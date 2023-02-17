@@ -1,0 +1,4 @@
+plugins:
+  plugin_name_enabled:
+    default: true
+    client: true
