@@ -3,22 +3,11 @@
 module ::DiscourseAI
   class InferenceManager
     def self.perform!(endpoint, model, content, api_key)
+      headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
 
-      headers = {
-        "Referer" => Discourse.base_url,
-        "Content-Type" => "application/json",
-      }
+      headers["X-API-KEY"] = api_key if api_key.present?
 
-      if api_key.present?
-        headers["X-API-KEY"] = api_key
-      end
-
-      response =
-        Faraday.post(
-          endpoint,
-          { model: model, content: content }.to_json,
-          headers,
-        )
+      response = Faraday.post(endpoint, { model: model, content: content }.to_json, headers)
 
       raise Net::HTTPBadResponse unless response.status == 200
 

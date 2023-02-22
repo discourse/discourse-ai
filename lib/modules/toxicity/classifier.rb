@@ -26,7 +26,7 @@ module ::DiscourseAI
             "#{SiteSetting.ai_toxicity_inference_service_api_endpoint}/api/v1/classify",
             SiteSetting.ai_toxicity_inference_service_api_model,
             content,
-            SiteSetting.ai_toxicity_inference_service_api_key
+            SiteSetting.ai_toxicity_inference_service_api_key,
           )
         store_classification
         consider_flagging

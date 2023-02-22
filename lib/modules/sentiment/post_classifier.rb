@@ -25,7 +25,7 @@ module ::DiscourseAI
                 "#{SiteSetting.ai_sentiment_inference_service_api_endpoint}/api/v1/classify",
                 model,
                 content,
-                SiteSetting.ai_sentiment_inference_service_api_key
+                SiteSetting.ai_sentiment_inference_service_api_key,
               )
 
             store_classification(model, classification)
