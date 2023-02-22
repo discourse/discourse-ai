@@ -1,4 +1,66 @@
 plugins:
-  plugin_name_enabled:
+  ai_enabled:
     default: true
     client: true
+
+  ai_toxicity_enabled:
+    default: false
+    client: true
+  ai_toxicity_inference_service_api_endpoint:
+    default: "https://disorder-testing.demo-by-discourse.com"
+  ai_toxicity_inference_service_api_key:
+    default: ''
+  ai_toxicity_inference_service_api_model:
+    type: enum
+    default: unbiased
+    choices:
+      - unbiased
+      - multilingual
+      - original
+  ai_toxicity_flag_automatically:
+    default: true
+    client: false
+  ai_toxicity_flag_threshold_toxicity:
+    default: 70
+    client: false
+  ai_toxicity_flag_threshold_severe_toxicity:
+    default: 60
+    client: false
+  ai_toxicity_flag_threshold_obscene:
+    default: 60
+    client: false
+  ai_toxicity_flag_threshold_identity_attack:
+    default: 60
+    client: false
+  ai_toxicity_flag_threshold_insult:
+    default: 60
+    client: false
+  ai_toxicity_flag_threshold_threat:
+    default: 60
+    client: false
+  ai_toxicity_flag_threshold_sexual_explicit:
+    default: 60
+    client: false
+  ai_toxicity_groups_bypass:
+    client: true
+    type: group_list
+    list_type: compact
+    default: "3" # 3: @staff
+    allow_any: false
+    refresh: true
+
+  ai_sentiment_enabled:
+    default: false
+    client: true
+  ai_sentiment_inference_service_api_endpoint:
+    default: ''
+  ai_sentiment_inference_service_api_key:
+    default: ''
+  ai_sentiment_models:
+    type: list
+    list_type: simple
+    default: "emotion"
+    allow_any: false
+    choices:
+     - sentiment
+     - emotion
