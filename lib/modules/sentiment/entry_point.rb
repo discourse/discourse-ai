@@ -5,7 +5,7 @@ module DiscourseAI
       def inject_into(plugin)
         require_relative "event_handler.rb"
         require_relative "post_classifier.rb"
-        require_relative "../../../app/jobs/regular/modules/sentiment/sentiment_classify_post.rb"
+        require_relative "jobs/regular/sentiment_classify_post.rb"
 
         plugin.on(:post_created) do |post|
           DiscourseAI::Sentiment::EventHandler.handle_post_async(post)

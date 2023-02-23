@@ -8,10 +8,8 @@ module DiscourseAI
         require_relative "post_classifier.rb"
         require_relative "chat_message_classifier.rb"
 
-        jobs_base_path = "../../../app/jobs/regular/modules/toxicity"
-
-        require_relative "#{jobs_base_path}/toxicity_classify_post.rb"
-        require_relative "#{jobs_base_path}/toxicity_classify_chat_message.rb"
+        require_relative "jobs/regular/toxicity_classify_post.rb"
+        require_relative "jobs/regular/toxicity_classify_chat_message.rb"
 
         plugin.on(:post_created) do |post|
           DiscourseAI::Toxicity::EventHandler.handle_post_async(post)

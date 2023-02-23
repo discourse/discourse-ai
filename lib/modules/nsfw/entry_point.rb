@@ -5,7 +5,7 @@ module DiscourseAI
     class EntryPoint
       def inject_into(plugin)
         require_relative "evaluation.rb"
-        require_relative "../../../app/jobs/regular/modules/nsfw/evaluate_content.rb"
+        require_relative "jobs/regular/evaluate_content.rb"
 
         plugin.add_model_callback(Upload, :after_create) do
           Jobs.enqueue(:evaluate_content, upload_id: self.id)
