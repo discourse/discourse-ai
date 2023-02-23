@@ -58,7 +58,7 @@ plugins:
     default: ''
   ai_sentiment_models:
     type: list
-    list_type: simple
+    list_type: compact
     default: "emotion"
     allow_any: false
     choices:
@@ -70,4 +70,17 @@ plugins:
     default: "https://nsfw-testing.demo-by-discourse.com"
   ai_nsfw_inference_service_api_key:
     default: ""
-  ai_nsfw_probability_threshold: 60
+  ai_nsfw_flag_automatically: true
+  ai_nsfw_flag_threshold_general: 60
+  ai_nsfw_flag_threshold_drawings: 60
+  ai_nsfw_flag_threshold_hentai: 60
+  ai_nsfw_flag_threshold_porn: 60
+  ai_nsfw_flag_threshold_sexy: 70
+  ai_nsfw_models:
+    type: list
+    list_type: compact
+    default: "opennsfw2"
+    allow_any: false
+    choices:
+     - opennsfw2
+     - nsfw_detector

@@ -19,8 +19,7 @@ module ::DiscourseAI
       end
 
       def flag!
-        PostActionCreator.create(flagger, @object, :inappropriate, reason: @reasons.join("/"))
-        @object.publish_change_to_clients! :acted
+        DiscourseAI::FlagManager.new(@object, reasons: @reasons).flag!
       end
     end
   end
