@@ -7,34 +7,36 @@ module ::DiscourseAI
 
       SENTIMENT_LABELS = %w[negative neutral positive]
 
-      def initialize(object)
-        @object = object
+      def classify!(post)
+        available_models.each do |model|
+          classification = request_classification(post, model)
+
+          store_classification(post, model, classification)
+        end
       end
 
-      def content
-        @object.post_number == 1 ? "#{@object.topic.title}\n#{@object.raw}" : @object.raw
+      def available_models
+        SiteSetting.ai_sentiment_models.split("|")
       end
 
-      def classify!
-        SiteSetting
-          .ai_sentiment_models
-          .split("|")
-          .each do |model|
-            classification =
-              ::DiscourseAI::InferenceManager.perform!(
-                "#{SiteSetting.ai_sentiment_inference_service_api_endpoint}/api/v1/classify",
-                model,
-                content,
-                SiteSetting.ai_sentiment_inference_service_api_key,
-              )
+      private
 
-            store_classification(model, classification)
-          end
+      def request_classification(post, model)
+        ::DiscourseAI::InferenceManager.perform!(
+          "#{SiteSetting.ai_sentiment_inference_service_api_endpoint}/api/v1/classify",
+          model,
+          content(post),
+          SiteSetting.ai_sentiment_inference_service_api_key,
+        )
       end
 
-      def store_classification(model, classification)
+      def content(post)
+        post.post_number == 1 ? "#{post.topic.title}\n#{post.raw}" : post.raw
+      end
+
+      def store_classification(post, model, classification)
         PostCustomField.create!(
-          post_id: @object.id,
+          post_id: post.id,
           name: "ai-sentiment-#{model}",
           value: { classification: classification }.to_json,
         )

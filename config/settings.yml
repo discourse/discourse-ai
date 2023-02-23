@@ -67,7 +67,7 @@ plugins:
   
   ai_nsfw_live_detection_enabled: false
   ai_nsfw_inference_service_api_endpoint:
-    default: "https://nsfw-testing.demo-by-discourse.com"
+    default: ""
   ai_nsfw_inference_service_api_key:
     default: ""
   ai_nsfw_flag_automatically: true

@@ -7,6 +7,8 @@ describe Jobs::EvaluateContent do
   fab!(:image) { Fabricate(:s3_image_upload) }
 
   describe "#execute" do
+    before { SiteSetting.ai_nsfw_inference_service_api_endpoint = "http://test.com" }
+
     context "when we conclude content is NSFW" do
       before { NSFWInferenceStubs.positive(image) }
 

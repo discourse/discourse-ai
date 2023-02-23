@@ -2,7 +2,7 @@
 module DiscourseAI
   module Toxicity
     class EntryPoint
-      def inject_into(plugin)
+      def load_files
         require_relative "event_handler.rb"
         require_relative "classifier.rb"
         require_relative "post_classifier.rb"
@@ -10,7 +10,9 @@ module DiscourseAI
 
         require_relative "jobs/regular/toxicity_classify_post.rb"
         require_relative "jobs/regular/toxicity_classify_chat_message.rb"
+      end
 
+      def inject_into(plugin)
         plugin.on(:post_created) do |post|
           DiscourseAI::Toxicity::EventHandler.handle_post_async(post)
         end

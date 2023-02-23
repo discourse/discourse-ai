@@ -4,7 +4,10 @@ require "rails_helper"
 require_relative "../../../support/nsfw_inference_stubs"
 
 describe DiscourseAI::NSFW::Evaluation do
-  before { SiteSetting.ai_nsfw_live_detection_enabled = true }
+  before do
+    SiteSetting.ai_nsfw_inference_service_api_endpoint = "http://test.com"
+    SiteSetting.ai_nsfw_live_detection_enabled = true
+  end
 
   fab!(:image) { Fabricate(:s3_image_upload) }
 

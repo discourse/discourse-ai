@@ -2,18 +2,21 @@
 module DiscourseAI
   module Sentiment
     class EntryPoint
-      def inject_into(plugin)
-        require_relative "event_handler.rb"
+      def load_files
         require_relative "post_classifier.rb"
-        require_relative "jobs/regular/sentiment_classify_post.rb"
+        require_relative "jobs/regular/post_sentiment_analysis.rb"
+      end
 
-        plugin.on(:post_created) do |post|
-          DiscourseAI::Sentiment::EventHandler.handle_post_async(post)
-        end
+      def inject_into(plugin)
+        sentiment_analysis_cb =
+          Proc.new do |post|
+            if SiteSetting.ai_sentiment_enabled
+              Jobs.enqueue(:post_sentiment_analysis, post_id: post.id)
+            end
+          end
 
-        plugin.on(:post_edited) do |post|
-          DiscourseAI::Sentiment::EventHandler.handle_post_async(post)
-        end
+        plugin.on(:post_created, &sentiment_analysis_cb)
+        plugin.on(:post_edited, &sentiment_analysis_cb)
       end
     end
   end
