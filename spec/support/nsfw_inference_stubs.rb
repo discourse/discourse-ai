@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class NSFWInferenceStubs
   class << self
     def endpoint

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
-require_relative "../../../../../support/nsfw_inference_stubs"
+require_relative "../../../../support/nsfw_inference_stubs"
 
 describe Jobs::EvaluateContent do
   fab!(:image) { Fabricate(:s3_image_upload) }

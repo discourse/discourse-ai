@@ -8,7 +8,7 @@ describe DiscourseAI::NSFW::Evaluation do
 
   fab!(:image) { Fabricate(:s3_image_upload) }
 
-  let(:available_models) { DiscourseAI::NSFW::Evaluation::AVAILABLE_MODELS }
+  let(:available_models) { SiteSetting.ai_nsfw_models.split("|") }
 
   describe "perform" do
     context "when we determine content is NSFW" do

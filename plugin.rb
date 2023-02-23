@@ -15,32 +15,16 @@ after_initialize do
   end
 
   require_relative "lib/shared/inference_manager.rb"
-  require_relative "lib/modules/toxicity/event_handler.rb"
-  require_relative "lib/modules/toxicity/classifier.rb"
-  require_relative "lib/modules/toxicity/post_classifier.rb"
-  require_relative "lib/modules/toxicity/chat_message_classifier.rb"
-  require_relative "app/jobs/regular/modules/toxicity/toxicity_classify_post.rb"
-  require_relative "app/jobs/regular/modules/toxicity/toxicity_classify_chat_message.rb"
-
-  require_relative "lib/modules/sentiment/event_handler.rb"
-  require_relative "lib/modules/sentiment/post_classifier.rb"
-  require_relative "app/jobs/regular/modules/sentiment/sentiment_classify_post.rb"
-
-  on(:post_created) do |post|
-    DiscourseAI::Toxicity::EventHandler.handle_post_async(post)
-    DiscourseAI::Sentiment::EventHandler.handle_post_async(post)
-  end
-  on(:post_edited) do |post|
-    DiscourseAI::Toxicity::EventHandler.handle_post_async(post)
-    DiscourseAI::Sentiment::EventHandler.handle_post_async(post)
-  end
-  on(:chat_message_created) do |chat_message|
-    DiscourseAI::Toxicity::EventHandler.handle_chat_async(chat_message)
-  end
-  on(:chat_message_edited) do |chat_message|
-    DiscourseAI::Toxicity::EventHandler.handle_chat_async(chat_message)
-  end
 
   require_relative "lib/modules/nsfw/entry_point.rb"
-  DiscourseAI::NSFW::EntryPoint.new.inject_into(self)
+  require_relative "lib/modules/toxicity/entry_point.rb"
+  require_relative "lib/modules/sentiment/entry_point.rb"
+
+  modules = [
+    DiscourseAI::NSFW::EntryPoint,
+    DiscourseAI::Toxicity::EntryPoint,
+    DiscourseAI::Sentiment::EntryPoint,
+  ]
+
+  modules.each { |a_module| a_module.new.inject_into(self) }
 end
