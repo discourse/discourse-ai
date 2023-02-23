@@ -7,10 +7,10 @@
 # url: TODO
 # required_version: 2.7.0
 
-enabled_site_setting :ai_enabled
+enabled_site_setting :discourse_ai_enabled
 
 after_initialize do
-  module ::Disorder
+  module ::DiscourseAI
     PLUGIN_NAME = "discourse-ai"
   end
 
@@ -40,4 +40,7 @@ after_initialize do
   on(:chat_message_edited) do |chat_message|
     DiscourseAI::Toxicity::EventHandler.handle_chat_async(chat_message)
   end
+
+  require_relative "lib/modules/nsfw/entry_point.rb"
+  DiscourseAI::NSFW::EntryPoint.new.inject_into(self)
 end
