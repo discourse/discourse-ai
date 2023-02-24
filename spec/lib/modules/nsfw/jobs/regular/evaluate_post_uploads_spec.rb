@@ -76,25 +76,5 @@ describe Jobs::EvaluatePostUploads do
         end
       end
     end
-
-    context "when the post has multiple uploads" do
-      fab!(:upload_2) { Fabricate(:upload) }
-
-      before { post.uploads << upload_2 }
-
-      context "when we conclude content is NSFW" do
-        before do
-          NSFWInferenceStubs.negative(upload_1)
-          NSFWInferenceStubs.positive(upload_2)
-        end
-
-        it "flags and hides the post if at least one upload is considered NSFW" do
-          subject.execute({ post_id: post.id })
-
-          expect(ReviewableFlaggedPost.where(target: post).count).to eq(1)
-          expect(post.reload.hidden?).to eq(true)
-        end
-      end
-    end
   end
 end

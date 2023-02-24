@@ -10,7 +10,9 @@ module ::Jobs
       chat_message = ChatMessage.find_by(id: chat_message_id)
       return if chat_message&.message.blank?
 
-      ::DiscourseAI::Toxicity::ChatMessageClassifier.new.classify!(chat_message)
+      DiscourseAI::ChatMessageClassification.new(
+        DiscourseAI::Toxicity::ToxicityClassification.new,
+      ).classify!(chat_message)
     end
   end
 end

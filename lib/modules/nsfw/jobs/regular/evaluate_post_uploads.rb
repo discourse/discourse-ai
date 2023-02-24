@@ -9,13 +9,9 @@ module Jobs
       post = Post.includes(:uploads).find_by_id(post_id)
       return if post.nil? || post.uploads.empty?
 
-      nsfw_evaluation = DiscourseAI::NSFW::Evaluation.new
+      return if post.uploads.none? { |u| FileHelper.is_supported_image?(u.url) }
 
-      image_uploads = post.uploads.select { |upload| FileHelper.is_supported_image?(upload.url) }
-
-      results = image_uploads.map { |upload| nsfw_evaluation.perform(upload) }
-
-      DiscourseAI::FlagManager.new(post).flag! if results.any? { |r| r[:verdict] }
+      DiscourseAI::PostClassification.new(DiscourseAI::NSFW::NSFWClassification.new).classify!(post)
     end
   end
 end

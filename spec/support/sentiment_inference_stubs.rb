@@ -15,7 +15,7 @@ class SentimentInferenceStubs
     def stub_classification(post)
       content = post.post_number == 1 ? "#{post.topic.title}\n#{post.raw}" : post.raw
 
-      DiscourseAI::Sentiment::PostClassifier.new.available_models.each do |model|
+      DiscourseAI::Sentiment::SentimentClassification.new.available_models.each do |model|
         WebMock
           .stub_request(:post, endpoint)
           .with(body: JSON.dump(model: model, content: content))

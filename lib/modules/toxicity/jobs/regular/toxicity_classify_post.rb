@@ -11,7 +11,9 @@ module ::Jobs
       post = Post.find_by(id: post_id, post_type: Post.types[:regular])
       return if post&.raw.blank?
 
-      ::DiscourseAI::Toxicity::PostClassifier.new.classify!(post)
+      DiscourseAI::PostClassification.new(
+        DiscourseAI::Toxicity::ToxicityClassification.new,
+      ).classify!(post)
     end
   end
 end

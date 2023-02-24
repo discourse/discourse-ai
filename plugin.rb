@@ -15,7 +15,9 @@ after_initialize do
   end
 
   require_relative "lib/shared/inference_manager"
-  require_relative "lib/shared/flag_manager"
+  require_relative "lib/shared/classification"
+  require_relative "lib/shared/post_classification"
+  require_relative "lib/shared/chat_message_classification"
 
   require_relative "lib/modules/nsfw/entry_point"
   require_relative "lib/modules/toxicity/entry_point"

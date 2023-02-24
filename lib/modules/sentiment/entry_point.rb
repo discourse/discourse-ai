@@ -3,7 +3,7 @@ module DiscourseAI
   module Sentiment
     class EntryPoint
       def load_files
-        require_relative "post_classifier"
+        require_relative "sentiment_classification"
         require_relative "jobs/regular/post_sentiment_analysis"
       end
 
