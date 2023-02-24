@@ -3,7 +3,7 @@
 require "rails_helper"
 require_relative "../../../../../support/nsfw_inference_stubs"
 
-describe Jobs::EvaluateContent do
+describe Jobs::EvaluatePostUploads do
   fab!(:image) { Fabricate(:s3_image_upload) }
 
   describe "#execute" do

@@ -65,7 +65,7 @@ plugins:
      - sentiment
      - emotion
   
-  ai_nsfw_live_detection_enabled: false
+  ai_nsfw_detection_enabled: false
   ai_nsfw_inference_service_api_endpoint:
     default: ""
   ai_nsfw_inference_service_api_key:

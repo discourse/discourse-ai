@@ -3,23 +3,25 @@
 module ::DiscourseAI
   module Toxicity
     class PostClassifier < Classifier
-      def content
-        object.post_number == 1 ? "#{object.topic.title}\n#{object.raw}" : object.raw
+      private
+
+      def content(post)
+        post.post_number == 1 ? "#{post.topic.title}\n#{post.raw}" : post.raw
       end
 
-      def store_classification
+      def store_classification(post, classification)
         PostCustomField.create!(
-          post_id: @object.id,
+          post_id: post.id,
           name: "toxicity",
           value: {
-            classification: @classification,
+            classification: classification,
             model: SiteSetting.ai_toxicity_inference_service_api_model,
           }.to_json,
         )
       end
 
-      def flag!
-        DiscourseAI::FlagManager.new(@object, reasons: @reasons).flag!
+      def flag!(target, toxic_labels)
+        ::DiscourseAI::FlagManager.new(target, reasons: toxic_labels).flag!
       end
     end
   end

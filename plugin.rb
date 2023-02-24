@@ -9,13 +9,18 @@
 
 enabled_site_setting :discourse_ai_enabled
 
-require_relative "lib/shared/inference_manager"
-
-require_relative "lib/modules/nsfw/entry_point"
-require_relative "lib/modules/toxicity/entry_point"
-require_relative "lib/modules/sentiment/entry_point"
-
 after_initialize do
+  module ::DiscourseAI
+    PLUGIN_NAME = "discourse-ai"
+  end
+
+  require_relative "lib/shared/inference_manager"
+  require_relative "lib/shared/flag_manager"
+
+  require_relative "lib/modules/nsfw/entry_point"
+  require_relative "lib/modules/toxicity/entry_point"
+  require_relative "lib/modules/sentiment/entry_point"
+
   modules = [
     DiscourseAI::NSFW::EntryPoint.new,
     DiscourseAI::Toxicity::EntryPoint.new,
@@ -25,9 +30,5 @@ after_initialize do
   modules.each do |a_module|
     a_module.load_files
     a_module.inject_into(self)
-  end
-
-  module ::DiscourseAI
-    PLUGIN_NAME = "discourse-ai"
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobs
-  class EvaluateContent < ::Jobs::Base
+  class EvaluatePostUploads < ::Jobs::Base
     def execute(args)
       upload = Upload.find_by_id(args[:upload_id])
 

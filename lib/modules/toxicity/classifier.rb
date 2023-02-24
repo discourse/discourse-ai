@@ -13,47 +13,53 @@ module ::DiscourseAI
         sexual_explicit
       ]
 
-      def initialize(object)
-        @object = object
+      def classify!(target)
+        classification = request_classification(target)
+
+        store_classification(target, classification)
+
+        toxic_labels = filter_toxic_labels(classification)
+
+        flag!(target, toxic_labels) if should_flag_based_on?(toxic_labels)
       end
 
-      def content
+      protected
+
+      def flag!(_target, _toxic_labels)
+        raise NotImplemented
       end
 
-      def classify!
-        @classification =
-          ::DiscourseAI::InferenceManager.perform!(
-            "#{SiteSetting.ai_toxicity_inference_service_api_endpoint}/api/v1/classify",
-            SiteSetting.ai_toxicity_inference_service_api_model,
-            content,
-            SiteSetting.ai_toxicity_inference_service_api_key,
-          )
-        store_classification
-        consider_flagging
+      def store_classification(_target, _classification)
+        raise NotImplemented
       end
 
-      def store_classification
-      end
-
-      def automatic_flag_enabled?
-        SiteSetting.ai_toxicity_flag_automatically
-      end
-
-      def consider_flagging
-        return unless automatic_flag_enabled?
-        @reasons =
-          CLASSIFICATION_LABELS.filter do |label|
-            @classification[label] >= SiteSetting.send("ai_toxicity_flag_threshold_#{label}")
-          end
-
-        flag! unless @reasons.empty?
+      def content(_target)
+        raise NotImplemented
       end
 
       def flagger
-        User.find_by(id: -1)
+        Discourse.system_user
       end
 
-      def flag!
+      private
+
+      def request_classification(target)
+        ::DiscourseAI::InferenceManager.perform!(
+          "#{SiteSetting.ai_toxicity_inference_service_api_endpoint}/api/v1/classify",
+          SiteSetting.ai_toxicity_inference_service_api_model,
+          content(target),
+          SiteSetting.ai_toxicity_inference_service_api_key,
+        )
+      end
+
+      def filter_toxic_labels(classification)
+        CLASSIFICATION_LABELS.filter do |label|
+          classification[label] >= SiteSetting.send("ai_toxicity_flag_threshold_#{label}")
+        end
+      end
+
+      def should_flag_based_on?(toxic_labels)
+        SiteSetting.ai_toxicity_flag_automatically && toxic_labels.present?
       end
     end
   end

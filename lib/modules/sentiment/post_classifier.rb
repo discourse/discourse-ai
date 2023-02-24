@@ -3,10 +3,6 @@
 module ::DiscourseAI
   module Sentiment
     class PostClassifier
-      SENTIMENT_LABELS = %w[anger disgust fear joy neutral sadness surprise]
-
-      SENTIMENT_LABELS = %w[negative neutral positive]
-
       def classify!(post)
         available_models.each do |model|
           classification = request_classification(post, model)
