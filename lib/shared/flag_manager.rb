@@ -13,7 +13,14 @@ module ::DiscourseAI
     end
 
     def flag!
-      PostActionCreator.create(@flagger, @object, :inappropriate, reason: @reasons)
+      PostActionCreator.new(
+        @flagger,
+        @object,
+        PostActionType.types[:inappropriate],
+        reason: @reasons,
+        queue_for_review: true,
+      ).perform
+
       @object.publish_change_to_clients! :acted
     end
   end

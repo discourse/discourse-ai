@@ -7,7 +7,10 @@ class NSFWInferenceStubs
     end
 
     def upload_url(upload)
-      Discourse.store.cdn_url(upload.url)
+      upload_url = Discourse.store.cdn_url(upload.url)
+      upload_url = "#{Discourse.base_url_no_prefix}#{upload_url}" if upload_url.starts_with?("/")
+
+      upload_url
     end
 
     def positive_result(model)

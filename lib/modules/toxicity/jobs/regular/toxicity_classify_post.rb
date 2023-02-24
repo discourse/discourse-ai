@@ -8,7 +8,7 @@ module ::Jobs
       post_id = args[:post_id]
       return if post_id.blank?
 
-      post = Post.includes(:user).find_by(id: post_id, post_type: Post.types[:regular])
+      post = Post.find_by(id: post_id, post_type: Post.types[:regular])
       return if post&.raw.blank?
 
       ::DiscourseAI::Toxicity::PostClassifier.new.classify!(post)

@@ -11,7 +11,7 @@ module DiscourseAI
       def inject_into(plugin)
         nsfw_detection_cb =
           Proc.new do |post|
-            if SiteSetting.ai_nsfw_detection_enabled
+            if SiteSetting.ai_nsfw_detection_enabled && post.uploads.present?
               Jobs.enqueue(:evaluate_post_uploads, post_id: post.id)
             end
           end
