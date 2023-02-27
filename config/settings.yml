@@ -53,7 +53,7 @@ plugins:
     default: false
     client: true
   ai_sentiment_inference_service_api_endpoint:
-    default: ''
+    default: "https://sentiment-testing.demo-by-discourse.com"
   ai_sentiment_inference_service_api_key:
     default: ''
   ai_sentiment_models:
@@ -67,7 +67,7 @@ plugins:
   
   ai_nsfw_detection_enabled: false
   ai_nsfw_inference_service_api_endpoint:
-    default: ""
+    default: "https://nsfw-testing.demo-by-discourse.com"
   ai_nsfw_inference_service_api_key:
     default: ""
   ai_nsfw_flag_automatically: true
