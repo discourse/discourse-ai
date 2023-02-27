@@ -42,10 +42,14 @@ module DiscourseAI
             SiteSetting.ai_toxicity_inference_service_api_key,
           )
 
-        { SiteSetting.ai_toxicity_inference_service_api_model => data }
+        { available_model => data }
       end
 
       private
+
+      def available_model
+        SiteSetting.ai_toxicity_inference_service_api_model
+      end
 
       def content_of(target_to_classify)
         return target_to_classify.message if target_to_classify.is_a?(ChatMessage)

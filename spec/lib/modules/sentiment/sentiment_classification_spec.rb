@@ -4,9 +4,9 @@ require "rails_helper"
 require_relative "../../../support/sentiment_inference_stubs"
 
 describe DiscourseAI::Sentiment::SentimentClassification do
-  describe "#request" do
-    fab!(:target) { Fabricate(:post) }
+  fab!(:target) { Fabricate(:post) }
 
+  describe "#request" do
     before { SiteSetting.ai_sentiment_inference_service_api_endpoint = "http://test.com" }
 
     it "returns the classification and the model used for it" do

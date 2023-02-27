@@ -14,20 +14,23 @@ module DiscourseAI
       def should_flag_based_on?(classification_data)
         return false if !SiteSetting.ai_nsfw_flag_automatically
 
-        # Flat representation of each model classification of each upload.
-        # Each element looks like [model_name, data]
-        all_classifications = classification_data.values.flatten.map { |x| x.to_a.flatten }
-
-        all_classifications.any? { |(model_name, data)| send("#{model_name}_verdict?", data) }
+        classification_data.any? do |model_name, classifications|
+          classifications.values.any? do |data|
+            send("#{model_name}_verdict?", data.except(:neutral, :target_classified_type))
+          end
+        end
       end
 
       def request(target_to_classify)
         uploads_to_classify = content_of(target_to_classify)
 
-        uploads_to_classify.reduce({}) do |memo, upload|
-          memo[upload.id] = available_models.reduce({}) do |per_model, model|
-            per_model[model] = evaluate_with_model(model, upload)
-            per_model
+        available_models.reduce({}) do |memo, model|
+          memo[model] = uploads_to_classify.reduce({}) do |upl_memo, upload|
+            upl_memo[upload.id] = evaluate_with_model(model, upload).merge(
+              target_classified_type: upload.class.name,
+            )
+
+            upl_memo
           end
 
           memo
@@ -61,11 +64,9 @@ module DiscourseAI
       end
 
       def nsfw_detector_verdict?(classification)
-        classification.each do |key, value|
-          next if key == :neutral
-          return true if value.to_i >= SiteSetting.send("ai_nsfw_flag_threshold_#{key}")
+        classification.any? do |key, value|
+          value.to_i >= SiteSetting.send("ai_nsfw_flag_threshold_#{key}")
         end
-        false
       end
     end
   end

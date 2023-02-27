@@ -18,19 +18,19 @@ describe Jobs::PostSentimentAnalysis do
 
         subject.execute({ post_id: post.id })
 
-        expect(PostCustomField.where(post: post).count).to be_zero
+        expect(ClassificationResult.where(target: post).count).to be_zero
       end
 
       it "does nothing if there's no arg called post_id" do
         subject.execute({})
 
-        expect(PostCustomField.where(post: post).count).to be_zero
+        expect(ClassificationResult.where(target: post).count).to be_zero
       end
 
       it "does nothing if no post match the given id" do
         subject.execute({ post_id: nil })
 
-        expect(PostCustomField.where(post: post).count).to be_zero
+        expect(ClassificationResult.where(target: post).count).to be_zero
       end
 
       it "does nothing if the post content is blank" do
@@ -38,7 +38,7 @@ describe Jobs::PostSentimentAnalysis do
 
         subject.execute({ post_id: post.id })
 
-        expect(PostCustomField.where(post: post).count).to be_zero
+        expect(ClassificationResult.where(target: post).count).to be_zero
       end
     end
 
@@ -48,7 +48,7 @@ describe Jobs::PostSentimentAnalysis do
 
       subject.execute({ post_id: post.id })
 
-      expect(PostCustomField.where(post: post).count).to eq(expected_analysis)
+      expect(ClassificationResult.where(target: post).count).to eq(expected_analysis)
     end
   end
 end

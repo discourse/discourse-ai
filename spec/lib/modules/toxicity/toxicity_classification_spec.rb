@@ -4,9 +4,9 @@ require "rails_helper"
 require_relative "../../../support/toxicity_inference_stubs"
 
 describe DiscourseAI::Toxicity::ToxicityClassification do
-  describe "#request" do
-    fab!(:target) { Fabricate(:post) }
+  fab!(:target) { Fabricate(:post) }
 
+  describe "#request" do
     it "returns the classification and the model used for it" do
       ToxicityInferenceStubs.stub_post_classification(target, toxic: false)
 

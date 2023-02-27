@@ -8,19 +8,15 @@ describe DiscourseAI::NSFW::NSFWClassification do
 
   let(:available_models) { SiteSetting.ai_nsfw_models.split("|") }
 
+  fab!(:upload_1) { Fabricate(:s3_image_upload) }
+  fab!(:post) { Fabricate(:post, uploads: [upload_1]) }
+
   describe "#request" do
-    fab!(:upload_1) { Fabricate(:s3_image_upload) }
-    fab!(:post) { Fabricate(:post, uploads: [upload_1]) }
-
-    def assert_correctly_classified(upload, results, expected)
-      available_models.each do |model|
-        model_result = results.dig(upload.id, model)
-
-        expect(model_result).to eq(expected[model])
-      end
+    def assert_correctly_classified(results, expected)
+      available_models.each { |model| expect(results[model]).to eq(expected[model]) }
     end
 
-    def build_expected_classification(positive: true)
+    def build_expected_classification(target, positive: true)
       available_models.reduce({}) do |memo, model|
         model_expected =
           if positive
@@ -29,7 +25,9 @@ describe DiscourseAI::NSFW::NSFWClassification do
             NSFWInferenceStubs.negative_result(model)
           end
 
-        memo[model] = model_expected
+        memo[model] = {
+          target.id => model_expected.merge(target_classified_type: target.class.name),
+        }
         memo
       end
     end
@@ -37,11 +35,11 @@ describe DiscourseAI::NSFW::NSFWClassification do
     context "when the target has one upload" do
       it "returns the classification and the model used for it" do
         NSFWInferenceStubs.positive(upload_1)
-        expected = build_expected_classification
+        expected = build_expected_classification(upload_1)
 
         classification = subject.request(post)
 
-        assert_correctly_classified(upload_1, classification, expected)
+        assert_correctly_classified(classification, expected)
       end
 
       context "when the target has multiple uploads" do
@@ -52,13 +50,14 @@ describe DiscourseAI::NSFW::NSFWClassification do
         it "returns a classification for each one" do
           NSFWInferenceStubs.positive(upload_1)
           NSFWInferenceStubs.negative(upload_2)
-          expected_upload_1 = build_expected_classification
-          expected_upload_2 = build_expected_classification(positive: false)
+          expected_classification = build_expected_classification(upload_1)
+          expected_classification.deep_merge!(
+            build_expected_classification(upload_2, positive: false),
+          )
 
           classification = subject.request(post)
 
-          assert_correctly_classified(upload_1, classification, expected_upload_1)
-          assert_correctly_classified(upload_2, classification, expected_upload_2)
+          assert_correctly_classified(classification, expected_classification)
         end
       end
     end
@@ -69,15 +68,23 @@ describe DiscourseAI::NSFW::NSFWClassification do
 
     let(:positive_classification) do
       {
-        1 => available_models.map { |m| { m => NSFWInferenceStubs.negative_result(m) } },
-        2 => available_models.map { |m| { m => NSFWInferenceStubs.positive_result(m) } },
+        "opennsfw2" => {
+          1 => NSFWInferenceStubs.negative_result("opennsfw2"),
+          2 => NSFWInferenceStubs.positive_result("opennsfw2"),
+        },
+        "nsfw_detector" => {
+          1 => NSFWInferenceStubs.negative_result("nsfw_detector"),
+          2 => NSFWInferenceStubs.positive_result("nsfw_detector"),
+        },
       }
     end
 
     let(:negative_classification) do
       {
-        1 => available_models.map { |m| { m => NSFWInferenceStubs.negative_result(m) } },
-        2 => available_models.map { |m| { m => NSFWInferenceStubs.negative_result(m) } },
+        "opennsfw2" => {
+          1 => NSFWInferenceStubs.negative_result("opennsfw2"),
+          2 => NSFWInferenceStubs.negative_result("opennsfw2"),
+        },
       }
     end
 
