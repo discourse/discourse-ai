@@ -12,15 +12,14 @@ describe DiscourseAI::ChatMessageClassification do
   describe "#classify!" do
     before { ToxicityInferenceStubs.stub_chat_message_classification(chat_message, toxic: true) }
 
-    it "stores the model classification data in a custom field" do
+    it "stores the model classification data" do
       classification.classify!(chat_message)
-      store_row = PluginStore.get("toxicity", "chat_message_#{chat_message.id}")
 
-      classified_data =
-        store_row[SiteSetting.ai_toxicity_inference_service_api_model].symbolize_keys
+      result = ClassificationResult.find_by(target: chat_message, classification_type: model.type)
 
-      expect(classified_data).to eq(ToxicityInferenceStubs.toxic_response)
-      expect(store_row[:date]).to be_present
+      classification = result.classification.symbolize_keys
+
+      expect(classification).to eq(ToxicityInferenceStubs.toxic_response)
     end
 
     it "flags the message when the model decides we should" do

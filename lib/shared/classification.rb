@@ -12,7 +12,7 @@ module ::DiscourseAI
       classification_model
         .request(target)
         .tap do |classification|
-          store_classification(target, classification_model.type, classification)
+          store_classification(target, classification)
 
           if classification_model.should_flag_based_on?(classification)
             flag!(target, classification)
@@ -28,8 +28,25 @@ module ::DiscourseAI
       raise NotImplemented
     end
 
-    def store_classification(_target, _classification)
-      raise NotImplemented
+    def store_classification(target, classification)
+      attrs =
+        classification.map do |model_name, classifications|
+          {
+            model_used: model_name,
+            target_id: target.id,
+            target_type: target.class.name,
+            classification_type: classification_model.type,
+            classification: classifications,
+            updated_at: DateTime.now,
+            created_at: DateTime.now,
+          }
+        end
+
+      ClassificationResult.upsert_all(
+        attrs,
+        unique_by: %i[target_id target_type model_used],
+        update_only: %i[classification],
+      )
     end
 
     def flagger

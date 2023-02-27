@@ -12,16 +12,13 @@ describe DiscourseAI::PostClassification do
   describe "#classify!" do
     before { ToxicityInferenceStubs.stub_post_classification(post, toxic: true) }
 
-    it "stores the model classification data in a custom field" do
+    it "stores the model classification data" do
       classification.classify!(post)
-      custom_field = PostCustomField.find_by(post: post, name: model.type)
+      result = ClassificationResult.find_by(target: post, classification_type: model.type)
 
-      expect(custom_field.value).to eq(
-        {
-          SiteSetting.ai_toxicity_inference_service_api_model =>
-            ToxicityInferenceStubs.toxic_response,
-        }.to_json,
-      )
+      classification = result.classification.symbolize_keys
+
+      expect(classification).to eq(ToxicityInferenceStubs.toxic_response)
     end
 
     it "flags the message and hides the post when the model decides we should" do

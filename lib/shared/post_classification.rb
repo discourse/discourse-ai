@@ -4,10 +4,6 @@ module ::DiscourseAI
   class PostClassification < Classification
     private
 
-    def store_classification(post, type, classification_data)
-      PostCustomField.create!(post_id: post.id, name: type, value: classification_data.to_json)
-    end
-
     def flag!(post, classification_type)
       PostActionCreator.new(
         flagger,
