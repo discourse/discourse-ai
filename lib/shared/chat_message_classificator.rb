@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ::DiscourseAI
-  class ChatMessageClassification < Classification
+  class ChatMessageClassificator < Classificator
     private
 
     def flag!(chat_message, _toxic_labels)

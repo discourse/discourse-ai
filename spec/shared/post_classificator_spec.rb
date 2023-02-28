@@ -3,7 +3,7 @@
 require "rails_helper"
 require_relative "../support/toxicity_inference_stubs"
 
-describe DiscourseAI::PostClassification do
+describe DiscourseAI::PostClassificator do
   fab!(:post) { Fabricate(:post) }
 
   let(:model) { DiscourseAI::Toxicity::ToxicityClassification.new }
