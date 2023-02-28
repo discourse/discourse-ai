@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ::DiscourseAI
-  class PostClassification < Classification
+  class PostClassificator < Classificator
     private
 
     def flag!(post, classification_type)

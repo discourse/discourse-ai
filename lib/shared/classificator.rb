@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ::DiscourseAI
-  class Classification
+  class Classificator
     def initialize(classification_model)
       @classification_model = classification_model
     end
