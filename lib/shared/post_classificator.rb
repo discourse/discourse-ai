@@ -4,16 +4,21 @@ module ::DiscourseAI
   class PostClassificator < Classificator
     private
 
-    def flag!(post, classification_type)
-      PostActionCreator.new(
-        flagger,
-        post,
-        PostActionType.types[:inappropriate],
-        reason: classification_type,
-        queue_for_review: true,
-      ).perform
+    def flag!(post, classification)
+      post.hide!(ReviewableScore.types[:inappropriate])
 
-      post.publish_change_to_clients! :acted
+      reviewable =
+        ReviewableAIPost.needs_review!(
+          created_by: Discourse.system_user,
+          target: post,
+          reviewable_by_moderator: true,
+          potential_spam: false,
+          payload: {
+            classification: classification,
+          },
+        )
+
+      add_score(reviewable)
     end
   end
 end

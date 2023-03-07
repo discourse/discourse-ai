@@ -1,3 +1,8 @@
 en:
   js:
-    discourse-ai:
+    review:
+      types:
+        reviewable_aipost:
+          title: "AI-Flagged post"
+        reviewable_aichat_message:
+          title: "AI-Flagged chat message"

@@ -61,7 +61,7 @@ describe Jobs::EvaluatePostUploads do
         it "flags and hides the post" do
           subject.execute({ post_id: post.id })
 
-          expect(ReviewableFlaggedPost.where(target: post).count).to eq(1)
+          expect(ReviewableAIPost.where(target: post).count).to eq(1)
           expect(post.reload.hidden?).to eq(true)
         end
       end
@@ -72,7 +72,7 @@ describe Jobs::EvaluatePostUploads do
         it "does nothing" do
           subject.execute({ post_id: post.id })
 
-          expect(ReviewableFlaggedPost.where(target: post).count).to be_zero
+          expect(ReviewableAIPost.where(target: post).count).to be_zero
         end
       end
     end

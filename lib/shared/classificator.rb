@@ -28,6 +28,15 @@ module ::DiscourseAI
       raise NotImplemented
     end
 
+    def add_score(reviewable)
+      reviewable.add_score(
+        Discourse.system_user,
+        ReviewableScore.types[:inappropriate],
+        reason: "flagged_by_#{classification_model.type}",
+        force_review: true,
+      )
+    end
+
     def store_classification(target, classification)
       attrs =
         classification.map do |model_name, classifications|

@@ -26,7 +26,7 @@ describe DiscourseAI::PostClassificator do
 
       classification.classify!(post)
 
-      expect(ReviewableFlaggedPost.where(target: post).count).to eq(1)
+      expect(ReviewableAIPost.where(target: post).count).to eq(1)
       expect(post.reload.hidden?).to eq(true)
     end
 
@@ -35,7 +35,7 @@ describe DiscourseAI::PostClassificator do
 
       classification.classify!(post)
 
-      expect(ReviewableFlaggedPost.where(target: post).count).to be_zero
+      expect(ReviewableAIPost.where(target: post).count).to be_zero
     end
   end
 end
