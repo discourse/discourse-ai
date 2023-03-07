@@ -66,44 +66,26 @@ describe DiscourseAI::NSFW::NSFWClassification do
   describe "#should_flag_based_on?" do
     before { SiteSetting.ai_nsfw_flag_automatically = true }
 
-    let(:positive_classification) do
-      {
-        "opennsfw2" => {
-          1 => NSFWInferenceStubs.negative_result("opennsfw2"),
-          2 => NSFWInferenceStubs.positive_result("opennsfw2"),
-        },
-        "nsfw_detector" => {
-          1 => NSFWInferenceStubs.negative_result("nsfw_detector"),
-          2 => NSFWInferenceStubs.positive_result("nsfw_detector"),
-        },
-      }
-    end
+    let(:positive_verdict) { { "opennsfw2" => true, "nsfw_detector" => true } }
 
-    let(:negative_classification) do
-      {
-        "opennsfw2" => {
-          1 => NSFWInferenceStubs.negative_result("opennsfw2"),
-          2 => NSFWInferenceStubs.negative_result("opennsfw2"),
-        },
-      }
-    end
+    let(:negative_verdict) { { "opennsfw2" => false } }
 
     it "returns false when NSFW flaggin is disabled" do
       SiteSetting.ai_nsfw_flag_automatically = false
 
-      should_flag = subject.should_flag_based_on?(positive_classification)
+      should_flag = subject.should_flag_based_on?(positive_verdict)
 
       expect(should_flag).to eq(false)
     end
 
     it "returns true if the response is NSFW based on our thresholds" do
-      should_flag = subject.should_flag_based_on?(positive_classification)
+      should_flag = subject.should_flag_based_on?(positive_verdict)
 
       expect(should_flag).to eq(true)
     end
 
     it "returns false if the response is safe based on our thresholds" do
-      should_flag = subject.should_flag_based_on?(negative_classification)
+      should_flag = subject.should_flag_based_on?(negative_verdict)
 
       expect(should_flag).to eq(false)
     end

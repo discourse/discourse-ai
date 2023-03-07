@@ -11,14 +11,23 @@ module DiscourseAI
         content_of(target).present?
       end
 
-      def should_flag_based_on?(classification_data)
+      def get_verdicts(classification_data)
+        classification_data
+          .map do |model_name, classifications|
+            verdict =
+              classifications.values.any? do |data|
+                send("#{model_name}_verdict?", data.except(:neutral, :target_classified_type))
+              end
+
+            [model_name, verdict]
+          end
+          .to_h
+      end
+
+      def should_flag_based_on?(verdicts)
         return false if !SiteSetting.ai_nsfw_flag_automatically
 
-        classification_data.any? do |model_name, classifications|
-          classifications.values.any? do |data|
-            send("#{model_name}_verdict?", data.except(:neutral, :target_classified_type))
-          end
-        end
+        verdicts.values.any?
       end
 
       def request(target_to_classify)
