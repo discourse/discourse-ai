@@ -42,7 +42,7 @@ module DiscourseAI
 
       def request(target_to_classify)
         data =
-          ::DiscourseAI::InferenceManager.perform!(
+          ::DiscourseAI::Inference::DiscourseClassifier.perform!(
             "#{SiteSetting.ai_toxicity_inference_service_api_endpoint}/api/v1/classify",
             SiteSetting.ai_toxicity_inference_service_api_model,
             content_of(target_to_classify),

@@ -16,7 +16,13 @@ after_initialize do
     PLUGIN_NAME = "discourse-ai"
   end
 
-  require_relative "lib/shared/inference_manager"
+  require_relative "app/models/classification_result"
+
+  require_relative "lib/shared/inference/discourse_classifier"
+  require_relative "lib/shared/inference/discourse_reranker"
+  require_relative "lib/shared/inference/openai_completions"
+  require_relative "lib/shared/inference/openai_embeddings"
+
   require_relative "lib/shared/classificator"
   require_relative "lib/shared/post_classificator"
   require_relative "lib/shared/chat_message_classificator"

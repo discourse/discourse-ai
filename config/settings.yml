@@ -84,3 +84,6 @@ plugins:
     choices:
      - opennsfw2
      - nsfw_detector
+
+  ai_openai_api_key:
+    default: ""

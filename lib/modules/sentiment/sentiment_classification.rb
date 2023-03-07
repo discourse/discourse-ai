@@ -39,7 +39,7 @@ module DiscourseAI
       private
 
       def request_with(model, content)
-        ::DiscourseAI::InferenceManager.perform!(
+        ::DiscourseAI::Inference::DiscourseClassifier.perform!(
           "#{SiteSetting.ai_sentiment_inference_service_api_endpoint}/api/v1/classify",
           model,
           content,
