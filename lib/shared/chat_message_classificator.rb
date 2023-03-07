@@ -4,14 +4,18 @@ module ::DiscourseAI
   class ChatMessageClassificator < Classificator
     private
 
-    def flag!(chat_message, toxic_labels)
+    def flag!(chat_message, classification, verdicts, accuracies)
       reviewable =
         ReviewableAIChatMessage.needs_review!(
           created_by: Discourse.system_user,
           target: chat_message,
           reviewable_by_moderator: true,
           potential_spam: false,
-          payload: toxic_labels,
+          payload: {
+            classification: classification,
+            accuracies: accuracies,
+            verdicts: verdicts,
+          },
         )
       reviewable.update(target_created_by: chat_message.user)
 

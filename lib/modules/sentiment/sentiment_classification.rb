@@ -15,7 +15,14 @@ module DiscourseAI
         content_of(target).present?
       end
 
-      def should_flag_based_on?(classification_data)
+      def get_verdicts(_)
+        available_models.reduce({}) do |memo, model|
+          memo[model] = false
+          memo
+        end
+      end
+
+      def should_flag_based_on?(_verdicts)
         # We don't flag based on sentiment classification.
         false
       end

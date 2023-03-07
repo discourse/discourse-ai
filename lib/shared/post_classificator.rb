@@ -4,7 +4,7 @@ module ::DiscourseAI
   class PostClassificator < Classificator
     private
 
-    def flag!(post, classification)
+    def flag!(post, classification, verdicts, accuracies)
       post.hide!(ReviewableScore.types[:inappropriate])
 
       reviewable =
@@ -15,6 +15,8 @@ module ::DiscourseAI
           potential_spam: false,
           payload: {
             classification: classification,
+            accuracies: accuracies,
+            verdicts: verdicts,
           },
         )
 

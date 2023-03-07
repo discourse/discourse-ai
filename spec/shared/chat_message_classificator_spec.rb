@@ -37,5 +37,16 @@ describe DiscourseAI::ChatMessageClassificator do
 
       expect(ReviewableAIChatMessage.where(target: chat_message).count).to be_zero
     end
+
+    it "includes the model accuracy in the payload" do
+      SiteSetting.ai_toxicity_flag_automatically = true
+      classification.classify!(chat_message)
+
+      reviewable = ReviewableAIChatMessage.find_by(target: chat_message)
+
+      expect(
+        reviewable.payload.dig("accuracies", SiteSetting.ai_toxicity_inference_service_api_model),
+      ).to be_zero
+    end
   end
 end

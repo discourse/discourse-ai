@@ -36,4 +36,8 @@ after_initialize do
 
   register_reviewable_type ReviewableAIChatMessage
   register_reviewable_type ReviewableAIPost
+
+  on(:reviewable_transitioned_to) do |new_status, reviewable|
+    ModelAccuracy.adjust_model_accuracy(new_status, reviewable)
+  end
 end

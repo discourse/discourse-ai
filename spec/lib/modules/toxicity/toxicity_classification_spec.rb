@@ -21,34 +21,26 @@ describe DiscourseAI::Toxicity::ToxicityClassification do
   describe "#should_flag_based_on?" do
     before { SiteSetting.ai_toxicity_flag_automatically = true }
 
-    let(:toxic_response) do
-      {
-        SiteSetting.ai_toxicity_inference_service_api_model =>
-          ToxicityInferenceStubs.toxic_response,
-      }
-    end
+    let(:toxic_verdict) { { SiteSetting.ai_toxicity_inference_service_api_model => true } }
 
     it "returns false when toxicity flaggin is disabled" do
       SiteSetting.ai_toxicity_flag_automatically = false
 
-      should_flag = subject.should_flag_based_on?(toxic_response)
+      should_flag = subject.should_flag_based_on?(toxic_verdict)
 
       expect(should_flag).to eq(false)
     end
 
     it "returns true if the response is toxic based on our thresholds" do
-      should_flag = subject.should_flag_based_on?(toxic_response)
+      should_flag = subject.should_flag_based_on?(toxic_verdict)
 
       expect(should_flag).to eq(true)
     end
 
     it "returns false if the response is civilized based on our thresholds" do
-      civilized_response = {
-        SiteSetting.ai_toxicity_inference_service_api_model =>
-          ToxicityInferenceStubs.civilized_response,
-      }
+      civilized_verdict = { SiteSetting.ai_toxicity_inference_service_api_model => false }
 
-      should_flag = subject.should_flag_based_on?(civilized_response)
+      should_flag = subject.should_flag_based_on?(civilized_verdict)
 
       expect(should_flag).to eq(false)
     end

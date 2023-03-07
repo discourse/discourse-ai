@@ -21,16 +21,23 @@ module DiscourseAI
         content_of(target).present?
       end
 
-      def should_flag_based_on?(classification_data)
-        return false if !SiteSetting.ai_toxicity_flag_automatically
-
+      def get_verdicts(classification_data)
         # We only use one model for this classification.
         # Classification_data looks like { model_name => classification }
         _model_used, data = classification_data.to_a.first
 
-        CLASSIFICATION_LABELS.any? do |label|
-          data[label] >= SiteSetting.send("ai_toxicity_flag_threshold_#{label}")
-        end
+        verdict =
+          CLASSIFICATION_LABELS.any? do |label|
+            data[label] >= SiteSetting.send("ai_toxicity_flag_threshold_#{label}")
+          end
+
+        { available_model => verdict }
+      end
+
+      def should_flag_based_on?(verdicts)
+        return false if !SiteSetting.ai_toxicity_flag_automatically
+
+        verdicts.values.any?
       end
 
       def request(target_to_classify)

@@ -14,8 +14,11 @@ module ::DiscourseAI
         .tap do |classification|
           store_classification(target, classification)
 
-          if classification_model.should_flag_based_on?(classification)
-            flag!(target, classification)
+          verdicts = classification_model.get_verdicts(classification)
+
+          if classification_model.should_flag_based_on?(verdicts)
+            accuracies = get_model_accuracies(verdicts.keys)
+            flag!(target, classification, verdicts, accuracies)
           end
         end
     end
@@ -24,8 +27,21 @@ module ::DiscourseAI
 
     attr_reader :classification_model
 
-    def flag!(_target, _classification)
+    def flag!(_target, _classification, _verdicts, _accuracies)
       raise NotImplemented
+    end
+
+    def get_model_accuracies(models)
+      models
+        .map do |name|
+          accuracy =
+            ModelAccuracy.find_or_create_by(
+              model: name,
+              classification_type: classification_model.type,
+            )
+          [name, accuracy.calculate_accuracy]
+        end
+        .to_h
     end
 
     def add_score(reviewable)

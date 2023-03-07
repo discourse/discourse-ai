@@ -37,5 +37,16 @@ describe DiscourseAI::PostClassificator do
 
       expect(ReviewableAIPost.where(target: post).count).to be_zero
     end
+
+    it "includes the model accuracy in the payload" do
+      SiteSetting.ai_toxicity_flag_automatically = true
+      classification.classify!(post)
+
+      reviewable = ReviewableAIPost.find_by(target: post)
+
+      expect(
+        reviewable.payload.dig("accuracies", SiteSetting.ai_toxicity_inference_service_api_model),
+      ).to be_zero
+    end
   end
 end
