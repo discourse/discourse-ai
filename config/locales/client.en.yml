@@ -1,5 +1,9 @@
 en:
   js:
+    discourse-ai:
+      reviewables:
+        model_used: "Model used:"
+        accuracy: "Accuracy:"
     review:
       types:
         reviewable_aipost:
