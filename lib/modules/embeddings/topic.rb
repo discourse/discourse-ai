@@ -3,9 +3,8 @@
 module DiscourseAI
   module Embeddings
     class Topic
-
-      DISCOURSE_MODELS = %i{all-mpnet-base-v2 msmarco-distilbert-base-v4}
-      OPENAI_MODELS = %i{text-embedding-ada-002}
+      DISCOURSE_MODELS = %i[all-mpnet-base-v2 msmarco-distilbert-base-v4]
+      OPENAI_MODELS = %i[text-embedding-ada-002]
 
       def initialize(topic)
         @topic = topic
@@ -24,7 +23,7 @@ module DiscourseAI
         return if @topic.blank? || @topic.first_post.blank?
 
         enabled_models.each do |model|
-          @embeddings[model] = case 
+          @embeddings[model] = case
           when DISCOURSE_MODELS.include?(model)
             discourse_embeddings(model)
           when OPENAI_MODELS.include?(model)
@@ -40,17 +39,15 @@ module DiscourseAI
 
       def discourse_embeddings(model)
         DiscourseAI::Inference::DiscourseClassifier.perform!(
-            "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
-            model.to_s,
-            @topic.first_post.raw,
-            SiteSetting.ai_embeddings_discourse_service_api_key,
-          )
+          "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
+          model.to_s,
+          @topic.first_post.raw,
+          SiteSetting.ai_embeddings_discourse_service_api_key,
+        )
       end
 
       def openai_embeddings
-        DiscourseAI::Inference::OpenAIEmbeddings.perform!(
-            @topic.first_post.raw
-          )
+        DiscourseAI::Inference::OpenAIEmbeddings.perform!(@topic.first_post.raw)
       end
 
       private
@@ -58,7 +55,6 @@ module DiscourseAI
       def enabled_models
         SiteSetting.ai_embeddings_models.split("|").map(&:to_sym)
       end
-      
     end
   end
 end
