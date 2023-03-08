@@ -1,5 +1,19 @@
 # frozen_string_literal: true
 
-class ReviewableAIChatMessageSerializer < ReviewableChatMessageSerializer
-  payload_attributes :accuracies
+require_dependency "reviewable_serializer"
+
+class ReviewableAIChatMessageSerializer < ReviewableSerializer
+  payload_attributes :accuracies, :message_cooked
+  target_attributes :cooked
+  attributes :target_id
+
+  has_one :chat_channel, serializer: AIChatChannelSerializer, root: false, embed: :objects
+
+  def chat_channel
+    object.chat_message.chat_channel
+  end
+
+  def target_id
+    object.target&.id
+  end
 end
