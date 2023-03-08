@@ -18,19 +18,19 @@ describe Jobs::ToxicityClassifyChatMessage do
 
         subject.execute({ chat_message_id: chat_message.id })
 
-        expect(ReviewableChatMessage.where(target: chat_message).count).to be_zero
+        expect(ReviewableAIChatMessage.where(target: chat_message).count).to be_zero
       end
 
       it "does nothing if there's no arg called post_id" do
         subject.execute({})
 
-        expect(ReviewableChatMessage.where(target: chat_message).count).to be_zero
+        expect(ReviewableAIChatMessage.where(target: chat_message).count).to be_zero
       end
 
       it "does nothing if no post match the given id" do
         subject.execute({ chat_message_id: nil })
 
-        expect(ReviewableChatMessage.where(target: chat_message).count).to be_zero
+        expect(ReviewableAIChatMessage.where(target: chat_message).count).to be_zero
       end
 
       it "does nothing if the post content is blank" do
@@ -38,7 +38,7 @@ describe Jobs::ToxicityClassifyChatMessage do
 
         subject.execute({ chat_message_id: chat_message.id })
 
-        expect(ReviewableChatMessage.where(target: chat_message).count).to be_zero
+        expect(ReviewableAIChatMessage.where(target: chat_message).count).to be_zero
       end
     end
 
@@ -47,7 +47,7 @@ describe Jobs::ToxicityClassifyChatMessage do
 
       subject.execute({ chat_message_id: chat_message.id })
 
-      expect(ReviewableChatMessage.where(target: chat_message).count).to eq(1)
+      expect(ReviewableAIChatMessage.where(target: chat_message).count).to eq(1)
     end
   end
 end

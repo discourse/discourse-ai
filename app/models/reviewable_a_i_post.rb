@@ -1,5 +1,7 @@
 # frozen_string_literal:true
 
+require_dependency "reviewable"
+
 class ReviewableAIPost < Reviewable
   # Penalties are handled by the modal after the action is performed
   def self.action_aliases
