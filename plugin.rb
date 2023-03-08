@@ -31,8 +31,10 @@ after_initialize do
   require_relative "lib/modules/toxicity/entry_point"
   require_relative "lib/modules/sentiment/entry_point"
   require_relative "lib/modules/ai_helper/entry_point"
+  require_relative "lib/modules/embeddings/entry_point"
 
   [
+    DiscourseAI::Embeddings::EntryPoint.new,
     DiscourseAi::NSFW::EntryPoint.new,
     DiscourseAi::Toxicity::EntryPoint.new,
     DiscourseAi::Sentiment::EntryPoint.new,
