@@ -2,7 +2,7 @@
 
 module ::DiscourseAi
   module Inference
-    class OpenAIEmbeddings
+    class OpenAiEmbeddings
       def self.perform!(content, model = nil)
         headers = {
           "Authorization" => "Bearer #{SiteSetting.ai_openai_api_key}",
