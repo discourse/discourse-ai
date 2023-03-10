@@ -9,13 +9,11 @@
 
 enabled_site_setting :discourse_ai_enabled
 
+register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
+
 require_relative "lib/discourse_ai/engine"
 
 after_initialize do
-  module ::DiscourseAI
-    PLUGIN_NAME = "discourse-ai"
-  end
-
   require_relative "lib/shared/inference/discourse_classifier"
   require_relative "lib/shared/inference/discourse_reranker"
   require_relative "lib/shared/inference/openai_completions"
@@ -28,11 +26,13 @@ after_initialize do
   require_relative "lib/modules/nsfw/entry_point"
   require_relative "lib/modules/toxicity/entry_point"
   require_relative "lib/modules/sentiment/entry_point"
+  require_relative "lib/modules/ai_helper/entry_point"
 
   [
     DiscourseAI::NSFW::EntryPoint.new,
     DiscourseAI::Toxicity::EntryPoint.new,
     DiscourseAI::Sentiment::EntryPoint.new,
+    DiscourseAI::AIHelper::EntryPoint.new,
   ].each do |a_module|
     a_module.load_files
     a_module.inject_into(self)
@@ -44,4 +44,7 @@ after_initialize do
   on(:reviewable_transitioned_to) do |new_status, reviewable|
     ModelAccuracy.adjust_model_accuracy(new_status, reviewable)
   end
+
+  ::DiscourseAI::Engine.routes.draw { get "/suggest" => "assistant#suggest" }
+  Discourse::Application.routes.append { mount ::DiscourseAI::Engine, at: "/discourse-ai" }
 end

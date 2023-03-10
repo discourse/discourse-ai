@@ -87,3 +87,7 @@ plugins:
 
   ai_openai_api_key:
     default: ""
+
+  composer_ai_helper_enabled:
+    default: false
+    client: true

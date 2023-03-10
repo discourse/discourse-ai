@@ -1,0 +1,52 @@
+<DModalBody @title="discourse_ai.ai_helper.title">
+  <span>{{i18n "discourse_ai.ai_helper.description"}}</span>
+
+  <ComboBox
+    @value={{this.selected}}
+    @content={{this.helperOptions}}
+    @onChange={{action this.updateSelected}}
+    @valueProperty="value"
+  />
+
+  <div class="text-preview">
+    <Textarea @value={{this.composedMessage}} disabled="true" />
+  </div>
+
+  <div class="text-preview">
+    <ConditionalLoadingSpinner @condition={{this.loading}} />
+
+    {{#if (not this.loading)}}
+      {{#if this.selectingTopicTitle}}
+        <div class="radios">
+          {{#each this.generatedTitlesSuggestions as |title index|}}
+            <label class="radio-label" for="title-suggestion-{{index}}">
+              <RadioButton
+                @id="title-suggestion-{{index}}"
+                @name="title-suggestion"
+                @value={{title}}
+                @selection={{this.selectedTitle}}
+              />
+              <b>{{title}}</b>
+            </label>
+          {{/each}}
+        </div>
+      {{else if this.suggestingText}}
+        <Textarea @value={{this.suggestedText}} disabled="true" />
+      {{/if}}
+    {{/if}}
+  </div>
+
+</DModalBody>
+
+<div class="modal-footer">
+  {{#if this.canSave}}
+    <DButton
+      @class="btn-primary create"
+      @action={{this.applySuggestion}}
+      @label="save"
+    />
+    <DModalCancel @close={{route-action "closeModal"}} />
+  {{else}}
+    <div class="ai-helper-waiting-selection">Select an option...</div>
+  {{/if}}
+</div>
