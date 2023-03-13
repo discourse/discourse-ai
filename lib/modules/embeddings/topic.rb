@@ -3,8 +3,8 @@
 module DiscourseAI
   module Embeddings
     class Topic
-      DISCOURSE_MODELS = %i[all-mpnet-base-v2 msmarco-distilbert-base-v4]
-      OPENAI_MODELS = %i[text-embedding-ada-002]
+      DISCOURSE_MODELS = %w[all-mpnet-base-v2 msmarco-distilbert-base-v4]
+      OPENAI_MODELS = %w[text-embedding-ada-002]
 
       def initialize(topic)
         @topic = topic
@@ -33,8 +33,26 @@ module DiscourseAI
       end
 
       def persist_embeddings!
-        pp @embeddings
-        #TODO: persist embeddings
+        return if @embeddings["all-mpnet-base-v2"].blank?
+        @embeddings.each do |model, model_embeddings|
+          case model
+          when "all-mpnet-base-v2"
+            DiscourseAI::Database::Connection.db.exec(
+              <<~SQL,
+                INSERT INTO topic_embeddings_symetric_discourse (topic_id, embeddings)
+                VALUES (:topic_id, '[:embeddings]')
+                ON CONFLICT (topic_id)
+                DO UPDATE SET embeddings = '[:embeddings]'
+              SQL
+              topic_id: @topic.id,
+              embeddings: model_embeddings,
+            )
+          when "msmarco-distilbert-base-v4"
+            #todo
+          when "text-embedding-ada-002"
+            #todo
+          end
+        end
       end
 
       def discourse_embeddings(model)
@@ -53,7 +71,7 @@ module DiscourseAI
       private
 
       def enabled_models
-        SiteSetting.ai_embeddings_models.split("|").map(&:to_sym)
+        SiteSetting.ai_embeddings_models.split("|")
       end
     end
   end
