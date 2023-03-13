@@ -25,14 +25,18 @@ after_initialize do
   require_relative "lib/shared/post_classificator"
   require_relative "lib/shared/chat_message_classificator"
 
+  require_relative "lib/shared/database/connection"
+
   require_relative "lib/modules/nsfw/entry_point"
   require_relative "lib/modules/toxicity/entry_point"
   require_relative "lib/modules/sentiment/entry_point"
+  require_relative "lib/modules/embeddings/entry_point"
 
   [
     DiscourseAI::NSFW::EntryPoint.new,
     DiscourseAI::Toxicity::EntryPoint.new,
     DiscourseAI::Sentiment::EntryPoint.new,
+    DiscourseAI::Embeddings::EntryPoint.new,
   ].each do |a_module|
     a_module.load_files
     a_module.inject_into(self)
