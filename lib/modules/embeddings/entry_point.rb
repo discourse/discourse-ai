@@ -20,7 +20,10 @@ module DiscourseAI
         plugin.on(:topic_created, &callback)
         plugin.on(:topic_edited, &callback)
 
-        DiscoursePluginRegistry.register_list_suggested_for_provider(SemanticSuggested.method(:build_suggested_topics), plugin)
+        DiscoursePluginRegistry.register_list_suggested_for_provider(
+          SemanticSuggested.method(:build_suggested_topics),
+          plugin,
+        )
       end
     end
   end

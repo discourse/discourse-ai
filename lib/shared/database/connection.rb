@@ -9,7 +9,7 @@ module ::DiscourseAI
       end
 
       def self.db
-        @@db ||= connect! 
+        @@db ||= connect!
       end
     end
   end
