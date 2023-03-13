@@ -27,6 +27,8 @@ after_initialize do
   require_relative "lib/shared/post_classificator"
   require_relative "lib/shared/chat_message_classificator"
 
+  require_relative "lib/shared/database/connection"
+
   require_relative "lib/modules/nsfw/entry_point"
   require_relative "lib/modules/toxicity/entry_point"
   require_relative "lib/modules/sentiment/entry_point"

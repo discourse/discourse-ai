@@ -6,6 +6,7 @@ module DiscourseAI
       def load_files
         require_relative "topic"
         require_relative "jobs/regular/generate_embeddings"
+        require_relative "semantic_suggested"
       end
 
       def inject_into(plugin)
@@ -18,6 +19,8 @@ module DiscourseAI
 
         plugin.on(:topic_created, &callback)
         plugin.on(:topic_edited, &callback)
+
+        DiscoursePluginRegistry.register_list_suggested_for_provider(SemanticSuggested.method(:build_suggested_topics), plugin)
       end
     end
   end
