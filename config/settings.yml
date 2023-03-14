@@ -116,7 +116,7 @@ plugins:
      - all-mpnet-base-v2
      - msmarco-distilbert-base-v4
      - text-embedding-ada-002
+  ai_embeddings_generate_for_pms: false
   ai_embeddings_semantic_suggested_topics_anons_enabled: false
-  ai_embeddings_pg_connection_string:
-    default: "postgresql://localhost/embeddings"
+  ai_embeddings_pg_connection_string: ""
   
