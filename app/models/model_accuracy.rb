@@ -3,7 +3,7 @@
 class ModelAccuracy < ActiveRecord::Base
   def self.adjust_model_accuracy(new_status, reviewable)
     return unless %i[approved rejected].include?(new_status)
-    return unless [ReviewableAIPost, ReviewableAIChatMessage].include?(reviewable.class)
+    return unless [ReviewableAiPost, ReviewableAiChatMessage].include?(reviewable.class)
 
     verdicts = reviewable.payload.to_h["verdicts"] || {}
 

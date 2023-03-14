@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe ReviewableAIChatMessage, type: :model do
+RSpec.describe ReviewableAiChatMessage, type: :model do
   fab!(:moderator) { Fabricate(:moderator) }
   fab!(:user) { Fabricate(:user) }
   fab!(:chat_channel) { Fabricate(:chat_channel) }

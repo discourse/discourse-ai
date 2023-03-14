@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseAI
+module DiscourseAi
   module Sentiment
     class SentimentClassification
       def type
@@ -39,7 +39,7 @@ module DiscourseAI
       private
 
       def request_with(model, content)
-        ::DiscourseAI::Inference::DiscourseClassifier.perform!(
+        ::DiscourseAi::Inference::DiscourseClassifier.perform!(
           "#{SiteSetting.ai_sentiment_inference_service_api_endpoint}/api/v1/classify",
           model,
           content,

@@ -3,10 +3,10 @@
 require "rails_helper"
 require_relative "../support/toxicity_inference_stubs"
 
-describe DiscourseAI::ChatMessageClassificator do
+describe DiscourseAi::ChatMessageClassificator do
   fab!(:chat_message) { Fabricate(:chat_message) }
 
-  let(:model) { DiscourseAI::Toxicity::ToxicityClassification.new }
+  let(:model) { DiscourseAi::Toxicity::ToxicityClassification.new }
   let(:classification) { described_class.new(model) }
 
   describe "#classify!" do
@@ -27,7 +27,7 @@ describe DiscourseAI::ChatMessageClassificator do
 
       classification.classify!(chat_message)
 
-      expect(ReviewableAIChatMessage.where(target: chat_message).count).to eq(1)
+      expect(ReviewableAiChatMessage.where(target: chat_message).count).to eq(1)
     end
 
     it "doesn't flags the message if the model decides we shouldn't" do
@@ -35,14 +35,14 @@ describe DiscourseAI::ChatMessageClassificator do
 
       classification.classify!(chat_message)
 
-      expect(ReviewableAIChatMessage.where(target: chat_message).count).to be_zero
+      expect(ReviewableAiChatMessage.where(target: chat_message).count).to be_zero
     end
 
     it "includes the model accuracy in the payload" do
       SiteSetting.ai_toxicity_flag_automatically = true
       classification.classify!(chat_message)
 
-      reviewable = ReviewableAIChatMessage.find_by(target: chat_message)
+      reviewable = ReviewableAiChatMessage.find_by(target: chat_message)
 
       expect(
         reviewable.payload.dig("accuracies", SiteSetting.ai_toxicity_inference_service_api_model),

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ::DiscourseAI
+module ::DiscourseAi
   module Inference
     class OpenAICompletions
       def self.perform!(model, content, api_key)

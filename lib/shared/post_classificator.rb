@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ::DiscourseAI
+module ::DiscourseAi
   class PostClassificator < Classificator
     private
 
@@ -8,7 +8,7 @@ module ::DiscourseAI
       post.hide!(ReviewableScore.types[:inappropriate])
 
       reviewable =
-        ReviewableAIPost.needs_review!(
+        ReviewableAiPost.needs_review!(
           created_by: Discourse.system_user,
           target: post,
           reviewable_by_moderator: true,

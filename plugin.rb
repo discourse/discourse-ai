@@ -9,13 +9,13 @@
 
 enabled_site_setting :discourse_ai_enabled
 
+module ::DiscourseAi
+  PLUGIN_NAME = "discourse-ai"
+end
+
 require_relative "lib/discourse_ai/engine"
 
 after_initialize do
-  module ::DiscourseAI
-    PLUGIN_NAME = "discourse-ai"
-  end
-
   require_relative "lib/shared/inference/discourse_classifier"
   require_relative "lib/shared/inference/discourse_reranker"
   require_relative "lib/shared/inference/openai_completions"
@@ -30,16 +30,16 @@ after_initialize do
   require_relative "lib/modules/sentiment/entry_point"
 
   [
-    DiscourseAI::NSFW::EntryPoint.new,
-    DiscourseAI::Toxicity::EntryPoint.new,
-    DiscourseAI::Sentiment::EntryPoint.new,
+    DiscourseAi::NSFW::EntryPoint.new,
+    DiscourseAi::Toxicity::EntryPoint.new,
+    DiscourseAi::Sentiment::EntryPoint.new,
   ].each do |a_module|
     a_module.load_files
     a_module.inject_into(self)
   end
 
-  register_reviewable_type ReviewableAIChatMessage
-  register_reviewable_type ReviewableAIPost
+  register_reviewable_type ReviewableAiChatMessage
+  register_reviewable_type ReviewableAiPost
 
   on(:reviewable_transitioned_to) do |new_status, reviewable|
     ModelAccuracy.adjust_model_accuracy(new_status, reviewable)

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-module ::DiscourseAI
+module ::DiscourseAi
   class ChatMessageClassificator < Classificator
     private
 
     def flag!(chat_message, classification, verdicts, accuracies)
       reviewable =
-        ReviewableAIChatMessage.needs_review!(
+        ReviewableAiChatMessage.needs_review!(
           created_by: Discourse.system_user,
           target: chat_message,
           reviewable_by_moderator: true,

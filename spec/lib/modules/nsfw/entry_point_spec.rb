@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseAI::NSFW::EntryPoint do
+describe DiscourseAi::NSFW::EntryPoint do
   fab!(:user) { Fabricate(:user) }
 
   describe "registering event callbacks" do

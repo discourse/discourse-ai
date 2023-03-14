@@ -18,19 +18,19 @@ describe Jobs::ToxicityClassifyPost do
 
         subject.execute({ post_id: post.id })
 
-        expect(ReviewableAIPost.where(target: post).count).to be_zero
+        expect(ReviewableAiPost.where(target: post).count).to be_zero
       end
 
       it "does nothing if there's no arg called post_id" do
         subject.execute({})
 
-        expect(ReviewableAIPost.where(target: post).count).to be_zero
+        expect(ReviewableAiPost.where(target: post).count).to be_zero
       end
 
       it "does nothing if no post match the given id" do
         subject.execute({ post_id: nil })
 
-        expect(ReviewableAIPost.where(target: post).count).to be_zero
+        expect(ReviewableAiPost.where(target: post).count).to be_zero
       end
 
       it "does nothing if the post content is blank" do
@@ -38,7 +38,7 @@ describe Jobs::ToxicityClassifyPost do
 
         subject.execute({ post_id: post.id })
 
-        expect(ReviewableAIPost.where(target: post).count).to be_zero
+        expect(ReviewableAiPost.where(target: post).count).to be_zero
       end
     end
 
@@ -47,7 +47,7 @@ describe Jobs::ToxicityClassifyPost do
 
       subject.execute({ post_id: post.id })
 
-      expect(ReviewableAIPost.where(target: post).count).to eq(1)
+      expect(ReviewableAiPost.where(target: post).count).to eq(1)
     end
   end
 end

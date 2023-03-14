@@ -3,7 +3,7 @@
 require "rails_helper"
 require_relative "../../../support/sentiment_inference_stubs"
 
-describe DiscourseAI::Sentiment::SentimentClassification do
+describe DiscourseAi::Sentiment::SentimentClassification do
   fab!(:target) { Fabricate(:post) }
 
   describe "#request" do

@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseAI::Toxicity::ScanQueue do
+describe DiscourseAi::Toxicity::ScanQueue do
   fab!(:group) { Fabricate(:group) }
 
   before do

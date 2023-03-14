@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseAI::Toxicity::EntryPoint do
+describe DiscourseAi::Toxicity::EntryPoint do
   fab!(:user) { Fabricate(:user) }
 
   describe "registering event callbacks" do

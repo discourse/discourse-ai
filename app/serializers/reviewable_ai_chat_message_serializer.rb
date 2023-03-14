@@ -2,12 +2,12 @@
 
 require_dependency "reviewable_serializer"
 
-class ReviewableAIChatMessageSerializer < ReviewableSerializer
+class ReviewableAiChatMessageSerializer < ReviewableSerializer
   payload_attributes :accuracies, :message_cooked
   target_attributes :cooked
   attributes :target_id
 
-  has_one :chat_channel, serializer: AIChatChannelSerializer, root: false, embed: :objects
+  has_one :chat_channel, serializer: AiChatChannelSerializer, root: false, embed: :objects
 
   def chat_channel
     object.chat_message.chat_channel

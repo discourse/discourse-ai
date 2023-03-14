@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ::DiscourseAI
+module ::DiscourseAi
   module Inference
     class DiscourseClassifier
       def self.perform!(endpoint, model, content, api_key)

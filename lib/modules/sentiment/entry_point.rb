@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-module DiscourseAI
+
+module DiscourseAi
   module Sentiment
     class EntryPoint
       def load_files
