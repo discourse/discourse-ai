@@ -8,27 +8,36 @@ module DiscourseAI
         return if topic_query.user
         return if topic.private_message?
 
-        candidate_ids = DiscourseAI::Database::Connection.db.query(<<~SQL, topic_id: topic.id)
-          SELECT
-            topic_id
-          FROM
-            topic_embeddings_symetric_discourse
-          WHERE
-            topic_id != :topic_id
-          ORDER BY
-            embeddings <#> (
-              SELECT
-                embeddings
-              FROM
-                topic_embeddings_symetric_discourse
-              WHERE
-                topic_id = :topic_id
-              LIMIT 1
-            )
-          LIMIT 10
-        SQL
+        begin
+          candidate_ids =
+            Discourse
+              .cache
+              .fetch("semantic-suggested-topic-#{topic.id}", expires_in: 1.hour) do
+                DiscourseAI::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
+                  SELECT
+                    topic_id
+                  FROM
+                    topic_embeddings_symetric_discourse
+                  WHERE
+                    topic_id != :topic_id
+                  ORDER BY
+                    embeddings <#> (
+                      SELECT
+                        embeddings
+                      FROM
+                        topic_embeddings_symetric_discourse
+                      WHERE
+                        topic_id = :topic_id
+                      LIMIT 1
+                    )
+                  LIMIT 10
+                SQL
+              end
+        rescue StandardError => e
+          Rails.logger.error("SemanticSuggested: #{e}")
+        end
 
-        candidates = ::Topic.where(id: candidate_ids.map(&:topic_id))
+        candidates = ::Topic.where(id: candidate_ids)
         { result: candidates, params: {} }
       end
     end
