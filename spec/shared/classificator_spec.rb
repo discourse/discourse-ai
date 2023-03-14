@@ -3,7 +3,7 @@
 require "rails_helper"
 require_relative "../support/sentiment_inference_stubs"
 
-describe DiscourseAI::Classificator do
+describe DiscourseAi::Classificator do
   describe "#classify!" do
     describe "saving the classification result" do
       let(:classification_raw_result) do
@@ -15,8 +15,8 @@ describe DiscourseAI::Classificator do
           end
       end
 
-      let(:model) { DiscourseAI::Sentiment::SentimentClassification.new }
-      let(:classification) { DiscourseAI::PostClassificator.new(model) }
+      let(:model) { DiscourseAi::Sentiment::SentimentClassification.new }
+      let(:classification) { DiscourseAi::PostClassificator.new(model) }
       fab!(:target) { Fabricate(:post) }
 
       before do

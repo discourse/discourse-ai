@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-module DiscourseAI
+
+module DiscourseAi
   module Toxicity
     class EntryPoint
       def load_files
@@ -11,13 +12,13 @@ module DiscourseAI
       end
 
       def inject_into(plugin)
-        post_analysis_cb = Proc.new { |post| DiscourseAI::Toxicity::ScanQueue.enqueue_post(post) }
+        post_analysis_cb = Proc.new { |post| DiscourseAi::Toxicity::ScanQueue.enqueue_post(post) }
 
         plugin.on(:post_created, &post_analysis_cb)
         plugin.on(:post_edited, &post_analysis_cb)
 
         chat_message_analysis_cb =
-          Proc.new { |message| DiscourseAI::Toxicity::ScanQueue.enqueue_chat_message(message) }
+          Proc.new { |message| DiscourseAi::Toxicity::ScanQueue.enqueue_chat_message(message) }
 
         plugin.on(:chat_message_created, &chat_message_analysis_cb)
         plugin.on(:chat_message_edited, &chat_message_analysis_cb)

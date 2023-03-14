@@ -9,8 +9,8 @@ module ::Jobs
       post = Post.find_by(id: post_id, post_type: Post.types[:regular])
       return if post&.raw.blank?
 
-      DiscourseAI::PostClassificator.new(
-        DiscourseAI::Sentiment::SentimentClassification.new,
+      DiscourseAi::PostClassificator.new(
+        DiscourseAi::Sentiment::SentimentClassification.new,
       ).classify!(post)
     end
   end

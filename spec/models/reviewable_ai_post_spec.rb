@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe ReviewableAIPost do
+describe ReviewableAiPost do
   fab!(:target) { Fabricate(:post) }
 
   describe "#build_actions" do

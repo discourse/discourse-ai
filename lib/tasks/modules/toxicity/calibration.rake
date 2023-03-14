@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def classify(content)
-  ::DiscourseAI::Inference::DiscourseClassifier.perform!(
+  ::DiscourseAi::Inference::DiscourseClassifier.perform!(
     "#{SiteSetting.ai_toxicity_inference_service_api_endpoint}/api/v1/classify",
     SiteSetting.ai_toxicity_inference_service_api_model,
     content,
@@ -37,7 +37,7 @@ task "ai:toxicity:calibration_stats", [:set_size] => [:environment] do |_, args|
   flag_agreed_scores = flag_agreed.map { classify(_1) }
   flag_not_agreed_scores = flag_not_agreed.map { classify(_1) }
 
-  DiscourseAI::Toxicity::Classifier::CLASSIFICATION_LABELS.each do |label|
+  DiscourseAi::Toxicity::Classifier::CLASSIFICATION_LABELS.each do |label|
     puts "Label: #{label}"
 
     label_agreed_scores = flag_agreed_scores.map { _1[label] }

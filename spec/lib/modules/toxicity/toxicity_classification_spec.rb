@@ -3,7 +3,7 @@
 require "rails_helper"
 require_relative "../../../support/toxicity_inference_stubs"
 
-describe DiscourseAI::Toxicity::ToxicityClassification do
+describe DiscourseAi::Toxicity::ToxicityClassification do
   fab!(:target) { Fabricate(:post) }
 
   describe "#request" do

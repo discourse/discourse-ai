@@ -42,7 +42,7 @@ describe ModelAccuracy do
     end
 
     it "updates the agreed flag if reviewable was approved and verdict is true" do
-      reviewable = build_reviewable(ReviewableAIPost, true)
+      reviewable = build_reviewable(ReviewableAiPost, true)
 
       described_class.adjust_model_accuracy(:approved, reviewable)
 
@@ -51,7 +51,7 @@ describe ModelAccuracy do
     end
 
     it "updates the disagreed flag if the reviewable was approved and verdict is false" do
-      reviewable = build_reviewable(ReviewableAIPost, false)
+      reviewable = build_reviewable(ReviewableAiPost, false)
 
       described_class.adjust_model_accuracy(:approved, reviewable)
 
@@ -60,7 +60,7 @@ describe ModelAccuracy do
     end
 
     it "updates the disagreed flag if reviewable was rejected and verdict is true" do
-      reviewable = build_reviewable(ReviewableAIPost, true)
+      reviewable = build_reviewable(ReviewableAiPost, true)
 
       described_class.adjust_model_accuracy(:rejected, reviewable)
 
@@ -69,7 +69,7 @@ describe ModelAccuracy do
     end
 
     it "updates the agreed flag if the reviewable was rejected and verdict is false" do
-      reviewable = build_reviewable(ReviewableAIPost, false)
+      reviewable = build_reviewable(ReviewableAiPost, false)
 
       described_class.adjust_model_accuracy(:rejected, reviewable)
 

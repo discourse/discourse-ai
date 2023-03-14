@@ -13,10 +13,10 @@ describe Plugin::Instance do
     it "adjusts model accuracy" do
       ToxicityInferenceStubs.stub_post_classification(post, toxic: true)
       SiteSetting.ai_toxicity_flag_automatically = true
-      classification = DiscourseAI::Toxicity::ToxicityClassification.new
-      classificator = DiscourseAI::PostClassificator.new(classification)
+      classification = DiscourseAi::Toxicity::ToxicityClassification.new
+      classificator = DiscourseAi::PostClassificator.new(classification)
       classificator.classify!(post)
-      reviewable = ReviewableAIPost.find_by(target: post)
+      reviewable = ReviewableAiPost.find_by(target: post)
 
       reviewable.perform admin, :agree_and_keep
       accuracy = ModelAccuracy.find_by(classification_type: classification.type)

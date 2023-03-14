@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-module DiscourseAI
+module DiscourseAi
   class Engine < ::Rails::Engine
-    isolate_namespace DiscourseAI
+    engine_name PLUGIN_NAME
+    isolate_namespace DiscourseAi
   end
 end

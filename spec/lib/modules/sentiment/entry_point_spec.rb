@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-describe DiscourseAI::Sentiment::EntryPoint do
+describe DiscourseAi::Sentiment::EntryPoint do
   fab!(:user) { Fabricate(:user) }
 
   describe "registering event callbacks" do

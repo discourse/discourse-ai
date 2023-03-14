@@ -2,6 +2,6 @@
 
 require_dependency "reviewable_flagged_post_serializer"
 
-class ReviewableAIPostSerializer < ReviewableFlaggedPostSerializer
+class ReviewableAiPostSerializer < ReviewableFlaggedPostSerializer
   payload_attributes :accuracies
 end

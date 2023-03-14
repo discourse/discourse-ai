@@ -21,19 +21,19 @@ describe Jobs::EvaluatePostUploads do
 
         subject.execute({ post_id: post.id })
 
-        expect(ReviewableFlaggedPost.where(target: post).count).to be_zero
+        expect(ReviewableAiPost.where(target: post).count).to be_zero
       end
 
       it "does nothing if there's no arg called post_id" do
         subject.execute({})
 
-        expect(ReviewableFlaggedPost.where(target: post).count).to be_zero
+        expect(ReviewableAiPost.where(target: post).count).to be_zero
       end
 
       it "does nothing if no post match the given id" do
         subject.execute({ post_id: nil })
 
-        expect(ReviewableFlaggedPost.where(target: post).count).to be_zero
+        expect(ReviewableAiPost.where(target: post).count).to be_zero
       end
 
       it "does nothing if the post has no uploads" do
@@ -41,7 +41,7 @@ describe Jobs::EvaluatePostUploads do
 
         subject.execute({ post_id: post_no_uploads.id })
 
-        expect(ReviewableFlaggedPost.where(target: post_no_uploads).count).to be_zero
+        expect(ReviewableAiPost.where(target: post_no_uploads).count).to be_zero
       end
 
       it "does nothing if the upload is not an image" do
@@ -50,7 +50,7 @@ describe Jobs::EvaluatePostUploads do
 
         subject.execute({ post_id: post.id })
 
-        expect(ReviewableFlaggedPost.where(target: post).count).to be_zero
+        expect(ReviewableAiPost.where(target: post).count).to be_zero
       end
     end
 
@@ -61,7 +61,7 @@ describe Jobs::EvaluatePostUploads do
         it "flags and hides the post" do
           subject.execute({ post_id: post.id })
 
-          expect(ReviewableAIPost.where(target: post).count).to eq(1)
+          expect(ReviewableAiPost.where(target: post).count).to eq(1)
           expect(post.reload.hidden?).to eq(true)
         end
       end
@@ -72,7 +72,7 @@ describe Jobs::EvaluatePostUploads do
         it "does nothing" do
           subject.execute({ post_id: post.id })
 
-          expect(ReviewableAIPost.where(target: post).count).to be_zero
+          expect(ReviewableAiPost.where(target: post).count).to be_zero
         end
       end
     end
