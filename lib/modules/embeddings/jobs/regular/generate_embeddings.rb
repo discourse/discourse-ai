@@ -7,7 +7,7 @@ module Jobs
       return if (topic_id = args[:topic_id]).blank?
 
       topic = Topic.find_by_id(topic_id)
-      return if topic.private_message? && !SiteSetting.ai_embeddings_enabled_for_private_messages
+      return if topic.nil? || topic.private_message? && !SiteSetting.ai_embeddings_generate_for_pms
       post = Topic.find_by_id(topic_id).first_post
       return if post.nil? || post.raw.blank?
 
