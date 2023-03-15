@@ -8,11 +8,21 @@ module DiscourseAi
         return if topic_query.user
         return if topic.private_message?
 
+        cache_for =
+          case topic.created_at
+          when 6.hour.ago..Time.now
+            15.minutes
+          when 1.day.ago..6.hour.ago
+            1.hour
+          else
+            1.day
+          end
+
         begin
           candidate_ids =
             Discourse
               .cache
-              .fetch("semantic-suggested-topic-#{topic.id}", expires_in: 1.hour) do
+              .fetch("semantic-suggested-topic-#{topic.id}", expires_in: cache_for) do
                 search_suggestions(topic)
               end
         rescue StandardError => e
