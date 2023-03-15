@@ -19,13 +19,18 @@ task "ai:embeddings:backfill" => [:environment] do
     .where("category_id IN ?", public_categories)
     .where(deleted_at: nil)
     .find_each do |t|
-      puts "."
+      print "."
       DiscourseAI::Embeddings::Topic.new(t).perform!
     end
 end
 
 desc "Creates indexes for embeddings"
 task "ai:embeddings:index" => [:environment] do
+  # Using 4 * sqrt(number of topics) as a rule of thumb for now
+  # Results are not as good as without indexes, but it's much faster
+  # Disk usage is ~1x the size of the table, so this double table total size
+  lists = 4 * Math.sqrt(Topic.count).to_i
+
   DiscourseAi::Embeddings::Models.enabled_models.each do |model|
     DiscourseAi::Database::Connection.db.exec(<<~SQL)
       CREATE INDEX IF NOT EXISTS
@@ -33,7 +38,9 @@ task "ai:embeddings:index" => [:environment] do
       ON
         topic_embeddings_#{model.name.underscore}
       USING
-        ivfflat (embedding #{DiscourseAi::Embeddings::Models::SEARCH_FUNCTION_TO_PG_INDEX[model.functions.first]});
+        ivfflat (embedding #{DiscourseAi::Embeddings::Models::SEARCH_FUNCTION_TO_PG_INDEX[model.functions.first]})
+      WITH
+        (lists = #{lists});
     SQL
   end
 end
