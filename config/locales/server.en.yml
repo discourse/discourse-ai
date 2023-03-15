@@ -40,7 +40,7 @@ en:
     ai_embeddings_enabled: "Enable the embeddings module."
     ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"
     ai_embeddings_discourse_service_api_key: "API key for the embeddings API"
-    ai_embeddings_models: "Models to use for inference. `all-mpnet-base-v2` is used for suggested topics, `msmarco-distilbert-base-v4` for search and `text-embedding-ada-002` can do both."
+    ai_embeddings_models: "Discourse will generate embeddings for each of the models enabled here"
     ai_embeddings_semantic_suggested_model: "Model to use for suggested topics."
     ai_embeddings_generate_for_pms: "Generate embeddings for personal messages."
     ai_embeddings_semantic_suggested_topics_anons_enabled: "Use Semantic Search for suggested topics for anonymous users."
