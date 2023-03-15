@@ -111,8 +111,11 @@ export default class AiHelper extends Component {
   @action
   applySuggestion() {
     if (this.selectingTopicTitle) {
-      const composer = this.args.editor.parentView.composer;
-      composer.set("title", this.selectedTitle);
+      const composer = this.args.editor.outletArgs?.composer;
+
+      if (composer) {
+        composer.set("title", this.selectedTitle);
+      }
     } else {
       const newText = this.proofreadingText
         ? this.proofReadSuggestion

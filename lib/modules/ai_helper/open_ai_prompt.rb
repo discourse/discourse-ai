@@ -20,21 +20,39 @@ module DiscourseAi
       end
 
       def generate_and_send_prompt(prompt_type, text)
+        result = {}
+
         prompt = [
           { role: "system", content: get_prompt_for(prompt_type) },
           { role: "user", content: text },
         ]
 
-        DiscourseAi::Inference::OpenAiCompletions
+        result[:suggestions] = DiscourseAi::Inference::OpenAiCompletions
           .perform!(prompt)
           .dig(:choices)
           .to_a
-          .map { |choice| parse_content(prompt_type, choice.dig(:message, :content).to_s) }
-          .flatten
+          .flat_map { |choice| parse_content(prompt_type, choice.dig(:message, :content).to_s) }
           .compact_blank
+
+        result[:diff] = generate_diff(text, result[:suggestions].first) if proofreading?(
+          prompt_type,
+        )
+
+        result
       end
 
       private
+
+      def proofreading?(prompt_type)
+        prompt_type == PROOFREAD
+      end
+
+      def generate_diff(text, suggestion)
+        cooked_text = PrettyText.cook(text)
+        cooked_suggestion = PrettyText.cook(suggestion)
+
+        DiscourseDiff.new(cooked_text, suggestion).inline_html
+      end
 
       def parse_content(type, content)
         return "" if content.blank?

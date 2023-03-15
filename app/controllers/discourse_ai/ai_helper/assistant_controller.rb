@@ -17,21 +17,12 @@ module DiscourseAi
         RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
 
         hijack do
-          response = {
-            suggestions:
-              DiscourseAi::AiHelper::OpenAiPrompt.new.generate_and_send_prompt(
-                params[:mode],
-                params[:text],
-              ),
-          }
-
-          if params[:mode] === DiscourseAi::AiHelper::OpenAiPrompt::PROOFREAD
-            cooked_text = PrettyText.cook(params[:text])
-            suggestion = PrettyText.cook(response[:suggestions].first)
-            response[:diff] = DiscourseDiff.new(cooked_text, suggestion).inline_html
-          end
-
-          render json: response, status: 200
+          render json:
+                   DiscourseAi::AiHelper::OpenAiPrompt.new.generate_and_send_prompt(
+                     params[:mode],
+                     params[:text],
+                   ),
+                 status: 200
         end
       end
 

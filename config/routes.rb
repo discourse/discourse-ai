@@ -7,4 +7,4 @@ DiscourseAi::Engine.routes.draw do
   end
 end
 
-Discourse::Application.routes.append { mount ::DiscourseAi::Engine, at: "/discourse-ai" }
+Discourse::Application.routes.append { mount ::DiscourseAi::Engine, at: "discourse-ai" }

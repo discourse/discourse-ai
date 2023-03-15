@@ -34,6 +34,7 @@ en:
     composer_ai_helper_enabled: "Enable the Composer's AI helper."
     ai_openai_api_key: "API key for the AI helper"
     ai_helper_allowed_groups: "Users on these groups will see the AI helper button in the composer."
+    ai_helper_allowed_in_pm: "Enable the composer's AI helper in PMs."
 
   reviewables:
       reasons:

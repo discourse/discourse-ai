@@ -13,7 +13,9 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
         response =
           subject.generate_and_send_prompt(mode, OpenAiCompletionsInferenceStubs.spanish_text)
 
-        expect(response).to eq([OpenAiCompletionsInferenceStubs.translated_response.strip])
+        expect(response[:suggestions]).to contain_exactly(
+          OpenAiCompletionsInferenceStubs.translated_response.strip,
+        )
       end
     end
 
@@ -29,7 +31,9 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
             OpenAiCompletionsInferenceStubs.translated_response,
           )
 
-        expect(response).to eq([OpenAiCompletionsInferenceStubs.proofread_response.strip])
+        expect(response[:suggestions]).to contain_exactly(
+          OpenAiCompletionsInferenceStubs.proofread_response.strip,
+        )
       end
     end
 
@@ -53,7 +57,7 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
             OpenAiCompletionsInferenceStubs.translated_response,
           )
 
-        expect(response).to contain_exactly(*expected)
+        expect(response[:suggestions]).to contain_exactly(*expected)
       end
     end
   end

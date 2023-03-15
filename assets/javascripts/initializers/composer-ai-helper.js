@@ -2,6 +2,27 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
 
 function initializeComposerAIHelper(api) {
+  api.modifyClass("component:composer-editor", {
+    actions: {
+      extraButtons(toolbar) {
+        this._super(toolbar);
+
+        const removeAiHelperFromPM =
+          this.composerModel.privateMessage &&
+          !this.siteSettings.ai_helper_allowed_in_pm;
+
+        if (removeAiHelperFromPM) {
+          const extrasGroup = toolbar.groups.find((g) => g.group === "extras");
+          const newButtons = extrasGroup.buttons.filter(
+            (b) => b.id !== "ai-helper"
+          );
+
+          extrasGroup.buttons = newButtons;
+        }
+      },
+    },
+  });
+
   api.modifyClass("component:d-editor", {
     pluginId: "discourse-ai",
 
