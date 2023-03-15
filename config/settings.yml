@@ -101,3 +101,32 @@ plugins:
   ai_helper_allowed_in_pm:
     default: false
     client: true
+
+  ai_embeddings_enabled: false
+  ai_embeddings_discourse_service_api_endpoint: ""
+  ai_embeddings_discourse_service_api_key: ""
+  ai_embeddings_models:
+    type: list
+    list_type: compact
+    default: ""
+    allow_any: false
+    choices:
+     - all-mpnet-base-v2
+     - all-distilroberta-v1
+     - multi-qa-mpnet-base-dot-v1
+     - paraphrase-multilingual-mpnet-base-v2
+     - msmarco-distilbert-base-v4
+     - msmarco-distilbert-base-tas-b
+     - text-embedding-ada-002
+  ai_embeddings_semantic_suggested_model:
+    type: enum
+    default: all-mpnet-base-v2
+    choices:
+      - all-mpnet-base-v2
+      - text-embedding-ada-002
+      - all-distilroberta-v1
+      - multi-qa-mpnet-base-dot-v1
+      - paraphrase-multilingual-mpnet-base-v2
+  ai_embeddings_generate_for_pms: false
+  ai_embeddings_semantic_suggested_topics_anons_enabled: false
+  ai_embeddings_pg_connection_string: ""

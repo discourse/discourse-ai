@@ -27,12 +27,16 @@ after_initialize do
   require_relative "lib/shared/post_classificator"
   require_relative "lib/shared/chat_message_classificator"
 
+  require_relative "lib/shared/database/connection"
+
   require_relative "lib/modules/nsfw/entry_point"
   require_relative "lib/modules/toxicity/entry_point"
   require_relative "lib/modules/sentiment/entry_point"
   require_relative "lib/modules/ai_helper/entry_point"
+  require_relative "lib/modules/embeddings/entry_point"
 
   [
+    DiscourseAi::Embeddings::EntryPoint.new,
     DiscourseAi::NSFW::EntryPoint.new,
     DiscourseAi::Toxicity::EntryPoint.new,
     DiscourseAi::Sentiment::EntryPoint.new,
