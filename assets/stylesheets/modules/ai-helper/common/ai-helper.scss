@@ -1,0 +1,27 @@
+.composer-ai-helper-modal {
+  .combobox,
+  .text-preview,
+  .ai-helper-waiting-selection {
+    margin: 10px 0 10px 0;
+  }
+
+  .text-preview {
+    ins {
+      background-color: var(--success-low);
+      text-decoration: underline;
+    }
+    del {
+      background-color: var(--danger-low);
+      text-decoration: line-through;
+    }
+
+    .preview-area {
+      height: 200px;
+    }
+  }
+
+  .selection-hint {
+    font-size: var(--font-down-2);
+    margin-bottom: 20px;
+  }
+}

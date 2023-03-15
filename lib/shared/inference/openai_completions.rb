@@ -2,14 +2,12 @@
 
 module ::DiscourseAi
   module Inference
-    class OpenAICompletions
-      def self.perform!(model, content, api_key)
+    class OpenAiCompletions
+      def self.perform!(content, model = "gpt-3.5-turbo")
         headers = {
           "Authorization" => "Bearer #{SiteSetting.ai_openai_api_key}",
           "Content-Type" => "application/json",
         }
-
-        model ||= "gpt-3.5-turbo"
 
         response =
           Faraday.post(
