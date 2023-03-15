@@ -103,10 +103,8 @@ plugins:
     client: true
 
   ai_embeddings_enabled: false
-  ai_embeddings_discourse_service_api_endpoint:
-    default: "https://embeddings-testing.demo-by-discourse.com"
-  ai_embeddings_discourse_service_api_key:
-    default: ""
+  ai_embeddings_discourse_service_api_endpoint: ""
+  ai_embeddings_discourse_service_api_key: ""
   ai_embeddings_models:
     type: list
     list_type: compact

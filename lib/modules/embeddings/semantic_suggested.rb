@@ -23,7 +23,14 @@ module DiscourseAi
             Discourse
               .cache
               .fetch("semantic-suggested-topic-#{topic.id}", expires_in: cache_for) do
-                search_suggestions(topic)
+                suggested = search_suggestions(topic)
+
+                # Happens when the topic doesn't have any embeddings
+                if suggested.empty? || !suggested.include(topic.id)
+                  return { result: [], params: {} }
+                end
+
+                suggested
               end
         rescue StandardError => e
           Rails.logger.error("SemanticSuggested: #{e}")
@@ -44,8 +51,6 @@ module DiscourseAi
             topic_id
           FROM
             topic_embeddings_#{model_name.underscore}
-          WHERE
-            topic_id != :topic_id
           ORDER BY
             embedding #{function} (
               SELECT
@@ -56,7 +61,7 @@ module DiscourseAi
                 topic_id = :topic_id
               LIMIT 1
             )
-          LIMIT 10
+          LIMIT 11
         SQL
       end
     end

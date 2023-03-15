@@ -29,7 +29,7 @@ module DiscourseAi
           DiscourseAi::Database::Connection.db.exec(
             <<~SQL,
               INSERT INTO topic_embeddings_#{model.underscore} (topic_id, embedding)
-              VALUES (:topic_id, '[:embeddings]')
+              VALUES (:topic_id, '[:embedding]')
               ON CONFLICT (topic_id)
               DO UPDATE SET embedding = '[:embedding]'
             SQL
