@@ -26,7 +26,7 @@ module DiscourseAi
                 suggested = search_suggestions(topic)
 
                 # Happens when the topic doesn't have any embeddings
-                if suggested.empty? || !suggested.include(topic.id)
+                if suggested.empty? || !suggested.include?(topic.id)
                   return { result: [], params: {} }
                 end
 
@@ -36,7 +36,10 @@ module DiscourseAi
           Rails.logger.error("SemanticSuggested: #{e}")
         end
 
-        candidates = ::Topic.where(id: candidate_ids)
+        # array_position forces the order of the topics to be preserved
+        candidates =
+          ::Topic.where(id: candidate_ids).order("array_position(ARRAY#{candidate_ids}, id)")
+
         { result: candidates, params: {} }
       end
 
