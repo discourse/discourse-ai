@@ -8,32 +8,40 @@ module DiscourseAi
         return if topic_query.user
         return if topic.private_message?
 
-        model = SiteSetting.ai_embeddings_semantic_suggested_topics_model
-
         begin
           candidate_ids =
             Discourse
               .cache
-              .fetch("semantic-suggested-topic-#{topic.id}", expires_in: 1.hour) do
-                DiscourseAi::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
-                  SELECT
-                    topic_id
-                  FROM
-                    topic_embeddings_#{model.underscore}
-                  WHERE
-                    topic_id != :topic_id
-                  ORDER BY
-                    embeddings <#> (
-                      SELECT
-                        embeddings
-                      FROM
-                        topic_embeddings_#{model.underscore}
-                      WHERE
-                        topic_id = :topic_id
-                      LIMIT 1
-                    )
-                  LIMIT 10
-                SQL
+              .fetch("semantic-suggested-topic-#{topic.id}", expires_in: 1.second) do
+                model_name = SiteSetting.ai_embeddings_semantic_suggested_model
+                model = DiscourseAi::Embeddings::Models.list.find { |m| m.name == model_name }
+                function =
+                  DiscourseAi::Embeddings::Models::SEARCH_FUNCTION_TO_PG_FUNCTION[
+                    model.functions.first
+                  ]
+
+                DiscourseAi::Database::Connection
+                  .db
+                  .query(<<~SQL, topic_id: topic.id)
+                    SELECT
+                      topic_id
+                    FROM
+                      topic_embeddings_#{model_name.underscore}
+                    WHERE
+                      topic_id != :topic_id
+                    ORDER BY
+                      embedding #{function} (
+                        SELECT
+                          embedding
+                        FROM
+                          topic_embeddings_#{model_name.underscore}
+                        WHERE
+                          topic_id = :topic_id
+                        LIMIT 1
+                      )
+                    LIMIT 10
+                  SQL
+                  .map(&:topic_id)
               end
         rescue StandardError => e
           Rails.logger.error("SemanticSuggested: #{e}")

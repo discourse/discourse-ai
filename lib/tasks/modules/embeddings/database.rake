@@ -1,12 +1,13 @@
+# frozen_string_literal: true
+
 desc "Creates tables to store embeddings"
-task "ai:embeddings:prepare" => [:environment] do
-  DiscourseAi::Embeddings::Model.enabled_models.each do |model|
+task "ai:embeddings:create_table" => [:environment] do
+  DiscourseAi::Embeddings::Models.enabled_models.each do |model|
     DiscourseAi::Database::Connection.db.exec(<<~SQL)
         CREATE TABLE IF NOT EXISTS topic_embeddings_#{model.name.underscore} (
           topic_id bigint PRIMARY KEY,
           embedding vector(#{model.dimensions})
         );
-        CREATE INDEX ON topic_embeddings_#{model.name.underscore} USING ivfflat (embedding vector_#{model.functions.first == :dot ? "ip" : "cosine"}_ops);
       SQL
   end
 end
@@ -18,7 +19,21 @@ task "ai:embeddings:backfill" => [:environment] do
     .where("category_id IN ?", public_categories)
     .where(deleted_at: nil)
     .find_each do |t|
-      puts '.'
+      puts "."
       DiscourseAI::Embeddings::Topic.new(t).perform!
     end
+end
+
+desc "Creates indexes for embeddings"
+task "ai:embeddings:index" => [:environment] do
+  DiscourseAi::Embeddings::Models.enabled_models.each do |model|
+    DiscourseAi::Database::Connection.db.exec(<<~SQL)
+      CREATE INDEX IF NOT EXISTS
+        topic_embeddings_#{model.name.underscore}_search
+      ON
+        topic_embeddings_#{model.name.underscore}
+      USING
+        ivfflat (embedding #{DiscourseAi::Embeddings::Models::SEARCH_FUNCTION_TO_PG_INDEX[model.functions.first]});
+    SQL
+  end
 end

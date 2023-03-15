@@ -25,16 +25,16 @@ module DiscourseAi
       end
 
       def persist_embeddings!
-        @embeddings.each do |model, model_embeddings|
+        @embeddings.each do |model, model_embedding|
           DiscourseAi::Database::Connection.db.exec(
             <<~SQL,
-              INSERT INTO topic_embeddings_#{model.underscore} (topic_id, embeddings)
+              INSERT INTO topic_embeddings_#{model.underscore} (topic_id, embedding)
               VALUES (:topic_id, '[:embeddings]')
               ON CONFLICT (topic_id)
-              DO UPDATE SET embeddings = '[:embeddings]'
+              DO UPDATE SET embedding = '[:embedding]'
             SQL
             topic_id: @topic.id,
-            embeddings: model_embeddings,
+            embedding: model_embedding,
           )
         end
       end
