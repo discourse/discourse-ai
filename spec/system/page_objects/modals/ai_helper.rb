@@ -4,7 +4,7 @@ module PageObjects
   module Modals
     class AiHelper < PageObjects::Modals::Base
       def visible?
-        page.has_css?(".composer-ai-helper-modal")
+        page.has_css?(".composer-ai-helper-modal", wait: 5)
       end
 
       def select_helper_model(mode)
@@ -13,7 +13,7 @@ module PageObjects
       end
 
       def save_changes
-        find(".modal-footer button.create").click
+        find(".modal-footer button.create", wait: 5).click
       end
 
       def select_title_suggestion(option_number)
