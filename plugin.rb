@@ -36,7 +36,7 @@ after_initialize do
   require_relative "lib/modules/embeddings/entry_point"
 
   [
-    DiscourseAI::Embeddings::EntryPoint.new,
+    DiscourseAi::Embeddings::EntryPoint.new,
     DiscourseAi::NSFW::EntryPoint.new,
     DiscourseAi::Toxicity::EntryPoint.new,
     DiscourseAi::Sentiment::EntryPoint.new,

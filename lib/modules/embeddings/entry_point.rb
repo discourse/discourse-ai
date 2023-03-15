@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-module DiscourseAI
+module DiscourseAi
   module Embeddings
     class EntryPoint
       def load_files
+        require_relative "models"
         require_relative "topic"
         require_relative "jobs/regular/generate_embeddings"
         require_relative "semantic_suggested"
