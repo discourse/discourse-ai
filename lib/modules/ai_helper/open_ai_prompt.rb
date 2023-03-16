@@ -51,7 +51,7 @@ module DiscourseAi
         cooked_text = PrettyText.cook(text)
         cooked_suggestion = PrettyText.cook(suggestion)
 
-        DiscourseDiff.new(cooked_text, suggestion).inline_html
+        DiscourseDiff.new(cooked_text, cooked_suggestion).inline_html
       end
 
       def parse_content(type, content)
