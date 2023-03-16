@@ -21,7 +21,7 @@ RSpec.describe ReviewableAiChatMessage, type: :model do
     reviewable.perform(moderator, :agree_and_delete)
 
     expect(reviewable).to be_approved
-    expect(ChatMessage.with_deleted.find_by(id: chat_message_id).deleted_at).to be_present
+    expect(Chat::Message.with_deleted.find_by(id: chat_message_id).deleted_at).to be_present
   end
 
   it "agree_and_restore agrees with the flag and restores the message" do

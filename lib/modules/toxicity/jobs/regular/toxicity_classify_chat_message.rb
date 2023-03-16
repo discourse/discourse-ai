@@ -7,7 +7,7 @@ module ::Jobs
 
       return if (chat_message_id = args[:chat_message_id]).blank?
 
-      chat_message = ChatMessage.find_by(id: chat_message_id)
+      chat_message = Chat::Message.find_by(id: chat_message_id)
       return if chat_message&.message.blank?
 
       DiscourseAi::ChatMessageClassificator.new(

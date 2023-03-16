@@ -39,7 +39,7 @@ describe DiscourseAi::Toxicity::EntryPoint do
     context "when creating a chat message" do
       let(:public_chat_channel) { Fabricate(:chat_channel) }
       let(:creator) do
-        Chat::ChatMessageCreator.new(
+        Chat::MessageCreator.new(
           chat_channel: public_chat_channel,
           user: user,
           content: "This is my new test",
@@ -54,7 +54,7 @@ describe DiscourseAi::Toxicity::EntryPoint do
     context "when editing a chat message" do
       let(:chat_message) { Fabricate(:chat_message) }
       let(:updater) do
-        Chat::ChatMessageUpdater.new(
+        Chat::MessageUpdater.new(
           guardian: Guardian.new(chat_message.user),
           chat_message: chat_message,
           new_content: "This is my updated message",
