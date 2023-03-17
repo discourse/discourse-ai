@@ -3,15 +3,17 @@
 require_relative "../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
+  let(:prompt) { CompletionPrompt.find_by(name: mode) }
+
   describe "#generate_and_send_prompt" do
     context "when using the translate mode" do
-      let(:mode) { described_class::TRANSLATE }
+      let(:mode) { "translate" }
 
       before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
       it "Sends the prompt to chatGPT and returns the response" do
         response =
-          subject.generate_and_send_prompt(mode, OpenAiCompletionsInferenceStubs.spanish_text)
+          subject.generate_and_send_prompt(prompt, OpenAiCompletionsInferenceStubs.spanish_text)
 
         expect(response[:suggestions]).to contain_exactly(
           OpenAiCompletionsInferenceStubs.translated_response.strip,
@@ -20,14 +22,14 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
     end
 
     context "when using the proofread mode" do
-      let(:mode) { described_class::PROOFREAD }
+      let(:mode) { "proofread" }
 
       before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
       it "Sends the prompt to chatGPT and returns the response" do
         response =
           subject.generate_and_send_prompt(
-            mode,
+            prompt,
             OpenAiCompletionsInferenceStubs.translated_response,
           )
 
@@ -38,7 +40,7 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
     end
 
     context "when generating titles" do
-      let(:mode) { described_class::GENERATE_TITLES }
+      let(:mode) { "generate_titles" }
 
       before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
@@ -53,7 +55,7 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
 
         response =
           subject.generate_and_send_prompt(
-            mode,
+            prompt,
             OpenAiCompletionsInferenceStubs.translated_response,
           )
 

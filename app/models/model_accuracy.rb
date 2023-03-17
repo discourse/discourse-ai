@@ -33,3 +33,20 @@ class ModelAccuracy < ActiveRecord::Base
     flags_agreed + flags_disagreed
   end
 end
+
+# == Schema Information
+#
+# Table name: model_accuracies
+#
+#  id                  :bigint           not null, primary key
+#  model               :string           not null
+#  classification_type :string           not null
+#  flags_agreed        :integer          default(0), not null
+#  flags_disagreed     :integer          default(0), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#
+# Indexes
+#
+#  index_model_accuracies_on_model  (model) UNIQUE
+#
