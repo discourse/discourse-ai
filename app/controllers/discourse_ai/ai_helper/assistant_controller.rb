@@ -7,19 +7,27 @@ module DiscourseAi
       requires_login
       before_action :ensure_can_request_suggestions
 
+      def prompts
+        render json:
+                 ActiveModel::ArraySerializer.new(
+                   DiscourseAi::AiHelper::OpenAiPrompt.new.available_prompts,
+                   root: false,
+                 ),
+               status: 200
+      end
+
       def suggest
         raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
 
-        if !DiscourseAi::AiHelper::OpenAiPrompt::VALID_TYPES.include?(params[:mode])
-          raise Discourse::InvalidParameters.new(:mode)
-        end
+        prompt = CompletionPrompt.find_by(name: params[:mode])
+        raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
 
         RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
 
         hijack do
           render json:
                    DiscourseAi::AiHelper::OpenAiPrompt.new.generate_and_send_prompt(
-                     params[:mode],
+                     prompt,
                      params[:text],
                    ),
                  status: 200

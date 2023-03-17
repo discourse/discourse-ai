@@ -82,10 +82,9 @@ class OpenAiCompletionsInferenceStubs
       prompt_builder = DiscourseAi::AiHelper::OpenAiPrompt.new
       text =
         type == DiscourseAi::AiHelper::OpenAiPrompt::TRANSLATE ? spanish_text : translated_response
-      prompt = [
-        { role: "system", content: prompt_builder.get_prompt_for(type) },
-        { role: "user", content: text },
-      ]
+
+      used_prompt = CompletionPrompt.find_by(name: type)
+      prompt = [{ role: "system", content: used_prompt.value }, { role: "user", content: text }]
 
       WebMock
         .stub_request(:post, "https://api.openai.com/v1/chat/completions")

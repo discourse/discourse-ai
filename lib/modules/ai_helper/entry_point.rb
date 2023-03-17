@@ -7,6 +7,9 @@ module DiscourseAi
       end
 
       def inject_into(plugin)
+        plugin.register_seedfu_fixtures(
+          Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai-helper"),
+        )
         plugin.register_svg_icon("magic")
       end
     end

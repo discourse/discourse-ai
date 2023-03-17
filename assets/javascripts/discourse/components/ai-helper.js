@@ -1,13 +1,12 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action, computed } from "@ember/object";
-import I18n from "I18n";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
-const TRANSLATE = "translate";
-const GENERATE_TITLES = "generate_titles";
-const PROOFREAD = "proofread";
+const LIST = "list";
+const TEXT = "text";
+const DIFF = "diff";
 
 export default class AiHelper extends Component {
   @tracked selected = null;
@@ -21,20 +20,29 @@ export default class AiHelper extends Component {
 
   @tracked proofreadDiff = null;
 
-  helperOptions = [
-    {
-      name: I18n.t("discourse_ai.ai_helper.modes.translate"),
-      value: TRANSLATE,
-    },
-    {
-      name: I18n.t("discourse_ai.ai_helper.modes.generate_titles"),
-      value: GENERATE_TITLES,
-    },
-    {
-      name: I18n.t("discourse_ai.ai_helper.modes.proofreader"),
-      value: PROOFREAD,
-    },
-  ];
+  @tracked helperOptions = [];
+  promptTypes = {};
+
+  constructor() {
+    super(...arguments);
+    this.loadPrompts();
+  }
+
+  async loadPrompts() {
+    const prompts = await ajax("/discourse-ai/ai-helper/prompts");
+
+    this.promptTypes = prompts.reduce((memo, p) => {
+      memo[p.name] = p.prompt_type;
+      return memo;
+    }, {});
+
+    this.helperOptions = prompts.map((p) => {
+      return {
+        name: p.translated_name,
+        value: p.name,
+      };
+    });
+  }
 
   get composedMessage() {
     const editor = this.args.editor;
@@ -45,7 +53,7 @@ export default class AiHelper extends Component {
   @computed("selected", "selectedTitle", "translatingText", "proofreadingText")
   get canSave() {
     return (
-      (this.selected === GENERATE_TITLES && this.selectedTitle) ||
+      (this.promptTypes[this.selected] === LIST && this.selectedTitle) ||
       this.translatingText ||
       this.proofreadingText
     );
@@ -53,31 +61,33 @@ export default class AiHelper extends Component {
 
   @computed("selected", "translatedSuggestion")
   get translatingText() {
-    return this.selected === TRANSLATE && this.translatedSuggestion;
+    return (
+      this.promptTypes[this.selected] === TEXT && this.translatedSuggestion
+    );
   }
 
   @computed("selected", "proofReadSuggestion")
   get proofreadingText() {
-    return this.selected === PROOFREAD && this.proofReadSuggestion;
+    return this.promptTypes[this.selected] === DIFF && this.proofReadSuggestion;
   }
 
   @computed("selected", "generatedTitlesSuggestions")
   get selectingTopicTitle() {
     return (
-      this.selected === GENERATE_TITLES &&
+      this.promptTypes[this.selected] === LIST &&
       this.generatedTitlesSuggestions.length > 0
     );
   }
 
-  _updateSuggestedByAI(value, data) {
-    switch (value) {
-      case GENERATE_TITLES:
+  _updateSuggestedByAI(data) {
+    switch (data.type) {
+      case LIST:
         this.generatedTitlesSuggestions = data.suggestions;
         break;
-      case TRANSLATE:
+      case TEXT:
         this.translatedSuggestion = data.suggestions[0];
         break;
-      case PROOFREAD:
+      case DIFF:
         this.proofReadSuggestion = data.suggestions[0];
         this.proofreadDiff = data.diff;
         break;
@@ -89,7 +99,7 @@ export default class AiHelper extends Component {
     this.loading = true;
     this.selected = value;
 
-    if (value === GENERATE_TITLES) {
+    if (value === LIST) {
       this.selectedTitle = null;
     }
 
@@ -101,7 +111,7 @@ export default class AiHelper extends Component {
         data: { mode: this.selected, text: this.composedMessage },
       })
         .then((data) => {
-          this._updateSuggestedByAI(value, data);
+          this._updateSuggestedByAI(data);
         })
         .catch(popupAjaxError)
         .finally(() => (this.loading = false));
