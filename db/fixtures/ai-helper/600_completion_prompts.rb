@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 CompletionPrompt.seed do |cp|
-  cp.id = 1
+  cp.id = -1
   cp.name = "translate"
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
   cp.value = <<~STRING
@@ -14,7 +14,7 @@ CompletionPrompt.seed do |cp|
 end
 
 CompletionPrompt.seed do |cp|
-  cp.id = 2
+  cp.id = -2
   cp.name = "generate_titles"
   cp.prompt_type = CompletionPrompt.prompt_types[:list]
   cp.value = <<~STRING
@@ -25,7 +25,7 @@ CompletionPrompt.seed do |cp|
 end
 
 CompletionPrompt.seed do |cp|
-  cp.id = 3
+  cp.id = -3
   cp.name = "proofread"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
   cp.value = <<~STRING
