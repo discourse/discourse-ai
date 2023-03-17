@@ -20,7 +20,8 @@ CompletionPrompt.seed do |cp|
   cp.value = <<~STRING
     I want you to act as a title generator for written pieces. I will provide you with a text, 
     and you will generate five attention-grabbing titles. Please keep the title concise and under 20 words,
-    and ensure that the meaning is maintained. Replies will utilize the language type of the topic. 
+    and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
+    I want you to only reply the list of options and nothing else, do not write explanations.
   STRING
 end
 
