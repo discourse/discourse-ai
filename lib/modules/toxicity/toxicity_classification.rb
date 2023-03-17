@@ -59,7 +59,7 @@ module DiscourseAi
       end
 
       def content_of(target_to_classify)
-        return target_to_classify.message if target_to_classify.is_a?(ChatMessage)
+        return target_to_classify.message if target_to_classify.is_a?(Chat::Message)
 
         if target_to_classify.post_number == 1
           "#{target_to_classify.topic.title}\n#{target_to_classify.raw}"

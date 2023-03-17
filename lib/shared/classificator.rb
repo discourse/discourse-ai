@@ -59,7 +59,7 @@ module ::DiscourseAi
           {
             model_used: model_name,
             target_id: target.id,
-            target_type: target.class.name,
+            target_type: target.class.sti_name,
             classification_type: classification_model.type,
             classification: classifications,
             updated_at: DateTime.now,
