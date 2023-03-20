@@ -23,10 +23,10 @@ module DiscourseAi
       def generate_and_send_prompt(prompt, text)
         result = { type: prompt.prompt_type }
 
-        ai_messages = [{ role: "system", content: prompt.value }, { role: "user", content: text }]
+        messages = prompt.messages_with_user_input(text)
 
         result[:suggestions] = DiscourseAi::Inference::OpenAiCompletions
-          .perform!(ai_messages)
+          .perform!(messages)
           .dig(:choices)
           .to_a
           .flat_map { |choice| parse_content(prompt, choice.dig(:message, :content).to_s) }

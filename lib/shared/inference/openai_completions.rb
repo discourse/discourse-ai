@@ -3,7 +3,7 @@
 module ::DiscourseAi
   module Inference
     class OpenAiCompletions
-      def self.perform!(content, model = "gpt-3.5-turbo")
+      def self.perform!(messages, model = "gpt-3.5-turbo")
         headers = {
           "Authorization" => "Bearer #{SiteSetting.ai_openai_api_key}",
           "Content-Type" => "application/json",
@@ -14,7 +14,7 @@ module ::DiscourseAi
         response =
           Faraday.new(nil, connection_opts).post(
             "https://api.openai.com/v1/chat/completions",
-            { model: model, messages: content }.to_json,
+            { model: model, messages: messages }.to_json,
             headers,
           )
 
