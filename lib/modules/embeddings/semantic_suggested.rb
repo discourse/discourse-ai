@@ -23,17 +23,11 @@ module DiscourseAi
             Discourse
               .cache
               .fetch("semantic-suggested-topic-#{topic.id}", expires_in: cache_for) do
-                suggested = search_suggestions(topic)
-
-                # Happens when the topic doesn't have any embeddings
-                if suggested.empty? || !suggested.include?(topic.id)
-                  return { result: [], params: {} }
-                end
-
-                suggested
+                search_suggestions(topic)
               end
         rescue StandardError => e
           Rails.logger.error("SemanticSuggested: #{e}")
+          return { result: [], params: {} }
         end
 
         # array_position forces the order of the topics to be preserved
@@ -49,7 +43,8 @@ module DiscourseAi
         function =
           DiscourseAi::Embeddings::Models::SEARCH_FUNCTION_TO_PG_FUNCTION[model.functions.first]
 
-        DiscourseAi::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
+        candidate_ids =
+          DiscourseAi::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
           SELECT
             topic_id
           FROM
@@ -66,6 +61,14 @@ module DiscourseAi
             )
           LIMIT 11
         SQL
+
+        # Happens when the topic doesn't have any embeddings
+        # I'd rather not use Exceptions to control the flow, so this should be refactored soon
+        if candidate_ids.empty? || !candidate_ids.include?(topic.id)
+          raise StandardError, "No embeddings found for topic #{topic.id}"
+        end
+
+        candidate_ids
       end
     end
   end

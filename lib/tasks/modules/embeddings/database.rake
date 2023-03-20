@@ -2,6 +2,10 @@
 
 desc "Creates tables to store embeddings"
 task "ai:embeddings:create_table" => [:environment] do
+  DiscourseAi::Database::Connection.db.exec(<<~SQL)
+    CREATE EXTENSION IF NOT EXISTS pg_vector;
+  SQL
+
   DiscourseAi::Embeddings::Models.enabled_models.each do |model|
     DiscourseAi::Database::Connection.db.exec(<<~SQL)
         CREATE TABLE IF NOT EXISTS topic_embeddings_#{model.name.underscore} (
@@ -25,12 +29,13 @@ task "ai:embeddings:backfill" => [:environment] do
 end
 
 desc "Creates indexes for embeddings"
-task "ai:embeddings:index" => [:environment] do
+task "ai:embeddings:index", [:work_mem] => [:environment] do |_, args|
   # Using 4 * sqrt(number of topics) as a rule of thumb for now
   # Results are not as good as without indexes, but it's much faster
   # Disk usage is ~1x the size of the table, so this double table total size
   lists = 4 * Math.sqrt(Topic.count).to_i
 
+  DiscourseAi::Database::Connection.db.exec("SET work_mem TO '#{args[:work_mem] || "1GB"}';")
   DiscourseAi::Embeddings::Models.enabled_models.each do |model|
     DiscourseAi::Database::Connection.db.exec(<<~SQL)
       CREATE INDEX IF NOT EXISTS
@@ -42,5 +47,6 @@ task "ai:embeddings:index" => [:environment] do
       WITH
         (lists = #{lists});
     SQL
+    DiscourseAi::Database::Connection.db.exec("RESET work_mem;")
   end
 end
