@@ -10,7 +10,7 @@ en:
         accuracy: "Accuracy:"
     review:
       types:
-        reviewable_aipost:
+        reviewable_ai_post:
           title: "AI-Flagged post"
-        reviewable_aichat_message:
+        reviewable_ai_chat_message:
           title: "AI-Flagged chat message"
