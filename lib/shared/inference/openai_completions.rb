@@ -9,8 +9,10 @@ module ::DiscourseAi
           "Content-Type" => "application/json",
         }
 
+        connection_opts = { request: { write_timeout: 10, read_timeout: 10, open_timeout: 10 } }
+
         response =
-          Faraday.post(
+          Faraday.new(nil, connection_opts).post(
             "https://api.openai.com/v1/chat/completions",
             { model: model, messages: content }.to_json,
             headers,
