@@ -27,6 +27,7 @@ module DiscourseAi
               end
         rescue StandardError => e
           Rails.logger.error("SemanticSuggested: #{e}")
+          Jobs.enqueue(:generate_embeddings, topic_id: topic.id)
           return { result: [], params: {} }
         end
 
