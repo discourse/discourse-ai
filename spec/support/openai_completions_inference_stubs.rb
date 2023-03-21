@@ -83,12 +83,11 @@ class OpenAiCompletionsInferenceStubs
       text =
         type == DiscourseAi::AiHelper::OpenAiPrompt::TRANSLATE ? spanish_text : translated_response
 
-      used_prompt = CompletionPrompt.find_by(name: type)
-      prompt = [{ role: "system", content: used_prompt.value }, { role: "user", content: text }]
+      prompt_messages = CompletionPrompt.find_by(name: type).messages_with_user_input(text)
 
       WebMock
         .stub_request(:post, "https://api.openai.com/v1/chat/completions")
-        .with(body: JSON.dump(model: "gpt-3.5-turbo", messages: prompt))
+        .with(body: { model: "gpt-3.5-turbo", messages: prompt_messages }.to_json)
         .to_return(status: 200, body: JSON.dump(response(response_text_for(type))))
     end
   end
