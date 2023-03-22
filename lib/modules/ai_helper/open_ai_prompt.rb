@@ -6,7 +6,8 @@ module DiscourseAi
       TRANSLATE = "translate"
       GENERATE_TITLES = "generate_titles"
       PROOFREAD = "proofread"
-      VALID_TYPES = [TRANSLATE, GENERATE_TITLES, PROOFREAD]
+      MARKDOWN_TABLE = "markdown_table"
+      VALID_TYPES = [TRANSLATE, GENERATE_TITLES, PROOFREAD, MARKDOWN_TABLE]
 
       def available_prompts
         CompletionPrompt

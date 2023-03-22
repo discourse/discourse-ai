@@ -9,7 +9,7 @@ module ::DiscourseAi
           "Content-Type" => "application/json",
         }
 
-        connection_opts = { request: { write_timeout: 10, read_timeout: 10, open_timeout: 10 } }
+        connection_opts = { request: { write_timeout: 60, read_timeout: 60, open_timeout: 60 } }
 
         response =
           Faraday.new(nil, connection_opts).post(
