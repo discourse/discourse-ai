@@ -80,3 +80,42 @@ CompletionPrompt.seed do |cp|
     TEXT
   ]
 end
+
+CompletionPrompt.seed do |cp|
+  cp.id = -4
+  cp.name = "markdown_table"
+  cp.prompt_type = CompletionPrompt.prompt_types[:diff]
+  cp.messages = [
+    { role: "system", content: <<~TEXT },
+      You are a markdown table formatter, I will provide you text and you will format it into a markdown table
+    TEXT
+    { role: "user", content: "sam,joe,jane\nage: 22|  10|11" },
+    { role: "assistant", content: <<~TEXT },
+      |   | sam | joe | jane |
+      |---|---|---|---|
+      | age | 22 | 10 | 11 |
+    TEXT
+    { role: "user", content: <<~TEXT },
+      sam: speed 100, age 22
+      jane: age 10
+      fred: height 22
+    TEXT
+    { role: "assistant", content: <<~TEXT },
+      |   | speed | age | height |
+      |---|---|---|---|
+      | sam | 100 | 22 | - |
+      | jane | - | 10 | - |
+      | fred | - | - | 22 |
+    TEXT
+    { role: "user", content: <<~TEXT },
+      chrome 22ms (first load 10ms)
+      firefox 10ms (first load: 9ms)
+    TEXT
+    { role: "assistant", content: <<~TEXT },
+      | Browser | Load Time (ms) | First Load Time (ms) |
+      |---|---|---|
+      | Chrome | 22 | 10 |
+      | Firefox | 10 | 9 |
+    TEXT
+  ]
+end

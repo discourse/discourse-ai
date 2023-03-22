@@ -50,7 +50,7 @@ en:
       reasons:
         flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.
         flagged_by_nsfw: The AI plugin flagged this after classifying at least one of the attached images as NSFW.
-  
+
   errors:
     prompt_message_length: The message %{idx} is over the 1000 character limit.
     invalid_prompt_role: The message %{idx} has an invalid role.
@@ -61,3 +61,4 @@ en:
         translate: Translate to English
         generate_titles: Suggest topic titles
         proofread: Proofread text
+        markdown_table: Generate Markdown table
