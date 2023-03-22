@@ -7,7 +7,7 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
 
   describe "#generate_and_send_prompt" do
     context "when using the translate mode" do
-      let(:mode) { "translate" }
+      let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
 
       before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
@@ -22,7 +22,7 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
     end
 
     context "when using the proofread mode" do
-      let(:mode) { "proofread" }
+      let(:mode) { OpenAiCompletionsInferenceStubs::PROOFREAD }
 
       before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
@@ -40,7 +40,7 @@ RSpec.describe DiscourseAi::AiHelper::OpenAiPrompt do
     end
 
     context "when generating titles" do
-      let(:mode) { "generate_titles" }
+      let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
 
       before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 

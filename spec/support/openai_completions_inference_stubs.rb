@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class OpenAiCompletionsInferenceStubs
+  TRANSLATE = "translate"
+  PROOFREAD = "proofread"
+  GENERATE_TITLES = "generate_titles"
+
   class << self
     def spanish_text
       <<~STRING
@@ -69,19 +73,18 @@ class OpenAiCompletionsInferenceStubs
 
     def response_text_for(type)
       case type
-      when DiscourseAi::AiHelper::OpenAiPrompt::TRANSLATE
+      when TRANSLATE
         translated_response
-      when DiscourseAi::AiHelper::OpenAiPrompt::PROOFREAD
+      when PROOFREAD
         proofread_response
-      when DiscourseAi::AiHelper::OpenAiPrompt::GENERATE_TITLES
+      when GENERATE_TITLES
         generated_titles
       end
     end
 
     def stub_prompt(type)
       prompt_builder = DiscourseAi::AiHelper::OpenAiPrompt.new
-      text =
-        type == DiscourseAi::AiHelper::OpenAiPrompt::TRANSLATE ? spanish_text : translated_response
+      text = type == TRANSLATE ? spanish_text : translated_response
 
       prompt_messages = CompletionPrompt.find_by(name: type).messages_with_user_input(text)
 

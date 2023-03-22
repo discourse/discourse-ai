@@ -53,6 +53,16 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         expect(response.status).to eq(400)
       end
 
+      it "returns a generic error when the completion call fails" do
+        WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+          status: 500,
+        )
+
+        post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text }
+
+        expect(response.status).to eq(502)
+      end
+
       it "returns a suggestion" do
         OpenAiCompletionsInferenceStubs.stub_prompt(mode)
 

@@ -57,6 +57,8 @@ en:
 
   discourse_ai:
     ai_helper:
+      errors:
+        completion_request_failed: "Something went wrong while trying to provide suggestions. Please, try again."
       prompts:
         translate: Translate to English
         generate_titles: Suggest topic titles
