@@ -32,6 +32,9 @@ module DiscourseAi
                    ),
                  status: 200
         end
+      rescue DiscourseAi::Inference::OpenAiCompletions::CompletionFailed
+        render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
+                          status: 502
       end
 
       private

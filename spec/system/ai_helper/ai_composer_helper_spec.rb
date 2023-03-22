@@ -15,7 +15,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:ai_helper_modal) { PageObjects::Modals::AiHelper.new }
 
   context "when using the translation mode" do
-    let(:mode) { DiscourseAi::AiHelper::OpenAiPrompt::TRANSLATE }
+    let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
 
     before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
@@ -38,7 +38,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when using the proofreading mode" do
-    let(:mode) { DiscourseAi::AiHelper::OpenAiPrompt::PROOFREAD }
+    let(:mode) { OpenAiCompletionsInferenceStubs::PROOFREAD }
 
     before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
@@ -61,7 +61,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when selecting an AI generated title" do
-    let(:mode) { DiscourseAi::AiHelper::OpenAiPrompt::GENERATE_TITLES }
+    let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
 
     before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 

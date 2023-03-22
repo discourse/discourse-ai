@@ -3,6 +3,8 @@
 module ::DiscourseAi
   module Inference
     class OpenAiCompletions
+      CompletionFailed = Class.new(StandardError)
+
       def self.perform!(messages, model = "gpt-3.5-turbo")
         headers = {
           "Authorization" => "Bearer #{SiteSetting.ai_openai_api_key}",
@@ -18,7 +20,12 @@ module ::DiscourseAi
             headers,
           )
 
-        raise Net::HTTPBadResponse unless response.status == 200
+        if response.status != 200
+          Rails.logger.error(
+            "OpenAiCompletions: status: #{response.status} - body: #{response.body}",
+          )
+          raise CompletionFailed
+        end
 
         JSON.parse(response.body, symbolize_names: true)
       end
