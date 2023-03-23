@@ -33,7 +33,12 @@ module DiscourseAi
 
         # array_position forces the order of the topics to be preserved
         candidates =
-          ::Topic.where(id: candidate_ids).order("array_position(ARRAY#{candidate_ids}, id)")
+          ::Topic
+            .visible
+            .listable_topics
+            .secured
+            .where(id: candidate_ids)
+            .order("array_position(ARRAY#{candidate_ids}, id)")
 
         { result: candidates, params: {} }
       end
