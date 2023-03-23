@@ -12,9 +12,10 @@ describe DiscourseAi::Embeddings::SemanticSuggested do
   fab!(:secured_category) { Fabricate(:category, read_restricted: true) }
   fab!(:secured_category_topic) { Fabricate(:topic, category: secured_category) }
 
+  before { SiteSetting.ai_embeddings_semantic_suggested_topics_anons_enabled = true }
+
   describe "#build_suggested_topics" do
     before do
-      SiteSetting.ai_embeddings_semantic_suggested_topics_anons_enabled = true
       Discourse.cache.clear
       described_class.stubs(:search_suggestions).returns(
         Topic.unscoped.order(id: :desc).limit(10).pluck(:id),
