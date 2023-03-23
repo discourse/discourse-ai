@@ -28,7 +28,7 @@ describe DiscourseAi::Embeddings::SemanticSuggested do
       suggested_results = suggested[:result]
       expect(suggested_results).to include(normal_topic_1)
       expect(suggested_results).to include(normal_topic_2)
-      expect(suggested_results).to include(normal_topic_1)
+      expect(suggested_results).to include(normal_topic_3)
       expect(suggested_results).to_not include(unlisted_topic)
       expect(suggested_results).to_not include(private_topic)
       expect(suggested_results).to_not include(secured_category_topic)
