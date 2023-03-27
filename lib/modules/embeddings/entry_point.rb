@@ -11,6 +11,16 @@ module DiscourseAi
       end
 
       def inject_into(plugin)
+        plugin.add_to_serializer(:topic_view, :related_topics) do
+          if !object.topic.private_message? && scope.authenticated?
+            TopicList.new(
+              :suggested,
+              nil,
+              DiscourseAi::Embeddings::SemanticSuggested.candidates_for(object.topic),
+            ).topics
+          end
+        end
+
         callback =
           Proc.new do |topic|
             if SiteSetting.ai_embeddings_enabled
