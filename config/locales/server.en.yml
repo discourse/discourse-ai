@@ -43,7 +43,7 @@ en:
     ai_embeddings_models: "Discourse will generate embeddings for each of the models enabled here"
     ai_embeddings_semantic_suggested_model: "Model to use for suggested topics."
     ai_embeddings_generate_for_pms: "Generate embeddings for personal messages."
-    ai_embeddings_semantic_suggested_topics_anons_enabled: "Use Semantic Search for suggested topics for anonymous users."
+    ai_embeddings_semantic_suggested_topics_enabled: "Use Semantic Search for related topics."
     ai_embeddings_pg_connection_string: "PostgreSQL connection string for the embeddings module. Needs pgvector extension enabled and a series of tables created. See docs for more info."
 
   reviewables:

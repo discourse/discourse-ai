@@ -4,7 +4,7 @@ module DiscourseAi
   module Embeddings
     class SemanticSuggested
       def self.build_suggested_topics(topic, pm_params, topic_query)
-        return unless SiteSetting.ai_embeddings_semantic_suggested_topics_anons_enabled
+        return unless SiteSetting.ai_embeddings_semantic_suggested_topics_enabled
         return if topic_query.user
         return if topic.private_message?
 

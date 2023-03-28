@@ -128,5 +128,5 @@ plugins:
       - multi-qa-mpnet-base-dot-v1
       - paraphrase-multilingual-mpnet-base-v2
   ai_embeddings_generate_for_pms: false
-  ai_embeddings_semantic_suggested_topics_anons_enabled: false
+  ai_embeddings_semantic_suggested_topics_enabled: false
   ai_embeddings_pg_connection_string: ""
