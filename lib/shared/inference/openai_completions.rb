@@ -5,11 +5,13 @@ module ::DiscourseAi
     class OpenAiCompletions
       CompletionFailed = Class.new(StandardError)
 
-      def self.perform!(messages, model = "gpt-3.5-turbo")
+      def self.perform!(messages)
         headers = {
           "Authorization" => "Bearer #{SiteSetting.ai_openai_api_key}",
           "Content-Type" => "application/json",
         }
+
+        model = SiteSetting.ai_helper_model
 
         connection_opts = { request: { write_timeout: 60, read_timeout: 60, open_timeout: 60 } }
 
