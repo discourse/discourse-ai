@@ -101,6 +101,12 @@ plugins:
   ai_helper_allowed_in_pm:
     default: false
     client: true
+  ai_helper_model:
+    default: gpt-3.5-turbo
+    type: enum
+    choices:
+      - gpt-3.5-turbo
+      - gpt-4
 
   ai_embeddings_enabled: false
   ai_embeddings_discourse_service_api_endpoint: ""
