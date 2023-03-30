@@ -2,43 +2,6 @@
 
 module DiscourseAi
   module Embeddings
-    module TopicViewSerializerAdditions
-      def include_related_topics?
-        SiteSetting.ai_embeddings_semantic_suggested_topics_enabled
-      end
-
-      def related_topics
-        if object.next_page.nil? && !object.topic.private_message? && scope.authenticated?
-          @related_topics ||=
-            TopicList.new(
-              :suggested,
-              nil,
-              DiscourseAi::Embeddings::SemanticSuggested.candidates_for(object.topic),
-            ).topics
-        end
-      end
-
-      def suggested_topics
-        if !SiteSetting.ai_embeddings_semantic_suggested_topics_enabled ||
-             object.topic.private_message?
-          super
-        else
-          if object.next_page.nil?
-            @suggested_topics ||=
-              TopicQuery
-                .new(@user)
-                .list_suggested_for(
-                  topic,
-                  include_random:
-                    !SiteSetting.ai_embeddings_semantic_suggested_topics_enabled ||
-                      related_topics.length == 0,
-                )
-                .topics
-          end
-        end
-      end
-    end
-
     class EntryPoint
       def load_files
         require_relative "models"
@@ -48,10 +11,39 @@ module DiscourseAi
       end
 
       def inject_into(plugin)
-        TopicViewSerializer.attribute :related_topics
-        TopicViewPostsSerializer.attribute :related_topics
-        TopicViewSerializer.prepend(TopicViewSerializerAdditions)
-        TopicViewPostsSerializer.prepend(TopicViewSerializerAdditions)
+        plugin.add_to_class(:topic_view, :related_topics) do
+          return nil if topic.private_message?
+
+          @related_topics ||=
+            TopicList.new(
+              :suggested,
+              nil,
+              DiscourseAi::Embeddings::SemanticSuggested.candidates_for(topic),
+            ).topics
+        end
+
+        plugin.register_modifier(
+          :topic_view_suggested_topics_options,
+        ) do |suggested_options, topic_view|
+          related_topics = topic_view.related_topics
+          include_random = related_topics.nil? || related_topics.length == 0
+          suggested_options.merge(include_random: include_random)
+        end
+
+        %i[topic_view TopicViewPosts].each do |serializer|
+          plugin.add_to_serializer(serializer, :related_topics) do
+            if object.next_page.nil? && !object.topic.private_message? && scope.authenticated?
+              object.related_topics.map do |t|
+                SuggestedTopicSerializer.new(t, scope: scope, root: false)
+              end
+            end
+          end
+
+          # custom include method so we also check on semantic search
+          plugin.add_to_serializer(serializer, :include_related_topics?) do
+            plugin.enabled? && SiteSetting.ai_embeddings_semantic_suggested_topics_enabled
+          end
+        end
 
         callback =
           Proc.new do |topic|
