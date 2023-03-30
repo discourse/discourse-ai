@@ -4,10 +4,14 @@ module DiscourseAi
   module Embeddings
     class SemanticSuggested
       def self.build_suggested_topics(topic, pm_params, topic_query)
-        return unless SiteSetting.ai_embeddings_semantic_suggested_topics_anons_enabled
+        return unless SiteSetting.ai_embeddings_semantic_suggested_topics_enabled
         return if topic_query.user
         return if topic.private_message?
 
+        { result: candidates_for(topic), params: {} }
+      end
+
+      def self.candidates_for(topic)
         cache_for =
           case topic.created_at
           when 6.hour.ago..Time.now
@@ -28,19 +32,16 @@ module DiscourseAi
         rescue StandardError => e
           Rails.logger.error("SemanticSuggested: #{e}")
           Jobs.enqueue(:generate_embeddings, topic_id: topic.id)
-          return { result: [], params: {} }
+          return ::Topic.none
         end
 
         # array_position forces the order of the topics to be preserved
-        candidates =
-          ::Topic
-            .visible
-            .listable_topics
-            .secured
-            .where(id: candidate_ids)
-            .order("array_position(ARRAY#{candidate_ids}, id)")
-
-        { result: candidates, params: {} }
+        ::Topic
+          .visible
+          .listable_topics
+          .secured
+          .where(id: candidate_ids)
+          .order("array_position(ARRAY#{candidate_ids}, id)")
       end
 
       def self.search_suggestions(topic)
