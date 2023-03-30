@@ -12,7 +12,8 @@ module DiscourseAi
 
       def inject_into(plugin)
         plugin.add_to_class(:topic_view, :related_topics) do
-          if topic.private_message? || !SiteSetting.ai_embeddings_semantic_suggested_topics_enabled
+          if !@guardian&.user || topic.private_message? ||
+               !SiteSetting.ai_embeddings_semantic_suggested_topics_enabled
             return nil
           end
 
