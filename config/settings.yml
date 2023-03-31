@@ -21,13 +21,13 @@ plugins:
     default: true
     client: false
   ai_toxicity_flag_threshold_toxicity:
-    default: 70
+    default: 80
     client: false
   ai_toxicity_flag_threshold_severe_toxicity:
-    default: 60
+    default: 30
     client: false
   ai_toxicity_flag_threshold_obscene:
-    default: 60
+    default: 80
     client: false
   ai_toxicity_flag_threshold_identity_attack:
     default: 60
