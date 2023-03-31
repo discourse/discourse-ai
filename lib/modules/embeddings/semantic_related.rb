@@ -34,6 +34,7 @@ module DiscourseAi
           .visible
           .listable_topics
           .secured
+          .where("id <> ?", topic.id)
           .where(id: candidate_ids)
           .order("array_position(ARRAY#{candidate_ids}, id)")
           .limit(SiteSetting.ai_embeddings_semantic_related_topics)
