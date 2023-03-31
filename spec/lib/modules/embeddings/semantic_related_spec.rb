@@ -29,6 +29,7 @@ describe DiscourseAi::Embeddings::SemanticRelated do
       expect(results).to include(normal_topic_1)
       expect(results).to include(normal_topic_2)
       expect(results).to include(normal_topic_3)
+      expect(results).to_not include(target)
       expect(results).to_not include(unlisted_topic)
       expect(results).to_not include(private_topic)
       expect(results).to_not include(secured_category_topic)
