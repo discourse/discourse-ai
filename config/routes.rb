@@ -6,6 +6,11 @@ DiscourseAi::Engine.routes.draw do
     get "prompts" => "assistant#prompts"
     post "suggest" => "assistant#suggest"
   end
+
+  # Embedding routes
+  scope module: :embeddings, path: "/embeddings", defaults: { format: :json } do
+    get "semantic-search" => "embeddings#search"
+  end
 end
 
 Discourse::Application.routes.append { mount ::DiscourseAi::Engine, at: "discourse-ai" }

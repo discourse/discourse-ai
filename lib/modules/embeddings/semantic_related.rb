@@ -16,12 +16,17 @@ module DiscourseAi
             1.day
           end
 
+        model =
+          DiscourseAi::Embeddings::Model.instantiate(
+            SiteSetting.ai_embeddings_semantic_related_model,
+          )
+
         begin
           candidate_ids =
             Discourse
               .cache
               .fetch("semantic-suggested-topic-#{topic.id}", expires_in: cache_for) do
-                search_suggestions(topic)
+                DiscourseAi::Embeddings::Topic.new.symmetric_semantic_search(model, topic)
               end
         rescue StandardError => e
           Rails.logger.error("SemanticRelated: #{e}")
@@ -38,40 +43,6 @@ module DiscourseAi
           .where(id: candidate_ids)
           .order("array_position(ARRAY#{candidate_ids}, id)")
           .limit(SiteSetting.ai_embeddings_semantic_related_topics)
-      end
-
-      def self.search_suggestions(topic)
-        model_name = SiteSetting.ai_embeddings_semantic_related_model
-        model = DiscourseAi::Embeddings::Models.list.find { |m| m.name == model_name }
-        function =
-          DiscourseAi::Embeddings::Models::SEARCH_FUNCTION_TO_PG_FUNCTION[model.functions.first]
-
-        candidate_ids =
-          DiscourseAi::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
-          SELECT
-            topic_id
-          FROM
-            topic_embeddings_#{model_name.underscore}
-          ORDER BY
-            embedding #{function} (
-              SELECT
-                embedding
-              FROM
-                topic_embeddings_#{model_name.underscore}
-              WHERE
-                topic_id = :topic_id
-              LIMIT 1
-            )
-          LIMIT 11
-        SQL
-
-        # Happens when the topic doesn't have any embeddings
-        # I'd rather not use Exceptions to control the flow, so this should be refactored soon
-        if candidate_ids.empty? || !candidate_ids.include?(topic.id)
-          raise StandardError, "No embeddings found for topic #{topic.id}"
-        end
-
-        candidate_ids
       end
     end
   end

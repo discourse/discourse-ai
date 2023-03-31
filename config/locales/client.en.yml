@@ -10,6 +10,9 @@ en:
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"
+      
+      embeddings:
+        semantic_search: "Topics (Semantic)"
     review:
       types:
         reviewable_ai_post:
