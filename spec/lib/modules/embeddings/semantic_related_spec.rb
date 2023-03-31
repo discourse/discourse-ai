@@ -17,9 +17,10 @@ describe DiscourseAi::Embeddings::SemanticRelated do
   describe "#candidates_for" do
     before do
       Discourse.cache.clear
-      described_class.stubs(:search_suggestions).returns(
-        Topic.unscoped.order(id: :desc).limit(10).pluck(:id),
-      )
+      DiscourseAi::Embeddings::Topic
+        .any_instance
+        .expects(:symmetric_semantic_search)
+        .returns(Topic.unscoped.order(id: :desc).limit(10).pluck(:id))
     end
 
     after { Discourse.cache.clear }
