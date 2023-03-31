@@ -13,6 +13,9 @@ en:
       
       embeddings:
         semantic_search: "Topics (Semantic)"
+
+      summarization:
+        title: "Summarize using AI"
     review:
       types:
         reviewable_ai_post:

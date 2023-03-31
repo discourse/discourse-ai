@@ -1,0 +1,52 @@
+import { withPluginApi } from "discourse/lib/plugin-api";
+import showModal from "discourse/lib/show-modal";
+import { action } from "@ember/object";
+import { ajax } from "discourse/lib/ajax";
+
+function initializeChatChannelSummary(api) {
+  const chat = api.container.lookup("service:chat");
+  if (chat) {
+    api.registerChatComposerButton?.({
+      translatedLabel: "discourse_ai.summarization.title",
+      id: "chat_channel_summary",
+      icon: "magic",
+      action: "showChannelSummary",
+      position: "dropdown",
+    });
+
+    api.modifyClass("component:chat-composer", {
+      pluginId: "discourse-ai",
+
+      @action
+      showChannelSummary() {
+        const chatChannel = this.chatChannel.id;
+
+        ajax("/discourse-ai/summarization/chat_channel", {
+          method: "POST",
+          data: { chat_channel_id: chatChannel },
+        }).then((data) => {
+          console.log(data);
+          // TODO show summary
+        });
+        // TODO handle error
+        //.catch(popupAjaxError)
+      },
+    });
+  }
+}
+
+export default {
+  name: "discourse_ai-chat_channel_summary",
+
+  initialize(container) {
+    const settings = container.lookup("site-settings:main");
+    const user = container.lookup("service:current-user");
+
+    const summarizationEnabled =
+      settings.discourse_ai_enabled && settings.ai_summarization_enabled;
+
+    if (summarizationEnabled) {
+      withPluginApi("1.6.0", initializeChatChannelSummary);
+    }
+  },
+};
