@@ -124,7 +124,7 @@ plugins:
      - msmarco-distilbert-base-v4
      - msmarco-distilbert-base-tas-b
      - text-embedding-ada-002
-  ai_embeddings_semantic_suggested_model:
+  ai_embeddings_semantic_related_model:
     type: enum
     default: all-mpnet-base-v2
     choices:
@@ -134,5 +134,6 @@ plugins:
       - multi-qa-mpnet-base-dot-v1
       - paraphrase-multilingual-mpnet-base-v2
   ai_embeddings_generate_for_pms: false
-  ai_embeddings_semantic_suggested_topics_enabled: false
+  ai_embeddings_semantic_related_topics_enabled: false
+  ai_embeddings_semantic_related_topics: 5
   ai_embeddings_pg_connection_string: ""

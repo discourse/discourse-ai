@@ -42,9 +42,10 @@ en:
     ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"
     ai_embeddings_discourse_service_api_key: "API key for the embeddings API"
     ai_embeddings_models: "Discourse will generate embeddings for each of the models enabled here"
-    ai_embeddings_semantic_suggested_model: "Model to use for suggested topics."
+    ai_embeddings_semantic_related_model: "Model to use for related topics."
     ai_embeddings_generate_for_pms: "Generate embeddings for personal messages."
-    ai_embeddings_semantic_suggested_topics_enabled: "Use Semantic Search for related topics."
+    ai_embeddings_semantic_related_topics_enabled: "Use Semantic Search for related topics."
+    ai_embeddings_semantic_related_topics: "Maximum number of topics to show in related topic section."
     ai_embeddings_pg_connection_string: "PostgreSQL connection string for the embeddings module. Needs pgvector extension enabled and a series of tables created. See docs for more info."
 
   reviewables:

@@ -2,16 +2,10 @@
 
 module DiscourseAi
   module Embeddings
-    class SemanticSuggested
-      def self.build_suggested_topics(topic, pm_params, topic_query)
-        return unless SiteSetting.ai_embeddings_semantic_suggested_topics_enabled
-        return if topic_query.user
-        return if topic.private_message?
-
-        { result: candidates_for(topic), params: {} }
-      end
-
+    class SemanticRelated
       def self.candidates_for(topic)
+        return ::Topic.none if SiteSetting.ai_embeddings_semantic_related_topics < 1
+
         cache_for =
           case topic.created_at
           when 6.hour.ago..Time.now
@@ -30,7 +24,7 @@ module DiscourseAi
                 search_suggestions(topic)
               end
         rescue StandardError => e
-          Rails.logger.error("SemanticSuggested: #{e}")
+          Rails.logger.error("SemanticRelated: #{e}")
           Jobs.enqueue(:generate_embeddings, topic_id: topic.id)
           return ::Topic.none
         end
@@ -42,10 +36,11 @@ module DiscourseAi
           .secured
           .where(id: candidate_ids)
           .order("array_position(ARRAY#{candidate_ids}, id)")
+          .limit(SiteSetting.ai_embeddings_semantic_related_topics)
       end
 
       def self.search_suggestions(topic)
-        model_name = SiteSetting.ai_embeddings_semantic_suggested_model
+        model_name = SiteSetting.ai_embeddings_semantic_related_model
         model = DiscourseAi::Embeddings::Models.list.find { |m| m.name == model_name }
         function =
           DiscourseAi::Embeddings::Models::SEARCH_FUNCTION_TO_PG_FUNCTION[model.functions.first]
