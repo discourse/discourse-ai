@@ -46,7 +46,7 @@ module DiscourseAi
       end
 
       def asymmetric_semantic_search(model, query, limit, offset)
-        query_embedding = model.generate_embedding(query)
+        embedding = model.generate_embedding(query)
 
         candidate_ids =
           DiscourseAi::Database::Connection

@@ -8,10 +8,10 @@ module Jobs
 
       topic = Topic.find_by_id(topic_id)
       return if topic.nil? || topic.private_message? && !SiteSetting.ai_embeddings_generate_for_pms
-      post = Topic.find_by_id(topic_id).first_post
+      post = topic.first_post
       return if post.nil? || post.raw.blank?
 
-      DiscourseAi::Embeddings::Topic.new(post.topic).perform!
+      DiscourseAi::Embeddings::Topic.new.generate_and_store_embeddings_for(topic)
     end
   end
 end

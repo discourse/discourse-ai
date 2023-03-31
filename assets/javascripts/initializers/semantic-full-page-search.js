@@ -1,6 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { translateResults, updateRecentSearches } from "discourse/lib/search";
-import { setTransient } from "discourse/lib/page-tracker";
 import { ajax } from "discourse/lib/ajax";
 
 const SEMANTIC_SEARCH = "semantic_search";
@@ -9,7 +8,7 @@ function initializeSemanticSearch(api) {
   api.addFullPageSearchType(
     "discourse_ai.embeddings.semantic_search",
     SEMANTIC_SEARCH,
-    (searchController, args, searchKey) => {
+    (searchController, args) => {
       if (searchController.currentUser) {
         updateRecentSearches(searchController.currentUser, args.searchTerm);
       }
@@ -32,7 +31,6 @@ function initializeSemanticSearch(api) {
               );
             }
           } else {
-            setTransient("lastSearch", { searchKey, model }, 5);
             model.grouped_search_result = results.grouped_search_result;
             searchController.set("model", model);
           }
