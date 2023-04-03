@@ -55,7 +55,9 @@ export default {
   initialize(container) {
     const settings = container.lookup("site-settings:main");
 
-    if (settings.ai_embeddings_enabled) {
+    const semanticSearch = settings.ai_embeddings_semantic_search_enabled;
+
+    if (settings.ai_embeddings_enabled && semanticSearch) {
       withPluginApi("1.6.0", initializeSemanticSearch);
     }
   },

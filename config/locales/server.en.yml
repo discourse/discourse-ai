@@ -48,6 +48,7 @@ en:
     ai_embeddings_semantic_related_topics: "Maximum number of topics to show in related topic section."
     ai_embeddings_pg_connection_string: "PostgreSQL connection string for the embeddings module. Needs pgvector extension enabled and a series of tables created. See docs for more info."
     ai_embeddings_semantic_search_model: "Model to use for semantic search."
+    ai_embeddings_semantic_search_enabled: "Enable full-page semantic search."
 
   reviewables:
       reasons:
