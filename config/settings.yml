@@ -146,3 +146,6 @@ plugins:
   ai_embeddings_semantic_related_topics_enabled: false
   ai_embeddings_semantic_related_topics: 5
   ai_embeddings_pg_connection_string: ""
+  ai_embeddings_semantic_search_enabled:
+    default: false
+    client: true

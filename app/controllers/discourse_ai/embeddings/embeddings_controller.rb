@@ -16,6 +16,7 @@ module DiscourseAi
             type_filter: SEMANTIC_SEARCH_TYPE,
             term: query,
             search_context: guardian,
+            use_pg_headlines_for_excerpt: false,
           )
 
         model =
