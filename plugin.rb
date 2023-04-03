@@ -7,6 +7,8 @@
 # url: TODO
 # required_version: 2.7.0
 
+gem "tokenizers", "0.3.2", platform: RUBY_PLATFORM
+
 enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
@@ -28,6 +30,8 @@ after_initialize do
   require_relative "lib/shared/classificator"
   require_relative "lib/shared/post_classificator"
   require_relative "lib/shared/chat_message_classificator"
+
+  require_relative "lib/shared/tokenizer/tokenizer"
 
   require_relative "lib/shared/database/connection"
 
