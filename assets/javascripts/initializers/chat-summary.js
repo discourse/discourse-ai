@@ -1,7 +1,6 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import showModal from "discourse/lib/show-modal";
 import { action } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
 
 function initializeChatChannelSummary(api) {
   const chat = api.container.lookup("service:chat");
@@ -19,17 +18,9 @@ function initializeChatChannelSummary(api) {
 
       @action
       showChannelSummary() {
-        const chatChannel = this.chatChannel.id;
-
-        ajax("/discourse-ai/summarization/chat_channel", {
-          method: "POST",
-          data: { chat_channel_id: chatChannel },
-        }).then((data) => {
-          console.log(data);
-          // TODO show summary
+        showModal("composer-chat-channel-summary").setProperties({
+          chatChannel: this.chatChannel,
         });
-        // TODO handle error
-        //.catch(popupAjaxError)
       },
     });
   }
@@ -40,7 +31,6 @@ export default {
 
   initialize(container) {
     const settings = container.lookup("site-settings:main");
-    const user = container.lookup("service:current-user");
 
     const summarizationEnabled =
       settings.discourse_ai_enabled && settings.ai_summarization_enabled;

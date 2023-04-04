@@ -10,6 +10,7 @@
 enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
+register_asset "stylesheets/modules/summarization/common/summarization.scss"
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"

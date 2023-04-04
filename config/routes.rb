@@ -8,10 +8,10 @@ DiscourseAi::Engine.routes.draw do
 
   scope module: :embeddings, path: "/embeddings", defaults: { format: :json } do
     get "semantic-search" => "embeddings#search"
-
+  end
 
   scope module: :summarization, path: "/summarization", defaults: { format: :json } do
-    post "chat_channel" => "summary#chat_channel"
+    post "chat-channel" => "summary#chat_channel"
   end
 end
 

@@ -1,6 +1,9 @@
 en:
   js:
     discourse_ai:
+      modals:
+        select_option: "Select an option..."
+
       related_topics:
         title: "Related Topics"
       ai_helper:
@@ -16,6 +19,8 @@ en:
 
       summarization:
         title: "Summarize using AI"
+        description: "Select an option below to summarize the conversation sent during the desired timeframe."
+        since: "Last %{hours} hours"
     review:
       types:
         reviewable_ai_post:

@@ -62,6 +62,8 @@
     />
     <DModalCancel @close={{route-action "closeModal"}} />
   {{else}}
-    <div class="ai-helper-waiting-selection">Select an option...</div>
+    <div class="ai-helper-waiting-selection">{{i18n
+        "discourse_ai.modals.select_option"
+      }}</div>
   {{/if}}
 </div>
