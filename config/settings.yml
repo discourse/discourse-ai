@@ -149,3 +149,20 @@ plugins:
   ai_embeddings_semantic_search_enabled:
     default: false
     client: true
+
+  ai_summarization_enabled:
+    default: true
+    client: true
+  ai_summarization_discourse_service_api_endpoint: ""
+  ai_summarization_discourse_service_api_key: ""
+  ai_summarization_model:
+    type: enum
+    default: "bart-large-cnn-samsum"
+    allow_any: false
+    choices:
+     - bart-large-cnn-samsum
+     - flan-t5-base-samsum
+     - long-t5-tglobal-base-16384-book-summary
+     - gpt-3.5-turbo
+     - gpt-4
+  ai_summarization_rate_limit_minutes: 10

@@ -10,6 +10,7 @@
 enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
+register_asset "stylesheets/modules/summarization/common/summarization.scss"
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
@@ -34,6 +35,7 @@ after_initialize do
   require_relative "lib/modules/sentiment/entry_point"
   require_relative "lib/modules/ai_helper/entry_point"
   require_relative "lib/modules/embeddings/entry_point"
+  require_relative "lib/modules/summarization/entry_point"
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,
@@ -41,6 +43,7 @@ after_initialize do
     DiscourseAi::Toxicity::EntryPoint.new,
     DiscourseAi::Sentiment::EntryPoint.new,
     DiscourseAi::AiHelper::EntryPoint.new,
+    DiscourseAi::Summarization::EntryPoint.new,
   ].each do |a_module|
     a_module.load_files
     a_module.inject_into(self)
