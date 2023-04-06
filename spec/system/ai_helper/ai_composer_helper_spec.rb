@@ -28,7 +28,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
       expect(ai_helper_modal).to be_visible
 
-      ai_helper_modal.select_helper_model(mode)
+      ai_helper_modal.select_helper_model(OpenAiCompletionsInferenceStubs.text_mode_to_id(mode))
       ai_helper_modal.save_changes
 
       expect(composer.composer_input.value).to eq(
@@ -51,7 +51,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
       expect(ai_helper_modal).to be_visible
 
-      ai_helper_modal.select_helper_model(mode)
+      ai_helper_modal.select_helper_model(OpenAiCompletionsInferenceStubs.text_mode_to_id(mode))
       ai_helper_modal.save_changes
 
       expect(composer.composer_input.value).to eq(
@@ -74,7 +74,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
       expect(ai_helper_modal).to be_visible
 
-      ai_helper_modal.select_helper_model(mode)
+      ai_helper_modal.select_helper_model(OpenAiCompletionsInferenceStubs.text_mode_to_id(mode))
       ai_helper_modal.select_title_suggestion(2)
       ai_helper_modal.save_changes
 
