@@ -15,6 +15,11 @@ module DiscourseAi
         chat_channel = Chat::Channel.find_by(id: params[:chat_channel_id])
         raise Discourse::NotFound.new(:chat_channel) if !chat_channel
 
+        if !(SiteSetting.discourse_ai_enabled && SiteSetting.ai_summarization_enabled)
+          raise PluginDisabled
+        end
+        raise Discourse::InvalidAccess if !guardian.can_join_chat_channel?(chat_channel)
+
         RateLimiter.new(
           current_user,
           "ai_summarization",
