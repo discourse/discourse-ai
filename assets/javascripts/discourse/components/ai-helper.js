@@ -21,6 +21,7 @@ export default class AiHelper extends Component {
   @tracked proofreadDiff = null;
 
   @tracked helperOptions = [];
+  prompts = [];
   promptTypes = {};
 
   constructor() {
@@ -29,7 +30,11 @@ export default class AiHelper extends Component {
   }
 
   async loadPrompts() {
-    const prompts = await ajax("/discourse-ai/ai-helper/prompts");
+    let prompts = await ajax("/discourse-ai/ai-helper/prompts");
+
+    prompts.map((p) => {
+      this.prompts[p.id] = p;
+    });
 
     this.promptTypes = prompts.reduce((memo, p) => {
       memo[p.name] = p.prompt_type;
@@ -39,7 +44,7 @@ export default class AiHelper extends Component {
     this.helperOptions = prompts.map((p) => {
       return {
         name: p.translated_name,
-        value: p.name,
+        value: p.id,
       };
     });
   }
@@ -53,7 +58,9 @@ export default class AiHelper extends Component {
   @computed("selected", "selectedTitle", "translatingText", "proofreadingText")
   get canSave() {
     return (
-      (this.promptTypes[this.selected] === LIST && this.selectedTitle) ||
+      (this.selected &&
+        this.prompts[this.selected].prompt_type === LIST &&
+        this.selectedTitle) ||
       this.translatingText ||
       this.proofreadingText
     );
@@ -62,19 +69,26 @@ export default class AiHelper extends Component {
   @computed("selected", "translatedSuggestion")
   get translatingText() {
     return (
-      this.promptTypes[this.selected] === TEXT && this.translatedSuggestion
+      this.selected &&
+      this.prompts[this.selected].prompt_type === TEXT &&
+      this.translatedSuggestion
     );
   }
 
   @computed("selected", "proofReadSuggestion")
   get proofreadingText() {
-    return this.promptTypes[this.selected] === DIFF && this.proofReadSuggestion;
+    return (
+      this.selected &&
+      this.prompts[this.selected].prompt_type === DIFF &&
+      this.proofReadSuggestion
+    );
   }
 
   @computed("selected", "generatedTitlesSuggestions")
   get selectingTopicTitle() {
     return (
-      this.promptTypes[this.selected] === LIST &&
+      this.selected &&
+      this.prompts[this.selected].prompt_type === LIST &&
       this.generatedTitlesSuggestions.length > 0
     );
   }

@@ -17,13 +17,5 @@ RSpec.describe CompletionPrompt do
         expect(prompt.valid?).to eq(false)
       end
     end
-
-    context "when the message has invalid roles" do
-      it "doesn't accept messages when the role is invalid" do
-        prompt = described_class.new(messages: [{ role: "invalid", content: "a" }])
-
-        expect(prompt.valid?).to eq(false)
-      end
-    end
   end
 end

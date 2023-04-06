@@ -87,6 +87,8 @@ plugins:
 
   ai_openai_api_key:
     default: ""
+  ai_anthropic_api_key:
+    default: ""
 
   composer_ai_helper_enabled:
     default: false
@@ -107,6 +109,7 @@ plugins:
     choices:
       - gpt-3.5-turbo
       - gpt-4
+      - claude-v1
 
   ai_embeddings_enabled: 
     default: false
@@ -165,4 +168,5 @@ plugins:
      - long-t5-tglobal-base-16384-book-summary
      - gpt-3.5-turbo
      - gpt-4
+     - claude-v1
   ai_summarization_rate_limit_minutes: 10

@@ -3,7 +3,7 @@ module DiscourseAi
   module AiHelper
     class EntryPoint
       def load_files
-        require_relative "open_ai_prompt"
+        require_relative "llm_prompt"
       end
 
       def inject_into(plugin)

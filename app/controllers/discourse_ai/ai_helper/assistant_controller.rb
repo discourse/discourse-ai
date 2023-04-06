@@ -10,7 +10,7 @@ module DiscourseAi
       def prompts
         render json:
                  ActiveModel::ArraySerializer.new(
-                   DiscourseAi::AiHelper::OpenAiPrompt.new.available_prompts,
+                   DiscourseAi::AiHelper::LlmPrompt.new.available_prompts,
                    root: false,
                  ),
                status: 200
@@ -19,20 +19,20 @@ module DiscourseAi
       def suggest
         raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
 
-        prompt = CompletionPrompt.find_by(name: params[:mode])
+        prompt = CompletionPrompt.find_by(id: params[:mode])
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
 
         RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
 
         hijack do
           render json:
-                   DiscourseAi::AiHelper::OpenAiPrompt.new.generate_and_send_prompt(
+                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
                      prompt,
                      params[:text],
                    ),
                  status: 200
         end
-      rescue DiscourseAi::Inference::OpenAiCompletions::CompletionFailed
+      rescue CompletionFailed
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end
