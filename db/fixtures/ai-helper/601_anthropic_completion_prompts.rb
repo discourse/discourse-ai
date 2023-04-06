@@ -32,8 +32,7 @@ CompletionPrompt.seed do |cp|
   cp.provider = "anthropic"
   cp.name = "Proofread"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
-  cp.messages = [
-    { role: "Human", content: <<~TEXT },
+  cp.messages = [{ role: "Human", content: <<~TEXT }]
       You are a markdown proofreader. You correct egregious typos and phrasing issues but keep the user's original voice.
       You do not touch code blocks. I will provide you with text to proofread. If nothing needs fixing, then you will echo the text back.
 
@@ -42,7 +41,6 @@ CompletionPrompt.seed do |cp|
       I will provide you with a text inside <input> tags,
       please reply with the corrected text between <ai></ai> tags.
     TEXT
-  ]
 end
 
 CompletionPrompt.seed do |cp|
@@ -50,11 +48,9 @@ CompletionPrompt.seed do |cp|
   cp.provider = "anthropic"
   cp.name = "Convert to table"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
-  cp.messages = [
-    { role: "Human", content: <<~TEXT },
+  cp.messages = [{ role: "Human", content: <<~TEXT }]
       You are a markdown table formatter, I will provide you text and you will format it into a markdown table.
       I will provide you with a text inside <input> tags,
       please reply with the corrected text between <ai></ai> tags.
     TEXT
-  ]
 end

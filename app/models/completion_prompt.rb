@@ -13,7 +13,7 @@ class CompletionPrompt < ActiveRecord::Base
     if ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider == "openai"
       self.messages << { role: "user", content: user_input }
     else
-      self.messages << { 'role' => "Input", 'content' => "<input>#{user_input}</input>" }
+      self.messages << { "role" => "Input", "content" => "<input>#{user_input}</input>" }
     end
   end
 

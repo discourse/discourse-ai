@@ -2,7 +2,7 @@
 
 class AddProviderToCompletionPrompts < ActiveRecord::Migration[7.0]
   def up
-    remove_index :completion_prompts, name: 'index_completion_prompts_on_name'
+    remove_index :completion_prompts, name: "index_completion_prompts_on_name"
     add_column :completion_prompts, :provider, :text
     add_index :completion_prompts, %i[name], unique: false
 
@@ -16,7 +16,7 @@ class AddProviderToCompletionPrompts < ActiveRecord::Migration[7.0]
 
   def down
     remove_column :completion_prompts, :provider
-    remove_index :completion_prompts, name: 'index_completion_prompts_on_name'
+    remove_index :completion_prompts, name: "index_completion_prompts_on_name"
     add_index :completion_prompts, %i[name], unique: true
   end
 end

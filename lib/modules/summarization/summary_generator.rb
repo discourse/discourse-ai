@@ -73,8 +73,8 @@ module DiscourseAi
       end
 
       def anthropic_summarization(content)
-        messages = "Human: 
-          Summarize the following article that is inside <input> tags.
+        messages =
+          "Human: Summarize the following article that is inside <input> tags.
           Plese include only the summary inside <ai> tags.
 
           <input>##{content}</input>
@@ -83,7 +83,8 @@ module DiscourseAi
           Assistant:
         "
 
-        response = ::DiscourseAi::Inference::AnthropicCompletions.perform!(messages).dig(:completion)
+        response =
+          ::DiscourseAi::Inference::AnthropicCompletions.perform!(messages).dig(:completion)
 
         Nokogiri::HTML5.fragment(response).at("ai").text
       end
