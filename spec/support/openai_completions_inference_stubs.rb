@@ -6,7 +6,6 @@ class OpenAiCompletionsInferenceStubs
   GENERATE_TITLES = "generate_titles"
 
   class << self
-
     def text_mode_to_id(mode)
       case mode
       when TRANSLATE
@@ -15,7 +14,7 @@ class OpenAiCompletionsInferenceStubs
         -3
       when GENERATE_TITLES
         -2
-      end 
+      end
     end
 
     def spanish_text
