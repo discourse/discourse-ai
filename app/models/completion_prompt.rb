@@ -39,9 +39,10 @@ end
 #  enabled         :boolean          default(TRUE), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  messages        :jsonb            not null
+#  messages        :jsonb
+#  provider        :text
 #
 # Indexes
 #
-#  index_completion_prompts_on_name  (name) UNIQUE
+#  index_completion_prompts_on_name  (name)
 #

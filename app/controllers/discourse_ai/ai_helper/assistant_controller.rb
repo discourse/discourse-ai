@@ -32,7 +32,8 @@ module DiscourseAi
                    ),
                  status: 200
         end
-      rescue CompletionFailed
+      rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
+             ::DiscourseAi::Inference::AnthropicCompletions::CompletionFailed => e
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end

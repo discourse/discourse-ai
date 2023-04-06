@@ -5,7 +5,7 @@ require_relative "../../support/openai_completions_inference_stubs"
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
   describe "#suggest" do
     let(:text) { OpenAiCompletionsInferenceStubs.translated_response }
-    let(:mode) { "proofread" }
+    let(:mode) { "-3" }
 
     context "when not logged in" do
       it "returns a 403 response" do
@@ -64,7 +64,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       end
 
       it "returns a suggestion" do
-        OpenAiCompletionsInferenceStubs.stub_prompt(mode)
+        OpenAiCompletionsInferenceStubs.stub_prompt("proofread")
 
         post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text }
 
