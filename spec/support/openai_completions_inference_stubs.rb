@@ -6,6 +6,17 @@ class OpenAiCompletionsInferenceStubs
   GENERATE_TITLES = "generate_titles"
 
   class << self
+    def text_mode_to_id(mode)
+      case mode
+      when TRANSLATE
+        -1
+      when PROOFREAD
+        -3
+      when GENERATE_TITLES
+        -2
+      end
+    end
+
     def spanish_text
       <<~STRING
         Para que su horror sea perfecto, César, acosado al pie de la estatua por lo impacientes puñales de sus amigos, 
@@ -83,7 +94,7 @@ class OpenAiCompletionsInferenceStubs
     end
 
     def stub_prompt(type)
-      prompt_builder = DiscourseAi::AiHelper::OpenAiPrompt.new
+      prompt_builder = DiscourseAi::AiHelper::LlmPrompt.new
       text = type == TRANSLATE ? spanish_text : translated_response
 
       prompt_messages = CompletionPrompt.find_by(name: type).messages_with_user_input(text)

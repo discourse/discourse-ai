@@ -18,7 +18,16 @@ module DiscourseAi
       attr_reader :target
 
       def summarization_provider
-        model.starts_with?("gpt") ? "openai" : "discourse"
+        case model
+        in "gpt-3.5-turbo"
+          "openai"
+        in "gpt-4"
+          "openai"
+        in "claude-v1"
+          "anthropic"
+        else
+          "discourse"
+        end
       end
 
       def get_content(content_since)
@@ -61,6 +70,23 @@ module DiscourseAi
           :message,
           :content,
         )
+      end
+
+      def anthropic_summarization(content)
+        messages =
+          "Human: Summarize the following article that is inside <input> tags.
+          Plese include only the summary inside <ai> tags.
+
+          <input>##{content}</input>
+
+
+          Assistant:
+        "
+
+        response =
+          ::DiscourseAi::Inference::AnthropicCompletions.perform!(messages).dig(:completion)
+
+        Nokogiri::HTML5.fragment(response).at("ai").text
       end
 
       def model

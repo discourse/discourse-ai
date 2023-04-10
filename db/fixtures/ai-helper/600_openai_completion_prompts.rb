@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 CompletionPrompt.seed do |cp|
   cp.id = -1
+  cp.provider = "openai"
   cp.name = "translate"
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
   cp.messages = [{ role: "system", content: <<~TEXT }]
@@ -15,6 +16,7 @@ end
 
 CompletionPrompt.seed do |cp|
   cp.id = -2
+  cp.provider = "openai"
   cp.name = "generate_titles"
   cp.prompt_type = CompletionPrompt.prompt_types[:list]
   cp.messages = [{ role: "system", content: <<~TEXT }]
@@ -27,6 +29,7 @@ end
 
 CompletionPrompt.seed do |cp|
   cp.id = -3
+  cp.provider = "openai"
   cp.name = "proofread"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
   cp.messages = [
@@ -83,6 +86,7 @@ end
 
 CompletionPrompt.seed do |cp|
   cp.id = -4
+  cp.provider = "openai"
   cp.name = "markdown_table"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
   cp.messages = [
