@@ -100,7 +100,7 @@ module DiscourseAi
           if suggestions.length > 1
             suggestions
           else
-            suggestions.split("\n").map(&:strip)
+            suggestions.first.split("\n").map(&:strip)
           end
         else
           [Nokogiri::HTML5.fragment(content).at("ai").text]
