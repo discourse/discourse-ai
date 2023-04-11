@@ -11,7 +11,7 @@ DiscourseAi::Engine.routes.draw do
   end
 
   scope module: :summarization, path: "/summarization", defaults: { format: :json } do
-    post "chat-channel" => "summary#chat_channel"
+    post "summary" => "summary#show"
   end
 end
 

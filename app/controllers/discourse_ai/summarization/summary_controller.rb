@@ -7,18 +7,27 @@ module DiscourseAi
       requires_login
 
       VALID_SINCE_VALUES = [1, 3, 6, 12, 24]
+      VALID_TARGETS = %w[chat_channel topic]
 
-      def chat_channel
-        since = params[:since].to_i
+      def show
+        raise PluginDisabled unless SiteSetting.ai_summarization_enabled
+        target_type = params[:target_type]
 
-        raise Discourse::InvalidParameters.new(:since) if !VALID_SINCE_VALUES.include?(since)
-        chat_channel = Chat::Channel.find_by(id: params[:chat_channel_id])
-        raise Discourse::NotFound.new(:chat_channel) if !chat_channel
+        raise Discourse::InvalidParameters.new(:target_type) if !VALID_TARGETS.include?(target_type)
 
-        if !(SiteSetting.discourse_ai_enabled && SiteSetting.ai_summarization_enabled)
-          raise PluginDisabled
+        since = nil
+
+        if target_type == "chat_channel"
+          since = params[:since].to_i
+          raise Discourse::InvalidParameters.new(:since) if !VALID_SINCE_VALUES.include?(since)
+          target = Chat::Channel.find_by(id: params[:target_id])
+          raise Discourse::NotFound.new(:chat_channel) if !target
+          raise Discourse::InvalidAccess if !guardian.can_join_chat_channel?(target)
+        else
+          target = Topic.find_by(id: params[:target_id])
+          raise Discourse::NotFound.new(:topic) if !target
+          raise Discourse::InvalidAccess if !guardian.can_see_topic?(target)
         end
-        raise Discourse::InvalidAccess if !guardian.can_join_chat_channel?(chat_channel)
 
         RateLimiter.new(
           current_user,
@@ -28,7 +37,8 @@ module DiscourseAi
         ).performed!
 
         hijack do
-          summary = DiscourseAi::Summarization::SummaryGenerator.new(chat_channel).summarize!(since)
+          summary =
+            DiscourseAi::Summarization::SummaryGenerator.new(target, current_user).summarize!(since)
 
           render json: { summary: summary }, status: 200
         end

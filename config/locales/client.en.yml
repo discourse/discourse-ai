@@ -20,7 +20,10 @@ en:
       summarization:
         title: "Summarize using AI"
         description: "Select an option below to summarize the conversation sent during the desired timeframe."
-        since: "Last %{hours} hours"
+        summarize: "Summarize"
+        since:
+          one: "Last hour" 
+          other: "Last %{count} hours"
     review:
       types:
         reviewable_ai_post:

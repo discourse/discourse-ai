@@ -18,8 +18,10 @@ function initializeChatChannelSummary(api) {
 
       @action
       showChannelSummary() {
-        showModal("composer-chat-channel-summary").setProperties({
-          chatChannel: this.chatChannel,
+        showModal("ai-summary").setProperties({
+          targetId: this.chatChannel.id,
+          targetType: "chat_channel",
+          allowTimeframe: true,
         });
       },
     });

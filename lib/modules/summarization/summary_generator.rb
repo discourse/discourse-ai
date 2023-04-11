@@ -3,19 +3,20 @@
 module DiscourseAi
   module Summarization
     class SummaryGenerator
-      def initialize(target)
+      def initialize(target, user)
         @target = target
+        @user = user
       end
 
       def summarize!(content_since)
         content = get_content(content_since)
 
-        send("#{summarization_provider}_summarization", content)
+        send("#{summarization_provider}_summarization", content[0..(max_length - 1)])
       end
 
       private
 
-      attr_reader :target
+      attr_reader :target, :user
 
       def summarization_provider
         case model
@@ -35,7 +36,20 @@ module DiscourseAi
         in Post
           target.raw
         in Topic
-          target.posts.order(:post_number).pluck(:raw).join("\n")
+          TopicView
+            .new(
+              target,
+              user,
+              {
+                filter: "summary",
+                exclude_deleted_users: true,
+                exclude_hidden: true,
+                show_deleted: false,
+              },
+            )
+            .posts
+            .pluck(:raw)
+            .join("\n")
         in ::Chat::Channel
           target
             .chat_messages
@@ -46,7 +60,7 @@ module DiscourseAi
             .map { "#{_1}: #{_2}" }
             .join("\n")
         else
-          raise "Invalid target to classify"
+          raise "Can't find content to summarize"
         end
       end
 
@@ -91,6 +105,18 @@ module DiscourseAi
 
       def model
         SiteSetting.ai_summarization_model
+      end
+
+      def max_length
+        lengths = {
+          "bart-large-cnn-samsum" => 8192,
+          "flan-t5-base-samsum" => 8192,
+          "long-t5-tglobal-base-16384-book-summary" => 8192,
+          "gpt-3.5-turbo" => 8192,
+          "gpt-4" => 8192,
+        }
+
+        lengths[model]
       end
     end
   end
