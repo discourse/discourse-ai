@@ -23,7 +23,7 @@ module ::DiscourseAi
           "Content-Type": "application/json",
           Authorization: "Bearer #{SiteSetting.ai_openai_api_key}",
         }
-        payload = { model: SiteSetting.blog_open_ai_model, messages: messages }
+        payload = { model: model, messages: messages }
 
         payload[:temperature] = temperature if temperature
         payload[:top_p] = top_p if top_p
