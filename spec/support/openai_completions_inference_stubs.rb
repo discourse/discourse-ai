@@ -19,13 +19,13 @@ class OpenAiCompletionsInferenceStubs
 
     def spanish_text
       <<~STRING
-        Para que su horror sea perfecto, César, acosado al pie de la estatua por lo impacientes puñales de sus amigos, 
+        Para que su horror sea perfecto, César, acosado al pie de la estatua por lo impacientes puñales de sus amigos,
         descubre entre las caras y los aceros la de Marco Bruto, su protegido, acaso su hijo,
         y ya no se defiende y exclama: ¡Tú también, hijo mío! Shakespeare y Quevedo recogen el patético grito.
-          
-        Al destino le agradan las repeticiones, las variantes, las simetrías; diecinueve siglos después, 
-        en el sur de la provincia de Buenos Aires, un gaucho es agredido por otros gauchos y, al caer, 
-        reconoce a un ahijado suyo y le dice con mansa reconvención y lenta sorpresa (estas palabras hay que oírlas, no leerlas): 
+
+        Al destino le agradan las repeticiones, las variantes, las simetrías; diecinueve siglos después,
+        en el sur de la provincia de Buenos Aires, un gaucho es agredido por otros gauchos y, al caer,
+        reconoce a un ahijado suyo y le dice con mansa reconvención y lenta sorpresa (estas palabras hay que oírlas, no leerlas):
         ¡Pero, che! Lo matan y no sabe que muere para que se repita una escena.
       STRING
     end
@@ -59,7 +59,7 @@ class OpenAiCompletionsInferenceStubs
         where someone is betrayed by a close friend or protege, uttering a similar phrase of surprise and disappointment
         before their untimely death. The first example refers to Julius Caesar, who upon realizing that one of his own
         friends and proteges, Marcus Brutus, is among his assassins, exclaims \"You too, my son!\" The second example
-        is of a gaucho in Buenos Aires, who recognizes his godson among his attackers and utters the words of rebuke 
+        is of a gaucho in Buenos Aires, who recognizes his godson among his attackers and utters the words of rebuke
         and surprise, \"But, my friend!\" before he is killed. The author suggests that these tragedies occur so that
         a scene may be repeated, emphasizing the cyclical nature of history and the inevitability of certain events."
       STRING
@@ -94,7 +94,6 @@ class OpenAiCompletionsInferenceStubs
     end
 
     def stub_prompt(type)
-      prompt_builder = DiscourseAi::AiHelper::LlmPrompt.new
       text = type == TRANSLATE ? spanish_text : translated_response
 
       prompt_messages = CompletionPrompt.find_by(name: type).messages_with_user_input(text)
