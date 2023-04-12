@@ -45,7 +45,7 @@ module ::DiscourseAi
 
           if response.code.to_i != 200
             Rails.logger.error(
-              "OpenAiCompletions: status: #{response.status} - body: #{response.body}",
+              "OpenAiCompletions: status: #{response.code.to_i} - body: #{response.body}",
             )
             raise CompletionFailed
           end
