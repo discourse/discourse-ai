@@ -3,7 +3,8 @@
 module DiscourseAi
   class Tokenizer
     def self.tokenizer
-      @@tokenizer ||= Tokenizers.from_file("./plugins/discourse-ai/tokenizers/bert-base-uncased.json")
+      @@tokenizer ||=
+        Tokenizers.from_file("./plugins/discourse-ai/tokenizers/bert-base-uncased.json")
     end
 
     def self.size(text)
