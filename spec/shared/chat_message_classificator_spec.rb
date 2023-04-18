@@ -15,7 +15,8 @@ describe DiscourseAi::ChatMessageClassificator do
     it "stores the model classification data" do
       classification.classify!(chat_message)
 
-      result = ClassificationResult.find_by(target_id: chat_message.id, classification_type: model.type)
+      result =
+        ClassificationResult.find_by(target_id: chat_message.id, classification_type: model.type)
 
       classification = result.classification.symbolize_keys
 
