@@ -1,0 +1,32 @@
+<DModalBody @title="discourse_ai.summarization.title">
+  {{#if @allowTimeframe}}
+    <span>{{i18n "discourse_ai.summarization.description"}}</span>
+    <ComboBox
+      @value={{this.sinceHours}}
+      @content={{this.sinceOptions}}
+      @onChange={{action this.summarize}}
+      @valueProperty="value"
+      @class="summarization-since"
+    />
+  {{/if}}
+
+  <div class="channel-summary">
+    <ConditionalLoadingSpinner @condition={{this.loading}} />
+
+    {{#unless this.loading}}
+      <Textarea @value={{this.summary}} disabled="true" class="summary-area" />
+    {{/unless}}
+  </div>
+
+</DModalBody>
+
+<div class="modal-footer">
+  {{#unless @allowTimeframe}}
+    <DButton
+      @class="btn-primary create"
+      @action={{this.summarize}}
+      @label="discourse_ai.summarization.summarize"
+    />
+  {{/unless}}
+  <DModalCancel @close={{route-action "closeModal"}} />
+</div>
