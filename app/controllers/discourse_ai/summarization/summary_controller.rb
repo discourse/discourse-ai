@@ -6,7 +6,7 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_login
 
-      VALID_SINCE_VALUES = [1, 3, 6, 12, 24]
+      VALID_SINCE_VALUES = [1, 3, 6, 12, 24, 72, 168]
       VALID_TARGETS = %w[chat_channel topic]
 
       def show

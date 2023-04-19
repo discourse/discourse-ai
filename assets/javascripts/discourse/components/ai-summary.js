@@ -31,6 +31,14 @@ export default class AiSummary extends Component {
       name: I18n.t("discourse_ai.summarization.since", { count: 24 }),
       value: 24,
     },
+    {
+      name: I18n.t("discourse_ai.summarization.since", { count: 72 }),
+      value: 72,
+    },
+    {
+      name: I18n.t("discourse_ai.summarization.since", { count: 168 }),
+      value: 168,
+    },
   ];
 
   get canSummarize() {

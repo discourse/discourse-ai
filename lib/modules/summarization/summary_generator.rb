@@ -114,6 +114,7 @@ module DiscourseAi
           "long-t5-tglobal-base-16384-book-summary" => 8192,
           "gpt-3.5-turbo" => 8192,
           "gpt-4" => 8192,
+          "claude-v1" => 8192,
         }
 
         lengths[model]
