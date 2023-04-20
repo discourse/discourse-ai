@@ -40,7 +40,7 @@ function initializeComposerAIHelper(api) {
       id: "ai-helper",
       title: "discourse_ai.ai_helper.title",
       group: "extras",
-      icon: "magic",
+      icon: "discourse-sparkles",
       className: "composer-ai-helper",
       sendAction: () => toolbar.context.send("openAIHelper"),
     });

@@ -8,7 +8,7 @@ function initializeChatChannelSummary(api) {
     api.registerChatComposerButton?.({
       translatedLabel: "discourse_ai.summarization.title",
       id: "chat_channel_summary",
-      icon: "magic",
+      icon: "discourse-sparkles",
       action: "showChannelSummary",
       position: "dropdown",
     });
