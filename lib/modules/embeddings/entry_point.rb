@@ -34,17 +34,16 @@ module DiscourseAi
         end
 
         %i[topic_view TopicViewPosts].each do |serializer|
-          plugin.add_to_serializer(serializer, :related_topics) do
+          plugin.add_to_serializer(
+            serializer,
+            :related_topics,
+            include_condition: -> { SiteSetting.ai_embeddings_semantic_related_topics_enabled },
+          ) do
             if object.next_page.nil? && !object.topic.private_message?
               object.related_topics.map do |t|
                 SuggestedTopicSerializer.new(t, scope: scope, root: false)
               end
             end
-          end
-
-          # custom include method so we also check on semantic search
-          plugin.add_to_serializer(serializer, :include_related_topics?) do
-            plugin.enabled? && SiteSetting.ai_embeddings_semantic_related_topics_enabled
           end
         end
 
