@@ -18,6 +18,8 @@ describe DiscourseAi::Inference::OpenAiCompletions do
       },
     ).to_return(status: 200, body: body, headers: {})
 
+    user_id = 183
+
     prompt = [role: "user", content: "write 3 words"]
     completions =
       DiscourseAi::Inference::OpenAiCompletions.perform!(
@@ -26,10 +28,24 @@ describe DiscourseAi::Inference::OpenAiCompletions do
         temperature: 0.5,
         top_p: 0.8,
         max_tokens: 700,
+        user_id: user_id,
       )
     expect(completions[:choices][0][:message][:content]).to eq(
       "1. Serenity\n2. Laughter\n3. Adventure",
     )
+
+    expect(AiApiAuditLog.count).to eq(1)
+    log = AiApiAuditLog.first
+
+    request_body = (<<~JSON).strip
+      {"model":"gpt-3.5-turbo","messages":[{"role":"user","content":"write 3 words"}],"temperature":0.5,"top_p":0.8,"max_tokens":700}
+    JSON
+
+    expect(log.provider_id).to eq(AiApiAuditLog::Provider::OpenAI)
+    expect(log.request_tokens).to eq(12)
+    expect(log.response_tokens).to eq(13)
+    expect(log.raw_request_payload).to eq(request_body)
+    expect(log.raw_response_payload).to eq(body)
   end
 
   it "raises an error if attempting to stream without a block" do
@@ -88,5 +104,18 @@ describe DiscourseAi::Inference::OpenAiCompletions do
     end
 
     expect(content).to eq("Mountain Tree ")
+
+    expect(AiApiAuditLog.count).to eq(1)
+    log = AiApiAuditLog.first
+
+    request_body = (<<~JSON).strip
+      {"model":"gpt-3.5-turbo","messages":[{"role":"user","content":"write 3 words"}],"stream":true}
+    JSON
+
+    expect(log.provider_id).to eq(AiApiAuditLog::Provider::OpenAI)
+    expect(log.request_tokens).to eq(5)
+    expect(log.response_tokens).to eq(4)
+    expect(log.raw_request_payload).to eq(request_body)
+    expect(log.raw_response_payload).to eq(payload)
   end
 end
