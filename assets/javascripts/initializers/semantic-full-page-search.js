@@ -50,11 +50,10 @@ function initializeSemanticSearch(api) {
 }
 
 export default {
-  name: "discourse_ai-full-page-semantic-search",
+  name: "discourse-ai-full-page-semantic-search",
 
   initialize(container) {
-    const settings = container.lookup("site-settings:main");
-
+    const settings = container.lookup("service:site-settings");
     const semanticSearch = settings.ai_embeddings_semantic_search_enabled;
 
     if (settings.ai_embeddings_enabled && semanticSearch) {
