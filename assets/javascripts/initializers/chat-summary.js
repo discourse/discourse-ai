@@ -29,11 +29,10 @@ function initializeChatChannelSummary(api) {
 }
 
 export default {
-  name: "discourse_ai-chat_channel_summary",
+  name: "discourse-ai-chat-channel-summary",
 
   initialize(container) {
-    const settings = container.lookup("site-settings:main");
-
+    const settings = container.lookup("service:site-settings");
     const summarizationEnabled =
       settings.discourse_ai_enabled && settings.ai_summarization_enabled;
 

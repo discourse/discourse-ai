@@ -3,6 +3,8 @@ import showModal from "discourse/lib/show-modal";
 
 function initializeTopicSummary(api) {
   api.modifyClass("component:scrolling-post-stream", {
+    pluginId: "discourse-ai",
+
     showAiSummary() {
       showModal("ai-summary").setProperties({
         targetId: this.posts["posts"][0].topic_id,
@@ -28,11 +30,10 @@ function initializeTopicSummary(api) {
 }
 
 export default {
-  name: "discourse_ai-topic_summary",
+  name: "discourse-ai-topic-summary",
 
   initialize(container) {
-    const settings = container.lookup("site-settings:main");
-
+    const settings = container.lookup("service:site-settings");
     const summarizationEnabled =
       settings.discourse_ai_enabled && settings.ai_summarization_enabled;
 

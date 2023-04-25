@@ -3,6 +3,8 @@ import showModal from "discourse/lib/show-modal";
 
 function initializeComposerAIHelper(api) {
   api.modifyClass("component:composer-editor", {
+    pluginId: "discourse-ai",
+
     actions: {
       extraButtons(toolbar) {
         this._super(toolbar);
@@ -48,20 +50,20 @@ function initializeComposerAIHelper(api) {
 }
 
 export default {
-  name: "discourse_ai-composer-helper",
+  name: "discourse-ai-composer-helper",
 
   initialize(container) {
-    const settings = container.lookup("site-settings:main");
+    const settings = container.lookup("service:site-settings");
     const user = container.lookup("service:current-user");
-
     const helperEnabled =
       settings.discourse_ai_enabled && settings.composer_ai_helper_enabled;
 
     const allowedGroups = settings.ai_helper_allowed_groups
       .split("|")
       .map(parseInt);
-    let canUseAssistant =
-      user && user.groups.some((g) => allowedGroups.includes(g.id));
+    const canUseAssistant = user?.groups.some((g) =>
+      allowedGroups.includes(g.id)
+    );
 
     if (helperEnabled && canUseAssistant) {
       withPluginApi("1.6.0", initializeComposerAIHelper);
