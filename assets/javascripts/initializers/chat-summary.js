@@ -19,7 +19,7 @@ function initializeChatChannelSummary(api) {
       @action
       showChannelSummary() {
         showModal("ai-summary").setProperties({
-          targetId: this.chatChannel.id,
+          targetId: this.args.channel.id,
           targetType: "chat_channel",
           allowTimeframe: true,
         });
