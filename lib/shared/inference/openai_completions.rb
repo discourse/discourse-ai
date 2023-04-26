@@ -14,6 +14,7 @@ module ::DiscourseAi
         top_p: nil,
         max_tokens: nil,
         stream: false,
+        user_id: nil,
         &blk
       )
         raise ArgumentError, "block must be supplied in streaming mode" if stream && !blk
@@ -39,7 +40,8 @@ module ::DiscourseAi
           write_timeout: TIMEOUT,
         ) do |http|
           request = Net::HTTP::Post.new(url, headers)
-          request.body = payload.to_json
+          request_body = payload.to_json
+          request.body = request_body
 
           response = http.request(request)
 
@@ -50,23 +52,43 @@ module ::DiscourseAi
             raise CompletionFailed
           end
 
+          log =
+            AiApiAuditLog.create!(
+              provider_id: AiApiAuditLog::Provider::OpenAI,
+              raw_request_payload: request_body,
+              user_id: user_id,
+            )
+
           if stream
-            stream(http, response, &blk)
+            stream(http, response, messages, log, &blk)
           else
-            JSON.parse(response.read_body, symbolize_names: true)
+            response_body = response.body
+            parsed = JSON.parse(response_body, symbolize_names: true)
+
+            log.update!(
+              raw_response_payload: response_body,
+              request_tokens: parsed.dig(:usage, :prompt_tokens),
+              response_tokens: parsed.dig(:usage, :completion_tokens),
+            )
+            parsed
           end
         end
       end
 
-      def self.stream(http, response)
+      def self.stream(http, response, messages, log)
         cancelled = false
         cancel = lambda { cancelled = true }
+
+        response_data = +""
+        response_raw = +""
 
         response.read_body do |chunk|
           if cancelled
             http.finish
             break
           end
+
+          response_raw << chunk
 
           chunk
             .split("\n")
@@ -75,7 +97,15 @@ module ::DiscourseAi
 
               next if data == "[DONE]"
 
-              yield JSON.parse(data, symbolize_names: true), cancel if data
+              if data
+                json = JSON.parse(data, symbolize_names: true)
+                choices = json[:choices]
+                if choices && choices[0]
+                  delta = choices[0].dig(:delta, :content)
+                  response_data << delta if delta
+                end
+                yield json, cancel
+              end
 
               if cancelled
                 http.finish
@@ -85,6 +115,16 @@ module ::DiscourseAi
         end
       rescue IOError
         raise if !cancelled
+      ensure
+        log.update!(
+          raw_response_payload: response_raw,
+          request_tokens: DiscourseAi::Tokenizer.size(extract_prompt(messages)),
+          response_tokens: DiscourseAi::Tokenizer.size(response_data),
+        )
+      end
+
+      def self.extract_prompt(messages)
+        messages.map { |message| message[:content] || message["content"] || "" }.join("\n")
       end
     end
   end
