@@ -65,7 +65,11 @@ module DiscourseAi
       end
 
       def content_of(target_to_classify)
-        target_to_classify.uploads.to_a.select { |u| FileHelper.is_supported_image?(u.url) }
+        target_to_classify
+          .uploads
+          .where(extension: %w[png jpeg jpg])
+          .to_a
+          .select { |u| FileHelper.is_supported_image?(u.url) }
       end
 
       def opennsfw2_verdict?(clasification)
