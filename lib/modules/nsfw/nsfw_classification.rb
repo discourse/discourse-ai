@@ -67,7 +67,7 @@ module DiscourseAi
       def content_of(target_to_classify)
         target_to_classify
           .uploads
-          .where(extension: %w[png jpeg jpg])
+          .where(extension: %w[png jpeg jpg PNG JPEG JPG])
           .to_a
           .select { |u| FileHelper.is_supported_image?(u.url) }
       end
