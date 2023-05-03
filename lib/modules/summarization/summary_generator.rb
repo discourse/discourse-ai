@@ -69,7 +69,7 @@ module DiscourseAi
           "#{SiteSetting.ai_summarization_discourse_service_api_endpoint}/api/v1/classify",
           model,
           content,
-          SiteSetting.ai_sentiment_inference_service_api_key,
+          SiteSetting.ai_summarization_discourse_service_api_key,
         ).dig(:summary_text)
       end
 
