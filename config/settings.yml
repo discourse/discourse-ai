@@ -18,7 +18,7 @@ plugins:
       - multilingual
       - original
   ai_toxicity_flag_automatically:
-    default: true
+    default: false
     client: false
   ai_toxicity_flag_threshold_toxicity:
     default: 80
