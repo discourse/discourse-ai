@@ -56,6 +56,10 @@ en:
     ai_summarization_model: "Model to use for summarization."
     ai_summarization_rate_limit_minutes: "Minutes to elapse after the summarization limit is reached (6 requests)."
 
+    ai_bot_enabled: "Enable the AI Bot module."
+    ai_bot_allowed_groups: "When the GPT Bot has access to the PM, it will reply to members of these groups."
+
+
   reviewables:
       reasons:
         flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.

@@ -8,7 +8,7 @@ module DiscourseAi
 
       def inject_into(plugin)
         plugin.register_seedfu_fixtures(
-          Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai-helper"),
+          Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_helper"),
         )
         plugin.register_svg_icon("discourse-sparkles")
       end

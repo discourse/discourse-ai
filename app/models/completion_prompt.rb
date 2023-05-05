@@ -4,10 +4,42 @@ class CompletionPrompt < ActiveRecord::Base
   # TODO(roman): Remove sept 2023.
   self.ignored_columns = ["value"]
 
+  MAX_PROMPT_LENGTH = 3000
+
   enum :prompt_type, { text: 0, list: 1, diff: 2 }
 
   validates :messages, length: { maximum: 20 }
   validate :each_message_length
+
+  def self.bot_prompt_with_topic_context(post)
+    messages = []
+    conversation =
+      post
+        .topic
+        .posts
+        .includes(:user)
+        .where("post_number <= ?", post.post_number)
+        .order("post_number desc")
+        .pluck(:raw, :username)
+
+    total_prompt_length = 0
+    messages =
+      conversation.reduce([]) do |memo, (raw, username)|
+        total_prompt_length += raw.length
+        break(memo) if total_prompt_length > MAX_PROMPT_LENGTH
+        role = username == Discourse.gpt_bot.username ? "system" : "user"
+
+        memo.unshift({ role: role, content: raw })
+      end
+
+    messages.unshift({ role: "system", content: <<~TEXT })
+      You are gpt-bot. You answer questions and generate text.
+      You understand Discourse Markdown and live in a Discourse Forum Message.
+      You are provided you with context of previous discussions.
+    TEXT
+
+    messages
+  end
 
   def messages_with_user_input(user_input)
     if ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider == "openai"
