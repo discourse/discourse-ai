@@ -24,6 +24,11 @@ en:
         since:
           one: "Last hour" 
           other: "Last %{count} hours"
+
+      ai_bot:
+        cancel_streaming: Stop reply
+
+
     review:
       types:
         reviewable_ai_post:

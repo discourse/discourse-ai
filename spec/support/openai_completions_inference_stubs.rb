@@ -98,10 +98,38 @@ class OpenAiCompletionsInferenceStubs
 
       prompt_messages = CompletionPrompt.find_by(name: type).messages_with_user_input(text)
 
+      stub_response(prompt_messages, response_text_for(type))
+    end
+
+    def stub_response(messages, response_text, req_opts: {})
       WebMock
         .stub_request(:post, "https://api.openai.com/v1/chat/completions")
-        .with(body: { model: "gpt-3.5-turbo", messages: prompt_messages }.to_json)
-        .to_return(status: 200, body: JSON.dump(response(response_text_for(type))))
+        .with(body: { model: "gpt-3.5-turbo", messages: messages }.merge(req_opts).to_json)
+        .to_return(status: 200, body: JSON.dump(response(response_text)))
+    end
+
+    def stream_line(finish_reason: nil, delta: {})
+      +"data: " << {
+        id: "chatcmpl-#{SecureRandom.hex}",
+        object: "chat.completion.chunk",
+        created: 1_681_283_881,
+        model: "gpt-3.5-turbo-0301",
+        choices: [{ delta: delta }],
+        finish_reason: finish_reason,
+        index: 0,
+      }.to_json
+    end
+
+    def stub_streamed_response(messages, deltas, req_opts: {})
+      chunks = deltas.map { |d| stream_line(delta: d) }
+      chunks << stream_line(finish_reason: "stop")
+      chunks << "[DONE]"
+      chunks = chunks.join("\n\n")
+
+      WebMock
+        .stub_request(:post, "https://api.openai.com/v1/chat/completions")
+        .with(body: { model: "gpt-3.5-turbo", messages: messages }.merge(req_opts).to_json)
+        .to_return(status: 200, body: chunks)
     end
   end
 end
