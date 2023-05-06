@@ -39,6 +39,19 @@ RSpec.describe CompletionPrompt do
       end
     end
 
+    context "when prompt gets very long" do
+      fab!(:post_1) { Fabricate(:post, topic: topic, raw: "test " * 6000, post_number: 1) }
+
+      it "trims the prompt" do
+        prompt_messages = described_class.bot_prompt_with_topic_context(post_1)
+
+        expect(prompt_messages[0][:role]).to eq("system")
+        expect(prompt_messages[1][:role]).to eq("user")
+        expected_length = ("test " * (CompletionPrompt::MAX_PROMPT_TOKENS)).length
+        expect(prompt_messages[1][:content].length).to eq(expected_length)
+      end
+    end
+
     context "when the topic has multiple posts" do
       fab!(:post_1) { Fabricate(:post, topic: topic, raw: post_body(1), post_number: 1) }
       fab!(:post_2) do
