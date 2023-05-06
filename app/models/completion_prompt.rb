@@ -4,7 +4,8 @@ class CompletionPrompt < ActiveRecord::Base
   # TODO(roman): Remove sept 2023.
   self.ignored_columns = ["value"]
 
-  MAX_PROMPT_LENGTH = 3000
+  # GPT 3.5 allows 4000 tokens
+  MAX_PROMPT_TOKENS = 3500
 
   enum :prompt_type, { text: 0, list: 1, diff: 2 }
 
@@ -22,11 +23,19 @@ class CompletionPrompt < ActiveRecord::Base
         .order("post_number desc")
         .pluck(:raw, :username)
 
-    total_prompt_length = 0
+    total_prompt_tokens = 0
     messages =
       conversation.reduce([]) do |memo, (raw, username)|
-        total_prompt_length += raw.length
-        break(memo) if total_prompt_length > MAX_PROMPT_LENGTH
+        break(memo) if total_prompt_tokens >= MAX_PROMPT_TOKENS
+
+        tokens = DiscourseAi::Tokenizer.tokenize(raw)
+
+        if tokens.length + total_prompt_tokens > MAX_PROMPT_TOKENS
+          tokens = tokens[0...(MAX_PROMPT_TOKENS - total_prompt_tokens)]
+          raw = tokens.join(" ")
+        end
+
+        total_prompt_tokens += tokens.length
         role = username == Discourse.gpt_bot.username ? "system" : "user"
 
         memo.unshift({ role: role, content: raw })

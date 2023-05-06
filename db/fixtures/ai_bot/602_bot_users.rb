@@ -10,8 +10,7 @@ end
 User.seed do |u|
   u.id = -110
   u.name = "GPT Bot"
-  u.username = "gpt_bot"
-  u.username_lower = "gpt_bot"
+  u.username = UserNameSuggester.suggest("gpt_bot")
   u.password = SecureRandom.hex
   u.active = true
   u.admin = true
