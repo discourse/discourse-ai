@@ -34,13 +34,16 @@ module DiscourseAi
           return ::Topic.none
         end
 
-        # array_position forces the order of the topics to be preserved
-        ::Topic
-          .visible
-          .listable_topics
-          .secured
+        topic_list = ::Topic.visible.listable_topics.secured
+
+        unless SiteSetting.ai_embeddings_semantic_related_include_closed_topics
+          topic_list = topic_list.where(closed: false)
+        end
+
+        topic_list
           .where("id <> ?", topic.id)
           .where(id: candidate_ids)
+          # array_position forces the order of the topics to be preserved
           .order("array_position(ARRAY#{candidate_ids}, id)")
           .limit(SiteSetting.ai_embeddings_semantic_related_topics)
       end
