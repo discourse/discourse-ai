@@ -33,7 +33,7 @@ module DiscourseAi
                 topic_id = :topic_id
               LIMIT 1
             )
-          LIMIT 11
+          LIMIT 100
         SQL
 
         # Happens when the topic doesn't have any embeddings
