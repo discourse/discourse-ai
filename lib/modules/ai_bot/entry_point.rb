@@ -3,10 +3,20 @@
 module DiscourseAi
   module AiBot
     class EntryPoint
-      AI_BOT_ID = -110
+      GPT4_ID = -110
+      GPT3_5_TURBO_ID = -111
+      CLAUDE_V1_ID = -112
+      BOTS = [
+        [GPT4_ID, "gpt4_bot"],
+        [GPT3_5_TURBO_ID, "gpt3.5_bot"],
+        [CLAUDE_V1_ID, "claude_v1_bot"],
+      ]
 
       def load_files
         require_relative "jobs/regular/create_ai_reply"
+        require_relative "bot"
+        require_relative "anthropic_bot"
+        require_relative "open_ai_bot"
       end
 
       def inject_into(plugin)
@@ -14,21 +24,15 @@ module DiscourseAi
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_bot"),
         )
 
-        plugin.add_class_method(Discourse, :gpt_bot) do
-          @ai_bots ||= {}
-          current_db = RailsMultisite::ConnectionManagement.current_db
-          @ai_bots[current_db] ||= User.find(AI_BOT_ID)
-        end
-
         plugin.on(:post_created) do |post|
-          if post.topic.private_message? && post.user_id != AI_BOT_ID &&
-               post.topic.topic_allowed_users.exists?(user_id: Discourse.gpt_bot.id)
-            in_allowed_group =
-              SiteSetting.ai_bot_allowed_groups_map.any? do |group_id|
-                post.user.group_ids.include?(group_id)
-              end
+          bot_ids = BOTS.map(&:first)
 
-            Jobs.enqueue(:create_ai_reply, post_id: post.id) if in_allowed_group
+          if post.topic.private_message? && !bot_ids.include?(post.user_id)
+            if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).present?
+              bot_id = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user_id
+
+              Jobs.enqueue(:create_ai_reply, post_id: post.id, bot_user_id: bot_id) if bot_id
+            end
           end
         end
       end

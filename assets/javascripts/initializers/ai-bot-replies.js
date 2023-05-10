@@ -5,7 +5,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import loadScript from "discourse/lib/load-script";
 
 function isGPTBot(user) {
-  return user && user.id === -110;
+  return user && [-110, -111, -112].includes(user.id);
 }
 
 function initializeAIBotReplies(api) {
@@ -74,7 +74,7 @@ function initializeAIBotReplies(api) {
       if (
         this.model.isPrivateMessage &&
         this.model.details.allowed_users &&
-        this.model.details.allowed_users.filter(isGPTBot).length === 1
+        this.model.details.allowed_users.filter(isGPTBot).length >= 1
       ) {
         this.messageBus.subscribe(
           `discourse-ai/ai-bot/topic/${this.model.id}`,
@@ -83,7 +83,7 @@ function initializeAIBotReplies(api) {
       }
     },
     unsubscribe: function () {
-      this.messageBus.unsubscribe("discourse-ai/ai-bot/topic/");
+      this.messageBus.unsubscribe("discourse-ai/ai-bot/topic/*");
       this._super();
     },
   });

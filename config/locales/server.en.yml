@@ -32,6 +32,7 @@ en:
     ai_nsfw_models: "Models to use for NSFW inference."
 
     ai_openai_api_key: "API key for OpenAI API"
+    ai_anthropic_api_key: "API key for Anthropic API"
 
     composer_ai_helper_enabled: "Enable the Composer's AI helper."
     ai_helper_allowed_groups: "Users on these groups will see the AI helper button in the composer."
@@ -58,6 +59,7 @@ en:
 
     ai_bot_enabled: "Enable the AI Bot module."
     ai_bot_allowed_groups: "When the GPT Bot has access to the PM, it will reply to members of these groups."
+    ai_bot_enabled_chat_bots: "Available models to act as an AI Bot"
 
 
   reviewables:
