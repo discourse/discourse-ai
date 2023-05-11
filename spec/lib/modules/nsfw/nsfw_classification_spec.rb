@@ -68,7 +68,7 @@ describe DiscourseAi::NSFW::NSFWClassification do
           classification = subject.request(post)
 
           assert_correctly_classified(classification, expected_classification)
-        end   
+        end
       end
     end
   end
