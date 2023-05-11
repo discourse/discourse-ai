@@ -20,11 +20,9 @@ module DiscourseAi
 
       def summarization_provider
         case model
-        in "gpt-3.5-turbo"
+        in "gpt-3.5-turbo" | "gpt-4"
           "openai"
-        in "gpt-4"
-          "openai"
-        in "claude-v1"
+        in "claude-v1" | "claude-v1-100k"
           "anthropic"
         else
           "discourse"
@@ -98,7 +96,7 @@ module DiscourseAi
         "
 
         response =
-          ::DiscourseAi::Inference::AnthropicCompletions.perform!(messages).dig(:completion)
+          ::DiscourseAi::Inference::AnthropicCompletions.perform!(messages, model).dig(:completion)
 
         Nokogiri::HTML5.fragment(response).at("ai").text
       end
@@ -109,12 +107,13 @@ module DiscourseAi
 
       def max_length
         lengths = {
-          "bart-large-cnn-samsum" => 8192,
-          "flan-t5-base-samsum" => 8192,
-          "long-t5-tglobal-base-16384-book-summary" => 8192,
-          "gpt-3.5-turbo" => 8192,
-          "gpt-4" => 8192,
-          "claude-v1" => 8192,
+          "bart-large-cnn-samsum" => 1024 * 4,
+          "flan-t5-base-samsum" => 512 * 4,
+          "long-t5-tglobal-base-16384-book-summary" => 16_384 * 4,
+          "gpt-3.5-turbo" => 4096 * 4,
+          "gpt-4" => 8192 * 4,
+          "claude-v1" => 9000 * 4,
+          "claude-v1-100k" => 100_000 * 4,
         }
 
         lengths[model]
