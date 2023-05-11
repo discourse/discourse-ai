@@ -64,7 +64,7 @@ module DiscourseAi
         messages = prompt.messages_with_user_input(text)
 
         result[:suggestions] = DiscourseAi::Inference::OpenAiCompletions
-          .perform!(messages)
+          .perform!(messages, SiteSetting.ai_helper_model)
           .dig(:choices)
           .to_a
           .flat_map { |choice| parse_content(prompt, choice.dig(:message, :content).to_s) }

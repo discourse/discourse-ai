@@ -4,7 +4,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
   describe "#inject_into" do
     describe "subscribes to the post_created event" do
       fab!(:admin) { Fabricate(:admin) }
-      let(:gpt_bot) { Discourse.gpt_bot }
+      let(:gpt_bot) { User.find(described_class::GPT4_ID) }
       fab!(:bot_allowed_group) { Fabricate(:group) }
 
       let(:post_args) do
@@ -13,7 +13,6 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
           raw: "Hello, Can you please tell me a story?",
           archetype: Archetype.private_message,
           target_usernames: [gpt_bot.username].join(","),
-          category: 1,
         }
       end
 
@@ -27,6 +26,19 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
           Jobs::CreateAiReply.jobs,
           :size,
         ).by(1)
+      end
+
+      it "includes the bot's user_id" do
+        claude_bot = User.find(described_class::CLAUDE_V1_ID)
+        claude_post_attrs = post_args.merge(target_usernames: [claude_bot.username].join(","))
+
+        expect { PostCreator.create!(admin, claude_post_attrs) }.to change(
+          Jobs::CreateAiReply.jobs,
+          :size,
+        ).by(1)
+
+        job_args = Jobs::CreateAiReply.jobs.last["args"].first
+        expect(job_args["bot_user_id"]).to eq(claude_bot.id)
       end
 
       context "when the post is not from a PM" do

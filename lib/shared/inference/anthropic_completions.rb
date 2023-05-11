@@ -4,32 +4,106 @@ module ::DiscourseAi
   module Inference
     class AnthropicCompletions
       CompletionFailed = Class.new(StandardError)
+      TIMEOUT = 60
 
-      def self.perform!(prompt)
+      def self.perform!(
+        prompt,
+        model = "claude-v1",
+        temperature: nil,
+        top_p: nil,
+        max_tokens: nil,
+        user_id: nil
+      )
+        url = URI("https://api.anthropic.com/v1/complete")
         headers = {
           "x-api-key" => SiteSetting.ai_anthropic_api_key,
           "Content-Type" => "application/json",
         }
 
-        model = "claude-v1"
+        payload = { model: model, prompt: prompt }
 
-        connection_opts = { request: { write_timeout: 60, read_timeout: 60, open_timeout: 60 } }
+        payload[:temperature] = temperature if temperature
+        payload[:top_p] = top_p if top_p
+        payload[:max_tokens_to_sample] = max_tokens || 300
+        payload[:stream] = true if block_given?
 
-        response =
-          Faraday.new(nil, connection_opts).post(
-            "https://api.anthropic.com/v1/complete",
-            { model: model, prompt: prompt, max_tokens_to_sample: 300 }.to_json,
-            headers,
-          )
+        Net::HTTP.start(
+          url.host,
+          url.port,
+          use_ssl: true,
+          read_timeout: TIMEOUT,
+          open_timeout: TIMEOUT,
+          write_timeout: TIMEOUT,
+        ) do |http|
+          request = Net::HTTP::Post.new(url, headers)
+          request_body = payload.to_json
+          request.body = request_body
 
-        if response.status != 200
-          Rails.logger.error(
-            "AnthropicCompletions: status: #{response.status} - body: #{response.body}",
-          )
-          raise CompletionFailed
+          http.request(request) do |response|
+            if response.code.to_i != 200
+              Rails.logger.error(
+                "AnthropicCompletions: status: #{response.code.to_i} - body: #{response.body}",
+              )
+              raise CompletionFailed
+            end
+
+            log =
+              AiApiAuditLog.create!(
+                provider_id: AiApiAuditLog::Provider::Anthropic,
+                raw_request_payload: request_body,
+                user_id: user_id,
+              )
+
+            if !block_given?
+              response_body = response.read_body
+              parsed_response = JSON.parse(response_body, symbolize_names: true)
+
+              log.update!(
+                raw_response_payload: response_body,
+                request_tokens: DiscourseAi::Tokenizer.size(prompt),
+                response_tokens: DiscourseAi::Tokenizer.size(parsed_response[:completion]),
+              )
+              return parsed_response
+            end
+
+            begin
+              cancelled = false
+              cancel = lambda { cancelled = true }
+              response_data = +""
+              response_raw = +""
+
+              response.read_body do |chunk|
+                if cancelled
+                  http.finish
+                  return
+                end
+
+                response_raw << chunk
+
+                chunk
+                  .split("\n")
+                  .each do |line|
+                    data = line.split("data: ", 2)[1]
+                    next if !data || data.squish == "[DONE]"
+
+                    if !cancelled && partial = JSON.parse(data, symbolize_names: true)
+                      response_data << partial[:completion].to_s
+
+                      yield partial, cancel
+                    end
+                  end
+              rescue IOError
+                raise if !cancelled
+              ensure
+                log.update!(
+                  raw_response_payload: response_raw,
+                  request_tokens: DiscourseAi::Tokenizer.size(prompt),
+                  response_tokens: DiscourseAi::Tokenizer.size(response_data),
+                )
+              end
+            end
+          end
         end
-
-        JSON.parse(response.body, symbolize_names: true)
       end
     end
   end

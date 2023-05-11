@@ -9,7 +9,7 @@ module ::DiscourseAi
 
       def self.perform!(
         messages,
-        model = SiteSetting.ai_helper_model,
+        model,
         temperature: nil,
         top_p: nil,
         max_tokens: nil,
