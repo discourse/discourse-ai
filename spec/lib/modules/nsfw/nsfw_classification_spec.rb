@@ -59,6 +59,16 @@ describe DiscourseAi::NSFW::NSFWClassification do
 
           assert_correctly_classified(classification, expected_classification)
         end
+
+        it "correctly skips unsupported uploads" do
+          NSFWInferenceStubs.positive(upload_1)
+          NSFWInferenceStubs.unsupported(upload_2)
+          expected_classification = build_expected_classification(upload_1)
+
+          classification = subject.request(post)
+
+          assert_correctly_classified(classification, expected_classification)
+        end   
       end
     end
   end

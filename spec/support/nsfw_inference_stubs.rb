@@ -46,5 +46,17 @@ class NSFWInferenceStubs
         .with(body: JSON.dump(model: "opennsfw2", content: upload_url(upload)))
         .to_return(status: 200, body: JSON.dump(negative_result("opennsfw2")))
     end
+
+    def unsupported(upload)
+      WebMock
+        .stub_request(:post, endpoint)
+        .with(body: JSON.dump(model: "nsfw_detector", content: upload_url(upload)))
+        .to_return(status: 415, body: JSON.dump({ error: "Unsupported image type", status: 415 }))
+
+      WebMock
+        .stub_request(:post, endpoint)
+        .with(body: JSON.dump(model: "opennsfw2", content: upload_url(upload)))
+        .to_return(status: 415, body: JSON.dump({ error: "Unsupported image type", status: 415 }))
+    end
   end
 end

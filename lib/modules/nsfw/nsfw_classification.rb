@@ -35,9 +35,11 @@ module DiscourseAi
 
         available_models.reduce({}) do |memo, model|
           memo[model] = uploads_to_classify.reduce({}) do |upl_memo, upload|
-            upl_memo[upload.id] = evaluate_with_model(model, upload).merge(
-              target_classified_type: upload.class.name,
-            )
+            classification =
+              evaluate_with_model(model, upload).merge(target_classified_type: upload.class.name)
+
+            # 415 denotes that the image is not supported by the model, so we skip it
+            upl_memo[upload.id] = classification if classification.dig(:status) != 415
 
             upl_memo
           end
@@ -65,11 +67,7 @@ module DiscourseAi
       end
 
       def content_of(target_to_classify)
-        target_to_classify
-          .uploads
-          .where(extension: %w[png jpeg jpg PNG JPEG JPG])
-          .to_a
-          .select { |u| FileHelper.is_supported_image?(u.url) }
+        target_to_classify.uploads.to_a.select { |u| FileHelper.is_supported_image?(u.url) }
       end
 
       def opennsfw2_verdict?(clasification)
