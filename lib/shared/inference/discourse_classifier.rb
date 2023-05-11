@@ -10,7 +10,7 @@ module ::DiscourseAi
 
         response = Faraday.post(endpoint, { model: model, content: content }.to_json, headers)
 
-        raise Net::HTTPBadResponse unless response.status == 200
+        raise Net::HTTPBadResponse if ![200, 415].include?(response.status)
 
         JSON.parse(response.body, symbolize_names: true)
       end
