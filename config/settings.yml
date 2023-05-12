@@ -10,6 +10,7 @@ plugins:
     default: "https://disorder-testing.demo-by-discourse.com"
   ai_toxicity_inference_service_api_key:
     default: ''
+    secret: true
   ai_toxicity_inference_service_api_model:
     type: enum
     default: unbiased
@@ -56,6 +57,7 @@ plugins:
     default: "https://sentiment-testing.demo-by-discourse.com"
   ai_sentiment_inference_service_api_key:
     default: ''
+    secret: true
   ai_sentiment_models:
     type: list
     list_type: compact
@@ -64,12 +66,13 @@ plugins:
     choices:
      - sentiment
      - emotion
-  
+
   ai_nsfw_detection_enabled: false
   ai_nsfw_inference_service_api_endpoint:
     default: "https://nsfw-testing.demo-by-discourse.com"
   ai_nsfw_inference_service_api_key:
     default: ""
+    secret: true
   ai_nsfw_flag_automatically: true
   ai_nsfw_flag_threshold_general: 60
   ai_nsfw_flag_threshold_drawings: 60
@@ -87,8 +90,10 @@ plugins:
 
   ai_openai_api_key:
     default: ""
+    secret: true
   ai_anthropic_api_key:
     default: ""
+    secret: true
 
   composer_ai_helper_enabled:
     default: false
@@ -111,11 +116,13 @@ plugins:
       - gpt-4
       - claude-v1
 
-  ai_embeddings_enabled: 
+  ai_embeddings_enabled:
     default: false
     client: true
   ai_embeddings_discourse_service_api_endpoint: ""
-  ai_embeddings_discourse_service_api_key: ""
+  ai_embeddings_discourse_service_api_key:
+    default: ""
+    secret: true
   ai_embeddings_models:
     type: list
     list_type: compact
@@ -158,7 +165,9 @@ plugins:
     default: false
     client: true
   ai_summarization_discourse_service_api_endpoint: ""
-  ai_summarization_discourse_service_api_key: ""
+  ai_summarization_discourse_service_api_key:
+    default: ""
+    secret: true
   ai_summarization_model:
     type: enum
     default: "bart-large-cnn-samsum"
@@ -189,4 +198,4 @@ plugins:
     choices:
      - gpt-3.5-turbo
      - gpt-4
-     - claude-v1 
+     - claude-v1
