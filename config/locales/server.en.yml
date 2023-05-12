@@ -47,6 +47,7 @@ en:
     ai_embeddings_generate_for_pms: "Generate embeddings for personal messages."
     ai_embeddings_semantic_related_topics_enabled: "Use Semantic Search for related topics."
     ai_embeddings_semantic_related_topics: "Maximum number of topics to show in related topic section."
+    ai_embeddings_semantic_related_topics_include_closed_topics: "Include closed topics in related topics."
     ai_embeddings_pg_connection_string: "PostgreSQL connection string for the embeddings module. Needs pgvector extension enabled and a series of tables created. See docs for more info."
     ai_embeddings_semantic_search_model: "Model to use for semantic search."
     ai_embeddings_semantic_search_enabled: "Enable full-page semantic search."

@@ -3,7 +3,9 @@
 module DiscourseAi
   module Embeddings
     class Topic
-      def generate_and_store_embeddings_for(topic)
+      VERSION = 1
+
+      def generate_and_store_embeddings_for(topic, include_posts: true)
         return unless SiteSetting.ai_embeddings_enabled
         return if topic.blank? || topic.first_post.blank?
 
@@ -13,6 +15,18 @@ module DiscourseAi
         enabled_models.each do |model|
           embedding = model.generate_embedding(topic.first_post.raw)
           persist_embedding(topic, model, embedding) if embedding
+
+          if include_posts
+            persist_embedding(topic.first_post, model, embedding) if embedding
+
+            topic
+              .posts
+              .where("post_number > 1 AND post_type = 1")
+              .each do |post|
+                embedding = model.generate_embedding(post.raw)
+                persist_embedding(post, model, embedding) if embedding
+              end
+          end
         end
       end
 
@@ -70,13 +84,20 @@ module DiscourseAi
 
       private
 
-      def persist_embedding(topic, model, embedding)
-        DiscourseAi::Database::Connection.db.exec(<<~SQL, topic_id: topic.id, embedding: embedding)
-            INSERT INTO topic_embeddings_#{model.name.underscore} (topic_id, embedding)
-            VALUES (:topic_id, '[:embedding]')
-            ON CONFLICT (topic_id)
+      def persist_embedding(topic_or_post, model, embedding)
+        table = topic_or_post.is_a?(Topic) ? "topic" : "post"
+
+        DiscourseAi::Database::Connection.db.exec(
+          <<~SQL,
+            INSERT INTO #{table}_embeddings_#{model.name.underscore} (#{table}_id, embedding, version)
+            VALUES (:id, '[:embedding]', :version)
+            ON CONFLICT (#{table}_id)
             DO UPDATE SET embedding = '[:embedding]'
           SQL
+          id: topic_or_post.id,
+          embedding: embedding,
+          version: VERSION,
+        )
       end
     end
   end

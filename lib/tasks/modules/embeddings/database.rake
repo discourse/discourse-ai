@@ -7,17 +7,24 @@ task "ai:embeddings:create_table" => [:environment] do
   SQL
 
   DiscourseAi::Embeddings::Model.enabled_models.each do |model|
-    DiscourseAi::Database::Connection.db.exec(<<~SQL)
-        CREATE TABLE IF NOT EXISTS topic_embeddings_#{model.name.underscore} (
-          topic_id bigint PRIMARY KEY,
-          embedding vector(#{model.dimensions})
-        );
+    %w[topic post].each do |table|
+      table_name = "#{table}_embeddings_#{model.name.underscore}"
+      DiscourseAi::Database::Connection.db.exec(<<~SQL)
+        CREATE TABLE IF NOT EXISTS #{table_name} (
+          #{table}_id bigint PRIMARY KEY,
+          embedding vector(#{model.dimensions}),
+          version smallint
+        )
       SQL
+      DiscourseAi::Database::Connection.db.exec(<<~SQL)
+        ALTER TABLE #{table_name} ADD COLUMN IF NOT EXISTS version smallint
+      SQL
+    end
   end
 end
 
 desc "Backfill embeddings for all topics"
-task "ai:embeddings:backfill", [:start_topic] => [:environment] do
+task "ai:embeddings:backfill", [:start_topic] => [:environment] do |_, args|
   public_categories = Category.where(read_restricted: false).pluck(:id)
   topic_embeddings = DiscourseAi::Embeddings::Topic.new
   Topic
