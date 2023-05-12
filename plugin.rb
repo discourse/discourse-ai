@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # name: discourse-ai
-# about: TODO
+# about: Enables AI modules features in Discourse
 # version: 0.0.1
 # authors: Discourse
-# url: TODO
+# url: https://meta.discourse.org/t/discourse-ai/259214
 # required_version: 2.7.0
 
 gem "tokenizers", "0.3.2", platform: RUBY_PLATFORM
