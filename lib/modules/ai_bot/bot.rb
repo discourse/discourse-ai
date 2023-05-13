@@ -141,7 +141,7 @@ module DiscourseAi
       end
 
       def tokenize(text)
-        raise NotImplemented 
+        raise NotImplemented
       end
     end
   end

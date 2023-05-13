@@ -98,7 +98,8 @@ module ::DiscourseAi
               ensure
                 log.update!(
                   raw_response_payload: response_raw,
-                  request_tokens: DiscourseAi::Tokenizer::OpenAiTokenizer.size(extract_prompt(messages)),
+                  request_tokens:
+                    DiscourseAi::Tokenizer::OpenAiTokenizer.size(extract_prompt(messages)),
                   response_tokens: DiscourseAi::Tokenizer::OpenAiTokenizer.size(response_data),
                 )
               end

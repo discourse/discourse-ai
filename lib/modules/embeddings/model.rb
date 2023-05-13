@@ -67,8 +67,7 @@ module DiscourseAi
       private
 
       def discourse_embeddings(input)
-        truncated_input =
-          DiscourseAi::Tokenizer::BertTokenizer.truncate(input, max_sequence_lenght)
+        truncated_input = DiscourseAi::Tokenizer::BertTokenizer.truncate(input, max_sequence_lenght)
 
         if name.start_with?("instructor")
           instructed_input = [

@@ -42,7 +42,7 @@ module DiscourseAi
       end
 
       def tokenize(text)
-         DiscourseAi::Tokenizer::AnthropicTokenizer.tokenize(text)
+        DiscourseAi::Tokenizer::AnthropicTokenizer.tokenize(text)
       end
     end
   end
