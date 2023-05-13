@@ -43,6 +43,10 @@ module DiscourseAi
           &blk
         )
       end
+
+      def tokenize(text)
+        DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(text)
+      end
     end
   end
 end

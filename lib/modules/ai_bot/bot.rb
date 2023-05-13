@@ -81,7 +81,7 @@ module DiscourseAi
           conversation.reduce([]) do |memo, (raw, username)|
             break(memo) if total_prompt_tokens >= prompt_limit
 
-            tokens = DiscourseAi::Tokenizer.tokenize(raw)
+            tokens = tokenize(raw)
 
             if tokens.length + total_prompt_tokens > prompt_limit
               tokens = tokens[0...(prompt_limit - total_prompt_tokens)]
@@ -138,6 +138,10 @@ module DiscourseAi
           payload.merge(post_id: bot_reply_post.id, post_number: bot_reply_post.post_number),
           user_ids: bot_reply_post.topic.allowed_user_ids,
         )
+      end
+
+      def tokenize(text)
+        raise NotImplemented 
       end
     end
   end

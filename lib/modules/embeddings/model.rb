@@ -14,8 +14,9 @@ module DiscourseAi
           %i[symmetric],
           "discourse",
         ],
+        "all-mpnet-base-v2" => [768, 384, %i[dot cosine euclidean], %i[symmetric], "discourse"],
         "msmarco-distilbert-base-v4" => [768, 512, %i[cosine], %i[asymmetric], "discourse"],
-        "msmarco-distilbert-base-tas-b" => [768, 512, %i[dot], %i[asymmetric], "discourse"],
+        "instructor-xl" => [768, 512, %i[cosine], %i[symmetric asymmetric], "discourse"],
         "text-embedding-ada-002" => [1536, 2048, %i[cosine], %i[symmetric asymmetric], "openai"],
       }
 
@@ -66,16 +67,28 @@ module DiscourseAi
       private
 
       def discourse_embeddings(input)
+        truncated_input =
+          DiscourseAi::Tokenizer::BertTokenizer.truncate(input, max_sequence_lenght)
+
+        if name.start_with?("instructor")
+          instructed_input = [
+            SiteSetting.ai_embeddings_semantic_related_instruction,
+            truncated_input,
+          ]
+        end
+
         DiscourseAi::Inference::DiscourseClassifier.perform!(
           "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
           name.to_s,
-          input,
+          instructed_input,
           SiteSetting.ai_embeddings_discourse_service_api_key,
         )
       end
 
       def openai_embeddings(input)
-        response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(input)
+        truncated_input =
+          DiscourseAi::Tokenizer::OpenAiTokenizer.truncate(input, max_sequence_lenght)
+        response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(truncated_input)
         response[:data].first[:embedding]
       end
     end

@@ -60,8 +60,8 @@ module ::DiscourseAi
 
               log.update!(
                 raw_response_payload: response_body,
-                request_tokens: DiscourseAi::Tokenizer.size(prompt),
-                response_tokens: DiscourseAi::Tokenizer.size(parsed_response[:completion]),
+                request_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(prompt),
+                response_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(parsed_response[:completion]),
               )
               return parsed_response
             end
@@ -97,8 +97,8 @@ module ::DiscourseAi
               ensure
                 log.update!(
                   raw_response_payload: response_raw,
-                  request_tokens: DiscourseAi::Tokenizer.size(prompt),
-                  response_tokens: DiscourseAi::Tokenizer.size(response_data),
+                  request_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(prompt),
+                  response_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(response_data),
                 )
               end
             end
