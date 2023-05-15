@@ -71,8 +71,7 @@ module DiscourseAi
 
         if name.start_with?("instructor")
           instructed_input = [
-            SiteSetting.ai_embeddings_semantic_related_instruction,
-            truncated_input,
+            [SiteSetting.ai_embeddings_semantic_related_instruction, truncated_input],
           ]
         end
 
