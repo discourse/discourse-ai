@@ -14,7 +14,7 @@ module DiscourseAi
           %i[symmetric],
           "discourse",
         ],
-        "all-mpnet-base-v2" => [768, 384, %i[dot cosine euclidean], %i[symmetric], "discourse"],
+        "msmarco-distilbert-base-tas-b" => [768, 512, %i[dot], %i[asymmetric], "discourse"],
         "msmarco-distilbert-base-v4" => [768, 512, %i[cosine], %i[asymmetric], "discourse"],
         "instructor-xl" => [768, 512, %i[cosine], %i[symmetric asymmetric], "discourse"],
         "text-embedding-ada-002" => [1536, 2048, %i[cosine], %i[symmetric asymmetric], "openai"],

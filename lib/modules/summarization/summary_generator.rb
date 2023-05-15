@@ -75,7 +75,7 @@ module DiscourseAi
 
       def openai_summarization(content)
         truncated_content =
-          DiscourseAi::Tokenizer::OpenAiTokenizer.truncate(content, max_length - content - 50)
+          DiscourseAi::Tokenizer::OpenAiTokenizer.truncate(content, max_length - 50)
 
         messages = [{ role: "system", content: <<~TEXT }]
           Summarize the following article:\n\n#{truncated_content}
