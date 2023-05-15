@@ -152,6 +152,10 @@ plugins:
       - msmarco-distilbert-base-v4
       - msmarco-distilbert-base-tas-b
       - text-embedding-ada-002
+  ai_embeddings_semantic_related_instruction:
+    default: "Represent the Discourse topic for retrieving relevant topics:"
+    hidden: true
+    client: false
   ai_embeddings_generate_for_pms: false
   ai_embeddings_semantic_related_topics_enabled: false
   ai_embeddings_semantic_related_topics: 5

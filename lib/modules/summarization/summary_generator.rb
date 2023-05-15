@@ -11,7 +11,7 @@ module DiscourseAi
       def summarize!(content_since)
         content = get_content(content_since)
 
-        send("#{summarization_provider}_summarization", content[0..(max_length - 1)])
+        send("#{summarization_provider}_summarization", content)
       end
 
       private
@@ -63,17 +63,22 @@ module DiscourseAi
       end
 
       def discourse_summarization(content)
+        truncated_content = DiscourseAi::Tokenizer::BertTokenizer.truncate(content, max_length)
+
         ::DiscourseAi::Inference::DiscourseClassifier.perform!(
           "#{SiteSetting.ai_summarization_discourse_service_api_endpoint}/api/v1/classify",
           model,
-          content,
+          truncated_content,
           SiteSetting.ai_summarization_discourse_service_api_key,
         ).dig(:summary_text)
       end
 
       def openai_summarization(content)
+        truncated_content =
+          DiscourseAi::Tokenizer::OpenAiTokenizer.truncate(content, max_length - 50)
+
         messages = [{ role: "system", content: <<~TEXT }]
-          Summarize the following article:\n\n#{content}
+          Summarize the following article:\n\n#{truncated_content}
         TEXT
 
         ::DiscourseAi::Inference::OpenAiCompletions.perform!(messages, model).dig(
@@ -85,11 +90,14 @@ module DiscourseAi
       end
 
       def anthropic_summarization(content)
+        truncated_content =
+          DiscourseAi::Tokenizer::AnthropicTokenizer.truncate(content, max_length - 50)
+
         messages =
           "Human: Summarize the following article that is inside <input> tags.
-          Plese include only the summary inside <ai> tags.
+          Please include only the summary inside <ai> tags.
 
-          <input>##{content}</input>
+          <input>##{truncated_content}</input>
 
 
           Assistant:
@@ -107,13 +115,13 @@ module DiscourseAi
 
       def max_length
         lengths = {
-          "bart-large-cnn-samsum" => 1024 * 4,
-          "flan-t5-base-samsum" => 512 * 4,
-          "long-t5-tglobal-base-16384-book-summary" => 16_384 * 4,
-          "gpt-3.5-turbo" => 4096 * 4,
-          "gpt-4" => 8192 * 4,
-          "claude-v1" => 9000 * 4,
-          "claude-v1-100k" => 100_000 * 4,
+          "bart-large-cnn-samsum" => 1024,
+          "flan-t5-base-samsum" => 512,
+          "long-t5-tglobal-base-16384-book-summary" => 16_384,
+          "gpt-3.5-turbo" => 4096,
+          "gpt-4" => 8192,
+          "claude-v1" => 9000,
+          "claude-v1-100k" => 100_000,
         }
 
         lengths[model]
