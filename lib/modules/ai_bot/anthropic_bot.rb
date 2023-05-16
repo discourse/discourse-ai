@@ -31,6 +31,15 @@ module DiscourseAi
         partial[:completion]
       end
 
+      def get_updated_title(prompt)
+        DiscourseAi::Inference::AnthropicCompletions.perform!(
+          prompt,
+          model_for,
+          temperature: 0.7,
+          max_tokens: 40,
+        ).dig(:completion)
+      end
+
       def submit_prompt_and_stream_reply(prompt, &blk)
         DiscourseAi::Inference::AnthropicCompletions.perform!(
           prompt,

@@ -20,6 +20,17 @@ module DiscourseAi
         @bot_user = bot_user
       end
 
+      def update_pm_title(post)
+        prompt = [title_prompt(post)]
+
+        new_title = get_updated_title(prompt)
+
+        PostRevisor.new(post.topic.first_post, post.topic).revise!(
+          bot_user,
+          title: new_title.sub(/\A"/, "").sub(/"\Z/, ""),
+        )
+      end
+
       def reply_to(post)
         prompt = bot_prompt_with_topic_context(post)
 
@@ -72,7 +83,7 @@ module DiscourseAi
         Discourse.warn_exception(e, message: "ai-bot: Reply failed")
       end
 
-      def bot_prompt_with_topic_context(post)
+      def bot_prompt_with_topic_context(post, prompt: "topic")
         messages = []
         conversation = conversation_context(post)
 
@@ -106,9 +117,21 @@ module DiscourseAi
         raise NotImplemented
       end
 
+      def title_prompt(post)
+        build_message(bot_user.username, <<~TEXT)
+          Suggest a 7 word title for the following topic without quoting any of it:
+
+          #{post.topic.posts[1..-1].map(&:raw).join("\n\n")[0..prompt_limit]}
+        TEXT
+      end
+
       protected
 
       attr_reader :bot_user
+
+      def get_updated_title(prompt)
+        raise NotImplemented
+      end
 
       def model_for(bot)
         raise NotImplemented

@@ -203,3 +203,6 @@ plugins:
      - gpt-3.5-turbo
      - gpt-4
      - claude-v1
+  ai_helper_add_ai_pm_to_header:
+    default: true
+    client: true

@@ -16,6 +16,7 @@ DiscourseAi::Engine.routes.draw do
 
   scope module: :ai_bot, path: "/ai-bot", defaults: { format: :json } do
     post "post/:post_id/stop-streaming" => "bot#stop_streaming_response"
+    get "bot-username" => "bot#show_bot_username"
   end
 end
 
