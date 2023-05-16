@@ -8,7 +8,7 @@ function isGPTBot(user) {
   return user && [-110, -111, -112].includes(user.id);
 }
 
-function attachHeadeIcon(api) {
+function attachHeaderIcon(api) {
   const settings = api.container.lookup("service:site-settings");
 
   if (settings.ai_helper_add_ai_pm_to_header) {
