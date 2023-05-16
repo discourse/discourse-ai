@@ -114,7 +114,7 @@ export default {
     );
 
     if (aiBotEnaled && canInteractWithAIBots) {
-      withPluginApi("1.6.0", attachHeadeIcon);
+      withPluginApi("1.6.0", attachHeaderIcon);
       withPluginApi("1.6.0", initializeAIBotReplies);
     }
   },
