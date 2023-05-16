@@ -26,8 +26,9 @@ en:
           other: "Last %{count} hours"
 
       ai_bot:
-        cancel_streaming: Stop reply
+        cancel_streaming: "Stop reply"
         default_pm_prefix: "[Untitled AI bot PM]"
+        shortcut_title: "Start a PM with an AI bot"
 
 
     review:
