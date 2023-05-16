@@ -1,0 +1,31 @@
+{{#if this.singleBotEnabled}}
+  <DButton
+    @class="icon btn-flat"
+    @action={{this.singleComposeAiBotMessage}}
+    @icon="robot"
+  />
+{{else}}
+  <DButton
+    @class="icon btn-flat ai-bot-toggle-available-bots"
+    @action={{this.toggleBotOptions}}
+    @icon="robot"
+  />
+  {{#if this.open}}
+    <div class="ai-bot-available-bot-options">
+      <div
+        class="ai-bot-available-bot-options-wrapper"
+        {{did-insert this.registerClickListener}}
+        {{will-destroy this.unregisterClickListener}}
+      >
+        {{#each this.enabledBotOptions as |modelName|}}
+          <DButton
+            @class="btn-flat ai-bot-available-bot-content"
+            @translatedTitle={{modelName}}
+            @translatedLabel={{modelName}}
+            @action={{action "composeMessageWithTargetBot" modelName}}
+          />
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+{{/if}}

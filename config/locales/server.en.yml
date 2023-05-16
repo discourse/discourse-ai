@@ -50,6 +50,7 @@ en:
     ai_embeddings_pg_connection_string: "PostgreSQL connection string for the embeddings module. Needs pgvector extension enabled and a series of tables created. See docs for more info."
     ai_embeddings_semantic_search_model: "Model to use for semantic search."
     ai_embeddings_semantic_search_enabled: "Enable full-page semantic search."
+    ai_embeddings_semantic_related_include_closed_topics: "Include closed topics in semantic search results"
 
     ai_summarization_enabled: "Enable the summarization module."
     ai_summarization_discourse_service_api_endpoint: "URL where the Discourse summarization API is running."
@@ -60,6 +61,7 @@ en:
     ai_bot_enabled: "Enable the AI Bot module."
     ai_bot_allowed_groups: "When the GPT Bot has access to the PM, it will reply to members of these groups."
     ai_bot_enabled_chat_bots: "Available models to act as an AI Bot"
+    ai_helper_add_ai_pm_to_header: "Display a button in the header to start a PM with a AI Bot"
 
 
   reviewables:
@@ -80,3 +82,6 @@ en:
         generate_titles: Suggest topic titles
         proofread: Proofread text
         markdown_table: Generate Markdown table
+
+    ai_bot:
+      default_pm_prefix: "[Untitled AI bot PM]"

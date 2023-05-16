@@ -5,3 +5,21 @@ nav.post-controls .actions button.cancel-streaming {
 article.streaming nav.post-controls .actions button.cancel-streaming {
   display: inline-block;
 }
+
+.ai-bot-available-bot-options {
+  position: absolute;
+  top: 100%;
+  z-index: z("modal", "content") + 1;
+  transition: background-color 0.25s;
+  background-color: var(--secondary);
+  min-width: 150px;
+
+  .ai-bot-available-bot-content {
+    color: var(--primary-high);
+    width: 100%;
+
+    &:hover {
+      background: var(--primary-low);
+    }
+  }
+}

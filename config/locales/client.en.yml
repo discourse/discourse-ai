@@ -27,6 +27,7 @@ en:
 
       ai_bot:
         cancel_streaming: Stop reply
+        default_pm_prefix: "[Untitled AI bot PM]"
 
 
     review:

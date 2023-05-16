@@ -8,6 +8,14 @@ function isGPTBot(user) {
   return user && [-110, -111, -112].includes(user.id);
 }
 
+function attachHeadeIcon(api) {
+  const settings = api.container.lookup("service:site-settings");
+
+  if (settings.ai_helper_add_ai_pm_to_header) {
+    api.addToHeaderIcons("ai-bot-header-icon");
+  }
+}
+
 function initializeAIBotReplies(api) {
   api.addPostMenuButton("cancel-gpt", (post) => {
     if (isGPTBot(post.user)) {
@@ -94,10 +102,19 @@ export default {
 
   initialize(container) {
     const settings = container.lookup("service:site-settings");
+    const user = container.lookup("service:current-user");
     const aiBotEnaled =
       settings.discourse_ai_enabled && settings.ai_bot_enabled;
 
-    if (aiBotEnaled) {
+    const aiBotsAllowedGroups = settings.ai_bot_allowed_groups
+      .split("|")
+      .map(parseInt);
+    const canInteractWithAIBots = user?.groups.some((g) =>
+      aiBotsAllowedGroups.includes(g.id)
+    );
+
+    if (aiBotEnaled && canInteractWithAIBots) {
+      withPluginApi("1.6.0", attachHeadeIcon);
       withPluginApi("1.6.0", initializeAIBotReplies);
     }
   },

@@ -33,6 +33,16 @@ module DiscourseAi
         current_delta + partial.dig(:choices, 0, :delta, :content).to_s
       end
 
+      def get_updated_title(prompt)
+        DiscourseAi::Inference::OpenAiCompletions.perform!(
+          prompt,
+          model_for,
+          temperature: 0.7,
+          top_p: 0.9,
+          max_tokens: 40,
+        ).dig(:choices, 0, :message, :content)
+      end
+
       def submit_prompt_and_stream_reply(prompt, &blk)
         DiscourseAi::Inference::OpenAiCompletions.perform!(
           prompt,

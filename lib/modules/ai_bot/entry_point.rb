@@ -12,8 +12,22 @@ module DiscourseAi
         [CLAUDE_V1_ID, "claude_v1_bot"],
       ]
 
+      def self.map_bot_model_to_user_id(model_name)
+        case model_name
+        in "gpt-3.5-turbo"
+          GPT3_5_TURBO_ID
+        in "gpt-4"
+          GPT4_ID
+        in "claude-v1"
+          CLAUDE_V1_ID
+        else
+          nil
+        end
+      end
+
       def load_files
         require_relative "jobs/regular/create_ai_reply"
+        require_relative "jobs/regular/update_ai_bot_pm_title"
         require_relative "bot"
         require_relative "anthropic_bot"
         require_relative "open_ai_bot"
@@ -24,6 +38,8 @@ module DiscourseAi
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_bot"),
         )
 
+        plugin.register_svg_icon("robot")
+
         plugin.on(:post_created) do |post|
           bot_ids = BOTS.map(&:first)
 
@@ -31,7 +47,15 @@ module DiscourseAi
             if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).present?
               bot_id = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user_id
 
-              Jobs.enqueue(:create_ai_reply, post_id: post.id, bot_user_id: bot_id) if bot_id
+              if bot_id
+                Jobs.enqueue(:create_ai_reply, post_id: post.id, bot_user_id: bot_id)
+                Jobs.enqueue_in(
+                  5.minutes,
+                  :update_ai_bot_pm_title,
+                  post_id: post.id,
+                  bot_user_id: bot_id,
+                )
+              end
             end
           end
         end
