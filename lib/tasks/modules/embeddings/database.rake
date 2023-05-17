@@ -17,7 +17,7 @@ task "ai:embeddings:create_table" => [:environment] do
 end
 
 desc "Backfill embeddings for all topics"
-task "ai:embeddings:backfill", [:start_topic] => [:environment] do
+task "ai:embeddings:backfill", [:start_topic] => [:environment] do |_, args|
   public_categories = Category.where(read_restricted: false).pluck(:id)
   topic_embeddings = DiscourseAi::Embeddings::Topic.new
   Topic

@@ -14,6 +14,9 @@ module DiscourseAi
         tokenize(text).size
       end
       def self.truncate(text, max_length)
+        # Fast track the common case where the text is already short enough.
+        return text if text.size < max_length
+
         tokenizer.decode(tokenizer.encode(text).ids.take(max_length))
       end
     end
@@ -42,6 +45,9 @@ module DiscourseAi
       end
 
       def self.truncate(text, max_length)
+        # Fast track the common case where the text is already short enough.
+        return text if text.size < max_length
+
         tokenizer.decode(tokenize(text).take(max_length))
       end
     end
