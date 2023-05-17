@@ -43,7 +43,7 @@ export default class AiBotHeaderIcon extends Component {
   @bind
   closeDetails(event) {
     if (this.open) {
-      const isLinkClick = event.target.className.includes(
+      const isLinkClick = Array.from(event.target.classList).includes(
         "ai-bot-toggle-available-bots"
       );
 
@@ -55,7 +55,7 @@ export default class AiBotHeaderIcon extends Component {
 
   #isOutsideDetailsClick(event) {
     return !event.composedPath().some((element) => {
-      return element.className === "ai-bot-available-bot-options";
+      return element.className === "ai-bot-available-bot-content";
     });
   }
 
@@ -65,6 +65,15 @@ export default class AiBotHeaderIcon extends Component {
 
   #addClickEventListener() {
     document.addEventListener("click", this.closeDetails);
+  }
+
+  get botNames() {
+    return this.enabledBotOptions.map((bot) => {
+      return {
+        humanized: I18n.t(`discourse_ai.ai_bot.bot_names.${bot}`),
+        modelName: bot,
+      };
+    });
   }
 
   get enabledBotOptions() {
@@ -82,15 +91,17 @@ export default class AiBotHeaderIcon extends Component {
       return data.bot_username;
     });
 
-    this.composer.open({
-      action: Composer.PRIVATE_MESSAGE,
-      recipients: botUsername,
-      topicTitle: `${I18n.t(
-        "discourse_ai.ai_bot.default_pm_prefix"
-      )} ${botUsername}`,
-      archetypeId: "private_message",
-      draftKey: Composer.NEW_PRIVATE_MESSAGE_KEY,
-      hasGroups: false,
+    this.composer.focusComposer({
+      fallbackToNewTopic: true,
+      openOpts: {
+        action: Composer.PRIVATE_MESSAGE,
+        recipients: botUsername,
+        topicTitle: I18n.t("discourse_ai.ai_bot.default_pm_prefix"),
+        archetypeId: "private_message",
+        draftKey: Composer.NEW_PRIVATE_MESSAGE_KEY,
+        hasGroups: false,
+        warningsDisabled: true,
+      },
     });
 
     this.open = false;

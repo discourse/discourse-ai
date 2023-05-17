@@ -30,6 +30,12 @@ en:
         default_pm_prefix: "[Untitled AI bot PM]"
         shortcut_title: "Start a PM with an AI bot"
 
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-v1: "Claude V1"
+
 
     review:
       types:
