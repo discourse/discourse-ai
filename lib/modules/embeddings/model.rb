@@ -70,7 +70,7 @@ module DiscourseAi
         truncated_input = DiscourseAi::Tokenizer::BertTokenizer.truncate(input, max_sequence_lenght)
 
         if name.start_with?("instructor")
-          instructed_input = [
+          truncated_input = [
             [SiteSetting.ai_embeddings_semantic_related_instruction, truncated_input],
           ]
         end
@@ -78,7 +78,7 @@ module DiscourseAi
         DiscourseAi::Inference::DiscourseClassifier.perform!(
           "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
           name.to_s,
-          instructed_input,
+          truncated_input,
           SiteSetting.ai_embeddings_discourse_service_api_key,
         )
       end
