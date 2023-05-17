@@ -17,12 +17,12 @@
         {{did-insert this.registerClickListener}}
         {{will-destroy this.unregisterClickListener}}
       >
-        {{#each this.enabledBotOptions as |modelName|}}
+        {{#each this.botNames as |bot|}}
           <DButton
             @class="btn-flat ai-bot-available-bot-content"
-            @translatedTitle={{modelName}}
-            @translatedLabel={{modelName}}
-            @action={{action "composeMessageWithTargetBot" modelName}}
+            @translatedTitle={{bot.humanized}}
+            @translatedLabel={{bot.humanized}}
+            @action={{action "composeMessageWithTargetBot" bot.modelName}}
           />
         {{/each}}
       </div>
