@@ -3,6 +3,7 @@ import { cookAsync } from "discourse/lib/text";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import loadScript from "discourse/lib/load-script";
+import { ComposeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 
 function isGPTBot(user) {
   return user && [-110, -111, -112].includes(user.id);
@@ -11,8 +12,51 @@ function isGPTBot(user) {
 function attachHeaderIcon(api) {
   const settings = api.container.lookup("service:site-settings");
 
-  if (settings.ai_helper_add_ai_pm_to_header) {
-    api.addToHeaderIcons("ai-bot-header-icon");
+  const enabledBots = settings.ai_helper_add_ai_pm_to_header
+    ? settings.ai_bot_enabled_chat_bots.split("|").filter(Boolean)
+    : [];
+  if (enabledBots.length > 0) {
+    api.attachWidgetAction("header", "showAiBotPanel", function () {
+      this.state.botSelectorVisible = true;
+    });
+
+    api.attachWidgetAction("header", "hideAiBotPanel", function () {
+      this.state.botSelectorVisible = false;
+    });
+
+    api.attachWidgetAction("header", "toggleAiBotPanel", function () {
+      this.state.botSelectorVisible = !this.state.botSelectorVisible;
+    });
+
+    api.decorateWidget("header-icons:before", (helper) => {
+      return helper.attach("header-dropdown", {
+        title: "blog.start_gpt_chat",
+        icon: "robot",
+        action: "clickStartAiBotChat",
+        active: false,
+      });
+    });
+
+    if (enabledBots.length === 1) {
+      api.attachWidgetAction("header", "clickStartAiBotChat", function () {
+        ComposeAiBotMessage(
+          enabledBots[0],
+          api.container.lookup("service:composer")
+        );
+      });
+    } else {
+      api.attachWidgetAction("header", "clickStartAiBotChat", function () {
+        this.sendWidgetAction("showAiBotPanel");
+      });
+    }
+
+    api.addHeaderPanel(
+      "ai-bot-header-panel-wrapper",
+      "botSelectorVisible",
+      function () {
+        return {};
+      }
+    );
   }
 }
 

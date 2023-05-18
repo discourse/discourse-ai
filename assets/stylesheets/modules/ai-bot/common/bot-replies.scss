@@ -7,17 +7,14 @@ article.streaming nav.post-controls .actions button.cancel-streaming {
 }
 
 .ai-bot-available-bot-options {
-  position: absolute;
-  top: 100%;
-  z-index: z("modal", "content") + 1;
-  transition: background-color 0.25s;
-  background-color: var(--secondary);
-  min-width: 150px;
-
   .ai-bot-available-bot-content {
     color: var(--primary-high);
+    display: flex;
     width: 100%;
-
+    .d-button-label {
+      flex: 1;
+      text-align: left;
+    }
     &:hover {
       background: var(--primary-low);
     }
