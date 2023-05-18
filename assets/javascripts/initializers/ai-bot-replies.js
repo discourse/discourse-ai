@@ -3,7 +3,7 @@ import { cookAsync } from "discourse/lib/text";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import loadScript from "discourse/lib/load-script";
-import { ComposeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
+import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 
 function isGPTBot(user) {
   return user && [-110, -111, -112].includes(user.id);
@@ -40,7 +40,7 @@ function attachHeaderIcon(api) {
 
     if (enabledBots.length === 1) {
       api.attachWidgetAction("header", "clickStartAiBotChat", function () {
-        ComposeAiBotMessage(
+        composeAiBotMessage(
           enabledBots[0],
           api.container.lookup("service:composer")
         );

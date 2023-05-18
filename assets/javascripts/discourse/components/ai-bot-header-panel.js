@@ -1,7 +1,7 @@
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
-import Component from "@ember/component";
-import { ComposeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
+import Component from "@glimmer/component";
+import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 
 import I18n from "I18n";
 
@@ -12,7 +12,7 @@ export default class AiBotHeaderPanel extends Component {
 
   @action
   async composeMessageWithTargetBot(target) {
-    this._composeAiBotMessage(target);
+    this.#composeAiBotMessage(target);
   }
 
   @action
@@ -39,7 +39,7 @@ export default class AiBotHeaderPanel extends Component {
     return this.enabledBotOptions.length === 1;
   }
 
-  async _composeAiBotMessage(targetBot) {
-    ComposeAiBotMessage(targetBot, this.composer, this.appEvents);
+  async #composeAiBotMessage(targetBot) {
+    composeAiBotMessage(targetBot, this.composer, this.appEvents);
   }
 }
