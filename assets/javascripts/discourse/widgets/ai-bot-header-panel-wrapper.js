@@ -14,18 +14,18 @@ export default class AiBotHeaderPanelWrapper extends Widget {
         this,
         "div.widget-component-connector",
         hbs`<AiBotHeaderPanel @closePanel={{@data.closePanel}} />`,
-        { closePanel: this.hideAiBotPanel }
+        { closePanel: this.closePanel }
       ),
     ];
   }
 
   @action
-  hideAiBotPanel() {
+  closePanel() {
     this.sendWidgetAction("hideAiBotPanel");
   }
 
   @action
   clickOutside() {
-    this.hideAiBotPanel();
+    this.closePanel();
   }
 }
