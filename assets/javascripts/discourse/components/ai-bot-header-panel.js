@@ -15,13 +15,6 @@ export default class AiBotHeaderPanel extends Component {
     this.#composeAiBotMessage(target);
   }
 
-  @action
-  async singleComposeAiBotMessage() {
-    this._composeAiBotMessage(
-      this.siteSettings.ai_bot_enabled_chat_bots.split("|")[0]
-    );
-  }
-
   get botNames() {
     return this.enabledBotOptions.map((bot) => {
       return {
@@ -33,10 +26,6 @@ export default class AiBotHeaderPanel extends Component {
 
   get enabledBotOptions() {
     return this.siteSettings.ai_bot_enabled_chat_bots.split("|");
-  }
-
-  get singleBotEnabled() {
-    return this.enabledBotOptions.length === 1;
   }
 
   async #composeAiBotMessage(targetBot) {
