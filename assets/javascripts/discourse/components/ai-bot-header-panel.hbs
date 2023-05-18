@@ -1,0 +1,18 @@
+<div class="bot-panel ai-bot-available-bot-options">
+  <div class="menu-panel drop-down">
+    <div class="panel-body">
+      <div class="panel-body-contents">
+        <div class="sidebar-hamburger-dropdown">
+          {{#each this.botNames as |bot|}}
+            <DButton
+              @class="btn-flat ai-bot-available-bot-content"
+              @translatedTitle={{bot.humanized}}
+              @translatedLabel={{bot.humanized}}
+              @action={{action "composeMessageWithTargetBot" bot.modelName}}
+            />
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
