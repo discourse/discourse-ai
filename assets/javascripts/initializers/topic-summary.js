@@ -33,12 +33,16 @@ export default {
   name: "discourse-ai-topic-summary",
 
   initialize(container) {
-    const settings = container.lookup("service:site-settings");
-    const summarizationEnabled =
-      settings.discourse_ai_enabled && settings.ai_summarization_enabled;
+    const user = container.lookup("service:current-user");
 
-    if (summarizationEnabled) {
-      withPluginApi("1.6.0", initializeTopicSummary);
+    if (user) {
+      const settings = container.lookup("service:site-settings");
+      const summarizationEnabled =
+        settings.discourse_ai_enabled && settings.ai_summarization_enabled;
+
+      if (summarizationEnabled) {
+        withPluginApi("1.6.0", initializeTopicSummary);
+      }
     }
   },
 };
