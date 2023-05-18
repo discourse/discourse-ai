@@ -43,7 +43,8 @@ module DiscourseAi
         plugin.on(:post_created) do |post|
           bot_ids = BOTS.map(&:first)
 
-          if post.topic.private_message? && !bot_ids.include?(post.user_id)
+          if post.post_type == Post.types[:regular] && post.topic.private_message? &&
+               !bot_ids.include?(post.user_id)
             if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).present?
               bot_id = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user_id
 

@@ -28,6 +28,34 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
         ).by(1)
       end
 
+      it "does not queue a job for small actions" do
+        post = PostCreator.create!(admin, post_args)
+
+        expect {
+          post.topic.add_moderator_post(
+            admin,
+            "this is a small action",
+            post_type: Post.types[:small_action],
+          )
+        }.not_to change(Jobs::CreateAiReply.jobs, :size)
+
+        expect {
+          post.topic.add_moderator_post(
+            admin,
+            "this is a small action",
+            post_type: Post.types[:moderator_action],
+          )
+        }.not_to change(Jobs::CreateAiReply.jobs, :size)
+
+        expect {
+          post.topic.add_moderator_post(
+            admin,
+            "this is a small action",
+            post_type: Post.types[:whisper],
+          )
+        }.not_to change(Jobs::CreateAiReply.jobs, :size)
+      end
+
       it "includes the bot's user_id" do
         claude_bot = User.find(described_class::CLAUDE_V1_ID)
         claude_post_attrs = post_args.merge(target_usernames: [claude_bot.username].join(","))
