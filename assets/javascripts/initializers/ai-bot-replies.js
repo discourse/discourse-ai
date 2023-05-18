@@ -34,6 +34,7 @@ function attachHeaderIcon(api) {
         icon: "robot",
         action: "clickStartAiBotChat",
         active: false,
+        classNames: ["ai-bot-button"],
       });
     });
 
