@@ -8,7 +8,6 @@ import I18n from "I18n";
 export default class AiBotHeaderPanel extends Component {
   @service siteSettings;
   @service composer;
-  @service appEvents;
 
   @action
   async composeMessageWithTargetBot(target) {
@@ -29,6 +28,7 @@ export default class AiBotHeaderPanel extends Component {
   }
 
   async #composeAiBotMessage(targetBot) {
-    composeAiBotMessage(targetBot, this.composer, this.appEvents);
+    this.args.closePanel();
+    composeAiBotMessage(targetBot, this.composer);
   }
 }

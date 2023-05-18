@@ -2,10 +2,7 @@ import { ajax } from "discourse/lib/ajax";
 import Composer from "discourse/models/composer";
 import I18n from "I18n";
 
-export async function composeAiBotMessage(targetBot, composer, appEvents) {
-  if (appEvents) {
-    appEvents.trigger("ai-bot-menu:close");
-  }
+export async function composeAiBotMessage(targetBot, composer) {
   let botUsername = await ajax("/discourse-ai/ai-bot/bot-username", {
     data: { username: targetBot },
   }).then((data) => {
