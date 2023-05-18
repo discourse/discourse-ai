@@ -24,10 +24,6 @@ function attachHeaderIcon(api) {
       this.state.botSelectorVisible = false;
     });
 
-    api.attachWidgetAction("header", "toggleAiBotPanel", function () {
-      this.state.botSelectorVisible = !this.state.botSelectorVisible;
-    });
-
     api.decorateWidget("header-icons:before", (helper) => {
       return helper.attach("header-dropdown", {
         title: "blog.start_gpt_chat",
