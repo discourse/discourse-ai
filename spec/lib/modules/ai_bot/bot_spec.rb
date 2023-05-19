@@ -23,30 +23,6 @@ RSpec.describe DiscourseAi::AiBot::Bot do
     Fabricate(:post, topic: pm, user: user, raw: "This is a second reply by the user")
   end
 
-  describe "#generate_categories_info" do
-    it "can generate correct info" do
-      Fabricate(:category, name: "america", posts_year: 999)
-
-      info = bot.generate_categories_info
-      expect(info).to include("america")
-      expect(info).to include("999")
-    end
-  end
-
-  describe "#generate_tags_info" do
-    it "can generate correct info" do
-      SiteSetting.tagging_enabled = true
-
-      Fabricate(:tag, name: "america", public_topic_count: 100)
-      Fabricate(:tag, name: "not_here", public_topic_count: 0)
-
-      info = bot.generate_tags_info
-
-      expect(info).to include("america")
-      expect(info).not_to include("not_here")
-    end
-  end
-
   describe "#system_prompt" do
     it "includes relevant context in system prompt" do
       SiteSetting.title = "My Forum"
@@ -63,6 +39,8 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
   describe "#reply_to" do
     it "can respond to !search" do
+      bot.system_prompt_style!(:simple)
+
       expected_response = "!search test search"
 
       prompt = bot.bot_prompt_with_topic_context(second_post)

@@ -108,115 +108,36 @@ module DiscourseAi
         Discourse.warn_exception(e, message: "ai-bot: Reply failed")
       end
 
-      def process_command(post, command, total_completions:)
-        args = command.split(" ", 2)[1]
-
-        if command.start_with?("search ")
-          process_search_command(post, args, total_completions: total_completions)
-        end
-
-        if command.start_with?("categories")
-          process_categories_command(post, total_completions: total_completions)
-        end
-
-        if command.start_with?("time")
-          process_time_command(post, args, total_completions: total_completions)
-        end
-
-        if command.start_with?("tags")
-          process_tags_command(post, total_completions: total_completions)
-        end
-      end
-
-      def generate_categories_info
-        info =
-          +"Name, Slug, Description, Posts Year, Posts Month, Posts Week, id, parent_category_id\n"
-
-        Category
-          .where(read_restricted: false)
-          .pluck(
-            :id,
-            :parent_category_id,
-            :slug,
-            :name,
-            :description,
-            :posts_year,
-            :posts_month,
-            :posts_week,
-          )
-          .map do |id, parent_category_id, slug, name, description, posts_year, posts_month, posts_week|
-            info << "#{name}, #{slug}, #{(description || "").gsub(",", "")}, #{posts_year || 0}, #{posts_month || 0}, #{posts_week || 0},#{id}, #{parent_category_id} \n"
-          end
-
-        info
-      end
-
-      def generate_tags_info
-        info = +"Name, Topic Count\n"
-        Tag
-          .where("public_topic_count > 0")
-          .order(public_topic_count: :desc)
-          .limit(100)
-          .pluck(:name, :public_topic_count)
-          .each { |name, count| info << "#{name}, #{count}\n" }
-        info
-      end
-
-      def process_time_command(post, timezone, total_completions:)
-        time =
+      def commands
+        @commands ||=
           begin
-            Time.now.in_time_zone(timezone)
-          rescue StandardError
-            nil
+            list = [
+              Commands::CategoriesCommand.new,
+              Commands::TimeCommand.new,
+              Commands::SearchCommand.new,
+            ]
+            list << Commands::TagsCommand.new if SiteSetting.tagging_enabled
+            list
           end
-        time = Time.now if !time
-
-        run_next_command(
-          post,
-          time.to_s,
-          "!time #{timezone}",
-          "time",
-          total_completions: total_completions,
-        )
       end
 
-      def process_categories_command(post, total_completions:)
-        info = generate_categories_info
+      def process_command(post, command_with_args, total_completions:)
+        command_name, args = command_with_args.split(" ", 2)
 
-        run_next_command(post, info, "!categories", "results", total_completions: total_completions)
-      end
+        commands.each do |command|
+          if command_name == command.name
+            text = command.process(post, args)
 
-      def process_tags_command(post, total_completions:)
-        if SiteSetting.tagging_enabled
-          info = generate_tags_info
-
-          run_next_command(post, info, "!tags", "results", total_completions: total_completions)
+            run_next_command(
+              post,
+              text,
+              "!#{command_with_args}",
+              command.result_name,
+              total_completions: total_completions,
+            )
+            break
+          end
         end
-      end
-
-      def process_search_command(post, query, total_completions:)
-        results = Search.execute(query, search_type: :full_page, guardian: Guardian.new())
-
-        json =
-          results.posts[0..10]
-            .map do |p|
-              {
-                title: p.topic.title,
-                url: p.url,
-                raw_truncated: p.raw[0..250],
-                excerpt: p.excerpt,
-                created: p.created_at,
-              }
-            end
-            .to_json
-
-        run_next_command(
-          post,
-          json,
-          "!search #{query}",
-          "results",
-          total_completions: total_completions,
-        )
       end
 
       def run_next_command(post, payload, command, result_username, total_completions:)
@@ -273,7 +194,13 @@ module DiscourseAi
         TEXT
       end
 
+      def system_prompt_style!(style)
+        @style = style
+      end
+
       def system_prompt(post)
+        return "You are a helpful Bot" if @style == :simple
+
         if SiteSetting.tagging_enabled
           tags = "!tags - will list the 100 most popular tags on the current discourse instance"
         end

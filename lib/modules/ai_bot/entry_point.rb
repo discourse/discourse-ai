@@ -31,6 +31,11 @@ module DiscourseAi
         require_relative "bot"
         require_relative "anthropic_bot"
         require_relative "open_ai_bot"
+        require_relative "commands/command"
+        require_relative "commands/search_command"
+        require_relative "commands/categories_command"
+        require_relative "commands/tags_command"
+        require_relative "commands/time_command"
       end
 
       def inject_into(plugin)
