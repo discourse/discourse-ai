@@ -94,6 +94,13 @@ plugins:
   ai_anthropic_api_key:
     default: ""
     secret: true
+  ai_stability_api_key:
+    default: ""
+    secret: true
+  ai_stability_api_url:
+    default: "https://api.stability.ai"
+  ai_stability_engine:
+    default: "stable-diffusion-xl-beta-v2-2-2"
 
   composer_ai_helper_enabled:
     default: false
