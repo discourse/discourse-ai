@@ -32,6 +32,7 @@ after_initialize do
   require_relative "lib/shared/inference/openai_completions"
   require_relative "lib/shared/inference/openai_embeddings"
   require_relative "lib/shared/inference/anthropic_completions"
+  require_relative "lib/shared/inference/stability_generator"
 
   require_relative "lib/shared/classificator"
   require_relative "lib/shared/post_classificator"
