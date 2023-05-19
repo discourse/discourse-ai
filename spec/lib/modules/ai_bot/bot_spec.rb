@@ -25,6 +25,8 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
   describe "#system_prompt" do
     it "includes relevant context in system prompt" do
+      bot.system_prompt_style!(:standard)
+
       SiteSetting.title = "My Forum"
       SiteSetting.site_description = "My Forum Description"
 

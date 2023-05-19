@@ -4,6 +4,21 @@ module DiscourseAi
   module AiBot
     module Commands
       class Command
+        attr_reader :bot, :post
+
+        def initialize(bot, post)
+          @bot = bot
+          @post = post
+        end
+
+        def standalone?
+          false
+        end
+
+        def low_cost?
+          false
+        end
+
         def result_name
           raise NotImplemented
         end
@@ -12,7 +27,7 @@ module DiscourseAi
           raise NotImplemented
         end
 
-        def process(post, command_args)
+        def process(command_args)
           raise NotImplemented
         end
       end

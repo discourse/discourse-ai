@@ -10,7 +10,7 @@ module DiscourseAi::AiBot::Commands
       "categories"
     end
 
-    def process(_post, _ignore)
+    def process(_args)
       info =
         +"Name, Slug, Description, Posts Year, Posts Month, Posts Week, id, parent_category_id\n"
 

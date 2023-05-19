@@ -53,8 +53,9 @@ module DiscourseAi
         ).dig(:choices, 0, :message, :content)
       end
 
-      def submit_prompt_and_stream_reply(prompt, &blk)
-        DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model_for, **reply_params, &blk)
+      def submit_prompt_and_stream_reply(prompt, prefer_low_cost: false, &blk)
+        model = prefer_low_cost ? "gpt-3.5-turbo" : model_for
+        DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model, **reply_params, &blk)
       end
 
       def tokenize(text)

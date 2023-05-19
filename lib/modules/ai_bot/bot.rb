@@ -32,10 +32,22 @@ module DiscourseAi
         )
       end
 
-      def reply_to(post, total_completions: 0, bot_reply_post: nil)
+      def reply_to(
+        post,
+        total_completions: 0,
+        bot_reply_post: nil,
+        prefer_low_cost: false,
+        standalone: false
+      )
         return if total_completions > MAX_COMPLETIONS
 
-        prompt = bot_prompt_with_topic_context(post)
+        prompt =
+          if standalone && post.post_custom_prompt
+            username, standalone_prompt = post.post_custom_prompt.custom_prompt.last
+            [build_message(username, standalone_prompt)]
+          else
+            bot_prompt_with_topic_context(post)
+          end
 
         redis_stream_key = nil
         reply = +""
@@ -43,7 +55,10 @@ module DiscourseAi
 
         setup_cancel = false
 
-        submit_prompt_and_stream_reply(prompt) do |partial, cancel|
+        submit_prompt_and_stream_reply(
+          prompt,
+          prefer_low_cost: prefer_low_cost,
+        ) do |partial, cancel|
           reply = update_with_delta(reply, partial)
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
@@ -108,31 +123,30 @@ module DiscourseAi
         Discourse.warn_exception(e, message: "ai-bot: Reply failed")
       end
 
-      def commands
-        @commands ||=
-          begin
-            list = [
-              Commands::CategoriesCommand.new,
-              Commands::TimeCommand.new,
-              Commands::SearchCommand.new,
-            ]
-            list << Commands::TagsCommand.new if SiteSetting.tagging_enabled
-            list
-          end
+      def commands(post)
+        list = [
+          Commands::CategoriesCommand,
+          Commands::TimeCommand,
+          Commands::SearchCommand,
+          Commands::SummarizeCommand,
+        ]
+        list << Commands::TagsCommand if SiteSetting.tagging_enabled
+
+        list.map { |klass| klass.new(self, post) }
       end
 
       def process_command(post, command_with_args, total_completions:)
         command_name, args = command_with_args.split(" ", 2)
 
-        commands.each do |command|
+        commands(post).each do |command|
           if command_name == command.name
-            text = command.process(post, args)
+            text = command.process(args)
 
             run_next_command(
+              command,
               post,
               text,
               "!#{command_with_args}",
-              command.result_name,
               total_completions: total_completions,
             )
             break
@@ -140,7 +154,8 @@ module DiscourseAi
         end
       end
 
-      def run_next_command(post, payload, command, result_username, total_completions:)
+      def run_next_command(command, post, payload, command_text, total_completions:)
+        result_username = command.result_name
         post.raw = ""
         post.save!(validate: false)
 
@@ -148,12 +163,18 @@ module DiscourseAi
 
         prompt = post.post_custom_prompt.custom_prompt || []
 
-        prompt << [command, bot_user.username]
+        prompt << [command_text, bot_user.username]
         prompt << [payload, result_username]
 
         post.post_custom_prompt.update!(custom_prompt: prompt)
 
-        reply_to(post, total_completions: total_completions, bot_reply_post: post)
+        reply_to(
+          post,
+          total_completions: total_completions,
+          bot_reply_post: post,
+          prefer_low_cost: command.low_cost?,
+          standalone: command.standalone?,
+        )
       end
 
       def bot_prompt_with_topic_context(post, prompt: "topic")
@@ -221,8 +242,10 @@ module DiscourseAi
           !time RUBY_COMPATIBLE_TIMEZONE - will generate the time in a timezone
           !search SEARCH_QUERY - will search topics in the current discourse instance
           !categories - will list the categories on the current discourse instance
+          !summarize TOPIC_ID GUIDANCE - will summarize a topic attempting to answer question in guidance
           #{tags}
 
+          Discourse topic paths are /t/slug/topic_id/optional_number
           Keep in mind, search on Discourse uses AND to and terms.
           Strip the query down to the most important terms.
           Remove all stop words.
@@ -296,7 +319,7 @@ module DiscourseAi
         raise NotImplemented
       end
 
-      def submit_prompt_and_stream_reply(prompt, &blk)
+      def submit_prompt_and_stream_reply(prompt, prefer_low_cost: false, &blk)
         raise NotImplemented
       end
 

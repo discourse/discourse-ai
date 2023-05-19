@@ -2,11 +2,15 @@
 
 module DiscourseAi::AiBot::Commands
   class TimeCommand < Command
+    def result_name
+      "time"
+    end
+
     def name
       "time"
     end
 
-    def process(post, timezone)
+    def process(timezone)
       time =
         begin
           Time.now.in_time_zone(timezone)

@@ -10,7 +10,7 @@ module DiscourseAi::AiBot::Commands
       "search"
     end
 
-    def process(post, search_string)
+    def process(search_string)
       results =
         Search.execute(search_string.to_s, search_type: :full_page, guardian: Guardian.new())
 

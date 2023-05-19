@@ -36,6 +36,7 @@ module DiscourseAi
         require_relative "commands/categories_command"
         require_relative "commands/tags_command"
         require_relative "commands/time_command"
+        require_relative "commands/summarize_command"
       end
 
       def inject_into(plugin)

@@ -7,7 +7,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::CategoriesCommand do
     it "can generate correct info" do
       Fabricate(:category, name: "america", posts_year: 999)
 
-      info = subject.process(nil, nil)
+      info = DiscourseAi::AiBot::Commands::CategoriesCommand.new(nil, nil).process(nil)
       expect(info).to include("america")
       expect(info).to include("999")
     end

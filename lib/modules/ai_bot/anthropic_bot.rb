@@ -40,7 +40,7 @@ module DiscourseAi
         ).dig(:completion)
       end
 
-      def submit_prompt_and_stream_reply(prompt, &blk)
+      def submit_prompt_and_stream_reply(prompt, prefer_low_cost: false, &blk)
         DiscourseAi::Inference::AnthropicCompletions.perform!(
           prompt,
           model_for,

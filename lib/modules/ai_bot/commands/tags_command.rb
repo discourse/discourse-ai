@@ -10,7 +10,7 @@ module DiscourseAi::AiBot::Commands
       "tags"
     end
 
-    def process(_post, _args)
+    def process(_args)
       info = +"Name, Topic Count\n"
       Tag
         .where("public_topic_count > 0")
