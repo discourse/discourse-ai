@@ -2,12 +2,18 @@
 
 module DiscourseAi::AiBot::Commands
   class SummarizeCommand < Command
-    def result_name
-      "summary"
+    class << self
+      def name
+        "summarize"
+      end
+
+      def desc
+        "!summarize TOPIC_ID GUIDANCE - will summarize a topic attempting to answer question in guidance"
+      end
     end
 
-    def name
-      "summarize"
+    def result_name
+      "summary"
     end
 
     def standalone?

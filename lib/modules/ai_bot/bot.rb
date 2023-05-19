@@ -102,79 +102,35 @@ module DiscourseAi
             skip_revision: true,
           )
 
-          commands = reply.split("\n").select { |l| l[0] == "!" }
+          cmd_text = reply.split("\n").detect { |l| l[0] == "!" }
 
-          if commands.length > 0
-            process_command(
-              bot_reply_post,
-              commands[0][1..-1].strip,
-              total_completions: total_completions + 1,
-            )
-          else
-            if post_custom_prompt = bot_reply_post.post_custom_prompt
-              prompt = post_custom_prompt.custom_prompt
-              prompt << [reply, bot_user.username]
-              post_custom_prompt.update!(custom_prompt: prompt)
+          if cmd_text
+            command_name, args = cmd_text[1..-1].strip.split(" ", 2)
+
+            if command_klass = available_commands.detect { |cmd| cmd.invoked?(command_name) }
+              command = command_klass.new(bot_user, args)
+              command.invoke_and_attach_result_to(bot_reply_post)
+
+              bot_reply_post.raw = ""
+              bot_reply_post.save!(validate: false)
+
+              reply_to(
+                bot_reply_post,
+                total_completions: total_completions + 1,
+                bot_reply_post: bot_reply_post,
+                prefer_low_cost: command.low_cost?,
+                standalone: command.standalone?,
+              )
             end
+          elsif post_custom_prompt = bot_reply_post.post_custom_prompt
+            prompt = post_custom_prompt.custom_prompt
+            prompt << [reply, bot_user.username]
+            post_custom_prompt.update!(custom_prompt: prompt)
           end
         end
       rescue => e
         raise e if Rails.env.test?
         Discourse.warn_exception(e, message: "ai-bot: Reply failed")
-      end
-
-      def commands(post)
-        list = [
-          Commands::CategoriesCommand,
-          Commands::TimeCommand,
-          Commands::SearchCommand,
-          Commands::SummarizeCommand,
-        ]
-        list << Commands::TagsCommand if SiteSetting.tagging_enabled
-
-        list.map { |klass| klass.new(self, post) }
-      end
-
-      def process_command(post, command_with_args, total_completions:)
-        command_name, args = command_with_args.split(" ", 2)
-
-        commands(post).each do |command|
-          if command_name == command.name
-            text = command.process(args)
-
-            run_next_command(
-              command,
-              post,
-              text,
-              "!#{command_with_args}",
-              total_completions: total_completions,
-            )
-            break
-          end
-        end
-      end
-
-      def run_next_command(command, post, payload, command_text, total_completions:)
-        result_username = command.result_name
-        post.raw = ""
-        post.save!(validate: false)
-
-        post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
-
-        prompt = post.post_custom_prompt.custom_prompt || []
-
-        prompt << [command_text, bot_user.username]
-        prompt << [payload, result_username]
-
-        post.post_custom_prompt.update!(custom_prompt: prompt)
-
-        reply_to(
-          post,
-          total_completions: total_completions,
-          bot_reply_post: post,
-          prefer_low_cost: command.low_cost?,
-          standalone: command.standalone?,
-        )
       end
 
       def bot_prompt_with_topic_context(post, prompt: "topic")
@@ -215,6 +171,16 @@ module DiscourseAi
         TEXT
       end
 
+      def available_commands
+        @cmds ||=
+          [
+            Commands::CategoriesCommand,
+            Commands::TimeCommand,
+            Commands::SearchCommand,
+            Commands::SummarizeCommand,
+          ].tap { |cmds| cmds << Commands::TagsCommand if SiteSetting.tagging_enabled }
+      end
+
       def system_prompt_style!(style)
         @style = style
       end
@@ -239,11 +205,7 @@ module DiscourseAi
 
           You can complete some tasks using multiple steps and have access to some special commands!
 
-          !time RUBY_COMPATIBLE_TIMEZONE - will generate the time in a timezone
-          !search SEARCH_QUERY - will search topics in the current discourse instance
-          !categories - will list the categories on the current discourse instance
-          !summarize TOPIC_ID GUIDANCE - will summarize a topic attempting to answer question in guidance
-          #{tags}
+          #{available_commands.map(&:desc).join("\n")}
 
           Discourse topic paths are /t/slug/topic_id/optional_number
           Keep in mind, search on Discourse uses AND to and terms.
@@ -259,37 +221,7 @@ module DiscourseAi
 
           YOUR LOCAL INFORMATION IS OUT OF DATE, YOU ARE TRAINED ON OLD DATA. Always try local search first.
 
-          Discourse search supports, the following special commands:
-
-          in:tagged: has at least 1 tag
-          in:untagged: has no tags
-          status:open: not closed or archived
-          status:closed: closed
-          status:public: topics that are not read restricted (eg: belong to a secure category)
-          status:archived: archived
-          status:noreplies: post count is 1
-          status:single_user: only a single user posted on the topic
-          post_count:X: only topics with X amount of posts
-          min_posts:X: topics containing a minimum of X posts
-          max_posts:X: topics with no more than max posts
-          in:pinned: in all pinned topics (either global or per category pins)
-          created:@USERNAME: topics created by a specific user
-          category:bug: topics in the bug category AND all subcategories
-          category:=bug: topics in the bug category excluding subcategories
-          #=bug: same as above (no sub categories)
-          #SLUG: try category first, then tag, then tag group
-          #SLUG:SLUG: used for subcategory search to disambiguate
-          min_views:100: topics containing 100 views or more
-          max_views:100: topics containing 100 views or less
-          tags:bug+feature: tagged both bug and feature
-          tags:bug,feature: tagged either bug or feature
-          -tags:bug+feature: excluding topics tagged bug and feature
-          -tags:bug,feature: excluding topics tagged bug or feature
-          l: order by post creation desc
-          order:latest: order by post creation desc
-          order:latest_topic: order by topic creation desc
-          order:views: order by topic views desc
-          order:likes: order by post like count - most liked posts first
+          #{available_commands.map(&:extra_context).compact_blank.join("\n")}
 
           Commands should be issued in single assistant message.
 

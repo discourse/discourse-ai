@@ -2,11 +2,17 @@
 
 module DiscourseAi::AiBot::Commands
   class TimeCommand < Command
-    def result_name
-      "time"
+    class << self
+      def name
+        "time"
+      end
+
+      def desc
+        "!time RUBY_COMPATIBLE_TIMEZONE - will generate the time in a timezone"
+      end
     end
 
-    def name
+    def result_name
       "time"
     end
 

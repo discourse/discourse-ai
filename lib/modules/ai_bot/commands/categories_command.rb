@@ -2,12 +2,18 @@
 
 module DiscourseAi::AiBot::Commands
   class CategoriesCommand < Command
-    def result_name
-      "results"
+    class << self
+      def name
+        "categories"
+      end
+
+      def desc
+        "!categories - will list the categories on the current discourse instance"
+      end
     end
 
-    def name
-      "categories"
+    def result_name
+      "results"
     end
 
     def process(_args)

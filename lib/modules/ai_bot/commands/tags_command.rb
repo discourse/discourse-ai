@@ -2,12 +2,18 @@
 
 module DiscourseAi::AiBot::Commands
   class TagsCommand < Command
-    def result_name
-      "results"
+    class << self
+      def name
+        "tags"
+      end
+
+      def desc
+        "!tags - will list the 100 most popular tags on the current discourse instance"
+      end
     end
 
-    def name
-      "tags"
+    def result_name
+      "results"
     end
 
     def process(_args)
