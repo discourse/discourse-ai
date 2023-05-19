@@ -23,7 +23,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
         post_1_message = prompt_messages[1]
 
         expect(post_1_message[:role]).to eq("user")
-        expect(post_1_message[:content]).to eq(post_body(1))
+        expect(post_1_message[:content]).to eq("#{post_1.user.username}: #{post_body(1)}")
       end
     end
 
@@ -35,7 +35,8 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
 
         expect(prompt_messages[0][:role]).to eq("system")
         expect(prompt_messages[1][:role]).to eq("user")
-        expected_length = ("test " * (subject.prompt_limit)).length
+        expected_length =
+          ("test " * (subject.prompt_limit)).length + "#{post_1.user.username}:".length
         expect(prompt_messages[1][:content].length).to eq(expected_length)
       end
     end
@@ -51,13 +52,13 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
         prompt_messages = subject.bot_prompt_with_topic_context(post_3)
 
         expect(prompt_messages[1][:role]).to eq("user")
-        expect(prompt_messages[1][:content]).to eq(post_body(1))
+        expect(prompt_messages[1][:content]).to eq("#{post_1.username}: #{post_body(1)}")
 
-        expect(prompt_messages[2][:role]).to eq("system")
+        expect(prompt_messages[2][:role]).to eq("assistant")
         expect(prompt_messages[2][:content]).to eq(post_body(2))
 
         expect(prompt_messages[3][:role]).to eq("user")
-        expect(prompt_messages[3][:content]).to eq(post_body(3))
+        expect(prompt_messages[3][:content]).to eq("#{post_3.username}: #{post_body(3)}")
       end
     end
   end

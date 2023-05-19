@@ -16,12 +16,22 @@ module DiscourseAi
         3500
       end
 
+      def reply_params
+        { temperature: 0.4, top_p: 0.9, max_tokens: 3000 }
+      end
+
       private
 
-      def build_message(poster_username, content)
-        role = poster_username == bot_user.username ? "system" : "user"
+      def build_message(poster_username, content, system: false)
+        is_bot = poster_username == bot_user.username
 
-        { role: role, content: content }
+        if system
+          role = "system"
+        else
+          role = is_bot ? "assistant" : "user"
+        end
+
+        { role: role, content: is_bot ? content : "#{poster_username}: #{content}" }
       end
 
       def model_for
@@ -44,14 +54,7 @@ module DiscourseAi
       end
 
       def submit_prompt_and_stream_reply(prompt, &blk)
-        DiscourseAi::Inference::OpenAiCompletions.perform!(
-          prompt,
-          model_for,
-          temperature: 0.4,
-          top_p: 0.9,
-          max_tokens: 3000,
-          &blk
-        )
+        DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model_for, **reply_params, &blk)
       end
 
       def tokenize(text)

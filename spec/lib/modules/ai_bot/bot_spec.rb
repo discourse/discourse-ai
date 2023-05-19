@@ -3,20 +3,100 @@
 require_relative "../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::AiBot::Bot do
-  describe "#update_pm_title" do
-    fab!(:topic) { Fabricate(:topic) }
-    fab!(:post) { Fabricate(:post, topic: topic) }
+  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  fab!(:bot) { described_class.as(bot_user) }
 
+  fab!(:user) { Fabricate(:user) }
+  fab!(:pm) do
+    Fabricate(
+      :private_message_topic,
+      title: "This is my special PM",
+      user: user,
+      topic_allowed_users: [
+        Fabricate.build(:topic_allowed_user, user: user),
+        Fabricate.build(:topic_allowed_user, user: bot_user),
+      ],
+    )
+  end
+  fab!(:first_post) { Fabricate(:post, topic: pm, user: user, raw: "This is a reply by the user") }
+  fab!(:second_post) do
+    Fabricate(:post, topic: pm, user: user, raw: "This is a second reply by the user")
+  end
+
+  describe "#generate_categories_info" do
+    it "can generate correct info" do
+      Fabricate(:category, name: "america", posts_year: 999)
+
+      info = bot.generate_categories_info
+      expect(info).to include("america")
+      expect(info).to include("999")
+    end
+  end
+
+  describe "#generate_tags_info" do
+    it "can generate correct info" do
+      SiteSetting.tagging_enabled = true
+
+      Fabricate(:tag, name: "america", public_topic_count: 100)
+      Fabricate(:tag, name: "not_here", public_topic_count: 0)
+
+      info = bot.generate_tags_info
+
+      expect(info).to include("america")
+      expect(info).not_to include("not_here")
+    end
+  end
+
+  describe "#system_prompt" do
+    it "includes relevant context in system prompt" do
+      SiteSetting.title = "My Forum"
+      SiteSetting.site_description = "My Forum Description"
+
+      system_prompt = bot.system_prompt(second_post)
+
+      expect(system_prompt).to include(SiteSetting.title)
+      expect(system_prompt).to include(SiteSetting.site_description)
+
+      expect(system_prompt).to include(user.username)
+    end
+  end
+
+  describe "#reply_to" do
+    it "can respond to !search" do
+      expected_response = "!search test search"
+
+      prompt = bot.bot_prompt_with_topic_context(second_post)
+
+      OpenAiCompletionsInferenceStubs.stub_streamed_response(
+        prompt,
+        [{ content: expected_response }],
+        req_opts: bot.reply_params.merge(stream: true),
+      )
+
+      prompt << { role: "assistant", content: "!search test search" }
+      prompt << { role: "user", content: "results: []" }
+
+      OpenAiCompletionsInferenceStubs.stub_streamed_response(
+        prompt,
+        [{ content: "We are done now" }],
+        req_opts: bot.reply_params.merge(stream: true),
+      )
+
+      bot.reply_to(second_post)
+
+      last = second_post.topic.posts.order("id desc").first
+      expect(last.post_custom_prompt.custom_prompt.to_s).to include("We are done now")
+    end
+  end
+
+  describe "#update_pm_title" do
     let(:expected_response) { "This is a suggested title" }
 
     before { SiteSetting.min_personal_message_post_length = 5 }
 
-    before { SiteSetting.min_personal_message_post_length = 5 }
-
     it "updates the title using bot suggestions" do
-      bot_user = User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID)
       OpenAiCompletionsInferenceStubs.stub_response(
-        DiscourseAi::AiBot::OpenAiBot.new(bot_user).title_prompt(post),
+        [bot.title_prompt(second_post)],
         expected_response,
         req_opts: {
           temperature: 0.7,
@@ -25,9 +105,9 @@ RSpec.describe DiscourseAi::AiBot::Bot do
         },
       )
 
-      described_class.as(bot_user).update_pm_title(post)
+      bot.update_pm_title(second_post)
 
-      expect(topic.reload.title).to eq(expected_response)
+      expect(pm.reload.title).to eq(expected_response)
     end
   end
 end
