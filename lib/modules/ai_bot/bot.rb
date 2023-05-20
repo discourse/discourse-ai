@@ -188,10 +188,6 @@ module DiscourseAi
       def system_prompt(post)
         return "You are a helpful Bot" if @style == :simple
 
-        if SiteSetting.tagging_enabled
-          tags = "!tags - will list the 100 most popular tags on the current discourse instance"
-        end
-
         <<~TEXT
           You are a helpful Discourse assistant, you answer questions and generate text.
           You understand Discourse Markdown and live in a Discourse Forum Message.
