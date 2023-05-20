@@ -17,7 +17,7 @@ module DiscourseAi
 
       private
 
-      def build_message(poster_username, content)
+      def build_message(poster_username, content, system: false)
         role = poster_username == bot_user.username ? "Assistant" : "Human"
 
         "#{role}: #{content}"
@@ -40,7 +40,7 @@ module DiscourseAi
         ).dig(:completion)
       end
 
-      def submit_prompt_and_stream_reply(prompt, &blk)
+      def submit_prompt_and_stream_reply(prompt, prefer_low_cost: false, &blk)
         DiscourseAi::Inference::AnthropicCompletions.perform!(
           prompt,
           model_for,

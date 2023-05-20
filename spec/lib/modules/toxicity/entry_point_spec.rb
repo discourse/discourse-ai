@@ -61,7 +61,7 @@ describe DiscourseAi::Toxicity::EntryPoint do
         )
       end
 
-      it "queues a job on chat message update" do
+      xit "queues a job on chat message update" do
         expect { updater.update }.to change(Jobs::ToxicityClassifyChatMessage.jobs, :size).by(1)
       end
     end

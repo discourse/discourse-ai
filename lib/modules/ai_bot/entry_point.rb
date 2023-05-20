@@ -31,6 +31,14 @@ module DiscourseAi
         require_relative "bot"
         require_relative "anthropic_bot"
         require_relative "open_ai_bot"
+        require_relative "commands/command"
+        require_relative "commands/search_command"
+        require_relative "commands/categories_command"
+        require_relative "commands/tags_command"
+        require_relative "commands/time_command"
+        require_relative "commands/summarize_command"
+        require_relative "commands/image_command"
+        require_relative "commands/google_command"
       end
 
       def inject_into(plugin)
@@ -43,7 +51,8 @@ module DiscourseAi
         plugin.on(:post_created) do |post|
           bot_ids = BOTS.map(&:first)
 
-          if post.topic.private_message? && !bot_ids.include?(post.user_id)
+          if post.post_type == Post.types[:regular] && post.topic.private_message? &&
+               !bot_ids.include?(post.user_id)
             if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).present?
               bot_id = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user_id
 
