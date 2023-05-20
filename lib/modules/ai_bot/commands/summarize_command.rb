@@ -51,6 +51,8 @@ module DiscourseAi::AiBot::Commands
             .joins(:user)
             .where(topic_id: topic.id)
             .order(:post_number)
+            .where("post_type in (?)", [Post.types[:regular], Post.types[:small_action]])
+            .where("not hidden")
             .limit(50)
             .pluck(:raw, :username)
             .each { |raw, username| rows << ["#{username} said: #{raw}"] }
