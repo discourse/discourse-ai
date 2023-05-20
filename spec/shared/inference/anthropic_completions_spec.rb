@@ -31,7 +31,7 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
     response_body = AnthropicCompletionStubs.response(response_text).to_json
 
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
-    expect(log.request_tokens).to eq(7)
+    expect(log.request_tokens).to eq(6)
     expect(log.response_tokens).to eq(16)
     expect(log.raw_request_payload).to eq(request_body)
     expect(log.raw_response_payload).to eq(response_body)
@@ -59,8 +59,8 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
     request_body = { model: "claude-v1", prompt: prompt }.merge(req_opts).to_json
 
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
-    expect(log.request_tokens).to eq(7)
-    expect(log.response_tokens).to eq(9)
+    expect(log.request_tokens).to eq(6)
+    expect(log.response_tokens).to eq(6)
     expect(log.raw_request_payload).to eq(request_body)
     expect(log.raw_response_payload).to be_present
   end

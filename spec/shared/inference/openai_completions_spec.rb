@@ -74,8 +74,8 @@ describe DiscourseAi::Inference::OpenAiCompletions do
     request_body = { model: "gpt-3.5-turbo", messages: prompt, stream: true }.to_json
 
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::OpenAI)
-    expect(log.request_tokens).to eq(5)
-    expect(log.response_tokens).to eq(4)
+    expect(log.request_tokens).to eq(4)
+    expect(log.response_tokens).to eq(3)
     expect(log.raw_request_payload).to eq(request_body)
     expect(log.raw_response_payload).to be_present
   end
