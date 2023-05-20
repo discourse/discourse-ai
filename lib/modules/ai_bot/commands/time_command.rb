@@ -16,6 +16,10 @@ module DiscourseAi::AiBot::Commands
       "time"
     end
 
+    def description_args
+      { timezone: @last_timezone, time: @last_time }
+    end
+
     def process(timezone)
       time =
         begin
@@ -24,6 +28,10 @@ module DiscourseAi::AiBot::Commands
           nil
         end
       time = Time.now if !time
+
+      @last_timezone = timezone
+      @last_time = time.to_s
+
       time.to_s
     end
   end

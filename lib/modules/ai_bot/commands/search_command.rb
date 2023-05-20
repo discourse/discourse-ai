@@ -52,9 +52,20 @@ module DiscourseAi::AiBot::Commands
       "results"
     end
 
+    def description_args
+      {
+        count: @last_num_results || 0,
+        query: @last_query || "",
+        url: "#{Discourse.base_path}/search?q=#{CGI.escape(@last_query || "")}",
+      }
+    end
+
     def process(search_string)
+      @last_query = search_string
       results =
         Search.execute(search_string.to_s, search_type: :full_page, guardian: Guardian.new())
+
+      @last_num_results = results.posts.length
 
       results.posts[0..10]
         .map do |p|

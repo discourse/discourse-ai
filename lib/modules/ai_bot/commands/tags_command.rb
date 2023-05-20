@@ -16,14 +16,22 @@ module DiscourseAi::AiBot::Commands
       "results"
     end
 
+    def description_args
+      { count: @last_count || 0 }
+    end
+
     def process(_args)
       info = +"Name, Topic Count\n"
+      @last_count = 0
       Tag
         .where("public_topic_count > 0")
         .order(public_topic_count: :desc)
         .limit(100)
         .pluck(:name, :public_topic_count)
-        .each { |name, count| info << "#{name}, #{count}\n" }
+        .each do |name, count|
+          @last_count += 1
+          info << "#{name}, #{count}\n"
+        end
       info
     end
   end

@@ -50,7 +50,7 @@ module DiscourseAi
           end
 
         redis_stream_key = nil
-        reply = +""
+        reply = bot_reply_post ? bot_reply_post.raw : ""
         start = Time.now
 
         setup_cancel = false
@@ -111,9 +111,6 @@ module DiscourseAi
               command = command_klass.new(bot_user, args)
               command.invoke_and_attach_result_to(bot_reply_post)
 
-              bot_reply_post.raw = ""
-              bot_reply_post.save!(validate: false)
-
               reply_to(
                 bot_reply_post,
                 total_completions: total_completions + 1,
@@ -137,25 +134,27 @@ module DiscourseAi
         messages = []
         conversation = conversation_context(post)
 
-        total_prompt_tokens = 0
+        rendered_system_prompt = system_prompt(post)
+
+        total_prompt_tokens = tokenize(rendered_system_prompt).length
         messages =
           conversation.reduce([]) do |memo, (raw, username)|
             break(memo) if total_prompt_tokens >= prompt_limit
 
             tokens = tokenize(raw)
 
-            if tokens.length + total_prompt_tokens > prompt_limit
-              tokens = tokens[0...(prompt_limit - total_prompt_tokens)]
-              raw = tokens.join(" ")
+            while !raw.blank? && tokens.length + total_prompt_tokens > prompt_limit
+              raw = raw[0..-100] || ""
+              tokens = tokenize(raw)
             end
 
-            total_prompt_tokens += tokens.length
+            next(memo) if raw.blank?
 
+            total_prompt_tokens += tokens.length
             memo.unshift(build_message(username, raw))
           end
 
-        messages.unshift(build_message(bot_user.username, system_prompt(post), system: true))
-
+        messages.unshift(build_message(bot_user.username, rendered_system_prompt, system: true))
         messages
       end
 

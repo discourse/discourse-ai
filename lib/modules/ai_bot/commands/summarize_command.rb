@@ -24,8 +24,14 @@ module DiscourseAi::AiBot::Commands
       true
     end
 
+    def description_args
+      { url: "#{Discourse.base_path}/t/-/#{@last_topic_id}", title: @last_topic_title || "" }
+    end
+
     def process(instructions)
       topic_id, guidance = instructions.split(" ", 2)
+
+      @last_topic_id = topic_id
 
       topic_id = topic_id.to_i
       topic = nil
@@ -37,6 +43,7 @@ module DiscourseAi::AiBot::Commands
       rows = []
 
       if topic
+        @last_topic_title = topic.title
         if guidance.present?
           rows << ["Given: #{guidance}"]
           rows << ["Summarise: #{topic.title}"]

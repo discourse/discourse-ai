@@ -47,6 +47,10 @@ module DiscourseAi
           raise NotImplemented
         end
 
+        def description_args
+          {}
+        end
+
         def invoke_and_attach_result_to(post)
           post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
           prompt = post.post_custom_prompt.custom_prompt || []
@@ -55,6 +59,17 @@ module DiscourseAi
           prompt << [process(args), result_name]
 
           post.post_custom_prompt.update!(custom_prompt: prompt)
+
+          post.raw = <<~HTML
+          <details>
+            <summary>#{I18n.t("discourse_ai.ai_bot.command_summary.#{self.class.name}")}</summary>
+            <p>
+              #{I18n.t("discourse_ai.ai_bot.command_description.#{self.class.name}", self.description_args)}
+            </p>
+          </details>
+
+          HTML
+          post.save!(validate: false)
         end
 
         protected

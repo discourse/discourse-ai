@@ -66,6 +66,11 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
       last = second_post.topic.posts.order("id desc").first
       expect(last.post_custom_prompt.custom_prompt.to_s).to include("We are done now")
+
+      expect(last.raw).to include("<details>")
+      expect(last.raw).to include("<summary>Search</summary>")
+      expect(last.raw).not_to include("translation missing")
+      expect(last.raw).to include("We are done now")
     end
   end
 

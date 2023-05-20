@@ -85,3 +85,21 @@ en:
 
     ai_bot:
       default_pm_prefix: "[Untitled AI bot PM]"
+      command_summary:
+        categories: "List categories"
+        search: "Search"
+        tags: "List tags"
+        time: "Time"
+        summarize: "Summarize"
+      command_description:
+        time: "Time in %{timezone} is %{time}"
+        summarize: "Summarized <a href='%{url}'>%{title}</a>"
+        categories:
+          one: "Found %{count} category"
+          other: "Found %{count} categories"
+        tags:
+          one: "Found %{count} tag"
+          other: "Found %{count} tags"
+        search:
+          one: "Found %{count} <a href='%{url}'>result</a> for '%{query}'"
+          other: "Found %{count} <a href='%{url}'>results</a> for '%{query}'"

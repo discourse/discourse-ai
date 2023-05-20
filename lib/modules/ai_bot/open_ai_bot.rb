@@ -13,11 +13,24 @@ module DiscourseAi
       end
 
       def prompt_limit
-        3500
+        # note GPT counts both reply and request tokens in limits...
+        # also allow for an extra 500 or so spare tokens
+        if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
+          8192 - 3500
+        else
+          4096 - 2000
+        end
       end
 
       def reply_params
-        { temperature: 0.4, top_p: 0.9, max_tokens: 3000 }
+        max_tokens =
+          if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
+            3000
+          else
+            1500
+          end
+
+        { temperature: 0.4, top_p: 0.9, max_tokens: max_tokens }
       end
 
       private
