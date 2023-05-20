@@ -40,19 +40,5 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
       expect(info).to include("title1")
       expect(info).to include("snippet1")
     end
-
-    it "protects hidden data" do
-      category = Fabricate(:category)
-      category.set_permissions({})
-      category.save!
-
-      topic = Fabricate(:topic, category_id: category.id)
-      post = Fabricate(:post, topic: topic)
-
-      summarizer = described_class.new(bot, post)
-      info = summarizer.process("#{post.topic_id} why did it happen?")
-
-      expect(info).not_to include(post.raw)
-    end
   end
 end
