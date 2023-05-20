@@ -106,6 +106,12 @@ plugins:
       - "stable-diffusion-xl-beta-v2-2-2"
       - "stable-diffusion-v1-5"
 
+  ai_google_custom_search_api_key:
+    default: ""
+    secret: true
+  ai_google_custom_search_cx:
+    default: ""
+
   composer_ai_helper_enabled:
     default: false
     client: true

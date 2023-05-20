@@ -182,6 +182,10 @@ module DiscourseAi
           ].tap do |cmds|
             cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
             cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
+            if SiteSetting.ai_google_custom_search_api_key.present? &&
+                 SiteSetting.ai_google_custom_search_cx.present?
+              cmds << Commands::GoogleCommand
+            end
           end
       end
 
