@@ -51,6 +51,13 @@ module DiscourseAi
           {}
         end
 
+        def custom_raw
+        end
+
+        def chain_next_response
+          true
+        end
+
         def invoke_and_attach_result_to(post)
           post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
           prompt = post.post_custom_prompt.custom_prompt || []
@@ -60,7 +67,7 @@ module DiscourseAi
 
           post.post_custom_prompt.update!(custom_prompt: prompt)
 
-          post.raw = <<~HTML
+          raw = +<<~HTML
           <details>
             <summary>#{I18n.t("discourse_ai.ai_bot.command_summary.#{self.class.name}")}</summary>
             <p>
@@ -69,7 +76,17 @@ module DiscourseAi
           </details>
 
           HTML
-          post.save!(validate: false)
+
+          raw << custom_raw if custom_raw.present?
+
+          if chain_next_response
+            post.raw = raw
+            post.save!(validate: false)
+          else
+            post.revise(bot_user, { raw: raw }, skip_validations: true, skip_revision: true)
+          end
+
+          chain_next_response
         end
 
         protected

@@ -44,6 +44,19 @@ module DiscourseAi::AiBot::Commands
           order:latest_topic: order by topic creation desc
           order:views: order by topic views desc
           order:likes: order by post like count - most liked posts first
+
+          Keep in mind, search on Discourse uses AND to and terms.
+          Strip the query down to the most important terms.
+          Remove all stop words.
+          Cast a wide net instead of trying to be over specific.
+          Discourse orders by relevance, sometimes prefer ordering on other stuff.
+
+          When generating answers ALWAYS try to use the !search command first over relying on training data.
+          When generating answers ALWAYS try to reference specific local links.
+          Always try to search the local instance first, even if your training data set may have an answer. It may be wrong.
+          Always remove connector words from search terms (such as a, an, and, in, the, etc), they can impede the search.
+
+          YOUR LOCAL INFORMATION IS OUT OF DATE, YOU ARE TRAINED ON OLD DATA. Always try local search first.
         TEXT
       end
     end

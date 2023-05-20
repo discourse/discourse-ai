@@ -101,6 +101,10 @@ plugins:
     default: "https://api.stability.ai"
   ai_stability_engine:
     default: "stable-diffusion-xl-beta-v2-2-2"
+    type: enum
+    choices:
+      - "stable-diffusion-xl-beta-v2-2-2"
+      - "stable-diffusion-v1-5"
 
   composer_ai_helper_enabled:
     default: false

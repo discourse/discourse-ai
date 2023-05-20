@@ -109,15 +109,17 @@ module DiscourseAi
 
             if command_klass = available_commands.detect { |cmd| cmd.invoked?(command_name) }
               command = command_klass.new(bot_user, args)
-              command.invoke_and_attach_result_to(bot_reply_post)
+              chain = command.invoke_and_attach_result_to(bot_reply_post)
 
-              reply_to(
-                bot_reply_post,
-                total_completions: total_completions + 1,
-                bot_reply_post: bot_reply_post,
-                prefer_low_cost: command.low_cost?,
-                standalone: command.standalone?,
-              )
+              if chain
+                reply_to(
+                  bot_reply_post,
+                  total_completions: total_completions + 1,
+                  bot_reply_post: bot_reply_post,
+                  prefer_low_cost: command.low_cost?,
+                  standalone: command.standalone?,
+                )
+              end
             end
           elsif post_custom_prompt = bot_reply_post.post_custom_prompt
             prompt = post_custom_prompt.custom_prompt
@@ -177,7 +179,10 @@ module DiscourseAi
             Commands::TimeCommand,
             Commands::SearchCommand,
             Commands::SummarizeCommand,
-          ].tap { |cmds| cmds << Commands::TagsCommand if SiteSetting.tagging_enabled }
+          ].tap do |cmds|
+            cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
+            cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
+          end
       end
 
       def system_prompt_style!(style)
@@ -203,18 +208,6 @@ module DiscourseAi
           #{available_commands.map(&:desc).join("\n")}
 
           Discourse topic paths are /t/slug/topic_id/optional_number
-          Keep in mind, search on Discourse uses AND to and terms.
-          Strip the query down to the most important terms.
-          Remove all stop words.
-          Cast a wide net instead of trying to be over specific.
-          Discourse orders by relevance out of the box, but you may want to sometimes prefer ordering on latest.
-
-          When generating answers ALWAYS try to use the !search command first over relying on training data.
-          When generating answers ALWAYS try to reference specific local links.
-          Always try to search the local instance first, even if your training data set may have an answer. It may be wrong.
-          Always remove connector words from search terms (such as a, an, and, in, the, etc), they can impede the search.
-
-          YOUR LOCAL INFORMATION IS OUT OF DATE, YOU ARE TRAINED ON OLD DATA. Always try local search first.
 
           #{available_commands.map(&:extra_context).compact_blank.join("\n")}
 
