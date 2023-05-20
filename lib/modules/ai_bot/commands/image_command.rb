@@ -46,7 +46,7 @@ module DiscourseAi::AiBot::Commands
       @last_custom_raw =
         uploads
           .map { |upload| "![#{prompt.gsub(/\|\'\"/, "")}|512x512, 50%](#{upload.short_url})" }
-          .join("\n\n")
+          .join(" ")
     end
   end
 end
