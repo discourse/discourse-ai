@@ -55,10 +55,7 @@ module DiscourseAi
 
         setup_cancel = false
 
-        submit_prompt_and_stream_reply(
-          prompt,
-          prefer_low_cost: prefer_low_cost,
-        ) do |partial, cancel|
+        submit_prompt(prompt, prefer_low_cost: prefer_low_cost) do |partial, cancel|
           reply = update_with_delta(reply, partial)
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
@@ -228,6 +225,14 @@ module DiscourseAi
         TEXT
       end
 
+      def tokenize(text)
+        raise NotImplemented
+      end
+
+      def submit_prompt(prompt, prefer_low_cost: false, &blk)
+        raise NotImplemented
+      end
+
       protected
 
       attr_reader :bot_user
@@ -241,10 +246,6 @@ module DiscourseAi
       end
 
       def get_delta_from(partial)
-        raise NotImplemented
-      end
-
-      def submit_prompt_and_stream_reply(prompt, prefer_low_cost: false, &blk)
         raise NotImplemented
       end
 
@@ -286,10 +287,6 @@ module DiscourseAi
           payload.merge(post_id: bot_reply_post.id, post_number: bot_reply_post.post_number),
           user_ids: bot_reply_post.topic.allowed_user_ids,
         )
-      end
-
-      def tokenize(text)
-        raise NotImplemented
       end
     end
   end

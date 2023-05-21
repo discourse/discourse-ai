@@ -33,6 +33,29 @@ module DiscourseAi
         { temperature: 0.4, top_p: 0.9, max_tokens: max_tokens }
       end
 
+      def submit_prompt(
+        prompt,
+        prefer_low_cost: false,
+        temperature: nil,
+        top_p: nil,
+        max_tokens: nil,
+        &blk
+      )
+        params =
+          reply_params.merge(
+            temperature: temperature,
+            top_p: top_p,
+            max_tokens: max_tokens,
+          ) { |key, old_value, new_value| new_value.nil? ? old_value : new_value }
+
+        model = prefer_low_cost ? "gpt-3.5-turbo" : model_for
+        DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model, **params, &blk)
+      end
+
+      def tokenize(text)
+        DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(text)
+      end
+
       private
 
       def build_message(poster_username, content, system: false)
@@ -64,15 +87,6 @@ module DiscourseAi
           top_p: 0.9,
           max_tokens: 40,
         ).dig(:choices, 0, :message, :content)
-      end
-
-      def submit_prompt_and_stream_reply(prompt, prefer_low_cost: false, &blk)
-        model = prefer_low_cost ? "gpt-3.5-turbo" : model_for
-        DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model, **reply_params, &blk)
-      end
-
-      def tokenize(text)
-        DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(text)
       end
     end
   end

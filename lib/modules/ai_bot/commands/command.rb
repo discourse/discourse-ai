@@ -22,6 +22,8 @@ module DiscourseAi
           end
         end
 
+        attr_reader :bot_user, :args
+
         def initialize(bot_user, args)
           @bot_user = bot_user
           @args = args
