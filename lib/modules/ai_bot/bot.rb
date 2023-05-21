@@ -139,6 +139,7 @@ module DiscourseAi
         rendered_system_prompt = system_prompt(post)
 
         total_prompt_tokens = tokenize(rendered_system_prompt).length
+
         messages =
           conversation.reduce([]) do |memo, (raw, username)|
             break(memo) if total_prompt_tokens >= prompt_limit
@@ -262,8 +263,11 @@ module DiscourseAi
 
         result = []
 
+        # custom prompts can be a problem and use up many tokens
+        # this limits the problem
+        first = true
         context.each do |raw, username, custom_prompt|
-          if custom_prompt.present?
+          if custom_prompt.present? && first
             custom_prompt.reverse_each { |message| result << message }
           else
             result << [raw, username]

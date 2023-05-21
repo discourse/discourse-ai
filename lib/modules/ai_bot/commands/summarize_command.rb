@@ -47,22 +47,44 @@ module DiscourseAi::AiBot::Commands
         if guidance.present?
           rows << ["Given: #{guidance}"]
           rows << ["Summarise: #{topic.title}"]
-          Post
-            .joins(:user)
-            .where(topic_id: topic.id)
-            .order(:post_number)
-            .where("post_type in (?)", [Post.types[:regular], Post.types[:small_action]])
-            .where("not hidden")
-            .limit(50)
-            .pluck(:raw, :username)
-            .each { |raw, username| rows << ["#{username} said: #{raw}"] }
+          posts =
+            Post
+              .joins(:user)
+              .where(topic_id: topic.id)
+              .where("post_type in (?)", [Post.types[:regular], Post.types[:small_action]])
+              .where("not hidden")
+              .order(:post_number)
+
+          columns = ["posts.id", :post_number, :raw, :username]
+
+          current = posts.limit(3).pluck(columns)
+
+          current +=
+            posts
+              .where("posts.id not in(?)", current.map { |x| x[0] })
+              .reorder("posts.score desc")
+              .limit(10)
+              .sort_by { |row| row[1] }
+
+          current +=
+            posts
+              .where("posts.id not in(?)", current.map { |x| x[0] })
+              .reorder("post_number desc")
+              .limit(3)
+              .pluck(columns)
+              .reverse
+
+          current.each do |id, post_number, raw, username|
+            rows << ["(#{post_number} #{username} said: #{raw}"]
+          end
         end
       end
 
       if rows.blank?
         "Say: No topic found!"
       else
-        "#{rows.join("\n")}"[0..2000]
+        # TODO got to be way smarter about this and use tokens
+        "#{rows.join("\n")}"[0..3000]
       end
     end
   end
