@@ -74,23 +74,44 @@ module DiscourseAi::AiBot::Commands
     end
 
     def process(search_string)
+      limit = nil
+
+      search_string =
+        search_string
+          .strip
+          .split(/\s+/)
+          .map do |term|
+            if term =~ /limit:(\d+)/
+              limit = $1.to_i
+              nil
+            else
+              term
+            end
+          end
+          .compact
+          .join(" ")
+
       @last_query = search_string
       results =
         Search.execute(search_string.to_s, search_type: :full_page, guardian: Guardian.new())
 
+      posts = results.posts
+      posts = posts[0..limit - 1] if limit
+
       @last_num_results = results.posts.length
 
-      results.posts[0..10]
-        .map do |p|
+      if posts.blank?
+        "No results found"
+      else
+        format_results(posts) do |post|
           {
-            title: p.topic.title,
-            url: p.url,
-            raw_truncated: p.raw[0..250],
-            excerpt: p.excerpt,
-            created: p.created_at,
+            title: post.topic.title,
+            url: post.url,
+            excerpt: post.excerpt,
+            created: post.created_at,
           }
         end
-        .to_json
+      end
     end
   end
 end

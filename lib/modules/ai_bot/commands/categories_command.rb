@@ -21,29 +21,21 @@ module DiscourseAi::AiBot::Commands
     end
 
     def process(_args)
-      info =
-        +"Name, Slug, Description, Posts Year, Posts Month, Posts Week, id, parent_category_id\n"
+      columns = {
+        name: "Name",
+        slug: "Slug",
+        description: "Description",
+        posts_year: "Posts Year",
+        posts_month: "Posts Month",
+        posts_week: "Posts Week",
+        id: "id",
+        parent_category_id: "parent_category_id",
+      }
 
-      @count = 0
-      Category
-        .where(read_restricted: false)
-        .limit(100)
-        .pluck(
-          :id,
-          :parent_category_id,
-          :slug,
-          :name,
-          :description,
-          :posts_year,
-          :posts_month,
-          :posts_week,
-        )
-        .map do |id, parent_category_id, slug, name, description, posts_year, posts_month, posts_week|
-          @count += 1
-          info << "#{name}, #{slug}, #{(description || "").gsub(",", "")}, #{posts_year || 0}, #{posts_month || 0}, #{posts_week || 0},#{id}, #{parent_category_id} \n"
-        end
+      rows = Category.where(read_restricted: false).limit(100).pluck(*columns.keys)
+      @count = rows.length
 
-      info
+      format_results(rows, columns.values)
     end
   end
 end

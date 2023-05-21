@@ -89,6 +89,41 @@ module DiscourseAi
           chain_next_response
         end
 
+        def format_results(rows, column_names = nil)
+          rows = rows.map { |row| yield row } if block_given?
+
+          if !column_names
+            index = -1
+            column_indexes = {}
+
+            rows =
+              rows.map do |data|
+                new_row = []
+                data.each do |key, value|
+                  found_index = column_indexes[key.to_s] ||= (index += 1)
+                  new_row[found_index] = value
+                end
+                new_row
+              end
+            column_names = column_indexes.keys
+          end
+          # two tokens per delimiter is a reasonable balance
+          # there may be a single delimiter solution but GPT has
+          # a hard time dealing with escaped characters
+          delimiter = "¦"
+          formatted = +""
+          formatted << column_names.join(delimiter)
+          formatted << "\n"
+
+          rows.each do |array|
+            array.map! { |item| item.to_s.gsub(delimiter, "|").gsub(/\n/, " ") }
+            formatted << array.join(delimiter)
+            formatted << "\n"
+          end
+
+          formatted
+        end
+
         protected
 
         attr_reader :bot_user, :args
