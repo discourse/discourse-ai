@@ -263,12 +263,15 @@ module DiscourseAi
 
         result = []
 
-        # custom prompts can be a problem and use up many tokens
-        # this limits the problem
         first = true
         context.each do |raw, username, custom_prompt|
-          if custom_prompt.present? && first
-            custom_prompt.reverse_each { |message| result << message }
+          if custom_prompt.present?
+            if first
+              custom_prompt.reverse_each { |message| result << message }
+              first = false
+            else
+              result << custom_prompt.first
+            end
           else
             result << [raw, username]
           end
