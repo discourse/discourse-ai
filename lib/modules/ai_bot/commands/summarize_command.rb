@@ -155,13 +155,15 @@ module DiscourseAi::AiBot::Commands
         #{text}
       TEXT
 
-      messages = [
-        {
-          role: "system",
-          content:
-            "You are a summarization bot. You effectively summarise any text. You condense it into a shorter version. You understand and generate Discourse forum markdown.\n Try generating links as well the format is #{topic.url}/POST_NUMBER. eg: [ref](#{topic.url}/77)",
-        },
-      ]
+      system_prompt = <<~TEXT
+        You are a summarization bot.
+        You effectively summarise any text.
+        You condense it into a shorter version.
+        You understand and generate Discourse forum markdown.
+        Try generating links as well the format is #{topic.url}/POST_NUMBER. eg: [ref](#{topic.url}/77)
+      TEXT
+
+      messages = [{ role: "system", content: system_prompt }]
       messages << { role: "user", content: prompt }
 
       result =
