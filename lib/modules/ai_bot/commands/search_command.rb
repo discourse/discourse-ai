@@ -95,10 +95,10 @@ module DiscourseAi::AiBot::Commands
       results =
         Search.execute(search_string.to_s, search_type: :full_page, guardian: Guardian.new())
 
-      posts = results.posts
+      posts = results&.posts || []
       posts = posts[0..limit - 1] if limit
 
-      @last_num_results = results.posts.length
+      @last_num_results = posts.length
 
       if posts.blank?
         "No results found"
