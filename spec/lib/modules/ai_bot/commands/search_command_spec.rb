@@ -9,6 +9,14 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
   after { SearchIndexer.disable }
 
   describe "#process" do
+    it "can handle no results" do
+      post1 = Fabricate(:post)
+      search = described_class.new(bot_user, post1)
+
+      results = search.process("order:fake")
+      expect(results).to eq("No results found")
+    end
+
     it "can handle limits" do
       post1 = Fabricate(:post)
       _post2 = Fabricate(:post, user: post1.user)
