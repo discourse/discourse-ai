@@ -91,6 +91,7 @@ en:
 
     ai_bot:
       default_pm_prefix: "[Untitled AI bot PM]"
+      topic_not_found: "Summary unavailable, topic not found!"
       command_summary:
         categories: "List categories"
         search: "Search"

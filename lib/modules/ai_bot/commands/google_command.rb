@@ -42,20 +42,15 @@ module DiscourseAi::AiBot::Commands
 
       @last_num_results = parsed.dig("searchInformation", "totalResults").to_i
 
-      formatted_results = []
-
-      results.each do |result|
-        formatted_result = {
+      format_results(results) do |result|
+        {
           title: result["title"],
           link: result["link"],
           snippet: result["snippet"],
           displayLink: result["displayLink"],
           formattedUrl: result["formattedUrl"],
         }
-        formatted_results << formatted_result
       end
-
-      formatted_results
     end
   end
 end

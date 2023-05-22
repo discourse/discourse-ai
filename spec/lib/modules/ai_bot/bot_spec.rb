@@ -54,7 +54,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       )
 
       prompt << { role: "assistant", content: "!search test search" }
-      prompt << { role: "user", content: "results: []" }
+      prompt << { role: "user", content: "results: No results found" }
 
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
         prompt,

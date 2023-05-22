@@ -4,7 +4,6 @@ require_relative "../../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
   fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  fab!(:bot) { DiscourseAi::AiBot::Bot.as(bot_user) }
 
   describe "#process" do
     it "can generate correct info" do
@@ -33,7 +32,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
         "https://www.googleapis.com/customsearch/v1?cx=cx&key=abc&num=10&q=some%20search%20term",
       ).to_return(status: 200, body: json_text, headers: {})
 
-      google = described_class.new(bot, post)
+      google = described_class.new(bot_user, post)
       info = google.process("some search term")
 
       expect(google.description_args[:count]).to eq(1)

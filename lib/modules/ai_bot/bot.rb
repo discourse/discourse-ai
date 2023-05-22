@@ -55,10 +55,7 @@ module DiscourseAi
 
         setup_cancel = false
 
-        submit_prompt_and_stream_reply(
-          prompt,
-          prefer_low_cost: prefer_low_cost,
-        ) do |partial, cancel|
+        submit_prompt(prompt, prefer_low_cost: prefer_low_cost) do |partial, cancel|
           reply = update_with_delta(reply, partial)
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
@@ -139,6 +136,7 @@ module DiscourseAi
         rendered_system_prompt = system_prompt(post)
 
         total_prompt_tokens = tokenize(rendered_system_prompt).length
+
         messages =
           conversation.reduce([]) do |memo, (raw, username)|
             break(memo) if total_prompt_tokens >= prompt_limit
@@ -227,6 +225,14 @@ module DiscourseAi
         TEXT
       end
 
+      def tokenize(text)
+        raise NotImplemented
+      end
+
+      def submit_prompt(prompt, prefer_low_cost: false, &blk)
+        raise NotImplemented
+      end
+
       protected
 
       attr_reader :bot_user
@@ -240,10 +246,6 @@ module DiscourseAi
       end
 
       def get_delta_from(partial)
-        raise NotImplemented
-      end
-
-      def submit_prompt_and_stream_reply(prompt, prefer_low_cost: false, &blk)
         raise NotImplemented
       end
 
@@ -262,9 +264,15 @@ module DiscourseAi
 
         result = []
 
+        first = true
         context.each do |raw, username, custom_prompt|
           if custom_prompt.present?
-            custom_prompt.reverse_each { |message| result << message }
+            if first
+              custom_prompt.reverse_each { |message| result << message }
+              first = false
+            else
+              result << custom_prompt.first
+            end
           else
             result << [raw, username]
           end
@@ -279,10 +287,6 @@ module DiscourseAi
           payload.merge(post_id: bot_reply_post.id, post_number: bot_reply_post.post_number),
           user_ids: bot_reply_post.topic.allowed_user_ids,
         )
-      end
-
-      def tokenize(text)
-        raise NotImplemented
       end
     end
   end

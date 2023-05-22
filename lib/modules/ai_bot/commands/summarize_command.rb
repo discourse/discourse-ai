@@ -40,30 +40,135 @@ module DiscourseAi::AiBot::Commands
         topic = nil if !topic || !Guardian.new.can_see?(topic)
       end
 
-      rows = []
+      @last_summary = nil
 
       if topic
         @last_topic_title = topic.title
-        if guidance.present?
-          rows << ["Given: #{guidance}"]
-          rows << ["Summarise: #{topic.title}"]
+
+        posts =
           Post
-            .joins(:user)
             .where(topic_id: topic.id)
-            .order(:post_number)
             .where("post_type in (?)", [Post.types[:regular], Post.types[:small_action]])
             .where("not hidden")
-            .limit(50)
-            .pluck(:raw, :username)
-            .each { |raw, username| rows << ["#{username} said: #{raw}"] }
-        end
+            .order(:post_number)
+
+        columns = ["posts.id", :post_number, :raw, :username]
+
+        current_post_numbers = posts.limit(5).pluck(:post_number)
+        current_post_numbers += posts.reorder("posts.score desc").limit(50).pluck(:post_number)
+        current_post_numbers += posts.reorder("post_number desc").limit(5).pluck(:post_number)
+
+        data =
+          Post
+            .where(topic_id: topic.id)
+            .joins(:user)
+            .where("post_number in (?)", current_post_numbers)
+            .order(:post_number)
+            .pluck(*columns)
+
+        @last_summary = summarize(data, guidance, topic)
       end
 
-      if rows.blank?
+      if !@last_summary
         "Say: No topic found!"
       else
-        "#{rows.join("\n")}"[0..2000]
+        "Topic summarized"
       end
+    end
+
+    def custom_raw
+      @last_summary || I18n.t("discourse_ai.ai_bot.topic_not_found")
+    end
+
+    def chain_next_response
+      false
+    end
+
+    def bot
+      @bot ||= DiscourseAi::AiBot::Bot.as(bot_user)
+    end
+
+    def summarize(data, guidance, topic)
+      text = +""
+      data.each do |id, post_number, raw, username|
+        text << "(#{post_number} #{username} said: #{raw}"
+      end
+
+      summaries = []
+      current_section = +""
+      split = []
+
+      text
+        .split(/\s+/)
+        .each_slice(20) do |slice|
+          current_section << " "
+          current_section << slice.join(" ")
+
+          # somehow any more will get closer to limits
+          if bot.tokenize(current_section).length > 2500
+            split << current_section
+            current_section = +""
+          end
+        end
+
+      split << current_section if current_section.present?
+
+      split = split[0..3] + split[-3..-1] if split.length > 5
+
+      split.each do |section|
+        # TODO progress meter
+        summary =
+          generate_gpt_summary(
+            section,
+            topic: topic,
+            context: "Guidance: #{guidance}\nYou are summarizing the topic: #{topic.title}",
+          )
+        summaries << summary
+      end
+
+      if summaries.length > 1
+        messages = []
+        messages << { role: "system", content: "You are a helpful bot" }
+        messages << {
+          role: "user",
+          content:
+            "concatenated the disjoint summaries, creating a cohesive narrative:\n#{summaries.join("\n")}}",
+        }
+        bot.submit_prompt(messages, temperature: 0.6, max_tokens: 500, prefer_low_cost: true).dig(
+          :choices,
+          0,
+          :message,
+          :content,
+        )
+      else
+        summaries.first
+      end
+    end
+
+    def generate_gpt_summary(text, topic:, context: nil, length: nil)
+      length ||= 400
+
+      prompt = <<~TEXT
+        #{context}
+        Summarize the following in #{length} words:
+
+        #{text}
+      TEXT
+
+      system_prompt = <<~TEXT
+        You are a summarization bot.
+        You effectively summarise any text.
+        You condense it into a shorter version.
+        You understand and generate Discourse forum markdown.
+        Try generating links as well the format is #{topic.url}/POST_NUMBER. eg: [ref](#{topic.url}/77)
+      TEXT
+
+      messages = [{ role: "system", content: system_prompt }]
+      messages << { role: "user", content: prompt }
+
+      result =
+        bot.submit_prompt(messages, temperature: 0.6, max_tokens: length, prefer_low_cost: true)
+      result.dig(:choices, 0, :message, :content)
     end
   end
 end

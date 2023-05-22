@@ -21,18 +21,18 @@ module DiscourseAi::AiBot::Commands
     end
 
     def process(_args)
-      info = +"Name, Topic Count\n"
-      @last_count = 0
-      Tag
-        .where("public_topic_count > 0")
-        .order(public_topic_count: :desc)
-        .limit(100)
-        .pluck(:name, :public_topic_count)
-        .each do |name, count|
-          @last_count += 1
-          info << "#{name}, #{count}\n"
-        end
-      info
+      column_names = { name: "Name", public_topic_count: "Topic Count" }
+
+      tags =
+        Tag
+          .where("public_topic_count > 0")
+          .order(public_topic_count: :desc)
+          .limit(100)
+          .pluck(*column_names.keys)
+
+      @last_count = tags.length
+
+      format_results(tags, column_names.values)
     end
   end
 end
