@@ -17,9 +17,9 @@ module DiscourseAi::AiBot::Commands
 
           in:tagged: has at least 1 tag
           in:untagged: has no tags
+          in:title: has the search term in the title
           status:open: not closed or archived
           status:closed: closed
-          status:public: topics that are not read restricted (eg: belong to a secure category)
           status:archived: archived
           status:noreplies: post count is 1
           status:single_user: only a single user posted on the topic
@@ -28,24 +28,24 @@ module DiscourseAi::AiBot::Commands
           max_posts:X: topics with no more than max posts
           in:pinned: in all pinned topics (either global or per category pins)
           created:@USERNAME: topics created by a specific user
-          category:bug: topics in the bug category AND all subcategories
-          category:=bug: topics in the bug category excluding subcategories
-          #=bug: same as above (no sub categories)
+          category:CATGORY: topics in the CATEGORY AND all subcategories
+          category:=CATEGORY: topics in the CATEGORY excluding subcategories
           #SLUG: try category first, then tag, then tag group
           #SLUG:SLUG: used for subcategory search to disambiguate
           min_views:100: topics containing 100 views or more
           max_views:100: topics containing 100 views or less
-          tags:bug+feature: tagged both bug and feature
-          tags:bug,feature: tagged either bug or feature
-          -tags:bug+feature: excluding topics tagged bug and feature
-          -tags:bug,feature: excluding topics tagged bug or feature
-          l: order by post creation desc
+          tags:TAG1+TAG2: tagged both TAG1 and TAG2
+          tags:TAG1,TAG2: tagged either TAG1 or TAG2
+          -tags:TAG1+TAG2: excluding topics tagged TAG1 and TAG2
           order:latest: order by post creation desc
           order:latest_topic: order by topic creation desc
           order:views: order by topic views desc
           order:likes: order by post like count - most liked posts first
+          after:YYYY-MM-DD: only topics created after a specific date
+          before:YYYY-MM-DD: only topics created before a specific date
 
           Keep in mind, search on Discourse uses AND to and terms.
+          You only have access to public topics.
           Strip the query down to the most important terms.
           Remove all stop words.
           Cast a wide net instead of trying to be over specific.
