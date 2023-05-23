@@ -25,6 +25,7 @@ describe ::TopicsController do
         .returns([topic1.id, topic2.id, topic3.id])
 
       get("#{topic.relative_url}.json")
+      expect(response.status).to eq(200)
       json = response.parsed_body
 
       expect(json["suggested_topics"].length).to eq(0)
@@ -37,6 +38,17 @@ describe ::TopicsController do
 
       expect(json["suggested_topics"].length).to eq(0)
       expect(json["related_topics"].length).to eq(2)
+    end
+
+    it "excludes embeddings when the database is offline" do
+      DiscourseAi::Database::Connection.stubs(:db).raises(PG::ConnectionBad)
+
+      get "#{topic.relative_url}.json"
+      expect(response.status).to eq(200)
+      json = response.parsed_body
+
+      expect(json["suggested_topics"].length).not_to eq(0)
+      expect(json["related_topics"].length).to eq(0)
     end
   end
 end

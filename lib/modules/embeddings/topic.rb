@@ -33,22 +33,27 @@ module DiscourseAi
       def asymmetric_semantic_search(model, query, limit, offset)
         embedding = model.generate_embedding(query)
 
-        candidate_ids =
-          DiscourseAi::Database::Connection
-            .db
-            .query(<<~SQL, query_embedding: embedding, limit: limit, offset: offset)
-          SELECT
-            topic_id
-          FROM
-            topic_embeddings_#{model.name.underscore}
-          ORDER BY
-            embedding #{model.pg_function} '[:query_embedding]'
-          LIMIT :limit
-          OFFSET :offset
-        SQL
-            .map(&:topic_id)
-
-        raise StandardError, "No embeddings found for topic #{topic.id}" if candidate_ids.empty?
+        begin
+          candidate_ids =
+            DiscourseAi::Database::Connection
+              .db
+              .query(<<~SQL, query_embedding: embedding, limit: limit, offset: offset)
+                SELECT
+                  topic_id
+                FROM
+                  topic_embeddings_#{model.name.underscore}
+                ORDER BY
+                  embedding #{model.pg_function} '[:query_embedding]'
+                LIMIT :limit
+                OFFSET :offset
+              SQL
+              .map(&:topic_id)
+        rescue PG::Error => e
+          Rails.logger.error(
+            "Error #{e} querying embeddings for topic #{topic.id} and model #{model.name}",
+          )
+          raise MissingEmbeddingError
+        end
 
         candidate_ids
       end
@@ -56,32 +61,49 @@ module DiscourseAi
       private
 
       def query_symmetric_embeddings(model, topic)
-        DiscourseAi::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
-          SELECT
-            topic_id
-          FROM
-            topic_embeddings_#{model.name.underscore}
-          ORDER BY
-            embedding #{model.pg_function} (
-              SELECT
-                embedding
-              FROM
-                topic_embeddings_#{model.name.underscore}
-              WHERE
-                topic_id = :topic_id
-              LIMIT 1
-            )
-          LIMIT 100
-        SQL
+        begin
+          DiscourseAi::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
+            SELECT
+              topic_id
+            FROM
+              topic_embeddings_#{model.name.underscore}
+            ORDER BY
+              embedding #{model.pg_function} (
+                SELECT
+                  embedding
+                FROM
+                  topic_embeddings_#{model.name.underscore}
+                WHERE
+                  topic_id = :topic_id
+                LIMIT 1
+              )
+            LIMIT 100
+          SQL
+        rescue PG::Error => e
+          Rails.logger.error(
+            "Error #{e} querying embeddings for topic #{topic.id} and model #{model.name}",
+          )
+          raise MissingEmbeddingError
+        end
       end
 
       def persist_embedding(topic, model, embedding)
-        DiscourseAi::Database::Connection.db.exec(<<~SQL, topic_id: topic.id, embedding: embedding)
-            INSERT INTO topic_embeddings_#{model.name.underscore} (topic_id, embedding)
-            VALUES (:topic_id, '[:embedding]')
-            ON CONFLICT (topic_id)
-            DO UPDATE SET embedding = '[:embedding]'
-          SQL
+        begin
+          DiscourseAi::Database::Connection.db.exec(
+            <<~SQL,
+              INSERT INTO topic_embeddings_#{model.name.underscore} (topic_id, embedding)
+              VALUES (:topic_id, '[:embedding]')
+              ON CONFLICT (topic_id)
+              DO UPDATE SET embedding = '[:embedding]'
+            SQL
+            topic_id: topic.id,
+            embedding: embedding,
+          )
+        rescue PG::Error => e
+          Rails.logger.error(
+            "Error #{e} persisting embedding for topic #{topic.id} and model #{model.name}",
+          )
+        end
       end
     end
   end
