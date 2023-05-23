@@ -2,6 +2,8 @@
 
 module DiscourseAi
   module Embeddings
+    MissingEmbeddingError = Class.new(StandardError)
+
     class Topic
       def generate_and_store_embeddings_for(topic)
         return unless SiteSetting.ai_embeddings_enabled
@@ -17,29 +19,12 @@ module DiscourseAi
       end
 
       def symmetric_semantic_search(model, topic)
-        candidate_ids =
-          DiscourseAi::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
-          SELECT
-            topic_id
-          FROM
-            topic_embeddings_#{model.name.underscore}
-          ORDER BY
-            embedding #{model.pg_function} (
-              SELECT
-                embedding
-              FROM
-                topic_embeddings_#{model.name.underscore}
-              WHERE
-                topic_id = :topic_id
-              LIMIT 1
-            )
-          LIMIT 100
-        SQL
+        candidate_ids = query_symmetric_embeddings(model, topic)
 
         # Happens when the topic doesn't have any embeddings
         # I'd rather not use Exceptions to control the flow, so this should be refactored soon
         if candidate_ids.empty? || !candidate_ids.include?(topic.id)
-          raise StandardError, "No embeddings found for topic #{topic.id}"
+          raise MissingEmbeddingError, "No embeddings found for topic #{topic.id}"
         end
 
         candidate_ids
@@ -69,6 +54,26 @@ module DiscourseAi
       end
 
       private
+
+      def query_symmetric_embeddings(model, topic)
+        DiscourseAi::Database::Connection.db.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
+          SELECT
+            topic_id
+          FROM
+            topic_embeddings_#{model.name.underscore}
+          ORDER BY
+            embedding #{model.pg_function} (
+              SELECT
+                embedding
+              FROM
+                topic_embeddings_#{model.name.underscore}
+              WHERE
+                topic_id = :topic_id
+              LIMIT 1
+            )
+          LIMIT 100
+        SQL
+      end
 
       def persist_embedding(topic, model, embedding)
         DiscourseAi::Database::Connection.db.exec(<<~SQL, topic_id: topic.id, embedding: embedding)
