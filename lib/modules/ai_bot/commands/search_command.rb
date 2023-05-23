@@ -93,7 +93,11 @@ module DiscourseAi::AiBot::Commands
 
       @last_query = search_string
       results =
-        Search.execute(search_string.to_s, search_type: :full_page, guardian: Guardian.new())
+        Search.execute(
+          search_string.to_s + " status:public",
+          search_type: :full_page,
+          guardian: Guardian.new(),
+        )
 
       # let's be frugal with tokens, 50 results is too much and stuff gets cut off
       limit ||= 10
