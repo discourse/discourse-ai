@@ -49,7 +49,10 @@ module DiscourseAi
               SQL
               .map(&:topic_id)
         rescue PG::Error => e
-          raise StandardError, "No embeddings found for topic #{topic.id}" if candidate_ids.empty?
+          Rails.logger.error(
+            "Error #{e} querying embeddings for topic #{topic.id} and model #{model.name}",
+          )
+          raise MissingEmbeddingError
         end
 
         candidate_ids
@@ -80,6 +83,7 @@ module DiscourseAi
           Rails.logger.error(
             "Error #{e} querying embeddings for topic #{topic.id} and model #{model.name}",
           )
+          raise MissingEmbeddingError
         end
       end
 
