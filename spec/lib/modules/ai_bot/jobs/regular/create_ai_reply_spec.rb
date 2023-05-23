@@ -63,7 +63,8 @@ RSpec.describe Jobs::CreateAiReply do
     end
 
     context "when chatting with Claude from Anthropic" do
-      let(:deltas) { expected_response.split(" ").map { |w| "#{w} " } }
+      let(:claude_response) { "Assistant: #{expected_response}" }
+      let(:deltas) { claude_response.split(" ").map { |w| "#{w} " } }
 
       before do
         bot_user = User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V1_ID)

@@ -93,10 +93,18 @@ module DiscourseAi::AiBot::Commands
 
       @last_query = search_string
       results =
-        Search.execute(search_string.to_s, search_type: :full_page, guardian: Guardian.new())
+        Search.execute(
+          search_string.to_s + " status:public",
+          search_type: :full_page,
+          guardian: Guardian.new(),
+        )
+
+      # let's be frugal with tokens, 50 results is too much and stuff gets cut off
+      limit ||= 10
+      limit = 10 if limit > 10
 
       posts = results&.posts || []
-      posts = posts[0..limit - 1] if limit
+      posts = posts[0..limit - 1]
 
       @last_num_results = posts.length
 

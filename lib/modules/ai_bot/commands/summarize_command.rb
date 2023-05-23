@@ -84,10 +84,6 @@ module DiscourseAi::AiBot::Commands
       false
     end
 
-    def bot
-      @bot ||= DiscourseAi::AiBot::Bot.as(bot_user)
-    end
-
     def summarize(data, guidance, topic)
       text = +""
       data.each do |id, post_number, raw, username|
