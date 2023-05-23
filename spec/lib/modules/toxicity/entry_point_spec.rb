@@ -37,7 +37,7 @@ describe DiscourseAi::Toxicity::EntryPoint do
     end
 
     context "when creating a chat message" do
-      let(:public_chat_channel) { Fabricate(:chat_channel) }
+      fab!(:public_chat_channel) { Fabricate(:chat_channel) }
       let(:creator) do
         Chat::MessageCreator.new(
           chat_channel: public_chat_channel,
@@ -52,7 +52,9 @@ describe DiscourseAi::Toxicity::EntryPoint do
     end
 
     context "when editing a chat message" do
-      let(:chat_message) { Fabricate(:chat_message) }
+      # This fabricator trigger events because it uses the MessageCreator.
+      # Using let makes the test fail.
+      fab!(:chat_message) { Fabricate(:chat_message) }
       let(:updater) do
         Chat::MessageUpdater.new(
           guardian: Guardian.new(chat_message.user),
@@ -61,7 +63,7 @@ describe DiscourseAi::Toxicity::EntryPoint do
         )
       end
 
-      xit "queues a job on chat message update" do
+      it "queues a job on chat message update" do
         expect { updater.update }.to change(Jobs::ToxicityClassifyChatMessage.jobs, :size).by(1)
       end
     end
