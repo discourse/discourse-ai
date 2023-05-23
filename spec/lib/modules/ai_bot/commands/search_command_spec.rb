@@ -13,7 +13,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       post1 = Fabricate(:post)
       search = described_class.new(bot_user, post1)
 
-      results = search.process("order:fake")
+      results = search.process("order:fake ABDDCDCEDGDG")
       expect(results).to eq("No results found")
     end
 
@@ -29,6 +29,10 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
       # title + 2 rows
       expect(results.split("\n").length).to eq(3)
+
+      # just searching for everything
+      results = search.process("order:latest_topic")
+      expect(results.split("\n").length).to be > 1
     end
   end
 end
