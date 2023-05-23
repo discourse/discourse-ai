@@ -15,6 +15,26 @@ module DiscourseAi
         7500 # https://console.anthropic.com/docs/prompt-design#what-is-a-prompt
       end
 
+      def get_delta(partial, context)
+        context[:pos] ||= 0
+
+        full = partial[:completion]
+        delta = full[context[:pos]..-1]
+
+        context[:pos] = full.length
+
+        if !context[:processed]
+          delta = ""
+          index = full.index("Assistant: ")
+          if index
+            delta = full[index + 11..-1]
+            context[:processed] = true
+          end
+        end
+
+        delta
+      end
+
       private
 
       def build_message(poster_username, content, system: false)
@@ -25,10 +45,6 @@ module DiscourseAi
 
       def model_for
         "claude-v1"
-      end
-
-      def update_with_delta(_, partial)
-        partial[:completion]
       end
 
       def get_updated_title(prompt)

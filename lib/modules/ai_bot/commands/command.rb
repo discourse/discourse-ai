@@ -29,6 +29,10 @@ module DiscourseAi
           @args = args
         end
 
+        def bot
+          @bot ||= DiscourseAi::AiBot::Bot.as(bot_user)
+        end
+
         def standalone?
           false
         end
@@ -80,6 +84,9 @@ module DiscourseAi
           HTML
 
           raw << custom_raw if custom_raw.present?
+
+          replacement = "!#{self.class.name} #{args}"
+          raw = post.raw.sub(replacement, raw) if post.raw.include?(replacement)
 
           if chain_next_response
             post.raw = raw

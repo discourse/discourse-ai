@@ -3,6 +3,8 @@
 module DiscourseAi
   module AiBot
     class Bot
+      attr_reader :bot_user
+
       BOT_NOT_FOUND = Class.new(StandardError)
       MAX_COMPLETIONS = 3
 
@@ -50,13 +52,14 @@ module DiscourseAi
           end
 
         redis_stream_key = nil
-        reply = bot_reply_post ? bot_reply_post.raw : ""
+        reply = +(bot_reply_post ? bot_reply_post.raw.dup : "")
         start = Time.now
 
         setup_cancel = false
+        context = {}
 
         submit_prompt(prompt, prefer_low_cost: prefer_low_cost) do |partial, cancel|
-          reply = update_with_delta(reply, partial)
+          reply << get_delta(partial, context)
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
             cancel&.call
@@ -92,6 +95,7 @@ module DiscourseAi
 
         if bot_reply_post
           publish_update(bot_reply_post, done: true)
+
           bot_reply_post.revise(
             bot_user,
             { raw: reply },
@@ -154,6 +158,9 @@ module DiscourseAi
             memo.unshift(build_message(username, raw))
           end
 
+        # we need this to ground the model (especially GPT-3.5)
+        messages.unshift(build_message(bot_user.username, "!echo 1"))
+        messages.unshift(build_message("user", "please echo 1"))
         messages.unshift(build_message(bot_user.username, rendered_system_prompt, system: true))
         messages
       end
@@ -205,7 +212,9 @@ module DiscourseAi
           The participants in this conversation are: #{post.topic.allowed_users.map(&:username).join(", ")}
           The date now is: #{Time.zone.now}, much has changed since you were trained.
 
-          You can complete some tasks using multiple steps and have access to some special commands!
+          You can complete some tasks using !commands.
+
+          NEVER ask user to issue !commands, they have no access, only you do.
 
           #{available_commands.map(&:desc).join("\n")}
 
@@ -233,19 +242,17 @@ module DiscourseAi
         raise NotImplemented
       end
 
-      protected
+      def get_delta(partial, context)
+        raise NotImplemented
+      end
 
-      attr_reader :bot_user
+      protected
 
       def get_updated_title(prompt)
         raise NotImplemented
       end
 
       def model_for(bot)
-        raise NotImplemented
-      end
-
-      def get_delta_from(partial)
         raise NotImplemented
       end
 

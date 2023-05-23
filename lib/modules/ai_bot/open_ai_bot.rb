@@ -75,8 +75,8 @@ module DiscourseAi
         "gpt-3.5-turbo"
       end
 
-      def update_with_delta(current_delta, partial)
-        current_delta + partial.dig(:choices, 0, :delta, :content).to_s
+      def get_delta(partial, _context)
+        partial.dig(:choices, 0, :delta, :content).to_s
       end
 
       def get_updated_title(prompt)
