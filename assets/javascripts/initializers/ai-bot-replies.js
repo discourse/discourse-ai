@@ -26,7 +26,7 @@ function attachHeaderIcon(api) {
 
     api.decorateWidget("header-icons:before", (helper) => {
       return helper.attach("header-dropdown", {
-        title: "blog.start_gpt_chat",
+        title: "discourse_ai.ai_bot.shortcut_title",
         icon: "robot",
         action: "clickStartAiBotChat",
         active: false,

@@ -13,8 +13,9 @@ module DiscourseAi::AiBot::Commands
 
       def extra_context
         <<~TEXT
-          Discourse search supports, the following special commands:
+          Discourse search supports, the following special filters:
 
+          user:USERNAME: only posts created by a specific user
           in:tagged: has at least 1 tag
           in:untagged: has no tags
           in:title: has the search term in the title
@@ -39,10 +40,14 @@ module DiscourseAi::AiBot::Commands
           -tags:TAG1+TAG2: excluding topics tagged TAG1 and TAG2
           order:latest: order by post creation desc
           order:latest_topic: order by topic creation desc
+          order:oldest : order by post creation asc
+          order:oldest_topic: order by topic creation asc
           order:views: order by topic views desc
           order:likes: order by post like count - most liked posts first
           after:YYYY-MM-DD: only topics created after a specific date
           before:YYYY-MM-DD: only topics created before a specific date
+
+          Example: !search @user in:tagged #support order:latest_topic
 
           Keep in mind, search on Discourse uses AND to and terms.
           You only have access to public topics.
