@@ -20,7 +20,7 @@ RSpec.describe Jobs::CreateAiReply do
       before do
         bot_user = User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID)
 
-        # time nees to be frozen so time in prompt does not drift
+        # time needs to be frozen so time in prompt does not drift
         freeze_time
 
         OpenAiCompletionsInferenceStubs.stub_streamed_response(
