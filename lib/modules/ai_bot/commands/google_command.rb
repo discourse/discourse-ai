@@ -13,7 +13,7 @@ module DiscourseAi::AiBot::Commands
     end
 
     def result_name
-      "results"
+      "Google Results"
     end
 
     def description_args
@@ -24,11 +24,11 @@ module DiscourseAi::AiBot::Commands
       }
     end
 
-    def process(search_string)
-      @last_query = search_string
+    def process
+      @last_query = @args
       api_key = SiteSetting.ai_google_custom_search_api_key
       cx = SiteSetting.ai_google_custom_search_cx
-      query = CGI.escape(search_string)
+      query = CGI.escape(@args)
       uri =
         URI("https://www.googleapis.com/customsearch/v1?key=#{api_key}&cx=#{cx}&q=#{query}&num=10")
       body = Net::HTTP.get(uri)

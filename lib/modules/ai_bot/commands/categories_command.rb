@@ -13,14 +13,14 @@ module DiscourseAi::AiBot::Commands
     end
 
     def result_name
-      "results"
+      "Category list is"
     end
 
     def description_args
       { count: @last_count || 0 }
     end
 
-    def process(_args)
+    def process
       columns = {
         name: "Name",
         slug: "Slug",

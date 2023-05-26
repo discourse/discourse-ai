@@ -7,8 +7,8 @@ module DiscourseAi
         bot_user.id == DiscourseAi::AiBot::EntryPoint::CLAUDE_V1_ID
       end
 
-      def bot_prompt_with_topic_context(post)
-        super(post).join("\n\n")
+      def bot_prompt_with_topic_context(post, triage: false)
+        super(post, triage: triage).join("\n\n")
       end
 
       def prompt_limit
@@ -22,25 +22,18 @@ module DiscourseAi
         delta = full[context[:pos]..-1]
 
         context[:pos] = full.length
-
-        if !context[:processed]
-          delta = ""
-          index = full.index("Assistant: ")
-          if index
-            delta = full[index + 11..-1]
-            context[:processed] = true
-          end
-        end
-
         delta
       end
 
       private
 
-      def build_message(poster_username, content, system: false)
+      def build_message(poster_username, content, system: false, last: false)
         role = poster_username == bot_user.username ? "Assistant" : "Human"
 
-        "#{role}: #{content}"
+        result = +"#{role}: #{content}"
+        result << "\nAssistant: " if last
+
+        result
       end
 
       def model_for

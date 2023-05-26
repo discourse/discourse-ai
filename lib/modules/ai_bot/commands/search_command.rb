@@ -67,7 +67,7 @@ module DiscourseAi::AiBot::Commands
     end
 
     def result_name
-      "results"
+      "relevant forum search results"
     end
 
     def description_args
@@ -78,8 +78,9 @@ module DiscourseAi::AiBot::Commands
       }
     end
 
-    def process(search_string)
+    def process
       limit = nil
+      search_string = @args
 
       search_string =
         search_string

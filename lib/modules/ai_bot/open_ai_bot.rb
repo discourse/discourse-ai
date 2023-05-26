@@ -58,7 +58,7 @@ module DiscourseAi
 
       private
 
-      def build_message(poster_username, content, system: false)
+      def build_message(poster_username, content, system: false, last: false)
         is_bot = poster_username == bot_user.username
 
         if system

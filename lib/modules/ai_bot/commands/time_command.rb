@@ -20,10 +20,10 @@ module DiscourseAi::AiBot::Commands
       { timezone: @last_timezone, time: @last_time }
     end
 
-    def process(timezone)
+    def process
       time =
         begin
-          Time.now.in_time_zone(timezone)
+          Time.now.in_time_zone(@args)
         rescue StandardError
           nil
         end

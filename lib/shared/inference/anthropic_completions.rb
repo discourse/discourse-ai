@@ -87,10 +87,18 @@ module ::DiscourseAi
                     data = line.split("data: ", 2)[1]
                     next if !data || data.squish == "[DONE]"
 
-                    if !cancelled && partial = JSON.parse(data, symbolize_names: true)
-                      response_data << partial[:completion].to_s
-
-                      yield partial, cancel
+                    if !cancelled
+                      # anthropic sends a bunch of partial JSON that can not be parsed
+                      partial =
+                        begin
+                          JSON.parse(data, symbolize_names: true)
+                        rescue JSON::ParserError
+                          nil
+                        end
+                      if partial
+                        response_data << partial[:completion].to_s
+                        yield partial, cancel
+                      end
                     end
                   end
               rescue IOError

@@ -8,7 +8,7 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!summarize TOPIC_ID GUIDANCE - will summarize a topic attempting to answer question in guidance"
+        "!summarize TOPIC_ID OPTIONAL_GUIDANCE - will summarize a topic attempting to answer question in guidance, if provided"
       end
     end
 
@@ -28,8 +28,8 @@ module DiscourseAi::AiBot::Commands
       { url: "#{Discourse.base_path}/t/-/#{@last_topic_id}", title: @last_topic_title || "" }
     end
 
-    def process(instructions)
-      topic_id, guidance = instructions.split(" ", 2)
+    def process
+      topic_id, guidance = @args.split(" ", 2)
 
       @last_topic_id = topic_id
 

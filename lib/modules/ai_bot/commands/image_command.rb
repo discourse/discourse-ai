@@ -8,7 +8,7 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!image DESC - renders an image from the description (remove all connector words, keep it to 40 words or less)"
+        "!image DESC - renders an image from the description (remove all connector words, keep it to 40 words or less, be creative)"
       end
     end
 
@@ -17,19 +17,20 @@ module DiscourseAi::AiBot::Commands
     end
 
     def description_args
-      { prompt: @last_prompt || 0 }
-    end
-
-    def custom_raw
-      @last_custom_raw
+      { prompt: @args || 0 }
     end
 
     def chain_next_response
       false
     end
 
-    def process(prompt)
-      @last_prompt = prompt
+    def post_raw_details
+      "#{super}\n\n#{@last_custom_raw}"
+    end
+
+    def process
+      prompt = @args
+
       results = DiscourseAi::Inference::StabilityGenerator.perform!(prompt)
 
       uploads = []
@@ -47,6 +48,8 @@ module DiscourseAi::AiBot::Commands
         uploads
           .map { |upload| "![#{prompt.gsub(/\|\'\"/, "")}|512x512, 50%](#{upload.short_url})" }
           .join(" ")
+
+      nil
     end
   end
 end

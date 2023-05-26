@@ -20,7 +20,7 @@ module DiscourseAi::AiBot::Commands
       { count: @last_count || 0 }
     end
 
-    def process(_args)
+    def process
       column_names = { name: "Name", public_topic_count: "Topic Count" }
 
       tags =
@@ -32,7 +32,11 @@ module DiscourseAi::AiBot::Commands
 
       @last_count = tags.length
 
-      format_results(tags, column_names.values)
+      if @last_count == 0
+        "This Discourse instance has no tags"
+      else
+        format_results(tags, column_names.values)
+      end
     end
   end
 end
