@@ -10,10 +10,6 @@ DiscourseAi::Engine.routes.draw do
     get "semantic-search" => "embeddings#search"
   end
 
-  scope module: :summarization, path: "/summarization", defaults: { format: :json } do
-    post "summary" => "summary#show"
-  end
-
   scope module: :ai_bot, path: "/ai-bot", defaults: { format: :json } do
     post "post/:post_id/stop-streaming" => "bot#stop_streaming_response"
     get "bot-username" => "bot#show_bot_username"

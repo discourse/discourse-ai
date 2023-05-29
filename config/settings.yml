@@ -182,14 +182,11 @@ plugins:
     default: false
     client: true
 
-  ai_summarization_enabled:
-    default: false
-    client: true
   ai_summarization_discourse_service_api_endpoint: ""
   ai_summarization_discourse_service_api_key:
     default: ""
     secret: true
-  ai_summarization_model:
+  ai_summarization_discourse_service_model:
     type: enum
     default: "bart-large-cnn-samsum"
     allow_any: false
@@ -197,11 +194,20 @@ plugins:
      - bart-large-cnn-samsum
      - flan-t5-base-samsum
      - long-t5-tglobal-base-16384-book-summary
+  ai_summarization_open_ai_service_model:
+    type: enum
+    default: "gpt-3.5-turbo"
+    allow_any: false
+    choices:
      - gpt-3.5-turbo
      - gpt-4
+  ai_summarization_anthropic_service_model:
+    type: enum
+    default: "claude-v1"
+    allow_any: false
+    choices:
      - claude-v1
      - claude-v1-100k
-  ai_summarization_rate_limit_minutes: 10
 
   ai_bot_enabled:
     default: false
