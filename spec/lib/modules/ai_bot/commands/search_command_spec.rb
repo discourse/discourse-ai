@@ -11,9 +11,9 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
   describe "#process" do
     it "can handle no results" do
       post1 = Fabricate(:post)
-      search = described_class.new(bot_user, post1)
+      search = described_class.new(bot_user, post1, "order:fake ABDDCDCEDGDG")
 
-      results = search.process("order:fake ABDDCDCEDGDG")
+      results = search.process
       expect(results).to eq("No results found")
     end
 
@@ -23,15 +23,15 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       _post3 = Fabricate(:post, user: post1.user)
 
       # search has no built in support for limit: so handle it from the outside
-      search = described_class.new(bot_user, post1)
+      search = described_class.new(bot_user, post1, "@#{post1.user.username} limit:2")
 
-      results = search.process("@#{post1.user.username} limit:2")
+      results = search.process
 
       # title + 2 rows
       expect(results.split("\n").length).to eq(3)
 
-      # just searching for everything
-      results = search.process("order:latest_topic")
+      search = described_class.new(bot_user, post1, "order:latest_topic")
+      results = search.process
       expect(results.split("\n").length).to be > 1
     end
   end

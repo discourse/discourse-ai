@@ -32,8 +32,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
         "https://www.googleapis.com/customsearch/v1?cx=cx&key=abc&num=10&q=some%20search%20term",
       ).to_return(status: 200, body: json_text, headers: {})
 
-      google = described_class.new(bot_user, post)
-      info = google.process("some search term")
+      google = described_class.new(bot_user, post, "some search term")
+      info = google.process
 
       expect(google.description_args[:count]).to eq(1)
       expect(info).to include("title1")

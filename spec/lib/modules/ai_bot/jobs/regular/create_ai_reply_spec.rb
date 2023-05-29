@@ -24,11 +24,23 @@ RSpec.describe Jobs::CreateAiReply do
         freeze_time
 
         OpenAiCompletionsInferenceStubs.stub_streamed_response(
+          DiscourseAi::AiBot::OpenAiBot.new(bot_user).bot_prompt_with_topic_context(
+            post,
+            triage: true,
+          ),
+          [{ content: "!noop" }],
+          req_opts: {
+            temperature: 0.1,
+            max_tokens: 100,
+            stream: true,
+          },
+        )
+
+        OpenAiCompletionsInferenceStubs.stub_streamed_response(
           DiscourseAi::AiBot::OpenAiBot.new(bot_user).bot_prompt_with_topic_context(post),
           deltas,
           req_opts: {
             temperature: 0.4,
-            top_p: 0.9,
             max_tokens: 1500,
             stream: true,
           },
@@ -66,11 +78,24 @@ RSpec.describe Jobs::CreateAiReply do
     end
 
     context "when chatting with Claude from Anthropic" do
-      let(:claude_response) { "Assistant: #{expected_response}" }
+      let(:claude_response) { "#{expected_response}" }
       let(:deltas) { claude_response.split(" ").map { |w| "#{w} " } }
 
       before do
         bot_user = User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V1_ID)
+
+        AnthropicCompletionStubs.stub_streamed_response(
+          DiscourseAi::AiBot::AnthropicBot.new(bot_user).bot_prompt_with_topic_context(
+            post,
+            triage: true,
+          ),
+          [{ content: "!noop" }],
+          req_opts: {
+            temperature: 0.1,
+            max_tokens_to_sample: 100,
+            stream: true,
+          },
+        )
 
         AnthropicCompletionStubs.stub_streamed_response(
           DiscourseAi::AiBot::AnthropicBot.new(bot_user).bot_prompt_with_topic_context(post),

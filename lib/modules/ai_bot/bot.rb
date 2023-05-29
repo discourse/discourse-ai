@@ -34,6 +34,7 @@ module DiscourseAi
       end
 
       def debug(prompt)
+        return if !Rails.env.development?
         if prompt.is_a?(Array)
           prompt.each { |p| p.keys.each { |k| puts "#{k}: #{p[k]}" } }
         else
@@ -105,6 +106,10 @@ module DiscourseAi
         PostCreator.create!(bot_user, topic_id: post.topic_id, raw: raw, skip_validations: false)
       end
 
+      def context_prompt(post, context, result_name)
+        ["Given the #{result_name} data:\n #{context}\nAnswer: #{post.raw}", post.user.username]
+      end
+
       def reply_to(post)
         command = triage_post(post)
 
@@ -117,11 +122,7 @@ module DiscourseAi
             post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
             prompt = post.post_custom_prompt.custom_prompt || []
             # TODO consider providing even more context
-            # Given the last 10 posts of Sam are data:\n
-            prompt << [
-              "Given the #{command.result_name} data:\n #{context}\nAnswer: #{post.raw}",
-              post.user.username,
-            ]
+            prompt << context_prompt(post, context, command.result_name)
             post.post_custom_prompt.update!(custom_prompt: prompt)
           end
         end
@@ -149,6 +150,10 @@ module DiscourseAi
         Discourse.warn_exception(e, message: "ai-bot: Reply failed")
       end
 
+      def triage_params
+        { temperature: 0.1, max_tokens: 100 }
+      end
+
       def triage_post(post)
         prompt = bot_prompt_with_topic_context(post, triage: true)
 
@@ -156,7 +161,9 @@ module DiscourseAi
 
         reply = +""
         context = {}
-        submit_prompt(prompt) { |partial, cancel| reply << get_delta(partial, context) }
+        submit_prompt(prompt, **triage_params) do |partial, cancel|
+          reply << get_delta(partial, context)
+        end
 
         debug(reply)
 

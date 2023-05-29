@@ -10,7 +10,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::TagsCommand do
       Fabricate(:tag, name: "america", public_topic_count: 100)
       Fabricate(:tag, name: "not_here", public_topic_count: 0)
 
-      info = DiscourseAi::AiBot::Commands::TagsCommand.new(nil, nil).process(nil)
+      info = DiscourseAi::AiBot::Commands::TagsCommand.new(nil, nil, nil).process
 
       expect(info).to include("america")
       expect(info).not_to include("not_here")

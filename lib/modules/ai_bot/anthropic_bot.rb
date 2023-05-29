@@ -49,12 +49,12 @@ module DiscourseAi
         ).dig(:completion)
       end
 
-      def submit_prompt(prompt, prefer_low_cost: false, &blk)
+      def submit_prompt(prompt, max_tokens: nil, temperature: nil, prefer_low_cost: false, &blk)
         DiscourseAi::Inference::AnthropicCompletions.perform!(
           prompt,
           model_for,
-          temperature: 0.4,
-          max_tokens: 3000,
+          temperature: temperature || 0.4,
+          max_tokens: max_tokens || 3000,
           &blk
         )
       end

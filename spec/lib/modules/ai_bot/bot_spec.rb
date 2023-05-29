@@ -25,12 +25,10 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
   describe "#system_prompt" do
     it "includes relevant context in system prompt" do
-      bot.system_prompt_style!(:standard)
-
       SiteSetting.title = "My Forum"
       SiteSetting.site_description = "My Forum Description"
 
-      system_prompt = bot.system_prompt(second_post)
+      system_prompt = bot.system_prompt(second_post, triage: false)
 
       expect(system_prompt).to include(SiteSetting.title)
       expect(system_prompt).to include(SiteSetting.site_description)
@@ -41,20 +39,23 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
   describe "#reply_to" do
     it "can respond to !search" do
-      bot.system_prompt_style!(:simple)
+      expected_response = "!search test search"
 
-      expected_response = "ok, searching...\n!search test search"
-
-      prompt = bot.bot_prompt_with_topic_context(second_post)
+      prompt = bot.bot_prompt_with_topic_context(second_post, triage: true)
 
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
         prompt,
         [{ content: expected_response }],
-        req_opts: bot.reply_params.merge(stream: true),
+        req_opts: bot.triage_params.merge(stream: true),
       )
 
-      prompt << { role: "assistant", content: "!search test search" }
-      prompt << { role: "user", content: "results: No results found" }
+      # second post will contain the search instruction
+      prompt = bot.bot_prompt_with_topic_context(first_post)
+
+      command = DiscourseAi::AiBot::Commands::SearchCommand.new(nil, nil, SecureRandom.hex(10))
+      content, username = bot.context_prompt(second_post, command.process, command.result_name)
+
+      prompt << bot.build_message(username, content)
 
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
         prompt,
@@ -69,7 +70,6 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       expect(last.raw).to include("<details>")
       expect(last.raw).to include("<summary>Search</summary>")
       expect(last.raw).not_to include("translation missing")
-      expect(last.raw).to include("ok, searching...")
       expect(last.raw).to include("We are done now")
 
       expect(last.post_custom_prompt.custom_prompt.to_s).to include("We are done now")

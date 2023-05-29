@@ -33,7 +33,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       it "trims the prompt" do
         prompt_messages = subject.bot_prompt_with_topic_context(post_1)
 
-        expect(prompt_messages[-2][:role]).to eq("assistant")
+        expect(prompt_messages[-2][:role]).to eq("system")
         expect(prompt_messages[-1][:role]).to eq("user")
         # trimming is tricky... it needs to account for system message as
         # well... just make sure we trim for now

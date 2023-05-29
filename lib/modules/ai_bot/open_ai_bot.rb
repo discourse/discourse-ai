@@ -30,21 +30,13 @@ module DiscourseAi
             1500
           end
 
-        { temperature: 0.4, top_p: 0.9, max_tokens: max_tokens }
+        { temperature: 0.4, max_tokens: max_tokens }
       end
 
-      def submit_prompt(
-        prompt,
-        prefer_low_cost: false,
-        temperature: nil,
-        top_p: nil,
-        max_tokens: nil,
-        &blk
-      )
+      def submit_prompt(prompt, prefer_low_cost: false, temperature: nil, max_tokens: nil, &blk)
         params =
           reply_params.merge(
             temperature: temperature,
-            top_p: top_p,
             max_tokens: max_tokens,
           ) { |key, old_value, new_value| new_value.nil? ? old_value : new_value }
 
@@ -55,8 +47,6 @@ module DiscourseAi
       def tokenize(text)
         DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(text)
       end
-
-      private
 
       def build_message(poster_username, content, system: false, last: false)
         is_bot = poster_username == bot_user.username
@@ -69,6 +59,8 @@ module DiscourseAi
 
         { role: role, content: is_bot ? content : "#{poster_username}: #{content}" }
       end
+
+      private
 
       def model_for
         return "gpt-4" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
