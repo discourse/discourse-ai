@@ -27,7 +27,6 @@ module DiscourseAi::AiBot::Commands
           post_count:X: only topics with X amount of posts
           min_posts:X: topics containing a minimum of X posts
           max_posts:X: topics with no more than max posts
-          in:pinned: in all pinned topics (either global or per category pins)
           created:@USERNAME: topics created by a specific user
           category:CATGORY: topics in the CATEGORY AND all subcategories
           category:=CATEGORY: topics in the CATEGORY excluding subcategories
