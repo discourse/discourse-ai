@@ -33,7 +33,7 @@ class AnthropicCompletionStubs
       }.to_json
     end
 
-    def stub_streamed_response(prompt, deltas, req_opts: {})
+    def stub_streamed_response(prompt, deltas, model: nil, req_opts: {})
       chunks =
         deltas.each_with_index.map do |_, index|
           if index == (deltas.length - 1)
@@ -48,7 +48,7 @@ class AnthropicCompletionStubs
 
       WebMock
         .stub_request(:post, "https://api.anthropic.com/v1/complete")
-        .with(body: { model: "claude-v1", prompt: prompt }.merge(req_opts).to_json)
+        .with(body: { model: model || "claude-v1", prompt: prompt }.merge(req_opts).to_json)
         .to_return(status: 200, body: chunks)
     end
   end

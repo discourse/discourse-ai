@@ -87,10 +87,16 @@ module ::DiscourseAi
                     data = line.split("data: ", 2)[1]
                     next if !data || data.squish == "[DONE]"
 
-                    if !cancelled && partial = JSON.parse(data, symbolize_names: true)
-                      response_data << partial[:completion].to_s
+                    if !cancelled
+                      begin
+                        # partial contains the entire payload till now
+                        partial = JSON.parse(data, symbolize_names: true)
+                        response_data = partial[:completion].to_s
 
-                      yield partial, cancel
+                        yield partial, cancel
+                      rescue JSON::ParserError
+                        nil
+                      end
                     end
                   end
               rescue IOError
@@ -104,6 +110,12 @@ module ::DiscourseAi
               end
             end
           end
+        end
+
+        def self.try_parse(data)
+          JSON.parse(data, symbolize_names: true)
+        rescue JSON::ParserError
+          nil
         end
       end
     end

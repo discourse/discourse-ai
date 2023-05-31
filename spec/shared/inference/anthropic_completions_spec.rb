@@ -60,7 +60,7 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
 
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
     expect(log.request_tokens).to eq(6)
-    expect(log.response_tokens).to eq(6)
+    expect(log.response_tokens).to eq(3)
     expect(log.raw_request_payload).to eq(request_body)
     expect(log.raw_response_payload).to be_present
   end

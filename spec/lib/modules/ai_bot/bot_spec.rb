@@ -3,7 +3,7 @@
 require_relative "../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::AiBot::Bot do
-  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
   fab!(:bot) { described_class.as(bot_user) }
 
   fab!(:user) { Fabricate(:user) }
@@ -50,6 +50,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
         prompt,
         [{ content: expected_response }],
+        model: "gpt-4",
         req_opts: bot.reply_params.merge(stream: true),
       )
 
@@ -59,6 +60,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
         prompt,
         [{ content: "We are done now" }],
+        model: "gpt-4",
         req_opts: bot.reply_params.merge(stream: true),
       )
 
@@ -85,6 +87,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       OpenAiCompletionsInferenceStubs.stub_response(
         [bot.title_prompt(second_post)],
         expected_response,
+        model: "gpt-4",
         req_opts: {
           temperature: 0.7,
           top_p: 0.9,

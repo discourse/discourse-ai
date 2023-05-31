@@ -178,20 +178,9 @@ module DiscourseAi
       end
 
       def available_commands
-        @cmds ||=
-          [
-            Commands::CategoriesCommand,
-            Commands::TimeCommand,
-            Commands::SearchCommand,
-            Commands::SummarizeCommand,
-          ].tap do |cmds|
-            cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
-            cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
-            if SiteSetting.ai_google_custom_search_api_key.present? &&
-                 SiteSetting.ai_google_custom_search_cx.present?
-              cmds << Commands::GoogleCommand
-            end
-          end
+        # by default assume bots have no access to commands
+        # for now we need GPT 4 to properly work with them
+        []
       end
 
       def system_prompt_style!(style)
@@ -200,6 +189,28 @@ module DiscourseAi
 
       def system_prompt(post)
         return "You are a helpful Bot" if @style == :simple
+
+        command_text = ""
+        command_text = <<~TEXT if available_commands.present?
+            You can complete some tasks using !commands.
+
+            NEVER ask user to issue !commands, they have no access, only you do.
+
+            #{available_commands.map(&:desc).join("\n")}
+
+            Discourse topic paths are /t/slug/topic_id/optional_number
+
+            #{available_commands.map(&:extra_context).compact_blank.join("\n")}
+
+            Commands should be issued in single assistant message.
+
+            Example sessions:
+
+            User: echo the text 'test'
+            GPT: !echo test
+            User: THING GPT DOES NOT KNOW ABOUT
+            GPT: !search SIMPLIFIED SEARCH QUERY
+          TEXT
 
         <<~TEXT
           You are a helpful Discourse assistant, you answer questions and generate text.
@@ -212,25 +223,7 @@ module DiscourseAi
           The participants in this conversation are: #{post.topic.allowed_users.map(&:username).join(", ")}
           The date now is: #{Time.zone.now}, much has changed since you were trained.
 
-          You can complete some tasks using !commands.
-
-          NEVER ask user to issue !commands, they have no access, only you do.
-
-          #{available_commands.map(&:desc).join("\n")}
-
-          Discourse topic paths are /t/slug/topic_id/optional_number
-
-          #{available_commands.map(&:extra_context).compact_blank.join("\n")}
-
-          Commands should be issued in single assistant message.
-
-          Example sessions:
-
-          User: echo the text 'test'
-          GPT: !echo test
-          User: THING GPT DOES NOT KNOW ABOUT
-          GPT: !search SIMPLIFIED SEARCH QUERY
-
+          #{command_text}
         TEXT
       end
 

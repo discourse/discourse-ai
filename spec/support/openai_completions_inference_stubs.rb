@@ -101,10 +101,10 @@ class OpenAiCompletionsInferenceStubs
       stub_response(prompt_messages, response_text_for(type))
     end
 
-    def stub_response(messages, response_text, req_opts: {})
+    def stub_response(messages, response_text, model: nil, req_opts: {})
       WebMock
         .stub_request(:post, "https://api.openai.com/v1/chat/completions")
-        .with(body: { model: "gpt-3.5-turbo", messages: messages }.merge(req_opts).to_json)
+        .with(body: { model: model || "gpt-3.5-turbo", messages: messages }.merge(req_opts).to_json)
         .to_return(status: 200, body: JSON.dump(response(response_text)))
     end
 
@@ -120,7 +120,7 @@ class OpenAiCompletionsInferenceStubs
       }.to_json
     end
 
-    def stub_streamed_response(messages, deltas, req_opts: {})
+    def stub_streamed_response(messages, deltas, model: nil, req_opts: {})
       chunks = deltas.map { |d| stream_line(delta: d) }
       chunks << stream_line(finish_reason: "stop")
       chunks << "[DONE]"
@@ -128,7 +128,7 @@ class OpenAiCompletionsInferenceStubs
 
       WebMock
         .stub_request(:post, "https://api.openai.com/v1/chat/completions")
-        .with(body: { model: "gpt-3.5-turbo", messages: messages }.merge(req_opts).to_json)
+        .with(body: { model: model || "gpt-3.5-turbo", messages: messages }.merge(req_opts).to_json)
         .to_return(status: 200, body: chunks)
     end
   end
