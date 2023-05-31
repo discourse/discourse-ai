@@ -73,6 +73,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       expect(last.raw).to include("We are done now")
 
       expect(last.post_custom_prompt.custom_prompt.to_s).to include("We are done now")
+      expect(last.post_custom_prompt.custom_prompt.to_s).not_to include("details")
     end
   end
 

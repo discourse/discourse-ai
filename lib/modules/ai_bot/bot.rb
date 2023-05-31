@@ -56,8 +56,12 @@ module DiscourseAi
         reply = +(bot_reply_post&.raw || "").dup
         reply << "\n\n" if reply.length > 0
 
+        raw_reply = +""
+
         submit_prompt(prompt, prefer_low_cost: prefer_low_cost) do |partial, cancel|
-          reply << get_delta(partial, context)
+          delta = get_delta(partial, context)
+          reply << delta
+          raw_reply << delta
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
             cancel&.call
@@ -97,7 +101,8 @@ module DiscourseAi
 
           bot_reply_post.post_custom_prompt ||=
             bot_reply_post.build_post_custom_prompt(custom_prompt: [])
-          prompt = [reply, bot_user.username]
+
+          prompt = [raw_reply, bot_user.username]
           bot_reply_post.post_custom_prompt.update!(custom_prompt: prompt)
         end
       end
@@ -107,7 +112,7 @@ module DiscourseAi
       end
 
       def context_prompt(post, context, result_name)
-        ["Given the #{result_name} data:\n #{context}\nAnswer: #{post.raw}", post.user.username]
+        ["Given the #{result_name} data:\n #{context}\n\n#{post.raw}\n", post.user.username]
       end
 
       def reply_to(post)
@@ -263,14 +268,15 @@ module DiscourseAi
             You are a decision making bot. Given a conversation you determine which commands will
             complete a task. You are not a chatbot, you do not have a personality.
 
-            YOU only ever reply with !commands, If you have nothing to say, say !noop
+            YOU only ever reply with !commands, If you are unsure, use !noop
+            Only issue non !noop commands if you are 80% sure they are needed.
 
             #{common}
 
             The following !commands are available.
 
             #{available_commands.map(&:desc).join("\n")}
-            !noop: do nothing, you determined there is no special command to run
+            !noop: do nothing, you determined there is no special command to run, or there is low value running a command
 
             Discourse topic paths are /t/slug/topic_id/optional_number
 

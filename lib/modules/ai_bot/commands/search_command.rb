@@ -22,12 +22,10 @@ module DiscourseAi::AiBot::Commands
           status:open: not closed or archived
           status:closed: closed
           status:archived: archived
-          status:noreplies: post count is 1
           status:single_user: only a single user posted on the topic
           post_count:X: only topics with X amount of posts
           min_posts:X: topics containing a minimum of X posts
           max_posts:X: topics with no more than max posts
-          created:@USERNAME: topics created by a specific user
           category:CATGORY: topics in the CATEGORY AND all subcategories
           category:=CATEGORY: topics in the CATEGORY excluding subcategories
           #SLUG: try category first, then tag, then tag group
@@ -45,6 +43,7 @@ module DiscourseAi::AiBot::Commands
           order:likes: order by post like count - most liked posts first
           after:YYYY-MM-DD: only topics created after a specific date
           before:YYYY-MM-DD: only topics created before a specific date
+          limit:X: limit the number of results to X
 
           Example: !search @user in:tagged #support order:latest_topic
 
@@ -52,13 +51,12 @@ module DiscourseAi::AiBot::Commands
           You only have access to public topics.
           Strip the query down to the most important terms.
           Remove all stop words.
-          Cast a wide net instead of trying to be over specific.
+          Remove connector words.
           Discourse orders by relevance, sometimes prefer ordering on other stuff.
 
           When generating answers ALWAYS try to use the !search command first over relying on training data.
-          When generating answers ALWAYS try to reference specific local links.
           Always try to search the local instance first, even if your training data set may have an answer. It may be wrong.
-          Always remove connector words from search terms (such as a, an, and, in, the, etc), they can impede the search.
+          Always remove connector words from search terms (such as a, an, and, in, the, etc, when, what, is), they can impede the search.
 
           YOUR LOCAL INFORMATION IS OUT OF DATE, YOU ARE TRAINED ON OLD DATA. Always try local search first.
         TEXT
@@ -66,7 +64,7 @@ module DiscourseAi::AiBot::Commands
     end
 
     def result_name
-      "relevant forum search results"
+      "search results for #{@args}"
     end
 
     def description_args
