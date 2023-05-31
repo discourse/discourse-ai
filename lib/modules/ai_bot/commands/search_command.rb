@@ -27,14 +27,12 @@ module DiscourseAi::AiBot::Commands
           post_count:X: only topics with X amount of posts
           min_posts:X: topics containing a minimum of X posts
           max_posts:X: topics with no more than max posts
-          in:pinned: in all pinned topics (either global or per category pins)
           created:@USERNAME: topics created by a specific user
           category:CATGORY: topics in the CATEGORY AND all subcategories
           category:=CATEGORY: topics in the CATEGORY excluding subcategories
           #SLUG: try category first, then tag, then tag group
           #SLUG:SLUG: used for subcategory search to disambiguate
           min_views:100: topics containing 100 views or more
-          max_views:100: topics containing 100 views or less
           tags:TAG1+TAG2: tagged both TAG1 and TAG2
           tags:TAG1,TAG2: tagged either TAG1 or TAG2
           -tags:TAG1+TAG2: excluding topics tagged TAG1 and TAG2
@@ -51,10 +49,8 @@ module DiscourseAi::AiBot::Commands
 
           Keep in mind, search on Discourse uses AND to and terms.
           You only have access to public topics.
-          Strip the query down to the most important terms.
-          Remove all stop words.
-          Cast a wide net instead of trying to be over specific.
-          Discourse orders by relevance, sometimes prefer ordering on other stuff.
+          Strip the query down to the most important terms. Remove all stop words.
+          Discourse orders by default by relevance.
 
           When generating answers ALWAYS try to use the !search command first over relying on training data.
           When generating answers ALWAYS try to reference specific local links.

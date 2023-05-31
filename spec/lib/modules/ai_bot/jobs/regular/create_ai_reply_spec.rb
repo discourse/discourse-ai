@@ -75,6 +75,7 @@ RSpec.describe Jobs::CreateAiReply do
         AnthropicCompletionStubs.stub_streamed_response(
           DiscourseAi::AiBot::AnthropicBot.new(bot_user).bot_prompt_with_topic_context(post),
           deltas,
+          model: "claude-v1.3",
           req_opts: {
             temperature: 0.4,
             max_tokens_to_sample: 3000,

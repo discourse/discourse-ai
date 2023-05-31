@@ -44,7 +44,7 @@ module DiscourseAi
       end
 
       def model_for
-        "claude-v1"
+        "claude-v1.3"
       end
 
       def get_updated_title(prompt)

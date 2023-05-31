@@ -56,6 +56,27 @@ module DiscourseAi
         DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(text)
       end
 
+      def available_commands
+        if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
+          @cmds ||=
+            [
+              Commands::CategoriesCommand,
+              Commands::TimeCommand,
+              Commands::SearchCommand,
+              Commands::SummarizeCommand,
+            ].tap do |cmds|
+              cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
+              cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
+              if SiteSetting.ai_google_custom_search_api_key.present? &&
+                   SiteSetting.ai_google_custom_search_cx.present?
+                cmds << Commands::GoogleCommand
+              end
+            end
+        else
+          []
+        end
+      end
+
       private
 
       def build_message(poster_username, content, system: false)
