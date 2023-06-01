@@ -4,6 +4,10 @@ require_relative "../../../../support/anthropic_completion_stubs"
 
 RSpec.describe DiscourseAi::Summarization::Strategies::Anthropic do
   describe "#summarize" do
+    let(:model) { "claude-v1" }
+
+    subject { described_class.new(model) }
+
     it "asks an Anthropic's model to summarize the content" do
       summarization_text = "This is a text"
       expected_response = "This is a summary"

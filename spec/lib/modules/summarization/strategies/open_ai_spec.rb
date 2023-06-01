@@ -3,6 +3,10 @@
 require_relative "../../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::Summarization::Strategies::OpenAi do
+  let(:model) { "gpt-3.5-turbo" }
+
+  subject { described_class.new(model) }
+
   it "asks a OpenAI's model to summarize the content" do
     summarization_text = "This is a text"
     expected_response = "This is a summary"

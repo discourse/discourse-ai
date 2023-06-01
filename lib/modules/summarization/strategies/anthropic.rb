@@ -4,8 +4,8 @@ module DiscourseAi
   module Summarization
     module Strategies
       class Anthropic < ::Summarization::Base
-        def self.name
-          "Anthropic"
+        def display_name
+          "Anthropic's #{model}"
         end
 
         def correctly_configured?
@@ -24,7 +24,7 @@ module DiscourseAi
           response =
             ::DiscourseAi::Inference::AnthropicCompletions.perform!(
               prompt(content_text),
-              anthropic_model,
+              model,
             ).dig(:completion)
 
           Nokogiri::HTML5.fragment(response).at("ai").text
@@ -46,14 +46,10 @@ module DiscourseAi
 
         private
 
-        def anthropic_model
-          SiteSetting.ai_summarization_anthropic_service_model
-        end
-
         def max_length
           lengths = { "claude-v1" => 9000, "claude-v1-100k" => 100_000 }
 
-          lengths[anthropic_model]
+          lengths[model]
         end
       end
     end

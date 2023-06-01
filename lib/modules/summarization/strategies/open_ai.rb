@@ -4,8 +4,8 @@ module DiscourseAi
   module Summarization
     module Strategies
       class OpenAi < ::Summarization::Base
-        def self.name
-          "Open AI"
+        def display_name
+          "Open AI's #{model}"
         end
 
         def correctly_configured?
@@ -21,10 +21,12 @@ module DiscourseAi
         end
 
         def summarize(content_text)
-          ::DiscourseAi::Inference::OpenAiCompletions.perform!(
-            prompt(content_text),
-            open_ai_model,
-          ).dig(:choices, 0, :message, :content)
+          ::DiscourseAi::Inference::OpenAiCompletions.perform!(prompt(content_text), model).dig(
+            :choices,
+            0,
+            :message,
+            :content,
+          )
         end
 
         def prompt(content)
@@ -38,14 +40,10 @@ module DiscourseAi
 
         private
 
-        def open_ai_model
-          SiteSetting.ai_summarization_open_ai_service_model
-        end
-
         def max_length
           lengths = { "gpt-3.5-turbo" => 4096, "gpt-4" => 8192 }
 
-          lengths[open_ai_model]
+          lengths[model]
         end
       end
     end

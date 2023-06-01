@@ -4,8 +4,8 @@ module DiscourseAi
   module Summarization
     module Strategies
       class DiscourseAi < ::Summarization::Base
-        def self.name
-          "Discourse AI"
+        def display_name
+          "Discourse AI's #{model}"
         end
 
         def correctly_configured?
@@ -25,7 +25,7 @@ module DiscourseAi
         def summarize(content_text)
           ::DiscourseAi::Inference::DiscourseClassifier.perform!(
             "#{SiteSetting.ai_summarization_discourse_service_api_endpoint}/api/v1/classify",
-            discourse_ai_model,
+            model,
             prompt(content_text),
             SiteSetting.ai_summarization_discourse_service_api_key,
           ).dig(:summary_text)
@@ -37,10 +37,6 @@ module DiscourseAi
 
         private
 
-        def discourse_ai_model
-          SiteSetting.ai_summarization_discourse_service_model
-        end
-
         def max_length
           lengths = {
             "bart-large-cnn-samsum" => 1024,
@@ -48,7 +44,7 @@ module DiscourseAi
             "long-t5-tglobal-base-16384-book-summary" => 16_384,
           }
 
-          lengths[discourse_ai_model]
+          lengths[model]
         end
       end
     end
