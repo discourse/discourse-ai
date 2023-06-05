@@ -34,6 +34,14 @@ module DiscourseAi
         )
       end
 
+      def max_commands_per_reply=(val)
+        @max_commands_per_reply = val
+      end
+
+      def max_commands_per_reply
+        @max_commands_per_reply || 5
+      end
+
       def reply_to(
         post,
         total_completions: 0,
@@ -103,26 +111,40 @@ module DiscourseAi
             skip_revision: true,
           )
 
-          cmd_text = reply.split("\n").detect { |l| l[0] == "!" }
+          cmd_texts = reply.split("\n").filter { |l| l[0] == "!" }
 
-          if cmd_text
+          chain = false
+          standalone = false
+
+          cmd_texts[0...max_commands_per_reply].each do |cmd_text|
             command_name, args = cmd_text[1..-1].strip.split(" ", 2)
 
             if command_klass = available_commands.detect { |cmd| cmd.invoked?(command_name) }
               command = command_klass.new(bot_user, args)
-              chain = command.invoke_and_attach_result_to(bot_reply_post)
-
-              if chain
-                reply_to(
-                  bot_reply_post,
-                  total_completions: total_completions + 1,
-                  bot_reply_post: bot_reply_post,
-                  prefer_low_cost: command.low_cost?,
-                  standalone: command.standalone?,
-                )
-              end
+              chain_intermediate = command.invoke_and_attach_result_to(bot_reply_post)
+              chain ||= chain_intermediate
+              standalone ||= command.standalone?
             end
-          elsif post_custom_prompt = bot_reply_post.post_custom_prompt
+          end
+
+          if cmd_texts.length > max_commands_per_reply
+            raw = +bot_reply_post.raw.dup
+            cmd_texts[max_commands_per_reply..-1].each { |cmd_text| raw.sub!(cmd_text, "") }
+
+            bot_reply_post.raw = raw
+            bot_reply_post.save!(validate: false)
+          end
+
+          if chain
+            reply_to(
+              bot_reply_post,
+              total_completions: total_completions + 1,
+              bot_reply_post: bot_reply_post,
+              standalone: standalone,
+            )
+          end
+
+          if cmd_texts.length == 0 && (post_custom_prompt = bot_reply_post.post_custom_prompt)
             prompt = post_custom_prompt.custom_prompt
             prompt << [reply, bot_user.username]
             post_custom_prompt.update!(custom_prompt: prompt)
