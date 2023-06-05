@@ -42,8 +42,10 @@ RSpec.describe DiscourseAi::AiBot::Bot do
   describe "#reply_to" do
     it "can respond to !search" do
       bot.system_prompt_style!(:simple)
+      bot.max_commands_per_reply = 2
 
-      expected_response = "ok, searching...\n!search test search"
+      expected_response =
+        "ok, searching...\n!search test search\n!search test2 search\n!search test3 ignored"
 
       prompt = bot.bot_prompt_with_topic_context(second_post)
 
@@ -55,6 +57,8 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       )
 
       prompt << { role: "assistant", content: "!search test search" }
+      prompt << { role: "user", content: "results: No results found" }
+      prompt << { role: "assistant", content: "!search test2 search" }
       prompt << { role: "user", content: "results: No results found" }
 
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
