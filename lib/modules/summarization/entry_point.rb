@@ -12,7 +12,9 @@ module DiscourseAi
       def inject_into(plugin)
         [
           Strategies::OpenAi.new("gpt-4"),
+          Strategies::OpenAi.new("gpt-4-32k"),
           Strategies::OpenAi.new("gpt-3.5-turbo"),
+          Strategies::OpenAi.new("gpt-3.5-turbo-16k"),
           Strategies::DiscourseAi.new("bart-large-cnn-samsum"),
           Strategies::DiscourseAi.new("flan-t5-base-samsum"),
           Strategies::DiscourseAi.new("long-t5-tglobal-base-16384-book-summary"),
