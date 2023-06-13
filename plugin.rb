@@ -14,10 +14,6 @@ enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 
-register_asset "stylesheets/modules/summarization/common/summarization.scss"
-register_asset "stylesheets/modules/summarization/desktop/summarization.scss", :desktop
-register_asset "stylesheets/modules/summarization/mobile/summarization.scss", :mobile
-
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 
 module ::DiscourseAi

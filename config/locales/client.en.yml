@@ -17,14 +17,6 @@ en:
       embeddings:
         semantic_search: "Topics (Semantic)"
 
-      summarization:
-        title: "Summarize using AI"
-        description: "Select an option below to summarize the conversation sent during the desired timeframe."
-        summarize: "Summarize"
-        since:
-          one: "Last hour" 
-          other: "Last %{count} hours"
-
       ai_bot:
         cancel_streaming: "Stop reply"
         default_pm_prefix: "[Untitled AI bot PM]"
