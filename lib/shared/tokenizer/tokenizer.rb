@@ -3,21 +3,31 @@
 module DiscourseAi
   module Tokenizer
     class BasicTokenizer
-      def self.tokenizer
-        raise NotImplementedError
-      end
+      class << self
+        def tokenizer
+          raise NotImplementedError
+        end
 
-      def self.tokenize(text)
-        tokenizer.encode(text).tokens
-      end
-      def self.size(text)
-        tokenize(text).size
-      end
-      def self.truncate(text, max_length)
-        # Fast track the common case where the text is already short enough.
-        return text if text.size < max_length
+        def tokenize(text)
+          tokenizer.encode(text).tokens
+        end
 
-        tokenizer.decode(tokenizer.encode(text).ids.take(max_length))
+        def size(text)
+          tokenize(text).size
+        end
+
+        def truncate(text, max_length)
+          # Fast track the common case where the text is already short enough.
+          return text if text.size < max_length
+
+          tokenizer.decode(tokenizer.encode(text).ids.take(max_length))
+        end
+
+        def can_expand_tokens?(text, addition, max_length)
+          return true if text.size + addition.size < max_length
+
+          tokenizer.encode(text).ids.length + tokenizer.encode(addition).ids.length < max_length
+        end
       end
     end
 
@@ -36,22 +46,30 @@ module DiscourseAi
     end
 
     class OpenAiTokenizer < BasicTokenizer
-      def self.tokenizer
-        @@tokenizer ||= Tiktoken.get_encoding("cl100k_base")
-      end
+      class << self
+        def tokenizer
+          @@tokenizer ||= Tiktoken.get_encoding("cl100k_base")
+        end
 
-      def self.tokenize(text)
-        tokenizer.encode(text)
-      end
+        def tokenize(text)
+          tokenizer.encode(text)
+        end
 
-      def self.truncate(text, max_length)
-        # Fast track the common case where the text is already short enough.
-        return text if text.size < max_length
+        def truncate(text, max_length)
+          # Fast track the common case where the text is already short enough.
+          return text if text.size < max_length
 
-        tokenizer.decode(tokenize(text).take(max_length))
-      rescue Tiktoken::UnicodeError
-        max_length = max_length - 1
-        retry
+          tokenizer.decode(tokenize(text).take(max_length))
+        rescue Tiktoken::UnicodeError
+          max_length = max_length - 1
+          retry
+        end
+
+        def can_expand_tokens?(text, addition, max_length)
+          return true if text.size + addition.size < max_length
+
+          tokenizer.encode(text).length + tokenizer.encode(addition).length < max_length
+        end
       end
     end
   end

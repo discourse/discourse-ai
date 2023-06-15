@@ -1,0 +1,35 @@
+# frozen_string_literal: true
+
+require_relative "../../../../support/summarization/dummy_completion_model"
+
+RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
+  describe "#summarize" do
+    let(:summarize_text) { "This is a text" }
+    let(:model_tokens) { summarize_text.length }
+    let(:model) { DummyCompletionModel.new(model_tokens) }
+
+    subject { described_class.new(model) }
+
+    let(:content) { { contents: [{ poster: "asd", id: 1, text: summarize_text }] } }
+
+    context "when the content to summarize fits in a single call" do
+      it "does one call to summarize content" do
+        result = subject.summarize(content)
+
+        expect(model.summarization_calls).to eq(1)
+        expect(result).to eq(DummyCompletionModel::SINGLE_SUMMARY)
+      end
+    end
+
+    context "when the content to summarize doesn't fit in a single call" do
+      it "summarizes each chunk and then concatenates them" do
+        content[:contents] << { poster: "asd2", id: 2, text: summarize_text }
+
+        result = subject.summarize(content)
+
+        expect(model.summarization_calls).to eq(3)
+        expect(result).to eq(DummyCompletionModel::CONCATENATED_SUMMARIES)
+      end
+    end
+  end
+end
