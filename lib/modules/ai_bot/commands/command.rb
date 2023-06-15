@@ -3,6 +3,17 @@
 module DiscourseAi
   module AiBot
     module Commands
+      class Parameter
+        attr_reader :name, :description, :type, :enum, :required
+        def initialize(name:, description:, type:, enum: nil, required: false)
+          @name = name
+          @description = description
+          @type = type
+          @enum = enum
+          @required = required
+        end
+      end
+
       class Command
         class << self
           def name
@@ -19,6 +30,10 @@ module DiscourseAi
 
           def extra_context
             ""
+          end
+
+          def parameters
+            raise NotImplemented
           end
         end
 
@@ -68,12 +83,11 @@ module DiscourseAi
           post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
           prompt = post.post_custom_prompt.custom_prompt || []
 
-          prompt << ["!#{self.class.name} #{args}", bot_user.username]
-          prompt << [process(args), result_name]
+          prompt << [process(args).to_json, self.class.name, "function"]
 
           post.post_custom_prompt.update!(custom_prompt: prompt)
 
-          raw = +<<~HTML
+          raw = +(post.raw + <<~HTML)
           <details>
             <summary>#{I18n.t("discourse_ai.ai_bot.command_summary.#{self.class.name}")}</summary>
             <p>
@@ -84,9 +98,6 @@ module DiscourseAi
           HTML
 
           raw << custom_raw if custom_raw.present?
-
-          replacement = "!#{self.class.name} #{args}"
-          raw = post.raw.sub(replacement, raw) if post.raw.include?(replacement)
 
           if chain_next_response
             post.raw = raw
@@ -116,21 +127,15 @@ module DiscourseAi
               end
             column_names = column_indexes.keys
           end
-          # two tokens per delimiter is a reasonable balance
-          # there may be a single delimiter solution but GPT has
-          # a hard time dealing with escaped characters
-          delimiter = "¦"
-          formatted = +""
-          formatted << column_names.join(delimiter)
-          formatted << "\n"
 
-          rows.each do |array|
-            array.map! { |item| item.to_s.gsub(delimiter, "|").gsub(/\n/, " ") }
-            formatted << array.join(delimiter)
-            formatted << "\n"
+          # this is a very inefficient format, there is lots of duplication
+          # however this is needed cause GPT 3.5 / 4 was steered using JSON
+
+          rows.map do |row|
+            obj = {}
+            column_names.each_with_index { |name, i| obj[name] = row[i] }
+            row
           end
-
-          formatted
         end
 
         protected

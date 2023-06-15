@@ -8,7 +8,11 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!tags - will list the 100 most popular tags on the current discourse instance"
+        "Will list the 100 most popular tags on the current discourse instance"
+      end
+
+      def parameters
+        []
       end
     end
 

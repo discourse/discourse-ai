@@ -3,6 +3,25 @@
 module DiscourseAi
   module AiBot
     class Bot
+      class Functions
+        attr_reader :functions
+        attr_reader :current_function
+
+        def initialize
+          @functions = []
+          @current_function = nil
+        end
+
+        def add_function(name)
+          @current_function = { name: name, arguments: +"" }
+          functions << current_function
+        end
+
+        def add_argument_fragment(fragment)
+          @current_function[:arguments] << fragment
+        end
+      end
+
       attr_reader :bot_user
 
       BOT_NOT_FOUND = Class.new(StandardError)
@@ -65,9 +84,11 @@ module DiscourseAi
 
         setup_cancel = false
         context = {}
+        functions = Functions.new
 
         submit_prompt(prompt, prefer_low_cost: prefer_low_cost) do |partial, cancel|
           reply << get_delta(partial, context)
+          populate_functions(partial, functions)
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
             cancel&.call
@@ -110,29 +131,31 @@ module DiscourseAi
             skip_validations: true,
             skip_revision: true,
           )
+        end
 
-          cmd_texts = reply.split("\n").filter { |l| l[0] == "!" }
-
+        if functions.functions.length > 0
           chain = false
           standalone = false
 
-          cmd_texts[0...max_commands_per_reply].each do |cmd_text|
-            command_name, args = cmd_text[1..-1].strip.split(" ", 2)
+          functions.functions.each do |function|
+            name, args = function[:name], function[:arguments]
 
-            if command_klass = available_commands.detect { |cmd| cmd.invoked?(command_name) }
+            if !bot_reply_post
+              bot_reply_post =
+                PostCreator.create!(
+                  bot_user,
+                  topic_id: post.topic_id,
+                  raw: "",
+                  skip_validations: true,
+                )
+            end
+
+            if command_klass = available_commands.detect { |cmd| cmd.invoked?(name) }
               command = command_klass.new(bot_user, args)
               chain_intermediate = command.invoke_and_attach_result_to(bot_reply_post)
               chain ||= chain_intermediate
               standalone ||= command.standalone?
             end
-          end
-
-          if cmd_texts.length > max_commands_per_reply
-            raw = +bot_reply_post.raw.dup
-            cmd_texts[max_commands_per_reply..-1].each { |cmd_text| raw.sub!(cmd_text, "") }
-
-            bot_reply_post.raw = raw
-            bot_reply_post.save!(validate: false)
           end
 
           if chain
@@ -143,14 +166,12 @@ module DiscourseAi
               standalone: standalone,
             )
           end
-
-          if cmd_texts.length == 0 && (post_custom_prompt = bot_reply_post.post_custom_prompt)
-            prompt = post_custom_prompt.custom_prompt
-            prompt << [reply, bot_user.username]
-            post_custom_prompt.update!(custom_prompt: prompt)
-          end
         end
       rescue => e
+        if Rails.env.development?
+          p e
+          puts e.backtrace
+        end
         raise e if Rails.env.test?
         Discourse.warn_exception(e, message: "ai-bot: Reply failed")
       end
@@ -164,7 +185,7 @@ module DiscourseAi
         total_prompt_tokens = tokenize(rendered_system_prompt).length
 
         messages =
-          conversation.reduce([]) do |memo, (raw, username)|
+          conversation.reduce([]) do |memo, (raw, username, function)|
             break(memo) if total_prompt_tokens >= prompt_limit
 
             tokens = tokenize(raw)
@@ -177,12 +198,9 @@ module DiscourseAi
             next(memo) if raw.blank?
 
             total_prompt_tokens += tokens.length
-            memo.unshift(build_message(username, raw))
+            memo.unshift(build_message(username, raw, function: !!function))
           end
 
-        # we need this to ground the model (especially GPT-3.5)
-        messages.unshift(build_message(bot_user.username, "!echo 1"))
-        messages.unshift(build_message("user", "please echo 1"))
         messages.unshift(build_message(bot_user.username, rendered_system_prompt, system: true))
         messages
       end
@@ -211,29 +229,6 @@ module DiscourseAi
 
       def system_prompt(post)
         return "You are a helpful Bot" if @style == :simple
-
-        command_text = ""
-        command_text = <<~TEXT if available_commands.present?
-            You can complete some tasks using !commands.
-
-            NEVER ask user to issue !commands, they have no access, only you do.
-
-            #{available_commands.map(&:desc).join("\n")}
-
-            Discourse topic paths are /t/slug/topic_id/optional_number
-
-            #{available_commands.map(&:extra_context).compact_blank.join("\n")}
-
-            Commands should be issued in single assistant message.
-
-            Example sessions:
-
-            User: echo the text 'test'
-            GPT: !echo test
-            User: THING GPT DOES NOT KNOW ABOUT
-            GPT: !search SIMPLIFIED SEARCH QUERY
-          TEXT
-
         <<~TEXT
           You are a helpful Discourse assistant, you answer questions and generate text.
           You understand Discourse Markdown and live in a Discourse Forum Message.
@@ -244,8 +239,6 @@ module DiscourseAi
           The description is: #{SiteSetting.site_description}
           The participants in this conversation are: #{post.topic.allowed_users.map(&:username).join(", ")}
           The date now is: #{Time.zone.now}, much has changed since you were trained.
-
-          #{command_text}
         TEXT
       end
 
@@ -258,6 +251,10 @@ module DiscourseAi
       end
 
       def get_delta(partial, context)
+        raise NotImplemented
+      end
+
+      def populate_functions(partial, functions)
         raise NotImplemented
       end
 

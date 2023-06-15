@@ -8,7 +8,23 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!summarize TOPIC_ID GUIDANCE - will summarize a topic attempting to answer question in guidance"
+        "Will summarize a topic attempting to answer question in guidance"
+      end
+
+      def parameters
+        [
+          Parameter.new(
+            name: "topic_id",
+            description: "The discourse topic id to summarize",
+            type: "integer",
+            required: true,
+          ),
+          Parameter.new(
+            name: "guidance",
+            description: "Special guidance on how to summarize the topic",
+            type: "string",
+          ),
+        ]
       end
     end
 

@@ -8,7 +8,18 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!image DESC - renders an image from the description (remove all connector words, keep it to 40 words or less)"
+        "Renders an image from the description (remove all connector words, keep it to 40 words or less)"
+      end
+
+      def parameters
+        [
+          Parameter.new(
+            name: "prompt",
+            description: "The prompt used to generate the image",
+            type: "string",
+            required: true,
+          ),
+        ]
       end
     end
 
