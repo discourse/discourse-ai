@@ -49,6 +49,9 @@ module DiscourseAi
         return text if text.size < max_length
 
         tokenizer.decode(tokenize(text).take(max_length))
+      rescue Tiktoken::UnicodeError
+        max_length = max_length - 1
+        retry
       end
     end
   end
