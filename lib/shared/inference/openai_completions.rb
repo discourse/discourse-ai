@@ -120,6 +120,8 @@ module ::DiscourseAi
               response_data = +""
               response_raw = +""
 
+              leftover = ""
+
               response.read_body do |chunk|
                 if cancelled
                   http.finish
@@ -128,13 +130,22 @@ module ::DiscourseAi
 
                 response_raw << chunk
 
-                chunk
+                (leftover + chunk)
                   .split("\n")
                   .each do |line|
                     data = line.split("data: ", 2)[1]
                     next if !data || data == "[DONE]"
+                    next if cancelled
 
-                    if !cancelled && partial = JSON.parse(data, symbolize_names: true)
+                    partial = nil
+                    begin
+                      partial = JSON.parse(data, symbolize_names: true)
+                      leftover = ""
+                    rescue JSON::ParserError
+                      leftover = line
+                    end
+
+                    if partial
                       response_data << partial.dig(:choices, 0, :delta, :content).to_s
                       response_data << partial.dig(:choices, 0, :delta, :function_call).to_s
 

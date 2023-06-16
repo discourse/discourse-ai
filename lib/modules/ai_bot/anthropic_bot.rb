@@ -43,7 +43,7 @@ module DiscourseAi
         # hard to steer for now
       end
 
-      def build_message(poster_username, content, system: false)
+      def build_message(poster_username, content, system: false, function: nil)
         role = poster_username == bot_user.username ? "Assistant" : "Human"
 
         "#{role}: #{content}"

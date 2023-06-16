@@ -44,28 +44,31 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       bot.system_prompt_style!(:simple)
       bot.max_commands_per_reply = 2
 
-      expected_response =
-        "ok, searching...\n!search test search\n!search test2 search\n!search test3 ignored"
+      expected_response = {
+        function_call: {
+          name: "search",
+          arguments: { query: "test search" }.to_json,
+        },
+      }
 
       prompt = bot.bot_prompt_with_topic_context(second_post)
 
+      req_opts = bot.reply_params.merge({ functions: bot.available_functions, stream: true })
+
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
         prompt,
-        [{ content: expected_response }],
-        model: "gpt-4",
-        req_opts: bot.reply_params.merge(stream: true),
+        [expected_response],
+        model: bot.model_for,
+        req_opts: req_opts,
       )
 
-      prompt << { role: "assistant", content: "!search test search" }
-      prompt << { role: "user", content: "results: No results found" }
-      prompt << { role: "assistant", content: "!search test2 search" }
-      prompt << { role: "user", content: "results: No results found" }
+      prompt << { role: "function", content: "[]", name: "search" }
 
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
         prompt,
-        [{ content: "We are done now" }],
-        model: "gpt-4",
-        req_opts: bot.reply_params.merge(stream: true),
+        [content: "I found nothing, sorry"],
+        model: bot.model_for,
+        req_opts: req_opts,
       )
 
       bot.reply_to(second_post)
@@ -75,10 +78,9 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       expect(last.raw).to include("<details>")
       expect(last.raw).to include("<summary>Search</summary>")
       expect(last.raw).not_to include("translation missing")
-      expect(last.raw).to include("ok, searching...")
-      expect(last.raw).to include("We are done now")
+      expect(last.raw).to include("I found nothing")
 
-      expect(last.post_custom_prompt.custom_prompt.to_s).to include("We are done now")
+      expect(last.post_custom_prompt.custom_prompt.to_s).to include("I found nothing")
     end
   end
 
@@ -91,7 +93,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       OpenAiCompletionsInferenceStubs.stub_response(
         [bot.title_prompt(second_post)],
         expected_response,
-        model: "gpt-4",
+        model: bot.model_for,
         req_opts: {
           temperature: 0.7,
           top_p: 0.9,

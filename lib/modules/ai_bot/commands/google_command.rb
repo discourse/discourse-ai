@@ -21,6 +21,10 @@ module DiscourseAi::AiBot::Commands
           ),
         ]
       end
+
+      def custom_system_message
+        "You were trained on OLD data, lean on search to get up to date information from the web"
+      end
     end
 
     def result_name

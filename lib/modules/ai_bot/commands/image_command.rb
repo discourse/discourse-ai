@@ -8,18 +8,25 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "Renders an image from the description (remove all connector words, keep it to 40 words or less)"
+        "Renders an image from the description (remove all connector words, keep it to 40 words or less). Despite being a text based bot you can generate images!"
       end
 
       def parameters
         [
           Parameter.new(
             name: "prompt",
-            description: "The prompt used to generate the image",
+            description: "The prompt used to generate or create or draw the image",
             type: "string",
             required: true,
           ),
         ]
+      end
+
+      def custom_system_message
+        <<~TEXT
+          In Discourse the markdown (description|SIZE, ZOOM%)[upload://SOMETEXT] is used to denote images and uploads. NEVER try changing the to http or https links.
+          When rendering multiple images place them in a [grid] ... [/grid] block
+        TEXT
       end
     end
 
@@ -31,16 +38,12 @@ module DiscourseAi::AiBot::Commands
       { prompt: @last_prompt || 0 }
     end
 
-    def custom_raw
-      @last_custom_raw
-    end
-
     def chain_next_response
-      false
+      true
     end
 
     def process(prompt)
-      @last_prompt = prompt
+      @last_prompt = prompt = JSON.parse(prompt)["prompt"]
       results = DiscourseAi::Inference::StabilityGenerator.perform!(prompt)
 
       uploads = []
@@ -54,10 +57,17 @@ module DiscourseAi::AiBot::Commands
         f.unlink
       end
 
-      @last_custom_raw =
+      raw = <<~RAW
+      [grid]
+      #{
         uploads
           .map { |upload| "![#{prompt.gsub(/\|\'\"/, "")}|512x512, 50%](#{upload.short_url})" }
           .join(" ")
+      }
+      [/grid]
+    RAW
+
+      { prompt: prompt, markdown: raw, display_to_user: true }
     end
   end
 end

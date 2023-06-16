@@ -28,8 +28,7 @@ module DiscourseAi
             raise NotImplemented
           end
 
-          def extra_context
-            ""
+          def custom_system_message
           end
 
           def parameters
@@ -79,15 +78,38 @@ module DiscourseAi
           true
         end
 
-        def invoke_and_attach_result_to(post)
+        def invoke_and_attach_result_to(post, parent_post)
+          placeholder = (<<~HTML).strip
+            <details>
+              <summary>#{I18n.t("discourse_ai.ai_bot.command_summary.#{self.class.name}")}</summary>
+            </details>
+          HTML
+
+          if !post
+            post =
+              PostCreator.create!(
+                bot_user,
+                raw: placeholder,
+                topic_id: parent_post.topic_id,
+                skip_validations: true,
+                skip_rate_limiter: true,
+              )
+          else
+            post.revise(
+              bot_user,
+              { raw: post.raw + "\n\n" + placeholder + "\n\n" },
+              skip_validations: true,
+              skip_revision: true,
+            )
+          end
+
           post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
           prompt = post.post_custom_prompt.custom_prompt || []
 
           prompt << [process(args).to_json, self.class.name, "function"]
-
           post.post_custom_prompt.update!(custom_prompt: prompt)
 
-          raw = +(post.raw + <<~HTML)
+          raw = +(<<~HTML)
           <details>
             <summary>#{I18n.t("discourse_ai.ai_bot.command_summary.#{self.class.name}")}</summary>
             <p>
@@ -99,6 +121,8 @@ module DiscourseAi
 
           raw << custom_raw if custom_raw.present?
 
+          raw = post.raw.sub(placeholder, raw)
+
           if chain_next_response
             post.raw = raw
             post.save!(validate: false)
@@ -106,7 +130,7 @@ module DiscourseAi
             post.revise(bot_user, { raw: raw }, skip_validations: true, skip_revision: true)
           end
 
-          chain_next_response
+          [chain_next_response, post]
         end
 
         def format_results(rows, column_names = nil)
@@ -128,14 +152,9 @@ module DiscourseAi
             column_names = column_indexes.keys
           end
 
-          # this is a very inefficient format, there is lots of duplication
+          # this is not the most efficient format
           # however this is needed cause GPT 3.5 / 4 was steered using JSON
-
-          rows.map do |row|
-            obj = {}
-            column_names.each_with_index { |name, i| obj[name] = row[i] }
-            row
-          end
+          { column_names: column_names, rows: rows }
         end
 
         protected

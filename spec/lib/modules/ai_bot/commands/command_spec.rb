@@ -14,8 +14,9 @@ RSpec.describe DiscourseAi::AiBot::Commands::Command do
       formatted =
         command.format_results(rows, column_names) { |row| ["row ¦ 1", row + 1, "a|b,\nc"] }
 
-      expect(formatted.split("\n").length).to eq(6)
-      expect(formatted).to include("a|b, c")
+      expect(formatted[:column_names].length).to eq(3)
+      expect(formatted[:rows].length).to eq(5)
+      expect(formatted.to_s).to include("a|b,\\nc")
     end
 
     it "can also generate results by returning hash per row" do

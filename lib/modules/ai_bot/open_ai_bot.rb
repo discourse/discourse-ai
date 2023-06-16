@@ -59,7 +59,9 @@ module DiscourseAi
       end
 
       def available_functions
-        return @avilable_functions if defined?(@available_functions)
+        # note if defined? can be a problem in test
+        # this can never be nil so it is safe
+        return @available_functions if @available_functions
 
         functions = []
 
@@ -101,6 +103,11 @@ module DiscourseAi
           end
       end
 
+      def model_for(low_cost: false)
+        return "gpt-4-0613" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID && !low_cost
+        "gpt-3.5-turbo-16k"
+      end
+
       private
 
       def populate_functions(partial, functions)
@@ -123,19 +130,15 @@ module DiscourseAi
         end
 
         result = { role: role, content: content }
+
         if function
           result[:name] = poster_username
-        elsif !system
+        elsif !system && poster_username != bot_user.username
           # Open AI restrict name to 64 chars and only A-Za-z._ (work around)
           result[:content] = "#{poster_username}: #{content}"
         end
 
         result
-      end
-
-      def model_for(low_cost: false)
-        return "gpt-4-0613" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID && !low_cost
-        "gpt-3.5-turbo-16k"
       end
 
       def get_delta(partial, _context)

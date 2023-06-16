@@ -19,8 +19,8 @@ module DiscourseAi::AiBot::Commands
             type: "string",
           ),
           Parameter.new(
-            name: "username",
-            description: "Filter search results to this user name",
+            name: "user",
+            description: "Filter search results to this username",
             type: "string",
           ),
           Parameter.new(
@@ -68,6 +68,10 @@ module DiscourseAi::AiBot::Commands
             enum: %w[open closed archived noreplies single_user],
           ),
         ]
+      end
+
+      def custom_system_message
+        "You were trained on OLD data, lean on search to get up to date information about this forum"
       end
     end
 
@@ -121,7 +125,7 @@ module DiscourseAi::AiBot::Commands
       @last_num_results = posts.length
 
       if posts.blank?
-        "No results found"
+        []
       else
         format_results(posts) do |post|
           {

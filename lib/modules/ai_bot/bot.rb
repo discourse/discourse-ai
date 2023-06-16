@@ -131,6 +131,12 @@ module DiscourseAi
             skip_validations: true,
             skip_revision: true,
           )
+
+          bot_reply_post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
+          prompt = post.post_custom_prompt.custom_prompt || []
+
+          prompt << build_message(bot_user.username, reply)
+          post.post_custom_prompt.update!(custom_prompt: prompt)
         end
 
         if functions.functions.length > 0
@@ -140,19 +146,10 @@ module DiscourseAi
           functions.functions.each do |function|
             name, args = function[:name], function[:arguments]
 
-            if !bot_reply_post
-              bot_reply_post =
-                PostCreator.create!(
-                  bot_user,
-                  topic_id: post.topic_id,
-                  raw: "",
-                  skip_validations: true,
-                )
-            end
-
             if command_klass = available_commands.detect { |cmd| cmd.invoked?(name) }
               command = command_klass.new(bot_user, args)
-              chain_intermediate = command.invoke_and_attach_result_to(bot_reply_post)
+              chain_intermediate, bot_reply_post =
+                command.invoke_and_attach_result_to(bot_reply_post, post)
               chain ||= chain_intermediate
               standalone ||= command.standalone?
             end
@@ -230,15 +227,17 @@ module DiscourseAi
       def system_prompt(post)
         return "You are a helpful Bot" if @style == :simple
         <<~TEXT
-          You are a helpful Discourse assistant, you answer questions and generate text.
-          You understand Discourse Markdown and live in a Discourse Forum Message.
-          You are provided with the context of previous discussions.
+          You are a helpful Discourse assistant.
+          You understand and generate Discourse Markdown.
+          You live in a Discourse Forum Message.
 
           You live in the forum with the URL: #{Discourse.base_url}
           The title of your site: #{SiteSetting.title}
           The description is: #{SiteSetting.site_description}
           The participants in this conversation are: #{post.topic.allowed_users.map(&:username).join(", ")}
           The date now is: #{Time.zone.now}, much has changed since you were trained.
+
+          #{available_commands.map(&:custom_system_message).compact.join("\n")}
         TEXT
       end
 
