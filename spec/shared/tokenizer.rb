@@ -77,7 +77,7 @@ describe DiscourseAi::Tokenizer::OpenAiTokenizer do
       expect(described_class.truncate(sentence, 3)).to eq("foo bar baz")
     end
 
-    it "truncates a sentence sucesfully at a multibyte unicode character" do
+    it "truncates a sentence successfully at a multibyte unicode character" do
       sentence = "foo bar 👨🏿‍👩🏿‍👧🏿‍👧🏿 baz qux quux corge grault garply waldo fred plugh xyzzy thud"
       expect(described_class.truncate(sentence, 7)).to eq("foo bar 👨🏿")
     end
