@@ -69,7 +69,7 @@ RSpec.describe Jobs::CreateAiReply do
     end
 
     context "when chatting with Claude from Anthropic" do
-      let(:claude_response) { "Assistant: #{expected_response}" }
+      let(:claude_response) { "#{expected_response}" }
       let(:deltas) { claude_response.split(" ").map { |w| "#{w} " } }
 
       before do

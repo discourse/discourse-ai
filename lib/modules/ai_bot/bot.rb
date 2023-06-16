@@ -43,7 +43,7 @@ module DiscourseAi
       end
 
       def update_pm_title(post)
-        prompt = [title_prompt(post)]
+        prompt = title_prompt(post)
 
         new_title = get_updated_title(prompt)
 
@@ -207,7 +207,7 @@ module DiscourseAi
       end
 
       def title_prompt(post)
-        build_message(bot_user.username, <<~TEXT)
+        [build_message(bot_user.username, <<~TEXT)]
           Suggest a 7 word title for the following topic without quoting any of it:
 
           #{post.topic.posts[1..-1].map(&:raw).join("\n\n")[0..prompt_limit]}

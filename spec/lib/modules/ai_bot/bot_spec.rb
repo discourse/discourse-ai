@@ -91,7 +91,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
     it "updates the title using bot suggestions" do
       OpenAiCompletionsInferenceStubs.stub_response(
-        [bot.title_prompt(second_post)],
+        bot.title_prompt(second_post),
         expected_response,
         model: bot.model_for,
         req_opts: {

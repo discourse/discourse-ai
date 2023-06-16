@@ -8,11 +8,15 @@ module DiscourseAi
       end
 
       def bot_prompt_with_topic_context(post)
-        super(post).join("\n\n")
+        super(post).join("\n\n") + "\n\nAssistant:"
       end
 
       def prompt_limit
         7500 # https://console.anthropic.com/docs/prompt-design#what-is-a-prompt
+      end
+
+      def title_prompt(post)
+        super(post).join("\n\n") + "\n\nAssistant:"
       end
 
       def get_delta(partial, context)
@@ -22,15 +26,6 @@ module DiscourseAi
         delta = full[context[:pos]..-1]
 
         context[:pos] = full.length
-
-        if !context[:processed]
-          delta = ""
-          index = full.index("Assistant: ")
-          if index
-            delta = full[index + 11..-1]
-            context[:processed] = true
-          end
-        end
 
         delta
       end
