@@ -25,6 +25,7 @@ module DiscourseAi::AiBot::Commands
       def custom_system_message
         <<~TEXT
           In Discourse the markdown (description|SIZE, ZOOM%)[upload://SOMETEXT] is used to denote images and uploads. NEVER try changing the to http or https links.
+          ALWAYS prefer the upload:// format if available.
           When rendering multiple images place them in a [grid] ... [/grid] block
         TEXT
       end

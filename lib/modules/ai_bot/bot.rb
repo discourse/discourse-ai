@@ -185,11 +185,11 @@ module DiscourseAi
           conversation.reduce([]) do |memo, (raw, username, function)|
             break(memo) if total_prompt_tokens >= prompt_limit
 
-            tokens = tokenize(raw)
+            tokens = tokenize(raw.to_s)
 
             while !raw.blank? && tokens.length + total_prompt_tokens > prompt_limit
               raw = raw[0..-100] || ""
-              tokens = tokenize(raw)
+              tokens = tokenize(raw.to_s)
             end
 
             next(memo) if raw.blank?
