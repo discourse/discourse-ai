@@ -17,6 +17,17 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       expect(results).to eq([])
     end
 
+    it "supports subfolder properly" do
+      Discourse.stubs(:base_path).returns("/subfolder")
+
+      post1 = Fabricate(:post)
+
+      search = described_class.new(bot_user, post1)
+
+      results = search.process({ limit: 1, user: post1.user.username }.to_json)
+      expect(results[:rows].to_s).to include("/subfolder" + post1.url)
+    end
+
     it "can handle limits" do
       post1 = Fabricate(:post)
       _post2 = Fabricate(:post, user: post1.user)

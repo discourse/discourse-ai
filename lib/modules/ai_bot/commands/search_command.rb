@@ -130,7 +130,7 @@ module DiscourseAi::AiBot::Commands
         format_results(posts) do |post|
           {
             title: post.topic.title,
-            url: post.url,
+            url: Discourse.base_path + post.url,
             excerpt: post.excerpt,
             created: post.created_at,
           }
