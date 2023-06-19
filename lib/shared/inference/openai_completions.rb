@@ -88,7 +88,6 @@ module ::DiscourseAi
 
           http.request(request) do |response|
             if response.code.to_i != 200
-              puts response.body
               Rails.logger.error(
                 "OpenAiCompletions: status: #{response.code.to_i} - body: #{response.body}",
               )
