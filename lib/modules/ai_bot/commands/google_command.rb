@@ -8,7 +8,22 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!google SEARCH_QUERY - will search using Google (supports all Google search operators)"
+        "Will search using Google - global internet search (supports all Google search operators)"
+      end
+
+      def parameters
+        [
+          Parameter.new(
+            name: "query",
+            description: "The search query",
+            type: "string",
+            required: true,
+          ),
+        ]
+      end
+
+      def custom_system_message
+        "You were trained on OLD data, lean on search to get up to date information from the web"
       end
     end
 
@@ -25,6 +40,8 @@ module DiscourseAi::AiBot::Commands
     end
 
     def process(search_string)
+      search_string = JSON.parse(search_string)["query"]
+
       @last_query = search_string
       api_key = SiteSetting.ai_google_custom_search_api_key
       cx = SiteSetting.ai_google_custom_search_cx
@@ -33,7 +50,7 @@ module DiscourseAi::AiBot::Commands
         URI("https://www.googleapis.com/customsearch/v1?key=#{api_key}&cx=#{cx}&q=#{query}&num=10")
       body = Net::HTTP.get(uri)
 
-      parse_search_json(body).to_s
+      parse_search_json(body)
     end
 
     def parse_search_json(json_data)

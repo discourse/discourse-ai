@@ -13,14 +13,11 @@ RSpec.describe DiscourseAi::AiBot::AnthropicBot do
         context = {}
         reply = +""
 
-        reply << subject.get_delta({ completion: "\n\nAssist" }, context)
-        expect(reply).to eq("")
+        reply << subject.get_delta({ completion: "Hello " }, context)
+        expect(reply).to eq("Hello ")
 
-        reply << subject.get_delta({ completion: "\n\nAssistant: test" }, context)
-        expect(reply).to eq("test")
-
-        reply << subject.get_delta({ completion: "\n\nAssistant: test\nworld" }, context)
-        expect(reply).to eq("test\nworld")
+        reply << subject.get_delta({ completion: "Hello world" }, context)
+        expect(reply).to eq("Hello world")
       end
     end
   end

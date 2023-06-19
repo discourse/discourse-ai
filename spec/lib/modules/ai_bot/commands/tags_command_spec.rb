@@ -12,8 +12,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::TagsCommand do
 
       info = DiscourseAi::AiBot::Commands::TagsCommand.new(nil, nil).process(nil)
 
-      expect(info).to include("america")
-      expect(info).not_to include("not_here")
+      expect(info.to_s).to include("america")
+      expect(info.to_s).not_to include("not_here")
     end
   end
 end

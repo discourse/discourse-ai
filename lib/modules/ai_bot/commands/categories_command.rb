@@ -8,7 +8,11 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!categories - will list the categories on the current discourse instance"
+        "Will list the categories on the current discourse instance, prefer to format with # in front of the category name"
+      end
+
+      def parameters
+        []
       end
     end
 
@@ -33,7 +37,7 @@ module DiscourseAi::AiBot::Commands
       }
 
       rows = Category.where(read_restricted: false).limit(100).pluck(*columns.keys)
-      @count = rows.length
+      @last_count = rows.length
 
       format_results(rows, columns.values)
     end

@@ -19,6 +19,7 @@ RSpec.describe Jobs::CreateAiReply do
 
       before do
         bot_user = User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID)
+        bot = DiscourseAi::AiBot::Bot.as(bot_user)
 
         # time needs to be frozen so time in prompt does not drift
         freeze_time
@@ -26,10 +27,12 @@ RSpec.describe Jobs::CreateAiReply do
         OpenAiCompletionsInferenceStubs.stub_streamed_response(
           DiscourseAi::AiBot::OpenAiBot.new(bot_user).bot_prompt_with_topic_context(post),
           deltas,
+          model: bot.model_for,
           req_opts: {
             temperature: 0.4,
             top_p: 0.9,
             max_tokens: 1500,
+            functions: bot.available_functions,
             stream: true,
           },
         )
@@ -66,7 +69,7 @@ RSpec.describe Jobs::CreateAiReply do
     end
 
     context "when chatting with Claude from Anthropic" do
-      let(:claude_response) { "Assistant: #{expected_response}" }
+      let(:claude_response) { "#{expected_response}" }
       let(:deltas) { claude_response.split(" ").map { |w| "#{w} " } }
 
       before do

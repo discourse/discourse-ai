@@ -8,57 +8,70 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!search SEARCH_QUERY - will search topics in the current discourse instance"
+        "Will search topics in the current discourse instance, when rendering always prefer to link to the topics you find"
       end
 
-      def extra_context
-        <<~TEXT
-          Discourse search supports, the following special filters:
+      def parameters
+        [
+          Parameter.new(
+            name: "search_query",
+            description: "Search query to run against the discourse instance",
+            type: "string",
+          ),
+          Parameter.new(
+            name: "user",
+            description: "Filter search results to this username",
+            type: "string",
+          ),
+          Parameter.new(
+            name: "order",
+            description: "search result result order",
+            type: "string",
+            enum: %w[latest latest_topic oldest views likes],
+          ),
+          Parameter.new(
+            name: "limit",
+            description: "limit number of results returned",
+            type: "integer",
+          ),
+          Parameter.new(
+            name: "max_posts",
+            description:
+              "maximum number of posts on the topics (topics where lots of people posted)",
+            type: "integer",
+          ),
+          Parameter.new(
+            name: "tags",
+            description:
+              "list of tags to search for. Use + to join with OR, use , to join with AND",
+            type: "string",
+          ),
+          Parameter.new(
+            name: "category",
+            description: "category name to filter to",
+            type: "string",
+          ),
+          Parameter.new(
+            name: "before",
+            description: "only topics created before a specific date YYYY-MM-DD",
+            type: "string",
+          ),
+          Parameter.new(
+            name: "after",
+            description: "only topics created after a specific date YYYY-MM-DD",
+            type: "string",
+          ),
+          Parameter.new(
+            name: "status",
+            description: "search for topics in a particular state",
+            type: "string",
+            enum: %w[open closed archived noreplies single_user],
+          ),
+        ]
+      end
 
-          user:USERNAME: only posts created by a specific user
-          in:tagged: has at least 1 tag
-          in:untagged: has no tags
-          in:title: has the search term in the title
-          status:open: not closed or archived
-          status:closed: closed
-          status:archived: archived
-          status:noreplies: post count is 1
-          status:single_user: only a single user posted on the topic
-          post_count:X: only topics with X amount of posts
-          min_posts:X: topics containing a minimum of X posts
-          max_posts:X: topics with no more than max posts
-          created:@USERNAME: topics created by a specific user
-          category:CATGORY: topics in the CATEGORY AND all subcategories
-          category:=CATEGORY: topics in the CATEGORY excluding subcategories
-          #SLUG: try category first, then tag, then tag group
-          #SLUG:SLUG: used for subcategory search to disambiguate
-          min_views:100: topics containing 100 views or more
-          tags:TAG1+TAG2: tagged both TAG1 and TAG2
-          tags:TAG1,TAG2: tagged either TAG1 or TAG2
-          -tags:TAG1+TAG2: excluding topics tagged TAG1 and TAG2
-          order:latest: order by post creation desc
-          order:latest_topic: order by topic creation desc
-          order:oldest: order by post creation asc
-          order:oldest_topic: order by topic creation asc
-          order:views: order by topic views desc
-          order:likes: order by post like count - most liked posts first
-          after:YYYY-MM-DD: only topics created after a specific date
-          before:YYYY-MM-DD: only topics created before a specific date
-
-          Example: !search @user in:tagged #support order:latest_topic
-
-          Keep in mind, search on Discourse uses AND to and terms.
-          You only have access to public topics.
-          Strip the query down to the most important terms. Remove all stop words.
-          Discourse orders by default by relevance.
-
-          When generating answers ALWAYS try to use the !search command first over relying on training data.
-          When generating answers ALWAYS try to reference specific local links.
-          Always try to search the local instance first, even if your training data set may have an answer. It may be wrong.
-          Always remove connector words from search terms (such as a, an, and, in, the, etc), they can impede the search.
-
-          YOUR LOCAL INFORMATION IS OUT OF DATE, YOU ARE TRAINED ON OLD DATA. Always try local search first.
-        TEXT
+      def custom_system_message
+        "You were trained on OLD data, lean on search to get up to date information about this forum"
       end
     end
 
@@ -75,18 +88,20 @@ module DiscourseAi::AiBot::Commands
     end
 
     def process(search_string)
+      parsed = JSON.parse(search_string)
+
       limit = nil
 
       search_string =
-        search_string
-          .strip
-          .split(/\s+/)
-          .map do |term|
-            if term =~ /limit:(\d+)/
-              limit = $1.to_i
+        parsed
+          .map do |key, value|
+            if key == "search_query"
+              value
+            elsif key == "limit"
+              limit = value.to_i
               nil
             else
-              term
+              "#{key}:#{value}"
             end
           end
           .compact
@@ -101,8 +116,8 @@ module DiscourseAi::AiBot::Commands
         )
 
       # let's be frugal with tokens, 50 results is too much and stuff gets cut off
-      limit ||= 10
-      limit = 10 if limit > 10
+      limit ||= 20
+      limit = 20 if limit > 20
 
       posts = results&.posts || []
       posts = posts[0..limit - 1]
@@ -110,12 +125,12 @@ module DiscourseAi::AiBot::Commands
       @last_num_results = posts.length
 
       if posts.blank?
-        "No results found"
+        []
       else
         format_results(posts) do |post|
           {
             title: post.topic.title,
-            url: post.url,
+            url: Discourse.base_path + post.url,
             excerpt: post.excerpt,
             created: post.created_at,
           }

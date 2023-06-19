@@ -18,7 +18,7 @@ module DiscourseAi
         if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
           8192 - 3500
         else
-          4096 - 2000
+          16_384 - 2000
         end
       end
 
@@ -46,9 +46,11 @@ module DiscourseAi
             temperature: temperature,
             top_p: top_p,
             max_tokens: max_tokens,
+            functions: available_functions,
           ) { |key, old_value, new_value| new_value.nil? ? old_value : new_value }
 
-        model = prefer_low_cost ? "gpt-3.5-turbo" : model_for
+        model = model_for(low_cost: prefer_low_cost)
+
         DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model, **params, &blk)
       end
 
@@ -56,44 +58,87 @@ module DiscourseAi
         DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(text)
       end
 
-      def available_commands
-        if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
-          @cmds ||=
-            [
-              Commands::CategoriesCommand,
-              Commands::TimeCommand,
-              Commands::SearchCommand,
-              Commands::SummarizeCommand,
-            ].tap do |cmds|
-              cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
-              cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
-              if SiteSetting.ai_google_custom_search_api_key.present? &&
-                   SiteSetting.ai_google_custom_search_cx.present?
-                cmds << Commands::GoogleCommand
-              end
+      def available_functions
+        # note if defined? can be a problem in test
+        # this can never be nil so it is safe
+        return @available_functions if @available_functions
+
+        functions = []
+
+        functions =
+          available_commands.map do |command|
+            function =
+              DiscourseAi::Inference::OpenAiCompletions::Function.new(
+                name: command.name,
+                description: command.desc,
+              )
+            command.parameters.each do |parameter|
+              function.add_parameter(
+                name: parameter.name,
+                type: parameter.type,
+                description: parameter.description,
+                required: parameter.required,
+              )
             end
-        else
-          []
-        end
+            function
+          end
+
+        @available_functions = functions
+      end
+
+      def available_commands
+        @cmds ||=
+          [
+            Commands::CategoriesCommand,
+            Commands::TimeCommand,
+            Commands::SearchCommand,
+            Commands::SummarizeCommand,
+          ].tap do |cmds|
+            cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
+            cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
+            if SiteSetting.ai_google_custom_search_api_key.present? &&
+                 SiteSetting.ai_google_custom_search_cx.present?
+              cmds << Commands::GoogleCommand
+            end
+          end
+      end
+
+      def model_for(low_cost: false)
+        return "gpt-4-0613" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID && !low_cost
+        "gpt-3.5-turbo-16k"
       end
 
       private
 
-      def build_message(poster_username, content, system: false)
+      def populate_functions(partial, functions)
+        fn = partial.dig(:choices, 0, :delta, :function_call)
+        if fn
+          functions.add_function(fn[:name]) if fn[:name].present?
+          functions.add_argument_fragment(fn[:arguments]) if fn[:arguments].present?
+        end
+      end
+
+      def build_message(poster_username, content, function: false, system: false)
         is_bot = poster_username == bot_user.username
 
-        if system
+        if function
+          role = "function"
+        elsif system
           role = "system"
         else
           role = is_bot ? "assistant" : "user"
         end
 
-        { role: role, content: is_bot ? content : "#{poster_username}: #{content}" }
-      end
+        result = { role: role, content: content }
 
-      def model_for
-        return "gpt-4" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
-        "gpt-3.5-turbo"
+        if function
+          result[:name] = poster_username
+        elsif !system && poster_username != bot_user.username
+          # Open AI restrict name to 64 chars and only A-Za-z._ (work around)
+          result[:content] = "#{poster_username}: #{content}"
+        end
+
+        result
       end
 
       def get_delta(partial, _context)

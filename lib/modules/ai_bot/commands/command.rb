@@ -3,6 +3,17 @@
 module DiscourseAi
   module AiBot
     module Commands
+      class Parameter
+        attr_reader :name, :description, :type, :enum, :required
+        def initialize(name:, description:, type:, enum: nil, required: false)
+          @name = name
+          @description = description
+          @type = type
+          @enum = enum
+          @required = required
+        end
+      end
+
       class Command
         class << self
           def name
@@ -17,8 +28,11 @@ module DiscourseAi
             raise NotImplemented
           end
 
-          def extra_context
-            ""
+          def custom_system_message
+          end
+
+          def parameters
+            raise NotImplemented
           end
         end
 
@@ -64,16 +78,38 @@ module DiscourseAi
           true
         end
 
-        def invoke_and_attach_result_to(post)
+        def invoke_and_attach_result_to(post, parent_post)
+          placeholder = (<<~HTML).strip
+            <details>
+              <summary>#{I18n.t("discourse_ai.ai_bot.command_summary.#{self.class.name}")}</summary>
+            </details>
+          HTML
+
+          if !post
+            post =
+              PostCreator.create!(
+                bot_user,
+                raw: placeholder,
+                topic_id: parent_post.topic_id,
+                skip_validations: true,
+                skip_rate_limiter: true,
+              )
+          else
+            post.revise(
+              bot_user,
+              { raw: post.raw + "\n\n" + placeholder + "\n\n" },
+              skip_validations: true,
+              skip_revision: true,
+            )
+          end
+
           post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
           prompt = post.post_custom_prompt.custom_prompt || []
 
-          prompt << ["!#{self.class.name} #{args}", bot_user.username]
-          prompt << [process(args), result_name]
-
+          prompt << [process(args).to_json, self.class.name, "function"]
           post.post_custom_prompt.update!(custom_prompt: prompt)
 
-          raw = +<<~HTML
+          raw = +(<<~HTML)
           <details>
             <summary>#{I18n.t("discourse_ai.ai_bot.command_summary.#{self.class.name}")}</summary>
             <p>
@@ -85,8 +121,7 @@ module DiscourseAi
 
           raw << custom_raw if custom_raw.present?
 
-          replacement = "!#{self.class.name} #{args}"
-          raw = post.raw.sub(replacement, raw) if post.raw.include?(replacement)
+          raw = post.raw.sub(placeholder, raw)
 
           if chain_next_response
             post.raw = raw
@@ -95,7 +130,7 @@ module DiscourseAi
             post.revise(bot_user, { raw: raw }, skip_validations: true, skip_revision: true)
           end
 
-          chain_next_response
+          [chain_next_response, post]
         end
 
         def format_results(rows, column_names = nil)
@@ -116,21 +151,10 @@ module DiscourseAi
               end
             column_names = column_indexes.keys
           end
-          # two tokens per delimiter is a reasonable balance
-          # there may be a single delimiter solution but GPT has
-          # a hard time dealing with escaped characters
-          delimiter = "¦"
-          formatted = +""
-          formatted << column_names.join(delimiter)
-          formatted << "\n"
 
-          rows.each do |array|
-            array.map! { |item| item.to_s.gsub(delimiter, "|").gsub(/\n/, " ") }
-            formatted << array.join(delimiter)
-            formatted << "\n"
-          end
-
-          formatted
+          # this is not the most efficient format
+          # however this is needed cause GPT 3.5 / 4 was steered using JSON
+          { column_names: column_names, rows: rows }
         end
 
         protected

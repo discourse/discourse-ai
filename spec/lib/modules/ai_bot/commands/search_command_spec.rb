@@ -13,8 +13,19 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       post1 = Fabricate(:post)
       search = described_class.new(bot_user, post1)
 
-      results = search.process("order:fake ABDDCDCEDGDG")
-      expect(results).to eq("No results found")
+      results = search.process({ query: "order:fake ABDDCDCEDGDG" }.to_json)
+      expect(results).to eq([])
+    end
+
+    it "supports subfolder properly" do
+      Discourse.stubs(:base_path).returns("/subfolder")
+
+      post1 = Fabricate(:post)
+
+      search = described_class.new(bot_user, post1)
+
+      results = search.process({ limit: 1, user: post1.user.username }.to_json)
+      expect(results[:rows].to_s).to include("/subfolder" + post1.url)
     end
 
     it "can handle limits" do
@@ -25,14 +36,14 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       # search has no built in support for limit: so handle it from the outside
       search = described_class.new(bot_user, post1)
 
-      results = search.process("@#{post1.user.username} limit:2")
+      results = search.process({ limit: 2, user: post1.user.username }.to_json)
 
-      # title + 2 rows
-      expect(results.split("\n").length).to eq(3)
+      expect(results[:column_names].length).to eq(4)
+      expect(results[:rows].length).to eq(2)
 
       # just searching for everything
-      results = search.process("order:latest_topic")
-      expect(results.split("\n").length).to be > 1
+      results = search.process({ order: "latest_topic" }.to_json)
+      expect(results[:rows].length).to be > 1
     end
   end
 end

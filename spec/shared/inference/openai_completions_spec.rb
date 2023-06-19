@@ -6,6 +6,98 @@ require_relative "../../support/openai_completions_inference_stubs"
 describe DiscourseAi::Inference::OpenAiCompletions do
   before { SiteSetting.ai_openai_api_key = "abc-123" }
 
+  it "supports function calling" do
+    prompt = [role: "system", content: "you are weatherbot"]
+    prompt << { role: "user", content: "what is the weather in sydney?" }
+
+    functions = []
+
+    function =
+      DiscourseAi::Inference::OpenAiCompletions::Function.new(
+        name: "get_weather",
+        description: "Get the weather in a city",
+      )
+
+    function.add_parameter(
+      name: "location",
+      type: "string",
+      description: "the city name",
+      required: true,
+    )
+
+    function.add_parameter(
+      name: "unit",
+      type: "string",
+      description: "the unit of measurement celcius c or fahrenheit f",
+      enum: %w[c f],
+      required: true,
+    )
+
+    functions << function
+
+    function_calls = []
+    current_function_call = nil
+
+    deltas = [
+      { role: "assistant" },
+      { function_call: { name: "get_weather", arguments: "" } },
+      { function_call: { arguments: "{ \"location\": " } },
+      { function_call: { arguments: "\"sydney\", \"unit\": \"c\" }" } },
+    ]
+
+    OpenAiCompletionsInferenceStubs.stub_streamed_response(
+      prompt,
+      deltas,
+      model: "gpt-3.5-turbo-0613",
+      req_opts: {
+        functions: functions,
+        stream: true,
+      },
+    )
+
+    DiscourseAi::Inference::OpenAiCompletions.perform!(
+      prompt,
+      "gpt-3.5-turbo-0613",
+      functions: functions,
+    ) do |json, cancel|
+      fn = json.dig(:choices, 0, :delta, :function_call)
+      if fn && fn[:name]
+        current_function_call = { name: fn[:name], arguments: +fn[:arguments].to_s.dup }
+        function_calls << current_function_call
+      elsif fn && fn[:arguments] && current_function_call
+        current_function_call[:arguments] << fn[:arguments]
+      end
+    end
+
+    expect(function_calls.length).to eq(1)
+    expect(function_calls[0][:name]).to eq("get_weather")
+    expect(JSON.parse(function_calls[0][:arguments])).to eq(
+      { "location" => "sydney", "unit" => "c" },
+    )
+
+    prompt << { role: "function", name: "get_weather", content: 22.to_json }
+
+    OpenAiCompletionsInferenceStubs.stub_response(
+      prompt,
+      "The current temperature in Sydney is 22 degrees Celsius.",
+      model: "gpt-3.5-turbo-0613",
+      req_opts: {
+        functions: functions,
+      },
+    )
+
+    result =
+      DiscourseAi::Inference::OpenAiCompletions.perform!(
+        prompt,
+        "gpt-3.5-turbo-0613",
+        functions: functions,
+      )
+
+    expect(result.dig(:choices, 0, :message, :content)).to eq(
+      "The current temperature in Sydney is 22 degrees Celsius.",
+    )
+  end
+
   it "can complete a trivial prompt" do
     response_text = "1. Serenity\\n2. Laughter\\n3. Adventure"
     prompt = [role: "user", content: "write 3 words"]

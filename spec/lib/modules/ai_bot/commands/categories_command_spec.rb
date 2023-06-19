@@ -8,8 +8,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::CategoriesCommand do
       Fabricate(:category, name: "america", posts_year: 999)
 
       info = DiscourseAi::AiBot::Commands::CategoriesCommand.new(nil, nil).process(nil)
-      expect(info).to include("america")
-      expect(info).to include("999")
+      expect(info.to_s).to include("america")
+      expect(info.to_s).to include("999")
     end
   end
 end

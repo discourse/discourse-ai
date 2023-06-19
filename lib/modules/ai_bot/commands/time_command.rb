@@ -10,6 +10,17 @@ module DiscourseAi::AiBot::Commands
       def desc
         "!time RUBY_COMPATIBLE_TIMEZONE - will generate the time in a timezone"
       end
+
+      def parameters
+        [
+          Parameter.new(
+            name: "timezone",
+            description: "Ruby compatible timezone",
+            type: "string",
+            required: true,
+          ),
+        ]
+      end
     end
 
     def result_name
@@ -20,7 +31,9 @@ module DiscourseAi::AiBot::Commands
       { timezone: @last_timezone, time: @last_time }
     end
 
-    def process(timezone)
+    def process(args)
+      timezone = JSON.parse(args)["timezone"]
+
       time =
         begin
           Time.now.in_time_zone(timezone)

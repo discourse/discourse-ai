@@ -8,11 +8,15 @@ module DiscourseAi
       end
 
       def bot_prompt_with_topic_context(post)
-        super(post).join("\n\n")
+        super(post).join("\n\n") + "\n\nAssistant:"
       end
 
       def prompt_limit
         7500 # https://console.anthropic.com/docs/prompt-design#what-is-a-prompt
+      end
+
+      def title_prompt(post)
+        super(post).join("\n\n") + "\n\nAssistant:"
       end
 
       def get_delta(partial, context)
@@ -23,21 +27,18 @@ module DiscourseAi
 
         context[:pos] = full.length
 
-        if !context[:processed]
-          delta = ""
-          index = full.index("Assistant: ")
-          if index
-            delta = full[index + 11..-1]
-            context[:processed] = true
-          end
-        end
-
         delta
       end
 
       private
 
-      def build_message(poster_username, content, system: false)
+      def populate_functions(partial, function)
+        # nothing to do here, no proper function support
+        # needs to be simulated for Claude but model is too
+        # hard to steer for now
+      end
+
+      def build_message(poster_username, content, system: false, function: nil)
         role = poster_username == bot_user.username ? "Assistant" : "Human"
 
         "#{role}: #{content}"
