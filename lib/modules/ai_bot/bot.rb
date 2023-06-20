@@ -25,7 +25,7 @@ module DiscourseAi
       attr_reader :bot_user
 
       BOT_NOT_FOUND = Class.new(StandardError)
-      MAX_COMPLETIONS = 3
+      MAX_COMPLETIONS = 6
 
       def self.as(bot_user)
         available_bots = [DiscourseAi::AiBot::OpenAiBot, DiscourseAi::AiBot::AnthropicBot]
@@ -79,6 +79,7 @@ module DiscourseAi
           end
 
         redis_stream_key = nil
+        partial_reply = +""
         reply = +(bot_reply_post ? bot_reply_post.raw.dup : "")
         start = Time.now
 
@@ -87,7 +88,9 @@ module DiscourseAi
         functions = Functions.new
 
         submit_prompt(prompt, prefer_low_cost: prefer_low_cost) do |partial, cancel|
-          reply << get_delta(partial, context)
+          current_delta = get_delta(partial, context)
+          partial_reply << current_delta
+          reply << current_delta
           populate_functions(partial, functions)
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
@@ -135,7 +138,8 @@ module DiscourseAi
           bot_reply_post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
           prompt = post.post_custom_prompt.custom_prompt || []
 
-          prompt << build_message(bot_user.username, reply)
+          prompt << [partial_reply, bot_user.username]
+
           post.post_custom_prompt.update!(custom_prompt: prompt)
         end
 

@@ -4,6 +4,11 @@ require_relative "../../../../../support/openai_completions_inference_stubs"
 require_relative "../../../../../support/anthropic_completion_stubs"
 
 RSpec.describe Jobs::CreateAiReply do
+  before do
+    # got to do this cause we include times in system message
+    freeze_time
+  end
+
   describe "#execute" do
     fab!(:topic) { Fabricate(:topic) }
     fab!(:post) { Fabricate(:post, topic: topic) }

@@ -87,12 +87,12 @@ module DiscourseAi
       end
 
       def available_commands
+        # note: Summarize command is not ready yet, leave it out for now
         @cmds ||=
           [
             Commands::CategoriesCommand,
             Commands::TimeCommand,
             Commands::SearchCommand,
-            Commands::SummarizeCommand,
           ].tap do |cmds|
             cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
             cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
@@ -106,6 +106,16 @@ module DiscourseAi
       def model_for(low_cost: false)
         return "gpt-4-0613" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID && !low_cost
         "gpt-3.5-turbo-16k"
+      end
+
+      def clean_username(username)
+        if username.match?(/\0[a-zA-Z0-9_-]{1,64}\z/)
+          username
+        else
+          # not the best in the world, but this is what we have to work with
+          # if sites enable unicode usernames this can get messy
+          username.gsub(/[^a-zA-Z0-9_-]/, "_")[0..63]
+        end
       end
 
       private
@@ -133,9 +143,9 @@ module DiscourseAi
 
         if function
           result[:name] = poster_username
-        elsif !system && poster_username != bot_user.username
+        elsif !system && poster_username != bot_user.username && poster_username.present?
           # Open AI restrict name to 64 chars and only A-Za-z._ (work around)
-          result[:content] = "#{poster_username}: #{content}"
+          result[:name] = clean_username(poster_username)
         end
 
         result
