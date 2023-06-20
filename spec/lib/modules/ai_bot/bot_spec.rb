@@ -80,7 +80,9 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       expect(last.raw).not_to include("translation missing")
       expect(last.raw).to include("I found nothing")
 
-      expect(last.post_custom_prompt.custom_prompt.to_s).to include("I found nothing")
+      expect(last.post_custom_prompt.custom_prompt).to eq(
+        [["[]", "search", "function"], ["I found nothing, sorry", bot_user.username]],
+      )
     end
   end
 

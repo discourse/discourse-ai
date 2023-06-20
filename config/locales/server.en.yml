@@ -100,7 +100,7 @@ en:
       command_description:
         time: "Time in %{timezone} is %{time}"
         summarize: "Summarized <a href='%{url}'>%{title}</a>"
-        image: "Prompt: %{prompt}"
+        image: "%{prompt}"
         categories:
           one: "Found %{count} category"
           other: "Found %{count} categories"
@@ -115,6 +115,6 @@ en:
           other: "Found %{count} <a href='%{url}'>results</a> for '%{query}'"
 
     summarization:
-      configuration_hint: 
+      configuration_hint:
         one: "Configure the `%{setting}` setting first."
         other: "Configure these settings first: %{settings}"

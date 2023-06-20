@@ -36,7 +36,7 @@ module DiscourseAi::AiBot::Commands
     end
 
     def description_args
-      { prompt: @last_prompt || 0 }
+      { prompt: @last_prompt }
     end
 
     def chain_next_response

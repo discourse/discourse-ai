@@ -20,7 +20,8 @@ module DiscourseAi::AiBot::Commands
           ),
           Parameter.new(
             name: "user",
-            description: "Filter search results to this username",
+            description:
+              "Filter search results to this username (only include if user explicitly asks to filter by user)",
             type: "string",
           ),
           Parameter.new(
@@ -31,7 +32,8 @@ module DiscourseAi::AiBot::Commands
           ),
           Parameter.new(
             name: "limit",
-            description: "limit number of results returned",
+            description:
+              "limit number of results returned (generally prefer to just keep to default)",
             type: "integer",
           ),
           Parameter.new(

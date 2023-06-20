@@ -14,6 +14,14 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
 
     subject { described_class.new(bot_user) }
 
+    context "when cleaning usernames" do
+      it "can properly clean usernames so OpenAI allows it" do
+        subject.clean_username("test test").should eq("test_test")
+        subject.clean_username("test.test").should eq("test_test")
+        subject.clean_username("test😀test").should eq("test_test")
+      end
+    end
+
     context "when the topic has one post" do
       fab!(:post_1) { Fabricate(:post, topic: topic, raw: post_body(1), post_number: 1) }
 
@@ -23,7 +31,8 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
         post_1_message = prompt_messages[-1]
 
         expect(post_1_message[:role]).to eq("user")
-        expect(post_1_message[:content]).to eq("#{post_1.user.username}: #{post_body(1)}")
+        expect(post_1_message[:content]).to eq(post_body(1))
+        expect(post_1_message[:name]).to eq(post_1.user.username)
       end
     end
 
@@ -51,13 +60,15 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
 
         # negative cause we may have grounding prompts
         expect(prompt_messages[-3][:role]).to eq("user")
-        expect(prompt_messages[-3][:content]).to eq("#{post_1.username}: #{post_body(1)}")
+        expect(prompt_messages[-3][:content]).to eq(post_body(1))
+        expect(prompt_messages[-3][:name]).to eq(post_1.username)
 
         expect(prompt_messages[-2][:role]).to eq("assistant")
         expect(prompt_messages[-2][:content]).to eq(post_body(2))
 
         expect(prompt_messages[-1][:role]).to eq("user")
-        expect(prompt_messages[-1][:content]).to eq("#{post_3.username}: #{post_body(3)}")
+        expect(prompt_messages[-1][:content]).to eq(post_body(3))
+        expect(prompt_messages[-1][:name]).to eq(post_3.username)
       end
     end
   end
