@@ -73,7 +73,11 @@ module DiscourseAi::AiBot::Commands
       end
 
       def custom_system_message
-        "You were trained on OLD data, lean on search to get up to date information about this forum"
+        <<~TEXT
+          You were trained on OLD data, lean on search to get up to date information about this forum
+          When searching try to SIMPLIFY search terms
+          Discourse search joins all terms with AND. Reduce and simplify terms to find more results.
+        TEXT
       end
     end
 
