@@ -43,9 +43,10 @@ RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
           "<ai>This is summary 1</ai>",
         )
 
-        expect(subject.summarize_in_chunks(content[:contents], opts)).to contain_exactly(
-          "This is summary 1",
-        )
+        summarized_chunks =
+          subject.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+
+        expect(summarized_chunks).to contain_exactly("This is summary 1")
       end
     end
 
@@ -65,10 +66,10 @@ RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
           )
         end
 
-        expect(subject.summarize_in_chunks(content[:contents], opts)).to contain_exactly(
-          "This is summary 1",
-          "This is summary 2",
-        )
+        summarized_chunks =
+          subject.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+
+        expect(summarized_chunks).to contain_exactly("This is summary 1", "This is summary 2")
       end
     end
   end

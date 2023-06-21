@@ -19,10 +19,10 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
   def expected_messages(contents, opts)
     base_prompt = <<~TEXT
       You are a summarization bot.
-      You effectively summarise any text.
+      You effectively summarise any text and reply ONLY with ONLY the summarized text.
       You condense it into a shorter version.
-      You understand and generate Discourse forum markdown.
-      Try generating links as well the format is #{opts[:resource_path]}.
+      You understand and generate Discourse forum Markdown.
+      Try generating links as well the format is #{opts[:resource_path]}. eg: [ref](#{opts[:resource_path]}/77)
       The discussion title is: #{opts[:content_title]}.
     TEXT
 
@@ -46,9 +46,10 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
           "This is summary 1",
         )
 
-        expect(subject.summarize_in_chunks(content[:contents], opts)).to contain_exactly(
-          "This is summary 1",
-        )
+        summarized_chunks =
+          subject.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+
+        expect(summarized_chunks).to contain_exactly("This is summary 1")
       end
     end
 
@@ -68,10 +69,10 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
           )
         end
 
-        expect(subject.summarize_in_chunks(content[:contents], opts)).to contain_exactly(
-          "This is summary 1",
-          "This is summary 2",
-        )
+        summarized_chunks =
+          subject.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+
+        expect(summarized_chunks).to contain_exactly("This is summary 1", "This is summary 2")
       end
     end
   end

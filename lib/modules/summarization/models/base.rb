@@ -21,8 +21,32 @@ module DiscourseAi
           raise NotImplemented
         end
 
-        def summarize_in_chunks(_contents, _opts)
-          raise NotImplemented
+        def summarize_in_chunks(contents, opts)
+          chunks = []
+
+          section = { ids: [], summary: "" }
+
+          contents.each do |item|
+            new_content = format_content_item(item)
+
+            if tokenizer.can_expand_tokens?(
+                 section[:summary],
+                 new_content,
+                 max_tokens - reserved_tokens,
+               )
+              section[:summary] += new_content
+              section[:ids] << item[:id]
+            else
+              chunks << section
+              section = { id: [item[:id]], summary: new_content }
+            end
+          end
+
+          chunks << section if section[:summary].present?
+
+          chunks.each { |chunk| chunk[:summary] = summarize_chunk(chunk[:summary], opts) }
+
+          chunks
         end
 
         def concatenate_summaries(_summaries)
@@ -38,6 +62,10 @@ module DiscourseAi
         protected
 
         attr_reader :max_tokens
+
+        def summarize_chunk(_chunk_text, _opts)
+          raise NotImplemented
+        end
 
         def format_content_item(item)
           "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "

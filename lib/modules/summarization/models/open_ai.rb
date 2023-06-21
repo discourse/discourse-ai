@@ -20,32 +20,6 @@ module DiscourseAi
           )
         end
 
-        def summarize_in_chunks(contents, opts = {})
-          chunks = []
-
-          messages = [{ role: "system", content: build_base_prompt(opts) }]
-
-          section = ""
-          last_chunk =
-            contents.each do |item|
-              new_content = format_content_item(item)
-
-              if tokenizer.can_expand_tokens?(section, new_content, max_tokens - reserved_tokens)
-                section += new_content
-              else
-                chunks << section
-                section = new_content
-              end
-            end
-
-          chunks << section if section.present?
-
-          chunks.map do |chunk|
-            chunk_text = "Summarize the following in 400 words:\n#{chunk}"
-            completion(messages + [({ role: "user", content: chunk_text })])
-          end
-        end
-
         def concatenate_summaries(summaries)
           messages = [
             { role: "system", content: "You are a helpful bot" },
@@ -75,16 +49,26 @@ module DiscourseAi
 
         private
 
+        def summarize_chunk(chunk_text, opts)
+          completion(
+            [
+              { role: "system", content: build_base_prompt(opts) },
+              { role: "user", content: "Summarize the following in 400 words:\n#{chunk_text}" },
+            ],
+          )
+        end
+
         def build_base_prompt(opts)
           base_prompt = <<~TEXT
             You are a summarization bot.
-            You effectively summarise any text.
+            You effectively summarise any text and reply ONLY with ONLY the summarized text.
             You condense it into a shorter version.
-            You understand and generate Discourse forum markdown.
+            You understand and generate Discourse forum Markdown.
           TEXT
 
           if opts[:resource_path]
-            base_prompt += "Try generating links as well the format is #{opts[:resource_path]}.\n"
+            base_prompt +=
+              "Try generating links as well the format is #{opts[:resource_path]}. eg: [ref](#{opts[:resource_path]}/77)\n"
           end
 
           base_prompt += "The discussion title is: #{opts[:content_title]}.\n" if opts[

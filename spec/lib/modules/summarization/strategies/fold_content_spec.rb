@@ -5,8 +5,11 @@ require_relative "../../../../support/summarization/dummy_completion_model"
 RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
   describe "#summarize" do
     let(:summarize_text) { "This is a text" }
-    let(:model_tokens) { summarize_text.length }
     let(:model) { DummyCompletionModel.new(model_tokens) }
+    let(:model_tokens) do
+      # Make sure each content fits in a single chunk.
+      DiscourseAi::Tokenizer::BertTokenizer.size("(1 asd said: This is a text ") + 3
+    end
 
     subject { described_class.new(model) }
 
@@ -17,7 +20,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
         result = subject.summarize(content)
 
         expect(model.summarization_calls).to eq(1)
-        expect(result).to eq(DummyCompletionModel::SINGLE_SUMMARY)
+        expect(result[:summary]).to eq(DummyCompletionModel::SINGLE_SUMMARY)
       end
     end
 
@@ -28,7 +31,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
         result = subject.summarize(content)
 
         expect(model.summarization_calls).to eq(3)
-        expect(result).to eq(DummyCompletionModel::CONCATENATED_SUMMARIES)
+        expect(result[:summary]).to eq(DummyCompletionModel::CONCATENATED_SUMMARIES)
       end
     end
   end

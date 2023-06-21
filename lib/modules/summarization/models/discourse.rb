@@ -22,27 +22,6 @@ module DiscourseAi
           )
         end
 
-        def summarize_in_chunks(contents, _opts)
-          chunks = []
-
-          section = ""
-          last_chunk =
-            contents.each do |item|
-              new_content = format_content_item(item)
-
-              if tokenizer.can_expand_tokens?(section, new_content, max_tokens - reserved_tokens)
-                section += new_content
-              else
-                chunks << section
-                section = new_content
-              end
-            end
-
-          chunks << section if section.present?
-
-          chunks.map { |chunk| completion(chunk) }
-        end
-
         def concatenate_summaries(summaries)
           completion(summaries.join("\n"))
         end
@@ -56,6 +35,10 @@ module DiscourseAi
         end
 
         private
+
+        def summarize_chunk(chunk_text, _opts)
+          completion(chunk_text)
+        end
 
         def reserved_tokens
           0

@@ -20,9 +20,9 @@ module DiscourseAi
           opts = content.except(:contents)
           summaries = completion_model.summarize_in_chunks(content[:contents], opts)
 
-          return summaries.first if summaries.length == 1
+          return { summary: summaries.first[:summary], chunks: [] } if summaries.length == 1
 
-          completion_model.concatenate_summaries(summaries)
+          { summary: completion_model.concatenate_summaries(summaries), chunks: summaries }
         end
       end
     end

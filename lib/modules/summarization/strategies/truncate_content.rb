@@ -18,7 +18,11 @@ module DiscourseAi
 
         def summarize(content)
           opts = content.except(:contents)
-          completion_model.summarize_with_truncation(content[:contents], opts)
+
+          {
+            summary: completion_model.summarize_with_truncation(content[:contents], opts),
+            chunks: [],
+          }
         end
       end
     end

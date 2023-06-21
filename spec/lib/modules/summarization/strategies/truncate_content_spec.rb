@@ -19,7 +19,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TruncateContent do
         result = subject.summarize(content)
 
         expect(model.summarization_calls).to eq(1)
-        expect(result).to eq(DummyCompletionModel::SINGLE_SUMMARY)
+        expect(result[:summary]).to eq(DummyCompletionModel::SINGLE_SUMMARY)
       end
     end
   end

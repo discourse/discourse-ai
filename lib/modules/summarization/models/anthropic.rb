@@ -20,31 +20,6 @@ module DiscourseAi
           )
         end
 
-        def summarize_in_chunks(contents, opts = {})
-          base_instructions = build_base_prompt(opts)
-          chunks = []
-
-          section = ""
-          last_chunk =
-            contents.each do |item|
-              new_content = format_content_item(item)
-
-              if tokenizer.can_expand_tokens?(section, new_content, max_tokens - reserved_tokens)
-                section += new_content
-              else
-                chunks << section
-                section = new_content
-              end
-            end
-
-          chunks << section if section.present?
-
-          chunks.map do |chunk|
-            chunk_text = "<input>#{chunk}</input>\nAssistant:\n"
-            completion(base_instructions + chunk_text)
-          end
-        end
-
         def concatenate_summaries(summaries)
           instructions = <<~TEXT
             Human: Concatenate the following disjoint summaries inside the given input tags, creating a cohesive narrative.
@@ -69,6 +44,10 @@ module DiscourseAi
         end
 
         private
+
+        def summarize_chunk(chunk_text, opts)
+          completion(build_base_prompt(opts) + "<input>#{chunk_text}</input>\nAssistant:\n")
+        end
 
         def build_base_prompt(opts)
           base_prompt = <<~TEXT

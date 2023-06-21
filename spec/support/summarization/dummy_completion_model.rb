@@ -11,21 +11,31 @@ class DummyCompletionModel
 
   attr_reader :max_length, :summarization_calls
 
-  def summarize_in_chunks(contents, _opts)
-    contents.reduce("") do |memo, item|
+  def summarize_in_chunks(contents, opts)
+    chunks = []
+
+    section = { ids: [], summary: "" }
+
+    contents.each do |item|
       new_content = "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
 
-      if tokenizer.can_expand_tokens?(memo, new_content, max_length)
-        memo << new_content
+      if tokenizer.can_expand_tokens?(section[:summary], new_content, max_length)
+        section[:summary] += new_content
+        section[:ids] << item[:id]
       else
-        @summarization_calls += 1
-        memo = ""
+        chunks << section
+        section = { id: [item[:id]], summary: new_content }
       end
-
-      memo
     end
 
-    [SINGLE_SUMMARY] * @summarization_calls
+    chunks << section if section[:summary].present?
+
+    chunks.each do |chunk|
+      chunk[:summary] = SINGLE_SUMMARY
+      @summarization_calls += 1
+    end
+
+    chunks
   end
 
   def concatenate_summaries(summaries)
