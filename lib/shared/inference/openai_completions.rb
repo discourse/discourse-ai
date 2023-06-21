@@ -60,11 +60,19 @@ module ::DiscourseAi
         functions: nil,
         user_id: nil
       )
-        url = URI("https://api.openai.com/v1/chat/completions")
-        headers = {
-          "Content-Type" => "application/json",
-          "Authorization" => "Bearer #{SiteSetting.ai_openai_api_key}",
-        }
+        url =
+          if model.include?("gpt-4")
+            URI(SiteSetting.ai_openai_gpt4_url)
+          else
+            URI(SiteSetting.ai_openai_gpt35_url)
+          end
+        headers = { "Content-Type" => "application/json" }
+
+        if url.host.include? ("azure")
+          headers["api-key"] = SiteSetting.ai_openai_api_key
+        else
+          headers["Authorization"] = "Bearer #{SiteSetting.ai_openai_api_key}"
+        end
 
         payload = { model: model, messages: messages }
 
