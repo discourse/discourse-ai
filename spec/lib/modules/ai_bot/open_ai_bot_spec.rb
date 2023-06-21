@@ -14,7 +14,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
 
     subject { described_class.new(bot_user) }
 
-    context "when changing avialable commands" do
+    context "when changing available commands" do
       it "contains all commands by default" do
         # this will break as we add commands, but it is important as a sanity check
         SiteSetting.ai_stability_api_key = "test"
