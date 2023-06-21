@@ -133,7 +133,7 @@ module DiscourseAi
           [chain_next_response, post]
         end
 
-        def format_results(rows, column_names = nil)
+        def format_results(rows, column_names = nil, args: nil)
           rows = rows.map { |row| yield row } if block_given?
 
           if !column_names
@@ -154,7 +154,9 @@ module DiscourseAi
 
           # this is not the most efficient format
           # however this is needed cause GPT 3.5 / 4 was steered using JSON
-          { column_names: column_names, rows: rows }
+          result = { column_names: column_names, rows: rows }
+          result[:args] = args if args
+          result
         end
 
         protected

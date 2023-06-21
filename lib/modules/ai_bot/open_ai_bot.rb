@@ -46,10 +46,11 @@ module DiscourseAi
             temperature: temperature,
             top_p: top_p,
             max_tokens: max_tokens,
-            functions: available_functions,
           ) { |key, old_value, new_value| new_value.nil? ? old_value : new_value }
 
         model = model_for(low_cost: prefer_low_cost)
+
+        params[:functions] = available_functions if available_functions.present?
 
         DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model, **params, &blk)
       end
@@ -87,12 +88,14 @@ module DiscourseAi
       end
 
       def available_commands
-        # note: Summarize command is not ready yet, leave it out for now
-        @cmds ||=
+        return @cmds if @cmds
+
+        all_commands =
           [
             Commands::CategoriesCommand,
             Commands::TimeCommand,
             Commands::SearchCommand,
+            Commands::SummarizeCommand,
           ].tap do |cmds|
             cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
             cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
@@ -101,6 +104,9 @@ module DiscourseAi
               cmds << Commands::GoogleCommand
             end
           end
+
+        allowed_commands = SiteSetting.ai_bot_enabled_chat_commands.split("|")
+        @cmds = all_commands.filter { |klass| allowed_commands.include?(klass.name) }
       end
 
       def model_for(low_cost: false)

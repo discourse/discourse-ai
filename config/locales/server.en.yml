@@ -61,6 +61,7 @@ en:
     ai_bot_enabled: "Enable the AI Bot module."
     ai_bot_allowed_groups: "When the GPT Bot has access to the PM, it will reply to members of these groups."
     ai_bot_enabled_chat_bots: "Available models to act as an AI Bot"
+    ai_bot_enabled_chat_commands: "Available GPT integrations used to provide external functionality to the model. Only works with GPT-4 and GPT-3.5"
     ai_helper_add_ai_pm_to_header: "Display a button in the header to start a PM with a AI Bot"
 
     ai_stability_api_key: "API key for the stability.ai API"

@@ -14,7 +14,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       search = described_class.new(bot_user, post1)
 
       results = search.process({ query: "order:fake ABDDCDCEDGDG" }.to_json)
-      expect(results).to eq([])
+      expect(results[:args]).to eq("{\"query\":\"order:fake ABDDCDCEDGDG\"}")
+      expect(results[:rows]).to eq([])
     end
 
     it "supports subfolder properly" do
