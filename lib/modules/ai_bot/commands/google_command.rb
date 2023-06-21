@@ -59,7 +59,7 @@ module DiscourseAi::AiBot::Commands
 
       @last_num_results = parsed.dig("searchInformation", "totalResults").to_i
 
-      format_results(results) do |result|
+      format_results(results, args: json_data) do |result|
         {
           title: result["title"],
           link: result["link"],

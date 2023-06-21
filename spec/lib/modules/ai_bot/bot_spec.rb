@@ -62,7 +62,13 @@ RSpec.describe DiscourseAi::AiBot::Bot do
         req_opts: req_opts,
       )
 
-      prompt << { role: "function", content: "[]", name: "search" }
+      result =
+        DiscourseAi::AiBot::Commands::SearchCommand
+          .new(nil, nil)
+          .process({ query: "test search" }.to_json)
+          .to_json
+
+      prompt << { role: "function", content: result, name: "search" }
 
       OpenAiCompletionsInferenceStubs.stub_streamed_response(
         prompt,
@@ -81,7 +87,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       expect(last.raw).to include("I found nothing")
 
       expect(last.post_custom_prompt.custom_prompt).to eq(
-        [["[]", "search", "function"], ["I found nothing, sorry", bot_user.username]],
+        [[result, "search", "function"], ["I found nothing, sorry", bot_user.username]],
       )
     end
   end

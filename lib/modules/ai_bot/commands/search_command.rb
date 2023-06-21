@@ -15,7 +15,7 @@ module DiscourseAi::AiBot::Commands
         [
           Parameter.new(
             name: "search_query",
-            description: "Search query to run against the discourse instance",
+            description: "Search query (correct bad spelling, remove connector words!)",
             type: "string",
           ),
           Parameter.new(
@@ -89,8 +89,8 @@ module DiscourseAi::AiBot::Commands
       }
     end
 
-    def process(search_string)
-      parsed = JSON.parse(search_string)
+    def process(search_args)
+      parsed = JSON.parse(search_args)
 
       limit = nil
 
@@ -127,9 +127,9 @@ module DiscourseAi::AiBot::Commands
       @last_num_results = posts.length
 
       if posts.blank?
-        []
+        { args: search_args, rows: [], instruction: "nothing was found, expand your search" }
       else
-        format_results(posts) do |post|
+        format_results(posts, args: search_args) do |post|
           {
             title: post.topic.title,
             url: Discourse.base_path + post.url,

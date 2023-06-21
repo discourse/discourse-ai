@@ -207,6 +207,18 @@ plugins:
      - gpt-3.5-turbo
      - gpt-4
      - claude-v1
+  ai_bot_enabled_chat_commands:
+    type: list
+    default: "categories|google|image|search|tags|time"
+    client: true
+    choices:
+     - categories
+     - google
+     - image
+     - search
+     - summarize
+     - tags
+     - time
   ai_helper_add_ai_pm_to_header:
     default: true
     client: true
