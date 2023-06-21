@@ -8,14 +8,14 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "!time RUBY_COMPATIBLE_TIMEZONE - will generate the time in a timezone"
+        "Will generate the time in a timezone"
       end
 
       def parameters
         [
           Parameter.new(
             name: "timezone",
-            description: "Ruby compatible timezone",
+            description: "ALWAYS supply a Ruby compatible timezone",
             type: "string",
             required: true,
           ),
@@ -45,7 +45,7 @@ module DiscourseAi::AiBot::Commands
       @last_timezone = timezone
       @last_time = time.to_s
 
-      time.to_s
+      { args: args, time: time.to_s }
     end
   end
 end
