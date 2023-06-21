@@ -21,11 +21,8 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
     ).with(
       body: "{\"model\":\"text-embedding-ada-002\",\"input\":\"hello\"}",
       headers: {
-        "Accept" => "*/*",
-        "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
         "Api-Key" => "123456",
         "Content-Type" => "application/json",
-        "User-Agent" => "Faraday v2.7.6",
       },
     ).to_return(status: 200, body: body_json, headers: {})
 
@@ -49,11 +46,8 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
     stub_request(:post, "https://api.openai.com/v1/embeddings").with(
       body: "{\"model\":\"text-embedding-ada-002\",\"input\":\"hello\"}",
       headers: {
-        "Accept" => "*/*",
-        "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
         "Authorization" => "Bearer 123456",
         "Content-Type" => "application/json",
-        "User-Agent" => "Faraday v2.7.6",
       },
     ).to_return(status: 200, body: body_json, headers: {})
 

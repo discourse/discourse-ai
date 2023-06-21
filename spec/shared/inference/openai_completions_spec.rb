@@ -41,12 +41,9 @@ describe DiscourseAi::Inference::OpenAiCompletions do
         body:
           "{\"model\":\"gpt-3.5-turbo-0613\",\"messages\":[{\"role\":\"user\",\"content\":\"hello\"}]}",
         headers: {
-          "Accept" => "*/*",
-          "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
           "Api-Key" => "12345",
           "Content-Type" => "application/json",
           "Host" => "company.openai.azure.com",
-          "User-Agent" => "Ruby",
         },
       ).to_return(status: 200, body: expected.to_json, headers: {})
 
