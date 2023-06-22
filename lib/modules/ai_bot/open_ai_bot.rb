@@ -15,22 +15,21 @@ module DiscourseAi
       def prompt_limit
         # note GPT counts both reply and request tokens in limits...
         # also allow for an extra 500 or so spare tokens
+        #
+        # 2500 are the max reply tokens
+        # Then we have 400 or so for the full function suite
+        # 100 additional for growth around function calls
         if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
-          8192 - 3500
+          8192 - 3000
         else
-          16_384 - 2000
+          16_384 - 3000
         end
       end
 
       def reply_params
-        max_tokens =
-          if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
-            3000
-          else
-            1500
-          end
-
-        { temperature: 0.4, top_p: 0.9, max_tokens: max_tokens }
+        # technically we could allow GPT-3.5 16k more tokens
+        # but lets just keep it here for now
+        { temperature: 0.4, top_p: 0.9, max_tokens: 2500 }
       end
 
       def submit_prompt(
