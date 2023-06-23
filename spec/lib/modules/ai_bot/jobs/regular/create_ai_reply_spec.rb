@@ -36,7 +36,7 @@ RSpec.describe Jobs::CreateAiReply do
           req_opts: {
             temperature: 0.4,
             top_p: 0.9,
-            max_tokens: 1500,
+            max_tokens: 2500,
             functions: bot.available_functions,
             stream: true,
           },
