@@ -38,7 +38,7 @@ module DiscourseAi
               section[:ids] << item[:id]
             else
               chunks << section
-              section = { id: [item[:id]], summary: new_content }
+              section = { ids: [item[:id]], summary: new_content }
             end
           end
 
