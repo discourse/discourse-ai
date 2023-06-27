@@ -9,7 +9,7 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
     response_text = "1. Serenity\\n2. Laughter\\n3. Adventure"
     prompt = "Human: write 3 words\n\n"
     user_id = 183
-    req_opts = { temperature: 0.5, max_tokens_to_sample: 700 }
+    req_opts = { max_tokens_to_sample: 700, temperature: 0.5 }
 
     AnthropicCompletionStubs.stub_response(prompt, response_text, req_opts: req_opts)
 

@@ -4,11 +4,11 @@ require_relative "../../../../support/summarization/dummy_completion_model"
 
 RSpec.describe DiscourseAi::Summarization::Strategies::TruncateContent do
   describe "#summarize" do
+    subject(:strategy) { described_class.new(model) }
+
     let(:summarize_text) { "This is a text" }
     let(:model_tokens) { summarize_text.length }
     let(:model) { DummyCompletionModel.new(model_tokens) }
-
-    subject { described_class.new(model) }
 
     let(:content) { { contents: [{ poster: "asd", id: 1, text: summarize_text }] } }
 
@@ -16,7 +16,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TruncateContent do
       it "summarizes a truncated version" do
         content[:contents] << { poster: "asd2", id: 2, text: summarize_text }
 
-        result = subject.summarize(content)
+        result = strategy.summarize(content)
 
         expect(model.summarization_calls).to eq(1)
         expect(result[:summary]).to eq(DummyCompletionModel::SINGLE_SUMMARY)
