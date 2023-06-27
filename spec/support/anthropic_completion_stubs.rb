@@ -17,7 +17,11 @@ class AnthropicCompletionStubs
     def stub_response(prompt, response_text, req_opts: {})
       WebMock
         .stub_request(:post, "https://api.anthropic.com/v1/complete")
-        .with(body: { model: "claude-v1", prompt: prompt }.merge(req_opts).to_json)
+        .with(
+          body: { model: "claude-v1", prompt: prompt, max_tokens_to_sample: 2000 }.merge(
+            req_opts,
+          ).to_json,
+        )
         .to_return(status: 200, body: JSON.dump(response(response_text)))
     end
 

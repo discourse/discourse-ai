@@ -85,8 +85,8 @@ RSpec.describe Jobs::CreateAiReply do
           deltas,
           model: "claude-v1.3",
           req_opts: {
-            temperature: 0.4,
             max_tokens_to_sample: 3000,
+            temperature: 0.4,
             stream: true,
           },
         )

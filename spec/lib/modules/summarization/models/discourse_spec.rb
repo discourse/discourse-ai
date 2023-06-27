@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Summarization::Models::Discourse do
-  let(:model) { "bart-large-cnn-samsum" }
-  let(:max_tokens) { 20 }
+  subject(:model) { described_class.new(model_name, max_tokens: max_tokens) }
 
-  subject { described_class.new(model, max_tokens: max_tokens) }
+  let(:model_name) { "bart-large-cnn-samsum" }
+  let(:max_tokens) { 20 }
 
   let(:content) do
     {
@@ -22,7 +22,7 @@ RSpec.describe DiscourseAi::Summarization::Models::Discourse do
         :post,
         "#{SiteSetting.ai_summarization_discourse_service_api_endpoint}/api/v1/classify",
       )
-      .with(body: JSON.dump(model: model, content: prompt))
+      .with(body: JSON.dump(model: model_name, content: prompt))
       .to_return(status: 200, body: JSON.dump(summary_text: response))
   end
 
@@ -40,7 +40,7 @@ RSpec.describe DiscourseAi::Summarization::Models::Discourse do
         stub_request(expected_messages(content[:contents], opts), "This is summary 1")
 
         summarized_chunks =
-          subject.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+          model.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
 
         expect(summarized_chunks).to contain_exactly("This is summary 1")
       end
@@ -60,7 +60,7 @@ RSpec.describe DiscourseAi::Summarization::Models::Discourse do
         end
 
         summarized_chunks =
-          subject.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+          model.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
 
         expect(summarized_chunks).to contain_exactly("This is summary 1", "This is summary 2")
       end
@@ -73,9 +73,7 @@ RSpec.describe DiscourseAi::Summarization::Models::Discourse do
 
       stub_request(messages, "concatenated summary")
 
-      expect(subject.concatenate_summaries(["summary 1", "summary 2"])).to eq(
-        "concatenated summary",
-      )
+      expect(model.concatenate_summaries(["summary 1", "summary 2"])).to eq("concatenated summary")
     end
   end
 
@@ -87,7 +85,7 @@ RSpec.describe DiscourseAi::Summarization::Models::Discourse do
 
       stub_request("( 1 asd said : this is", "truncated summary")
 
-      expect(subject.summarize_with_truncation(content[:contents], opts)).to eq("truncated summary")
+      expect(model.summarize_with_truncation(content[:contents], opts)).to eq("truncated summary")
     end
   end
 end

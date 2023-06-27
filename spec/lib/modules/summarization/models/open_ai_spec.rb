@@ -3,10 +3,10 @@
 require_relative "../../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
-  let(:model) { "gpt-3.5-turbo" }
-  let(:max_tokens) { 720 }
+  subject(:model) { described_class.new(model_name, max_tokens: max_tokens) }
 
-  subject { described_class.new(model, max_tokens: max_tokens) }
+  let(:model_name) { "gpt-3.5-turbo" }
+  let(:max_tokens) { 720 }
 
   let(:content) do
     {
@@ -47,7 +47,7 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
         )
 
         summarized_chunks =
-          subject.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+          model.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
 
         expect(summarized_chunks).to contain_exactly("This is summary 1")
       end
@@ -70,7 +70,7 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
         end
 
         summarized_chunks =
-          subject.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+          model.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
 
         expect(summarized_chunks).to contain_exactly("This is summary 1", "This is summary 2")
       end
@@ -90,9 +90,7 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
 
       OpenAiCompletionsInferenceStubs.stub_response(messages, "concatenated summary")
 
-      expect(subject.concatenate_summaries(["summary 1", "summary 2"])).to eq(
-        "concatenated summary",
-      )
+      expect(model.concatenate_summaries(["summary 1", "summary 2"])).to eq("concatenated summary")
     end
   end
 
@@ -110,7 +108,7 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
 
       OpenAiCompletionsInferenceStubs.stub_response(truncated_version, "truncated summary")
 
-      expect(subject.summarize_with_truncation(content[:contents], opts)).to eq("truncated summary")
+      expect(model.summarize_with_truncation(content[:contents], opts)).to eq("truncated summary")
     end
   end
 end
