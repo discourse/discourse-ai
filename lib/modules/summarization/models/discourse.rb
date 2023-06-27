@@ -2,8 +2,8 @@
 
 module DiscourseAi
   module Summarization
-    module Strategies
-      class DiscourseAi < ::Summarization::Base
+    module Models
+      class Discourse < Base
         def display_name
           "Discourse AI's #{model}"
         end
@@ -22,29 +22,39 @@ module DiscourseAi
           )
         end
 
-        def summarize(content_text)
-          ::DiscourseAi::Inference::DiscourseClassifier.perform!(
-            "#{SiteSetting.ai_summarization_discourse_service_api_endpoint}/api/v1/classify",
-            model,
-            prompt(content_text),
-            SiteSetting.ai_summarization_discourse_service_api_key,
-          ).dig(:summary_text)
+        def concatenate_summaries(summaries)
+          completion(summaries.join("\n"))
         end
 
-        def prompt(text)
-          ::DiscourseAi::Tokenizer::BertTokenizer.truncate(text, max_length)
+        def summarize_with_truncation(contents, opts)
+          text_to_summarize = contents.map { |c| format_content_item(c) }.join
+          truncated_content =
+            ::DiscourseAi::Tokenizer::BertTokenizer.truncate(text_to_summarize, max_tokens)
+
+          completion(truncated_content)
         end
 
         private
 
-        def max_length
-          lengths = {
-            "bart-large-cnn-samsum" => 1024,
-            "flan-t5-base-samsum" => 512,
-            "long-t5-tglobal-base-16384-book-summary" => 16_384,
-          }
+        def summarize_chunk(chunk_text, _opts)
+          completion(chunk_text)
+        end
 
-          lengths[model]
+        def reserved_tokens
+          0
+        end
+
+        def completion(prompt)
+          ::DiscourseAi::Inference::DiscourseClassifier.perform!(
+            "#{SiteSetting.ai_summarization_discourse_service_api_endpoint}/api/v1/classify",
+            model,
+            prompt,
+            SiteSetting.ai_summarization_discourse_service_api_key,
+          ).dig(:summary_text)
+        end
+
+        def tokenizer
+          DiscourseAi::Tokenizer::BertTokenizer
         end
       end
     end

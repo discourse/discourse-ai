@@ -24,7 +24,7 @@ module ::DiscourseAi
 
         payload[:temperature] = temperature if temperature
         payload[:top_p] = top_p if top_p
-        payload[:max_tokens_to_sample] = max_tokens || 300
+        payload[:max_tokens_to_sample] = max_tokens if max_tokens
         payload[:stream] = true if block_given?
 
         Net::HTTP.start(
