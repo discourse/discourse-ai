@@ -19,9 +19,9 @@ describe ::TopicsController do
 
   context "when a user is logged on" do
     it "includes related topics in payload when configured" do
-      DiscourseAi::Embeddings::SemanticRelated
-        .expects(:symmetric_semantic_search)
-        .returns([topic1.id, topic2.id, topic3.id])
+      DiscourseAi::Embeddings::SemanticRelated.expects(:symmetric_semantic_search).returns(
+        [topic1.id, topic2.id, topic3.id],
+      )
 
       get("#{topic.relative_url}.json")
       expect(response.status).to eq(200)

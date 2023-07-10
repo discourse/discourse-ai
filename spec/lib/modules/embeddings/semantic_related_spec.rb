@@ -42,9 +42,9 @@ describe DiscourseAi::Embeddings::SemanticRelated do
     context "when embeddings exist" do
       before do
         Discourse.cache.clear
-        DiscourseAi::Embeddings::SemanticRelated
-          .expects(:symmetric_semantic_search)
-          .returns(Topic.unscoped.order(id: :desc).limit(100).pluck(:id))
+        DiscourseAi::Embeddings::SemanticRelated.expects(:symmetric_semantic_search).returns(
+          Topic.unscoped.order(id: :desc).limit(100).pluck(:id),
+        )
       end
 
       after { Discourse.cache.clear }

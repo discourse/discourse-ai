@@ -21,14 +21,15 @@ module DiscourseAi
 
         # Need a better name for this method
         def process!
-          @processed_target = case @target
-          when Topic
-            topic_truncation(@target)
-          when Post
-            post_truncation(@target)
-          else
-            raise ArgumentError, "Invalid target type"
-          end
+          @processed_target =
+            case @target
+            when Topic
+              topic_truncation(@target)
+            when Post
+              post_truncation(@target)
+            else
+              raise ArgumentError, "Invalid target type"
+            end
 
           @digest = OpenSSL::Digest::SHA1.hexdigest(@processed_target)
         end
