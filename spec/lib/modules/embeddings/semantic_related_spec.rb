@@ -24,13 +24,6 @@ describe DiscourseAi::Embeddings::SemanticRelated do
       end
 
       it "queues job only once per 15 minutes" do
-        # sadly we need to mock a DB connection to return nothing
-        DiscourseAi::Embeddings::Topic
-          .any_instance
-          .expects(:query_symmetric_embeddings)
-          .returns([])
-          .twice
-
         results = nil
 
         expect_enqueued_with(job: :generate_embeddings, args: { topic_id: topic.id }) do
@@ -49,8 +42,7 @@ describe DiscourseAi::Embeddings::SemanticRelated do
     context "when embeddings exist" do
       before do
         Discourse.cache.clear
-        DiscourseAi::Embeddings::Topic
-          .any_instance
+        DiscourseAi::Embeddings::SemanticRelated
           .expects(:symmetric_semantic_search)
           .returns(Topic.unscoped.order(id: :desc).limit(100).pluck(:id))
       end

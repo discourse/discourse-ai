@@ -11,7 +11,7 @@ module Jobs
       post = topic.first_post
       return if post.nil? || post.raw.blank?
 
-      DiscourseAi::Embeddings::Topic.new.generate_and_store_embeddings_for(topic)
+      DiscourseAi::Embeddings::Manager.new(topic).generate!
     end
   end
 end

@@ -143,39 +143,14 @@ plugins:
   ai_embeddings_discourse_service_api_key:
     default: ""
     secret: true
-  ai_embeddings_models:
-    type: list
+  ai_embeddings_model:
+    type: enum
     list_type: compact
-    default: ""
+    default: "all-mpnet-base-v2"
     allow_any: false
     choices:
      - all-mpnet-base-v2
-     - all-distilroberta-v1
-     - multi-qa-mpnet-base-dot-v1
-     - paraphrase-multilingual-mpnet-base-v2
-     - msmarco-distilbert-base-v4
-     - msmarco-distilbert-base-tas-b
      - text-embedding-ada-002
-  ai_embeddings_semantic_related_model:
-    type: enum
-    default: all-mpnet-base-v2
-    choices:
-      - all-mpnet-base-v2
-      - text-embedding-ada-002
-      - all-distilroberta-v1
-      - multi-qa-mpnet-base-dot-v1
-      - paraphrase-multilingual-mpnet-base-v2
-  ai_embeddings_semantic_search_model:
-    type: enum
-    default: msmarco-distilbert-base-v4
-    choices:
-      - msmarco-distilbert-base-v4
-      - msmarco-distilbert-base-tas-b
-      - text-embedding-ada-002
-  ai_embeddings_semantic_related_instruction:
-    default: "Represent the Discourse topic for retrieving relevant topics:"
-    hidden: true
-    client: false
   ai_embeddings_generate_for_pms: false
   ai_embeddings_semantic_related_topics_enabled: false
   ai_embeddings_semantic_related_topics: 5

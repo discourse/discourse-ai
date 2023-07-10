@@ -4,8 +4,11 @@ module DiscourseAi
   module Embeddings
     class EntryPoint
       def load_files
-        require_relative "model"
-        require_relative "topic"
+        require_relative "models/base"
+        require_relative "models/all_mpnet_base_v2"
+        require_relative "models/text_embedding_ada_002"
+        require_relative "strategies/truncation"
+        require_relative "manager"
         require_relative "jobs/regular/generate_embeddings"
         require_relative "semantic_related"
         require_relative "semantic_search"
