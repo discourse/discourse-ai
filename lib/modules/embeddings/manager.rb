@@ -17,9 +17,9 @@ module DiscourseAi
       def generate!
         @strategy.process!
 
-        # bail here if we already have an embedding with matching version and digest
+        # TODO bail here if we already have an embedding with matching version and digest
 
-        @embeddings = @model.generate_embeddings(processed_target)
+        @embeddings = @model.generate_embeddings(@strategy.processed_target)
 
         persist!
       end
@@ -28,14 +28,15 @@ module DiscourseAi
         begin
           DB.exec(
             <<~SQL,
-                INSERT INTO ai_topic_embeddings_#{table_suffix} (topic_id, model_version, strategy_version, digest, embeddings)
-                VALUES (:topic_id, :model_version, :strategy_version, :digest, '[:embeddings]')
+                INSERT INTO ai_topic_embeddings_#{table_suffix} (topic_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
+                VALUES (:topic_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                 ON CONFLICT (topic_id)
                 DO UPDATE SET
                   model_version = :model_version,
                   strategy_version = :strategy_version,
                   digest = :digest,
-                  embeddings = '[:embeddings]'
+                  embeddings = '[:embeddings]',
+                  updated_at = CURRENT_TIMESTAMP
 
               SQL
             topic_id: @target.id,

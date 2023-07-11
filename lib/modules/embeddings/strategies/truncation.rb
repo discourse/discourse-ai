@@ -4,6 +4,8 @@ module DiscourseAi
   module Embeddings
     module Strategies
       class Truncation
+        attr_reader :processed_target, :digest
+
         def self.id
           1
         end
@@ -12,63 +14,67 @@ module DiscourseAi
           self.class.id
         end
 
+        def version
+          1
+        end
+
         def initialize(target, model)
           @model = model
           @target = target
           @tokenizer = @model.tokenizer
           @max_length = @model.max_sequence_length
+          @processed_target = +""
         end
 
         # Need a better name for this method
         def process!
-          @processed_target =
-            case @target
-            when Topic
-              topic_truncation(@target)
-            when Post
-              post_truncation(@target)
-            else
-              raise ArgumentError, "Invalid target type"
-            end
+          case @target
+          when Topic
+            topic_truncation(@target)
+          when Post
+            post_truncation(@target)
+          else
+            raise ArgumentError, "Invalid target type"
+          end
 
           @digest = OpenSSL::Digest::SHA1.hexdigest(@processed_target)
         end
 
         def topic_truncation(topic)
-          result = +""
+          t = @processed_target
 
-          restult << topic.title
-          result << "\n\n"
-          result << topic.category.name
+          t << topic.title
+          t << "\n\n"
+          t << topic.category.name
           if SiteSetting.tagging_enabled
-            result << "\n\n"
-            result << topic.tags.pluck(:name).join(", ")
+            t << "\n\n"
+            t << topic.tags.pluck(:name).join(", ")
           end
-          result << "\n\n"
+          t << "\n\n"
 
           topic.posts.each do |post|
-            result << post.raw
-            break if @tokenizer.size(result) >= @max_length
-            result << "\n\n"
+            t << post.raw
+            break if @tokenizer.size(t) >= @max_length
+            t << "\n\n"
           end
 
-          @tokenizer.truncate(result, @max_length)
+          @tokenizer.truncate(t, @max_length)
         end
 
         def post_truncation(post)
-          result = +""
+          t = processed_target
 
-          result << post.topic.title
-          result << "\n\n"
-          result << post.topic.category.name
+          t << post.topic.title
+          t << "\n\n"
+          t << post.topic.category.name
           if SiteSetting.tagging_enabled
-            result << "\n\n"
-            result << post.topic.tags.pluck(:name).join(", ")
+            t << "\n\n"
+            t << post.topic.tags.pluck(:name).join(", ")
           end
-          result << "\n\n"
-          result << post.raw
+          t << "\n\n"
+          t << post.raw
 
-          @tokenizer.truncate(result, @max_length)
+          @tokenizer.truncate(t, @max_length)
         end
       end
     end
