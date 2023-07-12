@@ -27,23 +27,26 @@ class MigrateEmbeddingsFromDedicatedDatabase < ActiveRecord::Migration[7.0]
             puts "Migrating #{row_count} embeddings from #{old_table_name} to #{new_table_name}"
 
             last_topic_id = 0
-            batch = DiscourseAi::Database::Connection.db.query(<<-SQL)
-              SELECT topic_id, embedding
-              FROM #{old_table_name}
-              WHERE topic_id > #{last_topic_id}
-              ORDER BY topic_id ASC
-              LIMIT 50
-            SQL
-            next if batch.empty?
 
-            DB.exec(<<-SQL)
-              INSERT INTO #{new_table_name} (topic_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES #{batch.map { |r| "(#{r.topic_id}, 0, 0, '', '#{r.embedding}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)" }.join(", ")}
-              ON CONFLICT (topic_id)
-              DO NOTHING
-            SQL
+            loop do
+              batch = DiscourseAi::Database::Connection.db.query(<<-SQL)
+                SELECT topic_id, embedding
+                FROM #{old_table_name}
+                WHERE topic_id > #{last_topic_id}
+                ORDER BY topic_id ASC
+                LIMIT 50
+              SQL
+              break if batch.empty?
 
-            last_topic_id = batch.last.topic_id
+              DB.exec(<<-SQL)
+                INSERT INTO #{new_table_name} (topic_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
+                VALUES #{batch.map { |r| "(#{r.topic_id}, 0, 0, '', '#{r.embedding}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)" }.join(", ")}
+                ON CONFLICT (topic_id)
+                DO NOTHING
+              SQL
+
+              last_topic_id = batch.last.topic_id
+            end
           end
         rescue PG::Error => e
           Rails.logger.error(
