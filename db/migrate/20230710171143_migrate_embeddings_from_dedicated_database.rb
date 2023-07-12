@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class MigrateEmbeddingsFromDedicatedDatabase < ActiveRecord::Migration[7.0]
-  def change
+  def up
     return unless SiteSetting.ai_embeddings_enabled
     return unless SiteSetting.ai_embeddings_pg_connection_string.present?
 
@@ -35,10 +35,11 @@ class MigrateEmbeddingsFromDedicatedDatabase < ActiveRecord::Migration[7.0]
               LIMIT 50
             SQL
             next if batch.empty?
+            byebug
 
             DB.exec(<<-SQL)
-              INSERT INTO #{new_table_name} (topic_id, model_version, strategy_version, digest, embeddings)
-              VALUES #{batch.map { |topic_id, embedding| "(#{topic_id}, 0, 0, '', '#{embedding}')" }.join(", ")}
+              INSERT INTO #{new_table_name} (topic_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
+              VALUES #{batch.map { |r| "(#{r.topic_id}, 0, 0, '', '#{r.embedding}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)" }.join(", ")}
               ON CONFLICT (topic_id)
               DO NOTHING
             SQL
@@ -52,5 +53,9 @@ class MigrateEmbeddingsFromDedicatedDatabase < ActiveRecord::Migration[7.0]
         end
       end
     end
+  end
+
+  def down
+    # no-op
   end
 end

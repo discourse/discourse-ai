@@ -13,12 +13,14 @@ class CreateAiTopicEmbeddingsTable < ActiveRecord::Migration[7.0]
         table_name = "ai_topic_embeddings_#{model.id}_#{strategy.id}".to_sym
 
         create_table table_name, id: false do |t|
-          t.integer :topic_id, null: false, primary_key: true
+          t.integer :topic_id, null: false
           t.integer :model_version, null: false
           t.integer :strategy_version, null: false
           t.text :digest, null: false
           t.column :embeddings, "vector(#{model.dimensions})", null: false
           t.timestamps
+
+          t.index :topic_id, unique: true
         end
       end
     end
