@@ -35,7 +35,6 @@ class MigrateEmbeddingsFromDedicatedDatabase < ActiveRecord::Migration[7.0]
               LIMIT 50
             SQL
             next if batch.empty?
-            byebug
 
             DB.exec(<<-SQL)
               INSERT INTO #{new_table_name} (topic_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
