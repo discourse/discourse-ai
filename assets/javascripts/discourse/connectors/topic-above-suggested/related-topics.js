@@ -6,7 +6,7 @@ export default class extends Component {
   }
 
   get relatedTopics() {
-    return this.args.model.related_topics.map((topic) =>
+    return this.args.outletArgs.model.related_topics.map((topic) =>
       this.store.createRecord("topic", topic)
     );
   }
