@@ -52,7 +52,7 @@ module DiscourseAi
           end
           t << "\n\n"
 
-          topic.posts.each do |post|
+          topic.posts.find_each do |post|
             t << post.raw
             break if @tokenizer.size(t) >= @max_length
             t << "\n\n"
