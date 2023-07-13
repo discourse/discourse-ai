@@ -3,11 +3,14 @@
 desc "Backfill embeddings for all topics"
 task "ai:embeddings:backfill", [:start_topic] => [:environment] do |_, args|
   public_categories = Category.where(read_restricted: false).pluck(:id)
+  manager = DiscourseAi::Embeddings::Manager.new(Topic.first)
   Topic
-    .where("id >= ?", args[:start_topic] || 0)
+    .joins("LEFT JOIN #{manager.topic_embeddings_table} ON #{manager.topic_embeddings_table}.topic_id = topics.id")
+    .where("#{manager.topic_embeddings_table}.topic_id IS NULL")
+    .where("topics.id >= ?", args[:start_topic].to_i || 0)
     .where("category_id IN (?)", public_categories)
     .where(deleted_at: nil)
-    .order(id: :asc)
+    .order('topics.id ASC')
     .find_each do |t|
       print "."
       DiscourseAi::Embeddings::Manager.new(t).generate!
