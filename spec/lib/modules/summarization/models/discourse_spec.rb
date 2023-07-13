@@ -32,6 +32,10 @@ RSpec.describe DiscourseAi::Summarization::Models::Discourse do
     end
   end
 
+  def as_chunk(item)
+    { ids: [item[:id]], summary: "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
+  end
+
   describe "#summarize_in_chunks" do
     context "when the content fits in a single chunk" do
       it "performs a request to summarize" do
@@ -39,8 +43,8 @@ RSpec.describe DiscourseAi::Summarization::Models::Discourse do
 
         stub_request(expected_messages(content[:contents], opts), "This is summary 1")
 
-        summarized_chunks =
-          model.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+        chunks = content[:contents].map { |c| as_chunk(c) }
+        summarized_chunks = model.summarize_in_chunks(chunks, opts).map { |c| c[:summary] }
 
         expect(summarized_chunks).to contain_exactly("This is summary 1")
       end
@@ -59,8 +63,8 @@ RSpec.describe DiscourseAi::Summarization::Models::Discourse do
           stub_request(expected_messages([item], opts), "This is summary #{idx + 1}")
         end
 
-        summarized_chunks =
-          model.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+        chunks = content[:contents].map { |c| as_chunk(c) }
+        summarized_chunks = model.summarize_in_chunks(chunks, opts).map { |c| c[:summary] }
 
         expect(summarized_chunks).to contain_exactly("This is summary 1", "This is summary 2")
       end

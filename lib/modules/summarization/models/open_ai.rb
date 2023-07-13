@@ -37,7 +37,7 @@ module DiscourseAi
           messages = [{ role: "system", content: build_base_prompt(opts) }]
 
           text_to_summarize = contents.map { |c| format_content_item(c) }.join
-          truncated_content = tokenizer.truncate(text_to_summarize, max_tokens - reserved_tokens)
+          truncated_content = tokenizer.truncate(text_to_summarize, available_tokens)
 
           messages << {
             role: "user",
@@ -47,13 +47,24 @@ module DiscourseAi
           completion(messages)
         end
 
+        def summarize_single(chunk_text, opts)
+          summarize_chunk(chunk_text, opts.merge(single_chunk: true))
+        end
+
         private
 
         def summarize_chunk(chunk_text, opts)
+          summary_instruction =
+            if opts[:single_chunk]
+              "Summarize the following forum discussion, creating a cohesive narrative:"
+            else
+              "Summarize the following in 400 words:"
+            end
+
           completion(
             [
               { role: "system", content: build_base_prompt(opts) },
-              { role: "user", content: "Summarize the following in 400 words:\n#{chunk_text}" },
+              { role: "user", content: "#{summary_instruction}\n#{chunk_text}" },
             ],
           )
         end

@@ -21,32 +21,11 @@ module DiscourseAi
           raise NotImplemented
         end
 
-        def summarize_in_chunks(contents, opts)
-          chunks = []
-
-          section = { ids: [], summary: "" }
-
-          contents.each do |item|
-            new_content = format_content_item(item)
-
-            if tokenizer.can_expand_tokens?(
-                 section[:summary],
-                 new_content,
-                 max_tokens - reserved_tokens,
-               )
-              section[:summary] += new_content
-              section[:ids] << item[:id]
-            else
-              chunks << section
-              section = { ids: [item[:id]], summary: new_content }
-            end
+        def summarize_in_chunks(chunks, opts)
+          chunks.map do |chunk|
+            chunk[:summary] = summarize_chunk(chunk[:summary], opts)
+            chunk
           end
-
-          chunks << section if section[:summary].present?
-
-          chunks.each { |chunk| chunk[:summary] = summarize_chunk(chunk[:summary], opts) }
-
-          chunks
         end
 
         def concatenate_summaries(_summaries)
@@ -57,13 +36,7 @@ module DiscourseAi
           raise NotImplemented
         end
 
-        attr_reader :model
-
-        protected
-
-        attr_reader :max_tokens
-
-        def summarize_chunk(_chunk_text, _opts)
+        def summarize_single(chunk_text, opts)
           raise NotImplemented
         end
 
@@ -71,11 +44,29 @@ module DiscourseAi
           "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
         end
 
+        def available_tokens
+          max_tokens - reserved_tokens
+        end
+
+        attr_reader :model, :max_tokens
+
+        protected
+
         def reserved_tokens
           # Reserve tokens for the response and the base prompt
           # ~500 words
           700
         end
+
+        def summarize_chunk(_chunk_text, _opts)
+          raise NotImplemented
+        end
+
+        def tokenizer
+          raise NotImplemented
+        end
+
+        delegate :can_expand_tokens?, to: :tokenizer
       end
     end
   end
