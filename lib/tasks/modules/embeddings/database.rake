@@ -4,7 +4,7 @@ desc "Backfill embeddings for all topics"
 task "ai:embeddings:backfill", [:start_topic] => [:environment] do |_, args|
   public_categories = Category.where(read_restricted: false).pluck(:id)
   Topic
-    .where("id >= ?", 0)
+    .where("id >= ?", args[:start_topic] || 0)
     .where("category_id IN (?)", public_categories)
     .where(deleted_at: nil)
     .order(id: :asc)
