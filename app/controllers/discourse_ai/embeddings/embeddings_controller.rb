@@ -19,13 +19,8 @@ module DiscourseAi
             use_pg_headlines_for_excerpt: false,
           )
 
-        model =
-          DiscourseAi::Embeddings::Model.instantiate(
-            SiteSetting.ai_embeddings_semantic_search_model,
-          )
-
         DiscourseAi::Embeddings::SemanticSearch
-          .new(guardian, model)
+          .new(guardian)
           .search_for_topics(query, page)
           .each { |topic_post| grouped_results.add(topic_post) }
 

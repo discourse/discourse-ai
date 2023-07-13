@@ -3,15 +3,13 @@
 RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   fab!(:post) { Fabricate(:post) }
   fab!(:user) { Fabricate(:user) }
-  let(:model_name) { "msmarco-distilbert-base-v4" }
-  let(:query) { "test_query" }
 
-  let(:model) { DiscourseAi::Embeddings::Model.instantiate(model_name) }
-  let(:subject) { described_class.new(Guardian.new(user), model) }
+  let(:query) { "test_query" }
+  let(:subject) { described_class.new(Guardian.new(user)) }
 
   describe "#search_for_topics" do
     def stub_candidate_ids(candidate_ids)
-      DiscourseAi::Embeddings::Topic
+      DiscourseAi::Embeddings::SemanticSearch
         .any_instance
         .expects(:asymmetric_semantic_search)
         .returns(candidate_ids)
