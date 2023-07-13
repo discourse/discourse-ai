@@ -8,7 +8,7 @@ module ::DiscourseAi
 
       def self.perform!(
         prompt,
-        model = "claude-v1",
+        model = "claude-2",
         temperature: nil,
         top_p: nil,
         max_tokens: nil,
