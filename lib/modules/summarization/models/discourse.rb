@@ -29,9 +29,13 @@ module DiscourseAi
         def summarize_with_truncation(contents, opts)
           text_to_summarize = contents.map { |c| format_content_item(c) }.join
           truncated_content =
-            ::DiscourseAi::Tokenizer::BertTokenizer.truncate(text_to_summarize, max_tokens)
+            ::DiscourseAi::Tokenizer::BertTokenizer.truncate(text_to_summarize, available_tokens)
 
           completion(truncated_content)
+        end
+
+        def summarize_single(chunk_text, _opts)
+          completion(chunk_text)
         end
 
         private

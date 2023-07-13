@@ -16,6 +16,10 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
     }
   end
 
+  def as_chunk(item)
+    { ids: [item[:id]], summary: "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
+  end
+
   def expected_messages(contents, opts)
     base_prompt = <<~TEXT
       You are a summarization bot.
@@ -46,8 +50,8 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
           "This is summary 1",
         )
 
-        summarized_chunks =
-          model.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+        chunks = content[:contents].map { |c| as_chunk(c) }
+        summarized_chunks = model.summarize_in_chunks(chunks, opts).map { |c| c[:summary] }
 
         expect(summarized_chunks).to contain_exactly("This is summary 1")
       end
@@ -69,8 +73,8 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
           )
         end
 
-        summarized_chunks =
-          model.summarize_in_chunks(content[:contents], opts).map { |c| c[:summary] }
+        chunks = content[:contents].map { |c| as_chunk(c) }
+        summarized_chunks = model.summarize_in_chunks(chunks, opts).map { |c| c[:summary] }
 
         expect(summarized_chunks).to contain_exactly("This is summary 1", "This is summary 2")
       end

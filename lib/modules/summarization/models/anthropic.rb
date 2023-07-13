@@ -36,11 +36,15 @@ module DiscourseAi
           instructions = build_base_prompt(opts)
 
           text_to_summarize = contents.map { |c| format_content_item(c) }.join
-          truncated_content = tokenizer.truncate(text_to_summarize, max_tokens - reserved_tokens)
+          truncated_content = tokenizer.truncate(text_to_summarize, available_tokens)
 
           instructions += "<input>#{truncated_content}</input>\nAssistant:\n"
 
           completion(instructions)
+        end
+
+        def summarize_single(chunk_text, opts)
+          summarize_chunk(chunk_text, opts.merge(single_chunk: true))
         end
 
         private
@@ -50,8 +54,15 @@ module DiscourseAi
         end
 
         def build_base_prompt(opts)
+          initial_instruction =
+            if opts[:single_chunk]
+              "Summarize the following forum discussion inside the given <input> tag, creating a cohesive narrative."
+            else
+              "Summarize the following forum discussion inside the given <input> tag."
+            end
+
           base_prompt = <<~TEXT
-            Human: Summarize the following forum discussion inside the given <input> tag.
+            Human: #{initial_instruction}
             Include only the summary inside <ai> tags.
           TEXT
 
@@ -63,7 +74,7 @@ module DiscourseAi
             :content_title
           ]
 
-          base_prompt += "Don't use more than 400 words.\n"
+          base_prompt += "Don't use more than 400 words.\n" unless opts[:single_chunk]
         end
 
         def completion(prompt)
