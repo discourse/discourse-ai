@@ -75,6 +75,8 @@ module DiscourseAi
           ]
 
           base_prompt += "Don't use more than 400 words.\n" unless opts[:single_chunk]
+
+          base_prompt
         end
 
         def completion(prompt)
