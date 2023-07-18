@@ -27,10 +27,12 @@ module DiscourseAi
             case topic.created_at
             when 6.hour.ago..Time.now
               15.minutes
-            when 1.day.ago..6.hour.ago
+            when 3.day.ago..6.hour.ago
               1.hour
+            when 15.days.ago..3.day.ago
+              12.hours
             else
-              1.day
+              1.week
             end
 
           begin
