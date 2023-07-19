@@ -9,7 +9,7 @@ export default {
     if (settings.ai_embeddings_semantic_related_topics_enabled) {
       withPluginApi("1.1.0", (api) => {
         api.modifyClass("model:post-stream", {
-          pluginId: "plugin-api-test",
+          pluginId: "discourse-ai",
 
           _setSuggestedTopics(result) {
             this._super(...arguments);
