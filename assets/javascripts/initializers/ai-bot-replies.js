@@ -149,7 +149,7 @@ export default {
 
     const aiBotsAllowedGroups = settings.ai_bot_allowed_groups
       .split("|")
-      .map(parseInt);
+      .map((id) => parseInt(id, 10));
     const canInteractWithAIBots = user?.groups.some((g) =>
       aiBotsAllowedGroups.includes(g.id)
     );

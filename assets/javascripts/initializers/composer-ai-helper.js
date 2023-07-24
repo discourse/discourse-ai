@@ -60,7 +60,7 @@ export default {
 
     const allowedGroups = settings.ai_helper_allowed_groups
       .split("|")
-      .map(parseInt);
+      .map((id) => parseInt(id, 10));
     const canUseAssistant = user?.groups.some((g) =>
       allowedGroups.includes(g.id)
     );
