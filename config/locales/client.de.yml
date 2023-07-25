@@ -1,0 +1,37 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+de:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "Wähle eine Option aus..."
+      related_topics:
+        title: "Verwandte Themen"
+      ai_helper:
+        title: "Änderungen mit KI vorschlagen"
+        description: "Wähle eine der folgenden Optionen und die KI schlägt dir eine neue Version des Textes vor."
+        selection_hint: "Tipp: Du kannst auch einen Teil des Textes auswählen, bevor du die Hilfe öffnest, um nur diesen Teil neu zu schreiben."
+      reviewables:
+        model_used: "Verwendetes Modell:"
+        accuracy: "Genauigkeit:"
+      embeddings:
+        semantic_search: "Themen (Semantisch)"
+      ai_bot:
+        cancel_streaming: "Antwort abbrechen"
+        default_pm_prefix: "[Unbenannte KI Bot PN]"
+        shortcut_title: "Starte eine PN mit einem KI-Bot"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-v1: "Claude V1"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "KI-gemeldeter Beitrag"
+        reviewable_ai_chat_message:
+          title: "KI-gemeldete Chat-Nachricht"
