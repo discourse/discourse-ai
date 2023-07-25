@@ -9,7 +9,7 @@ class AnthropicCompletionStubs
         stop_reason: "stop_sequence",
         truncated: false,
         log_id: "12dcc7feafbee4a394e0de9dffde3ac5",
-        model: "claude-v1",
+        model: "claude-2",
         exception: nil,
       }
     end
@@ -18,7 +18,7 @@ class AnthropicCompletionStubs
       WebMock
         .stub_request(:post, "https://api.anthropic.com/v1/complete")
         .with(
-          body: { model: "claude-v1", prompt: prompt, max_tokens_to_sample: 2000 }.merge(
+          body: { model: "claude-2", prompt: prompt, max_tokens_to_sample: 2000 }.merge(
             req_opts,
           ).to_json,
         )
@@ -32,7 +32,7 @@ class AnthropicCompletionStubs
         stop_reason: finish_reason,
         truncated: false,
         log_id: "12b029451c6d18094d868bc04ce83f63",
-        model: "claude-v1",
+        model: "claude-2",
         exception: nil,
       }.to_json
     end
@@ -52,7 +52,7 @@ class AnthropicCompletionStubs
 
       WebMock
         .stub_request(:post, "https://api.anthropic.com/v1/complete")
-        .with(body: { model: model || "claude-v1", prompt: prompt }.merge(req_opts).to_json)
+        .with(body: { model: model || "claude-2", prompt: prompt }.merge(req_opts).to_json)
         .to_return(status: 200, body: chunks)
     end
   end

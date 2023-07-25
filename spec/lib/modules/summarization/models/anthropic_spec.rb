@@ -5,7 +5,7 @@ require_relative "../../../../support/anthropic_completion_stubs"
 RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
   subject(:model) { described_class.new(model_name, max_tokens: max_tokens) }
 
-  let(:model_name) { "claude-v1" }
+  let(:model_name) { "claude-2" }
   let(:max_tokens) { 720 }
 
   let(:content) do

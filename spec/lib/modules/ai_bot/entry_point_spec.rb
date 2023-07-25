@@ -57,7 +57,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
       end
 
       it "includes the bot's user_id" do
-        claude_bot = User.find(described_class::CLAUDE_V1_ID)
+        claude_bot = User.find(described_class::CLAUDE_V2_ID)
         claude_post_attrs = post_args.merge(target_usernames: [claude_bot.username].join(","))
 
         expect { PostCreator.create!(admin, claude_post_attrs) }.to change(

@@ -20,8 +20,6 @@ module DiscourseAi
           Models::OpenAi.new("gpt-3.5-turbo", max_tokens: 4096),
           Models::OpenAi.new("gpt-3.5-turbo-16k", max_tokens: 16_384),
           Models::Discourse.new("long-t5-tglobal-base-16384-book-summary", max_tokens: 16_384),
-          Models::Anthropic.new("claude-v1", max_tokens: 9000),
-          Models::Anthropic.new("claude-v1-100k", max_tokens: 100_000),
           Models::Anthropic.new("claude-2", max_tokens: 100_000),
         ]
 

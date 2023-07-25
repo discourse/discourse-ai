@@ -13,7 +13,7 @@ en:
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"
-      
+
       embeddings:
         semantic_search: "Topics (Semantic)"
 
@@ -26,7 +26,7 @@ en:
           gpt-4: "GPT-4"
           gpt-3:
             5-turbo: "GPT-3.5"
-          claude-v1: "Claude V1"
+          claude-2: "Claude 2"
 
 
     review:
