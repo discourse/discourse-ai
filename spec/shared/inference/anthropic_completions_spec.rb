@@ -51,7 +51,7 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
       max_tokens: req_opts[:max_tokens_to_sample],
     ) do |partial, cancel|
       data = partial[:completion]
-      content = data if data
+      content << data if data
       cancel.call if content.split(" ").length == 2
     end
 

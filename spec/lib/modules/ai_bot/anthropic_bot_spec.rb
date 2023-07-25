@@ -16,7 +16,7 @@ RSpec.describe DiscourseAi::AiBot::AnthropicBot do
         reply << subject.get_delta({ completion: "Hello " }, context)
         expect(reply).to eq("Hello ")
 
-        reply << subject.get_delta({ completion: "Hello world" }, context)
+        reply << subject.get_delta({ completion: "world" }, context)
         expect(reply).to eq("Hello world")
       end
     end

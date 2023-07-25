@@ -41,13 +41,12 @@ class AnthropicCompletionStubs
       chunks =
         deltas.each_with_index.map do |_, index|
           if index == (deltas.length - 1)
-            stream_line(deltas.join(""), finish_reason: "stop_sequence")
+            stream_line(deltas[index], finish_reason: "stop_sequence")
           else
-            stream_line(deltas[0..index].join(""))
+            stream_line(deltas[index])
           end
         end
 
-      chunks << "[DONE]"
       chunks = chunks.join("\n\n")
 
       WebMock
