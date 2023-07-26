@@ -52,6 +52,14 @@ module DiscourseAi
       end
     end
 
+
+    class Llama2Tokenizer < BasicTokenizer
+      def self.tokenizer
+        @@tokenizer ||=
+          Tokenizers.from_file("./plugins/discourse-ai/tokenizers/llama-2-70b-chat-hf.json")
+      end
+    end
+
     class OpenAiTokenizer < BasicTokenizer
       class << self
         def tokenizer

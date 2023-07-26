@@ -8,6 +8,7 @@ module DiscourseAi
         require_relative "models/anthropic"
         require_relative "models/discourse"
         require_relative "models/open_ai"
+        require_relative "models/llama2"
 
         require_relative "strategies/fold_content"
         require_relative "strategies/truncate_content"
@@ -23,6 +24,7 @@ module DiscourseAi
           Models::Anthropic.new("claude-v1", max_tokens: 9000),
           Models::Anthropic.new("claude-v1-100k", max_tokens: 100_000),
           Models::Anthropic.new("claude-2", max_tokens: 100_000),
+          Models::Llama2.new("Llama-2-7b-chat-hf", max_tokens: 4096),
         ]
 
         foldable_models.each do |model|

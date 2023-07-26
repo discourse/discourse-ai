@@ -108,6 +108,9 @@ plugins:
     choices:
       - "stable-diffusion-xl-beta-v2-2-2"
       - "stable-diffusion-v1-5"
+  ai_hugging_face_api_url:
+    default: ""
+
 
   ai_google_custom_search_api_key:
     default: ""
