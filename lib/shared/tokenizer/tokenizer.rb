@@ -52,7 +52,6 @@ module DiscourseAi
       end
     end
 
-
     class Llama2Tokenizer < BasicTokenizer
       def self.tokenizer
         @@tokenizer ||=
