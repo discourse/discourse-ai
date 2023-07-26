@@ -100,6 +100,7 @@ describe DiscourseAi::Tokenizer::AllMpnetBaseV2Tokenizer do
     end
   end
 end
+<<<<<<< HEAD
 
 describe DiscourseAi::Tokenizer::Llama2Tokenizer do
   describe "#size" do
@@ -117,3 +118,23 @@ describe DiscourseAi::Tokenizer::Llama2Tokenizer do
     end
   end
 end
+||||||| parent of 1765a5e (FEATURE: Support for locally infered embeddings in 100 languages)
+=======
+
+describe DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer do
+  describe "#size" do
+    describe "returns a token count" do
+      it "for a sentence with punctuation and capitalization and numbers" do
+        expect(described_class.size("Hello, World! 123")).to eq(7)
+      end
+    end
+  end
+
+  describe "#truncate" do
+    it "truncates a sentence" do
+      sentence = "foo bar baz qux quux corge grault garply waldo fred plugh xyzzy thud"
+      expect(described_class.truncate(sentence, 3)).to eq("foo")
+    end
+  end
+end
+>>>>>>> 1765a5e (FEATURE: Support for locally infered embeddings in 100 languages)

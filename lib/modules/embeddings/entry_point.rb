@@ -7,6 +7,7 @@ module DiscourseAi
         require_relative "models/base"
         require_relative "models/all_mpnet_base_v2"
         require_relative "models/text_embedding_ada_002"
+        require_relative "models/multilingual_e5_large"
         require_relative "strategies/truncation"
         require_relative "manager"
         require_relative "jobs/regular/generate_embeddings"
