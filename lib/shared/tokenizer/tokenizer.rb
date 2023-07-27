@@ -52,7 +52,6 @@ module DiscourseAi
       end
     end
 
-<<<<<<< HEAD
     class Llama2Tokenizer < BasicTokenizer
       def self.tokenizer
         @@tokenizer ||=
@@ -60,8 +59,6 @@ module DiscourseAi
       end
     end
 
-||||||| parent of 1765a5e (FEATURE: Support for locally infered embeddings in 100 languages)
-=======
     class MultilingualE5LargeTokenizer < BasicTokenizer
       def self.tokenizer
         @@tokenizer ||=
@@ -69,7 +66,6 @@ module DiscourseAi
       end
     end
 
->>>>>>> 1765a5e (FEATURE: Support for locally infered embeddings in 100 languages)
     class OpenAiTokenizer < BasicTokenizer
       class << self
         def tokenizer

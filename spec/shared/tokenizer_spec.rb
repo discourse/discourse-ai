@@ -100,7 +100,6 @@ describe DiscourseAi::Tokenizer::AllMpnetBaseV2Tokenizer do
     end
   end
 end
-<<<<<<< HEAD
 
 describe DiscourseAi::Tokenizer::Llama2Tokenizer do
   describe "#size" do
@@ -118,8 +117,6 @@ describe DiscourseAi::Tokenizer::Llama2Tokenizer do
     end
   end
 end
-||||||| parent of 1765a5e (FEATURE: Support for locally infered embeddings in 100 languages)
-=======
 
 describe DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer do
   describe "#size" do
@@ -137,4 +134,3 @@ describe DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer do
     end
   end
 end
->>>>>>> 1765a5e (FEATURE: Support for locally infered embeddings in 100 languages)

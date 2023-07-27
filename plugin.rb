@@ -68,13 +68,4 @@ after_initialize do
   on(:reviewable_transitioned_to) do |new_status, reviewable|
     ModelAccuracy.adjust_model_accuracy(new_status, reviewable)
   end
-
-  if DB.query_single("SELECT 1 FROM pg_available_extensions WHERE name = 'vector';").empty?
-    STDERR.puts "------------------------------DISCOURSE AI ERROR----------------------------------"
-    STDERR.puts "    Discourse AI requires the pgvector extension on the PostgreSQL database."
-    STDERR.puts "         Run a `./launcher rebuild app` to fix it on a standard install."
-    STDERR.puts "            Alternatively, you can remove Discourse AI to rebuild."
-    STDERR.puts "------------------------------DISCOURSE AI ERROR----------------------------------"
-    exit 1
-  end
 end
