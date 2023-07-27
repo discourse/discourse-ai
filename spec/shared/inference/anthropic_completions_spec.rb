@@ -16,7 +16,7 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
     completions =
       DiscourseAi::Inference::AnthropicCompletions.perform!(
         prompt,
-        "claude-v1",
+        "claude-2",
         temperature: req_opts[:temperature],
         max_tokens: req_opts[:max_tokens_to_sample],
         user_id: user_id,
@@ -27,7 +27,7 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
     expect(AiApiAuditLog.count).to eq(1)
     log = AiApiAuditLog.first
 
-    request_body = { model: "claude-v1", prompt: prompt }.merge(req_opts).to_json
+    request_body = { model: "claude-2", prompt: prompt }.merge(req_opts).to_json
     response_body = AnthropicCompletionStubs.response(response_text).to_json
 
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
@@ -47,11 +47,11 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
 
     DiscourseAi::Inference::AnthropicCompletions.perform!(
       prompt,
-      "claude-v1",
+      "claude-2",
       max_tokens: req_opts[:max_tokens_to_sample],
     ) do |partial, cancel|
       data = partial[:completion]
-      content = data if data
+      content << data if data
       cancel.call if content.split(" ").length == 2
     end
 
@@ -60,7 +60,7 @@ RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
     expect(AiApiAuditLog.count).to eq(1)
     log = AiApiAuditLog.first
 
-    request_body = { model: "claude-v1", prompt: prompt }.merge(req_opts).to_json
+    request_body = { model: "claude-2", prompt: prompt }.merge(req_opts).to_json
 
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
     expect(log.request_tokens).to eq(6)

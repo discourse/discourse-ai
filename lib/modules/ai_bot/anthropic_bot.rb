@@ -4,7 +4,7 @@ module DiscourseAi
   module AiBot
     class AnthropicBot < Bot
       def self.can_reply_as?(bot_user)
-        bot_user.id == DiscourseAi::AiBot::EntryPoint::CLAUDE_V1_ID
+        bot_user.id == DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
       end
 
       def bot_prompt_with_topic_context(post)
@@ -12,7 +12,7 @@ module DiscourseAi
       end
 
       def prompt_limit
-        7500 # https://console.anthropic.com/docs/prompt-design#what-is-a-prompt
+        50_000 # https://console.anthropic.com/docs/prompt-design#what-is-a-prompt
       end
 
       def title_prompt(post)
@@ -20,14 +20,7 @@ module DiscourseAi
       end
 
       def get_delta(partial, context)
-        context[:pos] ||= 0
-
-        full = partial[:completion]
-        delta = full[context[:pos]..-1]
-
-        context[:pos] = full.length
-
-        delta
+        partial[:completion]
       end
 
       private
@@ -45,7 +38,7 @@ module DiscourseAi
       end
 
       def model_for
-        "claude-v1.3"
+        "claude-2"
       end
 
       def get_updated_title(prompt)

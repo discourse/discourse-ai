@@ -16,8 +16,9 @@ module ::DiscourseAi
       )
         url = URI("https://api.anthropic.com/v1/complete")
         headers = {
+          "anthropic-version" => "2023-06-01",
           "x-api-key" => SiteSetting.ai_anthropic_api_key,
-          "Content-Type" => "application/json",
+          "content-type" => "application/json",
         }
 
         payload = { model: model, prompt: prompt }
@@ -85,17 +86,18 @@ module ::DiscourseAi
                   .split("\n")
                   .each do |line|
                     data = line.split("data: ", 2)[1]
-                    next if !data || data.squish == "[DONE]"
+                    next if !data
 
                     if !cancelled
                       begin
-                        # partial contains the entire payload till now
                         partial = JSON.parse(data, symbolize_names: true)
-                        response_data = partial[:completion].to_s
+                        response_data << partial[:completion].to_s
 
-                        yield partial, cancel
+                        # ping has no data... do not yeild it
+                        yield partial, cancel if partial[:completion]
                       rescue JSON::ParserError
                         nil
+                        # TODO leftover chunk carry over to next
                       end
                     end
                   end

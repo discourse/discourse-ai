@@ -5,12 +5,8 @@ module DiscourseAi
     class EntryPoint
       GPT4_ID = -110
       GPT3_5_TURBO_ID = -111
-      CLAUDE_V1_ID = -112
-      BOTS = [
-        [GPT4_ID, "gpt4_bot"],
-        [GPT3_5_TURBO_ID, "gpt3.5_bot"],
-        [CLAUDE_V1_ID, "claude_v1_bot"],
-      ]
+      CLAUDE_V2_ID = -112
+      BOTS = [[GPT4_ID, "gpt4_bot"], [GPT3_5_TURBO_ID, "gpt3.5_bot"], [CLAUDE_V2_ID, "claude_bot"]]
 
       def self.map_bot_model_to_user_id(model_name)
         case model_name
@@ -18,8 +14,8 @@ module DiscourseAi
           GPT3_5_TURBO_ID
         in "gpt-4"
           GPT4_ID
-        in "claude-v1"
-          CLAUDE_V1_ID
+        in "claude-2"
+          CLAUDE_V2_ID
         else
           nil
         end

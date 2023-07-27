@@ -78,12 +78,12 @@ RSpec.describe Jobs::CreateAiReply do
       let(:deltas) { claude_response.split(" ").map { |w| "#{w} " } }
 
       before do
-        bot_user = User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V1_ID)
+        bot_user = User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
 
         AnthropicCompletionStubs.stub_streamed_response(
           DiscourseAi::AiBot::AnthropicBot.new(bot_user).bot_prompt_with_topic_context(post),
           deltas,
-          model: "claude-v1.3",
+          model: "claude-2",
           req_opts: {
             max_tokens_to_sample: 3000,
             temperature: 0.4,
@@ -95,7 +95,7 @@ RSpec.describe Jobs::CreateAiReply do
       it "adds a reply from the Claude bot" do
         subject.execute(
           post_id: topic.first_post.id,
-          bot_user_id: DiscourseAi::AiBot::EntryPoint::CLAUDE_V1_ID,
+          bot_user_id: DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID,
         )
 
         expect(topic.posts.last.raw).to eq(expected_response)
