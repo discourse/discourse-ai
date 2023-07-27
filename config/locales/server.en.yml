@@ -36,6 +36,7 @@ en:
     ai_openai_embeddings_url: "Custom URL used for the OpenAI embeddings API. (in the case of Azure it can be: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API key for OpenAI API"
     ai_anthropic_api_key: "API key for Anthropic API"
+    ai_hugging_face_api_url: "Custom URL used for OpenSource LLM inference. Compatible with https://github.com/huggingface/text-generation-inference"
 
     composer_ai_helper_enabled: "Enable the Composer's AI helper."
     ai_helper_allowed_groups: "Users on these groups will see the AI helper button in the composer."
