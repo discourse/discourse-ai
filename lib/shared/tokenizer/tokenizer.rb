@@ -59,6 +59,13 @@ module DiscourseAi
       end
     end
 
+    class MultilingualE5LargeTokenizer < BasicTokenizer
+      def self.tokenizer
+        @@tokenizer ||=
+          Tokenizers.from_file("./plugins/discourse-ai/tokenizers/multilingual-e5-large.json")
+      end
+    end
+
     class OpenAiTokenizer < BasicTokenizer
       class << self
         def tokenizer
