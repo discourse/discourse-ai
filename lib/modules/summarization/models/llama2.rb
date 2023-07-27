@@ -40,7 +40,7 @@ module DiscourseAi
             #{build_base_prompt(opts)}
             <</SYS>>
 
-            Summarize the following in 400 words:
+            Summarize the following in up to 400 words:
             #{truncated_content} [/INST]
           TEXT
         end
@@ -56,7 +56,7 @@ module DiscourseAi
             if opts[:single_chunk]
               "Summarize the following forum discussion, creating a cohesive narrative:"
             else
-              "Summarize the following in 400 words:"
+              "Summarize the following in up to 400 words:"
             end
 
           completion(<<~TEXT)

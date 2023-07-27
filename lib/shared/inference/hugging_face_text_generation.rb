@@ -6,20 +6,36 @@ module ::DiscourseAi
       CompletionFailed = Class.new(StandardError)
       TIMEOUT = 60
 
-      def self.perform!(prompt, model, temperature: nil, top_p: nil, max_tokens: nil, user_id: nil)
+      def self.perform!(
+        prompt,
+        model,
+        temperature: 0.7,
+        top_p: nil,
+        top_k: nil,
+        typical_p: nil,
+        max_tokens: 2000,
+        repetition_penalty: 1.1,
+        user_id: nil
+      )
         raise CompletionFailed if model.blank?
 
         url = URI(SiteSetting.ai_hugging_face_api_url)
+        if block_given?
+          url.path = "/generate_stream"
+        else
+          url.path = "/generate"
+        end
         headers = { "Content-Type" => "application/json" }
 
         parameters = {}
         payload = { inputs: prompt, parameters: parameters }
 
         parameters[:top_p] = top_p if top_p
-        parameters[:max_new_tokens] = max_tokens || 2000
+        parameters[:top_k] = top_k if top_k
+        parameters[:typical_p] = typical_p if typical_p
+        parameters[:max_new_tokens] = max_tokens if max_tokens
         parameters[:temperature] = temperature if temperature
-        parameters[:repetition_penalty] = 1.2
-        payload[:stream] = true if block_given?
+        parameters[:repetition_penalty] = repetition_penalty if repetition_penalty
 
         Net::HTTP.start(
           url.host,
@@ -85,7 +101,11 @@ module ::DiscourseAi
                       begin
                         # partial contains the entire payload till now
                         partial = JSON.parse(data, symbolize_names: true)
-                        response_data = partial[:completion].to_s
+
+                        # this is the last chunk and contains the full response
+                        next if partial[:token][:special] == true
+
+                        response_data = partial[:token][:text].to_s
 
                         yield partial, cancel
                       rescue JSON::ParserError
@@ -98,8 +118,8 @@ module ::DiscourseAi
               ensure
                 log.update!(
                   raw_response_payload: response_raw,
-                  request_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(prompt),
-                  response_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(response_data),
+                  request_tokens: DiscourseAi::Tokenizer::Llama2Tokenizer.size(prompt),
+                  response_tokens: DiscourseAi::Tokenizer::Llama2Tokenizer.size(response_data),
                 )
               end
             end
