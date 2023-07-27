@@ -4,6 +4,7 @@ class AiApiAuditLog < ActiveRecord::Base
   module Provider
     OpenAI = 1
     Anthropic = 2
+    HuggingFaceTextGeneration = 3
   end
 end
 

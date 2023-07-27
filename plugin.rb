@@ -7,7 +7,7 @@
 # url: https://meta.discourse.org/t/discourse-ai/259214
 # required_version: 2.7.0
 
-gem "tokenizers", "0.3.2"
+gem "tokenizers", "0.3.3"
 gem "tiktoken_ruby", "0.0.5"
 
 enabled_site_setting :discourse_ai_enabled
@@ -31,6 +31,7 @@ after_initialize do
   require_relative "lib/shared/inference/openai_embeddings"
   require_relative "lib/shared/inference/anthropic_completions"
   require_relative "lib/shared/inference/stability_generator"
+  require_relative "lib/shared/inference/hugging_face_text_generation"
 
   require_relative "lib/shared/classificator"
   require_relative "lib/shared/post_classificator"
