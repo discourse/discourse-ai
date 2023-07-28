@@ -8,7 +8,14 @@ module DiscourseAi
       GPT4_ID = -110
       GPT3_5_TURBO_ID = -111
       CLAUDE_V2_ID = -112
-      BOTS = [[GPT4_ID, "gpt4_bot"], [GPT3_5_TURBO_ID, "gpt3.5_bot"], [CLAUDE_V2_ID, "claude_bot"]]
+      OPEN_LLM_ID = -113
+
+      BOTS = [
+        [GPT4_ID, "gpt4_bot"],
+        [GPT3_5_TURBO_ID, "gpt3.5_bot"],
+        [CLAUDE_V2_ID, "claude_bot"],
+        [OPEN_LLM_ID, "open_llm_bot"],
+      ]
 
       def self.map_bot_model_to_user_id(model_name)
         case model_name
@@ -18,6 +25,8 @@ module DiscourseAi
           GPT4_ID
         in "claude-2"
           CLAUDE_V2_ID
+        in "open-llm"
+          OPEN_LLM_ID
         else
           nil
         end
@@ -29,6 +38,7 @@ module DiscourseAi
         require_relative "bot"
         require_relative "anthropic_bot"
         require_relative "open_ai_bot"
+        require_relative "open_llm_bot"
         require_relative "commands/command"
         require_relative "commands/search_command"
         require_relative "commands/categories_command"

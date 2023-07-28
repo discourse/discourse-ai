@@ -73,7 +73,11 @@ module DiscourseAi
       MAX_COMPLETIONS = 5
 
       def self.as(bot_user)
-        available_bots = [DiscourseAi::AiBot::OpenAiBot, DiscourseAi::AiBot::AnthropicBot]
+        available_bots = [
+          DiscourseAi::AiBot::OpenAiBot,
+          DiscourseAi::AiBot::AnthropicBot,
+          DiscourseAi::AiBot::OpenLlmBot,
+        ]
 
         bot =
           available_bots.detect(-> { raise BOT_NOT_FOUND }) do |bot_klass|
