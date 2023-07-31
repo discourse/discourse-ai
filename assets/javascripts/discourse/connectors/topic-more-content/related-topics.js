@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { inject as service } from "@ember/service";
+import { computed } from "@ember/object";
 
 export default class extends Component {
   static shouldRender(args) {
@@ -7,6 +8,18 @@ export default class extends Component {
   }
 
   @service store;
+  @service site;
+  @service moreTopicsPreferenceTracking;
+
+  listId = "related-topics";
+
+  @computed("moreTopicsPreferenceTracking.preference")
+  get hidden() {
+    return (
+      this.site.mobileView &&
+      this.moreTopicsPreferenceTracking.preference !== this.listId
+    );
+  }
 
   get relatedTopics() {
     return this.args.outletArgs.model.related_topics.map((topic) =>

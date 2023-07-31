@@ -1,0 +1,15 @@
+<div
+  id="related-topics"
+  class="more-content-topics {{if this.hidden 'hidden'}}"
+  role="complementary"
+  aria-labelledby="related-topics-title"
+  data-mobile-title={{i18n "discourse_ai.related_topics.pill"}}
+  data-list-id={{this.listId}}
+>
+  <h3 id="related-topics-title" class="more-topics-title">
+    {{i18n "discourse_ai.related_topics.title"}}
+  </h3>
+  <div class="topics">
+    <BasicTopicList @topics={{this.relatedTopics}} />
+  </div>
+</div>

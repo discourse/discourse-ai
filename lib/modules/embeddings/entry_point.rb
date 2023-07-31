@@ -15,6 +15,16 @@ module DiscourseAi
       end
 
       def inject_into(plugin)
+        # Include random topics in the suggested list *only* if there are no related topics.
+        plugin.register_modifier(
+          :topic_view_suggested_topics_options,
+        ) do |suggested_options, topic_view|
+          related_topics = topic_view.related_topics
+          include_random = related_topics.nil? || related_topics.length == 0
+          suggested_options.merge(include_random: include_random)
+        end
+
+        # Query and serialize related topics.
         plugin.add_to_class(:topic_view, :related_topics) do
           if topic.private_message? || !SiteSetting.ai_embeddings_semantic_related_topics_enabled
             return nil
@@ -22,18 +32,10 @@ module DiscourseAi
 
           @related_topics ||=
             TopicList.new(
-              :suggested,
+              :related,
               nil,
               DiscourseAi::Embeddings::SemanticRelated.candidates_for(topic),
             ).topics
-        end
-
-        plugin.register_modifier(
-          :topic_view_suggested_topics_options,
-        ) do |suggested_options, topic_view|
-          related_topics = topic_view.related_topics
-          include_random = related_topics.nil? || related_topics.length == 0
-          suggested_options.merge(include_random: include_random)
         end
 
         %i[topic_view TopicViewPosts].each do |serializer|
@@ -50,6 +52,7 @@ module DiscourseAi
           end
         end
 
+        # embeddings generation.
         callback =
           Proc.new do |topic|
             if SiteSetting.ai_embeddings_enabled

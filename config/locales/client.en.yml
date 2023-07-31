@@ -5,7 +5,8 @@ en:
         select_option: "Select an option..."
 
       related_topics:
-        title: "Related Topics"
+        title: "Similar Topics"
+        pill: "Related"
       ai_helper:
         title: "Suggest changes using AI"
         description: "Choose one of the options below, and the AI will suggest you a new version of the text."
