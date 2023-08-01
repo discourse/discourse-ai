@@ -9,8 +9,6 @@ fa_IR:
     discourse_ai:
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
-      related_topics:
-        title: "موضوعات مرتبط"
       ai_helper:
         title: "پیشنهاد تغییرات با استفاده از هوش مصنوعی"
         description: "یکی از گزینه‌های زیر را انتخاب کنید و هوش مصنوعی نسخه جدیدی از متن را به شما پیشنهاد می‌کند."
@@ -26,4 +24,4 @@ fa_IR:
           gpt-4: "GPT-4"
           gpt-3:
             5-turbo: "GPT-3.5"
-          claude-v1: "Claude V1"
+          claude-2: "Claude 2"

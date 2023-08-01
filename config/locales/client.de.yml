@@ -8,9 +8,10 @@ de:
   js:
     discourse_ai:
       modals:
-        select_option: "Wähle eine Option aus..."
+        select_option: "Wähle ein Symbol..."
       related_topics:
-        title: "Verwandte Themen"
+        title: "Ähnliche Themen"
+        pill: "Verwandt"
       ai_helper:
         title: "Änderungen mit KI vorschlagen"
         description: "Wähle eine der folgenden Optionen und die KI schlägt dir eine neue Version des Textes vor."
@@ -28,7 +29,7 @@ de:
           gpt-4: "GPT-4"
           gpt-3:
             5-turbo: "GPT-3.5"
-          claude-v1: "Claude V1"
+          claude-2: "Claude 2"
     review:
       types:
         reviewable_ai_post:
