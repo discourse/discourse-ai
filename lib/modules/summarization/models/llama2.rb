@@ -90,13 +90,17 @@ module DiscourseAi
         end
 
         def completion(prompt)
-          ::DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(prompt, model).dig(
+          ::DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(prompt, model, token_limit: token_limit).dig(
             :generated_text,
           )
         end
 
         def tokenizer
           DiscourseAi::Tokenizer::Llama2Tokenizer
+        end
+
+        def token_limit
+          4096
         end
       end
     end
