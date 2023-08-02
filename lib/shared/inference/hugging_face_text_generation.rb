@@ -15,7 +15,8 @@ module ::DiscourseAi
         typical_p: nil,
         max_tokens: 2000,
         repetition_penalty: 1.1,
-        user_id: nil
+        user_id: nil,
+        tokenizer: DiscourseAi::Tokenizer::Llama2Tokenizer
       )
         raise CompletionFailed if model.blank?
 
@@ -26,6 +27,10 @@ module ::DiscourseAi
           url.path = "/generate"
         end
         headers = { "Content-Type" => "application/json" }
+
+        if SiteSetting.ai_hugging_face_api_key.present?
+          headers["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_api_key}"
+        end
 
         parameters = {}
         payload = { inputs: prompt, parameters: parameters }
@@ -70,9 +75,9 @@ module ::DiscourseAi
 
               log.update!(
                 raw_response_payload: response_body,
-                request_tokens: DiscourseAi::Tokenizer::Llama2Tokenizer.size(prompt),
+                request_tokens: tokenizer.size(prompt),
                 response_tokens:
-                  DiscourseAi::Tokenizer::Llama2Tokenizer.size(parsed_response[:generated_text]),
+                  tokenizer.size(parsed_response[:generated_text]),
               )
               return parsed_response
             end
@@ -118,8 +123,8 @@ module ::DiscourseAi
               ensure
                 log.update!(
                   raw_response_payload: response_raw,
-                  request_tokens: DiscourseAi::Tokenizer::Llama2Tokenizer.size(prompt),
-                  response_tokens: DiscourseAi::Tokenizer::Llama2Tokenizer.size(response_data),
+                  request_tokens: tokenizer.size(prompt),
+                  response_tokens: tokenizer.size(response_data),
                 )
               end
             end

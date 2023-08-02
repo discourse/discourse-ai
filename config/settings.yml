@@ -110,6 +110,9 @@ plugins:
       - "stable-diffusion-v1-5"
   ai_hugging_face_api_url:
     default: ""
+  ai_hugging_face_api_key:
+    default: ""
+    secret: true
 
 
   ai_google_custom_search_api_key:
