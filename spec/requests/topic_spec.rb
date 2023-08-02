@@ -10,16 +10,13 @@ describe ::TopicsController do
   fab!(:user) { Fabricate(:admin) }
 
   before do
-    Discourse.cache.clear
     SiteSetting.ai_embeddings_semantic_related_topics_enabled = true
     SiteSetting.ai_embeddings_semantic_related_topics = 2
   end
 
-  after { Discourse.cache.clear }
-
   context "when a user is logged on" do
     it "includes related topics in payload when configured" do
-      DiscourseAi::Embeddings::SemanticRelated.expects(:symmetric_semantic_search).returns(
+      DiscourseAi::Embeddings::SemanticRelated.stubs(:related_topic_ids_for).returns(
         [topic1.id, topic2.id, topic3.id],
       )
 
