@@ -103,10 +103,11 @@ plugins:
   ai_stability_api_url:
     default: "https://api.stability.ai"
   ai_stability_engine:
-    default: "stable-diffusion-xl-beta-v2-2-2"
+    default: "stable-diffusion-xl-1024-v1-0"
     type: enum
     choices:
-      - "stable-diffusion-xl-beta-v2-2-2"
+      - "stable-diffusion-xl-1024-v1-0"
+      - "stable-diffusion-768-v2-1"
       - "stable-diffusion-v1-5"
   ai_hugging_face_api_url:
     default: ""
