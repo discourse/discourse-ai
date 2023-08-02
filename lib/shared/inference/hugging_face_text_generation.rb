@@ -78,8 +78,7 @@ module ::DiscourseAi
               log.update!(
                 raw_response_payload: response_body,
                 request_tokens: tokenizer.size(prompt),
-                response_tokens:
-                  tokenizer.size(parsed_response[:generated_text]),
+                response_tokens: tokenizer.size(parsed_response[:generated_text]),
               )
               return parsed_response
             end
