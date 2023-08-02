@@ -15,10 +15,14 @@ module DiscourseAi
 
         # start with system
         result = +""
-        result << "[INST] <<SYS>>\n #{messages.shift[:content]} <</SYS>>\n\n #{messages.shift[:content]} [/INST]"
+        result << "<s>[INST] <<SYS>>\n #{messages.shift[:content]} <</SYS>>\n\n #{messages.shift[:content]} [/INST]"
 
         messages.each do |message|
-          result << "\n\n[INST]#{message[:bot] ? "" : message[:username] + ":"} #{message[:content]} [/INST]"
+          if message[:bot]
+            result << message[:content]
+          else
+            result << "</s><s>[INST]#{message[:bot] ? "" : message[:username] + ":"} #{message[:content]} [/INST]"
+          end
         end
 
         result
@@ -65,7 +69,7 @@ module DiscourseAi
           prompt,
           model_for,
           temperature: 0.4,
-          max_tokens: 200,
+          max_tokens: 600,
           &blk
         )
       end

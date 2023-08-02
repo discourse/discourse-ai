@@ -8,7 +8,7 @@ import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import { hbs } from "ember-cli-htmlbars";
 
 function isGPTBot(user) {
-  return user && [-110, -111, -112].includes(user.id);
+  return user && [-110, -111, -112, -113].includes(user.id);
 }
 
 function attachHeaderIcon(api) {

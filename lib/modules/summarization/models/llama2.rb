@@ -20,9 +20,9 @@ module DiscourseAi
           )
         end
 
-        def concatenate_summaries(summaries, &on_partial_blk)
-          prompt = <<~TEXT
-            [INST] <<SYS>>
+        def concatenate_summaries(summaries)
+          completion(<<~TEXT)
+            <s>[INST] <<SYS>>
             You are a helpful bot
             <</SYS>>
 
