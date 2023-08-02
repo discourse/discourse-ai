@@ -31,12 +31,28 @@ module DiscourseAi
             return nil
           end
 
-          @related_topics ||=
-            TopicList.new(
-              :related,
-              nil,
-              DiscourseAi::Embeddings::SemanticRelated.candidates_for(topic),
-            ).topics
+          @related_topics ||= TopicQuery.new(@user).list_semantic_related_topics(topic).topics
+        end
+
+        plugin.add_to_class(:topic_query, :list_semantic_related_topics) do |topic|
+          query_opts = {
+            skip_ordering: true,
+            per_page: SiteSetting.ai_embeddings_semantic_related_topics,
+            unordered: true,
+          }
+
+          if !SiteSetting.ai_embeddings_semantic_related_include_closed_topics
+            query_opts[:status] = "open"
+          end
+
+          create_list(:semantic_related, query_opts) do |topics|
+            candidate_ids = DiscourseAi::Embeddings::SemanticRelated.related_topic_ids_for(topic)
+
+            topics
+              .where.not(id: topic.id)
+              .where(id: candidate_ids)
+              .order("array_position(ARRAY#{candidate_ids}, topics.id)") # array_position forces the order of the topics to be preserved
+          end
         end
 
         %i[topic_view TopicViewPosts].each do |serializer|

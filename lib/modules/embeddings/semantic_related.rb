@@ -19,29 +19,18 @@ module DiscourseAi
           Discourse.redis.del(build_semantic_suggested_key(topic.id))
         end
 
-        def candidates_for(topic)
-          return ::Topic.none if SiteSetting.ai_embeddings_semantic_related_topics < 1
+        def related_topic_ids_for(topic)
+          return [] if SiteSetting.ai_embeddings_semantic_related_topics < 1
 
           manager = DiscourseAi::Embeddings::Manager.new(topic)
-          cache_for =
-            case topic.created_at
-            when 6.hour.ago..Time.now
-              15.minutes
-            when 3.day.ago..6.hour.ago
-              1.hour
-            when 15.days.ago..3.day.ago
-              12.hours
-            else
-              1.week
-            end
+          cache_for = results_ttl(topic)
 
           begin
-            candidate_ids =
-              Discourse
-                .cache
-                .fetch(semantic_suggested_key(topic.id), expires_in: cache_for) do
-                  self.symmetric_semantic_search(manager)
-                end
+            Discourse
+              .cache
+              .fetch(semantic_suggested_key(topic.id), expires_in: cache_for) do
+                symmetric_semantic_search(manager)
+              end
           rescue MissingEmbeddingError
             # avoid a flood of jobs when visiting topic
             if Discourse.redis.set(
@@ -52,21 +41,8 @@ module DiscourseAi
                )
               Jobs.enqueue(:generate_embeddings, topic_id: topic.id)
             end
-            return ::Topic.none
+            []
           end
-
-          topic_list = ::Topic.visible.listable_topics.secured
-
-          unless SiteSetting.ai_embeddings_semantic_related_include_closed_topics
-            topic_list = topic_list.where(closed: false)
-          end
-
-          topic_list
-            .where("id <> ?", topic.id)
-            .where(id: candidate_ids)
-            # array_position forces the order of the topics to be preserved
-            .order("array_position(ARRAY#{candidate_ids}, id)")
-            .limit(SiteSetting.ai_embeddings_semantic_related_topics)
         end
 
         def symmetric_semantic_search(manager)
@@ -109,6 +85,19 @@ module DiscourseAi
               "Error #{e} querying embeddings for topic #{topic.id} and model #{model.name}",
             )
             raise MissingEmbeddingError
+          end
+        end
+
+        def results_ttl(topic)
+          case topic.created_at
+          when 6.hour.ago..Time.now
+            15.minutes
+          when 3.day.ago..6.hour.ago
+            1.hour
+          when 15.days.ago..3.day.ago
+            12.hours
+          else
+            1.week
           end
         end
       end
