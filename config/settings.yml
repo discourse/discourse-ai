@@ -116,6 +116,8 @@ plugins:
     secret: true
   ai_hugging_face_token_limit:
     default: 4096
+  ai_hugging_face_model_display_name:
+    default: ""
 
   ai_google_custom_search_api_key:
     default: ""
