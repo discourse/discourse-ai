@@ -3,14 +3,14 @@
 module DiscourseAi
   module Summarization
     module Models
-      class Llama2 < Base
+      class Llama2FinedTunedOrcaStyle < Base
         def initialize(model, max_tokens:)
           @model = model
           @max_tokens = SiteSetting.ai_hugging_face_token_limit
         end
 
         def display_name
-          "Llama2's #{model}"
+          "Llama2FinedTunedOrcaStyle's #{model}"
         end
 
         def correctly_configured?
@@ -27,12 +27,14 @@ module DiscourseAi
 
         def concatenate_summaries(summaries)
           completion(<<~TEXT)
-            [INST] <<SYS>>
+            ### System:
             You are a helpful bot
-            <</SYS>>
-
+            
+            ### User:
             Concatenate these disjoint summaries, creating a cohesive narrative:
-            #{summaries.join("\n")} [/INST]
+            #{summaries.join("\n")}
+
+            ### Assistant:
           TEXT
         end
 
@@ -41,12 +43,14 @@ module DiscourseAi
           truncated_content = tokenizer.truncate(text_to_summarize, available_tokens)
 
           completion(<<~TEXT)
-            [INST] <<SYS>>
+            ### System:
             #{build_base_prompt(opts)}
-            <</SYS>>
-
+            
+            ### User:
             Summarize the following in up to 400 words:
-            #{truncated_content} [/INST]
+            #{truncated_content}
+
+            ### Assistant:
           TEXT
         end
 
@@ -65,12 +69,14 @@ module DiscourseAi
             end
 
           completion(<<~TEXT)
-            [INST] <<SYS>>
+            ### System:
             #{build_base_prompt(opts)}
-            <</SYS>>
 
+            ### User:
             #{summary_instruction}
-            #{chunk_text} [/INST]
+            #{chunk_text}
+
+            ### Assistant:
           TEXT
         end
 
