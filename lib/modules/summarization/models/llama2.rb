@@ -5,7 +5,7 @@ module DiscourseAi
     module Models
       class Llama2 < Base
         def display_name
-          "Llama2's #{model}"
+          "Llama2's #{SiteSetting.ai_hugging_face_model_display_name.presence || model}"
         end
 
         def correctly_configured?
@@ -42,6 +42,7 @@ module DiscourseAi
 
             Summarize the following in up to 400 words:
             #{truncated_content} [/INST]
+            Here is a summary of the above topic:
           TEXT
         end
 
@@ -66,6 +67,7 @@ module DiscourseAi
 
             #{summary_instruction}
             #{chunk_text} [/INST]
+            Here is a summary of the above topic:
           TEXT
         end
 
@@ -90,19 +92,13 @@ module DiscourseAi
         end
 
         def completion(prompt)
-          ::DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(
-            prompt,
-            model,
-            token_limit: token_limit,
-          ).dig(:generated_text)
+          ::DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(prompt, model).dig(
+            :generated_text,
+          )
         end
 
         def tokenizer
           DiscourseAi::Tokenizer::Llama2Tokenizer
-        end
-
-        def token_limit
-          4096
         end
       end
     end

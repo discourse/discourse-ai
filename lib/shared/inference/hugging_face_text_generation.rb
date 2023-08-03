@@ -17,7 +17,7 @@ module ::DiscourseAi
         repetition_penalty: 1.1,
         user_id: nil,
         tokenizer: DiscourseAi::Tokenizer::Llama2Tokenizer,
-        token_limit: 4096
+        token_limit: nil
       )
         raise CompletionFailed if model.blank?
 
@@ -32,6 +32,8 @@ module ::DiscourseAi
         if SiteSetting.ai_hugging_face_api_key.present?
           headers["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_api_key}"
         end
+
+        token_limit = token_limit || SiteSetting.ai_hugging_face_token_limit
 
         parameters = {}
         payload = { inputs: prompt, parameters: parameters }
