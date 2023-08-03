@@ -33,7 +33,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
       ).to_return(status: 200, body: json_text, headers: {})
 
       google = described_class.new(bot_user, post)
-      info = google.process({ query: "some search term" }.to_json).to_json
+      info = google.process(query: "some search term").to_json
 
       expect(google.description_args[:count]).to eq(1)
       expect(info).to include("title1")

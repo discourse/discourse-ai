@@ -93,17 +93,15 @@ module DiscourseAi::AiBot::Commands
       }
     end
 
-    def process(search_args)
-      parsed = JSON.parse(search_args)
-
+    def process(**search_args)
       limit = nil
 
       search_string =
-        parsed
+        search_args
           .map do |key, value|
-            if key == "search_query"
+            if key == :search_query
               value
-            elsif key == "limit"
+            elsif key == :limit
               limit = value.to_i
               nil
             else

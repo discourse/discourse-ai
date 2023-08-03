@@ -7,8 +7,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::TimeCommand do
     it "can generate correct info" do
       freeze_time
 
-      args = { timezone: "America/Los_Angeles" }.to_json
-      info = DiscourseAi::AiBot::Commands::TimeCommand.new(nil, nil).process(args)
+      args = { timezone: "America/Los_Angeles" }
+      info = DiscourseAi::AiBot::Commands::TimeCommand.new(nil, nil).process(**args)
 
       expect(info).to eq({ args: args, time: Time.now.in_time_zone("America/Los_Angeles").to_s })
       expect(info.to_s).not_to include("not_here")

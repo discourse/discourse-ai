@@ -15,7 +15,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SummarizeCommand do
       )
 
       summarizer = described_class.new(bot_user, post)
-      info = summarizer.process("#{post.topic_id} why did it happen?")
+      info = summarizer.process(topic_id: post.topic_id, guidance: "why did it happen?")
 
       expect(info).to include("Topic summarized")
       expect(summarizer.custom_raw).to include("summary stuff")
@@ -31,7 +31,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SummarizeCommand do
       post = Fabricate(:post, topic: topic)
 
       summarizer = described_class.new(bot_user, post)
-      info = summarizer.process("#{post.topic_id} why did it happen?")
+      info = summarizer.process(topic_id: post.topic_id, guidance: "why did it happen?")
 
       expect(info).not_to include(post.raw)
 

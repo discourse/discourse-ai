@@ -106,7 +106,9 @@ module DiscourseAi
           post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
           prompt = post.post_custom_prompt.custom_prompt || []
 
-          prompt << [process(args).to_json, self.class.name, "function"]
+          parsed_args = JSON.parse(args).symbolize_keys
+
+          prompt << [process(**parsed_args).to_json, self.class.name, "function"]
           post.post_custom_prompt.update!(custom_prompt: prompt)
 
           raw = +(<<~HTML)
