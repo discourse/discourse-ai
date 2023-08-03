@@ -3,12 +3,7 @@
 module DiscourseAi
   module Summarization
     module Models
-      class Llama2 < Base
-        def initialize(model)
-          @model = model
-          @max_tokens = SiteSetting.ai_hugging_face_token_limit
-        end
-
+      class Llama2 < Bas
         def display_name
           "Llama2's #{SiteSetting.ai_hugging_face_model_display_name.presence || model}"
         end
