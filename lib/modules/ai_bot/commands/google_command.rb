@@ -39,13 +39,11 @@ module DiscourseAi::AiBot::Commands
       }
     end
 
-    def process(search_string)
-      search_string = JSON.parse(search_string)["query"]
-
-      @last_query = search_string
+    def process(query:)
+      @last_query = query
       api_key = SiteSetting.ai_google_custom_search_api_key
       cx = SiteSetting.ai_google_custom_search_cx
-      query = CGI.escape(search_string)
+      query = CGI.escape(query)
       uri =
         URI("https://www.googleapis.com/customsearch/v1?key=#{api_key}&cx=#{cx}&q=#{query}&num=10")
       body = Net::HTTP.get(uri)

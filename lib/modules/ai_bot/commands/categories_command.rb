@@ -24,7 +24,7 @@ module DiscourseAi::AiBot::Commands
       { count: @last_count || 0 }
     end
 
-    def process(_args)
+    def process
       columns = {
         name: "Name",
         slug: "Slug",

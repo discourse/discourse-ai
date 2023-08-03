@@ -31,9 +31,7 @@ module DiscourseAi::AiBot::Commands
       { timezone: @last_timezone, time: @last_time }
     end
 
-    def process(args)
-      timezone = JSON.parse(args)["timezone"]
-
+    def process(timezone:)
       time =
         begin
           Time.now.in_time_zone(timezone)
@@ -45,7 +43,7 @@ module DiscourseAi::AiBot::Commands
       @last_timezone = timezone
       @last_time = time.to_s
 
-      { args: args, time: time.to_s }
+      { args: { timezone: timezone }, time: time.to_s }
     end
   end
 end

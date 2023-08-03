@@ -44,9 +44,7 @@ module DiscourseAi::AiBot::Commands
       { url: "#{Discourse.base_path}/t/-/#{@last_topic_id}", title: @last_topic_title || "" }
     end
 
-    def process(instructions)
-      topic_id, guidance = instructions.split(" ", 2)
-
+    def process(topic_id:, guidance: nil)
       @last_topic_id = topic_id
 
       topic_id = topic_id.to_i

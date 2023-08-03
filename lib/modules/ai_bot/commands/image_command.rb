@@ -43,8 +43,8 @@ module DiscourseAi::AiBot::Commands
       true
     end
 
-    def process(prompt)
-      @last_prompt = prompt = JSON.parse(prompt)["prompt"]
+    def process(prompt:)
+      @last_prompt = prompt
       results = DiscourseAi::Inference::StabilityGenerator.perform!(prompt)
 
       uploads = []

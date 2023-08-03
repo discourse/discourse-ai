@@ -40,7 +40,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
   end
 
   describe "#reply_to" do
-    it "can respond to !search" do
+    it "can respond to a search command" do
       bot.system_prompt_style!(:simple)
       bot.max_commands_per_reply = 2
 
@@ -65,7 +65,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       result =
         DiscourseAi::AiBot::Commands::SearchCommand
           .new(nil, nil)
-          .process({ query: "test search" }.to_json)
+          .process(query: "test search")
           .to_json
 
       prompt << { role: "function", content: result, name: "search" }
