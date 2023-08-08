@@ -5,3 +5,111 @@
 # https://translate.discourse.org/
 
 nl:
+  site_settings:
+    discourse_ai_enabled: "Schakel de discours-AI-plug-in in."
+    ai_toxicity_enabled: "Schakel de toxiciteitsmodule in."
+    ai_toxicity_inference_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de toxiciteitsmodule"
+    ai_toxicity_inference_service_api_key: "API-sleutel voor de toxiciteits-API"
+    ai_toxicity_inference_service_api_model: "Te gebruiken model voor inferentie. Het meertalige model werkt met Italiaans, Frans, Russisch, Portugees, Spaans en Turks."
+    ai_toxicity_flag_automatically: "Markeer automatisch berichten/chatberichten die boven de geconfigureerde drempels komen."
+    ai_toxicity_flag_threshold_toxicity: "Toxiciteit: een onbeschofte, respectloze of onredelijke opmerking die er enigszins waarschijnlijk toe leidt dat je een discussie verlaat of stopt met het delen van je mening"
+    ai_toxicity_flag_threshold_severe_toxicity: "Ernstige toxiciteit: een zeer hatelijke, agressieve of respectloze opmerking die er zeer waarschijnlijk toe leidt dat je een discussie verlaat of stopt met het delen van je mening"
+    ai_toxicity_flag_threshold_obscene: "Obsceen"
+    ai_toxicity_flag_threshold_identity_attack: "Aanval op identiteit"
+    ai_toxicity_flag_threshold_insult: "Belediging"
+    ai_toxicity_flag_threshold_threat: "Bedreiging"
+    ai_toxicity_flag_threshold_sexual_explicit: "Seksueel expliciet"
+    ai_toxicity_groups_bypass: "De berichten van gebruikers in die groepen worden niet geclassificeerd door de toxiciteitsmodule."
+    ai_sentiment_enabled: "Schakel de sentimentmodule in."
+    ai_sentiment_inference_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de sentimentmodule"
+    ai_sentiment_inference_service_api_key: "API-sleutel voor de sentiment-API"
+    ai_sentiment_models: "Te gebruiken model voor inferentie. Sentiment classificeert berichten in de ruimte positief/neutraal/negatief. Emotie classificeert berichten in de ruimte boosheid/afschuw/angst/vreugde/neutraal/verdriet/verrassing."
+    ai_nsfw_detection_enabled: "Schakel de NVWW-module in."
+    ai_nsfw_inference_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de NVWW-module"
+    ai_nsfw_inference_service_api_key: "API-sleutel voor de NVWW-API"
+    ai_nsfw_flag_automatically: "Markeer automatisch NVWW-berichten die boven de geconfigureerde drempels komen."
+    ai_nsfw_flag_threshold_general: "Algemene drempel voor een afbeelding om als NSFW te worden beschouwd."
+    ai_nsfw_flag_threshold_drawings: "Drempel voor een tekening om als NSFW te worden beschouwd."
+    ai_nsfw_flag_threshold_hentai: "Drempelwaarde voor een als hentai geclassificeerde afbeelding om als NSFW te worden beschouwd."
+    ai_nsfw_flag_threshold_porn: "Drempelwaarde voor een als porno geclassificeerde afbeelding om als NSFW te worden beschouwd."
+    ai_nsfw_flag_threshold_sexy: "Drempelwaarde voor een als sexy geclassificeerde afbeelding om als NSFW te worden beschouwd."
+    ai_nsfw_models: "Te gebruiken modellen voor NVWW-inferentie."
+    ai_openai_gpt35_url: "Aangepaste URL voor voltooiingen van GPT 3.5-chats. (Azure: MOET functieaanroepen ondersteunen en is idealiter een GPT3.5 16K-eindpunt)"
+    ai_openai_gpt4_url: "Aangepaste URL voor voltooiingen van GPT 4-chats. (voor Azure-ondersteuning)"
+    ai_openai_embeddings_url: "Aangepaste URL voor de OpenAI-insluitings-API. (in het geval van Azure kan dit zijn: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
+    ai_openai_api_key: "API-sleutel voor de OpenAI-API"
+    ai_anthropic_api_key: "API-sleutel voor de Anthropic-API"
+    ai_hugging_face_api_url: "Aangepaste URL voor OpenSource LLM-inferentie. Compatibel met https://github.com/huggingface/text-generation-inference"
+    composer_ai_helper_enabled: "Schakel de AI-hulp van de editor in."
+    ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
+    ai_helper_allowed_in_pm: "Schakel de AI-hulp van de editor in in PB's."
+    ai_helper_model: "Te gebruiken model voor de AI-hulp."
+    ai_embeddings_enabled: "Schakel de insluitingsmodule in."
+    ai_embeddings_discourse_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de insluitingsmodule"
+    ai_embeddings_discourse_service_api_key: "API-sleutel voor de insluitings-API"
+    ai_embeddings_model: "Gebruik all-mpnet-base-v2 voor lokale en snelle inferentie in het Engels, text-embedding-ada-002 om de OpenAI-API te gebruiken (API-sleutel nodig) en multilingual-e5-large voor lokale meertalige insluiting"
+    ai_embeddings_generate_for_pms: "Genereer insluitingen voor persoonlijke berichten."
+    ai_embeddings_semantic_related_topics_enabled: "Gebruik semantisch zoeken voor gerelateerde topics."
+    ai_embeddings_semantic_related_topics: "Maximaal aantal topics om weer te geven in de sectie met gerelateerde topics."
+    ai_embeddings_pg_connection_string: "PostgreSQL-verbindingsreeks voor de insluitingsmodule. Vereist dat de pgvector-extensie is ingeschakeld en dat een reeks tabellen is gemaakt. Zie de documentatie voor meer informatie."
+    ai_embeddings_semantic_search_enabled: "Schakel semantisch zoeken op volledige pagina's in."
+    ai_embeddings_semantic_related_include_closed_topics: "Neem gesloten topics op in semantische zoekresultaten"
+    ai_summarization_discourse_service_api_endpoint: "URL waar de Discourse-samenvattings-API wordt uitgevoerd."
+    ai_summarization_discourse_service_api_key: "API-sleutel voor de Discourse-samenvattings-API."
+    ai_bot_enabled: "Schakel de AI-botmodule in."
+    ai_bot_allowed_groups: "Wanneer de GPT-bot toegang heeft tot het privébericht, zal deze reageren op leden van deze groepen."
+    ai_bot_enabled_chat_bots: "Beschikbare modellen om op te treden als AI-bot"
+    ai_bot_enabled_chat_commands: "Beschikbare GPT-integraties die worden gebruikt om externe functionaliteit aan het model te bieden. Werkt alleen met GPT-4 en GPT-3.5"
+    ai_helper_add_ai_pm_to_header: "Geef een knop weer in de kop om een privéchat te starten met een AI-bot"
+    ai_stability_api_key: "API-sleutel voor de stability.ai-API"
+    ai_stability_engine: "Te gebruiken engine voor het genereren van afbeeldingen voor de stability.ai API"
+    ai_stability_api_url: "URL voor de stability.ai-API"
+    ai_google_custom_search_api_key: "API-sleutel voor de Google Custom Search-API zie: https://developers.google.com/custom-search"
+    ai_google_custom_search_cx: "CX voor Google Custom Search-API"
+  reviewables:
+    reasons:
+      flagged_by_toxicity: De AI-plug-in heeft dit gemarkeerd nadat het als toxisch was geclassificeerd.
+      flagged_by_nsfw: De AI-plug-in heeft dit gemarkeerd na classificatie van ten minste één van de bijgevoegde afbeeldingen als NVWW.
+  errors:
+    prompt_message_length: Het bericht %{idx} is langer dan de limiet van 1000 tekens.
+    invalid_prompt_role: Het bericht %{idx} heeft een ongeldige rol.
+  discourse_ai:
+    ai_helper:
+      errors:
+        completion_request_failed: "Er is iets misgegaan bij het geven van suggesties. Probeer het opnieuw."
+      prompts:
+        translate: Vertalen naar het Engels
+        generate_titles: Topictitels voorstellen
+        proofread: Tekst proeflezen
+        markdown_table: Markdowntabel genereren
+    ai_bot:
+      default_pm_prefix: "[PB naamloze AI-bot]"
+      topic_not_found: "Samenvatting niet beschikbaar, topic niet gevonden!"
+      command_summary:
+        categories: "Categorieën weergeven"
+        search: "Zoeken"
+        tags: "Tags weergeven"
+        time: "Tijd"
+        summarize: "Samenvatten"
+        image: "Afbeelding genereren"
+        google: "Zoeken op Google"
+      command_description:
+        time: "De tijd in %{timezone} is %{time}"
+        summarize: "<a href='%{url}'>%{title}</a> samengevat"
+        image: "%{prompt}"
+        categories:
+          one: "%{count} categorie gevonden"
+          other: "%{count} categorieën gevonden"
+        tags:
+          one: "%{count} tag gevonden"
+          other: "%{count} tags gevonden"
+        search:
+          one: "%{count} <a href='%{url}'>resultaat</a> gevonden voor '%{query}'"
+          other: "%{count} <a href='%{url}'>resultaten</a> gevonden voor '%{query}'"
+        google:
+          one: "%{count} <a href='%{url}'>resultaat</a> gevonden voor '%{query}'"
+          other: "%{count} <a href='%{url}'>resultaten</a> gevonden voor '%{query}'"
+    summarization:
+      configuration_hint:
+        one: "Configureer eerst de instelling '%{setting}'."
+        other: "Configureer eerst deze instellingen: '%{settings}'."

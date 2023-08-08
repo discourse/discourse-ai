@@ -5,3 +5,34 @@
 # https://translate.discourse.org/
 
 ru:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "Выберите вариант..."
+      related_topics:
+        title: "Похожие темы"
+        pill: "Связанные"
+      ai_helper:
+        title: "Предложить изменения с помощью AI"
+        description: "Выберите один из вариантов ниже, и AI предложит новую версию текста."
+        selection_hint: "Подсказка: чтобы переписать часть текста, выделите нужный фрагмент до запуска помощника."
+      reviewables:
+        model_used: "Использованная модель:"
+        accuracy: "Точность:"
+      embeddings:
+        semantic_search: "Темы (семантика)"
+      ai_bot:
+        cancel_streaming: "Прекратить отвечать"
+        default_pm_prefix: "[Личные сообщения от AI-бота без названия]"
+        shortcut_title: "Начать личный чат с AI-ботом"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "Сообщение с жалобой от AI"
+        reviewable_ai_chat_message:
+          title: "Сообщение в чате с жалобой от AI"

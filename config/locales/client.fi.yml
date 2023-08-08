@@ -5,3 +5,34 @@
 # https://translate.discourse.org/
 
 fi:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "Valitse vaihtoehto..."
+      related_topics:
+        title: "Samankaltaisia ketjuja"
+        pill: "Liittyy aiheeseen"
+      ai_helper:
+        title: "Ehdota muutoksia tekoälyn avulla"
+        description: "Valitse yksi seuraavista vaihtoehdoista, niin tekoäly ehdottaa sinulle uutta versiota tekstistä."
+        selection_hint: "Vihje: voit myös valita osan tekstistä ennen apuohjelman avaamista kirjoittaaksesi vain sen uudelleen."
+      reviewables:
+        model_used: "Käytetty malli:"
+        accuracy: "Tarkkuus:"
+      embeddings:
+        semantic_search: "Ketjut (semanttinen)"
+      ai_bot:
+        cancel_streaming: "Lopeta vastaus"
+        default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
+        shortcut_title: "Aloita yksityiskeskustelu tekoälybotin kanssa"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "Tekoälyn liputtama viesti"
+        reviewable_ai_chat_message:
+          title: "Tekoälyn liputtama chat-viesti"

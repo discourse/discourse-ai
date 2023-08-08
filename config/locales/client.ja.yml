@@ -5,3 +5,34 @@
 # https://translate.discourse.org/
 
 ja:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "オプションを選択..."
+      related_topics:
+        title: "類似トピック"
+        pill: "関連"
+      ai_helper:
+        title: "AI を使用して変更を提案"
+        description: "以下のいずれかのオプションを選択すると、AI が新しいバージョンのテキストを提案します。"
+        selection_hint: "ヒント: ヘルパーを開く前にテキストの一部を選択すると、その部分のみを書き換えることもできます。"
+      reviewables:
+        model_used: "使用モデル:"
+        accuracy: "精度:"
+      embeddings:
+        semantic_search: "トピック (セマンティック)"
+      ai_bot:
+        cancel_streaming: "返信を停止する"
+        default_pm_prefix: "[無題の AI ボット PM]"
+        shortcut_title: "AI ボットと PM を開始する"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "クロード 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "AI が通報した投稿"
+        reviewable_ai_chat_message:
+          title: "AI が通報したチャットメッセージ"

@@ -5,3 +5,34 @@
 # https://translate.discourse.org/
 
 es:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "Selecciona una opción..."
+      related_topics:
+        title: "Temas similares"
+        pill: "Relacionados"
+      ai_helper:
+        title: "Sugerir cambios usando IA"
+        description: "Elige una de las opciones siguientes y la IA te propondrá una nueva versión del texto."
+        selection_hint: "Sugerencia: También puedes seleccionar una parte del texto antes de abrir el asistente para reescribir solo eso."
+      reviewables:
+        model_used: "Modelo utilizado:"
+        accuracy: "Precisión:"
+      embeddings:
+        semantic_search: "Temas (semánticos)"
+      ai_bot:
+        cancel_streaming: "Detener respuesta"
+        default_pm_prefix: "[MP de bot IA sin título]"
+        shortcut_title: "Iniciar un MP con un bot de IA"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "Publicación denunciada por IA"
+        reviewable_ai_chat_message:
+          title: "Mensaje de chat denunciado por IA"

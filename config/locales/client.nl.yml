@@ -5,3 +5,34 @@
 # https://translate.discourse.org/
 
 nl:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "Selecteer een optie..."
+      related_topics:
+        title: "Vergelijkbare topics"
+        pill: "Gerelateerd"
+      ai_helper:
+        title: "Stel wijzigingen voor met behulp van AI"
+        description: "Kies een van de onderstaande opties, dan zal de AI je een nieuwe versie van de tekst voorstellen."
+        selection_hint: "Tip: je kunt ook een deel van de tekst selecteren voordat je de hulp opent om alleen dat deel te herschrijven."
+      reviewables:
+        model_used: "Gebruikt model:"
+        accuracy: "Nauwkeurigheid:"
+      embeddings:
+        semantic_search: "Topics (semantisch)"
+      ai_bot:
+        cancel_streaming: "Stoppen met antwoorden"
+        default_pm_prefix: "[PB naamloze AI-bot]"
+        shortcut_title: "Start een PB met een AI-bot"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "Door AI gemarkeerd bericht"
+        reviewable_ai_chat_message:
+          title: "Door AI gemarkeerd chatbericht"

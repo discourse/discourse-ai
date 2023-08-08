@@ -5,3 +5,33 @@
 # https://translate.discourse.org/
 
 pl_PL:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "Wybierz opcję..."
+      related_topics:
+        title: "Podobne tematy"
+        pill: "Powiązane"
+      ai_helper:
+        title: "Zaproponuj zmiany za pomocą AI"
+        description: "Wybierz jedną z poniższych opcji, a sztuczna inteligencja zasugeruje Ci nową wersję tekstu."
+        selection_hint: "Wskazówka: Możesz także zaznaczyć część tekstu przed otwarciem pomocnika, aby przepisać tylko ten fragment."
+      reviewables:
+        model_used: "Zastosowany model:"
+        accuracy: "Dokładność:"
+      embeddings:
+        semantic_search: "Tematy (semantyczne)"
+      ai_bot:
+        cancel_streaming: "Zatrzymaj odpowiedź"
+        shortcut_title: "Rozpocznij PW z botem AI"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "Post oflagowany przez AI"
+        reviewable_ai_chat_message:
+          title: "Wiadomość na czacie oflagowana przez AI"
