@@ -32,7 +32,8 @@ module DiscourseAi
             return nil
           end
 
-          @related_topics ||= SemanticTopicQuery.new(@user).list_semantic_related_topics(topic).topics
+          @related_topics ||=
+            SemanticTopicQuery.new(@user).list_semantic_related_topics(topic).topics
         end
 
         %i[topic_view TopicViewPosts].each do |serializer|
