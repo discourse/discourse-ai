@@ -82,7 +82,6 @@ describe DiscourseAi::Embeddings::EntryPoint do
         end
       end
 
-
       context "when the semantic search returns public topics" do
         fab!(:normal_topic_1) { Fabricate(:topic) }
         fab!(:normal_topic_2) { Fabricate(:topic) }

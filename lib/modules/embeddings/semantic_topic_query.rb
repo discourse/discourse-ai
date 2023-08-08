@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DiscourseAi::Embeddings::SemanticTopicQuery < TopicQuery
   def list_semantic_related_topics(topic)
     query_opts = {
