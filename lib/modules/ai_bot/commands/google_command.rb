@@ -53,7 +53,7 @@ module DiscourseAi::AiBot::Commands
 
     def minimize_field(result, field, max_tokens: 100)
       data = result[field].squish
-      data = ::DiscourseAi::Tokenizer::BertTokenizer.truncate(data, max_tokens).squish if max_tokens
+      data = ::DiscourseAi::Tokenizer::BertTokenizer.truncate(data, max_tokens).squish
       data
     end
 
