@@ -35,6 +35,7 @@ module DiscourseAi
         require_relative "commands/summarize_command"
         require_relative "commands/image_command"
         require_relative "commands/google_command"
+        require_relative "commands/read_command"
       end
 
       def inject_into(plugin)

@@ -100,7 +100,9 @@ en:
         summarize: "Summarize"
         image: "Generate image"
         google: "Search Google"
+        read: "Read topic"
       command_description:
+        read: "Reading: %{title}"
         time: "Time in %{timezone} is %{time}"
         summarize: "Summarized <a href='%{url}'>%{title}</a>"
         image: "%{prompt}"

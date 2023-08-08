@@ -95,6 +95,7 @@ module DiscourseAi
             Commands::TimeCommand,
             Commands::SearchCommand,
             Commands::SummarizeCommand,
+            Commands::ReadCommand,
           ].tap do |cmds|
             cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
             cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
