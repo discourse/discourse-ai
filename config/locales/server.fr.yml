@@ -5,3 +5,111 @@
 # https://translate.discourse.org/
 
 fr:
+  site_settings:
+    discourse_ai_enabled: "Activez l'extension IA de Discourse."
+    ai_toxicity_enabled: "Activez le module de toxicité."
+    ai_toxicity_inference_service_api_endpoint: "Adresse URL où s'exécute l'API pour le module de toxicité"
+    ai_toxicity_inference_service_api_key: "Clé API pour l'API de toxicité"
+    ai_toxicity_inference_service_api_model: "Modèle à utiliser pour l'inférence. Le modèle multilingue fonctionne avec l'italien, le français, le russe, le portugais, l'espagnol et le turc."
+    ai_toxicity_flag_automatically: "Signalez automatiquement les publications et les messages de conversation qui dépassent les seuils configurés."
+    ai_toxicity_flag_threshold_toxicity: "Toxicité : commentaire grossier, irrespectueux ou déraisonnable susceptible de vous inciter à quitter une discussion ou à renoncer à partager votre point de vue"
+    ai_toxicity_flag_threshold_severe_toxicity: "Toxicité grave : commentaire très haineux, agressif ou irrespectueux susceptible de vous inciter à quitter une discussion ou à renoncer à partager votre point de vue"
+    ai_toxicity_flag_threshold_obscene: "Obscène"
+    ai_toxicity_flag_threshold_identity_attack: "Attaque d'identité"
+    ai_toxicity_flag_threshold_insult: "Insulte"
+    ai_toxicity_flag_threshold_threat: "Menace"
+    ai_toxicity_flag_threshold_sexual_explicit: "Sexualité explicite"
+    ai_toxicity_groups_bypass: "Les utilisateurs de ces groupes ne verront pas leurs messages classés par le module de toxicité."
+    ai_sentiment_enabled: "Activez le module de sentiment."
+    ai_sentiment_inference_service_api_endpoint: "Adresse URL où s'exécute l'API pour le module de sentiment"
+    ai_sentiment_inference_service_api_key: "Clé API pour l'API de sentiment"
+    ai_sentiment_models: "Modèles à utiliser pour l'inférence. Le sentiment classe les publications dans la plage positif/neutre/négatif. Les émotions se classent dans la plage colère/dégoût/peur/joie/neutre/tristesse/surprise."
+    ai_nsfw_detection_enabled: "Activez le module NSFW."
+    ai_nsfw_inference_service_api_endpoint: "Adresse URL où l'API s'exécute pour le module NSFW"
+    ai_nsfw_inference_service_api_key: "Clé API pour l'API NSFW"
+    ai_nsfw_flag_automatically: "Signalez automatiquement les publications NSFW qui dépassent les seuils configurés."
+    ai_nsfw_flag_threshold_general: "Seuil général pour qu'une image soit considérée comme NSFW."
+    ai_nsfw_flag_threshold_drawings: "Seuil pour qu'un dessin soit considéré comme NSFW."
+    ai_nsfw_flag_threshold_hentai: "Seuil pour qu'une image classée comme hentai soit considérée comme NSFW."
+    ai_nsfw_flag_threshold_porn: "Seuil pour qu'une image classée comme pornographique soit considérée comme NSFW."
+    ai_nsfw_flag_threshold_sexy: "Seuil pour qu'une image classée comme sexy soit considérée comme NSFW."
+    ai_nsfw_models: "Modèles à utiliser pour l'inférence NSFW."
+    ai_openai_gpt35_url: "Adresse URL personnalisée utilisée pour terminer les discussions GPT 3.5. (Azure : DOIT prendre en charge les appels de fonctions et doit être, idéalement, un point de terminaison GPT3.5 16K)"
+    ai_openai_gpt4_url: "Adresse URL personnalisée utilisée pour terminer les conversations GPT 4. (pour la prise en charge Azure)"
+    ai_openai_embeddings_url: "Adresse URL personnalisée utilisée pour l'API d'intégration OpenAI. (dans le cas d'Azure, elle peut être : https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
+    ai_openai_api_key: "Clé API pour l'API OpenAI"
+    ai_anthropic_api_key: "Clé API pour l'API Anthropic"
+    ai_hugging_face_api_url: "URL personnalisée utilisée pour l'inférence OpenSource LLM. Compatible avec https://github.com/huggingface/text-generation-inference"
+    composer_ai_helper_enabled: "Activez l'assistant IA du compositeur."
+    ai_helper_allowed_groups: "Les utilisateurs de ces groupes verront le bouton d'assistance AI dans le compositeur."
+    ai_helper_allowed_in_pm: "Activez l'assistant IA du compositeur dans les messages privés."
+    ai_helper_model: "Modèle à utiliser pour l'assistant IA."
+    ai_embeddings_enabled: "Activez le module d'intégration."
+    ai_embeddings_discourse_service_api_endpoint: "Adresse URL où s'exécute l'API pour le module d'intégration"
+    ai_embeddings_discourse_service_api_key: "Clé API pour l'API d'intégration"
+    ai_embeddings_model: "Utilisez all-mpnet-base-v2 pour une inférence locale et rapide en anglais, text-embedding-ada-002 pour utiliser l'API OpenAI (nécessite une clé API) et multilingual-e5-large pour les intégrations multilingues locales"
+    ai_embeddings_generate_for_pms: "Générez des intégrations pour les messages privés."
+    ai_embeddings_semantic_related_topics_enabled: "Utilisez la recherche sémantique pour les sujets connexes."
+    ai_embeddings_semantic_related_topics: "Nombre maximal de sujets à afficher dans la section des sujets connexes."
+    ai_embeddings_pg_connection_string: "Chaîne de connexion PostgreSQL pour le module d'intégration. Nécessite l'activation de l'extension pgvector et la création d'une série de tables. Consultez la documentation pour obtenir plus d'informations."
+    ai_embeddings_semantic_search_enabled: "Activez la recherche sémantique en pleine page."
+    ai_embeddings_semantic_related_include_closed_topics: "Inclure des sujets fermés dans les résultats de recherche sémantique"
+    ai_summarization_discourse_service_api_endpoint: "Adresse URL où s'exécute l'API de synthèse Discourse."
+    ai_summarization_discourse_service_api_key: "Clé API pour l'API de synthèse Discourse."
+    ai_bot_enabled: "Activez le module du robot IA."
+    ai_bot_allowed_groups: "Lorsque le robot GPT aura accès aux messages privés, il répondra aux membres de ces groupes."
+    ai_bot_enabled_chat_bots: "Modèles disponibles pour agir en tant que robot IA"
+    ai_bot_enabled_chat_commands: "Intégrations GPT disponibles utilisées pour fournir des fonctionnalités externes au modèle. Fonctionne uniquement avec GPT-4 et GPT-3.5"
+    ai_helper_add_ai_pm_to_header: "Afficher un bouton dans l'en-tête pour démarrer une conversation avec un robot IA"
+    ai_stability_api_key: "Clé API pour l'API stable.ai"
+    ai_stability_engine: "Moteur de génération d'images à utiliser pour l'API stability.ai"
+    ai_stability_api_url: "Adresse URL de l'API stability.ai"
+    ai_google_custom_search_api_key: "Clé API pour l'API Google Custom Search, voir : https://developers.google.com/custom-search"
+    ai_google_custom_search_cx: "CX pour l'API de recherche personnalisée Google"
+  reviewables:
+    reasons:
+      flagged_by_toxicity: Le plugin IA l'a signalé après l'avoir classé comme toxique.
+      flagged_by_nsfw: Le plugin IA l'a signalé après avoir classé au moins une des images jointes comme NSFW.
+  errors:
+    prompt_message_length: Le message %{idx} dépasse la limite de 1 000 caractères.
+    invalid_prompt_role: Le message %{idx} a un rôle invalide.
+  discourse_ai:
+    ai_helper:
+      errors:
+        completion_request_failed: "Une erreur s'est produite lors de la tentative de fournir des suggestions. Veuillez réessayer."
+      prompts:
+        translate: Traduire en anglais
+        generate_titles: Suggérer des titres de sujets
+        proofread: Relisez le texte
+        markdown_table: Générer un tableau Markdown
+    ai_bot:
+      default_pm_prefix: "[Message privé de robot IA sans titre]"
+      topic_not_found: "Résumé indisponible, sujet introuvable !"
+      command_summary:
+        categories: "Lister les catégories"
+        search: "Rechercher"
+        tags: "Répertorier les étiquettes"
+        time: "Heure"
+        summarize: "Résumer"
+        image: "Générer une image"
+        google: "Rechercher sur Google"
+      command_description:
+        time: "L'heure (%{timezone}) est %{time}"
+        summarize: "Résumé de <a href='%{url}'>%{title}</a>"
+        image: "%{prompt}"
+        categories:
+          one: "%{count} catégorie trouvée"
+          other: "%{count} catégories trouvées"
+        tags:
+          one: "%{count} étiquette trouvée"
+          other: "%{count} étiquettes trouvées"
+        search:
+          one: "%{count} <a href='%{url}'>résultat</a> trouvé pour « %{query} »"
+          other: "%{count} <a href='%{url}'>résultats</a> trouvés pour « %{query} »"
+        google:
+          one: "%{count} <a href='%{url}'>résultat</a> trouvé pour « %{query} »"
+          other: "%{count} <a href='%{url}'>résultats</a> trouvés pour « %{query} »"
+    summarization:
+      configuration_hint:
+        one: "Configurez d'abord le paramètre « %{setting} »."
+        other: "Configurez d'abord ces paramètres : %{settings}"

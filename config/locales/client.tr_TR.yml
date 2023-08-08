@@ -5,3 +5,34 @@
 # https://translate.discourse.org/
 
 tr_TR:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "Seçenek belirleyin..."
+      related_topics:
+        title: "Benzer Konular"
+        pill: "İlgili"
+      ai_helper:
+        title: "YZ kullanarak değişiklik önerin"
+        description: "Aşağıdaki seçeneklerden birini belirleyin ve YZ size metnin yeni bir versiyonunu önersin."
+        selection_hint: "İpucu: Ayrıca, yalnızca onu yeniden yazmak için yardımcıyı açmadan önce metnin bir bölümünü de seçebilirsiniz."
+      reviewables:
+        model_used: "Kullanılan model:"
+        accuracy: "Doğruluk:"
+      embeddings:
+        semantic_search: "Konular (Semantik)"
+      ai_bot:
+        cancel_streaming: "Yanıtı durdur"
+        default_pm_prefix: "[Adsız YZ botu kişisel mesajı]"
+        shortcut_title: "YZ botuyla kişisel mesaj başlatın"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "YZ Bayraklı gönderi"
+        reviewable_ai_chat_message:
+          title: "YZ Bayraklı sohbet mesajı"

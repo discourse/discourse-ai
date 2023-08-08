@@ -6,110 +6,110 @@
 
 de:
   site_settings:
-    discourse_ai_enabled: "Aktiviere das Discourse KI-Plugin."
+    discourse_ai_enabled: "Aktiviere das Discourse-KI-Plug-in."
     ai_toxicity_enabled: "Aktiviere das Toxizitätsmodul."
-    ai_toxicity_inference_service_api_endpoint: "URL, unter der die API für das Toxizitätsmodul ausgeführt wird"
-    ai_toxicity_inference_service_api_key: "API-Schlüssel für die Toxizität API"
+    ai_toxicity_inference_service_api_endpoint: "URL, unter der die API für das Toxizitätsmodul läuft"
+    ai_toxicity_inference_service_api_key: "API-Schlüssel für die Toxizitäts-API"
     ai_toxicity_inference_service_api_model: "Modell, das für die Inferenz verwendet wird. Das mehrsprachige Modell funktioniert mit Italienisch, Französisch, Russisch, Portugiesisch, Spanisch und Türkisch."
     ai_toxicity_flag_automatically: "Markiere automatisch Beiträge/Chat-Nachrichten, die über den konfigurierten Schwellenwerten liegen."
-    ai_toxicity_flag_threshold_toxicity: "Toxizität: ein unhöflicher, respektloser oder unangemessener Kommentar, der dich mit einiger Wahrscheinlichkeit dazu bringt, eine Diskussion zu verlassen oder deinen Standpunkt aufzugeben"
-    ai_toxicity_flag_threshold_severe_toxicity: "Schwere Toxizität: ein sehr hasserfüllter, aggressiver oder respektloser Kommentar, der dich mit hoher Wahrscheinlichkeit dazu bringt, eine Diskussion zu verlassen oder deinen Standpunkt aufzugeben"
+    ai_toxicity_flag_threshold_toxicity: "Toxizität: ein unhöflicher, respektloser oder unangemessener Kommentar, der dich mit einiger Wahrscheinlichkeit dazu bringt, eine Diskussion zu verlassen oder deinen Standpunkt nicht mehr zu teilen"
+    ai_toxicity_flag_threshold_severe_toxicity: "Drastische Toxizität: ein sehr hasserfüllter, aggressiver oder respektloser Kommentar, der dich mit hoher Wahrscheinlichkeit dazu bringt, eine Diskussion zu verlassen oder deinen Standpunkt nicht mehr zu teilen"
     ai_toxicity_flag_threshold_obscene: "Obszön"
     ai_toxicity_flag_threshold_identity_attack: "Identitätsangriff"
     ai_toxicity_flag_threshold_insult: "Beleidigung"
     ai_toxicity_flag_threshold_threat: "Bedrohung"
     ai_toxicity_flag_threshold_sexual_explicit: "Sexuell explizit"
-    ai_toxicity_groups_bypass: "Die Beiträge von Nutzern in diesen Gruppen werden nicht durch das Toxizitätsmodul eingestuft."
+    ai_toxicity_groups_bypass: "Die Beiträge von Benutzern in diesen Gruppen werden nicht durch das Toxizitätsmodul eingestuft."
     ai_sentiment_enabled: "Aktiviere das Stimmungsmodul."
     ai_sentiment_inference_service_api_endpoint: "URL, unter der die API für das Stimmungsmodul läuft"
     ai_sentiment_inference_service_api_key: "API-Schlüssel für die Stimmungsmodul-API"
-    ai_sentiment_models: "Modelle, die für die Inferenz verwendet werden. Das Stimmungsmodul klassifiziert Beiträge in den Bereichen positiv/neutral/negativ. Emotionen werden in den Bereich Wut/Ekel/Furcht/Freude/neutral/Traurigkeit/Überraschung eingeordnet."
+    ai_sentiment_models: "Modelle, die für die Inferenz verwendet werden. Das Stimmungsmodul klassifiziert Beiträge in den Bereichen positiv/neutral/negativ. Emotionen werden in die Bereiche Wut/Ekel/Furcht/Freude/neutral/Traurigkeit/Überraschung eingeordnet."
     ai_nsfw_detection_enabled: "Aktiviere das NSFW-Modul."
-    ai_nsfw_inference_service_api_endpoint: "URL, unter der die API für das NSFW-Modul ausgeführt wird"
+    ai_nsfw_inference_service_api_endpoint: "URL, unter der die API für das NSFW-Modul läuft"
     ai_nsfw_inference_service_api_key: "API-Schlüssel für die NSFW-API"
     ai_nsfw_flag_automatically: "Kennzeichne automatisch NSFW-Beiträge, die über den konfigurierten Schwellenwerten liegen."
     ai_nsfw_flag_threshold_general: "Allgemeiner Schwellenwert, ab dem ein Bild als NSFW gilt."
-    ai_nsfw_flag_threshold_drawings: "Schwelle, ab der eine Zeichnung als NSFW gilt."
+    ai_nsfw_flag_threshold_drawings: "Schwellenwert, ab dem eine Zeichnung als NSFW gilt."
     ai_nsfw_flag_threshold_hentai: "Schwellenwert, ab dem ein Bild, das als Hentai eingestuft wird, als NSFW gilt."
     ai_nsfw_flag_threshold_porn: "Schwellenwert, ab dem ein Bild, das als Porno eingestuft wird, als NSFW gilt."
-    ai_nsfw_flag_threshold_sexy: "Schwellenwert, ab dem ein Bild als sexy eingestuft wird, um als NSFW zu gelten."
+    ai_nsfw_flag_threshold_sexy: "Schwellenwert, ab dem ein Bild, das als sexy eingestuft wird, als NSFW gilt."
     ai_nsfw_models: "Modelle, die für NSFW-Inferenz verwendet werden."
-    ai_openai_gpt35_url: "Benutzerdefinierte URL, die für GPT 3.5 Chat-Abschlüsse verwendet wird. (Azure: MUSS Funktionsaufrufe unterstützen und ist idealerweise ein GPT3.5 16K Endpunkt)"
-    ai_openai_gpt4_url: "Benutzerdefinierte URL, die für GPT 4 Chat-Abschlüsse verwendet wird. (für Azure-Support)"
-    ai_openai_embeddings_url: "Benutzerdefinierte URL, die für die OpenAI Embeddings API verwendet wird. (im Falle von Azure kann das sein: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "API-Schlüssel für OpenAI API"
-    ai_anthropic_api_key: "API-Schlüssel für Anthropische API"
-    ai_hugging_face_api_url: "Benutzerdefinierte URL, die für OpenSource LLM-Inferenz verwendet wird. Kompatibel mit https://github.com/huggingface/text-generation-inference"
-    composer_ai_helper_enabled: "Aktiviere den KI-Helfer des Composers."
-    ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen den KI-Helfer-Button im Composer."
-    ai_helper_allowed_in_pm: "Aktivieren Sie den KI-Helfer des Composers in PNs."
+    ai_openai_gpt35_url: "Benutzerdefinierte URL, die für GPT-3.5-Chat-Vervollständigungen verwendet wird (Azure: MUSS Funktionsaufrufe unterstützen und idealerweise ein GPT3.5-16K-Endpunkt sein)."
+    ai_openai_gpt4_url: "Benutzerdefinierte URL, die für GPT-4-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
+    ai_openai_embeddings_url: "Benutzerdefinierte URL, die für die OpenAI-Embeddings-API verwendet wird (im Falle von Azure gegebenenfalls: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
+    ai_openai_api_key: "API-Schlüssel für OpenAI-API"
+    ai_anthropic_api_key: "API-Schlüssel für Anthropic-API"
+    ai_hugging_face_api_url: "Benutzerdefinierte URL, die für OpenSource-LLM-Inferenz verwendet wird. Kompatibel mit https://github.com/huggingface/text-generation-inference"
+    composer_ai_helper_enabled: "Aktiviere den Composer-KI-Helfer."
+    ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
+    ai_helper_allowed_in_pm: "Aktiviere den Composer-KI-Helfer in PN."
     ai_helper_model: "Modell, das für den KI-Helfer verwendet werden soll."
     ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
-    ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul ausgeführt wird"
+    ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
     ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
-    ai_embeddings_model: "Benutze all-mpnet-base-v2 für lokale und schnelle Inferenz in Englisch, text-embedding-ada-002, um OpenAI API zu benutzen (benötigt API-Schlüssel) und multilingual-e5-large für lokale mehrsprachige Einbettungen"
+    ai_embeddings_model: "Benutze all-mpnet-base-v2 für lokale und schnelle Inferenz in Englisch, text-embedding-ada-002, um die OpenAI-API zu verwenden (benötigt API-Schlüssel) und multilingual-e5-large für lokale mehrsprachige Einbettungen"
     ai_embeddings_generate_for_pms: "Erstelle Einbettungen für persönliche Nachrichten."
     ai_embeddings_semantic_related_topics_enabled: "Verwende die semantische Suche für verwandte Themen."
     ai_embeddings_semantic_related_topics: "Maximale Anzahl der Themen, die im Abschnitt für verwandte Themen angezeigt werden sollen."
-    ai_embeddings_pg_connection_string: "PostgreSQL-Verbindungsstring für das Embeddings-Modul. Dazu muss die pgvector-Erweiterung aktiviert und eine Reihe von Tabellen erstellt werden. Siehe Dokumentation für weitere Informationen."
+    ai_embeddings_pg_connection_string: "PostgreSQL-Verbindungsstring für das Einbettungsmodul. Die pgvector-Erweiterung muss aktiviert sein und eine Reihe von Tabellen erstellt werden. Siehe Dokumentation für weitere Informationen."
     ai_embeddings_semantic_search_enabled: "Aktiviere die semantische Ganzseitensuche."
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"
     ai_summarization_discourse_service_api_endpoint: "URL, unter der die Discourse-Zusammenfassungs-API läuft."
     ai_summarization_discourse_service_api_key: "API-Schlüssel für die Discourse-Zusammenfassungs-API."
-    ai_bot_enabled: "Aktivieren Sie das KI Bot-Modul."
-    ai_bot_allowed_groups: "Wenn der GPT Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
-    ai_bot_enabled_chat_bots: "Verfügbare Modelle, um als KI-Bot zu agieren"
+    ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
+    ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
+    ai_bot_enabled_chat_bots: "Verfügbare Modelle, die als KI-Bot agieren können"
     ai_bot_enabled_chat_commands: "Verfügbare GPT-Integrationen, die verwendet werden, um externe Funktionen für das Modell bereitzustellen. Funktioniert nur mit GPT-4 und GPT-3.5"
     ai_helper_add_ai_pm_to_header: "Eine Schaltfläche in der Kopfzeile anzeigen, um eine PN mit einem KI-Bot zu starten"
-    ai_stability_api_key: "API-Schlüssel für die stability.ai API"
-    ai_stability_engine: "Bilderzeugungsmaschine für die stability.ai API"
-    ai_stability_api_url: "URL für die stability.ai API"
-    ai_google_custom_search_api_key: "API-Schlüssel für die Google Custom Search API siehe: https://developers.google.com/custom-search"
+    ai_stability_api_key: "API-Schlüssel für die stability.ai-API"
+    ai_stability_engine: "Bildgenerierungsengine für die stability.ai-API"
+    ai_stability_api_url: "URL für die stability.ai-API"
+    ai_google_custom_search_api_key: "API-Schlüssel für die Google Custom Search API, siehe: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX für Google Custom Search API"
   reviewables:
     reasons:
-      flagged_by_toxicity: Das AI-Plugin markierte dies, nachdem es als toxisch eingestuft wurde.
-      flagged_by_nsfw: Das AI-Plugin meldete dies nach der Klassifizierung von mindestens einem der angehängten Bilder als NSFW.
+      flagged_by_toxicity: Das KI-Plug-in meldete dies nach der Klassifizierung als toxisch.
+      flagged_by_nsfw: Das KI-Plug-in meldete dies nach der Klassifizierung von mindestens einem der angehängten Bilder als NSFW.
   errors:
-    prompt_message_length: Die Nachricht %{idx} ist über die 1000-Zeichen-Grenze hinausgegangen.
+    prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.
     invalid_prompt_role: Die Nachricht %{idx} hat eine ungültige Rolle.
   discourse_ai:
     ai_helper:
       errors:
-        completion_request_failed: "Beim Versuch, Vorschläge zu machen, ist etwas schief gelaufen. Bitte versuche es noch einmal."
+        completion_request_failed: "Beim Versuch, Vorschläge zu machen, ist etwas schiefgelaufen. Bitte versuche es noch einmal."
       prompts:
         translate: Übersetzen ins Englische
         generate_titles: Thementitel vorschlagen
         proofread: Text korrekturlesen
         markdown_table: Markdown-Tabelle generieren
     ai_bot:
-      default_pm_prefix: "[Unbenannte KI Bot PN]"
+      default_pm_prefix: "[KI-Bot-PN ohne Titel]"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       command_summary:
         categories: "Kategorien auflisten"
         search: "Suche"
-        tags: "Tags auflisten"
+        tags: "Schlagwörter auflisten"
         time: "Zeit"
         summarize: "Zusammenfassen"
         image: "Bild generieren"
         google: "Google-Suche"
       command_description:
-        time: "Die Zeit in %{timezone} ist %{time}"
-        summarize: "Zusammengefasst <a href='%{url}'>%{title}</a>"
+        time: "Die Uhrzeit in %{timezone} ist %{time}"
+        summarize: "<a href='%{url}'>%{title}</a> zusammengefasst"
         image: "%{prompt}"
         categories:
           one: "%{count} Kategorie gefunden"
           other: "%{count} Kategorien gefunden"
         tags:
           one: "%{count} Schlagwort gefunden"
-          other: "%{count} Schlagworte gefunden"
+          other: "%{count} Schlagwörter gefunden"
         search:
-          one: "%{count} <a href='%{url}'>Ergebnis</a> für '%{query}' gefunden"
-          other: "%{count} <a href='%{url}'>Ergebnisse</a> für '%{query}' gefunden"
+          one: "%{count} <a href='%{url}'>Ergebnis</a> für „%{query}“ gefunden"
+          other: "%{count} <a href='%{url}'>Ergebnisse</a> für „%{query}“ gefunden"
         google:
-          one: "%{count} <a href='%{url}'>Ergebnis</a> für '%{query}' gefunden"
-          other: "%{count} <a href='%{url}'>Ergebnisse</a> für '%{query}' gefunden"
+          one: "%{count} <a href='%{url}'>Ergebnis</a> für „%{query}“ gefunden"
+          other: "%{count} <a href='%{url}'>Ergebnisse</a> für „%{query}“ gefunden"
     summarization:
       configuration_hint:
-        one: "Konfiguriere zuerst die Einstellung \"%{setting}\"."
+        one: "Konfiguriere zunächst die Einstellung `%{setting}`."
         other: "Konfiguriere zunächst diese Einstellungen: %{settings}"

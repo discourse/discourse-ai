@@ -5,3 +5,34 @@
 # https://translate.discourse.org/
 
 ar:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "حدِّد خيارًا..."
+      related_topics:
+        title: "موضوعات مشابهة"
+        pill: "موضوعات ذات صلة"
+      ai_helper:
+        title: "اقتراح تغييرات باستخدام الذكاء الاصطناعي"
+        description: "اختر أحد الخيارات أدناه، وسيقترح عليك الذكاء الاصطناعي نسخة جديدة من النص."
+        selection_hint: "تلميح: يمكنك أيضًا تحديد جزء من النص قبل فتح أداة المساعدة لإعادة كتابة ذلك الجزء فقط."
+      reviewables:
+        model_used: "النموذج المستخدم:"
+        accuracy: "الدقة:"
+      embeddings:
+        semantic_search: "الموضوعات (دلالية)"
+      ai_bot:
+        cancel_streaming: "إيقاف الرد"
+        default_pm_prefix: "[رسالة خاصة دون عنوان من روبوت ذكاء اصطناعي]"
+        shortcut_title: "بدء رسالة خاصة باستخدام روبوت ذكاء اصطناعي"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "منشور تم الإبلاغ عنه بواسطة الذكاء الاصطناعي"
+        reviewable_ai_chat_message:
+          title: "رسالة دردشة تم الإبلاغ عنها بواسطة الذكاء الاصطناعي"

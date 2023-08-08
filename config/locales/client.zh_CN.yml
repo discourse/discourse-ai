@@ -5,3 +5,34 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  js:
+    discourse_ai:
+      modals:
+        select_option: "选择一个选项…"
+      related_topics:
+        title: "相似话题"
+        pill: "相关"
+      ai_helper:
+        title: "使用 AI 提出更改建议"
+        description: "选择以下选项之一，AI 将向您推荐新版本文本。"
+        selection_hint: "提示：您也可以在打开助手之前选择文本的一部分来仅重写该文本。"
+      reviewables:
+        model_used: "使用的模型："
+        accuracy: "准确性："
+      embeddings:
+        semantic_search: "话题（语义）"
+      ai_bot:
+        cancel_streaming: "停止回复"
+        default_pm_prefix: "[无标题 AI 机器人私信]"
+        shortcut_title: "使用 AI 机器人启动私信"
+        bot_names:
+          gpt-4: "GPT-4"
+          gpt-3:
+            5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
+    review:
+      types:
+        reviewable_ai_post:
+          title: "AI 举报的帖子"
+        reviewable_ai_chat_message:
+          title: "AI 举报的聊天消息"

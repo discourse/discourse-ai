@@ -5,3 +5,131 @@
 # https://translate.discourse.org/
 
 ar:
+  site_settings:
+    discourse_ai_enabled: "تفعيل المكوِّن الإضافي للذكاء الاصطناعي على Discourse."
+    ai_toxicity_enabled: "تفعيل وحدة السلبية."
+    ai_toxicity_inference_service_api_endpoint: "عنوان URL حيث تعمل واجهة API لوحدة السلبية"
+    ai_toxicity_inference_service_api_key: "مفتاح API لواجهة API الخاصة بنموذج السلبية"
+    ai_toxicity_inference_service_api_model: "النموذج المراد استخدامه في الاستدلال. نموذج متعدد اللغات يعمل مع اللغة الإيطالية والفرنسية والروسية والبرتغالية والإسبانية والتركية."
+    ai_toxicity_flag_automatically: "الإبلاغ تلقائيًا عن المنشورات/رسائل الدردشة التي تتجاوز الحدود التي تم تكوينها."
+    ai_toxicity_flag_threshold_toxicity: "السلبية: تعليق فظ أو غير محترم أو غير معقول، والذي من المحتمل بعض الشيء أن يجعلك تغادر مناقشة أو تتخلى عن مشاركة وجهة نظرك"
+    ai_toxicity_flag_threshold_severe_toxicity: "السلبية الشديدة: تعليق شديد الكراهية أو هجومي أو غير محترم، والذي من المحتمل جدًا أن يجعلك تغادر مناقشة أو تتخلى عن مناقشة وجهة نظرك"
+    ai_toxicity_flag_threshold_obscene: "فاحش"
+    ai_toxicity_flag_threshold_identity_attack: "هجوم انتحال الشخصية"
+    ai_toxicity_flag_threshold_insult: "إهانة"
+    ai_toxicity_flag_threshold_threat: "تهديد"
+    ai_toxicity_flag_threshold_sexual_explicit: "محتوى جنسي صريح"
+    ai_toxicity_groups_bypass: "لن يتم تصنيف منشورات المستخدمين في هذه المجموعات حسب وحدة السلبية."
+    ai_sentiment_enabled: "تفعيل وحدة المشاعر."
+    ai_sentiment_inference_service_api_endpoint: "عنوان URL حيث تعمل واجهة API لوحدة المشاعر"
+    ai_sentiment_inference_service_api_key: "مفتاح API لواجهة API الخاصة بنموذج المشاعر"
+    ai_sentiment_models: "النماذج المراد استخدامها في الاستدلال. يصنِّف نموذج المشاعر المنشورات إلى إيجابية/محايدة/سلبية. ويصنِّفها نموذج العاطفة إلى غضب/اشمئزاز/خوف/فرح/حياد/حزن/مفاجأة."
+    ai_nsfw_detection_enabled: "تفعيل وحدة NSFW (غير آمن لبيئة العمل)."
+    ai_nsfw_inference_service_api_endpoint: "عنوان URL حيث تعمل واجهة API لوحدة NSFW (غير آمن لبيئة العمل)"
+    ai_nsfw_inference_service_api_key: "مفتاح API لواجهة API الخاصة بنموذج NSFW (غير آمن لبيئة العمل)"
+    ai_nsfw_flag_automatically: "الإبلاغ تلقائيًا عن المنشورات غير الآمنة للعمل التي تتجاوز الحدود التي تم تكوينها."
+    ai_nsfw_flag_threshold_general: "الحد العام للصورة ليتم اعتبارها غير آمنة لبيئة العمل."
+    ai_nsfw_flag_threshold_drawings: "الحد الأدنى للرسمة ليتم اعتبارها غير آمنة لبيئة العمل."
+    ai_nsfw_flag_threshold_hentai: "الحد الأدنى للصورة المصنَّفة كمحتوى \"هنتاي\" ليتم اعتبارها غير آمنة لبيئة العمل."
+    ai_nsfw_flag_threshold_porn: "الحد الأدنى للصورة المصنَّفة كمحتوى إباحي ليتم اعتبارها غير آمنة لبيئة العمل."
+    ai_nsfw_flag_threshold_sexy: "الحد الأدنى للصورة المصنَّفة كمحتوى جنسي ليتم اعتبارها غير آمنة لبيئة العمل."
+    ai_nsfw_models: "نماذج المراد استخدامها في الاستدلال على المحتوى غير الآمن لبيئة العمل."
+    ai_openai_gpt35_url: "عنوان URL المخصَّص المُستخدَم لإكمال الدردشة باستخدام GPT 3.5. (Azure: يجب أن يدعم استدعاء الدوال، ويُفضَّل أن يكون نقطة نهاية GPT3.5 16K)"
+    ai_openai_gpt4_url: "عنوان URL المخصَّص المُستخدَم لإكمال دردشة GPT 4. (لدعم Azure)"
+    ai_openai_embeddings_url: "عنوان URL المخصَّص المُستخدَم لواجهة API لتضمينات OpenAI. (في حالة Azure، يمكن أن يكون: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15))"
+    ai_openai_api_key: "مفتاح API لواجهة API الخاصة بخدمات OpenAI"
+    ai_anthropic_api_key: "مفتاح API لواجهة API الخاصة بخدمات Anthropic"
+    ai_hugging_face_api_url: "عنوان URL المخصَّص المُستخدَم للاستدلال على النماذج اللغوية الكبيرة (LLM) في OpenSource. إنه متوافق مع https://github.com/huggingface/text-generation-inference"
+    composer_ai_helper_enabled: "تفعيل مساعد الذكاء الاصطناعي لأداة الإنشاء."
+    ai_helper_allowed_groups: "سيرى المستخدمون في هذه المجموعات زر مساعد الذكاء الاصطناعي في أداة الإنشاء."
+    ai_helper_allowed_in_pm: "تفعيل مساعد الذكاء الاصطناعي في الرسائل الخاصة."
+    ai_helper_model: "النموذج المراد استخدامه لمساعد الذكاء الاصطناعي."
+    ai_embeddings_enabled: "تفعيل وحدة التضمينات."
+    ai_embeddings_discourse_service_api_endpoint: "عنوان URL حيث تعمل واجهة API لوحدة التضمينات"
+    ai_embeddings_discourse_service_api_key: "مفتاح API لواجهة API الخاصة بالتضمينات"
+    ai_embeddings_model: "استخدم all-mpnet-base-v2 للاستدلال المحلي والسريع باللغة الإنجليزية، وtext-embedding-ada-002 لاستخدام واجهة API لخدمات OpenAI (تحتاج إلى مفتاح API)، وmultilingual-e5-large لالتضمينات متعددة اللغات المحلية"
+    ai_embeddings_generate_for_pms: "إنشاء تضمينات للرسائل الشخصية."
+    ai_embeddings_semantic_related_topics_enabled: "استخدام البحث الدلالي للموضوعات ذات الصلة."
+    ai_embeddings_semantic_related_topics: "أقصى عدد من الموضوعات لعرضها في قسم الموضوع ذي الصلة."
+    ai_embeddings_pg_connection_string: "سلسلة اتصال PostgreSQL لوحدة التضمينات. يلزم تفعيل امتداد pgvector وإنشاء سلسلة من الجداول. انظر المستندات للمزيد من المعلومات."
+    ai_embeddings_semantic_search_enabled: "تفعيل البحث الدلالي في الصفحة كاملةً."
+    ai_embeddings_semantic_related_include_closed_topics: "تضمين الموضوعات المغلقة في نتائج البحث الدلالي"
+    ai_summarization_discourse_service_api_endpoint: "عنوان URL حيث تعمل واجهة API للتلخيص على Discourse."
+    ai_summarization_discourse_service_api_key: "مفتاح API لواجهة API للتلخيص على Discourse."
+    ai_bot_enabled: "تفعيل وحدة روبوت الذكاء الاصطناعي"
+    ai_bot_allowed_groups: "عندما يتمكن GPT Bot من الوصول إلى الرسالة الخاصة، فإنه سيرد على أعضاء هذه المجموعات."
+    ai_bot_enabled_chat_bots: "النماذج المتاحة للقيام بدور روبوت الذكاء الاصطناعي"
+    ai_bot_enabled_chat_commands: "تكاملات GPT المتاحة للاستخدام لتوفير وظيفة خارجية للنموذج. تعمل مع GPT-4 وGPT-3.5 فقط"
+    ai_helper_add_ai_pm_to_header: "عرض زر في الرأس لبدء رسالة خاصة مع روبوت ذكاء اصطناعي"
+    ai_stability_api_key: "مفتاح API لواجهة API المسماة stability.ai"
+    ai_stability_engine: "محرك إنشاء الصور المراد استخدامه لواجهة API المسماة stability.ai"
+    ai_stability_api_url: "عنوان URL لواجهة API المسماة stability.ai"
+    ai_google_custom_search_api_key: "مفتاح API لواجهة API الخاصة ببحث Google المخصَّص، راجع: https://developers.google.com/custom-search"
+    ai_google_custom_search_cx: "تجربة العملاء لواجهة بحث Google المخصَّصة"
+  reviewables:
+    reasons:
+      flagged_by_toxicity: أبلغ المكوِّن الإضافي الذي يعمل بالذكاء الاصطناعي عن هذا بعد تصنيفه كسلبي.
+      flagged_by_nsfw: أبلغ المكوِّن الإضافي الذي يعمل بالذكاء الاصطناعي عن هذا بعد تصنيفه كسلبي لصورة واحدة على الأقل من الصور الملحقة على أنها غير آمنة لبيئة العمل.
+  errors:
+    prompt_message_length: تتجاوز الرسالة الحد الأقصى لعدد الحروف، والبالغ 1000 حرف، بمقدار %{idx}.
+    invalid_prompt_role: تنطوي الرسالة %{idx} على دور غير صالح.
+  discourse_ai:
+    ai_helper:
+      errors:
+        completion_request_failed: "حدث خطأ في أثناء محاولة تقديم اقتراحات. يُرجى إعادة المحاولة."
+      prompts:
+        translate: الترجمة إلى الإنجليزية
+        generate_titles: اقتراح عناوين للموضوعات
+        proofread: تدقيق النص لغويًا
+        markdown_table: إنشاء جدول Markdown
+    ai_bot:
+      default_pm_prefix: "[رسالة خاصة دون عنوان من روبوت ذكاء اصطناعي]"
+      topic_not_found: "الملخص غير متوفر، الموضوع غير موجود!"
+      command_summary:
+        categories: "إدراج الفئات"
+        search: "البحث"
+        tags: "إدراج الوسوم"
+        time: "الوقت"
+        summarize: "تلخيص"
+        image: "إنشاء صورة"
+        google: "البحث في Google"
+      command_description:
+        time: "الوقت في المنطقة الزمنية %{timezone} هو %{time}"
+        summarize: "تم تلخيص <a href='%{url}'>%{title}</a>"
+        image: "%{prompt}"
+        categories:
+          zero: "تم العثور على %{count} فئة"
+          one: "تم العثور على فئة واحدة (%{count})"
+          two: "تم العثور على فئتين (%{count})"
+          few: "تم العثور على %{count} فئات"
+          many: "تم العثور على %{count} فئة"
+          other: "تم العثور على %{count} فئة"
+        tags:
+          zero: "تم العثور على %{count} وسم"
+          one: "تم العثور على وسم واحد (%{count})"
+          two: "تم العثور على وسمين (%{count})"
+          few: "تم العثور على %{count} وسوم"
+          many: "تم العثور على %{count} وسمًا"
+          other: "تم العثور على %{count} وسم"
+        search:
+          zero: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          one: "تم العثور على <a href='%{url}'>نتيجة واحدة (%{count})</a> لاستعلام البحث '%{query}'"
+          two: "تم العثور على <a href='%{url}'>نتيجتين (%{count})</a> لاستعلام البحث '%{query}'"
+          few: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
+          many: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          other: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+        google:
+          zero: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          one: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          two: "تم العثور على <a href='%{url}'>نتيجتين (%{count})</a> لاستعلام البحث '%{query}'"
+          few: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
+          many: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          other: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+    summarization:
+      configuration_hint:
+        zero: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
+        one: "قم بتكوين الإعداد `%{setting}` أولًا."
+        two: "قم بتكوين هذين الإعدادين أولًا: %{settings}"
+        few: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
+        many: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
+        other: "قم بتكوين هذه الإعدادات أولًا: %{settings}"

@@ -8,22 +8,22 @@ de:
   js:
     discourse_ai:
       modals:
-        select_option: "Wähle ein Symbol..."
+        select_option: "Wähle eine Option aus..."
       related_topics:
         title: "Ähnliche Themen"
         pill: "Verwandt"
       ai_helper:
         title: "Änderungen mit KI vorschlagen"
         description: "Wähle eine der folgenden Optionen und die KI schlägt dir eine neue Version des Textes vor."
-        selection_hint: "Tipp: Du kannst auch einen Teil des Textes auswählen, bevor du die Hilfe öffnest, um nur diesen Teil neu zu schreiben."
+        selection_hint: "Tipp: Du kannst auch einen Teil des Textes auswählen, bevor du den Assistenten öffnest, um nur diesen Teil neu zu schreiben."
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"
       embeddings:
-        semantic_search: "Themen (Semantisch)"
+        semantic_search: "Themen (semantisch)"
       ai_bot:
         cancel_streaming: "Antwort abbrechen"
-        default_pm_prefix: "[Unbenannte KI Bot PN]"
+        default_pm_prefix: "[KI-Bot-PN ohne Titel]"
         shortcut_title: "Starte eine PN mit einem KI-Bot"
         bot_names:
           gpt-4: "GPT-4"

@@ -5,3 +5,106 @@
 # https://translate.discourse.org/
 
 ja:
+  site_settings:
+    discourse_ai_enabled: "Discourse AI プラグインを有効にします。"
+    ai_toxicity_enabled: "毒コメントモジュールを有効にします。"
+    ai_toxicity_inference_service_api_endpoint: "毒コメントモジュールの API が実行している URL"
+    ai_toxicity_inference_service_api_key: "毒コメント API の API キー"
+    ai_toxicity_inference_service_api_model: "推論に使用するモデル。多言語モデルは、イタリア語、フランス語、ロシア語、ポルトガル語、スペイン語、およびトルコ語で動作します。"
+    ai_toxicity_flag_automatically: "構成されたしきい値を超える投稿 / チャットメッセージを自動的に通報します。"
+    ai_toxicity_flag_threshold_toxicity: "毒コメント: ディスカッションから退出したり、自分の意見の共有を諦めたりさせられる可能性がある程度ある、失礼、無礼、または不合理なコメント"
+    ai_toxicity_flag_threshold_severe_toxicity: "深刻な毒コメント: ディスカッションから退出したり、自分の意見の共有を諦めたりさせられる可能性が高い、非常に憎しみに満ちた、攻撃的、または無礼なコメント"
+    ai_toxicity_flag_threshold_obscene: "わいせつ"
+    ai_toxicity_flag_threshold_identity_attack: "アイデンティティ攻撃"
+    ai_toxicity_flag_threshold_insult: "侮辱"
+    ai_toxicity_flag_threshold_threat: "脅迫"
+    ai_toxicity_flag_threshold_sexual_explicit: "露骨な性的表現"
+    ai_toxicity_groups_bypass: "このグループのユーザーの投稿は、毒コメントモジュールによって分類されません。"
+    ai_sentiment_enabled: "センチメントモジュールを有効にします。"
+    ai_sentiment_inference_service_api_endpoint: "センチメントモジュールの API が実行している URL"
+    ai_sentiment_inference_service_api_key: "センチメント API の API キー"
+    ai_sentiment_models: "推論に使用するモデル。センチメントは、投稿をポジティブ、ニュートラル、ネガティブの空間に分類します。感情は、怒り、嫌悪、恐怖、喜び、ニュートラル、悲しみ、驚きの空間に分類されます。"
+    ai_nsfw_detection_enabled: "NSFW モジュールを有効にします。"
+    ai_nsfw_inference_service_api_endpoint: "NSFW モジュールの API が実行している URL"
+    ai_nsfw_inference_service_api_key: "NSFW API の API キー"
+    ai_nsfw_flag_automatically: "構成されたしきい値を超える NSFW 投稿を自動的に通報します。"
+    ai_nsfw_flag_threshold_general: "NSFW と見なされる画像の一般しきい値。"
+    ai_nsfw_flag_threshold_drawings: "描画が NSFW と見なされるしきい値。"
+    ai_nsfw_flag_threshold_hentai: "エロアニメとして分類された画像が NSFW として見なされるためのしきい値。"
+    ai_nsfw_flag_threshold_porn: "ポルノとして分類された画像が NSFW として見なされるためのしきい値。"
+    ai_nsfw_flag_threshold_sexy: "官能的として分類された画像が NSFW として見なされるためのしきい値。"
+    ai_nsfw_models: "NSFW 推論に使用するモデル。"
+    ai_openai_gpt35_url: "GPT 3.5 チャット補完に使用されるカスタム URL。(Azure: 関数呼び出しをサポートしている必要があり、GPT3.5 16K エンドポイントが理想的です)"
+    ai_openai_gpt4_url: "GPT 4 チャット補完に使用されるカスタム URL。(Azure サポート用)"
+    ai_openai_embeddings_url: "OpenAI 埋め込み API に使用されるカスタム URL。(Azure の場合: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
+    ai_openai_api_key: "OpenAI API の API キー"
+    ai_anthropic_api_key: "Anthropic API の API キー"
+    ai_hugging_face_api_url: "OpenSource LLM 推論に使用されるカスタム URL。https://github.com/huggingface/text-generation-inference に対応"
+    composer_ai_helper_enabled: "作成ツールの AI ヘルパーを有効にします。"
+    ai_helper_allowed_groups: "これらのグループのユーザーの作成ツールには、AI ヘルパーボタンが表示されます。"
+    ai_helper_allowed_in_pm: "PM で作成ツールの AI ヘルパーを有効にします。"
+    ai_helper_model: "AI ヘルパーに使用するモデル。"
+    ai_embeddings_enabled: "埋め込みモジュールを有効にします。"
+    ai_embeddings_discourse_service_api_endpoint: "埋め込みモジュールの API が実行している URL"
+    ai_embeddings_discourse_service_api_key: "埋め込み API の API キー"
+    ai_embeddings_model: "英語でのローカルおよび高速推論には all-mpnet-base-v2、OpenAI API の使用には text-embedding-ada-002 (API キーが必要)、およびローカル多言語埋め込みには multilingual-e5-large を使用します"
+    ai_embeddings_generate_for_pms: "個人メッセージの埋め込みを生成します。"
+    ai_embeddings_semantic_related_topics_enabled: "関連トピックのセマンティック検索を使用します。"
+    ai_embeddings_semantic_related_topics: "関連トピックセクションに表示する最大トピック数。"
+    ai_embeddings_pg_connection_string: "埋め込みモジュールの PostgreSQL 接続文字列。pgvector 拡張機能が有効であり、一連のテーブルが作成される必要があります。詳細はドキュメントをご覧ください。"
+    ai_embeddings_semantic_search_enabled: "全ページのセマンティック検索を有効にします。"
+    ai_embeddings_semantic_related_include_closed_topics: "閉鎖トピックをセマンティック検索結果に含める"
+    ai_summarization_discourse_service_api_endpoint: "Discourse 要約 API が実行している URL。"
+    ai_summarization_discourse_service_api_key: "Discourse 要約 API の API キー。"
+    ai_bot_enabled: "AI ボットモジュールを有効にします。"
+    ai_bot_allowed_groups: "GPT ボットが PM にアクセスできる場合、これらのグループのメンバーに返信します。"
+    ai_bot_enabled_chat_bots: "AI ボットとして機能する利用可能なモデル"
+    ai_bot_enabled_chat_commands: "外部機能をモデルに提供するために使用できる GPT の統合。GPT-4 および GPT-3.5 でのみ動作します"
+    ai_helper_add_ai_pm_to_header: "AI ボットとの PM を開始するためのボタンをヘッダーに表示する"
+    ai_stability_api_key: "stability.ai API の API キー"
+    ai_stability_engine: "stability.ai API に使用する画像生成エンジン"
+    ai_stability_api_url: "stability.ai API の URL"
+    ai_google_custom_search_api_key: "Google カスタム検索 API の API キーは https://developers.google.com/custom-search を参照してください"
+    ai_google_custom_search_cx: "Google カスタム検索 API の CX"
+  reviewables:
+    reasons:
+      flagged_by_toxicity: AI プラグインは、これを毒コメントとして分類した後に通報しました。
+      flagged_by_nsfw: AI プラグインは、添付画像の少なくとも 1 つを NSFW として分類した後に通報しました。
+  errors:
+    prompt_message_length: メッセージ %{idx} は 1000 文字の上限を超えています。
+    invalid_prompt_role: メッセージ %{idx} には無効な権限があります。
+  discourse_ai:
+    ai_helper:
+      errors:
+        completion_request_failed: "提案しようとしたときに問題が発生しました。もう一度お試しください。"
+      prompts:
+        translate: 英語に翻訳
+        generate_titles: トピックのタイトルを提案
+        proofread: テキストを構成
+        markdown_table: Markdown テーブルを生成
+    ai_bot:
+      default_pm_prefix: "[無題の AI ボット PM]"
+      topic_not_found: "要約がありません。トピックが見つかりません！"
+      command_summary:
+        categories: "カテゴリをリスト表示"
+        search: "検索"
+        tags: "タグをリスト"
+        time: "時刻"
+        summarize: "要約"
+        image: "画像を生成"
+        google: "Google で検索"
+      command_description:
+        time: "%{timezone} での時刻は %{time} です"
+        summarize: "<a href='%{url}'>%{title}</a> の要約"
+        image: "%{prompt}"
+        categories:
+          other: "%{count} 個のカテゴリが見つかりました"
+        tags:
+          other: "%{count} 個のタグが見つかりました"
+        search:
+          other: "「%{query}」の<a href='%{url}'>結果</a> が %{count} 件見つかりました"
+        google:
+          other: "「%{query}」の<a href='%{url}'>結果</a>が %{count} 件見つかりました"
+    summarization:
+      configuration_hint:
+        other: "先に次の設定を構成します: %{settings}"
