@@ -23,6 +23,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
             snippet: "snippet1",
             displayLink: "displayLink1",
             formattedUrl: "formattedUrl1",
+            oops: "do no include me ... oops",
           },
         ],
       }.to_json
@@ -38,6 +39,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
       expect(google.description_args[:count]).to eq(1)
       expect(info).to include("title1")
       expect(info).to include("snippet1")
+      expect(info).to include("some+search+term")
+      expect(info).to_not include("oops")
     end
   end
 end
