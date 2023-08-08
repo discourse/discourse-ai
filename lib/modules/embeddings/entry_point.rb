@@ -13,6 +13,7 @@ module DiscourseAi
         require_relative "jobs/regular/generate_embeddings"
         require_relative "semantic_related"
         require_relative "semantic_search"
+        require_relative "semantic_topic_query"
       end
 
       def inject_into(plugin)
