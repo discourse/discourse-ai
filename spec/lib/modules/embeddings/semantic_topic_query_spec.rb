@@ -5,30 +5,6 @@ require "rails_helper"
 describe DiscourseAi::Embeddings::EntryPoint do
   fab!(:user) { Fabricate(:user) }
 
-  describe "registering event callbacks" do
-    context "when creating a topic" do
-      let(:creator) do
-        PostCreator.new(
-          user,
-          raw: "this is the new content for my topic",
-          title: "this is my new topic title",
-        )
-      end
-
-      it "queues a job on create if embeddings is enabled" do
-        SiteSetting.ai_embeddings_enabled = true
-
-        expect { creator.create }.to change(Jobs::GenerateEmbeddings.jobs, :size).by(1)
-      end
-
-      it "does nothing if sentiment analysis is disabled" do
-        SiteSetting.ai_embeddings_enabled = false
-
-        expect { creator.create }.not_to change(Jobs::GenerateEmbeddings.jobs, :size)
-      end
-    end
-  end
-
   describe "SemanticTopicQuery extension" do
     describe "#list_semantic_related_topics" do
       subject(:topic_query) { DiscourseAi::Embeddings::SemanticTopicQuery.new(user) }
@@ -89,6 +65,20 @@ describe DiscourseAi::Embeddings::EntryPoint do
 
         it "filters it out" do
           expect(topic_query.list_semantic_related_topics(target).topics).to be_empty
+        end
+      end
+
+      context "when the semantic search returns a muted topic" do
+        it "filters it out" do
+          category = Fabricate(:category_with_definition)
+          topic = Fabricate(:topic, category: category)
+          CategoryUser.create!(
+            user_id: user.id,
+            category_id: category.id,
+            notification_level: CategoryUser.notification_levels[:muted],
+          )
+          stub_semantic_search_with([topic.id])
+          expect(topic_query.list_semantic_related_topics(target).topics).not_to include(topic)
         end
       end
 
