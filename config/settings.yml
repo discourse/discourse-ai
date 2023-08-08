@@ -203,6 +203,7 @@ plugins:
      - image
      - search
      - summarize
+     - read
      - tags
      - time
   ai_helper_add_ai_pm_to_header:

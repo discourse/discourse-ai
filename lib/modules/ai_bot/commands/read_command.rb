@@ -1,0 +1,61 @@
+#frozen_string_literal: true
+
+module DiscourseAi::AiBot::Commands
+  class ReadCommand < Command
+    class << self
+      def name
+        "read"
+      end
+
+      def desc
+        "Will read a topic or a post on this Discourse instance"
+      end
+
+      def parameters
+        [
+          Parameter.new(
+            name: "topic_id",
+            description: "the id of the topic to read",
+            type: "integer",
+            required: true,
+          ),
+          Parameter.new(
+            name: "post_number",
+            description: "the post number to read",
+            type: "integer",
+            required: false,
+          ),
+        ]
+      end
+    end
+
+    def description_args
+      { title: @title }
+    end
+
+    def process(topic_id:, post_number: nil)
+      not_found = { topic_id: topic_id, description: "Topic not found" }
+
+      @title = ""
+
+      topic_id = topic_id.to_i
+
+      topic = Topic.find_by(id: topic_id)
+      return not_found if !topic || !Guardian.new.can_see?(topic)
+
+      @title = topic.title
+
+      posts = Post.secured(Guardian.new).where(topic_id: topic_id).order(:post_number).limit(40)
+      posts = posts.where("post_number = ?", post_number) if post_number
+
+      content = +"title: #{topic.title}\n\n"
+
+      posts.each { |post| content << "\n\n#{post.username} said:\n\n#{post.raw}" }
+
+      # TODO: 16k or 100k models can handle a lot more tokens
+      content = ::DiscourseAi::Tokenizer::BertTokenizer.truncate(content, 1500).squish
+
+      { topic_id: topic_id, post_number: post_number, content: content }
+    end
+  end
+end
