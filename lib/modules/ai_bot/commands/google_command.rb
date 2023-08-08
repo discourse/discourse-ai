@@ -48,22 +48,28 @@ module DiscourseAi::AiBot::Commands
         URI("https://www.googleapis.com/customsearch/v1?key=#{api_key}&cx=#{cx}&q=#{query}&num=10")
       body = Net::HTTP.get(uri)
 
-      parse_search_json(body)
+      parse_search_json(body, query)
     end
 
-    def parse_search_json(json_data)
+    def minimize_field(result, field, max_tokens: 100)
+      data = result[field].squish
+      data = ::DiscourseAi::Tokenizer::BertTokenizer.truncate(data, max_tokens).squish
+      data
+    end
+
+    def parse_search_json(json_data, query)
       parsed = JSON.parse(json_data)
       results = parsed["items"]
 
       @last_num_results = parsed.dig("searchInformation", "totalResults").to_i
 
-      format_results(results, args: json_data) do |result|
+      format_results(results, args: query) do |result|
         {
-          title: result["title"],
-          link: result["link"],
-          snippet: result["snippet"],
-          displayLink: result["displayLink"],
-          formattedUrl: result["formattedUrl"],
+          title: minimize_field(result, "title"),
+          link: minimize_field(result, "link"),
+          snippet: minimize_field(result, "snippet", max_tokens: 120),
+          displayLink: minimize_field(result, "displayLink"),
+          formattedUrl: minimize_field(result, "formattedUrl"),
         }
       end
     end
