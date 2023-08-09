@@ -125,11 +125,13 @@ module DiscourseAi
 
           raw = post.raw.sub(placeholder, raw)
 
+          post.revise(bot_user, { raw: raw }, skip_validations: true, skip_revision: true)
+
           if chain_next_response
+            # somewhat annoying but whitespace was stripped in revise
+            # so we need to save again
             post.raw = raw
             post.save!(validate: false)
-          else
-            post.revise(bot_user, { raw: raw }, skip_validations: true, skip_revision: true)
           end
 
           [chain_next_response, post]

@@ -30,7 +30,7 @@ module DiscourseAi::AiBot::Commands
     end
 
     def description_args
-      { title: @title }
+      { title: @title, url: @url }
     end
 
     def process(topic_id:, post_number: nil)
@@ -46,6 +46,8 @@ module DiscourseAi::AiBot::Commands
       @title = topic.title
 
       posts = Post.secured(Guardian.new).where(topic_id: topic_id).order(:post_number).limit(40)
+      @url = topic.relative_url(post_number)
+
       posts = posts.where("post_number = ?", post_number) if post_number
 
       content = +"title: #{topic.title}\n\n"
@@ -55,7 +57,9 @@ module DiscourseAi::AiBot::Commands
       # TODO: 16k or 100k models can handle a lot more tokens
       content = ::DiscourseAi::Tokenizer::BertTokenizer.truncate(content, 1500).squish
 
-      { topic_id: topic_id, post_number: post_number, content: content }
+      result = { topic_id: topic_id, content: content, complete: true }
+      result[:post_number] = post_number if post_number
+      result
     end
   end
 end
