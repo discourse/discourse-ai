@@ -15,19 +15,12 @@ module DiscourseAi::AiBot::Commands
         [
           Parameter.new(
             name: "prompt",
-            description: "The prompt used to generate or create or draw the image",
+            description:
+              "The prompt used to generate or create or draw the image (40 words or less, be creative)",
             type: "string",
             required: true,
           ),
         ]
-      end
-
-      def custom_system_message
-        <<~TEXT
-          In Discourse the markdown (description|SIZE, ZOOM%)[upload://SOMETEXT] is used to denote images and uploads. NEVER try changing the to http or https links.
-          ALWAYS prefer the upload:// format if available.
-          When rendering multiple images place them in a [grid] ... [/grid] block
-        TEXT
       end
     end
 
@@ -40,7 +33,11 @@ module DiscourseAi::AiBot::Commands
     end
 
     def chain_next_response
-      true
+      false
+    end
+
+    def custom_raw
+      @custom_raw
     end
 
     def process(prompt:)
@@ -58,7 +55,8 @@ module DiscourseAi::AiBot::Commands
         f.unlink
       end
 
-      raw = <<~RAW
+      @custom_raw = <<~RAW
+
       [grid]
       #{
         uploads
@@ -68,7 +66,7 @@ module DiscourseAi::AiBot::Commands
       [/grid]
     RAW
 
-      { prompt: prompt, markdown: raw, display_to_user: true }
+      { prompt: prompt, displayed_to_user: true }
     end
   end
 end

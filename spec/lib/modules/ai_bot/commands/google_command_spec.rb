@@ -1,7 +1,5 @@
 #frozen_string_literal: true
 
-require_relative "../../../../support/openai_completions_inference_stubs"
-
 RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
   fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
 
