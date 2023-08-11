@@ -42,7 +42,28 @@ module DiscourseAi::AiBot::Commands
 
     def process(prompt:)
       @last_prompt = prompt
-      results = DiscourseAi::Inference::StabilityGenerator.perform!(prompt)
+
+      show_progress(localized_description + " ")
+
+      results = nil
+
+      # API is flaky, so try a few times
+      3.times do
+        begin
+          thread =
+            Thread.new do
+              begin
+                results = DiscourseAi::Inference::StabilityGenerator.perform!(prompt)
+              rescue => e
+                Rails.logger.warn("Failed to generate image for prompt #{prompt}: #{e}")
+              end
+            end
+
+          show_progress(".", caret2: true) while !thread.join(2)
+
+          break if results
+        end
+      end
 
       uploads = []
 
