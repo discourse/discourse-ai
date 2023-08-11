@@ -20,7 +20,7 @@ module DiscourseAi
           )
         end
 
-        def concatenate_summaries(summaries)
+        def concatenate_summaries(summaries, &on_partial_blk)
           messages = [
             { role: "system", content: "You are a helpful bot" },
             {
@@ -30,10 +30,10 @@ module DiscourseAi
             },
           ]
 
-          completion(messages)
+          completion(messages, &on_partial_blk)
         end
 
-        def summarize_with_truncation(contents, opts)
+        def summarize_with_truncation(contents, opts, &on_partial_blk)
           messages = [{ role: "system", content: build_base_prompt(opts) }]
 
           text_to_summarize = contents.map { |c| format_content_item(c) }.join
@@ -44,16 +44,16 @@ module DiscourseAi
             content: "Summarize the following in 400 words:\n#{truncated_content}",
           }
 
-          completion(messages)
+          completion(messages, &on_partial_blk)
         end
 
-        def summarize_single(chunk_text, opts)
-          summarize_chunk(chunk_text, opts.merge(single_chunk: true))
+        def summarize_single(chunk_text, opts, &on_partial_blk)
+          summarize_chunk(chunk_text, opts.merge(single_chunk: true), &on_partial_blk)
         end
 
         private
 
-        def summarize_chunk(chunk_text, opts)
+        def summarize_chunk(chunk_text, opts, &on_partial_blk)
           summary_instruction =
             if opts[:single_chunk]
               "Summarize the following forum discussion, creating a cohesive narrative:"
@@ -66,6 +66,7 @@ module DiscourseAi
               { role: "system", content: build_base_prompt(opts) },
               { role: "user", content: "#{summary_instruction}\n#{chunk_text}" },
             ],
+            &on_partial_blk
           )
         end
 
@@ -89,13 +90,22 @@ module DiscourseAi
           base_prompt
         end
 
-        def completion(prompt)
-          ::DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model).dig(
-            :choices,
-            0,
-            :message,
-            :content,
-          )
+        def completion(prompt, &on_partial_blk)
+          if on_partial_blk
+            on_partial_read =
+              Proc.new do |partial|
+                on_partial_blk.call(partial.dig(:choices, 0, :delta, :content).to_s)
+              end
+
+            ::DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model, &on_partial_read)
+          else
+            ::DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model).dig(
+              :choices,
+              0,
+              :message,
+              :content,
+            )
+          end
         end
 
         def tokenizer

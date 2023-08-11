@@ -8,8 +8,8 @@ module DiscourseAi
           "Llama2FineTunedOrcaStyle's #{SiteSetting.ai_hugging_face_model_display_name.presence || model}"
         end
 
-        def concatenate_summaries(summaries)
-          completion(<<~TEXT)
+        def concatenate_summaries(summaries, &on_partial_blk)
+          prompt = <<~TEXT
             ### System:
             You are a helpful bot
             
@@ -19,28 +19,32 @@ module DiscourseAi
 
             ### Assistant:
           TEXT
+
+          completion(prompt, &on_partial_blk)
         end
 
-        def summarize_with_truncation(contents, opts)
+        def summarize_with_truncation(contents, opts, &on_partial_blk)
           text_to_summarize = contents.map { |c| format_content_item(c) }.join
           truncated_content = tokenizer.truncate(text_to_summarize, available_tokens)
 
-          completion(<<~TEXT)
-            ### System:
-            #{build_base_prompt(opts)}
-            
-            ### User:
-            Summarize the following in up to 400 words:
-            #{truncated_content}
+          prompt = <<~TEXT
+          ### System:
+          #{build_base_prompt(opts)}
+          
+          ### User:
+          Summarize the following in up to 400 words:
+          #{truncated_content}
 
-            ### Assistant:
-            Here is a summary of the above topic:
-          TEXT
+          ### Assistant:
+          Here is a summary of the above topic:
+        TEXT
+
+          completion(prompt, &on_partial_blk)
         end
 
         private
 
-        def summarize_chunk(chunk_text, opts)
+        def summarize_chunk(chunk_text, opts, &on_partial_blk)
           summary_instruction =
             if opts[:single_chunk]
               "Summarize the following forum discussion, creating a cohesive narrative:"
@@ -48,7 +52,7 @@ module DiscourseAi
               "Summarize the following in up to 400 words:"
             end
 
-          completion(<<~TEXT)
+          prompt = <<~TEXT
             ### System:
             #{build_base_prompt(opts)}
 
@@ -59,6 +63,8 @@ module DiscourseAi
             ### Assistant:
             Here is a summary of the above topic:
           TEXT
+
+          completion(prompt, &on_partial_blk)
         end
       end
     end

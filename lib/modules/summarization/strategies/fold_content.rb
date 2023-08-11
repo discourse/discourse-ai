@@ -16,17 +16,24 @@ module DiscourseAi
                  :model,
                  to: :completion_model
 
-        def summarize(content)
+        def summarize(content, &on_partial_blk)
           opts = content.except(:contents)
 
           chunks = split_into_chunks(content[:contents])
 
           if chunks.length == 1
-            { summary: completion_model.summarize_single(chunks.first[:summary], opts), chunks: [] }
+            {
+              summary:
+                completion_model.summarize_single(chunks.first[:summary], opts, &on_partial_blk),
+              chunks: [],
+            }
           else
             summaries = completion_model.summarize_in_chunks(chunks, opts)
 
-            { summary: completion_model.concatenate_summaries(summaries), chunks: summaries }
+            {
+              summary: completion_model.concatenate_summaries(summaries, &on_partial_blk),
+              chunks: summaries,
+            }
           end
         end
 
