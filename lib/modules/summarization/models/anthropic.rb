@@ -20,7 +20,7 @@ module DiscourseAi
           )
         end
 
-        def concatenate_summaries(summaries)
+        def concatenate_summaries(summaries, &on_partial_blk)
           instructions = <<~TEXT
             Human: Concatenate the following disjoint summaries inside the given input tags, creating a cohesive narrative.
             Include only the summary inside <ai> tags.
@@ -29,10 +29,10 @@ module DiscourseAi
           instructions += summaries.reduce("") { |m, s| m += "<input>#{s}</input>\n" }
           instructions += "Assistant:\n"
 
-          completion(instructions)
+          completion(instructions, &on_partial_blk)
         end
 
-        def summarize_with_truncation(contents, opts)
+        def summarize_with_truncation(contents, opts, &on_partial_blk)
           instructions = build_base_prompt(opts)
 
           text_to_summarize = contents.map { |c| format_content_item(c) }.join
@@ -40,17 +40,20 @@ module DiscourseAi
 
           instructions += "<input>#{truncated_content}</input>\nAssistant:\n"
 
-          completion(instructions)
+          completion(instructions, &on_partial_blk)
         end
 
-        def summarize_single(chunk_text, opts)
-          summarize_chunk(chunk_text, opts.merge(single_chunk: true))
+        def summarize_single(chunk_text, opts, &on_partial_blk)
+          summarize_chunk(chunk_text, opts.merge(single_chunk: true), &on_partial_blk)
         end
 
         private
 
-        def summarize_chunk(chunk_text, opts)
-          completion(build_base_prompt(opts) + "<input>#{chunk_text}</input>\nAssistant:\n")
+        def summarize_chunk(chunk_text, opts, &on_partial_blk)
+          completion(
+            build_base_prompt(opts) + "<input>#{chunk_text}</input>\nAssistant:\n",
+            &on_partial_blk
+          )
         end
 
         def build_base_prompt(opts)
@@ -79,9 +82,33 @@ module DiscourseAi
           base_prompt
         end
 
-        def completion(prompt)
-          response =
-            ::DiscourseAi::Inference::AnthropicCompletions.perform!(prompt, model).dig(:completion)
+        def completion(prompt, &on_partial_blk)
+          # We need to discard any text that might come before the <ai> tag.
+          # Instructing the model to reply only with the summary seems impossible.
+          pre_tag_partial = +""
+
+          if on_partial_blk
+            on_partial_read =
+              Proc.new do |partial|
+                if pre_tag_partial.include?("<ai>")
+                  on_partial_blk.call(partial[:completion])
+                else
+                  pre_tag_partial << partial[:completion]
+                end
+              end
+
+            response =
+              ::DiscourseAi::Inference::AnthropicCompletions.perform!(
+                prompt,
+                model,
+                &on_partial_read
+              )
+          else
+            response =
+              ::DiscourseAi::Inference::AnthropicCompletions.perform!(prompt, model).dig(
+                :completion,
+              )
+          end
 
           Nokogiri::HTML5.fragment(response).at("ai").text
         end

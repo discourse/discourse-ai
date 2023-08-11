@@ -16,11 +16,12 @@ module DiscourseAi
                  :model,
                  to: :completion_model
 
-        def summarize(content)
+        def summarize(content, &on_partial_blk)
           opts = content.except(:contents)
 
           {
-            summary: completion_model.summarize_with_truncation(content[:contents], opts),
+            summary:
+              completion_model.summarize_with_truncation(content[:contents], opts, &on_partial_blk),
             chunks: [],
           }
         end

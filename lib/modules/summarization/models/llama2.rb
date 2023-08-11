@@ -20,8 +20,8 @@ module DiscourseAi
           )
         end
 
-        def concatenate_summaries(summaries)
-          completion(<<~TEXT)
+        def concatenate_summaries(summaries, &on_partial_blk)
+          prompt = <<~TEXT
             [INST] <<SYS>>
             You are a helpful bot
             <</SYS>>
@@ -29,13 +29,15 @@ module DiscourseAi
             Concatenate these disjoint summaries, creating a cohesive narrative:
             #{summaries.join("\n")} [/INST]
           TEXT
+
+          completion(prompt, &on_partial_blk)
         end
 
-        def summarize_with_truncation(contents, opts)
+        def summarize_with_truncation(contents, opts, &on_partial_blk)
           text_to_summarize = contents.map { |c| format_content_item(c) }.join
           truncated_content = tokenizer.truncate(text_to_summarize, available_tokens)
 
-          completion(<<~TEXT)
+          prompt = <<~TEXT
             [INST] <<SYS>>
             #{build_base_prompt(opts)}
             <</SYS>>
@@ -44,15 +46,17 @@ module DiscourseAi
             #{truncated_content} [/INST]
             Here is a summary of the above topic:
           TEXT
+
+          completion(prompt, &on_partial_blk)
         end
 
-        def summarize_single(chunk_text, opts)
-          summarize_chunk(chunk_text, opts.merge(single_chunk: true))
+        def summarize_single(chunk_text, opts, &on_partial_blk)
+          summarize_chunk(chunk_text, opts.merge(single_chunk: true), &on_partial_blk)
         end
 
         private
 
-        def summarize_chunk(chunk_text, opts)
+        def summarize_chunk(chunk_text, opts, &on_partial_blk)
           summary_instruction =
             if opts[:single_chunk]
               "Summarize the following forum discussion, creating a cohesive narrative:"
@@ -60,7 +64,7 @@ module DiscourseAi
               "Summarize the following in up to 400 words:"
             end
 
-          completion(<<~TEXT)
+          prompt = <<~TEXT
             [INST] <<SYS>>
             #{build_base_prompt(opts)}
             <</SYS>>
@@ -69,6 +73,8 @@ module DiscourseAi
             #{chunk_text} [/INST]
             Here is a summary of the above topic:
           TEXT
+
+          completion(prompt, &on_partial_blk)
         end
 
         def build_base_prompt(opts)
@@ -91,10 +97,21 @@ module DiscourseAi
           base_prompt
         end
 
-        def completion(prompt)
-          ::DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(prompt, model).dig(
-            :generated_text,
-          )
+        def completion(prompt, &on_partial_blk)
+          if on_partial_blk
+            on_partial_read =
+              Proc.new { |partial| on_partial_blk.call(partial.dig(:token, :text).to_s) }
+
+            ::DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(
+              prompt,
+              model,
+              &on_partial_read
+            )
+          else
+            ::DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(prompt, model).dig(
+              :generated_text,
+            )
+          end
         end
 
         def tokenizer

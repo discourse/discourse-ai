@@ -121,10 +121,11 @@ module ::DiscourseAi
               return parsed_response
             end
 
+            response_data = +""
+
             begin
               cancelled = false
               cancel = lambda { cancelled = true }
-              response_data = +""
               response_raw = +""
 
               leftover = ""
@@ -170,6 +171,8 @@ module ::DiscourseAi
                 )
               end
             end
+
+            return response_data
           end
         end
       end

@@ -85,10 +85,11 @@ module ::DiscourseAi
               return parsed_response
             end
 
+            response_data = +""
+
             begin
               cancelled = false
               cancel = lambda { cancelled = true }
-              response_data = +""
               response_raw = +""
 
               response.read_body do |chunk|
@@ -102,7 +103,7 @@ module ::DiscourseAi
                 chunk
                   .split("\n")
                   .each do |line|
-                    data = line.split("data: ", 2)[1]
+                    data = line.split("data:", 2)[1]
                     next if !data || data.squish == "[DONE]"
 
                     if !cancelled
@@ -113,7 +114,7 @@ module ::DiscourseAi
                         # this is the last chunk and contains the full response
                         next if partial[:token][:special] == true
 
-                        response_data = partial[:token][:text].to_s
+                        response_data << partial[:token][:text].to_s
 
                         yield partial, cancel
                       rescue JSON::ParserError
@@ -131,6 +132,8 @@ module ::DiscourseAi
                 )
               end
             end
+
+            return response_data
           end
         end
 
