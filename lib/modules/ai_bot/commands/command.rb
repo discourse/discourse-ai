@@ -16,7 +16,7 @@ module DiscourseAi
 
       class Command
         CARET = "<!-- caret -->"
-        CARET2 = "<!-- caret2 -->"
+        PROGRESS_CARET = "<!-- progress -->"
 
         class << self
           def name
@@ -54,7 +54,7 @@ module DiscourseAi
                 #{CARET}
               </p>
             </details>
-            #{CARET2}
+            #{PROGRESS_CARET}
           HTML
 
           @invoked = false
@@ -95,9 +95,9 @@ module DiscourseAi
           true
         end
 
-        def show_progress(text, caret2: false)
+        def show_progress(text, progress_caret: false)
           # during tests we may have none
-          caret = caret2 ? CARET2 : CARET
+          caret = progress_caret ? PROGRESS_CARET : CARET
           new_placeholder = @placeholder.sub(caret, text + caret)
           raw = @post.raw.sub(@placeholder, new_placeholder)
           @placeholder = new_placeholder

@@ -59,7 +59,7 @@ module DiscourseAi::AiBot::Commands
               end
             end
 
-          show_progress(".", caret2: true) while !thread.join(2)
+          show_progress(".", progress_caret: true) while !thread.join(2)
 
           break if results
         end
