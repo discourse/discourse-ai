@@ -17,7 +17,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
         "https://www.googleapis.com/customsearch/v1?cx=cx&key=abc&num=10&q=some%20search%20term",
       ).to_return(status: 200, body: json_text, headers: {})
 
-      google = described_class.new(bot_user, post)
+      google = described_class.new(bot_user: bot_user, post: post, args: {}.to_json)
       info = google.process(query: "some search term").to_json
 
       expect(google.description_args[:count]).to eq(0)
@@ -51,7 +51,13 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
         "https://www.googleapis.com/customsearch/v1?cx=cx&key=abc&num=10&q=some%20search%20term",
       ).to_return(status: 200, body: json_text, headers: {})
 
-      google = described_class.new(bot_user, post)
+      google =
+        described_class.new(
+          bot_user: bot_user,
+          post: post,
+          args: { query: "some search term" }.to_json,
+        )
+
       info = google.process(query: "some search term").to_json
 
       expect(google.description_args[:count]).to eq(1)
@@ -59,6 +65,12 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
       expect(info).to include("snippet1")
       expect(info).to include("some+search+term")
       expect(info).to_not include("oops")
+
+      google.invoke!
+
+      expect(post.reload.raw).to include("some search term")
+
+      expect { google.invoke! }.to raise_error(StandardError)
     end
   end
 end

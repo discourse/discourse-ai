@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::ReadCommand do
       post1 = Fabricate(:post, raw: "hello there")
       Fabricate(:post, raw: "mister sam", topic: post1.topic)
 
-      read = described_class.new(bot_user, post1)
+      read = described_class.new(bot_user: bot_user, args: nil, post: post1)
 
       results = read.process(topic_id: post1.topic_id)
 
