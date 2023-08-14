@@ -82,6 +82,8 @@ module DiscourseAi
         CARET2 = "<!-- caret2 -->"
 
         def show_progress(text, caret2: false)
+          # during tests we may have none
+          return if !@placeholder
           caret = caret2 ? CARET2 : CARET
           new_placeholder = @placeholder.sub(caret, text + caret)
           raw = @current_post.raw.sub(@placeholder, new_placeholder)
@@ -163,14 +165,14 @@ module DiscourseAi
         end
 
         def format_results(rows, column_names = nil, args: nil)
-          rows = rows.map { |row| yield row } if block_given?
+          rows = rows&.map { |row| yield row } if block_given?
 
           if !column_names
             index = -1
             column_indexes = {}
 
             rows =
-              rows.map do |data|
+              rows&.map do |data|
                 new_row = []
                 data.each do |key, value|
                   found_index = column_indexes[key.to_s] ||= (index += 1)

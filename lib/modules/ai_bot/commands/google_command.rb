@@ -41,6 +41,9 @@ module DiscourseAi::AiBot::Commands
 
     def process(query:)
       @last_query = query
+
+      show_progress(localized_description)
+
       api_key = SiteSetting.ai_google_custom_search_api_key
       cx = SiteSetting.ai_google_custom_search_cx
       query = CGI.escape(query)

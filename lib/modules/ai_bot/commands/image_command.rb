@@ -43,7 +43,7 @@ module DiscourseAi::AiBot::Commands
     def process(prompt:)
       @last_prompt = prompt
 
-      show_progress(localized_description + " ")
+      show_progress(localized_description)
 
       results = nil
 
