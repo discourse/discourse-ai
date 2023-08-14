@@ -11,7 +11,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
   describe "#process" do
     it "can handle no results" do
       post1 = Fabricate(:post)
-      search = described_class.new(bot_user, post1)
+      search = described_class.new(bot_user: bot_user, post: post1, args: nil)
 
       results = search.process(query: "order:fake ABDDCDCEDGDG")
 
@@ -24,7 +24,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
       post1 = Fabricate(:post)
 
-      search = described_class.new(bot_user, post1)
+      search = described_class.new(bot_user: bot_user, post: post1, args: nil)
 
       results = search.process(limit: 1, user: post1.user.username)
       expect(results[:rows].to_s).to include("/subfolder" + post1.url)
@@ -36,7 +36,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       _post3 = Fabricate(:post, user: post1.user)
 
       # search has no built in support for limit: so handle it from the outside
-      search = described_class.new(bot_user, post1)
+      search = described_class.new(bot_user: bot_user, post: post1, args: nil)
 
       results = search.process(limit: 2, user: post1.user.username)
 

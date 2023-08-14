@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::TimeCommand do
       freeze_time
 
       args = { timezone: "America/Los_Angeles" }
-      info = DiscourseAi::AiBot::Commands::TimeCommand.new(nil, nil).process(**args)
+      info = DiscourseAi::AiBot::Commands::TimeCommand.new(bot_user: nil, args: nil).process(**args)
 
       expect(info).to eq({ args: args, time: Time.now.in_time_zone("America/Los_Angeles").to_s })
       expect(info.to_s).not_to include("not_here")

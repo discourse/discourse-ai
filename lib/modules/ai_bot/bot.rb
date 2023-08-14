@@ -151,9 +151,14 @@ module DiscourseAi
             name, args = function[:name], function[:arguments]
 
             if command_klass = available_commands.detect { |cmd| cmd.invoked?(name) }
-              command = command_klass.new(bot_user, args)
-              chain_intermediate, bot_reply_post =
-                command.invoke_and_attach_result_to(bot_reply_post, post)
+              command =
+                command_klass.new(
+                  bot_user: bot_user,
+                  args: args,
+                  post: bot_reply_post,
+                  parent_post: post,
+                )
+              chain_intermediate, bot_reply_post = command.invoke!
               chain ||= chain_intermediate
               standalone ||= command.standalone?
             end

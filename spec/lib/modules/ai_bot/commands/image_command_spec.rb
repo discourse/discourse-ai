@@ -24,7 +24,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::ImageCommand do
         end
         .to_return(status: 200, body: { artifacts: [{ base64: image }, { base64: image }] }.to_json)
 
-      image = described_class.new(bot_user, post)
+      image = described_class.new(bot_user: bot_user, post: post, args: nil)
+
       info = image.process(prompt: "a pink cow").to_json
 
       expect(JSON.parse(info)).to eq("prompt" => "a pink cow", "displayed_to_user" => true)

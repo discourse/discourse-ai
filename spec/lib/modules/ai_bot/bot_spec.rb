@@ -64,7 +64,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
       result =
         DiscourseAi::AiBot::Commands::SearchCommand
-          .new(nil, nil)
+          .new(bot_user: nil, args: nil)
           .process(query: "test search")
           .to_json
 
