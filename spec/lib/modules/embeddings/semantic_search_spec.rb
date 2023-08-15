@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require_relative "../../../support/embeddings_generation_stubs"
+require_relative "../../../support/openai_completions_inference_stubs"
+
 RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   fab!(:post) { Fabricate(:post) }
   fab!(:user) { Fabricate(:user) }
@@ -8,10 +11,28 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   let(:subject) { described_class.new(Guardian.new(user)) }
 
   describe "#search_for_topics" do
+    let(:hypothetical_post) { "This is an hypothetical post generated from the keyword test_query" }
+
+    before do
+      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+
+      prompt = DiscourseAi::Embeddings::HydeGenerators::OpenAi.new.prompt(query)
+      OpenAiCompletionsInferenceStubs.stub_response(prompt, hypothetical_post)
+
+      hyde_embedding = [0.049382, 0.9999]
+      EmbeddingsGenerationStubs.discourse_service(
+        SiteSetting.ai_embeddings_model,
+        hypothetical_post,
+        hyde_embedding,
+      )
+    end
+
+    after { described_class.clear_cache_for(query) }
+
     def stub_candidate_ids(candidate_ids)
-      DiscourseAi::Embeddings::SemanticSearch
+      DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2
         .any_instance
-        .expects(:asymmetric_semantic_search)
+        .expects(:asymmetric_topics_similarity_search)
         .returns(candidate_ids)
     end
 

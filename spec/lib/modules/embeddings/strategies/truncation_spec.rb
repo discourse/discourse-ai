@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Embeddings::Strategies::Truncation do
-  describe "#process!" do
-    context "when the model uses OpenAI to create embeddings" do
+  subject(:truncation) { described_class.new }
+
+  describe "#prepare_text_from" do
+    context "when using vector from OpenAI" do
       before { SiteSetting.max_post_length = 100_000 }
 
       fab!(:topic) { Fabricate(:topic) }
@@ -18,13 +20,15 @@ RSpec.describe DiscourseAi::Embeddings::Strategies::Truncation do
       end
       fab!(:post) { Fabricate(:post, topic: topic, raw: "Surfin' bird\n" * 800) }
 
-      let(:model) { DiscourseAi::Embeddings::Models::Base.descendants.sample(1).first }
-      let(:truncation) { described_class.new(topic, model) }
+      let(:model) do
+        DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002.new(truncation)
+      end
 
       it "truncates a topic" do
-        truncation.process!
+        prepared_text =
+          truncation.prepare_text_from(topic, model.tokenizer, model.max_sequence_length)
 
-        expect(model.tokenizer.size(truncation.processed_target)).to be <= model.max_sequence_length
+        expect(model.tokenizer.size(prepared_text)).to be <= model.max_sequence_length
       end
     end
   end

@@ -4,77 +4,57 @@ module DiscourseAi
   module Embeddings
     module Strategies
       class Truncation
-        attr_reader :processed_target, :digest
-
-        def self.id
-          1
-        end
-
         def id
-          self.class.id
+          1
         end
 
         def version
           1
         end
 
-        def initialize(target, model)
-          @model = model
-          @target = target
-          @tokenizer = @model.tokenizer
-          @max_length = @model.max_sequence_length - 2
-          @processed_target = nil
-        end
-
-        # Need a better name for this method
-        def process!
-          case @target
+        def prepare_text_from(target, tokenizer, max_length)
+          case target
           when Topic
-            @processed_target = topic_truncation(@target)
+            topic_truncation(target, tokenizer, max_length)
           when Post
-            @processed_target = post_truncation(@target)
+            post_truncation(target, tokenizer, max_length)
           else
             raise ArgumentError, "Invalid target type"
           end
-
-          @digest = OpenSSL::Digest::SHA1.hexdigest(@processed_target)
         end
 
-        def topic_truncation(topic)
-          t = +""
+        private
 
-          t << topic.title
-          t << "\n\n"
-          t << topic.category.name
+        def topic_information(topic)
+          info = +""
+
+          info << topic.title
+          info << "\n\n"
+          info << topic.category.name
           if SiteSetting.tagging_enabled
-            t << "\n\n"
-            t << topic.tags.pluck(:name).join(", ")
+            info << "\n\n"
+            info << topic.tags.pluck(:name).join(", ")
           end
-          t << "\n\n"
+          info << "\n\n"
+        end
+
+        def topic_truncation(topic, tokenizer, max_length)
+          text = +topic_information(topic)
 
           topic.posts.find_each do |post|
-            t << post.raw
-            break if @tokenizer.size(t) >= @max_length #maybe keep a partial counter to speed this up?
-            t << "\n\n"
+            text << post.raw
+            break if tokenizer.size(text) >= max_length #maybe keep a partial counter to speed this up?
+            text << "\n\n"
           end
 
-          @tokenizer.truncate(t, @max_length)
+          tokenizer.truncate(text, max_length)
         end
 
-        def post_truncation(post)
-          t = +""
+        def post_truncation(topic, tokenizer, max_length)
+          text = +topic_information(post.topic)
+          text << post.raw
 
-          t << post.topic.title
-          t << "\n\n"
-          t << post.topic.category.name
-          if SiteSetting.tagging_enabled
-            t << "\n\n"
-            t << post.topic.tags.pluck(:name).join(", ")
-          end
-          t << "\n\n"
-          t << post.raw
-
-          @tokenizer.truncate(t, @max_length)
+          tokenizer.truncate(text, max_length)
         end
       end
     end

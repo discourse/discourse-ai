@@ -16,9 +16,10 @@ describe ::TopicsController do
 
   context "when a user is logged on" do
     it "includes related topics in payload when configured" do
-      DiscourseAi::Embeddings::SemanticRelated.stubs(:related_topic_ids_for).returns(
-        [topic1.id, topic2.id, topic3.id],
-      )
+      DiscourseAi::Embeddings::SemanticRelated
+        .any_instance
+        .stubs(:related_topic_ids_for)
+        .returns([topic1.id, topic2.id, topic3.id])
 
       get("#{topic.relative_url}.json")
       expect(response.status).to eq(200)

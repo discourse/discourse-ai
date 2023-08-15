@@ -4,16 +4,21 @@ module DiscourseAi
   module Embeddings
     class EntryPoint
       def load_files
-        require_relative "models/base"
-        require_relative "models/all_mpnet_base_v2"
-        require_relative "models/text_embedding_ada_002"
-        require_relative "models/multilingual_e5_large"
+        require_relative "vector_representations/base"
+        require_relative "vector_representations/all_mpnet_base_v2"
+        require_relative "vector_representations/text_embedding_ada_002"
+        require_relative "vector_representations/multilingual_e5_large"
         require_relative "strategies/truncation"
-        require_relative "manager"
         require_relative "jobs/regular/generate_embeddings"
         require_relative "semantic_related"
-        require_relative "semantic_search"
         require_relative "semantic_topic_query"
+
+        require_relative "hyde_generators/base"
+        require_relative "hyde_generators/openai"
+        require_relative "hyde_generators/anthropic"
+        require_relative "hyde_generators/llama2"
+        require_relative "hyde_generators/llama2_ftos"
+        require_relative "semantic_search"
       end
 
       def inject_into(plugin)

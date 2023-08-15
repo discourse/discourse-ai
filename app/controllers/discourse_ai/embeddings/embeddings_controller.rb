@@ -9,7 +9,6 @@ module DiscourseAi
 
       def search
         query = params[:q]
-        page = (params[:page] || 1).to_i
 
         grouped_results =
           Search::GroupedSearchResults.new(
@@ -19,12 +18,15 @@ module DiscourseAi
             use_pg_headlines_for_excerpt: false,
           )
 
-        DiscourseAi::Embeddings::SemanticSearch
-          .new(guardian)
-          .search_for_topics(query, page)
-          .each { |topic_post| grouped_results.add(topic_post) }
+        semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(guardian)
 
-        render_serialized(grouped_results, GroupedSearchResultSerializer, result: grouped_results)
+        hijack do
+          semantic_search
+            .search_for_topics(query)
+            .each { |topic_post| grouped_results.add(topic_post) }
+
+          render_serialized(grouped_results, GroupedSearchResultSerializer, result: grouped_results)
+        end
       end
     end
   end

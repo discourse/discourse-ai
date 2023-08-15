@@ -11,7 +11,11 @@ module Jobs
       post = topic.first_post
       return if post.nil? || post.raw.blank?
 
-      DiscourseAi::Embeddings::Manager.new(topic).generate!
+      strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
+      vector_rep =
+        DiscourseAi::Embeddings::VectorRepresentations::Base.find_vector_representation.new
+
+      vector_rep.generate_topic_representation_from(topic, strategy)
     end
   end
 end

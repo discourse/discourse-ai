@@ -17,6 +17,7 @@ register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
+register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"

@@ -3,17 +3,49 @@
 module DiscourseAi
   module Embeddings
     class SemanticSearch
+      def self.clear_cache_for(query)
+        digest = OpenSSL::Digest::SHA1.hexdigest(query)
+
+        Discourse.cache.delete("hyde-doc-#{digest}")
+        Discourse.cache.delete("hyde-doc-embedding-#{digest}")
+      end
+
       def initialize(guardian)
         @guardian = guardian
-        @manager = DiscourseAi::Embeddings::Manager.new(nil)
-        @model = @manager.model
       end
 
       def search_for_topics(query, page = 1)
-        limit = Search.per_filter + 1
-        offset = (page - 1) * Search.per_filter
+        max_results_per_page = 50
+        limit = [Search.per_filter, max_results_per_page].min + 1
+        offset = (page - 1) * limit
 
-        candidate_ids = asymmetric_semantic_search(query, limit, offset)
+        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
+        vector_rep =
+          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+
+        digest = OpenSSL::Digest::SHA1.hexdigest(query)
+
+        hypothetical_post =
+          Discourse
+            .cache
+            .fetch("hyde-doc-#{digest}", expires_in: 1.week) do
+              hyde_generator = DiscourseAi::Embeddings::HydeGenerators::Base.current_hyde_model.new
+              hyde_generator.hypothetical_post_from(query)
+            end
+
+        hypothetical_post_embedding =
+          Discourse
+            .cache
+            .fetch("hyde-doc-embedding-#{digest}", expires_in: 1.week) do
+              vector_rep.vector_from(hypothetical_post)
+            end
+
+        candidate_topic_ids =
+          vector_rep.asymmetric_topics_similarity_search(
+            hypothetical_post_embedding,
+            limit: limit,
+            offset: offset,
+          )
 
         ::Post
           .where(post_type: ::Topic.visible_post_types(guardian.user))
@@ -23,39 +55,9 @@ module DiscourseAi
           .order("array_position(ARRAY#{candidate_ids}, topic_id)")
       end
 
-      def asymmetric_semantic_search(query, limit, offset, return_distance: false)
-        embedding = model.generate_embeddings(query)
-        table = @manager.topic_embeddings_table
-
-        begin
-          candidate_ids = DB.query(<<~SQL, query_embedding: embedding, limit: limit, offset: offset)
-                SELECT
-                  topic_id,
-                  embeddings #{@model.pg_function} '[:query_embedding]' AS distance
-                FROM
-                  #{table}
-                ORDER BY
-                  embeddings #{@model.pg_function} '[:query_embedding]'
-                LIMIT :limit
-                OFFSET :offset
-              SQL
-        rescue PG::Error => e
-          Rails.logger.error(
-            "Error #{e} querying embeddings for model #{model.name} and search #{query}",
-          )
-          raise MissingEmbeddingError
-        end
-
-        if return_distance
-          candidate_ids.map { |c| [c.topic_id, c.distance] }
-        else
-          candidate_ids.map(&:topic_id)
-        end
-      end
-
       private
 
-      attr_reader :model, :guardian
+      attr_reader :guardian
     end
   end
 end

@@ -12,8 +12,13 @@ describe DiscourseAi::Embeddings::EntryPoint do
       fab!(:target) { Fabricate(:topic) }
 
       def stub_semantic_search_with(results)
-        DiscourseAi::Embeddings::SemanticRelated.expects(:related_topic_ids_for).returns(results)
+        DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2
+          .any_instance
+          .expects(:symmetric_topics_similarity_search)
+          .returns(results.concat([target.id]))
       end
+
+      after { DiscourseAi::Embeddings::SemanticRelated.clear_cache_for(target) }
 
       context "when the semantic search returns an unlisted topic" do
         fab!(:unlisted_topic) { Fabricate(:topic, visible: false) }
