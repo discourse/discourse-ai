@@ -62,7 +62,6 @@ nl:
     ai_bot_enabled_chat_commands: "Beschikbare GPT-integraties die worden gebruikt om externe functionaliteit aan het model te bieden. Werkt alleen met GPT-4 en GPT-3.5"
     ai_helper_add_ai_pm_to_header: "Geef een knop weer in de kop om een privéchat te starten met een AI-bot"
     ai_stability_api_key: "API-sleutel voor de stability.ai-API"
-    ai_stability_engine: "Te gebruiken engine voor het genereren van afbeeldingen voor de stability.ai API"
     ai_stability_api_url: "URL voor de stability.ai-API"
     ai_google_custom_search_api_key: "API-sleutel voor de Google Custom Search-API zie: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX voor Google Custom Search-API"

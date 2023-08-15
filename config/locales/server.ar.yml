@@ -62,7 +62,6 @@ ar:
     ai_bot_enabled_chat_commands: "تكاملات GPT المتاحة للاستخدام لتوفير وظيفة خارجية للنموذج. تعمل مع GPT-4 وGPT-3.5 فقط"
     ai_helper_add_ai_pm_to_header: "عرض زر في الرأس لبدء رسالة خاصة مع روبوت ذكاء اصطناعي"
     ai_stability_api_key: "مفتاح API لواجهة API المسماة stability.ai"
-    ai_stability_engine: "محرك إنشاء الصور المراد استخدامه لواجهة API المسماة stability.ai"
     ai_stability_api_url: "عنوان URL لواجهة API المسماة stability.ai"
     ai_google_custom_search_api_key: "مفتاح API لواجهة API الخاصة ببحث Google المخصَّص، راجع: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "تجربة العملاء لواجهة بحث Google المخصَّصة"

@@ -62,7 +62,6 @@ es:
     ai_bot_enabled_chat_commands: "Integraciones GPT disponibles utilizadas para proporcionar funcionalidades externas al modelo. Solo funciona con GPT-4 y GPT-3.5"
     ai_helper_add_ai_pm_to_header: "Mostrar un botón en el encabezado para iniciar un MP con un bot de IA"
     ai_stability_api_key: "Clave API para la API de stability.ai"
-    ai_stability_engine: "Motor de generación de imágenes que se utilizará para la API stability.ai"
     ai_stability_api_url: "URL para la API de stability.ai"
     ai_google_custom_search_api_key: "Clave API para la API de búsqueda personalizada de Google, consulta: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX para la API de búsqueda personalizada de Google"

@@ -9,6 +9,9 @@ he:
     discourse_ai:
       modals:
         select_option: "בחירת אפשרות…"
+      related_topics:
+        title: "נושאים דומים"
+        pill: "קשורים"
       ai_helper:
         title: "הצעת שינויים באמצעות בינה מלאכותית"
         description: "נא לבחור באחת מהאפשרויות להלן והבינה המלאכותית תציע לך גרסה חדשה של הטקסט."
@@ -26,6 +29,7 @@ he:
           gpt-4: "GPT-4"
           gpt-3:
             5-turbo: "GPT-3.5"
+          claude-2: "Claude 2"
     review:
       types:
         reviewable_ai_post:
