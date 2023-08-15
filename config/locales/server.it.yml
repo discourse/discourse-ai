@@ -5,3 +5,112 @@
 # https://translate.discourse.org/
 
 it:
+  site_settings:
+    discourse_ai_enabled: "Abilita il plugin Discourse AI."
+    ai_toxicity_enabled: "Abilita il modulo tossicità."
+    ai_toxicity_inference_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo tossicità"
+    ai_toxicity_inference_service_api_key: "Chiave API per l'API di tossicità"
+    ai_toxicity_inference_service_api_model: "Modello da utilizzare per l'inferenza. Il modello multilingue funziona con italiano, francese, russo, portoghese, spagnolo e turco."
+    ai_toxicity_flag_automatically: "Contrassegna automaticamente post/messaggi di chat al di sopra delle soglie configurate."
+    ai_toxicity_flag_threshold_toxicity: "Tossicità: un commento maleducato, irrispettoso o irragionevole che potrebbe farti abbandonare una discussione o rinunciare a condividere il tuo punto di vista"
+    ai_toxicity_flag_threshold_severe_toxicity: "Grave tossicità: un commento molto odioso, aggressivo o irrispettoso che molto probabilmente ti farà abbandonare una discussione o rinunciare a condividere la tua prospettiva"
+    ai_toxicity_flag_threshold_obscene: "Osceno"
+    ai_toxicity_flag_threshold_identity_attack: "Attacco all'identità"
+    ai_toxicity_flag_threshold_insult: "Insulto"
+    ai_toxicity_flag_threshold_threat: "Minaccia"
+    ai_toxicity_flag_threshold_sexual_explicit: "Sessualmente esplicito"
+    ai_toxicity_groups_bypass: "Gli utenti di questi gruppi non vedranno i propri post classificati dal modulo sulla tossicità."
+    ai_sentiment_enabled: "Abilita il modulo sentimento."
+    ai_sentiment_inference_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo sentimento"
+    ai_sentiment_inference_service_api_key: "Chiave API per l'API di sentimento"
+    ai_sentiment_models: "Modelli da utilizzare per l'inferenza. Il sentimento classifica i post nello spazio positivo/neutro/negativo. L'emozione si classifica nello spazio rabbia/disgusto/paura/gioia/neutrale/tristezza/sorpresa."
+    ai_nsfw_detection_enabled: "Abilita il modulo NSFW."
+    ai_nsfw_inference_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo NSFW"
+    ai_nsfw_inference_service_api_key: "Chiave API per l'API NSFW"
+    ai_nsfw_flag_automatically: "Contrassegna automaticamente i post NSFW che superano le soglie configurate."
+    ai_nsfw_flag_threshold_general: "Soglia generale per un'immagine da considerare NSFW."
+    ai_nsfw_flag_threshold_drawings: "Soglia per un disegno da considerare NSFW."
+    ai_nsfw_flag_threshold_hentai: "Soglia per un'immagine classificata come hentai per essere considerata NSFW."
+    ai_nsfw_flag_threshold_porn: "Soglia per un'immagine classificata come pornografica per essere considerata NSFW."
+    ai_nsfw_flag_threshold_sexy: "Soglia per un'immagine classificata come sexy per essere considerata NSFW."
+    ai_nsfw_models: "Modelli da utilizzare per l'inferenza NSFW."
+    ai_openai_gpt35_url: "URL personalizzato utilizzato per i completamenti della chat GPT 3.5. (Azure: DEVE supportare le chiamate di funzione e idealmente è un endpoint GPT3.5 16K)"
+    ai_openai_gpt4_url: "URL personalizzato utilizzato per i completamenti della chat GPT 4. (per il supporto di Azure)"
+    ai_openai_embeddings_url: "URL personalizzato utilizzato per l'API di integrazione OpenAI. (nel caso di Azure può essere: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
+    ai_openai_api_key: "Chiave API per l'API OpenAI"
+    ai_anthropic_api_key: "Chiave API per Anthropic API"
+    ai_hugging_face_api_url: "URL personalizzato utilizzato per l'inferenza OpenSource LLM. Compatibile con https://github.com/huggingface/text-generation-inference"
+    composer_ai_helper_enabled: "Abilita l'assistente IA nella sezione di scrittura."
+    ai_helper_allowed_groups: "Gli utenti di questi gruppi vedranno il pulsante dell'assistente IA nella sezione di scrittura."
+    ai_helper_allowed_in_pm: "Abilita l'assistente IA nei MP."
+    ai_helper_model: "Modello da utilizzare per l'assistente IA."
+    ai_embeddings_enabled: "Abilita il modulo di integrazioni."
+    ai_embeddings_discourse_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo di integrazioni"
+    ai_embeddings_discourse_service_api_key: "Chiave API per l'API di integrazioni"
+    ai_embeddings_model: "Usa all-mpnet-base-v2 per l'inferenza locale e veloce in inglese, text-embedding-ada-002 per usare l'API OpenAI (richiede la chiave API) e multilingue-e5-large per le integrazioni multilingue locali"
+    ai_embeddings_generate_for_pms: "Genera integrazioni per messaggi personali."
+    ai_embeddings_semantic_related_topics_enabled: "Usa la ricerca semantica per argomenti correlati."
+    ai_embeddings_semantic_related_topics: "Numero massimo di argomenti da mostrare nella sezione degli argomenti correlati."
+    ai_embeddings_pg_connection_string: "Stringa di connessione PostgreSQL per il modulo di integrazioni. Richiede l'estensione pgvector abilitata e la creazione di una serie di tabelle. Consulta i documenti per maggiori informazioni."
+    ai_embeddings_semantic_search_enabled: "Abilita la ricerca semantica a pagina intera."
+    ai_embeddings_semantic_related_include_closed_topics: "Includi argomenti chiusi nei risultati della ricerca semantica"
+    ai_summarization_discourse_service_api_endpoint: "URL in cui è in esecuzione l'API di riepilogo del discorso."
+    ai_summarization_discourse_service_api_key: "Chiave API per l'API di riepilogo del discorso."
+    ai_bot_enabled: "Abilita il modulo Bot IA."
+    ai_bot_allowed_groups: "Quando il bot GPT ha accesso a un MP, risponderà ai membri di questi gruppi."
+    ai_bot_enabled_chat_bots: "Modelli disponibili per agire come robot IA"
+    ai_bot_enabled_chat_commands: "Integrazioni GPT disponibili utilizzate per fornire funzionalità esterne al modello. Funziona solo con GPT-4 e GPT-3.5"
+    ai_helper_add_ai_pm_to_header: "Mostra un pulsante nell'intestazione per avviare un MP con un Bot IA"
+    ai_stability_api_key: "Chiave API per l'API stability.ai"
+    ai_stability_api_url: "URL per l'API stability.ai"
+    ai_google_custom_search_api_key: "Chiave API per l'API della ricerca personalizzata di Google: https://developers.google.com/custom-search"
+    ai_google_custom_search_cx: "CX per l'API di ricerca personalizzata di Google"
+  reviewables:
+    reasons:
+      flagged_by_toxicity: Il plugin IA lo ha segnalato dopo averlo classificato come tossico.
+      flagged_by_nsfw: Il plugin IA lo ha segnalato dopo aver classificato almeno una delle immagini allegate come NSFW.
+  errors:
+    prompt_message_length: Il messaggio %{idx} supera il limite di 1000 caratteri.
+    invalid_prompt_role: Il messaggio %{idx} ha un ruolo non valido.
+  discourse_ai:
+    ai_helper:
+      errors:
+        completion_request_failed: "Qualcosa è andato storto durante il tentativo di fornire suggerimenti. Riprova."
+      prompts:
+        translate: Traduci in inglese
+        generate_titles: Suggerisci i titoli degli argomenti
+        proofread: Testo corretto
+        markdown_table: Genera tabella di markdown
+    ai_bot:
+      default_pm_prefix: "[Bot IA senza titolo MP]"
+      topic_not_found: "Riepilogo non disponibile, argomento non trovato!"
+      command_summary:
+        categories: "Elenca le categorie"
+        search: "Cerca"
+        tags: "Elenca i tag"
+        time: "Ora"
+        summarize: "Riassumi"
+        image: "Genera immagine"
+        google: "Cerca su Google"
+        read: "Leggi l'argomento"
+      command_description:
+        read: "Lettura: <a href='%{url}'>%{title}</a>"
+        time: "L'orario in %{timezone} è %{time}"
+        summarize: "Riassunto di <a href='%{url}'>%{title}</a>"
+        image: "%{prompt}"
+        categories:
+          one: "%{count} categoria trovata"
+          other: "%{count} categorie trovate"
+        tags:
+          one: "%{count} tag trovato"
+          other: "%{count} tag trovati"
+        search:
+          one: "Trovato %{count} <a href='%{url}'>risultato</a> per '%{query}'"
+          other: "Trovati %{count} <a href='%{url}'>risultati</a> per '%{query}'"
+        google:
+          one: "Trovato %{count} <a href='%{url}'>risultato</a> per '%{query}'"
+          other: "Trovati %{count} <a href='%{url}'>risultati</a> per '%{query}'"
+    summarization:
+      configuration_hint:
+        one: "Configura prima l'impostazione \"%{setting}\"."
+        other: "Configura prima queste impostazioni: %{settings}"

@@ -93,7 +93,9 @@ de:
         summarize: "Zusammenfassen"
         image: "Bild generieren"
         google: "Google-Suche"
+        read: "Thema lesen"
       command_description:
+        read: "Lesen: <a href='%{url}'>%{title}</a>"
         time: "Die Uhrzeit in %{timezone} ist %{time}"
         summarize: "<a href='%{url}'>%{title}</a> zusammengefasst"
         image: "%{prompt}"

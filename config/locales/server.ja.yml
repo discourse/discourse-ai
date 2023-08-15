@@ -62,7 +62,6 @@ ja:
     ai_bot_enabled_chat_commands: "外部機能をモデルに提供するために使用できる GPT の統合。GPT-4 および GPT-3.5 でのみ動作します"
     ai_helper_add_ai_pm_to_header: "AI ボットとの PM を開始するためのボタンをヘッダーに表示する"
     ai_stability_api_key: "stability.ai API の API キー"
-    ai_stability_engine: "stability.ai API に使用する画像生成エンジン"
     ai_stability_api_url: "stability.ai API の URL"
     ai_google_custom_search_api_key: "Google カスタム検索 API の API キーは https://developers.google.com/custom-search を参照してください"
     ai_google_custom_search_cx: "Google カスタム検索 API の CX"

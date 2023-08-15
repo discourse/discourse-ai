@@ -47,6 +47,7 @@ he:
     ai_embeddings_enabled: "הפעלת מודול ההטמעות."
     ai_embeddings_discourse_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול ההטמעות"
     ai_embeddings_discourse_service_api_key: "מפתח API ל־API של ההטמעות"
+    ai_embeddings_model: "להשתמש ב־all-mpnet-base-v2 להסקה מהירה ומקומית באנגלית, text-embedding-ada-002 כדי להשתמש ב־API של OpenAI (דורש מפתח API) וב־multilingual-e5-large להטמעות רב־לשוניות מקומיות"
     ai_embeddings_generate_for_pms: "יצירת הטמעות להודעות פרטיות."
     ai_embeddings_semantic_related_topics_enabled: "להשתמש בחיפוש סמנטי לנושאים קשורים."
     ai_embeddings_semantic_related_topics: "מספר הנושאים המרבי להצגה בסעיף הנושאים הקשורים."
@@ -92,7 +93,9 @@ he:
         summarize: "סיכום"
         image: "יצירת תמונה"
         google: "חיפוש ב־Google"
+        read: "קריאת נושא"
       command_description:
+        read: "קריאה: <a href='%{url}'>%{title}</a>"
         time: "השעה ב־%{timezone} היא %{time}"
         summarize: "<a href='%{url}'>%{title}</a> סוכם"
         image: "%{prompt}"
