@@ -23,6 +23,8 @@ RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
   def expected_messages(contents, opts)
     base_prompt = <<~TEXT
       Human: Summarize the following forum discussion inside the given <input> tag.
+      Try to keep the summary in the same languague as the forum discussion.
+      Format the response, including links, using markdown.
       Include only the summary inside <ai> tags.
       Try generating links as well the format is #{opts[:resource_path]}.
       The discussion title is: #{opts[:content_title]}.
@@ -102,6 +104,8 @@ RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
 
       instructions = <<~TEXT
         Human: Summarize the following forum discussion inside the given <input> tag.
+        Try to keep the summary in the same languague as the forum discussion.
+        Format the response, including links, using markdown.
         Include only the summary inside <ai> tags.
         Try generating links as well the format is #{opts[:resource_path]}.
         The discussion title is: #{opts[:content_title]}.
