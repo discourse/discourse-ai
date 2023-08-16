@@ -22,17 +22,17 @@ module DiscourseAi
           @model = model
           @target = target
           @tokenizer = @model.tokenizer
-          @max_length = @model.max_sequence_length
-          @processed_target = +""
+          @max_length = @model.max_sequence_length - 2
+          @processed_target = nil
         end
 
         # Need a better name for this method
         def process!
           case @target
           when Topic
-            topic_truncation(@target)
+            @processed_target = topic_truncation(@target)
           when Post
-            post_truncation(@target)
+            @processed_target = post_truncation(@target)
           else
             raise ArgumentError, "Invalid target type"
           end
@@ -41,7 +41,7 @@ module DiscourseAi
         end
 
         def topic_truncation(topic)
-          t = @processed_target
+          t = +""
 
           t << topic.title
           t << "\n\n"
@@ -54,7 +54,7 @@ module DiscourseAi
 
           topic.posts.find_each do |post|
             t << post.raw
-            break if @tokenizer.size(t) >= @max_length
+            break if @tokenizer.size(t) >= @max_length #maybe keep a partial counter to speed this up?
             t << "\n\n"
           end
 
@@ -62,7 +62,7 @@ module DiscourseAi
         end
 
         def post_truncation(post)
-          t = processed_target
+          t = +""
 
           t << post.topic.title
           t << "\n\n"
