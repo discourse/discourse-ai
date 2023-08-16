@@ -179,6 +179,9 @@ plugins:
   ai_bot_enabled:
     default: false
     client: true
+  ai_bot_enable_chat_warning:
+    default: false
+    client: true
   ai_bot_allowed_groups:
     client: true
     type: group_list

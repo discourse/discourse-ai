@@ -10,7 +10,7 @@ export default class AiBotHeaderPanel extends Component {
   @service composer;
 
   @action
-  async composeMessageWithTargetBot(target) {
+  composeMessageWithTargetBot(target) {
     this.#composeAiBotMessage(target);
   }
 
@@ -27,7 +27,7 @@ export default class AiBotHeaderPanel extends Component {
     return this.siteSettings.ai_bot_enabled_chat_bots.split("|");
   }
 
-  async #composeAiBotMessage(targetBot) {
+  #composeAiBotMessage(targetBot) {
     this.args.closePanel();
     composeAiBotMessage(targetBot, this.composer);
   }

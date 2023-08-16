@@ -1,13 +1,12 @@
-import { ajax } from "discourse/lib/ajax";
 import Composer from "discourse/models/composer";
 import I18n from "I18n";
 
-export async function composeAiBotMessage(targetBot, composer) {
-  let botUsername = await ajax("/discourse-ai/ai-bot/bot-username", {
-    data: { username: targetBot },
-  }).then((data) => {
-    return data.bot_username;
-  });
+export function composeAiBotMessage(targetBot, composer) {
+  const currentUser = composer.currentUser;
+
+  let botUsername = currentUser.ai_enabled_chat_bots.find(
+    (bot) => bot.model_name === targetBot
+  ).username;
 
   composer.focusComposer({
     fallbackToNewTopic: true,

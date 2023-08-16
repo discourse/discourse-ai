@@ -1,0 +1,8 @@
+{{#if this.isAiBotChat}}
+  <DSection @bodyClass="ai-bot-chat" />
+  {{#if this.renderChatWarning}}
+    <div class="ai-bot-chat-warning">{{i18n
+        "discourse_ai.ai_bot.pm_warning"
+      }}</div>
+  {{/if}}
+{{/if}}
