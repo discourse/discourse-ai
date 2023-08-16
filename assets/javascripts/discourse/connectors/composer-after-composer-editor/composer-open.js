@@ -19,7 +19,7 @@ export default class extends Component {
   }
 
   @computed("composerModel.targetRecipients")
-  get isGptChat() {
+  get isAiBotChat() {
     if (this.composerModel.targetRecipients) {
       let reciepients = this.composerModel.targetRecipients.split(",");
 
