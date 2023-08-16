@@ -43,6 +43,33 @@ module DiscourseAi
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_bot"),
         )
 
+        plugin.add_to_serializer(
+          :current_user,
+          :ai_enabled_chat_bots,
+          include_condition: -> do
+            SiteSetting.ai_bot_enabled && scope.authenticated? &&
+              scope.user.in_any_groups?(SiteSetting.ai_bot_allowed_groups_map)
+          end,
+        ) do
+          model_map = {}
+          SiteSetting
+            .ai_bot_enabled_chat_bots
+            .split("|")
+            .each do |bot_name|
+              model_map[
+                ::DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(bot_name)
+              ] = bot_name
+            end
+
+          # not 100% ideal, cause it is one extra query, but we need it
+          bots = DB.query_hash(<<~SQL, user_ids: model_map.keys)
+            SELECT username, id FROM users WHERE id IN (:user_ids)
+          SQL
+
+          bots.each { |hash| hash["model_name"] = model_map[hash["id"]] }
+          bots
+        end
+
         plugin.register_svg_icon("robot")
 
         plugin.on(:post_created) do |post|
