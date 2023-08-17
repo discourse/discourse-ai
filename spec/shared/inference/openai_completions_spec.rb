@@ -7,53 +7,63 @@ describe DiscourseAi::Inference::OpenAiCompletions do
   before { SiteSetting.ai_openai_api_key = "abc-123" }
 
   context "when configured using Azure" do
-    it "Supports GPT 3.5 completions" do
-      SiteSetting.ai_openai_api_key = "12345"
-      SiteSetting.ai_openai_gpt35_url =
+    it "Supports custom Azure endpoints for completions" do
+      gpt_url_base =
         "https://company.openai.azure.com/openai/deployments/deployment/chat/completions?api-version=2023-03-15-preview"
+      key = "12345"
+      SiteSetting.ai_openai_api_key = key
 
-      expected = {
-        id: "chatcmpl-7TfPzOyBGW5K6dyWp3NPU0mYLGZRQ",
-        object: "chat.completion",
-        created: 1_687_305_079,
-        model: "gpt-35-turbo",
-        choices: [
-          {
-            index: 0,
-            finish_reason: "stop",
-            message: {
-              role: "assistant",
-              content: "Hi there! How can I assist you today?",
+      [
+        { setting_name: "ai_openai_gpt35_url", model: "gpt-35-turbo" },
+        { setting_name: "ai_openai_gpt35_16k_url", model: "gpt-35-16k-turbo" },
+        { setting_name: "ai_openai_gpt4_url", model: "gpt-4" },
+        { setting_name: "ai_openai_gpt4_32k_url", model: "gpt-4-32k" },
+      ].each do |config|
+        gpt_url = "#{gpt_url_base}/#{config[:model]}"
+        setting_name = config[:setting_name]
+        model = config[:model]
+
+        SiteSetting.public_send("#{setting_name}=".to_sym, gpt_url)
+
+        expected = {
+          id: "chatcmpl-7TfPzOyBGW5K6dyWp3NPU0mYLGZRQ",
+          object: "chat.completion",
+          created: 1_687_305_079,
+          model: model,
+          choices: [
+            {
+              index: 0,
+              finish_reason: "stop",
+              message: {
+                role: "assistant",
+                content: "Hi there! How can I assist you today?",
+              },
             },
+          ],
+          usage: {
+            completion_tokens: 10,
+            prompt_tokens: 9,
+            total_tokens: 19,
           },
-        ],
-        usage: {
-          completion_tokens: 10,
-          prompt_tokens: 9,
-          total_tokens: 19,
-        },
-      }
+        }
 
-      stub_request(
-        :post,
-        "https://company.openai.azure.com/openai/deployments/deployment/chat/completions?api-version=2023-03-15-preview",
-      ).with(
-        body:
-          "{\"model\":\"gpt-3.5-turbo-0613\",\"messages\":[{\"role\":\"user\",\"content\":\"hello\"}]}",
-        headers: {
-          "Api-Key" => "12345",
-          "Content-Type" => "application/json",
-          "Host" => "company.openai.azure.com",
-        },
-      ).to_return(status: 200, body: expected.to_json, headers: {})
+        stub_request(:post, gpt_url).with(
+          body: "{\"model\":\"#{model}\",\"messages\":[{\"role\":\"user\",\"content\":\"hello\"}]}",
+          headers: {
+            "Api-Key" => "12345",
+            "Content-Type" => "application/json",
+            "Host" => "company.openai.azure.com",
+          },
+        ).to_return(status: 200, body: expected.to_json, headers: {})
 
-      result =
-        DiscourseAi::Inference::OpenAiCompletions.perform!(
-          [role: "user", content: "hello"],
-          "gpt-3.5-turbo-0613",
-        )
+        result =
+          DiscourseAi::Inference::OpenAiCompletions.perform!(
+            [role: "user", content: "hello"],
+            model,
+          )
 
-      expect(result).to eq(expected)
+        expect(result).to eq(expected)
+      end
     end
   end
 

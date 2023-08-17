@@ -62,9 +62,17 @@ module ::DiscourseAi
       )
         url =
           if model.include?("gpt-4")
-            URI(SiteSetting.ai_openai_gpt4_url)
+            if model.include?("32k")
+              URI(SiteSetting.ai_openai_gpt4_32k_url)
+            else
+              URI(SiteSetting.ai_openai_gpt4_url)
+            end
           else
-            URI(SiteSetting.ai_openai_gpt35_url)
+            if model.include?("16k")
+              URI(SiteSetting.ai_openai_gpt35_16k_url)
+            else
+              URI(SiteSetting.ai_openai_gpt35_url)
+            end
           end
         headers = { "Content-Type" => "application/json" }
 
