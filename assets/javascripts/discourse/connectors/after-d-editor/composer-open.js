@@ -11,7 +11,7 @@ export default class extends Component {
   @service siteSettings;
 
   get composerModel() {
-    return this.args.outletArgs.model;
+    return this.args?.outletArgs?.composer;
   }
 
   get renderChatWarning() {
@@ -21,6 +21,7 @@ export default class extends Component {
   @computed("composerModel.targetRecipients")
   get isAiBotChat() {
     if (
+      this.composerModel &&
       this.composerModel.targetRecipients &&
       this.currentUser.ai_enabled_chat_bots
     ) {

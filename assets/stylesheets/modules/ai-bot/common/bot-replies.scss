@@ -3,7 +3,7 @@ nav.post-controls .actions button.cancel-streaming {
 }
 
 .ai-bot-chat #reply-control {
-  .title-input {
+  .title-and-category {
     display: none;
   }
 }
@@ -11,14 +11,14 @@ nav.post-controls .actions button.cancel-streaming {
 .ai-bot-chat-warning {
   color: var(--tertiary);
   background-color: var(--tertiary-low);
-  box-shadow: 0px 0px 0px 2px var(--tertiary-medium);
+  border-top: 1px solid var(--tertiary-medium);
   opacity: 0.75;
   .d-icon {
     color: var(--tertiary);
   }
-  margin: 10px 2px 0;
+  margin: 0;
   padding: 4px 10px;
-  width: fit-content;
+  width: calc(100% - 20px);
 }
 
 article.streaming nav.post-controls .actions button.cancel-streaming {
