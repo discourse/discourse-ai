@@ -15,10 +15,7 @@ export default class extends Component {
 
   @computed("moreTopicsPreferenceTracking.preference")
   get hidden() {
-    return (
-      this.site.mobileView &&
-      this.moreTopicsPreferenceTracking.preference !== this.listId
-    );
+    return this.moreTopicsPreferenceTracking.preference !== this.listId;
   }
 
   get relatedTopics() {
