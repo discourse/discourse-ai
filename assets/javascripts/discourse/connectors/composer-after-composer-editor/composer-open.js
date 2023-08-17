@@ -20,7 +20,10 @@ export default class extends Component {
 
   @computed("composerModel.targetRecipients")
   get isAiBotChat() {
-    if (this.composerModel.targetRecipients) {
+    if (
+      this.composerModel.targetRecipients &&
+      this.currentUser.ai_enabled_chat_bots
+    ) {
       let reciepients = this.composerModel.targetRecipients.split(",");
 
       return this.currentUser.ai_enabled_chat_bots.any((bot) =>
