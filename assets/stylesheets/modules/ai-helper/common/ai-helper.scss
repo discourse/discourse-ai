@@ -29,3 +29,24 @@
 .topic-above-suggested-outlet.related-topics {
   margin: 4.5em 0 1em;
 }
+
+.ai-helper-context-menu {
+  background: var(--secondary);
+  box-shadow: var(--shadow-dropdown);
+  padding: 0.25rem;
+  max-width: 15rem;
+  border: 1px solid var(--primary-low);
+  list-style: none;
+  z-index: 999;
+
+  div {
+    transition: background-color 0.25s ease;
+    &:hover {
+      background: var(--primary-low);
+    }
+  }
+
+  &__options {
+    padding: 0.25rem;
+  }
+}

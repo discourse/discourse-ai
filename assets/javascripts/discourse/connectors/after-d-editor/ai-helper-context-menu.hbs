@@ -1,0 +1,33 @@
+<div {{did-insert this.setupContextMenu}}>
+  {{#if this.showContextMenu}}
+    <ul class="ai-helper-context-menu">
+      {{#if this.showContextMenuTrigger}}
+        <div class="ai-helper-context-menu__trigger">
+          <li>
+            <DButton
+              @icon="magic"
+              @action={{this.toggleAiHelperOptions}}
+              @label="discourse_ai.ai_helper.context_menu.trigger"
+              class="btn-flat"
+            />
+          </li>
+        </div>
+      {{/if}}
+
+      {{#if this.showContextMenuOptions}}
+        {{#each this.helperOptions as |option|}}
+          <div class="ai-helper-context-menu__options">
+            <li>
+              <DButton
+                @class="btn-flat"
+                @translatedLabel={{option.name}}
+                @action={{this.updateSelected}}
+                @actionParam={{option.value}}
+              />
+            </li>
+          </div>
+        {{/each}}
+      {{/if}}
+    </ul>
+  {{/if}}
+</div>
