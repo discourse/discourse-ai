@@ -31,8 +31,10 @@ en:
     ai_nsfw_flag_threshold_sexy: "Threshold for an image classified as sexy to be considered NSFW."
     ai_nsfw_models: "Models to use for NSFW inference."
 
-    ai_openai_gpt35_url: "Custom URL used for GPT 3.5 chat completions. (Azure: MUST support function calling and ideally is a GPT3.5 16K endpoint)"
+    ai_openai_gpt35_url: "Custom URL used for GPT 3.5 chat completions. (for Azuer support)"
+    ai_openai_gpt35_16k_url: "Custom URL used for GPT 3.5 16k chat completions. (for Azure support)"
     ai_openai_gpt4_url: "Custom URL used for GPT 4 chat completions. (for Azure support)"
+    ai_openai_gpt4_32k_url: "Custom URL used for GPT 4 32k chat completions. (for Azure support)"
     ai_openai_embeddings_url: "Custom URL used for the OpenAI embeddings API. (in the case of Azure it can be: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API key for OpenAI API"
     ai_anthropic_api_key: "API key for Anthropic API"
@@ -58,6 +60,7 @@ en:
     ai_summarization_discourse_service_api_key: "API key for the Discourse summarization API."
 
     ai_bot_enabled: "Enable the AI Bot module."
+    ai_bot_enable_chat_warning: "Display a warning when PM chat is initiated. Can be overriden by editing the translation string: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "When the GPT Bot has access to the PM, it will reply to members of these groups."
     ai_bot_enabled_chat_bots: "Available models to act as an AI Bot"
     ai_bot_enabled_chat_commands: "Available GPT integrations used to provide external functionality to the model. Only works with GPT-4 and GPT-3.5"

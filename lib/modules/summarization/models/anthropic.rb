@@ -66,6 +66,8 @@ module DiscourseAi
 
           base_prompt = <<~TEXT
             Human: #{initial_instruction}
+            Try to keep the summary in the same languague as the forum discussion.
+            Format the response, including links, using markdown.
             Include only the summary inside <ai> tags.
           TEXT
 

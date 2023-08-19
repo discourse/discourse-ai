@@ -17,12 +17,12 @@ module DiscourseAi
         # also allow for an extra 500 or so spare tokens
         #
         # 2500 are the max reply tokens
-        # Then we have 400 or so for the full function suite
+        # Then we have 450 or so for the full function suite
         # 100 additional for growth around function calls
         if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
-          8192 - 3000
+          8192 - 3050
         else
-          16_384 - 3000
+          16_384 - 3050
         end
       end
 
@@ -110,7 +110,7 @@ module DiscourseAi
       end
 
       def model_for(low_cost: false)
-        return "gpt-4-0613" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID && !low_cost
+        return "gpt-4" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID && !low_cost
         "gpt-3.5-turbo-16k"
       end
 
