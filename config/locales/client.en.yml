@@ -1,4 +1,9 @@
 en:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse AI"
   js:
     discourse_ai:
       modals:
