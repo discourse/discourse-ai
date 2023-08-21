@@ -38,7 +38,11 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
         memo += "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
       end
 
-    messages << { role: "user", content: "Summarize the following in 400 words. Keep the summary in the same language used in the text below.\n#{text}" }
+    messages << {
+      role: "user",
+      content:
+        "Summarize the following in 400 words. Keep the summary in the same language used in the text below.\n#{text}",
+    }
   end
 
   describe "#summarize_in_chunks" do

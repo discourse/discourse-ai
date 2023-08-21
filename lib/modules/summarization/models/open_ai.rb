@@ -41,7 +41,8 @@ module DiscourseAi
 
           messages << {
             role: "user",
-            content: "Summarize the following in 400 words. Keep the summary in the same language used in the text below.\n#{truncated_content}",
+            content:
+              "Summarize the following in 400 words. Keep the summary in the same language used in the text below.\n#{truncated_content}",
           }
 
           completion(messages, &on_partial_blk)
