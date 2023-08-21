@@ -26,6 +26,7 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
       You effectively summarise any text and reply ONLY with ONLY the summarized text.
       You condense it into a shorter version.
       You understand and generate Discourse forum Markdown.
+      You format the response, including links, using markdown.
       Try generating links as well the format is #{opts[:resource_path]}. eg: [ref](#{opts[:resource_path]}/77)
       The discussion title is: #{opts[:content_title]}.
     TEXT
@@ -37,7 +38,11 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
         memo += "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
       end
 
-    messages << { role: "user", content: "Summarize the following in 400 words:\n#{text}" }
+    messages << {
+      role: "user",
+      content:
+        "Summarize the following in 400 words. Keep the summary in the same language used in the text below.\n#{text}",
+    }
   end
 
   describe "#summarize_in_chunks" do
@@ -88,7 +93,7 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
         {
           role: "user",
           content:
-            "Concatenate these disjoint summaries, creating a cohesive narrative:\nsummary 1\nsummary 2",
+            "Concatenate these disjoint summaries, creating a cohesive narrative. Keep the summary in the same language used in the text below.\nsummary 1\nsummary 2",
         },
       ]
 
@@ -108,7 +113,7 @@ RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
 
       truncated_version.last[
         :content
-      ] = "Summarize the following in 400 words:\n(1 asd said: This is a"
+      ] = "Summarize the following in 400 words. Keep the summary in the same language used in the text below.\n(1 asd said: This is a"
 
       OpenAiCompletionsInferenceStubs.stub_response(truncated_version, "truncated summary")
 

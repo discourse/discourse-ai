@@ -26,7 +26,7 @@ module DiscourseAi
             {
               role: "user",
               content:
-                "Concatenate these disjoint summaries, creating a cohesive narrative:\n#{summaries.join("\n")}",
+                "Concatenate these disjoint summaries, creating a cohesive narrative. Keep the summary in the same language used in the text below.\n#{summaries.join("\n")}",
             },
           ]
 
@@ -41,7 +41,8 @@ module DiscourseAi
 
           messages << {
             role: "user",
-            content: "Summarize the following in 400 words:\n#{truncated_content}",
+            content:
+              "Summarize the following in 400 words. Keep the summary in the same language used in the text below.\n#{truncated_content}",
           }
 
           completion(messages, &on_partial_blk)
@@ -56,9 +57,9 @@ module DiscourseAi
         def summarize_chunk(chunk_text, opts, &on_partial_blk)
           summary_instruction =
             if opts[:single_chunk]
-              "Summarize the following forum discussion, creating a cohesive narrative:"
+              "Summarize the following forum discussion, creating a cohesive narrative. Keep the summary in the same language used in the text below."
             else
-              "Summarize the following in 400 words:"
+              "Summarize the following in 400 words. Keep the summary in the same language used in the text below."
             end
 
           completion(
@@ -76,6 +77,7 @@ module DiscourseAi
             You effectively summarise any text and reply ONLY with ONLY the summarized text.
             You condense it into a shorter version.
             You understand and generate Discourse forum Markdown.
+            You format the response, including links, using markdown.
           TEXT
 
           if opts[:resource_path]
