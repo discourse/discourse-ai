@@ -1,4 +1,4 @@
-plugins:
+discourse_ai:
   discourse_ai_enabled:
     default: true
     client: true
