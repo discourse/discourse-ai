@@ -182,13 +182,17 @@ module DiscourseAi
         Discourse.warn_exception(e, message: "ai-bot: Reply failed")
       end
 
+      def extra_tokens_per_message
+        0
+      end
+
       def bot_prompt_with_topic_context(post, prompt: "topic")
         messages = []
         conversation = conversation_context(post)
 
         rendered_system_prompt = system_prompt(post)
 
-        total_prompt_tokens = tokenize(rendered_system_prompt).length
+        total_prompt_tokens = tokenize(rendered_system_prompt).length + extra_tokens_per_message
 
         messages =
           conversation.reduce([]) do |memo, (raw, username, function)|
@@ -196,18 +200,20 @@ module DiscourseAi
 
             tokens = tokenize(raw.to_s)
 
-            while !raw.blank? && tokens.length + total_prompt_tokens > prompt_limit
+            while !raw.blank? &&
+                    tokens.length + total_prompt_tokens + extra_tokens_per_message > prompt_limit
               raw = raw[0..-100] || ""
               tokens = tokenize(raw.to_s)
             end
 
             next(memo) if raw.blank?
 
-            total_prompt_tokens += tokens.length
+            total_prompt_tokens += tokens.length + extra_tokens_per_message
             memo.unshift(build_message(username, raw, function: !!function))
           end
 
         messages.unshift(build_message(bot_user.username, rendered_system_prompt, system: true))
+
         messages
       end
 
