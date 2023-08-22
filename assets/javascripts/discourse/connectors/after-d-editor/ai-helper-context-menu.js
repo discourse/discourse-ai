@@ -1,40 +1,27 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
-import { bind, debounce } from "discourse-common/utils/decorators";
+import { afterRender, bind, debounce } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
 import { INPUT_DELAY } from "discourse-common/config/environment";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { createPopper } from "@popperjs/core";
-import { afterRender } from "discourse-common/utils/decorators";
-import { next, schedule } from "@ember/runloop";
-import {
-  getCaretPosition,
-  caretRowCol,
-  caretPosition,
-} from "discourse/lib/utilities";
+import { caretPosition, getCaretPosition } from "discourse/lib/utilities";
 import discourseLater from "discourse-common/lib/later";
 import { inject as service } from "@ember/service";
 
-const LIST = "list";
-const TEXT = "text";
-const DIFF = "diff";
-
 export default class AiHelperContextMenu extends Component {
-  CONTEXT_MENU_STATES = {
-    triggers: "TRIGGERS",
-    options: "OPTIONS",
-    resets: "RESETS",
-    loading: "LOADING",
-    suggesions: "SUGGESTIONS",
-  };
+  static shouldRender(outletArgs, helper) {
+    return (
+      helper.siteSettings.discourse_ai_enabled &&
+      helper.siteSettings.composer_ai_helper_enabled
+    );
+  }
+
   @service siteSettings;
   @tracked helperOptions = [];
   @tracked showContextMenu = false;
   @tracked menuState = this.CONTEXT_MENU_STATES.triggers;
-  @tracked _popper;
-  @tracked _dEditorInput;
-  @tracked _contextMenu;
   @tracked caretCoords;
   @tracked virtualElement;
   @tracked selectedText = "";
@@ -42,15 +29,20 @@ export default class AiHelperContextMenu extends Component {
   @tracked oldEditorValue;
   @tracked generatedTitleSuggestions = [];
   @tracked lastUsedOption = null;
+
+  CONTEXT_MENU_STATES = {
+    triggers: "TRIGGERS",
+    options: "OPTIONS",
+    resets: "RESETS",
+    loading: "LOADING",
+    suggesions: "SUGGESTIONS",
+  };
   prompts = [];
   promptTypes = {};
 
-  static shouldRender(outletArgs, helper) {
-    return (
-      helper.siteSettings.discourse_ai_enabled &&
-      helper.siteSettings.composer_ai_helper_enabled
-    );
-  }
+  @tracked _popper;
+  @tracked _dEditorInput;
+  @tracked _contextMenu;
 
   willDestroy() {
     super.willDestroy(...arguments);
@@ -99,7 +91,7 @@ export default class AiHelperContextMenu extends Component {
   }
 
   @bind
-  updatePosition(event) {
+  updatePosition() {
     if (!this.showContextMenu) {
       return;
     }
