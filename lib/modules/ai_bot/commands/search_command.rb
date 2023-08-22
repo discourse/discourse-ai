@@ -26,7 +26,7 @@ module DiscourseAi::AiBot::Commands
           ),
           Parameter.new(
             name: "order",
-            description: "search result result order",
+            description: "search result order",
             type: "string",
             enum: %w[latest latest_topic oldest views likes],
           ),

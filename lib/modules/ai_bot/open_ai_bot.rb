@@ -63,57 +63,6 @@ module DiscourseAi
         DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(text)
       end
 
-      def available_functions
-        # note if defined? can be a problem in test
-        # this can never be nil so it is safe
-        return @available_functions if @available_functions
-
-        functions = []
-
-        functions =
-          available_commands.map do |command|
-            function =
-              DiscourseAi::Inference::OpenAiCompletions::Function.new(
-                name: command.name,
-                description: command.desc,
-              )
-            command.parameters.each do |parameter|
-              function.add_parameter(
-                name: parameter.name,
-                type: parameter.type,
-                description: parameter.description,
-                required: parameter.required,
-              )
-            end
-            function
-          end
-
-        @available_functions = functions
-      end
-
-      def available_commands
-        return @cmds if @cmds
-
-        all_commands =
-          [
-            Commands::CategoriesCommand,
-            Commands::TimeCommand,
-            Commands::SearchCommand,
-            Commands::SummarizeCommand,
-            Commands::ReadCommand,
-          ].tap do |cmds|
-            cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
-            cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
-            if SiteSetting.ai_google_custom_search_api_key.present? &&
-                 SiteSetting.ai_google_custom_search_cx.present?
-              cmds << Commands::GoogleCommand
-            end
-          end
-
-        allowed_commands = SiteSetting.ai_bot_enabled_chat_commands.split("|")
-        @cmds = all_commands.filter { |klass| allowed_commands.include?(klass.name) }
-      end
-
       def model_for(low_cost: false)
         return "gpt-4" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID && !low_cost
         "gpt-3.5-turbo-16k"
@@ -129,9 +78,15 @@ module DiscourseAi
         end
       end
 
+      def include_function_instructions_in_system_prompt?
+        # open ai uses a bespoke system for function calls
+        false
+      end
+
       private
 
-      def populate_functions(partial, functions)
+      def populate_functions(partial:, reply:, functions:, done:)
+        return if !partial
         fn = partial.dig(:choices, 0, :delta, :function_call)
         if fn
           functions.add_function(fn[:name]) if fn[:name].present?

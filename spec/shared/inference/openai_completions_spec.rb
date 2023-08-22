@@ -74,7 +74,7 @@ describe DiscourseAi::Inference::OpenAiCompletions do
     functions = []
 
     function =
-      DiscourseAi::Inference::OpenAiCompletions::Function.new(
+      DiscourseAi::Inference::Function.new(
         name: "get_weather",
         description: "Get the weather in a city",
       )
