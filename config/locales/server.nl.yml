@@ -34,7 +34,6 @@ nl:
     ai_nsfw_flag_threshold_porn: "Drempelwaarde voor een als porno geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_flag_threshold_sexy: "Drempelwaarde voor een als sexy geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_models: "Te gebruiken modellen voor NVWW-inferentie."
-    ai_openai_gpt35_url: "Aangepaste URL voor voltooiingen van GPT 3.5-chats. (Azure: MOET functieaanroepen ondersteunen en is idealiter een GPT3.5 16K-eindpunt)"
     ai_openai_gpt4_url: "Aangepaste URL voor voltooiingen van GPT 4-chats. (voor Azure-ondersteuning)"
     ai_openai_embeddings_url: "Aangepaste URL voor de OpenAI-insluitings-API. (in het geval van Azure kan dit zijn: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API-sleutel voor de OpenAI-API"

@@ -22,6 +22,7 @@ he:
       embeddings:
         semantic_search: "נושאים (סמנטיקה)"
       ai_bot:
+        pm_warning: "הודעות בוט שיח בינה מלאכותית לא נאכפות דרך קבע על ידי המפקחים."
         cancel_streaming: "עצירת התגובה"
         default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
         shortcut_title: "התחלת הודעה פרטית עם בוט בינה מלאכותית"

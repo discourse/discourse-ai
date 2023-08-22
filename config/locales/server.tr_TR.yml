@@ -34,7 +34,6 @@ tr_TR:
     ai_nsfw_flag_threshold_porn: "Porno olarak sınıflandırılan bir görüntünün NSFW olarak değerlendirilmesi için eşik."
     ai_nsfw_flag_threshold_sexy: "Seksi olarak sınıflandırılan bir görüntünün NSFW olarak değerlendirilmesi için eşik."
     ai_nsfw_models: "NSFW çıkarımı için kullanılacak modeller."
-    ai_openai_gpt35_url: "GPT 3.5 sohbet tamamlamaları için kullanılan özel URL. (Azure: İşlev çağırmayı DESTEKLEMELİDİR ve ideal olarak bir GPT3.5 16K uç noktasıdır)"
     ai_openai_gpt4_url: "GPT 4 sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
     ai_openai_embeddings_url: "OpenAI gömme API'si için kullanılan özel URL. (Azure söz konusu olduğunda şu olabilir: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "OpenAI API'si için API anahtarı"
