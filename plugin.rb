@@ -32,6 +32,8 @@ after_initialize do
   require_relative "lib/shared/inference/anthropic_completions"
   require_relative "lib/shared/inference/stability_generator"
   require_relative "lib/shared/inference/hugging_face_text_generation"
+  require_relative "lib/shared/inference/function"
+  require_relative "lib/shared/inference/function_list"
 
   require_relative "lib/shared/classificator"
   require_relative "lib/shared/post_classificator"

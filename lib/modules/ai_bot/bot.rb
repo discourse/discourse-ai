@@ -3,22 +3,40 @@
 module DiscourseAi
   module AiBot
     class Bot
-      class Functions
-        attr_reader :functions
-        attr_reader :current_function
-
+      class FunctionCalls
         def initialize
           @functions = []
           @current_function = nil
+          @found = false
+        end
+
+        def found?
+          !@functions.empty? || @found
+        end
+
+        def found!
+          @found = true
         end
 
         def add_function(name)
           @current_function = { name: name, arguments: +"" }
-          functions << current_function
+          @functions << @current_function
         end
 
         def add_argument_fragment(fragment)
           @current_function[:arguments] << fragment
+        end
+
+        def length
+          @functions.length
+        end
+
+        def each
+          @functions.each { |function| yield function }
+        end
+
+        def to_a
+          @functions
         end
       end
 
@@ -85,13 +103,22 @@ module DiscourseAi
 
         setup_cancel = false
         context = {}
-        functions = Functions.new
+        functions = FunctionCalls.new
 
         submit_prompt(prompt, prefer_low_cost: prefer_low_cost) do |partial, cancel|
           current_delta = get_delta(partial, context)
           partial_reply << current_delta
-          reply << current_delta
-          populate_functions(partial, functions)
+
+          if !available_functions.empty?
+            populate_functions(
+              partial: partial,
+              reply: partial_reply,
+              functions: functions,
+              done: false,
+            )
+          end
+
+          reply << current_delta if !functions.found?
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
             cancel&.call
@@ -143,11 +170,15 @@ module DiscourseAi
           post.post_custom_prompt.update!(custom_prompt: prompt)
         end
 
-        if functions.functions.length > 0
+        if !available_functions.empty?
+          populate_functions(partial: nil, reply: partial_reply, functions: functions, done: true)
+        end
+
+        if functions.length > 0
           chain = false
           standalone = false
 
-          functions.functions.each do |function|
+          functions.each do |function|
             name, args = function[:name], function[:arguments]
 
             if command_klass = available_commands.detect { |cmd| cmd.invoked?(name) }
@@ -230,9 +261,26 @@ module DiscourseAi
       end
 
       def available_commands
-        # by default assume bots have no access to commands
-        # for now we need GPT 4 to properly work with them
-        []
+        return @cmds if @cmds
+
+        all_commands =
+          [
+            Commands::CategoriesCommand,
+            Commands::TimeCommand,
+            Commands::SearchCommand,
+            Commands::SummarizeCommand,
+            Commands::ReadCommand,
+          ].tap do |cmds|
+            cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
+            cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
+            if SiteSetting.ai_google_custom_search_api_key.present? &&
+                 SiteSetting.ai_google_custom_search_cx.present?
+              cmds << Commands::GoogleCommand
+            end
+          end
+
+        allowed_commands = SiteSetting.ai_bot_enabled_chat_commands.split("|")
+        @cmds = all_commands.filter { |klass| allowed_commands.include?(klass.name) }
       end
 
       def system_prompt_style!(style)
@@ -241,7 +289,8 @@ module DiscourseAi
 
       def system_prompt(post)
         return "You are a helpful Bot" if @style == :simple
-        <<~TEXT
+
+        prompt = +<<~TEXT
           You are a helpful Discourse assistant.
           You understand and generate Discourse Markdown.
           You live in a Discourse Forum Message.
@@ -251,9 +300,28 @@ module DiscourseAi
           The description is: #{SiteSetting.site_description}
           The participants in this conversation are: #{post.topic.allowed_users.map(&:username).join(", ")}
           The date now is: #{Time.zone.now}, much has changed since you were trained.
-
-          #{available_commands.map(&:custom_system_message).compact.join("\n")}
         TEXT
+
+        if include_function_instructions_in_system_prompt?
+          prompt << "\n"
+          prompt << function_list.system_prompt
+          prompt << "\n"
+        end
+
+        prompt << available_commands.map(&:custom_system_message).compact.join("\n")
+        prompt
+      end
+
+      def include_function_instructions_in_system_prompt?
+        true
+      end
+
+      def function_list
+        return @function_list if @function_list
+
+        @function_list = DiscourseAi::Inference::FunctionList.new
+        available_functions.each { |function| @function_list << function }
+        @function_list
       end
 
       def tokenize(text)
@@ -268,8 +336,47 @@ module DiscourseAi
         raise NotImplemented
       end
 
-      def populate_functions(partial, functions)
-        raise NotImplemented
+      def populate_functions(partial:, reply:, functions:, done:)
+        if !done
+          functions.found! if reply.match?(/^!/i)
+        else
+          reply
+            .scan(/^!.*$/i)
+            .each do |line|
+              function_list
+                .parse_prompt(line)
+                .each do |function|
+                  functions.add_function(function[:name])
+                  functions.add_argument_fragment(function[:arguments].to_json)
+                end
+            end
+        end
+      end
+
+      def available_functions
+        # note if defined? can be a problem in test
+        # this can never be nil so it is safe
+        return @available_functions if @available_functions
+
+        functions = []
+
+        functions =
+          available_commands.map do |command|
+            function =
+              DiscourseAi::Inference::Function.new(name: command.name, description: command.desc)
+            command.parameters.each do |parameter|
+              function.add_parameter(
+                name: parameter.name,
+                type: parameter.type,
+                description: parameter.description,
+                required: parameter.required,
+                enum: parameter.enum,
+              )
+            end
+            function
+          end
+
+        @available_functions = functions
       end
 
       protected

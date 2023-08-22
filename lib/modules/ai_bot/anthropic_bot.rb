@@ -25,12 +25,6 @@ module DiscourseAi
 
       private
 
-      def populate_functions(partial, function)
-        # nothing to do here, no proper function support
-        # needs to be simulated for Claude but model is too
-        # hard to steer for now
-      end
-
       def build_message(poster_username, content, system: false, function: nil)
         role = poster_username == bot_user.username ? "Assistant" : "Human"
 
