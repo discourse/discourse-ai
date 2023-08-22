@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { inject as service } from "@ember/service";
-import { computed } from "@ember/object";
+import { action, computed } from "@ember/object";
+import I18n from "I18n";
 
 export default class extends Component {
   static shouldRender(args) {
@@ -13,14 +14,28 @@ export default class extends Component {
 
   listId = "related-topics";
 
-  @computed("moreTopicsPreferenceTracking.preference")
+  @computed("moreTopicsPreferenceTracking.selectedTab")
   get hidden() {
-    return this.moreTopicsPreferenceTracking.preference !== this.listId;
+    return this.moreTopicsPreferenceTracking.selectedTab !== this.listId;
   }
 
   get relatedTopics() {
     return this.args.outletArgs.model.related_topics.map((topic) =>
       this.store.createRecord("topic", topic)
     );
+  }
+
+  @action
+  registerList() {
+    this.moreTopicsPreferenceTracking.registerTopicList({
+      name: I18n.t("discourse_ai.related_topics.pill"),
+      id: this.listId,
+      icon: "magic",
+    });
+  }
+
+  @action
+  removeList() {
+    this.moreTopicsPreferenceTracking.removeTopicList(this.listId);
   }
 }
