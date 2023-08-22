@@ -52,10 +52,6 @@ export default class AiHelperContextMenu extends Component {
     );
   }
 
-  constructor() {
-    super(...arguments);
-  }
-
   willDestroy() {
     super.willDestroy(...arguments);
     document.removeEventListener("selectionchange", this.selectionChanged);
@@ -98,7 +94,6 @@ export default class AiHelperContextMenu extends Component {
       return;
     }
 
-    // TODO: Add approach for mobile
     this.selectedText = event.target.getSelection().toString();
     this._onSelectionChanged();
   }
