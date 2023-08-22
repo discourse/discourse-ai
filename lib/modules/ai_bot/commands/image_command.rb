@@ -8,7 +8,7 @@ module DiscourseAi::AiBot::Commands
       end
 
       def desc
-        "Renders an image from the description (remove all connector words, keep it to 40 words or less). Despite being a text based bot you can generate images!"
+        "Renders an image from the description (remove all connector words, keep it to 40 words or less). Despite being a text based bot you can generate images! (when user asks to draw, paint or other synonyms try this)"
       end
 
       def parameters
