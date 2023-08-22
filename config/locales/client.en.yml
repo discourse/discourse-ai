@@ -13,6 +13,10 @@ en:
         selection_hint: "Hint: You can also select a portion of the text before opening the helper to rewrite only that."
         context_menu:
           trigger: "AI"
+          undo: "Undo"
+          loading: "AI is generating"
+          cancel: "Cancel"
+          regen: "Try Again"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"

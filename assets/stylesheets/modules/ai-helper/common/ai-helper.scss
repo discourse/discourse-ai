@@ -39,14 +39,139 @@
   list-style: none;
   z-index: 999;
 
-  div {
+  ul {
+    margin: 0;
+    list-style: none;
+  }
+
+  ul:not(.ai-helper-context-menu__loading) li {
     transition: background-color 0.25s ease;
     &:hover {
       background: var(--primary-low);
     }
   }
 
+  .d-button-label {
+    color: var(--primary-very-high);
+  }
+
   &__options {
     padding: 0.25rem;
+  }
+
+  &__loading {
+    .dot-falling {
+      margin-inline: 1rem;
+      margin-left: 1.5rem;
+    }
+
+    li {
+      display: flex;
+      padding: 0.5rem;
+      gap: 1rem;
+      justify-content: flex-start;
+      align-items: center;
+    }
+  }
+
+  &__resets {
+    display: flex;
+    align-items: center;
+    flex-flow: row wrap;
+  }
+}
+
+.d-editor-input.loading {
+  animation: loading-text 1.5s infinite linear;
+}
+
+@keyframes loading-text {
+  0% {
+    color: var(--primary);
+  }
+  50% {
+    color: var(--tertiary);
+  }
+  100% {
+    color: var(--primary);
+  }
+}
+
+// AI Typing indicator (taken from: https://github.com/nzbin/three-dots)
+.dot-falling {
+  position: relative;
+  left: -9999px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--tertiary);
+  color: var(--tertiary);
+  box-shadow: 9999px 0 0 0 var(--tertiary);
+  animation: dot-falling 1s infinite linear;
+  animation-delay: 0.1s;
+}
+.dot-falling::before,
+.dot-falling::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+.dot-falling::before {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--tertiary);
+  color: var(--tertiary);
+  animation: dot-falling-before 1s infinite linear;
+  animation-delay: 0s;
+}
+.dot-falling::after {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--tertiary);
+  color: var(--tertiary);
+  animation: dot-falling-after 1s infinite linear;
+  animation-delay: 0.2s;
+}
+
+@keyframes dot-falling {
+  0% {
+    box-shadow: 9999px -15px 0 0 rgba(152, 128, 255, 0);
+  }
+  25%,
+  50%,
+  75% {
+    box-shadow: 9999px 0 0 0 var(--tertiary);
+  }
+  100% {
+    box-shadow: 9999px 15px 0 0 rgba(152, 128, 255, 0);
+  }
+}
+@keyframes dot-falling-before {
+  0% {
+    box-shadow: 9984px -15px 0 0 rgba(152, 128, 255, 0);
+  }
+  25%,
+  50%,
+  75% {
+    box-shadow: 9984px 0 0 0 var(--tertiary);
+  }
+  100% {
+    box-shadow: 9984px 15px 0 0 rgba(152, 128, 255, 0);
+  }
+}
+@keyframes dot-falling-after {
+  0% {
+    box-shadow: 10014px -15px 0 0 rgba(152, 128, 255, 0);
+  }
+  25%,
+  50%,
+  75% {
+    box-shadow: 10014px 0 0 0 var(--tertiary);
+  }
+  100% {
+    box-shadow: 10014px 15px 0 0 rgba(152, 128, 255, 0);
   }
 }

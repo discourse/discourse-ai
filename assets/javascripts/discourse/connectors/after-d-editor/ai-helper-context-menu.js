@@ -13,31 +13,43 @@ import {
   caretRowCol,
   caretPosition,
 } from "discourse/lib/utilities";
+import discourseLater from "discourse-common/lib/later";
+import { inject as service } from "@ember/service";
+
+const LIST = "list";
+const TEXT = "text";
+const DIFF = "diff";
 
 export default class AiHelperContextMenu extends Component {
+  CONTEXT_MENU_STATES = {
+    triggers: "TRIGGERS",
+    options: "OPTIONS",
+    resets: "RESETS",
+    loading: "LOADING",
+    suggesions: "SUGGESTIONS",
+  };
+  @service siteSettings;
   @tracked helperOptions = [];
   @tracked showContextMenu = false;
-  @tracked showContextMenuOptions = false;
+  @tracked menuState = this.CONTEXT_MENU_STATES.triggers;
   @tracked _popper;
   @tracked _dEditorInput;
   @tracked _contextMenu;
   @tracked caretCoords;
   @tracked virtualElement;
   @tracked selectedText = "";
+  @tracked loading = false;
+  @tracked oldEditorValue;
+  @tracked generatedTitleSuggestions = [];
+  @tracked lastUsedOption = null;
   prompts = [];
   promptTypes = {};
 
-  get showContextMenuTrigger() {
-    return !this.showContextMenuOptions;
-  }
-
-  set showContextMenuTrigger(value) {
-    this.showContextMenuOptions = !value;
-  }
-
-  resetContextMenuState() {
-    this.showContextMenu = false;
-    this.showContextMenuOptions = false;
+  static shouldRender(outletArgs, helper) {
+    return (
+      helper.siteSettings.discourse_ai_enabled &&
+      helper.siteSettings.composer_ai_helper_enabled
+    );
   }
 
   constructor() {
@@ -77,7 +89,12 @@ export default class AiHelperContextMenu extends Component {
     }
 
     if (window.getSelection().toString().length === 0) {
-      this.resetContextMenuState();
+      if (this.loading) {
+        // prevent accidentally closing context menu while results loading
+        return;
+      }
+
+      this.closeContextMenu();
       return;
     }
 
@@ -88,6 +105,10 @@ export default class AiHelperContextMenu extends Component {
 
   @bind
   updatePosition(event) {
+    if (!this.showContextMenu) {
+      return;
+    }
+
     this.positionContextMenu();
   }
 
@@ -106,6 +127,22 @@ export default class AiHelperContextMenu extends Component {
       bottom: y,
       left: x,
     });
+  }
+
+  closeContextMenu() {
+    this.showContextMenu = false;
+    this.menuState = this.CONTEXT_MENU_STATES.triggers;
+  }
+
+  _updateSuggestedByAI(data) {
+    const composer = this.args.outletArgs.composer;
+    this.oldEditorValue = this._dEditorInput.value;
+    const newValue = this.oldEditorValue.replace(
+      this.selectedText,
+      data.suggestions[0]
+    );
+    composer.set("reply", newValue);
+    this.menuState = this.CONTEXT_MENU_STATES.resets;
   }
 
   @afterRender
@@ -154,35 +191,56 @@ export default class AiHelperContextMenu extends Component {
     if (this.helperOptions.length === 0) {
       this.loadPrompts();
     }
-    this.showContextMenuOptions = !this.showContextMenuOptions;
+    this.menuState = this.CONTEXT_MENU_STATES.options;
   }
 
-  _updateSuggestedByAI(data) {
-    // TODO others, just doing translate for now:
-    // todo replace the text in the composer with the generated text
+  @action
+  undoAIAction() {
+    const composer = this.args.outletArgs.composer;
+    composer.set("reply", this.oldEditorValue);
+    this.closeContextMenu();
   }
 
   @action
   async updateSelected(option) {
+    this.loading = true;
+    this.lastUsedOption = option;
+    this._dEditorInput.classList.add("loading");
+    this.menuState = this.CONTEXT_MENU_STATES.loading;
+
     return ajax("/discourse-ai/ai-helper/suggest", {
       method: "POST",
       data: { mode: option, text: this.selectedText },
     })
       .then((data) => {
-        const oldValue = this._dEditorInput.value;
-        const newValue = oldValue.replace(
-          this.selectedText,
-          data.suggestions[0]
-        );
-        this._dEditorInput.value = newValue;
+        if (this.prompts[option].name === "generate_titles") {
+          this.menuState = this.CONTEXT_MENU_STATES.suggestions;
+          this.generatedTitleSuggestions = data.suggestions;
+        } else {
+          this._updateSuggestedByAI(data);
+        }
       })
       .catch(popupAjaxError)
-      .finally(() => (this.loading = false));
+      .finally(() => {
+        this.loading = false;
+        this._dEditorInput.classList.remove("loading");
+
+        // Make reset options disappear by closing the context menu after 5 seconds
+        if (this.menuState === this.CONTEXT_MENU_STATES.resets) {
+          discourseLater(() => {
+            this.closeContextMenu();
+          }, 5000);
+        }
+      });
+  }
+
+  @action
+  updateTopicTitle(title) {
+    const composer = this.args.outletArgs?.composer;
+
+    if (composer) {
+      composer.set("title", title);
+      this.closeContextMenu();
+    }
   }
 }
-
-/*
- ! TODOS:
-    - Add a settings.discourse_ai_enabled && settings.composer_ai_helper_enabled in shouldRender()
-    - Add for each type
- */

@@ -1,8 +1,8 @@
 <div {{did-insert this.setupContextMenu}}>
   {{#if this.showContextMenu}}
-    <ul class="ai-helper-context-menu">
-      {{#if this.showContextMenuTrigger}}
-        <div class="ai-helper-context-menu__trigger">
+    <div class="ai-helper-context-menu">
+      {{#if (eq this.menuState this.CONTEXT_MENU_STATES.triggers)}}
+        <ul class="ai-helper-context-menu__trigger">
           <li>
             <DButton
               @icon="magic"
@@ -11,12 +11,11 @@
               class="btn-flat"
             />
           </li>
-        </div>
-      {{/if}}
+        </ul>
 
-      {{#if this.showContextMenuOptions}}
-        {{#each this.helperOptions as |option|}}
-          <div class="ai-helper-context-menu__options">
+      {{else if (eq this.menuState this.CONTEXT_MENU_STATES.options)}}
+        <ul class="ai-helper-context-menu__options">
+          {{#each this.helperOptions as |option|}}
             <li>
               <DButton
                 @class="btn-flat"
@@ -25,9 +24,55 @@
                 @actionParam={{option.value}}
               />
             </li>
-          </div>
-        {{/each}}
+          {{/each}}
+        </ul>
+
+      {{else if (eq this.menuState this.CONTEXT_MENU_STATES.suggestions)}}
+        <ul class="ai-helper-context-menu__suggestions">
+          {{#each this.generatedTitleSuggestions as |suggestion|}}
+            <li>
+              <DButton
+                @class="btn-flat"
+                @translatedLabel={{suggestion}}
+                @action={{this.updateTopicTitle}}
+                @actionParam={{suggestion}}
+              />
+            </li>
+          {{/each}}
+        </ul>
+
+      {{else if (eq this.menuState this.CONTEXT_MENU_STATES.loading)}}
+        <ul class="ai-helper-context-menu__loading">
+          <li>
+            <div class="dot-falling"></div>
+            <span>
+              {{i18n "discourse_ai.ai_helper.context_menu.loading"}}
+            </span>
+          </li>
+        </ul>
+
+      {{else if (eq this.menuState this.CONTEXT_MENU_STATES.resets)}}
+        <ul class="ai-helper-context-menu__resets">
+          <li>
+            <DButton
+              @icon="undo"
+              @label="discourse_ai.ai_helper.context_menu.undo"
+              @action={{this.undoAIAction}}
+              class="btn-flat"
+            />
+          </li>
+          <li>
+            <DButton
+              @icon="discourse-sparkles"
+              @label="discourse_ai.ai_helper.context_menu.regen"
+              @action={{this.updateSelected}}
+              @actionParam={{this.lastUsedOption}}
+              class="btn-flat"
+            />
+          </li>
+        </ul>
+
       {{/if}}
-    </ul>
+    </div>
   {{/if}}
 </div>
