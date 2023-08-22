@@ -34,7 +34,6 @@ fi:
     ai_nsfw_flag_threshold_porn: "Raja, jolloin pornoksi luokiteltua kuvaa pidetään NSFW:nä."
     ai_nsfw_flag_threshold_sexy: "Raja, jolloin seksikkääksi luokiteltua kuvaa pidetään NSFW:nä."
     ai_nsfw_models: "NSFW-päätelmiin käytettävät mallit."
-    ai_openai_gpt35_url: "Mukautettu URL, jota käytetään GPT 3.5 -chat-suorituksiin. (Azure: TÄYTYY tukea toimintojen kutsumista ja on ihanteellisesti GPT3.5 16K -päätepiste)"
     ai_openai_gpt4_url: "Mukautettu URL, jota käytetään GPT 4 -chat-suorituksiin. (Azuren tukea varten)"
     ai_openai_embeddings_url: "Mukautettu URL, jota käytetään OpenAI:n upotus-APIssa. (Azuren tapauksessa se voi olla: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "OpenAI APIn API-avain"

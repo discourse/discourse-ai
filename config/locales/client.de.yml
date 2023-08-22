@@ -22,6 +22,7 @@ de:
       embeddings:
         semantic_search: "Themen (semantisch)"
       ai_bot:
+        pm_warning: "AI chatbot messages are monitored regularly by moderators."
         cancel_streaming: "Antwort abbrechen"
         default_pm_prefix: "[KI-Bot-PN ohne Titel]"
         shortcut_title: "Starte eine PN mit einem KI-Bot"

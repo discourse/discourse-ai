@@ -34,7 +34,6 @@ it:
     ai_nsfw_flag_threshold_porn: "Soglia per un'immagine classificata come pornografica per essere considerata NSFW."
     ai_nsfw_flag_threshold_sexy: "Soglia per un'immagine classificata come sexy per essere considerata NSFW."
     ai_nsfw_models: "Modelli da utilizzare per l'inferenza NSFW."
-    ai_openai_gpt35_url: "URL personalizzato utilizzato per i completamenti della chat GPT 3.5. (Azure: DEVE supportare le chiamate di funzione e idealmente è un endpoint GPT3.5 16K)"
     ai_openai_gpt4_url: "URL personalizzato utilizzato per i completamenti della chat GPT 4. (per il supporto di Azure)"
     ai_openai_embeddings_url: "URL personalizzato utilizzato per l'API di integrazione OpenAI. (nel caso di Azure può essere: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "Chiave API per l'API OpenAI"
