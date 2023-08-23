@@ -23,6 +23,12 @@ export default class AiHelperContextMenu extends Component {
       allowedGroups.includes(g.id)
     );
 
+    const canShowInPM = helper.siteSettings.ai_helper_allowed_in_pm;
+
+    if (outletArgs.composer.privateMessage) {
+      return helperEnabled && canUseAssistant && canShowInPM;
+    }
+
     return helperEnabled && canUseAssistant;
   }
 
