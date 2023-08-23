@@ -7,7 +7,6 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { createPopper } from "@popperjs/core";
 import { caretPosition, getCaretPosition } from "discourse/lib/utilities";
-import discourseLater from "discourse-common/lib/later";
 import { inject as service } from "@ember/service";
 
 export default class AiHelperContextMenu extends Component {
