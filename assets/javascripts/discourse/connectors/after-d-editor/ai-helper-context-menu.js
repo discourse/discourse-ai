@@ -237,13 +237,6 @@ export default class AiHelperContextMenu extends Component {
       .finally(() => {
         this.loading = false;
         this._dEditorInput.classList.remove("loading");
-
-        // Make reset options disappear by closing the context menu after 5 seconds
-        if (this.menuState === this.CONTEXT_MENU_STATES.resets) {
-          discourseLater(() => {
-            this.closeContextMenu();
-          }, 5000);
-        }
       });
   }
 
