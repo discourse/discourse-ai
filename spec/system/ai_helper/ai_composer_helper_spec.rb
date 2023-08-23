@@ -132,11 +132,27 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       it "shows loading indicator while waiting for results" do
         trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
         ai_helper_context_menu.click_ai_button
+
+        has_loading_indicator = false
+        start_time = Time.now
+        end_time = start_time + 5.seconds
+
         ai_helper_context_menu.select_helper_model(
           OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
         )
 
-        expect(ai_helper_context_menu).to be_showing_loading
+        # Check for the loading indicator within a specific time window
+
+        while Time.now < end_time
+          if ai_helper_context_menu.showing_loading?
+            has_loading_indicator = true
+            break
+          end
+
+          sleep 0.5
+        end
+
+        expect(has_loading_indicator).to be(true)
       end
 
       it "shows reset options after results are complete" do
