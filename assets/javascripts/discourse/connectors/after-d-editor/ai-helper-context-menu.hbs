@@ -16,7 +16,7 @@
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.options)}}
         <ul class="ai-helper-context-menu__options">
           {{#each this.helperOptions as |option|}}
-            <li>
+            <li data-name={{option.name}} data-value={{option.value}}>
               <DButton
                 @class="btn-flat"
                 @translatedLabel={{option.name}}
@@ -29,8 +29,8 @@
 
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.suggestions)}}
         <ul class="ai-helper-context-menu__suggestions">
-          {{#each this.generatedTitleSuggestions as |suggestion|}}
-            <li>
+          {{#each this.generatedTitleSuggestions as |suggestion index|}}
+            <li data-name={{suggestion}} data-value={{index}}>
               <DButton
                 @class="btn-flat"
                 @translatedLabel={{suggestion}}
@@ -58,7 +58,7 @@
               @icon="undo"
               @label="discourse_ai.ai_helper.context_menu.undo"
               @action={{this.undoAIAction}}
-              class="btn-flat"
+              class="btn-flat undo"
             />
           </li>
           <li>
