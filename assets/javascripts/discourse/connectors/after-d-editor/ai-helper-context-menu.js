@@ -25,7 +25,7 @@ export default class AiHelperContextMenu extends Component {
 
     const canShowInPM = helper.siteSettings.ai_helper_allowed_in_pm;
 
-    if (outletArgs.composer.privateMessage) {
+    if (outletArgs?.composer?.privateMessage) {
       return helperEnabled && canUseAssistant && canShowInPM;
     }
 
