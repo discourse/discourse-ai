@@ -173,6 +173,28 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         ai_helper_context_menu.click_undo_button
         expect(composer.composer_input.value).to eq(OpenAiCompletionsInferenceStubs.spanish_text)
       end
+
+      it "reverts results when Ctrl/Cmd + Z is pressed on the keyboard" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
+        ai_helper_context_menu.click_ai_button
+        ai_helper_context_menu.select_helper_model(
+          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
+        )
+
+        wait_for do
+          composer.composer_input.value == OpenAiCompletionsInferenceStubs.translated_response.strip
+        end
+
+        ai_helper_context_menu.press_undo_keys
+        expect(composer.composer_input.value).to eq(OpenAiCompletionsInferenceStubs.spanish_text)
+      end
+
+      it "hides the context menu when pressing Escape on the keyboard" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
+        ai_helper_context_menu.click_ai_button
+        ai_helper_context_menu.press_escape_key
+        expect(ai_helper_context_menu).to have_no_context_menu
+      end
     end
 
     context "when using the proofreading mode" do
