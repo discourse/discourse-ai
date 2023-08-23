@@ -3,6 +3,8 @@
 module DiscourseAi
   module AiBot
     class EntryPoint
+      REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
+
       GPT4_ID = -110
       GPT3_5_TURBO_ID = -111
       CLAUDE_V2_ID = -112
@@ -81,6 +83,10 @@ module DiscourseAi
               bot_id = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user_id
 
               if bot_id
+                if post.post_number == 1
+                  post.topic.custom_fields[REQUIRE_TITLE_UPDATE] = true
+                  post.topic.save_custom_fields
+                end
                 Jobs.enqueue(:create_ai_reply, post_id: post.id, bot_user_id: bot_id)
                 Jobs.enqueue_in(
                   5.minutes,

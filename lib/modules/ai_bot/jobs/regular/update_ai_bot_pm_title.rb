@@ -9,7 +9,7 @@ module ::Jobs
       return unless bot = DiscourseAi::AiBot::Bot.as(bot_user)
       return unless post = Post.includes(:topic).find_by(id: args[:post_id])
 
-      return unless post.topic.title.start_with?(I18n.t("discourse_ai.ai_bot.default_pm_prefix"))
+      return unless post.topic.custom_fields[DiscourseAi::AiBot::EntryPoint::REQUIRE_TITLE_UPDATE]
 
       bot.update_pm_title(post)
     end

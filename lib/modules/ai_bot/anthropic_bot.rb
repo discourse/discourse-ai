@@ -39,7 +39,7 @@ module DiscourseAi
         DiscourseAi::Inference::AnthropicCompletions.perform!(
           prompt,
           model_for,
-          temperature: 0.7,
+          temperature: 0.4,
           max_tokens: 40,
         ).dig(:completion)
       end

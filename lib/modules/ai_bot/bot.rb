@@ -63,12 +63,14 @@ module DiscourseAi
       def update_pm_title(post)
         prompt = title_prompt(post)
 
-        new_title = get_updated_title(prompt)
+        new_title = get_updated_title(prompt).strip.split("\n").last
 
         PostRevisor.new(post.topic.first_post, post.topic).revise!(
           bot_user,
           title: new_title.sub(/\A"/, "").sub(/"\Z/, ""),
         )
+        post.topic.custom_fields.delete(DiscourseAi::AiBot::EntryPoint::REQUIRE_TITLE_UPDATE)
+        post.topic.save_custom_fields
       end
 
       def max_commands_per_reply=(val)
@@ -254,6 +256,8 @@ module DiscourseAi
 
       def title_prompt(post)
         [build_message(bot_user.username, <<~TEXT)]
+          You are titlebot. Given a topic you will figure out a title.
+          You will never respond with anything but a topic title.
           Suggest a 7 word title for the following topic without quoting any of it:
 
           #{post.topic.posts[1..-1].map(&:raw).join("\n\n")[0..prompt_limit]}
