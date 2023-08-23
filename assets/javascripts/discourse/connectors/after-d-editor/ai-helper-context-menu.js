@@ -60,6 +60,7 @@ export default class AiHelperContextMenu extends Component {
   willDestroy() {
     super.willDestroy(...arguments);
     document.removeEventListener("selectionchange", this.selectionChanged);
+    document.removeEventListener("keydown", this.onKeyDown);
     this._popper?.destroy();
   }
 
@@ -122,6 +123,19 @@ export default class AiHelperContextMenu extends Component {
     }
 
     this.positionContextMenu();
+  }
+
+  @bind
+  onKeyDown(event) {
+    const cmdOrCtrl = event.ctrlKey || event.metaKey;
+
+    if (cmdOrCtrl && event.key === "z" && this.oldEditorValue) {
+      return this.undoAIAction();
+    }
+
+    if (event.key === "Escape") {
+      return this.closeContextMenu();
+    }
   }
 
   @debounce(INPUT_DELAY)
@@ -189,6 +203,7 @@ export default class AiHelperContextMenu extends Component {
   @action
   setupContextMenu() {
     document.addEventListener("selectionchange", this.selectionChanged);
+    document.addEventListener("keydown", this.onKeyDown);
 
     this._dEditorInput = document.querySelector(".d-editor-input");
 

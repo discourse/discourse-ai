@@ -3,6 +3,7 @@
 module PageObjects
   module Components
     class AIHelperContextMenu < PageObjects::Components::Base
+      COMPOSER_EDITOR_SELECTOR = ".d-editor-input"
       CONTEXT_MENU_SELECTOR = ".ai-helper-context-menu"
       TRIGGER_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__trigger"
       OPTIONS_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__options"
@@ -26,8 +27,20 @@ module PageObjects
         find("#{RESETS_STATE_SELECTOR} .undo").click
       end
 
+      def press_undo_keys
+        find(COMPOSER_EDITOR_SELECTOR).send_keys([:control, "z"])
+      end
+
+      def press_escape_key
+        find("body").send_keys(:escape)
+      end
+
       def has_context_menu?
         page.has_css?(CONTEXT_MENU_SELECTOR)
+      end
+
+      def has_no_context_menu?
+        page.has_no_css?(CONTEXT_MENU_SELECTOR)
       end
 
       def showing_triggers?
