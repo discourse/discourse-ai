@@ -85,12 +85,25 @@ export default class AiHelperContextMenu extends Component {
   }
 
   @bind
-  selectionChanged(event) {
-    if (!event.target.activeElement.classList.contains("d-editor-input")) {
+  selectionChanged() {
+    if (document.activeElement !== this._dEditorInput) {
       return;
     }
 
-    if (window.getSelection().toString().length === 0) {
+    const canSelect = Boolean(
+      window.getSelection() &&
+        document.activeElement &&
+        document.activeElement.value
+    );
+
+    this.selectedText = canSelect
+      ? document.activeElement.value.substring(
+          document.activeElement.selectionStart,
+          document.activeElement.selectionEnd
+        )
+      : "";
+
+    if (this.selectedText.length === 0) {
       if (this.loading) {
         // prevent accidentally closing context menu while results loading
         return;
@@ -100,7 +113,6 @@ export default class AiHelperContextMenu extends Component {
       return;
     }
 
-    this.selectedText = event.target.getSelection().toString();
     this._onSelectionChanged();
   }
 
