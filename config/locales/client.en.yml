@@ -16,6 +16,12 @@ en:
         title: "Suggest changes using AI"
         description: "Choose one of the options below, and the AI will suggest you a new version of the text."
         selection_hint: "Hint: You can also select a portion of the text before opening the helper to rewrite only that."
+        context_menu:
+          trigger: "AI"
+          undo: "Undo"
+          loading: "AI is generating"
+          cancel: "Cancel"
+          regen: "Try Again"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"
@@ -34,7 +40,6 @@ en:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
-
 
     review:
       types:
