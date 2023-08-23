@@ -12,10 +12,18 @@ import { inject as service } from "@ember/service";
 
 export default class AiHelperContextMenu extends Component {
   static shouldRender(outletArgs, helper) {
-    return (
+    const helperEnabled =
       helper.siteSettings.discourse_ai_enabled &&
-      helper.siteSettings.composer_ai_helper_enabled
+      helper.siteSettings.composer_ai_helper_enabled;
+
+    const allowedGroups = helper.siteSettings.ai_helper_allowed_groups
+      .split("|")
+      .map((id) => parseInt(id, 10));
+    const canUseAssistant = helper.currentUser?.groups.some((g) =>
+      allowedGroups.includes(g.id)
     );
+
+    return helperEnabled && canUseAssistant;
   }
 
   @service siteSettings;
