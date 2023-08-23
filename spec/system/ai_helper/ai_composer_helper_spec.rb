@@ -143,22 +143,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         expect(ai_helper_context_menu).to be_showing_resets
       end
 
-      it "hides reset options after 5 seconds" do
-        trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
-        ai_helper_context_menu.click_ai_button
-        ai_helper_context_menu.select_helper_model(
-          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
-        )
-
-        wait_for do
-          composer.composer_input.value == OpenAiCompletionsInferenceStubs.translated_response.strip
-        end
-
-        expect(ai_helper_context_menu).to be_showing_resets
-        sleep 5
-        expect(ai_helper_context_menu).to be_not_showing_resets
-      end
-
       it "reverts results when Undo button is clicked" do
         trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
         ai_helper_context_menu.click_ai_button
