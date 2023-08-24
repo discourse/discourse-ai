@@ -38,10 +38,14 @@ export default class AiHelperContextMenu extends Component {
   @tracked caretCoords;
   @tracked virtualElement;
   @tracked selectedText = "";
+  @tracked newSelectedText;
   @tracked loading = false;
   @tracked oldEditorValue;
+  @tracked newEditorValue;
   @tracked generatedTitleSuggestions = [];
   @tracked lastUsedOption = null;
+  @tracked showDiffModal = false;
+  @tracked diff;
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -49,6 +53,7 @@ export default class AiHelperContextMenu extends Component {
     resets: "RESETS",
     loading: "LOADING",
     suggesions: "SUGGESTIONS",
+    review: "REVIEW",
   };
   prompts = [];
   promptTypes = {};
@@ -104,8 +109,9 @@ export default class AiHelperContextMenu extends Component {
       : "";
 
     if (this.selectedText.length === 0) {
-      if (this.loading) {
-        // prevent accidentally closing context menu while results loading
+      if (this.loading || this.menuState === this.CONTEXT_MENU_STATES.review) {
+        // prevent accidentally closing context menu
+        // while results loading or in review state
         return;
       }
 
@@ -163,12 +169,18 @@ export default class AiHelperContextMenu extends Component {
   _updateSuggestedByAI(data) {
     const composer = this.args.outletArgs.composer;
     this.oldEditorValue = this._dEditorInput.value;
-    const newValue = this.oldEditorValue.replace(
+    this.newSelectedText = data.suggestions[0];
+
+    this.newEditorValue = this.oldEditorValue.replace(
       this.selectedText,
-      data.suggestions[0]
+      this.newSelectedText
     );
-    composer.set("reply", newValue);
-    this.menuState = this.CONTEXT_MENU_STATES.resets;
+
+    if (data.diff) {
+      this.diff = data.diff;
+    }
+    composer.set("reply", this.newEditorValue);
+    this.menuState = this.CONTEXT_MENU_STATES.review;
   }
 
   @afterRender
@@ -240,6 +252,10 @@ export default class AiHelperContextMenu extends Component {
       data: { mode: option, text: this.selectedText },
     })
       .then((data) => {
+        // resets the values if new suggestion is started:
+        this.diff = null;
+        this.newSelectedText = null;
+
         if (this.prompts[option].name === "generate_titles") {
           this.menuState = this.CONTEXT_MENU_STATES.suggestions;
           this.generatedTitleSuggestions = data.suggestions;
@@ -262,5 +278,15 @@ export default class AiHelperContextMenu extends Component {
       composer.set("title", title);
       this.closeContextMenu();
     }
+  }
+
+  @action
+  viewChanges() {
+    this.showDiffModal = true;
+  }
+
+  @action
+  confirmChanges() {
+    this.menuState = this.CONTEXT_MENU_STATES.resets;
   }
 }

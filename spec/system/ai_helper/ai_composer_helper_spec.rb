@@ -14,6 +14,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:composer) { PageObjects::Components::Composer.new }
   let(:ai_helper_context_menu) { PageObjects::Components::AIHelperContextMenu.new }
   let(:ai_helper_modal) { PageObjects::Modals::AiHelper.new }
+  let(:diff_modal) { PageObjects::Modals::DiffModal.new }
 
   context "when using the translation mode" do
     let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
@@ -140,6 +141,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
           composer.composer_input.value == OpenAiCompletionsInferenceStubs.translated_response.strip
         end
 
+        ai_helper_context_menu.click_confirm_button
         expect(ai_helper_context_menu).to be_showing_resets
       end
 
@@ -154,7 +156,23 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
           composer.composer_input.value == OpenAiCompletionsInferenceStubs.translated_response.strip
         end
 
+        ai_helper_context_menu.click_confirm_button
         ai_helper_context_menu.click_undo_button
+        expect(composer.composer_input.value).to eq(OpenAiCompletionsInferenceStubs.spanish_text)
+      end
+
+      it "reverts results when revert button is clicked" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
+        ai_helper_context_menu.click_ai_button
+        ai_helper_context_menu.select_helper_model(
+          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
+        )
+
+        wait_for do
+          composer.composer_input.value == OpenAiCompletionsInferenceStubs.translated_response.strip
+        end
+
+        ai_helper_context_menu.click_revert_button
         expect(composer.composer_input.value).to eq(OpenAiCompletionsInferenceStubs.spanish_text)
       end
 
@@ -173,11 +191,56 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         expect(composer.composer_input.value).to eq(OpenAiCompletionsInferenceStubs.spanish_text)
       end
 
+      it "confirms the results when confirm button is pressed" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
+        ai_helper_context_menu.click_ai_button
+        ai_helper_context_menu.select_helper_model(
+          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
+        )
+
+        wait_for do
+          composer.composer_input.value == OpenAiCompletionsInferenceStubs.translated_response.strip
+        end
+
+        ai_helper_context_menu.click_confirm_button
+        expect(composer.composer_input.value).to eq(
+          OpenAiCompletionsInferenceStubs.translated_response.strip,
+        )
+      end
+
       it "hides the context menu when pressing Escape on the keyboard" do
         trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
         ai_helper_context_menu.click_ai_button
         ai_helper_context_menu.press_escape_key
         expect(ai_helper_context_menu).to have_no_context_menu
+      end
+
+      it "shows the changes in a modal when view changes button is pressed" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
+        ai_helper_context_menu.click_ai_button
+        ai_helper_context_menu.select_helper_model(
+          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
+        )
+
+        wait_for do
+          composer.composer_input.value == OpenAiCompletionsInferenceStubs.translated_response.strip
+        end
+
+        ai_helper_context_menu.click_view_changes_button
+        expect(diff_modal).to be_visible
+        expect(diff_modal.old_value).to eq(
+          OpenAiCompletionsInferenceStubs.spanish_text.gsub(/[[:space:]]+/, " ").strip,
+        )
+        expect(diff_modal.new_value).to eq(
+          OpenAiCompletionsInferenceStubs
+            .translated_response
+            .gsub(/[[:space:]]+/, " ")
+            .gsub(/[‘’]/, "'")
+            .gsub(/[“”]/, '"')
+            .strip,
+        )
+        diff_modal.confirm_changes
+        expect(ai_helper_context_menu).to be_showing_resets
       end
     end
 

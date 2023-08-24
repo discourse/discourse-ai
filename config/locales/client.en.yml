@@ -22,6 +22,10 @@ en:
           loading: "AI is generating"
           cancel: "Cancel"
           regen: "Try Again"
+          view_changes: "View Changes"
+          confirm: "Confirm"
+          revert: "Revert"
+          changes: "Changes"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"
