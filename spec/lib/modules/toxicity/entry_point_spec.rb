@@ -38,16 +38,17 @@ describe DiscourseAi::Toxicity::EntryPoint do
 
     context "when creating a chat message" do
       fab!(:public_chat_channel) { Fabricate(:chat_channel) }
-      let(:creator) do
-        Chat::MessageCreator.new(
-          chat_channel: public_chat_channel,
-          user: user,
-          content: "This is my new test",
-        )
-      end
 
       it "queues a job when creating a chat message" do
-        expect { creator.create }.to change(Jobs::ToxicityClassifyChatMessage.jobs, :size).by(1)
+        expect {
+          Fabricate(
+            :chat_message,
+            chat_channel: public_chat_channel,
+            user: user,
+            message: "This is my new test",
+            use_service: true,
+          )
+        }.to change(Jobs::ToxicityClassifyChatMessage.jobs, :size).by(1)
       end
     end
 
