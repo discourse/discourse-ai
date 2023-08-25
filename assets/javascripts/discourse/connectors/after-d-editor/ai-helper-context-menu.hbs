@@ -51,6 +51,34 @@
           </li>
         </ul>
 
+      {{else if (eq this.menuState this.CONTEXT_MENU_STATES.review)}}
+        <ul class="ai-helper-context-menu__review">
+          <li>
+            <DButton
+              @icon="exchange-alt"
+              @label="discourse_ai.ai_helper.context_menu.view_changes"
+              @action={{this.viewChanges}}
+              class="btn-flat view-changes"
+            />
+          </li>
+          <li>
+            <DButton
+              @icon="undo"
+              @label="discourse_ai.ai_helper.context_menu.revert"
+              @action={{this.undoAIAction}}
+              class="btn-flat revert"
+            />
+          </li>
+          <li>
+            <DButton
+              @icon="check"
+              @label="discourse_ai.ai_helper.context_menu.confirm"
+              @action={{this.confirmChanges}}
+              class="btn-flat confirm"
+            />
+          </li>
+        </ul>
+
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.resets)}}
         <ul class="ai-helper-context-menu__resets">
           <li>
@@ -76,3 +104,13 @@
     </div>
   {{/if}}
 </div>
+
+{{#if this.showDiffModal}}
+  <Modal::DiffModal
+    @confirm={{this.confirmChanges}}
+    @diff={{this.diff}}
+    @oldValue={{this.selectedText}}
+    @newValue={{this.newSelectedText}}
+    @closeModal={{fn (mut this.showDiffModal) false}}
+  />
+{{/if}}

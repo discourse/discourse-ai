@@ -10,6 +10,7 @@ module PageObjects
       SUGGESTIONS_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__suggestions"
       LOADING_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__loading"
       RESETS_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__resets"
+      REVIEW_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__review"
 
       def click_ai_button
         find("#{TRIGGER_STATE_SELECTOR} .btn").click
@@ -25,6 +26,18 @@ module PageObjects
 
       def click_undo_button
         find("#{RESETS_STATE_SELECTOR} .undo").click
+      end
+
+      def click_revert_button
+        find("#{REVIEW_STATE_SELECTOR} .revert").click
+      end
+
+      def click_view_changes_button
+        find("#{REVIEW_STATE_SELECTOR} .view-changes").click
+      end
+
+      def click_confirm_button
+        find("#{REVIEW_STATE_SELECTOR} .confirm").click
       end
 
       def press_undo_keys
