@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 CompletionPrompt.seed do |cp|
-  cp.id = -1
+  cp.id = -201
   cp.provider = "huggingface"
   cp.name = "translate"
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
@@ -22,7 +22,7 @@ CompletionPrompt.seed do |cp|
 end
 
 CompletionPrompt.seed do |cp|
-  cp.id = -2
+  cp.id = -202
   cp.provider = "huggingface"
   cp.name = "generate_titles"
   cp.prompt_type = CompletionPrompt.prompt_types[:list]
@@ -42,7 +42,7 @@ CompletionPrompt.seed do |cp|
 end
 
 CompletionPrompt.seed do |cp|
-  cp.id = -3
+  cp.id = -203
   cp.provider = "huggingface"
   cp.name = "proofread"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
@@ -64,7 +64,7 @@ CompletionPrompt.seed do |cp|
 end
 
 CompletionPrompt.seed do |cp|
-  cp.id = -4
+  cp.id = -204
   cp.provider = "huggingface"
   cp.name = "markdown_table"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
