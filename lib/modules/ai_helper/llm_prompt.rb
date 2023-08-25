@@ -22,18 +22,24 @@ module DiscourseAi
       end
 
       def generate_and_send_prompt(prompt, text)
-        if enabled_provider == "openai"
+        case enabled_provider
+        when "openai"
           openai_call(prompt, text)
-        else
+        when "anthropic"
           anthropic_call(prompt, text)
+        when "huggingface"
+          huggingface_call(prompt, text)
         end
       end
 
       def enabled_provider
-        if SiteSetting.ai_helper_model.start_with?("gpt")
+        case SiteSetting.ai_helper_model
+        when /gpt/
           "openai"
-        else
+        when /claude/
           "anthropic"
+        else
+          "huggingface"
         end
       end
 
@@ -49,12 +55,17 @@ module DiscourseAi
       def parse_content(prompt, content)
         return "" if content.blank?
 
-        if enabled_provider == "openai"
+        case enabled_provider
+        when "openai"
           return content.strip if !prompt.list?
 
           content.gsub("\"", "").gsub(/\d./, "").split("\n").map(&:strip)
-        else
+        when "anthropic"
           parse_antropic_content(prompt, content)
+        when "huggingface"
+          return [content.strip.delete_prefix('"').delete_suffix('"')] if !prompt.list?
+
+          content.gsub("\"", "").gsub(/\d./, "").split("\n").map(&:strip)
         end
       end
 
@@ -87,6 +98,20 @@ module DiscourseAi
         response = DiscourseAi::Inference::AnthropicCompletions.perform!(message)
 
         result[:suggestions] = parse_content(prompt, response.dig(:completion))
+
+        result[:diff] = generate_diff(text, result[:suggestions].first) if prompt.diff?
+
+        result
+      end
+
+      def huggingface_call(prompt, text)
+        result = { type: prompt.prompt_type }
+
+        message = prompt.messages_with_user_input(text)
+
+        response = DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(message, SiteSetting.ai_helper_model)
+
+        result[:suggestions] = parse_content(prompt, response.dig(:generated_text))
 
         result[:diff] = generate_diff(text, result[:suggestions].first) if prompt.diff?
 
