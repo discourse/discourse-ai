@@ -219,6 +219,22 @@ module DiscourseAi
         0
       end
 
+      def bot_prompt_with_topic_context2(post)
+        builder = tokenizer.build_prompt(max_tokens: prompt_limit)
+        builder << { user: bot_user.username, content: rendered_system_prompt, type: :system }
+
+        conversation_context(post).each do |raw, username, function|
+          builder.unshift(
+            user: username,
+            content: raw,
+            type: :username == bot_user.username ? :assistant : :user,
+          )
+          break if builder.full?
+        end
+
+        builder.generate
+      end
+
       def bot_prompt_with_topic_context(post, prompt: "topic")
         messages = []
         conversation = conversation_context(post)
