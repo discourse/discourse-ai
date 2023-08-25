@@ -109,7 +109,11 @@ module DiscourseAi
 
         message = prompt.messages_with_user_input(text)
 
-        response = DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(message, SiteSetting.ai_helper_model)
+        response =
+          DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(
+            message,
+            SiteSetting.ai_helper_model,
+          )
 
         result[:suggestions] = parse_content(prompt, response.dig(:generated_text))
 
