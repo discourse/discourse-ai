@@ -147,6 +147,7 @@ discourse_ai:
       - gpt-3.5-turbo
       - gpt-4
       - claude-2
+      - stable-beluga-2
 
   ai_embeddings_enabled:
     default: false

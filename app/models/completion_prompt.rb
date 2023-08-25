@@ -10,10 +10,13 @@ class CompletionPrompt < ActiveRecord::Base
   validate :each_message_length
 
   def messages_with_user_input(user_input)
-    if ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider == "openai"
+    case ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider
+    when "openai"
       self.messages << { role: "user", content: user_input }
-    else
+    when "anthropic"
       self.messages << { "role" => "Input", "content" => "<input>#{user_input}</input>" }
+    when "huggingface"
+      self.messages.first.sub("{{user_input}}", user_input)
     end
   end
 
