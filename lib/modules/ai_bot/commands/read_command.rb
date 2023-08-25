@@ -55,7 +55,7 @@ module DiscourseAi::AiBot::Commands
       posts.each { |post| content << "\n\n#{post.username} said:\n\n#{post.raw}" }
 
       # TODO: 16k or 100k models can handle a lot more tokens
-      content = ::DiscourseAi::Tokenizer::BertTokenizer.truncate(content, 1500).squish
+      content = tokenizer.truncate(content, 1500).squish
 
       result = { topic_id: topic_id, content: content, complete: true }
       result[:post_number] = post_number if post_number

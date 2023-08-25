@@ -274,6 +274,7 @@ module DiscourseAi
             Commands::SearchCommand,
             Commands::SummarizeCommand,
             Commands::ReadCommand,
+            Commands::SettingContextCommand,
           ].tap do |cmds|
             cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
             cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
@@ -328,8 +329,12 @@ module DiscourseAi
         @function_list
       end
 
-      def tokenize(text)
+      def tokenizer
         raise NotImplemented
+      end
+
+      def tokenize(text)
+        tokenizer.tokenize(text)
       end
 
       def submit_prompt(prompt, prefer_low_cost: false, &blk)

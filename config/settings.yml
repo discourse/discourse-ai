@@ -165,7 +165,7 @@ discourse_ai:
      - text-embedding-ada-002
      - multilingual-e5-large
   ai_embeddings_generate_for_pms: false
-  ai_embeddings_semantic_related_topics_enabled: 
+  ai_embeddings_semantic_related_topics_enabled:
     default: false
     client: true
   ai_embeddings_semantic_related_topics: 5
@@ -202,7 +202,7 @@ discourse_ai:
      - claude-2
   ai_bot_enabled_chat_commands:
     type: list
-    default: "categories|google|image|search|tags|time"
+    default: "categories|google|image|search|tags|time|read"
     client: true
     choices:
      - categories
@@ -213,6 +213,7 @@ discourse_ai:
      - read
      - tags
      - time
+     - setting_context
   ai_helper_add_ai_pm_to_header:
     default: true
     client: true
