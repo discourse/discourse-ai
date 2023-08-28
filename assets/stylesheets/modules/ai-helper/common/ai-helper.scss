@@ -44,7 +44,7 @@
 
 .ai-helper-context-menu {
   background: var(--secondary);
-  box-shadow: var(--shadow-dropdown);
+  box-shadow: var(--shadow-card);
   padding: 0.25rem;
   max-width: 25rem;
   border: 1px solid var(--primary-low);
@@ -56,10 +56,22 @@
     list-style: none;
   }
 
-  ul:not(.ai-helper-context-menu__loading) li {
-    transition: background-color 0.25s ease;
+  .btn {
+    justify-content: left;
+    text-align: left;
+    background: none;
+    width: 100%;
+    border-radius: 0;
+    margin: 0;
+
+    &:focus,
     &:hover {
-      background: var(--primary-low);
+      color: var(--primary);
+      background: var(--d-hover);
+
+      .d-icon {
+        color: var(--primary-medium);
+      }
     }
   }
 
