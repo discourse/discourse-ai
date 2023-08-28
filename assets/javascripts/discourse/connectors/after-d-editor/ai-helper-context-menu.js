@@ -201,11 +201,7 @@ export default class AiHelperContextMenu extends Component {
 
     if (contextMenuRect.top < boundaryElement.top) {
       this._contextMenu.classList.add("out-of-bounds");
-    } else {
-      this._contextMenu.classList.remove("out-of-bounds");
-    }
-
-    if (contextMenuRect.bottom > boundaryElement.bottom) {
+    } else if (contextMenuRect.bottom > boundaryElement.bottom) {
       this._contextMenu.classList.add("out-of-bounds");
     } else {
       this._contextMenu.classList.remove("out-of-bounds");
