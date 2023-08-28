@@ -27,20 +27,6 @@
           {{/each}}
         </ul>
 
-      {{else if (eq this.menuState this.CONTEXT_MENU_STATES.suggestions)}}
-        <ul class="ai-helper-context-menu__suggestions">
-          {{#each this.generatedTitleSuggestions as |suggestion index|}}
-            <li data-name={{suggestion}} data-value={{index}}>
-              <DButton
-                @class="btn-flat"
-                @translatedLabel={{suggestion}}
-                @action={{this.updateTopicTitle}}
-                @actionParam={{suggestion}}
-              />
-            </li>
-          {{/each}}
-        </ul>
-
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.loading)}}
         <ul class="ai-helper-context-menu__loading">
           <li>
