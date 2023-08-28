@@ -51,6 +51,10 @@
   list-style: none;
   z-index: 999;
 
+  &.out-of-bounds {
+    visibility: hidden;
+  }
+
   ul {
     margin: 0;
     list-style: none;

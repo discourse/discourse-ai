@@ -192,12 +192,35 @@ export default class AiHelperContextMenu extends Component {
     this.menuState = this.CONTEXT_MENU_STATES.review;
   }
 
+  handleBoundaries() {
+    const boundaryElement = document
+      .querySelector(".d-editor-textarea-wrapper")
+      .getBoundingClientRect();
+
+    const contextMenuRect = this._contextMenu.getBoundingClientRect();
+
+    if (contextMenuRect.top < boundaryElement.top) {
+      this._contextMenu.classList.add("out-of-bounds");
+    } else {
+      this._contextMenu.classList.remove("out-of-bounds");
+    }
+
+    if (contextMenuRect.bottom > boundaryElement.bottom) {
+      this._contextMenu.classList.add("out-of-bounds");
+    } else {
+      this._contextMenu.classList.remove("out-of-bounds");
+    }
+  }
+
   @afterRender
   positionContextMenu() {
     this._contextMenu = document.querySelector(".ai-helper-context-menu");
     this.caretCoords = getCaretPosition(this._dEditorInput, {
       pos: caretPosition(this._dEditorInput),
     });
+
+    // prevent overflow of context menu outside of editor
+    this.handleBoundaries();
 
     this.virtualElement = {
       getBoundingClientRect: this.generateGetBoundingClientRect(
