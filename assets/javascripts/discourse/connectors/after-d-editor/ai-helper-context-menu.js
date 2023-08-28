@@ -62,6 +62,15 @@ export default class AiHelperContextMenu extends Component {
   @tracked _dEditorInput;
   @tracked _contextMenu;
 
+  constructor() {
+    super(...arguments);
+
+    // Fetch prompts only if it hasn't been fetched yet
+    if (this.helperOptions.length === 0) {
+      this.loadPrompts();
+    }
+  }
+
   willDestroy() {
     super.willDestroy(...arguments);
     document.removeEventListener("selectionchange", this.selectionChanged);
