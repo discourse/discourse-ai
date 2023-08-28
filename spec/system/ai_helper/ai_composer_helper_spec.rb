@@ -110,6 +110,12 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       expect(ai_helper_context_menu).to be_showing_options
     end
 
+    it "closes the context menu when clicking outside" do
+      trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
+      find(".d-editor-preview").click
+      expect(ai_helper_context_menu).to have_no_context_menu
+    end
+
     context "when using translation mode" do
       let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
       before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
@@ -241,6 +247,21 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         )
         diff_modal.confirm_changes
         expect(ai_helper_context_menu).to be_showing_resets
+      end
+
+      it "should not close the context menu when in review state" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
+        ai_helper_context_menu.click_ai_button
+        ai_helper_context_menu.select_helper_model(
+          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
+        )
+
+        wait_for do
+          composer.composer_input.value == OpenAiCompletionsInferenceStubs.translated_response.strip
+        end
+
+        find(".d-editor-preview").click
+        expect(ai_helper_context_menu).to have_context_menu
       end
     end
 
