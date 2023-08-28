@@ -101,6 +101,7 @@ export default class AiHelperContextMenu extends Component {
   @bind
   selectionChanged() {
     if (document.activeElement !== this._dEditorInput) {
+      this.closeContextMenu();
       return;
     }
 
@@ -118,12 +119,6 @@ export default class AiHelperContextMenu extends Component {
       : "";
 
     if (this.selectedText.length === 0) {
-      if (this.loading || this.menuState === this.CONTEXT_MENU_STATES.review) {
-        // prevent accidentally closing context menu
-        // while results loading or in review state
-        return;
-      }
-
       this.closeContextMenu();
       return;
     }
@@ -170,7 +165,23 @@ export default class AiHelperContextMenu extends Component {
     });
   }
 
+  get canCloseContextMenu() {
+    if (this.loading) {
+      return false;
+    }
+
+    if (this.menuState === this.CONTEXT_MENU_STATES.review) {
+      return false;
+    }
+
+    return true;
+  }
+
   closeContextMenu() {
+    if (!this.canCloseContextMenu) {
+      return;
+    }
+
     this.showContextMenu = false;
     this.menuState = this.CONTEXT_MENU_STATES.triggers;
   }
@@ -265,6 +276,9 @@ export default class AiHelperContextMenu extends Component {
   undoAIAction() {
     const composer = this.args.outletArgs.composer;
     composer.set("reply", this.oldEditorValue);
+    // context menu is prevented from closing when in review state
+    // so we change to reset state quickly before closing
+    this.menuState = this.CONTEXT_MENU_STATES.resets;
     this.closeContextMenu();
   }
 
