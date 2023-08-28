@@ -172,6 +172,7 @@ discourse_ai:
   ai_embeddings_semantic_related_topics: 5
   ai_embeddings_semantic_related_include_closed_topics: true
   ai_embeddings_pg_connection_string: ""
+    hidden: true
   ai_embeddings_semantic_search_enabled:
     default: false
     client: true
