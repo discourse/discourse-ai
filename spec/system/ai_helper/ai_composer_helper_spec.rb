@@ -285,25 +285,22 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         )
       end
     end
+  end
 
-    context "when selecting an AI generated title" do
-      let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
-      before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
+  context "when suggesting titles with AI title suggester" do
+    let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
+    before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
-      it "replaces the topic title" do
-        trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
-        ai_helper_context_menu.click_ai_button
-        ai_helper_context_menu.select_helper_model(
-          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
-        )
-        expect(ai_helper_context_menu).to be_showing_suggestions
+    it "opens a menu with title suggestions" do
+      # TODO
+    end
 
-        ai_helper_context_menu.select_title_suggestion(2)
-        expected_title = "The Quiet Piece that Moves Literature: A Gaucho's Story"
+    it "replaces the topic title with the selected title" do
+      # TODO
+    end
 
-        wait_for { find("#reply-title").value == expected_title }
-        expect(find("#reply-title").value).to eq(expected_title)
-      end
+    it "closes the menu when clicking outside" do
+      # TODO
     end
   end
 end

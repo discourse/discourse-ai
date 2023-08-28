@@ -2,12 +2,12 @@ import Component from '@glimmer/component';
 import DButton from "discourse/components/d-button";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { ajax } from "discourse/lib/ajax"
+import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { bind } from "discourse-common/utils/decorators";
 
-export default class SuggestTitlesButton extends Component {
+export default class AITitleSuggester extends Component {
   <template>
     <DButton
       @class="suggest-titles-button {{if this.loading 'is-loading'}}"
@@ -42,7 +42,7 @@ export default class SuggestTitlesButton extends Component {
     name: "generate_titles",
     translated_name: "Suggest topic titles",
     prompt_type: "list"
-  }
+  };
 
   willDestroy() {
     super.willDestroy(...arguments);
@@ -58,6 +58,7 @@ export default class SuggestTitlesButton extends Component {
   }
 
   closeMenu() {
+    this.suggestTitleIcon = "discourse-sparkles";
     this.showMenu = false;
   }
 
@@ -99,9 +100,9 @@ export default class SuggestTitlesButton extends Component {
       this.generatedTitleSuggestions = data.suggestions;
     }).catch(popupAjaxError).finally(() => {
       this.loading = false;
-      this.suggestTitleIcon = "discourse-sparkles";
+      this.suggestTitleIcon = "sync-alt";
       this.showMenu = true;
-    })
+    });
 
   }
 }
