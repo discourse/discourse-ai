@@ -25,9 +25,9 @@ module ::DiscourseAi
           SiteSetting.ai_bot_enabled_chat_commands = "read|search"
           functions = DiscourseAi::AiBot::Bot::FunctionCalls.new
 
+          # note anthropic API has a silly leading space, we need to make sure we can handle that
           prompt = <<~REPLY
-            Hi there I am a robot!!!
-
+            hello world
             !search(search_query: "hello world", random_stuff: 77)
             !random(search_query: "hello world", random_stuff: 77)
             !read(topic_id: 109)
@@ -52,6 +52,15 @@ module ::DiscourseAi
 
       describe "#update_with_delta" do
         describe "get_delta" do
+          it "can properly remove first leading space" do
+            context = {}
+            reply = +""
+
+            reply << bot.get_delta({ completion: " Hello" }, context)
+            reply << bot.get_delta({ completion: " World" }, context)
+            expect(reply).to eq("Hello World")
+          end
+
           it "can properly remove Assistant prefix" do
             context = {}
             reply = +""
