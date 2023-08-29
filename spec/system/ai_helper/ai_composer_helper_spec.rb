@@ -15,6 +15,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:ai_helper_context_menu) { PageObjects::Components::AIHelperContextMenu.new }
   let(:ai_helper_modal) { PageObjects::Modals::AiHelper.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
+  let(:ai_title_suggester) { PageObjects::Components::AITitleSuggester.new }
 
   context "when using the translation mode" do
     let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
@@ -285,25 +286,48 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         )
       end
     end
+  end
 
-    context "when selecting an AI generated title" do
-      let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
-      before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
+  context "when suggesting titles with AI title suggester" do
+    let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
+    before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
-      it "replaces the topic title" do
-        trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
-        ai_helper_context_menu.click_ai_button
-        ai_helper_context_menu.select_helper_model(
-          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
-        )
-        expect(ai_helper_context_menu).to be_showing_suggestions
+    it "opens a menu with title suggestions" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      ai_title_suggester.click_suggest_titles_button
 
-        ai_helper_context_menu.select_title_suggestion(2)
-        expected_title = "The Quiet Piece that Moves Literature: A Gaucho's Story"
+      wait_for { ai_title_suggester.has_dropdown? }
 
-        wait_for { find("#reply-title").value == expected_title }
-        expect(find("#reply-title").value).to eq(expected_title)
-      end
+      expect(ai_title_suggester).to have_dropdown
+    end
+
+    it "replaces the topic title with the selected title" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      ai_title_suggester.click_suggest_titles_button
+
+      wait_for { ai_title_suggester.has_dropdown? }
+
+      ai_title_suggester.select_title_suggestion(2)
+      expected_title = "The Quiet Piece that Moves Literature: A Gaucho's Story"
+
+      expect(find("#reply-title").value).to eq(expected_title)
+    end
+
+    it "closes the menu when clicking outside" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      ai_title_suggester.click_suggest_titles_button
+
+      wait_for { ai_title_suggester.has_dropdown? }
+
+      find(".d-editor-preview").click
+
+      expect(ai_title_suggester).to have_no_dropdown
     end
   end
 end

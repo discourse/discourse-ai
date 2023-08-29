@@ -209,3 +209,36 @@
     box-shadow: 10014px 15px 0 0 rgba(152, 128, 255, 0);
   }
 }
+
+// Suggest Titles Related
+.suggest-titles-button {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background: none;
+  border: none;
+
+  .d-icon-spinner {
+    animation: spin 1s linear infinite;
+  }
+}
+
+.ai-title-suggestions-menu {
+  list-style: none;
+  margin-left: 0;
+  position: absolute;
+  right: 0;
+  top: 1.5rem;
+  max-width: 25rem;
+  width: unset;
+  z-index: 999;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}

@@ -42,7 +42,6 @@ export default class AiHelperContextMenu extends Component {
   @tracked loading = false;
   @tracked oldEditorValue;
   @tracked newEditorValue;
-  @tracked generatedTitleSuggestions = [];
   @tracked lastUsedOption = null;
   @tracked showDiffModal = false;
   @tracked diff;
@@ -52,7 +51,6 @@ export default class AiHelperContextMenu extends Component {
     options: "OPTIONS",
     resets: "RESETS",
     loading: "LOADING",
-    suggesions: "SUGGESTIONS",
     review: "REVIEW",
   };
   prompts = [];
@@ -81,21 +79,24 @@ export default class AiHelperContextMenu extends Component {
   async loadPrompts() {
     let prompts = await ajax("/discourse-ai/ai-helper/prompts");
 
-    prompts.map((p) => {
-      this.prompts[p.id] = p;
-    });
+    prompts
+      .filter((p) => p.name !== "generate_titles")
+      .map((p) => {
+        this.prompts[p.id] = p;
+      });
 
     this.promptTypes = prompts.reduce((memo, p) => {
       memo[p.name] = p.prompt_type;
       return memo;
     }, {});
-
-    this.helperOptions = prompts.map((p) => {
-      return {
-        name: p.translated_name,
-        value: p.id,
-      };
-    });
+    this.helperOptions = prompts
+      .filter((p) => p.name !== "generate_titles")
+      .map((p) => {
+        return {
+          name: p.translated_name,
+          value: p.id,
+        };
+      });
   }
 
   @bind
@@ -297,29 +298,13 @@ export default class AiHelperContextMenu extends Component {
         // resets the values if new suggestion is started:
         this.diff = null;
         this.newSelectedText = null;
-
-        if (this.prompts[option].name === "generate_titles") {
-          this.menuState = this.CONTEXT_MENU_STATES.suggestions;
-          this.generatedTitleSuggestions = data.suggestions;
-        } else {
-          this._updateSuggestedByAI(data);
-        }
+        this._updateSuggestedByAI(data);
       })
       .catch(popupAjaxError)
       .finally(() => {
         this.loading = false;
         this._dEditorInput.classList.remove("loading");
       });
-  }
-
-  @action
-  updateTopicTitle(title) {
-    const composer = this.args.outletArgs?.composer;
-
-    if (composer) {
-      composer.set("title", title);
-      this.closeContextMenu();
-    }
   }
 
   @action
