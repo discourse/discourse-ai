@@ -6,6 +6,9 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { bind } from "discourse-common/utils/decorators";
+import { inject as service } from "@ember/service";
+import I18n from "I18n";
+
 
 export default class AITitleSuggester extends Component {
   <template>
@@ -33,6 +36,7 @@ export default class AITitleSuggester extends Component {
     {{/if}}
   </template>
 
+  @service dialog;
   @tracked loading = false;
   @tracked showMenu = false;
   @tracked generatedTitleSuggestions = [];
@@ -50,7 +54,7 @@ export default class AITitleSuggester extends Component {
   }
 
   get composerInput() {
-    return document.querySelector(".d-editor-input").value || this.args.outletArgs.composer.reply;
+    return document.querySelector(".d-editor-input")?.value || this.args.outletArgs.composer.reply;
   }
 
   get disableSuggestionButton() {
@@ -90,6 +94,10 @@ export default class AITitleSuggester extends Component {
 
   @action
   async suggestTitles() {
+    if (this.composerInput?.length === 0) {
+      return this.dialog.alert(I18n.t("discourse_ai.ai_helper.missing_content"));
+    }
+
     this.loading = true;
     this.suggestTitleIcon = "spinner";
 
