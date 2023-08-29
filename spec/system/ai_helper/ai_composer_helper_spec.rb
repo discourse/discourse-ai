@@ -15,6 +15,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:ai_helper_context_menu) { PageObjects::Components::AIHelperContextMenu.new }
   let(:ai_helper_modal) { PageObjects::Modals::AiHelper.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
+  let(:ai_title_suggester) { PageObjects::Components::AITitleSuggester.new }
 
   context "when using the translation mode" do
     let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
@@ -292,15 +293,41 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
     it "opens a menu with title suggestions" do
-      # TODO
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      ai_title_suggester.click_suggest_titles_button
+
+      wait_for { ai_title_suggester.has_dropdown? }
+
+      expect(ai_title_suggester).to have_dropdown
     end
 
     it "replaces the topic title with the selected title" do
-      # TODO
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      ai_title_suggester.click_suggest_titles_button
+
+      wait_for { ai_title_suggester.has_dropdown? }
+
+      ai_title_suggester.select_title_suggestion(2)
+      expected_title = "The Quiet Piece that Moves Literature: A Gaucho's Story"
+
+      expect(find("#reply-title").value).to eq(expected_title)
     end
 
     it "closes the menu when clicking outside" do
-      # TODO
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      ai_title_suggester.click_suggest_titles_button
+
+      wait_for { ai_title_suggester.has_dropdown? }
+
+      find(".d-editor-preview").click
+
+      expect(ai_title_suggester).to have_no_dropdown
     end
   end
 end
