@@ -5,13 +5,17 @@ module DiscourseAi::AiBot::Commands
 
   class SettingContextCommand < Command
     def self.rg_installed?
-      @rg_installed ||=
-        begin
-          Discourse::Utils.execute_command("which", "rg")
-          true
-        rescue Discourse::Utils::CommandError
-          false
-        end
+      if defined?(@rg_installed)
+        @rg_installed
+      else
+        @rg_installed =
+          begin
+            Discourse::Utils.execute_command("which", "rg")
+            true
+          rescue Discourse::Utils::CommandError
+            false
+          end
+      end
     end
 
     class << self
@@ -42,6 +46,8 @@ module DiscourseAi::AiBot::Commands
     def description_args
       { setting_name: @setting_name }
     end
+
+    CODE_FILE_EXTENSIONS = "rb,js,gjs,hbs"
 
     def process(setting_name:)
       if !self.class.rg_installed?
@@ -81,7 +87,7 @@ module DiscourseAi::AiBot::Commands
             "-g",
             "!**/dist/**",
             "-g",
-            "*.{rb,js,gjs}",
+            "*.{#{CODE_FILE_EXTENSIONS}}",
             "-C",
             "10",
             "--color",
@@ -111,7 +117,7 @@ module DiscourseAi::AiBot::Commands
             name,
             search_path,
             "-g",
-            "*.{rb,js,gjs}",
+            "*.{#{CODE_FILE_EXTENSIONS}}",
             "-A",
             "10",
             "--color",
