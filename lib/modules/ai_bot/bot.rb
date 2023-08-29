@@ -58,6 +58,7 @@ module DiscourseAi
 
       def initialize(bot_user)
         @bot_user = bot_user
+        @persona = DiscourseAi::AiBot::Personas::General.new
       end
 
       def update_pm_title(post)
@@ -265,27 +266,7 @@ module DiscourseAi
       end
 
       def available_commands
-        return @cmds if @cmds
-
-        all_commands =
-          [
-            Commands::CategoriesCommand,
-            Commands::TimeCommand,
-            Commands::SearchCommand,
-            Commands::SummarizeCommand,
-            Commands::ReadCommand,
-            Commands::SettingContextCommand,
-          ].tap do |cmds|
-            cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
-            cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
-            if SiteSetting.ai_google_custom_search_api_key.present? &&
-                 SiteSetting.ai_google_custom_search_cx.present?
-              cmds << Commands::GoogleCommand
-            end
-          end
-
-        allowed_commands = SiteSetting.ai_bot_enabled_chat_commands.split("|")
-        @cmds = all_commands.filter { |klass| allowed_commands.include?(klass.name) }
+        @persona.available_commands
       end
 
       def system_prompt_style!(style)
@@ -295,26 +276,10 @@ module DiscourseAi
       def system_prompt(post)
         return "You are a helpful Bot" if @style == :simple
 
-        prompt = +<<~TEXT
-          You are a helpful Discourse assistant.
-          You understand and generate Discourse Markdown.
-          You live in a Discourse Forum Message.
-
-          You live in the forum with the URL: #{Discourse.base_url}
-          The title of your site: #{SiteSetting.title}
-          The description is: #{SiteSetting.site_description}
-          The participants in this conversation are: #{post.topic.allowed_users.map(&:username).join(", ")}
-          The date now is: #{Time.zone.now}, much has changed since you were trained.
-        TEXT
-
-        if include_function_instructions_in_system_prompt?
-          prompt << "\n"
-          prompt << function_list.system_prompt
-          prompt << "\n"
-        end
-
-        prompt << available_commands.map(&:custom_system_message).compact.join("\n")
-        prompt
+        @persona.render_system_prompt(
+          topic: post.topic,
+          render_function_instructions: include_function_instructions_in_system_prompt?,
+        )
       end
 
       def include_function_instructions_in_system_prompt?
@@ -322,11 +287,7 @@ module DiscourseAi
       end
 
       def function_list
-        return @function_list if @function_list
-
-        @function_list = DiscourseAi::Inference::FunctionList.new
-        available_functions.each { |function| @function_list << function }
-        @function_list
+        @persona.function_list
       end
 
       def tokenizer
@@ -363,29 +324,7 @@ module DiscourseAi
       end
 
       def available_functions
-        # note if defined? can be a problem in test
-        # this can never be nil so it is safe
-        return @available_functions if @available_functions
-
-        functions = []
-
-        functions =
-          available_commands.map do |command|
-            function =
-              DiscourseAi::Inference::Function.new(name: command.name, description: command.desc)
-            command.parameters.each do |parameter|
-              function.add_parameter(
-                name: parameter.name,
-                type: parameter.type,
-                description: parameter.description,
-                required: parameter.required,
-                enum: parameter.enum,
-              )
-            end
-            function
-          end
-
-        @available_functions = functions
+        @persona.available_functions
       end
 
       protected

@@ -39,6 +39,9 @@ module DiscourseAi
         require_relative "commands/google_command"
         require_relative "commands/read_command"
         require_relative "commands/setting_context_command"
+        require_relative "personas/persona"
+        require_relative "personas/artist"
+        require_relative "personas/general"
       end
 
       def inject_into(plugin)
