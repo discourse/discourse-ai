@@ -59,8 +59,8 @@ module DiscourseAi
         DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model, **params, &blk)
       end
 
-      def tokenize(text)
-        DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(text)
+      def tokenizer
+        DiscourseAi::Tokenizer::OpenAiTokenizer
       end
 
       def model_for(low_cost: false)

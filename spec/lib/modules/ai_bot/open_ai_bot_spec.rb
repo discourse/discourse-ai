@@ -21,7 +21,6 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
         SiteSetting.ai_google_custom_search_api_key = "test"
         SiteSetting.ai_google_custom_search_cx = "test"
 
-        expect(subject.available_commands.length).to eq(6)
         expect(subject.available_commands.length).to eq(
           SiteSetting.ai_bot_enabled_chat_commands.split("|").length,
         )

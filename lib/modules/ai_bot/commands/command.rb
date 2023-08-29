@@ -64,6 +64,10 @@ module DiscourseAi
           @bot ||= DiscourseAi::AiBot::Bot.as(bot_user)
         end
 
+        def tokenizer
+          bot.tokenizer
+        end
+
         def standalone?
           false
         end
