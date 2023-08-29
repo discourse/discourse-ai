@@ -5,3 +5,12 @@
 # https://translate.discourse.org/
 
 id:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Batalkan perintah"
+          cancel: "Batal"
+          regen: "Coba Lagi"
+          confirm: "Konfirmasi"
+          revert: "Dibalik"

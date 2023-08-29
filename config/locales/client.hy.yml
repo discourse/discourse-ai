@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 hy:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Ետարկել"
+          cancel: "Չեղարկել"
+          regen: "Կրկին Փորձել"
+          revert: "Հետադարձել"

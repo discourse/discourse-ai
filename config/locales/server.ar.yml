@@ -58,7 +58,6 @@ ar:
     ai_bot_enabled: "تفعيل وحدة روبوت الذكاء الاصطناعي"
     ai_bot_allowed_groups: "عندما يتمكن GPT Bot من الوصول إلى الرسالة الخاصة، فإنه سيرد على أعضاء هذه المجموعات."
     ai_bot_enabled_chat_bots: "النماذج المتاحة للقيام بدور روبوت الذكاء الاصطناعي"
-    ai_bot_enabled_chat_commands: "تكاملات GPT المتاحة للاستخدام لتوفير وظيفة خارجية للنموذج. تعمل مع GPT-4 وGPT-3.5 فقط"
     ai_helper_add_ai_pm_to_header: "عرض زر في الرأس لبدء رسالة خاصة مع روبوت ذكاء اصطناعي"
     ai_stability_api_key: "مفتاح API لواجهة API المسماة stability.ai"
     ai_stability_api_url: "عنوان URL لواجهة API المسماة stability.ai"

@@ -16,6 +16,12 @@ fr:
         title: "Suggérer des modifications à l'aide de l'IA"
         description: "Choisissez l'une des options ci-dessous et l'IA vous proposera une nouvelle version du texte."
         selection_hint: "Conseil : vous pouvez également sélectionner une partie du texte avant d'ouvrir l'assistant pour ne réécrire que cette partie."
+        context_menu:
+          undo: "Annuler"
+          cancel: "Annuler"
+          regen: "Réessayer"
+          confirm: "Confirmer"
+          revert: "Rétablir"
       reviewables:
         model_used: "Modèle utilisé :"
         accuracy: "Précision :"

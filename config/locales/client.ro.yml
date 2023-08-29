@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 ro:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Anulează acțiunea"
+          cancel: "Anulare"
+          regen: "Încearcă din nou"
+          revert: "Revenire la starea inițială"

@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 nb_NO:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Angre"
+          cancel: "Avbryt"
+          regen: "Prøv igjen"
+          revert: "Reverser"

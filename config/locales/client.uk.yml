@@ -5,3 +5,12 @@
 # https://translate.discourse.org/
 
 uk:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Скасувати"
+          cancel: "Скасувати"
+          regen: "Спробувати ще раз"
+          confirm: "Підтвердити"
+          revert: "Повернути"

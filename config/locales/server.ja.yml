@@ -58,7 +58,6 @@ ja:
     ai_bot_enabled: "AI ボットモジュールを有効にします。"
     ai_bot_allowed_groups: "GPT ボットが PM にアクセスできる場合、これらのグループのメンバーに返信します。"
     ai_bot_enabled_chat_bots: "AI ボットとして機能する利用可能なモデル"
-    ai_bot_enabled_chat_commands: "外部機能をモデルに提供するために使用できる GPT の統合。GPT-4 および GPT-3.5 でのみ動作します"
     ai_helper_add_ai_pm_to_header: "AI ボットとの PM を開始するためのボタンをヘッダーに表示する"
     ai_stability_api_key: "stability.ai API の API キー"
     ai_stability_api_url: "stability.ai API の URL"

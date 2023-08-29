@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 vi:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Hoàn tác"
+          cancel: "Huỷ"
+          regen: "Thử lại"
+          revert: "Phục hồi"

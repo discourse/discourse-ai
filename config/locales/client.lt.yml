@@ -5,3 +5,12 @@
 # https://translate.discourse.org/
 
 lt:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Anuliuoti"
+          cancel: "Atšaukti"
+          regen: "Bandyti dar kartą"
+          confirm: "Patvirtinti"
+          revert: "Grąžinti"

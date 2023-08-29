@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 et:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Ennista"
+          cancel: "Tühista"
+          regen: "Proovi uuesti"
+          revert: "Võta tagasi"
