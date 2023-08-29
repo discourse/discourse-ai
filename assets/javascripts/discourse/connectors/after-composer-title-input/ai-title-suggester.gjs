@@ -50,10 +50,14 @@ export default class AITitleSuggester extends Component {
   }
 
   get composerInput() {
-    return document.querySelector(".d-editor-input").value || this.args.outletArgs.composer.reply;
+    return document.querySelector(".d-editor-input")?.value || this.args.outletArgs.composer.reply;
   }
 
   get disableSuggestionButton() {
+    if (this.composerInput?.length === 0) {
+      return true;
+    }
+
     return this.loading;
   }
 
