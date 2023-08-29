@@ -39,15 +39,28 @@ module DiscourseAi
         require_relative "commands/google_command"
         require_relative "commands/read_command"
         require_relative "commands/setting_context_command"
+        require_relative "commands/db_schema_command"
         require_relative "personas/persona"
         require_relative "personas/artist"
         require_relative "personas/general"
+        require_relative "personas/sql_helper"
       end
 
       def inject_into(plugin)
         plugin.register_seedfu_fixtures(
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_bot"),
         )
+
+        plugin.add_to_serializer(
+          :current_user,
+          :ai_enabled_personas,
+          include_condition: -> do
+            SiteSetting.ai_bot_enabled && scope.authenticated? &&
+              scope.user.in_any_groups?(SiteSetting.ai_bot_allowed_groups_map)
+          end,
+        ) do
+          Personas.all.map { |persona| { name: persona.name, description: persona.description } }
+        end
 
         plugin.add_to_serializer(
           :current_user,

@@ -3,9 +3,19 @@
 module DiscourseAi
   module AiBot
     module Personas
+      def self.all
+        personas = [Personas::General, Personas::SqlHelper]
+        personas << Personas::Artist if SiteSetting.ai_stability_api_key.present?
+        personas
+      end
+
       class Persona
-        def name
-          raise "Must be implemented"
+        def self.name
+          I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.name")
+        end
+
+        def self.description
+          I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.description")
         end
 
         def commands

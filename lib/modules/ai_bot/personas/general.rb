@@ -8,14 +8,6 @@ module DiscourseAi
           all_available_commands
         end
 
-        def name
-          "general"
-        end
-
-        def description
-          "general purpose discourse bot"
-        end
-
         def system_prompt
           <<~PROMPT
             You are a helpful Discourse assistant.

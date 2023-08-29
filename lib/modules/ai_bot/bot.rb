@@ -91,6 +91,13 @@ module DiscourseAi
       )
         return if total_completions > MAX_COMPLETIONS
 
+        @persona = DiscourseAi::AiBot::Personas::General.new
+        if persona_name = post.topic.custom_fields["ai_persona"]
+          personaClass =
+            DiscourseAi::AiBot::Personas.all.find { |current| current.name == persona_name }
+          @persona = personaClass.new if personaClass
+        end
+
         prompt =
           if standalone && post.post_custom_prompt
             username, standalone_prompt = post.post_custom_prompt.custom_prompt.last

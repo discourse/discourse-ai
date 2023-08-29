@@ -3,10 +3,6 @@ import { inject as service } from "@ember/service";
 import { computed } from "@ember/object";
 
 export default class extends Component {
-  static shouldRender() {
-    return true;
-  }
-
   @service currentUser;
   @service siteSettings;
 
