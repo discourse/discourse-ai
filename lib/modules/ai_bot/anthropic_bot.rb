@@ -20,7 +20,12 @@ module DiscourseAi
       end
 
       def get_delta(partial, context)
-        partial[:completion]
+        completion = partial[:completion]
+        if completion&.start_with?(" ") && !context[:processed_first]
+          completion = completion[1..-1]
+          context[:processed_first] = true
+        end
+        completion
       end
 
       private
