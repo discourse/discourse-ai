@@ -53,6 +53,7 @@
 
   &.out-of-bounds {
     visibility: hidden;
+    pointer-events: none;
   }
 
   ul {

@@ -45,6 +45,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked lastUsedOption = null;
   @tracked showDiffModal = false;
   @tracked diff;
+  @tracked popperPlacement = "top-start";
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -205,18 +206,34 @@ export default class AiHelperContextMenu extends Component {
   }
 
   handleBoundaries() {
-    const boundaryElement = document
+    const textAreaWrapper = document
       .querySelector(".d-editor-textarea-wrapper")
       .getBoundingClientRect();
+    const buttonBar = document
+      .querySelector(".d-editor-button-bar")
+      .getBoundingClientRect();
+
+    const boundaryElement = {
+      top: buttonBar.bottom,
+      bottom: textAreaWrapper.bottom,
+    };
 
     const contextMenuRect = this._contextMenu.getBoundingClientRect();
 
+    // Hide context menu if it's scrolled out of bounds:
     if (contextMenuRect.top < boundaryElement.top) {
       this._contextMenu.classList.add("out-of-bounds");
     } else if (contextMenuRect.bottom > boundaryElement.bottom) {
       this._contextMenu.classList.add("out-of-bounds");
     } else {
       this._contextMenu.classList.remove("out-of-bounds");
+    }
+
+    // Position context menu at based on if interfering with button bar
+    if (this.caretCoords.y - contextMenuRect.height < boundaryElement.top) {
+      this.popperPlacement = "bottom-start";
+    } else {
+      this.popperPlacement = "top-start";
     }
   }
 
@@ -240,7 +257,7 @@ export default class AiHelperContextMenu extends Component {
     };
 
     this._popper = createPopper(this.virtualElement, this._contextMenu, {
-      placement: "top-start",
+      placement: this.popperPlacement,
       modifiers: [
         {
           name: "offset",
