@@ -5,3 +5,12 @@
 # https://translate.discourse.org/
 
 da:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Fortryd"
+          cancel: "Annuller"
+          regen: "Prøv igen"
+          confirm: "Bekræft"
+          revert: "Gendan"

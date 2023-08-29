@@ -5,3 +5,12 @@
 # https://translate.discourse.org/
 
 sv:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Ångra"
+          cancel: "Avbryt"
+          regen: "Försök igen"
+          confirm: "Bekräfta"
+          revert: "Återställ"

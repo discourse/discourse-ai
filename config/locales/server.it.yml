@@ -58,7 +58,6 @@ it:
     ai_bot_enabled: "Abilita il modulo Bot IA."
     ai_bot_allowed_groups: "Quando il bot GPT ha accesso a un MP, risponderà ai membri di questi gruppi."
     ai_bot_enabled_chat_bots: "Modelli disponibili per agire come robot IA"
-    ai_bot_enabled_chat_commands: "Integrazioni GPT disponibili utilizzate per fornire funzionalità esterne al modello. Funziona solo con GPT-4 e GPT-3.5"
     ai_helper_add_ai_pm_to_header: "Mostra un pulsante nell'intestazione per avviare un MP con un Bot IA"
     ai_stability_api_key: "Chiave API per l'API stability.ai"
     ai_stability_api_url: "URL per l'API stability.ai"

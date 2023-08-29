@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 lv:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Atsaukt"
+          cancel: "Atcelt"
+          regen: "Mēģināt vēlreiz"
+          revert: "Atgriezt"

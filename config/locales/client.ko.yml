@@ -5,3 +5,12 @@
 # https://translate.discourse.org/
 
 ko:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "실행 취소"
+          cancel: "취소"
+          regen: "다시 시도"
+          confirm: "확인"
+          revert: "되돌리기"

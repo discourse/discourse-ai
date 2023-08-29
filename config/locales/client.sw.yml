@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 sw:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Tendua"
+          cancel: "Ghairi"
+          regen: "Jaribu Tena"
+          revert: "Rudisha Nyuma"

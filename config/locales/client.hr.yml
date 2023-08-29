@@ -5,3 +5,12 @@
 # https://translate.discourse.org/
 
 hr:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Vrati na prethodno"
+          cancel: "Odustani"
+          regen: "Pokušaj ponovno"
+          confirm: "Potvrdi"
+          revert: "Vrati nazad"

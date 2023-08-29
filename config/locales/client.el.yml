@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 el:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Αναίρεση"
+          cancel: "Ακύρωση"
+          regen: "Δοκίμασε ξανά"
+          revert: "Επαναφορά"

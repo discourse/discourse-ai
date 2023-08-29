@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 pt:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Desfazer"
+          cancel: "Cancelar"
+          regen: "Tentar Novamente"
+          revert: "Reverter"

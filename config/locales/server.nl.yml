@@ -58,7 +58,6 @@ nl:
     ai_bot_enabled: "Schakel de AI-botmodule in."
     ai_bot_allowed_groups: "Wanneer de GPT-bot toegang heeft tot het privébericht, zal deze reageren op leden van deze groepen."
     ai_bot_enabled_chat_bots: "Beschikbare modellen om op te treden als AI-bot"
-    ai_bot_enabled_chat_commands: "Beschikbare GPT-integraties die worden gebruikt om externe functionaliteit aan het model te bieden. Werkt alleen met GPT-4 en GPT-3.5"
     ai_helper_add_ai_pm_to_header: "Geef een knop weer in de kop om een privéchat te starten met een AI-bot"
     ai_stability_api_key: "API-sleutel voor de stability.ai-API"
     ai_stability_api_url: "URL voor de stability.ai-API"

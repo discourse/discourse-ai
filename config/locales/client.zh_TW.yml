@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 zh_TW:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "復原"
+          cancel: "取消"
+          regen: "請再試一次"
+          revert: "恢復"

@@ -58,7 +58,6 @@ zh_CN:
     ai_bot_enabled: "启用 AI 机器人模块。"
     ai_bot_allowed_groups: "当 GPT 机器人可以访问私信时，它将回复这些群组的成员。"
     ai_bot_enabled_chat_bots: "充当 AI 机器人的可用模型"
-    ai_bot_enabled_chat_commands: "可用 GPT 集成用于为模型提供外部功能。仅适用于 GPT-4 和 GPT-3.5"
     ai_helper_add_ai_pm_to_header: "在标题中显示按钮以使用 AI 机器人启动私信"
     ai_stability_api_key: "stability.ai API 的 API 密钥"
     ai_stability_api_url: "stability.ai API 的 URL"

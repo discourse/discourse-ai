@@ -5,3 +5,12 @@
 # https://translate.discourse.org/
 
 ca:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Desfés"
+          cancel: "Cancel·la"
+          regen: "Torna-ho a intentar"
+          confirm: "Confirma"
+          revert: "Reverteix"

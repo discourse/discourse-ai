@@ -5,6 +5,11 @@
 # https://translate.discourse.org/
 
 he:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "בינה מלאכותית ב־Discourse"
   js:
     discourse_ai:
       modals:
@@ -16,6 +21,16 @@ he:
         title: "הצעת שינויים באמצעות בינה מלאכותית"
         description: "נא לבחור באחת מהאפשרויות להלן והבינה המלאכותית תציע לך גרסה חדשה של הטקסט."
         selection_hint: "עצה: אפשר לבחור חלק מהטקסט בטרם פתיחת המסייע כדי לשכתב רק את החלק הזה."
+        context_menu:
+          trigger: "בינה מלאכותית"
+          undo: "ביטול פעולה"
+          loading: "הבינה המלאכותית נוצרת"
+          cancel: "ביטול"
+          regen: "ניסיון נוסף"
+          view_changes: "הצגת שינויים"
+          confirm: "אישור"
+          revert: "החזרה"
+          changes: "שינויים"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"

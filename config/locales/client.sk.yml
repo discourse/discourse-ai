@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 sk:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Späť"
+          cancel: "Zrušiť"
+          regen: "Skúsiť znova"
+          revert: "Vrátiť zmeny"

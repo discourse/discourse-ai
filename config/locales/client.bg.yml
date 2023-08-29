@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 bg:
+  js:
+    discourse_ai:
+      ai_helper:
+        context_menu:
+          undo: "Отмени"
+          cancel: "Прекрати"
+          regen: "Опитайте отново"
+          revert: "Върни"
