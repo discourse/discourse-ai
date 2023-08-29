@@ -7,7 +7,7 @@ module PageObjects
       MENU_SELECTOR = ".ai-title-suggestions-menu"
 
       def click_suggest_titles_button
-        find(BUTTON_SELECTOR).click
+        find(BUTTON_SELECTOR, visible: :all).click
       end
 
       def select_title_suggestion(index)
