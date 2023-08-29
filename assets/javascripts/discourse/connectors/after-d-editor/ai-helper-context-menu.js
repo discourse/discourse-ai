@@ -45,7 +45,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked lastUsedOption = null;
   @tracked showDiffModal = false;
   @tracked diff;
-  @tracked popperPosition = "top-start";
+  @tracked popperPlacement = "top-start";
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -231,9 +231,9 @@ export default class AiHelperContextMenu extends Component {
 
     // Position context menu at based on if interfering with button bar
     if (this.caretCoords.y - contextMenuRect.height < boundaryElement.top) {
-      this.popperPosition = "bottom-start";
+      this.popperPlacement = "bottom-start";
     } else {
-      this.popperPosition = "top-start";
+      this.popperPlacement = "top-start";
     }
   }
 
@@ -257,7 +257,7 @@ export default class AiHelperContextMenu extends Component {
     };
 
     this._popper = createPopper(this.virtualElement, this._contextMenu, {
-      placement: this.popperPosition,
+      placement: this.popperPlacement,
       modifiers: [
         {
           name: "offset",
