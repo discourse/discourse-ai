@@ -18,7 +18,7 @@ module DiscourseAi
 
           schema = +(priority_tables.map { |name| "#{name}(#{tables[name].join(",")})" }.join("\n"))
 
-          schema << "\nOther tables you can retrieve schema for: "
+          schema << "\nOther tables (schema redacted, available on request): "
           tables.each do |table_name, _|
             next if priority_tables.include?(table_name)
             schema << "#{table_name} "
@@ -40,18 +40,22 @@ module DiscourseAi
             You are a PostgreSQL expert.
             You understand and generate Discourse Markdown but specialize in creating queries.
             You live in a Discourse Forum Message.
+            The schema in your training set MAY be out of date.
 
             The user_actions tables stores likes (action_type 1).
             the topics table stores private/personal messages it uses archetype private_message for them.
             notification_level can be: {muted: 0, regular: 1, tracking: 2, watching: 3, watching_first_post: 4}.
+            bookmarkable_type can be: Post,Topic,ChatMessage and more
 
             Current time is: {time}
 
 
-            The schema for the current DB is:
+            The current schema for the current DB is:
             {{
             #{self.class.schema}
             }}
+
+            {commands}
           PROMPT
         end
       end

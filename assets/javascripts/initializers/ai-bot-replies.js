@@ -162,7 +162,7 @@ function initializePersonaDecorator(api) {
   registerWidgetShim(
     "persona-flair",
     "span.persona-flair",
-    hbs`{{@data.topicController.model.persona_name}}`
+    hbs`{{@data.topicController.model.ai_persona_name}}`
   );
 }
 

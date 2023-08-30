@@ -7,7 +7,7 @@ function isBotMessage(composer, currentUser) {
     composer.targetRecipients &&
     currentUser.ai_enabled_chat_bots
   ) {
-    let reciepients = composer.targetRecipients.split(",");
+    const reciepients = composer.targetRecipients.split(",");
 
     return currentUser.ai_enabled_chat_bots.any((bot) =>
       reciepients.any((username) => username === bot.username)

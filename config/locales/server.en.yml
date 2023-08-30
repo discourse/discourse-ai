@@ -95,8 +95,8 @@ en:
     ai_bot:
       personas:
         general:
-          name: Default
-          description: "General purpose AI Bot capable of performing a flexible amount of tasks"
+          name: Forum Helper
+          description: "General purpose AI Bot capable of performing various tasks"
         artist:
           name: Artist
           description: "AI Bot specialized in generating images"

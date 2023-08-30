@@ -93,22 +93,21 @@ module DiscourseAi
         def all_available_commands
           return @cmds if @cmds
 
-          all_commands =
-            [
-              Commands::CategoriesCommand,
-              Commands::TimeCommand,
-              Commands::SearchCommand,
-              Commands::SummarizeCommand,
-              Commands::ReadCommand,
-              Commands::SettingContextCommand,
-            ].tap do |cmds|
-              cmds << Commands::TagsCommand if SiteSetting.tagging_enabled
-              cmds << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
-              if SiteSetting.ai_google_custom_search_api_key.present? &&
-                   SiteSetting.ai_google_custom_search_cx.present?
-                cmds << Commands::GoogleCommand
-              end
-            end
+          all_commands = [
+            Commands::CategoriesCommand,
+            Commands::TimeCommand,
+            Commands::SearchCommand,
+            Commands::SummarizeCommand,
+            Commands::ReadCommand,
+            Commands::SettingContextCommand,
+          ]
+
+          all_commands << Commands::TagsCommand if SiteSetting.tagging_enabled
+          all_commands << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
+          if SiteSetting.ai_google_custom_search_api_key.present? &&
+               SiteSetting.ai_google_custom_search_cx.present?
+            all_commands << Commands::GoogleCommand
+          end
 
           allowed_commands = SiteSetting.ai_bot_enabled_chat_commands.split("|")
           @cmds = all_commands.filter { |klass| allowed_commands.include?(klass.name) }
