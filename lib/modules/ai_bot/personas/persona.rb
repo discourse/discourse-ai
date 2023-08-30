@@ -67,15 +67,7 @@ module DiscourseAi
             available_commands.map do |command|
               function =
                 DiscourseAi::Inference::Function.new(name: command.name, description: command.desc)
-              command.parameters.each do |parameter|
-                function.add_parameter(
-                  name: parameter.name,
-                  type: parameter.type,
-                  description: parameter.description,
-                  required: parameter.required,
-                  enum: parameter.enum,
-                )
-              end
+              command.parameters.each { |parameter| function.add_parameter(parameter) }
               function
             end
 
