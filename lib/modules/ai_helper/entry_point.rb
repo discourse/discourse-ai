@@ -4,6 +4,7 @@ module DiscourseAi
     class EntryPoint
       def load_files
         require_relative "llm_prompt"
+        require_relative "semantic_categorizer"
       end
 
       def inject_into(plugin)

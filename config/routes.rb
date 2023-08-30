@@ -4,6 +4,9 @@ DiscourseAi::Engine.routes.draw do
   scope module: :ai_helper, path: "/ai-helper", defaults: { format: :json } do
     get "prompts" => "assistant#prompts"
     post "suggest" => "assistant#suggest"
+    post "suggest_title" => "assistant#suggest_title"
+    post "suggest_category" => "assistant#suggest_category"
+    post "suggest_tags" => "assistant#suggest_tags"
   end
 
   scope module: :embeddings, path: "/embeddings", defaults: { format: :json } do

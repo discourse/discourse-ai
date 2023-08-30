@@ -39,6 +39,46 @@ module DiscourseAi
                           status: 502
       end
 
+      def suggest_title
+        raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
+
+        prompt = CompletionPrompt.find_by(name: "suggest_title")
+        raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
+
+        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
+
+        hijack do
+          render json:
+                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
+                     prompt,
+                     params[:text],
+                   ),
+                 status: 200
+        end
+      rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
+             ::DiscourseAi::Inference::HuggingFaceTextGeneration::CompletionFailed,
+             ::DiscourseAi::Inference::AnthropicCompletions::CompletionFailed => e
+        render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
+                          status: 502
+      end
+
+      def suggest_category
+        raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
+
+        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
+
+        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(params[:text]).categories,
+               status: 200
+      end
+
+      def suggest_tags
+        raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
+
+        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
+
+        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(params[:text]).tags, status: 200
+      end
+
       private
 
       def ensure_can_request_suggestions
