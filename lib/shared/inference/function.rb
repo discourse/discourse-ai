@@ -12,7 +12,21 @@ module ::DiscourseAi
         @parameters = []
       end
 
-      def add_parameter(name:, type:, description:, enum: nil, required: false)
+      def add_parameter(parameter = nil, **kwargs)
+        if parameter
+          add_parameter_kwargs(
+            name: parameter.name,
+            type: parameter.type,
+            description: parameter.description,
+            required: parameter.required,
+            enum: parameter.enum,
+          )
+        else
+          add_parameter_kwargs(**kwargs)
+        end
+      end
+
+      def add_parameter_kwargs(name:, type:, description:, enum: nil, required: false)
         @parameters << {
           name: name,
           type: type,

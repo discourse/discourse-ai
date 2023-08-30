@@ -93,6 +93,16 @@ en:
         markdown_table: Generate Markdown table
 
     ai_bot:
+      personas:
+        general:
+          name: Forum Helper
+          description: "General purpose AI Bot capable of performing various tasks"
+        artist:
+          name: Artist
+          description: "AI Bot specialized in generating images"
+        sql_helper:
+          name: SQL Helper
+          description: "AI Bot specialized in helping craft SQL queries on this Discourse instance"
       default_pm_prefix: "[Untitled AI bot PM]"
       topic_not_found: "Summary unavailable, topic not found!"
       command_summary:
@@ -105,6 +115,7 @@ en:
         google: "Search Google"
         read: "Read topic"
         setting_context: "Look up site setting context"
+        schema: "Look up database schema"
       command_description:
         read: "Reading: <a href='%{url}'>%{title}</a>"
         time: "Time in %{timezone} is %{time}"
@@ -123,6 +134,7 @@ en:
           one: "Found %{count} <a href='%{url}'>result</a> for '%{query}'"
           other: "Found %{count} <a href='%{url}'>results</a> for '%{query}'"
         setting_context: "Reading context for: %{setting_name}"
+        schema: "%{tables}"
 
     summarization:
       configuration_hint:

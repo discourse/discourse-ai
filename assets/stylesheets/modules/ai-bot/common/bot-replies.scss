@@ -2,9 +2,16 @@ nav.post-controls .actions button.cancel-streaming {
   display: none;
 }
 
-.ai-bot-chat #reply-control {
-  .title-and-category {
-    display: none;
+.ai-bot-chat {
+  #reply-control {
+    .title-and-category,
+    #private-message-users {
+      display: none;
+    }
+  }
+  .gpt-persona {
+    margin-bottom: 5px;
+    margin-top: -10px;
   }
 }
 
@@ -38,4 +45,10 @@ article.streaming nav.post-controls .actions button.cancel-streaming {
       background: var(--primary-low);
     }
   }
+}
+
+.topic-body .persona-flair {
+  order: 2;
+  font-size: var(--font-down-1);
+  padding-top: 3px;
 }

@@ -28,7 +28,22 @@ module ::DiscourseAi
             next if function.blank?
 
             arguments = arguments[0..-2] if arguments.end_with?(")")
-            arguments = arguments.split(",").map(&:strip)
+
+            temp_string = +""
+            in_string = nil
+            replace = SecureRandom.hex(10)
+            arguments.each_char do |char|
+              if %w[" '].include?(char) && !in_string
+                in_string = char
+              elsif char == in_string
+                in_string = nil
+              elsif char == "," && in_string
+                char = replace
+              end
+              temp_string << char
+            end
+
+            arguments = temp_string.split(",").map { |s| s.gsub(replace, ",").strip }
 
             parsed_arguments = {}
             arguments.each do |argument|
@@ -76,8 +91,8 @@ module ::DiscourseAi
         PROMPT
 
         @functions.each do |function|
-          prompt << " // #{function.description}\n"
-          prompt << " #{function.name}"
+          prompt << "// #{function.description}\n"
+          prompt << "!#{function.name}"
           if function.parameters.present?
             prompt << "("
             function.parameters.each_with_index do |parameter, index|
@@ -96,8 +111,9 @@ module ::DiscourseAi
 
               prompt << " /* #{description} */" if description.present?
             end
-            prompt << ")\n"
+            prompt << ")"
           end
+          prompt << "\n"
         end
 
         prompt << <<~PROMPT
@@ -109,8 +125,8 @@ module ::DiscourseAi
           For example for a function defined as:
 
           {
-            // echo a string
-            echo(message: string [required])
+          // echo a string
+          !echo(message: string [required])
           }
 
           Human: please echo out "hello"
