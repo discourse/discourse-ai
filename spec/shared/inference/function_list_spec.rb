@@ -52,8 +52,8 @@ module DiscourseAi::Inference
       #
       expected = <<~PROMPT
         {
-         // Get the weather in a city (default to c)
-         !get_weather(location: string [required] /* the city name */, unit: string [optional] /* the unit of measurement celcius c or fahrenheit f [valid values: c,f] */)
+        // Get the weather in a city (default to c)
+        !get_weather(location: string [required] /* the city name */, unit: string [optional] /* the unit of measurement celcius c or fahrenheit f [valid values: c,f] */)
         }
       PROMPT
       expect(prompt).to include(expected)

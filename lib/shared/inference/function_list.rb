@@ -76,8 +76,8 @@ module ::DiscourseAi
         PROMPT
 
         @functions.each do |function|
-          prompt << " // #{function.description}\n"
-          prompt << " !#{function.name}"
+          prompt << "// #{function.description}\n"
+          prompt << "!#{function.name}"
           if function.parameters.present?
             prompt << "("
             function.parameters.each_with_index do |parameter, index|
@@ -110,8 +110,8 @@ module ::DiscourseAi
           For example for a function defined as:
 
           {
-            // echo a string
-            !echo(message: string [required])
+          // echo a string
+          !echo(message: string [required])
           }
 
           Human: please echo out "hello"
