@@ -29,16 +29,16 @@ module DiscourseAi::Inference
 
     it "can handle complex parsing" do
       raw_prompt = <<~PROMPT
-        !get_weather(location: "sydney", unit: "f")
+        !get_weather(location: "sydney,melbourne", unit: "f")
         !get_weather  (location: sydney)
-        !get_weather(location  : 'sydney's', unit: "m", invalid: "invalid")
+        !get_weather(location  : "sydney's", unit: "m", invalid: "invalid")
         !get_weather(unit: "f", invalid: "invalid")
       PROMPT
       parsed = function_list.parse_prompt(raw_prompt)
 
       expect(parsed).to eq(
         [
-          { name: "get_weather", arguments: { location: "sydney", unit: "f" } },
+          { name: "get_weather", arguments: { location: "sydney,melbourne", unit: "f" } },
           { name: "get_weather", arguments: { location: "sydney" } },
           { name: "get_weather", arguments: { location: "sydney's" } },
         ],

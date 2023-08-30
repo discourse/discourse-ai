@@ -28,7 +28,22 @@ module ::DiscourseAi
             next if function.blank?
 
             arguments = arguments[0..-2] if arguments.end_with?(")")
-            arguments = arguments.split(",").map(&:strip)
+
+            temp_string = +""
+            in_string = nil
+            replace = SecureRandom.hex(10)
+            arguments.each_char do |char|
+              if %w[" '].include?(char) && !in_string
+                in_string = char
+              elsif char == in_string
+                in_string = nil
+              elsif char == "," && in_string
+                char = replace
+              end
+              temp_string << char
+            end
+
+            arguments = temp_string.split(",").map { |s| s.gsub(replace, ",").strip }
 
             parsed_arguments = {}
             arguments.each do |argument|
