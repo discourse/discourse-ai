@@ -4,6 +4,8 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import loadScript from "discourse/lib/load-script";
 import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
+import { registerWidgetShim } from "discourse/widgets/render-glimmer";
+import { hbs } from "ember-cli-htmlbars";
 
 function isGPTBot(user) {
   return user && [-110, -111, -112].includes(user.id);
@@ -138,6 +140,32 @@ function initializeAIBotReplies(api) {
   });
 }
 
+function initializePersonaDecorator(api) {
+  let topicController = null;
+  api.decorateWidget(`poster-name:after`, (dec) => {
+    if (!isGPTBot(dec.attrs.user)) {
+      return;
+    }
+    // this is hacky and will need to change
+    // trouble is we need to get the model for the topic
+    // and it is not available in the decorator
+    // long term this will not be a problem once we remove widgets and
+    // have a saner structure for our model
+    topicController =
+      topicController || api.container.lookup("controller:topic");
+
+    return dec.widget.attach("persona-flair", {
+      topicController,
+    });
+  });
+
+  registerWidgetShim(
+    "persona-flair",
+    "span.persona-flair",
+    hbs`{{@data.topicController.model.persona_name}}`
+  );
+}
+
 export default {
   name: "discourse-ai-bot-replies",
 
@@ -157,6 +185,7 @@ export default {
     if (aiBotEnaled && canInteractWithAIBots) {
       withPluginApi("1.6.0", attachHeaderIcon);
       withPluginApi("1.6.0", initializeAIBotReplies);
+      withPluginApi("1.6.0", initializePersonaDecorator);
     }
   },
 };

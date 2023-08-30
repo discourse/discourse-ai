@@ -91,6 +91,12 @@ module DiscourseAi
 
         plugin.register_svg_icon("robot")
 
+        plugin.add_to_serializer(
+          :topic_view,
+          :persona_name,
+          include_condition: -> { SiteSetting.ai_bot_enabled && object.topic.private_message? },
+        ) { topic.custom_fields["ai_persona"] }
+
         plugin.on(:post_created) do |post|
           bot_ids = BOTS.map(&:first)
 
