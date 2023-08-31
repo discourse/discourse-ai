@@ -3,8 +3,10 @@
 module DiscourseAi
   module AiHelper
     class LlmPrompt
-      def available_prompts
-        CompletionPrompt
+      def available_prompts(name_filter: nil)
+        cp = CompletionPrompt
+        cp = cp.where(name: name_filter) if name_filter.present?
+        cp
           .where(provider: enabled_provider)
           .where(enabled: true)
           .map do |prompt|

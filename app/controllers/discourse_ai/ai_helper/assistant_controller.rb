@@ -42,7 +42,12 @@ module DiscourseAi
       def suggest_title
         raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
 
-        prompt = CompletionPrompt.find_by(name: "suggest_title")
+        llm_prompt =
+          DiscourseAi::AiHelper::LlmPrompt
+            .new
+            .available_prompts(name_filter: "generate_titles")
+            .first
+        prompt = CompletionPrompt.find_by(id: llm_prompt[:id])
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
 
         RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
