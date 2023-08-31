@@ -8,7 +8,7 @@ module DiscourseAi
           return @schema if defined?(@schema)
 
           tables = Hash.new
-          priority_tables = %w[posts topics notifications users user_actions]
+          priority_tables = %w[posts topics notifications users user_actions user_emails]
 
           DB.query(<<~SQL).each { |row| (tables[row.table_name] ||= []) << row.column_name }
         select table_name, column_name from information_schema.columns
