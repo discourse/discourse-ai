@@ -216,7 +216,14 @@ discourse_ai:
      - read
      - tags
      - time
-     - setting_context
+  ai_bot_enabled_personas:
+    type: list
+    default: "general|artist|sql_helper|settings_explorer"
+    choices:
+      - general
+      - artist
+      - sql_helper
+      - settings_explorer
   ai_bot_add_to_header:
     default: true
     client: true

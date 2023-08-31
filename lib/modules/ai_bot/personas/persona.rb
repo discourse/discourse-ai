@@ -6,7 +6,10 @@ module DiscourseAi
       def self.all
         personas = [Personas::General, Personas::SqlHelper]
         personas << Personas::Artist if SiteSetting.ai_stability_api_key.present?
-        personas
+        personas << Personas::SettingsExplorer
+
+        personas_allowed = SiteSetting.ai_bot_enabled_personas.split("|")
+        personas.filter { |persona| personas_allowed.include?(persona.to_s.demodulize.underscore) }
       end
 
       class Persona
@@ -91,7 +94,6 @@ module DiscourseAi
             Commands::SearchCommand,
             Commands::SummarizeCommand,
             Commands::ReadCommand,
-            Commands::SettingContextCommand,
           ]
 
           all_commands << Commands::TagsCommand if SiteSetting.tagging_enabled
