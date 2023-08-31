@@ -217,6 +217,6 @@ discourse_ai:
      - tags
      - time
      - setting_context
-  ai_helper_add_ai_pm_to_header:
+  ai_bot_add_to_header:
     default: true
     client: true

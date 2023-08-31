@@ -58,7 +58,7 @@ zh_CN:
     ai_bot_enabled: "启用 AI 机器人模块。"
     ai_bot_allowed_groups: "当 GPT 机器人可以访问私信时，它将回复这些群组的成员。"
     ai_bot_enabled_chat_bots: "充当 AI 机器人的可用模型"
-    ai_helper_add_ai_pm_to_header: "在标题中显示按钮以使用 AI 机器人启动私信"
+    ai_bot_add_to_header: "在标题中显示按钮以使用 AI 机器人启动私信"
     ai_stability_api_key: "stability.ai API 的 API 密钥"
     ai_stability_api_url: "stability.ai API 的 URL"
     ai_google_custom_search_api_key: "Google 自定义搜索 API 的 API 密钥，请参阅：https://developers.google.com/custom-search"

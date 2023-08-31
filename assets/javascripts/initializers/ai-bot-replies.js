@@ -14,7 +14,7 @@ function isGPTBot(user) {
 function attachHeaderIcon(api) {
   const settings = api.container.lookup("service:site-settings");
 
-  const enabledBots = settings.ai_helper_add_ai_pm_to_header
+  const enabledBots = settings.ai_bot_add_to_header
     ? settings.ai_bot_enabled_chat_bots.split("|").filter(Boolean)
     : [];
   if (enabledBots.length > 0) {

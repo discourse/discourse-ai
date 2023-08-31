@@ -58,7 +58,7 @@ tr_TR:
     ai_bot_enabled: "YZ Botu modülünü etkinleştirin."
     ai_bot_allowed_groups: "GPT Botunun Kişisel Mesaja erişimi olduğunda, bu grupların üyelerine yanıt verir."
     ai_bot_enabled_chat_bots: "YZ Botu görevi görecek mevcut modeller"
-    ai_helper_add_ai_pm_to_header: "Bir YZ Botu ile bir kişisel mesaj başlatmak için başlıkta bir düğme gösterin"
+    ai_bot_add_to_header: "Bir YZ Botu ile bir kişisel mesaj başlatmak için başlıkta bir düğme gösterin"
     ai_stability_api_key: "stability.ai API'si için API anahtarı"
     ai_stability_api_url: "stability.ai API'si için URL"
     ai_google_custom_search_api_key: "Google Özel Arama API'sı için API anahtarı bkz.: https://developers.google.com/custom-search"

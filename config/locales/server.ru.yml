@@ -58,7 +58,7 @@ ru:
     ai_bot_enabled: "Включить модуль AI-бота."
     ai_bot_allowed_groups: "Если у GPT-бота есть доступ к личным сообщениям, он будет отвечать участникам указанных групп."
     ai_bot_enabled_chat_bots: "Доступные модели для использования в качестве AI-бота"
-    ai_helper_add_ai_pm_to_header: "Кнопка в заголовке для начала личного разговора с AI-ботом"
+    ai_bot_add_to_header: "Кнопка в заголовке для начала личного разговора с AI-ботом"
     ai_stability_api_key: "API-ключ для API stability.ai"
     ai_stability_api_url: "URL-адрес для API stability.ai"
     ai_google_custom_search_api_key: "API-ключ для API программируемого поиска Google — см. https://developers.google.com/custom-search"

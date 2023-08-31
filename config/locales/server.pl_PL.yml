@@ -58,7 +58,7 @@ pl_PL:
     ai_bot_enabled: "Włącz moduł bota AI."
     ai_bot_allowed_groups: "Gdy bot GPT uzyska dostęp do PW, odpowie członkom tych grup."
     ai_bot_enabled_chat_bots: "Dostępne modele do działania jako bot AI"
-    ai_helper_add_ai_pm_to_header: "Wyświetl przycisk w nagłówku, aby rozpocząć PW z botem AI"
+    ai_bot_add_to_header: "Wyświetl przycisk w nagłówku, aby rozpocząć PW z botem AI"
     ai_stability_api_key: "Klucz dla API stability.ai"
     ai_stability_api_url: "Adres URL interfejsu API stability.ai"
     ai_google_custom_search_api_key: "Klucz dla Google Custom Search API, zobacz: https://developers.google.com/custom-search"
