@@ -58,7 +58,7 @@ fi:
     ai_bot_enabled: "Ota tekoälybottimoduuli käyttöön."
     ai_bot_allowed_groups: "Kun GPT-botilla on yksityisviestin käyttöoikeus, se vastaa näiden ryhmien jäsenille."
     ai_bot_enabled_chat_bots: "Käytettävissä olevat mallit tekoälybottina toimimiseen"
-    ai_helper_add_ai_pm_to_header: "Näytä painike yläpalkissa yksityiskeskustelun aloittamiseksi tekoälybotin kanssa"
+    ai_bot_add_to_header: "Näytä painike yläpalkissa yksityiskeskustelun aloittamiseksi tekoälybotin kanssa"
     ai_stability_api_key: "stability.ai-APIn API-avain"
     ai_stability_api_url: "stability.ai-APIn URL"
     ai_google_custom_search_api_key: "Google Custom Search APIn API-avain, katso: https://developers.google.com/custom-search"

@@ -58,7 +58,7 @@ ar:
     ai_bot_enabled: "تفعيل وحدة روبوت الذكاء الاصطناعي"
     ai_bot_allowed_groups: "عندما يتمكن GPT Bot من الوصول إلى الرسالة الخاصة، فإنه سيرد على أعضاء هذه المجموعات."
     ai_bot_enabled_chat_bots: "النماذج المتاحة للقيام بدور روبوت الذكاء الاصطناعي"
-    ai_helper_add_ai_pm_to_header: "عرض زر في الرأس لبدء رسالة خاصة مع روبوت ذكاء اصطناعي"
+    ai_bot_add_to_header: "عرض زر في الرأس لبدء رسالة خاصة مع روبوت ذكاء اصطناعي"
     ai_stability_api_key: "مفتاح API لواجهة API المسماة stability.ai"
     ai_stability_api_url: "عنوان URL لواجهة API المسماة stability.ai"
     ai_google_custom_search_api_key: "مفتاح API لواجهة API الخاصة ببحث Google المخصَّص، راجع: https://developers.google.com/custom-search"

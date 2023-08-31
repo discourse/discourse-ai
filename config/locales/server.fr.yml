@@ -58,7 +58,7 @@ fr:
     ai_bot_enabled: "Activez le module du robot IA."
     ai_bot_allowed_groups: "Lorsque le robot GPT aura accès aux messages privés, il répondra aux membres de ces groupes."
     ai_bot_enabled_chat_bots: "Modèles disponibles pour agir en tant que robot IA"
-    ai_helper_add_ai_pm_to_header: "Afficher un bouton dans l'en-tête pour démarrer une conversation avec un robot IA"
+    ai_bot_add_to_header: "Afficher un bouton dans l'en-tête pour démarrer une conversation avec un robot IA"
     ai_stability_api_key: "Clé API pour l'API stable.ai"
     ai_stability_api_url: "Adresse URL de l'API stability.ai"
     ai_google_custom_search_api_key: "Clé API pour l'API Google Custom Search, voir : https://developers.google.com/custom-search"

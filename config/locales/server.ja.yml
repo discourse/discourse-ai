@@ -58,7 +58,7 @@ ja:
     ai_bot_enabled: "AI ボットモジュールを有効にします。"
     ai_bot_allowed_groups: "GPT ボットが PM にアクセスできる場合、これらのグループのメンバーに返信します。"
     ai_bot_enabled_chat_bots: "AI ボットとして機能する利用可能なモデル"
-    ai_helper_add_ai_pm_to_header: "AI ボットとの PM を開始するためのボタンをヘッダーに表示する"
+    ai_bot_add_to_header: "AI ボットとの PM を開始するためのボタンをヘッダーに表示する"
     ai_stability_api_key: "stability.ai API の API キー"
     ai_stability_api_url: "stability.ai API の URL"
     ai_google_custom_search_api_key: "Google カスタム検索 API の API キーは https://developers.google.com/custom-search を参照してください"
