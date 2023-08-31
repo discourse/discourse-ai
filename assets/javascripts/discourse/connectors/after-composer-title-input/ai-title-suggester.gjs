@@ -101,12 +101,15 @@ export default class AITitleSuggester extends Component {
     this.loading = true;
     this.suggestTitleIcon = "spinner";
 
-    return ajax("/discourse-ai/ai-helper/suggest", {
+    return ajax("/discourse-ai/ai-helper/suggest_tags", {
       method: "POST",
-      data: { mode: this.mode.id, text: this.composerInput },
+      data: { text: this.composerInput },
     }).then((data) => {
+      console.log(data);
       this.generatedTitleSuggestions = data.suggestions;
-    }).catch(popupAjaxError).finally(() => {
+    }).catch((e) => {
+      console.log(e);
+    }).finally(() => {
       this.loading = false;
       this.suggestTitleIcon = "sync-alt";
       this.showMenu = true;
