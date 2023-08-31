@@ -16,7 +16,7 @@ en:
         title: "Suggest changes using AI"
         description: "Choose one of the options below, and the AI will suggest you a new version of the text."
         selection_hint: "Hint: You can also select a portion of the text before opening the helper to rewrite only that."
-        suggest_titles: "Suggest titles with AI"
+        suggest: "Suggest with AI"
         missing_content: "Please enter some content to generate suggestions."
         context_menu:
           trigger: "AI"
