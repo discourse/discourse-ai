@@ -142,7 +142,7 @@ module ::DiscourseAi
             response_tokens: response_tokens,
           )
         end
-        if log && Rails.env == "development"
+        if log && Rails.env.development?
           puts "OpenAiCompletions: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
         end
       end
