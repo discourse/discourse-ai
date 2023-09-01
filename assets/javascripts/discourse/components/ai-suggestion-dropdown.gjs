@@ -125,6 +125,7 @@ export default class AISuggestionDropdown extends Component {
       return;
     }
 
+    // TODO: If tags are already present, don't add them again.
     // TODO: FIX, UI is not updating after adding a tag, though it works on submit.
     tags.push(suggestion);
     composer.set("tags", tags);
