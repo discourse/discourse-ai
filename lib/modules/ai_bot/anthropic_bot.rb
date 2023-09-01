@@ -28,6 +28,10 @@ module DiscourseAi
         completion
       end
 
+      def tokenizer
+        DiscourseAi::Tokenizer::AnthropicTokenizer
+      end
+
       private
 
       def build_message(poster_username, content, system: false, function: nil)
@@ -57,10 +61,6 @@ module DiscourseAi
           max_tokens: 3000,
           &blk
         )
-      end
-
-      def tokenizer
-        DiscourseAi::Tokenizer::AnthropicTokenizer
       end
     end
   end
