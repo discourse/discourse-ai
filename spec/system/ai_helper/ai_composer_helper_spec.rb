@@ -333,9 +333,16 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when suggesting the category with AI category suggester" do
-    SiteSetting.ai_embeddings_enabled = true
+    before { SiteSetting.ai_embeddings_enabled = true }
 
     it "updates the category with the suggested category" do
+      response =
+        Category
+          .take(3)
+          .pluck(:slug)
+          .map { |s| { name: s, score: rand(0.0...45.0) } }
+          .sort { |h| h[:score] }
+      DiscourseAi::AiHelper::SemanticCategorizer.any_instance.stubs(:categories).returns(response)
       visit("/latest")
       page.find("#create-topic").click
       composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
@@ -343,9 +350,11 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
       wait_for { ai_suggestion_dropdown.has_dropdown? }
 
-      suggestion = ai_suggestion_dropdown.suggestion_name(1)
-      ai_suggestion_dropdown.select_suggestion(1)
-      expect(find(".category-chooser summary[data-name='#{category_name}']")).to eq(suggestion)
+      suggestion = ai_suggestion_dropdown.suggestion_name(0)
+      ai_suggestion_dropdown.select_suggestion(0)
+      category_selector = page.find(".category-chooser summary")
+
+      expect(category_selector["data-name"].downcase.gsub(" ", "-")).to eq(suggestion)
     end
   end
 end

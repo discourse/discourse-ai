@@ -20,7 +20,8 @@ module PageObjects
       end
 
       def suggestion_name(index)
-        find("#{MENU_SELECTOR} li[data-value=\"#{index}\"]").text
+        suggestion = find("#{MENU_SELECTOR} li[data-value=\"#{index}\"]")
+        suggestion["data-name"]
       end
 
       def has_dropdown?
