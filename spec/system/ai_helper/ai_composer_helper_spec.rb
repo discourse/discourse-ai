@@ -79,7 +79,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       expect(ai_helper_modal).to be_visible
 
       ai_helper_modal.select_helper_model(OpenAiCompletionsInferenceStubs.text_mode_to_id(mode))
-      ai_helper_modal.select_suggestion(2)
+      ai_helper_modal.select_title_suggestion(2)
       ai_helper_modal.save_changes
 
       expected_title = "The Quiet Piece that Moves Literature: A Gaucho's Story"
