@@ -15,6 +15,10 @@ module ::DiscourseAi
         functions: nil,
         user_id: nil
       )
+        log = nil
+        response_data = +""
+        response_raw = +""
+
         url =
           if model.include?("gpt-4")
             if model.include?("32k")
@@ -84,12 +88,9 @@ module ::DiscourseAi
               return parsed_response
             end
 
-            response_data = +""
-
             begin
               cancelled = false
               cancel = lambda { cancelled = true }
-              response_raw = +""
 
               leftover = ""
 
@@ -125,18 +126,24 @@ module ::DiscourseAi
                   end
               rescue IOError
                 raise if !cancelled
-              ensure
-                log.update!(
-                  raw_response_payload: response_raw,
-                  request_tokens:
-                    DiscourseAi::Tokenizer::OpenAiTokenizer.size(extract_prompt(messages)),
-                  response_tokens: DiscourseAi::Tokenizer::OpenAiTokenizer.size(response_data),
-                )
               end
             end
 
             return response_data
           end
+        end
+      ensure
+        if log && block_given?
+          request_tokens = DiscourseAi::Tokenizer::OpenAiTokenizer.size(extract_prompt(messages))
+          response_tokens = DiscourseAi::Tokenizer::OpenAiTokenizer.size(response_data)
+          log.update!(
+            raw_response_payload: response_raw,
+            request_tokens: request_tokens,
+            response_tokens: response_tokens,
+          )
+        end
+        if log && Rails.env.development?
+          puts "OpenAiCompletions: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
         end
       end
 

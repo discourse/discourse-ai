@@ -14,6 +14,10 @@ module ::DiscourseAi
         max_tokens: nil,
         user_id: nil
       )
+        log = nil
+        response_data = +""
+        response_raw = +""
+
         url = URI("https://api.anthropic.com/v1/complete")
         headers = {
           "anthropic-version" => "2023-06-01",
@@ -68,12 +72,9 @@ module ::DiscourseAi
               return parsed_response
             end
 
-            response_data = +""
-
             begin
               cancelled = false
               cancel = lambda { cancelled = true }
-              response_raw = +""
 
               response.read_body do |chunk|
                 if cancelled
@@ -104,16 +105,21 @@ module ::DiscourseAi
                   end
               rescue IOError
                 raise if !cancelled
-              ensure
-                log.update!(
-                  raw_response_payload: response_raw,
-                  request_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(prompt),
-                  response_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(response_data),
-                )
               end
             end
 
             return response_data
+          end
+        ensure
+          if block_given?
+            log.update!(
+              raw_response_payload: response_raw,
+              request_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(prompt),
+              response_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(response_data),
+            )
+          end
+          if Rails.env.development? && log
+            puts "AnthropicCompletions: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
           end
         end
 

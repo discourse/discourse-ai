@@ -39,6 +39,7 @@ module DiscourseAi
         require_relative "commands/google_command"
         require_relative "commands/read_command"
         require_relative "commands/setting_context_command"
+        require_relative "commands/search_settings_command"
         require_relative "commands/db_schema_command"
         require_relative "personas/persona"
         require_relative "personas/artist"

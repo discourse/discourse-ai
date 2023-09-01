@@ -120,6 +120,7 @@ en:
         read: "Read topic"
         setting_context: "Look up site setting context"
         schema: "Look up database schema"
+        search_settings: "Searching site settings"
       command_description:
         read: "Reading: <a href='%{url}'>%{title}</a>"
         time: "Time in %{timezone} is %{time}"
@@ -139,6 +140,9 @@ en:
           other: "Found %{count} <a href='%{url}'>results</a> for '%{query}'"
         setting_context: "Reading context for: %{setting_name}"
         schema: "%{tables}"
+        search_settings:
+          one: "Found %{count} result for '%{query}'"
+          other: "Found %{count} results for '%{query}'"
 
     summarization:
       configuration_hint:
