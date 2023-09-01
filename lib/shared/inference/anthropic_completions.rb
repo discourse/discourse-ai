@@ -118,7 +118,7 @@ module ::DiscourseAi
               response_tokens: DiscourseAi::Tokenizer::AnthropicTokenizer.size(response_data),
             )
           end
-          if Rails.env == "development" && log
+          if Rails.env.development? && log
             puts "AnthropicCompletions: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
           end
         end
