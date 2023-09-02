@@ -2,7 +2,7 @@
 CompletionPrompt.seed do |cp|
   cp.id = -101
   cp.provider = "anthropic"
-  cp.name = "Traslate to English"
+  cp.name = "translate"
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
   cp.messages = [{ role: "Human", content: <<~TEXT }]
     I want you to act as an English translator, spelling corrector and improver. I will speak to you
@@ -17,7 +17,7 @@ end
 CompletionPrompt.seed do |cp|
   cp.id = -102
   cp.provider = "anthropic"
-  cp.name = "Suggest topic titles"
+  cp.name = "generate_titles"
   cp.prompt_type = CompletionPrompt.prompt_types[:list]
   cp.messages = [{ role: "Human", content: <<~TEXT }]
     I want you to act as a title generator for written pieces. I will provide you with a text inside <input> tags, 
@@ -30,7 +30,7 @@ end
 CompletionPrompt.seed do |cp|
   cp.id = -103
   cp.provider = "anthropic"
-  cp.name = "Proofread"
+  cp.name = "proofread"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
   cp.messages = [{ role: "Human", content: <<~TEXT }]
       You are a markdown proofreader. You correct egregious typos and phrasing issues but keep the user's original voice.
@@ -46,7 +46,7 @@ end
 CompletionPrompt.seed do |cp|
   cp.id = -104
   cp.provider = "anthropic"
-  cp.name = "Convert to table"
+  cp.name = "markdown_table"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
   cp.messages = [{ role: "Human", content: <<~TEXT }]
       You are a markdown table formatter, I will provide you text and you will format it into a markdown table.

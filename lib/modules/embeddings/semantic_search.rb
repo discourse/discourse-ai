@@ -23,15 +23,15 @@ module DiscourseAi
           .order("array_position(ARRAY#{candidate_ids}, topic_id)")
       end
 
-      def asymmetric_semantic_search(query, limit, offset)
+      def asymmetric_semantic_search(query, limit, offset, return_distance: false)
         embedding = model.generate_embeddings(query)
         table = @manager.topic_embeddings_table
 
         begin
-          candidate_ids =
-            DB.query(<<~SQL, query_embedding: embedding, limit: limit, offset: offset).map(
+          candidate_ids = DB.query(<<~SQL, query_embedding: embedding, limit: limit, offset: offset)
                 SELECT
-                  topic_id
+                  topic_id,
+                  embeddings #{@model.pg_function} '[:query_embedding]' AS distance
                 FROM
                   #{table}
                 ORDER BY
@@ -39,8 +39,6 @@ module DiscourseAi
                 LIMIT :limit
                 OFFSET :offset
               SQL
-              &:topic_id
-            )
         rescue PG::Error => e
           Rails.logger.error(
             "Error #{e} querying embeddings for model #{model.name} and search #{query}",
@@ -48,7 +46,11 @@ module DiscourseAi
           raise MissingEmbeddingError
         end
 
-        candidate_ids
+        if return_distance
+          candidate_ids.map { |c| [c.topic_id, c.distance] }
+        else
+          candidate_ids.map(&:topic_id)
+        end
       end
 
       private

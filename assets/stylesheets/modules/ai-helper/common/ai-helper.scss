@@ -218,13 +218,24 @@
   right: 1px;
   background: none;
   border: none;
+}
 
+.suggestion-button {
   .d-icon-spinner {
     animation: spin 1s linear infinite;
   }
 }
 
-.ai-title-suggestions-menu {
+.suggest-tags-button,
+.suggest-category-button {
+  display: block;
+  align-self: baseline;
+  border: 1px solid var(--primary-medium);
+  border-left: none;
+  background: none;
+}
+
+.ai-suggestions-menu {
   list-style: none;
   margin-left: 0;
   position: absolute;
@@ -233,6 +244,20 @@
   max-width: 25rem;
   width: unset;
   z-index: 999;
+
+  &__errors {
+    background: var(--danger);
+    padding: 0.25rem 1em;
+    color: var(--secondary);
+  }
+}
+
+.category-input:has(.ai-suggestions-menu) {
+  position: relative;
+}
+
+.suggest-tags-button + .ai-suggestions-menu {
+  top: 4.25rem;
 }
 
 @keyframes spin {
