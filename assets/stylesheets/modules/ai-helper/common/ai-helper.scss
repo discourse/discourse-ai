@@ -244,6 +244,12 @@
   max-width: 25rem;
   width: unset;
   z-index: 999;
+
+  &__errors {
+    background: var(--danger);
+    padding: 0.25rem 1em;
+    color: var(--secondary);
+  }
 }
 
 .category-input:has(.ai-suggestions-menu) {

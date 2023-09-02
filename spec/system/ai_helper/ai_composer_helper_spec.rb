@@ -17,6 +17,11 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
   let(:ai_suggestion_dropdown) { PageObjects::Components::AISuggestionDropdown.new }
   fab!(:category) { Fabricate(:category) }
+  fab!(:video) { Fabricate(:tag) }
+  fab!(:music) { Fabricate(:tag) }
+  fab!(:cloud) { Fabricate(:tag) }
+  fab!(:feedback) { Fabricate(:tag) }
+  fab!(:review) { Fabricate(:tag) }
 
   context "when using the translation mode" do
     let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
@@ -347,7 +352,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       page.find("#create-topic").click
       composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
       ai_suggestion_dropdown.click_suggest_category_button
-
       wait_for { ai_suggestion_dropdown.has_dropdown? }
 
       suggestion = ai_suggestion_dropdown.suggestion_name(0)
@@ -355,6 +359,34 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       category_selector = page.find(".category-chooser summary")
 
       expect(category_selector["data-name"].downcase.gsub(" ", "-")).to eq(suggestion)
+    end
+  end
+
+  context "when suggesting the tags with AI tag suggester" do
+    before { SiteSetting.ai_embeddings_enabled = true }
+
+    it "updates the tag with the suggested tag" do
+      response =
+        Tag
+          .take(5)
+          .pluck(:name)
+          .map { |s| { name: s, score: rand(0.0...45.0) } }
+          .sort { |h| h[:score] }
+      DiscourseAi::AiHelper::SemanticCategorizer.any_instance.stubs(:tags).returns(response)
+
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+
+      ai_suggestion_dropdown.click_suggest_tags_button
+
+      wait_for { ai_suggestion_dropdown.has_dropdown? }
+
+      suggestion = ai_suggestion_dropdown.suggestion_name(0)
+      ai_suggestion_dropdown.select_suggestion(0)
+      tag_selector = page.find(".mini-tag-chooser summary")
+
+      expect(tag_selector["data-name"]).to eq(suggestion)
     end
   end
 end

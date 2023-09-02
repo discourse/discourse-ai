@@ -22,6 +22,9 @@ export default class AISuggestionDropdown extends Component {
     {{#if this.showMenu}}
       {{! template-lint-disable modifier-name-case }}
       <ul class="popup-menu ai-suggestions-menu" {{didInsert this.handleClickOutside}}>
+        {{#if this.showErrors}}
+          <li class="ai-suggestions-menu__errors">{{this.error}}</li>
+        {{/if}}
         {{#each this.generatedSuggestions as |suggestion index|}}
           <li data-name={{suggestion}} data-value={{index}}>
               <DButton
@@ -43,6 +46,8 @@ export default class AISuggestionDropdown extends Component {
   @tracked showMenu = false;
   @tracked generatedSuggestions = [];
   @tracked suggestIcon = "discourse-sparkles";
+  @tracked showErrors = false;
+  @tracked error = "";
   SUGGESTION_TYPES = {
     title: "suggest_title",
     category: "suggest_category",
@@ -65,6 +70,8 @@ export default class AISuggestionDropdown extends Component {
   closeMenu() {
     this.suggestIcon = "discourse-sparkles";
     this.showMenu = false;
+    this.showErrors = false;
+    this.errors = "";
   }
 
   @bind
@@ -116,19 +123,22 @@ export default class AISuggestionDropdown extends Component {
 
     if (!composer.tags) {
       composer.set("tags", [suggestion]);
+      // remove tag from the list of suggestions once added
       this.generatedSuggestions = this.generatedSuggestions.filter((s) => s !== suggestion);
       return;
     }
     const tags = composer.tags;
 
-    if (tags >= maxTags) {
+    if (tags?.length >= maxTags) {
+      // Show error if trying to add more tags than allowed
+      this.showErrors = true;
+      this.error = I18n.t("select_kit.max_content_reached", { count: maxTags});
       return;
     }
 
-    // TODO: If tags are already present, don't add them again.
-    // TODO: FIX, UI is not updating after adding a tag, though it works on submit.
     tags.push(suggestion);
-    composer.set("tags", tags);
+    composer.set("tags", [...tags]);
+    // remove tag from the list of suggestions once added
     return this.generatedSuggestions = this.generatedSuggestions.filter((s) => s !== suggestion);
   }
 
@@ -149,10 +159,21 @@ export default class AISuggestionDropdown extends Component {
       method: "POST",
       data: { text: this.composerInput },
     }).then((data) => {
+      console.log(data);
       if (this.args.mode === this.SUGGESTION_TYPES.title) {
         this.generatedSuggestions = data.suggestions;
       } else {
-        this.generatedSuggestions = data.assistant.map((s) => s.name);
+        const suggestions = data.assistant.map((s) => s.name);
+        if (this.SUGGESTION_TYPES.tag) {
+          if (this.args.composer?.tags && this.args.composer?.tags.length > 0) {
+            // Filter out tags if they are already selected in the tag input
+            this.generatedSuggestions = suggestions.filter((t) => !this.args.composer.tags.includes(t));
+          } else {
+            this.generatedSuggestions = suggestions;
+          }
+        } else {
+          this.generatedSuggestions = suggestions;
+        }
       }
     }).catch(popupAjaxError).finally(() => {
       this.loading = false;
