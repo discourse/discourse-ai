@@ -159,7 +159,6 @@ export default class AISuggestionDropdown extends Component {
       method: "POST",
       data: { text: this.composerInput },
     }).then((data) => {
-      console.log(data);
       if (this.args.mode === this.SUGGESTION_TYPES.title) {
         this.generatedSuggestions = data.suggestions;
       } else {
