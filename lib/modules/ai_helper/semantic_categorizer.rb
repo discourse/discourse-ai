@@ -2,7 +2,8 @@
 module DiscourseAi
   module AiHelper
     class SemanticCategorizer
-      def initialize(text)
+      def initialize(text, user)
+        @user = user
         @text = text
       end
 
@@ -22,6 +23,7 @@ module DiscourseAi
         ::Topic
           .joins(:category)
           .where(id: candidate_ids)
+          .where("categories.id IN (?)", Category.topic_create_allowed(@user.guardian).pluck(:id))
           .order("array_position(ARRAY#{candidate_ids}, topics.id)")
           .pluck("categories.slug")
           .map
@@ -52,6 +54,7 @@ module DiscourseAi
         ::Topic
           .joins(:topic_tags, :tags)
           .where(id: candidate_ids)
+          .where("tags.id IN (?)", DiscourseTagging.visible_tags(@user.guardian).pluck(:id))
           .group("topics.id")
           .order("array_position(ARRAY#{candidate_ids}, topics.id)")
           .pluck("array_agg(tags.name)")

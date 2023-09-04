@@ -72,7 +72,11 @@ module DiscourseAi
 
         RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
 
-        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(params[:text]).categories,
+        render json:
+                 DiscourseAi::AiHelper::SemanticCategorizer.new(
+                   params[:text],
+                   current_user,
+                 ).categories,
                status: 200
       end
 
@@ -81,7 +85,9 @@ module DiscourseAi
 
         RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
 
-        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(params[:text]).tags, status: 200
+        render json:
+                 DiscourseAi::AiHelper::SemanticCategorizer.new(params[:text], current_user).tags,
+               status: 200
       end
 
       private
