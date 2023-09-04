@@ -107,6 +107,9 @@ en:
         settings_explorer:
           name: Settings Explorer
           description: "AI Bot specialized in helping explore Discourse site settings"
+        researcher:
+          name: Researcher
+          description: "AI Bot with Google access that can research information for you"
       default_pm_prefix: "[Untitled AI bot PM]"
       topic_not_found: "Summary unavailable, topic not found!"
       command_summary:

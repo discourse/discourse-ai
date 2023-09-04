@@ -46,6 +46,7 @@ module DiscourseAi
         require_relative "personas/general"
         require_relative "personas/sql_helper"
         require_relative "personas/settings_explorer"
+        require_relative "personas/researcher"
       end
 
       def inject_into(plugin)
