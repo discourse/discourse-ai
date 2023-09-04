@@ -172,18 +172,11 @@ export default {
   initialize(container) {
     const settings = container.lookup("service:site-settings");
     const user = container.lookup("service:current-user");
-    const aiBotEnaled =
-      settings.discourse_ai_enabled && settings.ai_bot_enabled;
 
-    const aiBotsAllowedGroups = settings.ai_bot_allowed_groups
-      .split("|")
-      .map((id) => parseInt(id, 10));
-    const canInteractWithAIBots = user?.groups.some((g) =>
-      aiBotsAllowedGroups.includes(g.id)
-    );
-
-    if (aiBotEnaled && canInteractWithAIBots) {
-      withPluginApi("1.6.0", attachHeaderIcon);
+    if (user?.ai_enabled_chat_bots) {
+      if (settings.ai_bot_add_to_header) {
+        withPluginApi("1.6.0", attachHeaderIcon);
+      }
       withPluginApi("1.6.0", initializeAIBotReplies);
       withPluginApi("1.6.0", initializePersonaDecorator);
     }

@@ -190,7 +190,6 @@ discourse_ai:
     default: false
     client: true
   ai_bot_allowed_groups:
-    client: true
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
