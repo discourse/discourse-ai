@@ -66,14 +66,16 @@ module DiscourseAi
 
           base_prompt = <<~TEXT
             Human: #{initial_instruction}
-            Try to keep the summary in the same languague as the forum discussion.
+            Try to keep the summary in the same language as the forum discussion.
             Format the response, including links, using markdown.
-            Include only the summary inside <ai> tags.
           TEXT
 
-          if opts[:resource_path]
-            base_prompt += "Try generating links as well the format is #{opts[:resource_path]}.\n"
-          end
+          base_prompt += <<~TEXT if opts[:resource_path]
+              Try generating links as well the format is #{opts[:resource_path]}/POST_ID
+              For example, a link to the 3rd post in the topic would be [post 3](#{opts[:resource_path]}/3)
+            TEXT
+
+          base_prompt += "Wrap the whole the summary inside <ai> tags.\n"
 
           base_prompt += "The discussion title is: #{opts[:content_title]}.\n" if opts[
             :content_title

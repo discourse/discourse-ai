@@ -10,7 +10,7 @@ RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
 
   let(:content) do
     {
-      resource_path: "/t/1/POST_NUMBER",
+      resource_path: "/t/-/1",
       content_title: "This is a title",
       contents: [{ poster: "asd", id: 1, text: "This is a text" }],
     }
@@ -23,10 +23,11 @@ RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
   def expected_messages(contents, opts)
     base_prompt = <<~TEXT
       Human: Summarize the following forum discussion inside the given <input> tag.
-      Try to keep the summary in the same languague as the forum discussion.
+      Try to keep the summary in the same language as the forum discussion.
       Format the response, including links, using markdown.
-      Include only the summary inside <ai> tags.
-      Try generating links as well the format is #{opts[:resource_path]}.
+      Try generating links as well the format is #{opts[:resource_path]}/POST_ID
+      For example, a link to the 3rd post in the topic would be [post 3](#{opts[:resource_path]}/3)
+      Wrap the whole the summary inside <ai> tags.
       The discussion title is: #{opts[:content_title]}.
       Don't use more than 400 words.
     TEXT
@@ -104,10 +105,11 @@ RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
 
       instructions = <<~TEXT
         Human: Summarize the following forum discussion inside the given <input> tag.
-        Try to keep the summary in the same languague as the forum discussion.
+        Try to keep the summary in the same language as the forum discussion.
         Format the response, including links, using markdown.
-        Include only the summary inside <ai> tags.
-        Try generating links as well the format is #{opts[:resource_path]}.
+        Try generating links as well the format is #{opts[:resource_path]}/POST_ID
+        For example, a link to the 3rd post in the topic would be [post 3](#{opts[:resource_path]}/3)
+        Wrap the whole the summary inside <ai> tags.
         The discussion title is: #{opts[:content_title]}.
         Don't use more than 400 words.
         <input>(1 asd said: This is a</input>
