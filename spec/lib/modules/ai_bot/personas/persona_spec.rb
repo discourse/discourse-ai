@@ -64,11 +64,21 @@ module DiscourseAi::AiBot::Personas
       it "includes all personas by default" do
         # must be enabled to see it
         SiteSetting.ai_stability_api_key = "abc"
+        SiteSetting.ai_google_custom_search_api_key = "abc"
 
         expect(DiscourseAi::AiBot::Personas.all).to contain_exactly(
           General,
           SqlHelper,
           Artist,
+          SettingsExplorer,
+          Researcher,
+        )
+      end
+
+      it "does not include personas that require api keys by default" do
+        expect(DiscourseAi::AiBot::Personas.all).to contain_exactly(
+          General,
+          SqlHelper,
           SettingsExplorer,
         )
       end

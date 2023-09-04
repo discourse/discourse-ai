@@ -218,12 +218,13 @@ discourse_ai:
      - time
   ai_bot_enabled_personas:
     type: list
-    default: "general|artist|sql_helper|settings_explorer"
+    default: "general|artist|sql_helper|settings_explorer|researcher"
     choices:
       - general
       - artist
       - sql_helper
       - settings_explorer
+      - researcher
   ai_bot_add_to_header:
     default: true
     client: true
