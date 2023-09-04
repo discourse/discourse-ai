@@ -1,5 +1,5 @@
-# **Plugin Name** Plugin
+# **Discourse AI** Plugin
 
 **Plugin Summary**
 
-For more information, please see: **url to meta topic**
+For more information, please see: https://meta.discourse.org/t/discourse-ai/259214?u=falco
