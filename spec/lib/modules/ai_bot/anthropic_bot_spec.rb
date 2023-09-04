@@ -21,6 +21,36 @@ module ::DiscourseAi
       end
 
       describe "parsing a reply prompt" do
+        it "can correctly predict that a completion needs to be cancelled" do
+          SiteSetting.ai_bot_enabled_chat_commands = "read|search"
+          functions = DiscourseAi::AiBot::Bot::FunctionCalls.new
+
+          # note anthropic API has a silly leading space, we need to make sure we can handle that
+          prompt = +<<~REPLY.strip
+            hello world
+            !search(search_query: "hello world", random_stuff: 77)
+            !search(search_query: "hello world 2", random_stuff: 77
+          REPLY
+
+          bot.populate_functions(partial: nil, reply: prompt, functions: functions, done: false)
+
+          expect(functions.found?).to eq(true)
+          expect(functions.cancel_completion?).to eq(false)
+
+          prompt << ")\n"
+
+          bot.populate_functions(partial: nil, reply: prompt, functions: functions, done: false)
+
+          expect(functions.found?).to eq(true)
+          expect(functions.cancel_completion?).to eq(false)
+
+          prompt << "a test test"
+
+          bot.populate_functions(partial: nil, reply: prompt, functions: functions, done: false)
+
+          expect(functions.cancel_completion?).to eq(true)
+        end
+
         it "can correctly detect commands from a prompt" do
           SiteSetting.ai_bot_enabled_chat_commands = "read|search"
           functions = DiscourseAi::AiBot::Bot::FunctionCalls.new
