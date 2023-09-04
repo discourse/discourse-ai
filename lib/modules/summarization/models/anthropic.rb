@@ -70,12 +70,10 @@ module DiscourseAi
             Format the response, including links, using markdown.
           TEXT
 
-          if opts[:resource_path]
-            base_prompt += <<~TEXT
+          base_prompt += <<~TEXT if opts[:resource_path]
               Try generating links as well the format is #{opts[:resource_path]}/POST_ID
               For example, a link to the 3rd post in the topic would be [post 3](#{opts[:resource_path]}/3)
             TEXT
-          end
 
           base_prompt += "Wrap the whole the summary inside <ai> tags.\n"
 
