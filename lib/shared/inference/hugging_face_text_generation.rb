@@ -4,7 +4,7 @@ module ::DiscourseAi
   module Inference
     class HuggingFaceTextGeneration
       CompletionFailed = Class.new(StandardError)
-      TIMEOUT = 60
+      TIMEOUT = 120
 
       def self.perform!(
         prompt,

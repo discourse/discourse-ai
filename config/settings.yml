@@ -177,6 +177,18 @@ discourse_ai:
   ai_embeddings_semantic_search_enabled:
     default: false
     client: true
+  ai_embeddings_semantic_search_hyde_model:
+    default: "gpt-3.5-turbo"
+    type: enum
+    allow_any: false
+    choices:
+      - Llama2-*-chat-hf
+      - claude-instant-1   
+      - claude-2           
+      - gpt-3.5-turbo
+      - gpt-4              
+      - StableBeluga2      
+      - Upstage-Llama-2-*-instruct-v2
 
   ai_summarization_discourse_service_api_endpoint: ""
   ai_summarization_discourse_service_api_key:

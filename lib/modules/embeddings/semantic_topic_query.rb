@@ -14,7 +14,7 @@ class DiscourseAi::Embeddings::SemanticTopicQuery < TopicQuery
 
     list =
       create_list(:semantic_related, query_opts) do |topics|
-        candidate_ids = DiscourseAi::Embeddings::SemanticRelated.related_topic_ids_for(topic)
+        candidate_ids = DiscourseAi::Embeddings::SemanticRelated.new.related_topic_ids_for(topic)
 
         list =
           topics

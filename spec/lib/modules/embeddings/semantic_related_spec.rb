@@ -3,6 +3,8 @@
 require "rails_helper"
 
 describe DiscourseAi::Embeddings::SemanticRelated do
+  subject(:semantic_related) { described_class.new }
+
   fab!(:target) { Fabricate(:topic) }
   fab!(:normal_topic_1) { Fabricate(:topic) }
   fab!(:normal_topic_2) { Fabricate(:topic) }
@@ -25,13 +27,13 @@ describe DiscourseAi::Embeddings::SemanticRelated do
         results = nil
 
         expect_enqueued_with(job: :generate_embeddings, args: { topic_id: topic.id }) do
-          results = described_class.related_topic_ids_for(topic)
+          results = semantic_related.related_topic_ids_for(topic)
         end
 
         expect(results).to eq([])
 
         expect_not_enqueued_with(job: :generate_embeddings, args: { topic_id: topic.id }) do
-          results = described_class.related_topic_ids_for(topic)
+          results = semantic_related.related_topic_ids_for(topic)
         end
 
         expect(results).to eq([])
