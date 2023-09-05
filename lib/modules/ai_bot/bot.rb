@@ -8,6 +8,7 @@ module DiscourseAi
           @functions = []
           @current_function = nil
           @found = false
+          @cancel_completion = false
         end
 
         def found?
@@ -16,6 +17,14 @@ module DiscourseAi
 
         def found!
           @found = true
+        end
+
+        def cancel_completion?
+          @cancel_completion
+        end
+
+        def cancel_completion!
+          @cancel_completion = true
         end
 
         def add_function(name)
@@ -126,6 +135,8 @@ module DiscourseAi
               functions: functions,
               done: false,
             )
+
+            cancel&.call if functions.cancel_completion?
           end
 
           reply << current_delta if !functions.found?
@@ -315,6 +326,9 @@ module DiscourseAi
 
       def populate_functions(partial:, reply:, functions:, done:)
         if !done
+          if functions.found?
+            functions.cancel_completion! if reply.split("\n")[-1].match?(/^\s*[^!]+/)
+          end
           functions.found! if reply.match?(/^!/i)
         else
           reply
