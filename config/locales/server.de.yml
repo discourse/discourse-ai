@@ -62,7 +62,9 @@ de:
     ai_bot_enable_chat_warning: "Display a warnen wehen PM Chat IS initiale. Man der verrieten, bot Styling the Translation String: Diskurs_ai.ai_bot.pm_warnen"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
     ai_bot_enabled_chat_bots: "Verfügbare Modelle, die als KI-Bot agieren können"
+    ai_bot_enabled_chat_commands: "Verfügbare GPT-Integrationen zur Bereitstellung externer Funktionen für den Forum Helper-Bot. Beachte, dass bestimmte Befehle nur verfügbar sind, wenn die entsprechenden API-Schlüssel hinzugefügt wurden."
     ai_bot_add_to_header: "Eine Schaltfläche in der Kopfzeile anzeigen, um eine PN mit einem KI-Bot zu starten"
+    ai_bot_enabled_personas: "Liste der verfügbaren Personen für den KI-Bot"
     ai_stability_api_key: "API-Schlüssel für die stability.ai-API"
     ai_stability_engine: "Bildgenerierungsengine für die stability.ai-API"
     ai_stability_api_url: "URL für die stability.ai-API"
@@ -85,6 +87,22 @@ de:
         proofread: Text korrekturlesen
         markdown_table: Markdown-Tabelle generieren
     ai_bot:
+      personas:
+        general:
+          name: Forum-Helfer
+          description: "Universeller KI-Bot, der verschiedene Aufgaben erfüllen kann"
+        artist:
+          name: Künstler
+          description: "KI-Bot spezialisiert auf die Erstellung von Bildern"
+        sql_helper:
+          name: SQL-Helfer
+          description: "KI-Bot, der darauf spezialisiert ist, bei der Erstellung von SQL-Abfragen auf dieser Discourse-Instanz zu helfen"
+        settings_explorer:
+          name: Einstellungs-Explorer
+          description: "KI-Bot, der darauf spezialisiert ist, die Einstellungen der Discourse-Website zu erkunden"
+        researcher:
+          name: Forscher
+          description: "KI-Bot mit Google-Zugang, der Informationen für dich recherchieren kann"
       default_pm_prefix: "[KI-Bot-PN ohne Titel]"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       command_summary:
@@ -96,6 +114,9 @@ de:
         image: "Bild generieren"
         google: "Google-Suche"
         read: "Thema lesen"
+        setting_context: "Kontext der Seiteneinstellung nachschlagen"
+        schema: "Datenbankschema nachschlagen"
+        search_settings: "Website-Einstellungen durchsuchen"
       command_description:
         read: "Lesen: <a href='%{url}'>%{title}</a>"
         time: "Die Uhrzeit in %{timezone} ist %{time}"
@@ -113,6 +134,11 @@ de:
         google:
           one: "%{count} <a href='%{url}'>Ergebnis</a> für „%{query}“ gefunden"
           other: "%{count} <a href='%{url}'>Ergebnisse</a> für „%{query}“ gefunden"
+        setting_context: "Lesekontext für: %{setting_name}"
+        schema: "%{tables}"
+        search_settings:
+          one: "Gefunden %{count} Ergebnis für '%{query}'"
+          other: "Gefunden %{count} Ergebnisse für '%{query}'"
     summarization:
       configuration_hint:
         one: "Konfiguriere zunächst die Einstellung `%{setting}`."
