@@ -8,9 +8,9 @@ module DiscourseAi
           [
             {
               role: "system",
-              content: "You are a helpful bot. You create forum posts about a given topic.",
+              content: "You are a helpful bot. You create forum posts about a given subject.",
             },
-            { role: "user", content: "Create a forum post about the topic: #{search_term}" },
+            { role: "user", content: "#{basic_prompt_instruction}\n#{search_term}" },
           ]
         end
 
@@ -22,6 +22,7 @@ module DiscourseAi
           ::DiscourseAi::Inference::OpenAiCompletions.perform!(
             prompt(query),
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
+            max_tokens: 400,
           ).dig(:choices, 0, :message, :content)
         end
       end
