@@ -11,12 +11,7 @@ module DiscourseAi
         return [] if @text.blank?
         return [] unless SiteSetting.ai_embeddings_enabled
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-
-        candidates =
-          vector_rep.asymmetric_semantic_search(@text, limit: 100, offset: 0, return_distance: true)
+        candidates = nearest_neighbors(limit: 100)
         candidate_ids = candidates.map(&:first)
 
         ::Topic
@@ -41,13 +36,7 @@ module DiscourseAi
         return [] if @text.blank?
         return [] unless SiteSetting.ai_embeddings_enabled
 
-        candidates =
-          ::DiscourseAi::Embeddings::SemanticSearch.new(nil).asymmetric_semantic_search(
-            @text,
-            100,
-            0,
-            return_distance: true,
-          )
+        candidates = nearest_neighbors(limit: 100)
         candidate_ids = candidates.map(&:first)
 
         ::Topic
@@ -69,6 +58,23 @@ module DiscourseAi
           .map { |name, scores| { name: name, score: scores.sum { |s| s[:score] } } }
           .sort_by { |c| -c[:score] }
           .take(5)
+      end
+
+      private
+
+      def nearest_neighbors(limit: 100)
+        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
+        vector_rep =
+          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+
+        raw_vector = vector_rep.vector_from(@text)
+
+        vector_rep.asymmetric_topics_similarity_search(
+          raw_vector,
+          limit: limit,
+          offset: 0,
+          return_distance: true,
+        )
       end
     end
   end
