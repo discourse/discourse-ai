@@ -6,8 +6,11 @@ module DiscourseAi
       def self.clear_cache_for(query)
         digest = OpenSSL::Digest::SHA1.hexdigest(query)
 
-        Discourse.cache.delete("hyde-doc-#{digest}")
-        Discourse.cache.delete("hyde-doc-embedding-#{digest}")
+        hyde_key =
+          "semantic-search-#{digest}-#{SiteSetting.ai_embeddings_semantic_search_hyde_model}"
+
+        Discourse.cache.delete(hyde_key)
+        Discourse.cache.delete("#{hyde_key}-#{SiteSetting.ai_embeddings_model}")
       end
 
       def initialize(guardian)
@@ -16,7 +19,14 @@ module DiscourseAi
 
       def cached_query?(query)
         digest = OpenSSL::Digest::SHA1.hexdigest(query)
-        Discourse.cache.read("hyde-doc-embedding-#{digest}").present?
+        embedding_key =
+          build_embedding_key(
+            digest,
+            SiteSetting.ai_embeddings_semantic_search_hyde_model,
+            SiteSetting.ai_embeddings_model,
+          )
+
+        Discourse.cache.read(embedding_key).present?
       end
 
       def search_for_topics(query, page = 1)
@@ -29,11 +39,19 @@ module DiscourseAi
           DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
 
         digest = OpenSSL::Digest::SHA1.hexdigest(query)
+        hyde_key = build_hyde_key(digest, SiteSetting.ai_embeddings_semantic_search_hyde_model)
+
+        embedding_key =
+          build_embedding_key(
+            digest,
+            SiteSetting.ai_embeddings_semantic_search_hyde_model,
+            SiteSetting.ai_embeddings_model,
+          )
 
         hypothetical_post =
           Discourse
             .cache
-            .fetch("hyde-doc-#{digest}", expires_in: 1.week) do
+            .fetch(hyde_key, expires_in: 1.week) do
               hyde_generator = DiscourseAi::Embeddings::HydeGenerators::Base.current_hyde_model.new
               hyde_generator.hypothetical_post_from(query)
             end
@@ -41,9 +59,7 @@ module DiscourseAi
         hypothetical_post_embedding =
           Discourse
             .cache
-            .fetch("hyde-doc-embedding-#{digest}", expires_in: 1.week) do
-              vector_rep.vector_from(hypothetical_post)
-            end
+            .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(hypothetical_post) }
 
         candidate_topic_ids =
           vector_rep.asymmetric_topics_similarity_search(
@@ -63,6 +79,14 @@ module DiscourseAi
       private
 
       attr_reader :guardian
+
+      def build_hyde_key(digest, hyde_model)
+        "semantic-search-#{digest}-#{hyde_model}"
+      end
+
+      def build_embedding_key(digest, hyde_model, embedding_model)
+        "#{build_hyde_key(digest, hyde_model)}-#{embedding_model}"
+      end
     end
   end
 end
