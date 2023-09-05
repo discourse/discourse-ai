@@ -16,7 +16,7 @@ export default class extends Component {
 
   @service appEvents;
 
-  @tracked searching = false;
+  @tracked searching = true;
   @tracked collapsedResults = true;
   @tracked results = [];
 
@@ -57,7 +57,7 @@ export default class extends Component {
 
   @bind
   performHyDESearch() {
-    if (!this.searchTerm || !this.searchEnabled || this.searching) {
+    if (!this.searchTerm || !this.searchEnabled) {
       return;
     }
 
