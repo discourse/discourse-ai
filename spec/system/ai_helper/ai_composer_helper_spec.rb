@@ -17,6 +17,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
   let(:ai_suggestion_dropdown) { PageObjects::Components::AISuggestionDropdown.new }
   fab!(:category) { Fabricate(:category) }
+  fab!(:category_2) { Fabricate(:category) }
   fab!(:video) { Fabricate(:tag) }
   fab!(:music) { Fabricate(:tag) }
   fab!(:cloud) { Fabricate(:tag) }
@@ -317,7 +318,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
       wait_for { ai_suggestion_dropdown.has_dropdown? }
 
-      ai_suggestion_dropdown.select_suggestion(2)
+      ai_suggestion_dropdown.select_suggestion_by_value(2)
       expected_title = "The Quiet Piece that Moves Literature: A Gaucho's Story"
 
       expect(find("#reply-title").value).to eq(expected_title)
@@ -354,8 +355,8 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       ai_suggestion_dropdown.click_suggest_category_button
       wait_for { ai_suggestion_dropdown.has_dropdown? }
 
-      suggestion = ai_suggestion_dropdown.suggestion_name(0)
-      ai_suggestion_dropdown.select_suggestion(0)
+      suggestion = "amazing-category-1"
+      ai_suggestion_dropdown.select_suggestion_by_name("amazing-category-1")
       category_selector = page.find(".category-chooser summary")
 
       expect(category_selector["data-name"].downcase.gsub(" ", "-")).to eq(suggestion)
@@ -383,7 +384,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       wait_for { ai_suggestion_dropdown.has_dropdown? }
 
       suggestion = ai_suggestion_dropdown.suggestion_name(0)
-      ai_suggestion_dropdown.select_suggestion(0)
+      ai_suggestion_dropdown.select_suggestion_by_value(0)
       tag_selector = page.find(".mini-tag-chooser summary")
 
       expect(tag_selector["data-name"]).to eq(suggestion)

@@ -20,8 +20,12 @@ module PageObjects
         find(TAG_BUTTON_SELECTOR, visible: :all).click
       end
 
-      def select_suggestion(index)
+      def select_suggestion_by_value(index)
         find("#{MENU_SELECTOR} li[data-value=\"#{index}\"]").click
+      end
+
+      def select_suggestion_by_name(name)
+        find("#{MENU_SELECTOR} li[data-name=\"#{name}\"]").click
       end
 
       def suggestion_name(index)
