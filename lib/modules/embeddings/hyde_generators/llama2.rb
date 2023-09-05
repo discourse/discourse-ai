@@ -8,12 +8,13 @@ module DiscourseAi
           <<~TEXT
               [INST] <<SYS>>
               You are a helpful bot
-              You create forum posts about a given topic
+              You create forum posts about a given subject
               <</SYS>>
 
-              Topic: #{search_term}
+              #{basic_prompt_instruction}
+              #{search_term}
               [/INST]
-              Here is a forum post about the above topic:
+              Here is a forum post about the above subject:
             TEXT
         end
 

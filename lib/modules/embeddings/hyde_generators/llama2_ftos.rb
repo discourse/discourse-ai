@@ -8,13 +8,14 @@ module DiscourseAi
           <<~TEXT
               ### System:
               You are a helpful bot
-              You create forum posts about a given topic
+              You create forum posts about a given subject
               
               ### User:
-              Topic: #{search_term}
+              #{basic_prompt_instruction}
+              #{search_term}
     
               ### Assistant:
-              Here is a forum post about the above topic:
+              Here is a forum post about the above subject:
             TEXT
         end
 

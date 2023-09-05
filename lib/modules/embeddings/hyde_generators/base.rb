@@ -11,6 +11,17 @@ module DiscourseAi
             )
           end
         end
+
+        def basic_prompt_instruction
+          <<~TEXT
+            Act as a content writer for a forum.
+            The forum description is as follows:
+            #{SiteSetting.title}
+            #{SiteSetting.site_description}
+
+            Given the forum description write a forum post about the following subject:
+          TEXT
+        end
       end
     end
   end
