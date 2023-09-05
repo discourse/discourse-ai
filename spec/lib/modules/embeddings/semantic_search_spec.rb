@@ -17,7 +17,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
 
       prompt = DiscourseAi::Embeddings::HydeGenerators::OpenAi.new.prompt(query)
-      OpenAiCompletionsInferenceStubs.stub_response(prompt, hypothetical_post)
+      OpenAiCompletionsInferenceStubs.stub_response(prompt, hypothetical_post, req_opts: { max_tokens: 400 })
 
       hyde_embedding = [0.049382, 0.9999]
       EmbeddingsGenerationStubs.discourse_service(
