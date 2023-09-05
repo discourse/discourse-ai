@@ -61,7 +61,7 @@ module DiscourseAi
         def asymmetric_topics_similarity_search(raw_vector, limit:, offset:, return_distance: false)
           results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
             SELECT
-              topic_id
+              topic_id,
               embeddings #{pg_function} '[:query_embedding]' AS distance
             FROM
               #{table_name}

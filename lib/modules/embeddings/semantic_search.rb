@@ -14,6 +14,11 @@ module DiscourseAi
         @guardian = guardian
       end
 
+      def cached_query?(query)
+        digest = OpenSSL::Digest::SHA1.hexdigest(query)
+        Discourse.cache.read("hyde-doc-embedding-#{digest}").present?
+      end
+
       def search_for_topics(query, page = 1)
         max_results_per_page = 50
         limit = [Search.per_filter, max_results_per_page].min + 1
@@ -51,8 +56,8 @@ module DiscourseAi
           .where(post_type: ::Topic.visible_post_types(guardian.user))
           .public_posts
           .where("topics.visible")
-          .where(topic_id: candidate_ids, post_number: 1)
-          .order("array_position(ARRAY#{candidate_ids}, topic_id)")
+          .where(topic_id: candidate_topic_ids, post_number: 1)
+          .order("array_position(ARRAY#{candidate_topic_ids}, topic_id)")
       end
 
       private

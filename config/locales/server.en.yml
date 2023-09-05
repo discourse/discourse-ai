@@ -55,6 +55,7 @@ en:
     ai_embeddings_pg_connection_string: "PostgreSQL connection string for the embeddings module. Needs pgvector extension enabled and a series of tables created. See docs for more info."
     ai_embeddings_semantic_search_enabled: "Enable full-page semantic search."
     ai_embeddings_semantic_related_include_closed_topics: "Include closed topics in semantic search results"
+    ai_embeddings_semantic_search_hyde_model: "Model used to expand keywords to get better results during a semantic search"
 
     ai_summarization_discourse_service_api_endpoint: "URL where the Discourse summarization API is running."
     ai_summarization_discourse_service_api_key: "API key for the Discourse summarization API."

@@ -20,6 +20,10 @@ module DiscourseAi
 
         semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(guardian)
 
+        if !semantic_search.cached_query?(query)
+          RateLimiter.new(current_user, "semantic-search", 4, 1.minutes).performed!
+        end
+
         hijack do
           semantic_search
             .search_for_topics(query)
