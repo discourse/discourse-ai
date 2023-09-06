@@ -19,6 +19,10 @@ module PageObjects
       def select_title_suggestion(option_number)
         find("input#title-suggestion-#{option_number}").click
       end
+
+      def has_diff?
+        has_css?(".text-preview .inline-diff")
+      end
     end
   end
 end
