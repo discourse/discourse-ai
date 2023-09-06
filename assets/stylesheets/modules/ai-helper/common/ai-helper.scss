@@ -220,16 +220,6 @@
   border: none;
 }
 
-.suggest-titles-button:has(.d-icon-discourse-sparkles) {
-  visibility: hidden;
-}
-
-.title-input:focus-within {
-  .suggest-titles-button {
-    visibility: visible;
-  }
-}
-
 .suggestion-button {
   .d-icon-spinner {
     animation: spin 1s linear infinite;

@@ -9,8 +9,6 @@ module PageObjects
       MENU_SELECTOR = ".ai-suggestions-menu"
 
       def click_suggest_titles_button
-        # click on composer title input first to reveal the button
-        page.find(".title-input").click
         page.find(TITLE_BUTTON_SELECTOR, visible: :all).click
       end
 
