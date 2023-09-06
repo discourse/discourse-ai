@@ -39,7 +39,7 @@ export default class ModalDiffModal extends Component {
       </:footer>
     </DModal>
   </template>
-  
+
   @action
   triggerConfirmChanges() {
     this.args.closeModal();

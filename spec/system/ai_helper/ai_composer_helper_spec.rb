@@ -13,7 +13,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
   let(:composer) { PageObjects::Components::Composer.new }
   let(:ai_helper_context_menu) { PageObjects::Components::AIHelperContextMenu.new }
-  let(:ai_helper_modal) { PageObjects::Modals::AiHelper.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
   let(:ai_suggestion_dropdown) { PageObjects::Components::AISuggestionDropdown.new }
   fab!(:category) { Fabricate(:category) }
@@ -23,79 +22,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   fab!(:cloud) { Fabricate(:tag) }
   fab!(:feedback) { Fabricate(:tag) }
   fab!(:review) { Fabricate(:tag) }
-
-  context "when using the translation mode" do
-    let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
-
-    before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
-
-    it "replaces the composed message with AI generated content" do
-      visit("/latest")
-      page.find("#create-topic").click
-
-      composer.fill_content(OpenAiCompletionsInferenceStubs.spanish_text)
-      page.find(".composer-ai-helper").click
-
-      expect(ai_helper_modal).to be_visible
-
-      ai_helper_modal.select_helper_model(OpenAiCompletionsInferenceStubs.text_mode_to_id(mode))
-      ai_helper_modal.save_changes
-
-      expect(composer.composer_input.value).to eq(
-        OpenAiCompletionsInferenceStubs.translated_response.strip,
-      )
-    end
-  end
-
-  context "when using the proofreading mode" do
-    let(:mode) { OpenAiCompletionsInferenceStubs::PROOFREAD }
-
-    before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
-
-    it "replaces the composed message with AI generated content" do
-      visit("/latest")
-      page.find("#create-topic").click
-
-      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
-      page.find(".composer-ai-helper").click
-
-      expect(ai_helper_modal).to be_visible
-
-      ai_helper_modal.select_helper_model(OpenAiCompletionsInferenceStubs.text_mode_to_id(mode))
-
-      wait_for { ai_helper_modal.has_diff? == true }
-
-      ai_helper_modal.save_changes
-
-      expect(composer.composer_input.value).to eq(
-        OpenAiCompletionsInferenceStubs.proofread_response.strip,
-      )
-    end
-  end
-
-  context "when selecting an AI generated title" do
-    let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
-
-    before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
-
-    it "replaces the topic title" do
-      visit("/latest")
-      page.find("#create-topic").click
-
-      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
-      page.find(".composer-ai-helper").click
-
-      expect(ai_helper_modal).to be_visible
-
-      ai_helper_modal.select_helper_model(OpenAiCompletionsInferenceStubs.text_mode_to_id(mode))
-      ai_helper_modal.select_title_suggestion(2)
-      ai_helper_modal.save_changes
-
-      expected_title = "The Quiet Piece that Moves Literature: A Gaucho's Story"
-
-      expect(find("#reply-title").value).to eq(expected_title)
-    end
-  end
 
   def trigger_context_menu(content)
     visit("/latest")
