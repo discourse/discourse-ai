@@ -68,12 +68,15 @@ module DiscourseAi
             offset: offset,
           )
 
-        ::Post
-          .where(post_type: ::Topic.visible_post_types(guardian.user))
-          .public_posts
-          .where("topics.visible")
-          .where(topic_id: candidate_topic_ids, post_number: 1)
-          .order("array_position(ARRAY#{candidate_topic_ids}, topic_id)")
+        semantic_results =
+          ::Post
+            .where(post_type: ::Topic.visible_post_types(guardian.user))
+            .public_posts
+            .where("topics.visible")
+            .where(topic_id: candidate_topic_ids, post_number: 1)
+            .order("array_position(ARRAY#{candidate_topic_ids}, topic_id)")
+
+        guardian.filter_allowed_categories(semantic_results)
       end
 
       private

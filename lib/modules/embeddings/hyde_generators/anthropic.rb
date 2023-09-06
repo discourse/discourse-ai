@@ -6,12 +6,14 @@ module DiscourseAi
       class Anthropic < DiscourseAi::Embeddings::HydeGenerators::Base
         def prompt(search_term)
           <<~TEXT
-              Given a search term given between <input> tags, generate a forum post about a given subject.
-              #{basic_prompt_instruction}
-              <input>#{search_term}</input>
+            Human: Given a search term given between <input> tags, generate a forum post about a given subject.
+            #{basic_prompt_instruction}
+            <input>#{search_term}</input>
 
-              Respond with the generated post between <ai> tags.
-            TEXT
+            Respond with the generated post between <ai> tags.
+
+            Assistant:\n
+          TEXT
         end
 
         def models
@@ -24,6 +26,7 @@ module DiscourseAi
               prompt(query),
               SiteSetting.ai_embeddings_semantic_search_hyde_model,
               max_tokens: 400,
+              stop_sequences: ["</ai>"],
             ).dig(:completion)
 
           Nokogiri::HTML5.fragment(response).at("ai").text

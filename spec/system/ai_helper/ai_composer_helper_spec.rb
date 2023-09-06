@@ -355,11 +355,11 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       ai_suggestion_dropdown.click_suggest_category_button
       wait_for { ai_suggestion_dropdown.has_dropdown? }
 
-      suggestion = "amazing-category-1"
-      ai_suggestion_dropdown.select_suggestion_by_name("amazing-category-1")
+      suggestion = category_2.name
+      ai_suggestion_dropdown.select_suggestion_by_name(category_2.slug)
       category_selector = page.find(".category-chooser summary")
 
-      expect(category_selector["data-name"].downcase.gsub(" ", "-")).to eq(suggestion)
+      expect(category_selector["data-name"]).to eq(suggestion)
     end
   end
 
