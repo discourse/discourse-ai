@@ -106,6 +106,38 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
           expect(posts).not_to include(post_2)
         end
       end
+
+      context "when the post belongs to a secured category" do
+        fab!(:group) { Fabricate(:group) }
+        fab!(:private_category) { Fabricate(:private_category, group: group) }
+
+        before do
+          post.topic.update!(category: private_category)
+          stub_candidate_ids([post.topic_id])
+        end
+
+        it "returns an empty list" do
+          posts = subject.search_for_topics(query)
+
+          expect(posts).to be_empty
+        end
+
+        it "returns the results if the user has access to the category" do
+          group.add(user)
+
+          posts = subject.search_for_topics(query)
+
+          expect(posts).to contain_exactly(post)
+        end
+
+        context "while searching as anon" do
+          it "returns an empty list" do
+            posts = described_class.new(Guardian.new(nil)).search_for_topics(query)
+
+            expect(posts).to be_empty
+          end
+        end
+      end
     end
   end
 end
