@@ -3,9 +3,10 @@
 module PageObjects
   module Components
     class AISuggestionDropdown < PageObjects::Components::Base
-      TITLE_BUTTON_SELECTOR = ".suggestion-button.suggest-titles-button"
-      CATEGORY_BUTTON_SELECTOR = ".suggestion-button.suggest-category-button"
-      TAG_BUTTON_SELECTOR = ".suggestion-button.suggest-tags-button"
+      SUGGESTION_BUTTON_SELECTOR = ".suggestion-button"
+      TITLE_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}.suggest-titles-button"
+      CATEGORY_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}.suggest-category-button"
+      TAG_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}.suggest-tags-button"
       MENU_SELECTOR = ".ai-suggestions-menu"
 
       def click_suggest_titles_button
@@ -39,6 +40,14 @@ module PageObjects
 
       def has_no_dropdown?
         has_no_css?(MENU_SELECTOR)
+      end
+
+      def has_suggestion_button?
+        has_css?(SUGGESTION_BUTTON_SELECTOR)
+      end
+
+      def has_no_suggestion_button?
+        has_no_css?(SUGGESTION_BUTTON_SELECTOR)
       end
     end
   end

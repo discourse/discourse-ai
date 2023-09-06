@@ -11,14 +11,17 @@ import DButton from "discourse/components/d-button";
 
 export default class AISuggestionDropdown extends Component {
   <template>
-    <DButton
-      @class="suggestion-button {{if this.loading 'is-loading'}}"
-      @icon={{this.suggestIcon}}
-      @title="discourse_ai.ai_helper.suggest"
-      @action={{this.performSuggestion}}
-      @disabled={{this.disableSuggestionButton}}
-      ...attributes
-    />
+    {{#if this.showAIButton}}
+      <DButton
+        @class="suggestion-button {{if this.loading 'is-loading'}}"
+        @icon={{this.suggestIcon}}
+        @title="discourse_ai.ai_helper.suggest"
+        @action={{this.performSuggestion}}
+        @disabled={{this.disableSuggestionButton}}
+        ...attributes
+      />
+    {{/if}}
+
     {{#if this.showMenu}}
       {{! template-lint-disable modifier-name-case }}
       <ul class="popup-menu ai-suggestions-menu" {{didInsert this.handleClickOutside}}>
@@ -42,6 +45,7 @@ export default class AISuggestionDropdown extends Component {
   @service dialog;
   @service site;
   @service siteSettings;
+  @service composer;
   @tracked loading = false;
   @tracked showMenu = false;
   @tracked generatedSuggestions = [];
@@ -59,8 +63,9 @@ export default class AISuggestionDropdown extends Component {
     document.removeEventListener("click", this.onClickOutside);
   }
 
-  get composerInput() {
-    return document.querySelector(".d-editor-input")?.value || this.args.composer.reply;
+  get showAIButton() {
+    const minCharacterCount = 40;
+    return this.composer.model.replyLength > minCharacterCount;
   }
 
   get disableSuggestionButton() {
@@ -117,7 +122,7 @@ export default class AISuggestionDropdown extends Component {
       return;
     }
 
-    if (this.composerInput?.length === 0) {
+    if (this.composer.model.replyLength === 0) {
       return this.dialog.alert(I18n.t("discourse_ai.ai_helper.missing_content"));
     }
 
@@ -126,7 +131,7 @@ export default class AISuggestionDropdown extends Component {
 
     return ajax(`/discourse-ai/ai-helper/${this.args.mode}`, {
       method: "POST",
-      data: { text: this.composerInput },
+      data: { text: this.composer.model.reply },
     }).then((data) => {
       this.#assignGeneratedSuggestions(data, this.args.mode);
     }).catch(popupAjaxError).finally(() => {

@@ -339,6 +339,17 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
       expect(ai_suggestion_dropdown).to have_no_dropdown
     end
+
+    it "only shows trigger button if there is sufficient content in the composer" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content("abc")
+
+      expect(ai_suggestion_dropdown).to have_no_suggestion_button
+
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      expect(ai_suggestion_dropdown).to have_suggestion_button
+    end
   end
 
   context "when suggesting the category with AI category suggester" do
