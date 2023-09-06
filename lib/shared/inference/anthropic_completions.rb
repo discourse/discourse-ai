@@ -12,7 +12,8 @@ module ::DiscourseAi
         temperature: nil,
         top_p: nil,
         max_tokens: nil,
-        user_id: nil
+        user_id: nil,
+        stop_sequences: nil
       )
         log = nil
         response_data = +""
@@ -31,6 +32,7 @@ module ::DiscourseAi
         payload[:max_tokens_to_sample] = max_tokens || 2000
         payload[:temperature] = temperature if temperature
         payload[:stream] = true if block_given?
+        payload[:stop_sequences] = stop_sequences if stop_sequences
 
         Net::HTTP.start(
           url.host,
