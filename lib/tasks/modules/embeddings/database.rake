@@ -3,11 +3,9 @@
 desc "Backfill embeddings for all topics"
 task "ai:embeddings:backfill", [:start_topic] => [:environment] do |_, args|
   public_categories = Category.where(read_restricted: false).pluck(:id)
-  manager = DiscourseAi::Embeddings::Manager.new(Topic.first)
 
   strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-  vector_rep =
-    DiscourseAi::Embeddings::VectorRepresentations::Base.find_vector_representation.new(strategy)
+  vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
   table_name = vector_rep.table_name
 
   Topic
