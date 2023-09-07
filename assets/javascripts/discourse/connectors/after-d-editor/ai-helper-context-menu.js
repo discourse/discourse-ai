@@ -60,6 +60,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked _popper;
   @tracked _dEditorInput;
   @tracked _contextMenu;
+  @tracked _activeAIRequest = null;
 
   constructor() {
     super(...arguments);
@@ -168,7 +169,7 @@ export default class AiHelperContextMenu extends Component {
   }
 
   get canCloseContextMenu() {
-    if (this.loading) {
+    if (this.loading && this._activeAIRequest !== null) {
       return false;
     }
 
@@ -203,6 +204,16 @@ export default class AiHelperContextMenu extends Component {
     }
     composer.set("reply", this.newEditorValue);
     this.menuState = this.CONTEXT_MENU_STATES.review;
+  }
+
+  _toggleLoadingState(loading) {
+    if (loading) {
+      this._dEditorInput.classList.add("loading");
+      return (this.loading = true);
+    }
+
+    this._dEditorInput.classList.remove("loading");
+    return (this.loading = false);
   }
 
   handleBoundaries() {
@@ -302,15 +313,16 @@ export default class AiHelperContextMenu extends Component {
 
   @action
   async updateSelected(option) {
-    this.loading = true;
+    this._toggleLoadingState(true);
     this.lastUsedOption = option;
-    this._dEditorInput.classList.add("loading");
     this.menuState = this.CONTEXT_MENU_STATES.loading;
 
-    return ajax("/discourse-ai/ai-helper/suggest", {
+    this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
       method: "POST",
       data: { mode: option, text: this.selectedText },
-    })
+    });
+
+    this._activeAIRequest
       .then((data) => {
         // resets the values if new suggestion is started:
         this.diff = null;
@@ -319,9 +331,10 @@ export default class AiHelperContextMenu extends Component {
       })
       .catch(popupAjaxError)
       .finally(() => {
-        this.loading = false;
-        this._dEditorInput.classList.remove("loading");
+        this._toggleLoadingState(false);
       });
+
+    return this._activeAIRequest;
   }
 
   @action
@@ -332,5 +345,15 @@ export default class AiHelperContextMenu extends Component {
   @action
   confirmChanges() {
     this.menuState = this.CONTEXT_MENU_STATES.resets;
+  }
+
+  @action
+  cancelAIAction() {
+    if (this._activeAIRequest) {
+      this._activeAIRequest.abort();
+      this._activeAIRequest = null;
+      this._toggleLoadingState(false);
+      this.closeContextMenu();
+    }
   }
 }

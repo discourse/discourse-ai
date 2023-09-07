@@ -35,6 +35,10 @@ module PageObjects
         find("#{REVIEW_STATE_SELECTOR} .confirm").click
       end
 
+      def click_cancel_button
+        find("#{LOADING_STATE_SELECTOR} .cancel-request").click
+      end
+
       def press_undo_keys
         find(COMPOSER_EDITOR_SELECTOR).send_keys([:control, "z"])
       end
