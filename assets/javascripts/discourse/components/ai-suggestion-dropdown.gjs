@@ -43,7 +43,6 @@ export default class AISuggestionDropdown extends Component {
   </template>
 
   @service dialog;
-  @service site;
   @service siteSettings;
   @service composer;
   @tracked loading = false;
@@ -106,7 +105,7 @@ export default class AISuggestionDropdown extends Component {
     }
 
     if (this.args.mode === this.SUGGESTION_TYPES.category) {
-    const selectedCategoryId = this.site.categories.find((c) => c.slug === suggestion).id;
+    const selectedCategoryId = this.composer.categories.find((c) => c.slug === suggestion).id;
     composer.set("categoryId", selectedCategoryId);
     return this.#closeMenu();
     }
