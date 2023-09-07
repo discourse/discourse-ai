@@ -13,9 +13,9 @@ module Jobs
 
       strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
       vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.find_vector_representation.new
+        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
 
-      vector_rep.generate_topic_representation_from(topic, strategy)
+      vector_rep.generate_topic_representation_from(topic)
     end
   end
 end
