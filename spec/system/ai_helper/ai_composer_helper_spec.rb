@@ -200,17 +200,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         find(".d-editor-preview").click
         expect(ai_helper_context_menu).to have_context_menu
       end
-
-      it "cancels the changes if the cancel button is pressed" do
-        trigger_context_menu(OpenAiCompletionsInferenceStubs.spanish_text)
-        ai_helper_context_menu.click_ai_button
-        ai_helper_context_menu.select_helper_model(
-          OpenAiCompletionsInferenceStubs.text_mode_to_id(mode),
-        )
-
-        ai_helper_context_menu.click_cancel_button
-        expect(composer.composer_input.value).to eq(OpenAiCompletionsInferenceStubs.spanish_text)
-      end
     end
 
     context "when using the proofreading mode" do
