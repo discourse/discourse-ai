@@ -90,6 +90,10 @@
       justify-content: flex-start;
       align-items: center;
     }
+
+    .btn {
+      width: unset;
+    }
   }
 
   &__resets {

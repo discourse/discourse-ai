@@ -34,7 +34,14 @@
             <span>
               {{i18n "discourse_ai.ai_helper.context_menu.loading"}}
             </span>
+            <DButton
+              @icon="times"
+              @title="discourse_ai.ai_helper.context_menu.cancel"
+              @action={{this.cancelAIAction}}
+              class="btn-flat cancel-request"
+            />
           </li>
+
         </ul>
 
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.review)}}
