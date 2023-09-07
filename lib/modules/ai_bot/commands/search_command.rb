@@ -15,7 +15,8 @@ module DiscourseAi::AiBot::Commands
         [
           Parameter.new(
             name: "search_query",
-            description: "Search query (correct bad spelling, remove connector words!)",
+            description:
+              "Specific keywords to search for, space seperated (correct bad spelling, remove connector words)",
             type: "string",
           ),
           Parameter.new(
@@ -93,6 +94,9 @@ module DiscourseAi::AiBot::Commands
       }
     end
 
+    MAX_RESULTS = 20
+    MIN_SEMANTIC_RESULTS = 5
+
     def process(**search_args)
       limit = nil
 
@@ -120,11 +124,34 @@ module DiscourseAi::AiBot::Commands
         )
 
       # let's be frugal with tokens, 50 results is too much and stuff gets cut off
-      limit ||= 20
-      limit = 20 if limit > 20
+      limit ||= MAX_RESULTS
+      limit = MAX_RESULTS if limit > MAX_RESULTS
+
+      should_try_semantic_search = SiteSetting.ai_embeddings_semantic_search_enabled
+      should_try_semantic_search &&= (limit == MAX_RESULTS)
+      should_try_semantic_search &&= (search_args.keys - %i[search_query order]).length == 0
+      should_try_semantic_search &&= (search_args[:search_query].present?)
+
+      limit = limit - MIN_SEMANTIC_RESULTS if should_try_semantic_search
 
       posts = results&.posts || []
       posts = posts[0..limit - 1]
+
+      if should_try_semantic_search
+        semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.new())
+        topic_ids = Set.new(posts.map(&:topic_id))
+
+        semantic_search
+          .search_for_topics(search_args[:search_query])
+          .each do |post|
+            next if topic_ids.include?(post.topic_id)
+
+            topic_ids << post.topic_id
+            posts << post
+
+            break if posts.length >= MAX_RESULTS
+          end
+      end
 
       @last_num_results = posts.length
 
