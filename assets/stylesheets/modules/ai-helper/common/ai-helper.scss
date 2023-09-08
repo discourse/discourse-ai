@@ -50,27 +50,29 @@
     list-style: none;
   }
 
-  .btn {
-    justify-content: left;
-    text-align: left;
-    background: none;
-    width: 100%;
-    border-radius: 0;
-    margin: 0;
+  li {
+    .btn-flat {
+      justify-content: left;
+      text-align: left;
+      background: none;
+      width: 100%;
+      border-radius: 0;
+      margin: 0;
 
-    &:focus,
-    &:hover {
-      color: var(--primary);
-      background: var(--d-hover);
+      &:focus,
+      &:hover {
+        color: var(--primary);
+        background: var(--d-hover);
 
-      .d-icon {
-        color: var(--primary-medium);
+        .d-icon {
+          color: var(--primary-medium);
+        }
+      }
+
+      .d-button-label {
+        color: var(--primary-very-high);
       }
     }
-  }
-
-  .d-button-label {
-    color: var(--primary-very-high);
   }
 
   &__options {
@@ -78,21 +80,15 @@
   }
 
   &__loading {
+    display: flex;
+    padding: 0.5rem;
+    gap: 1rem;
+    justify-content: flex-start;
+    align-items: center;
+
     .dot-falling {
       margin-inline: 1rem;
       margin-left: 1.5rem;
-    }
-
-    li {
-      display: flex;
-      padding: 0.5rem;
-      gap: 1rem;
-      justify-content: flex-start;
-      align-items: center;
-    }
-
-    .btn {
-      width: unset;
     }
   }
 
@@ -106,6 +102,25 @@
     display: flex;
     align-items: center;
     flex-flow: row wrap;
+  }
+
+  &__custom-prompt {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0.5rem;
+
+    &-header {
+      margin-bottom: 0.5rem;
+
+      .btn {
+        padding: 0;
+      }
+    }
+
+    .ai-custom-prompt-input {
+      min-height: 90px;
+      width: 100%;
+    }
   }
 }
 
