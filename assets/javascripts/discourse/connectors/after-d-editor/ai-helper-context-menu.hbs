@@ -18,6 +18,7 @@
           {{#each this.helperOptions as |option|}}
             <li data-name={{option.name}} data-value={{option.value}}>
               <DButton
+                @icon={{option.icon}}
                 @class="btn-flat"
                 @translatedLabel={{option.name}}
                 @action={{this.updateSelected}}

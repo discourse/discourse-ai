@@ -19,6 +19,7 @@ module DiscourseAi
               name: prompt.name,
               translated_name: translation,
               prompt_type: prompt.prompt_type,
+              icon: icon_map(prompt.name),
             }
           end
       end
@@ -46,6 +47,27 @@ module DiscourseAi
       end
 
       private
+
+      def icon_map(name)
+        case name
+        when "translate"
+          "language"
+        when "generate_titles"
+          "heading"
+        when "proofread"
+          "spell-check"
+        when "markdown_table"
+          "table"
+        when "tone"
+          "microphone"
+        when "custom_prompt"
+          "comment"
+        when "rewrite"
+          "pen"
+        else
+          nil
+        end
+      end
 
       def generate_diff(text, suggestion)
         cooked_text = PrettyText.cook(text)
