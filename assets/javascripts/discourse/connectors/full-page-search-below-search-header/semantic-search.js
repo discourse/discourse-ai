@@ -3,7 +3,7 @@ import { action, computed } from "@ember/object";
 import I18n from "I18n";
 import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
-import { translateResults } from "discourse/lib/search";
+import { isValidSearchTerm, translateResults } from "discourse/lib/search";
 import discourseDebounce from "discourse-common/lib/debounce";
 import { inject as service } from "@ember/service";
 import { bind } from "discourse-common/utils/decorators";
@@ -15,6 +15,7 @@ export default class extends Component {
   }
 
   @service appEvents;
+  @service siteSettings;
 
   @tracked searching = true;
   @tracked collapsedResults = true;
@@ -25,9 +26,12 @@ export default class extends Component {
     return this.args.outletArgs.search;
   }
 
-  @computed("args.outletArgs.type")
+  @computed("args.outletArgs.type", "searchTerm")
   get searchEnabled() {
-    return this.args.outletArgs.type === SEARCH_TYPE_DEFAULT;
+    return (
+      this.args.outletArgs.type === SEARCH_TYPE_DEFAULT &&
+      isValidSearchTerm(this.searchTerm, this.siteSettings)
+    );
   }
 
   @computed("results")
@@ -57,7 +61,7 @@ export default class extends Component {
 
   @bind
   performHyDESearch() {
-    if (!this.searchTerm || !this.searchEnabled) {
+    if (!this.searchEnabled) {
       return;
     }
 
