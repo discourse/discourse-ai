@@ -176,7 +176,8 @@ module DiscourseAi::AiBot::Commands
 
           if SiteSetting.tagging_enabled
             hidden_tags ||= DiscourseTagging.hidden_tag_names
-            tags = post.topic.tags.pluck(:name) - hidden_tags
+            # using map over pluck to avoid n+1 (assuming caller preloading)
+            tags = post.topic.tags.map(&:name) - hidden_tags
             row[:tags] = tags.join(", ") if tags.present?
           end
           row
