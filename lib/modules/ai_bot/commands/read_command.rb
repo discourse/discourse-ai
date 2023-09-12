@@ -52,8 +52,12 @@ module DiscourseAi::AiBot::Commands
 
       content = +<<~TEXT.strip
         title: #{topic.title}
-        category: #{topic.category&.name}
       TEXT
+
+      category_names = [topic.category&.parent_category&.name, topic.category&.name].compact.join(
+        " ",
+      )
+      content << "\ncategories: #{category_names}" if category_names.present?
 
       if topic.tags.length > 0
         tags = DiscourseTagging.filter_visible(topic.tags, Guardian.new)

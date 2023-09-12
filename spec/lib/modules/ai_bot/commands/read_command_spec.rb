@@ -3,7 +3,9 @@
 RSpec.describe DiscourseAi::AiBot::Commands::ReadCommand do
   fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
 
-  fab!(:category) { Fabricate(:category, name: "amazing-cat") }
+  fab!(:parent_category) { Fabricate(:category, name: "animals") }
+  fab!(:category) { Fabricate(:category, parent_category: parent_category, name: "amazing-cat") }
+
   fab!(:tag_funny) { Fabricate(:tag, name: "funny") }
   fab!(:tag_sad) { Fabricate(:tag, name: "sad") }
   fab!(:tag_hidden) { Fabricate(:tag, name: "hidden") }
@@ -37,6 +39,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::ReadCommand do
       expect(results[:content]).to include("amazing-cat")
       expect(results[:content]).to include("funny")
       expect(results[:content]).to include("sad")
+      expect(results[:content]).to include("animals")
       expect(results[:content]).not_to include("hidden")
       expect(read.description_args).to eq(
         title: topic_with_tags.title,
