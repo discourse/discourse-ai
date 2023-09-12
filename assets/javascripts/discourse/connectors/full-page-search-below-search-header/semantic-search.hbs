@@ -3,6 +3,7 @@
     <div
       class="semantic-search__results"
       {{did-insert this.setup}}
+      {{did-insert this.debouncedSearch}}
       {{will-destroy this.teardown}}
     >
       {{#if this.searching}}
