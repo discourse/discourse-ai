@@ -33,7 +33,7 @@ module DiscourseAi
         max_results_per_page = 100
         limit = [Search.per_filter, max_results_per_page].min + 1
         offset = (page - 1) * limit
-        search = Search.new(query, {guardian: guardian})
+        search = Search.new(query, { guardian: guardian })
         search_term = search.term
 
         strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
