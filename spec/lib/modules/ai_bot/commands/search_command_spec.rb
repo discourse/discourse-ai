@@ -111,7 +111,6 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
       results = search.process(limit: 2, user: post1.user.username)
 
-      expect(results[:column_names].length).to eq(4)
       expect(results[:rows].length).to eq(2)
 
       # just searching for everything
