@@ -9,17 +9,17 @@ RSpec.describe DiscourseAi::AiBot::Commands::ReadCommand do
   fab!(:tag_funny) { Fabricate(:tag, name: "funny") }
   fab!(:tag_sad) { Fabricate(:tag, name: "sad") }
   fab!(:tag_hidden) { Fabricate(:tag, name: "hidden") }
-  fab!(:staff_tag_group) { Fabricate(:tag_group, name: "Staff only", tag_names: ["hidden"]) }
+  fab!(:staff_tag_group) do
+    tag_group = Fabricate.build(:tag_group, name: "Staff only", tag_names: ["hidden"])
+
+    tag_group.permissions = [
+      [Group::AUTO_GROUPS[:staff], TagGroupPermission.permission_types[:full]],
+    ]
+    tag_group.save!
+    tag_group
+  end
   fab!(:topic_with_tags) do
     Fabricate(:topic, category: category, tags: [tag_funny, tag_sad, tag_hidden])
-  end
-
-  let(:staff) { Group::AUTO_GROUPS[:staff] }
-  let(:full) { TagGroupPermission.permission_types[:full] }
-
-  before do
-    staff_tag_group.permissions = [[staff, full]]
-    staff_tag_group.save!
   end
 
   describe "#process" do

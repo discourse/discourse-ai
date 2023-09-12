@@ -154,17 +154,32 @@ module DiscourseAi::AiBot::Commands
       end
 
       @last_num_results = posts.length
+      # this is the general pattern from core
+      # if there are millions of hidden tags it may fail
+      hidden_tags = nil
 
       if posts.blank?
         { args: search_args, rows: [], instruction: "nothing was found, expand your search" }
       else
         format_results(posts, args: search_args) do |post|
-          {
+          category_names = [
+            post.topic.category&.parent_category&.name,
+            post.topic.category&.name,
+          ].compact.join(" > ")
+          row = {
             title: post.topic.title,
             url: Discourse.base_path + post.url,
             excerpt: post.excerpt,
             created: post.created_at,
+            category: category_names,
           }
+
+          if SiteSetting.tagging_enabled
+            hidden_tags ||= DiscourseTagging.hidden_tag_names
+            tags = post.topic.tags.pluck(:name) - hidden_tags
+            row[:tags] = tags.join(", ") if tags.present?
+          end
+          row
         end
       end
     end
