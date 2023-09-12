@@ -38,6 +38,10 @@ de:
         accuracy: "Genauigkeit:"
       embeddings:
         semantic_search: "Themen (semantisch)"
+        semantic_search_loading: "Suche mehr Ergebnisse mit Hilfe der KI"
+        semantic_search_results:
+          toggle: "%{count} Ergebnisse mit KI gefunden"
+          none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden."
       ai_bot:
         pm_warning: "AI chatbot messages are monitored regularly by moderators."
         cancel_streaming: "Antwort abbrechen"
