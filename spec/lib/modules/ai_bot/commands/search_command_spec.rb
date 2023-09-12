@@ -9,9 +9,28 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
   before { SearchIndexer.enable }
   after { SearchIndexer.disable }
 
+  fab!(:parent_category) { Fabricate(:category, name: "animals") }
+  fab!(:category) { Fabricate(:category, parent_category: parent_category, name: "amazing-cat") }
+
+  fab!(:tag_funny) { Fabricate(:tag, name: "funny") }
+  fab!(:tag_sad) { Fabricate(:tag, name: "sad") }
+  fab!(:tag_hidden) { Fabricate(:tag, name: "hidden") }
+  fab!(:staff_tag_group) do
+    tag_group = Fabricate.build(:tag_group, name: "Staff only", tag_names: ["hidden"])
+
+    tag_group.permissions = [
+      [Group::AUTO_GROUPS[:staff], TagGroupPermission.permission_types[:full]],
+    ]
+    tag_group.save!
+    tag_group
+  end
+  fab!(:topic_with_tags) do
+    Fabricate(:topic, category: category, tags: [tag_funny, tag_sad, tag_hidden])
+  end
+
   describe "#process" do
     it "can handle no results" do
-      post1 = Fabricate(:post)
+      post1 = Fabricate(:post, topic: topic_with_tags)
       search = described_class.new(bot_user: bot_user, post: post1, args: nil)
 
       results = search.process(query: "order:fake ABDDCDCEDGDG")
@@ -42,7 +61,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
           hyde_embedding,
         )
 
-        post1 = Fabricate(:post)
+        post1 = Fabricate(:post, topic: topic_with_tags)
         search = described_class.new(bot_user: bot_user, post: post1, args: nil)
 
         DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2
@@ -60,7 +79,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
     it "supports subfolder properly" do
       Discourse.stubs(:base_path).returns("/subfolder")
 
-      post1 = Fabricate(:post)
+      post1 = Fabricate(:post, topic: topic_with_tags)
 
       search = described_class.new(bot_user: bot_user, post: post1, args: nil)
 
@@ -68,8 +87,22 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       expect(results[:rows].to_s).to include("/subfolder" + post1.url)
     end
 
+    it "returns category and tags" do
+      post1 = Fabricate(:post, topic: topic_with_tags)
+      search = described_class.new(bot_user: bot_user, post: post1, args: nil)
+      results = search.process(user: post1.user.username)
+
+      row = results[:rows].first
+      category = row[results[:column_names].index("category")]
+
+      expect(category).to eq("animals > amazing-cat")
+
+      tags = row[results[:column_names].index("tags")]
+      expect(tags).to eq("funny, sad")
+    end
+
     it "can handle limits" do
-      post1 = Fabricate(:post)
+      post1 = Fabricate(:post, topic: topic_with_tags)
       _post2 = Fabricate(:post, user: post1.user)
       _post3 = Fabricate(:post, user: post1.user)
 
@@ -78,7 +111,6 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
       results = search.process(limit: 2, user: post1.user.username)
 
-      expect(results[:column_names].length).to eq(4)
       expect(results[:rows].length).to eq(2)
 
       # just searching for everything
