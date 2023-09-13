@@ -21,16 +21,15 @@ module DiscourseAi
 
         prompt = CompletionPrompt.find_by(id: params[:mode])
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
-        raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
+        if params[:mode] == "custom_prompt" && params[:custom_prompt].blank?
+          raise Discourse::InvalidParameters.new(:custom_prompt)
+        end
 
         RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
 
         hijack do
           render json:
-                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
-                     prompt,
-                     params,
-                   ),
+                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, params),
                  status: 200
         end
       rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
