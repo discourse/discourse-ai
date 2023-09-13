@@ -121,7 +121,7 @@ export default class AiHelperContextMenu extends Component {
         )
       : "";
 
-    if (this.selectedText.length === 0) {
+    if (this.selectedText?.length === 0) {
       this.closeContextMenu();
       return;
     }
