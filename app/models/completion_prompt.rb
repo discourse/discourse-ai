@@ -12,11 +12,16 @@ class CompletionPrompt < ActiveRecord::Base
   def messages_with_user_input(user_input)
     case ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider
     when "openai"
-      self.messages << { role: "user", content: user_input }
+      self.messages << { role: "user", content: user_input[:text] }
     when "anthropic"
-      self.messages << { "role" => "Input", "content" => "<input>#{user_input}</input>" }
+      self.messages << { "role" => "Input", "content" => "<input>#{user_input[:text]}</input>" }
     when "huggingface"
-      self.messages.first.sub("{{user_input}}", user_input)
+      self.messages.first.sub("{{user_input}}", user_input[:text])
+    end
+
+    if user_input[:custom_prompt].present?
+      self.messages =
+        self.messages.map { |msg| msg.sub("{{custom_prompt}}", user_input[:custom_prompt]) }
     end
   end
 

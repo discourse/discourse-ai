@@ -24,14 +24,14 @@ module DiscourseAi
           end
       end
 
-      def generate_and_send_prompt(prompt, text)
+      def generate_and_send_prompt(prompt, params)
         case enabled_provider
         when "openai"
-          openai_call(prompt, text)
+          openai_call(prompt, params)
         when "anthropic"
-          anthropic_call(prompt, text)
+          anthropic_call(prompt, params)
         when "huggingface"
-          huggingface_call(prompt, text)
+          huggingface_call(prompt, params)
         end
       end
 
@@ -93,10 +93,10 @@ module DiscourseAi
         end
       end
 
-      def openai_call(prompt, text)
+      def openai_call(prompt, params)
         result = { type: prompt.prompt_type }
 
-        messages = prompt.messages_with_user_input(text)
+        messages = prompt.messages_with_user_input(params)
 
         result[:suggestions] = DiscourseAi::Inference::OpenAiCompletions
           .perform!(messages, SiteSetting.ai_helper_model)
@@ -105,15 +105,15 @@ module DiscourseAi
           .flat_map { |choice| parse_content(prompt, choice.dig(:message, :content).to_s) }
           .compact_blank
 
-        result[:diff] = generate_diff(text, result[:suggestions].first) if prompt.diff?
+        result[:diff] = generate_diff(params[:text], result[:suggestions].first) if prompt.diff?
 
         result
       end
 
-      def anthropic_call(prompt, text)
+      def anthropic_call(prompt, params)
         result = { type: prompt.prompt_type }
 
-        filled_message = prompt.messages_with_user_input(text)
+        filled_message = prompt.messages_with_user_input(params)
 
         message =
           filled_message.map { |msg| "#{msg["role"]}: #{msg["content"]}" }.join("\n\n") +
@@ -123,15 +123,15 @@ module DiscourseAi
 
         result[:suggestions] = parse_content(prompt, response.dig(:completion))
 
-        result[:diff] = generate_diff(text, result[:suggestions].first) if prompt.diff?
+        result[:diff] = generate_diff(params[:text], result[:suggestions].first) if prompt.diff?
 
         result
       end
 
-      def huggingface_call(prompt, text)
+      def huggingface_call(prompt, params)
         result = { type: prompt.prompt_type }
 
-        message = prompt.messages_with_user_input(text)
+        message = prompt.messages_with_user_input(params)
 
         response =
           DiscourseAi::Inference::HuggingFaceTextGeneration.perform!(
@@ -141,7 +141,7 @@ module DiscourseAi
 
         result[:suggestions] = parse_content(prompt, response.dig(:generated_text))
 
-        result[:diff] = generate_diff(text, result[:suggestions].first) if prompt.diff?
+        result[:diff] = generate_diff(params[:text], result[:suggestions].first) if prompt.diff?
 
         result
       end

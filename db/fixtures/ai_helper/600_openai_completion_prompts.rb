@@ -123,3 +123,14 @@ CompletionPrompt.seed do |cp|
     TEXT
   ]
 end
+
+CompletionPrompt.seed do |cp|
+  cp.id = -5
+  cp.provider = "openai"
+  cp.name = "custom_prompt"
+  cp.prompt_type = CompletionPrompt.prompt_types[:list]
+  cp.messages = [{ role: "system", content: <<~TEXT }]
+    You are a helpful assistant, I will provide you with a text below,
+    you will {{custom_prompt}} and you will reply with the result.
+  TEXT
+end

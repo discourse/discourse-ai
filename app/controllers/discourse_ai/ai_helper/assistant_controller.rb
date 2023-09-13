@@ -21,6 +21,7 @@ module DiscourseAi
 
         prompt = CompletionPrompt.find_by(id: params[:mode])
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
+        raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
 
         RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
 
@@ -28,7 +29,7 @@ module DiscourseAi
           render json:
                    DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
                      prompt,
-                     params[:text],
+                     params,
                    ),
                  status: 200
         end
