@@ -256,6 +256,21 @@
   position: relative;
 }
 
+// Prevent suggestion button from wrapping on smaller screens
+@media screen and (max-width: 768px) {
+  #reply-control {
+    .category-input:has(.suggestion-button) {
+      .category-chooser {
+        width: 10px;
+      }
+
+      + .mini-tag-chooser {
+        width: 10px;
+      }
+    }
+  }
+}
+
 .suggest-tags-button + .ai-suggestions-menu {
   top: 4.25rem;
 }
