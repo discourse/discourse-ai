@@ -20,6 +20,7 @@ module DiscourseAi
         raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
 
         prompt = CompletionPrompt.find_by(id: params[:mode])
+        
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
         if params[:mode] == "custom_prompt" && params[:custom_prompt].blank?
           raise Discourse::InvalidParameters.new(:custom_prompt)
