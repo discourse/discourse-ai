@@ -100,6 +100,9 @@ module DiscourseAi
         end
 
         def show_progress(text, progress_caret: false)
+          return if !@post
+          return if !@placeholder
+
           # during tests we may have none
           caret = progress_caret ? PROGRESS_CARET : CARET
           new_placeholder = @placeholder.sub(caret, text + caret)

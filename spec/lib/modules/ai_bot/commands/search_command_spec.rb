@@ -69,9 +69,9 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
           .expects(:asymmetric_topics_similarity_search)
           .returns([post1.topic_id])
 
-        results = search.process(search_query: "hello world, sam")
+        results = search.process(search_query: "hello world, sam", status: "public")
 
-        expect(results[:args]).to eq({ search_query: "hello world, sam" })
+        expect(results[:args]).to eq({ search_query: "hello world, sam", status: "public" })
         expect(results[:rows].length).to eq(1)
       end
     end
