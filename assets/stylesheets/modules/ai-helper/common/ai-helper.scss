@@ -206,11 +206,18 @@
 
 // Suggest Titles Related
 .suggest-titles-button {
-  position: absolute;
-  top: 1px;
-  right: 1px;
+  display: block;
+  align-self: baseline;
   background: var(--secondary);
-  border: none;
+  border: 1px solid var(--primary-medium);
+  border-left: none;
+}
+
+.title-input:has(.suggestion-button) {
+  // border on focus should be on top of suggestion button
+  input:focus {
+    z-index: 1;
+  }
 }
 
 .suggestion-button {
