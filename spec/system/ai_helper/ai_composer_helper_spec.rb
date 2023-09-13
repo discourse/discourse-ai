@@ -4,6 +4,7 @@ require_relative "../../support/openai_completions_inference_stubs"
 
 RSpec.describe "AI Composer helper", type: :system, js: true do
   fab!(:user) { Fabricate(:admin) }
+  fab!(:non_member_group) { Fabricate(:group) }
 
   before do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
@@ -328,6 +329,46 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       tag_selector = page.find(".mini-tag-chooser summary")
 
       expect(tag_selector["data-name"]).to eq(suggestion)
+    end
+  end
+
+  context "when AI helper is disabled" do
+    let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
+    before do
+      OpenAiCompletionsInferenceStubs.stub_prompt(mode)
+      SiteSetting.composer_ai_helper_enabled = false
+    end
+
+    it "does not trigger AI context menu" do
+      trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
+      expect(ai_helper_context_menu).to have_no_context_menu
+    end
+
+    it "does not trigger AI suggestion buttons" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      expect(ai_suggestion_dropdown).to have_no_suggestion_button
+    end
+  end
+
+  context "when user is not a member of AI helper allowed group" do
+    let(:mode) { OpenAiCompletionsInferenceStubs::GENERATE_TITLES }
+    before do
+      OpenAiCompletionsInferenceStubs.stub_prompt(mode)
+      SiteSetting.ai_helper_allowed_groups = non_member_group.id.to_s
+    end
+
+    it "does not trigger AI context menu" do
+      trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
+      expect(ai_helper_context_menu).to have_no_context_menu
+    end
+
+    it "does not trigger AI suggestion buttons" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      expect(ai_suggestion_dropdown).to have_no_suggestion_button
     end
   end
 end
