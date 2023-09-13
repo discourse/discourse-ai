@@ -16,15 +16,36 @@
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.options)}}
         <ul class="ai-helper-context-menu__options">
           {{#each this.helperOptions as |option|}}
-            <li data-name={{option.translated_name}} data-value={{option.id}}>
-              <DButton
-                @icon={{option.icon}}
-                @class="btn-flat"
-                @translatedLabel={{option.translated_name}}
-                @action={{this.updateSelected}}
-                @actionParam={{option}}
-              />
-            </li>
+            {{#if (eq option.name "custom_prompt")}}
+              <div class="ai-custom-prompt">
+                <Input
+                  @value={{this.customPromptValue}}
+                  placeholder="Enter a custom prompt..."
+                  class="ai-custom-prompt__input"
+                  @enter={{this.submitCustomPrompt}}
+                />
+
+                {{#if this.customPromptValue.length}}
+                  <DButton
+                    @class="ai-custom-prompt__submit btn-primary"
+                    @icon="discourse-sparkles"
+                    @action={{this.submitCustomPrompt}}
+                    @actionParam={{this.customPromptValue}}
+                  />
+                {{/if}}
+              </div>
+            {{else}}
+              <li data-name={{option.translated_name}} data-value={{option.id}}>
+                <DButton
+                  @icon={{option.icon}}
+                  @class="btn-flat"
+                  @translatedLabel={{option.translated_name}}
+                  @action={{this.updateSelected}}
+                  @actionParam={{option}}
+                />
+              </li>
+            {{/if}}
+
           {{/each}}
         </ul>
 

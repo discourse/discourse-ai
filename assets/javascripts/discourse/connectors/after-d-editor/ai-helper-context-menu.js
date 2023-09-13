@@ -46,6 +46,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked diff;
   @tracked popperPlacement = "top-start";
   @tracked previousMenuState = null;
+  @tracked customPromptValue = "";
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -92,25 +93,26 @@ export default class AiHelperContextMenu extends Component {
   async loadPrompts() {
     let prompts = await ajax("/discourse-ai/ai-helper/prompts");
 
-    prompts
-      .filter((p) => p.name !== "generate_titles")
-      .map((p) => {
-        this.prompts[p.id] = p;
-      });
+    prompts = prompts.filter((p) => p.name !== "generate_titles");
+
+    // Find the custom_prompt object and move it to the beginning of the array
+    const customPromptIndex = prompts.findIndex(
+      (p) => p.name === "custom_prompt"
+    );
+    if (customPromptIndex !== -1) {
+      const customPrompt = prompts.splice(customPromptIndex, 1)[0];
+      prompts.unshift(customPrompt);
+    }
+
+    prompts.forEach((p) => {
+      this.prompts[p.id] = p;
+    });
 
     this.promptTypes = prompts.reduce((memo, p) => {
       memo[p.name] = p.prompt_type;
       return memo;
     }, {});
-    this.helperOptions = prompts.filter((p) => p.name !== "generate_titles");
-
-    // ! TODO - Remove once we have backend
-    this.helperOptions.push({
-      id: -5,
-      name: "custom_prompt",
-      translated_name: "Custom Prompt",
-      icon: "comment",
-    });
+    this.helperOptions = prompts;
   }
 
   @bind
@@ -193,12 +195,11 @@ export default class AiHelperContextMenu extends Component {
   }
 
   closeContextMenu() {
-    if (!this.canCloseContextMenu) {
-      return;
-    }
-
-    this.showContextMenu = false;
-    this.menuState = this.CONTEXT_MENU_STATES.triggers;
+    // if (!this.canCloseContextMenu) {
+    //   return;
+    // }
+    // this.showContextMenu = false;
+    // this.menuState = this.CONTEXT_MENU_STATES.triggers;
   }
 
   _updateSuggestedByAI(data) {
@@ -335,7 +336,10 @@ export default class AiHelperContextMenu extends Component {
 
     this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
       method: "POST",
-      data: { mode: option.id, text: this.selectedText },
+      data: {
+        mode: option.id,
+        text: this.selectedText,
+      },
     });
 
     this._activeAIRequest
@@ -376,5 +380,21 @@ export default class AiHelperContextMenu extends Component {
   @action
   togglePreviousMenu() {
     this.menuState = this.previousMenuState;
+  }
+
+  @action
+  submitCustomPrompt(prompt) {
+    // TODO: This is for testing purposes only, use updateSelected instead
+    console.log("prompt submitted", prompt);
+    ajax("/discourse-ai/ai-helper/suggest", {
+      method: "POST",
+      data: { mode: -5, text: this.selectedText, custom_prompt: prompt },
+    })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 }

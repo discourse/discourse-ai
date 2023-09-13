@@ -21,7 +21,7 @@ en:
     ai_sentiment_models: "Models to use for inference. Sentiment classifies post on the positive/neutral/negative space. Emotion classifies on the anger/disgust/fear/joy/neutral/sadness/surprise space."
 
     ai_nsfw_detection_enabled: "Enable the NSFW module."
-    ai_nsfw_inference_service_api_endpoint:  "URL where the API is running for the NSFW module"
+    ai_nsfw_inference_service_api_endpoint: "URL where the API is running for the NSFW module"
     ai_nsfw_inference_service_api_key: "API key for the NSFW API"
     ai_nsfw_flag_automatically: "Automatically flag NSFW posts that are above the configured thresholds."
     ai_nsfw_flag_threshold_general: "General Threshold for an image to be considered NSFW."
@@ -76,9 +76,9 @@ en:
     ai_google_custom_search_cx: "CX for Google Custom Search API"
 
   reviewables:
-      reasons:
-        flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.
-        flagged_by_nsfw: The AI plugin flagged this after classifying at least one of the attached images as NSFW.
+    reasons:
+      flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.
+      flagged_by_nsfw: The AI plugin flagged this after classifying at least one of the attached images as NSFW.
 
   errors:
     prompt_message_length: The message %{idx} is over the 1000 character limit.
@@ -93,6 +93,7 @@ en:
         generate_titles: Suggest topic titles
         proofread: Proofread text
         markdown_table: Generate Markdown table
+        custom_prompt: "Custom Prompt"
 
     ai_bot:
       personas:
