@@ -116,6 +116,9 @@ module DiscourseAi::AiBot::Commands
           .join(" ")
 
       @last_query = search_string
+
+      show_progress(localized_description)
+
       results =
         Search.execute(
           search_string.to_s + " status:public",
@@ -129,7 +132,6 @@ module DiscourseAi::AiBot::Commands
 
       should_try_semantic_search = SiteSetting.ai_embeddings_semantic_search_enabled
       should_try_semantic_search &&= (limit == MAX_RESULTS)
-      should_try_semantic_search &&= (search_args.keys - %i[search_query order]).length == 0
       should_try_semantic_search &&= (search_args[:search_query].present?)
 
       limit = limit - MIN_SEMANTIC_RESULTS if should_try_semantic_search
@@ -141,16 +143,19 @@ module DiscourseAi::AiBot::Commands
         semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.new())
         topic_ids = Set.new(posts.map(&:topic_id))
 
-        semantic_search
-          .search_for_topics(search_args[:search_query])
-          .each do |post|
-            next if topic_ids.include?(post.topic_id)
+        search = Search.new(search_string, guardian: Guardian.new)
 
-            topic_ids << post.topic_id
-            posts << post
+        results = semantic_search.search_for_topics(search.term)
+        results = search.apply_filters(results)
 
-            break if posts.length >= MAX_RESULTS
-          end
+        results.each do |post|
+          next if topic_ids.include?(post.topic_id)
+
+          topic_ids << post.topic_id
+          posts << post
+
+          break if posts.length >= MAX_RESULTS
+        end
       end
 
       @last_num_results = posts.length
