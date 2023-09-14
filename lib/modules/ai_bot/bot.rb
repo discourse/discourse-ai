@@ -168,8 +168,6 @@ module DiscourseAi
           end
         end
 
-        puts reply
-
         if bot_reply_post
           publish_update(bot_reply_post, done: true)
 
