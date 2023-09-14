@@ -2,7 +2,82 @@
 
 require_relative "../../../support/openai_completions_inference_stubs"
 
-RSpec.describe DiscourseAi::AiBot::Bot do
+class FakeBot < DiscourseAi::AiBot::Bot
+  class Tokenizer
+    def tokenize(text)
+      text.split(" ")
+    end
+  end
+
+  def tokenizer
+    Tokenizer.new
+  end
+
+  def prompt_limit
+    10_000
+  end
+
+  def build_message(poster_username, content, system: false, function: nil)
+    role = poster_username == bot_user.username ? "Assistant" : "Human"
+
+    "#{role}: #{content}"
+  end
+
+  def submit_prompt(prompt, prefer_low_cost: false)
+    rows = @responses.shift
+    rows.each { |data| yield data, lambda {} }
+  end
+
+  def get_delta(partial, context)
+    partial
+  end
+
+  def add_response(response)
+    @responses ||= []
+    @responses << response
+  end
+end
+
+describe FakeBot do
+  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
+  fab!(:post) { Fabricate(:post, raw: "hello world") }
+
+  it "can handle command truncation for long messages" do
+    bot = FakeBot.new(bot_user)
+
+    bot.add_response(["hello this is a big test I am testing 123\n", "!tags\nabc"])
+    bot.add_response(["this is the reply"])
+
+    bot.reply_to(post)
+
+    reply = post.topic.posts.order(:post_number).last
+
+    expect(reply.raw).not_to include("abc")
+    expect(reply.post_custom_prompt.custom_prompt.to_s).not_to include("abc")
+    expect(reply.post_custom_prompt.custom_prompt.length).to eq(3)
+    expect(reply.post_custom_prompt.custom_prompt[0][0]).to eq(
+      "hello this is a big test I am testing 123\n!tags",
+    )
+  end
+
+  it "can handle command truncation for short bot messages" do
+    bot = FakeBot.new(bot_user)
+
+    bot.add_response(["hello\n", "!tags\nabc"])
+    bot.add_response(["this is the reply"])
+
+    bot.reply_to(post)
+
+    reply = post.topic.posts.order(:post_number).last
+
+    expect(reply.raw).not_to include("abc")
+    expect(reply.post_custom_prompt.custom_prompt.to_s).not_to include("abc")
+    expect(reply.post_custom_prompt.custom_prompt.length).to eq(3)
+    expect(reply.post_custom_prompt.custom_prompt[0][0]).to eq("hello\n!tags")
+  end
+end
+
+describe DiscourseAi::AiBot::Bot do
   fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
   fab!(:bot) { described_class.as(bot_user) }
 

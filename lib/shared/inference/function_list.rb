@@ -27,38 +27,40 @@ module ::DiscourseAi
             function = @functions.find { |f| f.name == name }
             next if function.blank?
 
-            arguments = arguments[0..-2] if arguments.end_with?(")")
-
-            temp_string = +""
-            in_string = nil
-            replace = SecureRandom.hex(10)
-            arguments.each_char do |char|
-              if %w[" '].include?(char) && !in_string
-                in_string = char
-              elsif char == in_string
-                in_string = nil
-              elsif char == "," && in_string
-                char = replace
-              end
-              temp_string << char
-            end
-
-            arguments = temp_string.split(",").map { |s| s.gsub(replace, ",").strip }
-
             parsed_arguments = {}
-            arguments.each do |argument|
-              key, value = argument.split(":", 2)
-              # remove stuff that is bypasses spec
-              param = function.parameters.find { |p| p[:name] == key.strip }
-              next if !param
+            if arguments
+              arguments = arguments[0..-2] if arguments.end_with?(")")
 
-              value = value.strip.gsub(/(\A"(.*)"\Z)|(\A'(.*)'\Z)/m, '\2\4') if value.present?
-
-              if param[:enum]
-                next if !param[:enum].include?(value)
+              temp_string = +""
+              in_string = nil
+              replace = SecureRandom.hex(10)
+              arguments.each_char do |char|
+                if %w[" '].include?(char) && !in_string
+                  in_string = char
+                elsif char == in_string
+                  in_string = nil
+                elsif char == "," && in_string
+                  char = replace
+                end
+                temp_string << char
               end
 
-              parsed_arguments[key.strip.to_sym] = value.strip
+              arguments = temp_string.split(",").map { |s| s.gsub(replace, ",").strip }
+
+              arguments.each do |argument|
+                key, value = argument.split(":", 2)
+                # remove stuff that is bypasses spec
+                param = function.parameters.find { |p| p[:name] == key.strip }
+                next if !param
+
+                value = value.strip.gsub(/(\A"(.*)"\Z)|(\A'(.*)'\Z)/m, '\2\4') if value.present?
+
+                if param[:enum]
+                  next if !param[:enum].include?(value)
+                end
+
+                parsed_arguments[key.strip.to_sym] = value.strip
+              end
             end
 
             # ensure parsed_arguments has all required arguments
