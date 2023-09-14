@@ -13,9 +13,9 @@ class CompletionPrompt < ActiveRecord::Base
     if user_input[:custom_prompt].present?
       case ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider
       when "huggingface"
-        self.messages = self.messages.map { |msg| msg.sub("{{custom_prompt}}", user_input[:custom_prompt]) }
+        self.messages.each { |msg| msg.sub!("{{custom_prompt}}", user_input[:custom_prompt]) }
       else
-        self.messages = self.messages.map { |msg| msg[:content].sub("{{user_input}}", user_input[:custom_prompt]) }
+        self.messages.each { |msg| msg["content"].sub!("{{custom_prompt}}", user_input[:custom_prompt]) }
       end
     end
 
