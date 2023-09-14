@@ -30,15 +30,17 @@ module DiscourseAi
       end
 
       def search_for_topics(query, page = 1)
-        max_results_per_page = 50
+        max_results_per_page = 100
         limit = [Search.per_filter, max_results_per_page].min + 1
         offset = (page - 1) * limit
+        search = Search.new(query, { guardian: guardian })
+        search_term = search.term
 
         strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
         vector_rep =
           DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
 
-        digest = OpenSSL::Digest::SHA1.hexdigest(query)
+        digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
         hyde_key = build_hyde_key(digest, SiteSetting.ai_embeddings_semantic_search_hyde_model)
 
         embedding_key =
@@ -53,7 +55,7 @@ module DiscourseAi
             .cache
             .fetch(hyde_key, expires_in: 1.week) do
               hyde_generator = DiscourseAi::Embeddings::HydeGenerators::Base.current_hyde_model.new
-              hyde_generator.hypothetical_post_from(query)
+              hyde_generator.hypothetical_post_from(search_term)
             end
 
         hypothetical_post_embedding =
@@ -76,7 +78,9 @@ module DiscourseAi
             .where(topic_id: candidate_topic_ids, post_number: 1)
             .order("array_position(ARRAY#{candidate_topic_ids}, topic_id)")
 
-        guardian.filter_allowed_categories(semantic_results)
+        query_filter_results = search.apply_filters(semantic_results)
+
+        guardian.filter_allowed_categories(query_filter_results)
       end
 
       private

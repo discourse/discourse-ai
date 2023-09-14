@@ -50,7 +50,19 @@ module DiscourseAi::AiBot::Commands
 
       posts = posts.where("post_number = ?", post_number) if post_number
 
-      content = +"title: #{topic.title}\n\n"
+      content = +<<~TEXT.strip
+        title: #{topic.title}
+      TEXT
+
+      category_names = [topic.category&.parent_category&.name, topic.category&.name].compact.join(
+        " ",
+      )
+      content << "\ncategories: #{category_names}" if category_names.present?
+
+      if topic.tags.length > 0
+        tags = DiscourseTagging.filter_visible(topic.tags, Guardian.new)
+        content << "\ntags: #{tags.map(&:name).join(", ")}\n\n" if tags.length > 0
+      end
 
       posts.each { |post| content << "\n\n#{post.username} said:\n\n#{post.raw}" }
 

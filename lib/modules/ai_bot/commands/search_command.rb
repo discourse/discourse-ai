@@ -116,6 +116,9 @@ module DiscourseAi::AiBot::Commands
           .join(" ")
 
       @last_query = search_string
+
+      show_progress(I18n.t("discourse_ai.ai_bot.searching", query: search_string))
+
       results =
         Search.execute(
           search_string.to_s + " status:public",
@@ -129,7 +132,6 @@ module DiscourseAi::AiBot::Commands
 
       should_try_semantic_search = SiteSetting.ai_embeddings_semantic_search_enabled
       should_try_semantic_search &&= (limit == MAX_RESULTS)
-      should_try_semantic_search &&= (search_args.keys - %i[search_query order]).length == 0
       should_try_semantic_search &&= (search_args[:search_query].present?)
 
       limit = limit - MIN_SEMANTIC_RESULTS if should_try_semantic_search
@@ -141,9 +143,19 @@ module DiscourseAi::AiBot::Commands
         semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.new())
         topic_ids = Set.new(posts.map(&:topic_id))
 
-        semantic_search
-          .search_for_topics(search_args[:search_query])
-          .each do |post|
+        search = Search.new(search_string, guardian: Guardian.new)
+
+        results = nil
+        begin
+          results = semantic_search.search_for_topics(search.term)
+        rescue => e
+          Discourse.warn_exception(e, message: "Semantic search failed")
+        end
+
+        if results
+          results = search.apply_filters(results)
+
+          results.each do |post|
             next if topic_ids.include?(post.topic_id)
 
             topic_ids << post.topic_id
@@ -151,20 +163,37 @@ module DiscourseAi::AiBot::Commands
 
             break if posts.length >= MAX_RESULTS
           end
+        end
       end
 
       @last_num_results = posts.length
+      # this is the general pattern from core
+      # if there are millions of hidden tags it may fail
+      hidden_tags = nil
 
       if posts.blank?
         { args: search_args, rows: [], instruction: "nothing was found, expand your search" }
       else
         format_results(posts, args: search_args) do |post|
-          {
+          category_names = [
+            post.topic.category&.parent_category&.name,
+            post.topic.category&.name,
+          ].compact.join(" > ")
+          row = {
             title: post.topic.title,
             url: Discourse.base_path + post.url,
             excerpt: post.excerpt,
             created: post.created_at,
+            category: category_names,
           }
+
+          if SiteSetting.tagging_enabled
+            hidden_tags ||= DiscourseTagging.hidden_tag_names
+            # using map over pluck to avoid n+1 (assuming caller preloading)
+            tags = post.topic.tags.map(&:name) - hidden_tags
+            row[:tags] = tags.join(", ") if tags.present?
+          end
+          row
         end
       end
     end

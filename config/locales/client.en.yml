@@ -10,7 +10,7 @@ en:
         select_option: "Select an option..."
 
       related_topics:
-        title: "Similar Topics"
+        title: "Related Topics"
         pill: "Related"
       ai_helper:
         title: "Suggest changes using AI"

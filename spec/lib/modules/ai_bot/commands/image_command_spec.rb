@@ -1,5 +1,7 @@
 #frozen_string_literal: true
 
+require_relative "../../../../support/stable_difussion_stubs"
+
 RSpec.describe DiscourseAi::AiBot::Commands::ImageCommand do
   fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
 
@@ -13,16 +15,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::ImageCommand do
       image =
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
 
-      stub_request(
-        :post,
-        "https://api.stability.dev/v1/generation/#{SiteSetting.ai_stability_engine}/text-to-image",
-      )
-        .with do |request|
-          json = JSON.parse(request.body)
-          expect(json["text_prompts"][0]["text"]).to eq("a pink cow")
-          true
-        end
-        .to_return(status: 200, body: { artifacts: [{ base64: image }, { base64: image }] }.to_json)
+      StableDiffusionStubs.new.stub_response("a pink cow", [image, image])
 
       image = described_class.new(bot_user: bot_user, post: post, args: nil)
 

@@ -56,6 +56,7 @@ he:
     ai_embeddings_pg_connection_string: "מחרוזת חיבור ל־PostgreSQL למודול ההטמעות. הרחבת pgvector צריכה להיות פעילה ומספר טבלאות צריכות להיווצר. יש לעיין בתיעוד למידע נוסף."
     ai_embeddings_semantic_search_enabled: "הפעלת חיפוש סמנטי בעמוד מלא."
     ai_embeddings_semantic_related_include_closed_topics: "כולל נושאים סגורים בתוצאות החיפוש הסמנטיות"
+    ai_embeddings_semantic_search_hyde_model: "הדגם שמשמש להרחבת מילות החיפוש לקבלת תוצאות טובות יותר במהלך חיפוש סמנטי"
     ai_summarization_discourse_service_api_endpoint: "כתובת בה API הסיכום של Dicourse פעיל."
     ai_summarization_discourse_service_api_key: "מפתח API ל־API הסיכומים של Discourse."
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."

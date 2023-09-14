@@ -56,6 +56,7 @@ de:
     ai_embeddings_pg_connection_string: "PostgreSQL-Verbindungsstring für das Einbettungsmodul. Die pgvector-Erweiterung muss aktiviert sein und eine Reihe von Tabellen erstellt werden. Siehe Dokumentation für weitere Informationen."
     ai_embeddings_semantic_search_enabled: "Aktiviere die semantische Ganzseitensuche."
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"
+    ai_embeddings_semantic_search_hyde_model: "Modell zur Erweiterung von Schlüsselwörtern, um bessere Ergebnisse bei der semantischen Suche zu erzielen"
     ai_summarization_discourse_service_api_endpoint: "URL, unter der die Discourse-Zusammenfassungs-API läuft."
     ai_summarization_discourse_service_api_key: "API-Schlüssel für die Discourse-Zusammenfassungs-API."
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."

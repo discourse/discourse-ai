@@ -22,11 +22,17 @@ module DiscourseAi
           I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.description")
         end
 
+        def initialize(allow_commands: true)
+          @allow_commands = allow_commands
+        end
+
         def commands
           []
         end
 
         def render_commands(render_function_instructions:)
+          return +"" if !@allow_commands
+
           result = +""
           if render_function_instructions
             result << "\n"
@@ -55,12 +61,15 @@ module DiscourseAi
         end
 
         def available_commands
+          return [] if !@allow_commands
+
           return @available_commands if @available_commands
 
           @available_commands = all_available_commands.filter { |cmd| commands.include?(cmd) }
         end
 
         def available_functions
+          return [] if !@allow_commands
           # note if defined? can be a problem in test
           # this can never be nil so it is safe
           return @available_functions if @available_functions

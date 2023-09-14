@@ -38,6 +38,10 @@ he:
         accuracy: "דיוק:"
       embeddings:
         semantic_search: "נושאים (סמנטיקה)"
+        semantic_search_loading: "מתבצע חיפוש אחר תוצאות נוספות עם בינה מלאכותית"
+        semantic_search_results:
+          toggle: "נמצאו %{count} תוצאות באמצעות בינה מלאכותית"
+          none: "חיפוש הבינה המלאכותית שלנו לא מצא נושאים, עמך הסליחה."
       ai_bot:
         pm_warning: "הודעות בוט שיח בינה מלאכותית לא נאכפות דרך קבע על ידי המפקחים."
         cancel_streaming: "עצירת התגובה"

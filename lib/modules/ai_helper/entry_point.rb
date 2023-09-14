@@ -5,6 +5,7 @@ module DiscourseAi
       def load_files
         require_relative "llm_prompt"
         require_relative "semantic_categorizer"
+        require_relative "painter"
       end
 
       def inject_into(plugin)

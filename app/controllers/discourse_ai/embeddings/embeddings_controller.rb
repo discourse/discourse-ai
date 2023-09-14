@@ -8,7 +8,11 @@ module DiscourseAi
       SEMANTIC_SEARCH_TYPE = "semantic_search"
 
       def search
-        query = params[:q]
+        query = params[:q].to_s
+
+        if query.length < SiteSetting.min_search_term_length
+          raise Discourse::InvalidParameters.new(:q)
+        end
 
         grouped_results =
           Search::GroupedSearchResults.new(

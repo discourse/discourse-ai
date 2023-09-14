@@ -36,9 +36,9 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
 
     context "when cleaning usernames" do
       it "can properly clean usernames so OpenAI allows it" do
-        subject.clean_username("test test").should eq("test_test")
-        subject.clean_username("test.test").should eq("test_test")
-        subject.clean_username("test😀test").should eq("test_test")
+        expect(subject.clean_username("test test")).to eq("test_test")
+        expect(subject.clean_username("test.test")).to eq("test_test")
+        expect(subject.clean_username("test😀test")).to eq("test_test")
       end
     end
 

@@ -8,27 +8,11 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { createPopper } from "@popperjs/core";
 import { caretPosition, getCaretPosition } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
+import showAIHelper from "../../lib/show-ai-helper";
 
 export default class AiHelperContextMenu extends Component {
   static shouldRender(outletArgs, helper) {
-    const helperEnabled =
-      helper.siteSettings.discourse_ai_enabled &&
-      helper.siteSettings.composer_ai_helper_enabled;
-
-    const allowedGroups = helper.siteSettings.ai_helper_allowed_groups
-      .split("|")
-      .map((id) => parseInt(id, 10));
-    const canUseAssistant = helper.currentUser?.groups.some((g) =>
-      allowedGroups.includes(g.id)
-    );
-
-    const canShowInPM = helper.siteSettings.ai_helper_allowed_in_pm;
-
-    if (outletArgs?.composer?.privateMessage) {
-      return helperEnabled && canUseAssistant && canShowInPM;
-    }
-
-    return helperEnabled && canUseAssistant;
+    return showAIHelper(outletArgs, helper);
   }
 
   @service siteSettings;
@@ -135,7 +119,7 @@ export default class AiHelperContextMenu extends Component {
         )
       : "";
 
-    if (this.selectedText.length === 0) {
+    if (this.selectedText?.length === 0) {
       this.closeContextMenu();
       return;
     }
