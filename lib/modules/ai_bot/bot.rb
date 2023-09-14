@@ -52,7 +52,7 @@ module DiscourseAi
       attr_reader :bot_user
 
       BOT_NOT_FOUND = Class.new(StandardError)
-      MAX_COMPLETIONS = 6
+      MAX_COMPLETIONS = 5
 
       def self.as(bot_user)
         available_bots = [DiscourseAi::AiBot::OpenAiBot, DiscourseAi::AiBot::AnthropicBot]
@@ -83,14 +83,6 @@ module DiscourseAi
         post.topic.save_custom_fields
       end
 
-      def max_commands_per_reply=(val)
-        @max_commands_per_reply = val
-      end
-
-      def max_commands_per_reply
-        @max_commands_per_reply || 5
-      end
-
       def reply_to(
         post,
         total_completions: 0,
@@ -100,11 +92,14 @@ module DiscourseAi
       )
         return if total_completions > MAX_COMPLETIONS
 
-        @persona = DiscourseAi::AiBot::Personas::General.new
+        # do not allow commands when we are at the end of chain (total completions == MAX_COMPLETIONS)
+        allow_commands = (total_completions < MAX_COMPLETIONS)
+
+        @persona = DiscourseAi::AiBot::Personas::General.new(allow_commands: allow_commands)
         if persona_name = post.topic.custom_fields["ai_persona"]
           persona_class =
             DiscourseAi::AiBot::Personas.all.find { |current| current.name == persona_name }
-          @persona = persona_class.new if persona_class
+          @persona = persona_class.new(allow_commands: allow_commands) if persona_class
         end
 
         prompt =

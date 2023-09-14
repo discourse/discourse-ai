@@ -34,6 +34,18 @@ module DiscourseAi::AiBot::Personas
       topic
     end
 
+    it "can disable commands via constructor" do
+      persona = TestPersona.new(allow_commands: false)
+
+      rendered =
+        persona.render_system_prompt(topic: topic_with_users, render_function_instructions: true)
+
+      expect(rendered).not_to include("!tags")
+      expect(rendered).not_to include("!search")
+
+      expect(persona.available_functions).to be_empty
+    end
+
     it "renders the system prompt" do
       freeze_time
 

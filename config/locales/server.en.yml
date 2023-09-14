@@ -113,6 +113,7 @@ en:
           description: "AI Bot with Google access that can research information for you"
       default_pm_prefix: "[Untitled AI bot PM]"
       topic_not_found: "Summary unavailable, topic not found!"
+      searching: "Searching for: '%{query}'"
       command_summary:
         categories: "List categories"
         search: "Search"

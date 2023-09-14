@@ -42,7 +42,6 @@ RSpec.describe DiscourseAi::AiBot::Bot do
   describe "#reply_to" do
     it "can respond to a search command" do
       bot.system_prompt_style!(:simple)
-      bot.max_commands_per_reply = 2
 
       expected_response = {
         function_call: {

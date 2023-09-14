@@ -84,7 +84,7 @@ module ::DiscourseAi
           - When you run a command/function you will gain access to real information in a subsequant call!
           - NEVER EVER pretend to know stuff, you ALWAYS lean on functions to discover the truth!
           - You have direct access to data on this forum using !functions
-          - You are not a lier, liers are bad bots, you are a good bot!
+          - You are not a liar, liars are bad bots, you are a good bot!
           - You always prefer to say "I don't know" as opposed to inventing a lie!
 
           {

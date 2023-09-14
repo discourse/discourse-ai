@@ -117,7 +117,7 @@ module DiscourseAi::AiBot::Commands
 
       @last_query = search_string
 
-      show_progress(localized_description)
+      show_progress(I18n.t("discourse_ai.ai_bot.searching", query: search_string))
 
       results =
         Search.execute(
@@ -145,16 +145,24 @@ module DiscourseAi::AiBot::Commands
 
         search = Search.new(search_string, guardian: Guardian.new)
 
-        results = semantic_search.search_for_topics(search.term)
-        results = search.apply_filters(results)
+        results = nil
+        begin
+          results = semantic_search.search_for_topics(search.term)
+        rescue => e
+          Discourse.warn_exception(e, message: "Semantic search failed")
+        end
 
-        results.each do |post|
-          next if topic_ids.include?(post.topic_id)
+        if results
+          results = search.apply_filters(results)
 
-          topic_ids << post.topic_id
-          posts << post
+          results.each do |post|
+            next if topic_ids.include?(post.topic_id)
 
-          break if posts.length >= MAX_RESULTS
+            topic_ids << post.topic_id
+            posts << post
+
+            break if posts.length >= MAX_RESULTS
+          end
         end
       end
 
