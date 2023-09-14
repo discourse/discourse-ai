@@ -205,7 +205,7 @@ module DiscourseAi
             truncated_reply = functions.truncate(partial_reply)
           end
 
-          prompt << [truncated_reply, bot_user.username]
+          prompt << [truncated_reply, bot_user.username] if truncated_reply.present?
 
           post.post_custom_prompt.update!(custom_prompt: prompt)
         end
