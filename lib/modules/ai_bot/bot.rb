@@ -47,6 +47,24 @@ module DiscourseAi
         def to_a
           @functions
         end
+
+        def truncate(partial_reply)
+          lines = []
+          found_command = false
+          partial_reply
+            .split("\n")
+            .each do |line|
+              if line.match?(/^!/)
+                found_command = true
+                lines << line
+              elsif found_command && line.match(/^\s*[^!]+/)
+                break
+              else
+                lines << line
+              end
+            end
+          lines.join("\n")
+        end
       end
 
       attr_reader :bot_user
@@ -142,7 +160,6 @@ module DiscourseAi
             bot_reply_post.update!(raw: reply, cooked: PrettyText.cook(reply)) if bot_reply_post
           end
 
-          next if reply.length < SiteSetting.min_personal_message_post_length
           # Minor hack to skip the delay during tests.
           next if (Time.now - start < 0.5) && !Rails.env.test?
 
@@ -157,7 +174,7 @@ module DiscourseAi
                 bot_user,
                 topic_id: post.topic_id,
                 raw: reply,
-                skip_validations: false,
+                skip_validations: true,
               )
           end
 
@@ -181,7 +198,14 @@ module DiscourseAi
           bot_reply_post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
           prompt = post.post_custom_prompt.custom_prompt || []
 
-          prompt << [partial_reply, bot_user.username]
+          truncated_reply = partial_reply
+
+          if functions.found? && functions.cancel_completion?
+            # we need to truncate the partial_reply
+            truncated_reply = functions.truncate(partial_reply)
+          end
+
+          prompt << [truncated_reply, bot_user.username]
 
           post.post_custom_prompt.update!(custom_prompt: prompt)
         end
@@ -321,10 +345,10 @@ module DiscourseAi
 
       def populate_functions(partial:, reply:, functions:, done:)
         if !done
+          functions.found! if reply.match?(/^!/i)
           if functions.found?
             functions.cancel_completion! if reply.split("\n")[-1].match?(/^\s*[^!]+/)
           end
-          functions.found! if reply.match?(/^!/i)
         else
           reply
             .scan(/^!.*$/i)
