@@ -58,7 +58,7 @@
       width: 100%;
       border-radius: 0;
       margin: 0;
-      padding-block: 0.7rem;
+      padding-block: 0.6rem;
 
       &:focus,
       &:hover {
@@ -74,14 +74,14 @@
         color: var(--primary-very-high);
       }
     }
-
-    &:not(:last-child) {
-      border-bottom: 1px solid var(--primary-low);
-    }
   }
 
   &__options {
     padding: 0.25rem;
+
+    li:not(:last-child) {
+      border-bottom: 1px solid var(--primary-low);
+    }
   }
 
   &__loading {

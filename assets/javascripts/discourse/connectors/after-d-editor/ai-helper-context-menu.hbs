@@ -17,20 +17,23 @@
         <ul class="ai-helper-context-menu__options">
           {{#each this.helperOptions as |option|}}
             {{#if (eq option.name "custom_prompt")}}
-              <div class="ai-custom-prompt">
+              <div
+                class="ai-custom-prompt"
+                {{did-insert this.setupCustomPrompt}}
+              >
                 <Input
                   @value={{this.customPromptValue}}
                   placeholder="Enter a custom prompt..."
                   class="ai-custom-prompt__input"
-                  @enter={{this.submitCustomPrompt}}
+                  @enter={{action (fn this.updateSelected option)}}
                 />
 
                 {{#if this.customPromptValue.length}}
                   <DButton
                     @class="ai-custom-prompt__submit btn-primary"
                     @icon="discourse-sparkles"
-                    @action={{this.submitCustomPrompt}}
-                    @actionParam={{this.customPromptValue}}
+                    @action={{this.updateSelected}}
+                    @actionParam={{option}}
                   />
                 {{/if}}
               </div>
@@ -45,7 +48,6 @@
                 />
               </li>
             {{/if}}
-
           {{/each}}
         </ul>
 

@@ -54,7 +54,6 @@ export default class AiHelperContextMenu extends Component {
     resets: "RESETS",
     loading: "LOADING",
     review: "REVIEW",
-    customPrompt: "CUSTOM_PROMPT",
   };
   prompts = [];
   promptTypes = {};
@@ -62,6 +61,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked _menuState = this.CONTEXT_MENU_STATES.triggers;
   @tracked _popper;
   @tracked _dEditorInput;
+  @tracked _customPromptInput;
   @tracked _contextMenu;
   @tracked _activeAIRequest = null;
 
@@ -183,6 +183,10 @@ export default class AiHelperContextMenu extends Component {
   }
 
   get canCloseContextMenu() {
+    if (document.activeElement === this._customPromptInput) {
+      return false;
+    }
+
     if (this.loading && this._activeAIRequest !== null) {
       return false;
     }
@@ -195,11 +199,12 @@ export default class AiHelperContextMenu extends Component {
   }
 
   closeContextMenu() {
-    // if (!this.canCloseContextMenu) {
-    //   return;
-    // }
-    // this.showContextMenu = false;
-    // this.menuState = this.CONTEXT_MENU_STATES.triggers;
+    if (!this.canCloseContextMenu) {
+      return;
+    }
+    this.showContextMenu = false;
+    this.menuState = this.CONTEXT_MENU_STATES.triggers;
+    this.customPromptValue = "";
   }
 
   _updateSuggestedByAI(data) {
@@ -306,6 +311,14 @@ export default class AiHelperContextMenu extends Component {
   }
 
   @action
+  setupCustomPrompt() {
+    this._customPromptInput = document.querySelector(
+      ".ai-custom-prompt__input"
+    );
+    this._customPromptInput.focus();
+  }
+
+  @action
   toggleAiHelperOptions() {
     // Fetch prompts only if it hasn't been fetched yet
     if (this.helperOptions.length === 0) {
@@ -326,10 +339,6 @@ export default class AiHelperContextMenu extends Component {
 
   @action
   async updateSelected(option) {
-    if (option.name === "custom_prompt") {
-      return (this.menuState = this.CONTEXT_MENU_STATES.customPrompt);
-    }
-
     this._toggleLoadingState(true);
     this.lastUsedOption = option;
     this.menuState = this.CONTEXT_MENU_STATES.loading;
@@ -339,6 +348,7 @@ export default class AiHelperContextMenu extends Component {
       data: {
         mode: option.id,
         text: this.selectedText,
+        custom_prompt: this.customPromptValue,
       },
     });
 
@@ -380,21 +390,5 @@ export default class AiHelperContextMenu extends Component {
   @action
   togglePreviousMenu() {
     this.menuState = this.previousMenuState;
-  }
-
-  @action
-  submitCustomPrompt(prompt) {
-    // TODO: This is for testing purposes only, use updateSelected instead
-    console.log("prompt submitted", prompt);
-    ajax("/discourse-ai/ai-helper/suggest", {
-      method: "POST",
-      data: { mode: -5, text: this.selectedText, custom_prompt: prompt },
-    })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
   }
 }
