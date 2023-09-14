@@ -51,26 +51,6 @@
           {{/each}}
         </ul>
 
-      {{else if (eq this.menuState this.CONTEXT_MENU_STATES.customPrompt)}}
-        <div class="ai-helper-context-menu__custom-prompt">
-          <div class="ai-helper-context-menu__custom-prompt-header">
-            <DButton
-              @class="btn-flat"
-              @icon="chevron-left"
-              @label="discourse_ai.ai_helper.context_menu.back"
-              @action={{this.togglePreviousMenu}}
-            />
-          </div>
-
-          <Textarea @value="A bunch of text" @class="ai-custom-prompt-input" />
-
-          <DButton
-            @class="btn-primary btn-small send-prompt"
-            @icon="check"
-            @label="discourse_ai.ai_helper.context_menu.custom_prompt.submit"
-          />
-        </div>
-
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.loading)}}
         <div class="ai-helper-context-menu__loading">
           <div class="dot-falling"></div>
