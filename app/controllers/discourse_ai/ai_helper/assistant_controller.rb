@@ -6,6 +6,7 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_login
       before_action :ensure_can_request_suggestions
+      before_action :rate_limiter_performed!, except: %i[prompts]
 
       def prompts
         render json:
@@ -17,19 +18,13 @@ module DiscourseAi
       end
 
       def suggest
-        raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
+        input = get_text_param!
 
         prompt = CompletionPrompt.find_by(id: params[:mode])
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
 
-        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
-
         hijack do
-          render json:
-                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
-                     prompt,
-                     params[:text],
-                   ),
+          render json: DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, input),
                  status: 200
         end
       rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
@@ -40,7 +35,7 @@ module DiscourseAi
       end
 
       def suggest_title
-        raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
+        input = get_text_param!
 
         llm_prompt =
           DiscourseAi::AiHelper::LlmPrompt
@@ -50,14 +45,8 @@ module DiscourseAi
         prompt = CompletionPrompt.find_by(id: llm_prompt[:id])
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
 
-        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
-
         hijack do
-          render json:
-                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
-                     prompt,
-                     params[:text],
-                   ),
+          render json: DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, input),
                  status: 200
         end
       rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
@@ -68,29 +57,38 @@ module DiscourseAi
       end
 
       def suggest_category
-        raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
+        input = get_text_param!
 
-        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
-
-        render json:
-                 DiscourseAi::AiHelper::SemanticCategorizer.new(
-                   params[:text],
-                   current_user,
-                 ).categories,
+        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(input, current_user).categories,
                status: 200
       end
 
       def suggest_tags
-        raise Discourse::InvalidParameters.new(:text) if params[:text].blank?
+        input = get_text_param!
 
-        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
-
-        render json:
-                 DiscourseAi::AiHelper::SemanticCategorizer.new(params[:text], current_user).tags,
+        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(input, current_user).tags,
                status: 200
       end
 
+      def suggest_thumbnails
+        input = get_text_param!
+
+        hijack do
+          thumbnails = DiscourseAi::AiHelper::Painter.new.commission_thumbnails(input, current_user)
+
+          render json: { thumbnails: thumbnails }, status: 200
+        end
+      end
+
       private
+
+      def get_text_param!
+        params[:text].tap { |t| raise Discourse::InvalidParameters.new(:text) if t.blank? }
+      end
+
+      def rate_limiter_performed!
+        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
+      end
 
       def ensure_can_request_suggestions
         user_group_ids = current_user.group_ids
