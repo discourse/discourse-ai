@@ -16,8 +16,9 @@ module DiscourseAi
         # note this is about 100 tokens over, OpenAI have a more optimal representation
         @function_size ||= tokenize(available_functions.to_json).length
 
-        # provide a buffer of 50 tokens in case our counting is off
-        buffer = @function_size + reply_params[:max_tokens] + 50
+        # provide a buffer of 80 tokens - our function counting is not
+        # 100% accurate so this is a trial and error number
+        buffer = @function_size + reply_params[:max_tokens] + 80
 
         if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
           8192 - buffer
@@ -90,7 +91,7 @@ module DiscourseAi
         fn = partial.dig(:choices, 0, :delta, :function_call)
         if fn
           functions.add_function(fn[:name]) if fn[:name].present?
-          functions.add_argument_fragment(fn[:arguments]) if fn[:arguments].present?
+          functions.add_argument_fragment(fn[:arguments]) if !fn[:arguments].nil?
         end
       end
 
