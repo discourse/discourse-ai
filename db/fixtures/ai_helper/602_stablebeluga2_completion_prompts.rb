@@ -110,7 +110,6 @@ CompletionPrompt.seed do |cp|
   TEXT
 end
 
-
 CompletionPrompt.seed do |cp|
   cp.id = -205
   cp.provider = "huggingface"

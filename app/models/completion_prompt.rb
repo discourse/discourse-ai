@@ -15,7 +15,9 @@ class CompletionPrompt < ActiveRecord::Base
       when "huggingface"
         self.messages.each { |msg| msg.sub!("{{custom_prompt}}", user_input[:custom_prompt]) }
       else
-        self.messages.each { |msg| msg["content"].sub!("{{custom_prompt}}", user_input[:custom_prompt]) }
+        self.messages.each do |msg|
+          msg["content"].sub!("{{custom_prompt}}", user_input[:custom_prompt])
+        end
       end
     end
 
