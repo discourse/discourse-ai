@@ -4,6 +4,7 @@ class OpenAiCompletionsInferenceStubs
   TRANSLATE = "translate"
   PROOFREAD = "proofread"
   GENERATE_TITLES = "generate_titles"
+  CUSTOM_PROMPT = "custom_prompt"
 
   class << self
     def text_mode_to_id(mode)
@@ -14,6 +15,8 @@ class OpenAiCompletionsInferenceStubs
         -3
       when GENERATE_TITLES
         -2
+      when CUSTOM_PROMPT
+        -5
       end
     end
 
@@ -27,6 +30,20 @@ class OpenAiCompletionsInferenceStubs
         en el sur de la provincia de Buenos Aires, un gaucho es agredido por otros gauchos y, al caer,
         reconoce a un ahijado suyo y le dice con mansa reconvención y lenta sorpresa (estas palabras hay que oírlas, no leerlas):
         ¡Pero, che! Lo matan y no sabe que muere para que se repita una escena.
+      STRING
+    end
+
+    def custom_prompt_input
+      "Translate to French"
+    end
+
+    def custom_prompt_response
+      <<~STRING
+        Le destin favorise les répétitions, les variantes, les symétries ;
+        dix-neuf siècles plus tard, dans la province du sud de Buenos Aires, 
+        un gaucho est attaqué par d'autres gauchos et, en tombant, 
+        reconnaît un filleul à lui et dit avec doux reproche et surprise lente (ces mots doivent être entendus, pas lus)
+         : 'Mais, mon ami!' Il est tué et ne sait pas qu'il meurt pour qu'une scène puisse être répétée.
       STRING
     end
 
@@ -90,13 +107,27 @@ class OpenAiCompletionsInferenceStubs
         proofread_response
       when GENERATE_TITLES
         generated_titles
+      when CUSTOM_PROMPT
+        custom_prompt_response
       end
     end
 
     def stub_prompt(type)
-      text = type == TRANSLATE ? spanish_text : translated_response
+      user_input = type == TRANSLATE ? spanish_text : translated_response
 
-      prompt_messages = CompletionPrompt.find_by(name: type).messages_with_user_input(text)
+      if type == CUSTOM_PROMPT
+        user_input = {
+          mode: text_mode_to_id(type),
+          content: translated_response,
+          custom_prompt: "Translate to French",
+        }
+      elsif type == TRANSLATE
+        user_input = { mode: text_mode_to_id(type), text: spanish_text, custom_prompt: "" }
+      else
+        user_input = { mode: text_mode_to_id(type), text: translated_response, custom_prompt: "" }
+      end
+
+      prompt_messages = CompletionPrompt.find_by(name: type).messages_with_user_input(user_input)
 
       stub_response(prompt_messages, response_text_for(type))
     end
