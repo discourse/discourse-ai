@@ -40,10 +40,6 @@ class OpenAiCompletionsInferenceStubs
     def custom_prompt_response
       <<~STRING
         Le destin favorise les répétitions, les variantes, les symétries ;
-        dix-neuf siècles plus tard, dans la province du sud de Buenos Aires, 
-        un gaucho est attaqué par d'autres gauchos et, en tombant, 
-        reconnaît un filleul à lui et dit avec doux reproche et surprise lente (ces mots doivent être entendus, pas lus)
-         : 'Mais, mon ami!' Il est tué et ne sait pas qu'il meurt pour qu'une scène puisse être répétée.
       STRING
     end
 
@@ -114,20 +110,21 @@ class OpenAiCompletionsInferenceStubs
 
     def stub_prompt(type)
       user_input = type == TRANSLATE ? spanish_text : translated_response
+      id = text_mode_to_id(type)
 
       if type == CUSTOM_PROMPT
         user_input = {
-          mode: text_mode_to_id(type),
-          content: translated_response,
+          mode: id,
+          text: translated_response,
           custom_prompt: "Translate to French",
         }
       elsif type == TRANSLATE
-        user_input = { mode: text_mode_to_id(type), text: spanish_text, custom_prompt: "" }
+        user_input = { mode: id, text: spanish_text, custom_prompt: "" }
       else
-        user_input = { mode: text_mode_to_id(type), text: translated_response, custom_prompt: "" }
+        user_input = { mode: id, text: translated_response, custom_prompt: "" }
       end
 
-      prompt_messages = CompletionPrompt.find_by(name: type).messages_with_user_input(user_input)
+      prompt_messages = CompletionPrompt.find_by(id: id).messages_with_user_input(user_input)
 
       stub_response(prompt_messages, response_text_for(type))
     end
