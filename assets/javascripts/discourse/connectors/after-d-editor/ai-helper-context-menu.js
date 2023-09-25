@@ -224,7 +224,6 @@ export default class AiHelperContextMenu extends Component {
   }
 
   _showUserCustomPrompts() {
-    console.log(this.siteSettings.ai_helper_custom_prompts_allowed_groups);
     const allowedGroups =
       this.siteSettings?.ai_helper_custom_prompts_allowed_groups
         .split("|")
