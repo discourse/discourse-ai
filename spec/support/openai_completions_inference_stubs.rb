@@ -113,11 +113,7 @@ class OpenAiCompletionsInferenceStubs
       id = text_mode_to_id(type)
 
       if type == CUSTOM_PROMPT
-        user_input = {
-          mode: id,
-          text: translated_response,
-          custom_prompt: "Translate to French",
-        }
+        user_input = { mode: id, text: translated_response, custom_prompt: "Translate to French" }
       elsif type == TRANSLATE
         user_input = { mode: id, text: spanish_text, custom_prompt: "" }
       else
