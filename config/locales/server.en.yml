@@ -44,6 +44,7 @@ en:
     ai_helper_allowed_groups: "Users on these groups will see the AI helper button in the composer."
     ai_helper_allowed_in_pm: "Enable the composer's AI helper in PMs."
     ai_helper_model: "Model to use for the AI helper."
+    ai_helper_custom_prompts_allowed_groups: "Users on these groups will see the custom prompt option in the AI helper."
 
     ai_embeddings_enabled: "Enable the embeddings module."
     ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"

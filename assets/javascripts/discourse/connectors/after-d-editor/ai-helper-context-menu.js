@@ -15,6 +15,7 @@ export default class AiHelperContextMenu extends Component {
     return showAIHelper(outletArgs, helper);
   }
 
+  @service currentUser;
   @service siteSettings;
   @tracked helperOptions = [];
   @tracked showContextMenu = false;
@@ -86,6 +87,10 @@ export default class AiHelperContextMenu extends Component {
     if (customPromptIndex !== -1) {
       const customPrompt = prompts.splice(customPromptIndex, 1)[0];
       prompts.unshift(customPrompt);
+    }
+
+    if (!this._showUserCustomPrompts()) {
+      prompts = prompts.filter((p) => p.name !== "custom_prompt");
     }
 
     prompts.forEach((p) => {
@@ -216,6 +221,16 @@ export default class AiHelperContextMenu extends Component {
 
     this._dEditorInput.classList.remove("loading");
     return (this.loading = false);
+  }
+
+  _showUserCustomPrompts() {
+    console.log(this.siteSettings.ai_helper_custom_prompts_allowed_groups);
+    const allowedGroups =
+      this.siteSettings?.ai_helper_custom_prompts_allowed_groups
+        .split("|")
+        .map((id) => parseInt(id, 10));
+
+    return this.currentUser?.groups.some((g) => allowedGroups.includes(g.id));
   }
 
   handleBoundaries() {
