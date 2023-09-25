@@ -3,7 +3,7 @@
 require_relative "../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::AiHelper::LlmPrompt do
-  let(:prompt) { CompletionPrompt.find_by(name: mode, provider: 'openai') }
+  let(:prompt) { CompletionPrompt.find_by(name: mode, provider: "openai") }
 
   describe "#generate_and_send_prompt" do
     context "when using the translate mode" do
