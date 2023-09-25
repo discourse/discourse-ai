@@ -40,6 +40,10 @@ class OpenAiCompletionsInferenceStubs
     def custom_prompt_response
       <<~STRING
         Le destin favorise les répétitions, les variantes, les symétries ;
+        dix-neuf siècles plus tard, dans la province du sud de Buenos Aires, 
+        un gaucho est attaqué par d'autres gauchos et, en tombant, 
+        reconnaît un filleul à lui et dit avec doux reproche et surprise lente (ces mots doivent être entendus, pas lus)
+        : 'Mais, mon ami!' Il est tué et ne sait pas qu'il meurt pour qu'une scène puisse être répétée.
       STRING
     end
 
