@@ -15,10 +15,10 @@ export default class AiHelperContextMenu extends Component {
     return showAIHelper(outletArgs, helper);
   }
 
+  @service currentUser;
   @service siteSettings;
   @tracked helperOptions = [];
   @tracked showContextMenu = false;
-  @tracked menuState = this.CONTEXT_MENU_STATES.triggers;
   @tracked caretCoords;
   @tracked virtualElement;
   @tracked selectedText = "";
@@ -30,6 +30,8 @@ export default class AiHelperContextMenu extends Component {
   @tracked showDiffModal = false;
   @tracked diff;
   @tracked popperPlacement = "top-start";
+  @tracked previousMenuState = null;
+  @tracked customPromptValue = "";
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -41,8 +43,10 @@ export default class AiHelperContextMenu extends Component {
   prompts = [];
   promptTypes = {};
 
+  @tracked _menuState = this.CONTEXT_MENU_STATES.triggers;
   @tracked _popper;
   @tracked _dEditorInput;
+  @tracked _customPromptInput;
   @tracked _contextMenu;
   @tracked _activeAIRequest = null;
 
@@ -62,27 +66,42 @@ export default class AiHelperContextMenu extends Component {
     this._popper?.destroy();
   }
 
+  get menuState() {
+    return this._menuState;
+  }
+
+  set menuState(newState) {
+    this.previousMenuState = this._menuState;
+    this._menuState = newState;
+  }
+
   async loadPrompts() {
     let prompts = await ajax("/discourse-ai/ai-helper/prompts");
 
-    prompts
-      .filter((p) => p.name !== "generate_titles")
-      .map((p) => {
-        this.prompts[p.id] = p;
-      });
+    prompts = prompts.filter((p) => p.name !== "generate_titles");
+
+    // Find the custom_prompt object and move it to the beginning of the array
+    const customPromptIndex = prompts.findIndex(
+      (p) => p.name === "custom_prompt"
+    );
+    if (customPromptIndex !== -1) {
+      const customPrompt = prompts.splice(customPromptIndex, 1)[0];
+      prompts.unshift(customPrompt);
+    }
+
+    if (!this._showUserCustomPrompts()) {
+      prompts = prompts.filter((p) => p.name !== "custom_prompt");
+    }
+
+    prompts.forEach((p) => {
+      this.prompts[p.id] = p;
+    });
 
     this.promptTypes = prompts.reduce((memo, p) => {
       memo[p.name] = p.prompt_type;
       return memo;
     }, {});
-    this.helperOptions = prompts
-      .filter((p) => p.name !== "generate_titles")
-      .map((p) => {
-        return {
-          name: p.translated_name,
-          value: p.id,
-        };
-      });
+    this.helperOptions = prompts;
   }
 
   @bind
@@ -153,6 +172,10 @@ export default class AiHelperContextMenu extends Component {
   }
 
   get canCloseContextMenu() {
+    if (document.activeElement === this._customPromptInput) {
+      return false;
+    }
+
     if (this.loading && this._activeAIRequest !== null) {
       return false;
     }
@@ -168,9 +191,9 @@ export default class AiHelperContextMenu extends Component {
     if (!this.canCloseContextMenu) {
       return;
     }
-
     this.showContextMenu = false;
     this.menuState = this.CONTEXT_MENU_STATES.triggers;
+    this.customPromptValue = "";
   }
 
   _updateSuggestedByAI(data) {
@@ -198,6 +221,15 @@ export default class AiHelperContextMenu extends Component {
 
     this._dEditorInput.classList.remove("loading");
     return (this.loading = false);
+  }
+
+  _showUserCustomPrompts() {
+    const allowedGroups =
+      this.siteSettings?.ai_helper_custom_prompts_allowed_groups
+        .split("|")
+        .map((id) => parseInt(id, 10));
+
+    return this.currentUser?.groups.some((g) => allowedGroups.includes(g.id));
   }
 
   handleBoundaries() {
@@ -277,6 +309,14 @@ export default class AiHelperContextMenu extends Component {
   }
 
   @action
+  setupCustomPrompt() {
+    this._customPromptInput = document.querySelector(
+      ".ai-custom-prompt__input"
+    );
+    this._customPromptInput.focus();
+  }
+
+  @action
   toggleAiHelperOptions() {
     // Fetch prompts only if it hasn't been fetched yet
     if (this.helperOptions.length === 0) {
@@ -303,7 +343,11 @@ export default class AiHelperContextMenu extends Component {
 
     this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
       method: "POST",
-      data: { mode: option, text: this.selectedText },
+      data: {
+        mode: option.id,
+        text: this.selectedText,
+        custom_prompt: this.customPromptValue,
+      },
     });
 
     this._activeAIRequest
@@ -339,5 +383,10 @@ export default class AiHelperContextMenu extends Component {
       this._toggleLoadingState(false);
       this.closeContextMenu();
     }
+  }
+
+  @action
+  togglePreviousMenu() {
+    this.menuState = this.previousMenuState;
   }
 }

@@ -54,3 +54,14 @@ CompletionPrompt.seed do |cp|
       please reply with the corrected text between <ai></ai> tags.
     TEXT
 end
+
+CompletionPrompt.seed do |cp|
+  cp.id = -105
+  cp.provider = "anthropic"
+  cp.name = "custom_prompt"
+  cp.prompt_type = CompletionPrompt.prompt_types[:diff]
+  cp.messages = [{ role: "Human", content: <<~TEXT }]
+      You are a helpful assistant, I will provide you with a text inside <input> tags,
+      you will {{custom_prompt}} and you will reply with the result between <ai></ai> tags.
+    TEXT
+end

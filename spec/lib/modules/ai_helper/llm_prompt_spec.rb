@@ -3,7 +3,7 @@
 require_relative "../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::AiHelper::LlmPrompt do
-  let(:prompt) { CompletionPrompt.find_by(name: mode) }
+  let(:prompt) { CompletionPrompt.find_by(name: mode, provider: "openai") }
 
   describe "#generate_and_send_prompt" do
     context "when using the translate mode" do
@@ -13,7 +13,10 @@ RSpec.describe DiscourseAi::AiHelper::LlmPrompt do
 
       it "Sends the prompt to chatGPT and returns the response" do
         response =
-          subject.generate_and_send_prompt(prompt, OpenAiCompletionsInferenceStubs.spanish_text)
+          subject.generate_and_send_prompt(
+            prompt,
+            { text: OpenAiCompletionsInferenceStubs.spanish_text },
+          )
 
         expect(response[:suggestions]).to contain_exactly(
           OpenAiCompletionsInferenceStubs.translated_response.strip,
@@ -30,7 +33,7 @@ RSpec.describe DiscourseAi::AiHelper::LlmPrompt do
         response =
           subject.generate_and_send_prompt(
             prompt,
-            OpenAiCompletionsInferenceStubs.translated_response,
+            { text: OpenAiCompletionsInferenceStubs.translated_response },
           )
 
         expect(response[:suggestions]).to contain_exactly(
@@ -56,7 +59,7 @@ RSpec.describe DiscourseAi::AiHelper::LlmPrompt do
         response =
           subject.generate_and_send_prompt(
             prompt,
-            OpenAiCompletionsInferenceStubs.translated_response,
+            { text: OpenAiCompletionsInferenceStubs.translated_response },
           )
 
         expect(response[:suggestions]).to contain_exactly(*expected)

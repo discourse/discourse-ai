@@ -10,6 +10,9 @@ module PageObjects
       LOADING_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__loading"
       RESETS_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__resets"
       REVIEW_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__review"
+      CUSTOM_PROMPT_SELECTOR = "#{CONTEXT_MENU_SELECTOR} .ai-custom-prompt"
+      CUSTOM_PROMPT_INPUT_SELECTOR = "#{CUSTOM_PROMPT_SELECTOR}__input"
+      CUSTOM_PROMPT_BUTTON_SELECTOR = "#{CUSTOM_PROMPT_SELECTOR}__submit"
 
       def click_ai_button
         find("#{TRIGGER_STATE_SELECTOR} .btn").click
@@ -43,6 +46,15 @@ module PageObjects
         find("body").send_keys(:escape)
       end
 
+      def click_custom_prompt_button
+        find(CUSTOM_PROMPT_BUTTON_SELECTOR).click
+      end
+
+      def fill_custom_prompt(content)
+        find(CUSTOM_PROMPT_INPUT_SELECTOR).fill_in(with: content)
+        self
+      end
+
       def has_context_menu?
         page.has_css?(CONTEXT_MENU_SELECTOR)
       end
@@ -69,6 +81,22 @@ module PageObjects
 
       def not_showing_resets?
         page.has_no_css?(RESETS_STATE_SELECTOR)
+      end
+
+      def has_custom_prompt?
+        page.has_css?(CUSTOM_PROMPT_SELECTOR)
+      end
+
+      def has_no_custom_prompt?
+        page.has_no_css?(CUSTOM_PROMPT_SELECTOR)
+      end
+
+      def has_custom_prompt_button?
+        page.has_css?(CUSTOM_PROMPT_BUTTON_SELECTOR)
+      end
+
+      def has_no_custom_prompt_button?
+        page.has_no_css?(CUSTOM_PROMPT_BUTTON_SELECTOR)
       end
     end
   end

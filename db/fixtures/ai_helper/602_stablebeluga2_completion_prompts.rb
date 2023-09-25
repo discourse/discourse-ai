@@ -109,3 +109,20 @@ CompletionPrompt.seed do |cp|
     ### Assistant:
   TEXT
 end
+
+CompletionPrompt.seed do |cp|
+  cp.id = -205
+  cp.provider = "huggingface"
+  cp.name = "custom_prompt"
+  cp.prompt_type = CompletionPrompt.prompt_types[:diff]
+  cp.messages = [<<~TEXT]
+    ### System:
+    You are a helpful assistant, I will provide you with a text below,
+    you will {{custom_prompt}} and you will reply with the result.
+    
+    ### User:
+    {{user_input}}
+
+    ### Assistant:
+  TEXT
+end

@@ -19,6 +19,7 @@ en:
         suggest: "Suggest with AI"
         missing_content: "Please enter some content to generate suggestions."
         context_menu:
+          back: "Back"
           trigger: "AI"
           undo: "Undo"
           loading: "AI is generating"
@@ -28,6 +29,10 @@ en:
           confirm: "Confirm"
           revert: "Revert"
           changes: "Changes"
+          custom_prompt:
+            title: "Custom Prompt"
+            placeholder: "Enter a custom prompt..."
+            submit: "Send Prompt"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"

@@ -9,7 +9,7 @@ discourse_ai:
   ai_toxicity_inference_service_api_endpoint:
     default: "https://disorder-testing.demo-by-discourse.com"
   ai_toxicity_inference_service_api_key:
-    default: ''
+    default: ""
     secret: true
   ai_toxicity_inference_service_api_model:
     type: enum
@@ -56,7 +56,7 @@ discourse_ai:
   ai_sentiment_inference_service_api_endpoint:
     default: "https://sentiment-testing.demo-by-discourse.com"
   ai_sentiment_inference_service_api_key:
-    default: ''
+    default: ""
     secret: true
   ai_sentiment_models:
     type: list
@@ -64,8 +64,8 @@ discourse_ai:
     default: "emotion"
     allow_any: false
     choices:
-     - sentiment
-     - emotion
+      - sentiment
+      - emotion
 
   ai_nsfw_detection_enabled: false
   ai_nsfw_inference_service_api_endpoint:
@@ -85,8 +85,8 @@ discourse_ai:
     default: "opennsfw2"
     allow_any: false
     choices:
-     - opennsfw2
-     - nsfw_detector
+      - opennsfw2
+      - nsfw_detector
 
   ai_openai_gpt35_url: "https://api.openai.com/v1/chat/completions"
   ai_openai_gpt35_16k_url: "https://api.openai.com/v1/chat/completions"
@@ -148,6 +148,13 @@ discourse_ai:
       - gpt-4
       - claude-2
       - stable-beluga-2
+  ai_helper_custom_prompts_allowed_groups:
+    client: true
+    type: group_list
+    list_type: compact
+    default: "3" # 3: @staff
+    allow_any: false
+    refresh: true
 
   ai_embeddings_enabled:
     default: false
@@ -162,9 +169,9 @@ discourse_ai:
     default: "all-mpnet-base-v2"
     allow_any: false
     choices:
-     - all-mpnet-base-v2
-     - text-embedding-ada-002
-     - multilingual-e5-large
+      - all-mpnet-base-v2
+      - text-embedding-ada-002
+      - multilingual-e5-large
   ai_embeddings_generate_for_pms: false
   ai_embeddings_semantic_related_topics_enabled:
     default: false
@@ -183,11 +190,11 @@ discourse_ai:
     allow_any: false
     choices:
       - Llama2-*-chat-hf
-      - claude-instant-1   
-      - claude-2           
+      - claude-instant-1
+      - claude-2
       - gpt-3.5-turbo
-      - gpt-4              
-      - StableBeluga2      
+      - gpt-4
+      - StableBeluga2
       - Upstage-Llama-2-*-instruct-v2
 
   ai_summarization_discourse_service_api_endpoint: ""
@@ -211,22 +218,22 @@ discourse_ai:
     default: "gpt-3.5-turbo"
     client: true
     choices:
-     - gpt-3.5-turbo
-     - gpt-4
-     - claude-2
+      - gpt-3.5-turbo
+      - gpt-4
+      - claude-2
   ai_bot_enabled_chat_commands:
     type: list
     default: "categories|google|image|search|tags|time|read"
     client: true
     choices:
-     - categories
-     - google
-     - image
-     - search
-     - summarize
-     - read
-     - tags
-     - time
+      - categories
+      - google
+      - image
+      - search
+      - summarize
+      - read
+      - tags
+      - time
   ai_bot_enabled_personas:
     type: list
     default: "general|artist|sql_helper|settings_explorer|researcher"

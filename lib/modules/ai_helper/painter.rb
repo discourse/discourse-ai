@@ -36,7 +36,10 @@ module DiscourseAi
 
         return "" if prompt_for_provider.nil?
 
-        llm_prompt.generate_and_send_prompt(prompt_for_provider, text).dig(:suggestions).first
+        llm_prompt
+          .generate_and_send_prompt(prompt_for_provider, { text: text })
+          .dig(:suggestions)
+          .first
       end
 
       def completion_prompts

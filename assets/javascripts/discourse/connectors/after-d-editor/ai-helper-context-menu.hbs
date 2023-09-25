@@ -16,33 +16,54 @@
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.options)}}
         <ul class="ai-helper-context-menu__options">
           {{#each this.helperOptions as |option|}}
-            <li data-name={{option.name}} data-value={{option.value}}>
-              <DButton
-                @class="btn-flat"
-                @translatedLabel={{option.name}}
-                @action={{this.updateSelected}}
-                @actionParam={{option.value}}
-              />
-            </li>
+            {{#if (eq option.name "custom_prompt")}}
+              <div
+                class="ai-custom-prompt"
+                {{did-insert this.setupCustomPrompt}}
+              >
+                <Input
+                  @value={{this.customPromptValue}}
+                  placeholder="Enter a custom prompt..."
+                  class="ai-custom-prompt__input"
+                  @enter={{action (fn this.updateSelected option)}}
+                />
+
+                {{#if this.customPromptValue.length}}
+                  <DButton
+                    @class="ai-custom-prompt__submit btn-primary"
+                    @icon="discourse-sparkles"
+                    @action={{this.updateSelected}}
+                    @actionParam={{option}}
+                  />
+                {{/if}}
+              </div>
+            {{else}}
+              <li data-name={{option.translated_name}} data-value={{option.id}}>
+                <DButton
+                  @icon={{option.icon}}
+                  @class="btn-flat"
+                  @translatedLabel={{option.translated_name}}
+                  @action={{this.updateSelected}}
+                  @actionParam={{option}}
+                />
+              </li>
+            {{/if}}
           {{/each}}
         </ul>
 
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.loading)}}
-        <ul class="ai-helper-context-menu__loading">
-          <li>
-            <div class="dot-falling"></div>
-            <span>
-              {{i18n "discourse_ai.ai_helper.context_menu.loading"}}
-            </span>
-            <DButton
-              @icon="times"
-              @title="discourse_ai.ai_helper.context_menu.cancel"
-              @action={{this.cancelAIAction}}
-              class="btn-flat cancel-request"
-            />
-          </li>
-
-        </ul>
+        <div class="ai-helper-context-menu__loading">
+          <div class="dot-falling"></div>
+          <span>
+            {{i18n "discourse_ai.ai_helper.context_menu.loading"}}
+          </span>
+          <DButton
+            @icon="times"
+            @title="discourse_ai.ai_helper.context_menu.cancel"
+            @action={{this.cancelAIAction}}
+            class="btn-flat cancel-request"
+          />
+        </div>
 
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.review)}}
         <ul class="ai-helper-context-menu__review">
@@ -92,7 +113,6 @@
             />
           </li>
         </ul>
-
       {{/if}}
     </div>
   {{/if}}

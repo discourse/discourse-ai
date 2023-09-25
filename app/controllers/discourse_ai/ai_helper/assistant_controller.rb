@@ -21,10 +21,15 @@ module DiscourseAi
         input = get_text_param!
 
         prompt = CompletionPrompt.find_by(id: params[:mode])
+
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
+        if prompt.prompt_type == "custom_prompt" && params[:custom_prompt].blank?
+          raise Discourse::InvalidParameters.new(:custom_prompt)
+        end
 
         hijack do
-          render json: DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, input),
+          render json:
+                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, params),
                  status: 200
         end
       rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
@@ -36,6 +41,7 @@ module DiscourseAi
 
       def suggest_title
         input = get_text_param!
+        input_hash = { text: input }
 
         llm_prompt =
           DiscourseAi::AiHelper::LlmPrompt
@@ -46,7 +52,11 @@ module DiscourseAi
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
 
         hijack do
-          render json: DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, input),
+          render json:
+                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
+                     prompt,
+                     input_hash,
+                   ),
                  status: 200
         end
       rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
@@ -58,15 +68,21 @@ module DiscourseAi
 
       def suggest_category
         input = get_text_param!
+        input_hash = { text: input }
 
-        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(input, current_user).categories,
+        render json:
+                 DiscourseAi::AiHelper::SemanticCategorizer.new(
+                   input_hash,
+                   current_user,
+                 ).categories,
                status: 200
       end
 
       def suggest_tags
         input = get_text_param!
+        input_hash = { text: input }
 
-        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(input, current_user).tags,
+        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(input_hash, current_user).tags,
                status: 200
       end
 

@@ -54,6 +54,56 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       expect(ai_helper_context_menu).to have_no_context_menu
     end
 
+    context "when using custom prompt" do
+      let(:mode) { OpenAiCompletionsInferenceStubs::CUSTOM_PROMPT }
+      before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
+
+      it "shows custom prompt option" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
+        ai_helper_context_menu.click_ai_button
+        expect(ai_helper_context_menu).to have_custom_prompt
+      end
+
+      it "shows the custom prompt button when input is filled" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
+        ai_helper_context_menu.click_ai_button
+        expect(ai_helper_context_menu).to have_no_custom_prompt_button
+        ai_helper_context_menu.fill_custom_prompt(
+          OpenAiCompletionsInferenceStubs.custom_prompt_input,
+        )
+        expect(ai_helper_context_menu).to have_custom_prompt_button
+      end
+
+      it "replaces the composed message with AI generated content" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
+        ai_helper_context_menu.click_ai_button
+        ai_helper_context_menu.fill_custom_prompt(
+          OpenAiCompletionsInferenceStubs.custom_prompt_input,
+        )
+        ai_helper_context_menu.click_custom_prompt_button
+
+        wait_for do
+          composer.composer_input.value ==
+            OpenAiCompletionsInferenceStubs.custom_prompt_response.strip
+        end
+
+        expect(composer.composer_input.value).to eq(
+          OpenAiCompletionsInferenceStubs.custom_prompt_response.strip,
+        )
+      end
+    end
+
+    context "when not a member of custom prompt group" do
+      let(:mode) { OpenAiCompletionsInferenceStubs::CUSTOM_PROMPT }
+      before { SiteSetting.ai_helper_custom_prompts_allowed_groups = non_member_group.id.to_s }
+
+      it "does not show custom prompt option" do
+        trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
+        ai_helper_context_menu.click_ai_button
+        expect(ai_helper_context_menu).to have_no_custom_prompt
+      end
+    end
+
     context "when using translation mode" do
       let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
       before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
