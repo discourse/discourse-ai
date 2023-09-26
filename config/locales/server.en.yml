@@ -113,6 +113,9 @@ en:
         researcher:
           name: Researcher
           description: "AI Bot with Google access that can research information for you"
+        creative:
+          name: Creative
+          description: "AI Bot with no external integrations specialized in creative tasks"
       default_pm_prefix: "[Untitled AI bot PM]"
       topic_not_found: "Summary unavailable, topic not found!"
       searching: "Searching for: '%{query}'"
