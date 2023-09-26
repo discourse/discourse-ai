@@ -10,13 +10,13 @@ zh_CN:
       modals:
         select_option: "选择一个选项…"
       related_topics:
-        title: "相似话题"
         pill: "相关"
       ai_helper:
         title: "使用 AI 提出更改建议"
         description: "选择以下选项之一，AI 将向您推荐新版本文本。"
         selection_hint: "提示：您也可以在打开助手之前选择文本的一部分来仅重写该文本。"
         context_menu:
+          back: "返回"
           undo: "撤消"
           cancel: "取消"
           regen: "重试"

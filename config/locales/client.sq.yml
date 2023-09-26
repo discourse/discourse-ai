@@ -9,6 +9,7 @@ sq:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Kthehu mbrapa"
           undo: "Çbëj"
           cancel: "Anulo"
           regen: "Provo përsëri"

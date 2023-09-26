@@ -9,6 +9,7 @@ et:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Tagasi"
           undo: "Ennista"
           cancel: "Tühista"
           regen: "Proovi uuesti"

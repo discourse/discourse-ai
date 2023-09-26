@@ -15,7 +15,7 @@ he:
       modals:
         select_option: "בחירת אפשרות…"
       related_topics:
-        title: "נושאים דומים"
+        title: "נושאים קשורים"
         pill: "קשורים"
       ai_helper:
         title: "הצעת שינויים באמצעות בינה מלאכותית"
@@ -24,6 +24,7 @@ he:
         suggest: "הצעה עם בינה מלאכותית"
         missing_content: "נא למלא קצת תוכן כדי לחולל הצעות."
         context_menu:
+          back: "חזרה"
           trigger: "בינה מלאכותית"
           undo: "ביטול פעולה"
           loading: "הבינה המלאכותית נוצרת"
@@ -33,6 +34,10 @@ he:
           confirm: "אישור"
           revert: "החזרה"
           changes: "שינויים"
+          custom_prompt:
+            title: "בקשה מותאמת אישית"
+            placeholder: "נא למלא בקשה מותאמת…"
+            submit: "שליחת בקשה"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"

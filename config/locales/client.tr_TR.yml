@@ -10,13 +10,13 @@ tr_TR:
       modals:
         select_option: "Seçenek belirleyin..."
       related_topics:
-        title: "Benzer Konular"
         pill: "İlgili"
       ai_helper:
         title: "YZ kullanarak değişiklik önerin"
         description: "Aşağıdaki seçeneklerden birini belirleyin ve YZ size metnin yeni bir versiyonunu önersin."
         selection_hint: "İpucu: Ayrıca, yalnızca onu yeniden yazmak için yardımcıyı açmadan önce metnin bir bölümünü de seçebilirsiniz."
         context_menu:
+          back: "Geri"
           undo: "Geri Al"
           cancel: "İptal et"
           regen: "Tekrar Dene"

@@ -46,6 +46,7 @@ he:
     ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
     ai_helper_allowed_in_pm: "הפעלת מסייע הבינה המלאכותית בכותב ההודעות בהודעות הפרטיות."
     ai_helper_model: "דגם לשימוש למסייע הבינה המלאכותית."
+    ai_helper_custom_prompts_allowed_groups: "משתמשים בקבוצות אלה יראו את אפשרות הבקשה המותאמת אישית במסייע הבינה המלאכותית."
     ai_embeddings_enabled: "הפעלת מודול ההטמעות."
     ai_embeddings_discourse_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול ההטמעות"
     ai_embeddings_discourse_service_api_key: "מפתח API ל־API של ההטמעות"
@@ -87,6 +88,7 @@ he:
         generate_titles: הצעת כותרות לנושא
         proofread: הגהת הטקסט
         markdown_table: יצירת טבלה ב־Markdown
+        custom_prompt: "בקשה מותאמת אישית"
     ai_bot:
       personas:
         general:
@@ -106,6 +108,7 @@ he:
           description: "בוט בינה מלאכותית עם גישה ל־Google שיכול לגשת למידע מחקרי בשבילך"
       default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
+      searching: "חיפוש אחר: ‚%{query}’"
       command_summary:
         categories: "הצגת קטגוריות"
         search: "חיפוש"

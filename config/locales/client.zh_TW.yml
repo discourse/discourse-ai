@@ -9,6 +9,7 @@ zh_TW:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "上一步"
           undo: "復原"
           cancel: "取消"
           regen: "請再試一次"

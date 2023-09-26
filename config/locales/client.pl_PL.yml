@@ -10,13 +10,13 @@ pl_PL:
       modals:
         select_option: "Wybierz opcję..."
       related_topics:
-        title: "Podobne tematy"
         pill: "Powiązane"
       ai_helper:
         title: "Zaproponuj zmiany za pomocą AI"
         description: "Wybierz jedną z poniższych opcji, a sztuczna inteligencja zasugeruje Ci nową wersję tekstu."
         selection_hint: "Wskazówka: Możesz także zaznaczyć część tekstu przed otwarciem pomocnika, aby przepisać tylko ten fragment."
         context_menu:
+          back: "Poprzednia"
           undo: "Cofnij"
           cancel: "Anuluj"
           regen: "Spróbuj ponownie"

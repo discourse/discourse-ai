@@ -9,6 +9,7 @@ hu:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Vissza"
           undo: "Visszavonás"
           cancel: "Mégse"
           regen: "Újrapróbálkozás"

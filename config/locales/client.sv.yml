@@ -9,6 +9,7 @@ sv:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Tillbaka"
           undo: "Ångra"
           cancel: "Avbryt"
           regen: "Försök igen"

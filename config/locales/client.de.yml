@@ -15,7 +15,7 @@ de:
       modals:
         select_option: "Wähle eine Option aus..."
       related_topics:
-        title: "Ähnliche Themen"
+        title: "Verwandte Themen"
         pill: "Verwandt"
       ai_helper:
         title: "Änderungen mit KI vorschlagen"
@@ -24,6 +24,7 @@ de:
         suggest: "Mit KI vorschlagen"
         missing_content: "Bitte gib einige Inhalte ein, um Vorschläge zu generieren."
         context_menu:
+          back: "Zurück"
           trigger: "KI"
           undo: "Rückgängig machen"
           loading: "KI generiert"
