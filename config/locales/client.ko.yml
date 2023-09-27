@@ -9,6 +9,7 @@ ko:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "뒤로"
           undo: "실행 취소"
           cancel: "취소"
           regen: "다시 시도"

@@ -9,6 +9,7 @@ nb_NO:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Forrige"
           undo: "Angre"
           cancel: "Avbryt"
           regen: "Prøv igjen"

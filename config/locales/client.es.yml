@@ -10,13 +10,13 @@ es:
       modals:
         select_option: "Selecciona una opción..."
       related_topics:
-        title: "Temas similares"
         pill: "Relacionados"
       ai_helper:
         title: "Sugerir cambios usando IA"
         description: "Elige una de las opciones siguientes y la IA te propondrá una nueva versión del texto."
         selection_hint: "Sugerencia: También puedes seleccionar una parte del texto antes de abrir el asistente para reescribir solo eso."
         context_menu:
+          back: "Atrás"
           undo: "Deshacer"
           cancel: "Cancelar"
           regen: "Intentar de nuevo"

@@ -9,6 +9,7 @@ sl:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Nazaj"
           undo: "Razveljavi"
           cancel: "Prekliči"
           regen: "Poskusi ponovno"

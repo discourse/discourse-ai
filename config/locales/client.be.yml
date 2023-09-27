@@ -9,6 +9,7 @@ be:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Назад"
           undo: "Адмяніць"
           cancel: "адмяніць"
           regen: "Паспрабаваць яшчэ раз"

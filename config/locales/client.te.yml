@@ -9,6 +9,7 @@ te:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "వెనుకకు"
           undo: "రద్దు"
           cancel: "రద్దుచేయి"
           regen: "మళ్ళీ ప్రయత్నించండి"

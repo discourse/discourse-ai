@@ -9,6 +9,7 @@ da:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Tilbage"
           undo: "Fortryd"
           cancel: "Annuller"
           regen: "Prøv igen"

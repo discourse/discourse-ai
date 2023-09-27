@@ -9,6 +9,7 @@ lv:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Atpakaļ"
           undo: "Atsaukt"
           cancel: "Atcelt"
           regen: "Mēģināt vēlreiz"

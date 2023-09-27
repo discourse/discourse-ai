@@ -9,6 +9,7 @@ bg:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Назад"
           undo: "Отмени"
           cancel: "Прекрати"
           regen: "Опитайте отново"

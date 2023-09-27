@@ -9,6 +9,7 @@ ro:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Înapoi"
           undo: "Anulează acțiunea"
           cancel: "Anulare"
           regen: "Încearcă din nou"

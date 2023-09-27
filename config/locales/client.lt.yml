@@ -9,6 +9,7 @@ lt:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Atgal"
           undo: "Anuliuoti"
           cancel: "Atšaukti"
           regen: "Bandyti dar kartą"

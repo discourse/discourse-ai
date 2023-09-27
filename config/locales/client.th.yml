@@ -9,6 +9,7 @@ th:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "กลับ"
           undo: "เลิกทำ"
           cancel: "ยกเลิก"
           regen: "ลองอีกครั้ง"

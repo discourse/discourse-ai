@@ -9,6 +9,7 @@ el:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Πίσω"
           undo: "Αναίρεση"
           cancel: "Ακύρωση"
           regen: "Δοκίμασε ξανά"

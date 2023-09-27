@@ -9,6 +9,7 @@ vi:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Quay lại"
           undo: "Hoàn tác"
           cancel: "Huỷ"
           regen: "Thử lại"

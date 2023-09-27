@@ -9,6 +9,7 @@ sw:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "Iliyopita"
           undo: "Tendua"
           cancel: "Ghairi"
           regen: "Jaribu Tena"

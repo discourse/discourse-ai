@@ -106,6 +106,7 @@ de:
           description: "KI-Bot mit Google-Zugang, der Informationen für dich recherchieren kann"
       default_pm_prefix: "[KI-Bot-PN ohne Titel]"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
+      searching: "Suche nach: '%{query}'"
       command_summary:
         categories: "Kategorien auflisten"
         search: "Suche"

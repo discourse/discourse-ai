@@ -9,6 +9,7 @@ ur:
     discourse_ai:
       ai_helper:
         context_menu:
+          back: "واپس"
           undo: "کالعدم کریں"
           cancel: "منسوخ"
           regen: "دوبارہ کوشش کریں"

@@ -10,13 +10,13 @@ fi:
       modals:
         select_option: "Valitse vaihtoehto..."
       related_topics:
-        title: "Samankaltaisia ketjuja"
         pill: "Liittyy aiheeseen"
       ai_helper:
         title: "Ehdota muutoksia tekoälyn avulla"
         description: "Valitse yksi seuraavista vaihtoehdoista, niin tekoäly ehdottaa sinulle uutta versiota tekstistä."
         selection_hint: "Vihje: voit myös valita osan tekstistä ennen apuohjelman avaamista kirjoittaaksesi vain sen uudelleen."
         context_menu:
+          back: "Takaisin"
           undo: "Kumoa"
           cancel: "Peruuta"
           regen: "Yritä uudelleen"
