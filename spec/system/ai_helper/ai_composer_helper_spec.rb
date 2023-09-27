@@ -74,14 +74,14 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         expect(ai_helper_context_menu).to have_custom_prompt
       end
 
-      it "shows the custom prompt button when input is filled" do
+      it "enables the custom prompt button when input is filled" do
         trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
         ai_helper_context_menu.click_ai_button
-        expect(ai_helper_context_menu).to have_no_custom_prompt_button
+        expect(ai_helper_context_menu).to have_custom_prompt_button_disabled
         ai_helper_context_menu.fill_custom_prompt(
           OpenAiCompletionsInferenceStubs.custom_prompt_input,
         )
-        expect(ai_helper_context_menu).to have_custom_prompt_button
+        expect(ai_helper_context_menu).to have_custom_prompt_button_enabled
       end
 
       it "replaces the composed message with AI generated content" do

@@ -98,6 +98,14 @@ module PageObjects
       def has_no_custom_prompt_button?
         page.has_no_css?(CUSTOM_PROMPT_BUTTON_SELECTOR)
       end
+
+      def has_custom_prompt_button_enabled?
+        page.has_css?("#{CUSTOM_PROMPT_BUTTON_SELECTOR}:not(:disabled)")
+      end
+
+      def has_custom_prompt_button_disabled?
+        page.has_css?("#{CUSTOM_PROMPT_BUTTON_SELECTOR}:disabled")
+      end
     end
   end
 end
