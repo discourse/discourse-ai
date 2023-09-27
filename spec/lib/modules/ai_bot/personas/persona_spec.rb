@@ -84,6 +84,7 @@ module DiscourseAi::AiBot::Personas
           Artist,
           SettingsExplorer,
           Researcher,
+          Creative,
         )
       end
 
@@ -92,6 +93,7 @@ module DiscourseAi::AiBot::Personas
           General,
           SqlHelper,
           SettingsExplorer,
+          Creative,
         )
       end
 
