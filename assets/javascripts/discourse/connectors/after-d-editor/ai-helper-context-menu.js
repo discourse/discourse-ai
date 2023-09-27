@@ -42,6 +42,7 @@ export default class AiHelperContextMenu extends Component {
   };
   prompts = [];
   promptTypes = {};
+  minSelectionChars = 3;
 
   @tracked _menuState = this.CONTEXT_MENU_STATES.triggers;
   @tracked _popper;
@@ -107,7 +108,6 @@ export default class AiHelperContextMenu extends Component {
   @bind
   selectionChanged() {
     if (document.activeElement !== this._dEditorInput) {
-      this.closeContextMenu();
       return;
     }
 
@@ -126,6 +126,10 @@ export default class AiHelperContextMenu extends Component {
 
     if (this.selectedText?.length === 0) {
       this.closeContextMenu();
+      return;
+    }
+
+    if (this.selectedText?.length < this.minSelectionChars) {
       return;
     }
 

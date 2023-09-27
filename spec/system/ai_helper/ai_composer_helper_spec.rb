@@ -37,6 +37,16 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       expect(ai_helper_context_menu).to have_context_menu
     end
 
+    it "does not show the context menu when selecting insuffient text" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(OpenAiCompletionsInferenceStubs.translated_response)
+      page.execute_script(
+        "const input = document.querySelector('.d-editor-input'); input.setSelectionRange(0, 2);",
+      )
+      expect(ai_helper_context_menu).to have_no_context_menu
+    end
+
     it "shows context menu in 'trigger' state when first showing" do
       trigger_context_menu(OpenAiCompletionsInferenceStubs.translated_response)
       expect(ai_helper_context_menu).to be_showing_triggers
