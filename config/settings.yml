@@ -236,7 +236,7 @@ discourse_ai:
       - time
   ai_bot_enabled_personas:
     type: list
-    default: "general|artist|sql_helper|settings_explorer|researcher"
+    default: "general|artist|sql_helper|settings_explorer|researcher|creative"
     choices:
       - general
       - artist
