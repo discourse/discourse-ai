@@ -16,9 +16,9 @@ module DiscourseAi
         # note this is about 100 tokens over, OpenAI have a more optimal representation
         @function_size ||= tokenize(available_functions.to_json).length
 
-        # provide a buffer of 80 tokens - our function counting is not
-        # 100% accurate so this is a trial and error number
-        buffer = @function_size + reply_params[:max_tokens] + 80
+        # provide a buffer of 120 tokens - our function counting is not
+        # 100% accurate and getting numbers to align exactly is very hard
+        buffer = @function_size + reply_params[:max_tokens] + 120
 
         if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
           8192 - buffer

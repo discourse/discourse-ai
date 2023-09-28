@@ -243,6 +243,7 @@ discourse_ai:
       - sql_helper
       - settings_explorer
       - researcher
+      - creative
   ai_bot_add_to_header:
     default: true
     client: true
