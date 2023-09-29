@@ -37,7 +37,7 @@ module ::DiscourseAi
           Aws::Sigv4::Signer.new(
             access_key_id: SiteSetting.ai_bedrock_access_key_id,
             region: SiteSetting.ai_bedrock_region,
-            secret_access_key: SiteSetting.ai_bedrock_secret_access_key
+            secret_access_key: SiteSetting.ai_bedrock_secret_access_key,
             service: "bedrock",
           )
 
