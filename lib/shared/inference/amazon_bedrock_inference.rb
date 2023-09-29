@@ -3,6 +3,7 @@
 require "base64"
 require "json"
 require "aws-eventstream"
+require "aws-sigv4"
 
 module ::DiscourseAi
   module Inference
@@ -15,6 +16,7 @@ module ::DiscourseAi
         model = "anthropic.claude-v2",
         temperature: nil,
         top_p: nil,
+        top_k: nil,
         max_tokens: 20_000,
         user_id: nil,
         stop_sequences: nil,
@@ -25,12 +27,11 @@ module ::DiscourseAi
         raise CompletionFailed if !SiteSetting.ai_bedrock_secret_access_key.present?
         raise CompletionFailed if !SiteSetting.ai_bedrock_region.present?
 
-        url = URI(SiteSetting.ai_bedrock_api_url)
-        if block_given?
-          url.path = "/invoke-with-response-stream"
-        else
-          url.path = "/invoke"
-        end
+        url =
+          URI(
+            "https://bedrock.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model}/invoke",
+          )
+        url.path = url.path + "-with-response-stream" if block_given?
         headers = { "Content-Type" => "application/json" }
 
         signer =
@@ -59,7 +60,7 @@ module ::DiscourseAi
 
         payload[:top_p] = top_p if top_p
         payload[:top_k] = top_k if top_k
-        payload[:max_tokens_to_sample] = max_tokens
+        payload[:max_tokens_to_sample] = max_tokens || 2000
         payload[:temperature] = temperature if temperature
         payload[:stop_sequences] = stop_sequences if stop_sequences
 
@@ -71,14 +72,19 @@ module ::DiscourseAi
           open_timeout: TIMEOUT,
           write_timeout: TIMEOUT,
         ) do |http|
-          request = Net::HTTP::Post.new(url, headers)
+          request = Net::HTTP::Post.new(url)
           request_body = payload.to_json
           request.body = request_body
 
           signed_request =
-            signer.sign_request(req: request, http_method: req.method, url: url, body: request_body)
+            signer.sign_request(
+              req: request,
+              http_method: request.method,
+              url: url,
+              body: request.body,
+            )
 
-          request.headers.merge!(signed_request.headers)
+          request.initialize_http_header(headers.merge!(signed_request.headers))
 
           http.request(request) do |response|
             if response.code.to_i != 200
@@ -120,28 +126,28 @@ module ::DiscourseAi
 
                 response_raw << chunk
 
-                decoder(chunk) do |message|
-                  begin
-                    completion =
-                      message
-                        .payload
-                        .string
-                        .then { JSON.parse(_1) }
-                        .dig("bytes")
-                        .then { Base64.decode64(_1) }
-                        .then { JSON.parse(_1) }
-                        .dig("completion")
+                begin
+                  message = decoder.decode_chunk(chunk)
 
-                    next if !completion
+                  partial =
+                    message
+                      .first
+                      .payload
+                      .string
+                      .then { JSON.parse(_1) }
+                      .dig("bytes")
+                      .then { Base64.decode64(_1) }
+                      .then { JSON.parse(_1, symbolize_names: true) }
 
-                    response_data << completion.to_s
+                  next if !partial
 
-                    yield completion, cancel if !cancelled
-                  rescue JSON::ParserError,
-                         Errors::MessageChecksumError,
-                         Errors::PreludeChecksumError => e
-                    Rails.logger.error("BedRockInference: #{e}")
-                  end
+                  response_data << partial[:completion].to_s
+
+                  yield partial, cancel if partial[:completion]
+                rescue JSON::ParserError,
+                       Aws::EventStream::Errors::MessageChecksumError,
+                       Aws::EventStream::Errors::PreludeChecksumError => e
+                  Rails.logger.error("BedrockInference: #{e}")
                 end
               rescue IOError
                 raise if !cancelled
@@ -153,20 +159,14 @@ module ::DiscourseAi
         ensure
           if block_given?
             log.update!(
-              raw_response_payload: response_raw,
+              raw_response_payload: response_data,
               request_tokens: tokenizer.size(prompt),
               response_tokens: tokenizer.size(response_data),
             )
           end
           if Rails.env.development? && log
-            puts "BedRockInference: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
+            puts "BedrockInference: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
           end
-        end
-
-        def self.try_parse(data)
-          JSON.parse(data, symbolize_names: true)
-        rescue JSON::ParserError
-          nil
         end
       end
     end

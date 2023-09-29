@@ -13,8 +13,27 @@ module ::DiscourseAi
         top_p: nil,
         max_tokens: nil,
         user_id: nil,
-        stop_sequences: nil
+        stop_sequences: nil,
+        &blk
       )
+        # HACK to get around the fact that they have different APIs
+        # we will introduce a proper LLM abstraction layer to handle this shenanigas later this year
+        if model == "claude-2" && SiteSetting.ai_bedrock_access_key_id.present? &&
+             SiteSetting.ai_bedrock_secret_access_key.present? &&
+             SiteSetting.ai_bedrock_region.present?
+          return(
+            AmazonBedrockInference.perform!(
+              prompt,
+              temperature: temperature,
+              top_p: top_p,
+              max_tokens: max_tokens,
+              user_id: user_id,
+              stop_sequences: stop_sequences,
+              &blk
+            )
+          )
+        end
+
         log = nil
         response_data = +""
         response_raw = +""
