@@ -1,4 +1,9 @@
 en:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: Triage posts using AI
+        description: "Triage posts using a large language model"
   site_settings:
     discourse_ai_enabled: "Enable the discourse AI plugin."
     ai_toxicity_enabled: "Enable the toxicity module."

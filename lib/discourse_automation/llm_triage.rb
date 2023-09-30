@@ -1,0 +1,98 @@
+# frozen_string_literal: true
+
+if defined?(DiscourseAutomation)
+  DiscourseAutomation::Scriptable::LLM_TRIAGE = "llm_triage"
+
+  DiscourseAutomation::Scriptable.add(DiscourseAutomation::Scriptable::LLM_TRIAGE) do
+    version 1
+    run_in_background
+
+    placeholder :post
+
+    triggerables %i[post_created_edited]
+
+    field :system_prompt, component: :message, required: true, accepts_placeholders: true
+    field :search_for_text, component: :text, required: true
+    field :model, component: :text, required: true
+    field :category, component: :category
+    field :tags, component: :tags
+    field :hide_topic, component: :boolean
+    field :canned_reply, component: :message
+    field :canned_reply_user, component: :user
+
+    script do |context, fields, automation|
+      post = context["post"]
+      system_prompt = fields["system_prompt"]["value"]
+      search_for_text = fields["search_for_text"]["value"]
+      model = fields["model"]["value"]
+      if !%w[gpt-4 gpt-3-5-turbo].include?(model)
+        Rails.logger.warn("llm_triage: model #{model} is not supported")
+        next
+      end
+
+      category_id = fields.dig("category", "value")
+      tags = fields.dig("tags", "value")
+      hide_topic = fields.dig("hide_topic", "value")
+      canned_reply = fields.dig("canned_reply", "value")
+      canned_reply_user = fields.dig("canned_reply_user", "value")
+
+      if post.raw.strip == canned_reply.to_s.strip
+        # nothing to do if we already replied
+        next
+      end
+
+      post_template = +""
+      post_template << "title: #{post.topic.title}\n"
+      post_template << "#{post.raw}"
+
+      filled_system_prompt = system_prompt.sub("%%POST%%", post_template)
+
+      if filled_system_prompt == system_prompt
+        Rails.logger.warn("llm_triage: system_prompt does not contain %%POST%% placeholder")
+        next
+      end
+
+      if !category_id && !tags && !hide_topic && canned_reply.blank?
+        Rails.logger.warn("llm_triage: no action specified, please choose what you wish to do")
+        next
+      end
+
+      begin
+        result =
+          DiscourseAi::Inference::OpenAiCompletions.perform!(
+            [{ :role => "system", "content" => filled_system_prompt }],
+            model,
+            temperature: 0.7,
+            top_p: 0.9,
+            max_tokens: 40,
+          ).dig(:choices, 0, :message, :content)
+
+        if result.strip == search_for_text.strip
+          user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
+          user = user || Discourse.system_user
+          if canned_reply.present?
+            PostCreator.create!(
+              user,
+              topic_id: post.topic_id,
+              raw: canned_reply,
+              reply_to_post_number: post.post_number,
+              skip_validations: true,
+            )
+          end
+
+          changes = {}
+          changes[:category_id] = category_id if category_id.present?
+          changes[:tags] = tags if SiteSetting.tagging_enabled? && tags.present?
+          if changes.present?
+            first_post = post.topic.posts.where(post_number: 1).first
+            changes[:bypass_bump] = true
+            changes[:skip_validations] = true
+            first_post.revise(user, changes)
+          end
+        end
+      rescue => e
+        Discourse.warn_exception(e, message: "llm_triage: failed to run inference")
+      end
+    end
+  end
+end
