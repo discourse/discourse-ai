@@ -33,8 +33,10 @@ task "ai:embeddings:index", [:work_mem] => [:environment] do |_, args|
   vector_representation_klass = DiscourseAi::Embeddings::Vectors::Base.find_vector_representation
   strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
 
-  DB.exec("SET work_mem TO '#{args[:work_mem] || "1GB"}';")
+  DB.exec("SET work_mem TO '#{args[:work_mem] || "100MB"}';")
+  DB.exec("SET maintenance_work_mem TO '#{args[:work_mem] || "100MB"}';")
   vector_representation_klass.new(strategy).create_index(lists, probes)
   DB.exec("RESET work_mem;")
-  DB.exec("SET ivfflat.probes = #{probes};")
+  DB.exec("RESET maintenance_work_mem;")
+  DB.exec("ALTER SYSTEM SET ivfflat.probes = #{probes};")
 end
