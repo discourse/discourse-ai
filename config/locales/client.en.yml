@@ -5,6 +5,39 @@ en:
         categories:
           discourse_ai: "Discourse AI"
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            gpt_4: GPT 4
+            gpt_3_5_turbo: GPT 3.5 Turbo
+            claude_2: Claude 2
+          fields:
+            system_prompt:
+              label: "System Prompt"
+              description: "The prompt that will be used to triage, be sure for it to reply with a single word you can use to trigger the action"
+            search_for_text:
+              label: "Search for text"
+              description: "If the following text appears in the llm reply, apply this actions"
+            category:
+              label: "Category"
+              description: "Category to apply to the topic"
+            tags:
+              label: "Tags"
+              description: "Tags to apply to the topic"
+            canned_reply:
+              label: "Reply"
+              description: "Raw text of canned reply to post on the topic"
+            canned_reply_user:
+              label: "Reply User"
+              description: "Username of the user to post the canned reply"
+            hide_topic:
+              label: "Hide topic"
+              description: "Make topic non visible to the public if triggered"
+            model:
+              label: "Model"
+              description: "Either gpt-4 or gpt-3-5-turbo or claude-2"
+
     discourse_ai:
       modals:
         select_option: "Select an option..."
