@@ -8,6 +8,10 @@ en:
     discourse_automation:
       scriptables:
         llm_triage:
+          models:
+            gpt_4: GPT 4
+            gpt_3_5_turbo: GPT 3.5 Turbo
+            claude_2: Claude 2
           fields:
             system_prompt:
               label: "System Prompt"
