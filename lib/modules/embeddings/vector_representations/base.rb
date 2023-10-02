@@ -24,10 +24,7 @@ module DiscourseAi
             USING
               ivfflat (embeddings #{pg_index_type})
             WITH
-              (lists = #{lists})
-            WHERE
-              model_version = #{version} AND
-              strategy_version = #{@strategy.version};
+              (lists = #{lists});
             SQL
         end
 
