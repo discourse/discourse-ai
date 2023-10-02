@@ -2,9 +2,9 @@
 module DiscourseAi
   module AiHelper
     class SemanticCategorizer
-      def initialize(text, user)
+      def initialize(input, user)
         @user = user
-        @text = text
+        @text = input[:text]
       end
 
       def categories
