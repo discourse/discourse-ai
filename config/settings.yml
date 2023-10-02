@@ -120,12 +120,19 @@ discourse_ai:
     default: 4096
   ai_hugging_face_model_display_name:
     default: ""
-
   ai_google_custom_search_api_key:
     default: ""
     secret: true
   ai_google_custom_search_cx:
     default: ""
+  ai_bedrock_access_key_id:
+    default: ""
+    secret: true
+  ai_bedrock_secret_access_key:
+    default: ""
+    secret: true
+  ai_bedrock_region:
+    default: "us-east-1"
 
   composer_ai_helper_enabled:
     default: false

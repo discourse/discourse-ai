@@ -9,6 +9,7 @@
 
 gem "tokenizers", "0.3.3"
 gem "tiktoken_ruby", "0.0.5"
+gem "aws-eventstream", "1.2.0"
 
 enabled_site_setting :discourse_ai_enabled
 
@@ -33,6 +34,7 @@ after_initialize do
   require_relative "lib/shared/inference/anthropic_completions"
   require_relative "lib/shared/inference/stability_generator"
   require_relative "lib/shared/inference/hugging_face_text_generation"
+  require_relative "lib/shared/inference/amazon_bedrock_inference"
   require_relative "lib/shared/inference/function"
   require_relative "lib/shared/inference/function_list"
 
