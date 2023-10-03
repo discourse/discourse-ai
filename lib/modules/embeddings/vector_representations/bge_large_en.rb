@@ -6,10 +6,7 @@ module DiscourseAi
       class BgeLargeEn < Base
         def vector_from(text)
           DiscourseAi::Inference::CloudflareWorkersAi
-            .perform!(
-              inference_model_name,
-              { text: text },
-            )
+            .perform!(inference_model_name, { text: text })
             .dig(:result, :data)
             .first
         end

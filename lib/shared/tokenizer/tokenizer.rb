@@ -68,8 +68,7 @@ module DiscourseAi
 
     class BgeLargeEnTokenizer < BasicTokenizer
       def self.tokenizer
-        @@tokenizer ||=
-          Tokenizers.from_file("./plugins/discourse-ai/tokenizers/bge-large-en.json")
+        @@tokenizer ||= Tokenizers.from_file("./plugins/discourse-ai/tokenizers/bge-large-en.json")
       end
     end
 
