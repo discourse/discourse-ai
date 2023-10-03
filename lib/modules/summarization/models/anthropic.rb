@@ -114,7 +114,7 @@ module DiscourseAi
               )
           end
 
-          Nokogiri::HTML5.fragment(response).at("ai").text.presence || response
+          Nokogiri::HTML5.fragment(response).at("ai")&.text.presence || response
         end
 
         def tokenizer
