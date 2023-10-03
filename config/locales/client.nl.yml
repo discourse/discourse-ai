@@ -6,6 +6,18 @@
 
 nl:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: Claude 2
+          fields:
+            category:
+              label: "Categorie"
+            tags:
+              label: "Tags"
+            canned_reply:
+              label: "Antwoorden"
     discourse_ai:
       modals:
         select_option: "Selecteer een optie..."

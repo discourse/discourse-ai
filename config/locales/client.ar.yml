@@ -6,6 +6,18 @@
 
 ar:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: Claude 2
+          fields:
+            category:
+              label: "الفئة"
+            tags:
+              label: "الوسوم"
+            canned_reply:
+              label: "الرد"
     discourse_ai:
       modals:
         select_option: "حدِّد خيارًا..."

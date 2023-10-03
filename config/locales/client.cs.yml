@@ -6,6 +6,16 @@
 
 cs:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategorie"
+            tags:
+              label: "Tagy"
+            canned_reply:
+              label: "Odpověď"
     discourse_ai:
       ai_helper:
         context_menu:

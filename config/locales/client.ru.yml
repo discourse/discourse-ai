@@ -6,6 +6,18 @@
 
 ru:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: Claude 2
+          fields:
+            category:
+              label: "Категория"
+            tags:
+              label: "Теги"
+            canned_reply:
+              label: "Ответить"
     discourse_ai:
       modals:
         select_option: "Выберите вариант..."

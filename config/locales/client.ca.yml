@@ -6,6 +6,16 @@
 
 ca:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Categoria"
+            tags:
+              label: "Etiquetes"
+            canned_reply:
+              label: "Respon"
     discourse_ai:
       ai_helper:
         context_menu:

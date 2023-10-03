@@ -6,6 +6,18 @@
 
 fi:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: Claude 2
+          fields:
+            category:
+              label: "Luokka"
+            tags:
+              label: "Tunnisteet"
+            canned_reply:
+              label: "Vastaa"
     discourse_ai:
       modals:
         select_option: "Valitse vaihtoehto..."

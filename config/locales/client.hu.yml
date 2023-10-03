@@ -6,6 +6,16 @@
 
 hu:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategória"
+            tags:
+              label: "Címkék"
+            canned_reply:
+              label: "Válasz"
     discourse_ai:
       ai_helper:
         context_menu:

@@ -6,6 +6,16 @@
 
 et:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Foorum"
+            tags:
+              label: "Sildid"
+            canned_reply:
+              label: "Vasta"
     discourse_ai:
       ai_helper:
         context_menu:

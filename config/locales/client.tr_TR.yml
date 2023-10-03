@@ -6,6 +6,18 @@
 
 tr_TR:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: Claude 2
+          fields:
+            category:
+              label: "Kategori"
+            tags:
+              label: "Etiketler"
+            canned_reply:
+              label: "Yanıtla"
     discourse_ai:
       modals:
         select_option: "Seçenek belirleyin..."

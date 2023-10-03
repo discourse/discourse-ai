@@ -11,6 +11,38 @@ he:
         categories:
           discourse_ai: "בינה מלאכותית ב־Discourse"
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            gpt_4: GPT 4
+            gpt_3_5_turbo: GPT 3.5 טורבו
+            claude_2: Claude 2
+          fields:
+            system_prompt:
+              label: "בקשת מערכת"
+              description: "הבקשה שתשמש למיון ראשוני, נא לוודא שהתשובה היא מילה אחת בה ניתן להשתמש כדי להקפיץ את הפקודה"
+            search_for_text:
+              label: "חיפוש טקסט"
+              description: "אם הטקסט הבא מופיע בתגובה של ה־llm (דגם שפה גדול), להחיל את הפעולות האלה"
+            category:
+              label: "קטגוריה"
+              description: "קטגוריה להחלה על הנושא"
+            tags:
+              label: "תגיות"
+              description: "תגיות להחלה על הנושא"
+            canned_reply:
+              label: "להגיב"
+              description: "טקסט גולמי של תגובות מקוננות לפוסט בנושא"
+            canned_reply_user:
+              label: "משתמש תגובה"
+              description: "שם המשתמש של המשתמש לפרסום התגובה המקוננת"
+            hide_topic:
+              label: "הסתרת נושא"
+              description: "הפיכת הנושא למוסתר בפני הציבור אם מוקפץ"
+            model:
+              label: "דגם"
+              description: "יכול להיות gpt-4 או gpt-3-5-turbo או claude-2"
     discourse_ai:
       modals:
         select_option: "בחירת אפשרות…"

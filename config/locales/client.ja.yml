@@ -6,6 +6,18 @@
 
 ja:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: クロード 2
+          fields:
+            category:
+              label: "カテゴリ"
+            tags:
+              label: "タグ"
+            canned_reply:
+              label: "返信"
     discourse_ai:
       modals:
         select_option: "オプションを選択..."

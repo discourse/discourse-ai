@@ -6,6 +6,18 @@
 
 zh_CN:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: Claude 2
+          fields:
+            category:
+              label: "类别"
+            tags:
+              label: "标签"
+            canned_reply:
+              label: "回复"
     discourse_ai:
       modals:
         select_option: "选择一个选项…"

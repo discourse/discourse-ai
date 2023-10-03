@@ -6,6 +6,18 @@
 
 fa_IR:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: Claude 2
+          fields:
+            category:
+              label: "دسته‌بندی"
+            tags:
+              label: "برچسب‌ها"
+            canned_reply:
+              label: "پاسخ"
     discourse_ai:
       modals:
         select_option: "یک گزینه را انتخاب کنید..."

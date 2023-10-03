@@ -6,6 +6,16 @@
 
 sw:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategoria"
+            tags:
+              label: "Lebo"
+            canned_reply:
+              label: "Jibu"
     discourse_ai:
       ai_helper:
         context_menu:

@@ -6,6 +6,16 @@
 
 ro:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Categorie"
+            tags:
+              label: "Etichete"
+            canned_reply:
+              label: "Răspunde"
     discourse_ai:
       ai_helper:
         context_menu:

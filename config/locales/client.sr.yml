@@ -6,6 +6,14 @@
 
 sr:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategorija"
+            canned_reply:
+              label: "Odgovori"
     discourse_ai:
       ai_helper:
         context_menu:

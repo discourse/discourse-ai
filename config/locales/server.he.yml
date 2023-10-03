@@ -5,6 +5,12 @@
 # https://translate.discourse.org/
 
 he:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: מיון ראשוני של פוסטים באמצעות בינה מלאכותית
+        description: "מיון ראשוני של פוסטים באמצעות דגם שפה גדול"
+        system_prompt_missing_post_placeholder: "בקשת המערכת חייבת להכיל ממלא מקום לפוסט: %%POST%%"
   site_settings:
     discourse_ai_enabled: "הפעלת תוסף הבינה המלאכותית של Discourse."
     ai_toxicity_enabled: "הפעלת מודול הרעילות."
@@ -106,6 +112,9 @@ he:
         researcher:
           name: מחקר
           description: "בוט בינה מלאכותית עם גישה ל־Google שיכול לגשת למידע מחקרי בשבילך"
+        creative:
+          name: יצירה
+          description: "בוט בינה מלאכותית ללא שילובים חיצוניים שמתמחה ביצירת משימות יצירתיות"
       default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       searching: "חיפוש אחר: ‚%{query}’"
