@@ -66,6 +66,13 @@ module DiscourseAi
       end
     end
 
+    class BgeLargeEnTokenizer < BasicTokenizer
+      def self.tokenizer
+        @@tokenizer ||=
+          Tokenizers.from_file("./plugins/discourse-ai/tokenizers/bge-large-en.json")
+      end
+    end
+
     class OpenAiTokenizer < BasicTokenizer
       class << self
         def tokenizer

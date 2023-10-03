@@ -82,6 +82,12 @@ en:
     ai_google_custom_search_api_key: "API key for the Google Custom Search API see: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX for Google Custom Search API"
 
+    ai_bedrock_access_key_id: "Access key ID for the Bedrock API"
+    ai_bedrock_secret_access_key: "Secret access key for the Bedrock API"
+    ai_bedrock_region: "AWS region for the Bedrock API"
+    ai_cloudflare_workers_account_id: "Cloudflare account ID for the Cloudflare Workers AI API"
+    ai_cloudflare_workers_api_token: "API token for the Cloudflare Workers AI API"
+
   reviewables:
     reasons:
       flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.
@@ -122,7 +128,6 @@ en:
         creative:
           name: Creative
           description: "AI Bot with no external integrations specialized in creative tasks"
-      default_pm_prefix: "[Untitled AI bot PM]"
       topic_not_found: "Summary unavailable, topic not found!"
       searching: "Searching for: '%{query}'"
       command_summary:

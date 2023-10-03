@@ -8,6 +8,7 @@ module DiscourseAi
         require_relative "vector_representations/all_mpnet_base_v2"
         require_relative "vector_representations/text_embedding_ada_002"
         require_relative "vector_representations/multilingual_e5_large"
+        require_relative "vector_representations/bge_large_en"
         require_relative "strategies/truncation"
         require_relative "jobs/regular/generate_embeddings"
         require_relative "semantic_related"

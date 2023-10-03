@@ -17,3 +17,7 @@ Licensed under LLAMA 2 COMMUNITY LICENSE AGREEMENT
 ## multilingual-e5-large
 
 Licensed under MIT License
+
+## bge-large-en
+
+Licensed under MIT License
