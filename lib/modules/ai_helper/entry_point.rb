@@ -6,6 +6,7 @@ module DiscourseAi
         require_relative "llm_prompt"
         require_relative "semantic_categorizer"
         require_relative "painter"
+        require_relative "topic_helper"
       end
 
       def inject_into(plugin)

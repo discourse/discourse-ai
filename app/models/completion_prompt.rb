@@ -10,6 +10,8 @@ class CompletionPrompt < ActiveRecord::Base
   validate :each_message_length
 
   def messages_with_user_input(user_input)
+    return messages unless user_input.present?
+
     if user_input[:custom_prompt].present?
       case ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider
       when "huggingface"
