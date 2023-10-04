@@ -64,6 +64,8 @@ module DiscourseAi
           "comment"
         when "rewrite"
           "pen"
+        when "explain"
+          "question"
         else
           nil
         end

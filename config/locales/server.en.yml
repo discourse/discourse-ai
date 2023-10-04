@@ -107,6 +107,7 @@ en:
         proofread: Proofread text
         markdown_table: Generate Markdown table
         custom_prompt: "Custom Prompt"
+        explain: "Explain"
 
     ai_bot:
       personas:

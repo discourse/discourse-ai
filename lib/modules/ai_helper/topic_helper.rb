@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module DiscourseAi
   module AiHelper
     class TopicHelper
@@ -16,10 +17,7 @@ module DiscourseAi
         topic = reply_to.topic
 
         llm_prompt =
-          DiscourseAi::AiHelper::LlmPrompt
-            .new
-            .available_prompts(name_filter: "explain")
-            .first
+          DiscourseAi::AiHelper::LlmPrompt.new.available_prompts(name_filter: "explain").first
         prompt = CompletionPrompt.find_by(id: llm_prompt[:id])
 
         prompt.messages.first["content"] << <<~MSG
@@ -40,11 +38,7 @@ module DiscourseAi
           </post>
         MSG
 
-        DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
-                     prompt,
-                     nil,
-                   )
-        
+        DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, nil)
       end
     end
   end
