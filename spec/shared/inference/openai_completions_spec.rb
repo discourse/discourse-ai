@@ -159,6 +159,50 @@ describe DiscourseAi::Inference::OpenAiCompletions do
     )
   end
 
+  it "supports rate limits" do
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+      [
+        { status: 429, body: "", headers: {} },
+        { status: 429, body: "", headers: {} },
+        { status: 200, body: { choices: [message: { content: "ok" }] }.to_json, headers: {} },
+      ],
+    )
+    completions =
+      DiscourseAi::Inference::OpenAiCompletions.perform!(
+        [{ role: "user", content: "hello" }],
+        "gpt-3.5-turbo",
+        temperature: 0.5,
+        top_p: 0.8,
+        max_tokens: 700,
+        retries: 3,
+        retry_timeout: 0,
+      )
+
+    expect(completions.dig(:choices, 0, :message, :content)).to eq("ok")
+  end
+
+  it "supports will raise once rate limit is met" do
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+      [
+        { status: 429, body: "", headers: {} },
+        { status: 429, body: "", headers: {} },
+        { status: 429, body: "", headers: {} },
+      ],
+    )
+
+    expect do
+      DiscourseAi::Inference::OpenAiCompletions.perform!(
+        [{ role: "user", content: "hello" }],
+        "gpt-3.5-turbo",
+        temperature: 0.5,
+        top_p: 0.8,
+        max_tokens: 700,
+        retries: 3,
+        retry_timeout: 0,
+      )
+    end.to raise_error(DiscourseAi::Inference::OpenAiCompletions::CompletionFailed)
+  end
+
   it "can complete a trivial prompt" do
     response_text = "1. Serenity\\n2. Laughter\\n3. Adventure"
     prompt = [role: "user", content: "write 3 words"]

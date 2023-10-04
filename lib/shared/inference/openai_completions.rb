@@ -4,6 +4,10 @@ module ::DiscourseAi
   module Inference
     class OpenAiCompletions
       TIMEOUT = 60
+      DEFAULT_RETRIES = 3
+      DEFAULT_RETRY_TIMEOUT_SECONDS = 3
+      RETRY_TIMEOUT_BACKOFF_MULTIPLIER = 3
+
       CompletionFailed = Class.new(StandardError)
 
       def self.perform!(
@@ -13,7 +17,10 @@ module ::DiscourseAi
         top_p: nil,
         max_tokens: nil,
         functions: nil,
-        user_id: nil
+        user_id: nil,
+        retries: DEFAULT_RETRIES,
+        retry_timeout: DEFAULT_RETRY_TIMEOUT_SECONDS,
+        &blk
       )
         log = nil
         response_data = +""
@@ -62,11 +69,29 @@ module ::DiscourseAi
           request.body = request_body
 
           http.request(request) do |response|
-            if response.code.to_i != 200
+            if retries > 0 && response.code.to_i == 429
+              sleep(retry_timeout)
+              retries -= 1
+              retry_timeout *= RETRY_TIMEOUT_BACKOFF_MULTIPLIER
+              return(
+                perform!(
+                  messages,
+                  model,
+                  temperature: temperature,
+                  top_p: top_p,
+                  max_tokens: max_tokens,
+                  functions: functions,
+                  user_id: user_id,
+                  retries: retries,
+                  retry_timeout: retry_timeout,
+                  &blk
+                )
+              )
+            elsif response.code.to_i != 200
               Rails.logger.error(
                 "OpenAiCompletions: status: #{response.code.to_i} - body: #{response.body}",
               )
-              raise CompletionFailed
+              raise CompletionFailed, "status: #{response.code.to_i} - body: #{response.body}"
             end
 
             log =
@@ -76,7 +101,7 @@ module ::DiscourseAi
                 user_id: user_id,
               )
 
-            if !block_given?
+            if !blk
               response_body = response.read_body
               parsed_response = JSON.parse(response_body, symbolize_names: true)
 
@@ -121,7 +146,7 @@ module ::DiscourseAi
                       response_data << partial.dig(:choices, 0, :delta, :content).to_s
                       response_data << partial.dig(:choices, 0, :delta, :function_call).to_s
 
-                      yield partial, cancel
+                      blk.call(partial, cancel)
                     end
                   end
               rescue IOError

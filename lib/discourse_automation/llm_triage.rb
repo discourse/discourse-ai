@@ -27,14 +27,28 @@ if defined?(DiscourseAutomation)
         raise ArgumentError, "llm_triage: system_prompt does not contain %%POST%% placeholder"
       end
 
-      result =
-        DiscourseAi::Inference::OpenAiCompletions.perform!(
-          [{ :role => "system", "content" => filled_system_prompt }],
-          model,
-          temperature: 0.7,
-          top_p: 0.9,
-          max_tokens: 40,
-        ).dig(:choices, 0, :message, :content)
+      result = nil
+      if model == "claude-2"
+        # allowing double + 10 tokens
+        # technically maybe just token count is fine, but this will allow for more creative bad responses
+        result =
+          DiscourseAi::Inference::AnthropicCompletions.perform!(
+            filled_system_prompt,
+            model,
+            temperature: 0,
+            max_tokens:
+              DiscourseAi::Tokenizer::AnthropicTokenizer.tokenize(search_for_text).length * 2 + 10,
+          ).dig(:completion)
+      else
+        result =
+          DiscourseAi::Inference::OpenAiCompletions.perform!(
+            [{ :role => "system", "content" => filled_system_prompt }],
+            model,
+            temperature: 0,
+            max_tokens:
+              DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(search_for_text).length * 2 + 10,
+          ).dig(:choices, 0, :message, :content)
+      end
 
       if result.strip == search_for_text.strip
         user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
@@ -118,7 +132,7 @@ if defined?(DiscourseAutomation)
       search_for_text = fields["search_for_text"]["value"]
       model = fields["model"]["value"]
 
-      if !%w[gpt-4 gpt-3-5-turbo].include?(model)
+      if !%w[gpt-4 gpt-3-5-turbo claude-2].include?(model)
         Rails.logger.warn("llm_triage: model #{model} is not supported")
         next
       end

@@ -26,7 +26,24 @@ describe DiscourseAutomation::LlmTriage do
     expect(post.topic.reload.visible).to eq(true)
   end
 
-  it "can hide topics on triage" do
+  it "can hide topics on triage with claude" do
+    stub_request(:post, "https://api.anthropic.com/v1/complete").to_return(
+      status: 200,
+      body: { completion: "bad" }.to_json,
+    )
+
+    triage(
+      post: post,
+      model: "claude-2",
+      hide_topic: true,
+      system_prompt: "test %%POST%%",
+      search_for_text: "bad",
+    )
+
+    expect(post.topic.reload.visible).to eq(false)
+  end
+
+  it "can hide topics on triage with claude" do
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
       status: 200,
       body: { choices: [{ message: { content: "bad" } }] }.to_json,
