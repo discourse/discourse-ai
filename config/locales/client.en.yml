@@ -88,6 +88,7 @@ en:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+          open-llm: "Open LLM"
 
     review:
       types:

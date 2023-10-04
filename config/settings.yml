@@ -228,6 +228,7 @@ discourse_ai:
       - gpt-3.5-turbo
       - gpt-4
       - claude-2
+      - open-llm
   ai_bot_enabled_chat_commands:
     type: list
     default: "categories|google|image|search|tags|time|read"

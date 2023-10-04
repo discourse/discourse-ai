@@ -42,10 +42,6 @@ module DiscourseAi
 
       private
 
-      def populate_functions(partial, function)
-        # nothing to do here, no proper function support quite yet
-      end
-
       def build_message(poster_username, content, system: false, function: nil)
         { bot: poster_username == bot_user.username, username: poster_username, content: content }
       end
@@ -69,7 +65,7 @@ module DiscourseAi
           prompt,
           model_for,
           temperature: 0.4,
-          max_tokens: 600,
+          max_tokens: 1000,
           &blk
         )
       end
