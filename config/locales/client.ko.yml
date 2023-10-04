@@ -6,6 +6,16 @@
 
 ko:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "카테고리"
+            tags:
+              label: "태그"
+            canned_reply:
+              label: "댓글쓰기"
     discourse_ai:
       ai_helper:
         context_menu:

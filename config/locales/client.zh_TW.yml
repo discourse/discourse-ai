@@ -6,6 +6,16 @@
 
 zh_TW:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "分類"
+            tags:
+              label: "標記"
+            canned_reply:
+              label: "回覆"
     discourse_ai:
       ai_helper:
         context_menu:

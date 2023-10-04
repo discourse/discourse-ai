@@ -6,6 +6,16 @@
 
 uk:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Категорія"
+            tags:
+              label: "Теґи"
+            canned_reply:
+              label: "Відповідь"
     discourse_ai:
       ai_helper:
         context_menu:

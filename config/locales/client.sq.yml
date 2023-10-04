@@ -6,6 +6,16 @@
 
 sq:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategori"
+            tags:
+              label: "Etiketat"
+            canned_reply:
+              label: "Përgjigju"
     discourse_ai:
       ai_helper:
         context_menu:

@@ -6,6 +6,16 @@
 
 sv:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategori"
+            tags:
+              label: "Taggar"
+            canned_reply:
+              label: "Svara"
     discourse_ai:
       ai_helper:
         context_menu:

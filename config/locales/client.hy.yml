@@ -6,6 +6,16 @@
 
 hy:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Կատեգորիա"
+            tags:
+              label: "Թեգեր"
+            canned_reply:
+              label: "Պատասխանել"
     discourse_ai:
       ai_helper:
         context_menu:

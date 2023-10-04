@@ -6,6 +6,16 @@
 
 be:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "катэгорыя"
+            tags:
+              label: "тэгі"
+            canned_reply:
+              label: "Адказаць"
     discourse_ai:
       ai_helper:
         context_menu:

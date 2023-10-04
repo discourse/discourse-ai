@@ -6,6 +6,16 @@
 
 lt:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategorija"
+            tags:
+              label: "Žymos"
+            canned_reply:
+              label: "Atsakyti"
     discourse_ai:
       ai_helper:
         context_menu:

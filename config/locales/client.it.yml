@@ -6,6 +6,18 @@
 
 it:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          models:
+            claude_2: Claude 2
+          fields:
+            category:
+              label: "Categoria"
+            tags:
+              label: "Etichette"
+            canned_reply:
+              label: "Rispondi"
     discourse_ai:
       modals:
         select_option: "Scegli un'opzione..."

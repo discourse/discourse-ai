@@ -6,6 +6,16 @@
 
 te:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "వర్గం"
+            tags:
+              label: "ట్యాగులు"
+            canned_reply:
+              label: "జవాబు"
     discourse_ai:
       ai_helper:
         context_menu:

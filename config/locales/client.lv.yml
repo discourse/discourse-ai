@@ -6,6 +6,16 @@
 
 lv:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Sadaļa"
+            tags:
+              label: "Birkas"
+            canned_reply:
+              label: "Atbilde"
     discourse_ai:
       ai_helper:
         context_menu:

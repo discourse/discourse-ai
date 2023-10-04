@@ -6,6 +6,16 @@
 
 nb_NO:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategori"
+            tags:
+              label: "Stikkord"
+            canned_reply:
+              label: "Svar"
     discourse_ai:
       ai_helper:
         context_menu:

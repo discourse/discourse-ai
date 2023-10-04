@@ -6,6 +6,16 @@
 
 ur:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "زمرہ"
+            tags:
+              label: "ٹیگز"
+            canned_reply:
+              label: "جواب"
     discourse_ai:
       ai_helper:
         context_menu:

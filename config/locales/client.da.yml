@@ -6,6 +6,16 @@
 
 da:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategori"
+            tags:
+              label: "Mærker"
+            canned_reply:
+              label: "Svar"
     discourse_ai:
       ai_helper:
         context_menu:

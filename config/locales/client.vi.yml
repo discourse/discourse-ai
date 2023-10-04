@@ -6,6 +6,16 @@
 
 vi:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Danh mục"
+            tags:
+              label: "Thẻ"
+            canned_reply:
+              label: "Trả lời"
     discourse_ai:
       ai_helper:
         context_menu:

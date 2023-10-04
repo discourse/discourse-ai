@@ -5,6 +5,12 @@
 # https://translate.discourse.org/
 
 de:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: Triage Beiträge mithilfe von KI
+        description: "Triage Beiträge mithilfe eines großen Sprachmodells"
+        system_prompt_missing_post_placeholder: "System-Eingabeaufforderung muss einen Platzhalter für den Beitrag enthalten: %%POST%%"
   site_settings:
     discourse_ai_enabled: "Aktiviere das Discourse-KI-Plug-in."
     ai_toxicity_enabled: "Aktiviere das Toxizitätsmodul."
@@ -46,6 +52,7 @@ de:
     ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
     ai_helper_allowed_in_pm: "Aktiviere den Composer-KI-Helfer in PN."
     ai_helper_model: "Modell, das für den KI-Helfer verwendet werden soll."
+    ai_helper_custom_prompts_allowed_groups: "Die Benutzer dieser Gruppen sehen die Option \"Benutzerdefinierte Eingabeaufforderung\" in der KI-Hilfe."
     ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
     ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
     ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
@@ -87,6 +94,7 @@ de:
         generate_titles: Thementitel vorschlagen
         proofread: Text korrekturlesen
         markdown_table: Markdown-Tabelle generieren
+        custom_prompt: "Benutzerdefinierte Eingabeaufforderung"
     ai_bot:
       personas:
         general:
@@ -104,6 +112,9 @@ de:
         researcher:
           name: Forscher
           description: "KI-Bot mit Google-Zugang, der Informationen für dich recherchieren kann"
+        creative:
+          name: Kreativ
+          description: "KI-Bot ohne externe Integrationen, spezialisiert auf kreative Aufgaben"
       default_pm_prefix: "[KI-Bot-PN ohne Titel]"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       searching: "Suche nach: '%{query}'"

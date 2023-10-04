@@ -6,6 +6,16 @@
 
 id:
   js:
+    discourse_automation:
+      scriptables:
+        llm_triage:
+          fields:
+            category:
+              label: "Kategori"
+            tags:
+              label: "Label"
+            canned_reply:
+              label: "Balas"
     discourse_ai:
       ai_helper:
         context_menu:
