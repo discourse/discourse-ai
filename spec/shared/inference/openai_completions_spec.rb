@@ -6,6 +6,35 @@ require_relative "../../support/openai_completions_inference_stubs"
 describe DiscourseAi::Inference::OpenAiCompletions do
   before { SiteSetting.ai_openai_api_key = "abc-123" }
 
+  it "supports sending an organization id" do
+    SiteSetting.ai_openai_organization = "org_123"
+
+    stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
+      body:
+        "{\"model\":\"gpt-3.5-turbo-0613\",\"messages\":[{\"role\":\"system\",\"content\":\"hello\"}]}",
+      headers: {
+        "Authorization" => "Bearer abc-123",
+        "Content-Type" => "application/json",
+        "Host" => "api.openai.com",
+        "User-Agent" => "Ruby",
+        "OpenAI-Organization" => "org_123",
+      },
+    ).to_return(
+      status: 200,
+      body: { choices: [message: { content: "world" }] }.to_json,
+      headers: {
+      },
+    )
+
+    result =
+      DiscourseAi::Inference::OpenAiCompletions.perform!(
+        [{ role: "system", content: "hello" }],
+        "gpt-3.5-turbo-0613",
+      )
+
+    expect(result.dig(:choices, 0, :message, :content)).to eq("world")
+  end
+
   context "when configured using Azure" do
     it "Supports custom Azure endpoints for completions" do
       gpt_url_base =

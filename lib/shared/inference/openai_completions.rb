@@ -48,6 +48,10 @@ module ::DiscourseAi
           headers["Authorization"] = "Bearer #{SiteSetting.ai_openai_api_key}"
         end
 
+        if SiteSetting.ai_openai_organization.present?
+          headers["OpenAI-Organization"] = SiteSetting.ai_openai_organization
+        end
+
         payload = { model: model, messages: messages }
 
         payload[:temperature] = temperature if temperature

@@ -93,6 +93,7 @@ discourse_ai:
   ai_openai_gpt4_url: "https://api.openai.com/v1/chat/completions"
   ai_openai_gpt4_32k_url: "https://api.openai.com/v1/chat/completions"
   ai_openai_embeddings_url: "https://api.openai.com/v1/embeddings"
+  ai_openai_organization:
   ai_openai_api_key:
     default: ""
     secret: true
