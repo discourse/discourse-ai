@@ -70,7 +70,7 @@ export default class AIHelperOptionsMenu extends Component {
 
   @action
   async showAIHelperOptions() {
-    this.args.outletArgs.hidePrimaryActions();
+    this.args.outletArgs.togglePrimaryActions(false);
     this.menuState = this.MENU_STATES.options;
   }
 
