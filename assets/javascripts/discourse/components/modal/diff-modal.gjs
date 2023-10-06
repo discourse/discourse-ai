@@ -35,7 +35,11 @@ export default class ModalDiffModal extends Component {
           @action={{this.triggerConfirmChanges}}
           @label="discourse_ai.ai_helper.context_menu.confirm"
         />
-        <DModalCancel @close={{@closeModal}} />
+        <DButton
+          class="btn-flat"
+          @action={{this.triggerRevertChanges}}
+          @label="discourse_ai.ai_helper.context_menu.revert"
+        />
       </:footer>
     </DModal>
   </template>
@@ -44,5 +48,11 @@ export default class ModalDiffModal extends Component {
   triggerConfirmChanges() {
     this.args.closeModal();
     this.args.confirm();
+  }
+
+  @action
+  triggerRevertChanges() {
+    this.args.closeModal();
+    this.args.revert();
   }
 }
