@@ -12,6 +12,9 @@ const i18n = I18n.t.bind(I18n);
 
 export default class AIHelperOptionsMenu extends Component {
   <template>
+    {{#if this.showMainButtons}}
+      {{yield}}
+    {{/if}}
     <div class="ai-post-helper">
     {{#if (eq this.menuState this.MENU_STATES.triggers)}}
       <DButton @class="btn-flat" @icon="discourse-sparkles" @label="discourse_ai.ai_helper.post_options_menu.trigger" @action={{this.showAIHelperOptions}} />
@@ -49,6 +52,7 @@ export default class AIHelperOptionsMenu extends Component {
   @tracked menuState = this.MENU_STATES.triggers;
   @tracked loading = false;
   @tracked suggestion = "";
+  @tracked showMainButtons = true;
 
   MENU_STATES = {
     triggers: "TRIGGERS",
@@ -70,7 +74,7 @@ export default class AIHelperOptionsMenu extends Component {
 
   @action
   async showAIHelperOptions() {
-    this.args.outletArgs.togglePrimaryActions(false);
+    this.showMainButtons = false;
     this.menuState = this.MENU_STATES.options;
   }
 
