@@ -298,7 +298,7 @@ module DiscourseAi
           You will never respond with anything but a topic title.
           Suggest a 7 word title for the following topic without quoting any of it:
 
-          #{post.topic.posts[1..-1].map(&:raw).join("\n\n")[0..prompt_limit]}
+          #{post.topic.posts.map(&:raw).join("\n\n")[0..prompt_limit]}
         TEXT
       end
 
