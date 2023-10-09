@@ -1,5 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { cookAsync } from "discourse/lib/text";
+import { cook } from "discourse/lib/text";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import loadScript from "discourse/lib/load-script";
@@ -92,7 +92,7 @@ function initializeAIBotReplies(api) {
 
       if (post) {
         if (data.raw) {
-          cookAsync(data.raw).then((cooked) => {
+          cook(data.raw).then((cooked) => {
             post.set("raw", data.raw);
             post.set("cooked", cooked);
 
