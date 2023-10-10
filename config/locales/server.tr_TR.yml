@@ -80,7 +80,6 @@ tr_TR:
         proofread: Yazım hataları düzeltilmiş metin
         markdown_table: Markdown tablosu oluştur
     ai_bot:
-      default_pm_prefix: "[Adsız YZ botu kişisel mesajı]"
       topic_not_found: "Özet mevcut değil, konu bulunamadı!"
       command_summary:
         categories: "Kategorileri listele"

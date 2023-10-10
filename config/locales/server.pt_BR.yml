@@ -80,7 +80,6 @@ pt_BR:
         proofread: Revisar texto
         markdown_table: Gerar tabela de Markdown
     ai_bot:
-      default_pm_prefix: "[MP de bot com IA não identificado]"
       topic_not_found: "Resumo indisponível, tópico não encontrado!"
       command_summary:
         categories: "Listar categorias"

@@ -80,7 +80,6 @@ zh_CN:
         proofread: 审校文本
         markdown_table: 生成 Markdown 表
     ai_bot:
-      default_pm_prefix: "[无标题 AI 机器人私信]"
       topic_not_found: "总结不可用，找不到话题！"
       command_summary:
         categories: "列出类别"

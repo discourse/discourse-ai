@@ -80,7 +80,6 @@ ja:
         proofread: テキストを構成
         markdown_table: Markdown テーブルを生成
     ai_bot:
-      default_pm_prefix: "[無題の AI ボット PM]"
       topic_not_found: "要約がありません。トピックが見つかりません！"
       command_summary:
         categories: "カテゴリをリスト表示"

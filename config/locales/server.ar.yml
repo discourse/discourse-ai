@@ -80,7 +80,6 @@ ar:
         proofread: تدقيق النص لغويًا
         markdown_table: إنشاء جدول Markdown
     ai_bot:
-      default_pm_prefix: "[رسالة خاصة دون عنوان من روبوت ذكاء اصطناعي]"
       topic_not_found: "الملخص غير متوفر، الموضوع غير موجود!"
       command_summary:
         categories: "إدراج الفئات"

@@ -80,7 +80,6 @@ es:
         proofread: Corregir el texto
         markdown_table: Generar tabla Markdown
     ai_bot:
-      default_pm_prefix: "[MP de bot IA sin título]"
       topic_not_found: "¡Resumen no disponible, tema no encontrado!"
       command_summary:
         categories: "Lista de categorías"

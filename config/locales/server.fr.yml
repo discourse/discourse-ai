@@ -80,7 +80,6 @@ fr:
         proofread: Relisez le texte
         markdown_table: Générer un tableau Markdown
     ai_bot:
-      default_pm_prefix: "[Message privé de robot IA sans titre]"
       topic_not_found: "Résumé indisponible, sujet introuvable !"
       command_summary:
         categories: "Lister les catégories"

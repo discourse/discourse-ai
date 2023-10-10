@@ -80,7 +80,6 @@ ru:
         proofread: Вычитать текст
         markdown_table: Сгенерировать таблицу в формате Markdown
     ai_bot:
-      default_pm_prefix: "[Личное сообщение от AI-бота без названия]"
       topic_not_found: "Сводка недоступна: тема не найдена!"
       command_summary:
         categories: "Вывод списка категорий"

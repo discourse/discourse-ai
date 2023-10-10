@@ -80,7 +80,6 @@ fi:
         proofread: Oikolue teksti
         markdown_table: Luo markdown-taulukko
     ai_bot:
-      default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
       topic_not_found: "Yhteenveto ei ole saatavilla, ketjua ei löydy!"
       command_summary:
         categories: "Listaa alueet"
