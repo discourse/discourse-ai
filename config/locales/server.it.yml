@@ -80,7 +80,6 @@ it:
         proofread: Testo corretto
         markdown_table: Genera tabella di markdown
     ai_bot:
-      default_pm_prefix: "[Bot IA senza titolo MP]"
       topic_not_found: "Riepilogo non disponibile, argomento non trovato!"
       command_summary:
         categories: "Elenca le categorie"

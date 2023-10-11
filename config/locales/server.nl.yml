@@ -80,7 +80,6 @@ nl:
         proofread: Tekst proeflezen
         markdown_table: Markdowntabel genereren
     ai_bot:
-      default_pm_prefix: "[PB naamloze AI-bot]"
       topic_not_found: "Samenvatting niet beschikbaar, topic niet gevonden!"
       command_summary:
         categories: "Categorieën weergeven"
