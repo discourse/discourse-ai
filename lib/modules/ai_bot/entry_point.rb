@@ -125,6 +125,10 @@ module DiscourseAi
             end
           end
         end
+
+        if plugin.respond_to?(:register_editable_topic_custom_field)
+          plugin.register_editable_topic_custom_field(:ai_persona)
+        end
       end
     end
   end
