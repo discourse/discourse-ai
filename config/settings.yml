@@ -168,6 +168,13 @@ discourse_ai:
     default: "3" # 3: @staff
     allow_any: false
     refresh: true
+  post_ai_helper_allowed_groups:
+    client: true
+    type: group_list
+    list_type: compact
+    default: "3|14" # 3: @staff, 14: @trust_level_4
+    allow_any: false
+    refresh: true
 
   ai_embeddings_enabled:
     default: false

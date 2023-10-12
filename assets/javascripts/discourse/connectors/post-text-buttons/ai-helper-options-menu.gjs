@@ -3,7 +3,7 @@ import DButton from "discourse/components/d-button";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
-import showAIHelper from "../../lib/show-ai-helper";
+import { showPostAIHelper } from "../../lib/show-ai-helper";
 import eq from "truth-helpers/helpers/eq";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "I18n";
@@ -46,7 +46,7 @@ export default class AIHelperOptionsMenu extends Component {
   </template>
 
   static shouldRender(outletArgs, helper) {
-    return showAIHelper(outletArgs, helper);
+    return showPostAIHelper(outletArgs, helper);
   }
   @tracked helperOptions = [];
   @tracked menuState = this.MENU_STATES.triggers;

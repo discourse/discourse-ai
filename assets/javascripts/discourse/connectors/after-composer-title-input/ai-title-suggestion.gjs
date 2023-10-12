@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import AISuggestionDropdown from "../../components/ai-suggestion-dropdown";
-import showAIHelper from "../../lib/show-ai-helper";
+import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
 export default class AITitleSuggestion extends Component {
   <template>
@@ -8,6 +8,6 @@ export default class AITitleSuggestion extends Component {
   </template>
 
   static shouldRender(outletArgs, helper) {
-    return showAIHelper(outletArgs, helper);
+    return showComposerAIHelper(outletArgs, helper);
   }
 }

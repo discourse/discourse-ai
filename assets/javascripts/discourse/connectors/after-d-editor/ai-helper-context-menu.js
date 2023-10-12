@@ -8,11 +8,11 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { createPopper } from "@popperjs/core";
 import { caretPosition, getCaretPosition } from "discourse/lib/utilities";
 import { inject as service } from "@ember/service";
-import showAIHelper from "../../lib/show-ai-helper";
+import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
 export default class AiHelperContextMenu extends Component {
   static shouldRender(outletArgs, helper) {
-    return showAIHelper(outletArgs, helper);
+    return showComposerAIHelper(outletArgs, helper);
   }
 
   @service currentUser;
