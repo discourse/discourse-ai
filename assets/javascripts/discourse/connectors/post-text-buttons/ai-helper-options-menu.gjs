@@ -17,12 +17,12 @@ export default class AIHelperOptionsMenu extends Component {
     {{/if}}
     <div class="ai-post-helper">
     {{#if (eq this.menuState this.MENU_STATES.triggers)}}
-      <DButton @class="btn-flat" @icon="discourse-sparkles" @label="discourse_ai.ai_helper.post_options_menu.trigger" @action={{this.showAIHelperOptions}} />
+      <DButton @class="btn-flat ai-post-helper__trigger" @icon="discourse-sparkles" @label="discourse_ai.ai_helper.post_options_menu.trigger" @action={{this.showAIHelperOptions}} />
 
     {{else if (eq this.menuState this.MENU_STATES.options)}}
       <div class="ai-post-helper__options">
       {{#each this.helperOptions as |option|}}
-        <DButton @class="btn-flat" @icon={{option.icon}} @translatedLabel={{option.name}} @action={{this.performAISuggestion}} @actionParam={{option}} />
+        <DButton @class="btn-flat" @icon={{option.icon}} @translatedLabel={{option.name}} @action={{this.performAISuggestion}} @actionParam={{option}} data-name={{option.name}} data-value={{option.value}} />
       {{/each}}
       </div>
 
