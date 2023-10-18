@@ -52,6 +52,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
     context "when using explain mode" do
       let(:mode) { OpenAiCompletionsInferenceStubs::EXPLAIN }
+      before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
       it "shows an explanation of the selected text" do
         select_post_text(post)
@@ -70,6 +71,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
     context "when using translate mode" do
       let(:mode) { OpenAiCompletionsInferenceStubs::TRANSLATE }
+      before { OpenAiCompletionsInferenceStubs.stub_prompt(mode) }
 
       it "shows a translation of the selected text" do
         select_post_text(post_2)
