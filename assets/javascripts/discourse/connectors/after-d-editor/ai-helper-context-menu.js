@@ -79,7 +79,9 @@ export default class AiHelperContextMenu extends Component {
   async loadPrompts() {
     let prompts = await ajax("/discourse-ai/ai-helper/prompts");
 
-    prompts = prompts.filter((p) => p.name !== "generate_titles");
+    prompts = prompts
+      .filter((p) => p.location.includes("composer"))
+      .filter((p) => p.name !== "generate_titles");
 
     // Find the custom_prompt object and move it to the beginning of the array
     const customPromptIndex = prompts.findIndex(

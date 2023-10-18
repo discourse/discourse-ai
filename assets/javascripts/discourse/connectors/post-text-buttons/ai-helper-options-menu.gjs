@@ -114,9 +114,7 @@ export default class AIHelperOptionsMenu extends Component {
   async loadPrompts() {
     let prompts = await ajax("/discourse-ai/ai-helper/prompts");
 
-    const promptsToRemove = ["generate_titles", "markdown_table", "custom_prompt"];
-
-    this.helperOptions = prompts.filter(item => !promptsToRemove.includes(item.name)).map((p) => {
+    this.helperOptions = prompts.filter(item => item.location.includes("post")).map((p) => {
       return {
         name: p.translated_name,
         value: p.id,
