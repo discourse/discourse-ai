@@ -13,7 +13,7 @@ module DiscourseAi
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_helper"),
         )
 
-        additional_icons = %w[discourse-sparkles spell-check language]
+        additional_icons = %w[spell-check language]
         additional_icons.each { |icon| plugin.register_svg_icon(icon) }
       end
     end

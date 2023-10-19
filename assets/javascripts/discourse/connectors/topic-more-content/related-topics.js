@@ -30,7 +30,7 @@ export default class extends Component {
     this.moreTopicsPreferenceTracking.registerTopicList({
       name: I18n.t("discourse_ai.related_topics.pill"),
       id: this.listId,
-      icon: "magic",
+      icon: "discourse-sparkles",
     });
   }
 
