@@ -32,13 +32,20 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
 
       json_text = {
         searchInformation: {
-          totalResults: "1",
+          totalResults: "2",
         },
         items: [
           {
             title: "title1",
             link: "link1",
             snippet: "snippet1",
+            displayLink: "displayLink1",
+            formattedUrl: "formattedUrl1",
+            oops: "do no include me ... oops",
+          },
+          {
+            title: "title2",
+            link: "link2",
             displayLink: "displayLink1",
             formattedUrl: "formattedUrl1",
             oops: "do no include me ... oops",
@@ -60,10 +67,11 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
 
       info = google.process(query: "some search term").to_json
 
-      expect(google.description_args[:count]).to eq(1)
+      expect(google.description_args[:count]).to eq(2)
       expect(info).to include("title1")
       expect(info).to include("snippet1")
       expect(info).to include("some+search+term")
+      expect(info).to include("title2")
       expect(info).to_not include("oops")
 
       google.invoke!
