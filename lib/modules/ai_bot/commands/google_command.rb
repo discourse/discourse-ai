@@ -55,7 +55,9 @@ module DiscourseAi::AiBot::Commands
     end
 
     def minimize_field(result, field, max_tokens: 100)
-      data = result[field].squish
+      data = result[field]
+      return "" if data.blank?
+
       data = ::DiscourseAi::Tokenizer::BertTokenizer.truncate(data, max_tokens).squish
       data
     end
