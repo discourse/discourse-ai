@@ -12,7 +12,7 @@ module DiscourseAi
         plugin.register_seedfu_fixtures(
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_helper"),
         )
-        
+
         additional_icons.each { |icon| plugin.register_svg_icon(icon) }
       end
     end
