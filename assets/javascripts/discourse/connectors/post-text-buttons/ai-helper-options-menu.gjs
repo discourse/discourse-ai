@@ -82,14 +82,25 @@ export default class AIHelperOptionsMenu extends Component {
   async performAISuggestion(option) {
     this.menuState = this.MENU_STATES.loading;
 
-    this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
-      method: "POST",
-      data: {
-        mode: option.value,
-        text: this.args.outletArgs.data.quoteState.buffer,
-        custom_prompt: "",
-      }
-    });
+    if (option.name === "Explain") {
+      this._activeAIRequest = ajax("/discourse-ai/ai-helper/explain", {
+        method: "POST",
+        data: {
+          mode: option.value,
+          text: this.args.outletArgs.data.quoteState.buffer,
+          post_id: 419
+        }
+      });
+    } else {
+      this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
+        method: "POST",
+        data: {
+          mode: option.value,
+          text: this.args.outletArgs.data.quoteState.buffer,
+          custom_prompt: "",
+        }
+      });
+    }
 
     this._activeAIRequest.then(({ suggestions }) => {
       this.suggestion = suggestions[0];

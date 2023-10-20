@@ -71,11 +71,23 @@ CompletionPrompt.seed do |cp|
   cp.provider = "anthropic"
   cp.name = "explain"
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
-  cp.messages = [{ role: "Human", content: <<~TEXT }]
+  cp.messages = [{ role: "Human", content: <<~TEXT }, { role: "Assistant", content: "" }]
       You are a helpful assistant, I will provide you with a term inside <input> tags,
       and the context where it was used inside <context> tags, the title of the topic
       where it was used between <topic> tags, optionally the post it was written 
       in response to in <post> tags and you will reply with an explanation of what the
       term means in this context between <ai></ai> tags.
+
+      <input>
+      {{search}}
+      </input>
+
+      <context>
+      {{context}}
+      </context>
+
+      <topic>
+      {{topic}}
+      </topic>
     TEXT
 end

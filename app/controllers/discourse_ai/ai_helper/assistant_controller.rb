@@ -96,7 +96,7 @@ module DiscourseAi
         end
       end
 
-      def topic_helper
+      def explain
         post_id = get_post_param!
         text = get_text_param!
         post = Post.find_by(id: post_id)
