@@ -88,7 +88,7 @@ export default class AIHelperOptionsMenu extends Component {
         data: {
           mode: option.value,
           text: this.args.outletArgs.data.quoteState.buffer,
-          post_id: 419
+          post_id: this.args.outletArgs.data.quoteState.postId
         }
       });
     } else {
