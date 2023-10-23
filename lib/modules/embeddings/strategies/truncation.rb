@@ -30,7 +30,7 @@ module DiscourseAi
 
           info << topic.title
           info << "\n\n"
-          info << topic.category.name
+          info << topic.category.name if topic&.category&.name
           if SiteSetting.tagging_enabled
             info << "\n\n"
             info << topic.tags.pluck(:name).join(", ")
