@@ -52,15 +52,15 @@ describe DiscourseAi::Toxicity::EntryPoint do
       end
     end
 
-    xcontext "when editing a chat message" do
-      # This fabricator trigger events because it uses the MessageCreator.
+    context "when editing a chat message" do
+      # This fabricator trigger events because it uses the UpdateMessage service.
       # Using let makes the test fail.
       fab!(:chat_message) { Fabricate(:chat_message) }
       let(:updater) do
-        Chat::MessageUpdater.new(
+        Chat::UpdateMessage.call(
           guardian: Guardian.new(chat_message.user),
-          chat_message: chat_message,
-          new_content: "This is my updated message",
+          message_id: chat_message.id,
+          message: "This is my updated message",
         )
       end
 
