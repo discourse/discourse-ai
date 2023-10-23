@@ -22,7 +22,15 @@ export default class AIHelperOptionsMenu extends Component {
     {{else if (eq this.menuState this.MENU_STATES.options)}}
       <div class="ai-post-helper__options">
       {{#each this.helperOptions as |option|}}
-        <DButton @class="btn-flat" @icon={{option.icon}} @translatedLabel={{option.name}} @action={{this.performAISuggestion}} @actionParam={{option}} data-name={{option.name}} data-value={{option.value}} />
+        <DButton
+          @class="btn-flat"
+          @icon={{option.icon}}
+          @translatedLabel={{option.name}}
+          @action={{this.performAISuggestion}}
+          @actionParam={{option}}
+          data-name={{option.name}}
+          data-value={{option.value}}
+        />
       {{/each}}
       </div>
 
