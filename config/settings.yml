@@ -200,6 +200,9 @@ discourse_ai:
     client: true
   ai_embeddings_semantic_related_topics: 5
   ai_embeddings_semantic_related_include_closed_topics: true
+  ai_embeddings_backfill_batch_size:
+    default: 250
+    hidden: true
   ai_embeddings_pg_connection_string:
     default: ""
     hidden: true
