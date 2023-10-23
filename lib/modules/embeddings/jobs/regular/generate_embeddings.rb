@@ -2,6 +2,8 @@
 
 module Jobs
   class GenerateEmbeddings < ::Jobs::Base
+    sidekiq_options queue: "low"
+
     def execute(args)
       return unless SiteSetting.ai_embeddings_enabled
       return if (topic_id = args[:topic_id]).blank?
