@@ -76,7 +76,6 @@ export default class AIHelperOptionsMenu extends Component {
 
   @tracked _activeAIRequest = null;
 
-
   constructor() {
     super(...arguments);
 
