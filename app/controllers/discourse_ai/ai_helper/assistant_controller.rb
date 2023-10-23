@@ -96,10 +96,35 @@ module DiscourseAi
         end
       end
 
+      def explain
+        post_id = get_post_param!
+        text = get_text_param!
+        post = Post.find_by(id: post_id)
+
+        raise Discourse::InvalidParameters.new(:post_id) unless post
+
+        render json:
+                 DiscourseAi::AiHelper::TopicHelper.new(
+                   { text: text },
+                   current_user,
+                   post: post,
+                 ).explain,
+               status: 200
+      rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
+             ::DiscourseAi::Inference::HuggingFaceTextGeneration::CompletionFailed,
+             ::DiscourseAi::Inference::AnthropicCompletions::CompletionFailed => e
+        render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
+                          status: 502
+      end
+
       private
 
       def get_text_param!
         params[:text].tap { |t| raise Discourse::InvalidParameters.new(:text) if t.blank? }
+      end
+
+      def get_post_param!
+        params[:post_id].tap { |t| raise Discourse::InvalidParameters.new(:post_id) if t.blank? }
       end
 
       def rate_limiter_performed!

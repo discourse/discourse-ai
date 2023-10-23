@@ -20,6 +20,7 @@ module DiscourseAi
               translated_name: translation,
               prompt_type: prompt.prompt_type,
               icon: icon_map(prompt.name),
+              location: location_map(prompt.name),
             }
           end
       end
@@ -64,8 +65,35 @@ module DiscourseAi
           "comment"
         when "rewrite"
           "pen"
+        when "explain"
+          "question"
         else
           nil
+        end
+      end
+
+      def location_map(name)
+        case name
+        when "translate"
+          %w[composer post]
+        when "generate_titles"
+          %w[composer]
+        when "proofread"
+          %w[composer]
+        when "markdown_table"
+          %w[composer]
+        when "tone"
+          %w[composer]
+        when "custom_prompt"
+          %w[composer]
+        when "rewrite"
+          %w[composer]
+        when "explain"
+          %w[post]
+        when "summarize"
+          %w[post]
+        else
+          %w[composer post]
         end
       end
 

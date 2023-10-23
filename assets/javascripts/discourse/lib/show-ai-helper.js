@@ -1,20 +1,38 @@
-export default function showAIHelper(outletArgs, helper) {
-  const helperEnabled =
-    helper.siteSettings.discourse_ai_enabled &&
-    helper.siteSettings.composer_ai_helper_enabled;
-
-  const allowedGroups = helper.siteSettings.ai_helper_allowed_groups
-    .split("|")
-    .map((id) => parseInt(id, 10));
-  const canUseAssistant = helper.currentUser?.groups.some((g) =>
-    allowedGroups.includes(g.id)
+export function showComposerAIHelper(outletArgs, helper) {
+  const enableHelper = _helperEnabled(helper.siteSettings);
+  const enableAssistant = _canUseAssistant(
+    helper.currentUser,
+    _findAllowedGroups(helper.siteSettings.ai_helper_allowed_groups)
   );
-
   const canShowInPM = helper.siteSettings.ai_helper_allowed_in_pm;
 
   if (outletArgs?.composer?.privateMessage) {
-    return helperEnabled && canUseAssistant && canShowInPM;
+    return enableHelper && enableAssistant && canShowInPM;
   }
 
-  return helperEnabled && canUseAssistant;
+  return enableHelper && enableAssistant;
+}
+
+export function showPostAIHelper(outletArgs, helper) {
+  return (
+    _helperEnabled(helper.siteSettings) &&
+    _canUseAssistant(
+      helper.currentUser,
+      _findAllowedGroups(helper.siteSettings.post_ai_helper_allowed_groups)
+    )
+  );
+}
+
+function _helperEnabled(siteSettings) {
+  return (
+    siteSettings.discourse_ai_enabled && siteSettings.composer_ai_helper_enabled
+  );
+}
+
+function _findAllowedGroups(setting) {
+  return setting.split("|").map((id) => parseInt(id, 10));
+}
+
+function _canUseAssistant(user, allowedGroups) {
+  return user?.groups.some((g) => allowedGroups.includes(g.id));
 }

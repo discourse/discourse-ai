@@ -5,6 +5,7 @@ class OpenAiCompletionsInferenceStubs
   PROOFREAD = "proofread"
   GENERATE_TITLES = "generate_titles"
   CUSTOM_PROMPT = "custom_prompt"
+  EXPLAIN = "explain"
 
   class << self
     def text_mode_to_id(mode)
@@ -17,6 +18,8 @@ class OpenAiCompletionsInferenceStubs
         -2
       when CUSTOM_PROMPT
         -5
+      when EXPLAIN
+        -4
       end
     end
 
@@ -82,6 +85,15 @@ class OpenAiCompletionsInferenceStubs
       STRING
     end
 
+    def explain_response
+      <<~STRING
+        "In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling. 
+        The person states they enjoy eating pie, considering it a good dessert. They note that some people wastefully 
+        throw pie at others, but the person themselves chooses to eat the pie rather than throwing it. Overall, \"pie\" 
+        is being used to refer the the baked dessert food item."
+      STRING
+    end
+
     def response(content)
       {
         id: "chatcmpl-6sZfAb30Rnv9Q7ufzFwvQsMpjZh8S",
@@ -109,6 +121,8 @@ class OpenAiCompletionsInferenceStubs
         generated_titles
       when CUSTOM_PROMPT
         custom_prompt_response
+      when EXPLAIN
+        explain_response
       end
     end
 

@@ -319,3 +319,17 @@
     transform: rotate(359deg);
   }
 }
+
+.ai-post-helper {
+  &__options {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+    gap: 0.25rem;
+    justify-content: flex-start;
+  }
+
+  &__suggestion {
+    padding: 1rem;
+  }
+}

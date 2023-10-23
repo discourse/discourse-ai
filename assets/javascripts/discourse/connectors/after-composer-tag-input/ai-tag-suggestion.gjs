@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import AISuggestionDropdown from "../../components/ai-suggestion-dropdown";
 import { inject as service } from "@ember/service";
-import showAIHelper from "../../lib/show-ai-helper";
+import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
 
 export default class AITagSuggestion extends Component {
@@ -12,7 +12,7 @@ export default class AITagSuggestion extends Component {
   </template>
 
   static shouldRender(outletArgs, helper) {
-    return showAIHelper(outletArgs, helper);
+    return showComposerAIHelper(outletArgs, helper);
   }
 
   @service siteSettings;

@@ -66,6 +66,10 @@ en:
             title: "Custom Prompt"
             placeholder: "Enter a custom prompt..."
             submit: "Send Prompt"
+        post_options_menu:
+          trigger: "Ask AI"
+          loading: "AI is generating"
+          close: "Close"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"

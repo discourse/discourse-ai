@@ -126,3 +126,29 @@ CompletionPrompt.seed do |cp|
     ### Assistant:
   TEXT
 end
+
+CompletionPrompt.seed do |cp|
+  cp.id = -206
+  cp.provider = "huggingface"
+  cp.name = "explain"
+  cp.prompt_type = CompletionPrompt.prompt_types[:text]
+  cp.messages = [<<~TEXT]
+      ### System:
+      You are a helpful assistant. Act as a tutor explaining terms to a student in a specific
+      context. Reply with a paragraph with a brief explanation about what the term means in the
+      content provided, format the response using markdown. Reply only with the explanation and
+      nothing more.
+
+      ### User:
+      Term to explain:
+      {{search}}
+
+      Context where it was used:
+      {{context}}
+
+      Title of the conversation where it was used:
+      {{topic}}
+
+      ### Assistant:
+    TEXT
+end
