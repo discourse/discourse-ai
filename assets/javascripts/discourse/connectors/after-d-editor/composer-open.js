@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { inject as service } from "@ember/service";
 import { computed } from "@ember/object";
+import I18n from "I18n";
 
 export default class extends Component {
   @service currentUser;
@@ -12,6 +13,18 @@ export default class extends Component {
 
   get renderChatWarning() {
     return this.siteSettings.ai_bot_enable_chat_warning;
+  }
+
+  @computed("composerModel.targetRecipients", "composerModel.title")
+  get aiBotClasses() {
+    if (
+      this.composerModel?.title ===
+      I18n.t("discourse_ai.ai_bot.default_pm_prefix")
+    ) {
+      return "ai-bot-chat";
+    } else {
+      return "ai-bot-pm";
+    }
   }
 
   @computed("composerModel.targetRecipients")

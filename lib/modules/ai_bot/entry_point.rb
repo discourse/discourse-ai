@@ -8,7 +8,11 @@ module DiscourseAi
       GPT4_ID = -110
       GPT3_5_TURBO_ID = -111
       CLAUDE_V2_ID = -112
-      BOTS = [[GPT4_ID, "gpt4_bot"], [GPT3_5_TURBO_ID, "gpt3.5_bot"], [CLAUDE_V2_ID, "claude_bot"]]
+      BOTS = [
+        [GPT4_ID, "gpt4_bot", "gpt-4"],
+        [GPT3_5_TURBO_ID, "gpt3.5_bot", "gpt-3.5-turbo"],
+        [CLAUDE_V2_ID, "claude_bot", "claude-2"],
+      ]
 
       def self.map_bot_model_to_user_id(model_name)
         case model_name
@@ -48,6 +52,7 @@ module DiscourseAi
         require_relative "personas/settings_explorer"
         require_relative "personas/researcher"
         require_relative "personas/creative"
+        require_relative "site_settings_extension"
       end
 
       def inject_into(plugin)
