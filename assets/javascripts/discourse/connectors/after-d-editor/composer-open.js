@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { inject as service } from "@ember/service";
 import { computed } from "@ember/object";
-import I18n from "I18n";
+import I18n from "discourse-I18n";
 
 export default class extends Component {
   @service currentUser;

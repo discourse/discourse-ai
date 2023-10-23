@@ -14,6 +14,11 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
 
     subject { described_class.new(bot_user) }
 
+    before do
+      SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+      SiteSetting.ai_bot_enabled = true
+    end
+
     context "when changing available commands" do
       it "contains all commands by default" do
         # this will break as we add commands, but it is important as a sanity check
@@ -69,11 +74,11 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
     end
 
     context "when the topic has multiple posts" do
-      fab!(:post_1) { Fabricate(:post, topic: topic, raw: post_body(1), post_number: 1) }
-      fab!(:post_2) do
+      let!(:post_1) { Fabricate(:post, topic: topic, raw: post_body(1), post_number: 1) }
+      let!(:post_2) do
         Fabricate(:post, topic: topic, user: bot_user, raw: post_body(2), post_number: 2)
       end
-      fab!(:post_3) { Fabricate(:post, topic: topic, raw: post_body(3), post_number: 3) }
+      let!(:post_3) { Fabricate(:post, topic: topic, raw: post_body(3), post_number: 3) }
 
       it "includes them in the prompt respecting the post number order" do
         prompt_messages = subject.bot_prompt_with_topic_context(post_3)

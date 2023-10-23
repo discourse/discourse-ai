@@ -7,6 +7,7 @@ RSpec.describe Jobs::CreateAiReply do
   before do
     # got to do this cause we include times in system message
     freeze_time
+    SiteSetting.ai_bot_enabled = true
   end
 
   describe "#execute" do
@@ -78,6 +79,7 @@ RSpec.describe Jobs::CreateAiReply do
       let(:deltas) { claude_response.split(" ").map { |w| "#{w} " } }
 
       before do
+        SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
         bot_user = User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
 
         AnthropicCompletionStubs.stub_streamed_response(

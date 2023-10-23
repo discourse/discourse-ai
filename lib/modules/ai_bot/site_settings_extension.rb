@@ -14,7 +14,7 @@ module DiscourseAi::AiBot::SiteSettingsExtension
   end
 
   def self.enable_or_disable_ai_bots
-    enabled_bots = SiteSetting.ai_bot_enabled_chat_bots.split("|")
+    enabled_bots = SiteSetting.ai_bot_enabled_chat_bots_map
     enabled_bots = [] if !SiteSetting.ai_bot_enabled
     DiscourseAi::AiBot::EntryPoint::BOTS.each do |id, bot_name, name|
       active = enabled_bots.include?(name)

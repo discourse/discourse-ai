@@ -17,6 +17,8 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
       end
 
       before do
+        SiteSetting.ai_bot_enabled_chat_bots = "gpt-4|claude-2"
+        SiteSetting.ai_bot_enabled = true
         SiteSetting.ai_bot_allowed_groups = bot_allowed_group.id
         bot_allowed_group.add(admin)
       end

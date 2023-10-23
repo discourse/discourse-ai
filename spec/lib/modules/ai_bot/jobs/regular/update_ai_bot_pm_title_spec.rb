@@ -4,6 +4,11 @@ RSpec.describe Jobs::UpdateAiBotPmTitle do
   let(:user) { Fabricate(:admin) }
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
 
+  before do
+    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
+    SiteSetting.ai_bot_enabled = true
+  end
+
   it "will properly update title on bot PMs" do
     SiteSetting.ai_bot_allowed_groups = Group::AUTO_GROUPS[:staff]
 

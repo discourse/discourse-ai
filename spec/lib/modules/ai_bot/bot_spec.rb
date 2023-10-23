@@ -39,7 +39,12 @@ class FakeBot < DiscourseAi::AiBot::Bot
 end
 
 describe FakeBot do
-  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
+  before do
+    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+    SiteSetting.ai_bot_enabled = true
+  end
+
+  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
   fab!(:post) { Fabricate(:post, raw: "hello world") }
 
   it "can handle command truncation for long messages" do
@@ -78,11 +83,16 @@ describe FakeBot do
 end
 
 describe DiscourseAi::AiBot::Bot do
-  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
-  fab!(:bot) { described_class.as(bot_user) }
+  before do
+    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+    SiteSetting.ai_bot_enabled = true
+  end
+
+  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
+  let(:bot) { described_class.as(bot_user) }
 
   fab!(:user) { Fabricate(:user) }
-  fab!(:pm) do
+  let!(:pm) do
     Fabricate(
       :private_message_topic,
       title: "This is my special PM",
@@ -93,8 +103,8 @@ describe DiscourseAi::AiBot::Bot do
       ],
     )
   end
-  fab!(:first_post) { Fabricate(:post, topic: pm, user: user, raw: "This is a reply by the user") }
-  fab!(:second_post) do
+  let!(:first_post) { Fabricate(:post, topic: pm, user: user, raw: "This is a reply by the user") }
+  let!(:second_post) do
     Fabricate(:post, topic: pm, user: user, raw: "This is a second reply by the user")
   end
 
