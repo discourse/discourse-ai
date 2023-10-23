@@ -35,12 +35,21 @@ module DiscourseAi
         def generate_topic_representation_from(target, persist: true)
           text = @strategy.prepare_text_from(target, tokenizer, max_sequence_length - 2)
 
-          vector_from(text).tap do |vector|
-            if persist
-              digest = OpenSSL::Digest::SHA1.hexdigest(text)
-              save_to_db(target, vector, digest)
-            end
-          end
+          new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
+          current_digest = DB.query_single(<<~SQL, topic_id: target.id).first
+            SELECT
+              digest
+            FROM
+              #{table_name}
+            WHERE
+              topic_id = :topic_id
+            LIMIT 1
+          SQL
+          return if current_digest == new_digest
+
+          vector = vector_from(text)
+
+          save_to_db(target, vector, new_digest) if persist
         end
 
         def topic_id_from_representation(raw_vector)
