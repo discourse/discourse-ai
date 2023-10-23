@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobs
-  class EmbeddingsBackfill < ::Jobs::Base
+  class EmbeddingsBackfill < ::Jobs::Scheduled
     every 15.minutes
     sidekiq_options queue: "low"
     cluster_concurrency 1
@@ -20,6 +20,7 @@ module Jobs
       topics =
         Topic
           .joins("LEFT JOIN #{table_name} ON #{table_name}.topic_id = topics.id")
+          .where(archetype: Archetype.default)
           .where(deleted_at: nil)
           .order("#{table_name}.updated_at ASC NULLS FIRST, topics.id DESC")
           .limit(limit - rebaked)
@@ -33,6 +34,8 @@ module Jobs
         end
 
       return if rebaked >= limit
+
+      consider_indexing(vector_rep)
 
       # Then, we'll try to backfill embeddings for topics that have outdated
       # embeddings, be it model or strategy version
@@ -60,6 +63,17 @@ module Jobs
         end
 
       rebaked
+    end
+
+    private
+
+    def consider_indexing(vector_rep)
+      limiter = RateLimiter.new(nil, "ai_embeddings_backfill_indexing", 1, 1.week)
+
+      if limiter.can_perform?
+        vector_rep.create_index(memory: "100MB")
+        limiter.performed!
+      end
     end
   end
 end
