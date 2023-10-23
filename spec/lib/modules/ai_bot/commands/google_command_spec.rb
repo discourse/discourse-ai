@@ -1,7 +1,9 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
-  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+
+  before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
     it "will not explode if there are no results" do

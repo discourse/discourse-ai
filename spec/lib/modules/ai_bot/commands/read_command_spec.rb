@@ -1,7 +1,7 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Commands::ReadCommand do
-  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
 
   fab!(:parent_category) { Fabricate(:category, name: "animals") }
   fab!(:category) { Fabricate(:category, parent_category: parent_category, name: "amazing-cat") }
@@ -21,6 +21,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::ReadCommand do
   fab!(:topic_with_tags) do
     Fabricate(:topic, category: category, tags: [tag_funny, tag_sad, tag_hidden])
   end
+
+  before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
     it "can read a topic" do

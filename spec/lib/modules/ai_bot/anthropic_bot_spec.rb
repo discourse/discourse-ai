@@ -7,6 +7,11 @@ module ::DiscourseAi
         User.find(EntryPoint::CLAUDE_V2_ID)
       end
 
+      before do
+        SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
+        SiteSetting.ai_bot_enabled = true
+      end
+
       let(:bot) { described_class.new(bot_user) }
       let(:post) { Fabricate(:post) }
 

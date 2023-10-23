@@ -28,6 +28,8 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
     Fabricate(:topic, category: category, tags: [tag_funny, tag_sad, tag_hidden])
   end
 
+  before { SiteSetting.ai_bot_enabled = true }
+
   describe "#process" do
     it "can handle no results" do
       post1 = Fabricate(:post, topic: topic_with_tags)

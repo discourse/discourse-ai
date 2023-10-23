@@ -3,8 +3,10 @@
 require_relative "../../../../support/openai_completions_inference_stubs"
 
 RSpec.describe DiscourseAi::AiBot::Commands::Command do
-  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
   let(:command) { DiscourseAi::AiBot::Commands::GoogleCommand.new(bot_user: bot_user, args: nil) }
+
+  before { SiteSetting.ai_bot_enabled = true }
 
   describe "#format_results" do
     it "can generate efficient tables of data" do
