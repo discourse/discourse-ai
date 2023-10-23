@@ -1,18 +1,6 @@
 # frozen_string_literal: true
 
 module DiscourseAi::AiBot::SiteSettingsExtension
-  module ClassMethods
-    def ai_bot_enabled=(val)
-      super(val)
-      DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
-    end
-
-    def ai_bot_enabled_chat_bots=(val)
-      super(val)
-      DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
-    end
-  end
-
   def self.enable_or_disable_ai_bots
     enabled_bots = SiteSetting.ai_bot_enabled_chat_bots_map
     enabled_bots = [] if !SiteSetting.ai_bot_enabled
@@ -49,11 +37,5 @@ module DiscourseAi::AiBot::SiteSettingsExtension
         end
       end
     end
-  end
-end
-
-class ::SiteSetting
-  class << self
-    prepend DiscourseAi::AiBot::SiteSettingsExtension::ClassMethods
   end
 end
