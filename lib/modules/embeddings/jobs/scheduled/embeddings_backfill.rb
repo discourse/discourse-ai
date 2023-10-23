@@ -59,7 +59,7 @@ module Jobs
           rebaked += 1
         end
 
-      return rebaked
+      rebaked
     end
   end
 end
