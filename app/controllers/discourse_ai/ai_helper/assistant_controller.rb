@@ -107,7 +107,7 @@ module DiscourseAi
                  DiscourseAi::AiHelper::TopicHelper.new(
                    { text: text },
                    current_user,
-                   post_id: post_id,
+                   post: post,
                  ).explain,
                status: 200
       rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,

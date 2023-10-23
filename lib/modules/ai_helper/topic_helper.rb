@@ -11,7 +11,7 @@ module DiscourseAi
 
       def explain
         return nil if @text.blank?
-        return nil unless post = Post.find_by(id: @params[:post_id])
+        return nil unless post = Post.find_by(id: @params[:post])
 
         reply_to = post.topic.first_post
         topic = reply_to.topic
