@@ -23,7 +23,9 @@
               >
                 <Input
                   @value={{this.customPromptValue}}
-                  placeholder="Enter a custom prompt..."
+                  placeholder={{i18n
+                    "discourse_ai.ai_helper.context_menu.custom_prompt.placeholder"
+                  }}
                   class="ai-custom-prompt__input"
                   @enter={{action (fn this.updateSelected option)}}
                 />
