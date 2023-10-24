@@ -24,3 +24,5 @@ pt:
           cancel: "Cancelar"
           regen: "Tentar Novamente"
           revert: "Reverter"
+        post_options_menu:
+          close: "Fechar"

@@ -24,3 +24,5 @@ th:
           cancel: "ยกเลิก"
           regen: "ลองอีกครั้ง"
           revert: "ย้อนกลับ"
+        post_options_menu:
+          close: "ปิด"

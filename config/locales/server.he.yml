@@ -101,6 +101,7 @@ he:
         proofread: הגהת הטקסט
         markdown_table: יצירת טבלה ב־Markdown
         custom_prompt: "בקשה מותאמת אישית"
+        explain: "הסבר"
     ai_bot:
       personas:
         general:

@@ -24,3 +24,5 @@ sk:
           cancel: "Zrušiť"
           regen: "Skúsiť znova"
           revert: "Vrátiť zmeny"
+        post_options_menu:
+          close: "Zavrieť"

@@ -22,3 +22,5 @@ sr:
           cancel: "Odustani"
           regen: "Pokušaj ponovno"
           revert: "Vrati nazad"
+        post_options_menu:
+          close: "Zatvori"

@@ -34,6 +34,8 @@ tr_TR:
           regen: "Tekrar Dene"
           confirm: "Onayla"
           revert: "Eski Haline Getir"
+        post_options_menu:
+          close: "Bitir"
       reviewables:
         model_used: "Kullanılan model:"
         accuracy: "Doğruluk:"

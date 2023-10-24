@@ -25,3 +25,5 @@ gl:
           regen: "Tentar de novo"
           confirm: "Confirmar"
           revert: "Reverter"
+        post_options_menu:
+          close: "Pechar"

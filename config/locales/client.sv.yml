@@ -25,3 +25,5 @@ sv:
           regen: "Försök igen"
           confirm: "Bekräfta"
           revert: "Återställ"
+        post_options_menu:
+          close: "Stäng"

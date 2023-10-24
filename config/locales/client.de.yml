@@ -68,8 +68,12 @@ de:
           changes: "Änderungen"
           custom_prompt:
             title: "Benutzerdefinierte Eingabeaufforderung"
-            placeholder: "Gib eine benutzerdefinierte Eingabeaufforderung ein..."
+            placeholder: "Eigene Aufforderung..."
             submit: "Aufforderung senden"
+        post_options_menu:
+          trigger: "KI fragen"
+          loading: "KI generiert"
+          close: "Beenden"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"

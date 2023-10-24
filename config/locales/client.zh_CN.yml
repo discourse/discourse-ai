@@ -34,6 +34,8 @@ zh_CN:
           regen: "重试"
           confirm: "确认"
           revert: "还原"
+        post_options_menu:
+          close: "关闭"
       reviewables:
         model_used: "使用的模型："
         accuracy: "准确性："

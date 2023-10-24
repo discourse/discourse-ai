@@ -24,3 +24,5 @@ ro:
           cancel: "Anulare"
           regen: "Încearcă din nou"
           revert: "Revenire la starea inițială"
+        post_options_menu:
+          close: "Închide sondajul"

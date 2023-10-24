@@ -34,6 +34,8 @@ fr:
           regen: "Réessayer"
           confirm: "Confirmer"
           revert: "Rétablir"
+        post_options_menu:
+          close: "Fermer"
       reviewables:
         model_used: "Modèle utilisé :"
         accuracy: "Précision :"

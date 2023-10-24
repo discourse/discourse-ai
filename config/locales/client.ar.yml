@@ -34,6 +34,8 @@ ar:
           regen: "إعادة المحاولة"
           confirm: "تأكيد"
           revert: "عودة"
+        post_options_menu:
+          close: "إغلاق"
       reviewables:
         model_used: "النموذج المستخدم:"
         accuracy: "الدقة:"

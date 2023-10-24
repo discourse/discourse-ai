@@ -25,3 +25,5 @@ uk:
           regen: "Спробувати ще раз"
           confirm: "Підтвердити"
           revert: "Повернути"
+        post_options_menu:
+          close: "Закрити"

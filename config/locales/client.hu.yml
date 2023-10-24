@@ -25,3 +25,5 @@ hu:
           regen: "Újrapróbálkozás"
           confirm: "Megerősít"
           revert: "Visszaállítás"
+        post_options_menu:
+          close: "Lezárás"

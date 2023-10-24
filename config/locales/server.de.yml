@@ -101,6 +101,7 @@ de:
         proofread: Text korrekturlesen
         markdown_table: Markdown-Tabelle generieren
         custom_prompt: "Benutzerdefinierte Eingabeaufforderung"
+        explain: "Erklären"
     ai_bot:
       personas:
         general:

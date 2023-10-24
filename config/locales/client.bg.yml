@@ -24,3 +24,5 @@ bg:
           cancel: "Прекрати"
           regen: "Опитайте отново"
           revert: "Върни"
+        post_options_menu:
+          close: "Затвори"

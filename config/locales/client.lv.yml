@@ -24,3 +24,5 @@ lv:
           cancel: "Atcelt"
           regen: "Mēģināt vēlreiz"
           revert: "Atgriezt"
+        post_options_menu:
+          close: "Aizvērt"

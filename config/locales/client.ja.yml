@@ -34,6 +34,8 @@ ja:
           regen: "やり直す"
           confirm: "確認"
           revert: "戻す"
+        post_options_menu:
+          close: "クローズ"
       reviewables:
         model_used: "使用モデル:"
         accuracy: "精度:"

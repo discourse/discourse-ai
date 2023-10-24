@@ -24,3 +24,5 @@ id:
           regen: "Coba Lagi"
           confirm: "Konfirmasi"
           revert: "Dibalik"
+        post_options_menu:
+          close: "Tutup"

@@ -24,3 +24,5 @@ el:
           cancel: "Ακύρωση"
           regen: "Δοκίμασε ξανά"
           revert: "Επαναφορά"
+        post_options_menu:
+          close: "Κλείσιμο"

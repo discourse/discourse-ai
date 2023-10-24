@@ -24,3 +24,5 @@ nb_NO:
           cancel: "Avbryt"
           regen: "Prøv igjen"
           revert: "Reverser"
+        post_options_menu:
+          close: "Lukk"

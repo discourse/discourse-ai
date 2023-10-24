@@ -25,3 +25,5 @@ lt:
           regen: "Bandyti dar kartą"
           confirm: "Patvirtinti"
           revert: "Grąžinti"
+        post_options_menu:
+          close: "Uždaryti"

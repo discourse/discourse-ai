@@ -24,3 +24,5 @@ zh_TW:
           cancel: "取消"
           regen: "請再試一次"
           revert: "恢復"
+        post_options_menu:
+          close: "關閉"
