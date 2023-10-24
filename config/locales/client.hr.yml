@@ -25,3 +25,5 @@ hr:
           regen: "Pokušaj ponovno"
           confirm: "Potvrdi"
           revert: "Vrati nazad"
+        post_options_menu:
+          close: "Zatvori"

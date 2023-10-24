@@ -24,3 +24,5 @@ bs_BA:
           cancel: "Odustani"
           regen: "Pokušaj ponovo"
           revert: "Vrati nazad"
+        post_options_menu:
+          close: "Zatvori"

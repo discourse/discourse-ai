@@ -24,3 +24,5 @@ hy:
           cancel: "Չեղարկել"
           regen: "Կրկին Փորձել"
           revert: "Հետադարձել"
+        post_options_menu:
+          close: "Փակել"

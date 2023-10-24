@@ -25,3 +25,5 @@ ur:
           regen: "دوبارہ کوشش کریں"
           confirm: "تصدیق کریں"
           revert: "رِیوَرٹ"
+        post_options_menu:
+          close: "بند کریں"

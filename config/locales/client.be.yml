@@ -24,3 +24,5 @@ be:
           cancel: "адмяніць"
           regen: "Паспрабаваць яшчэ раз"
           revert: "Вярнуць"
+        post_options_menu:
+          close: "зачыніць"

@@ -24,3 +24,5 @@ sl:
           cancel: "Prekliči"
           regen: "Poskusi ponovno"
           revert: "Povrni"
+        post_options_menu:
+          close: "Zapri"

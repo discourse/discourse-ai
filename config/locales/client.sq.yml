@@ -24,3 +24,5 @@ sq:
           cancel: "Anulo"
           regen: "Provo përsëri"
           revert: "Rikthe"
+        post_options_menu:
+          close: "Mbyll"

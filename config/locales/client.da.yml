@@ -25,3 +25,5 @@ da:
           regen: "Prøv igen"
           confirm: "Bekræft"
           revert: "Gendan"
+        post_options_menu:
+          close: "Luk"

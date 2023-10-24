@@ -24,3 +24,5 @@ et:
           cancel: "Tühista"
           regen: "Proovi uuesti"
           revert: "Võta tagasi"
+        post_options_menu:
+          close: "Sulge"

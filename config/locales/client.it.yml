@@ -34,6 +34,8 @@ it:
           regen: "Riprova"
           confirm: "Conferma"
           revert: "Ripristina"
+        post_options_menu:
+          close: "Chiudi"
       reviewables:
         model_used: "Modello utilizzato:"
         accuracy: "Precisione:"

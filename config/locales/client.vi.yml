@@ -24,3 +24,5 @@ vi:
           cancel: "Huỷ"
           regen: "Thử lại"
           revert: "Phục hồi"
+        post_options_menu:
+          close: "Đóng"

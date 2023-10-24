@@ -24,3 +24,5 @@ cs:
           cancel: "Zrušit"
           regen: "Zkusit znovu"
           revert: "Vrátit"
+        post_options_menu:
+          close: "Zavřít"

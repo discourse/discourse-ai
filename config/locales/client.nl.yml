@@ -34,6 +34,8 @@ nl:
           regen: "Opnieuw proberen"
           confirm: "Bevestigen"
           revert: "Herstellen"
+        post_options_menu:
+          close: "Sluiten"
       reviewables:
         model_used: "Gebruikt model:"
         accuracy: "Nauwkeurigheid:"

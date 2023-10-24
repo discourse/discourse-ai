@@ -25,3 +25,5 @@ ko:
           regen: "다시 시도"
           confirm: "확인"
           revert: "되돌리기"
+        post_options_menu:
+          close: "닫기"

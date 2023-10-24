@@ -34,6 +34,8 @@ pt_BR:
           regen: "Tentar novamente"
           confirm: "Confirmar"
           revert: "Reverter"
+        post_options_menu:
+          close: "Fechar"
       reviewables:
         model_used: "Modelo usado:"
         accuracy: "Precisão:"

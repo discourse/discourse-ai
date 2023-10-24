@@ -25,3 +25,5 @@ ca:
           regen: "Torna-ho a intentar"
           confirm: "Confirma"
           revert: "Reverteix"
+        post_options_menu:
+          close: "Tanca"

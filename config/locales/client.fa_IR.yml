@@ -34,6 +34,8 @@ fa_IR:
           regen: "تلاش دوباره"
           confirm: "تایید"
           revert: "برگشت"
+        post_options_menu:
+          close: "بستن"
       reviewables:
         model_used: "مدل مورد استفاده:"
         accuracy: "دقت:"

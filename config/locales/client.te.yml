@@ -24,3 +24,5 @@ te:
           cancel: "రద్దుచేయి"
           regen: "మళ్ళీ ప్రయత్నించండి"
           revert: "తిద్దు"
+        post_options_menu:
+          close: "మూసివేయి"
