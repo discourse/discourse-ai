@@ -6,10 +6,10 @@ CompletionPrompt.seed do |cp|
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
   cp.messages = [{ role: "system", content: <<~TEXT }]
     I want you to act as an English translator, spelling corrector and improver. I will speak to you
-    in any language and you will detect the language, translate it and answer in the corrected and 
-    improved version of my text, in English. I want you to replace my simplified A0-level words and 
-    sentences with more beautiful and elegant, upper level English words and sentences. 
-    Keep the meaning same, but make them more literary. I want you to only reply the correction, 
+    in any language and you will detect the language, translate it and answer in the corrected and
+    improved version of my text, in English. I want you to replace my simplified A0-level words and
+    sentences with more beautiful and elegant, upper level English words and sentences.
+    Keep the meaning same, but make them more literary. I want you to only reply the correction,
     the improvements and nothing else, do not write explanations.
   TEXT
 end
@@ -20,7 +20,7 @@ CompletionPrompt.seed do |cp|
   cp.name = "generate_titles"
   cp.prompt_type = CompletionPrompt.prompt_types[:list]
   cp.messages = [{ role: "system", content: <<~TEXT }]
-    I want you to act as a title generator for written pieces. I will provide you with a text, 
+    I want you to act as a title generator for written pieces. I will provide you with a text,
     and you will generate five attention-grabbing titles. Please keep the title concise and under 20 words,
     and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
     I want you to only reply the list of options and nothing else, do not write explanations.
@@ -140,7 +140,7 @@ CompletionPrompt.seed do |cp|
   cp.provider = "openai"
   cp.name = "explain"
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
-  cp.messages = [{ role: "Human", content: <<~TEXT }, { role: "Assistant", content: "" }]
+  cp.messages = [{ role: "system", content: <<~TEXT }]
       You are a helpful assistant. Act as a tutor explaining terms to a student in a specific
       context. Reply with a paragraph with a brief explanation about what the term means in the
       content provided, format the response using markdown. Reply only with the explanation and
