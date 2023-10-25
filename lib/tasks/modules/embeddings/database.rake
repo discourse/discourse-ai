@@ -26,5 +26,5 @@ task "ai:embeddings:index", [:work_mem] => [:environment] do |_, args|
   strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
   vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
 
-  vector_rep.create_index(memory: args[:work_mem] || "100MB")
+  vector_rep.consider_indexing(memory: args[:work_mem] || "100MB")
 end

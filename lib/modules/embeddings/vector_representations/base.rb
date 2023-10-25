@@ -12,9 +12,7 @@ module DiscourseAi
           @strategy = strategy
         end
 
-        def create_index(memory: "100MB")
-          index_name = "#{table_name}_search"
-
+        def consider_indexing(memory: "100MB")
           # Using extension maintainer's recommendation for ivfflat indexes
           # Results are not as good as without indexes, but it's much faster
           # Disk usage is ~1x the size of the table, so this doubles table total size
@@ -32,16 +30,45 @@ module DiscourseAi
             LIMIT 1
           SQL
 
-          if existing_index.present?
-            existing_lists = existing_index.match(/lists='(\d+)'/)&.captures&.first&.to_i
-            if existing_lists == lists
-              puts "Index #{index_name} already exists with the same number of lists (#{lists}), skipping"
-              return
-            else
-              puts "Index #{index_name} already exists, but lists is #{existing_lists} instead of #{lists}, updating..."
+          if !existing_index.present?
+            Rails.logger.info("Index #{index_name} does not exist, creating...")
+            return create_index!(memory, lists, probes)
+          end
+
+          existing_index_age =
+            DB
+              .query_single(
+                "SELECT pg_catalog.obj_description((:index_name)::regclass, 'pg_class');",
+                index_name: index_name,
+              )
+              .first
+              .to_i || 0
+          new_rows =
+            DB.query_single(
+              "SELECT count(*) FROM #{table_name} WHERE created_at > '#{Time.at(existing_index_age)}';",
+            ).first
+          existing_lists = existing_index.match(/lists='(\d+)'/)&.captures&.first&.to_i
+
+          if existing_index_age > 0 && existing_index_age < 1.hour.ago.to_i
+            if new_rows > 10_000
+              Rails.logger.info(
+                "Index #{index_name} is #{existing_index_age} seconds old, and there are #{new_rows} new rows, updating...",
+              )
+              return create_index!(memory, lists, probes)
+            elsif existing_lists != lists
+              Rails.logger.info(
+                "Index #{index_name} already exists, but lists is #{existing_lists} instead of #{lists}, updating...",
+              )
+              return create_index!(memory, lists, probes)
             end
           end
 
+          Rails.logger.info(
+            "Index #{index_name} kept. #{Time.now.to_i - existing_index_age} seconds old, #{new_rows} new rows, #{existing_lists} lists, #{probes} probes.",
+          )
+        end
+
+        def create_index!(memory, lists, probes)
           DB.exec("SET work_mem TO '#{memory}';")
           DB.exec("SET maintenance_work_mem TO '#{memory}';")
           DB.exec(<<~SQL)
@@ -55,6 +82,7 @@ module DiscourseAi
             WITH
               (lists = #{lists});
           SQL
+          DB.exec("COMMENT ON INDEX #{index_name} IS '#{Time.now.to_i}';")
           DB.exec("RESET work_mem;")
           DB.exec("RESET maintenance_work_mem;")
 
@@ -148,6 +176,10 @@ module DiscourseAi
 
         def table_name
           "ai_topic_embeddings_#{id}_#{@strategy.id}"
+        end
+
+        def index_name
+          "#{table_name}_search"
         end
 
         def name
