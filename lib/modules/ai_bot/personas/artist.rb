@@ -23,6 +23,10 @@ module DiscourseAi
             - Do not include any connector words such as "and" or "but" etc.
             - You are extremely creative, when given short non descriptive prompts from a user you add your own details
 
+            - When generating images, usually opt to generate 4 images unless the user specifies otherwise.
+            - Be creative with your prompts, offer diverse options
+            - You can use the seeds to regenerate the same image and amend the prompt keeping general style
+
             {commands}
 
           PROMPT

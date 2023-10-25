@@ -14,11 +14,19 @@ module DiscourseAi::AiBot::Commands
       def parameters
         [
           Parameter.new(
-            name: "prompt",
+            name: "prompts",
             description:
-              "The prompt used to generate or create or draw the image (40 words or less, be creative)",
-            type: "string",
+              "The prompts used to generate or create or draw the image (40 words or less, be creative) up to 4 prompts",
+            type: "array",
+            item_type: "string",
             required: true,
+          ),
+          Parameter.new(
+            name: "seeds",
+            description:
+              "The seed used to generate the image (optional) - can be used to retain image style on amended prompts",
+            type: "array",
+            item_type: "integer",
           ),
         ]
       end
@@ -40,8 +48,12 @@ module DiscourseAi::AiBot::Commands
       @custom_raw
     end
 
-    def process(prompt:)
-      @last_prompt = prompt
+    def process(prompts:, seeds: nil)
+      # max 4 prompts
+      prompts = prompts[0..3]
+      seeds = seeds[0..3] if seeds
+
+      @last_prompt = prompts[0]
 
       show_progress(localized_description)
 
@@ -53,41 +65,59 @@ module DiscourseAi::AiBot::Commands
       engine = SiteSetting.ai_stability_engine
       api_url = SiteSetting.ai_stability_api_url
 
-      # API is flaky, so try a few times
-      3.times do
-        begin
-          thread =
-            Thread.new do
-              begin
-                results =
-                  DiscourseAi::Inference::StabilityGenerator.perform!(
-                    prompt,
-                    engine: engine,
-                    api_key: api_key,
-                    api_url: api_url,
-                  )
-              rescue => e
-                Rails.logger.warn("Failed to generate image for prompt #{prompt}: #{e}")
-              end
+      i = 0
+      threads =
+        prompts.map do |prompt|
+          seed = seeds ? seeds[i] : nil
+          i += 1
+          Thread.new(seed, prompt) do |inner_seed, inner_prompt|
+            attempts = 0
+            begin
+              DiscourseAi::Inference::StabilityGenerator.perform!(
+                inner_prompt,
+                engine: engine,
+                api_key: api_key,
+                api_url: api_url,
+                image_count: 1,
+                seed: inner_seed,
+              )
+            rescue => e
+              attempts += 1
+              retry if attempts < 3
+              Rails.logger.warn("Failed to generate image for prompt #{prompt}: #{e}")
+              nil
             end
-
-          show_progress(".", progress_caret: true) while !thread.join(2)
-
-          break if results
+          end
         end
+
+      while true
+        show_progress(".", progress_caret: true)
+        break if threads.all? { |t| t.join(2) }
       end
 
-      return { prompt: prompt, error: "Something went wrong, could not generate image" } if !results
+      results = threads.map(&:value).compact
+
+      if !results.present?
+        return { prompt: prompt, error: "Something went wrong, could not generate image" }
+      end
 
       uploads = []
 
-      results[:artifacts].each_with_index do |image, i|
-        f = Tempfile.new("v1_txt2img_#{i}.png")
-        f.binmode
-        f.write(Base64.decode64(image[:base64]))
-        f.rewind
-        uploads << UploadCreator.new(f, "image.png").create_for(bot_user.id)
-        f.unlink
+      i = 0
+      results.each do |result|
+        result[:artifacts].each do |image|
+          f = Tempfile.new("v1_txt2img_#{i}.png")
+          f.binmode
+          f.write(Base64.decode64(image[:base64]))
+          f.rewind
+          uploads << {
+            prompt: prompts[i],
+            upload: UploadCreator.new(f, "image.png").create_for(bot_user.id),
+            seed: image[:seed],
+          }
+          f.unlink
+        end
+        i += 1
       end
 
       @custom_raw = <<~RAW
@@ -95,13 +125,18 @@ module DiscourseAi::AiBot::Commands
       [grid]
       #{
         uploads
-          .map { |upload| "![#{prompt.gsub(/\|\'\"/, "")}|512x512, 50%](#{upload.short_url})" }
+          .map do |item|
+            "![#{item[:prompt].gsub(/\|\'\"/, "")}|512x512, 50%](#{item[:upload].short_url})"
+          end
           .join(" ")
       }
       [/grid]
     RAW
 
-      { prompt: prompt, displayed_to_user: true }
+      {
+        prompts: uploads.map { |item| { prompt: item[:prompt], seed: item[:seed] } },
+        displayed_to_user: true,
+      }
     end
   end
 end
