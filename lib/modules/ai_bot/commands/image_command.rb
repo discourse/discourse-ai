@@ -47,13 +47,25 @@ module DiscourseAi::AiBot::Commands
 
       results = nil
 
+      # this ensures multisite safety since background threads
+      # generate the images
+      api_key = SiteSetting.ai_stability_api_key
+      engine = SiteSetting.ai_stability_engine
+      api_url = SiteSetting.ai_stability_api_url
+
       # API is flaky, so try a few times
       3.times do
         begin
           thread =
             Thread.new do
               begin
-                results = DiscourseAi::Inference::StabilityGenerator.perform!(prompt)
+                results =
+                  DiscourseAi::Inference::StabilityGenerator.perform!(
+                    prompt,
+                    engine: engine,
+                    api_key: api_key,
+                    api_url: api_url,
+                  )
               rescue => e
                 Rails.logger.warn("Failed to generate image for prompt #{prompt}: #{e}")
               end
@@ -64,6 +76,8 @@ module DiscourseAi::AiBot::Commands
           break if results
         end
       end
+
+      return { prompt: prompt, error: "Something went wrong, could not generate image" } if !results
 
       uploads = []
 

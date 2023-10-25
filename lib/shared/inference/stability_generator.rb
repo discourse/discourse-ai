@@ -3,12 +3,15 @@
 module ::DiscourseAi
   module Inference
     class StabilityGenerator
-      def self.perform!(prompt, width: nil, height: nil)
+      def self.perform!(prompt, width: nil, height: nil, api_key: nil, engine: nil, api_url: nil)
+        api_key ||= SiteSetting.ai_stability_api_key
+        engine ||= SiteSetting.ai_stability_engine
+        api_url ||= SiteSetting.ai_stability_api_url
+
         headers = {
-          "Referer" => Discourse.base_url,
           "Content-Type" => "application/json",
           "Accept" => "application/json",
-          "Authorization" => "Bearer #{SiteSetting.ai_stability_api_key}",
+          "Authorization" => "Bearer #{api_key}",
         }
 
         sdxl_allowed_dimentions = [
@@ -24,7 +27,7 @@ module ::DiscourseAi
         ]
 
         if (!width && !height)
-          if SiteSetting.ai_stability_engine.include? "xl"
+          if engine.include? "xl"
             width, height = sdxl_allowed_dimentions[0]
           else
             width, height = [512, 512]
@@ -41,11 +44,9 @@ module ::DiscourseAi
           steps: 30,
         }
 
-        base_url = SiteSetting.ai_stability_api_url
-        engine = SiteSetting.ai_stability_engine
         endpoint = "v1/generation/#{engine}/text-to-image"
 
-        response = Faraday.post("#{base_url}/#{endpoint}", payload.to_json, headers)
+        response = Faraday.post("#{api_url}/#{endpoint}", payload.to_json, headers)
 
         if response.status != 200
           Rails.logger.error(
