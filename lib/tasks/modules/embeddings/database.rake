@@ -23,20 +23,8 @@ end
 
 desc "Creates indexes for embeddings"
 task "ai:embeddings:index", [:work_mem] => [:environment] do |_, args|
-  # Using extension maintainer's recommendation for ivfflat indexes
-  # Results are not as good as without indexes, but it's much faster
-  # Disk usage is ~1x the size of the table, so this doubles table total size
-  count = Topic.count
-  lists = count < 1_000_000 ? count / 1000 : Math.sqrt(count).to_i
-  probes = count < 1_000_000 ? lists / 10 : Math.sqrt(lists).to_i
-
-  vector_representation_klass = DiscourseAi::Embeddings::Vectors::Base.find_vector_representation
   strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
+  vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
 
-  DB.exec("SET work_mem TO '#{args[:work_mem] || "100MB"}';")
-  DB.exec("SET maintenance_work_mem TO '#{args[:work_mem] || "100MB"}';")
-  vector_representation_klass.new(strategy).create_index(lists, probes)
-  DB.exec("RESET work_mem;")
-  DB.exec("RESET maintenance_work_mem;")
-  DB.exec("ALTER SYSTEM SET ivfflat.probes = #{probes};")
+  vector_rep.consider_indexing(memory: args[:work_mem] || "100MB")
 end
