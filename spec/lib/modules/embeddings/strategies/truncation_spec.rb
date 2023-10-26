@@ -30,6 +30,14 @@ RSpec.describe DiscourseAi::Embeddings::Strategies::Truncation do
 
         expect(model.tokenizer.size(prepared_text)).to be <= model.max_sequence_length
       end
+
+      it "doesn't try to append category information if there isn't one" do
+        pm = Fabricate(:private_message_topic)
+
+        prepared_text = truncation.prepare_text_from(pm, model.tokenizer, model.max_sequence_length)
+
+        expect(model.tokenizer.size(prepared_text)).to be <= model.max_sequence_length
+      end
     end
   end
 end

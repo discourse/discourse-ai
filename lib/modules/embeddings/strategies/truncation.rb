@@ -29,12 +29,17 @@ module DiscourseAi
           info = +""
 
           info << topic.title
-          info << "\n\n"
-          info << topic.category.name
+
+          if topic.category
+            info << "\n\n"
+            info << topic.category.name
+          end
+
           if SiteSetting.tagging_enabled
             info << "\n\n"
             info << topic.tags.pluck(:name).join(", ")
           end
+
           info << "\n\n"
         end
 
