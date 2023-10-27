@@ -3,7 +3,16 @@
 module ::DiscourseAi
   module Inference
     class StabilityGenerator
-      def self.perform!(prompt, width: nil, height: nil, api_key: nil, engine: nil, api_url: nil)
+      def self.perform!(
+        prompt,
+        width: nil,
+        height: nil,
+        api_key: nil,
+        engine: nil,
+        api_url: nil,
+        image_count: 4,
+        seed: nil
+      )
         api_key ||= SiteSetting.ai_stability_api_key
         engine ||= SiteSetting.ai_stability_engine
         api_url ||= SiteSetting.ai_stability_api_url
@@ -40,9 +49,11 @@ module ::DiscourseAi
           clip_guidance_preset: "FAST_BLUE",
           height: width,
           width: height,
-          samples: 4,
+          samples: image_count,
           steps: 30,
         }
+
+        payload[:seed] = seed if seed
 
         endpoint = "v1/generation/#{engine}/text-to-image"
 

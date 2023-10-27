@@ -1,7 +1,5 @@
 #frozen_string_literal: true
 
-require_relative "../../../../support/stable_difussion_stubs"
-
 RSpec.describe DiscourseAi::AiBot::Commands::ImageCommand do
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
 
@@ -17,16 +15,36 @@ RSpec.describe DiscourseAi::AiBot::Commands::ImageCommand do
       image =
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
 
-      StableDiffusionStubs.new.stub_response("a pink cow", [image, image])
+      artifacts = [{ base64: image, seed: 99 }]
+      prompts = ["a pink cow", "a red cow"]
+
+      WebMock
+        .stub_request(
+          :post,
+          "https://api.stability.dev/v1/generation/#{SiteSetting.ai_stability_engine}/text-to-image",
+        )
+        .with do |request|
+          json = JSON.parse(request.body, symbolize_names: true)
+          expect(prompts).to include(json[:text_prompts][0][:text])
+          true
+        end
+        .to_return(status: 200, body: { artifacts: artifacts }.to_json)
 
       image = described_class.new(bot_user: bot_user, post: post, args: nil)
 
-      info = image.process(prompt: "a pink cow").to_json
+      info = image.process(prompts: prompts).to_json
 
-      expect(JSON.parse(info)).to eq("prompt" => "a pink cow", "displayed_to_user" => true)
+      expect(JSON.parse(info)).to eq(
+        "prompts" => [
+          { "prompt" => "a pink cow", "seed" => 99 },
+          { "prompt" => "a red cow", "seed" => 99 },
+        ],
+        "displayed_to_user" => true,
+      )
       expect(image.custom_raw).to include("upload://")
       expect(image.custom_raw).to include("[grid]")
       expect(image.custom_raw).to include("a pink cow")
+      expect(image.custom_raw).to include("a red cow")
     end
   end
 end
