@@ -48,7 +48,7 @@ module DiscourseAi::AiBot::Commands
       schema_info =
         table_info.map { |table_name, columns| "#{table_name}(#{columns.join(",")})" }.join("\n")
 
-      { tables: @tables, schema_info: schema_info }
+      { schema_info: schema_info, tables: tables }
     end
   end
 end
