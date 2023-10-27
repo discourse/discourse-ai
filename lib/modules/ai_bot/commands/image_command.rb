@@ -65,30 +65,28 @@ module DiscourseAi::AiBot::Commands
       engine = SiteSetting.ai_stability_engine
       api_url = SiteSetting.ai_stability_api_url
 
-      i = 0
-      threads =
-        prompts.map do |prompt|
-          seed = seeds ? seeds[i] : nil
-          i += 1
-          Thread.new(seed, prompt) do |inner_seed, inner_prompt|
-            attempts = 0
-            begin
-              DiscourseAi::Inference::StabilityGenerator.perform!(
-                inner_prompt,
-                engine: engine,
-                api_key: api_key,
-                api_url: api_url,
-                image_count: 1,
-                seed: inner_seed,
-              )
-            rescue => e
-              attempts += 1
-              retry if attempts < 3
-              Rails.logger.warn("Failed to generate image for prompt #{prompt}: #{e}")
-              nil
-            end
+      threads = []
+      prompts.each_with_index do |prompt, index|
+        seed = seeds ? seeds[index] : nil
+        threads << Thread.new(seed, prompt) do |inner_seed, inner_prompt|
+          attempts = 0
+          begin
+            DiscourseAi::Inference::StabilityGenerator.perform!(
+              inner_prompt,
+              engine: engine,
+              api_key: api_key,
+              api_url: api_url,
+              image_count: 1,
+              seed: inner_seed,
+            )
+          rescue => e
+            attempts += 1
+            retry if attempts < 3
+            Rails.logger.warn("Failed to generate image for prompt #{prompt}: #{e}")
+            nil
           end
         end
+      end
 
       while true
         show_progress(".", progress_caret: true)
@@ -103,21 +101,19 @@ module DiscourseAi::AiBot::Commands
 
       uploads = []
 
-      i = 0
-      results.each do |result|
+      results.each_with_index do |result, index|
         result[:artifacts].each do |image|
-          f = Tempfile.new("v1_txt2img_#{i}.png")
-          f.binmode
-          f.write(Base64.decode64(image[:base64]))
-          f.rewind
-          uploads << {
-            prompt: prompts[i],
-            upload: UploadCreator.new(f, "image.png").create_for(bot_user.id),
-            seed: image[:seed],
-          }
-          f.unlink
+          Tempfile.create("v1_txt2img_#{index}.png") do |file|
+            file.binmode
+            file.write(Base64.decode64(image[:base64]))
+            file.rewind
+            uploads << {
+              prompt: prompts[index],
+              upload: UploadCreator.new(file, "image.png").create_for(bot_user.id),
+              seed: image[:seed],
+            }
+          end
         end
-        i += 1
       end
 
       @custom_raw = <<~RAW
