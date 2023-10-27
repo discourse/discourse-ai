@@ -176,6 +176,10 @@ discourse_ai:
     default: "3|14" # 3: @staff, 14: @trust_level_4
     allow_any: false
     refresh: true
+  ai_helper_automatic_chat_thread_title:
+    default: true
+  ai_helper_automatic_chat_thread_title_delay:
+    default: 5
 
   ai_embeddings_enabled:
     default: false
