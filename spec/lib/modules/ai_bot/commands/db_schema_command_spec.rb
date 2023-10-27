@@ -10,7 +10,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::DbSchemaCommand do
       expect(result[:schema_info]).to include("posts")
       expect(result[:schema_info]).to include("topics")
 
-      expect(result[:tables]).to eq(%w[posts topics])
+      expect(result[:tables]).to eq("posts,topics")
     end
   end
 end
