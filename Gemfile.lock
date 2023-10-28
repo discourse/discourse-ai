@@ -1,5 +1,5 @@
 GEM
-  remote: https://mirrors.tuna.tsinghua.edu.cn/rubygems/
+  remote: https://mirrors.ustc.edu.cn/rubygems/
   specs:
     ast (2.4.2)
     json (2.6.2)
