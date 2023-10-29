@@ -1,5 +1,4 @@
 GEM
-  remote: https://rubygems.org/
   remote: https://mirrors.ustc.edu.cn/rubygems/
   specs:
     ast (2.4.2)
