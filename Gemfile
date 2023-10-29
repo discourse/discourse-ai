@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-"https://rubygems.org"
+source "https://rubygems.org"
 source "https://mirrors.ustc.edu.cn/rubygems/"
 
 group :development do
