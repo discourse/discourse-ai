@@ -20,8 +20,8 @@ module DiscourseAi
         additional_icons.each { |icon| plugin.register_svg_icon(icon) }
 
         plugin.on(:chat_thread_created) do |thread|
-          return unless SiteSetting.composer_ai_helper_enabled
-          return unless SiteSetting.ai_helper_automatic_chat_thread_title
+          next unless SiteSetting.composer_ai_helper_enabled
+          next unless SiteSetting.ai_helper_automatic_chat_thread_title
           Jobs.enqueue_in(
             SiteSetting.ai_helper_automatic_chat_thread_title_delay.minutes,
             :generate_chat_thread_title,
