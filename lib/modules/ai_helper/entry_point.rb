@@ -4,11 +4,11 @@ module DiscourseAi
     class EntryPoint
       def load_files
         require_relative "chat_thread_titler"
+        require_relative "jobs/regular/generate_chat_thread_title"
         require_relative "llm_prompt"
         require_relative "painter"
         require_relative "semantic_categorizer"
         require_relative "topic_helper"
-        require_relative "jobs/regular/generate_chat_thread_title"
       end
 
       def inject_into(plugin)

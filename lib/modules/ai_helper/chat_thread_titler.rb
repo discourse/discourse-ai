@@ -19,6 +19,8 @@ module DiscourseAi
       def suggested_title
         input_hash = { text: thread_content }
 
+        return nil if input_hash[:text].blank?
+
         llm_prompt =
           DiscourseAi::AiHelper::LlmPrompt
             .new
