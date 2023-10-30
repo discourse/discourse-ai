@@ -14,6 +14,7 @@ module DiscourseAi
           .joins(:user)
           .pluck(:username, :message)
           .map { |username, message| "#{username}: #{message}" }
+          .join("\n")
       end
 
       def suggested_title
