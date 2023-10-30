@@ -177,7 +177,7 @@ discourse_ai:
     allow_any: false
     refresh: true
   ai_helper_automatic_chat_thread_title:
-    default: true
+    default: false
   ai_helper_automatic_chat_thread_title_delay:
     default: 5
 
