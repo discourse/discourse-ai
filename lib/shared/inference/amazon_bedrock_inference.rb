@@ -27,13 +27,6 @@ module ::DiscourseAi
         raise CompletionFailed if !SiteSetting.ai_bedrock_secret_access_key.present?
         raise CompletionFailed if !SiteSetting.ai_bedrock_region.present?
 
-        url =
-          URI(
-            "https://bedrock.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model}/invoke",
-          )
-        url.path = url.path + "-with-response-stream" if block_given?
-        headers = { "Content-Type" => "application/json" }
-
         signer =
           Aws::Sigv4::Signer.new(
             access_key_id: SiteSetting.ai_bedrock_access_key_id,
@@ -46,7 +39,7 @@ module ::DiscourseAi
         response_data = +""
         response_raw = +""
 
-        url_api = "https://bedrock.us-east-1.amazonaws.com/model/#{model}/"
+        url_api = "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model}/"
         if block_given?
           url_api = url_api + "invoke-with-response-stream"
         else
