@@ -39,7 +39,8 @@ module ::DiscourseAi
         response_data = +""
         response_raw = +""
 
-        url_api = "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model}/"
+        url_api =
+          "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model}/"
         if block_given?
           url_api = url_api + "invoke-with-response-stream"
         else
