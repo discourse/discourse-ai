@@ -41,6 +41,7 @@ module DiscourseAi
       def submit_prompt(
         prompt,
         prefer_low_cost: false,
+        post: nil,
         temperature: nil,
         top_p: nil,
         max_tokens: nil,
@@ -57,7 +58,13 @@ module DiscourseAi
 
         params[:functions] = available_functions if available_functions.present?
 
-        DiscourseAi::Inference::OpenAiCompletions.perform!(prompt, model, **params, &blk)
+        DiscourseAi::Inference::OpenAiCompletions.perform!(
+          prompt,
+          model,
+          **params,
+          post: post,
+          &blk
+        )
       end
 
       def tokenizer
