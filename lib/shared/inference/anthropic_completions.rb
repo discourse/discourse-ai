@@ -14,6 +14,7 @@ module ::DiscourseAi
         max_tokens: nil,
         user_id: nil,
         stop_sequences: nil,
+        post: nil,
         &blk
       )
         # HACK to get around the fact that they have different APIs
@@ -78,6 +79,8 @@ module ::DiscourseAi
                 provider_id: AiApiAuditLog::Provider::Anthropic,
                 raw_request_payload: request_body,
                 user_id: user_id,
+                post_id: post&.id,
+                topic_id: post&.topic_id,
               )
 
             if !block_given?

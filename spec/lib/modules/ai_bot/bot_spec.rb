@@ -23,7 +23,7 @@ class FakeBot < DiscourseAi::AiBot::Bot
     "#{role}: #{content}"
   end
 
-  def submit_prompt(prompt, prefer_low_cost: false)
+  def submit_prompt(prompt, post: nil, prefer_low_cost: false)
     rows = @responses.shift
     rows.each { |data| yield data, lambda {} }
   end
@@ -173,6 +173,8 @@ describe DiscourseAi::AiBot::Bot do
       expect(last.post_custom_prompt.custom_prompt).to eq(
         [[result, "search", "function"], ["I found nothing, sorry", bot_user.username]],
       )
+      log = AiApiAuditLog.find_by(post_id: second_post.id)
+      expect(log).to be_present
     end
   end
 

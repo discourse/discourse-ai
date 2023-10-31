@@ -137,7 +137,7 @@ module DiscourseAi
         context = {}
         functions = FunctionCalls.new
 
-        submit_prompt(prompt, prefer_low_cost: prefer_low_cost) do |partial, cancel|
+        submit_prompt(prompt, post: post, prefer_low_cost: prefer_low_cost) do |partial, cancel|
           current_delta = get_delta(partial, context)
           partial_reply << current_delta
 
@@ -335,7 +335,14 @@ module DiscourseAi
         tokenizer.tokenize(text)
       end
 
-      def submit_prompt(prompt, prefer_low_cost: false, &blk)
+      def submit_prompt(
+        prompt,
+        post:,
+        prefer_low_cost: false,
+        temperature: nil,
+        max_tokens: nil,
+        &blk
+      )
         raise NotImplemented
       end
 

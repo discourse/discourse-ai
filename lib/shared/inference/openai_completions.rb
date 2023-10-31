@@ -20,6 +20,7 @@ module ::DiscourseAi
         user_id: nil,
         retries: DEFAULT_RETRIES,
         retry_timeout: DEFAULT_RETRY_TIMEOUT_SECONDS,
+        post: nil,
         &blk
       )
         log = nil
@@ -103,6 +104,8 @@ module ::DiscourseAi
                 provider_id: AiApiAuditLog::Provider::OpenAI,
                 raw_request_payload: request_body,
                 user_id: user_id,
+                post_id: post&.id,
+                topic_id: post&.topic_id,
               )
 
             if !blk
