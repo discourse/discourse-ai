@@ -61,6 +61,7 @@ de:
     ai_embeddings_generate_for_pms: "Erstelle Einbettungen für persönliche Nachrichten."
     ai_embeddings_semantic_related_topics_enabled: "Verwende die semantische Suche für verwandte Themen."
     ai_embeddings_semantic_related_topics: "Maximale Anzahl der Themen, die im Abschnitt für verwandte Themen angezeigt werden sollen."
+    ai_embeddings_backfill_batch_size: "Anzahl der Einbettungen, die alle 15 Minuten aufgefüllt werden."
     ai_embeddings_pg_connection_string: "PostgreSQL-Verbindungsstring für das Einbettungsmodul. Die pgvector-Erweiterung muss aktiviert sein und eine Reihe von Tabellen erstellt werden. Siehe Dokumentation für weitere Informationen."
     ai_embeddings_semantic_search_enabled: "Aktiviere die semantische Ganzseitensuche."
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"

@@ -61,6 +61,7 @@ he:
     ai_embeddings_generate_for_pms: "יצירת הטמעות להודעות פרטיות."
     ai_embeddings_semantic_related_topics_enabled: "להשתמש בחיפוש סמנטי לנושאים קשורים."
     ai_embeddings_semantic_related_topics: "מספר הנושאים המרבי להצגה בסעיף הנושאים הקשורים."
+    ai_embeddings_backfill_batch_size: "מספר ההטבעות למילוי חוזר כל 15 דקות."
     ai_embeddings_pg_connection_string: "מחרוזת חיבור ל־PostgreSQL למודול ההטמעות. הרחבת pgvector צריכה להיות פעילה ומספר טבלאות צריכות להיווצר. יש לעיין בתיעוד למידע נוסף."
     ai_embeddings_semantic_search_enabled: "הפעלת חיפוש סמנטי בעמוד מלא."
     ai_embeddings_semantic_related_include_closed_topics: "כולל נושאים סגורים בתוצאות החיפוש הסמנטיות"
