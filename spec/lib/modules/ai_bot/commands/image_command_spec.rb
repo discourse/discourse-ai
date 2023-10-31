@@ -34,13 +34,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::ImageCommand do
 
       info = image.process(prompts: prompts).to_json
 
-      expect(JSON.parse(info)).to eq(
-        "prompts" => [
-          { "prompt" => "a pink cow", "seed" => 99 },
-          { "prompt" => "a red cow", "seed" => 99 },
-        ],
-        "displayed_to_user" => true,
-      )
+      expect(JSON.parse(info)).to eq("prompts" => ["a pink cow", "a red cow"], "seeds" => [99, 99])
       expect(image.custom_raw).to include("upload://")
       expect(image.custom_raw).to include("[grid]")
       expect(image.custom_raw).to include("a pink cow")

@@ -129,10 +129,7 @@ module DiscourseAi::AiBot::Commands
       [/grid]
     RAW
 
-      {
-        prompts: uploads.map { |item| { prompt: item[:prompt], seed: item[:seed] } },
-        displayed_to_user: true,
-      }
+      { prompts: uploads.map { |item| item[:prompt] }, seeds: uploads.map { |item| item[:seed] } }
     end
   end
 end
