@@ -8,13 +8,26 @@
     align-items: baseline;
 
     .semantic-search {
+      &__searching {
+        display: flex;
+        align-items: center;
+
+        &.in-progress {
+          .semantic-search__searching-text {
+            color: var(--primary-medium);
+          }
+        }
+      }
+
       &__searching-text {
         display: inline-block;
         margin-left: 3px;
       }
+
       &__indicator-wave {
         flex: 0 0 auto;
         display: inline-flex;
+        color: var(--primary-medium);
       }
       &__indicator-dot {
         display: inline-block;
@@ -35,5 +48,24 @@
     .semantic-search__searching {
       margin-left: 5px;
     }
+  }
+}
+
+// Temporary styling to distinguish AI results,
+// TODO(@keegan): improve styling and use sparkles icon.
+.search-results {
+  .fps-result {
+    padding: 0.5rem;
+  }
+  .ai-result {
+    display: none;
+    background: var(--tertiary-low);
+    padding: 0.5rem;
+  }
+}
+
+.showing-ai-results {
+  .ai-result {
+    display: block;
   }
 }

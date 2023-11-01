@@ -6,46 +6,29 @@
       {{did-insert this.debouncedSearch}}
       {{will-destroy this.teardown}}
     >
-      {{#if this.searching}}
-        <div class="semantic-search__searching">
-          <div class="semantic-search__searching-text">
-            {{i18n "discourse_ai.embeddings.semantic_search_loading"}}
-          </div>
+
+      <div
+        class="semantic-search__searching {{if this.searching 'in-progress'}}"
+      >
+        <DToggleSwitch
+          disabled={{this.searching}}
+          @state={{this.showingAIResults}}
+          title="AI search results hidden"
+          class="semantic-search__results-toggle"
+          {{on "click" this.toggleAIResults}}
+        />
+        <div class="semantic-search__searching-text">
+          {{d-icon "discourse-sparkles"}}
+          {{this.searchStateText}}
+        </div>
+        {{#if this.searching}}
           <span class="semantic-search__indicator-wave">
             <span class="semantic-search__indicator-dot">.</span>
             <span class="semantic-search__indicator-dot">.</span>
             <span class="semantic-search__indicator-dot">.</span>
           </span>
-        </div>
-      {{else}}
-        {{#if this.results.length}}
-          <div class="semantic-search__toggle-button-container">
-            <DButton
-              @translatedTitle={{this.collapsedResultsTitle}}
-              @translatedLabel={{this.collapsedResultsTitle}}
-              @action={{fn
-                (mut this.collapsedResults)
-                (not this.collapsedResults)
-              }}
-              @class="btn-flat"
-              @icon={{if this.collapsedResults "chevron-right" "chevron-down"}}
-            />
-          </div>
-
-          {{#unless this.collapsedResults}}
-            <div class="semantic-search__entries">
-              <SearchResultEntries
-                @posts={{this.results}}
-                @highlightQuery={{this.highlightQuery}}
-              />
-            </div>
-          {{/unless}}
-        {{else}}
-          <div class="semantic-search__searching">
-            {{i18n "discourse_ai.embeddings.semantic_search_results.none"}}
-          </div>
         {{/if}}
-      {{/if}}
+      </div>
     </div>
   </div>
 {{/if}}
