@@ -114,8 +114,7 @@ export default class SemanticSearch extends Component {
           // Is there a better way to do this without needing to getOwner
           // get controller and thereby introduce code smell?
 
-          api.addAdditionalSearchResults(AIResults);
-          this.args.outletArgs.recheckSearchResults();
+          api.addSearchResults(AIResults);
           this.results = AIResults;
         });
       })

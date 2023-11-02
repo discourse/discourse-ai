@@ -51,21 +51,31 @@
   }
 }
 
-// Temporary styling to distinguish AI results,
-// TODO(@keegan): improve styling and use sparkles icon.
 .search-results {
   .fps-result {
     padding: 0.5rem;
+
+    .ai-result__icon {
+      display: none;
+    }
   }
+
   .ai-result {
     display: none;
-    background: var(--tertiary-low);
-    padding: 0.5rem;
+    background: var(--tertiary-very-low);
+    border-radius: var(--d-border-radius);
+
+    .ai-result__icon {
+      display: inline;
+      margin-inline: 0.5rem;
+      font-size: var(--font-up-2);
+      color: var(--tertiary);
+    }
   }
 }
 
 .showing-ai-results {
   .ai-result {
-    display: block;
+    display: flex;
   }
 }
