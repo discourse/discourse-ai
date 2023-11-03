@@ -150,14 +150,12 @@ export default class SemanticSearch extends Component {
     })
       .then(async (results) => {
         const model = (await translateResults(results)) || {};
-        withPluginApi("1.6.0", (api) => {
           const AIResults = model.posts.map(function (post) {
             return Object.assign({}, post, { generatedByAI: true });
           });
 
-          api.addSearchResults(AIResults);
+          this.args.outletArgs.addSearchResults(AIResults);
           this.AIResults = AIResults;
-        });
       })
       .catch(popupAjaxError)
       .finally(() => (this.searching = false));
