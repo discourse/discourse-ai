@@ -9,7 +9,6 @@ import { inject as service } from "@ember/service";
 import { bind } from "discourse-common/utils/decorators";
 import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
-import { withPluginApi } from "discourse/lib/plugin-api";
 import { on } from "@ember/modifier";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
