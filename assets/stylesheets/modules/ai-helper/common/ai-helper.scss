@@ -250,7 +250,7 @@
 }
 
 .showing-ai-suggestions .title-input {
-    // border on focus should be on top of suggestion button
+  // border on focus should be on top of suggestion button
   input:focus {
     z-index: 1;
   }
