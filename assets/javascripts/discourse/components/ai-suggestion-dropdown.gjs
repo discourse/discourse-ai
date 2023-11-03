@@ -32,11 +32,31 @@ export default class AISuggestionDropdown extends Component {
 
   get showAIButton() {
     const minCharacterCount = 40;
-    return this.composer.model.replyLength > minCharacterCount;
+    const isShowAIButton = this.composer.model.replyLength > minCharacterCount;
+    const composerFields = document.querySelector(".composer-fields");
+    
+    if (composerFields) {
+      if (isShowAIButton) {
+        composerFields.classList.add("showing-ai-suggestions");
+      } else {
+        composerFields.classList.remove("showing-ai-suggestions");
+      }
+    }
+
+    return isShowAIButton;
   }
 
   get disableSuggestionButton() {
     return this.loading;
+  }
+
+  @action
+  applyClasses() {
+    if (this.showAIButton) {
+      document.querySelector(".composer-fields")?.classList.add("showing-ai-suggestions");
+    } else {
+      document.querySelector(".composer-fields")?.classList.remove("showing-ai-suggestions");
+    }
   }
 
   @bind
@@ -111,10 +131,18 @@ export default class AISuggestionDropdown extends Component {
         this.loading = false;
         this.suggestIcon = "sync-alt";
         this.showMenu = true;
+
+        if (this.args.mode === "suggest_category") {
+          document.querySelector(".category-input")?.classList.add("showing-ai-suggestion-menu");
+        }
       });
   }
 
   #closeMenu() {
+    if (this.showMenu && this.args.mode === "suggest_category") {
+      document.querySelector(".category-input")?.classList.remove("showing-ai-suggestion-menu");
+    }
+
     this.suggestIcon = "discourse-sparkles";
     this.showMenu = false;
     this.showErrors = false;

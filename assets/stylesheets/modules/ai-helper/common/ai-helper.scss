@@ -249,7 +249,7 @@
   border-left: none;
 }
 
-.title-input:has(.suggestion-button) {
+.showing-ai-suggestions .title-input {
   // border on focus should be on top of suggestion button
   input:focus {
     z-index: 1;
@@ -288,14 +288,14 @@
   }
 }
 
-.category-input:has(.ai-suggestions-menu) {
+.category-input.showing-ai-suggestion-menu {
   position: relative;
 }
 
 // Prevent suggestion button from wrapping on smaller screens
 @media screen and (max-width: 768px) {
-  #reply-control {
-    .category-input:has(.suggestion-button) {
+  #reply-control .composer-fields.showing-ai-suggestions {
+    .category-input {
       .category-chooser {
         width: 10px;
       }
