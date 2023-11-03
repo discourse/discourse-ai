@@ -1,9 +1,8 @@
+import Component from "@glimmer/component";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
-import Component from "@glimmer/component";
-import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
-
 import I18n from "I18n";
+import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 
 export default class AiBotHeaderPanel extends Component {
   @service siteSettings;

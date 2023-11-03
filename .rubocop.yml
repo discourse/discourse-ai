@@ -1,2 +1,4 @@
 inherit_gem:
   rubocop-discourse: stree-compat.yml
+RSpec/NamedSubject:
+  Enabled: false
