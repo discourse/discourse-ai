@@ -1,11 +1,11 @@
-import { withPluginApi } from "discourse/lib/plugin-api";
-import { cook } from "discourse/lib/text";
+import { hbs } from "ember-cli-htmlbars";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import loadScript from "discourse/lib/load-script";
-import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
+import { withPluginApi } from "discourse/lib/plugin-api";
+import { cook } from "discourse/lib/text";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
-import { hbs } from "ember-cli-htmlbars";
+import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 
 function isGPTBot(user) {
   return user && [-110, -111, -112].includes(user.id);

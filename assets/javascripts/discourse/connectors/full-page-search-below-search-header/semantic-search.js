@@ -1,13 +1,13 @@
 import Component from "@glimmer/component";
-import { action, computed } from "@ember/object";
-import I18n from "I18n";
 import { tracked } from "@glimmer/tracking";
+import { action, computed } from "@ember/object";
+import { inject as service } from "@ember/service";
+import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
 import { ajax } from "discourse/lib/ajax";
 import { isValidSearchTerm, translateResults } from "discourse/lib/search";
 import discourseDebounce from "discourse-common/lib/debounce";
-import { inject as service } from "@ember/service";
 import { bind } from "discourse-common/utils/decorators";
-import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
+import I18n from "I18n";
 
 export default class extends Component {
   static shouldRender(_args, { siteSettings }) {

@@ -1,13 +1,13 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
-import { afterRender, bind, debounce } from "discourse-common/utils/decorators";
 import { tracked } from "@glimmer/tracking";
-import { INPUT_DELAY } from "discourse-common/config/environment";
+import { action } from "@ember/object";
+import { inject as service } from "@ember/service";
+import { createPopper } from "@popperjs/core";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { createPopper } from "@popperjs/core";
 import { caretPosition, getCaretPosition } from "discourse/lib/utilities";
-import { inject as service } from "@ember/service";
+import { INPUT_DELAY } from "discourse-common/config/environment";
+import { afterRender, bind, debounce } from "discourse-common/utils/decorators";
 import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
 export default class AiHelperContextMenu extends Component {
