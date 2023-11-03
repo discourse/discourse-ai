@@ -1,14 +1,25 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
+import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
-import DModalCancel from "discourse/components/d-modal-cancel";
 import I18n from "I18n";
-import { htmlSafe } from "@ember/template";
 
 const t = I18n.t.bind(I18n);
 
 export default class ModalDiffModal extends Component {
+  @action
+  triggerConfirmChanges() {
+    this.args.closeModal();
+    this.args.confirm();
+  }
+
+  @action
+  triggerRevertChanges() {
+    this.args.closeModal();
+    this.args.revert();
+  }
+
   <template>
     <DModal
       class="composer-ai-helper-modal"
@@ -43,16 +54,4 @@ export default class ModalDiffModal extends Component {
       </:footer>
     </DModal>
   </template>
-
-  @action
-  triggerConfirmChanges() {
-    this.args.closeModal();
-    this.args.confirm();
-  }
-
-  @action
-  triggerRevertChanges() {
-    this.args.closeModal();
-    this.args.revert();
-  }
 }

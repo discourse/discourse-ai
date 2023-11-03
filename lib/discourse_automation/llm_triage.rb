@@ -110,13 +110,13 @@ if defined?(DiscourseAutomation)
     field :system_prompt,
           component: :message,
           required: true,
-          validator: ->(input) {
+          validator: ->(input) do
             if !input.include?("%%POST%%")
               I18n.t(
                 "discourse_automation.scriptables.#{DiscourseAutomation::Scriptable::LLM_TRIAGE}.system_prompt_missing_post_placeholder",
               )
             end
-          },
+          end,
           accepts_placeholders: true
     field :search_for_text, component: :text, required: true
     field :model, component: :choices, required: true, extra: { content: AVAILABLE_MODELS }

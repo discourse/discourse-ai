@@ -1,7 +1,7 @@
-import Widget from "discourse/widgets/widget";
-import RenderGlimmer from "discourse/widgets/render-glimmer";
-import { hbs } from "ember-cli-htmlbars";
 import { action } from "@ember/object";
+import { hbs } from "ember-cli-htmlbars";
+import RenderGlimmer from "discourse/widgets/render-glimmer";
+import Widget from "discourse/widgets/widget";
 
 export default class AiBotHeaderPanelWrapper extends Widget {
   buildAttributes() {
