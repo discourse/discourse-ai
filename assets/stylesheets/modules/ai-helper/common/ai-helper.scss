@@ -262,6 +262,10 @@
   }
 }
 
+#reply-control .showing-ai-suggestions .category-chooser {
+  max-width: calc(100% - 41px); // width of AI button
+}
+
 .suggest-tags-button,
 .suggest-category-button {
   display: block;
