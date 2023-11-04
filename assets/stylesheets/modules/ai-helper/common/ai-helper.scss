@@ -297,6 +297,9 @@
   .with-category .showing-ai-suggestions .category-input,
   .with-tags .showing-ai-suggestions .mini-tag-chooser {
     flex-wrap: nowrap;
+    .select-kit {
+      max-width: calc(100% - 34px);
+    }
   }
 }
 
