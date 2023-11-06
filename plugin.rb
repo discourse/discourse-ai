@@ -9,6 +9,7 @@
 
 gem "tokenizers", "0.3.2", platform: RUBY_PLATFORM
 gem "tiktoken_ruby", "0.0.5", platform: RUBY_PLATFORM
+gem "ed25519", "1.2.4", platform: RUBY_PLATFORM
 
 enabled_site_setting :discourse_ai_enabled
 

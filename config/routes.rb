@@ -18,6 +18,10 @@ DiscourseAi::Engine.routes.draw do
     post "post/:post_id/stop-streaming" => "bot#stop_streaming_response"
     get "bot-username" => "bot#show_bot_username"
   end
+
+  scope module: :discord_bot, path: "/discord-bot", defaults: { format: :json } do
+    post "search" => "discord_bot#search"
+  end
 end
 
 Discourse::Application.routes.append { mount ::DiscourseAi::Engine, at: "discourse-ai" }
