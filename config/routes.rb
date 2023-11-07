@@ -21,4 +21,9 @@ DiscourseAi::Engine.routes.draw do
   end
 end
 
-Discourse::Application.routes.draw { mount ::DiscourseAi::Engine, at: "discourse-ai" }
+Discourse::Application.routes.draw do
+  mount ::DiscourseAi::Engine, at: "discourse-ai"
+
+  get "admin/dashboard/sentiment" => "discourse_ai/admin/dashboard#sentiment",
+      :constraints => StaffConstraint.new
+end

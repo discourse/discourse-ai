@@ -1,0 +1,10 @@
+.dashboard.dashboard-sentiment {
+  .charts {
+    .overall-sentiment {
+      grid-column: span 12;
+    }
+    .post-emotion {
+      grid-column: span 12;
+    }
+  }
+}
