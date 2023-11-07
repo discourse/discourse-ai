@@ -2,6 +2,7 @@
 
 # name: discourse-ai
 # about: Enables AI modules features in Discourse
+# meta_topic_id: 259214
 # version: 0.0.1
 # authors: Discourse
 # url: https://meta.discourse.org/t/discourse-ai/259214
