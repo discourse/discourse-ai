@@ -99,6 +99,18 @@ en:
     prompt_message_length: The message %{idx} is over the 1000 character limit.
     invalid_prompt_role: The message %{idx} has an invalid role.
 
+  reports:
+    overall_sentiment:
+      title: "Overall sentiment"
+      description: "The average percentage of positive and negative sentiments in public posts."
+      xaxis: "Positive(%)"
+      yaxis: "Date"
+    post_emotion:
+      title: "Post emotion"
+      description: "The average percentage of emotions present in public posts grouped by the poster's trust level."
+      xaxis:
+      yaxis:
+
   discourse_ai:
     ai_helper:
       errors:
@@ -172,3 +184,19 @@ en:
       configuration_hint:
         one: "Configure the `%{setting}` setting first."
         other: "Configure these settings first: %{settings}"
+  
+    sentiment:
+      reports:
+        overall_sentiment:
+          positive: "Positive"
+          negative: "Negative"
+        post_emotion:
+          tl_01: "Trust levels 0-1"
+          tl_234: "Trust levels 2+"
+          sadness: "Sadness"
+          surprise: "Surprise"
+          neutral: "Neutral"
+          fear: "Fear"
+          anger: "Anger"
+          joy: "Joy"
+          disgust: "Disgust"

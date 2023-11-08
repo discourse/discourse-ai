@@ -21,6 +21,10 @@ register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
 
+register_asset "stylesheets/modules/sentiment/common/dashboard.scss"
+register_asset "stylesheets/modules/sentiment/desktop/dashboard.scss", :desktop
+register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
+
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
 end

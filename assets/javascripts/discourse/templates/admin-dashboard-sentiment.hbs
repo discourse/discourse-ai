@@ -1,0 +1,39 @@
+<div class="sentiment section">
+  <div class="period-section">
+    <div class="section-title">
+      <h2>
+        {{i18n "discourse_ai.sentiments.dashboard.title"}}
+      </h2>
+      <span>
+        <PeriodChooser
+          @period={{this.period}}
+          @action={{action "changePeriod"}}
+          @content={{this.availablePeriods}}
+          @fullDay={{false}}
+        />
+        <DButton
+          @icon="cog"
+          class="custom-date-range-button"
+          @action={{this.openCustomDateRangeModal}}
+          @title="admin.dashboard.custom_date_range"
+        />
+      </span>
+    </div>
+  </div>
+
+  <div class="section-body">
+    <div class="charts">
+      <AdminReport
+        @dataSourceName="overall_sentiment"
+        @filters={{this.filters}}
+        @showHeader={{true}}
+      />
+
+      <AdminReport
+        @dataSourceName="post_emotion"
+        @filters={{this.filters}}
+        @showHeader={{true}}
+      />
+    </div>
+  </div>
+</div>
