@@ -121,6 +121,19 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
         expect(tl_01_point[:y]).to eq(emotion_1[tl_01_point[:x].downcase.to_sym])
         expect(tl_234_point[:y]).to eq(emotion_2[tl_234_point[:x].downcase.to_sym])
       end
+
+      it "doesn't try to divide by zero if there are no data in a TL group" do
+        post_1.user.update!(trust_level: TrustLevel[3])
+        post_2.user.update!(trust_level: TrustLevel[3])
+
+        emotion_classification(post_1, emotion_1)
+        emotion_classification(post_2, emotion_2)
+
+        report = Report.find("post_emotion")
+        tl_01_point = report.data[0][:data].first
+
+        expect(tl_01_point[:y]).to be_zero
+      end
     end
   end
 end

@@ -103,7 +103,7 @@ module DiscourseAi
                       y:
                         tl_emotion_avgs.sum do |tl_emotion_avg|
                           tl_emotion_avg.public_send("avg_#{e}").to_i
-                        end / tl_emotion_avgs.size,
+                        end / [tl_emotion_avgs.size, 1].max,
                     }
                   end,
               }
