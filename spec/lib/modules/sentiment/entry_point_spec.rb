@@ -94,13 +94,13 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
       let(:emotion_2) do
         { sadness: 19, surprise: 63, neutral: 45, fear: 44, anger: 27, joy: 62, disgust: 30 }
       end
-      let(:classification_type) { "emotion" }
+      let(:model_used) { "emotion" }
 
       def emotion_classification(post, classification)
         Fabricate(
           :sentiment_classification,
           target: post,
-          classification_type: classification_type,
+          model_used: model_used,
           classification: classification,
         )
       end
