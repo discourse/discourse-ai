@@ -36,7 +36,7 @@ module DiscourseAi
             WHERE
               t.archetype = 'regular' AND
               p.user_id > 0 AND
-              cr.classification_type = 'sentiment' AND
+              cr.model_used = 'sentiment' AND
               (p.created_at > :report_start AND p.created_at < :report_end)
             GROUP BY DATE_TRUNC('day', p.created_at)
           SQL
@@ -80,7 +80,7 @@ module DiscourseAi
             WHERE
               t.archetype = 'regular' AND
               p.user_id > 0 AND
-              cr.classification_type = 'emotion' AND
+              cr.model_used = 'emotion' AND
               (p.created_at > :report_start AND p.created_at < :report_end)
             GROUP BY u.trust_level
           SQL
