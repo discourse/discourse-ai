@@ -21,13 +21,21 @@ module DiscourseAi
 
         plugin.add_report("overall_sentiment") do |report|
           report.modes = [:stacked_chart]
+          threshold = 60
+
+          sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
+            COUNT(
+              CASE WHEN (cr.classification::jsonb->'#{sentiment}')::integer > :threshold THEN 1 ELSE NULL END
+            ) AS #{sentiment}_count
+          SQL
 
           grouped_sentiments =
-            DB.query(<<~SQL, report_start: report.start_date, report_end: report.end_date)
+            DB.query(
+              <<~SQL,
             SELECT 
               DATE_TRUNC('day', p.created_at)::DATE AS posted_at,
-              AVG((cr.classification::jsonb->'positive')::integer) AS avg_positive,
-              -AVG((cr.classification::jsonb->'negative')::integer) AS avg_negative
+              #{sentiment_count_sql.call("positive")},
+              -#{sentiment_count_sql.call("negative")}
             FROM 
               classification_results AS cr
             INNER JOIN posts p ON p.id = cr.target_id AND cr.target_type = 'Post'
@@ -40,8 +48,14 @@ module DiscourseAi
               (p.created_at > :report_start AND p.created_at < :report_end)
             GROUP BY DATE_TRUNC('day', p.created_at)
           SQL
+              report_start: report.start_date,
+              report_end: report.end_date,
+              threshold: threshold,
+            )
 
           data_points = %w[positive negative]
+
+          return report if grouped_sentiments.empty?
 
           report.data =
             data_points.map do |point|
@@ -51,7 +65,7 @@ module DiscourseAi
                 label: I18n.t("discourse_ai.sentiment.reports.overall_sentiment.#{point}"),
                 data:
                   grouped_sentiments.map do |gs|
-                    { x: gs.posted_at, y: gs.public_send("avg_#{point}") }
+                    { x: gs.posted_at, y: gs.public_send("#{point}_count") }
                   end,
               }
             end
@@ -59,18 +73,25 @@ module DiscourseAi
 
         plugin.add_report("post_emotion") do |report|
           report.modes = [:radar]
+          threshold = 30
+
+          emotion_count_clause = Proc.new { |emotion| <<~SQL }
+            COUNT(
+              CASE WHEN (cr.classification::jsonb->'#{emotion}')::integer > :threshold THEN 1 ELSE NULL END
+            ) AS #{emotion}_count
+          SQL
 
           grouped_emotions =
-            DB.query(<<~SQL, report_start: report.start_date, report_end: report.end_date)
+            DB.query(
+              <<~SQL,
             SELECT 
               u.trust_level AS trust_level,
-              AVG((cr.classification::jsonb->'sadness')::integer) AS avg_sadness,
-              AVG((cr.classification::jsonb->'surprise')::integer) AS avg_surprise,
-              AVG((cr.classification::jsonb->'neutral')::integer) AS avg_neutral,
-              AVG((cr.classification::jsonb->'fear')::integer) AS avg_fear,
-              AVG((cr.classification::jsonb->'anger')::integer) AS avg_anger,
-              AVG((cr.classification::jsonb->'joy')::integer) AS avg_joy,
-              AVG((cr.classification::jsonb->'disgust')::integer) AS avg_disgust
+              #{emotion_count_clause.call("sadness")},
+              #{emotion_count_clause.call("surprise")},
+              #{emotion_count_clause.call("fear")},
+              #{emotion_count_clause.call("anger")},
+              #{emotion_count_clause.call("joy")},
+              #{emotion_count_clause.call("disgust")}
             FROM
               classification_results AS cr
             INNER JOIN posts p ON p.id = cr.target_id AND cr.target_type = 'Post'
@@ -84,9 +105,15 @@ module DiscourseAi
               (p.created_at > :report_start AND p.created_at < :report_end)
             GROUP BY u.trust_level
           SQL
+              report_start: report.start_date,
+              report_end: report.end_date,
+              threshold: threshold,
+            )
 
-          emotions = %w[sadness surprise neutral fear anger joy disgust]
+          emotions = %w[sadness surprise fear anger joy disgust]
           level_groups = [[0, 1], [2, 3, 4]]
+
+          return report if grouped_emotions.empty?
 
           report.data =
             level_groups.each_with_index.map do |lg, idx|
@@ -102,8 +129,8 @@ module DiscourseAi
                       x: I18n.t("discourse_ai.sentiment.reports.post_emotion.#{e}"),
                       y:
                         tl_emotion_avgs.sum do |tl_emotion_avg|
-                          tl_emotion_avg.public_send("avg_#{e}").to_i
-                        end / [tl_emotion_avgs.size, 1].max,
+                          tl_emotion_avg.public_send("#{e}_count").to_i
+                        end,
                     }
                   end,
               }

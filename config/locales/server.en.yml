@@ -102,12 +102,12 @@ en:
   reports:
     overall_sentiment:
       title: "Overall sentiment"
-      description: "The average percentage of positive and negative sentiments in public posts."
+      description: "This chart compares the number of posts classified either positive or negative."
       xaxis: "Positive(%)"
       yaxis: "Date"
     post_emotion:
       title: "Post emotion"
-      description: "The average percentage of emotions present in public posts grouped by the poster's trust level."
+      description: "Number of posts classified with one of the following emotions, grouped by poster's trust level."
       xaxis:
       yaxis:
 

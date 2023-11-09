@@ -62,7 +62,7 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
 
     describe "overall_sentiment report" do
       let(:positive_classification) { { negative: 2, neutral: 30, positive: 70 } }
-      let(:negative_classification) { { negative: 60, neutral: 2, positive: 10 } }
+      let(:negative_classification) { { negative: 65, neutral: 2, positive: 10 } }
 
       def sentiment_classification(post, classification)
         Fabricate(:sentiment_classification, target: post, classification: classification)
@@ -73,17 +73,12 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
         sentiment_classification(post_2, negative_classification)
         sentiment_classification(pm, positive_classification)
 
-        expected_positive =
-          (positive_classification[:positive] + negative_classification[:positive]) / 2
-        expected_negative =
-          -(positive_classification[:negative] + negative_classification[:negative]) / 2
-
         report = Report.find("overall_sentiment")
         positive_data_point = report.data[0][:data].first[:y].to_i
         negative_data_point = report.data[1][:data].first[:y].to_i
 
-        expect(positive_data_point).to eq(expected_positive)
-        expect(negative_data_point).to eq(expected_negative)
+        expect(positive_data_point).to eq(1)
+        expect(negative_data_point).to eq(-1)
       end
     end
 
@@ -109,17 +104,25 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
         post_1.user.update!(trust_level: TrustLevel[0])
         post_2.user.update!(trust_level: TrustLevel[3])
         pm.user.update!(trust_level: TrustLevel[0])
+        threshold = 30
 
         emotion_classification(post_1, emotion_1)
         emotion_classification(post_2, emotion_2)
         emotion_classification(pm, emotion_2)
 
         report = Report.find("post_emotion")
-        tl_01_point = report.data[0][:data].first
-        tl_234_point = report.data[1][:data].first
+        tl_01_point = report.data[0][:data]
+        tl_234_point = report.data[1][:data]
 
-        expect(tl_01_point[:y]).to eq(emotion_1[tl_01_point[:x].downcase.to_sym])
-        expect(tl_234_point[:y]).to eq(emotion_2[tl_234_point[:x].downcase.to_sym])
+        tl_01_point.each do |point|
+          expected = emotion_1[point[:x].downcase.to_sym] > threshold ? 1 : 0
+          expect(point[:y]).to eq(expected)
+        end
+
+        tl_234_point.each do |point|
+          expected = emotion_2[point[:x].downcase.to_sym] > threshold ? 1 : 0
+          expect(point[:y]).to eq(expected)
+        end
       end
 
       it "doesn't try to divide by zero if there are no data in a TL group" do
