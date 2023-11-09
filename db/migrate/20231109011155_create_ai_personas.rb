@@ -6,7 +6,7 @@ class CreateAiPersonas < ActiveRecord::Migration[7.0]
       t.string :name, null: false, unique: true, limit: 100
       t.string :description, null: false, limit: 2000
       t.string :commands, array: true, default: [], null: false
-      t.string :system_prompt, null: false, limit: 1_000_000
+      t.string :system_prompt, null: false, limit: 10_000_000
       t.integer :allowed_group_ids, array: true, default: [], null: false
       t.timestamps
     end
