@@ -35,7 +35,7 @@ export default class SemanticSearch extends Component {
               class="semantic-search__results-toggle"
               {{on "click" this.toggleAIResults}}
             />
-            
+
             <div class="semantic-search__searching-text">
               {{icon "discourse-sparkles"}}
               {{this.searchStateText}}

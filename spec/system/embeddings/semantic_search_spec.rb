@@ -25,5 +25,4 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       # TODO: Allow semantic search to be performed correctly in spec.
     end
   end
-
 end
