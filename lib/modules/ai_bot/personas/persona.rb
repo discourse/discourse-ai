@@ -19,7 +19,7 @@ module DiscourseAi
         if user
           personas.concat(
             AiPersona.all_personas.filter do |persona|
-              (persona.allowed_group_ids & user.group_ids).length > 0
+              user.in_any_groups?(persona.allowed_group_id)
             end,
           )
         end

@@ -34,9 +34,7 @@ module DiscourseAi::AiBot::Personas
       topic
     end
 
-    fab! :user do
-      Fabricate(:user)
-    end
+    fab!(:user) { Fabricate(:user) }
 
     it "can disable commands via constructor" do
       persona = TestPersona.new(allow_commands: false)

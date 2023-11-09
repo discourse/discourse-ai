@@ -42,16 +42,13 @@ class AiPersona < ActiveRecord::Base
       system_prompt = ai_persona.system_prompt
       allowed_group_ids = ai_persona.allowed_group_ids
       commands =
-        ai_persona
-          .commands
-          .map do |inner_name|
-            begin
-              ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
-            rescue StandardError
-              nil
-            end
+        ai_persona.commands.filter_map do |inner_name|
+          begin
+            ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
+          rescue StandardError
+            nil
           end
-          .compact
+        end
 
       Class.new(DiscourseAi::AiBot::Personas::Persona) do
         define_singleton_method :name do
