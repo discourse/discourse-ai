@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 class AiPersona < ActiveRecord::Base
+  # places a hard limit, so per site we cache a maximum of 500 classes
+  MAX_PERSONAS_PER_SITE = 500
+
   class MultisiteHash
     def initialize(id)
-      @hash = Hash.new({})
+      @hash = Hash.new { |h, k| h[k] = {} }
       @id = id
 
       MessageBus.subscribe(channel_name) { |message| @hash[message.data] = {} }
@@ -36,42 +39,59 @@ class AiPersona < ActiveRecord::Base
   end
 
   def self.all_personas
-    persona_cache[:value] ||= AiPersona.all.map do |ai_persona|
-      name = ai_persona.name
-      description = ai_persona.description
-      system_prompt = ai_persona.system_prompt
-      allowed_group_ids = ai_persona.allowed_group_ids
-      commands =
-        ai_persona.commands.filter_map do |inner_name|
-          begin
-            ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
-          rescue StandardError
-            nil
+    persona_cache[:value] ||= AiPersona
+      .order(:name)
+      .all
+      .limit(MAX_PERSONAS_PER_SITE)
+      .map do |ai_persona|
+        name = ai_persona.name
+        description = ai_persona.description
+        ai_persona_id = ai_persona.id
+        allowed_group_ids = ai_persona.allowed_group_ids
+        commands =
+          ai_persona.commands.filter_map do |inner_name|
+            begin
+              ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
+            rescue StandardError
+              nil
+            end
+          end
+
+        Class.new(DiscourseAi::AiBot::Personas::Persona) do
+          define_singleton_method :name do
+            name
+          end
+
+          define_singleton_method :description do
+            description
+          end
+
+          define_singleton_method :allowed_group_ids do
+            allowed_group_ids
+          end
+
+          define_singleton_method :to_s do
+            "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
+          end
+
+          define_singleton_method :inspect do
+            "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
+          end
+
+          define_method :initialize do |*args, **kwargs|
+            @ai_persona = AiPersona.find_by(id: ai_persona_id)
+            super(*args, **kwargs)
+          end
+
+          define_method :commands do
+            commands
+          end
+
+          define_method :system_prompt do
+            @ai_persona&.system_prompt || "You are a helpful bot."
           end
         end
-
-      Class.new(DiscourseAi::AiBot::Personas::Persona) do
-        define_singleton_method :name do
-          name
-        end
-
-        define_singleton_method :description do
-          description
-        end
-
-        define_singleton_method :allowed_group_ids do
-          allowed_group_ids
-        end
-
-        define_method :commands do
-          commands
-        end
-
-        define_method :system_prompt do
-          system_prompt
-        end
       end
-    end
   end
 
   after_commit :bump_cache
