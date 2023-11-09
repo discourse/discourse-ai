@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # name: discourse-ai
-# about: Enables AI modules features in Discourse
+# about: Enables integration between AI modules and features in Discourse
 # meta_topic_id: 259214
 # version: 0.0.1
 # authors: Discourse
