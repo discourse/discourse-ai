@@ -3,7 +3,7 @@
 module DiscourseAi
   module AiBot
     module Personas
-      def self.all
+      def self.all(user: nil)
         personas = [Personas::General, Personas::SqlHelper]
         personas << Personas::Artist if SiteSetting.ai_stability_api_key.present?
         personas << Personas::SettingsExplorer
@@ -11,7 +11,20 @@ module DiscourseAi
         personas << Personas::Creative
 
         personas_allowed = SiteSetting.ai_bot_enabled_personas.split("|")
-        personas.filter { |persona| personas_allowed.include?(persona.to_s.demodulize.underscore) }
+        personas =
+          personas.filter do |persona|
+            personas_allowed.include?(persona.to_s.demodulize.underscore)
+          end
+
+        if user
+          personas.concat(
+            AiPersona.all_personas.filter do |persona|
+              user.in_any_groups?(persona.allowed_group_ids)
+            end,
+          )
+        end
+
+        personas
       end
 
       class Persona

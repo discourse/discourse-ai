@@ -116,7 +116,9 @@ module DiscourseAi
         @persona = DiscourseAi::AiBot::Personas::General.new(allow_commands: allow_commands)
         if persona_name = post.topic.custom_fields["ai_persona"]
           persona_class =
-            DiscourseAi::AiBot::Personas.all.find { |current| current.name == persona_name }
+            DiscourseAi::AiBot::Personas
+              .all(user: post.user)
+              .find { |current| current.name == persona_name }
           @persona = persona_class.new(allow_commands: allow_commands) if persona_class
         end
 

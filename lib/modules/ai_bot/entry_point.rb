@@ -74,7 +74,9 @@ module DiscourseAi
               scope.user.in_any_groups?(SiteSetting.ai_bot_allowed_groups_map)
           end,
         ) do
-          Personas.all.map { |persona| { name: persona.name, description: persona.description } }
+          Personas
+            .all(user: scope.user)
+            .map { |persona| { name: persona.name, description: persona.description } }
         end
 
         plugin.add_to_serializer(
