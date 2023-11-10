@@ -56,6 +56,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
             params: {
               ai_persona: {
                 name: "SuperBot",
+                enabled: false,
               },
             }
 
@@ -64,6 +65,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
         ai_persona.reload
         expect(ai_persona.name).to eq("SuperBot")
+        expect(ai_persona.enabled).to eq(false)
       end
     end
 
