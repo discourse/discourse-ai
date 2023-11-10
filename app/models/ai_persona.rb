@@ -41,6 +41,7 @@ class AiPersona < ActiveRecord::Base
   def self.all_personas
     persona_cache[:value] ||= AiPersona
       .order(:name)
+      .where(enabled: true)
       .all
       .limit(MAX_PERSONAS_PER_SITE)
       .map do |ai_persona|

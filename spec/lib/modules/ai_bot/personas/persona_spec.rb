@@ -103,6 +103,13 @@ module DiscourseAi::AiBot::Personas
         custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
         expect(custom_persona.name).to eq("pun_bot2")
 
+        # can be disabled
+        persona.update!(enabled: false)
+        last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        expect(last_persona.name).not_to eq("pun_bot2")
+
+        persona.update!(enabled: true)
+        # no groups have access
         persona.update!(allowed_group_ids: [])
 
         last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
