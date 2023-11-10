@@ -110,7 +110,7 @@ module DiscourseAi
               threshold: threshold,
             )
 
-          emotions = %w[sadness surprise fear anger joy disgust]
+          emotions = %w[sadness disgust fear anger joy surprise]
           level_groups = [[0, 1], [2, 3, 4]]
 
           return report if grouped_emotions.empty?
