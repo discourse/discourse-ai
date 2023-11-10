@@ -26,4 +26,12 @@ Discourse::Application.routes.draw do
 
   get "admin/dashboard/sentiment" => "discourse_ai/admin/dashboard#sentiment",
       :constraints => StaffConstraint.new
+
+  # long term we may want to give access to more people
+  # but this is a start
+  scope "/admin/plugins/ai", constraints: AdminConstraint.new do
+    resources :ai_personas,
+              only: %i[index create show update destroy],
+              controller: "discourse_ai/admin/ai_personas"
+  end
 end

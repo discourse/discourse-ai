@@ -4,6 +4,10 @@ class AiPersona < ActiveRecord::Base
   # places a hard limit, so per site we cache a maximum of 500 classes
   MAX_PERSONAS_PER_SITE = 500
 
+  validates :name, presence: true, uniqueness: true, length: { maximum: 100 }
+  validates :description, presence: true, length: { maximum: 2000 }
+  validates :system_prompt, presence: true
+
   class MultisiteHash
     def initialize(id)
       @hash = Hash.new { |h, k| h[k] = {} }
