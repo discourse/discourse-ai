@@ -70,6 +70,9 @@ fi:
   errors:
     prompt_message_length: Viesti %{idx} ylittää 1 000 merkin rajan.
     invalid_prompt_role: Viestillä %{idx} on virheellinen rooli.
+  reports:
+    overall_sentiment:
+      yaxis: "Päivämäärä"
   discourse_ai:
     ai_helper:
       errors:
@@ -109,3 +112,7 @@ fi:
       configuration_hint:
         one: "Määritä ensin %{setting}-asetus."
         other: "Määritä ensin nämä asetukset: %{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutraali"

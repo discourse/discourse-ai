@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 zh_TW:
+  reports:
+    overall_sentiment:
+      yaxis: "日期"
+  discourse_ai:
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "中性"

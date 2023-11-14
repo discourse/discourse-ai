@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 vi:
+  reports:
+    overall_sentiment:
+      yaxis: "Ngày"

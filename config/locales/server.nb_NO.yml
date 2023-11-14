@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 nb_NO:
+  reports:
+    overall_sentiment:
+      yaxis: "Dato"

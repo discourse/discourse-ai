@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 ko:
+  reports:
+    overall_sentiment:
+      yaxis: "날짜"
+  discourse_ai:
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "중립국"

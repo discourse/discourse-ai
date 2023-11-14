@@ -70,6 +70,9 @@ ar:
   errors:
     prompt_message_length: تتجاوز الرسالة الحد الأقصى لعدد الحروف، والبالغ 1000 حرف، بمقدار %{idx}.
     invalid_prompt_role: تنطوي الرسالة %{idx} على دور غير صالح.
+  reports:
+    overall_sentiment:
+      yaxis: "التاريخ"
   discourse_ai:
     ai_helper:
       errors:
@@ -129,3 +132,7 @@ ar:
         few: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
         many: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
         other: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "محايد"

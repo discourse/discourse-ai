@@ -70,6 +70,9 @@ nl:
   errors:
     prompt_message_length: Het bericht %{idx} is langer dan de limiet van 1000 tekens.
     invalid_prompt_role: Het bericht %{idx} heeft een ongeldige rol.
+  reports:
+    overall_sentiment:
+      yaxis: "Datum"
   discourse_ai:
     ai_helper:
       errors:
@@ -109,3 +112,7 @@ nl:
       configuration_hint:
         one: "Configureer eerst de instelling '%{setting}'."
         other: "Configureer eerst deze instellingen: '%{settings}'."
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutraal"

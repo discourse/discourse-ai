@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 bs_BA:
+  reports:
+    overall_sentiment:
+      yaxis: "Datum"

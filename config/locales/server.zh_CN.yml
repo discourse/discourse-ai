@@ -70,6 +70,9 @@ zh_CN:
   errors:
     prompt_message_length: 消息 %{idx} 超过 1000 个字符限制。
     invalid_prompt_role: 消息 %{idx} 的角色无效。
+  reports:
+    overall_sentiment:
+      yaxis: "日期"
   discourse_ai:
     ai_helper:
       errors:
@@ -104,3 +107,7 @@ zh_CN:
     summarization:
       configuration_hint:
         other: "首先配置这些设置：%{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "中性"

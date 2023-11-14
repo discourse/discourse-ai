@@ -92,6 +92,15 @@ he:
   errors:
     prompt_message_length: ההודעה %{idx} חורגת ממגבלת 1000 התווים.
     invalid_prompt_role: להודעה %{idx} יש תפקיד שגוי.
+  reports:
+    overall_sentiment:
+      title: "רגש כללי"
+      description: "התרשים הזה משווה בין מספר הפוסטים שסווגו כחיוביים מול השליליים."
+      xaxis: "חיובי(%)"
+      yaxis: "תאריך"
+    post_emotion:
+      title: "רגש הפוסט"
+      description: "מספר הפוסטים שסווגו עם אחד הרגשות הבאים, מקובצים לפי דרגות אמון המפרסמים."
   discourse_ai:
     ai_helper:
       errors:
@@ -175,3 +184,18 @@ he:
         two: "יש להגדיר את ההגדרות האלו תחילה: %{settings}."
         many: "יש להגדיר את ההגדרות האלו תחילה: %{settings}."
         other: "יש להגדיר את ההגדרות האלו תחילה: %{settings}."
+    sentiment:
+      reports:
+        overall_sentiment:
+          positive: "חיובי"
+          negative: "שלילי"
+        post_emotion:
+          tl_01: "דרגות אמון 0‏-1"
+          tl_234: "דרגות אמון 2‎+‎"
+          sadness: "עצב"
+          surprise: "הפתעה"
+          neutral: "נייטרלי"
+          fear: "פחד"
+          anger: "כעס"
+          joy: "הנאה"
+          disgust: "גועל"
