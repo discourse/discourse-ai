@@ -8,14 +8,21 @@ import Group from "discourse/models/group";
 import I18n from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
 import AiCommandSelector from "discourse/plugins/discourse-ai/discourse/components/ai-command-selector";
+import { tracked } from "@glimmer/tracking";
 
 export default class PersonaEditor extends Component {
   @service store;
   @service dialog;
 
+  @tracked allGroups = [];
+
   constructor() {
     super(...arguments);
     this.model = this.args.model || this.store.createRecord('ai-persona');
+
+    Group.findAll().then((groups) => {
+      this.allGroups = groups;
+    });
   }
 
   @action
@@ -41,14 +48,6 @@ export default class PersonaEditor extends Component {
     });
   }
 
-  async searchGroups(term) {
-    if (!term) {
-      return Promise.resolve([]);
-    }
-
-    return await Group.findAll({term});
-  }
-
   @action
   updateAllowedGroups(ids) {
     this.model.set("allowed_group_ids", ids);
@@ -71,10 +70,9 @@ export default class PersonaEditor extends Component {
     <div class="control-group">
       <label for="allowed_groups">{{I18n.t "discourse_ai.ai-persona.allowed_groups"}}</label>
       <GroupChooser
-          @value={{this.model.allowed_group_ids}}
-          @search={{this.searchGroups}}
-          @onChange={{this.updateAllowedGroups}}
-          @labelProperty="name"/>
+        @value={{this.model.allowed_group_ids}}
+        @content={{this.allGroups}}
+        @onChange={{this.updateAllowedGroups}} />
     </div>
     <div class="control-group">
       <label for="persona-editor__system_prompt">{{I18n.t "discourse_ai.ai-persona.system_prompt"}}</label>
