@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { Input } from "@ember/component";
 import { action } from "@ember/object";
+import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
 import Group from "discourse/models/group";
@@ -9,10 +10,11 @@ import GroupChooser from "select-kit/components/group-chooser";
 import AiCommandSelector from "discourse/plugins/discourse-ai/discourse/components/ai-command-selector";
 
 export default class PersonaEditor extends Component {
+  @service store;
 
   constructor() {
     super(...arguments);
-    this.model = this.args.model || arguments[0].__container__.lookup("service:store").createRecord('ai-persona');
+    this.model = this.args.model || this.store.createRecord('ai-persona');
   }
 
   @action
