@@ -49,6 +49,11 @@ export default class PersonaEditor extends Component {
     return Group.findAll({term});
   }
 
+  @action
+  updateAllowedGroups(ids) {
+    this.model.set("allowed_group_ids", ids);
+  }
+
   <template>
   <form class="form-horizontal persona-editor">
     <div class="control-group">
@@ -68,6 +73,9 @@ export default class PersonaEditor extends Component {
       <GroupChooser
           @value={{this.model.allowed_group_ids}}
           @search={{this.searchGroups}}
+          @valueProperty={{null}}
+          @nameProperty={{null}}
+          @onChange={{this.updateAllowedGroups}}
           @labelProperty="name"/>
     </div>
     <div class="control-group">
