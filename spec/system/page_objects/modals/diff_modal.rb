@@ -8,7 +8,7 @@ module PageObjects
       end
 
       def confirm_changes
-        find(".modal-footer button.confirm", wait: 5).click
+        find(".d-modal__footer button.confirm", wait: 5).click
       end
 
       def old_value
