@@ -13,11 +13,6 @@ export default class PersonaEditor extends Component {
   constructor() {
     super(...arguments);
     this.model = this.args.model;
-
-    Group.findAll().then((groups) => {
-      this.allGroups = groups;
-      this.rerender();
-    });
   }
 
   @action
@@ -27,6 +22,13 @@ export default class PersonaEditor extends Component {
         this.args.onSave();
       }
     });
+  }
+
+  searchGroups(term) {
+    if (!term) {
+      return Promise.resolve([]);
+    }
+    return Group.findAll({term});
   }
 
   <template>
@@ -47,7 +49,7 @@ export default class PersonaEditor extends Component {
       <label for="allowed_groups">{{I18n.t "discourse_ai.ai-persona.allowed_groups"}}</label>
       <GroupChooser
           @value={{this.model.allowed_group_ids}}
-          @content={{this.allGroups}}
+          @search={{this.searchGroups}}
           @labelProperty="name"/>
     </div>
     <div class="control-group">
