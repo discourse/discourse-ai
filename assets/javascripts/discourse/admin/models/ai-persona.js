@@ -8,6 +8,7 @@ export default class AiPersona extends RestModel {
       id: this.id,
       name: this.name,
       description: this.description,
+      commands: this.commands,
     };
   }
 

@@ -49,10 +49,10 @@ module DiscourseAi
           :name,
           :description,
           :enabled,
-          :allowed_group_ids,
-          :commands,
           :system_prompt,
           :enabled,
+          allowed_group_ids: [],
+          commands: [],
         )
       end
     end
