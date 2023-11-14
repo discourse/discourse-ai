@@ -153,7 +153,7 @@ export default class SemanticSearch extends Component {
             return Object.assign({}, post, { generatedByAI: true });
           });
 
-          this.args.outletArgs.addSearchResults(AIResults);
+          this.args.outletArgs.addSearchResults(AIResults, "topic_id");
           this.AIResults = AIResults;
       })
       .catch(popupAjaxError)
