@@ -46,7 +46,7 @@ export default class PersonaEditor extends Component {
       return Promise.resolve([]);
     }
 
-    await Group.findAll({term});
+    return await Group.findAll({term});
   }
 
   @action
