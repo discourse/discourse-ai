@@ -11,6 +11,7 @@ import AiCommandSelector from "discourse/plugins/discourse-ai/discourse/componen
 
 export default class PersonaEditor extends Component {
   @service store;
+  @service dialog;
 
   constructor() {
     super(...arguments);
@@ -23,6 +24,21 @@ export default class PersonaEditor extends Component {
       if (this.args.onSave) {
         this.args.onSave();
       }
+    });
+  }
+
+  @action
+
+  delete() {
+    return this.dialog.confirm({
+      message: I18n.t("discourse_ai.ai-persona.confirm_delete"),
+      didConfirm: () => {
+        return this.model.destroyRecord().then(() => {
+          if (this.args.onDelete) {
+            this.args.onDelete();
+          }
+        });
+      },
     });
   }
 
@@ -60,6 +76,7 @@ export default class PersonaEditor extends Component {
     </div>
     <div class="control-group">
       <DButton class="btn-primary" @action={{this.save}} >{{I18n.t "discourse_ai.ai-persona.save"}}</DButton>
+      <DButton @icon="far-trash-alt" @action={{this.delete}} class="btn-danger" />
     </div>
     </form>
   </template>

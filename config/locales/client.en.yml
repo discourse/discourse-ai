@@ -50,6 +50,7 @@ en:
         save: Save
         commands: Enabled Commands
         allowed_groups: Allowed Groups
+        confirm_delete: Are you sure you want to delete this persona?
 
       related_topics:
         title: "Related Topics"
