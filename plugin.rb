@@ -58,7 +58,6 @@ after_initialize do
   require_relative "lib/modules/ai_helper/entry_point"
   require_relative "lib/modules/embeddings/entry_point"
   require_relative "lib/modules/summarization/entry_point"
-  require_relative "lib/modules/ai_bot/entry_point"
   require_relative "lib/discourse_automation/llm_triage"
 
   [
