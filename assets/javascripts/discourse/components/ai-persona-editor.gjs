@@ -28,7 +28,6 @@ export default class PersonaEditor extends Component {
   }
 
   @action
-
   delete() {
     return this.dialog.confirm({
       message: I18n.t("discourse_ai.ai-persona.confirm_delete"),
@@ -42,11 +41,12 @@ export default class PersonaEditor extends Component {
     });
   }
 
-  searchGroups(term) {
+  async searchGroups(term) {
     if (!term) {
       return Promise.resolve([]);
     }
-    return Group.findAll({term});
+
+    await Group.findAll({term});
   }
 
   @action
@@ -73,8 +73,6 @@ export default class PersonaEditor extends Component {
       <GroupChooser
           @value={{this.model.allowed_group_ids}}
           @search={{this.searchGroups}}
-          @valueProperty={{null}}
-          @nameProperty={{null}}
           @onChange={{this.updateAllowedGroups}}
           @labelProperty="name"/>
     </div>
