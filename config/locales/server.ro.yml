@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 ro:
+  reports:
+    overall_sentiment:
+      yaxis: "Dată"

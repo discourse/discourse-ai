@@ -92,6 +92,15 @@ de:
   errors:
     prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.
     invalid_prompt_role: Die Nachricht %{idx} hat eine ungültige Rolle.
+  reports:
+    overall_sentiment:
+      title: "Allgemeine Stimmung"
+      description: "Diese Grafik vergleicht die Anzahl der Beiträge, die als positiv oder negativ eingestuft werden."
+      xaxis: "Positiv(%)"
+      yaxis: "Datum"
+    post_emotion:
+      title: "Emotionen posten"
+      description: "Anzahl der Beiträge, die mit einer der folgenden Emotionen klassifiziert wurden, gruppiert nach dem Vertrauenslevel des Posters."
   discourse_ai:
     ai_helper:
       errors:
@@ -163,3 +172,18 @@ de:
       configuration_hint:
         one: "Konfiguriere zunächst die Einstellung `%{setting}`."
         other: "Konfiguriere zunächst diese Einstellungen: %{settings}"
+    sentiment:
+      reports:
+        overall_sentiment:
+          positive: "Positiv"
+          negative: "Negativ"
+        post_emotion:
+          tl_01: "Vertrauensstufen 0-1"
+          tl_234: "Vertrauensstufen 2+"
+          sadness: "Traurigkeit"
+          surprise: "Überraschung"
+          neutral: "Neutral"
+          fear: "Furcht"
+          anger: "Wut"
+          joy: "Freude"
+          disgust: "Ekel"

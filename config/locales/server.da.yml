@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 da:
+  reports:
+    overall_sentiment:
+      yaxis: "Dato"
+  discourse_ai:
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutral"

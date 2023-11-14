@@ -70,6 +70,9 @@ pt_BR:
   errors:
     prompt_message_length: A mensagem %{idx} excede o limite de 1000 caracteres.
     invalid_prompt_role: A mensagem %{idx} tem uma função inválida.
+  reports:
+    overall_sentiment:
+      yaxis: "Data"
   discourse_ai:
     ai_helper:
       errors:
@@ -109,3 +112,7 @@ pt_BR:
       configuration_hint:
         one: "Defina a configuração \"%{setting}\" primeiro."
         other: "Defina estas configurações primeiro: %{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutro"

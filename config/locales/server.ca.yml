@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 ca:
+  reports:
+    overall_sentiment:
+      yaxis: "Data"
+  discourse_ai:
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutre"

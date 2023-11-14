@@ -5,3 +5,8 @@
 # https://translate.discourse.org/
 
 be:
+  discourse_ai:
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "нейтральны"

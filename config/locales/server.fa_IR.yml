@@ -7,6 +7,9 @@
 fa_IR:
   site_settings:
     discourse_ai_enabled: "افزونه discourse AI را فعال کنید."
+  reports:
+    overall_sentiment:
+      yaxis: "تاریخ"
   discourse_ai:
     ai_bot:
       command_summary:

@@ -70,6 +70,9 @@ tr_TR:
   errors:
     prompt_message_length: '%{idx} mesajı 1000 karakter sınırının üzerinde.'
     invalid_prompt_role: '%{idx} mesajının geçersiz bir rolü var.'
+  reports:
+    overall_sentiment:
+      yaxis: "Tarih"
   discourse_ai:
     ai_helper:
       errors:
@@ -109,3 +112,7 @@ tr_TR:
       configuration_hint:
         one: "Önce `%{setting}` ayarını yapılandırın"
         other: "Önce şu ayarları yapılandırın: %{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Nötr"
