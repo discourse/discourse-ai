@@ -9,6 +9,7 @@ export default class AiPersona extends RestModel {
       name: this.name,
       description: this.description,
       commands: this.commands,
+      system_prompt: this.system_prompt,
     };
   }
 
