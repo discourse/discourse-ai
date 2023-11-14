@@ -1,6 +1,6 @@
 import RestModel from "discourse/models/rest";
 
-const ATTRIBUTES = ["name", "description"];
+const ATTRIBUTES = ["name", "description", "commands", "system_prompt"];
 
 export default class AiPersona extends RestModel {
   updateProperties() {
