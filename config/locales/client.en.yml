@@ -39,8 +39,17 @@ en:
               description: "Either gpt-4 or gpt-3-5-turbo or claude-2"
 
     discourse_ai:
+      title: "AI"
       modals:
         select_option: "Select an option..."
+
+      ai-persona:
+        name: Name
+        description: Description
+        system_prompt: System Prompt
+        save: Save
+        commands: Enabled Commands
+        allowed_groups: Allowed Groups
 
       related_topics:
         title: "Related Topics"

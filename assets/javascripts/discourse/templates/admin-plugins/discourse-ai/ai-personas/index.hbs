@@ -1,0 +1,12 @@
+{{#each this.model as |aiPersona|}}
+  <div class="ai-persona">
+    <div class="ai-persona__content">
+      <h3 class="ai-persona__name">{{aiPersona.name}}</h3>
+      <p class="ai-persona__description">{{aiPersona.description}}</p>
+      <LinkTo
+        @route="adminPlugins.discourse-ai.ai-personas.show"
+        @model={{aiPersona}}
+      >edit</LinkTo>
+    </div>
+  </div>
+{{/each}}

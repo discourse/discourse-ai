@@ -17,6 +17,7 @@ enabled_site_setting :discourse_ai_enabled
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
+register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
 
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
@@ -60,6 +61,8 @@ after_initialize do
   require_relative "lib/modules/summarization/entry_point"
   require_relative "lib/modules/ai_bot/entry_point"
   require_relative "lib/discourse_automation/llm_triage"
+
+  add_admin_route "discourse_ai.title", "discourse-ai"
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,

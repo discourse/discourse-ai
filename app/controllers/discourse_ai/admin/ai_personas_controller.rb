@@ -11,7 +11,7 @@ module DiscourseAi
       end
 
       def show
-        render json: @ai_persona
+        render json: { ai_persona: @ai_persona }
       end
 
       def create
