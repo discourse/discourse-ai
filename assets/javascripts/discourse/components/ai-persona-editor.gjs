@@ -12,7 +12,7 @@ export default class PersonaEditor extends Component {
 
   constructor() {
     super(...arguments);
-    this.model = this.args.model;
+    this.model = this.args.model || arguments[0].__container__.lookup("service:store").createRecord('ai-persona');
   }
 
   @action
