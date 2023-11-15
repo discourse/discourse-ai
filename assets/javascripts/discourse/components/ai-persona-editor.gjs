@@ -1,20 +1,26 @@
 import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
+import DToggleSwitch from "discourse/components/d-toggle-switch";
 import Group from "discourse/models/group";
+import later from "discourse-common/lib/later";
 import I18n from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
-import AiCommandSelector from "discourse/plugins/discourse-ai/discourse/components/ai-command-selector";
-import { tracked } from "@glimmer/tracking";
+import AiCommandSelector from "./ai-command-selector";
+
 
 export default class PersonaEditor extends Component {
   @service store;
   @service dialog;
 
   @tracked allGroups = [];
+  @tracked isSaving = false;
+  @tracked justSaved = false;
 
   constructor() {
     super(...arguments);
@@ -25,12 +31,26 @@ export default class PersonaEditor extends Component {
     });
   }
 
+
+
   @action
   save() {
+    this.isSaving = true;
+
+    let start = Date.now();
+
     this.model.save().then(() => {
       if (this.args.onSave) {
         this.args.onSave();
       }
+    }).finally(() => {
+        later(() => {
+          this.isSaving = false;
+          this.justSaved = true;
+          later(() => {
+            this.justSaved = false;
+          }, 2000);
+        }, Math.max(0, 500 - (Date.now() - start)));
     });
   }
 
@@ -51,6 +71,11 @@ export default class PersonaEditor extends Component {
   @action
   updateAllowedGroups(ids) {
     this.model.set("allowed_group_ids", ids);
+  }
+
+  @action
+  toggleEnabled() {
+    this.model.set("enabled", !this.model.enabled);
   }
 
   <template>
@@ -79,8 +104,25 @@ export default class PersonaEditor extends Component {
       <Textarea class="persona-editor__system_prompt" @value={{this.model.system_prompt}} />
     </div>
     <div class="control-group">
-      <DButton class="btn-primary" @action={{this.save}} >{{I18n.t "discourse_ai.ai-persona.save"}}</DButton>
-      <DButton @icon="far-trash-alt" @action={{this.delete}} class="btn-danger" />
+      <DToggleSwitch
+        class="persona-editor__enabled"
+        @state={{this.model.enabled}}
+        @label="discourse_ai.ai-persona.enabled"
+        {{on "click" this.toggleEnabled}}
+        />
+    </div>
+    <div class="control-group persona-editor__action_panel">
+      <DButton
+        class="btn-primary persona-editor__save"
+        @action={{this.save}}
+        @disabled={{this.isSaving}}
+      >{{I18n.t "discourse_ai.ai-persona.save"}}</DButton>
+      {{#if this.justSaved}}
+        <span class="persona-editor__saved">
+          {{I18n.t "discourse_ai.ai-persona.saved"}}
+        </span>
+      {{/if}}
+      <DButton @icon="far-trash-alt" @action={{this.delete}} class="btn-danger persona-editor__delete" />
     </div>
     </form>
   </template>

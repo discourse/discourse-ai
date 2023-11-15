@@ -6,4 +6,17 @@
     width: 500px;
     height: 400px;
   }
+  &__action_panel {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    align-items: center;
+  }
+  &__save {
+    margin-right: 10px;
+    margin-left: 0;
+  }
+  &__delete {
+    margin-left: auto;
+  }
 }
