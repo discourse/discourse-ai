@@ -1,39 +1,21 @@
+.ai-persona-list-editor {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  &__current {
+    padding-left: 20px;
+  }
+}
+
 .ai-personas__container {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
   width: 100%;
-}
-
-.persona-viewer {
-  background-color: var(--primary-very-low);
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid var(--primary-low);
-  width: 400px;
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  &__name {
-    flex: 1;
-    margin-right: 10px;
-  }
-
-  .d-toggle-switch {
-    flex: 1;
-  }
 }
 
 .persona-editor {
@@ -43,18 +25,5 @@
   &__system_prompt {
     width: 500px;
     height: 400px;
-  }
-  &__action_panel {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    align-items: center;
-  }
-  &__save {
-    margin-right: 10px;
-    margin-left: 0;
-  }
-  &__delete {
-    margin-left: auto;
   }
 }

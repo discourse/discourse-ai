@@ -1,7 +1,1 @@
-<div class="ai-personas__container">
-  {{#each this.model as |aiPersona|}}
-    <AiPersonaViewer @model={{aiPersona}} />
-  {{/each}}
-</div>
-
-<LinkTo @route="adminPlugins.discourse-ai.ai-personas.new">new</LinkTo>
+<AiPersonaListEditor @personas={{this.model}} />

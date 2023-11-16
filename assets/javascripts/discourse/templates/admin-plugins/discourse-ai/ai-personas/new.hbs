@@ -1,3 +1,4 @@
-<LinkTo @route="adminPlugins.discourse-ai.ai-personas.index">All Personas</LinkTo>
-
-<AiPersonaEditor />
+<AiPersonaListEditor
+  @personas={{this.allPersonas}}
+  @currentPersona={{this.model}}
+/>

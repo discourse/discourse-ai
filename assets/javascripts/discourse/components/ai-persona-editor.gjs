@@ -24,14 +24,11 @@ export default class PersonaEditor extends Component {
 
   constructor() {
     super(...arguments);
-    this.model = this.args.model || this.store.createRecord('ai-persona');
 
     Group.findAll().then((groups) => {
       this.allGroups = groups;
     });
   }
-
-
 
   @action
   save() {
@@ -39,7 +36,7 @@ export default class PersonaEditor extends Component {
 
     let start = Date.now();
 
-    this.model.save().then(() => {
+    this.args.model.save().then(() => {
       if (this.args.onSave) {
         this.args.onSave();
       }
@@ -59,7 +56,7 @@ export default class PersonaEditor extends Component {
     return this.dialog.confirm({
       message: I18n.t("discourse_ai.ai-persona.confirm_delete"),
       didConfirm: () => {
-        return this.model.destroyRecord().then(() => {
+        return this.args.model.destroyRecord().then(() => {
           if (this.args.onDelete) {
             this.args.onDelete();
           }
@@ -70,46 +67,46 @@ export default class PersonaEditor extends Component {
 
   @action
   updateAllowedGroups(ids) {
-    this.model.set("allowed_group_ids", ids);
+    this.args.model.set("allowed_group_ids", ids);
   }
 
   @action
   toggleEnabled() {
-    this.model.set("enabled", !this.model.enabled);
+    this.args.model.set("enabled", !this.args.model.enabled);
   }
 
   <template>
   <form class="form-horizontal persona-editor">
     <div class="control-group">
+      <DToggleSwitch
+        class="persona-editor__enabled"
+        @state={{this.args.model.enabled}}
+        @label="discourse_ai.ai-persona.enabled"
+        {{on "click" this.toggleEnabled}}
+        />
+    </div>
+    <div class="control-group">
       <label for="name">{{I18n.t "discourse_ai.ai-persona.name"}}</label>
-      <Input @type="text" @value={{this.model.name}} />
+      <Input @type="text" @value={{this.args.model.name}} />
     </div>
     <div class="control-group">
       <label for="persona-editor__description">{{I18n.t "discourse_ai.ai-persona.description"}}</label>
-      <Textarea class="persona-editor__description" @value={{this.model.description}} />
+      <Textarea class="persona-editor__description" @value={{this.args.model.description}} />
     </div>
     <div class="control-group">
       <label for="persona-editor__commands">{{I18n.t "discourse_ai.ai-persona.commands"}}</label>
-      <AiCommandSelector class="persona-editor__commands" @value={{this.model.commands}} />
+      <AiCommandSelector class="persona-editor__commands" @value={{this.args.model.commands}} />
     </div>
     <div class="control-group">
       <label for="allowed_groups">{{I18n.t "discourse_ai.ai-persona.allowed_groups"}}</label>
       <GroupChooser
-        @value={{this.model.allowed_group_ids}}
+        @value={{this.args.model.allowed_group_ids}}
         @content={{this.allGroups}}
         @onChange={{this.updateAllowedGroups}} />
     </div>
     <div class="control-group">
       <label for="persona-editor__system_prompt">{{I18n.t "discourse_ai.ai-persona.system_prompt"}}</label>
-      <Textarea class="persona-editor__system_prompt" @value={{this.model.system_prompt}} />
-    </div>
-    <div class="control-group">
-      <DToggleSwitch
-        class="persona-editor__enabled"
-        @state={{this.model.enabled}}
-        @label="discourse_ai.ai-persona.enabled"
-        {{on "click" this.toggleEnabled}}
-        />
+      <Textarea class="persona-editor__system_prompt" @value={{this.args.model.system_prompt}} />
     </div>
     <div class="control-group persona-editor__action_panel">
       <DButton
@@ -122,7 +119,9 @@ export default class PersonaEditor extends Component {
           {{I18n.t "discourse_ai.ai-persona.saved"}}
         </span>
       {{/if}}
-      <DButton @icon="far-trash-alt" @action={{this.delete}} class="btn-danger persona-editor__delete" />
+      <DButton @action={{this.delete}} class="btn-danger persona-editor__delete">
+        {{I18n.t "discourse_ai.ai-persona.delete"}}
+      </DButton>
     </div>
     </form>
   </template>
