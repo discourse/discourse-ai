@@ -17,7 +17,7 @@ module DiscourseAi
       def create
         ai_persona = AiPersona.new(ai_persona_params)
         if ai_persona.save
-          render json: ai_persona, status: :created
+          render json: { ai_persona: ai_persona }, status: :created
         else
           render json: ai_persona.errors, status: :unprocessable_entity
         end
