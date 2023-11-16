@@ -70,6 +70,9 @@ ru:
   errors:
     prompt_message_length: Сообщение %{idx} превышает ограничение в 1000 символов.
     invalid_prompt_role: Для сообщения %{idx} указана недопустимая роль.
+  reports:
+    overall_sentiment:
+      yaxis: "Дата"
   discourse_ai:
     ai_helper:
       errors:
@@ -119,3 +122,7 @@ ru:
         few: "Сначала настройте следующие параметры: %{settings}"
         many: "Сначала настройте следующие параметры: %{settings}"
         other: "Сначала настройте следующие параметры: %{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Нейтральная"

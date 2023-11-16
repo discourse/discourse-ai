@@ -34,6 +34,8 @@ module DiscourseAi::AiBot::Personas
       topic
     end
 
+    fab!(:user) { Fabricate(:user) }
+
     it "can disable commands via constructor" do
       persona = TestPersona.new(allow_commands: false)
 
@@ -70,6 +72,49 @@ module DiscourseAi::AiBot::Personas
 
       expect(rendered).not_to include("!search")
       expect(rendered).not_to include("!tags")
+    end
+
+    describe "custom personas" do
+      it "is able to find custom personas" do
+        Group.refresh_automatic_groups!
+
+        # define an ai persona everyone can see
+        persona =
+          AiPersona.create!(
+            name: "pun_bot",
+            description: "you write puns",
+            system_prompt: "you are pun bot",
+            commands: ["ImageCommand"],
+            allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+          )
+
+        custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        expect(custom_persona.name).to eq("pun_bot")
+        expect(custom_persona.description).to eq("you write puns")
+
+        instance = custom_persona.new
+        expect(instance.commands).to eq([DiscourseAi::AiBot::Commands::ImageCommand])
+        expect(instance.render_system_prompt(render_function_instructions: true)).to eq(
+          "you are pun bot",
+        )
+
+        # should update
+        persona.update!(name: "pun_bot2")
+        custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        expect(custom_persona.name).to eq("pun_bot2")
+
+        # can be disabled
+        persona.update!(enabled: false)
+        last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        expect(last_persona.name).not_to eq("pun_bot2")
+
+        persona.update!(enabled: true)
+        # no groups have access
+        persona.update!(allowed_group_ids: [])
+
+        last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        expect(last_persona.name).not_to eq("pun_bot2")
+      end
     end
 
     describe "available personas" do

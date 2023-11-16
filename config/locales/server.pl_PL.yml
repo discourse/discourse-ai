@@ -70,6 +70,9 @@ pl_PL:
   errors:
     prompt_message_length: Wiadomość %{idx} przekracza limit 1000 znaków.
     invalid_prompt_role: Wiadomość %{idx} ma nieprawidłową rolę.
+  reports:
+    overall_sentiment:
+      yaxis: "Data"
   discourse_ai:
     ai_helper:
       errors:
@@ -115,3 +118,7 @@ pl_PL:
         few: "Najpierw skonfiguruj ustawienia: %{settings}"
         many: "Najpierw skonfiguruj ustawienia: %{settings}"
         other: "Najpierw skonfiguruj ustawienia: %{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutralne"

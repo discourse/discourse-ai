@@ -70,6 +70,9 @@ fr:
   errors:
     prompt_message_length: Le message %{idx} dépasse la limite de 1 000 caractères.
     invalid_prompt_role: Le message %{idx} a un rôle invalide.
+  reports:
+    overall_sentiment:
+      yaxis: "Date"
   discourse_ai:
     ai_helper:
       errors:
@@ -109,3 +112,7 @@ fr:
       configuration_hint:
         one: "Configurez d'abord le paramètre « %{setting} »."
         other: "Configurez d'abord ces paramètres : %{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutre"

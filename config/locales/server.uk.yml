@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 uk:
+  reports:
+    overall_sentiment:
+      yaxis: "Дата"
+  discourse_ai:
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Нейтральна"

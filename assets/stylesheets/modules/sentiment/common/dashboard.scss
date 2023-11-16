@@ -1,0 +1,16 @@
+.dashboard.dashboard-sentiment {
+  .sentiment {
+    margin-bottom: 1em;
+  }
+
+  .navigation-item.sentiment {
+    border-bottom: 0.4em solid var(--tertiary);
+  }
+
+  .charts {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+  }
+}

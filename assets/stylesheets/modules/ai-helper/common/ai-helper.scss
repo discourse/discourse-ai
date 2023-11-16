@@ -292,17 +292,13 @@
   position: relative;
 }
 
-// Prevent suggestion button from wrapping on smaller screens
-@media screen and (max-width: 768px) {
-  #reply-control .composer-fields.showing-ai-suggestions {
-    .category-input {
-      .category-chooser {
-        width: 10px;
-      }
-
-      + .mini-tag-chooser {
-        width: 10px;
-      }
+// Prevent suggestion button from wrapping
+#reply-control {
+  .with-category .showing-ai-suggestions .category-input,
+  .with-tags .showing-ai-suggestions .mini-tag-chooser {
+    flex-wrap: nowrap;
+    .select-kit {
+      max-width: calc(100% - 34px);
     }
   }
 }

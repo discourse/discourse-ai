@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "rails_helper"
+require_relative "../../../support/sentiment_inference_stubs"
 
-describe DiscourseAi::Sentiment::EntryPoint do
+RSpec.describe DiscourseAi::Sentiment::EntryPoint do
   fab!(:user) { Fabricate(:user) }
 
   describe "registering event callbacks" do
@@ -48,6 +48,94 @@ describe DiscourseAi::Sentiment::EntryPoint do
           Jobs::PostSentimentAnalysis.jobs,
           :size,
         )
+      end
+    end
+  end
+
+  describe "custom reports" do
+    before { SiteSetting.ai_sentiment_inference_service_api_endpoint = "http://test.com" }
+
+    fab!(:pm) { Fabricate(:private_message_post) }
+
+    fab!(:post_1) { Fabricate(:post) }
+    fab!(:post_2) { Fabricate(:post) }
+
+    describe "overall_sentiment report" do
+      let(:positive_classification) { { negative: 2, neutral: 30, positive: 70 } }
+      let(:negative_classification) { { negative: 65, neutral: 2, positive: 10 } }
+
+      def sentiment_classification(post, classification)
+        Fabricate(:sentiment_classification, target: post, classification: classification)
+      end
+
+      it "calculate averages using only public posts" do
+        sentiment_classification(post_1, positive_classification)
+        sentiment_classification(post_2, negative_classification)
+        sentiment_classification(pm, positive_classification)
+
+        report = Report.find("overall_sentiment")
+        positive_data_point = report.data[0][:data].first[:y].to_i
+        negative_data_point = report.data[1][:data].first[:y].to_i
+
+        expect(positive_data_point).to eq(1)
+        expect(negative_data_point).to eq(-1)
+      end
+    end
+
+    describe "post_emotion report" do
+      let(:emotion_1) do
+        { sadness: 49, surprise: 23, neutral: 6, fear: 34, anger: 87, joy: 22, disgust: 70 }
+      end
+      let(:emotion_2) do
+        { sadness: 19, surprise: 63, neutral: 45, fear: 44, anger: 27, joy: 62, disgust: 30 }
+      end
+      let(:model_used) { "emotion" }
+
+      def emotion_classification(post, classification)
+        Fabricate(
+          :sentiment_classification,
+          target: post,
+          model_used: model_used,
+          classification: classification,
+        )
+      end
+
+      it "calculate averages using only public posts" do
+        post_1.user.update!(trust_level: TrustLevel[0])
+        post_2.user.update!(trust_level: TrustLevel[3])
+        pm.user.update!(trust_level: TrustLevel[0])
+        threshold = 30
+
+        emotion_classification(post_1, emotion_1)
+        emotion_classification(post_2, emotion_2)
+        emotion_classification(pm, emotion_2)
+
+        report = Report.find("post_emotion")
+        tl_01_point = report.data[0][:data]
+        tl_234_point = report.data[1][:data]
+
+        tl_01_point.each do |point|
+          expected = emotion_1[point[:x].downcase.to_sym] > threshold ? 1 : 0
+          expect(point[:y]).to eq(expected)
+        end
+
+        tl_234_point.each do |point|
+          expected = emotion_2[point[:x].downcase.to_sym] > threshold ? 1 : 0
+          expect(point[:y]).to eq(expected)
+        end
+      end
+
+      it "doesn't try to divide by zero if there are no data in a TL group" do
+        post_1.user.update!(trust_level: TrustLevel[3])
+        post_2.user.update!(trust_level: TrustLevel[3])
+
+        emotion_classification(post_1, emotion_1)
+        emotion_classification(post_2, emotion_2)
+
+        report = Report.find("post_emotion")
+        tl_01_point = report.data[0][:data].first
+
+        expect(tl_01_point[:y]).to be_zero
       end
     end
   end

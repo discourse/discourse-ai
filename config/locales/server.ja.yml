@@ -70,6 +70,9 @@ ja:
   errors:
     prompt_message_length: メッセージ %{idx} は 1000 文字の上限を超えています。
     invalid_prompt_role: メッセージ %{idx} には無効な権限があります。
+  reports:
+    overall_sentiment:
+      yaxis: "日付"
   discourse_ai:
     ai_helper:
       errors:
@@ -104,3 +107,7 @@ ja:
     summarization:
       configuration_hint:
         other: "先に次の設定を構成します: %{settings}"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "ニュートラル"

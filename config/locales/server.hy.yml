@@ -5,3 +5,11 @@
 # https://translate.discourse.org/
 
 hy:
+  reports:
+    overall_sentiment:
+      yaxis: "Ամսաթիվ"
+  discourse_ai:
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Նեյտրալ"

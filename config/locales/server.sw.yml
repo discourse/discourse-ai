@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 sw:
+  reports:
+    overall_sentiment:
+      yaxis: "Tarehe"

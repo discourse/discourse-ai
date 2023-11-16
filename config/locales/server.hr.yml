@@ -5,3 +5,6 @@
 # https://translate.discourse.org/
 
 hr:
+  reports:
+    overall_sentiment:
+      yaxis: "Datum"

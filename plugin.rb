@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 # name: discourse-ai
-# about: Enables AI modules features in Discourse
+# about: Enables integration between AI modules and features in Discourse
+# meta_topic_id: 259214
 # version: 0.0.1
 # authors: Discourse
 # url: https://meta.discourse.org/t/discourse-ai/259214
@@ -19,6 +20,10 @@ register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
+
+register_asset "stylesheets/modules/sentiment/common/dashboard.scss"
+register_asset "stylesheets/modules/sentiment/desktop/dashboard.scss", :desktop
+register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
