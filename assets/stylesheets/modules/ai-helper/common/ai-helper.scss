@@ -326,6 +326,20 @@
   }
 
   &__suggestion {
-    padding: 1rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+
+    &__copy {
+      margin-top: 0.5rem;
+
+      .d-icon-check {
+        color: var(--success)
+      }
+    }
+
+    &__text {
+      padding: 0.5rem;
+    }
   }
 }
