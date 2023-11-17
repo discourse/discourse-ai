@@ -14,6 +14,7 @@ import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import icon from "discourse-common/helpers/d-icon";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { withPluginApi } from "discourse/lib/plugin-api";
 
 export default class SemanticSearch extends Component {
   <template>
@@ -21,12 +22,11 @@ export default class SemanticSearch extends Component {
       <div class="semantic-search__container search-results" role="region">
         <div
           class="semantic-search__results"
-          {{didInsert this.setup}}
-          {{didInsert this.debouncedSearch}}
-          {{willDestroy this.teardown}}
+          {{didInsert this.performHyDESearch}}
         >
           <div
-            class="semantic-search__searching {{if this.searching 'in-progress'}}"
+            class="semantic-search__searching
+              {{if this.searching 'in-progress'}}"
           >
             <DToggleSwitch
               disabled={{this.searching}}
@@ -61,7 +61,7 @@ export default class SemanticSearch extends Component {
   @service appEvents;
   @service siteSettings;
 
-  @tracked searching = true;
+  @tracked searching = false;
   @tracked AIResults = [];
   @tracked showingAIResults = false;
 
@@ -118,50 +118,31 @@ export default class SemanticSearch extends Component {
   }
 
   @action
-  setup() {
-    this.appEvents.on(
-      "full-page-search:trigger-search",
-      this,
-      "debouncedSearch"
-    );
-  }
-
-  @action
-  teardown() {
-    this.appEvents.off(
-      "full-page-search:trigger-search",
-      this,
-      "debouncedSearch"
-    );
-  }
-
-  @bind
   performHyDESearch() {
     if (!this.searchEnabled) {
       return;
     }
 
-    this.searching = true;
-    this.resetAIResults();
+    withPluginApi("1.15.0", (api) => {
+      api.onAppEvent("full-page-search:trigger-search", () => {
+        this.searching = true;
+        this.resetAIResults();
 
-    ajax("/discourse-ai/embeddings/semantic-search", {
-      data: { q: this.searchTerm },
-    })
-      .then(async (results) => {
-        const model = (await translateResults(results)) || {};
-          const AIResults = model.posts.map(function (post) {
-            return Object.assign({}, post, { generatedByAI: true });
-          });
+        ajax("/discourse-ai/embeddings/semantic-search", {
+          data: { q: this.searchTerm },
+        })
+          .then(async (results) => {
+            const model = (await translateResults(results)) || {};
+            const AIResults = model.posts.map(function (post) {
+              return Object.assign({}, post, { generatedByAI: true });
+            });
 
-          this.args.outletArgs.addSearchResults(AIResults, "topic_id");
-          this.AIResults = AIResults;
-      })
-      .catch(popupAjaxError)
-      .finally(() => (this.searching = false));
-  }
-
-  @action
-  debouncedSearch() {
-    discourseDebounce(this, this.performHyDESearch, 500);
+            this.args.outletArgs.addSearchResults(AIResults, "topic_id");
+            this.AIResults = AIResults;
+          })
+          .catch(popupAjaxError)
+          .finally(() => (this.searching = false));
+      });
+    });
   }
 }
