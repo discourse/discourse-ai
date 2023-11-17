@@ -4,7 +4,7 @@ module DiscourseAi
   module AiBot
     module Personas
       def self.system_personas
-        {
+        @system_personas ||= {
           Personas::General => -1,
           Personas::SqlHelper => -2,
           Personas::Artist => -3,
@@ -14,28 +14,28 @@ module DiscourseAi
         }
       end
 
-      def self.all(user: nil)
-        personas = [Personas::General, Personas::SqlHelper]
-        personas << Personas::Artist if SiteSetting.ai_stability_api_key.present?
-        personas << Personas::SettingsExplorer
-        personas << Personas::Researcher if SiteSetting.ai_google_custom_search_api_key.present?
-        personas << Personas::Creative
+      def self.system_personas_by_id
+        @system_personas_by_id ||= system_personas.invert
+      end
 
-        personas_allowed = SiteSetting.ai_bot_enabled_personas.split("|")
+      def self.all(user:)
         personas =
-          personas.filter do |persona|
-            personas_allowed.include?(persona.to_s.demodulize.underscore)
-          end
+          AiPersona.all_personas.filter { |persona| user.in_any_groups?(persona.allowed_group_ids) }
 
-        if user
-          personas.concat(
-            AiPersona.all_personas.filter do |persona|
-              user.in_any_groups?(persona.allowed_group_ids)
-            end,
+        # force non custom class for built in personas
+        # this mostly improves dev experience cause you don't need to run seeds to update prompts
+        personas.map! { |persona| system_personas_by_id[persona.id] || persona }
+
+        # this needs to be dynamic cause site settings may change
+        all_available_commands = Persona.all_available_commands
+
+        personas.filter do |persona|
+          instance = persona.new
+          (
+            instance.required_commands == [] ||
+              (instance.required_commands - all_available_commands).empty?
           )
         end
-
-        personas
       end
 
       class Persona
@@ -55,8 +55,13 @@ module DiscourseAi
           []
         end
 
+        def required_commands
+          []
+        end
+
         def render_commands(render_function_instructions:)
           return +"" if !@allow_commands
+          return +"" if available_commands.empty?
 
           result = +""
           if render_function_instructions
@@ -74,7 +79,6 @@ module DiscourseAi
             site_title: SiteSetting.title,
             site_description: SiteSetting.site_description,
             time: Time.zone.now,
-            commands: render_commands(render_function_instructions: render_function_instructions),
           }
 
           substitutions[:participants] = topic.allowed_users.map(&:username).join(", ") if topic
@@ -82,7 +86,7 @@ module DiscourseAi
           system_prompt.gsub(/\{(\w+)\}/) do |match|
             found = substitutions[match[1..-2].to_sym]
             found.nil? ? match : found.to_s
-          end
+          end + render_commands(render_function_instructions: render_function_instructions)
         end
 
         def available_commands
@@ -120,9 +124,7 @@ module DiscourseAi
           @function_list
         end
 
-        def all_available_commands
-          return @cmds if @cmds
-
+        def self.all_available_commands
           all_commands = [
             Commands::CategoriesCommand,
             Commands::TimeCommand,
@@ -138,8 +140,12 @@ module DiscourseAi
             all_commands << Commands::GoogleCommand
           end
 
-          allowed_commands = SiteSetting.ai_bot_enabled_chat_commands.split("|")
-          @cmds = all_commands.filter { |klass| allowed_commands.include?(klass.name) }
+          all_commands
+        end
+
+        def all_available_commands
+          return @cmds if @cmds
+          @cmds = self.class.all_available_commands
         end
       end
     end

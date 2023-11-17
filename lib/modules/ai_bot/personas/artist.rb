@@ -8,6 +8,10 @@ module DiscourseAi
           [Commands::ImageCommand]
         end
 
+        def required_commands
+          [Commands::ImageCommand]
+        end
+
         def system_prompt
           <<~PROMPT
             You are artistbot and you are here to help people generate images.
@@ -26,9 +30,6 @@ module DiscourseAi
             - When generating images, usually opt to generate 4 images unless the user specifies otherwise.
             - Be creative with your prompts, offer diverse options
             - You can use the seeds to regenerate the same image and amend the prompt keeping general style
-
-            {commands}
-
           PROMPT
         end
       end

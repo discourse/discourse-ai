@@ -49,6 +49,7 @@ class AiPersona < ActiveRecord::Base
       .all
       .limit(MAX_PERSONAS_PER_SITE)
       .map do |ai_persona|
+        id = ai_persona.id
         name = ai_persona.name
         description = ai_persona.description
         ai_persona_id = ai_persona.id
@@ -63,6 +64,10 @@ class AiPersona < ActiveRecord::Base
           end
 
         Class.new(DiscourseAi::AiBot::Personas::Persona) do
+          define_singleton_method :id do
+            id
+          end
+
           define_singleton_method :name do
             name
           end

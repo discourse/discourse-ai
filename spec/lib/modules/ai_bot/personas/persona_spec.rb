@@ -16,8 +16,6 @@ class TestPersona < DiscourseAi::AiBot::Personas::Persona
       {site_description}
       {participants}
       {time}
-
-      {commands}
     PROMPT
   end
 end
@@ -34,7 +32,7 @@ module DiscourseAi::AiBot::Personas
       topic
     end
 
-    fab!(:user) { Fabricate(:user) }
+    fab!(:user)
 
     it "can disable commands via constructor" do
       persona = TestPersona.new(allow_commands: false)
@@ -119,11 +117,14 @@ module DiscourseAi::AiBot::Personas
 
     describe "available personas" do
       it "includes all personas by default" do
+        Group.refresh_automatic_groups!
+
         # must be enabled to see it
         SiteSetting.ai_stability_api_key = "abc"
         SiteSetting.ai_google_custom_search_api_key = "abc"
+        SiteSetting.ai_google_custom_search_cx = "abc123"
 
-        expect(DiscourseAi::AiBot::Personas.all).to contain_exactly(
+        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
           General,
           SqlHelper,
           Artist,
@@ -131,21 +132,27 @@ module DiscourseAi::AiBot::Personas
           Researcher,
           Creative,
         )
-      end
 
-      it "does not include personas that require api keys by default" do
-        expect(DiscourseAi::AiBot::Personas.all).to contain_exactly(
+        # omits personas if key is missing
+        SiteSetting.ai_stability_api_key = ""
+        SiteSetting.ai_google_custom_search_api_key = ""
+
+        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
           General,
           SqlHelper,
           SettingsExplorer,
           Creative,
         )
-      end
 
-      it "can be modified via site settings" do
-        SiteSetting.ai_bot_enabled_personas = "general|sql_helper"
+        AiPersona.find(DiscourseAi::AiBot::Personas.system_personas[General]).update!(
+          enabled: false,
+        )
 
-        expect(DiscourseAi::AiBot::Personas.all).to contain_exactly(General, SqlHelper)
+        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
+          SqlHelper,
+          SettingsExplorer,
+          Creative,
+        )
       end
     end
   end

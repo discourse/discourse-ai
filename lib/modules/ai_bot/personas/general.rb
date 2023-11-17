@@ -19,8 +19,6 @@ module DiscourseAi
             The description is: {site_description}
             The participants in this conversation are: {participants}
             The date now is: {time}, much has changed since you were trained.
-
-            {commands}
           PROMPT
         end
       end
