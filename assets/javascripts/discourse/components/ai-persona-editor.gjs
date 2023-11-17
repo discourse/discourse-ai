@@ -29,6 +29,8 @@ export default class PersonaEditor extends Component {
     Group.findAll().then((groups) => {
       this.allGroups = groups;
     });
+
+    this.model = this.args.model.createProperties();
   }
 
   @action
@@ -39,6 +41,7 @@ export default class PersonaEditor extends Component {
 
     let start = Date.now();
 
+    this.args.model.setProperties(this.model);
     this.args.model
       .save()
       .catch((e) => {
@@ -83,79 +86,78 @@ export default class PersonaEditor extends Component {
 
   @action
   updateAllowedGroups(ids) {
-    this.args.model.set("allowed_group_ids", ids);
+    this.model.set("allowed_group_ids", ids);
   }
 
   @action
   toggleEnabled() {
     this.args.model.set("enabled", !this.args.model.enabled);
+    this.args.model.update({ enabled: this.args.model.enabled });
   }
 
   <template>
-    <form class="form-horizontal persona-editor">
+    <form class="form-horizontal ai-persona-editor">
       <div class="control-group">
         <DToggleSwitch
-          class="persona-editor__enabled"
-          @state={{this.args.model.enabled}}
+          class="ai-persona-editor__enabled"
+          @state={{@model.enabled}}
           @label="discourse_ai.ai-persona.enabled"
           {{on "click" this.toggleEnabled}}
         />
       </div>
       <div class="control-group">
-        <label for="name">{{I18n.t "discourse_ai.ai-persona.name"}}</label>
-        <Input @type="text" @value={{this.args.model.name}} />
+        <label>{{I18n.t "discourse_ai.ai-persona.name"}}</label>
+        <Input
+          class="ai-persona-editor__name"
+          @type="text"
+          @value={{this.model.name}}
+        />
       </div>
       <div class="control-group">
-        <label for="persona-editor__description">{{I18n.t
-            "discourse_ai.ai-persona.description"
-          }}</label>
+        <label>{{I18n.t "discourse_ai.ai-persona.description"}}</label>
         <Textarea
-          class="persona-editor__description"
-          @value={{this.args.model.description}}
+          class="ai-persona-editor__description"
+          @value={{this.model.description}}
         />
       </div>
       <div class="control-group">
-        <label for="persona-editor__commands">{{I18n.t
-            "discourse_ai.ai-persona.commands"
-          }}</label>
+        <label>{{I18n.t "discourse_ai.ai-persona.commands"}}</label>
         <AiCommandSelector
-          class="persona-editor__commands"
-          @value={{this.args.model.commands}}
+          class="ai-persona-editor__commands"
+          @value={{this.model.commands}}
         />
       </div>
       <div class="control-group">
-        <label for="allowed_groups">{{I18n.t
-            "discourse_ai.ai-persona.allowed_groups"
-          }}</label>
+        <label>{{I18n.t "discourse_ai.ai-persona.allowed_groups"}}</label>
         <GroupChooser
-          @value={{this.args.model.allowed_group_ids}}
+          @value={{this.model.allowed_group_ids}}
           @content={{this.allGroups}}
           @onChange={{this.updateAllowedGroups}}
         />
       </div>
       <div class="control-group">
-        <label for="persona-editor__system_prompt">{{I18n.t
+        <label for="ai-persona-editor__system_prompt">{{I18n.t
             "discourse_ai.ai-persona.system_prompt"
           }}</label>
         <Textarea
-          class="persona-editor__system_prompt"
-          @value={{this.args.model.system_prompt}}
+          class="ai-persona-editor__system_prompt"
+          @value={{this.model.system_prompt}}
         />
       </div>
-      <div class="control-group persona-editor__action_panel">
+      <div class="control-group ai-persona-editor__action_panel">
         <DButton
-          class="btn-primary persona-editor__save"
+          class="btn-primary ai-persona-editor__save"
           @action={{this.save}}
           @disabled={{this.isSaving}}
         >{{I18n.t "discourse_ai.ai-persona.save"}}</DButton>
         {{#if this.justSaved}}
-          <span class="persona-editor__saved">
+          <span class="ai-persona-editor__saved">
             {{I18n.t "discourse_ai.ai-persona.saved"}}
           </span>
         {{/if}}
         <DButton
           @action={{this.delete}}
-          class="btn-danger persona-editor__delete"
+          class="btn-danger ai-persona-editor__delete"
         >
           {{I18n.t "discourse_ai.ai-persona.delete"}}
         </DButton>

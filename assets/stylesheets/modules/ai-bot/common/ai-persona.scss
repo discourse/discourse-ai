@@ -18,7 +18,10 @@
   width: 100%;
 }
 
-.persona-editor {
+.ai-persona-editor {
+  label {
+    display: block;
+  }
   &__description {
     width: 500px;
   }
