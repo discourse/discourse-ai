@@ -3,6 +3,8 @@ import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
@@ -22,6 +24,7 @@ export default class PersonaEditor extends Component {
   @tracked allGroups = [];
   @tracked isSaving = false;
   @tracked justSaved = false;
+  @tracked model = null;
 
   constructor() {
     super(...arguments);
@@ -29,7 +32,10 @@ export default class PersonaEditor extends Component {
     Group.findAll().then((groups) => {
       this.allGroups = groups;
     });
+  }
 
+  @action
+  updateModel() {
     this.model = this.args.model.createProperties();
   }
 
@@ -96,7 +102,11 @@ export default class PersonaEditor extends Component {
   }
 
   <template>
-    <form class="form-horizontal ai-persona-editor">
+    <form
+      class="form-horizontal ai-persona-editor"
+      {{didUpdate this.updateModel @model.id}}
+      {{didInsert this.updateModel @model.id}}
+    >
       <div class="control-group">
         <DToggleSwitch
           class="ai-persona-editor__enabled"
