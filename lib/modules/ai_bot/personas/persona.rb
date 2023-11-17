@@ -3,6 +3,17 @@
 module DiscourseAi
   module AiBot
     module Personas
+      def self.system_personas
+        {
+          Personas::General => -1,
+          Personas::SqlHelper => -2,
+          Personas::Artist => -3,
+          Personas::SettingsExplorer => -4,
+          Personas::Researcher => -5,
+          Personas::Creative => -6,
+        }
+      end
+
       def self.all(user: nil)
         personas = [Personas::General, Personas::SqlHelper]
         personas << Personas::Artist if SiteSetting.ai_stability_api_key.present?

@@ -114,10 +114,14 @@ end
 #  name              :string(100)      not null
 #  description       :string(2000)     not null
 #  commands          :string           default([]), not null, is an Array
-#  system_prompt     :string           not null
+#  system_prompt     :string(10000000) not null
 #  allowed_group_ids :integer          default([]), not null, is an Array
+#  created_by_id     :integer
+#  enabled           :boolean          default(TRUE), not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  system            :boolean          default(FALSE), not null
+#  priority          :integer          default(0), not null
 #
 # Indexes
 #
