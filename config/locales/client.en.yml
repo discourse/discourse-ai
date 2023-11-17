@@ -70,6 +70,8 @@ en:
           trigger: "Ask AI"
           loading: "AI is generating"
           close: "Close"
+          copy: "Copy"
+          copied: "Copied!"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"

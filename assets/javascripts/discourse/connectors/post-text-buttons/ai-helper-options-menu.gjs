@@ -7,6 +7,8 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "I18n";
 import eq from "truth-helpers/helpers/eq";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
+import not from "truth-helpers/helpers/not";
+
 
 const i18n = I18n.t.bind(I18n);
 
@@ -19,6 +21,9 @@ export default class AIHelperOptionsMenu extends Component {
   @tracked loading = false;
   @tracked suggestion = "";
   @tracked showMainButtons = true;
+
+  @tracked copyButtonIcon = "copy";
+  @tracked copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy";
 
   MENU_STATES = {
     triggers: "TRIGGERS",
@@ -90,6 +95,20 @@ export default class AIHelperOptionsMenu extends Component {
     }
   }
 
+  @action
+  copySuggestion() {
+    if (this.suggestion?.length > 0) {
+      navigator.clipboard.writeText(this.suggestion).then(() => {
+        this.copyButtonIcon = "check";
+        this.copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copied"
+        setTimeout(() => {
+          this.copyButtonIcon = "copy";
+          this.copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy"
+        }, 3500);
+      });
+    }
+  }
+
   async loadPrompts() {
     let prompts = await ajax("/discourse-ai/ai-helper/prompts");
 
@@ -146,7 +165,18 @@ export default class AIHelperOptionsMenu extends Component {
           />
         </div>
       {{else if (eq this.menuState this.MENU_STATES.result)}}
-        <div class="ai-post-helper__suggestion">{{this.suggestion}}</div>
+        <div class="ai-post-helper__suggestion">
+          <div class="ai-post-helper__suggestion__text">
+            {{this.suggestion}}
+          </div>
+          <DButton
+            @class="btn-flat ai-post-helper__suggestion__copy"
+            @icon={{this.copyButtonIcon}}
+            @label={{this.copyButtonLabel}}
+            @action={{this.copySuggestion}}
+            @disabled={{not this.suggestion}}
+          />
+        </div>
       {{/if}}
     </div>
   </template>
