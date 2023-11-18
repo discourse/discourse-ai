@@ -44,7 +44,7 @@ class AiPersona < ActiveRecord::Base
 
   def self.all_personas
     persona_cache[:value] ||= AiPersona
-      .order(:name)
+      .order("priority DESC, lower(name) ASC")
       .where(enabled: true)
       .all
       .limit(MAX_PERSONAS_PER_SITE)

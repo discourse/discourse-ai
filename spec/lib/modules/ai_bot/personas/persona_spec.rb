@@ -124,13 +124,9 @@ module DiscourseAi::AiBot::Personas
         SiteSetting.ai_google_custom_search_api_key = "abc"
         SiteSetting.ai_google_custom_search_cx = "abc123"
 
-        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
-          General,
-          SqlHelper,
-          Artist,
-          SettingsExplorer,
-          Researcher,
-          Creative,
+        # should be ordered by priority and then alpha
+        expect(DiscourseAi::AiBot::Personas.all(user: user)).to eq(
+          [General, Artist, Creative, Researcher, SettingsExplorer, SqlHelper],
         )
 
         # omits personas if key is missing
