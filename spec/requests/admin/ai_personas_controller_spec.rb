@@ -74,7 +74,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
     end
 
-    context "system personas" do
+    context "with system personas" do
       it "does not allow editing of system prompts" do
         put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
             params: {
