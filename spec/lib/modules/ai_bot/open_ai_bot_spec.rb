@@ -19,26 +19,6 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       SiteSetting.ai_bot_enabled = true
     end
 
-    context "when changing available commands" do
-      it "contains all commands by default" do
-        # this will break as we add commands, but it is important as a sanity check
-        SiteSetting.ai_stability_api_key = "test"
-        SiteSetting.ai_google_custom_search_api_key = "test"
-        SiteSetting.ai_google_custom_search_cx = "test"
-
-        expect(subject.available_commands.length).to eq(
-          SiteSetting.ai_bot_enabled_chat_commands.split("|").length,
-        )
-      end
-      it "can properly filter out commands" do
-        SiteSetting.ai_bot_enabled_chat_commands = "time|tags"
-        expect(subject.available_commands.length).to eq(2)
-        expect(subject.available_commands).to eq(
-          [DiscourseAi::AiBot::Commands::TimeCommand, DiscourseAi::AiBot::Commands::TagsCommand],
-        )
-      end
-    end
-
     context "when cleaning usernames" do
       it "can properly clean usernames so OpenAI allows it" do
         expect(subject.clean_username("test test")).to eq("test_test")

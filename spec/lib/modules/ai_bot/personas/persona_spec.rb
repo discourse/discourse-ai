@@ -79,7 +79,7 @@ module DiscourseAi::AiBot::Personas
         # define an ai persona everyone can see
         persona =
           AiPersona.create!(
-            name: "pun_bot",
+            name: "zzzpun_bot",
             description: "you write puns",
             system_prompt: "you are pun bot",
             commands: ["ImageCommand"],
@@ -87,7 +87,7 @@ module DiscourseAi::AiBot::Personas
           )
 
         custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
-        expect(custom_persona.name).to eq("pun_bot")
+        expect(custom_persona.name).to eq("zzzpun_bot")
         expect(custom_persona.description).to eq("you write puns")
 
         instance = custom_persona.new
@@ -97,21 +97,21 @@ module DiscourseAi::AiBot::Personas
         )
 
         # should update
-        persona.update!(name: "pun_bot2")
+        persona.update!(name: "zzzpun_bot2")
         custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
-        expect(custom_persona.name).to eq("pun_bot2")
+        expect(custom_persona.name).to eq("zzzpun_bot2")
 
         # can be disabled
         persona.update!(enabled: false)
         last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
-        expect(last_persona.name).not_to eq("pun_bot2")
+        expect(last_persona.name).not_to eq("zzzpun_bot2")
 
         persona.update!(enabled: true)
         # no groups have access
         persona.update!(allowed_group_ids: [])
 
         last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
-        expect(last_persona.name).not_to eq("pun_bot2")
+        expect(last_persona.name).not_to eq("zzzpun_bot2")
       end
     end
 

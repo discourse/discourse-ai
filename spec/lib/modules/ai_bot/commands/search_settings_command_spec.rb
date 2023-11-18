@@ -19,7 +19,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchSettingsCommand do
 
     it "can return descriptions if there are few matches" do
       results =
-        search.process(query: "this will not be found!@,default_locale,ai_bot_enabled_personas")
+        search.process(query: "this will not be found!@,default_locale,ai_bot_enabled_chat_bots")
 
       expect(results[:rows].length).to eq(2)
 

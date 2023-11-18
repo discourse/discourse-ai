@@ -42,7 +42,7 @@ export default class AiPersonaListEditor extends Component {
     </div>
     <div class="content-list ai-persona-list-editor">
       <ul>
-        {{#each this.args.personas as |persona|}}
+        {{#each @personas as |persona|}}
           <li class={{if persona.enabled "" "disabled"}}>
             <LinkTo
               @route="adminPlugins.discourse-ai.ai-personas.show"
@@ -55,11 +55,8 @@ export default class AiPersonaListEditor extends Component {
       </ul>
     </div>
     <section class="ai-persona-list-editor__current content-body">
-      {{#if this.args.currentPersona}}
-        <AiPersonaEditor
-          @model={{this.args.currentPersona}}
-          @personas={{this.args.personas}}
-        />
+      {{#if @currentPersona}}
+        <AiPersonaEditor @model={{@currentPersona}} @personas={{@personas}} />
       {{else}}
         <div class="ai-persona-list-editor__empty">
           {{this.noPersonaText}}
