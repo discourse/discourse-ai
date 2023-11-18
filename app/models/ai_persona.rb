@@ -7,6 +7,7 @@ class AiPersona < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true, length: { maximum: 100 }
   validates :description, presence: true, length: { maximum: 2000 }
   validates :system_prompt, presence: true
+  validate :system_persona_unchangeable, on: :update, if: :system
 
   before_destroy :ensure_not_system
 
@@ -44,9 +45,11 @@ class AiPersona < ActiveRecord::Base
     @persona_cache ||= MultisiteHash.new("persona_cache")
   end
 
+  scope :ordered, -> { order("priority DESC, lower(name) ASC") }
+
   def self.all_personas
     persona_cache[:value] ||= AiPersona
-      .order("priority DESC, lower(name) ASC")
+      .ordered
       .where(enabled: true)
       .all
       .limit(MAX_PERSONAS_PER_SITE)
@@ -113,6 +116,12 @@ class AiPersona < ActiveRecord::Base
   end
 
   private
+
+  def system_persona_unchangeable
+    if system_prompt_changed? || commands_changed?
+      errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
+    end
+  end
 
   def ensure_not_system
     if system

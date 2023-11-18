@@ -124,6 +124,7 @@ en:
     ai_bot:
       personas:
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
+        cannot_edit_system_persona: "System personas can only be renamed, you may not edit commands or system prompt, instead disable and make a copy"
         general:
           name: Forum Helper
           description: "General purpose AI Bot capable of performing various tasks"

@@ -6,7 +6,7 @@ module DiscourseAi
       before_action :find_ai_persona, only: %i[show update destroy]
 
       def index
-        ai_personas = AiPersona.all
+        ai_personas = AiPersona.ordered
         render json: ai_personas
       end
 

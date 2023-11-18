@@ -74,6 +74,48 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
     end
 
+    context "system personas" do
+      it "does not allow editing of system prompts" do
+        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
+            params: {
+              ai_persona: {
+                system_prompt: "you are not a helpful bot",
+              },
+            }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["base"].join).not_to be_blank
+        expect(response.parsed_body["base"].join).not_to include("en.discourse")
+      end
+
+      it "does not allow editing of commands" do
+        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
+            params: {
+              ai_persona: {
+                commands: %w[SearchCommand ImageCommand],
+              },
+            }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["base"].join).not_to be_blank
+        expect(response.parsed_body["base"].join).not_to include("en.discourse")
+      end
+
+      it "does allow some actions" do
+        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
+            params: {
+              ai_persona: {
+                name: "bob",
+                description: "the bob",
+                allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_1]],
+                enabled: false,
+              },
+            }
+
+        expect(response).to be_successful
+      end
+    end
+
     context "with invalid params" do
       it "renders a JSON response with errors for the ai_persona" do
         put "/admin/plugins/discourse-ai/ai_personas/#{ai_persona.id}.json",
