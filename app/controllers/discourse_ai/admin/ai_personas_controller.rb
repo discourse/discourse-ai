@@ -55,6 +55,7 @@ module DiscourseAi
           :enabled,
           :system_prompt,
           :enabled,
+          :priority,
           allowed_group_ids: [],
           commands: [],
         )

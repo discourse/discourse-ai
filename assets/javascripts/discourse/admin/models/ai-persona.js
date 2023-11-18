@@ -8,6 +8,7 @@ const ATTRIBUTES = [
   "allowed_group_ids",
   "enabled",
   "system",
+  "priority",
 ];
 
 export default class AiPersona extends RestModel {

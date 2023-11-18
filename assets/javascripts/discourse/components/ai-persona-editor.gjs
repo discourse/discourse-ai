@@ -25,6 +25,7 @@ export default class PersonaEditor extends Component {
   @tracked isSaving = false;
   @tracked justSaved = false;
   @tracked model = null;
+  @tracked priority = false;
 
   constructor() {
     super(...arguments);
@@ -37,6 +38,7 @@ export default class PersonaEditor extends Component {
   @action
   updateModel() {
     this.model = EmberObject.create(this.args.model.createProperties());
+    this.priority = this.model.priority > 0;
   }
 
   @action
@@ -101,6 +103,15 @@ export default class PersonaEditor extends Component {
     this.args.model.update({ enabled: this.args.model.enabled });
   }
 
+  @action
+  togglePriority() {
+    this.priority = !this.priority;
+
+    this.model.set("priority", this.priority ? 99 : 0);
+    this.args.model.set("priority", this.model.priority);
+    this.args.model.update({ priority: this.args.model.priority });
+  }
+
   <template>
     <form
       class="form-horizontal ai-persona-editor"
@@ -113,6 +124,14 @@ export default class PersonaEditor extends Component {
           @state={{@model.enabled}}
           @label="discourse_ai.ai-persona.enabled"
           {{on "click" this.toggleEnabled}}
+        />
+      </div>
+      <div class="control-group">
+        <DToggleSwitch
+          class="ai-persona-editor__priority"
+          @state={{this.priority}}
+          @label="discourse_ai.ai-persona.priority"
+          {{on "click" this.togglePriority}}
         />
       </div>
       <div class="control-group">
