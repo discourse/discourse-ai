@@ -96,5 +96,15 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         expect(response).to have_http_status(:no_content)
       }.to change(AiPersona, :count).by(-1)
     end
+
+    it "is not allowed to delete system personas" do
+      expect {
+        delete "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json"
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["base"].join).not_to be_blank
+        # let's make sure this is translated
+        expect(response.parsed_body["base"].join).not_to include("en.discourse")
+      }.not_to change(AiPersona, :count)
+    end
   end
 end

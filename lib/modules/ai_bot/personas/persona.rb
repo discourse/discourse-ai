@@ -131,6 +131,10 @@ module DiscourseAi
             Commands::SearchCommand,
             Commands::SummarizeCommand,
             Commands::ReadCommand,
+            Commands::DbSchemaCommand,
+            Commands::SearchSettingsCommand,
+            Commands::SummarizeCommand,
+            Commands::SettingContextCommand,
           ]
 
           all_commands << Commands::TagsCommand if SiteSetting.tagging_enabled

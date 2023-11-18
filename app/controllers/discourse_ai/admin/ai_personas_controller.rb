@@ -33,7 +33,11 @@ module DiscourseAi
 
       def destroy
         @ai_persona.destroy
-        head :no_content
+        if @ai_persona.errors.present?
+          render json: @ai_persona.errors, status: :unprocessable_entity
+        else
+          head :no_content
+        end
       end
 
       private

@@ -8,6 +8,8 @@ class AiPersona < ActiveRecord::Base
   validates :description, presence: true, length: { maximum: 2000 }
   validates :system_prompt, presence: true
 
+  before_destroy :ensure_not_system
+
   class MultisiteHash
     def initialize(id)
       @hash = Hash.new { |h, k| h[k] = {} }
@@ -108,6 +110,15 @@ class AiPersona < ActiveRecord::Base
 
   def bump_cache
     self.class.persona_cache.flush!
+  end
+
+  private
+
+  def ensure_not_system
+    if system
+      errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_delete_system_persona"))
+      throw :abort
+    end
   end
 end
 

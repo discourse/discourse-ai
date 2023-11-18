@@ -5,7 +5,15 @@ module DiscourseAi
     module Personas
       class General < Persona
         def commands
-          all_available_commands
+          [
+            Commands::SearchCommand,
+            Commands::GoogleCommand,
+            Commands::ImageCommand,
+            Commands::ReadCommand,
+            Commands::ImageCommand,
+            Commands::CategoriesCommand,
+            Commands::TagsCommand,
+          ]
         end
 
         def system_prompt

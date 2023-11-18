@@ -26,6 +26,13 @@ RSpec.describe "AI personas", type: :system, js: true do
     expect(persona.system_prompt).to eq("You are a helpful bot")
   end
 
+  it "will not allow deletion or editing of system personas" do
+    visit "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}"
+    expect(page).not_to have_selector(".ai-persona-editor__delete")
+    prompt = find(".ai-persona-editor__system_prompt")
+    expect(prompt).to be_disabled
+  end
+
   it "will enable persona right away when you click on enable but does not save side effects" do
     persona = Fabricate(:ai_persona, enabled: false)
 

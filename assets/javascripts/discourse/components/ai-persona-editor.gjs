@@ -152,6 +152,7 @@ export default class PersonaEditor extends Component {
         <Textarea
           class="ai-persona-editor__system_prompt"
           @value={{this.model.system_prompt}}
+          disabled={{this.model.system}}
         />
       </div>
       <div class="control-group ai-persona-editor__action_panel">
@@ -165,12 +166,14 @@ export default class PersonaEditor extends Component {
             {{I18n.t "discourse_ai.ai-persona.saved"}}
           </span>
         {{/if}}
-        <DButton
-          @action={{this.delete}}
-          class="btn-danger ai-persona-editor__delete"
-        >
-          {{I18n.t "discourse_ai.ai-persona.delete"}}
-        </DButton>
+        {{#unless @model.system}}
+          <DButton
+            @action={{this.delete}}
+            class="btn-danger ai-persona-editor__delete"
+          >
+            {{I18n.t "discourse_ai.ai-persona.delete"}}
+          </DButton>
+        {{/unless}}
       </div>
     </form>
   </template>

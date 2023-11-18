@@ -123,6 +123,7 @@ en:
 
     ai_bot:
       personas:
+        cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
         general:
           name: Forum Helper
           description: "General purpose AI Bot capable of performing various tasks"
