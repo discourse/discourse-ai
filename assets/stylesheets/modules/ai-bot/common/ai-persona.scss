@@ -8,6 +8,10 @@
   &__current {
     padding-left: 20px;
   }
+
+  li.disabled {
+    opacity: 0.5;
+  }
 }
 
 .ai-personas__container {

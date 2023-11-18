@@ -135,6 +135,7 @@ export default class PersonaEditor extends Component {
         <AiCommandSelector
           class="ai-persona-editor__commands"
           @value={{this.model.commands}}
+          @disabled={{this.model.system}}
         />
       </div>
       <div class="control-group">
@@ -152,7 +153,7 @@ export default class PersonaEditor extends Component {
         <Textarea
           class="ai-persona-editor__system_prompt"
           @value={{this.model.system_prompt}}
-          @disabled={{this.model.system}}
+          disabled={{this.model.system}}
         />
       </div>
       <div class="control-group ai-persona-editor__action_panel">

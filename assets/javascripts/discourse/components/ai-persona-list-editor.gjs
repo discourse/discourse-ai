@@ -43,7 +43,7 @@ export default class AiPersonaListEditor extends Component {
     <div class="content-list ai-persona-list-editor">
       <ul>
         {{#each this.args.personas as |persona|}}
-          <li>
+          <li class={{if persona.enabled "" "disabled"}}>
             <LinkTo
               @route="adminPlugins.discourse-ai.ai-personas.show"
               current-when="true"
