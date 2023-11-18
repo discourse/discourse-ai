@@ -109,6 +109,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
                 description: "the bob",
                 allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_1]],
                 enabled: false,
+                priority: 989,
               },
             }
 

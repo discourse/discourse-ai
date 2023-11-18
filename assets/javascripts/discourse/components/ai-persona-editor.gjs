@@ -2,7 +2,7 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
 import { on } from "@ember/modifier";
-import { action } from "@ember/object";
+import EmberObject, { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { inject as service } from "@ember/service";
@@ -36,7 +36,7 @@ export default class PersonaEditor extends Component {
 
   @action
   updateModel() {
-    this.model = this.args.model.createProperties();
+    this.model = EmberObject.create(this.args.model.createProperties());
   }
 
   @action
@@ -152,7 +152,7 @@ export default class PersonaEditor extends Component {
         <Textarea
           class="ai-persona-editor__system_prompt"
           @value={{this.model.system_prompt}}
-          disabled={{this.model.system}}
+          @disabled={{this.model.system}}
         />
       </div>
       <div class="control-group ai-persona-editor__action_panel">

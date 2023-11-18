@@ -25,10 +25,10 @@ DiscourseAi::AiBot::Personas.system_personas.each do |persona_class, id|
       SQL
 
     persona.description = persona_class.description
+    persona.priority = 99 if persona_class == DiscourseAi::AiBot::Personas::General
   end
 
   persona.system = true
-  persona.priority = 99 if persona_class == DiscourseAi::AiBot::Personas::General
   instance = persona_class.new
   persona.commands = instance.commands.map { |command| command.to_s.split("::").last }
   persona.system_prompt = instance.system_prompt
