@@ -7,14 +7,16 @@ DiscourseAi::AiBot::Personas.system_personas.each do |persona_class, id|
     persona.id = id
     persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
     persona.enabled = true
+    persona.priority = true if persona_class == DiscourseAi::AiBot::Personas::General
+  end
 
-    names = [
-      persona_class.name,
-      persona_class.name + " 1",
-      persona_class.name + " 2",
-      persona_class.name + SecureRandom.hex,
-    ]
-    persona.name = DB.query_single(<<~SQL, names, id).first
+  names = [
+    persona_class.name,
+    persona_class.name + " 1",
+    persona_class.name + " 2",
+    persona_class.name + SecureRandom.hex,
+  ]
+  persona.name = DB.query_single(<<~SQL, names, id).first
         SELECT guess_name
         FROM (
           SELECT unnest(Array[?]) AS guess_name
@@ -26,9 +28,7 @@ DiscourseAi::AiBot::Personas.system_personas.each do |persona_class, id|
         LIMIT 1
       SQL
 
-    persona.description = persona_class.description
-    persona.priority = 99 if persona_class == DiscourseAi::AiBot::Personas::General
-  end
+  persona.description = persona_class.description
 
   persona.system = true
   instance = persona_class.new

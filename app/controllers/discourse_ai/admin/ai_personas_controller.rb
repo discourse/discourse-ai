@@ -6,12 +6,13 @@ module DiscourseAi
       before_action :find_ai_persona, only: %i[show update destroy]
 
       def index
-        ai_personas = AiPersona.ordered
+        ai_personas =
+          AiPersona.ordered.map { |persona| AiPersonaSerializer.new(persona, root: false) }
         commands =
           DiscourseAi::AiBot::Personas::Persona.all_available_commands.map do |command|
             { id: command.to_s.split("::").last, name: command.name }
           end
-        render json: { ai_personas: ai_personas.to_a, meta: { commands: commands } }
+        render json: { ai_personas: ai_personas, meta: { commands: commands } }
       end
 
       def show

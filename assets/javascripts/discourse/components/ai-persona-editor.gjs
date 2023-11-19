@@ -57,6 +57,7 @@ export default class PersonaEditor extends Component {
         error = true;
       })
       .finally(() => {
+        this.sortPersonas();
         if (!error) {
           if (isNew) {
             this.args.personas.addObject(this.args.model);
@@ -105,19 +106,31 @@ export default class PersonaEditor extends Component {
     }
   }
 
+  sortPersonas() {
+    let sorted = this.args.personas.toArray().sort((a, b) => {
+      if (a.priority && !b.priority) {
+        return -1;
+      } else if (!a.priority && b.priority) {
+        return 1;
+      } else {
+        return a.name.localeCompare(b.name);
+      }
+    });
+    this.args.personas.clear();
+    this.args.personas.setObjects(sorted);
+  }
+
   @action
   togglePriority() {
     this.priority = !this.priority;
 
-    this.model.set("priority", this.priority ? 99 : 0);
+    this.model.set("priority", this.priority);
     this.args.model.set("priority", this.model.priority);
     if (!this.args.model.isNew) {
       this.args.model
         .update({ priority: this.args.model.priority })
         .then(() => {
-          let sorted = this.args.personas.sortBy("sortKey");
-          this.args.personas.clear();
-          this.args.personas.setObjects(sorted);
+          this.sortPersonas();
         });
     }
   }
@@ -150,6 +163,7 @@ export default class PersonaEditor extends Component {
           class="ai-persona-editor__name"
           @type="text"
           @value={{this.model.name}}
+          disabled={{this.model.system}}
         />
       </div>
       <div class="control-group">
@@ -157,6 +171,7 @@ export default class PersonaEditor extends Component {
         <Textarea
           class="ai-persona-editor__description"
           @value={{this.model.description}}
+          disabled={{this.model.system}}
         />
       </div>
       <div class="control-group">

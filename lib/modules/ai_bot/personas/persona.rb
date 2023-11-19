@@ -22,10 +22,6 @@ module DiscourseAi
         personas =
           AiPersona.all_personas.filter { |persona| user.in_any_groups?(persona.allowed_group_ids) }
 
-        # force non custom class for built in personas
-        # this mostly improves dev experience cause you don't need to run seeds to update prompts
-        personas.map! { |persona| system_personas_by_id[persona.id] || persona }
-
         # this needs to be dynamic cause site settings may change
         all_available_commands = Persona.all_available_commands
 

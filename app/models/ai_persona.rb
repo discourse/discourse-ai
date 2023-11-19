@@ -53,60 +53,7 @@ class AiPersona < ActiveRecord::Base
       .where(enabled: true)
       .all
       .limit(MAX_PERSONAS_PER_SITE)
-      .map do |ai_persona|
-        id = ai_persona.id
-        name = ai_persona.name
-        description = ai_persona.description
-        ai_persona_id = ai_persona.id
-        allowed_group_ids = ai_persona.allowed_group_ids
-        commands =
-          ai_persona.commands.filter_map do |inner_name|
-            begin
-              ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
-            rescue StandardError
-              nil
-            end
-          end
-
-        Class.new(DiscourseAi::AiBot::Personas::Persona) do
-          define_singleton_method :id do
-            id
-          end
-
-          define_singleton_method :name do
-            name
-          end
-
-          define_singleton_method :description do
-            description
-          end
-
-          define_singleton_method :allowed_group_ids do
-            allowed_group_ids
-          end
-
-          define_singleton_method :to_s do
-            "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
-          end
-
-          define_singleton_method :inspect do
-            "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
-          end
-
-          define_method :initialize do |*args, **kwargs|
-            @ai_persona = AiPersona.find_by(id: ai_persona_id)
-            super(*args, **kwargs)
-          end
-
-          define_method :commands do
-            commands
-          end
-
-          define_method :system_prompt do
-            @ai_persona&.system_prompt || "You are a helpful bot."
-          end
-        end
-      end
+      .map { |ai_persona| ai_persona.instance }
   end
 
   after_commit :bump_cache
@@ -115,10 +62,74 @@ class AiPersona < ActiveRecord::Base
     self.class.persona_cache.flush!
   end
 
+  def instance
+    allowed_group_ids = self.allowed_group_ids
+
+    persona_class = DiscourseAi::AiBot::Personas.system_personas_by_id[self.id]
+    if persona_class
+      persona_class.define_singleton_method :allowed_group_ids do
+        allowed_group_ids
+      end
+      return persona_class
+    end
+
+    id = self.id
+    name = self.name
+    description = self.description
+    ai_persona_id = self.id
+    commands =
+      self.commands.filter_map do |inner_name|
+        begin
+          ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
+        rescue StandardError
+          nil
+        end
+      end
+
+    Class.new(DiscourseAi::AiBot::Personas::Persona) do
+      define_singleton_method :id do
+        id
+      end
+
+      define_singleton_method :name do
+        name
+      end
+
+      define_singleton_method :description do
+        description
+      end
+
+      define_singleton_method :allowed_group_ids do
+        allowed_group_ids
+      end
+
+      define_singleton_method :to_s do
+        "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
+      end
+
+      define_singleton_method :inspect do
+        "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
+      end
+
+      define_method :initialize do |*args, **kwargs|
+        @ai_persona = AiPersona.find_by(id: ai_persona_id)
+        super(*args, **kwargs)
+      end
+
+      define_method :commands do
+        commands
+      end
+
+      define_method :system_prompt do
+        @ai_persona&.system_prompt || "You are a helpful bot."
+      end
+    end
+  end
+
   private
 
   def system_persona_unchangeable
-    if system_prompt_changed? || commands_changed?
+    if system_prompt_changed? || commands_changed? || name_changed? || description_changed?
       errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
     end
   end

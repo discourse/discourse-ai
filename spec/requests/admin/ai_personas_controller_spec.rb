@@ -17,6 +17,27 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         DiscourseAi::AiBot::Personas::Persona.all_available_commands.length,
       )
     end
+
+    it "returns localized persona names and descriptions" do
+      SiteSetting.default_locale = "fr"
+
+      get "/admin/plugins/discourse-ai/ai_personas.json"
+
+      TranslationOverride.upsert!(:fr, "discourse_ai.ai_bot.personas.general.name", "Général")
+      TranslationOverride.upsert!(
+        :fr,
+        "discourse_ai.ai_bot.personas.general.description",
+        "Général Description",
+      )
+
+      id = DiscourseAi::AiBot::Personas.system_personas[DiscourseAi::AiBot::Personas::General]
+      name = I18n.t("discourse_ai.ai_bot.personas.general.name")
+      description = I18n.t("discourse_ai.ai_bot.personas.general.description")
+      persona = response.parsed_body["ai_personas"].find { |p| p["id"] == id }
+
+      expect(persona["name"]).to eq(name)
+      expect(persona["description"]).to eq(description)
+    end
   end
 
   describe "GET #show" do
@@ -106,12 +127,24 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         expect(response.parsed_body["base"].join).not_to include("en.discourse")
       end
 
-      it "does allow some actions" do
+      it "does not allow editing of name and description cause it is localized" do
         put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 name: "bob",
-                description: "the bob",
+                dscription: "the bob",
+              },
+            }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["base"].join).not_to be_blank
+        expect(response.parsed_body["base"].join).not_to include("en.discourse")
+      end
+
+      it "does allow some actions" do
+        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
+            params: {
+              ai_persona: {
                 allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_1]],
                 enabled: false,
                 priority: 989,
