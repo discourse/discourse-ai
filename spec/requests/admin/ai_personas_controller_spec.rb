@@ -9,8 +9,13 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
   describe "GET #index" do
     it "returns a success response" do
-      get "/admin/plugins/discourse-ai/ai_personas"
+      get "/admin/plugins/discourse-ai/ai_personas.json"
       expect(response).to be_successful
+
+      expect(response.parsed_body["ai_personas"].length).to eq(AiPersona.count)
+      expect(response.parsed_body["meta"]["commands"].length).to eq(
+        DiscourseAi::AiBot::Personas::Persona.all_available_commands.length,
+      )
     end
   end
 

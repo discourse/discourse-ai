@@ -7,20 +7,7 @@ export default MultiSelectComponent.extend({
   }),
 
   content: computed(function () {
-    // TODO: maybe we should sideload this in via serializer
-    return [
-      { id: "SearchCommand", name: "Search" },
-      { id: "SummarizeCommand", name: "Summarize" },
-      { id: "ReadCommand", name: "Read" },
-      { id: "TagsCommand", name: "Tags" },
-      { id: "ImageCommand", name: "Image" },
-      { id: "GoogleCommand", name: "Google" },
-      { id: "CategoriesCommand", name: "Categories" },
-      { id: "TimeCommand", name: "Time" },
-      { id: "DbSchemaCommand", name: "DB Schema" },
-      { id: "SearchSettingsCommand", name: "Search Settings" },
-      { id: "SettingContextCommand", name: "Setting Context" },
-    ];
+    return this.attrs.commands.value;
   }),
 
   value: "",

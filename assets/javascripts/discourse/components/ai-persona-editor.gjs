@@ -155,6 +155,7 @@ export default class PersonaEditor extends Component {
           class="ai-persona-editor__commands"
           @value={{this.model.commands}}
           @disabled={{this.model.system}}
+          @commands={{@personas.resultSetMeta.commands}}
         />
       </div>
       <div class="control-group">
