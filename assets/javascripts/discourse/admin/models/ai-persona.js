@@ -21,4 +21,9 @@ export default class AiPersona extends RestModel {
   createProperties() {
     return this.getProperties(ATTRIBUTES);
   }
+
+  get sortKey() {
+    let prefix = (this.priority || 0) === 0 ? "Z" : "A";
+    return prefix + this.name;
+  }
 }

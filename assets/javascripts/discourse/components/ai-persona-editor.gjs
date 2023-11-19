@@ -100,7 +100,9 @@ export default class PersonaEditor extends Component {
   @action
   toggleEnabled() {
     this.args.model.set("enabled", !this.args.model.enabled);
-    this.args.model.update({ enabled: this.args.model.enabled });
+    if (!this.args.model.isNew) {
+      this.args.model.update({ enabled: this.args.model.enabled });
+    }
   }
 
   @action
@@ -109,7 +111,15 @@ export default class PersonaEditor extends Component {
 
     this.model.set("priority", this.priority ? 99 : 0);
     this.args.model.set("priority", this.model.priority);
-    this.args.model.update({ priority: this.args.model.priority });
+    if (!this.args.model.isNew) {
+      this.args.model
+        .update({ priority: this.args.model.priority })
+        .then(() => {
+          let sorted = this.args.personas.sortBy("sortKey");
+          this.args.personas.clear();
+          this.args.personas.setObjects(sorted);
+        });
+    }
   }
 
   <template>
