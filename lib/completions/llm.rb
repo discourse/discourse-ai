@@ -8,9 +8,7 @@ module DiscourseAi
       def self.with_prepared_response(response)
         @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(response)
 
-        yield
-
-        @canned_response = nil
+        yield.tap { @canned_response = nil }
       end
 
       def self.proxy(model_name)
