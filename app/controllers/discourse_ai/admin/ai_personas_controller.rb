@@ -10,7 +10,7 @@ module DiscourseAi
           AiPersona.ordered.map { |persona| AiPersonaSerializer.new(persona, root: false) }
         commands =
           DiscourseAi::AiBot::Personas::Persona.all_available_commands.map do |command|
-            { id: command.to_s.split("::").last, name: command.name }
+            { id: command.to_s.split("::").last, name: command.name.humanize.titleize }
           end
         render json: { ai_personas: ai_personas, meta: { commands: commands } }
       end
