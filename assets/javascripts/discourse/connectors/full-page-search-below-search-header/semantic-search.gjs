@@ -133,12 +133,13 @@ export default class SemanticSearch extends Component {
         })
           .then(async (results) => {
             const model = (await translateResults(results)) || {};
-            const AIResults = model.posts.map(function (post) {
-              return Object.assign({}, post, { generatedByAI: true });
+
+            model.posts.forEach((post) => {
+              post.generatedByAI = true;
             });
 
-            this.args.outletArgs.addSearchResults(AIResults, "topic_id");
-            this.AIResults = AIResults;
+            this.args.outletArgs.addSearchResults(model.posts, "topic_id");
+            this.AIResults = model.posts;
           })
           .catch(popupAjaxError)
           .finally(() => (this.searching = false));
