@@ -29,7 +29,7 @@ export default class SemanticSearch extends Component {
               {{if this.searching 'in-progress'}}"
           >
             <DToggleSwitch
-              disabled={{this.searching}}
+              disabled={{this.disableToggleSwitch}}
               @state={{this.showingAIResults}}
               title="AI search results hidden"
               class="semantic-search__results-toggle"
@@ -64,6 +64,12 @@ export default class SemanticSearch extends Component {
   @tracked searching = false;
   @tracked AIResults = [];
   @tracked showingAIResults = false;
+
+  get disableToggleSwitch() {
+    if (this.searching || this.AIResults.length === 0) {
+      return true;
+    }
+  }
 
   get searchStateText() {
     if (this.searching) {
@@ -133,6 +139,11 @@ export default class SemanticSearch extends Component {
         })
           .then(async (results) => {
             const model = (await translateResults(results)) || {};
+
+            if (model.posts?.length === 0) {
+              this.searching = false;
+              return;
+            }
 
             model.posts.forEach((post) => {
               post.generatedByAI = true;
