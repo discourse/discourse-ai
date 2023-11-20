@@ -38,7 +38,7 @@ export default class PersonaEditor extends Component {
   @action
   updateModel() {
     this.model = EmberObject.create(this.args.model.createProperties());
-    this.priority = this.model.priority > 0;
+    this.priority = this.model.priority;
   }
 
   @action
