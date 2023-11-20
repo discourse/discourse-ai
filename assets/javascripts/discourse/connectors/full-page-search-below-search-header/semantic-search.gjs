@@ -29,7 +29,7 @@ export default class SemanticSearch extends Component {
               {{if this.searching 'in-progress'}}"
           >
             <DToggleSwitch
-              disabled={{this.searching}}
+              disabled={{this.disableToggleSwitch}}
               @state={{this.showingAIResults}}
               title="AI search results hidden"
               class="semantic-search__results-toggle"
@@ -64,6 +64,12 @@ export default class SemanticSearch extends Component {
   @tracked searching = false;
   @tracked AIResults = [];
   @tracked showingAIResults = false;
+
+  get disableToggleSwitch() {
+    if (this.searching || this.AIResults.length === 0) {
+      return true;
+    }
+  }
 
   get searchStateText() {
     if (this.searching) {
@@ -133,12 +139,18 @@ export default class SemanticSearch extends Component {
         })
           .then(async (results) => {
             const model = (await translateResults(results)) || {};
-            const AIResults = model.posts.map(function (post) {
-              return Object.assign({}, post, { generatedByAI: true });
+
+            if (model.posts?.length === 0) {
+              this.searching = false;
+              return;
+            }
+
+            model.posts.forEach((post) => {
+              post.generatedByAI = true;
             });
 
-            this.args.outletArgs.addSearchResults(AIResults, "topic_id");
-            this.AIResults = AIResults;
+            this.args.outletArgs.addSearchResults(model.posts, "topic_id");
+            this.AIResults = model.posts;
           })
           .catch(popupAjaxError)
           .finally(() => (this.searching = false));
