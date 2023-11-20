@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../../support/openai_completions_inference_stubs"
-
 RSpec.describe DiscourseAi::Summarization::Models::OpenAi do
   subject(:model) { described_class.new(model_name, max_tokens: max_tokens) }
 

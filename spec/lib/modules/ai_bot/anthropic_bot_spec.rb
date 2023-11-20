@@ -17,7 +17,7 @@ module ::DiscourseAi
 
       describe "system message" do
         it "includes the full command framework" do
-          prompt = bot.system_prompt(post)
+          prompt = bot.system_prompt(post, allow_commands: true)
 
           expect(prompt).to include("read")
           expect(prompt).to include("search_query")

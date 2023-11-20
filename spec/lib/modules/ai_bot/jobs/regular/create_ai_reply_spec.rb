@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../../../support/openai_completions_inference_stubs"
-require_relative "../../../../../support/anthropic_completion_stubs"
-
 RSpec.describe Jobs::CreateAiReply do
   before do
     # got to do this cause we include times in system message
@@ -31,7 +28,10 @@ RSpec.describe Jobs::CreateAiReply do
         freeze_time
 
         OpenAiCompletionsInferenceStubs.stub_streamed_response(
-          DiscourseAi::AiBot::OpenAiBot.new(bot_user).bot_prompt_with_topic_context(post),
+          DiscourseAi::AiBot::OpenAiBot.new(bot_user).bot_prompt_with_topic_context(
+            post,
+            allow_commands: true,
+          ),
           deltas,
           model: bot.model_for,
           req_opts: {
@@ -83,7 +83,10 @@ RSpec.describe Jobs::CreateAiReply do
         bot_user = User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
 
         AnthropicCompletionStubs.stub_streamed_response(
-          DiscourseAi::AiBot::AnthropicBot.new(bot_user).bot_prompt_with_topic_context(post),
+          DiscourseAi::AiBot::AnthropicBot.new(bot_user).bot_prompt_with_topic_context(
+            post,
+            allow_commands: true,
+          ),
           deltas,
           model: "claude-2",
           req_opts: {

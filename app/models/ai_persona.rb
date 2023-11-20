@@ -64,16 +64,26 @@ class AiPersona < ActiveRecord::Base
 
   def instance
     allowed_group_ids = self.allowed_group_ids
+    id = self.id
+    system = self.system
 
     persona_class = DiscourseAi::AiBot::Personas.system_personas_by_id[self.id]
     if persona_class
       persona_class.define_singleton_method :allowed_group_ids do
         allowed_group_ids
       end
+
+      persona_class.define_singleton_method :id do
+        id
+      end
+
+      persona_class.define_singleton_method :system do
+        system
+      end
+
       return persona_class
     end
 
-    id = self.id
     name = self.name
     description = self.description
     ai_persona_id = self.id
@@ -97,6 +107,10 @@ class AiPersona < ActiveRecord::Base
 
       define_singleton_method :description do
         description
+      end
+
+      define_singleton_method :system do
+        system
       end
 
       define_singleton_method :allowed_group_ids do

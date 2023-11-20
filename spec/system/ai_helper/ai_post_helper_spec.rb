@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../support/openai_completions_inference_stubs"
-
 RSpec.describe "AI Composer helper", type: :system, js: true do
   fab!(:user) { Fabricate(:admin) }
   fab!(:non_member_group) { Fabricate(:group) }

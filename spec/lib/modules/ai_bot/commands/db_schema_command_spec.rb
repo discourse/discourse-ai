@@ -1,7 +1,7 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Commands::DbSchemaCommand do
-  let(:command) { DiscourseAi::AiBot::Commands::DbSchemaCommand.new(bot_user: nil, args: nil) }
+  let(:command) { DiscourseAi::AiBot::Commands::DbSchemaCommand.new(bot: nil, args: nil) }
   describe "#process" do
     it "returns rich schema for tables" do
       result = command.process(tables: "posts,topics")

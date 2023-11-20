@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../support/openai_completions_inference_stubs"
-
 RSpec.describe DiscourseAi::AiHelper::LlmPrompt do
   let(:prompt) { CompletionPrompt.find_by(name: mode, provider: "openai") }
 

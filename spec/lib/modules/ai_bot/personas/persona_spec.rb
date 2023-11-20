@@ -32,18 +32,20 @@ module DiscourseAi::AiBot::Personas
       topic
     end
 
+    after do
+      # we are rolling back transactions so we can create poison cache
+      AiPersona.persona_cache.flush!
+    end
+
     fab!(:user)
 
-    it "can disable commands via constructor" do
-      persona = TestPersona.new(allow_commands: false)
+    it "can disable commands" do
+      persona = TestPersona.new
 
-      rendered =
-        persona.render_system_prompt(topic: topic_with_users, render_function_instructions: true)
+      rendered = persona.render_system_prompt(topic: topic_with_users, allow_commands: false)
 
       expect(rendered).not_to include("!tags")
       expect(rendered).not_to include("!search")
-
-      expect(persona.available_functions).to be_empty
     end
 
     it "renders the system prompt" do

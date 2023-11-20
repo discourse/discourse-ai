@@ -76,7 +76,9 @@ module DiscourseAi
         ) do
           Personas
             .all(user: scope.user)
-            .map { |persona| { name: persona.name, description: persona.description } }
+            .map do |persona|
+              { id: persona.id, name: persona.name, description: persona.description }
+            end
         end
 
         plugin.add_to_serializer(
@@ -112,7 +114,11 @@ module DiscourseAi
           :topic_view,
           :ai_persona_name,
           include_condition: -> { SiteSetting.ai_bot_enabled && object.topic.private_message? },
-        ) { topic.custom_fields["ai_persona"] }
+        ) do
+          id = topic.custom_fields["ai_persona_id"]
+          name = DiscourseAi::AiBot::Personas.find_by(user: scope.user, id: id)&.name if id
+          name || topic.custom_fields["ai_persona"]
+        end
 
         plugin.on(:post_created) do |post|
           bot_ids = BOTS.map(&:first)
@@ -140,7 +146,7 @@ module DiscourseAi
         end
 
         if plugin.respond_to?(:register_editable_topic_custom_field)
-          plugin.register_editable_topic_custom_field(:ai_persona)
+          plugin.register_editable_topic_custom_field(:ai_persona_id)
         end
       end
     end

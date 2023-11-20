@@ -2,6 +2,7 @@
 
 RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot) { DiscourseAi::AiBot::OpenAiBot.new(bot_user) }
 
   before { SiteSetting.ai_bot_enabled = true }
 
@@ -19,7 +20,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
         "https://www.googleapis.com/customsearch/v1?cx=cx&key=abc&num=10&q=some%20search%20term",
       ).to_return(status: 200, body: json_text, headers: {})
 
-      google = described_class.new(bot_user: bot_user, post: post, args: {}.to_json)
+      google = described_class.new(bot: nil, post: post, args: {}.to_json)
       info = google.process(query: "some search term").to_json
 
       expect(google.description_args[:count]).to eq(0)
@@ -61,11 +62,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::GoogleCommand do
       ).to_return(status: 200, body: json_text, headers: {})
 
       google =
-        described_class.new(
-          bot_user: bot_user,
-          post: post,
-          args: { query: "some search term" }.to_json,
-        )
+        described_class.new(bot: bot, post: post, args: { query: "some search term" }.to_json)
 
       info = google.process(query: "some search term").to_json
 

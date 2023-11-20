@@ -26,12 +26,20 @@ module DiscourseAi
         all_available_commands = Persona.all_available_commands
 
         personas.filter do |persona|
-          instance = persona.new
-          (
-            instance.required_commands == [] ||
-              (instance.required_commands - all_available_commands).empty?
-          )
+          if persona.system
+            instance = persona.new
+            (
+              instance.required_commands == [] ||
+                (instance.required_commands - all_available_commands).empty?
+            )
+          else
+            true
+          end
         end
+      end
+
+      def self.find_by(id: nil, name: nil, user:)
+        all(user: user).find { |persona| persona.id == id || persona.name == name }
       end
 
       class Persona
@@ -43,10 +51,6 @@ module DiscourseAi
           I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.description")
         end
 
-        def initialize(allow_commands: true)
-          @allow_commands = allow_commands
-        end
-
         def commands
           []
         end
@@ -56,7 +60,6 @@ module DiscourseAi
         end
 
         def render_commands(render_function_instructions:)
-          return +"" if !@allow_commands
           return +"" if available_commands.empty?
 
           result = +""
@@ -69,7 +72,11 @@ module DiscourseAi
           result
         end
 
-        def render_system_prompt(topic: nil, render_function_instructions: true)
+        def render_system_prompt(
+          topic: nil,
+          render_function_instructions: true,
+          allow_commands: true
+        )
           substitutions = {
             site_url: Discourse.base_url,
             site_title: SiteSetting.title,
@@ -79,22 +86,25 @@ module DiscourseAi
 
           substitutions[:participants] = topic.allowed_users.map(&:username).join(", ") if topic
 
-          system_prompt.gsub(/\{(\w+)\}/) do |match|
-            found = substitutions[match[1..-2].to_sym]
-            found.nil? ? match : found.to_s
-          end + render_commands(render_function_instructions: render_function_instructions)
+          prompt =
+            system_prompt.gsub(/\{(\w+)\}/) do |match|
+              found = substitutions[match[1..-2].to_sym]
+              found.nil? ? match : found.to_s
+            end
+
+          if allow_commands
+            prompt += render_commands(render_function_instructions: render_function_instructions)
+          end
+
+          prompt
         end
 
         def available_commands
-          return [] if !@allow_commands
-
           return @available_commands if @available_commands
-
           @available_commands = all_available_commands.filter { |cmd| commands.include?(cmd) }
         end
 
         def available_functions
-          return [] if !@allow_commands
           # note if defined? can be a problem in test
           # this can never be nil so it is safe
           return @available_functions if @available_functions

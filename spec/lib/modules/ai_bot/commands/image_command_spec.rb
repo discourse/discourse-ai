@@ -2,6 +2,7 @@
 
 RSpec.describe DiscourseAi::AiBot::Commands::ImageCommand do
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot) { DiscourseAi::AiBot::OpenAiBot.new(bot_user) }
 
   before { SiteSetting.ai_bot_enabled = true }
 
@@ -30,7 +31,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::ImageCommand do
         end
         .to_return(status: 200, body: { artifacts: artifacts }.to_json)
 
-      image = described_class.new(bot_user: bot_user, post: post, args: nil)
+      image = described_class.new(bot: bot, post: post, args: nil)
 
       info = image.process(prompts: prompts).to_json
 

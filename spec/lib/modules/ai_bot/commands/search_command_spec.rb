@@ -1,11 +1,6 @@
 #frozen_string_literal: true
 
-require_relative "../../../../support/openai_completions_inference_stubs"
-require_relative "../../../../support/embeddings_generation_stubs"
-
 RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-
   before { SearchIndexer.enable }
   after { SearchIndexer.disable }
 
@@ -33,7 +28,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
   describe "#process" do
     it "can handle no results" do
       post1 = Fabricate(:post, topic: topic_with_tags)
-      search = described_class.new(bot_user: bot_user, post: post1, args: nil)
+      search = described_class.new(bot: nil, post: post1, args: nil)
 
       results = search.process(query: "order:fake ABDDCDCEDGDG")
 
@@ -64,7 +59,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
         )
 
         post1 = Fabricate(:post, topic: topic_with_tags)
-        search = described_class.new(bot_user: bot_user, post: post1, args: nil)
+        search = described_class.new(bot: nil, post: post1, args: nil)
 
         DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2
           .any_instance
@@ -83,7 +78,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
       post1 = Fabricate(:post, topic: topic_with_tags)
 
-      search = described_class.new(bot_user: bot_user, post: post1, args: nil)
+      search = described_class.new(bot: nil, post: post1, args: nil)
 
       results = search.process(limit: 1, user: post1.user.username)
       expect(results[:rows].to_s).to include("/subfolder" + post1.url)
@@ -91,7 +86,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
     it "returns category and tags" do
       post1 = Fabricate(:post, topic: topic_with_tags)
-      search = described_class.new(bot_user: bot_user, post: post1, args: nil)
+      search = described_class.new(bot: nil, post: post1, args: nil)
       results = search.process(user: post1.user.username)
 
       row = results[:rows].first
@@ -109,7 +104,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       _post3 = Fabricate(:post, user: post1.user)
 
       # search has no built in support for limit: so handle it from the outside
-      search = described_class.new(bot_user: bot_user, post: post1, args: nil)
+      search = described_class.new(bot: nil, post: post1, args: nil)
 
       results = search.process(limit: 2, user: post1.user.username)
 

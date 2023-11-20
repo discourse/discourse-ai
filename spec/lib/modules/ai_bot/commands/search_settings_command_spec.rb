@@ -1,7 +1,7 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Commands::SearchSettingsCommand do
-  let(:search) { described_class.new(bot_user: nil, args: nil) }
+  let(:search) { described_class.new(bot: nil, args: nil) }
 
   describe "#process" do
     it "can handle no results" do

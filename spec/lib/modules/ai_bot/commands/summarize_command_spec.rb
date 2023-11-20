@@ -1,9 +1,8 @@
 #frozen_string_literal: true
 
-require_relative "../../../../support/openai_completions_inference_stubs"
-
 RSpec.describe DiscourseAi::AiBot::Commands::SummarizeCommand do
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot) { DiscourseAi::AiBot::OpenAiBot.new(bot_user) }
 
   before { SiteSetting.ai_bot_enabled = true }
 
@@ -16,7 +15,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SummarizeCommand do
         body: JSON.dump({ choices: [{ message: { content: "summary stuff" } }] }),
       )
 
-      summarizer = described_class.new(bot_user: bot_user, args: nil, post: post)
+      summarizer = described_class.new(bot: bot, args: nil, post: post)
       info = summarizer.process(topic_id: post.topic_id, guidance: "why did it happen?")
 
       expect(info).to include("Topic summarized")
@@ -32,7 +31,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SummarizeCommand do
       topic = Fabricate(:topic, category_id: category.id)
       post = Fabricate(:post, topic: topic)
 
-      summarizer = described_class.new(bot_user: bot_user, post: post, args: nil)
+      summarizer = described_class.new(bot: bot, post: post, args: nil)
       info = summarizer.process(topic_id: post.topic_id, guidance: "why did it happen?")
 
       expect(info).not_to include(post.raw)

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../support/anthropic_completion_stubs"
-
 RSpec.describe DiscourseAi::Inference::AnthropicCompletions do
   before { SiteSetting.ai_anthropic_api_key = "abc-123" }
 

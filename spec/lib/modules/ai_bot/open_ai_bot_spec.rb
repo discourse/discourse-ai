@@ -31,7 +31,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       fab!(:post_1) { Fabricate(:post, topic: topic, raw: post_body(1), post_number: 1) }
 
       it "includes it in the prompt" do
-        prompt_messages = subject.bot_prompt_with_topic_context(post_1)
+        prompt_messages = subject.bot_prompt_with_topic_context(post_1, allow_commands: true)
 
         post_1_message = prompt_messages[-1]
 
@@ -45,7 +45,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       fab!(:post_1) { Fabricate(:post, topic: topic, raw: "test " * 6000, post_number: 1) }
 
       it "trims the prompt" do
-        prompt_messages = subject.bot_prompt_with_topic_context(post_1)
+        prompt_messages = subject.bot_prompt_with_topic_context(post_1, allow_commands: true)
 
         # trimming is tricky... it needs to account for system message as
         # well... just make sure we trim for now
@@ -61,7 +61,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       let!(:post_3) { Fabricate(:post, topic: topic, raw: post_body(3), post_number: 3) }
 
       it "includes them in the prompt respecting the post number order" do
-        prompt_messages = subject.bot_prompt_with_topic_context(post_3)
+        prompt_messages = subject.bot_prompt_with_topic_context(post_3, allow_commands: true)
 
         # negative cause we may have grounding prompts
         expect(prompt_messages[-3][:role]).to eq("user")

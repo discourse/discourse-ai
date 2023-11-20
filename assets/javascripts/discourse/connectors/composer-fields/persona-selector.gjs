@@ -1,5 +1,7 @@
 import Component from "@glimmer/component";
+import { hash } from "@ember/helper";
 import { inject as service } from "@ember/service";
+import DropdownSelectBox from "select-kit/components/dropdown-select-box";
 
 function isBotMessage(composer, currentUser) {
   if (
@@ -25,6 +27,13 @@ export default class BotSelector extends Component {
   }
 
   @service currentUser;
+  constructor() {
+    super(...arguments);
+    if (this.botOptions && this.composer) {
+      this._value = this.botOptions[0].id;
+      this.composer.metaData = { ai_persona_id: this._value };
+    }
+  }
 
   get composer() {
     return this.args?.outletArgs?.model;
@@ -34,7 +43,7 @@ export default class BotSelector extends Component {
     if (this.currentUser.ai_enabled_personas) {
       return this.currentUser.ai_enabled_personas.map((persona) => {
         return {
-          id: persona.name,
+          id: persona.id,
           name: persona.name,
           description: persona.description,
         };
@@ -43,11 +52,21 @@ export default class BotSelector extends Component {
   }
 
   get value() {
-    return this._value || this.botOptions[0].id;
+    return this._value;
   }
 
   set value(val) {
     this._value = val;
-    this.composer.metaData = { ai_persona: val };
+    this.composer.metaData = { ai_persona_id: val };
   }
+
+  <template>
+    <div class="gpt-persona">
+      <DropdownSelectBox
+        @value={{this.value}}
+        @content={{this.botOptions}}
+        @options={{hash icon="robot"}}
+      />
+    </div>
+  </template>
 }

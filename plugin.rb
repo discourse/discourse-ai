@@ -83,4 +83,10 @@ after_initialize do
   on(:reviewable_transitioned_to) do |new_status, reviewable|
     ModelAccuracy.adjust_model_accuracy(new_status, reviewable)
   end
+
+  if Rails.env.test?
+    require_relative "spec/support/openai_completions_inference_stubs"
+    require_relative "spec/support/anthropic_completion_stubs"
+    require_relative "spec/support/stable_diffusion_stubs"
+  end
 end

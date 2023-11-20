@@ -1,10 +1,7 @@
 #frozen_string_literal: true
 
-require_relative "../../../../support/openai_completions_inference_stubs"
-
 RSpec.describe DiscourseAi::AiBot::Commands::Command do
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  let(:command) { DiscourseAi::AiBot::Commands::GoogleCommand.new(bot_user: bot_user, args: nil) }
+  let(:command) { DiscourseAi::AiBot::Commands::GoogleCommand.new(bot: nil, args: nil) }
 
   before { SiteSetting.ai_bot_enabled = true }
 

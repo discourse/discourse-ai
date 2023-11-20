@@ -7,11 +7,12 @@ module DiscourseAi
         bot_user.id == DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
       end
 
-      def bot_prompt_with_topic_context(post)
-        super(post).join("\n\n") + "\n\nAssistant:"
+      def bot_prompt_with_topic_context(post, allow_commands:)
+        super(post, allow_commands: allow_commands).join("\n\n") + "\n\nAssistant:"
       end
 
-      def prompt_limit
+      def prompt_limit(allow_commands: true)
+        # no side channel for commands, so we can ignore allow commands
         50_000 # https://console.anthropic.com/docs/prompt-design#what-is-a-prompt
       end
 
