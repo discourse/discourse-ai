@@ -53,7 +53,7 @@ class AiPersona < ActiveRecord::Base
       .where(enabled: true)
       .all
       .limit(MAX_PERSONAS_PER_SITE)
-      .map { |ai_persona| ai_persona.instance }
+      .map(&:instance)
   end
 
   after_commit :bump_cache
