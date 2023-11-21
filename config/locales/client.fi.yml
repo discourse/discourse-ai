@@ -21,6 +21,13 @@ fi:
     discourse_ai:
       modals:
         select_option: "Valitse vaihtoehto..."
+      ai_persona:
+        name: Nimi
+        description: Kuvaus
+        save: Tallenna
+        enabled: Käytössä
+        new: Uudet
+        delete: Poista
       related_topics:
         pill: "Liittyy aiheeseen"
       ai_helper:
@@ -36,6 +43,8 @@ fi:
           revert: "Palauta"
         post_options_menu:
           close: "Sulje"
+          copy: "Kopioi"
+          copied: "Kopioitiin!"
       reviewables:
         model_used: "Käytetty malli:"
         accuracy: "Tarkkuus:"

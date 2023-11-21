@@ -17,6 +17,13 @@ nb_NO:
             canned_reply:
               label: "Svar"
     discourse_ai:
+      ai_persona:
+        name: Navn
+        description: Beskrivelse
+        save: Lagre
+        enabled: Aktivert
+        new: Ny
+        delete: Slett
       ai_helper:
         context_menu:
           back: "Forrige"
@@ -26,3 +33,5 @@ nb_NO:
           revert: "Reverser"
         post_options_menu:
           close: "Lukk"
+          copy: "Kopier"
+          copied: "Kopiert!"

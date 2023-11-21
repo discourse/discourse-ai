@@ -17,6 +17,13 @@ sv:
             canned_reply:
               label: "Svara"
     discourse_ai:
+      ai_persona:
+        name: Namn
+        description: Beskrivning
+        save: Spara
+        enabled: Aktiverad
+        new: Nya
+        delete: Radera
       ai_helper:
         context_menu:
           back: "Tillbaka"
@@ -27,3 +34,5 @@ sv:
           revert: "Återställ"
         post_options_menu:
           close: "Stäng"
+          copy: "Kopiera"
+          copied: "Kopierad!"

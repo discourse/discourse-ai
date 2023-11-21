@@ -72,9 +72,7 @@ de:
     ai_bot_enable_chat_warning: "Display a warnen wehen PM Chat IS initiale. Man der verrieten, bot Styling the Translation String: Diskurs_ai.ai_bot.pm_warnen"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
     ai_bot_enabled_chat_bots: "Verfügbare Modelle, die als KI-Bot agieren können"
-    ai_bot_enabled_chat_commands: "Verfügbare GPT-Integrationen zur Bereitstellung externer Funktionen für den Forum Helper-Bot. Beachte, dass bestimmte Befehle nur verfügbar sind, wenn die entsprechenden API-Schlüssel hinzugefügt wurden."
     ai_bot_add_to_header: "Eine Schaltfläche in der Kopfzeile anzeigen, um eine PN mit einem KI-Bot zu starten"
-    ai_bot_enabled_personas: "Liste der verfügbaren Personen für den KI-Bot"
     ai_stability_api_key: "API-Schlüssel für die stability.ai-API"
     ai_stability_engine: "Bildgenerierungsengine für die stability.ai-API"
     ai_stability_api_url: "URL für die stability.ai-API"
@@ -114,6 +112,8 @@ de:
         explain: "Erklären"
     ai_bot:
       personas:
+        cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
+        cannot_edit_system_persona: "System-Personas können nur umbenannt werden, du kannst keine Befehle oder die System-Eingabeaufforderung bearbeiten, sondern deaktivieren und eine Kopie erstellen"
         general:
           name: Forum-Helfer
           description: "Universeller KI-Bot, der verschiedene Aufgaben erfüllen kann"

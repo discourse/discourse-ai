@@ -17,6 +17,13 @@ pt:
             canned_reply:
               label: "Responder"
     discourse_ai:
+      ai_persona:
+        name: Nome
+        description: Descrição
+        save: Guardar
+        enabled: Ativado
+        new: Novo
+        delete: Eliminar
       ai_helper:
         context_menu:
           back: "Retroceder"
@@ -26,3 +33,5 @@ pt:
           revert: "Reverter"
         post_options_menu:
           close: "Fechar"
+          copy: "Copiar"
+          copied: "Copiado!"

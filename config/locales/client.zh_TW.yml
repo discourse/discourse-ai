@@ -17,6 +17,13 @@ zh_TW:
             canned_reply:
               label: "回覆"
     discourse_ai:
+      ai_persona:
+        name: 名字
+        description: 簡述
+        save: 保存
+        enabled: 啟用
+        new: 新使用者
+        delete: 刪除
       ai_helper:
         context_menu:
           back: "上一步"
@@ -26,3 +33,5 @@ zh_TW:
           revert: "恢復"
         post_options_menu:
           close: "關閉"
+          copy: "複製"
+          copied: "已複製!"

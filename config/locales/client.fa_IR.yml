@@ -21,6 +21,12 @@ fa_IR:
     discourse_ai:
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
+      ai_persona:
+        name: نام
+        description: توضیح
+        save: ذخیره
+        new: تازه
+        delete: حذف
       related_topics:
         title: "موضوعات مرتبط"
       ai_helper:
@@ -36,6 +42,8 @@ fa_IR:
           revert: "برگشت"
         post_options_menu:
           close: "بستن"
+          copy: "کپی"
+          copied: "کپی شد!"
       reviewables:
         model_used: "مدل مورد استفاده:"
         accuracy: "دقت:"

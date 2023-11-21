@@ -44,8 +44,17 @@ he:
               label: "דגם"
               description: "יכול להיות gpt-4 או gpt-3-5-turbo או claude-2"
     discourse_ai:
+      title: "בינה מלאכותית"
       modals:
         select_option: "בחירת אפשרות…"
+      ai_persona:
+        name: שם
+        description: תיאור
+        system_prompt: בקשת מערכת
+        save: שמירה
+        enabled: פעיל
+        new: חדשות
+        delete: מחיקה
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
@@ -74,6 +83,8 @@ he:
           trigger: "לשאול בינה מלאכותית"
           loading: "הבינה המלאכותית נוצרת"
           close: "סגירה"
+          copy: "העתקה"
+          copied: "הועתק!"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"
@@ -81,7 +92,8 @@ he:
         semantic_search: "נושאים (סמנטיקה)"
         semantic_search_loading: "מתבצע חיפוש אחר תוצאות נוספות עם בינה מלאכותית"
         semantic_search_results:
-          toggle: "נמצאו %{count} תוצאות באמצעות בינה מלאכותית"
+          toggle: "מוצגות %{count} תוצאות שנמצאו באמצעות בינה מלאכותית"
+          toggle_hidden: "מוסתרות %{count} תוצאות שנמצאו באמצעות בינה מלאכותית"
           none: "חיפוש הבינה המלאכותית שלנו לא מצא נושאים, עמך הסליחה."
       ai_bot:
         pm_warning: "הודעות בוט שיח בינה מלאכותית לא נאכפות דרך קבע על ידי המפקחים."

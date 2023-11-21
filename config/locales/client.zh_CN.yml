@@ -21,6 +21,13 @@ zh_CN:
     discourse_ai:
       modals:
         select_option: "选择一个选项…"
+      ai_persona:
+        name: 名称
+        description: 描述
+        save: 保存
+        enabled: 已启用
+        new: 新
+        delete: 删除
       related_topics:
         pill: "相关"
       ai_helper:
@@ -36,6 +43,8 @@ zh_CN:
           revert: "还原"
         post_options_menu:
           close: "关闭"
+          copy: "复制"
+          copied: "已复制！"
       reviewables:
         model_used: "使用的模型："
         accuracy: "准确性："

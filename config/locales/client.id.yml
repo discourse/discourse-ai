@@ -17,6 +17,13 @@ id:
             canned_reply:
               label: "Balas"
     discourse_ai:
+      ai_persona:
+        name: Nama
+        description: Deskripsi
+        save: Simpan
+        enabled: Diaktifkan
+        new: New
+        delete: Hapus
       ai_helper:
         context_menu:
           undo: "Batalkan perintah"
@@ -26,3 +33,4 @@ id:
           revert: "Dibalik"
         post_options_menu:
           close: "Tutup"
+          copied: "Disalin!"

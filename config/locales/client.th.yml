@@ -17,6 +17,12 @@ th:
             canned_reply:
               label: "ตอบ"
     discourse_ai:
+      ai_persona:
+        name: ชื่อ
+        description: รายละเอียด
+        save: บันทึก
+        new: ใหม่
+        delete: ลบ
       ai_helper:
         context_menu:
           back: "กลับ"
@@ -26,3 +32,5 @@ th:
           revert: "ย้อนกลับ"
         post_options_menu:
           close: "ปิด"
+          copy: "คัดลอก"
+          copied: "คัดลอกแล้ว!"

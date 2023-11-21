@@ -17,6 +17,12 @@ vi:
             canned_reply:
               label: "Trả lời"
     discourse_ai:
+      ai_persona:
+        name: Tên
+        description: Mô tả
+        save: Lưu lại
+        new: Mới
+        delete: Xóa
       ai_helper:
         context_menu:
           back: "Quay lại"
@@ -26,3 +32,5 @@ vi:
           revert: "Phục hồi"
         post_options_menu:
           close: "Đóng"
+          copy: "Sao chép"
+          copied: "Đã sao chép!"

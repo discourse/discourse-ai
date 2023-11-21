@@ -17,6 +17,13 @@ ko:
             canned_reply:
               label: "댓글쓰기"
     discourse_ai:
+      ai_persona:
+        name: 그룹명
+        description: 내용
+        save: 저장
+        enabled: 활성화
+        new: 신규
+        delete: 삭제하기
       ai_helper:
         context_menu:
           back: "뒤로"
@@ -27,3 +34,5 @@ ko:
           revert: "되돌리기"
         post_options_menu:
           close: "닫기"
+          copy: "복사"
+          copied: "복사되었습니다!"

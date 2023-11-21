@@ -17,6 +17,13 @@ sl:
             canned_reply:
               label: "Odgovori"
     discourse_ai:
+      ai_persona:
+        name: Ime
+        description: Opis
+        save: Shrani
+        enabled: Vključeno
+        new: Nova
+        delete: Izbriši
       ai_helper:
         context_menu:
           back: "Nazaj"
@@ -26,3 +33,5 @@ sl:
           revert: "Povrni"
         post_options_menu:
           close: "Zapri"
+          copy: "Kopiraj"
+          copied: "Kopirano!"

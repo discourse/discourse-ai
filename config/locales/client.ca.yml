@@ -17,6 +17,13 @@ ca:
             canned_reply:
               label: "Respon"
     discourse_ai:
+      ai_persona:
+        name: Nom
+        description: Descripció
+        save: Desa
+        enabled: Activat
+        new: Nou
+        delete: Suprimeix
       ai_helper:
         context_menu:
           back: "Enrere"
@@ -27,3 +34,5 @@ ca:
           revert: "Reverteix"
         post_options_menu:
           close: "Tanca"
+          copy: "Còpia"
+          copied: "Copiat!"

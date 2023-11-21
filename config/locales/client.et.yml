@@ -17,6 +17,13 @@ et:
             canned_reply:
               label: "Vasta"
     discourse_ai:
+      ai_persona:
+        name: Nimi
+        description: Kirjeldus
+        save: Salvesta
+        enabled: Sisse lülitatud
+        new: Uus
+        delete: Kustuta
       ai_helper:
         context_menu:
           back: "Tagasi"
@@ -26,3 +33,5 @@ et:
           revert: "Võta tagasi"
         post_options_menu:
           close: "Sulge"
+          copy: "Kopeeri"
+          copied: "Kopeeritud!"

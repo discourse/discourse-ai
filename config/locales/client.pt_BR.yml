@@ -21,6 +21,13 @@ pt_BR:
     discourse_ai:
       modals:
         select_option: "Selecione uma opção..."
+      ai_persona:
+        name: Nome
+        description: Descrição
+        save: Salvar
+        enabled: Ativado
+        new: Novo
+        delete: Excluir
       related_topics:
         pill: "Relacionado(a)"
       ai_helper:
@@ -36,6 +43,8 @@ pt_BR:
           revert: "Reverter"
         post_options_menu:
           close: "Fechar"
+          copy: "Copiar"
+          copied: "Copiado!"
       reviewables:
         model_used: "Modelo usado:"
         accuracy: "Precisão:"
