@@ -116,7 +116,7 @@ module DiscourseAi
           include_condition: -> { SiteSetting.ai_bot_enabled && object.topic.private_message? },
         ) do
           id = topic.custom_fields["ai_persona_id"]
-          name = DiscourseAi::AiBot::Personas.find_by(user: scope.user, id: id)&.name if id
+          name = DiscourseAi::AiBot::Personas.find_by(user: scope.user, id: id.to_i)&.name if id
           name || topic.custom_fields["ai_persona"]
         end
 
