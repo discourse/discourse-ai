@@ -59,7 +59,7 @@ export default class PersonaEditor extends Component {
         );
       } else {
         this.toasts.success({
-          data: { message: I18n.t("discourse_ai.ai-persona.saved") },
+          data: { message: I18n.t("discourse_ai.ai_persona.saved") },
           duration: 2000,
         });
       }
@@ -76,7 +76,7 @@ export default class PersonaEditor extends Component {
   @action
   delete() {
     return this.dialog.confirm({
-      message: I18n.t("discourse_ai.ai-persona.confirm_delete"),
+      message: I18n.t("discourse_ai.ai_persona.confirm_delete"),
       didConfirm: () => {
         return this.args.model.destroyRecord().then(() => {
           this.args.personas.removeObject(this.args.model);
@@ -144,7 +144,7 @@ export default class PersonaEditor extends Component {
         <DToggleSwitch
           class="ai-persona-editor__enabled"
           @state={{@model.enabled}}
-          @label="discourse_ai.ai-persona.enabled"
+          @label="discourse_ai.ai_persona.enabled"
           {{on "click" this.toggleEnabled}}
         />
       </div>
@@ -152,16 +152,16 @@ export default class PersonaEditor extends Component {
         <DToggleSwitch
           class="ai-persona-editor__priority"
           @state={{@model.priority}}
-          @label="discourse_ai.ai-persona.priority"
+          @label="discourse_ai.ai_persona.priority"
           {{on "click" this.togglePriority}}
         />
         <DTooltip
           @icon="question-circle"
-          @content={{i18n "discourse_ai.ai-persona.priority_help"}}
+          @content={{i18n "discourse_ai.ai_persona.priority_help"}}
         />
       </div>
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai-persona.name"}}</label>
+        <label>{{I18n.t "discourse_ai.ai_persona.name"}}</label>
         <Input
           class="ai-persona-editor__name"
           @type="text"
@@ -170,7 +170,7 @@ export default class PersonaEditor extends Component {
         />
       </div>
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai-persona.description"}}</label>
+        <label>{{I18n.t "discourse_ai.ai_persona.description"}}</label>
         <Textarea
           class="ai-persona-editor__description"
           @value={{this.editingModel.description}}
@@ -178,7 +178,7 @@ export default class PersonaEditor extends Component {
         />
       </div>
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai-persona.commands"}}</label>
+        <label>{{I18n.t "discourse_ai.ai_persona.commands"}}</label>
         <AiCommandSelector
           class="ai-persona-editor__commands"
           @value={{this.editingModel.commands}}
@@ -187,7 +187,7 @@ export default class PersonaEditor extends Component {
         />
       </div>
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai-persona.allowed_groups"}}</label>
+        <label>{{I18n.t "discourse_ai.ai_persona.allowed_groups"}}</label>
         <GroupChooser
           @value={{this.editingModel.allowed_group_ids}}
           @content={{this.allGroups}}
@@ -209,13 +209,13 @@ export default class PersonaEditor extends Component {
           class="btn-primary ai-persona-editor__save"
           @action={{this.save}}
           @disabled={{this.isSaving}}
-        >{{I18n.t "discourse_ai.ai-persona.save"}}</DButton>
+        >{{I18n.t "discourse_ai.ai_persona.save"}}</DButton>
         {{#if this.showDelete}}
           <DButton
             @action={{this.delete}}
             class="btn-danger ai-persona-editor__delete"
           >
-            {{I18n.t "discourse_ai.ai-persona.delete"}}
+            {{I18n.t "discourse_ai.ai_persona.delete"}}
           </DButton>
         {{/if}}
       </div>

@@ -43,7 +43,7 @@ en:
       modals:
         select_option: "Select an option..."
 
-      ai-persona:
+      ai_persona:
         name: Name
         description: Description
         system_prompt: System Prompt

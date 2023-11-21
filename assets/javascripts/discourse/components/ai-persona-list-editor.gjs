@@ -12,7 +12,7 @@ export default class AiPersonaListEditor extends Component {
 
   get noPersonaText() {
     if (this._noPersonaText === null) {
-      const raw = I18n.t("discourse_ai.ai-persona.no_persona_selected");
+      const raw = I18n.t("discourse_ai.ai_persona.no_persona_selected");
       cook(raw).then((result) => {
         this._noPersonaText = result;
       });
@@ -23,14 +23,14 @@ export default class AiPersonaListEditor extends Component {
 
   <template>
     <div class="ai-persona-list-editor__header">
-      <h3>{{I18n.t "discourse_ai.ai-persona.title"}}</h3>
+      <h3>{{I18n.t "discourse_ai.ai_persona.title"}}</h3>
       {{#unless @currentPersona.isNew}}
         <LinkTo
           @route="adminPlugins.discourse-ai.ai-personas.new"
           class="btn btn-primary"
         >
           {{icon "plus"}}
-          <span>{{I18n.t "discourse_ai.ai-persona.new"}}</span>
+          <span>{{I18n.t "discourse_ai.ai_persona.new"}}</span>
         </LinkTo>
       {{/unless}}
     </div>
