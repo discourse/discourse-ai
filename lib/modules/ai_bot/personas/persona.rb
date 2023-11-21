@@ -154,8 +154,7 @@ module DiscourseAi
         end
 
         def all_available_commands
-          return @cmds if @cmds
-          @cmds = self.class.all_available_commands
+          @cmds ||= self.class.all_available_commands
         end
       end
     end
