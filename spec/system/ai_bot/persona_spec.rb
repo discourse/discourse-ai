@@ -38,7 +38,7 @@ RSpec.describe "AI personas", type: :system, js: true do
     visit "/admin/plugins/discourse-ai/ai_personas/#{persona.id}"
 
     find(".ai-persona-editor__name").set("Test Persona 1")
-    find(".ai-persona-editor__enabled+span").click()
+    PageObjects::Components::DToggleSwitch.new(".ai-persona-editor__enabled").toggle
 
     try_until_success { expect(persona.reload.enabled).to eq(true) }
 
