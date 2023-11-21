@@ -4,8 +4,24 @@ RSpec.describe "AI personas", type: :system, js: true do
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4|gpt-3.5-turbo"
+    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
     sign_in(admin)
+
+    Group.refresh_automatic_groups!
+  end
+
+  it "remembers the last selected persona" do
+    visit "/"
+    find(".d-header .ai-bot-button").click()
+    persona_selector = PageObjects::Components::SelectKit.new(".persona-selector__dropdown")
+    persona_selector.expand
+    persona_selector.select_row_by_value(-2)
+
+    visit "/"
+    find(".d-header .ai-bot-button").click()
+    persona_selector = PageObjects::Components::SelectKit.new(".persona-selector__dropdown")
+    persona_selector.expand
+    expect(persona_selector).to have_selected_value(-2)
   end
 
   it "allows creation of a persona" do

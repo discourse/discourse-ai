@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../support/embeddings_generation_stubs"
-
 RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   fab!(:post) { Fabricate(:post) }
   fab!(:user) { Fabricate(:user) }

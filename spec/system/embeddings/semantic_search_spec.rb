@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../support/embeddings_generation_stubs"
-require_relative "../../support/openai_completions_inference_stubs"
-
 RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:search_page) { PageObjects::Pages::Search.new }
   let(:query) { "apple_pie" }
