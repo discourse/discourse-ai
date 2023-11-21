@@ -21,4 +21,8 @@ export default class AiPersona extends RestModel {
   createProperties() {
     return this.getProperties(ATTRIBUTES);
   }
+
+  workingCopy() {
+    return AiPersona.create(this.createProperties());
+  }
 }

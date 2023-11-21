@@ -24,7 +24,7 @@ module DiscourseAi
         if ai_persona.save
           render json: { ai_persona: ai_persona }, status: :created
         else
-          render_json_error @ai_persona
+          render_json_error ai_persona
         end
       end
 
@@ -48,8 +48,6 @@ module DiscourseAi
 
       def find_ai_persona
         @ai_persona = AiPersona.find(params[:id])
-      rescue ActiveRecord::RecordNotFound
-        render json: { error: "AiPersona not found" }, status: :not_found
       end
 
       def ai_persona_params

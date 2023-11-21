@@ -2,7 +2,7 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
 import { on } from "@ember/modifier";
-import EmberObject, { action } from "@ember/object";
+import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { later } from "@ember/runloop";
@@ -38,7 +38,7 @@ export default class PersonaEditor extends Component {
 
   @action
   updateModel() {
-    this.editingModel = EmberObject.create(this.args.model.createProperties());
+    this.editingModel = this.args.model.workingCopy();
     this.showDelete = !this.args.model.isNew && !this.args.model.system;
   }
 
@@ -46,6 +46,8 @@ export default class PersonaEditor extends Component {
   async save() {
     const isNew = this.args.model.isNew;
     this.isSaving = true;
+
+    const backupModel = this.args.model.workingCopy();
 
     this.args.model.setProperties(this.editingModel);
     try {
@@ -64,6 +66,7 @@ export default class PersonaEditor extends Component {
         });
       }
     } catch (e) {
+      this.args.model.setProperties(backupModel);
       popupAjaxError(e);
     } finally {
       later(() => {
