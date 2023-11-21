@@ -58,7 +58,7 @@ export default class PersonaEditor extends Component {
           this.args.model
         );
       } else {
-        this.toasts.show({
+        this.toasts.success({
           data: { message: I18n.t("discourse_ai.ai-persona.saved") },
           duration: 2000,
         });
