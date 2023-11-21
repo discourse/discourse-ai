@@ -14,10 +14,10 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :allowed_group_ids
 
   def name
-    object.instance.name
+    object.class_instance.name
   end
 
   def description
-    object.instance.description
+    object.class_instance.description
   end
 end

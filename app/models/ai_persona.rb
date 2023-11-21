@@ -53,7 +53,7 @@ class AiPersona < ActiveRecord::Base
       .where(enabled: true)
       .all
       .limit(MAX_PERSONAS_PER_SITE)
-      .map(&:instance)
+      .map(&:class_instance)
   end
 
   after_commit :bump_cache
@@ -62,7 +62,7 @@ class AiPersona < ActiveRecord::Base
     self.class.persona_cache.flush!
   end
 
-  def instance
+  def class_instance
     allowed_group_ids = self.allowed_group_ids
     id = self.id
     system = self.system
