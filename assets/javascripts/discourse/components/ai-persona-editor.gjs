@@ -196,7 +196,7 @@ export default class PersonaEditor extends Component {
       </div>
       <div class="control-group">
         <label for="ai-persona-editor__system_prompt">{{I18n.t
-            "discourse_ai.ai-persona.system_prompt"
+            "discourse_ai.ai_persona.system_prompt"
           }}</label>
         <Textarea
           class="ai-persona-editor__system_prompt"
