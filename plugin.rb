@@ -88,5 +88,6 @@ after_initialize do
     require_relative "spec/support/openai_completions_inference_stubs"
     require_relative "spec/support/anthropic_completion_stubs"
     require_relative "spec/support/stable_diffusion_stubs"
+    require_relative "spec/support/embeddings_generation_stubs"
   end
 end

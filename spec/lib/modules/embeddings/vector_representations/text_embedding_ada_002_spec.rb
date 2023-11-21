@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../../support/embeddings_generation_stubs"
 require_relative "vector_rep_shared_examples"
 
 RSpec.describe DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002 do

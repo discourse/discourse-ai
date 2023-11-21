@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../../support/embeddings_generation_stubs"
-
 RSpec.describe Jobs::GenerateEmbeddings do
   subject(:job) { described_class.new }
 

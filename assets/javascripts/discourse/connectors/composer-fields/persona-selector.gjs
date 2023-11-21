@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { hash } from "@ember/helper";
 import { inject as service } from "@ember/service";
+import KeyValueStore from "discourse/lib/key-value-store";
 import DropdownSelectBox from "select-kit/components/dropdown-select-box";
 
 function isBotMessage(composer, currentUser) {
@@ -27,10 +28,20 @@ export default class BotSelector extends Component {
   }
 
   @service currentUser;
+
+  STORE_NAMESPACE = "discourse_ai_persona_selector_";
+  store = new KeyValueStore(this.STORE_NAMESPACE);
+
   constructor() {
     super(...arguments);
     if (this.botOptions && this.composer) {
-      this._value = this.botOptions[0].id;
+      const id = this.store.getObject("id");
+      if (id) {
+        this._value = parseInt(id, 10);
+      } else {
+        this._value = this.botOptions[0].id;
+      }
+
       this.composer.metaData = { ai_persona_id: this._value };
     }
   }
@@ -57,12 +68,14 @@ export default class BotSelector extends Component {
 
   set value(val) {
     this._value = val;
+    this.store.setObject({ key: "id", value: val });
     this.composer.metaData = { ai_persona_id: val };
   }
 
   <template>
     <div class="gpt-persona">
       <DropdownSelectBox
+        class="persona-selector__dropdown"
         @value={{this.value}}
         @content={{this.botOptions}}
         @options={{hash icon="robot"}}
