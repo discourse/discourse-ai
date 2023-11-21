@@ -24,6 +24,7 @@ export default class SemanticSearch extends Component {
   @tracked searching = false;
   @tracked AIResults = [];
   @tracked showingAIResults = false;
+  initialSearchTerm = this.args.outletArgs.search;
 
   get disableToggleSwitch() {
     if (this.searching || this.AIResults.length === 0) {
@@ -60,6 +61,11 @@ export default class SemanticSearch extends Component {
   }
 
   get searchTerm() {
+    if (this.initialSearchTerm !== this.args.outletArgs.search) {
+      this.initialSearchTerm = undefined;
+      this.resetAIResults();
+    }
+
     return this.args.outletArgs.search;
   }
 
@@ -92,7 +98,7 @@ export default class SemanticSearch extends Component {
       return;
     }
 
-    if (this.searchTerm) {
+    if (this.initialSearchTerm) {
       return this.performHyDESearch();
     }
 
