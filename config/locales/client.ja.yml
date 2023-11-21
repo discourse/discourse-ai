@@ -21,6 +21,13 @@ ja:
     discourse_ai:
       modals:
         select_option: "オプションを選択..."
+      ai_persona:
+        name: 名前
+        description: 説明
+        save: 保存
+        enabled: 有効
+        new: 新規
+        delete: 削除
       related_topics:
         pill: "関連"
       ai_helper:
@@ -36,6 +43,8 @@ ja:
           revert: "戻す"
         post_options_menu:
           close: "クローズ"
+          copy: "コピー"
+          copied: "コピーしました！"
       reviewables:
         model_used: "使用モデル:"
         accuracy: "精度:"

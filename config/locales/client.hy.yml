@@ -17,6 +17,12 @@ hy:
             canned_reply:
               label: "Պատասխանել"
     discourse_ai:
+      ai_persona:
+        name: Անուն
+        description: Նկարագրությունը
+        save: Պահպանել
+        new: Նոր
+        delete: Ջնջել
       ai_helper:
         context_menu:
           back: "Ետ"
@@ -26,3 +32,4 @@ hy:
           revert: "Հետադարձել"
         post_options_menu:
           close: "Փակել"
+          copy: "Կրկնօրինակել"

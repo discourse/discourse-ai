@@ -17,6 +17,13 @@ uk:
             canned_reply:
               label: "Відповідь"
     discourse_ai:
+      ai_persona:
+        name: Імʼя
+        description: Опис
+        save: Зберегти
+        enabled: Включено
+        new: Нові
+        delete: Видалити
       ai_helper:
         context_menu:
           back: "Назад"
@@ -27,3 +34,5 @@ uk:
           revert: "Повернути"
         post_options_menu:
           close: "Закрити"
+          copy: "Копіювати"
+          copied: "Скопійовано!"

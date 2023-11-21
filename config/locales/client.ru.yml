@@ -21,6 +21,13 @@ ru:
     discourse_ai:
       modals:
         select_option: "Выберите вариант..."
+      ai_persona:
+        name: Название
+        description: Описание
+        save: Сохранить
+        enabled: Включено
+        new: Новые
+        delete: Удалить
       related_topics:
         pill: "Связанные"
       ai_helper:
@@ -36,6 +43,8 @@ ru:
           revert: "Вернуть"
         post_options_menu:
           close: "Завершить"
+          copy: "Копировать"
+          copied: "Скопировано!"
       reviewables:
         model_used: "Использованная модель:"
         accuracy: "Точность:"

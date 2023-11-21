@@ -17,6 +17,13 @@ da:
             canned_reply:
               label: "Svar"
     discourse_ai:
+      ai_persona:
+        name: Navn
+        description: Beskrivelse
+        save: Gem
+        enabled: Aktiveret
+        new: Nye
+        delete: Slet
       ai_helper:
         context_menu:
           back: "Tilbage"
@@ -27,3 +34,5 @@ da:
           revert: "Gendan"
         post_options_menu:
           close: "Luk"
+          copy: "Kopier"
+          copied: "Kopieret!"

@@ -17,6 +17,12 @@ te:
             canned_reply:
               label: "జవాబు"
     discourse_ai:
+      ai_persona:
+        name: పేరు
+        description: వివరణ
+        save: భద్రపరుచు
+        new: కొత్త
+        delete: తొలగించు
       ai_helper:
         context_menu:
           back: "వెనుకకు"
@@ -26,3 +32,4 @@ te:
           revert: "తిద్దు"
         post_options_menu:
           close: "మూసివేయి"
+          copy: "నకలు"

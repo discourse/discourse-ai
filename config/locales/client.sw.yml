@@ -17,6 +17,13 @@ sw:
             canned_reply:
               label: "Jibu"
     discourse_ai:
+      ai_persona:
+        name: Jina
+        description: Elezo
+        save: Hifadhi
+        enabled: Imeruhusiwa
+        new: Mpya
+        delete: Futa
       ai_helper:
         context_menu:
           back: "Iliyopita"
@@ -26,3 +33,4 @@ sw:
           revert: "Rudisha Nyuma"
         post_options_menu:
           close: "Funga"
+          copy: "Nakili"

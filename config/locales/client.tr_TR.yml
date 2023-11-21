@@ -21,6 +21,13 @@ tr_TR:
     discourse_ai:
       modals:
         select_option: "Seçenek belirleyin..."
+      ai_persona:
+        name: Ad
+        description: Açıklama
+        save: Kaydet
+        enabled: Etkin mi
+        new: Yeni
+        delete: Sil
       related_topics:
         pill: "İlgili"
       ai_helper:
@@ -36,6 +43,8 @@ tr_TR:
           revert: "Eski Haline Getir"
         post_options_menu:
           close: "Bitir"
+          copy: "Kopyala"
+          copied: "Kopyalandı!"
       reviewables:
         model_used: "Kullanılan model:"
         accuracy: "Doğruluk:"

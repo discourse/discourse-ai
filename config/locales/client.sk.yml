@@ -17,6 +17,13 @@ sk:
             canned_reply:
               label: "Odpoveď"
     discourse_ai:
+      ai_persona:
+        name: Meno
+        description: Popis
+        save: Uložiť
+        enabled: Povolené
+        new: Nový
+        delete: Odstrániť
       ai_helper:
         context_menu:
           back: "Späť"
@@ -26,3 +33,4 @@ sk:
           revert: "Vrátiť zmeny"
         post_options_menu:
           close: "Zavrieť"
+          copy: "Kopírovať"

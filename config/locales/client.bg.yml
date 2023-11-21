@@ -17,6 +17,13 @@ bg:
             canned_reply:
               label: "Отговорете"
     discourse_ai:
+      ai_persona:
+        name: Име
+        description: Описание
+        save: Запази
+        enabled: Да е включен
+        new: Нова
+        delete: Изтрий
       ai_helper:
         context_menu:
           back: "Назад"
@@ -26,3 +33,5 @@ bg:
           revert: "Върни"
         post_options_menu:
           close: "Затвори"
+          copy: "Копирай"
+          copied: "Копирано!"

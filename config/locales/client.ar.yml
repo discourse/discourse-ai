@@ -21,6 +21,13 @@ ar:
     discourse_ai:
       modals:
         select_option: "حدِّد خيارًا..."
+      ai_persona:
+        name: الاسم
+        description: الوصف
+        save: حفظ
+        enabled: مفعَّلة
+        new: الجديدة
+        delete: حذف
       related_topics:
         pill: "موضوعات ذات صلة"
       ai_helper:
@@ -36,6 +43,8 @@ ar:
           revert: "عودة"
         post_options_menu:
           close: "إغلاق"
+          copy: "نسخ"
+          copied: "تم النسخ!"
       reviewables:
         model_used: "النموذج المستخدم:"
         accuracy: "الدقة:"

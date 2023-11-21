@@ -17,6 +17,13 @@ hu:
             canned_reply:
               label: "Válasz"
     discourse_ai:
+      ai_persona:
+        name: Név
+        description: Leírás
+        save: Mentés
+        enabled: Engedélyezed
+        new: Új
+        delete: Törlés
       ai_helper:
         context_menu:
           back: "Vissza"
@@ -27,3 +34,5 @@ hu:
           revert: "Visszaállítás"
         post_options_menu:
           close: "Lezárás"
+          copy: "Másolás"
+          copied: "Másolva!"

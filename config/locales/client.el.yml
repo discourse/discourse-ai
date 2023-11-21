@@ -17,6 +17,12 @@ el:
             canned_reply:
               label: "Απάντηση"
     discourse_ai:
+      ai_persona:
+        name: Όνομα
+        description: Περιγραφή
+        save: Αποθήκευση
+        new: Νέο
+        delete: Σβήσιμο
       ai_helper:
         context_menu:
           back: "Πίσω"
@@ -26,3 +32,5 @@ el:
           revert: "Επαναφορά"
         post_options_menu:
           close: "Κλείσιμο"
+          copy: "Αντιγραφή"
+          copied: "Αντιγράφηκε!"

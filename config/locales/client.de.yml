@@ -44,8 +44,36 @@ de:
               label: "Modell"
               description: "Entweder gpt-4 oder gpt-3-5-turbo oder claude-2"
     discourse_ai:
+      title: "KI"
       modals:
         select_option: "Wähle eine Option aus..."
+      ai_persona:
+        name: Name
+        description: Beschreibung
+        system_prompt: System-Eingabeaufforderung
+        save: Speichern
+        saved: KI-Persona gespeichert
+        enabled: Aktiviert
+        commands: Aktivierte Befehle
+        allowed_groups: Erlaubte Gruppen
+        confirm_delete: Bist du sicher, dass du diese Persona löschen willst?
+        new: Neu
+        title: "KI-Personas"
+        delete: Löschen
+        priority: Priorität
+        priority_help: Personas mit Priorität werden den Nutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
+        no_persona_selected: |
+          ## Was sind KI Personas?
+
+          KI-Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als "Systemnachricht", die die Antworten und Interaktionen der KI steuert und so zu einem persönlicheren und ansprechenderen Nutzererlebnis beiträgt.
+
+          ## Warum KI Personas?
+
+          Mit KI-Personen kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI in einem professionellen Umfeld förmlicher oder in einem Community-Forum lockerer auftritt oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert, KI Personas geben dir die Flexibilität dazu.
+
+          ## Gruppenspezifischer Zugang zu KI-Personen
+
+          Außerdem kannst du einstellen, dass bestimmte Benutzergruppen Zugang zu bestimmten Personas haben. Das bedeutet, dass du für verschiedene Bereiche deines Forums unterschiedliche KI-Verhaltensweisen festlegen kannst, was die Vielfalt und den Reichtum der Interaktionen in deiner Community weiter erhöht.
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -74,6 +102,8 @@ de:
           trigger: "KI fragen"
           loading: "KI generiert"
           close: "Beenden"
+          copy: "Kopieren"
+          copied: "Kopiert!"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"
@@ -81,7 +111,8 @@ de:
         semantic_search: "Themen (semantisch)"
         semantic_search_loading: "Suche mehr Ergebnisse mit Hilfe der KI"
         semantic_search_results:
-          toggle: "%{count} Ergebnisse mit KI gefunden"
+          toggle: "Zeigt %{count} Ergebnisse, die mit KI gefunden wurden"
+          toggle_hidden: "Ausblenden von %{count} mit KI gefundenen Ergebnissen"
           none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden."
       ai_bot:
         pm_warning: "AI chatbot messages are monitored regularly by moderators."

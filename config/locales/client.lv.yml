@@ -17,6 +17,13 @@ lv:
             canned_reply:
               label: "Atbilde"
     discourse_ai:
+      ai_persona:
+        name: Vārds
+        description: Apraksts
+        save: Saglabāt
+        enabled: Ieslēgts
+        new: jauns
+        delete: Dzēst
       ai_helper:
         context_menu:
           back: "Atpakaļ"
@@ -26,3 +33,5 @@ lv:
           revert: "Atgriezt"
         post_options_menu:
           close: "Aizvērt"
+          copy: "Kopēt"
+          copied: "Nokopēts!"

@@ -17,6 +17,13 @@ ro:
             canned_reply:
               label: "Răspunde"
     discourse_ai:
+      ai_persona:
+        name: Nume
+        description: Descriere
+        save: Salvare
+        enabled: Activat
+        new: Nou
+        delete: Șterge
       ai_helper:
         context_menu:
           back: "Înapoi"
@@ -26,3 +33,5 @@ ro:
           revert: "Revenire la starea inițială"
         post_options_menu:
           close: "Închide sondajul"
+          copy: "Copiază"
+          copied: "Copiat!"

@@ -17,6 +17,12 @@ be:
             canned_reply:
               label: "Адказаць"
     discourse_ai:
+      ai_persona:
+        name: імя
+        description: Апісанне
+        save: Захаваць
+        new: Новыя
+        delete: выдаляць
       ai_helper:
         context_menu:
           back: "Назад"
@@ -26,3 +32,4 @@ be:
           revert: "Вярнуць"
         post_options_menu:
           close: "зачыніць"
+          copy: "капіяваць"

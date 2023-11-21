@@ -17,6 +17,13 @@ sq:
             canned_reply:
               label: "Përgjigju"
     discourse_ai:
+      ai_persona:
+        name: Emri
+        description: Përshkrimi
+        save: Ruaj
+        enabled: Aktivizuar
+        new: I Ri
+        delete: Fshij
       ai_helper:
         context_menu:
           back: "Kthehu mbrapa"
@@ -26,3 +33,4 @@ sq:
           revert: "Rikthe"
         post_options_menu:
           close: "Mbyll"
+          copy: "Kopjo"

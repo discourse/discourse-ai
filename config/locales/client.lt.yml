@@ -17,6 +17,13 @@ lt:
             canned_reply:
               label: "Atsakyti"
     discourse_ai:
+      ai_persona:
+        name: Vardas
+        description: Aprašymas
+        save: Išsaugoti
+        enabled: Galimas
+        new: Nauji
+        delete: Pašalinti
       ai_helper:
         context_menu:
           back: "Atgal"
@@ -27,3 +34,5 @@ lt:
           revert: "Grąžinti"
         post_options_menu:
           close: "Uždaryti"
+          copy: "Kopijuoti"
+          copied: "Nukopijuota!"

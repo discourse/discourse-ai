@@ -21,6 +21,13 @@ nl:
     discourse_ai:
       modals:
         select_option: "Selecteer een optie..."
+      ai_persona:
+        name: Naam
+        description: Beschrijving
+        save: Opslaan
+        enabled: Ingeschakeld
+        new: Nieuw
+        delete: Verwijderen
       related_topics:
         pill: "Gerelateerd"
       ai_helper:
@@ -36,6 +43,8 @@ nl:
           revert: "Herstellen"
         post_options_menu:
           close: "Sluiten"
+          copy: "Kopiëren"
+          copied: "Gekopieerd!"
       reviewables:
         model_used: "Gebruikt model:"
         accuracy: "Nauwkeurigheid:"

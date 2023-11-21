@@ -17,6 +17,13 @@ cs:
             canned_reply:
               label: "Odpověď"
     discourse_ai:
+      ai_persona:
+        name: Jméno
+        description: Popis
+        save: Uložit
+        enabled: Zapnutý
+        new: Noví
+        delete: Smazat
       ai_helper:
         context_menu:
           back: "Zpět"
@@ -26,3 +33,5 @@ cs:
           revert: "Vrátit"
         post_options_menu:
           close: "Zavřít"
+          copy: "Kopírovat"
+          copied: "Zkopírováno!"
