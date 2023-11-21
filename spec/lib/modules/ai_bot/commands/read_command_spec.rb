@@ -2,6 +2,7 @@
 
 RSpec.describe DiscourseAi::AiBot::Commands::ReadCommand do
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user) }
 
   fab!(:parent_category) { Fabricate(:category, name: "animals") }
   fab!(:category) { Fabricate(:category, parent_category: parent_category, name: "amazing-cat") }
@@ -31,7 +32,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::ReadCommand do
       Fabricate(:post, topic: topic_with_tags, raw: "hello there")
       Fabricate(:post, topic: topic_with_tags, raw: "mister sam")
 
-      read = described_class.new(bot_user: bot_user, args: nil)
+      read = described_class.new(bot: bot, args: nil)
 
       results = read.process(topic_id: topic_id)
 

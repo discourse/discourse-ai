@@ -5,7 +5,15 @@ module DiscourseAi
     module Personas
       class General < Persona
         def commands
-          all_available_commands
+          [
+            Commands::SearchCommand,
+            Commands::GoogleCommand,
+            Commands::ImageCommand,
+            Commands::ReadCommand,
+            Commands::ImageCommand,
+            Commands::CategoriesCommand,
+            Commands::TagsCommand,
+          ]
         end
 
         def system_prompt
@@ -19,8 +27,6 @@ module DiscourseAi
             The description is: {site_description}
             The participants in this conversation are: {participants}
             The date now is: {time}, much has changed since you were trained.
-
-            {commands}
           PROMPT
         end
       end

@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../support/openai_completions_inference_stubs"
-require_relative "../../../support/stable_difussion_stubs"
-
 RSpec.describe DiscourseAi::AiHelper::Painter do
   subject(:painter) { described_class.new }
 
@@ -29,7 +26,7 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
 
     let(:expected_image_prompt) { <<~TEXT.strip }
         Visualize a vibrant scene of an inkwell bursting, spreading colors across a blank canvas,
-        embodying words in tangible forms, symbolizing the rhythm and emotion evoked by poetry, 
+        embodying words in tangible forms, symbolizing the rhythm and emotion evoked by poetry,
         under the soft glow of a full moon.
         TEXT
 

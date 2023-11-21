@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 require "rails_helper"
 
-require_relative "../../support/openai_completions_inference_stubs"
-
 describe DiscourseAi::Inference::OpenAiCompletions do
   before { SiteSetting.ai_openai_api_key = "abc-123" }
 

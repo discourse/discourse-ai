@@ -3,28 +3,43 @@
 module DiscourseAi
   module AiBot
     module Personas
-      def self.all(user: nil)
-        personas = [Personas::General, Personas::SqlHelper]
-        personas << Personas::Artist if SiteSetting.ai_stability_api_key.present?
-        personas << Personas::SettingsExplorer
-        personas << Personas::Researcher if SiteSetting.ai_google_custom_search_api_key.present?
-        personas << Personas::Creative
+      def self.system_personas
+        @system_personas ||= {
+          Personas::General => -1,
+          Personas::SqlHelper => -2,
+          Personas::Artist => -3,
+          Personas::SettingsExplorer => -4,
+          Personas::Researcher => -5,
+          Personas::Creative => -6,
+        }
+      end
 
-        personas_allowed = SiteSetting.ai_bot_enabled_personas.split("|")
+      def self.system_personas_by_id
+        @system_personas_by_id ||= system_personas.invert
+      end
+
+      def self.all(user:)
         personas =
-          personas.filter do |persona|
-            personas_allowed.include?(persona.to_s.demodulize.underscore)
+          AiPersona.all_personas.filter { |persona| user.in_any_groups?(persona.allowed_group_ids) }
+
+        # this needs to be dynamic cause site settings may change
+        all_available_commands = Persona.all_available_commands
+
+        personas.filter do |persona|
+          if persona.system
+            instance = persona.new
+            (
+              instance.required_commands == [] ||
+                (instance.required_commands - all_available_commands).empty?
+            )
+          else
+            true
           end
-
-        if user
-          personas.concat(
-            AiPersona.all_personas.filter do |persona|
-              user.in_any_groups?(persona.allowed_group_ids)
-            end,
-          )
         end
+      end
 
-        personas
+      def self.find_by(id: nil, name: nil, user:)
+        all(user: user).find { |persona| persona.id == id || persona.name == name }
       end
 
       class Persona
@@ -36,16 +51,16 @@ module DiscourseAi
           I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.description")
         end
 
-        def initialize(allow_commands: true)
-          @allow_commands = allow_commands
-        end
-
         def commands
           []
         end
 
+        def required_commands
+          []
+        end
+
         def render_commands(render_function_instructions:)
-          return +"" if !@allow_commands
+          return +"" if available_commands.empty?
 
           result = +""
           if render_function_instructions
@@ -57,33 +72,39 @@ module DiscourseAi
           result
         end
 
-        def render_system_prompt(topic: nil, render_function_instructions: true)
+        def render_system_prompt(
+          topic: nil,
+          render_function_instructions: true,
+          allow_commands: true
+        )
           substitutions = {
             site_url: Discourse.base_url,
             site_title: SiteSetting.title,
             site_description: SiteSetting.site_description,
             time: Time.zone.now,
-            commands: render_commands(render_function_instructions: render_function_instructions),
           }
 
           substitutions[:participants] = topic.allowed_users.map(&:username).join(", ") if topic
 
-          system_prompt.gsub(/\{(\w+)\}/) do |match|
-            found = substitutions[match[1..-2].to_sym]
-            found.nil? ? match : found.to_s
+          prompt =
+            system_prompt.gsub(/\{(\w+)\}/) do |match|
+              found = substitutions[match[1..-2].to_sym]
+              found.nil? ? match : found.to_s
+            end
+
+          if allow_commands
+            prompt += render_commands(render_function_instructions: render_function_instructions)
           end
+
+          prompt
         end
 
         def available_commands
-          return [] if !@allow_commands
-
           return @available_commands if @available_commands
-
           @available_commands = all_available_commands.filter { |cmd| commands.include?(cmd) }
         end
 
         def available_functions
-          return [] if !@allow_commands
           # note if defined? can be a problem in test
           # this can never be nil so it is safe
           return @available_functions if @available_functions
@@ -109,15 +130,17 @@ module DiscourseAi
           @function_list
         end
 
-        def all_available_commands
-          return @cmds if @cmds
-
+        def self.all_available_commands
           all_commands = [
             Commands::CategoriesCommand,
             Commands::TimeCommand,
             Commands::SearchCommand,
             Commands::SummarizeCommand,
             Commands::ReadCommand,
+            Commands::DbSchemaCommand,
+            Commands::SearchSettingsCommand,
+            Commands::SummarizeCommand,
+            Commands::SettingContextCommand,
           ]
 
           all_commands << Commands::TagsCommand if SiteSetting.tagging_enabled
@@ -127,8 +150,11 @@ module DiscourseAi
             all_commands << Commands::GoogleCommand
           end
 
-          allowed_commands = SiteSetting.ai_bot_enabled_chat_commands.split("|")
-          @cmds = all_commands.filter { |klass| allowed_commands.include?(klass.name) }
+          all_commands
+        end
+
+        def all_available_commands
+          @cmds ||= self.class.all_available_commands
         end
       end
     end

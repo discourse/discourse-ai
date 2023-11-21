@@ -40,10 +40,11 @@ module DiscourseAi
           end
         end
 
-        attr_reader :bot_user
+        attr_reader :bot_user, :bot
 
-        def initialize(bot_user:, args:, post: nil, parent_post: nil)
-          @bot_user = bot_user
+        def initialize(bot:, args:, post: nil, parent_post: nil)
+          @bot = bot
+          @bot_user = bot&.bot_user
           @args = args
           @post = post
           @parent_post = parent_post
@@ -59,10 +60,6 @@ module DiscourseAi
           HTML
 
           @invoked = false
-        end
-
-        def bot
-          @bot ||= DiscourseAi::AiBot::Bot.as(bot_user)
         end
 
         def tokenizer

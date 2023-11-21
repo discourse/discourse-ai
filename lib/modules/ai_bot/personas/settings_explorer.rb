@@ -25,9 +25,6 @@ module DiscourseAi
             - Keep in mind that setting names are always a single word separated by underscores. eg. 'site_description'
 
             Current time is: {time}
-
-            {commands}
-
           PROMPT
         end
       end

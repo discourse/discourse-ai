@@ -12,7 +12,7 @@ RSpec.describe AiPersona do
 
     AiPersona.all_personas
 
-    expect(AiPersona.persona_cache[:value].length).to eq(1)
+    expect(AiPersona.persona_cache[:value].length).to be > (0)
     RailsMultisite::ConnectionManagement.stubs(:current_db) { "abc" }
     expect(AiPersona.persona_cache[:value]).to eq(nil)
   end

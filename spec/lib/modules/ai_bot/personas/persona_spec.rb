@@ -16,8 +16,6 @@ class TestPersona < DiscourseAi::AiBot::Personas::Persona
       {site_description}
       {participants}
       {time}
-
-      {commands}
     PROMPT
   end
 end
@@ -34,18 +32,20 @@ module DiscourseAi::AiBot::Personas
       topic
     end
 
-    fab!(:user) { Fabricate(:user) }
+    after do
+      # we are rolling back transactions so we can create poison cache
+      AiPersona.persona_cache.flush!
+    end
 
-    it "can disable commands via constructor" do
-      persona = TestPersona.new(allow_commands: false)
+    fab!(:user)
 
-      rendered =
-        persona.render_system_prompt(topic: topic_with_users, render_function_instructions: true)
+    it "can disable commands" do
+      persona = TestPersona.new
+
+      rendered = persona.render_system_prompt(topic: topic_with_users, allow_commands: false)
 
       expect(rendered).not_to include("!tags")
       expect(rendered).not_to include("!search")
-
-      expect(persona.available_functions).to be_empty
     end
 
     it "renders the system prompt" do
@@ -81,7 +81,7 @@ module DiscourseAi::AiBot::Personas
         # define an ai persona everyone can see
         persona =
           AiPersona.create!(
-            name: "pun_bot",
+            name: "zzzpun_bot",
             description: "you write puns",
             system_prompt: "you are pun bot",
             commands: ["ImageCommand"],
@@ -89,7 +89,7 @@ module DiscourseAi::AiBot::Personas
           )
 
         custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
-        expect(custom_persona.name).to eq("pun_bot")
+        expect(custom_persona.name).to eq("zzzpun_bot")
         expect(custom_persona.description).to eq("you write puns")
 
         instance = custom_persona.new
@@ -99,53 +99,58 @@ module DiscourseAi::AiBot::Personas
         )
 
         # should update
-        persona.update!(name: "pun_bot2")
+        persona.update!(name: "zzzpun_bot2")
         custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
-        expect(custom_persona.name).to eq("pun_bot2")
+        expect(custom_persona.name).to eq("zzzpun_bot2")
 
         # can be disabled
         persona.update!(enabled: false)
         last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
-        expect(last_persona.name).not_to eq("pun_bot2")
+        expect(last_persona.name).not_to eq("zzzpun_bot2")
 
         persona.update!(enabled: true)
         # no groups have access
         persona.update!(allowed_group_ids: [])
 
         last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
-        expect(last_persona.name).not_to eq("pun_bot2")
+        expect(last_persona.name).not_to eq("zzzpun_bot2")
       end
     end
 
     describe "available personas" do
       it "includes all personas by default" do
+        Group.refresh_automatic_groups!
+
         # must be enabled to see it
         SiteSetting.ai_stability_api_key = "abc"
         SiteSetting.ai_google_custom_search_api_key = "abc"
+        SiteSetting.ai_google_custom_search_cx = "abc123"
 
-        expect(DiscourseAi::AiBot::Personas.all).to contain_exactly(
+        # should be ordered by priority and then alpha
+        expect(DiscourseAi::AiBot::Personas.all(user: user)).to eq(
+          [General, Artist, Creative, Researcher, SettingsExplorer, SqlHelper],
+        )
+
+        # omits personas if key is missing
+        SiteSetting.ai_stability_api_key = ""
+        SiteSetting.ai_google_custom_search_api_key = ""
+
+        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
           General,
           SqlHelper,
-          Artist,
           SettingsExplorer,
-          Researcher,
           Creative,
         )
-      end
 
-      it "does not include personas that require api keys by default" do
-        expect(DiscourseAi::AiBot::Personas.all).to contain_exactly(
-          General,
+        AiPersona.find(DiscourseAi::AiBot::Personas.system_personas[General]).update!(
+          enabled: false,
+        )
+
+        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
           SqlHelper,
           SettingsExplorer,
           Creative,
         )
-      end
-
-      it "can be modified via site settings" do
-        SiteSetting.ai_bot_enabled_personas = "general|sql_helper"
-
-        expect(DiscourseAi::AiBot::Personas.all).to contain_exactly(General, SqlHelper)
       end
     end
   end

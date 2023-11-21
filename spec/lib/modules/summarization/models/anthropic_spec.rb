@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../../support/anthropic_completion_stubs"
-
 RSpec.describe DiscourseAi::Summarization::Models::Anthropic do
   subject(:model) { described_class.new(model_name, max_tokens: max_tokens) }
 

@@ -67,12 +67,12 @@ module DiscourseAi
         end
       end
 
-      attr_reader :bot_user
+      attr_reader :bot_user, :persona
 
       BOT_NOT_FOUND = Class.new(StandardError)
       MAX_COMPLETIONS = 5
 
-      def self.as(bot_user)
+      def self.as(bot_user, persona_id: nil, persona_name: nil, user: nil)
         available_bots = [DiscourseAi::AiBot::OpenAiBot, DiscourseAi::AiBot::AnthropicBot]
 
         bot =
@@ -80,12 +80,23 @@ module DiscourseAi
             bot_klass.can_reply_as?(bot_user)
           end
 
-        bot.new(bot_user)
+        persona = nil
+        if persona_id
+          persona = DiscourseAi::AiBot::Personas.find_by(user: user, id: persona_id)
+          raise BOT_NOT_FOUND if persona.nil?
+        end
+
+        if !persona && persona_name
+          persona = DiscourseAi::AiBot::Personas.find_by(user: user, name: persona_name)
+          raise BOT_NOT_FOUND if persona.nil?
+        end
+
+        bot.new(bot_user, persona: persona&.new)
       end
 
-      def initialize(bot_user)
+      def initialize(bot_user, persona: nil)
         @bot_user = bot_user
-        @persona = DiscourseAi::AiBot::Personas::General.new
+        @persona = persona || DiscourseAi::AiBot::Personas::General.new
       end
 
       def update_pm_title(post)
@@ -113,21 +124,12 @@ module DiscourseAi
         # do not allow commands when we are at the end of chain (total completions == MAX_COMPLETIONS)
         allow_commands = (total_completions < MAX_COMPLETIONS)
 
-        @persona = DiscourseAi::AiBot::Personas::General.new(allow_commands: allow_commands)
-        if persona_name = post.topic.custom_fields["ai_persona"]
-          persona_class =
-            DiscourseAi::AiBot::Personas
-              .all(user: post.user)
-              .find { |current| current.name == persona_name }
-          @persona = persona_class.new(allow_commands: allow_commands) if persona_class
-        end
-
         prompt =
           if standalone && post.post_custom_prompt
             username, standalone_prompt = post.post_custom_prompt.custom_prompt.last
             [build_message(username, standalone_prompt)]
           else
-            bot_prompt_with_topic_context(post)
+            bot_prompt_with_topic_context(post, allow_commands: allow_commands)
           end
 
         redis_stream_key = nil
@@ -225,12 +227,7 @@ module DiscourseAi
 
             if command_klass = available_commands.detect { |cmd| cmd.invoked?(name) }
               command =
-                command_klass.new(
-                  bot_user: bot_user,
-                  args: args,
-                  post: bot_reply_post,
-                  parent_post: post,
-                )
+                command_klass.new(bot: self, args: args, post: bot_reply_post, parent_post: post)
               chain_intermediate, bot_reply_post = command.invoke!
               chain ||= chain_intermediate
               standalone ||= command.standalone?
@@ -259,38 +256,38 @@ module DiscourseAi
         0
       end
 
-      def bot_prompt_with_topic_context(post, prompt: "topic")
+      def bot_prompt_with_topic_context(post, allow_commands:)
         messages = []
         conversation = conversation_context(post)
 
-        rendered_system_prompt = system_prompt(post)
-
+        rendered_system_prompt = system_prompt(post, allow_commands: allow_commands)
         total_prompt_tokens = tokenize(rendered_system_prompt).length + extra_tokens_per_message
 
-        messages =
-          conversation.reduce([]) do |memo, (raw, username, function)|
-            break(memo) if total_prompt_tokens >= prompt_limit
+        prompt_limit = self.prompt_limit(allow_commands: allow_commands)
 
-            tokens = tokenize(raw.to_s)
+        conversation.each do |raw, username, function|
+          break if total_prompt_tokens >= prompt_limit
 
-            while !raw.blank? &&
-                    tokens.length + total_prompt_tokens + extra_tokens_per_message > prompt_limit
-              raw = raw[0..-100] || ""
-              tokens = tokenize(raw.to_s)
-            end
+          tokens = tokenize(raw.to_s + username.to_s)
 
-            next(memo) if raw.blank?
-
-            total_prompt_tokens += tokens.length + extra_tokens_per_message
-            memo.unshift(build_message(username, raw, function: !!function))
+          while !raw.blank? &&
+                  tokens.length + total_prompt_tokens + extra_tokens_per_message > prompt_limit
+            raw = raw[0..-100] || ""
+            tokens = tokenize(raw.to_s + username.to_s)
           end
+
+          next if raw.blank?
+
+          total_prompt_tokens += tokens.length + extra_tokens_per_message
+          messages.unshift(build_message(username, raw, function: !!function))
+        end
 
         messages.unshift(build_message(bot_user.username, rendered_system_prompt, system: true))
 
         messages
       end
 
-      def prompt_limit
+      def prompt_limit(allow_commands: false)
         raise NotImplemented
       end
 
@@ -300,7 +297,7 @@ module DiscourseAi
           You will never respond with anything but a topic title.
           Suggest a 7 word title for the following topic without quoting any of it:
 
-          #{post.topic.posts.map(&:raw).join("\n\n")[0..prompt_limit]}
+          #{post.topic.posts.map(&:raw).join("\n\n")[0..prompt_limit(allow_commands: false)]}
         TEXT
       end
 
@@ -312,12 +309,14 @@ module DiscourseAi
         @style = style
       end
 
-      def system_prompt(post)
+      def system_prompt(post, allow_commands:)
         return "You are a helpful Bot" if @style == :simple
 
         @persona.render_system_prompt(
           topic: post.topic,
-          render_function_instructions: include_function_instructions_in_system_prompt?,
+          allow_commands: allow_commands,
+          render_function_instructions:
+            allow_commands && include_function_instructions_in_system_prompt?,
         )
       end
 

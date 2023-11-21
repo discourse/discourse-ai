@@ -19,26 +19,6 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       SiteSetting.ai_bot_enabled = true
     end
 
-    context "when changing available commands" do
-      it "contains all commands by default" do
-        # this will break as we add commands, but it is important as a sanity check
-        SiteSetting.ai_stability_api_key = "test"
-        SiteSetting.ai_google_custom_search_api_key = "test"
-        SiteSetting.ai_google_custom_search_cx = "test"
-
-        expect(subject.available_commands.length).to eq(
-          SiteSetting.ai_bot_enabled_chat_commands.split("|").length,
-        )
-      end
-      it "can properly filter out commands" do
-        SiteSetting.ai_bot_enabled_chat_commands = "time|tags"
-        expect(subject.available_commands.length).to eq(2)
-        expect(subject.available_commands).to eq(
-          [DiscourseAi::AiBot::Commands::TimeCommand, DiscourseAi::AiBot::Commands::TagsCommand],
-        )
-      end
-    end
-
     context "when cleaning usernames" do
       it "can properly clean usernames so OpenAI allows it" do
         expect(subject.clean_username("test test")).to eq("test_test")
@@ -51,7 +31,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       fab!(:post_1) { Fabricate(:post, topic: topic, raw: post_body(1), post_number: 1) }
 
       it "includes it in the prompt" do
-        prompt_messages = subject.bot_prompt_with_topic_context(post_1)
+        prompt_messages = subject.bot_prompt_with_topic_context(post_1, allow_commands: true)
 
         post_1_message = prompt_messages[-1]
 
@@ -65,7 +45,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       fab!(:post_1) { Fabricate(:post, topic: topic, raw: "test " * 6000, post_number: 1) }
 
       it "trims the prompt" do
-        prompt_messages = subject.bot_prompt_with_topic_context(post_1)
+        prompt_messages = subject.bot_prompt_with_topic_context(post_1, allow_commands: true)
 
         # trimming is tricky... it needs to account for system message as
         # well... just make sure we trim for now
@@ -81,7 +61,7 @@ RSpec.describe DiscourseAi::AiBot::OpenAiBot do
       let!(:post_3) { Fabricate(:post, topic: topic, raw: post_body(3), post_number: 3) }
 
       it "includes them in the prompt respecting the post number order" do
-        prompt_messages = subject.bot_prompt_with_topic_context(post_3)
+        prompt_messages = subject.bot_prompt_with_topic_context(post_3, allow_commands: true)
 
         # negative cause we may have grounding prompts
         expect(prompt_messages[-3][:role]).to eq("user")

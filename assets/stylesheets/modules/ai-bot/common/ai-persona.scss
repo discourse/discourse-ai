@@ -1,0 +1,45 @@
+.ai-persona-list-editor {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  &__current {
+    padding-left: 20px;
+  }
+
+  li.disabled {
+    opacity: 0.5;
+  }
+}
+
+.ai-personas__container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.ai-persona-editor {
+  label {
+    display: block;
+  }
+  &__description {
+    width: 500px;
+  }
+  &__system_prompt {
+    width: 500px;
+    height: 400px;
+  }
+  &__priority {
+    display: flex;
+    align-items: center;
+
+    .fk-d-tooltip__icon {
+      padding-left: 0.25em;
+      color: var(--primary-medium);
+    }
+  }
+}

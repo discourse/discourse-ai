@@ -12,13 +12,16 @@ module DiscourseAi
         open_ai_bot_ids.include?(bot_user.id)
       end
 
-      def prompt_limit
-        # note this is about 100 tokens over, OpenAI have a more optimal representation
-        @function_size ||= tokenize(available_functions.to_json).length
-
+      def prompt_limit(allow_commands:)
         # provide a buffer of 120 tokens - our function counting is not
         # 100% accurate and getting numbers to align exactly is very hard
-        buffer = @function_size + reply_params[:max_tokens] + 120
+        buffer = reply_params[:max_tokens] + 50
+
+        if allow_commands
+          # note this is about 100 tokens over, OpenAI have a more optimal representation
+          @function_size ||= tokenize(available_functions.to_json.to_s).length
+          buffer += @function_size
+        end
 
         if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
           8192 - buffer

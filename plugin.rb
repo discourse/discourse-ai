@@ -17,6 +17,7 @@ enabled_site_setting :discourse_ai_enabled
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
+register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
 
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
@@ -61,6 +62,8 @@ after_initialize do
   require_relative "lib/modules/ai_bot/entry_point"
   require_relative "lib/discourse_automation/llm_triage"
 
+  add_admin_route "discourse_ai.title", "discourse-ai"
+
   [
     DiscourseAi::Embeddings::EntryPoint.new,
     DiscourseAi::NSFW::EntryPoint.new,
@@ -79,5 +82,11 @@ after_initialize do
 
   on(:reviewable_transitioned_to) do |new_status, reviewable|
     ModelAccuracy.adjust_model_accuracy(new_status, reviewable)
+  end
+
+  if Rails.env.test?
+    require_relative "spec/support/openai_completions_inference_stubs"
+    require_relative "spec/support/anthropic_completion_stubs"
+    require_relative "spec/support/stable_diffusion_stubs"
   end
 end

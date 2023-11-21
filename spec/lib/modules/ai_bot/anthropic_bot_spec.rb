@@ -17,8 +17,7 @@ module ::DiscourseAi
 
       describe "system message" do
         it "includes the full command framework" do
-          SiteSetting.ai_bot_enabled_chat_commands = "read|search"
-          prompt = bot.system_prompt(post)
+          prompt = bot.system_prompt(post, allow_commands: true)
 
           expect(prompt).to include("read")
           expect(prompt).to include("search_query")
@@ -27,7 +26,6 @@ module ::DiscourseAi
 
       describe "parsing a reply prompt" do
         it "can correctly predict that a completion needs to be cancelled" do
-          SiteSetting.ai_bot_enabled_chat_commands = "read|search"
           functions = DiscourseAi::AiBot::Bot::FunctionCalls.new
 
           # note anthropic API has a silly leading space, we need to make sure we can handle that
@@ -57,7 +55,6 @@ module ::DiscourseAi
         end
 
         it "can correctly detect commands from a prompt" do
-          SiteSetting.ai_bot_enabled_chat_commands = "read|search"
           functions = DiscourseAi::AiBot::Bot::FunctionCalls.new
 
           # note anthropic API has a silly leading space, we need to make sure we can handle that

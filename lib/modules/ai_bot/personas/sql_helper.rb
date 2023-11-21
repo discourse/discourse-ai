@@ -63,8 +63,6 @@ module DiscourseAi
             {{
             #{self.class.schema}
             }}
-
-            {commands}
           PROMPT
         end
       end

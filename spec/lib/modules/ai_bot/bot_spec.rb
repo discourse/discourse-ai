@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../support/openai_completions_inference_stubs"
-
 class FakeBot < DiscourseAi::AiBot::Bot
   class Tokenizer
     def tokenize(text)
@@ -13,7 +11,7 @@ class FakeBot < DiscourseAi::AiBot::Bot
     Tokenizer.new
   end
 
-  def prompt_limit
+  def prompt_limit(allow_commands: false)
     10_000
   end
 
@@ -115,7 +113,7 @@ describe DiscourseAi::AiBot::Bot do
       SiteSetting.title = "My Forum"
       SiteSetting.site_description = "My Forum Description"
 
-      system_prompt = bot.system_prompt(second_post)
+      system_prompt = bot.system_prompt(second_post, allow_commands: true)
 
       expect(system_prompt).to include(SiteSetting.title)
       expect(system_prompt).to include(SiteSetting.site_description)
@@ -135,7 +133,7 @@ describe DiscourseAi::AiBot::Bot do
         },
       }
 
-      prompt = bot.bot_prompt_with_topic_context(second_post)
+      prompt = bot.bot_prompt_with_topic_context(second_post, allow_commands: true)
 
       req_opts = bot.reply_params.merge({ functions: bot.available_functions, stream: true })
 
@@ -148,7 +146,7 @@ describe DiscourseAi::AiBot::Bot do
 
       result =
         DiscourseAi::AiBot::Commands::SearchCommand
-          .new(bot_user: nil, args: nil)
+          .new(bot: nil, args: nil)
           .process(query: "test search")
           .to_json
 

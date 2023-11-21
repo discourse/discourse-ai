@@ -250,29 +250,6 @@ discourse_ai:
       - gpt-3.5-turbo
       - gpt-4
       - claude-2
-  ai_bot_enabled_chat_commands:
-    type: list
-    default: "categories|google|image|search|tags|time|read"
-    client: true
-    choices:
-      - categories
-      - google
-      - image
-      - search
-      - summarize
-      - read
-      - tags
-      - time
-  ai_bot_enabled_personas:
-    type: list
-    default: "general|artist|sql_helper|settings_explorer|researcher|creative"
-    choices:
-      - general
-      - artist
-      - sql_helper
-      - settings_explorer
-      - researcher
-      - creative
   ai_bot_add_to_header:
     default: true
     client: true
