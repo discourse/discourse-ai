@@ -16,7 +16,7 @@ module DiscourseAi
                  :model,
                  to: :completion_model
 
-        def summarize(content, &on_partial_blk)
+        def summarize(content, _user, &on_partial_blk)
           opts = content.except(:contents)
 
           chunks = split_into_chunks(content[:contents])
