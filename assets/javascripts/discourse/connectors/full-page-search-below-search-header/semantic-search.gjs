@@ -112,7 +112,11 @@ export default class SemanticSearch extends Component {
 
   @action
   toggleAIResults() {
-    document.body.classList.toggle("showing-ai-results");
+    if (this.showingAIResults) {
+      this.args.outletArgs.addSearchResults([], "topic_id");
+    } else {
+      this.args.outletArgs.addSearchResults(this.AIResults, "topic_id");
+    }
     this.showingAIResults = !this.showingAIResults;
   }
 
@@ -120,7 +124,6 @@ export default class SemanticSearch extends Component {
   resetAIResults() {
     this.AIResults = [];
     this.showingAIResults = false;
-    document.body.classList.remove("showing-ai-results");
   }
 
   @action
@@ -149,7 +152,6 @@ export default class SemanticSearch extends Component {
               post.generatedByAI = true;
             });
 
-            this.args.outletArgs.addSearchResults(model.posts, "topic_id");
             this.AIResults = model.posts;
           })
           .catch(popupAjaxError)
