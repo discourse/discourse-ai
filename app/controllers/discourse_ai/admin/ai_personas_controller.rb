@@ -7,7 +7,11 @@ module DiscourseAi
 
       def index
         ai_personas =
-          AiPersona.ordered.map { |persona| AiPersonaSerializer.new(persona, root: false) }
+          AiPersona.ordered.map do |persona|
+            # we use a special serializer here cause names and descriptions are
+            # localized for system personas
+            LocalizedAiPersonaSerializer.new(persona, root: false)
+          end
         commands =
           DiscourseAi::AiBot::Personas::Persona.all_available_commands.map do |command|
             { id: command.to_s.split("::").last, name: command.name.humanize.titleize }
@@ -16,7 +20,7 @@ module DiscourseAi
       end
 
       def show
-        render json: { ai_persona: @ai_persona }
+        render json: LocalizedAiPersonaSerializer.new(@ai_persona)
       end
 
       def create

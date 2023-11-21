@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class AiPersonaSerializer < ApplicationSerializer
+class LocalizedAiPersonaSerializer < ApplicationSerializer
+  root "ai_persona"
+
   attributes :id,
              :name,
              :description,
