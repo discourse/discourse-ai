@@ -5,13 +5,14 @@ import { on } from "@ember/modifier";
 import EmberObject, { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
+import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
-import later from "discourse-common/lib/later";
+import icon from "discourse-common/helpers/d-icon";
 import I18n from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
 import AiCommandSelector from "./ai-command-selector";
@@ -20,12 +21,12 @@ export default class PersonaEditor extends Component {
   @service router;
   @service store;
   @service dialog;
+  @service toasts;
 
   @tracked allGroups = [];
   @tracked isSaving = false;
-  @tracked justSaved = false;
-  @tracked model = null;
-  @tracked priority = false;
+  @tracked editingModel = null;
+  @tracked showDelete = false;
 
   constructor() {
     super(...arguments);
@@ -37,45 +38,38 @@ export default class PersonaEditor extends Component {
 
   @action
   updateModel() {
-    this.model = EmberObject.create(this.args.model.createProperties());
-    this.priority = this.model.priority;
+    this.editingModel = EmberObject.create(this.args.model.createProperties());
+    this.showDelete = !this.args.model.isNew && !this.args.model.system;
   }
 
   @action
-  save() {
+  async save() {
     const isNew = this.args.model.isNew;
-    let error = false;
     this.isSaving = true;
 
-    let start = Date.now();
-
-    this.args.model.setProperties(this.model);
-    this.args.model
-      .save()
-      .catch((e) => {
-        popupAjaxError(e);
-        error = true;
-      })
-      .finally(() => {
-        this.sortPersonas();
-        if (!error) {
-          if (isNew) {
-            this.args.personas.addObject(this.args.model);
-            this.router.transitionTo(
-              "adminPlugins.discourse-ai.ai-personas.show",
-              this.args.model
-            );
-          } else {
-            later(() => {
-              this.isSaving = false;
-              this.justSaved = true;
-              later(() => {
-                this.justSaved = false;
-              }, 2000);
-            }, Math.max(0, 500 - (Date.now() - start)));
-          }
-        }
-      });
+    this.args.model.setProperties(this.editingModel);
+    try {
+      await this.args.model.save();
+      this.#sortPersonas();
+      if (isNew) {
+        this.args.personas.addObject(this.args.model);
+        this.router.transitionTo(
+          "adminPlugins.discourse-ai.ai-personas.show",
+          this.args.model
+        );
+      } else {
+        this.toasts.show({
+          data: { message: I18n.t("discourse_ai.ai-persona.saved") },
+          duration: 2000,
+        });
+      }
+    } catch (e) {
+      popupAjaxError(e);
+    } finally {
+      later(() => {
+        this.isSaving = false;
+      }, 1000);
+    }
   }
 
   @action
@@ -95,19 +89,44 @@ export default class PersonaEditor extends Component {
 
   @action
   updateAllowedGroups(ids) {
-    this.model.set("allowed_group_ids", ids);
+    this.editingModel.set("allowed_group_ids", ids);
   }
 
   @action
-  toggleEnabled() {
+  async toggleEnabled() {
     this.args.model.set("enabled", !this.args.model.enabled);
     if (!this.args.model.isNew) {
-      this.args.model.update({ enabled: this.args.model.enabled });
+      try {
+        await this.args.model.update({ enabled: this.args.model.enabled });
+      } catch (e) {
+        popupAjaxError(e);
+      }
     }
   }
 
-  sortPersonas() {
-    let sorted = this.args.personas.toArray().sort((a, b) => {
+  @action
+  async togglePriority() {
+    this.args.model.set("priority", !this.args.model.priority);
+    if (!this.args.model.isNew) {
+      try {
+        await this.args.model.update({ priority: this.args.model.priority });
+
+        this.#sortPersonas();
+      } catch (e) {
+        popupAjaxError(e);
+      }
+    }
+  }
+
+  @action
+  showPriorityHelp() {
+    this.dialog.alert({
+      message: I18n.t("discourse_ai.ai-persona.priority_help"),
+    });
+  }
+
+  #sortPersonas() {
+    const sorted = this.args.personas.toArray().sort((a, b) => {
       if (a.priority && !b.priority) {
         return -1;
       } else if (!a.priority && b.priority) {
@@ -118,21 +137,6 @@ export default class PersonaEditor extends Component {
     });
     this.args.personas.clear();
     this.args.personas.setObjects(sorted);
-  }
-
-  @action
-  togglePriority() {
-    this.priority = !this.priority;
-
-    this.model.set("priority", this.priority);
-    this.args.model.set("priority", this.model.priority);
-    if (!this.args.model.isNew) {
-      this.args.model
-        .update({ priority: this.args.model.priority })
-        .then(() => {
-          this.sortPersonas();
-        });
-    }
   }
 
   <template>
@@ -149,44 +153,54 @@ export default class PersonaEditor extends Component {
           {{on "click" this.toggleEnabled}}
         />
       </div>
-      <div class="control-group">
+      <div class="control-group ai-persona-editor__priority">
         <DToggleSwitch
           class="ai-persona-editor__priority"
-          @state={{this.priority}}
+          @state={{@model.priority}}
           @label="discourse_ai.ai-persona.priority"
           {{on "click" this.togglePriority}}
         />
+        <a
+          href="#"
+          class="ai-persona-editor__priority-help"
+          {{on "click" this.showPriorityHelp}}
+        >
+          {{icon
+            "question-circle"
+            title="discourse_ai.ai-persona.priority_help"
+          }}
+        </a>
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai-persona.name"}}</label>
         <Input
           class="ai-persona-editor__name"
           @type="text"
-          @value={{this.model.name}}
-          disabled={{this.model.system}}
+          @value={{this.editingModel.name}}
+          disabled={{this.editingModel.system}}
         />
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai-persona.description"}}</label>
         <Textarea
           class="ai-persona-editor__description"
-          @value={{this.model.description}}
-          disabled={{this.model.system}}
+          @value={{this.editingModel.description}}
+          disabled={{this.editingModel.system}}
         />
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai-persona.commands"}}</label>
         <AiCommandSelector
           class="ai-persona-editor__commands"
-          @value={{this.model.commands}}
-          @disabled={{this.model.system}}
+          @value={{this.editingModel.commands}}
+          @disabled={{this.editingModel.system}}
           @commands={{@personas.resultSetMeta.commands}}
         />
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai-persona.allowed_groups"}}</label>
         <GroupChooser
-          @value={{this.model.allowed_group_ids}}
+          @value={{this.editingModel.allowed_group_ids}}
           @content={{this.allGroups}}
           @onChange={{this.updateAllowedGroups}}
         />
@@ -197,8 +211,8 @@ export default class PersonaEditor extends Component {
           }}</label>
         <Textarea
           class="ai-persona-editor__system_prompt"
-          @value={{this.model.system_prompt}}
-          disabled={{this.model.system}}
+          @value={{this.editingModel.system_prompt}}
+          disabled={{this.editingModel.system}}
         />
       </div>
       <div class="control-group ai-persona-editor__action_panel">
@@ -207,19 +221,14 @@ export default class PersonaEditor extends Component {
           @action={{this.save}}
           @disabled={{this.isSaving}}
         >{{I18n.t "discourse_ai.ai-persona.save"}}</DButton>
-        {{#if this.justSaved}}
-          <span class="ai-persona-editor__saved">
-            {{I18n.t "discourse_ai.ai-persona.saved"}}
-          </span>
-        {{/if}}
-        {{#unless @model.system}}
+        {{#if this.showDelete}}
           <DButton
             @action={{this.delete}}
             class="btn-danger ai-persona-editor__delete"
           >
             {{I18n.t "discourse_ai.ai-persona.delete"}}
           </DButton>
-        {{/unless}}
+        {{/if}}
       </div>
     </form>
   </template>

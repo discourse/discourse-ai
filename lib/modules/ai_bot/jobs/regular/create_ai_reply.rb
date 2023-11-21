@@ -11,8 +11,7 @@ module ::Jobs
       kwargs = {}
       kwargs[:user] = post.user
       if persona_id = post.topic.custom_fields["ai_persona_id"]
-        persona_id = persona_id.to_i
-        kwargs[:persona_id] = persona_id
+        kwargs[:persona_id] = persona_id.to_i
       else
         kwargs[:persona_name] = post.topic.custom_fields["ai_persona"]
       end

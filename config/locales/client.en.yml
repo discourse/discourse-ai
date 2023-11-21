@@ -48,7 +48,7 @@ en:
         description: Description
         system_prompt: System Prompt
         save: Save
-        saved: Saved!
+        saved: AI Persona Saved
         enabled: Enabled
         commands: Enabled Commands
         allowed_groups: Allowed Groups
@@ -57,6 +57,7 @@ en:
         title: "AI Personas"
         delete: Delete
         priority: Priority
+        priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
         no_persona_selected: |
           ## What are AI Personas?
 

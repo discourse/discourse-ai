@@ -16,7 +16,7 @@ RSpec.describe "AI personas", type: :system, js: true do
     find(".ai-persona-editor__system_prompt").fill_in(with: "You are a helpful bot")
     find(".ai-persona-editor__save").click()
 
-    wait_for(timeout: 2) { !page.current_path.include?("new") }
+    expect(page).not_to have_current_path("/admin/plugins/discourse-ai/ai_personas/new")
 
     persona_id = page.current_path.split("/").last.to_i
 
@@ -29,8 +29,7 @@ RSpec.describe "AI personas", type: :system, js: true do
   it "will not allow deletion or editing of system personas" do
     visit "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}"
     expect(page).not_to have_selector(".ai-persona-editor__delete")
-    prompt = find(".ai-persona-editor__system_prompt")
-    expect(prompt).to be_disabled
+    expect(find(".ai-persona-editor__system_prompt")).to be_disabled
   end
 
   it "will enable persona right away when you click on enable but does not save side effects" do
@@ -41,7 +40,7 @@ RSpec.describe "AI personas", type: :system, js: true do
     find(".ai-persona-editor__name").set("Test Persona 1")
     find(".ai-persona-editor__enabled+span").click()
 
-    wait_for(timeout: 2) { persona.reload.enabled }
+    try_until_success { expect(persona.reload.enabled).to eq(true) }
 
     persona.reload
     expect(persona.enabled).to eq(true)

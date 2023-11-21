@@ -6,7 +6,7 @@ class AiPersona < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true, length: { maximum: 100 }
   validates :description, presence: true, length: { maximum: 2000 }
-  validates :system_prompt, presence: true
+  validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
 
   before_destroy :ensure_not_system

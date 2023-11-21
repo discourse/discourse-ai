@@ -2,7 +2,10 @@ import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
   async model() {
-    return this.store.createRecord("ai-persona");
+    const record = this.store.createRecord("ai-persona");
+    // TL0
+    record.set("allowed_group_ids", [10]);
+    return record;
   },
 
   setupController(controller, model) {

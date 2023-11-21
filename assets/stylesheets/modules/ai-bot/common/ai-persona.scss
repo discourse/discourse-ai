@@ -33,4 +33,13 @@
     width: 500px;
     height: 400px;
   }
+  &__priority {
+    display: flex;
+  }
+  &__priority-help,
+  &__priority-help:visited {
+    color: var(--primary-medium);
+    align-self: center;
+    margin-left: 10px;
+  }
 }

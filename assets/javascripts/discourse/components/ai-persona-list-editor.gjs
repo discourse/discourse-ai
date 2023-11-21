@@ -1,9 +1,9 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { LinkTo } from "@ember/routing";
-import { htmlSafe } from "@ember/template";
+import concatClass from "discourse/helpers/concat-class";
 import { cook } from "discourse/lib/text";
-import { renderIcon } from "discourse-common/lib/icon-library";
+import icon from "discourse-common/helpers/d-icon";
 import I18n from "discourse-i18n";
 import AiPersonaEditor from "./ai-persona-editor";
 
@@ -25,27 +25,27 @@ export default class AiPersonaListEditor extends Component {
     return this._noPersonaText;
   }
 
-  get plusIcon() {
-    return htmlSafe(renderIcon("string", "plus"));
-  }
-
   <template>
     <div class="ai-persona-list-editor__header">
       <h3>{{I18n.t "discourse_ai.ai-persona.title"}}</h3>
-      <LinkTo
-        @route="adminPlugins.discourse-ai.ai-personas.new"
-        class="btn btn-primary"
-      >
-        {{this.plusIcon}}
-        <span>{{I18n.t "discourse_ai.ai-persona.new"}}</span>
-      </LinkTo>
+      {{#unless @currentPersona.isNew}}
+        <LinkTo
+          @route="adminPlugins.discourse-ai.ai-personas.new"
+          class="btn btn-primary"
+        >
+          {{icon "plus"}}
+          <span>{{I18n.t "discourse_ai.ai-persona.new"}}</span>
+        </LinkTo>
+      {{/unless}}
     </div>
     <div class="content-list ai-persona-list-editor">
       <ul>
         {{#each @personas as |persona|}}
           <li
-            class="{{if persona.enabled '' 'disabled'}}
-              {{if persona.priority 'priority' ''}}"
+            class={{concatClass
+              (if persona.enabled "" "diabled")
+              (if persona.priority "priority")
+            }}
           >
             <LinkTo
               @route="adminPlugins.discourse-ai.ai-personas.show"

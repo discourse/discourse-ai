@@ -110,8 +110,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
             }
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.parsed_body["base"].join).not_to be_blank
-        expect(response.parsed_body["base"].join).not_to include("en.discourse")
+        expect(response.parsed_body["errors"].join).not_to be_blank
+        expect(response.parsed_body["errors"].join).not_to include("en.discourse")
       end
 
       it "does not allow editing of commands" do
@@ -123,8 +123,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
             }
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.parsed_body["base"].join).not_to be_blank
-        expect(response.parsed_body["base"].join).not_to include("en.discourse")
+        expect(response.parsed_body["errors"].join).not_to be_blank
+        expect(response.parsed_body["errors"].join).not_to include("en.discourse")
       end
 
       it "does not allow editing of name and description cause it is localized" do
@@ -137,8 +137,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
             }
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.parsed_body["base"].join).not_to be_blank
-        expect(response.parsed_body["base"].join).not_to include("en.discourse")
+        expect(response.parsed_body["errors"].join).not_to be_blank
+        expect(response.parsed_body["errors"].join).not_to include("en.discourse")
       end
 
       it "does allow some actions" do
@@ -182,9 +182,9 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect {
         delete "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json"
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.parsed_body["base"].join).not_to be_blank
+        expect(response.parsed_body["errors"].join).not_to be_blank
         # let's make sure this is translated
-        expect(response.parsed_body["base"].join).not_to include("en.discourse")
+        expect(response.parsed_body["errors"].join).not_to include("en.discourse")
       }.not_to change(AiPersona, :count)
     end
   end

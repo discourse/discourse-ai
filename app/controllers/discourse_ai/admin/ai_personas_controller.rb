@@ -24,7 +24,7 @@ module DiscourseAi
         if ai_persona.save
           render json: { ai_persona: ai_persona }, status: :created
         else
-          render json: ai_persona.errors, status: :unprocessable_entity
+          render_json_error @ai_persona
         end
       end
 
@@ -32,16 +32,15 @@ module DiscourseAi
         if @ai_persona.update(ai_persona_params)
           render json: @ai_persona
         else
-          render json: @ai_persona.errors, status: :unprocessable_entity
+          render_json_error @ai_persona
         end
       end
 
       def destroy
-        @ai_persona.destroy
-        if @ai_persona.errors.present?
-          render json: @ai_persona.errors, status: :unprocessable_entity
-        else
+        if @ai_persona.destroy
           head :no_content
+        else
+          render_json_error @ai_persona
         end
       end
 
