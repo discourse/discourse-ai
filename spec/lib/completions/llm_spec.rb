@@ -44,7 +44,9 @@ RSpec.describe DiscourseAi::Completions::LLM do
 
     let(:canned_response) do
       DiscourseAi::Completions::Endpoints::CannedResponse.new(
-        "<ai>The solitary horse.,The horse etched in gold.,A horse's infinite journey.,A horse lost in time.,A horse's last ride.</ai>",
+        [
+          "<ai>The solitary horse.,The horse etched in gold.,A horse's infinite journey.,A horse lost in time.,A horse's last ride.</ai>",
+        ],
       )
     end
 
@@ -52,7 +54,7 @@ RSpec.describe DiscourseAi::Completions::LLM do
       it "processes the prompt and return the response" do
         llm_response = llm.completion!(prompt, user)
 
-        expect(llm_response).to eq(canned_response.response)
+        expect(llm_response).to eq(canned_response.responses[0])
       end
     end
 
@@ -62,7 +64,7 @@ RSpec.describe DiscourseAi::Completions::LLM do
 
         llm.completion!(prompt, user) { |partial, cancel_fn| llm_response << partial }
 
-        expect(llm_response).to eq(canned_response.response)
+        expect(llm_response).to eq(canned_response.responses[0])
       end
     end
   end

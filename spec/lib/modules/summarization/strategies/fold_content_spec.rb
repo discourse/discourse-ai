@@ -1,28 +1,35 @@
 # frozen_string_literal: true
 
-require_relative "../../../../support/summarization/dummy_completion_model"
-
 RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
   describe "#summarize" do
     subject(:strategy) { described_class.new(model) }
 
     let(:summarize_text) { "This is a text" }
-    let(:model) { DummyCompletionModel.new(model_tokens) }
     let(:model_tokens) do
       # Make sure each content fits in a single chunk.
-      DiscourseAi::Tokenizer::BertTokenizer.size("(1 asd said: This is a text ") + 3
+      # 700 is the number of tokens reserved for the prompt.
+      700 + DiscourseAi::Tokenizer::OpenAiTokenizer.size("(1 asd said: This is a text ") + 3
     end
 
-    let(:user) { User.new }
+    let(:model) do
+      DiscourseAi::Summarization::Models::OpenAi.new("gpt-4", max_tokens: model_tokens)
+    end
 
     let(:content) { { contents: [{ poster: "asd", id: 1, text: summarize_text }] } }
 
+    let(:single_summary) { "<ai>this is a single summary</ai>" }
+    let(:concatenated_summary) { "<ai>this is a concatenated summary</ai>" }
+
+    let(:user) { User.new }
+
     context "when the content to summarize fits in a single call" do
       it "does one call to summarize content" do
-        result = strategy.summarize(content, user)
+        result =
+          DiscourseAi::Completions::LLM.with_prepared_response([single_summary]) do |spy|
+            strategy.summarize(content, user).tap { expect(spy.completions).to eq(1) }
+          end
 
-        expect(model.summarization_calls).to eq(1)
-        expect(result[:summary]).to eq(DummyCompletionModel::SINGLE_SUMMARY)
+        expect(result[:summary]).to eq(Nokogiri::HTML5.fragment(single_summary).at("ai").text)
       end
     end
 
@@ -30,10 +37,12 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
       it "summarizes each chunk and then concatenates them" do
         content[:contents] << { poster: "asd2", id: 2, text: summarize_text }
 
-        result = strategy.summarize(content, user)
+        result =
+          DiscourseAi::Completions::LLM.with_prepared_response(
+            [single_summary, single_summary, concatenated_summary],
+          ) { |spy| strategy.summarize(content, user).tap { expect(spy.completions).to eq(3) } }
 
-        expect(model.summarization_calls).to eq(3)
-        expect(result[:summary]).to eq(DummyCompletionModel::CONCATENATED_SUMMARIES)
+        expect(result[:summary]).to eq(Nokogiri::HTML5.fragment(concatenated_summary).at("ai").text)
       end
     end
   end

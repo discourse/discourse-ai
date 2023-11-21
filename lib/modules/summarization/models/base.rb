@@ -21,25 +21,6 @@ module DiscourseAi
           raise NotImplemented
         end
 
-        def summarize_in_chunks(chunks, opts)
-          chunks.map do |chunk|
-            chunk[:summary] = summarize_chunk(chunk[:summary], opts)
-            chunk
-          end
-        end
-
-        def concatenate_summaries(_summaries)
-          raise NotImplemented
-        end
-
-        def summarize_with_truncation(_contents, _opts)
-          raise NotImplemented
-        end
-
-        def summarize_single(chunk_text, opts)
-          raise NotImplemented
-        end
-
         def format_content_item(item)
           "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
         end
@@ -57,16 +38,6 @@ module DiscourseAi
           # ~500 words
           700
         end
-
-        def summarize_chunk(_chunk_text, _opts)
-          raise NotImplemented
-        end
-
-        def tokenizer
-          raise NotImplemented
-        end
-
-        delegate :can_expand_tokens?, to: :tokenizer
       end
     end
   end

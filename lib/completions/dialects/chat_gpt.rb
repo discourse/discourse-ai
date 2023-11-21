@@ -5,7 +5,7 @@ module DiscourseAi
     module Dialects
       class ChatGPT
         def self.can_translate?(model_name)
-          %w[gpt-3.5-turbo gpt-4].include?(model_name)
+          %w[gpt-3.5-turbo gpt-4 gpt-3.5-turbo-16k gpt-4-32k].include?(model_name)
         end
 
         def translate(generic_prompt)

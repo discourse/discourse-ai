@@ -14,10 +14,6 @@ module DiscourseAi
           { max_tokens_to_sample: 20_000 }
         end
 
-        def tokenizer
-          Tokenizer::AnthropicTokenizer
-        end
-
         def provider_id
           AiApiAuditLog::Provider::Anthropic
         end

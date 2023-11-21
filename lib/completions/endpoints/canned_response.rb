@@ -4,17 +4,27 @@ module DiscourseAi
   module Completions
     module Endpoints
       class CannedResponse
+        CANNED_RESPONSE_ERROR = Class.new(StandardError)
+
         def self.can_contact?(_)
           Rails.env.test?
         end
 
-        def initialize(response)
-          @response = response
+        def initialize(responses)
+          @responses = responses
+          @completions = 0
         end
 
-        attr_reader :response
+        attr_reader :responses, :completions
 
         def perform_completion!(_prompt, _user, _model_params)
+          response = responses[completions]
+          if response.nil?
+            raise CANNED_RESPONSE_ERROR,
+                  "The number of completions you requested exceed the number of canned responses"
+          end
+
+          @completions += 1
           if block_given?
             cancelled = false
             cancel_fn = lambda { cancelled = true }
@@ -26,6 +36,10 @@ module DiscourseAi
           else
             response
           end
+        end
+
+        def tokenizer
+          DiscourseAi::Tokenizer::OpenAiTokenizer
         end
       end
     end

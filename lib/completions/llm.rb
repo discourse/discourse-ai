@@ -8,7 +8,7 @@ module DiscourseAi
       def self.with_prepared_response(response)
         @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(response)
 
-        yield.tap { @canned_response = nil }
+        yield(@canned_response).tap { @canned_response = nil }
       end
 
       def self.proxy(model_name)
@@ -38,6 +38,8 @@ module DiscourseAi
         @gateway = gateway
         @model_name = model_name
       end
+
+      delegate :tokenizer, to: :dialect
 
       def completion!(generic_prompt, user, &partial_read_blk)
         prompt = dialect.translate(generic_prompt)
