@@ -28,18 +28,15 @@ export default class PersonaEditor extends Component {
   @tracked editingModel = null;
   @tracked showDelete = false;
 
-  constructor() {
-    super(...arguments);
-
-    Group.findAll().then((groups) => {
-      this.allGroups = groups;
-    });
-  }
-
   @action
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
     this.showDelete = !this.args.model.isNew && !this.args.model.system;
+  }
+
+  @action
+  async updateAllGroups() {
+    this.allGroups = await Group.findAll();
   }
 
   @action
@@ -147,6 +144,7 @@ export default class PersonaEditor extends Component {
       class="form-horizontal ai-persona-editor"
       {{didUpdate this.updateModel @model.id}}
       {{didInsert this.updateModel @model.id}}
+      {{didInsert this.updateAllGroups @model.id}}
     >
       <div class="control-group">
         <DToggleSwitch

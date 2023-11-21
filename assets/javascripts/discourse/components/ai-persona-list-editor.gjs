@@ -10,10 +10,6 @@ import AiPersonaEditor from "./ai-persona-editor";
 export default class AiPersonaListEditor extends Component {
   @tracked _noPersonaText = null;
 
-  constructor() {
-    super(...arguments);
-  }
-
   get noPersonaText() {
     if (this._noPersonaText === null) {
       const raw = I18n.t("discourse_ai.ai-persona.no_persona_selected");
