@@ -1,59 +1,19 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
-import I18n from "I18n";
 import { tracked } from "@glimmer/tracking";
-import { ajax } from "discourse/lib/ajax";
-import { isValidSearchTerm, translateResults } from "discourse/lib/search";
-import discourseDebounce from "discourse-common/lib/debounce";
-import { inject as service } from "@ember/service";
-import { bind } from "discourse-common/utils/decorators";
-import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
-import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { on } from "@ember/modifier";
+import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
-import icon from "discourse-common/helpers/d-icon";
+import { inject as service } from "@ember/service";
+import DToggleSwitch from "discourse/components/d-toggle-switch";
+import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
+import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import { isValidSearchTerm, translateResults } from "discourse/lib/search";
+import icon from "discourse-common/helpers/d-icon";
+import I18n from "I18n";
 
 export default class SemanticSearch extends Component {
-  <template>
-    {{#if this.searchEnabled}}
-      <div class="semantic-search__container search-results" role="region">
-        <div
-          class="semantic-search__results"
-          {{didInsert this.performHyDESearch}}
-        >
-          <div
-            class="semantic-search__searching
-              {{if this.searching 'in-progress'}}"
-          >
-            <DToggleSwitch
-              disabled={{this.disableToggleSwitch}}
-              @state={{this.showingAIResults}}
-              title="AI search results hidden"
-              class="semantic-search__results-toggle"
-              {{on "click" this.toggleAIResults}}
-            />
-
-            <div class="semantic-search__searching-text">
-              {{icon "discourse-sparkles"}}
-              {{this.searchStateText}}
-            </div>
-
-            {{#if this.searching}}
-              <span class="semantic-search__indicator-wave">
-                <span class="semantic-search__indicator-dot">.</span>
-                <span class="semantic-search__indicator-dot">.</span>
-                <span class="semantic-search__indicator-dot">.</span>
-              </span>
-            {{/if}}
-          </div>
-        </div>
-      </div>
-    {{/if}}
-  </template>
-
   static shouldRender(_args, { siteSettings }) {
     return siteSettings.ai_embeddings_semantic_search_enabled;
   }
@@ -127,36 +87,78 @@ export default class SemanticSearch extends Component {
   }
 
   @action
-  performHyDESearch() {
+  handleSearch() {
     if (!this.searchEnabled) {
       return;
     }
 
+    if (this.searchTerm) {
+      return this.performHyDESearch();
+    }
+
     withPluginApi("1.15.0", (api) => {
       api.onAppEvent("full-page-search:trigger-search", () => {
-        this.searching = true;
-        this.resetAIResults();
-
-        ajax("/discourse-ai/embeddings/semantic-search", {
-          data: { q: this.searchTerm },
-        })
-          .then(async (results) => {
-            const model = (await translateResults(results)) || {};
-
-            if (model.posts?.length === 0) {
-              this.searching = false;
-              return;
-            }
-
-            model.posts.forEach((post) => {
-              post.generatedByAI = true;
-            });
-
-            this.AIResults = model.posts;
-          })
-          .catch(popupAjaxError)
-          .finally(() => (this.searching = false));
+        return this.performHyDESearch();
       });
     });
   }
+
+  performHyDESearch() {
+    this.searching = true;
+    this.resetAIResults();
+
+    ajax("/discourse-ai/embeddings/semantic-search", {
+      data: { q: this.searchTerm },
+    })
+      .then(async (results) => {
+        const model = (await translateResults(results)) || {};
+
+        if (model.posts?.length === 0) {
+          this.searching = false;
+          return;
+        }
+
+        model.posts.forEach((post) => {
+          post.generatedByAI = true;
+        });
+
+        this.AIResults = model.posts;
+      })
+      .catch(popupAjaxError)
+      .finally(() => (this.searching = false));
+  }
+
+  <template>
+    {{#if this.searchEnabled}}
+      <div class="semantic-search__container search-results" role="region">
+        <div class="semantic-search__results" {{didInsert this.handleSearch}}>
+          <div
+            class="semantic-search__searching
+              {{if this.searching 'in-progress'}}"
+          >
+            <DToggleSwitch
+              disabled={{this.disableToggleSwitch}}
+              @state={{this.showingAIResults}}
+              title="AI search results hidden"
+              class="semantic-search__results-toggle"
+              {{on "click" this.toggleAIResults}}
+            />
+
+            <div class="semantic-search__searching-text">
+              {{icon "discourse-sparkles"}}
+              {{this.searchStateText}}
+            </div>
+
+            {{#if this.searching}}
+              <span class="semantic-search__indicator-wave">
+                <span class="semantic-search__indicator-dot">.</span>
+                <span class="semantic-search__indicator-dot">.</span>
+                <span class="semantic-search__indicator-dot">.</span>
+              </span>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    {{/if}}
+  </template>
 }
