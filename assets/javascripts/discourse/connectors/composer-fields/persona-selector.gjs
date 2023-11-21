@@ -30,16 +30,17 @@ export default class BotSelector extends Component {
   @service currentUser;
 
   STORE_NAMESPACE = "discourse_ai_persona_selector_";
-  store = new KeyValueStore(this.STORE_NAMESPACE);
+  preferredPersonaStore = new KeyValueStore(this.STORE_NAMESPACE);
 
   constructor() {
     super(...arguments);
+
     if (this.botOptions && this.composer) {
-      const id = this.store.getObject("id");
-      if (id) {
-        this._value = parseInt(id, 10);
+      const personaId = this.preferredPersonaStore.getObject("id");
+      if (personaId) {
+        this._value = parseInt(personaId, 10);
       } else {
-        this._value = this.botOptions[0].id;
+        this._value = this.botOptions[0].personaId;
       }
 
       this.composer.metaData = { ai_persona_id: this._value };
@@ -66,10 +67,10 @@ export default class BotSelector extends Component {
     return this._value;
   }
 
-  set value(val) {
-    this._value = val;
-    this.store.setObject({ key: "id", value: val });
-    this.composer.metaData = { ai_persona_id: val };
+  set value(newValue) {
+    this._value = newValue;
+    this.preferredPersonaStore.setObject({ key: "id", value: newValue });
+    this.composer.metaData = { ai_persona_id: newValue };
   }
 
   <template>

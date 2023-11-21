@@ -14,12 +14,13 @@ RSpec.describe "AI personas", type: :system, js: true do
     visit "/"
     find(".d-header .ai-bot-button").click()
     persona_selector = PageObjects::Components::SelectKit.new(".persona-selector__dropdown")
+    persona_selector.expand
     persona_selector.select_row_by_value(-2)
 
     visit "/"
     find(".d-header .ai-bot-button").click()
     persona_selector = PageObjects::Components::SelectKit.new(".persona-selector__dropdown")
-
+    persona_selector.expand
     expect(persona_selector).to have_selected_value(-2)
   end
 
