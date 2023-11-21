@@ -12,9 +12,10 @@ import Textarea from "discourse/components/d-textarea";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
-import icon from "discourse-common/helpers/d-icon";
+import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
+import DTooltip from "float-kit/components/d-tooltip";
 import AiCommandSelector from "./ai-command-selector";
 
 export default class PersonaEditor extends Component {
@@ -118,13 +119,6 @@ export default class PersonaEditor extends Component {
     }
   }
 
-  @action
-  showPriorityHelp() {
-    this.dialog.alert({
-      message: I18n.t("discourse_ai.ai-persona.priority_help"),
-    });
-  }
-
   #sortPersonas() {
     const sorted = this.args.personas.toArray().sort((a, b) => {
       if (a.priority && !b.priority) {
@@ -161,16 +155,10 @@ export default class PersonaEditor extends Component {
           @label="discourse_ai.ai-persona.priority"
           {{on "click" this.togglePriority}}
         />
-        <a
-          href="#"
-          class="ai-persona-editor__priority-help"
-          {{on "click" this.showPriorityHelp}}
-        >
-          {{icon
-            "question-circle"
-            title="discourse_ai.ai-persona.priority_help"
-          }}
-        </a>
+        <DTooltip
+          @icon="question-circle"
+          @content={{i18n "discourse_ai.ai-persona.priority_help"}}
+        />
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai-persona.name"}}</label>

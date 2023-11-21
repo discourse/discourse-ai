@@ -35,11 +35,11 @@
   }
   &__priority {
     display: flex;
-  }
-  &__priority-help,
-  &__priority-help:visited {
-    color: var(--primary-medium);
-    align-self: center;
-    margin-left: 10px;
+    align-items: center;
+
+    .fk-d-tooltip__icon {
+      padding-left: 0.25em;
+      color: var(--primary-medium);
+    }
   }
 }
