@@ -10,7 +10,6 @@
 
 gem "tokenizers", "0.3.3"
 gem "tiktoken_ruby", "0.0.5"
-gem "aws-eventstream", "1.2.0"
 
 enabled_site_setting :discourse_ai_enabled
 
