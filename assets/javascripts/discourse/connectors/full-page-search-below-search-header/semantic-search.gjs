@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { inject as service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
@@ -20,10 +21,12 @@ export default class SemanticSearch extends Component {
 
   @service appEvents;
   @service siteSettings;
+  @service searchPreferencesManager;
 
   @tracked searching = false;
   @tracked AIResults = [];
   @tracked showingAIResults = false;
+  @tracked sortOrder = this.searchPreferencesManager.sortOrder;
   initialSearchTerm = this.args.outletArgs.search;
 
   get disableToggleSwitch() {
@@ -71,6 +74,7 @@ export default class SemanticSearch extends Component {
 
   get searchEnabled() {
     return (
+      this.sortOrder === 0 &&
       this.args.outletArgs.type === SEARCH_TYPE_DEFAULT &&
       isValidSearchTerm(this.searchTerm, this.siteSettings)
     );
@@ -90,6 +94,17 @@ export default class SemanticSearch extends Component {
   resetAIResults() {
     this.AIResults = [];
     this.showingAIResults = false;
+  }
+
+  @action
+  checkSort(element) {
+    this.sortOrder = this.searchPreferencesManager.sortOrder;
+    if (this.sortOrder !== 0) {
+      this.resetAIResults();
+      this.searchEnabled = false;
+    } else {
+      this.handleSearch();
+    }
   }
 
   @action
@@ -135,6 +150,7 @@ export default class SemanticSearch extends Component {
   }
 
   <template>
+    <div {{didUpdate this.checkSort this.searchTerm}}></div>
     {{#if this.searchEnabled}}
       <div class="semantic-search__container search-results" role="region">
         <div class="semantic-search__results" {{didInsert this.handleSearch}}>
