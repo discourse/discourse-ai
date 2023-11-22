@@ -2,7 +2,7 @@
 
 require_relative "endpoint_examples"
 
-RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
+RSpec.describe DiscourseAi::Completions::Endpoints::OpenAI do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::OpenAiTokenizer) }
 
   let(:model_name) { "gpt-3.5-turbo" }

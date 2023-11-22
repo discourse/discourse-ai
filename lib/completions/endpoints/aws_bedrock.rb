@@ -5,7 +5,7 @@ module DiscourseAi
     module Endpoints
       class AwsBedrock < Base
         def self.can_contact?(model_name)
-          model_name == "claude-2" && SiteSetting.ai_bedrock_access_key_id.present? &&
+          SiteSetting.ai_bedrock_access_key_id.present? &&
             SiteSetting.ai_bedrock_secret_access_key.present? &&
             SiteSetting.ai_bedrock_region.present?
         end

@@ -21,7 +21,6 @@ module DiscourseAi
           Models::OpenAi.new("gpt-4-32k", max_tokens: 32_768),
           Models::OpenAi.new("gpt-3.5-turbo", max_tokens: 4096),
           Models::OpenAi.new("gpt-3.5-turbo-16k", max_tokens: 16_384),
-          Models::Discourse.new("long-t5-tglobal-base-16384-book-summary", max_tokens: 16_384),
           Models::Anthropic.new("claude-2", max_tokens: 100_000),
           Models::Anthropic.new("claude-instant-1", max_tokens: 100_000),
           Models::Llama2.new("Llama2-chat-hf", max_tokens: SiteSetting.ai_hugging_face_token_limit),
@@ -36,6 +35,7 @@ module DiscourseAi
         end
 
         truncable_models = [
+          Models::Discourse.new("long-t5-tglobal-base-16384-book-summary", max_tokens: 16_384),
           Models::Discourse.new("bart-large-cnn-samsum", max_tokens: 1024),
           Models::Discourse.new("flan-t5-base-samsum", max_tokens: 512),
         ]

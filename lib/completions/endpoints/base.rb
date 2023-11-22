@@ -84,12 +84,12 @@ module DiscourseAi
                   decoded_chunk = decode(chunk)
                   response_raw << decoded_chunk
 
-                  partials_from(decoded_chunk).each do |raw_partial|
+                  partials_from(leftover + decoded_chunk).each do |raw_partial|
                     next if cancelled
                     next if raw_partial.blank?
 
                     begin
-                      partial = extract_completion_from(leftover + raw_partial)
+                      partial = extract_completion_from(raw_partial)
                       leftover = ""
                       response_data << partial
 

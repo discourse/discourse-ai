@@ -21,10 +21,6 @@ module DiscourseAi
           raise NotImplemented
         end
 
-        def format_content_item(item)
-          "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
-        end
-
         def available_tokens
           max_tokens - reserved_tokens
         end

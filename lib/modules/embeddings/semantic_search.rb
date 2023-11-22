@@ -102,7 +102,8 @@ module DiscourseAi
         TEXT
           input: <<~TEXT,
           Using this description, write a forum post about the subject inside the <input></input> XML tags:
-          #{search_term}
+          
+          <input>#{search_term}</input>
         TEXT
           post_insts: "Put the forum post between <ai></ai> tags.",
         }

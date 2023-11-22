@@ -17,19 +17,19 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
 
     let(:content) { { contents: [{ poster: "asd", id: 1, text: summarize_text }] } }
 
-    let(:single_summary) { "<ai>this is a single summary</ai>" }
-    let(:concatenated_summary) { "<ai>this is a concatenated summary</ai>" }
+    let(:single_summary) { "this is a single summary" }
+    let(:concatenated_summary) { "this is a concatenated summary" }
 
     let(:user) { User.new }
 
     context "when the content to summarize fits in a single call" do
       it "does one call to summarize content" do
         result =
-          DiscourseAi::Completions::LLM.with_prepared_response([single_summary]) do |spy|
+          DiscourseAi::Completions::LLM.with_prepared_responses([single_summary]) do |spy|
             strategy.summarize(content, user).tap { expect(spy.completions).to eq(1) }
           end
 
-        expect(result[:summary]).to eq(Nokogiri::HTML5.fragment(single_summary).at("ai").text)
+        expect(result[:summary]).to eq(single_summary)
       end
     end
 
@@ -38,11 +38,11 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
         content[:contents] << { poster: "asd2", id: 2, text: summarize_text }
 
         result =
-          DiscourseAi::Completions::LLM.with_prepared_response(
+          DiscourseAi::Completions::LLM.with_prepared_responses(
             [single_summary, single_summary, concatenated_summary],
           ) { |spy| strategy.summarize(content, user).tap { expect(spy.completions).to eq(3) } }
 
-        expect(result[:summary]).to eq(Nokogiri::HTML5.fragment(concatenated_summary).at("ai").text)
+        expect(result[:summary]).to eq(concatenated_summary)
       end
     end
   end

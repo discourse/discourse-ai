@@ -28,8 +28,12 @@ module DiscourseAi
 
         private
 
+        def format_content_item(item)
+          "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
+        end
+
         def summarize_with_truncation(contents, opts)
-          text_to_summarize = contents.map { |c| completion_model.format_content_item(c) }.join
+          text_to_summarize = contents.map { |c| format_content_item(c) }.join
           truncated_content =
             ::DiscourseAi::Tokenizer::BertTokenizer.truncate(
               text_to_summarize,

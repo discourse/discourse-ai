@@ -67,7 +67,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
           .returns([post1.topic_id])
 
         results =
-          DiscourseAi::Completions::LLM.with_prepared_response(["<ai>#{query}</ai>"]) do
+          DiscourseAi::Completions::LLM.with_prepared_responses(["<ai>#{query}</ai>"]) do
             search.process(search_query: "hello world, sam", status: "public")
           end
 
