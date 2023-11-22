@@ -36,6 +36,8 @@ module DiscourseAi
         search = Search.new(query, { guardian: guardian })
         search_term = search.term
 
+        return [] if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
+
         strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
         vector_rep =
           DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
