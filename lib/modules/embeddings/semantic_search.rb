@@ -55,10 +55,7 @@ module DiscourseAi
         hypothetical_post =
           Discourse
             .cache
-            .fetch(hyde_key, expires_in: 1.week) do
-              hyde_generator = DiscourseAi::Embeddings::HydeGenerators::Base.current_hyde_model.new
-              hyde_generator.hypothetical_post_from(search_term)
-            end
+            .fetch(hyde_key, expires_in: 1.week) { hypothetical_post_from(search_term) }
 
         hypothetical_post_embedding =
           Discourse
@@ -95,6 +92,30 @@ module DiscourseAi
 
       def build_embedding_key(digest, hyde_model, embedding_model)
         "#{build_hyde_key(digest, hyde_model)}-#{embedding_model}"
+      end
+
+      def hypothetical_post_from(search_term)
+        prompt = {
+          insts: <<~TEXT,
+          You are a content creator for a forum. The forum description is as follows:
+          #{SiteSetting.title}
+          #{SiteSetting.site_description}
+          Given the forum description write a forum post about the following subject:
+        TEXT
+          input: <<~TEXT,
+          Using this description, write a forum post about the subject inside the <input></input> XML tags:
+          
+          <input>#{search_term}</input>
+        TEXT
+          post_insts: "Put the forum post between <ai></ai> tags.",
+        }
+
+        llm_response =
+          DiscourseAi::Completions::LLM.proxy(
+            SiteSetting.ai_embeddings_semantic_search_hyde_model,
+          ).completion!(prompt, @guardian.user)
+
+        Nokogiri::HTML5.fragment(llm_response).at("ai").text
       end
     end
   end
