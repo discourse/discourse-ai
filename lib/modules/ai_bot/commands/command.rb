@@ -42,12 +42,13 @@ module DiscourseAi
 
         attr_reader :bot_user, :bot
 
-        def initialize(bot:, args:, post: nil, parent_post: nil)
+        def initialize(bot:, args:, post: nil, parent_post: nil, xml_format: false)
           @bot = bot
           @bot_user = bot&.bot_user
           @args = args
           @post = post
           @parent_post = parent_post
+          @xml_format = xml_format
 
           @placeholder = +(<<~HTML).strip
             <details>
@@ -145,7 +146,18 @@ module DiscourseAi
 
           parsed_args = JSON.parse(@args).symbolize_keys
 
-          prompt << [process(**parsed_args).to_json, self.class.name, "function"]
+          function_results = process(**parsed_args).to_json
+          function_results = <<~XML if @xml_format
+              <function_results>
+              <result>
+              <tool_name>#{self.class.name}</tool_name>
+              <json>
+              #{function_results}
+              </json>
+              </result>
+              </function_results>
+            XML
+          prompt << [function_results, self.class.name, "function"]
           @post.post_custom_prompt.update!(custom_prompt: prompt)
 
           raw = +(<<~HTML)

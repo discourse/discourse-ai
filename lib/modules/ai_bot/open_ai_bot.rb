@@ -96,12 +96,13 @@ module DiscourseAi
 
       private
 
-      def populate_functions(partial:, reply:, functions:, done:)
+      def populate_functions(partial:, reply:, functions:, done:, current_delta:)
         return if !partial
         fn = partial.dig(:choices, 0, :delta, :function_call)
         if fn
           functions.add_function(fn[:name]) if fn[:name].present?
           functions.add_argument_fragment(fn[:arguments]) if !fn[:arguments].nil?
+          functions.custom = true
         end
       end
 

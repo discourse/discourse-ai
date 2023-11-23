@@ -62,16 +62,16 @@ module DiscourseAi::AiBot::Personas
       expect(rendered).to include("test site description")
       expect(rendered).to include("joe, jane")
       expect(rendered).to include(Time.zone.now.to_s)
-      expect(rendered).to include("!search")
-      expect(rendered).to include("!tags")
+      expect(rendered).to include("<tool_name>search</tool_name>")
+      expect(rendered).to include("<tool_name>tags</tool_name>")
       # needs to be configured so it is not available
-      expect(rendered).not_to include("!image")
+      expect(rendered).not_to include("<tool_name>image</tool_name>")
 
       rendered =
         persona.render_system_prompt(topic: topic_with_users, render_function_instructions: false)
 
-      expect(rendered).not_to include("!search")
-      expect(rendered).not_to include("!tags")
+      expect(rendered).not_to include("<tool_name>search</tool_name>")
+      expect(rendered).not_to include("<tool_name>tags</tool_name>")
     end
 
     describe "custom personas" do
