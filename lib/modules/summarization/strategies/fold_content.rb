@@ -105,21 +105,24 @@ module DiscourseAi
 
         def summarization_prompt(input, opts)
           insts = <<~TEXT
-            You are a summarization bot that effectively summarize any text, creating a cohesive narrative.
+            You are a summarization bot that effectively summarize any text
             Your replies contain ONLY a summarized version of the text I provided and you, using the same language.
             You understand and generate Discourse forum Markdown.
             You format the response, including links, using Markdown.
+            Your summaries are always a cohesive narrative in the form of one or multiple paragraphs.
+
           TEXT
 
           insts += <<~TEXT if opts[:resource_path]
-                Each message is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE> "
-                Append <POST_NUMBER> to #{opts[:resource_path]} when linking posts.
+                Each post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE> "
+                Try generating links as well the format is #{opts[:resource_path]}/<POST_NUMBER>
+                For example, a link to the 3rd post in the topic would be [post 3](#{opts[:resource_path]}/3)
               TEXT
 
           insts += "The discussion title is: #{opts[:content_title]}.\n" if opts[:content_title]
 
           prompt = { insts: insts, input: <<~TEXT }
-              Here is the text, inside <input></input> XML tags:
+              Here is the a list of posts, inside <input></input> XML tags:
 
               <input>
                 #{input}
@@ -129,7 +132,7 @@ module DiscourseAi
           if opts[:resource_path]
             prompt[:examples] = [
               [
-                "<input>(1 user1 said: I love Mondays 2) user2 said: I hate Mondays</input>",
+                "<input>1) user1 said: I love Mondays 2) user2 said: I hate Mondays</input>",
                 "Two users are sharing their feelings toward Mondays. [user1](#{opts[:resource_path]}/1) hates them, while [user2](#{opts[:resource_path]}/2) loves them.",
               ],
               [
