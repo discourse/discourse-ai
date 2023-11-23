@@ -22,43 +22,10 @@ module DiscourseAi
           )
         end
 
-        def concatenate_summaries(summaries)
-          completion(summaries.join("\n"))
-        end
-
-        def summarize_with_truncation(contents, opts)
-          text_to_summarize = contents.map { |c| format_content_item(c) }.join
-          truncated_content =
-            ::DiscourseAi::Tokenizer::BertTokenizer.truncate(text_to_summarize, available_tokens)
-
-          completion(truncated_content)
-        end
-
-        def summarize_single(chunk_text, _opts)
-          completion(chunk_text)
-        end
-
         private
-
-        def summarize_chunk(chunk_text, _opts)
-          completion(chunk_text)
-        end
 
         def reserved_tokens
           0
-        end
-
-        def completion(prompt)
-          ::DiscourseAi::Inference::DiscourseClassifier.perform!(
-            "#{SiteSetting.ai_summarization_discourse_service_api_endpoint}/api/v1/classify",
-            model,
-            prompt,
-            SiteSetting.ai_summarization_discourse_service_api_key,
-          ).dig(:summary_text)
-        end
-
-        def tokenizer
-          DiscourseAi::Tokenizer::BertTokenizer
         end
       end
     end

@@ -52,6 +52,8 @@ after_initialize do
 
   require_relative "lib/shared/database/connection"
 
+  require_relative "lib/completions/entry_point"
+
   require_relative "lib/modules/nsfw/entry_point"
   require_relative "lib/modules/toxicity/entry_point"
   require_relative "lib/modules/sentiment/entry_point"
@@ -64,6 +66,7 @@ after_initialize do
   add_admin_route "discourse_ai.title", "discourse-ai"
 
   [
+    DiscourseAi::Completions::EntryPoint.new,
     DiscourseAi::Embeddings::EntryPoint.new,
     DiscourseAi::NSFW::EntryPoint.new,
     DiscourseAi::Toxicity::EntryPoint.new,

@@ -15,11 +15,6 @@ module DiscourseAi
         require_relative "semantic_related"
         require_relative "semantic_topic_query"
 
-        require_relative "hyde_generators/base"
-        require_relative "hyde_generators/openai"
-        require_relative "hyde_generators/anthropic"
-        require_relative "hyde_generators/llama2"
-        require_relative "hyde_generators/llama2_ftos"
         require_relative "semantic_search"
       end
 

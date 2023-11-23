@@ -13,15 +13,6 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
     before do
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
 
-      prompt = DiscourseAi::Embeddings::HydeGenerators::OpenAi.new.prompt(query)
-      OpenAiCompletionsInferenceStubs.stub_response(
-        prompt,
-        hypothetical_post,
-        req_opts: {
-          max_tokens: 400,
-        },
-      )
-
       hyde_embedding = [0.049382, 0.9999]
       EmbeddingsGenerationStubs.discourse_service(
         SiteSetting.ai_embeddings_model,
@@ -39,10 +30,16 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
         .returns(candidate_ids)
     end
 
+    def trigger_search(query)
+      DiscourseAi::Completions::LLM.with_prepared_responses(["<ai>#{hypothetical_post}</ai>"]) do
+        subject.search_for_topics(query)
+      end
+    end
+
     it "returns the first post of a topic included in the asymmetric search results" do
       stub_candidate_ids([post.topic_id])
 
-      posts = subject.search_for_topics(query)
+      posts = trigger_search(query)
 
       expect(posts).to contain_exactly(post)
     end
@@ -53,7 +50,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
           post.topic.update!(visible: false)
           stub_candidate_ids([post.topic_id])
 
-          posts = subject.search_for_topics(query)
+          posts = trigger_search(query)
 
           expect(posts).to be_empty
         end
@@ -64,7 +61,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
           pm_post = Fabricate(:private_message_post)
           stub_candidate_ids([pm_post.topic_id])
 
-          posts = subject.search_for_topics(query)
+          posts = trigger_search(query)
 
           expect(posts).to be_empty
         end
@@ -75,7 +72,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
           post.update!(post_type: Post.types[:whisper])
           stub_candidate_ids([post.topic_id])
 
-          posts = subject.search_for_topics(query)
+          posts = trigger_search(query)
 
           expect(posts).to be_empty
         end
@@ -87,7 +84,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
           reply.topic.first_post.trash!
           stub_candidate_ids([reply.topic_id])
 
-          posts = subject.search_for_topics(query)
+          posts = trigger_search(query)
 
           expect(posts).to be_empty
         end
@@ -98,7 +95,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
           post_2 = Fabricate(:post)
           stub_candidate_ids([post.topic_id])
 
-          posts = subject.search_for_topics(query)
+          posts = trigger_search(query)
 
           expect(posts).not_to include(post_2)
         end
@@ -114,7 +111,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
         end
 
         it "returns an empty list" do
-          posts = subject.search_for_topics(query)
+          posts = trigger_search(query)
 
           expect(posts).to be_empty
         end
@@ -122,14 +119,17 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
         it "returns the results if the user has access to the category" do
           group.add(user)
 
-          posts = subject.search_for_topics(query)
+          posts = trigger_search(query)
 
           expect(posts).to contain_exactly(post)
         end
 
         context "while searching as anon" do
           it "returns an empty list" do
-            posts = described_class.new(Guardian.new(nil)).search_for_topics(query)
+            posts =
+              DiscourseAi::Completions::LLM.with_prepared_responses(
+                ["<ai>#{hypothetical_post}</ai>"],
+              ) { described_class.new(Guardian.new(nil)).search_for_topics(query) }
 
             expect(posts).to be_empty
           end
