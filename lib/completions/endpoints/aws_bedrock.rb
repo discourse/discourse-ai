@@ -22,7 +22,7 @@ module DiscourseAi
 
         def model_uri
           api_url =
-            "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model}/invoke"
+            "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{model}/invoke"
 
           api_url = @streaming_mode ? (api_url + "-with-response-stream") : api_url
 
