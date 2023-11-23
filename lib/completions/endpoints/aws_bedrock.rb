@@ -21,8 +21,13 @@ module DiscourseAi
         private
 
         def model_uri
+          # Bedrock uses slightly different names
+          bedrock_model_id = model.split("-")
+          bedrock_model_id[-1] = "v#{bedrock_model_id.last}"
+          bedrock_model_id = bedrock_model_id.join("-")
+
           api_url =
-            "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model}/invoke"
+            "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{bedrock_model_id}/invoke"
 
           api_url = @streaming_mode ? (api_url + "-with-response-stream") : api_url
 
@@ -45,7 +50,7 @@ module DiscourseAi
             )
 
           Net::HTTP::Post
-            .new(model_uri, headers)
+            .new(model_uri)
             .tap do |r|
               r.body = payload
 

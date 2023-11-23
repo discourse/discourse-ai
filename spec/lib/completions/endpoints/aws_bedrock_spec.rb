@@ -6,6 +6,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::AnthropicTokenizer) }
 
   let(:model_name) { "claude-2" }
+  let(:bedrock_name) { "claude-v2" }
   let(:prompt) { "Human: write 3 words\n\n" }
 
   let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
@@ -66,7 +67,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     WebMock
       .stub_request(
         :post,
-        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model_name}/invoke",
+        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{bedrock_name}/invoke",
       )
       .with(body: request_body)
       .to_return(status: 200, body: JSON.dump(response(response_text)))
@@ -112,7 +113,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     WebMock
       .stub_request(
         :post,
-        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model_name}/invoke-with-response-stream",
+        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{bedrock_name}/invoke-with-response-stream",
       )
       .with(body: stream_request_body)
       .to_return(status: 200, body: chunks)
