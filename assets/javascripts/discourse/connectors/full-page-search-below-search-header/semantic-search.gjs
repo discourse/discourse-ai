@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { inject as service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
@@ -20,19 +21,24 @@ export default class SemanticSearch extends Component {
 
   @service appEvents;
   @service siteSettings;
+  @service searchPreferencesManager;
 
   @tracked searching = false;
   @tracked AIResults = [];
   @tracked showingAIResults = false;
+  @tracked preventAISearch = false;
   initialSearchTerm = this.args.outletArgs.search;
 
   get disableToggleSwitch() {
-    if (this.searching || this.AIResults.length === 0) {
+    if (this.searching || this.AIResults.length === 0 || this.preventAISearch) {
       return true;
     }
   }
 
   get searchStateText() {
+    if (this.preventAISearch) {
+      return I18n.t("discourse_ai.embeddings.semantic_search_disabled_sort");
+    }
     if (this.searching) {
       return I18n.t("discourse_ai.embeddings.semantic_search_loading");
     }
@@ -98,6 +104,13 @@ export default class SemanticSearch extends Component {
       return;
     }
 
+    if (this.searchPreferencesManager.sortOrder !== 0) {
+      this.preventAISearch = true;
+      return;
+    } else {
+      this.preventAISearch = false;
+    }
+
     if (this.initialSearchTerm) {
       return this.performHyDESearch();
     }
@@ -137,7 +150,7 @@ export default class SemanticSearch extends Component {
   <template>
     {{#if this.searchEnabled}}
       <div class="semantic-search__container search-results" role="region">
-        <div class="semantic-search__results" {{didInsert this.handleSearch}}>
+        <div class="semantic-search__results" {{didInsert this.handleSearch}} {{didUpdate this.handleSearch this.searchTerm}}>
           <div
             class="semantic-search__searching
               {{if this.searching 'in-progress'}}"
