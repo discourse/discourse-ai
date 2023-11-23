@@ -66,7 +66,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     WebMock
       .stub_request(
         :post,
-        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{model_name}/invoke",
+        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model_name}/invoke",
       )
       .with(body: request_body)
       .to_return(status: 200, body: JSON.dump(response(response_text)))
@@ -112,7 +112,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     WebMock
       .stub_request(
         :post,
-        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{model_name}/invoke-with-response-stream",
+        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{model_name}/invoke-with-response-stream",
       )
       .with(body: stream_request_body)
       .to_return(status: 200, body: chunks)
