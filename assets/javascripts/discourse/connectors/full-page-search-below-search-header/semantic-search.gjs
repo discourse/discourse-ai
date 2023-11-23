@@ -26,16 +26,19 @@ export default class SemanticSearch extends Component {
   @tracked searching = false;
   @tracked AIResults = [];
   @tracked showingAIResults = false;
-  @tracked sortOrder = this.searchPreferencesManager.sortOrder;
+  @tracked preventAISearch = false;
   initialSearchTerm = this.args.outletArgs.search;
 
   get disableToggleSwitch() {
-    if (this.searching || this.AIResults.length === 0) {
+    if (this.searching || this.AIResults.length === 0 || this.preventAISearch) {
       return true;
     }
   }
 
   get searchStateText() {
+    if (this.preventAISearch) {
+      return I18n.t("discourse_ai.embeddings.semantic_search_disabled_sort");
+    }
     if (this.searching) {
       return I18n.t("discourse_ai.embeddings.semantic_search_loading");
     }
@@ -74,7 +77,6 @@ export default class SemanticSearch extends Component {
 
   get searchEnabled() {
     return (
-      this.sortOrder === 0 &&
       this.args.outletArgs.type === SEARCH_TYPE_DEFAULT &&
       isValidSearchTerm(this.searchTerm, this.siteSettings)
     );
@@ -97,20 +99,16 @@ export default class SemanticSearch extends Component {
   }
 
   @action
-  checkSort(element) {
-    this.sortOrder = this.searchPreferencesManager.sortOrder;
-    if (this.sortOrder !== 0) {
-      this.resetAIResults();
-      this.searchEnabled = false;
-    } else {
-      this.handleSearch();
-    }
-  }
-
-  @action
   handleSearch() {
     if (!this.searchEnabled) {
       return;
+    }
+
+    if (this.searchPreferencesManager.sortOrder !== 0) {
+      this.preventAISearch = true;
+      return;
+    } else {
+      this.preventAISearch = false;
     }
 
     if (this.initialSearchTerm) {
@@ -150,10 +148,9 @@ export default class SemanticSearch extends Component {
   }
 
   <template>
-    <div {{didUpdate this.checkSort this.searchTerm}}></div>
     {{#if this.searchEnabled}}
       <div class="semantic-search__container search-results" role="region">
-        <div class="semantic-search__results" {{didInsert this.handleSearch}}>
+        <div class="semantic-search__results" {{didInsert this.handleSearch}} {{didUpdate this.handleSearch this.searchTerm}}>
           <div
             class="semantic-search__searching
               {{if this.searching 'in-progress'}}"

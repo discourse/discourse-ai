@@ -108,6 +108,7 @@ en:
       embeddings:
         semantic_search: "Topics (Semantic)"
         semantic_search_loading: "Searching for more results using AI"
+        semantic_search_disabled_sort: "AI Search disabled for this sort order, sort by Relevance to enable."
         semantic_search_results:
           toggle: "Showing %{count} results found using AI"
           toggle_hidden: "Hiding %{count} results found using AI"
