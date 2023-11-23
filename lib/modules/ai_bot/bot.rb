@@ -4,11 +4,20 @@ module DiscourseAi
   module AiBot
     class Bot
       class FunctionCalls
+        attr_accessor :maybe_buffer, :maybe_found, :custom
+
         def initialize
           @functions = []
           @current_function = nil
           @found = false
           @cancel_completion = false
+          @maybe_buffer = +""
+          @maybe_found = false
+          @custom = false
+        end
+
+        def custom?
+          @custom
         end
 
         def found?
@@ -17,6 +26,10 @@ module DiscourseAi
 
         def found!
           @found = true
+        end
+
+        def maybe_found?
+          @maybe_found
         end
 
         def cancel_completion?
@@ -46,24 +59,6 @@ module DiscourseAi
 
         def to_a
           @functions
-        end
-
-        def truncate(partial_reply)
-          lines = []
-          found_command = false
-          partial_reply
-            .split("\n")
-            .each do |line|
-              if line.match?(/^!/)
-                found_command = true
-                lines << line
-              elsif found_command && line.match(/^\s*[^!]+/)
-                break
-              else
-                lines << line
-              end
-            end
-          lines.join("\n")
         end
       end
 
@@ -150,13 +145,19 @@ module DiscourseAi
               partial: partial,
               reply: partial_reply,
               functions: functions,
+              current_delta: current_delta,
               done: false,
             )
 
             cancel&.call if functions.cancel_completion?
           end
 
-          reply << current_delta if !functions.found?
+          if functions.maybe_buffer.present? && !functions.maybe_found?
+            reply << functions.maybe_buffer
+            functions.maybe_buffer = +""
+          end
+
+          reply << current_delta if !functions.found? && !functions.maybe_found?
 
           if redis_stream_key && !Discourse.redis.get(redis_stream_key)
             cancel&.call
@@ -189,6 +190,21 @@ module DiscourseAi
           end
         end
 
+        if !available_functions.empty?
+          populate_functions(
+            partial: nil,
+            reply: partial_reply,
+            current_delta: "",
+            functions: functions,
+            done: true,
+          )
+        end
+
+        if functions.maybe_buffer.present?
+          reply << functions.maybe_buffer
+          functions.maybe_buffer = +""
+        end
+
         if bot_reply_post
           publish_update(bot_reply_post, done: true)
 
@@ -204,18 +220,16 @@ module DiscourseAi
 
           truncated_reply = partial_reply
 
-          if functions.found? && functions.cancel_completion?
-            # we need to truncate the partial_reply
-            truncated_reply = functions.truncate(partial_reply)
+          # TODO: we may want to move this code
+          if functions.length > 0 && partial_reply.include?("</invoke>")
+            # recover stop word potentially
+            truncated_reply =
+              partial_reply.split("</invoke>").first + "</invoke>\n</function_calls>"
           end
 
           prompt << [truncated_reply, bot_user.username] if truncated_reply.present?
 
           post.post_custom_prompt.update!(custom_prompt: prompt)
-        end
-
-        if !available_functions.empty?
-          populate_functions(partial: nil, reply: partial_reply, functions: functions, done: true)
         end
 
         if functions.length > 0
@@ -227,7 +241,13 @@ module DiscourseAi
 
             if command_klass = available_commands.detect { |cmd| cmd.invoked?(name) }
               command =
-                command_klass.new(bot: self, args: args, post: bot_reply_post, parent_post: post)
+                command_klass.new(
+                  bot: self,
+                  args: args,
+                  post: bot_reply_post,
+                  parent_post: post,
+                  xml_format: !functions.custom?,
+                )
               chain_intermediate, bot_reply_post = command.invoke!
               chain ||= chain_intermediate
               standalone ||= command.standalone?
@@ -292,13 +312,20 @@ module DiscourseAi
       end
 
       def title_prompt(post)
-        [build_message(bot_user.username, <<~TEXT)]
+        prompt = <<~TEXT
           You are titlebot. Given a topic you will figure out a title.
-          You will never respond with anything but a topic title.
+          You will never respond with anything but a 7 word topic title.
+        TEXT
+        messages = [build_message(bot_user.username, prompt, system: true)]
+
+        messages << build_message("User", <<~TEXT)
           Suggest a 7 word title for the following topic without quoting any of it:
 
+          <content>
           #{post.topic.posts.map(&:raw).join("\n\n")[0..prompt_limit(allow_commands: false)]}
+          </content>
         TEXT
+        messages
       end
 
       def available_commands
@@ -351,23 +378,34 @@ module DiscourseAi
         raise NotImplemented
       end
 
-      def populate_functions(partial:, reply:, functions:, done:)
+      def populate_functions(partial:, reply:, functions:, done:, current_delta:)
         if !done
-          functions.found! if reply.match?(/^!/i)
+          search_length = "<function_calls>".length
+          index = -1
+          while index > -search_length
+            substr = reply[index..-1] || reply
+            index -= 1
+
+            functions.maybe_found = "<function_calls>".start_with?(substr)
+            break if functions.maybe_found?
+          end
+
+          functions.maybe_buffer << current_delta if functions.maybe_found?
+          functions.found! if reply.match?(/^<function_calls>/i)
           if functions.found?
-            functions.cancel_completion! if reply.split("\n")[-1].match?(/^\s*[^!]+/)
+            functions.maybe_buffer = functions.maybe_buffer.to_s.split("<")[0..-2].join("<")
+            functions.cancel_completion! if reply.match?(%r{</function_calls>}i)
           end
         else
-          reply
-            .scan(/^!.*$/i)
-            .each do |line|
-              function_list
-                .parse_prompt(line)
-                .each do |function|
-                  functions.add_function(function[:name])
-                  functions.add_argument_fragment(function[:arguments].to_json)
-                end
-            end
+          functions_string = reply.scan(%r{(<function_calls>(.*?)</invoke>)}im)&.first&.first
+          if functions_string
+            function_list
+              .parse_prompt(functions_string + "</function_calls>")
+              .each do |function|
+                functions.add_function(function[:name])
+                functions.add_argument_fragment(function[:arguments].to_json)
+              end
+          end
         end
       end
 

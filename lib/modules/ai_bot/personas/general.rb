@@ -19,7 +19,7 @@ module DiscourseAi
         def system_prompt
           <<~PROMPT
             You are a helpful Discourse assistant.
-            You understand and generate Discourse Markdown.
+            You _understand_ and **generate** Discourse Markdown.
             You live in a Discourse Forum Message.
 
             You live in the forum with the URL: {site_url}

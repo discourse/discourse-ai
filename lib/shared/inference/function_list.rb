@@ -12,136 +12,102 @@ module ::DiscourseAi
       end
 
       def parse_prompt(prompt)
-        parsed = []
-
-        prompt
-          .split("\n")
-          .each do |line|
-            line.strip!
-            next if line.blank?
-            next if !line.start_with?("!")
-
-            name, arguments = line.split("(", 2)
-            name = name[1..-1].strip
-
-            function = @functions.find { |f| f.name == name }
-            next if function.blank?
-
-            parsed_arguments = {}
-            if arguments
-              arguments = arguments[0..-2] if arguments.end_with?(")")
-
-              temp_string = +""
-              in_string = nil
-              replace = SecureRandom.hex(10)
-              arguments.each_char do |char|
-                if %w[" '].include?(char) && !in_string
-                  in_string = char
-                elsif char == in_string
-                  in_string = nil
-                elsif char == "," && in_string
-                  char = replace
+        xml = prompt.sub(%r{<function_calls>(.*)</function_calls>}m, '\1')
+        if xml.present?
+          parsed = []
+          Nokogiri
+            .XML(xml)
+            .xpath("//invoke")
+            .each do |invoke_node|
+              function = { name: invoke_node.xpath("//tool_name").text, arguments: {} }
+              parsed << function
+              invoke_node
+                .xpath("//parameters")
+                .children
+                .each do |parameters_node|
+                  if parameters_node.is_a?(Nokogiri::XML::Element) && name = parameters_node.name
+                    function[:arguments][name.to_sym] = parameters_node.text
+                  end
                 end
-                temp_string << char
-              end
+            end
+          coerce_arguments!(parsed)
+        end
+      end
 
-              arguments = temp_string.split(",").map { |s| s.gsub(replace, ",").strip }
+      def coerce_arguments!(parsed)
+        parsed.each do |function_call|
+          arguments = function_call[:arguments]
 
-              arguments.each do |argument|
-                key, value = argument.split(":", 2)
-                # remove stuff that is bypasses spec
-                param = function.parameters.find { |p| p[:name] == key.strip }
-                next if !param
+          function = @functions.find { |f| f.name == function_call[:name] }
+          next if !function
 
-                value = value.strip.gsub(/(\A"(.*)"\Z)|(\A'(.*)'\Z)/m, '\2\4') if value.present?
-
-                if param[:enum]
-                  next if !param[:enum].include?(value)
-                end
-
-                parsed_arguments[key.strip.to_sym] = value.strip
-              end
+          arguments.each do |name, value|
+            parameter = function.parameters.find { |p| p[:name].to_s == name.to_s }
+            if !parameter
+              arguments.delete(name)
+              next
             end
 
-            # ensure parsed_arguments has all required arguments
-            all_good = true
-            function.parameters.each do |parameter|
-              next if !parameter[:required]
-              next if parsed_arguments[parameter[:name].to_sym].present?
-
-              all_good = false
-              break
+            type = parameter[:type]
+            if type == "array"
+              arguments[name] = JSON.parse(value)
+            elsif type == "integer"
+              arguments[name] = value.to_i
+            elsif type == "float"
+              arguments[name] = value.to_f
             end
-
-            parsed << { name: name, arguments: parsed_arguments } if all_good
           end
-
+        end
         parsed
       end
 
       def system_prompt
-        prompt = +<<~PROMPT
-          - You are able to execute the following external functions on real data!
-          - Never say that you are in a hypothetical situation, just run functions you need to run!
-          - When you run a command/function you will gain access to real information in a subsequant call!
-          - NEVER EVER pretend to know stuff, you ALWAYS lean on functions to discover the truth!
-          - You have direct access to data on this forum using !functions
-          - You are not a liar, liars are bad bots, you are a good bot!
-          - You always prefer to say "I don't know" as opposed to inventing a lie!
-
-          {
-        PROMPT
+        tools = +""
 
         @functions.each do |function|
-          prompt << "// #{function.description}\n"
-          prompt << "!#{function.name}"
+          parameters = +""
           if function.parameters.present?
-            prompt << "("
-            function.parameters.each_with_index do |parameter, index|
-              prompt << ", " if index > 0
-              prompt << "#{parameter[:name]}: #{parameter[:type]}"
-              if parameter[:required]
-                prompt << " [required]"
-              else
-                prompt << " [optional]"
-              end
-
-              description = +(parameter[:description] || "")
-              description << " [valid values: #{parameter[:enum].join(",")}]" if parameter[:enum]
-
-              description.strip!
-
-              prompt << " /* #{description} */" if description.present?
+            parameters << "\n"
+            function.parameters.each do |parameter|
+              parameters << <<~PARAMETER
+                <parameter>
+                <name>#{parameter[:name]}</name>
+                <type>#{parameter[:type]}</type>
+                <description>#{parameter[:description]}</description>
+                <required>#{parameter[:required]}</required>
+              PARAMETER
+              parameters << "<options>#{parameter[:enum].join(",")}</options>\n" if parameter[:enum]
+              parameters << "</parameter>\n"
             end
-            prompt << ")"
           end
-          prompt << "\n"
+
+          tools << <<~TOOLS
+            <tool_description>
+            <tool_name>#{function.name}</tool_name>
+            <description>#{function.description}</description>
+            <parameters>#{parameters}</parameters>
+            </tool_description>
+          TOOLS
         end
 
-        prompt << <<~PROMPT
-          }
-          \n\nTo execute a function, use the following syntax:
+        <<~PROMPT
+          In this environment you have access to a set of tools you can use to answer the user's question.
+          You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
+          <function_calls>
+          <invoke>
+          <tool_name>$TOOL_NAME</tool_name>
+          <parameters>
+          <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
+          ...
+          </parameters>
+          </invoke>
+          </function_calls>
 
-          !function_name(param1: "value1", param2: 2)
+          Here are the tools available:
 
-          For example for a function defined as:
-
-          {
-          // echo a string
-          !echo(message: string [required])
-          }
-
-          Human: please echo out "hello"
-
-          Assistant: !echo(message: "hello")
-
-          Human: please say "hello"
-
-          Assistant: !echo(message: "hello")
-
+          <tools>
+          #{tools}</tools>
         PROMPT
-
-        prompt
       end
     end
   end

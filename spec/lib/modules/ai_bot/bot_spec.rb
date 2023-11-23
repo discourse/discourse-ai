@@ -48,7 +48,15 @@ describe FakeBot do
   it "can handle command truncation for long messages" do
     bot = FakeBot.new(bot_user)
 
-    bot.add_response(["hello this is a big test I am testing 123\n", "!tags\nabc"])
+    tags_command = <<~TEXT
+      <function_calls>
+      <invoke>
+      <tool_name>tags</tool_name>
+      </invoke>
+      </function_calls>
+    TEXT
+
+    bot.add_response(["hello this is a big test I am testing 123\n", "#{tags_command}\nabc"])
     bot.add_response(["this is the reply"])
 
     bot.reply_to(post)
@@ -59,14 +67,22 @@ describe FakeBot do
     expect(reply.post_custom_prompt.custom_prompt.to_s).not_to include("abc")
     expect(reply.post_custom_prompt.custom_prompt.length).to eq(3)
     expect(reply.post_custom_prompt.custom_prompt[0][0]).to eq(
-      "hello this is a big test I am testing 123\n!tags",
+      "hello this is a big test I am testing 123\n#{tags_command.strip}",
     )
   end
 
   it "can handle command truncation for short bot messages" do
     bot = FakeBot.new(bot_user)
 
-    bot.add_response(["hello\n", "!tags\nabc"])
+    tags_command = <<~TEXT
+      _calls>
+      <invoke>
+      <tool_name>tags</tool_name>
+      </invoke>
+      </function_calls>
+    TEXT
+
+    bot.add_response(["hello\n<function", "#{tags_command}\nabc"])
     bot.add_response(["this is the reply"])
 
     bot.reply_to(post)
@@ -76,7 +92,12 @@ describe FakeBot do
     expect(reply.raw).not_to include("abc")
     expect(reply.post_custom_prompt.custom_prompt.to_s).not_to include("abc")
     expect(reply.post_custom_prompt.custom_prompt.length).to eq(3)
-    expect(reply.post_custom_prompt.custom_prompt[0][0]).to eq("hello\n!tags")
+    expect(reply.post_custom_prompt.custom_prompt[0][0]).to eq(
+      "hello\n<function#{tags_command.strip}",
+    )
+
+    # we don't want function leftovers
+    expect(reply.raw).to start_with("hello\n\n<details>")
   end
 end
 

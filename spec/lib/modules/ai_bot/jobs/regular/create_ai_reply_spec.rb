@@ -93,6 +93,7 @@ RSpec.describe Jobs::CreateAiReply do
             max_tokens_to_sample: 3000,
             temperature: 0.4,
             stream: true,
+            stop_sequences: ["\n\nHuman:", "</function_calls>"],
           },
         )
       end

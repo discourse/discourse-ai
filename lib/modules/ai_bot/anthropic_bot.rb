@@ -38,7 +38,11 @@ module DiscourseAi
       def build_message(poster_username, content, system: false, function: nil)
         role = poster_username == bot_user.username ? "Assistant" : "Human"
 
-        "#{role}: #{content}"
+        if system || function
+          content
+        else
+          "#{role}: #{content}"
+        end
       end
 
       def model_for
@@ -61,6 +65,7 @@ module DiscourseAi
           temperature: 0.4,
           max_tokens: 3000,
           post: post,
+          stop_sequences: ["\n\nHuman:", "</function_calls>"],
           &blk
         )
       end
