@@ -43,7 +43,7 @@ module DiscourseAi::AiBot::Commands
 
     def process(prompts:)
       # max 4 prompts
-      prompts = prompts[0..3]
+      prompts = prompts.take(4)
 
       @last_prompt = prompts[0]
 
