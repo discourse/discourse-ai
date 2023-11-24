@@ -77,7 +77,7 @@ module DiscourseAi::AiBot::Commands
 
       results = threads.map(&:value).compact
 
-      if !results.present?
+      if results.blank?
         return { prompts: prompts, error: "Something went wrong, could not generate image" }
       end
 
