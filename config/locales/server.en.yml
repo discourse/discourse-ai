@@ -143,6 +143,9 @@ en:
         creative:
           name: Creative
           description: "AI Bot with no external integrations specialized in creative tasks"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "AI Bot specialized in generating images using DALL-E 3"
       topic_not_found: "Summary unavailable, topic not found!"
       searching: "Searching for: '%{query}'"
       command_summary:
@@ -157,10 +160,12 @@ en:
         setting_context: "Look up site setting context"
         schema: "Look up database schema"
         search_settings: "Searching site settings"
+        dall_e: "Generate image"
       command_description:
         read: "Reading: <a href='%{url}'>%{title}</a>"
         time: "Time in %{timezone} is %{time}"
         summarize: "Summarized <a href='%{url}'>%{title}</a>"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "Found %{count} category"

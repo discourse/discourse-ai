@@ -45,6 +45,7 @@ module DiscourseAi
         require_relative "commands/setting_context_command"
         require_relative "commands/search_settings_command"
         require_relative "commands/db_schema_command"
+        require_relative "commands/dall_e_command"
         require_relative "personas/persona"
         require_relative "personas/artist"
         require_relative "personas/general"
@@ -52,6 +53,7 @@ module DiscourseAi
         require_relative "personas/settings_explorer"
         require_relative "personas/researcher"
         require_relative "personas/creative"
+        require_relative "personas/dall_e_3"
         require_relative "site_settings_extension"
       end
 

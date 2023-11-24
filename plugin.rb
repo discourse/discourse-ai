@@ -36,6 +36,7 @@ after_initialize do
   require_relative "lib/shared/inference/discourse_reranker"
   require_relative "lib/shared/inference/openai_completions"
   require_relative "lib/shared/inference/openai_embeddings"
+  require_relative "lib/shared/inference/openai_image_generator"
   require_relative "lib/shared/inference/anthropic_completions"
   require_relative "lib/shared/inference/stability_generator"
   require_relative "lib/shared/inference/hugging_face_text_generation"
