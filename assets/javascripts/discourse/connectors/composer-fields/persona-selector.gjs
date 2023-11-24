@@ -36,11 +36,14 @@ export default class BotSelector extends Component {
     super(...arguments);
 
     if (this.botOptions && this.composer) {
-      const personaId = this.preferredPersonaStore.getObject("id");
+      let personaId = this.preferredPersonaStore.getObject("id");
+
+      this._value = this.botOptions[0].id;
       if (personaId) {
-        this._value = parseInt(personaId, 10);
-      } else {
-        this._value = this.botOptions[0].personaId;
+        personaId = parseInt(personaId, 10);
+        if (this.botOptions.any((bot) => bot.id === personaId)) {
+          this._value = parseInt(personaId, 10);
+        }
       }
 
       this.composer.metaData = { ai_persona_id: this._value };
