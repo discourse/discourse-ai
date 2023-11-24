@@ -11,6 +11,7 @@ module DiscourseAi
           Personas::SettingsExplorer => -4,
           Personas::Researcher => -5,
           Personas::Creative => -6,
+          Personas::DallE3 => -7,
         }
       end
 
@@ -145,6 +146,8 @@ module DiscourseAi
 
           all_commands << Commands::TagsCommand if SiteSetting.tagging_enabled
           all_commands << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
+
+          all_commands << Commands::DallECommand if SiteSetting.ai_openai_api_key.present?
           if SiteSetting.ai_google_custom_search_api_key.present? &&
                SiteSetting.ai_google_custom_search_cx.present?
             all_commands << Commands::GoogleCommand

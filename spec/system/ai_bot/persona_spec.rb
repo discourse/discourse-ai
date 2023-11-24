@@ -14,6 +14,11 @@ RSpec.describe "AI personas", type: :system, js: true do
     visit "/"
     find(".d-header .ai-bot-button").click()
     persona_selector = PageObjects::Components::SelectKit.new(".persona-selector__dropdown")
+
+    id = DiscourseAi::AiBot::Personas.all(user: admin).first.id
+
+    expect(persona_selector).to have_selected_value(id)
+
     persona_selector.expand
     persona_selector.select_row_by_value(-2)
 
