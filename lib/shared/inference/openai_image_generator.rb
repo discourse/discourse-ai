@@ -9,8 +9,7 @@ module ::DiscourseAi
         api_key ||= SiteSetting.ai_openai_api_key
 
         url = URI("https://api.openai.com/v1/images/generations")
-        headers = { "Content-Type" => "application/json" }
-        headers["Authorization"] = "Bearer #{api_key}"
+        headers = { "Content-Type" => "application/json", "Authorization" => "Bearer #{api_key}" }
 
         payload = { model: model, prompt: prompt, n: 1, size: size, response_format: "b64_json" }
 

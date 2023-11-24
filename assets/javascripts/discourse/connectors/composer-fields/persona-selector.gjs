@@ -42,7 +42,7 @@ export default class BotSelector extends Component {
       if (personaId) {
         personaId = parseInt(personaId, 10);
         if (this.botOptions.any((bot) => bot.id === personaId)) {
-          this._value = parseInt(personaId, 10);
+          this._value = personaId;
         }
       }
 

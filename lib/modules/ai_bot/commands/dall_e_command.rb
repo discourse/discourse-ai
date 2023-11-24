@@ -64,7 +64,7 @@ module DiscourseAi::AiBot::Commands
           rescue => e
             attempts += 1
             retry if attempts < 3
-            Rails.logger.warn("Failed to generate image for prompt #{prompt}: #{e}")
+            Discourse.warn_exception(e, message: "Failed to generate image for prompt #{prompt}")
             nil
           end
         end
@@ -75,7 +75,7 @@ module DiscourseAi::AiBot::Commands
         break if threads.all? { |t| t.join(2) }
       end
 
-      results = threads.map(&:value).compact
+      results = threads.filter_map(&:value)
 
       if results.blank?
         return { prompts: prompts, error: "Something went wrong, could not generate image" }
