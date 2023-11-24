@@ -3,31 +3,33 @@
 module DiscourseAi
   module AiHelper
     class TopicHelper
-      def initialize(input, user, params = {})
+      def initialize(user)
         @user = user
-        @text = input[:text]
-        @params = params
       end
 
-      def explain
-        return nil if @text.blank?
-        return nil unless post = Post.find_by(id: @params[:post])
+      def explain(term_to_explain, post)
+        return nil unless term_to_explain
+        return nil unless post
 
-        reply_to = post.topic.first_post
-        topic = reply_to.topic
+        reply_to = post.reply_to_post
+        topic = post.topic
 
-        llm_prompt =
-          DiscourseAi::AiHelper::LlmPrompt.new.available_prompts(name_filter: "explain").first
-        prompt = CompletionPrompt.find_by(id: llm_prompt[:id])
+        prompt = CompletionPrompt.enabled_by_name("explain")
+        raise Discourse::InvalidParameters.new(:mode) if !prompt
 
-        prompt.messages.first["content"].gsub!("{{search}}", @text)
-        prompt.messages.first["content"].gsub!("{{context}}", post.raw)
-        prompt.messages.first["content"].gsub!("{{topic}}", topic.title)
-        # TODO inject this conditionally
-        #prompt.messages.first["content"].gsub!("{{post}}", reply_to.raw)
+        input = <<~TEXT
+          <term>#{term_to_explain}</term>
+          <context>#{post.raw}</context>
+          <topic>#{topic.title}</topic>
+          #{reply_to ? "<replyTo>#{reply_to.raw}</replyTo>" : nil}
+        TEXT
 
-        DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, nil)
+        DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(prompt, input, user)
       end
+
+      private
+
+      attr_reader :user
     end
   end
 end

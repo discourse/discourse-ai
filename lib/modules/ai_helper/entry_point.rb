@@ -5,7 +5,7 @@ module DiscourseAi
       def load_files
         require_relative "chat_thread_titler"
         require_relative "jobs/regular/generate_chat_thread_title"
-        require_relative "llm_prompt"
+        require_relative "assistant"
         require_relative "painter"
         require_relative "semantic_categorizer"
         require_relative "topic_helper"

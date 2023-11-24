@@ -31,17 +31,13 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
         TEXT
 
     it "returns 4 samples" do
-      expected_prompt = [
-        { role: "system", content: <<~TEXT },
-      Provide me a StableDiffusion prompt to generate an image that illustrates the following post in 40 words or less, be creative.
-      TEXT
-        { role: "user", content: raw_content },
-      ]
-
-      OpenAiCompletionsInferenceStubs.stub_response(expected_prompt, expected_image_prompt)
       StableDiffusionStubs.new.stub_response(expected_image_prompt, artifacts)
 
-      thumbnails = subject.commission_thumbnails(raw_content, user)
+      thumbnails =
+        DiscourseAi::Completions::LLM.with_prepared_responses([expected_image_prompt]) do
+          thumbnails = subject.commission_thumbnails(raw_content, user)
+        end
+
       thumbnail_urls = Upload.last(4).map(&:short_url)
 
       expect(thumbnails).to contain_exactly(*thumbnail_urls)

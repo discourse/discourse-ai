@@ -4,7 +4,7 @@ module DiscourseAi
   module AiHelper
     class Painter
       def commission_thumbnails(theme, user)
-        stable_diffusion_prompt = difussion_prompt(theme)
+        stable_diffusion_prompt = difussion_prompt(theme, user)
 
         return [] if stable_diffusion_prompt.blank?
 
@@ -29,51 +29,13 @@ module DiscourseAi
 
       private
 
-      def difussion_prompt(text)
-        llm_prompt = LlmPrompt.new
-        prompt_for_provider =
-          completion_prompts.find { |prompt| prompt.provider == llm_prompt.enabled_provider }
+      def difussion_prompt(text, user)
+        prompt = { insts: <<~TEXT, input: text }
+          Provide me a StableDiffusion prompt to generate an image that illustrates the following post in 40 words or less, be creative.
+          You'll find the post between <input></input> XML tags.
+        TEXT
 
-        return "" if prompt_for_provider.nil?
-
-        llm_prompt
-          .generate_and_send_prompt(prompt_for_provider, { text: text })
-          .dig(:suggestions)
-          .first
-      end
-
-      def completion_prompts
-        [
-          CompletionPrompt.new(
-            provider: "anthropic",
-            prompt_type: CompletionPrompt.prompt_types[:text],
-            messages: [{ role: "Human", content: <<~TEXT }],
-            Provide me a StableDiffusion prompt to generate an image that illustrates the following post in 40 words or less, be creative. 
-            The post is provided between <input> tags and the Stable Diffusion prompt string should be returned between <ai> tags.
-          TEXT
-          ),
-          CompletionPrompt.new(
-            provider: "openai",
-            prompt_type: CompletionPrompt.prompt_types[:text],
-            messages: [{ role: "system", content: <<~TEXT }],
-            Provide me a StableDiffusion prompt to generate an image that illustrates the following post in 40 words or less, be creative.
-          TEXT
-          ),
-          CompletionPrompt.new(
-            provider: "huggingface",
-            prompt_type: CompletionPrompt.prompt_types[:text],
-            messages: [<<~TEXT],
-            ### System:
-            Provide me a StableDiffusion prompt to generate an image that illustrates the following post in 40 words or less, be creative.
-          
-            ### User:
-            {{user_input}}
-      
-            ### Assistant:
-            Here is a StableDiffusion prompt:
-          TEXT
-          ),
-        ]
+        DiscourseAi::Completions::LLM.proxy(SiteSetting.ai_helper_model).completion!(prompt, user)
       end
     end
   end

@@ -1,39 +1,36 @@
 # frozen_string_literal: true
 
 class CompletionPrompt < ActiveRecord::Base
-  # TODO(roman): Remove sept 2023.
-  self.ignored_columns = ["value"]
+  # TODO(roman): Remove may 2024.
+  self.ignored_columns = ["provider"]
+
+  TRANSLATE = -301
+  GENERATE_TITLES = -302
+  PROOFREAD = -303
+  MARKDOWN_TABLE = -304
+  CUSTOM_PROMPT = -305
+  EXPLAIN = -306
 
   enum :prompt_type, { text: 0, list: 1, diff: 2 }
 
   validates :messages, length: { maximum: 20 }
   validate :each_message_length
 
-  def messages_with_user_input(user_input)
-    return messages unless user_input.present?
+  def self.enabled_by_name(name)
+    where(enabled: true).find_by(name: name)
+  end
 
-    if user_input[:custom_prompt].present?
-      case ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider
-      when "huggingface"
-        self.messages.each { |msg| msg.sub!("{{custom_prompt}}", user_input[:custom_prompt]) }
-      else
-        self.messages.each do |msg|
-          msg["content"].sub!("{{custom_prompt}}", user_input[:custom_prompt])
-        end
-      end
-    end
+  def messages_with_input(input)
+    return unless input
 
-    case ::DiscourseAi::AiHelper::LlmPrompt.new.enabled_provider
-    when "openai"
-      self.messages << { role: "user", content: user_input[:text] }
-    when "anthropic"
-      self.messages << { "role" => "Input", "content" => "<input>#{user_input[:text]}</input>" }
-    when "huggingface"
-      self.messages.first.sub("{{user_input}}", user_input[:text])
-    end
+    messages_hash.merge(input: "<input>#{input}</input")
   end
 
   private
+
+  def messages_hash
+    @messages_hash ||= messages.symbolize_keys!
+  end
 
   def each_message_length
     messages.each_with_index do |msg, idx|
@@ -56,7 +53,6 @@ end
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  messages        :jsonb
-#  provider        :text
 #
 # Indexes
 #
