@@ -96,7 +96,7 @@ module DiscourseAi::AiBot::Commands
       results = threads.map(&:value).compact
 
       if !results.present?
-        return { prompt: prompt, error: "Something went wrong, could not generate image" }
+        return { prompts: prompts, error: "Something went wrong, could not generate image" }
       end
 
       uploads = []

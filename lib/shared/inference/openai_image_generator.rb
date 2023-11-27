@@ -5,23 +5,38 @@ module ::DiscourseAi
     class OpenAiImageGenerator
       TIMEOUT = 60
 
-      def self.perform!(prompt, model: "dall-e-3", size: "1024x1024", api_key: nil)
+      def self.perform!(prompt, model: "dall-e-3", size: "1024x1024", api_key: nil, api_url: nil)
         api_key ||= SiteSetting.ai_openai_api_key
+        api_url ||= SiteSetting.ai_openai_dall_e_3_url
 
-        url = URI("https://api.openai.com/v1/images/generations")
-        headers = { "Content-Type" => "application/json", "Authorization" => "Bearer #{api_key}" }
+        uri = URI(api_url)
 
-        payload = { model: model, prompt: prompt, n: 1, size: size, response_format: "b64_json" }
+        headers = { "Content-Type" => "application/json" }
+
+        if uri.host.include?("azure")
+          headers["api-key"] = api_key
+        else
+          headers["Authorization"] = "Bearer #{api_key}"
+        end
+
+        payload = {
+          quality: "hd",
+          model: model,
+          prompt: prompt,
+          n: 1,
+          size: size,
+          response_format: "b64_json",
+        }
 
         Net::HTTP.start(
-          url.host,
-          url.port,
-          use_ssl: url.scheme == "https",
+          uri.host,
+          uri.port,
+          use_ssl: uri.scheme == "https",
           read_timeout: TIMEOUT,
           open_timeout: TIMEOUT,
           write_timeout: TIMEOUT,
         ) do |http|
-          request = Net::HTTP::Post.new(url, headers)
+          request = Net::HTTP::Post.new(uri, headers)
           request.body = payload.to_json
 
           json = nil

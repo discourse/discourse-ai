@@ -50,7 +50,12 @@ module ::DiscourseAi
 
             type = parameter[:type]
             if type == "array"
-              arguments[name] = JSON.parse(value)
+              begin
+                arguments[name] = JSON.parse(value)
+              rescue JSON::ParserError
+                # maybe LLM chose a different shape for the array
+                arguments[name] = value.to_s.split("\n").map(&:strip).reject(&:blank?)
+              end
             elsif type == "integer"
               arguments[name] = value.to_i
             elsif type == "float"

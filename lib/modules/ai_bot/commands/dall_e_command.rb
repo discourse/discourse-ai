@@ -54,15 +54,21 @@ module DiscourseAi::AiBot::Commands
       # this ensures multisite safety since background threads
       # generate the images
       api_key = SiteSetting.ai_openai_api_key
+      api_url = SiteSetting.ai_openai_dall_e_3_url
 
       threads = []
       prompts.each_with_index do |prompt, index|
         threads << Thread.new(prompt) do |inner_prompt|
           attempts = 0
           begin
-            DiscourseAi::Inference::OpenAiImageGenerator.perform!(inner_prompt, api_key: api_key)
+            DiscourseAi::Inference::OpenAiImageGenerator.perform!(
+              inner_prompt,
+              api_key: api_key,
+              api_url: api_url,
+            )
           rescue => e
             attempts += 1
+            sleep 2
             retry if attempts < 3
             Discourse.warn_exception(e, message: "Failed to generate image for prompt #{prompt}")
             nil
