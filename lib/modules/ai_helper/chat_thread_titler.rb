@@ -18,20 +18,14 @@ module DiscourseAi
       end
 
       def suggested_title
-        input_hash = { text: thread_content }
+        return nil if thread_content.blank?
 
-        return nil if input_hash[:text].blank?
+        prompt = CompletionPrompt.enabled_by_name(id: "generate_titles")
+        raise Discourse::InvalidParameters.new(:mode) if !prompt
 
-        llm_prompt =
-          DiscourseAi::AiHelper::LlmPrompt
-            .new
-            .available_prompts(name_filter: "generate_titles")
-            .first
-        prompt = CompletionPrompt.find_by(id: llm_prompt[:id])
-        raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
-
-        response = DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, input_hash)
-        response.dig(:suggestions).first
+        response =
+          DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, thread_content)
+        response.dig(:suggestions)&.first
       end
     end
   end

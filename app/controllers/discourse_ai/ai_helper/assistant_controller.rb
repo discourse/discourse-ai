@@ -11,7 +11,7 @@ module DiscourseAi
       def prompts
         render json:
                  ActiveModel::ArraySerializer.new(
-                   DiscourseAi::AiHelper::LlmPrompt.new.available_prompts,
+                   DiscourseAi::AiHelper::Assistant.new.available_prompts,
                    root: false,
                  ),
                status: 200
@@ -29,39 +29,34 @@ module DiscourseAi
 
         hijack do
           render json:
-                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(prompt, params),
+                   DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(
+                     prompt,
+                     input,
+                     current_user,
+                   ),
                  status: 200
         end
-      rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
-             ::DiscourseAi::Inference::HuggingFaceTextGeneration::CompletionFailed,
-             ::DiscourseAi::Inference::AnthropicCompletions::CompletionFailed => e
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end
 
       def suggest_title
         input = get_text_param!
-        input_hash = { text: input }
 
-        llm_prompt =
-          DiscourseAi::AiHelper::LlmPrompt
-            .new
-            .available_prompts(name_filter: "generate_titles")
-            .first
-        prompt = CompletionPrompt.find_by(id: llm_prompt[:id])
-        raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
+        prompt = CompletionPrompt.enabled_by_name("generate_titles")
+        raise Discourse::InvalidParameters.new(:mode) if !prompt
 
         hijack do
           render json:
-                   DiscourseAi::AiHelper::LlmPrompt.new.generate_and_send_prompt(
+                   DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(
                      prompt,
-                     input_hash,
+                     input,
+                     current_user,
                    ),
                  status: 200
         end
-      rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
-             ::DiscourseAi::Inference::HuggingFaceTextGeneration::CompletionFailed,
-             ::DiscourseAi::Inference::AnthropicCompletions::CompletionFailed => e
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end
@@ -98,21 +93,18 @@ module DiscourseAi
 
       def explain
         post_id = get_post_param!
-        text = get_text_param!
-        post = Post.find_by(id: post_id)
+        term_to_explain = get_text_param!
+        post = Post.includes(:topic).find_by(id: post_id)
 
         raise Discourse::InvalidParameters.new(:post_id) unless post
 
         render json:
-                 DiscourseAi::AiHelper::TopicHelper.new(
-                   { text: text },
-                   current_user,
-                   post: post,
-                 ).explain,
+                 DiscourseAi::AiHelper::TopicHelper.new(current_user).explain(
+                   term_to_explain,
+                   post,
+                 ),
                status: 200
-      rescue ::DiscourseAi::Inference::OpenAiCompletions::CompletionFailed,
-             ::DiscourseAi::Inference::HuggingFaceTextGeneration::CompletionFailed,
-             ::DiscourseAi::Inference::AnthropicCompletions::CompletionFailed => e
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end
