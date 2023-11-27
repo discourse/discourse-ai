@@ -54,8 +54,8 @@ module ::DiscourseAi
                 arguments[name] = JSON.parse(value)
               rescue JSON::ParserError
                 # maybe LLM chose a different shape for the array
+                arguments[name] = value.to_s.split("\n").map(&:strip).reject(&:blank?)
               end
-              arguments[name] ||= value.split("\n").map(&:strip).reject(&:blank?)
             elsif type == "integer"
               arguments[name] = value.to_i
             elsif type == "float"
