@@ -96,6 +96,7 @@ export default class PersonaEditor extends Component {
   @action
   async toggleEnabled() {
     this.args.model.set("enabled", !this.args.model.enabled);
+    this.editingModel.set("enabled", this.args.model.enabled);
     if (!this.args.model.isNew) {
       try {
         await this.args.model.update({ enabled: this.args.model.enabled });
@@ -108,6 +109,7 @@ export default class PersonaEditor extends Component {
   @action
   async togglePriority() {
     this.args.model.set("priority", !this.args.model.priority);
+    this.editingModel.set("priority", this.args.model.priority);
     if (!this.args.model.isNew) {
       try {
         await this.args.model.update({ priority: this.args.model.priority });
