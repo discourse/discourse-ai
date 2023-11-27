@@ -103,8 +103,7 @@ export default class SemanticSearch extends Component {
     if (!this.searchEnabled) {
       return;
     }
-
-    if (this.searchPreferencesManager.sortOrder !== 0) {
+    if (this.searchPreferencesManager?.sortOrder !== undefined && this.searchPreferencesManager?.sortOrder !== 0) {
       this.preventAISearch = true;
       return;
     } else {
