@@ -11,7 +11,7 @@ module ::DiscourseAi
 
         uri = URI(api_url)
 
-        headers = { "Content-Type" => "application/json", "quality" => "hd" }
+        headers = { "Content-Type" => "application/json" }
 
         if uri.host.include?("azure")
           headers["api-key"] = api_key
@@ -19,7 +19,14 @@ module ::DiscourseAi
           headers["Authorization"] = "Bearer #{api_key}"
         end
 
-        payload = { model: model, prompt: prompt, n: 1, size: size, response_format: "b64_json" }
+        payload = {
+          quality: "hd",
+          model: model,
+          prompt: prompt,
+          n: 1,
+          size: size,
+          response_format: "b64_json",
+        }
 
         Net::HTTP.start(
           uri.host,
