@@ -113,6 +113,7 @@ en:
           toggle: "Showing %{count} results found using AI"
           toggle_hidden: "Hiding %{count} results found using AI"
           none: "Sorry, our AI search found no matching topics."
+        ai_generated_result: "Search result found using AI"
 
       ai_bot:
         pm_warning: "AI chatbot messages are monitored regularly by moderators."
