@@ -55,8 +55,13 @@
   .fps-result {
     padding: 0.5rem;
 
-    .ai-result__icon {
+    .ai-result__icon, .boosted-result__icon {
       display: none;
+      position: absolute;
+      right: 0;
+      top: 0;
+      padding: 0.5em;
+      font-size: var(--font-down-1);
     }
   }
 
@@ -64,11 +69,17 @@
     border-radius: var(--d-border-radius);
 
     .ai-result__icon {
-      display: inline;
-      margin-right: 0.5rem;
-      margin-left: auto;
-      font-size: var(--font-up-2);
+      display: block;
+      background: var(--tertiary-low);
       color: var(--tertiary);
+    }
+  }
+  
+  .boosted-result {
+    .boosted-result__icon {
+      display: block;
+      color: var(--success);
+      background: var(--success-low);
     }
   }
 }

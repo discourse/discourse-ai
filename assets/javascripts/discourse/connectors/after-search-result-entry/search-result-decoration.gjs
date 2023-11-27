@@ -5,6 +5,11 @@ export default class SearchResultDecoration extends Component {
   <template>
     <div class="ai-result__icon">
       {{icon "discourse-sparkles"}}
+      <span>AI</span>
+    </div>
+    <div class="boosted-result__icon">
+      {{icon "rocket"}}
+      <span>Boosted</span>
     </div>
   </template>
 }
