@@ -7,7 +7,7 @@ task "ai:sentiment:backfill", [:start_post] => [:environment] do |_, args|
   Post
     .joins("INNER JOIN topics ON topics.id = posts.topic_id")
     .joins(
-      "LEFT JOIN classification_results ON classification_results.target_id = posts.topic_id AND classification_results.target_type = 'Post'",
+      "LEFT JOIN classification_results ON classification_results.target_id = posts.id AND classification_results.target_type = 'Post'",
     )
     .where("classification_results.target_id IS NULL")
     .where("posts.id >= ?", args[:start_post].to_i || 0)
