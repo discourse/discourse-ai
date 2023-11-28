@@ -3,7 +3,6 @@ import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { inject as service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
@@ -149,7 +148,7 @@ export default class SemanticSearch extends Component {
   <template>
     {{#if this.searchEnabled}}
       <div class="semantic-search__container search-results" role="region">
-        <div class="semantic-search__results" {{didInsert this.handleSearch}} {{didUpdate this.handleSearch this.searchTerm}}>
+        <div class="semantic-search__results" {{didInsert this.handleSearch}}>
           <div
             class="semantic-search__searching
               {{if this.searching 'in-progress'}}"
