@@ -294,12 +294,15 @@
 
 // Prevent suggestion button from wrapping
 #reply-control {
-  .with-category .showing-ai-suggestions .category-input,
-  .with-tags .showing-ai-suggestions .mini-tag-chooser {
+  .with-category .showing-ai-suggestions .category-input {
     flex-wrap: nowrap;
     .select-kit {
-      max-width: calc(100% - 34px);
+      max-width: calc(100% - 2.25em);
     }
+  }
+
+  .with-tags .showing-ai-suggestions .mini-tag-chooser.select-kit {
+    max-width: calc(100% - 2.25em);
   }
 }
 
