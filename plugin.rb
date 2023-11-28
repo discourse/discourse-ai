@@ -34,6 +34,12 @@ Rails.autoloaders.main.push_dir(File.join(__dir__, "lib/discourse_ai"), namespac
 require_relative "lib/discourse_ai/engine"
 
 after_initialize do
+  Rails.autoloaders.each do |autoloader|
+    autoloader.inflector.inflect("llm" => "LLM")
+    autoloader.inflector.inflect("chat_gpt" => "ChatGPT")
+    autoloader.inflector.inflect("open_ai" => "OpenAI")
+  end
+
   require_relative "lib/shared/classificator"
   require_relative "lib/shared/post_classificator"
   require_relative "lib/shared/chat_message_classificator"
@@ -41,8 +47,6 @@ after_initialize do
   require_relative "lib/shared/tokenizer/tokenizer"
 
   require_relative "lib/shared/database/connection"
-
-  require_relative "lib/completions/entry_point"
 
   require_relative "lib/modules/nsfw/entry_point"
   require_relative "lib/modules/toxicity/entry_point"
@@ -57,7 +61,6 @@ after_initialize do
   add_admin_route "discourse_ai.title", "discourse-ai"
 
   [
-    DiscourseAi::Completions::EntryPoint.new,
     DiscourseAi::Embeddings::EntryPoint.new,
     DiscourseAi::NSFW::EntryPoint.new,
     DiscourseAi::Toxicity::EntryPoint.new,

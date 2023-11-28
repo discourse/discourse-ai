@@ -3,7 +3,7 @@
 module DiscourseAi
   module Completions
     module Endpoints
-      class Huggingface < Base
+      class HuggingFace < Base
         def self.can_contact?(model_name)
           %w[StableBeluga2 Upstage-Llama-2-*-instruct-v2 Llama2-*-chat-hf].include?(model_name)
         end
