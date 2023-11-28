@@ -122,6 +122,8 @@ discourse_ai:
     default: 4096
   ai_hugging_face_model_display_name:
     default: ""
+  ai_hugging_face_tei_endpoint:
+    default: ""
   ai_google_custom_search_api_key:
     default: ""
     secret: true
