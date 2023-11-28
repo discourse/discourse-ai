@@ -42,6 +42,7 @@ after_initialize do
   require_relative "lib/shared/inference/hugging_face_text_generation"
   require_relative "lib/shared/inference/amazon_bedrock_inference"
   require_relative "lib/shared/inference/cloudflare_workers_ai"
+  require_relative "lib/shared/inference/hugging_face_text_embeddings"
   require_relative "lib/shared/inference/function"
   require_relative "lib/shared/inference/function_list"
 

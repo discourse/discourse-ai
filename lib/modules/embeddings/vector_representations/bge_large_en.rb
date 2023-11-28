@@ -5,10 +5,23 @@ module DiscourseAi
     module VectorRepresentations
       class BgeLargeEn < Base
         def vector_from(text)
-          DiscourseAi::Inference::CloudflareWorkersAi
-            .perform!(inference_model_name, { text: text })
-            .dig(:result, :data)
-            .first
+          if SiteSetting.ai_cloudflare_workers_api_token.present?
+            DiscourseAi::Inference::CloudflareWorkersAi
+              .perform!(inference_model_name, { text: text })
+              .dig(:result, :data)
+              .first
+          elsif SiteSetting.ai_hugging_face_tei_endpoint.present?
+            DiscourseAi::Inference::HuggingFaceTextEmbeddings.perform!(text).first
+          elsif SiteSetting.ai_embeddings_discourse_service_api_endpoint.present?
+            DiscourseAi::Inference::DiscourseClassifier.perform!(
+              "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
+              inference_model_name.split("/").last,
+              text,
+              SiteSetting.ai_embeddings_discourse_service_api_key,
+            )
+          else
+            raise "No inference endpoint configured"
+          end
         end
 
         def name
