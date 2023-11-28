@@ -57,7 +57,7 @@ module DiscourseAi
               log =
                 AiApiAuditLog.new(
                   provider_id: provider_id,
-                  user_id: user.id,
+                  user_id: user&.id,
                   raw_request_payload: request_body,
                   request_tokens: prompt_size(prompt),
                 )

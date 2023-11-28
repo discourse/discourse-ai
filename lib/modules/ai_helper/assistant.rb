@@ -103,7 +103,7 @@ module DiscourseAi
       end
 
       def parse_list(list)
-        list.split("*")
+        Nokogiri::HTML5.fragment(list).css("item").map(&:text)
       end
     end
   end

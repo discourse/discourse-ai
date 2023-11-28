@@ -17,28 +17,6 @@ CompletionPrompt.seed do |cp|
 end
 
 CompletionPrompt.seed do |cp|
-  cp.id = -302
-  cp.name = "generate_titles"
-  cp.prompt_type = CompletionPrompt.prompt_types[:list]
-  cp.messages = {
-    insts: <<~TEXT,
-      I want you to act as a title generator for written pieces. I will provide you with a text,
-      and you will generate five attention-grabbing titles. Please keep the title concise and under 20 words,
-      and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
-      I want you to only reply the list of options and nothing else, do not write explanations.
-      Each title you generate must be separated by *.
-      You will find the text between <input></input> XML tags.
-    TEXT
-    examples: [
-      [
-        "<input>In the labyrinth of time, a solitary horse, etched in gold by the setting sun, embarked on an infinite journey.</input>",
-        "The solitary horse*The horse etched in gold*A horse's infinite journey*A horse lost in time*A horse's last ride",
-      ],
-    ],
-  }
-end
-
-CompletionPrompt.seed do |cp|
   cp.id = -303
   cp.name = "proofread"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
@@ -171,4 +149,27 @@ CompletionPrompt.seed do |cp|
     of what the term means. Format the response using Markdown. Reply only with the explanation and
     nothing more.
   TEXT
+end
+
+CompletionPrompt.seed do |cp|
+  cp.id = -307
+  cp.name = "generate_titles"
+  cp.prompt_type = CompletionPrompt.prompt_types[:list]
+  cp.messages = {
+    insts: <<~TEXT,
+      I want you to act as a title generator for written pieces. I will provide you with a text,
+      and you will generate five attention-grabbing titles. Please keep the title concise and under 20 words,
+      and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
+      I want you to only reply the list of options and nothing else, do not write explanations.
+      Each title you generate must be separated by *.
+      You will find the text between <input></input> XML tags.
+    TEXT
+    examples: [
+      [
+        "<input>In the labyrinth of time, a solitary horse, etched in gold by the setting sun, embarked on an infinite journey.</input>",
+        "<item>The solitary horse</item><item>The horse etched in gold</item><item>A horse's infinite journey</item><item>A horse lost in time</item><item>A horse's last ride</item>",
+      ],
+    ],
+    post_insts: "Wrap each title between <item></item> XML tags.",
+  }
 end

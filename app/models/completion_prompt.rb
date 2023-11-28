@@ -5,7 +5,7 @@ class CompletionPrompt < ActiveRecord::Base
   self.ignored_columns = ["provider"]
 
   TRANSLATE = -301
-  GENERATE_TITLES = -302
+  GENERATE_TITLES = -307
   PROOFREAD = -303
   MARKDOWN_TABLE = -304
   CUSTOM_PROMPT = -305

@@ -265,7 +265,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     let(:mode) { CompletionPrompt::GENERATE_TITLES }
 
     let(:titles) do
-      "Rainy Spain*Plane-Bound Delights*Mysterious Spain*Plane-Rain Chronicles*Unveiling Spain"
+      "<item>Rainy Spain</item><item>Plane-Bound Delights</item><item>Mysterious Spain</item><item>Plane-Rain Chronicles</item><item>Unveiling Spain</item>"
     end
 
     it "opens a menu with title suggestions" do
