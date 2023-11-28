@@ -30,30 +30,6 @@ module DiscourseAi
       def load_files
         require_relative "jobs/regular/create_ai_reply"
         require_relative "jobs/regular/update_ai_bot_pm_title"
-        require_relative "bot"
-        require_relative "anthropic_bot"
-        require_relative "open_ai_bot"
-        require_relative "commands/command"
-        require_relative "commands/search_command"
-        require_relative "commands/categories_command"
-        require_relative "commands/tags_command"
-        require_relative "commands/time_command"
-        require_relative "commands/summarize_command"
-        require_relative "commands/image_command"
-        require_relative "commands/google_command"
-        require_relative "commands/read_command"
-        require_relative "commands/setting_context_command"
-        require_relative "commands/search_settings_command"
-        require_relative "commands/db_schema_command"
-        require_relative "commands/dall_e_command"
-        require_relative "personas/persona"
-        require_relative "personas/artist"
-        require_relative "personas/general"
-        require_relative "personas/sql_helper"
-        require_relative "personas/settings_explorer"
-        require_relative "personas/researcher"
-        require_relative "personas/creative"
-        require_relative "personas/dall_e_3"
         require_relative "site_settings_extension"
       end
 
@@ -76,7 +52,7 @@ module DiscourseAi
               scope.user.in_any_groups?(SiteSetting.ai_bot_allowed_groups_map)
           end,
         ) do
-          Personas
+          DiscourseAi::AiBot::Personas
             .all(user: scope.user)
             .map do |persona|
               { id: persona.id, name: persona.name, description: persona.description }
@@ -135,8 +111,8 @@ module DiscourseAi
                   post.topic.custom_fields[REQUIRE_TITLE_UPDATE] = true
                   post.topic.save_custom_fields
                 end
-                Jobs.enqueue(:create_ai_reply, post_id: post.id, bot_user_id: bot_id)
-                Jobs.enqueue_in(
+                ::Jobs.enqueue(:create_ai_reply, post_id: post.id, bot_user_id: bot_id)
+                ::Jobs.enqueue_in(
                   5.minutes,
                   :update_ai_bot_pm_title,
                   post_id: post.id,
