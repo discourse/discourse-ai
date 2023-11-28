@@ -28,9 +28,9 @@ module DiscourseAi
       end
 
       def load_files
-        require_relative "jobs/regular/create_ai_reply"
-        require_relative "jobs/regular/update_ai_bot_pm_title"
-        require_relative "site_settings_extension"
+        # hard to autoload, this is a core namespace, will load manually for now
+        require_relative "../../jobs/regular/create_ai_reply"
+        require_relative "../../jobs/regular/update_ai_bot_pm_title"
       end
 
       def inject_into(plugin)

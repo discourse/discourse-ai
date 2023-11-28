@@ -29,23 +29,11 @@ module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
 end
 
+Rails.autoloaders.main.push_dir(File.join(__dir__, "lib/discourse_ai"), namespace: ::DiscourseAi)
+
 require_relative "lib/discourse_ai/engine"
 
 after_initialize do
-  require_relative "lib/shared/inference/discourse_classifier"
-  require_relative "lib/shared/inference/discourse_reranker"
-  require_relative "lib/shared/inference/openai_completions"
-  require_relative "lib/shared/inference/openai_embeddings"
-  require_relative "lib/shared/inference/openai_image_generator"
-  require_relative "lib/shared/inference/anthropic_completions"
-  require_relative "lib/shared/inference/stability_generator"
-  require_relative "lib/shared/inference/hugging_face_text_generation"
-  require_relative "lib/shared/inference/amazon_bedrock_inference"
-  require_relative "lib/shared/inference/cloudflare_workers_ai"
-  require_relative "lib/shared/inference/hugging_face_text_embeddings"
-  require_relative "lib/shared/inference/function"
-  require_relative "lib/shared/inference/function_list"
-
   require_relative "lib/shared/classificator"
   require_relative "lib/shared/post_classificator"
   require_relative "lib/shared/chat_message_classificator"
@@ -62,6 +50,8 @@ after_initialize do
   require_relative "lib/modules/ai_helper/entry_point"
   require_relative "lib/modules/embeddings/entry_point"
   require_relative "lib/modules/summarization/entry_point"
+
+  # do not autoload this cause we may have no namespace
   require_relative "lib/discourse_automation/llm_triage"
 
   add_admin_route "discourse_ai.title", "discourse-ai"

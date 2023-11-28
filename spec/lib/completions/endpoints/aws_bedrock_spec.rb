@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "endpoint_examples"
+require "aws-eventstream"
+require "aws-sigv4"
 
 RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::AnthropicTokenizer) }
