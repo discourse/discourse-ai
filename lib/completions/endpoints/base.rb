@@ -105,12 +105,14 @@ module DiscourseAi
 
               return response_data
             ensure
-              log.raw_response_payload = response_raw
-              log.response_tokens = tokenizer.size(response_data)
-              log.save!
+              if log
+                log.raw_response_payload = response_raw
+                log.response_tokens = tokenizer.size(response_data)
+                log.save!
 
-              if Rails.env.development? && log
-                puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
+                if Rails.env.development?
+                  puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
+                end
               end
             end
           end
