@@ -40,14 +40,6 @@ after_initialize do
     autoloader.inflector.inflect("open_ai" => "OpenAI")
   end
 
-  require_relative "lib/shared/classificator"
-  require_relative "lib/shared/post_classificator"
-  require_relative "lib/shared/chat_message_classificator"
-
-  require_relative "lib/shared/tokenizer/tokenizer"
-
-  require_relative "lib/shared/database/connection"
-
   require_relative "lib/modules/nsfw/entry_point"
   require_relative "lib/modules/toxicity/entry_point"
   require_relative "lib/modules/sentiment/entry_point"
