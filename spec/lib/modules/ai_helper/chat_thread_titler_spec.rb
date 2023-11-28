@@ -9,9 +9,8 @@ RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
   describe "#suggested_title" do
     it "suggest the first option from the generate_titles prompt" do
       titles =
-        "The solitary horse*The horse etched in gold*A horse's infinite journey*A horse lost in time*A horse's last ride"
-      expected_title = titles.split("*").first
-
+        "<item>The solitary horse</item><item>The horse etched in gold</item><item>A horse's infinite journey</item><item>A horse lost in time</item><item>A horse's last ride</item>"
+      expected_title = "The solitary horse"
       result =
         DiscourseAi::Completions::LLM.with_prepared_responses([titles]) { titler.suggested_title }
 
