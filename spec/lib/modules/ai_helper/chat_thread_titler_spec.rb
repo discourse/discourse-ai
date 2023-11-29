@@ -12,7 +12,7 @@ RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
         "<item>The solitary horse</item><item>The horse etched in gold</item><item>A horse's infinite journey</item><item>A horse lost in time</item><item>A horse's last ride</item>"
       expected_title = "The solitary horse"
       result =
-        DiscourseAi::Completions::LLM.with_prepared_responses([titles]) { titler.suggested_title }
+        DiscourseAi::Completions::Llm.with_prepared_responses([titles]) { titler.suggested_title }
 
       expect(result).to eq(expected_title)
     end

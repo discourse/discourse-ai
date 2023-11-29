@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 module DiscourseAi
-  module NSFW
+  module Nsfw
     class EntryPoint
       def inject_into(plugin)
         nsfw_detection_cb =
           Proc.new do |post|
             if SiteSetting.ai_nsfw_detection_enabled &&
-                 DiscourseAi::NSFW::Classification.new.can_classify?(post)
+                 DiscourseAi::Nsfw::Classification.new.can_classify?(post)
               Jobs.enqueue(:evaluate_post_uploads, post_id: post.id)
             end
           end

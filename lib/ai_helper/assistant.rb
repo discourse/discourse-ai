@@ -25,7 +25,7 @@ module DiscourseAi
       end
 
       def generate_and_send_prompt(completion_prompt, input, user)
-        llm = DiscourseAi::Completions::LLM.proxy(SiteSetting.ai_helper_model)
+        llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
 
         generic_prompt = completion_prompt.messages_with_input(input)
 

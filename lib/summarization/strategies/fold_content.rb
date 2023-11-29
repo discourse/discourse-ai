@@ -19,7 +19,7 @@ module DiscourseAi
         def summarize(content, user, &on_partial_blk)
           opts = content.except(:contents)
 
-          llm = DiscourseAi::Completions::LLM.proxy(completion_model.model)
+          llm = DiscourseAi::Completions::Llm.proxy(completion_model.model)
 
           chunks = split_into_chunks(llm.tokenizer, content[:contents])
 

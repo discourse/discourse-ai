@@ -22,7 +22,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
 
       it "Sends the prompt to the LLM and returns the response" do
         response =
-          DiscourseAi::Completions::LLM.with_prepared_responses([english_text]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([english_text]) do
             subject.generate_and_send_prompt(prompt, text_to_translate, user)
           end
 
@@ -47,7 +47,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
         ]
 
         response =
-          DiscourseAi::Completions::LLM.with_prepared_responses([titles]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([titles]) do
             subject.generate_and_send_prompt(prompt, english_text, user)
           end
 

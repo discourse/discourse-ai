@@ -14,7 +14,7 @@
 #
 module DiscourseAi
   module Completions
-    class LLM
+    class Llm
       UNKNOWN_MODEL = Class.new(StandardError)
 
       def self.with_prepared_responses(responses)
@@ -27,7 +27,7 @@ module DiscourseAi
         dialects = [
           DiscourseAi::Completions::Dialects::Claude,
           DiscourseAi::Completions::Dialects::Llama2Classic,
-          DiscourseAi::Completions::Dialects::ChatGPT,
+          DiscourseAi::Completions::Dialects::ChatGpt,
           DiscourseAi::Completions::Dialects::OrcaStyle,
         ]
 

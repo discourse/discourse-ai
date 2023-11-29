@@ -27,40 +27,21 @@ register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
-  module NSFW
-  end
 end
 
 Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::DiscourseAi)
-# this inflection is finicky
-Rails.autoloaders.main.push_dir(File.join(__dir__, "lib/nsfw"), namespace: ::DiscourseAi::NSFW)
 
 require_relative "lib/engine"
 
 after_initialize do
-  Rails.autoloaders.each do |autoloader|
-    autoloader.inflector.inflect({ "llm" => "LLM", "chat_gpt" => "ChatGPT" })
-  end
-
   # do not autoload this cause we may have no namespace
   require_relative "discourse_automation/llm_triage"
-
-  # jobs are special, they live in a discourse ::Jobs
-  require_relative "jobs/regular/create_ai_reply"
-  require_relative "jobs/regular/evaluate_post_uploads"
-  require_relative "jobs/regular/generate_chat_thread_title"
-  require_relative "jobs/regular/generate_embeddings"
-  require_relative "jobs/regular/post_sentiment_analysis"
-  require_relative "jobs/regular/update_ai_bot_pm_title"
-  require_relative "jobs/regular/toxicity_classify_chat_message"
-  require_relative "jobs/regular/toxicity_classify_post"
-  require_relative "jobs/scheduled/embeddings_backfill"
 
   add_admin_route "discourse_ai.title", "discourse-ai"
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,
-    DiscourseAi::NSFW::EntryPoint.new,
+    DiscourseAi::Nsfw::EntryPoint.new,
     DiscourseAi::Toxicity::EntryPoint.new,
     DiscourseAi::Sentiment::EntryPoint.new,
     DiscourseAi::AiHelper::EntryPoint.new,

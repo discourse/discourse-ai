@@ -103,14 +103,14 @@ module DiscourseAi
         TEXT
           input: <<~TEXT,
           Using this description, write a forum post about the subject inside the <input></input> XML tags:
-          
+
           <input>#{search_term}</input>
         TEXT
           post_insts: "Put the forum post between <ai></ai> tags.",
         }
 
         llm_response =
-          DiscourseAi::Completions::LLM.proxy(
+          DiscourseAi::Completions::Llm.proxy(
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
           ).completion!(prompt, @guardian.user)
 

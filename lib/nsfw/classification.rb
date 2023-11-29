@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DiscourseAi
-  module NSFW
+  module Nsfw
     class Classification
       def type
         :nsfw
