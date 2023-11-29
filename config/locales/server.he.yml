@@ -130,6 +130,9 @@ he:
         creative:
           name: יצירה
           description: "בוט בינה מלאכותית ללא שילובים חיצוניים שמתמחה ביצירת משימות יצירתיות"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "בוט בינה מלאכותית שמתמחה ביצירת תמונות באמצעות DALL-E 3"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       searching: "חיפוש אחר: ‚%{query}’"
       command_summary:
@@ -144,10 +147,12 @@ he:
         setting_context: "חיפוש הקשר הגדרות אתר"
         schema: "חיפוש סכמת מסד נתונים"
         search_settings: "מתבצע חיפוש בהגדרות האתר"
+        dall_e: "יצירת תמונה"
       command_description:
         read: "קריאה: <a href='%{url}'>%{title}</a>"
         time: "השעה ב־%{timezone} היא %{time}"
         summarize: "<a href='%{url}'>%{title}</a> סוכם"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "נמצאה קטגוריה אחת"

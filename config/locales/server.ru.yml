@@ -92,9 +92,11 @@ ru:
         summarize: "Сводка"
         image: "Сгенерировать изображение"
         google: "Искать в Google"
+        dall_e: "Сгенерировать изображение"
       command_description:
         time: "Время по %{timezone} — %{time}"
         summarize: "Получена сводка: <a href='%{url}'>%{title}</a>"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "Найдена %{count} категория"

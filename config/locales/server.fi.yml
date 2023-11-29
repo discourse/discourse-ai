@@ -92,9 +92,11 @@ fi:
         summarize: "Tee yhteenveto"
         image: "Luo kuva"
         google: "Hae Googlesta"
+        dall_e: "Luo kuva"
       command_description:
         time: "Aika aikavyöhykkeellä %{timezone} on %{time}"
         summarize: "Yhteenveto: <a href='%{url}'>%{title}</a>"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "Löytyi %{count} alue"

@@ -5,23 +5,52 @@
 # https://translate.discourse.org/
 
 lt:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse AI"
   js:
     discourse_automation:
       scriptables:
         llm_triage:
+          models:
+            gpt_4: GPT 4
+            gpt_3_5_turbo: GPT 3.5 Turbo
+            claude_2: Claude 2
           fields:
+            system_prompt:
+              label: "Sistemos pranešimas"
+              description: "Pranešimas, kuris bus naudojamas nustatant, įsitikinkite, kad jis turi atsakyti vienu žodžiu, kurį galite naudoti veiksmui suaktyvinti"
+            search_for_text:
+              label: "Ieškokite teksto"
+              description: "Jei llm atsakyme rodomas šis tekstas, atlikite šiuos veiksmus"
             category:
               label: "Kategorija"
+              description: "Kategorija, kuriai taikoma tema"
             tags:
               label: "Žymos"
+              description: "Žymos, kuriai taikoma tema"
             canned_reply:
               label: "Atsakyti"
+            canned_reply_user:
+              label: "Atsakyti Vartotojas"
+              description: "Vartotojo vardas, norintis paskelbti paruoštą atsakymą"
+            hide_topic:
+              label: "Slėpti temą"
+            model:
+              label: "Modelis"
     discourse_ai:
+      title: "AI"
+      modals:
+        select_option: "Pasirink nustatymą..."
       ai_persona:
         name: Vardas
         description: Aprašymas
         save: Išsaugoti
         enabled: Galimas
+        commands: Įgalintos komandos
+        allowed_groups: Leidžiamos grupės
         new: Nauji
         delete: Pašalinti
       ai_helper:
@@ -33,6 +62,7 @@ lt:
           confirm: "Patvirtinti"
           revert: "Grąžinti"
         post_options_menu:
+          trigger: "Paklauskite AI"
           close: "Uždaryti"
           copy: "Kopijuoti"
           copied: "Nukopijuota!"

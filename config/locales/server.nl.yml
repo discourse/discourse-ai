@@ -92,9 +92,11 @@ nl:
         summarize: "Samenvatten"
         image: "Afbeelding genereren"
         google: "Zoeken op Google"
+        dall_e: "Afbeelding genereren"
       command_description:
         time: "De tijd in %{timezone} is %{time}"
         summarize: "<a href='%{url}'>%{title}</a> samengevat"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "%{count} categorie gevonden"

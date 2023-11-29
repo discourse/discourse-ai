@@ -92,9 +92,11 @@ zh_CN:
         summarize: "总结"
         image: "生成图片"
         google: "搜索 Google"
+        dall_e: "生成图片"
       command_description:
         time: "%{timezone} 的时间为 %{time}"
         summarize: "已总结 <a href='%{url}'>%{title}</a>"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           other: "找到 %{count} 个类别"
