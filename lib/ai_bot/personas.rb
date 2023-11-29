@@ -20,13 +20,12 @@ module DiscourseAi
       end
 
       def self.all(user:)
-        personas =
-          AiPersona.all_personas.filter { |persona| user.in_any_groups?(persona.allowed_group_ids) }
-
         # this needs to be dynamic cause site settings may change
         all_available_commands = Persona.all_available_commands
 
-        personas.filter do |persona|
+        AiPersona.all_personas.filter do |persona|
+          next false if !user.in_any_groups?(persona.allowed_group_ids)
+
           if persona.system
             instance = persona.new
             (
