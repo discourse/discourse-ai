@@ -7,7 +7,7 @@ module DiscourseAi
         nsfw_detection_cb =
           Proc.new do |post|
             if SiteSetting.ai_nsfw_detection_enabled &&
-                 DiscourseAi::NSFW::NSFWClassification.new.can_classify?(post)
+                 DiscourseAi::NSFW::Classification.new.can_classify?(post)
               Jobs.enqueue(:evaluate_post_uploads, post_id: post.id)
             end
           end

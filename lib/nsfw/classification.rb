@@ -2,7 +2,7 @@
 
 module DiscourseAi
   module NSFW
-    class NSFWClassification
+    class Classification
       def type
         :nsfw
       end

@@ -11,7 +11,7 @@ module Jobs
 
       return if post.uploads.none? { |u| FileHelper.is_supported_image?(u.url) }
 
-      DiscourseAi::PostClassificator.new(DiscourseAi::NSFW::NSFWClassification.new).classify!(post)
+      DiscourseAi::PostClassificator.new(DiscourseAi::NSFW::Classification.new).classify!(post)
     end
   end
 end

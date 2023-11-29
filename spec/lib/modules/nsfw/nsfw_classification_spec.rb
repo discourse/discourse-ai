@@ -3,7 +3,7 @@
 require "rails_helper"
 require_relative "../../../support/nsfw_inference_stubs"
 
-describe DiscourseAi::NSFW::NSFWClassification do
+describe DiscourseAi::NSFW::Classification do
   before { SiteSetting.ai_nsfw_inference_service_api_endpoint = "http://test.com" }
 
   let(:available_models) { SiteSetting.ai_nsfw_models.split("|") }

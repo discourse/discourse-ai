@@ -39,10 +39,7 @@ require_relative "lib/engine"
 
 after_initialize do
   Rails.autoloaders.each do |autoloader|
-    autoloader.inflector.inflect("llm" => "LLM")
-    autoloader.inflector.inflect("chat_gpt" => "ChatGPT")
-    autoloader.inflector.inflect("open_ai" => "OpenAI")
-    autoloader.inflector.inflect("nsfw" => "NSFW")
+    autoloader.inflector.inflect({ "llm" => "LLM", "chat_gpt" => "ChatGPT" })
   end
 
   # do not autoload this cause we may have no namespace

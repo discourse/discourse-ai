@@ -3,7 +3,7 @@
 module DiscourseAi
   module Completions
     module Endpoints
-      class OpenAI < Base
+      class OpenAi < Base
         def self.can_contact?(model_name)
           %w[gpt-3.5-turbo gpt-4 gpt-3.5-turbo-16k gpt-4-32k].include?(model_name)
         end
