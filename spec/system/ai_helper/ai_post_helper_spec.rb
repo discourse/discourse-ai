@@ -19,9 +19,9 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:post_ai_helper) { PageObjects::Components::AIHelperPostOptions.new }
 
   let(:explain_response) { <<~STRING }
-    In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling. 
-    The person states they enjoy eating pie, considering it a good dessert. They note that some people wastefully 
-    throw pie at others, but the person themselves chooses to eat the pie rather than throwing it. Overall, \"pie\" 
+    In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling.
+    The person states they enjoy eating pie, considering it a good dessert. They note that some people wastefully
+    throw pie at others, but the person themselves chooses to eat the pie rather than throwing it. Overall, \"pie\"
     is being used to refer the the baked dessert food item.
   STRING
 
@@ -63,7 +63,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
           select_post_text(post)
           post_ai_helper.click_ai_button
 
-          DiscourseAi::Completions::LLM.with_prepared_responses([explain_response]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
             post_ai_helper.select_helper_model(mode)
 
             wait_for { post_ai_helper.suggestion_value == explain_response }
@@ -84,7 +84,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
           select_post_text(post_2)
           post_ai_helper.click_ai_button
 
-          DiscourseAi::Completions::LLM.with_prepared_responses([translated_input]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([translated_input]) do
             post_ai_helper.select_helper_model(mode)
 
             wait_for { post_ai_helper.suggestion_value == translated_input }

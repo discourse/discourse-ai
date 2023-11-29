@@ -2,7 +2,7 @@
 
 require_relative "endpoint_examples"
 
-RSpec.describe DiscourseAi::Completions::Endpoints::Huggingface do
+RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::Llama2Tokenizer) }
 
   let(:model_name) { "Llama2-*-chat-hf" }

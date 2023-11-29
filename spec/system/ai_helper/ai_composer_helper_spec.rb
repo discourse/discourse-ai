@@ -89,7 +89,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         ai_helper_context_menu.click_ai_button
         ai_helper_context_menu.fill_custom_prompt(custom_prompt_input)
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([custom_prompt_response]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([custom_prompt_response]) do
           ai_helper_context_menu.click_custom_prompt_button
 
           wait_for { composer.composer_input.value == custom_prompt_response }
@@ -119,7 +119,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(spanish_input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([input]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == input }
@@ -132,7 +132,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(spanish_input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([input]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == input }
@@ -146,7 +146,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(spanish_input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([input]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == input }
@@ -161,7 +161,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(spanish_input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([input]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == input }
@@ -175,7 +175,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(spanish_input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([input]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == input }
@@ -189,7 +189,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(spanish_input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([input]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == input }
@@ -210,7 +210,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(spanish_input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([input]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == input }
@@ -230,7 +230,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(spanish_input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([input]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == input }
@@ -250,7 +250,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         trigger_context_menu(input)
         ai_helper_context_menu.click_ai_button
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([proofread_text]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
           ai_helper_context_menu.select_helper_model(mode)
 
           wait_for { composer.composer_input.value == proofread_text }
@@ -272,7 +272,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       visit("/latest")
       page.find("#create-topic").click
       composer.fill_content(input)
-      DiscourseAi::Completions::LLM.with_prepared_responses([titles]) do
+      DiscourseAi::Completions::Llm.with_prepared_responses([titles]) do
         ai_suggestion_dropdown.click_suggest_titles_button
 
         wait_for { ai_suggestion_dropdown.has_dropdown? }
@@ -285,7 +285,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       visit("/latest")
       page.find("#create-topic").click
       composer.fill_content(input)
-      DiscourseAi::Completions::LLM.with_prepared_responses([titles]) do
+      DiscourseAi::Completions::Llm.with_prepared_responses([titles]) do
         ai_suggestion_dropdown.click_suggest_titles_button
 
         wait_for { ai_suggestion_dropdown.has_dropdown? }
@@ -302,7 +302,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       page.find("#create-topic").click
       composer.fill_content(input)
 
-      DiscourseAi::Completions::LLM.with_prepared_responses([titles]) do
+      DiscourseAi::Completions::Llm.with_prepared_responses([titles]) do
         ai_suggestion_dropdown.click_suggest_titles_button
 
         wait_for { ai_suggestion_dropdown.has_dropdown? }

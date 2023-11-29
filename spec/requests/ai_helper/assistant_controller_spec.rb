@@ -57,7 +57,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       end
 
       it "returns a generic error when the completion call fails" do
-        DiscourseAi::Completions::LLM
+        DiscourseAi::Completions::Llm
           .any_instance
           .expects(:completion!)
           .raises(DiscourseAi::Completions::Endpoints::Base::CompletionFailed)
@@ -71,7 +71,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         expected_diff =
           "<div class=\"inline-diff\"><p>The rain in <ins>Spain</ins><ins>,</ins><ins> </ins><del>spain </del>stays mainly in the <ins>Plane</ins><del>plane</del>.</p></div>"
 
-        DiscourseAi::Completions::LLM.with_prepared_responses([proofreaded_text]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([proofreaded_text]) do
           post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text_to_proofread }
 
           expect(response.status).to eq(200)

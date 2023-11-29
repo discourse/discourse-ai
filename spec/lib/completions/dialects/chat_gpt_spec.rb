@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DiscourseAi::Completions::Dialects::ChatGPT do
+RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
   subject(:dialect) { described_class.new }
 
   let(:prompt) do

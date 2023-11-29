@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DiscourseAi::Completions::LLM do
+RSpec.describe DiscourseAi::Completions::Llm do
   subject(:llm) do
     described_class.new(
       DiscourseAi::Completions::Dialects::OrcaStyle.new,
@@ -16,7 +16,7 @@ RSpec.describe DiscourseAi::Completions::LLM do
       fake_model = "unknown_v2"
 
       expect { described_class.proxy(fake_model) }.to(
-        raise_error(DiscourseAi::Completions::LLM::UNKNOWN_MODEL),
+        raise_error(DiscourseAi::Completions::Llm::UNKNOWN_MODEL),
       )
     end
   end

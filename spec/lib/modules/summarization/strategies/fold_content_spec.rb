@@ -25,7 +25,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
     context "when the content to summarize fits in a single call" do
       it "does one call to summarize content" do
         result =
-          DiscourseAi::Completions::LLM.with_prepared_responses([single_summary]) do |spy|
+          DiscourseAi::Completions::Llm.with_prepared_responses([single_summary]) do |spy|
             strategy.summarize(content, user).tap { expect(spy.completions).to eq(1) }
           end
 
@@ -38,7 +38,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
         content[:contents] << { poster: "asd2", id: 2, text: summarize_text }
 
         result =
-          DiscourseAi::Completions::LLM.with_prepared_responses(
+          DiscourseAi::Completions::Llm.with_prepared_responses(
             [single_summary, single_summary, concatenated_summary],
           ) { |spy| strategy.summarize(content, user).tap { expect(spy.completions).to eq(3) } }
 

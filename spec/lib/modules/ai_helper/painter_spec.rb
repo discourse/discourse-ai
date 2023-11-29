@@ -34,7 +34,7 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
       StableDiffusionStubs.new.stub_response(expected_image_prompt, artifacts)
 
       thumbnails =
-        DiscourseAi::Completions::LLM.with_prepared_responses([expected_image_prompt]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([expected_image_prompt]) do
           thumbnails = subject.commission_thumbnails(raw_content, user)
         end
 
