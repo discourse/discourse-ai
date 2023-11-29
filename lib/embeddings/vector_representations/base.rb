@@ -5,7 +5,14 @@ module DiscourseAi
     module VectorRepresentations
       class Base
         def self.current_representation(strategy)
-          subclasses.map { _1.new(strategy) }.find { _1.name == SiteSetting.ai_embeddings_model }
+          # we are explicit here cause the loader may have not
+          # loaded the subclasses yet
+          [
+            DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2,
+            DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn,
+            DiscourseAi::Embeddings::VectorRepresentations::MultilingualE5Large,
+            DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002,
+          ].map { _1.new(strategy) }.find { _1.name == SiteSetting.ai_embeddings_model }
         end
 
         def initialize(strategy)
