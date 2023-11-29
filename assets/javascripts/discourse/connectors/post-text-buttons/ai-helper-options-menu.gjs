@@ -4,13 +4,10 @@ import { action } from "@ember/object";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import I18n from "I18n";
+import i18n from "discourse-common/helpers/i18n";
 import eq from "truth-helpers/helpers/eq";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
 import not from "truth-helpers/helpers/not";
-
-
-const i18n = I18n.t.bind(I18n);
 
 export default class AIHelperOptionsMenu extends Component {
   static shouldRender(outletArgs, helper) {
