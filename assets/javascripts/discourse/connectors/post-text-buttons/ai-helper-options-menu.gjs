@@ -9,7 +9,6 @@ import eq from "truth-helpers/helpers/eq";
 import not from "truth-helpers/helpers/not";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
 
-
 const i18n = I18n.t.bind(I18n);
 
 export default class AIHelperOptionsMenu extends Component {
@@ -100,10 +99,12 @@ export default class AIHelperOptionsMenu extends Component {
     if (this.suggestion?.length > 0) {
       navigator.clipboard.writeText(this.suggestion).then(() => {
         this.copyButtonIcon = "check";
-        this.copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copied";
+        this.copyButtonLabel =
+          "discourse_ai.ai_helper.post_options_menu.copied";
         setTimeout(() => {
           this.copyButtonIcon = "copy";
-          this.copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy";
+          this.copyButtonLabel =
+            "discourse_ai.ai_helper.post_options_menu.copy";
         }, 3500);
       });
     }
