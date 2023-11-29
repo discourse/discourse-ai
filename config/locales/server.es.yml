@@ -92,9 +92,11 @@ es:
         summarize: "Resumir"
         image: "Generar imagen"
         google: "Buscar en Google"
+        dall_e: "Generar imagen"
       command_description:
         time: "La hora en %{timezone} es %{time}"
         summarize: "<a href='%{url}'>%{title}</a> resumido"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "Se encontró %{count} categoría"

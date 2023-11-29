@@ -89,6 +89,7 @@ pl_PL:
         summarize: "Podsumuj"
         image: "Wygeneruj obraz"
         google: "Szukaj w Google"
+        dall_e: "Wygeneruj obraz"
       command_description:
         time: "Czas w %{timezone} wynosi %{time}"
         summarize: "Podsumowano <a href='%{url}'>%{title}</a>"

@@ -92,9 +92,11 @@ ar:
         summarize: "تلخيص"
         image: "إنشاء صورة"
         google: "البحث في Google"
+        dall_e: "إنشاء صورة"
       command_description:
         time: "الوقت في المنطقة الزمنية %{timezone} هو %{time}"
         summarize: "تم تلخيص <a href='%{url}'>%{title}</a>"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           zero: "تم العثور على %{count} فئة"

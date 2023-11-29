@@ -53,8 +53,11 @@ he:
         system_prompt: בקשת מערכת
         save: שמירה
         enabled: פעיל
+        commands: פקודות מופעלות
+        allowed_groups: קבוצות מורשות
         new: חדשות
         delete: מחיקה
+        priority: עדיפות
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
@@ -91,6 +94,7 @@ he:
       embeddings:
         semantic_search: "נושאים (סמנטיקה)"
         semantic_search_loading: "מתבצע חיפוש אחר תוצאות נוספות עם בינה מלאכותית"
+        semantic_search_disabled_sort: "חיפוש בינה מלאכותית מושבת עבור סדר מיון זה, יש למיין לפי רלוונטיות כדי להפעיל."
         semantic_search_results:
           toggle: "מוצגות %{count} תוצאות שנמצאו באמצעות בינה מלאכותית"
           toggle_hidden: "מוסתרות %{count} תוצאות שנמצאו באמצעות בינה מלאכותית"

@@ -20,6 +20,8 @@ fa_IR:
         summarize: "خلاصه کنید"
         image: "تولید تصویر"
         google: "جستجو در گوگل"
+        dall_e: "تولید تصویر"
       command_description:
         summarize: "خلاصه شده <a href='%{url}'>%{title}</a>"
+        dall_e: "%{prompt}"
         image: "%{prompt}"

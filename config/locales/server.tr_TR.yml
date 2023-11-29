@@ -92,9 +92,11 @@ tr_TR:
         summarize: "Özetle"
         image: "Görüntü oluştur"
         google: "Google'da Ara"
+        dall_e: "Görüntü oluştur"
       command_description:
         time: "%{timezone} saat diliminde saat %{time}"
         summarize: "<a href='%{url}'>%{title}</a> özetlendi"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "%{count} kategori bulundu"

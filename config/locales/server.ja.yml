@@ -92,9 +92,11 @@ ja:
         summarize: "要約"
         image: "画像を生成"
         google: "Google で検索"
+        dall_e: "画像を生成"
       command_description:
         time: "%{timezone} での時刻は %{time} です"
         summarize: "<a href='%{url}'>%{title}</a> の要約"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           other: "%{count} 個のカテゴリが見つかりました"

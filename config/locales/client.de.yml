@@ -110,10 +110,12 @@ de:
       embeddings:
         semantic_search: "Themen (semantisch)"
         semantic_search_loading: "Suche mehr Ergebnisse mit Hilfe der KI"
+        semantic_search_disabled_sort: "Die KI-Suche ist für diese Sortierreihenfolge deaktiviert, sortiere nach Relevanz, um sie zu aktivieren."
         semantic_search_results:
           toggle: "Zeigt %{count} Ergebnisse, die mit KI gefunden wurden"
           toggle_hidden: "Ausblenden von %{count} mit KI gefundenen Ergebnissen"
           none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden."
+        ai_generated_result: "Suchergebnis mit KI gefunden"
       ai_bot:
         pm_warning: "AI chatbot messages are monitored regularly by moderators."
         cancel_streaming: "Antwort abbrechen"

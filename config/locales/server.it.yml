@@ -93,10 +93,12 @@ it:
         image: "Genera immagine"
         google: "Cerca su Google"
         read: "Leggi l'argomento"
+        dall_e: "Genera immagine"
       command_description:
         read: "Lettura: <a href='%{url}'>%{title}</a>"
         time: "L'orario in %{timezone} è %{time}"
         summarize: "Riassunto di <a href='%{url}'>%{title}</a>"
+        dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "%{count} categoria trovata"
