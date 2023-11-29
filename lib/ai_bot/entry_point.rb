@@ -27,12 +27,6 @@ module DiscourseAi
         end
       end
 
-      def load_files
-        # hard to autoload, this is a core namespace, will load manually for now
-        require_relative "../../jobs/regular/create_ai_reply"
-        require_relative "../../jobs/regular/update_ai_bot_pm_title"
-      end
-
       def inject_into(plugin)
         plugin.on(:site_setting_changed) do |name, _old_value, _new_value|
           if name == :ai_bot_enabled_chat_bots || name == :ai_bot_enabled

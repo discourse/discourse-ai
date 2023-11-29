@@ -3,11 +3,6 @@
 module DiscourseAi
   module NSFW
     class EntryPoint
-      def load_files
-        require_relative "nsfw_classification"
-        require_relative "jobs/regular/evaluate_post_uploads"
-      end
-
       def inject_into(plugin)
         nsfw_detection_cb =
           Proc.new do |post|

@@ -27,28 +27,37 @@ register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
+  module NSFW
+  end
 end
 
-Rails.autoloaders.main.push_dir(File.join(__dir__, "lib/discourse_ai"), namespace: ::DiscourseAi)
+Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::DiscourseAi)
+# this inflection is finicky
+Rails.autoloaders.main.push_dir(File.join(__dir__, "lib/nsfw"), namespace: ::DiscourseAi::NSFW)
 
-require_relative "lib/discourse_ai/engine"
+require_relative "lib/engine"
 
 after_initialize do
   Rails.autoloaders.each do |autoloader|
     autoloader.inflector.inflect("llm" => "LLM")
     autoloader.inflector.inflect("chat_gpt" => "ChatGPT")
     autoloader.inflector.inflect("open_ai" => "OpenAI")
+    autoloader.inflector.inflect("nsfw" => "NSFW")
   end
 
-  require_relative "lib/modules/nsfw/entry_point"
-  require_relative "lib/modules/toxicity/entry_point"
-  require_relative "lib/modules/sentiment/entry_point"
-  require_relative "lib/modules/ai_helper/entry_point"
-  require_relative "lib/modules/embeddings/entry_point"
-  require_relative "lib/modules/summarization/entry_point"
-
   # do not autoload this cause we may have no namespace
-  require_relative "lib/discourse_automation/llm_triage"
+  require_relative "discourse_automation/llm_triage"
+
+  # jobs are special, they live in a discourse ::Jobs
+  require_relative "jobs/regular/create_ai_reply"
+  require_relative "jobs/regular/evaluate_post_uploads"
+  require_relative "jobs/regular/generate_chat_thread_title"
+  require_relative "jobs/regular/generate_embeddings"
+  require_relative "jobs/regular/post_sentiment_analysis"
+  require_relative "jobs/regular/update_ai_bot_pm_title"
+  require_relative "jobs/regular/toxicity_classify_chat_message"
+  require_relative "jobs/regular/toxicity_classify_post"
+  require_relative "jobs/scheduled/embeddings_backfill"
 
   add_admin_route "discourse_ai.title", "discourse-ai"
 
@@ -60,10 +69,7 @@ after_initialize do
     DiscourseAi::AiHelper::EntryPoint.new,
     DiscourseAi::Summarization::EntryPoint.new,
     DiscourseAi::AiBot::EntryPoint.new,
-  ].each do |a_module|
-    a_module.load_files
-    a_module.inject_into(self)
-  end
+  ].each { |a_module| a_module.inject_into(self) }
 
   register_reviewable_type ReviewableAiChatMessage
   register_reviewable_type ReviewableAiPost

@@ -3,21 +3,6 @@
 module DiscourseAi
   module Embeddings
     class EntryPoint
-      def load_files
-        require_relative "vector_representations/base"
-        require_relative "vector_representations/all_mpnet_base_v2"
-        require_relative "vector_representations/text_embedding_ada_002"
-        require_relative "vector_representations/multilingual_e5_large"
-        require_relative "vector_representations/bge_large_en"
-        require_relative "strategies/truncation"
-        require_relative "jobs/regular/generate_embeddings"
-        require_relative "jobs/scheduled/embeddings_backfill"
-        require_relative "semantic_related"
-        require_relative "semantic_topic_query"
-
-        require_relative "semantic_search"
-      end
-
       def inject_into(plugin)
         # Include random topics in the suggested list *only* if there are no related topics.
         plugin.register_modifier(

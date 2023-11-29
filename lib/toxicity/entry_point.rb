@@ -3,14 +3,6 @@
 module DiscourseAi
   module Toxicity
     class EntryPoint
-      def load_files
-        require_relative "scan_queue"
-        require_relative "toxicity_classification"
-
-        require_relative "jobs/regular/toxicity_classify_post"
-        require_relative "jobs/regular/toxicity_classify_chat_message"
-      end
-
       def inject_into(plugin)
         post_analysis_cb = Proc.new { |post| DiscourseAi::Toxicity::ScanQueue.enqueue_post(post) }
 

@@ -3,18 +3,6 @@
 module DiscourseAi
   module Summarization
     class EntryPoint
-      def load_files
-        require_relative "models/base"
-        require_relative "models/anthropic"
-        require_relative "models/discourse"
-        require_relative "models/open_ai"
-        require_relative "models/llama2"
-        require_relative "models/llama2_fine_tuned_orca_style"
-
-        require_relative "strategies/fold_content"
-        require_relative "strategies/truncate_content"
-      end
-
       def inject_into(plugin)
         foldable_models = [
           Models::OpenAi.new("gpt-4", max_tokens: 8192),

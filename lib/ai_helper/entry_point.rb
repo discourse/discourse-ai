@@ -2,15 +2,6 @@
 module DiscourseAi
   module AiHelper
     class EntryPoint
-      def load_files
-        require_relative "chat_thread_titler"
-        require_relative "jobs/regular/generate_chat_thread_title"
-        require_relative "assistant"
-        require_relative "painter"
-        require_relative "semantic_categorizer"
-        require_relative "topic_helper"
-      end
-
       def inject_into(plugin)
         plugin.register_seedfu_fixtures(
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_helper"),
@@ -22,7 +13,7 @@ module DiscourseAi
         plugin.on(:chat_thread_created) do |thread|
           next unless SiteSetting.composer_ai_helper_enabled
           next unless SiteSetting.ai_helper_automatic_chat_thread_title
-          Jobs.enqueue_in(
+          ::Jobs.enqueue_in(
             SiteSetting.ai_helper_automatic_chat_thread_title_delay.minutes,
             :generate_chat_thread_title,
             thread_id: thread.id,

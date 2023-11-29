@@ -3,11 +3,6 @@
 module DiscourseAi
   module Sentiment
     class EntryPoint
-      def load_files
-        require_relative "sentiment_classification"
-        require_relative "jobs/regular/post_sentiment_analysis"
-      end
-
       def inject_into(plugin)
         sentiment_analysis_cb =
           Proc.new do |post|
@@ -32,11 +27,11 @@ module DiscourseAi
           grouped_sentiments =
             DB.query(
               <<~SQL,
-            SELECT 
+            SELECT
               DATE_TRUNC('day', p.created_at)::DATE AS posted_at,
               #{sentiment_count_sql.call("positive")},
               -#{sentiment_count_sql.call("negative")}
-            FROM 
+            FROM
               classification_results AS cr
             INNER JOIN posts p ON p.id = cr.target_id AND cr.target_type = 'Post'
             INNER JOIN topics t ON t.id = p.topic_id
@@ -84,7 +79,7 @@ module DiscourseAi
           grouped_emotions =
             DB.query(
               <<~SQL,
-            SELECT 
+            SELECT
               u.trust_level AS trust_level,
               #{emotion_count_clause.call("sadness")},
               #{emotion_count_clause.call("surprise")},
