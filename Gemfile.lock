@@ -9,7 +9,7 @@ GEM
       ast (~> 2.4.1)
       racc
     prettier_print (1.2.1)
-    racc (1.7.2)
+    racc (1.7.3)
     rainbow (3.1.1)
     regexp_parser (2.8.2)
     rexml (3.2.6)
@@ -28,7 +28,7 @@ GEM
       parser (>= 3.2.1.0)
     rubocop-capybara (2.19.0)
       rubocop (~> 1.41)
-    rubocop-discourse (3.4.0)
+    rubocop-discourse (3.4.1)
       rubocop (>= 1.1.0)
       rubocop-rspec (>= 2.0.0)
     rubocop-factory_bot (2.24.0)
@@ -55,4 +55,4 @@ DEPENDENCIES
   syntax_tree
 
 BUNDLED WITH
-   2.4.21
+   2.4.13
