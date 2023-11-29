@@ -53,9 +53,13 @@ export default class AISuggestionDropdown extends Component {
   @action
   applyClasses() {
     if (this.showAIButton) {
-      document.querySelector(".composer-fields")?.classList.add("showing-ai-suggestions");
+      document
+        .querySelector(".composer-fields")
+        ?.classList.add("showing-ai-suggestions");
     } else {
-      document.querySelector(".composer-fields")?.classList.remove("showing-ai-suggestions");
+      document
+        .querySelector(".composer-fields")
+        ?.classList.remove("showing-ai-suggestions");
     }
   }
 
@@ -133,14 +137,18 @@ export default class AISuggestionDropdown extends Component {
         this.showMenu = true;
 
         if (this.args.mode === "suggest_category") {
-          document.querySelector(".category-input")?.classList.add("showing-ai-suggestion-menu");
+          document
+            .querySelector(".category-input")
+            ?.classList.add("showing-ai-suggestion-menu");
         }
       });
   }
 
   #closeMenu() {
     if (this.showMenu && this.args.mode === "suggest_category") {
-      document.querySelector(".category-input")?.classList.remove("showing-ai-suggestion-menu");
+      document
+        .querySelector(".category-input")
+        ?.classList.remove("showing-ai-suggestion-menu");
     }
 
     this.suggestIcon = "discourse-sparkles";
