@@ -12,6 +12,9 @@ nav.post-controls .actions button.cancel-streaming {
   .gpt-persona {
     margin-bottom: 5px;
     margin-top: -10px;
+    .select-kit.single-select.dropdown-select-box ul.select-kit-collection {
+      max-height: 200px;
+    }
   }
 }
 
