@@ -23,7 +23,7 @@ task "ai:sentiment:backfill", [:start_post] => [:environment] do |_, args|
         DiscourseAi::PostClassificator.new(
           DiscourseAi::Sentiment::SentimentClassification.new,
         ).classify!(post)
-      rescue => e 
+      rescue => e
         puts "Error: #{e.message}"
       end
     end
