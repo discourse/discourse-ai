@@ -10,7 +10,7 @@ export default class Sentiment extends Component {
   }
 
   get icon() {
-    switch(this.args.outletArgs.model.sentiment) {
+    switch (this.args.outletArgs.model.sentiment) {
       case "positive":
         return "smile";
       case "negative":
