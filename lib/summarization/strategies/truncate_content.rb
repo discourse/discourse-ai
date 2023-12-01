@@ -20,8 +20,7 @@ module DiscourseAi
           opts = content.except(:contents)
 
           {
-            summary:
-              completion_model.summarize_with_truncation(content[:contents], opts, &on_partial_blk),
+            summary: summarize_with_truncation(content[:contents], opts, &on_partial_blk),
             chunks: [],
           }
         end
