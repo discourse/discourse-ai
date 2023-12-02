@@ -35,6 +35,11 @@ RSpec.describe "AI personas", type: :system, js: true do
     find(".ai-persona-editor__name").set("Test Persona")
     find(".ai-persona-editor__description").fill_in(with: "I am a test persona")
     find(".ai-persona-editor__system_prompt").fill_in(with: "You are a helpful bot")
+
+    command_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__commands")
+    command_selector.expand
+    command_selector.select_row_by_value("ReadCommand")
+
     find(".ai-persona-editor__save").click()
 
     expect(page).not_to have_current_path("/admin/plugins/discourse-ai/ai_personas/new")
@@ -45,6 +50,7 @@ RSpec.describe "AI personas", type: :system, js: true do
     expect(persona.name).to eq("Test Persona")
     expect(persona.description).to eq("I am a test persona")
     expect(persona.system_prompt).to eq("You are a helpful bot")
+    expect(persona.commands).to eq(["ReadCommand"])
   end
 
   it "will not allow deletion or editing of system personas" do
