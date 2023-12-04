@@ -25,6 +25,7 @@ en:
     ai_sentiment_inference_service_api_endpoint: "URL where the API is running for the sentiment module"
     ai_sentiment_inference_service_api_key: "API key for the sentiment API"
     ai_sentiment_models: "Models to use for inference. Sentiment classifies post on the positive/neutral/negative space. Emotion classifies on the anger/disgust/fear/joy/neutral/sadness/surprise space."
+    ai_sentiment_show_sentiment_public_profile: "Make a user dominant sentiment visible on their public profile."
 
     ai_nsfw_detection_enabled: "Enable the NSFW module."
     ai_nsfw_inference_service_api_endpoint: "URL where the API is running for the NSFW module"

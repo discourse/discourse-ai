@@ -4,6 +4,7 @@ export default class Sentiment extends Component {
   static shouldRender(outletArgs, helper) {
     return (
       helper.siteSettings.ai_sentiment_enabled &&
+      helper.siteSettings.ai_sentiment_show_sentiment_public_profile &&
       outletArgs.model.sentiment &&
       helper.currentUser &&
       helper.currentUser.staff
