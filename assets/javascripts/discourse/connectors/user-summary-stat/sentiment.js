@@ -1,9 +1,13 @@
 import Component from "@glimmer/component";
-import { inject as service } from "@ember/service";
 
 export default class Sentiment extends Component {
   static shouldRender(outletArgs, helper) {
-    return helper.siteSettings.ai_sentiment_enabled && outletArgs.model.sentiment && helper.currentUser && helper.currentUser.staff;
+    return (
+      helper.siteSettings.ai_sentiment_enabled &&
+      outletArgs.model.sentiment &&
+      helper.currentUser &&
+      helper.currentUser.staff
+    );
   }
 
   get icon() {
