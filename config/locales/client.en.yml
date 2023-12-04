@@ -129,6 +129,11 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+        summary:
+          label: "sentiment"
+          title: "Experimental AI-powered sentiment analysis of this person's most recent posts."
+
+      
 
     review:
       types:
