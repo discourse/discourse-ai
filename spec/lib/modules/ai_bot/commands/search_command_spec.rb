@@ -4,9 +4,10 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
   before { SearchIndexer.enable }
   after { SearchIndexer.disable }
 
+  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  fab!(:admin)
   fab!(:parent_category) { Fabricate(:category, name: "animals") }
   fab!(:category) { Fabricate(:category, parent_category: parent_category, name: "amazing-cat") }
-
   fab!(:tag_funny) { Fabricate(:tag, name: "funny") }
   fab!(:tag_sad) { Fabricate(:tag, name: "sad") }
   fab!(:tag_hidden) { Fabricate(:tag, name: "hidden") }
@@ -25,7 +26,42 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
   before { SiteSetting.ai_bot_enabled = true }
 
+  it "can properly list options" do
+    options = described_class.options
+    expect(options.length).to eq(1)
+    expect(options.first.name.to_s).to eq("base_query")
+    expect(options.first.localized_name).not_to include("Translation missing:")
+    expect(options.first.localized_description).not_to include("Translation missing:")
+  end
+
   describe "#process" do
+    it "can retreive options from persona correctly" do
+      persona =
+        Fabricate(
+          :ai_persona,
+          allowed_group_ids: [Group::AUTO_GROUPS[:admins]],
+          commands: [["SearchCommand", { "base_query" => "#funny" }]],
+        )
+      Group.refresh_automatic_groups!
+
+      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona_id: persona.id, user: admin)
+      search_post = Fabricate(:post, topic: topic_with_tags)
+
+      bot_post = Fabricate(:post)
+
+      search = described_class.new(bot: bot, post: bot_post, args: nil)
+
+      results = search.process(order: "latest")
+      expect(results[:rows].length).to eq(1)
+
+      search_post.topic.tags = []
+      search_post.topic.save!
+
+      # no longer has the tag funny
+      results = search.process(order: "latest")
+      expect(results[:rows].length).to eq(0)
+    end
+
     it "can handle no results" do
       post1 = Fabricate(:post, topic: topic_with_tags)
       search = described_class.new(bot: nil, post: post1, args: nil)

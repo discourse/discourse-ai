@@ -151,6 +151,11 @@ en:
           description: "AI Bot specialized in generating images using DALL-E 3"
       topic_not_found: "Summary unavailable, topic not found!"
       searching: "Searching for: '%{query}'"
+      command_options:
+        search:
+          base_query:
+            name: "Base Search Query"
+            description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       command_summary:
         categories: "List categories"
         search: "Search"

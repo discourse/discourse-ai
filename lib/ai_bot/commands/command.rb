@@ -3,18 +3,6 @@
 module DiscourseAi
   module AiBot
     module Commands
-      class Parameter
-        attr_reader :item_type, :name, :description, :type, :enum, :required
-        def initialize(name:, description:, type:, enum: nil, required: false, item_type: nil)
-          @name = name
-          @description = description
-          @type = type
-          @enum = enum
-          @required = required
-          @item_type = item_type
-        end
-      end
-
       class Command
         CARET = "<!-- caret -->"
         PROGRESS_CARET = "<!-- progress -->"
@@ -37,6 +25,14 @@ module DiscourseAi
 
           def parameters
             raise NotImplemented
+          end
+
+          def options
+            []
+          end
+
+          def option(name, type:)
+            Option.new(command: self, name: name, type: type)
           end
         end
 
@@ -61,6 +57,22 @@ module DiscourseAi
           HTML
 
           @invoked = false
+        end
+
+        def persona_options
+          return @persona_options if @persona_options
+
+          @persona_options = HashWithIndifferentAccess.new
+
+          # during tests we may operate without a bot
+          return @persona_options if !self.bot
+
+          self.class.options.each do |option|
+            val = self.bot.persona.options.dig(self.class, option.name)
+            @persona_options[option.name] = val if val
+          end
+
+          @persona_options
         end
 
         def tokenizer
