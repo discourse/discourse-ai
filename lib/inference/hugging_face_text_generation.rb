@@ -74,7 +74,6 @@ module ::DiscourseAi
 
             if !block_given?
               response_body = response.read_body
-              pp response_body
               parsed_response = JSON.parse(response_body, symbolize_names: true)
 
               log.update!(
