@@ -90,7 +90,7 @@ module DiscourseAi
 
                     begin
                       partial = extract_completion_from(raw_partial)
-                      next if partial.blank?
+                      next if partial.nil?
                       leftover = ""
                       response_data << partial
 

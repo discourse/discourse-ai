@@ -5,7 +5,9 @@ module DiscourseAi
     module Endpoints
       class HuggingFace < Base
         def self.can_contact?(model_name)
-          %w[StableBeluga2 Upstage-Llama-2-*-instruct-v2 Llama2-*-chat-hf Llama2-chat-hf].include?(model_name)
+          %w[StableBeluga2 Upstage-Llama-2-*-instruct-v2 Llama2-*-chat-hf Llama2-chat-hf].include?(
+            model_name,
+          )
         end
 
         def default_options
@@ -32,9 +34,7 @@ module DiscourseAi
 
               payload[:parameters][:max_new_tokens] = token_limit - prompt_size(prompt)
 
-              if @streaming_mode
-                payload[:stream] = true
-              end
+              payload[:stream] = true if @streaming_mode
             end
         end
 

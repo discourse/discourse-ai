@@ -40,10 +40,8 @@ module ::DiscourseAi
         parameters[:max_new_tokens] = token_limit - prompt_size
         parameters[:temperature] = temperature if temperature
         parameters[:repetition_penalty] = repetition_penalty if repetition_penalty
-        
-        if block_given?
-          payload[:stream] = true
-        end
+
+        payload[:stream] = true if block_given?
 
         Net::HTTP.start(
           url.host,
