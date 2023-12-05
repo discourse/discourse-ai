@@ -97,6 +97,7 @@ en:
             submit: "Send Prompt"
         post_options_menu:
           trigger: "Ask AI"
+          title: "Ask AI"
           loading: "AI is generating"
           close: "Close"
           copy: "Copy"

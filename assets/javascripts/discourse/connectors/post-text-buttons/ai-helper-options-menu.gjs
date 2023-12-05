@@ -133,6 +133,7 @@ export default class AIHelperOptionsMenu extends Component {
         <DButton
           @class="btn-flat ai-post-helper__trigger"
           @icon="discourse-sparkles"
+          @title="discourse_ai.ai_helper.post_options_menu.title"
           @label="discourse_ai.ai_helper.post_options_menu.trigger"
           @action={{this.showAIHelperOptions}}
         />
