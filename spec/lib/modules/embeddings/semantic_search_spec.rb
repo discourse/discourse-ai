@@ -5,7 +5,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   fab!(:user) { Fabricate(:user) }
 
   let(:query) { "test_query" }
-  let(:subject) { described_class.new(Guardian.new(user)) }
+  let(:subject) { described_class.new(user.guardian) }
 
   describe "#search_for_topics" do
     let(:hypothetical_post) { "This is an hypothetical post generated from the keyword test_query" }
@@ -129,7 +129,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
             posts =
               DiscourseAi::Completions::Llm.with_prepared_responses(
                 ["<ai>#{hypothetical_post}</ai>"],
-              ) { described_class.new(Guardian.new(nil)).search_for_topics(query) }
+              ) { described_class.new(Guardian.basic_user).search_for_topics(query) }
 
             expect(posts).to be_empty
           end
