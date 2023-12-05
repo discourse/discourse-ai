@@ -18,6 +18,46 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       )
     end
 
+    it "returns commands options with each command" do
+      persona1 = Fabricate(:ai_persona, name: "search1", commands: ["SearchCommand"])
+      persona2 =
+        Fabricate(
+          :ai_persona,
+          name: "search2",
+          commands: [["SearchCommand", { base_query: "test" }]],
+        )
+
+      get "/admin/plugins/discourse-ai/ai_personas.json"
+      expect(response).to be_successful
+
+      serializer_persona1 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona1.id }
+      serializer_persona2 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona2.id }
+
+      commands = response.parsed_body["meta"]["commands"]
+      search_command = commands.find { |c| c["id"] == "SearchCommand" }
+
+      expect(search_command["help"]).to eq(I18n.t("discourse_ai.ai_bot.command_help.search"))
+
+      expect(search_command["options"]).to eq(
+        {
+          "base_query" => {
+            "type" => "string",
+            "name" => I18n.t("discourse_ai.ai_bot.command_options.search.base_query.name"),
+            "description" =>
+              I18n.t("discourse_ai.ai_bot.command_options.search.base_query.description"),
+          },
+        },
+      )
+
+      expect(serializer_persona1["commands"]).to eq(["SearchCommand"])
+      expect(serializer_persona2["commands"]).to eq(["SearchCommand"])
+
+      expect(serializer_persona1["command_options"]).to be_blank
+      expect(serializer_persona2["command_options"]).to eq(
+        { "SearchCommand" => { "base_query" => "test" } },
+      )
+    end
+
     it "returns localized persona names and descriptions" do
       SiteSetting.default_locale = "fr"
 
@@ -55,16 +95,20 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           name: "superbot",
           description: "Assists with tasks",
           system_prompt: "you are a helpful bot",
+          commands: [["search", { "base_query" => "test" }]],
         }
       end
 
       it "creates a new AiPersona" do
         expect {
           post "/admin/plugins/discourse-ai/ai_personas.json",
-               params: {
-                 ai_persona: valid_attributes,
+               params: { ai_persona: valid_attributes }.to_json,
+               headers: {
+                 "CONTENT_TYPE" => "application/json",
                }
           expect(response).to be_successful
+          persona = AiPersona.find(response.parsed_body["ai_persona"]["id"])
+          expect(persona.commands).to eq([["search", { "base_query" => "test" }]])
         }.to change(AiPersona, :count).by(1)
       end
     end

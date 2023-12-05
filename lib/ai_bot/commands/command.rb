@@ -31,6 +31,10 @@ module DiscourseAi
             []
           end
 
+          def help
+            I18n.t("discourse_ai.ai_bot.command_help.#{name}")
+          end
+
           def option(name, type:)
             Option.new(command: self, name: name, type: type)
           end
