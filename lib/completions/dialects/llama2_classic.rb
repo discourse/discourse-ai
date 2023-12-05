@@ -5,7 +5,7 @@ module DiscourseAi
     module Dialects
       class Llama2Classic
         def self.can_translate?(model_name)
-          "Llama2-*-chat-hf" == model_name
+          %w[Llama2-*-chat-hf Llama2-chat-hf].include?(model_name)
         end
 
         def translate(generic_prompt)

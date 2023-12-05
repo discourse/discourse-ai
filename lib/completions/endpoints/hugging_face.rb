@@ -5,7 +5,7 @@ module DiscourseAi
     module Endpoints
       class HuggingFace < Base
         def self.can_contact?(model_name)
-          %w[StableBeluga2 Upstage-Llama-2-*-instruct-v2 Llama2-*-chat-hf].include?(model_name)
+          %w[StableBeluga2 Upstage-Llama-2-*-instruct-v2 Llama2-*-chat-hf Llama2-chat-hf].include?(model_name)
         end
 
         def default_options
@@ -19,9 +19,7 @@ module DiscourseAi
         private
 
         def model_uri
-          URI(SiteSetting.ai_hugging_face_api_url).tap do |uri|
-            uri.path = @streaming_mode ? "/generate_stream" : "/generate"
-          end
+          URI(SiteSetting.ai_hugging_face_api_url)
         end
 
         def prepare_payload(prompt, model_params)
@@ -30,9 +28,13 @@ module DiscourseAi
             .tap do |payload|
               payload[:parameters].merge!(model_params)
 
-              token_limit = 2_000 || SiteSetting.ai_hugging_face_token_limit
+              token_limit = SiteSetting.ai_hugging_face_token_limit || 4_000
 
               payload[:parameters][:max_new_tokens] = token_limit - prompt_size(prompt)
+
+              if @streaming_mode
+                payload[:stream] = true
+              end
             end
         end
 
@@ -56,7 +58,7 @@ module DiscourseAi
 
             parsed.dig(:token, :text).to_s
           else
-            parsed[:generated_text].to_s
+            parsed[0][:generated_text].to_s
           end
         end
 
@@ -64,7 +66,7 @@ module DiscourseAi
           decoded_chunk
             .split("\n")
             .map do |line|
-              data = line.split("data: ", 2)[1]
+              data = line.split("data:", 2)[1]
               data&.squish == "[DONE]" ? nil : data
             end
             .compact
