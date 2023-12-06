@@ -33,6 +33,7 @@ module DiscourseAi
               token_limit = SiteSetting.ai_hugging_face_token_limit || 4_000
 
               payload[:parameters][:max_new_tokens] = token_limit - prompt_size(prompt)
+              payload[:parameters][:return_full_text] = false
 
               payload[:stream] = true if @streaming_mode
             end
