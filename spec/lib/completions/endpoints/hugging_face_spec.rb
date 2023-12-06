@@ -15,20 +15,29 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
     model
       .default_options
       .merge(inputs: prompt)
-      .tap { |payload| payload[:parameters][:max_new_tokens] = 2_000 - model.prompt_size(prompt) }
+      .tap { |payload| payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) - model.prompt_size(prompt) }
       .to_json
   end
-  let(:stream_request_body) { request_body }
+  let(:stream_request_body) do
+    model
+    .default_options
+    .merge(inputs: prompt)
+    .tap do |payload|
+      payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) - model.prompt_size(prompt)
+      payload[:stream] = true
+    end
+    .to_json
+  end
 
   before { SiteSetting.ai_hugging_face_api_url = "https://test.dev" }
 
   def response(content)
-    { generated_text: content }
+    [{ generated_text: content }]
   end
 
   def stub_response(prompt, response_text)
     WebMock
-      .stub_request(:post, "#{SiteSetting.ai_hugging_face_api_url}/generate")
+      .stub_request(:post, "#{SiteSetting.ai_hugging_face_api_url}")
       .with(body: request_body)
       .to_return(status: 200, body: JSON.dump(response(response_text)))
   end
@@ -59,8 +68,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
     chunks = chunks.join("\n\n")
 
     WebMock
-      .stub_request(:post, "#{SiteSetting.ai_hugging_face_api_url}/generate_stream")
-      .with(body: request_body)
+      .stub_request(:post, "#{SiteSetting.ai_hugging_face_api_url}")
+      .with(body: stream_request_body)
       .to_return(status: 200, body: chunks)
   end
 
