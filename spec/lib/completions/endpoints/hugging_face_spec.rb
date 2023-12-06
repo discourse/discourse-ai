@@ -15,18 +15,22 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
     model
       .default_options
       .merge(inputs: prompt)
-      .tap { |payload| payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) - model.prompt_size(prompt) }
+      .tap do |payload|
+        payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) -
+          model.prompt_size(prompt)
+      end
       .to_json
   end
   let(:stream_request_body) do
     model
-    .default_options
-    .merge(inputs: prompt)
-    .tap do |payload|
-      payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) - model.prompt_size(prompt)
-      payload[:stream] = true
-    end
-    .to_json
+      .default_options
+      .merge(inputs: prompt)
+      .tap do |payload|
+        payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) -
+          model.prompt_size(prompt)
+        payload[:stream] = true
+      end
+      .to_json
   end
 
   before { SiteSetting.ai_hugging_face_api_url = "https://test.dev" }
