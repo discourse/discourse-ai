@@ -58,7 +58,7 @@ describe DiscourseAi::Toxicity::EntryPoint do
       fab!(:chat_message) { Fabricate(:chat_message) }
       let(:updater) do
         Chat::UpdateMessage.call(
-          guardian: chat_message.user.guardian,
+          guardian: Guardian.new(chat_message.user),
           message_id: chat_message.id,
           message: "This is my updated message",
         )

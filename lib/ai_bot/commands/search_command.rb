@@ -123,7 +123,7 @@ module DiscourseAi::AiBot::Commands
         Search.execute(
           search_string.to_s + " status:public",
           search_type: :full_page,
-          guardian: Guardian.basic_user,
+          guardian: Guardian.new(),
         )
 
       # let's be frugal with tokens, 50 results is too much and stuff gets cut off
@@ -140,10 +140,10 @@ module DiscourseAi::AiBot::Commands
       posts = posts[0..limit - 1]
 
       if should_try_semantic_search
-        semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.basic_user)
+        semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.new())
         topic_ids = Set.new(posts.map(&:topic_id))
 
-        search = Search.new(search_string, guardian: Guardian.basic_user)
+        search = Search.new(search_string, guardian: Guardian.new)
 
         results = nil
         begin
