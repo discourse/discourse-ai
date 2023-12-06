@@ -58,6 +58,7 @@ en:
         delete: Delete
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
+        command_options: "Command Options"
         no_persona_selected: |
           ## What are AI Personas?
 

@@ -12,11 +12,11 @@ import Textarea from "discourse/components/d-textarea";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
-import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiCommandSelector from "./ai-command-selector";
+import AiPersonaCommandOptions from "./ai-persona-command-options";
 
 export default class PersonaEditor extends Component {
   @service router;
@@ -159,7 +159,7 @@ export default class PersonaEditor extends Component {
         />
         <DTooltip
           @icon="question-circle"
-          @content={{i18n "discourse_ai.ai_persona.priority_help"}}
+          @content={{I18n.t "discourse_ai.ai_persona.priority_help"}}
         />
       </div>
       <div class="control-group">
@@ -188,6 +188,13 @@ export default class PersonaEditor extends Component {
           @commands={{@personas.resultSetMeta.commands}}
         />
       </div>
+      {{#unless this.editingModel.system}}
+        <AiPersonaCommandOptions
+          @persona={{this.editingModel}}
+          @commands={{this.editingModel.commands}}
+          @allCommands={{@personas.resultSetMeta.commands}}
+        />
+      {{/unless}}
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai_persona.allowed_groups"}}</label>
         <GroupChooser

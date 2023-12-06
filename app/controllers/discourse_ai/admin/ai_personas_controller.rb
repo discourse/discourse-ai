@@ -78,6 +78,7 @@ module DiscourseAi
         commands.filter_map do |command, options|
           break nil if !command.is_a?(String)
           options&.permit! if options && options.is_a?(ActionController::Parameters)
+
           if options
             [command, options]
           else

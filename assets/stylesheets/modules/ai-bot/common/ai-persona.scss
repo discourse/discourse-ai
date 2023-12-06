@@ -14,6 +14,14 @@
   }
 }
 
+.ai-persona-command-option-editor {
+  &__instructions {
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+    line-height: var(--line-height-large);
+  }
+}
+
 .ai-personas__container {
   display: flex;
   flex-direction: row;
@@ -25,6 +33,15 @@
 .ai-persona-editor {
   label {
     display: block;
+  }
+  &__command-options {
+    padding: 5px 10px 5px;
+    border: 1px solid var(--primary-low-mid);
+    width: 480px;
+  }
+  &__command-options-name {
+    margin-bottom: 10px;
+    font-size: var(--font-down-1);
   }
   &__description {
     width: 500px;
