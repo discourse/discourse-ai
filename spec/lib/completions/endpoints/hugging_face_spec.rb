@@ -18,6 +18,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
       .tap do |payload|
         payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) -
           model.prompt_size(prompt)
+        payload[:parameters][:return_full_text] = false
       end
       .to_json
   end
@@ -29,6 +30,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
         payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) -
           model.prompt_size(prompt)
         payload[:stream] = true
+        payload[:parameters][:return_full_text] = false
       end
       .to_json
   end

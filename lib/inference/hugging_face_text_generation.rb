@@ -40,6 +40,7 @@ module ::DiscourseAi
         parameters[:max_new_tokens] = token_limit - prompt_size
         parameters[:temperature] = temperature if temperature
         parameters[:repetition_penalty] = repetition_penalty if repetition_penalty
+        parameters[:return_full_text] = false
 
         payload[:stream] = true if block_given?
 
