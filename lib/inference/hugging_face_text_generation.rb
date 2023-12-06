@@ -22,11 +22,6 @@ module ::DiscourseAi
         raise CompletionFailed if model.blank?
 
         url = URI(SiteSetting.ai_hugging_face_api_url)
-        if block_given?
-          url.path = "/generate_stream"
-        else
-          url.path = "/generate"
-        end
         headers = { "Content-Type" => "application/json" }
 
         if SiteSetting.ai_hugging_face_api_key.present?
@@ -45,6 +40,8 @@ module ::DiscourseAi
         parameters[:max_new_tokens] = token_limit - prompt_size
         parameters[:temperature] = temperature if temperature
         parameters[:repetition_penalty] = repetition_penalty if repetition_penalty
+
+        payload[:stream] = true if block_given?
 
         Net::HTTP.start(
           url.host,
@@ -80,7 +77,7 @@ module ::DiscourseAi
               log.update!(
                 raw_response_payload: response_body,
                 request_tokens: tokenizer.size(prompt),
-                response_tokens: tokenizer.size(parsed_response[:generated_text]),
+                response_tokens: tokenizer.size(parsed_response.first[:generated_text]),
               )
               return parsed_response
             end
