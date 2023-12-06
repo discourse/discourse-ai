@@ -51,7 +51,7 @@ module DiscourseAi::AiBot::Commands
       topic = nil
       if topic_id > 0
         topic = Topic.find_by(id: topic_id)
-        topic = nil if !topic || !Guardian.basic_user.can_see?(topic)
+        topic = nil if !topic || !Guardian.new.can_see?(topic)
       end
 
       @last_summary = nil
