@@ -6,7 +6,7 @@ describe ReviewableAiPost do
   fab!(:target) { Fabricate(:post) }
 
   describe "#build_actions" do
-    let(:guardian) { Guardian.new }
+    let(:guardian) { Guardian.basic_user }
 
     let(:reviewable) do
       subject.tap do |r|

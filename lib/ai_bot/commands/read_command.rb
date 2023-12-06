@@ -41,11 +41,12 @@ module DiscourseAi::AiBot::Commands
       topic_id = topic_id.to_i
 
       topic = Topic.find_by(id: topic_id)
-      return not_found if !topic || !Guardian.new.can_see?(topic)
+      return not_found if !topic || !Guardian.basic_user.can_see?(topic)
 
       @title = topic.title
 
-      posts = Post.secured(Guardian.new).where(topic_id: topic_id).order(:post_number).limit(40)
+      posts =
+        Post.secured(Guardian.basic_user).where(topic_id: topic_id).order(:post_number).limit(40)
       @url = topic.relative_url(post_number)
 
       posts = posts.where("post_number = ?", post_number) if post_number
@@ -60,7 +61,7 @@ module DiscourseAi::AiBot::Commands
       content << "\ncategories: #{category_names}" if category_names.present?
 
       if topic.tags.length > 0
-        tags = DiscourseTagging.filter_visible(topic.tags, Guardian.new)
+        tags = DiscourseTagging.filter_visible(topic.tags, Guardian.basic_user)
         content << "\ntags: #{tags.map(&:name).join(", ")}\n\n" if tags.length > 0
       end
 
