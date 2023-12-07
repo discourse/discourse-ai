@@ -50,12 +50,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       )
 
       expect(serializer_persona1["commands"]).to eq(["SearchCommand"])
-      expect(serializer_persona2["commands"]).to eq(["SearchCommand"])
-
-      expect(serializer_persona1["command_options"]).to be_blank
-      expect(serializer_persona2["command_options"]).to eq(
-        { "SearchCommand" => { "base_query" => "test" } },
-      )
+      expect(serializer_persona2["commands"]).to eq([["SearchCommand", { "base_query" => "test" }]])
     end
 
     it "returns localized persona names and descriptions" do
