@@ -23,7 +23,7 @@ module Jobs
           #{reply_to ? "<replyTo>#{reply_to.raw}</replyTo>" : nil}
         TEXT
 
-      generic_prompt = completion_prompt.messages_with_input(input)
+      generic_prompt = prompt.messages_with_input(input)
       
       streamed_result = +""
       llm.completion!(generic_prompt, user) do |partial_response, cancel_function|
@@ -37,7 +37,7 @@ module Jobs
     private
 
     def publish_update(post, user, payload)
-      MessageBus.publish("discourse-ai/ai-helper/explain/#{post.id}", payload, user_ids: [user.id])
+      MessageBus.publish("/discourse-ai/ai-helper/explain/#{post.id}", payload, user_ids: [user.id])
     end
   end
 end

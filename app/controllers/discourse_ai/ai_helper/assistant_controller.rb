@@ -104,8 +104,7 @@ module DiscourseAi
           :stream_post_helper,
           post_id: post.id,
           user_id: current_user.id,
-          term_to_explain: term_to_explain,
-          prompt: 
+          term_to_explain: term_to_explain
         )
 
         render json: { success: true }, status: 200
