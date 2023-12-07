@@ -66,6 +66,9 @@ discourse_ai:
     choices:
       - sentiment
       - emotion
+  ai_sentiment_show_sentiment_public_profile:
+    default: true
+    client: true
 
   ai_nsfw_detection_enabled: false
   ai_nsfw_inference_service_api_endpoint:
@@ -165,6 +168,7 @@ discourse_ai:
       - gpt-4
       - claude-2
       - stable-beluga-2
+      - Llama2-chat-hf
   ai_helper_custom_prompts_allowed_groups:
     client: true
     type: group_list

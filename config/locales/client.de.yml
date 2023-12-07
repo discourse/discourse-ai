@@ -129,6 +129,8 @@ de:
       sentiments:
         dashboard:
           title: "Stimmung"
+        summary:
+          label: "stimmung"
     review:
       types:
         reviewable_ai_post:

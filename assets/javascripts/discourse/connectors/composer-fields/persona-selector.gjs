@@ -66,6 +66,10 @@ export default class BotSelector extends Component {
     }
   }
 
+  get filterable() {
+    return this.botOptions.length > 4;
+  }
+
   get value() {
     return this._value;
   }
@@ -82,7 +86,7 @@ export default class BotSelector extends Component {
         class="persona-selector__dropdown"
         @value={{this.value}}
         @content={{this.botOptions}}
-        @options={{hash icon="robot"}}
+        @options={{hash icon="robot" filterable=this.filterable}}
       />
     </div>
   </template>

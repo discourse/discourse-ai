@@ -97,6 +97,7 @@ en:
             submit: "Send Prompt"
         post_options_menu:
           trigger: "Ask AI"
+          title: "Ask AI"
           loading: "AI is generating"
           close: "Close"
           copy: "Copy"
@@ -129,6 +130,11 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+        summary:
+          label: "sentiment"
+          title: "Experimental AI-powered sentiment analysis of this person's most recent posts."
+
+      
 
     review:
       types:
