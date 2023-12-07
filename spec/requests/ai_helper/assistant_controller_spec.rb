@@ -103,7 +103,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           expect(response.status).to eq(200)
           expect(response.parsed_body["suggestions"].first).to eq(translated_text)
           expect(response.parsed_body["diff"]).to eq(expected_diff)
-          expect(spy.prompt.last[:content]).to eq(expected_input)
+          expect(spy.prompt.translate.last[:content]).to eq(expected_input)
         end
       end
     end

@@ -30,8 +30,10 @@ module DiscourseAi
           @tokenizer = tokenizer
         end
 
-        def perform_completion!(prompt, user, model_params = {})
+        def perform_completion!(dialect, user, model_params = {})
           @streaming_mode = block_given?
+
+          prompt = dialect.translate
 
           Net::HTTP.start(
             model_uri.host,
@@ -43,7 +45,10 @@ module DiscourseAi
           ) do |http|
             response_data = +""
             response_raw = +""
-            request_body = prepare_payload(prompt, model_params).to_json
+
+            # Needed to response token calculations. Cannot rely on response_data due to function buffering.
+            partials_raw = +""
+            request_body = prepare_payload(prompt, model_params, dialect).to_json
 
             request = prepare_request(request_body)
 
@@ -66,6 +71,15 @@ module DiscourseAi
               if !@streaming_mode
                 response_raw = response.read_body
                 response_data = extract_completion_from(response_raw)
+                partials_raw = response_data.to_s
+
+                if has_tool?("", response_data)
+                  function_buffer = build_buffer # Nokogiri document
+                  function_buffer = add_to_buffer(function_buffer, "", response_data)
+
+                  response_data = +function_buffer.at("function_calls").to_s
+                  response_data << "\n"
+                end
 
                 return response_data
               end
@@ -75,6 +89,7 @@ module DiscourseAi
                 cancel = lambda { cancelled = true }
 
                 leftover = ""
+                function_buffer = build_buffer # Nokogiri document
 
                 response.read_body do |chunk|
                   if cancelled
@@ -85,6 +100,12 @@ module DiscourseAi
                   decoded_chunk = decode(chunk)
                   response_raw << decoded_chunk
 
+                  # Buffering for extremely slow streaming.
+                  if (leftover + decoded_chunk).length < "data: [DONE]".length
+                    leftover += decoded_chunk
+                    next
+                  end
+
                   partials_from(leftover + decoded_chunk).each do |raw_partial|
                     next if cancelled
                     next if raw_partial.blank?
@@ -93,11 +114,27 @@ module DiscourseAi
                       partial = extract_completion_from(raw_partial)
                       next if partial.nil?
                       leftover = ""
-                      response_data << partial
 
-                      yield partial, cancel if partial
+                      if has_tool?(response_data, partial)
+                        function_buffer = add_to_buffer(function_buffer, response_data, partial)
+
+                        if buffering_finished?(dialect.tools, function_buffer)
+                          invocation = +function_buffer.at("function_calls").to_s
+                          invocation << "\n"
+
+                          partials_raw << partial.to_s
+                          response_data << invocation
+
+                          yield invocation, cancel
+                        end
+                      else
+                        partials_raw << partial
+                        response_data << partial
+
+                        yield partial, cancel if partial
+                      end
                     rescue JSON::ParserError
-                      leftover = raw_partial
+                      leftover += decoded_chunk
                     end
                   end
                 end
@@ -109,7 +146,7 @@ module DiscourseAi
             ensure
               if log
                 log.raw_response_payload = response_raw
-                log.response_tokens = tokenizer.size(response_data)
+                log.response_tokens = tokenizer.size(partials_raw)
                 log.save!
 
                 if Rails.env.development?
@@ -164,6 +201,40 @@ module DiscourseAi
 
         def extract_prompt_for_tokenizer(prompt)
           prompt
+        end
+
+        def build_buffer
+          Nokogiri::HTML5.fragment(<<~TEXT)
+          <function_calls>
+          <invoke>
+          <tool_name></tool_name>
+          <tool_id></tool_id>
+          <parameters></parameters>
+          </invoke>
+          </function_calls>
+          TEXT
+        end
+
+        def has_tool?(response, partial)
+          (response + partial).include?("<function_calls>")
+        end
+
+        def add_to_buffer(function_buffer, response_data, partial)
+          new_buffer = Nokogiri::HTML5.fragment(response_data + partial)
+          if tool_name = new_buffer.at("tool_name").text
+            if new_buffer.at("tool_id").nil?
+              tool_id_node =
+                Nokogiri::HTML5::DocumentFragment.parse("\n<tool_id>#{tool_name}</tool_id>")
+
+              new_buffer.at("invoke").children[1].add_next_sibling(tool_id_node)
+            end
+          end
+
+          new_buffer
+        end
+
+        def buffering_finished?(_available_functions, buffer)
+          buffer.to_s.include?("</function_calls>")
         end
       end
     end
