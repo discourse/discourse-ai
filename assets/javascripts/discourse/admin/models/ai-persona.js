@@ -50,6 +50,9 @@ export default class AiPersona extends RestModel {
   }
 
   populateCommandOptions(attrs) {
+    if (!attrs.commands) {
+      return;
+    }
     let commandsWithOptions = [];
     attrs.commands.forEach((commandId) => {
       if (typeof commandId !== "string") {
