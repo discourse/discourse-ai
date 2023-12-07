@@ -87,10 +87,23 @@ class AiPersona < ActiveRecord::Base
     name = self.name
     description = self.description
     ai_persona_id = self.id
+
+    options = {}
+
     commands =
-      self.commands.filter_map do |inner_name|
+      self.commands.filter_map do |element|
+        inner_name = element
+        current_options = nil
+
+        if element.is_a?(Array)
+          inner_name = element[0]
+          current_options = element[1]
+        end
+
         begin
-          ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
+          klass = ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
+          options[klass] = current_options if current_options
+          klass
         rescue StandardError
           nil
         end
@@ -132,6 +145,10 @@ class AiPersona < ActiveRecord::Base
 
       define_method :commands do
         commands
+      end
+
+      define_method :options do
+        options
       end
 
       define_method :system_prompt do

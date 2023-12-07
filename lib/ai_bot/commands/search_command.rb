@@ -11,6 +11,10 @@ module DiscourseAi::AiBot::Commands
         "Will search topics in the current discourse instance, when rendering always prefer to link to the topics you find"
       end
 
+      def options
+        [option(:base_query, type: :string)]
+      end
+
       def parameters
         [
           Parameter.new(
@@ -118,6 +122,10 @@ module DiscourseAi::AiBot::Commands
       @last_query = search_string
 
       show_progress(I18n.t("discourse_ai.ai_bot.searching", query: search_string))
+
+      if persona_options[:base_query].present?
+        search_string = "#{search_string} #{persona_options[:base_query]}"
+      end
 
       results =
         Search.execute(

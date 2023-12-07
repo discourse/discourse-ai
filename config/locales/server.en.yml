@@ -152,6 +152,11 @@ en:
           description: "AI Bot specialized in generating images using DALL-E 3"
       topic_not_found: "Summary unavailable, topic not found!"
       searching: "Searching for: '%{query}'"
+      command_options:
+        search:
+          base_query:
+            name: "Base Search Query"
+            description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       command_summary:
         categories: "List categories"
         search: "Search"
@@ -165,6 +170,19 @@ en:
         schema: "Look up database schema"
         search_settings: "Searching site settings"
         dall_e: "Generate image"
+      command_help:
+        categories: "List all publicly visible categories on the forum"
+        search: "Search all public topics on the forum"
+        tags: "List all tags on the forum"
+        time: "Find time in various time zones"
+        summarize: "Summarize a topic"
+        image: "Generate image using Stable Diffusion"
+        google: "Search Google for a query"
+        read: "Read public topic on the forum"
+        setting_context: "Look up site setting context"
+        schema: "Look up database schema"
+        search_settings: "Search site settings"
+        dall_e: "Generate image using DALL-E 3"
       command_description:
         read: "Reading: <a href='%{url}'>%{title}</a>"
         time: "Time in %{timezone} is %{time}"

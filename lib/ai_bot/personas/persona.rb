@@ -20,6 +20,10 @@ module DiscourseAi
           []
         end
 
+        def options
+          {}
+        end
+
         def render_commands(render_function_instructions:)
           return +"" if available_commands.empty?
 

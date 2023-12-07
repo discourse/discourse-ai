@@ -14,7 +14,7 @@ module DiscourseAi
           end
         commands =
           DiscourseAi::AiBot::Personas::Persona.all_available_commands.map do |command|
-            { id: command.to_s.split("::").last, name: command.name.humanize.titleize }
+            AiCommandSerializer.new(command, root: false)
           end
         render json: { ai_personas: ai_personas, meta: { commands: commands } }
       end
@@ -55,16 +55,36 @@ module DiscourseAi
       end
 
       def ai_persona_params
-        params.require(:ai_persona).permit(
-          :name,
-          :description,
-          :enabled,
-          :system_prompt,
-          :enabled,
-          :priority,
-          allowed_group_ids: [],
-          commands: [],
-        )
+        permitted =
+          params.require(:ai_persona).permit(
+            :name,
+            :description,
+            :enabled,
+            :system_prompt,
+            :priority,
+            allowed_group_ids: [],
+          )
+
+        if commands = params.dig(:ai_persona, :commands)
+          permitted[:commands] = permit_commands(commands)
+        end
+
+        permitted
+      end
+
+      def permit_commands(commands)
+        return [] if !commands.is_a?(Array)
+
+        commands.filter_map do |command, options|
+          break nil if !command.is_a?(String)
+          options&.permit! if options && options.is_a?(ActionController::Parameters)
+
+          if options
+            [command, options]
+          else
+            command
+          end
+        end
       end
     end
   end
