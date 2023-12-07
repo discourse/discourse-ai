@@ -39,7 +39,7 @@ export default class AiPersona extends RestModel {
         }
       });
     }
-    this._super(properties);
+    super.init(properties);
     this.commands = properties.commands;
   }
 
