@@ -6,7 +6,8 @@ module DiscourseAi
       class MultilingualE5Large < Base
         def vector_from(text)
           if SiteSetting.ai_hugging_face_tei_endpoint.present?
-            DiscourseAi::Inference::HuggingFaceTextEmbeddings.perform!(text).first
+            truncated_text = tokenizer.truncate(text, max_sequence_length - 2)
+            DiscourseAi::Inference::HuggingFaceTextEmbeddings.perform!(truncated_text).first
           elsif SiteSetting.ai_embeddings_discourse_service_api_endpoint.present?
             DiscourseAi::Inference::DiscourseClassifier.perform!(
               "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",

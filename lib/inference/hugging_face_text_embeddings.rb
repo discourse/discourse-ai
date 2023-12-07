@@ -5,7 +5,7 @@ module ::DiscourseAi
     class HuggingFaceTextEmbeddings
       def self.perform!(content)
         headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
-        body = { inputs: content }.to_json
+        body = { inputs: content, truncate: true }.to_json
 
         api_endpoint = SiteSetting.ai_hugging_face_tei_endpoint
 
