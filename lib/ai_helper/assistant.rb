@@ -45,6 +45,11 @@ module DiscourseAi
         result
       end
 
+      def stream_prompt(completion_prompt, input, user)
+        # todo: move generate_and_send_prompt logic but with streamed result here and call this
+        # from the topic_helper.explain/stream_post_helper job instead
+      end
+
       private
 
       def icon_map(name)
