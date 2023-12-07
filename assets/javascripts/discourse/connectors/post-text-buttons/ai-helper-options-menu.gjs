@@ -1,16 +1,16 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
+import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import i18n from "discourse-common/helpers/i18n";
+import { bind } from "discourse-common/utils/decorators";
 import eq from "truth-helpers/helpers/eq";
 import not from "truth-helpers/helpers/not";
-import { inject as service } from "@ember/service";
-import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
-import { bind } from "discourse-common/utils/decorators";
+import AiHelperLoading from "../../components/ai-helper-loading";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
 
 export default class AIHelperOptionsMenu extends Component {
@@ -52,21 +52,25 @@ export default class AIHelperOptionsMenu extends Component {
 
   @bind
   subscribe() {
-    console.log("messagebus subscribe", this.messageBus);
     const channel = `/discourse-ai/ai-helper/explain/${this.args.outletArgs.data.quoteState.postId}`;
     this.messageBus.subscribe(channel, this._updateResult);
   }
 
   @bind
   unsubscribe() {
-    console.log("messagebus UNsubscribe");
-    this.messageBus.unsubscribe("/discourse-ai/ai-helper/explain/*", this._updateResult);
+    this.messageBus.unsubscribe(
+      "/discourse-ai/ai-helper/explain/*",
+      this._updateResult
+    );
   }
 
   @bind
   _updateResult(result) {
-    console.log("this._updateResult called");
-    console.log("_updateResult", result);
+    const suggestion = result.result;
+
+    if (suggestion.length > 0) {
+      this.suggestion = suggestion;
+    }
   }
 
   @action
@@ -75,51 +79,40 @@ export default class AIHelperOptionsMenu extends Component {
 
     if (option.name === "Explain") {
       this.menuState = this.MENU_STATES.result;
+
       const fetchUrl = `/discourse-ai/ai-helper/explain`;
-      ajax(fetchUrl, {
+      this._activeAIRequest = ajax(fetchUrl, {
         method: "POST",
         data: {
           mode: option.value,
           text: this.args.outletArgs.data.quoteState.buffer,
           post_id: this.args.outletArgs.data.quoteState.postId,
-        }
-      }).then((result) => {
-        console.log("then called", result);
-      }).catch((e) => console.log(e));
+        },
+      });
+    } else {
+      this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
+        method: "POST",
+        data: {
+          mode: option.value,
+          text: this.args.outletArgs.data.quoteState.buffer,
+          custom_prompt: "",
+        },
+      });
     }
 
-    // if (option.name === "Explain") {
-    //   this._activeAIRequest = ajax("/discourse-ai/ai-helper/explain?stream=true", {
-    //     method: "POST",
-    //     data: {
-    //       mode: option.value,
-    //       text: this.args.outletArgs.data.quoteState.buffer,
-    //       post_id: this.args.outletArgs.data.quoteState.postId,
-    //     },
-    //   });
-    // } else {
-    //   this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
-    //     method: "POST",
-    //     data: {
-    //       mode: option.value,
-    //       text: this.args.outletArgs.data.quoteState.buffer,
-    //       custom_prompt: "",
-    //     },
-    //   });
-    // }
+    if (option.name !== "Explain") {
+      this._activeAIRequest
+        .then(({ suggestions }) => {
+          this.suggestion = suggestions[0];
+        })
+        .catch(popupAjaxError)
+        .finally(() => {
+          this.loading = false;
+          this.menuState = this.MENU_STATES.result;
+        });
+    }
 
-    // this._activeAIRequest
-    //   .then(({ suggestions }) => {
-    //     console.log(suggestions);
-    //     this.suggestion = suggestions[0];
-    //   })
-    //   .catch(popupAjaxError)
-    //   .finally(() => {
-    //     this.loading = false;
-    //     this.menuState = this.MENU_STATES.result;
-    //   });
-
-    // return this._activeAIRequest;
+    return this._activeAIRequest;
   }
 
   @action
@@ -192,30 +185,35 @@ export default class AIHelperOptionsMenu extends Component {
         </div>
 
       {{else if (eq this.menuState this.MENU_STATES.loading)}}
-        <div class="ai-helper-context-menu__loading">
-          <div class="dot-falling"></div>
-          <span>
-            {{i18n "discourse_ai.ai_helper.context_menu.loading"}}
-          </span>
-          <DButton
-            @icon="times"
-            @title="discourse_ai.ai_helper.context_menu.cancel"
-            @action={{this.cancelAIAction}}
-            class="btn-flat cancel-request"
-          />
-        </div>
+        <AiHelperLoading @cancel={{this.cancelAIAction}} />
       {{else if (eq this.menuState this.MENU_STATES.result)}}
-        <div class="ai-post-helper__suggestion" {{didInsert this.subscribe}} {{willDestroy this.unsubscribe}}>
-          <div class="ai-post-helper__suggestion__text">
-            {{this.suggestion}}
-          </div>
-          <DButton
-            @class="btn-flat ai-post-helper__suggestion__copy"
-            @icon={{this.copyButtonIcon}}
-            @label={{this.copyButtonLabel}}
-            @action={{this.copySuggestion}}
-            @disabled={{not this.suggestion}}
-          />
+        <div
+          class="ai-post-helper__suggestion"
+          {{didInsert this.subscribe}}
+          {{willDestroy this.unsubscribe}}
+        >
+          {{#if this.suggestion}}
+            <div class="ai-post-helper__suggestion__text">
+              {{this.suggestion}}
+            </div>
+            <di class="ai-post-helper__suggestion__buttons">
+              <DButton
+                @class="btn-flat ai-post-helper__suggestion__cancel"
+                @icon="times"
+                @label="discourse_ai.ai_helper.post_options_menu.cancel"
+                @action={{this.cancelAIAction}}
+              />
+              <DButton
+                @class="btn-flat ai-post-helper__suggestion__copy"
+                @icon={{this.copyButtonIcon}}
+                @label={{this.copyButtonLabel}}
+                @action={{this.copySuggestion}}
+                @disabled={{not this.suggestion}}
+              />
+            </di>
+          {{else}}
+            <AiHelperLoading @cancel={{this.cancelAIAction}} />
+          {{/if}}
         </div>
       {{/if}}
     </div>

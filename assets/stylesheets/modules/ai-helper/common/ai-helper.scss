@@ -334,8 +334,6 @@
     flex-direction: column;
 
     &__copy {
-      margin-top: 0.5rem;
-
       .d-icon-check {
         color: var(--success);
       }
@@ -343,6 +341,17 @@
 
     &__text {
       padding: 0.5rem;
+    }
+
+    &__buttons {
+      display: flex;
+      align-items: center;
+      justify-content: stretch;
+      margin-top: 0.5rem;
+      gap: 0.5rem;
+      .btn {
+        width: 100%;
+      }
     }
   }
 }
