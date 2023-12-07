@@ -7,11 +7,17 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 import eq from "truth-helpers/helpers/eq";
 import not from "truth-helpers/helpers/not";
+import { inject as service } from "@ember/service";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
+import { bind } from "discourse-common/utils/decorators";
+import { showPostAIHelper } from "../../lib/show-ai-helper";
 
 export default class AIHelperOptionsMenu extends Component {
   static shouldRender(outletArgs, helper) {
     return showPostAIHelper(outletArgs, helper);
   }
+  @service messageBus;
   @tracked helperOptions = [];
   @tracked menuState = this.MENU_STATES.triggers;
   @tracked loading = false;
@@ -44,41 +50,76 @@ export default class AIHelperOptionsMenu extends Component {
     this.menuState = this.MENU_STATES.options;
   }
 
+  @bind
+  subscribe() {
+    console.log("messagebus subscribe", this.messageBus);
+    const channel = `/discourse-ai/ai-helper/explain/${this.args.outletArgs.data.quoteState.postId}`;
+    this.messageBus.subscribe(channel, this._updateResult);
+  }
+
+  @bind
+  unsubscribe() {
+    console.log("messagebus UNsubscribe");
+    this.messageBus.unsubscribe("/discourse-ai/ai-helper/explain/*", this._updateResult);
+  }
+
+  @bind
+  _updateResult(result) {
+    console.log("this._updateResult called");
+    console.log("_updateResult", result);
+  }
+
   @action
   async performAISuggestion(option) {
     this.menuState = this.MENU_STATES.loading;
 
     if (option.name === "Explain") {
-      this._activeAIRequest = ajax("/discourse-ai/ai-helper/explain", {
+      this.menuState = this.MENU_STATES.result;
+      const fetchUrl = `/discourse-ai/ai-helper/explain`;
+      ajax(fetchUrl, {
         method: "POST",
         data: {
           mode: option.value,
           text: this.args.outletArgs.data.quoteState.buffer,
           post_id: this.args.outletArgs.data.quoteState.postId,
-        },
-      });
-    } else {
-      this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
-        method: "POST",
-        data: {
-          mode: option.value,
-          text: this.args.outletArgs.data.quoteState.buffer,
-          custom_prompt: "",
-        },
-      });
+        }
+      }).then((result) => {
+        console.log("then called", result);
+      }).catch((e) => console.log(e));
     }
 
-    this._activeAIRequest
-      .then(({ suggestions }) => {
-        this.suggestion = suggestions[0];
-      })
-      .catch(popupAjaxError)
-      .finally(() => {
-        this.loading = false;
-        this.menuState = this.MENU_STATES.result;
-      });
+    // if (option.name === "Explain") {
+    //   this._activeAIRequest = ajax("/discourse-ai/ai-helper/explain?stream=true", {
+    //     method: "POST",
+    //     data: {
+    //       mode: option.value,
+    //       text: this.args.outletArgs.data.quoteState.buffer,
+    //       post_id: this.args.outletArgs.data.quoteState.postId,
+    //     },
+    //   });
+    // } else {
+    //   this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
+    //     method: "POST",
+    //     data: {
+    //       mode: option.value,
+    //       text: this.args.outletArgs.data.quoteState.buffer,
+    //       custom_prompt: "",
+    //     },
+    //   });
+    // }
 
-    return this._activeAIRequest;
+    // this._activeAIRequest
+    //   .then(({ suggestions }) => {
+    //     console.log(suggestions);
+    //     this.suggestion = suggestions[0];
+    //   })
+    //   .catch(popupAjaxError)
+    //   .finally(() => {
+    //     this.loading = false;
+    //     this.menuState = this.MENU_STATES.result;
+    //   });
+
+    // return this._activeAIRequest;
   }
 
   @action
@@ -164,7 +205,7 @@ export default class AIHelperOptionsMenu extends Component {
           />
         </div>
       {{else if (eq this.menuState this.MENU_STATES.result)}}
-        <div class="ai-post-helper__suggestion">
+        <div class="ai-post-helper__suggestion" {{didInsert this.subscribe}} {{willDestroy this.unsubscribe}}>
           <div class="ai-post-helper__suggestion__text">
             {{this.suggestion}}
           </div>
