@@ -27,11 +27,15 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
   before { SiteSetting.ai_bot_enabled = true }
 
   it "can properly list options" do
-    options = described_class.options
-    expect(options.length).to eq(1)
+    options = described_class.options.sort_by(&:name)
+    expect(options.length).to eq(2)
     expect(options.first.name.to_s).to eq("base_query")
     expect(options.first.localized_name).not_to include("Translation missing:")
     expect(options.first.localized_description).not_to include("Translation missing:")
+
+    expect(options.second.name.to_s).to eq("max_results")
+    expect(options.second.localized_name).not_to include("Translation missing:")
+    expect(options.second.localized_description).not_to include("Translation missing:")
   end
 
   describe "#process" do
@@ -135,6 +139,35 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
       tags = row[results[:column_names].index("tags")]
       expect(tags).to eq("funny, sad")
+    end
+
+    it "scales results to number of tokens" do
+      SiteSetting.ai_bot_enabled_chat_bots = "gpt-3.5-turbo|gpt-4|claude-2"
+
+      post1 = Fabricate(:post)
+
+      gpt_3_5_turbo =
+        DiscourseAi::AiBot::Bot.as(User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID))
+      gpt4 = DiscourseAi::AiBot::Bot.as(User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID))
+      claude = DiscourseAi::AiBot::Bot.as(User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID))
+
+      expect(described_class.new(bot: claude, post: post1, args: nil).max_results).to eq(60)
+      expect(described_class.new(bot: gpt_3_5_turbo, post: post1, args: nil).max_results).to eq(40)
+      expect(described_class.new(bot: gpt4, post: post1, args: nil).max_results).to eq(20)
+
+      persona =
+        Fabricate(
+          :ai_persona,
+          commands: [["SearchCommand", { "max_results" => 6 }]],
+          enabled: true,
+          allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+        )
+
+      Group.refresh_automatic_groups!
+
+      custom_bot = DiscourseAi::AiBot::Bot.as(bot_user, persona_id: persona.id, user: admin)
+
+      expect(described_class.new(bot: custom_bot, post: post1, args: nil).max_results).to eq(6)
     end
 
     it "can handle limits" do

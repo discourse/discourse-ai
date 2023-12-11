@@ -12,7 +12,7 @@ module DiscourseAi::AiBot::Commands
       end
 
       def options
-        [option(:base_query, type: :string)]
+        [option(:base_query, type: :string), option(:max_results, type: :integer)]
       end
 
       def parameters
@@ -38,7 +38,7 @@ module DiscourseAi::AiBot::Commands
           Parameter.new(
             name: "limit",
             description:
-              "limit number of results returned (generally prefer to just keep to default)",
+              "Number of results to return. Defaults to maximum number of results. Only set if absolutely necessary",
             type: "integer",
           ),
           Parameter.new(
@@ -98,8 +98,26 @@ module DiscourseAi::AiBot::Commands
       }
     end
 
-    MAX_RESULTS = 20
     MIN_SEMANTIC_RESULTS = 5
+
+    def max_semantic_results
+      max_results / 4
+    end
+
+    def max_results
+      return 20 if !bot
+
+      max_results = persona_options[:max_results].to_i
+      return [max_results, 100].min if max_results > 0
+
+      if bot.prompt_limit(allow_commands: false) > 30_000
+        60
+      elsif bot.prompt_limit(allow_commands: false) > 10_000
+        40
+      else
+        20
+      end
+    end
 
     def process(**search_args)
       limit = nil
@@ -135,14 +153,14 @@ module DiscourseAi::AiBot::Commands
         )
 
       # let's be frugal with tokens, 50 results is too much and stuff gets cut off
-      limit ||= MAX_RESULTS
-      limit = MAX_RESULTS if limit > MAX_RESULTS
+      limit ||= max_results
+      limit = max_results if limit > max_results
 
       should_try_semantic_search = SiteSetting.ai_embeddings_semantic_search_enabled
-      should_try_semantic_search &&= (limit == MAX_RESULTS)
+      should_try_semantic_search &&= (limit == max_results)
       should_try_semantic_search &&= (search_args[:search_query].present?)
 
-      limit = limit - MIN_SEMANTIC_RESULTS if should_try_semantic_search
+      limit = limit - max_semantic_results if should_try_semantic_search
 
       posts = results&.posts || []
       posts = posts[0..limit - 1]
@@ -169,7 +187,7 @@ module DiscourseAi::AiBot::Commands
             topic_ids << post.topic_id
             posts << post
 
-            break if posts.length >= MAX_RESULTS
+            break if posts.length >= max_results
           end
         end
       end
