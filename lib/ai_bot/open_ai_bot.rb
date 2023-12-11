@@ -5,6 +5,7 @@ module DiscourseAi
     class OpenAiBot < Bot
       def self.can_reply_as?(bot_user)
         open_ai_bot_ids = [
+          DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID,
           DiscourseAi::AiBot::EntryPoint::GPT4_ID,
           DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID,
         ]
@@ -23,7 +24,9 @@ module DiscourseAi
           buffer += @function_size
         end
 
-        if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
+        if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
+          150_000 - buffer
+        elsif bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
           8192 - buffer
         else
           16_384 - buffer
@@ -75,8 +78,15 @@ module DiscourseAi
       end
 
       def model_for(low_cost: false)
-        return "gpt-4" if bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID && !low_cost
-        "gpt-3.5-turbo-16k"
+        if low_cost || bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
+          "gpt-3.5-turbo-16k"
+        elsif bot_user.id == DiscourseAi::AiBot::EntryPoint::GPT4_ID
+          "gpt-4"
+        else
+          # not quite released yet, once released we should replace with
+          # gpt-4-turbo
+          "gpt-4-1106-preview"
+        end
       end
 
       def clean_username(username)
