@@ -23,7 +23,7 @@ class CompletionPrompt < ActiveRecord::Base
   def messages_with_input(input)
     return unless input
 
-    messages_hash.merge(input: "<input>#{input}</input")
+    messages_hash.merge(input: "<input>#{input}</input>")
   end
 
   private
