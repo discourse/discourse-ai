@@ -20,10 +20,23 @@ class CompletionPrompt < ActiveRecord::Base
     where(enabled: true).find_by(name: name)
   end
 
+  attr_accessor :custom_instruction
+
   def messages_with_input(input)
     return unless input
 
-    messages_hash.merge(input: "<input>#{input}</input>")
+    user_input =
+      if id == CUSTOM_PROMPT && custom_instruction.present?
+        "#{custom_instruction}:\n#{input}"
+      else
+        input
+      end
+
+    messages_hash.merge(input: <<~TEXT)
+    <input>
+    #{user_input}
+    </input>
+    TEXT
   end
 
   private
