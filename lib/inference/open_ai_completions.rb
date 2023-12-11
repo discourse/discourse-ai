@@ -29,7 +29,9 @@ module ::DiscourseAi
 
         url =
           if model.include?("gpt-4")
-            if model.include?("32k")
+            if model.include?("turbo") || model.include?("1106-preview")
+              URI(SiteSetting.ai_openai_gpt4_turbo_url)
+            elsif model.include?("32k")
               URI(SiteSetting.ai_openai_gpt4_32k_url)
             else
               URI(SiteSetting.ai_openai_gpt4_url)
@@ -133,6 +135,11 @@ module ::DiscourseAi
                 end
 
                 response_raw << chunk
+
+                if (leftover + chunk).length < "data: [DONE]".length
+                  leftover += chunk
+                  next
+                end
 
                 (leftover + chunk)
                   .split("\n")

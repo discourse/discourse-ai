@@ -45,6 +45,7 @@ describe DiscourseAi::Inference::OpenAiCompletions do
         { setting_name: "ai_openai_gpt35_16k_url", model: "gpt-35-16k-turbo" },
         { setting_name: "ai_openai_gpt4_url", model: "gpt-4" },
         { setting_name: "ai_openai_gpt4_32k_url", model: "gpt-4-32k" },
+        { setting_name: "ai_openai_gpt4_turbo_url", model: "gpt-4-1106-preview" },
       ].each do |config|
         gpt_url = "#{gpt_url_base}/#{config[:model]}"
         setting_name = config[:setting_name]
@@ -261,6 +262,78 @@ describe DiscourseAi::Inference::OpenAiCompletions do
     expect(log.response_tokens).to eq(162)
     expect(log.raw_request_payload).to eq(body)
     expect(log.raw_response_payload).to eq(request_body)
+  end
+
+  context "when Webmock has streaming support" do
+    # See: https://github.com/bblimke/webmock/issues/629
+    let(:mock_net_http) do
+      Class.new(Net::HTTP) do
+        def request(*)
+          super do |response|
+            response.instance_eval do
+              def read_body(*, &)
+                @body.each(&)
+              end
+            end
+
+            yield response if block_given?
+
+            response
+          end
+        end
+      end
+    end
+
+    let(:remove_original_net_http) { Net.send(:remove_const, :HTTP) }
+    let(:original_http) { remove_original_net_http }
+    let(:stub_net_http) { Net.send(:const_set, :HTTP, mock_net_http) }
+
+    let(:remove_stubbed_net_http) { Net.send(:remove_const, :HTTP) }
+    let(:restore_net_http) { Net.send(:const_set, :HTTP, original_http) }
+
+    before do
+      mock_net_http
+      remove_original_net_http
+      stub_net_http
+    end
+
+    after do
+      remove_stubbed_net_http
+      restore_net_http
+    end
+
+    it "support extremely slow streaming" do
+      raw_data = <<~TEXT
+data: {"choices":[{"delta":{"content":"test"}}]}
+
+data: {"choices":[{"delta":{"content":"test1"}}]}
+
+data: {"choices":[{"delta":{"content":"test2"}}]}
+
+data: [DONE]
+    TEXT
+
+      chunks = raw_data.split("")
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        status: 200,
+        body: chunks,
+      )
+
+      partials = []
+      DiscourseAi::Inference::OpenAiCompletions.perform!([], "gpt-3.5-turbo") do |partial, cancel|
+        partials << partial
+      end
+
+      expect(partials.length).to eq(3)
+      expect(partials).to eq(
+        [
+          { choices: [{ delta: { content: "test" } }] },
+          { choices: [{ delta: { content: "test1" } }] },
+          { choices: [{ delta: { content: "test2" } }] },
+        ],
+      )
+    end
   end
 
   it "can operate in streaming mode" do
