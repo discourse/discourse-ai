@@ -79,6 +79,33 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           expect(response.parsed_body["diff"]).to eq(expected_diff)
         end
       end
+
+      it "uses custom instruction when using custom_prompt mode" do
+        translated_text = "Un usuario escribio esto"
+        expected_diff =
+          "<div class=\"inline-diff\"><p><ins>Un </ins><ins>usuario </ins><ins>escribio </ins><ins>esto</ins><del>A </del><del>user </del><del>wrote </del><del>this</del></p></div>"
+
+        expected_input = <<~TEXT
+        <input>
+        Translate to Spanish:
+        A user wrote this
+        </input>
+        TEXT
+
+        DiscourseAi::Completions::Llm.with_prepared_responses([translated_text]) do |spy|
+          post "/discourse-ai/ai-helper/suggest",
+               params: {
+                 mode: CompletionPrompt::CUSTOM_PROMPT,
+                 text: "A user wrote this",
+                 custom_prompt: "Translate to Spanish",
+               }
+
+          expect(response.status).to eq(200)
+          expect(response.parsed_body["suggestions"].first).to eq(translated_text)
+          expect(response.parsed_body["diff"]).to eq(expected_diff)
+          expect(spy.prompt.last[:content]).to eq(expected_input)
+        end
+      end
     end
   end
 end

@@ -23,8 +23,11 @@ module DiscourseAi
         prompt = CompletionPrompt.find_by(id: params[:mode])
 
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
-        if prompt.prompt_type == "custom_prompt" && params[:custom_prompt].blank?
-          raise Discourse::InvalidParameters.new(:custom_prompt)
+
+        if prompt.id == CompletionPrompt::CUSTOM_PROMPT
+          raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
+
+          prompt.custom_instruction = params[:custom_prompt]
         end
 
         hijack do

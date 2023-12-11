@@ -13,11 +13,13 @@ module DiscourseAi
         def initialize(responses)
           @responses = responses
           @completions = 0
+          @prompt = nil
         end
 
-        attr_reader :responses, :completions
+        attr_reader :responses, :completions, :prompt
 
-        def perform_completion!(_prompt, _user, _model_params)
+        def perform_completion!(prompt, _user, _model_params)
+          @prompt = prompt
           response = responses[completions]
           if response.nil?
             raise CANNED_RESPONSE_ERROR,
