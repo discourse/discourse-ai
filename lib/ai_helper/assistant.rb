@@ -40,9 +40,9 @@ module DiscourseAi
 
         result[:suggestions] = (
           if completion_prompt.list?
-            parse_list(completion_result)
+            parse_list(completion_result).map { |suggestion| sanitize_result(suggestion) }
           else
-            [completion_result]
+            [sanitize_result(completion_result)]
           end
         )
 
@@ -84,6 +84,8 @@ module DiscourseAi
           </replyTo>
           <input>
           </input>
+          <output>
+          </output>
         ]
 
         tags_to_remove.each { |tag| result.gsub!(tag, "") }
