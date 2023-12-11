@@ -155,6 +155,9 @@ en:
       searching: "Searching for: '%{query}'"
       command_options:
         search:
+          max_results:
+            name: "Maximum number of results"
+            description: "Maximum number of results to include in the search - if empty default rules will be used and count will be scaled depending on model used. Highest value is 100."
           base_query:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
