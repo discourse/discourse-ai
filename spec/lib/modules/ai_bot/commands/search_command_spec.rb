@@ -127,9 +127,11 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
       expect(results[:rows].to_s).to include("/subfolder" + post1.url)
     end
 
-    it "returns category and tags" do
-      post1 = Fabricate(:post, topic: topic_with_tags)
+    it "returns rich topic information" do
+      post1 = Fabricate(:post, like_count: 1, topic: topic_with_tags)
       search = described_class.new(bot: nil, post: post1, args: nil)
+      post1.topic.update!(views: 100, posts_count: 2, like_count: 10)
+
       results = search.process(user: post1.user.username)
 
       row = results[:rows].first
@@ -139,6 +141,21 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
 
       tags = row[results[:column_names].index("tags")]
       expect(tags).to eq("funny, sad")
+
+      likes = row[results[:column_names].index("likes")]
+      expect(likes).to eq(1)
+
+      username = row[results[:column_names].index("username")]
+      expect(username).to eq(post1.user.username)
+
+      likes = row[results[:column_names].index("topic_likes")]
+      expect(likes).to eq(10)
+
+      views = row[results[:column_names].index("topic_views")]
+      expect(views).to eq(100)
+
+      replies = row[results[:column_names].index("topic_replies")]
+      expect(replies).to eq(1)
     end
 
     it "scales results to number of tokens" do
