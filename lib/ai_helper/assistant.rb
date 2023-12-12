@@ -24,28 +24,75 @@ module DiscourseAi
         end
       end
 
-      def generate_and_send_prompt(completion_prompt, input, user)
+      def generate_prompt(completion_prompt, input, user, &block)
         llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
-
         generic_prompt = completion_prompt.messages_with_input(input)
 
-        completion_result = llm.completion!(generic_prompt, user)
+        llm.completion!(generic_prompt, user, &block)
+      end
+
+      def generate_and_send_prompt(completion_prompt, input, user)
+        completion_result = generate_prompt(completion_prompt, input, user)
         result = { type: completion_prompt.prompt_type }
 
         result[:diff] = parse_diff(input, completion_result) if completion_prompt.diff?
 
         result[:suggestions] = (
           if completion_prompt.list?
-            parse_list(completion_result)
+            parse_list(completion_result).map { |suggestion| sanitize_result(suggestion) }
           else
-            [completion_result]
+            [sanitize_result(completion_result)]
           end
         )
 
         result
       end
 
+      def stream_prompt(completion_prompt, input, user, channel)
+        streamed_result = +""
+        start = Time.now
+
+        generate_prompt(completion_prompt, input, user) do |partial_response, cancel_function|
+          streamed_result << partial_response
+
+          # Throttle the updates
+          if (Time.now - start > 0.5) || Rails.env.test?
+            payload = { result: sanitize_result(streamed_result), done: false }
+            publish_update(channel, payload, user)
+            start = Time.now
+          end
+        end
+
+        sanitized_result = sanitize_result(streamed_result)
+        if sanitized_result.present?
+          publish_update(channel, { result: sanitized_result, done: true }, user)
+        end
+      end
+
       private
+
+      def sanitize_result(result)
+        tags_to_remove = %w[
+          <term>
+          </term>
+          <context>
+          </context>
+          <topic>
+          </topic>
+          <replyTo>
+          </replyTo>
+          <input>
+          </input>
+          <output>
+          </output>
+        ]
+
+        result.dup.tap { |dup_result| tags_to_remove.each { |tag| dup_result.gsub!(tag, "") } }
+      end
+
+      def publish_update(channel, payload, user)
+        MessageBus.publish(channel, payload, user_ids: [user.id])
+      end
 
       def icon_map(name)
         case name
