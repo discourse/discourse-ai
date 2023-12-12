@@ -65,7 +65,7 @@ module DiscourseAi
 
         sanitized_result = sanitize_result(streamed_result)
         if sanitized_result.present?
-          publish_update(channel, { result: streamed_result, done: true }, user)
+          publish_update(channel, { result: sanitized_result, done: true }, user)
         end
       end
 
