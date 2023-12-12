@@ -78,26 +78,24 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
   def stream_line(delta, finish_reason: nil)
     encoder = Aws::EventStream::Encoder.new
 
-    message =
-      Aws::EventStream::Message.new(
-        payload:
-          StringIO.new(
-            {
-              bytes:
-                Base64.encode64(
-                  {
-                    completion: delta,
-                    stop: finish_reason ? "\n\nHuman:" : nil,
-                    stop_reason: finish_reason,
-                    truncated: false,
-                    log_id: "12b029451c6d18094d868bc04ce83f63",
-                    model: "claude-2",
-                    exception: nil,
-                  }.to_json,
-                ),
-            }.to_json,
-          ),
-      )
+    bytes =
+      if delta.nil?
+        nil
+      else
+        Base64.encode64(
+          {
+            completion: delta,
+            stop: finish_reason ? "\n\nHuman:" : nil,
+            stop_reason: finish_reason,
+            truncated: false,
+            log_id: "12b029451c6d18094d868bc04ce83f63",
+            model: "claude-2",
+            exception: nil,
+          }.to_json,
+        )
+      end
+
+    message = Aws::EventStream::Message.new(payload: StringIO.new({ bytes: bytes }.to_json))
 
     encoder.encode(message)
   end
@@ -122,4 +120,17 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
   end
 
   it_behaves_like "an endpoint that can communicate with a completion service"
+
+  it "skips empty deltas" do
+    completion_deltas = [nil, "Mount", "ain", " ", "Tree ", "Frog"]
+    stub_streamed_response(prompt, completion_deltas)
+    completion_response = +""
+
+    model.perform_completion!(prompt, Fabricate(:user)) do |partial, cancel|
+      completion_response << partial
+      cancel.call if completion_response.split(" ").length == 2
+    end
+
+    expect(completion_response).to eq(completion_deltas[0...-1].join)
+  end
 end
