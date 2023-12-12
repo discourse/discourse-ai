@@ -30,6 +30,7 @@ he:
     ai_sentiment_inference_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול התחושה"
     ai_sentiment_inference_service_api_key: "מפתח API ל־API של התחושה"
     ai_sentiment_models: "מודלים לטובת הסקת מסקנות. תחושה מסווגת את הפוסט על המנעד של חיובי/נייטרלי/שלילי. רגש מסווג על המנעד של כעס/גועל/פחד/שמחה/נייטרליות/עצב/הפתעה."
+    ai_sentiment_show_sentiment_public_profile: "להציג את הרגשות העיקריים של משתמשים בפרופיל שלהם."
     ai_nsfw_detection_enabled: "הפעלת מודול הפוגענות."
     ai_nsfw_inference_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול הפוגענות"
     ai_nsfw_inference_service_api_key: "מפתח API ל־API לתכנים פוגעניים"
@@ -44,6 +45,7 @@ he:
     ai_openai_gpt35_16k_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 3.5 16k.‏ (לתמיכה ב־Azure)"
     ai_openai_gpt4_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4.‏ (לתמיכה ב־Azure)"
     ai_openai_gpt4_32k_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4 32k.‏ (לתמיכה ב־Azure)"
+    ai_openai_gpt4_turbo_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4 טורבו.‏ (לתמיכה ב־Azure)"
     ai_openai_dall_e_3_url: "כתובת מותאמת אישית שמשמשת ליצירת תמונות עם DALL-E 3. (לתמיכה ב־Azure)"
     ai_openai_organization: "(רשות, אפשר להשאיר ריק כדי להשמיט) מזהה הארגון שמשמש ל־API של OpenAI. מועבר דרך הכותרת OpenAI-Organization."
     ai_openai_embeddings_url: "כתובת מותאמת אישית ל־API ההטמעות של OpenAI. (במקרה של Azure זה יכול להיות: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
@@ -140,6 +142,14 @@ he:
           description: "בוט בינה מלאכותית שמתמחה ביצירת תמונות באמצעות DALL-E 3"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       searching: "חיפוש אחר: ‚%{query}’"
+      command_options:
+        search:
+          max_results:
+            name: "מספר תוצאות מרבי"
+            description: "המספר המרבי של תוצאות שיכללו בחיפוש - אם ייעשה שימוש בכללי ברירת מחדל ריקים והספירה תשתנה בהתאם לדגם שבשימוש. הערך הגבוה ביותר הוא 100."
+          base_query:
+            name: "שאילתת חיפוש בסיסית"
+            description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‎‚#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
       command_summary:
         categories: "הצגת קטגוריות"
         search: "חיפוש"
@@ -153,6 +163,19 @@ he:
         schema: "חיפוש סכמת מסד נתונים"
         search_settings: "מתבצע חיפוש בהגדרות האתר"
         dall_e: "יצירת תמונה"
+      command_help:
+        categories: "הצגת כל הקטגוריות החשופות לציבור בפורום"
+        search: "חיפוש בכל הנושאים הציבוריים בפורום"
+        tags: "הצגת כל התגיות בפורום"
+        time: "איתור זמן באזורי זמן שונים"
+        summarize: "סיכום נושא"
+        image: "יצירת תמונה באמצעות Stable Diffusion"
+        google: "חיפוש שאילתה ב־Google"
+        read: "הצגת נושא ציבורי בפורום"
+        setting_context: "חיפוש הקשר הגדרות אתר"
+        schema: "חיפוש סכמת מסד נתונים"
+        search_settings: "חיפוש בהגדרות האתר"
+        dall_e: "יצירת תמונה באמצעות DALL-E 3"
       command_description:
         read: "קריאה: <a href='%{url}'>%{title}</a>"
         time: "השעה ב־%{timezone} היא %{time}"

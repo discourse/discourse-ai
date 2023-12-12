@@ -34,6 +34,7 @@ pl_PL:
     ai_nsfw_flag_threshold_porn: "Próg uznania obrazu zaklasyfikowanego jako pornograficzny, aby został uznany za NSFW."
     ai_nsfw_flag_threshold_sexy: "Próg uznania obrazu zaklasyfikowanego jako seksowny, aby został uznany za NSFW."
     ai_nsfw_models: "Modele używane do wnioskowania NSFW."
+    ai_openai_gpt35_url: "Niestandardowy adres URL używany do uzupełniania czatu GPT 3.5. (dla wsparcia platformy Azure)"
     ai_openai_gpt4_url: "Niestandardowy adres URL używany do uzupełniania czatu GPT 4. (dla wsparcia platformy Azure)"
     ai_openai_embeddings_url: "Niestandardowy adres URL używany w interfejsie API osadzania OpenAI. (w przypadku Azure może to być: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "Klucz dla API OpenAI"

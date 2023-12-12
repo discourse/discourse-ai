@@ -62,6 +62,7 @@ he:
         delete: מחיקה
         priority: עדיפות
         priority_help: דמויות בעדיפות גבוהה מוצגות למשתמשים בראש רשימת הדמויות. אם מספר דמויות הן בעדיפות הן תסודרנה לפי האלפבית.
+        command_options: "אפשרויות פקודה"
         no_persona_selected: |
           ## מה הן דמויות בינה מלאכותית?
 
@@ -100,6 +101,7 @@ he:
             submit: "שליחת בקשה"
         post_options_menu:
           trigger: "לשאול בינה מלאכותית"
+          title: "לשאול בינה מלאכותית"
           loading: "הבינה המלאכותית נוצרת"
           close: "סגירה"
           copy: "העתקה"
@@ -123,6 +125,7 @@ he:
         shortcut_title: "התחלת הודעה פרטית עם בוט בינה מלאכותית"
         bot_names:
           gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT 4 טורבו"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
@@ -131,6 +134,7 @@ he:
           title: "רגש"
         summary:
           label: "רגש"
+          title: "ניתוח רגשות ניסיוני עם בינה מלאכותית לפי הפוסטים האחרונים של אותו אדם."
     review:
       types:
         reviewable_ai_post:

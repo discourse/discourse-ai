@@ -63,6 +63,7 @@ lt:
           revert: "Grąžinti"
         post_options_menu:
           trigger: "Paklauskite AI"
+          title: "Paklauskite AI"
           close: "Uždaryti"
           copy: "Kopijuoti"
           copied: "Nukopijuota!"
