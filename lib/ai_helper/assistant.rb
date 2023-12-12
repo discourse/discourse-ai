@@ -33,7 +33,6 @@ module DiscourseAi
 
       def generate_and_send_prompt(completion_prompt, input, user)
         completion_result = generate_prompt(completion_prompt, input, user)
-        puts completion_result
         result = { type: completion_prompt.prompt_type }
 
         result[:diff] = parse_diff(input, completion_result) if completion_prompt.diff?
@@ -88,10 +87,11 @@ module DiscourseAi
           </output>
         ]
 
-        tags_to_remove.each { |tag| result.gsub!(tag, "") }
-
-        result
+        result.dup.tap do |dup_result|
+          tags_to_remove.each { |tag| dup_result.gsub!(tag, "") }
+        end
       end
+
 
       def publish_update(channel, payload, user)
         MessageBus.publish(channel, payload, user_ids: [user.id])
