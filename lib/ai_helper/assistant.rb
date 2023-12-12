@@ -87,11 +87,8 @@ module DiscourseAi
           </output>
         ]
 
-        result.dup.tap do |dup_result|
-          tags_to_remove.each { |tag| dup_result.gsub!(tag, "") }
-        end
+        result.dup.tap { |dup_result| tags_to_remove.each { |tag| dup_result.gsub!(tag, "") } }
       end
-
 
       def publish_update(channel, payload, user)
         MessageBus.publish(channel, payload, user_ids: [user.id])
