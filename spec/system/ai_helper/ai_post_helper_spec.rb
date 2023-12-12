@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "AI Composer helper", type: :system, js: true do
+RSpec.describe "AI Post helper", type: :system, js: true do
   fab!(:user) { Fabricate(:admin) }
   fab!(:non_member_group) { Fabricate(:group) }
   fab!(:topic) { Fabricate(:topic) }
@@ -17,13 +17,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:post_ai_helper) { PageObjects::Components::AIHelperPostOptions.new }
-
-  let(:explain_response) { <<~STRING }
-    In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling.
-    The person states they enjoy eating pie, considering it a good dessert. They note that some people wastefully
-    throw pie at others, but the person themselves chooses to eat the pie rather than throwing it. Overall, \"pie\"
-    is being used to refer the the baked dessert food item.
-  STRING
 
   before do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
@@ -56,18 +49,23 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     end
 
     context "when using explain mode" do
-      skip "TODO: Fix explain mode option not appearing in spec" do
-        let(:mode) { CompletionPrompt::EXPLAIN }
+      let(:mode) { CompletionPrompt::EXPLAIN }
 
+      let(:explain_response) { <<~STRING }
+        In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling.
+        The person states they enjoy eating pie, considering it a good dessert. They note that some people wastefully
+        throw pie at others, but the person themselves chooses to eat the pie rather than throwing it. Overall, \"pie\"
+        is being used to refer the the baked dessert food item.
+      STRING
+
+      skip "TODO: Fix explain option stuck in loading in test" do
         it "shows an explanation of the selected text" do
           select_post_text(post)
           post_ai_helper.click_ai_button
 
           DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
             post_ai_helper.select_helper_model(mode)
-
             wait_for { post_ai_helper.suggestion_value == explain_response }
-
             expect(post_ai_helper.suggestion_value).to eq(explain_response)
           end
         end
@@ -75,22 +73,20 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     end
 
     context "when using translate mode" do
-      skip "TODO: Fix WebMock request for translate mode not working" do
-        let(:mode) { CompletionPrompt::TRANSLATE }
+      let(:mode) { CompletionPrompt::TRANSLATE }
 
-        let(:translated_input) { "The rain in Spain, stays mainly in the Plane." }
+      let(:translated_input) { "The rain in Spain, stays mainly in the Plane." }
 
-        it "shows a translation of the selected text" do
-          select_post_text(post_2)
-          post_ai_helper.click_ai_button
+      it "shows a translation of the selected text" do
+        select_post_text(post_2)
+        post_ai_helper.click_ai_button
 
-          DiscourseAi::Completions::Llm.with_prepared_responses([translated_input]) do
-            post_ai_helper.select_helper_model(mode)
+        DiscourseAi::Completions::Llm.with_prepared_responses([translated_input]) do
+          post_ai_helper.select_helper_model(mode)
 
-            wait_for { post_ai_helper.suggestion_value == translated_input }
+          wait_for { post_ai_helper.suggestion_value == translated_input }
 
-            expect(post_ai_helper.suggestion_value).to eq(translated_input)
-          end
+          expect(post_ai_helper.suggestion_value).to eq(translated_input)
         end
       end
     end

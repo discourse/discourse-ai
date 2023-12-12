@@ -23,7 +23,7 @@ module PageObjects
       end
 
       def suggestion_value
-        find(SUGGESTION_SELECTOR).text
+        find("#{SUGGESTION_SELECTOR}__text").text
       end
 
       def has_post_ai_helper?
