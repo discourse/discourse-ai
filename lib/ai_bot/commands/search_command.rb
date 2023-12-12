@@ -208,9 +208,14 @@ module DiscourseAi::AiBot::Commands
           row = {
             title: post.topic.title,
             url: Discourse.base_path + post.url,
+            username: post.user&.username,
             excerpt: post.excerpt,
             created: post.created_at,
             category: category_names,
+            likes: post.like_count,
+            topic_views: post.topic.views,
+            topic_likes: post.topic.like_count,
+            topic_replies: post.topic.posts_count - 1,
           }
 
           if SiteSetting.tagging_enabled
