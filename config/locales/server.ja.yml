@@ -34,6 +34,7 @@ ja:
     ai_nsfw_flag_threshold_porn: "ポルノとして分類された画像が NSFW として見なされるためのしきい値。"
     ai_nsfw_flag_threshold_sexy: "官能的として分類された画像が NSFW として見なされるためのしきい値。"
     ai_nsfw_models: "NSFW 推論に使用するモデル。"
+    ai_openai_gpt35_url: "GPT 3.5 チャット補完に使用されるカスタム URL。(Azure サポート用)"
     ai_openai_gpt4_url: "GPT 4 チャット補完に使用されるカスタム URL。(Azure サポート用)"
     ai_openai_embeddings_url: "OpenAI 埋め込み API に使用されるカスタム URL。(Azure の場合: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "OpenAI API の API キー"

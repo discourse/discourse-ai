@@ -34,6 +34,7 @@ zh_CN:
     ai_nsfw_flag_threshold_porn: "分类为色情作品的图片被视为 NSFW 的阈值。"
     ai_nsfw_flag_threshold_sexy: "分类为性感的图片被视为 NSFW 的阈值。"
     ai_nsfw_models: "用于 NSFW 推断的模型。"
+    ai_openai_gpt35_url: "用于 GPT 3.5 会话补全的自定义 URL。（用于 Azure 支持）"
     ai_openai_gpt4_url: "用于 GPT 4 会话补全的自定义 URL。（用于 Azure 支持）"
     ai_openai_embeddings_url: "用于 OpenAI 嵌入向量 API 的自定义 URL。（对于 Azure，可以是：https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15）"
     ai_openai_api_key: "OpenAI API 的 API 密钥"

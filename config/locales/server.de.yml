@@ -30,6 +30,7 @@ de:
     ai_sentiment_inference_service_api_endpoint: "URL, unter der die API für das Stimmungsmodul läuft"
     ai_sentiment_inference_service_api_key: "API-Schlüssel für die Stimmungsmodul-API"
     ai_sentiment_models: "Modelle, die für die Inferenz verwendet werden. Das Stimmungsmodul klassifiziert Beiträge in den Bereichen positiv/neutral/negativ. Emotionen werden in die Bereiche Wut/Ekel/Furcht/Freude/neutral/Traurigkeit/Überraschung eingeordnet."
+    ai_sentiment_show_sentiment_public_profile: "Mach die dominante Stimmung eines Nutzers in seinem öffentlichen Profil sichtbar."
     ai_nsfw_detection_enabled: "Aktiviere das NSFW-Modul."
     ai_nsfw_inference_service_api_endpoint: "URL, unter der die API für das NSFW-Modul läuft"
     ai_nsfw_inference_service_api_key: "API-Schlüssel für die NSFW-API"
@@ -44,6 +45,7 @@ de:
     ai_openai_gpt35_16k_url: "Benutzerdefinierte URL, die für GPT-3.5-16k-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
     ai_openai_gpt4_url: "Benutzerdefinierte URL, die für GPT-4-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
     ai_openai_gpt4_32k_url: "Benutzerdefinierte URL, die für GPT-4-32k-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
+    ai_openai_gpt4_turbo_url: "Benutzerdefinierte URL, die für GPT 4 Turbo Chat-Abschlüsse verwendet wird. (für Azure-Support)"
     ai_openai_dall_e_3_url: "Benutzerdefinierte URL, die für die DALL-E 3 Bilderzeugung verwendet wird. (für Azure-Unterstützung)"
     ai_openai_organization: "(Optional, leer lassen, um es wegzulassen) Organisations-ID, die für die OpenAI-API verwendet wird. Wird mit dem OpenAI-Organization-Header übergeben."
     ai_openai_embeddings_url: "Benutzerdefinierte URL, die für die OpenAI-Embeddings-API verwendet wird (im Falle von Azure gegebenenfalls: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
@@ -140,6 +142,14 @@ de:
           description: "KI-Bot, spezialisiert auf die Erstellung von Bildern mit DALL-E 3"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       searching: "Suche nach: '%{query}'"
+      command_options:
+        search:
+          max_results:
+            name: "Maximale Anzahl von Ergebnissen"
+            description: "Maximale Anzahl der Ergebnisse, die in die Suche einbezogen werden sollen - wenn leer, werden die Standardregeln verwendet und die Anzahl wird je nach verwendetem Modell skaliert. Der höchste Wert ist 100."
+          base_query:
+            name: "Basis-Suchabfrage"
+            description: "Basisabfrage, die bei der Suche verwendet wird. Beispiel: \"#dringend\" wird der Suchanfrage \"#dringend\" vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort \"dringend\" angezeigt."
       command_summary:
         categories: "Kategorien auflisten"
         search: "Suche"
@@ -153,6 +163,19 @@ de:
         schema: "Datenbankschema nachschlagen"
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild generieren"
+      command_help:
+        categories: "Alle öffentlich sichtbaren Kategorien im Forum auflisten"
+        search: "Alle öffentlichen Themen im Forum durchsuchen"
+        tags: "Alle Schlagworte im Forum auflisten"
+        time: "Zeit in verschiedenen Zeitzonen finden"
+        summarize: "Ein Thema zusammenfassen"
+        image: "Bild mit stabiler Diffusion generieren"
+        google: "Suche bei Google nach einer Anfrage"
+        read: "Öffentliches Thema im Forum lesen"
+        setting_context: "Kontext der Seiteneinstellung nachschlagen"
+        schema: "Datenbankschema nachschlagen"
+        search_settings: "Website-Einstellungen durchsuchen"
+        dall_e: "Erstelle ein Bild mit DALL-E 3"
       command_description:
         read: "Lesen: <a href='%{url}'>%{title}</a>"
         time: "Die Uhrzeit in %{timezone} ist %{time}"

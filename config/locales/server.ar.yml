@@ -34,6 +34,7 @@ ar:
     ai_nsfw_flag_threshold_porn: "الحد الأدنى للصورة المصنَّفة كمحتوى إباحي ليتم اعتبارها غير آمنة لبيئة العمل."
     ai_nsfw_flag_threshold_sexy: "الحد الأدنى للصورة المصنَّفة كمحتوى جنسي ليتم اعتبارها غير آمنة لبيئة العمل."
     ai_nsfw_models: "نماذج المراد استخدامها في الاستدلال على المحتوى غير الآمن لبيئة العمل."
+    ai_openai_gpt35_url: "عنوان URL المخصَّص المُستخدَم لإكمال دردشة GPT 3.5. (لدعم Azure)"
     ai_openai_gpt4_url: "عنوان URL المخصَّص المُستخدَم لإكمال دردشة GPT 4. (لدعم Azure)"
     ai_openai_embeddings_url: "عنوان URL المخصَّص المُستخدَم لواجهة API لتضمينات OpenAI. (في حالة Azure، يمكن أن يكون: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15))"
     ai_openai_api_key: "مفتاح API لواجهة API الخاصة بخدمات OpenAI"

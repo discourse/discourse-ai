@@ -62,6 +62,7 @@ de:
         delete: Löschen
         priority: Priorität
         priority_help: Personas mit Priorität werden den Nutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
+        command_options: "Befehlsoptionen"
         no_persona_selected: |
           ## Was sind KI Personas?
 
@@ -100,6 +101,7 @@ de:
             submit: "Aufforderung senden"
         post_options_menu:
           trigger: "KI fragen"
+          title: "KI fragen"
           loading: "KI generiert"
           close: "Beenden"
           copy: "Kopieren"
@@ -123,6 +125,7 @@ de:
         shortcut_title: "Starte eine PN mit einem KI-Bot"
         bot_names:
           gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
@@ -130,7 +133,8 @@ de:
         dashboard:
           title: "Stimmung"
         summary:
-          label: "stimmung"
+          label: "Stimmung"
+          title: "Experimentelle, KI-gestützte Stimmungsanalyse der letzten Beiträge dieser Person."
     review:
       types:
         reviewable_ai_post:
