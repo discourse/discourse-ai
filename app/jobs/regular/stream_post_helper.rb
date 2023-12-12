@@ -16,7 +16,6 @@ module Jobs
       return unless guardian.can_see?(post)
 
       prompt = CompletionPrompt.enabled_by_name("explain")
-      llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
 
       input = <<~TEXT
       <term>#{args[:term_to_explain]}</term>
