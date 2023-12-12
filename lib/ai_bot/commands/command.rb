@@ -230,7 +230,7 @@ module DiscourseAi
 
         protected
 
-        attr_reader :bot_user, :args
+        attr_reader :args
       end
     end
   end

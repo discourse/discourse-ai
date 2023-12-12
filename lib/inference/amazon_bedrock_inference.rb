@@ -115,7 +115,7 @@ module ::DiscourseAi
               response.read_body do |chunk|
                 if cancelled
                   http.finish
-                  return
+                  return # rubocop:disable Lint/NonLocalExitFromIterator
                 end
 
                 response_raw << chunk

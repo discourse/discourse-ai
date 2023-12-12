@@ -9,7 +9,7 @@ module DiscourseAi
 
         def self.endpoint_for(model_name)
           # Order is important.
-          # Bedrock has priority over Anthropic if creadentials are present.
+          # Bedrock has priority over Anthropic if credentials are present.
           [
             DiscourseAi::Completions::Endpoints::AwsBedrock,
             DiscourseAi::Completions::Endpoints::Anthropic,
@@ -78,7 +78,7 @@ module DiscourseAi
                 response.read_body do |chunk|
                   if cancelled
                     http.finish
-                    return
+                    return # rubocop:disable Lint/NonLocalExitFromIterator
                   end
 
                   decoded_chunk = decode(chunk)

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
 require_relative "../../../../../support/toxicity_inference_stubs"
 
 describe Jobs::ToxicityClassifyPost do

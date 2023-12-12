@@ -39,7 +39,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
   end
 
   describe "#process" do
-    it "can retreive options from persona correctly" do
+    it "can retrieve options from persona correctly" do
       persona =
         Fabricate(
           :ai_persona,
@@ -77,9 +77,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SearchCommand do
     end
 
     describe "semantic search" do
-      let (:query) {
-        "this is an expanded search"
-      }
+      let(:query) { "this is an expanded search" }
       after { DiscourseAi::Embeddings::SemanticSearch.clear_cache_for(query) }
 
       it "supports semantic search when enabled" do

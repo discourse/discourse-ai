@@ -18,7 +18,7 @@ module ::DiscourseAi
         &blk
       )
         # HACK to get around the fact that they have different APIs
-        # we will introduce a proper LLM abstraction layer to handle this shenanigas later this year
+        # we will introduce a proper LLM abstraction layer to handle this shenanigans later this year
         if model == "claude-2" && SiteSetting.ai_bedrock_access_key_id.present? &&
              SiteSetting.ai_bedrock_secret_access_key.present? &&
              SiteSetting.ai_bedrock_region.present?
@@ -103,7 +103,7 @@ module ::DiscourseAi
               response.read_body do |chunk|
                 if cancelled
                   http.finish
-                  return
+                  return # rubocop:disable Lint/NonLocalExitFromIterator
                 end
 
                 response_raw << chunk
@@ -119,7 +119,7 @@ module ::DiscourseAi
                         partial = JSON.parse(data, symbolize_names: true)
                         response_data << partial[:completion].to_s
 
-                        # ping has no data... do not yeild it
+                        # ping has no data... do not yield it
                         yield partial, cancel if partial[:completion]
                       rescue JSON::ParserError
                         nil

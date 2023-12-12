@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe DiscourseAi::Nsfw::EntryPoint do
   fab!(:user) { Fabricate(:user) }
 

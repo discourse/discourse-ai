@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe DiscourseAi::Tokenizer::BertTokenizer do
   describe "#size" do
     describe "returns a token count" do
