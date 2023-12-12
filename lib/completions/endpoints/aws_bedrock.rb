@@ -71,7 +71,7 @@ module DiscourseAi
             .string
             .then { JSON.parse(_1) }
             .dig("bytes")
-            .then { Base64.decode64(_1) }
+            .then { Base64.decode64(_1.to_s) }
         rescue JSON::ParserError,
                Aws::EventStream::Errors::MessageChecksumError,
                Aws::EventStream::Errors::PreludeChecksumError => e
