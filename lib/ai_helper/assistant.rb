@@ -57,15 +57,16 @@ module DiscourseAi
 
           # Throttle the updates
           if (Time.now - start > 0.5) || Rails.env.test?
-            payload = { result: sanitize_result(streamed_result), done: false }
+            payload = { result: PrettyText.cook(sanitize_result(streamed_result)), done: false }
             publish_update(channel, payload, user)
             start = Time.now
           end
         end
 
         sanitized_result = sanitize_result(streamed_result)
+        cooked_result = PrettyText.cook(sanitized_result)
         if sanitized_result.present?
-          publish_update(channel, { result: sanitized_result, done: true }, user)
+          publish_update(channel, { result: cooked_result, done: true }, user)
         end
       end
 

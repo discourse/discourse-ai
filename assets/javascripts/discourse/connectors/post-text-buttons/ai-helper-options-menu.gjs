@@ -12,6 +12,7 @@ import eq from "truth-helpers/helpers/eq";
 import not from "truth-helpers/helpers/not";
 import AiHelperLoading from "../../components/ai-helper-loading";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
+import { htmlSafe } from "@ember/template";
 
 export default class AIHelperOptionsMenu extends Component {
   static shouldRender(outletArgs, helper) {
@@ -194,7 +195,7 @@ export default class AIHelperOptionsMenu extends Component {
         >
           {{#if this.suggestion}}
             <div class="ai-post-helper__suggestion__text">
-              {{this.suggestion}}
+              {{htmlSafe this.suggestion}}
             </div>
             <di class="ai-post-helper__suggestion__buttons">
               <DButton
