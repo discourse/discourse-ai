@@ -51,7 +51,9 @@ RSpec.describe Jobs::StreamPostHelper do
 
     it "publishes updates with a partial result" do
       explanation =
-        "I"
+        "In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling."
+
+      partial_explanation = "I"
 
       DiscourseAi::Completions::Llm.with_prepared_responses([explanation]) do
         messages =
@@ -61,7 +63,7 @@ RSpec.describe Jobs::StreamPostHelper do
 
         partial_result_update = messages.first.data
         expect(partial_result_update[:done]).to eq(false)
-        expect(partial_result_update[:result]).to eq(explanation)
+        expect(partial_result_update[:result]).to eq(partial_explanation)
       end
     end
 
