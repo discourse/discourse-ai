@@ -101,12 +101,14 @@ module DiscourseAi
 
         raise Discourse::InvalidParameters.new(:post_id) unless post
 
-        render json:
-                 DiscourseAi::AiHelper::TopicHelper.new(current_user).explain(
-                   term_to_explain,
-                   post,
-                 ),
-               status: 200
+        Jobs.enqueue(
+          :stream_post_helper,
+          post_id: post.id,
+          user_id: current_user.id,
+          term_to_explain: term_to_explain,
+        )
+
+        render json: { success: true }, status: 200
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502

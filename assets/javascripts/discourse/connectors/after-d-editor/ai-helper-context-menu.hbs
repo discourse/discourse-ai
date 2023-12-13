@@ -53,18 +53,7 @@
         </ul>
 
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.loading)}}
-        <div class="ai-helper-context-menu__loading">
-          <div class="dot-falling"></div>
-          <span>
-            {{i18n "discourse_ai.ai_helper.context_menu.loading"}}
-          </span>
-          <DButton
-            @icon="times"
-            @title="discourse_ai.ai_helper.context_menu.cancel"
-            @action={{this.cancelAIAction}}
-            class="btn-flat cancel-request"
-          />
-        </div>
+        <AiHelperLoading @cancel={{this.cancelAIAction}} />
 
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.review)}}
         <ul class="ai-helper-context-menu__review">
