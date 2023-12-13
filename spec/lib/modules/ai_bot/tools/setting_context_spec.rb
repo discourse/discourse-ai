@@ -9,9 +9,7 @@ def has_rg?
 end
 
   describe "#execute" do
-    before do
-      skip("rg is needed for these tests") if !has_rg?
-    end
+    before { skip("rg is needed for these tests") if !has_rg? }
 
     it "returns the context for core setting" do
       result = setting_context("moderators_view_emails").invoke(bot_user, llm)
