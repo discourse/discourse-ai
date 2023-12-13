@@ -7,7 +7,6 @@ import DButton from "discourse/components/d-button";
 import i18n from "discourse-common/helpers/i18n";
 import not from "truth-helpers/helpers/not";
 
-
 export default class AiHelperCustomPrompt extends Component {
   <template>
     <div
