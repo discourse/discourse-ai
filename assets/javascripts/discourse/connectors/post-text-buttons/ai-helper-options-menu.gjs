@@ -7,12 +7,12 @@ import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { cook } from "discourse/lib/text";
 import { bind } from "discourse-common/utils/decorators";
 import eq from "truth-helpers/helpers/eq";
 import not from "truth-helpers/helpers/not";
 import AiHelperLoading from "../../components/ai-helper-loading";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
-import { htmlSafe } from "@ember/template";
 
 export default class AIHelperOptionsMenu extends Component {
   static shouldRender(outletArgs, helper) {
@@ -70,7 +70,9 @@ export default class AIHelperOptionsMenu extends Component {
     const suggestion = result.result;
 
     if (suggestion.length > 0) {
-      this.suggestion = suggestion;
+      cook(suggestion).then((cooked) => {
+        this.suggestion = cooked;
+      });
     }
   }
 
@@ -102,15 +104,10 @@ export default class AIHelperOptionsMenu extends Component {
     }
 
     if (option.name !== "Explain") {
-      this._activeAIRequest
-        .then(({ suggestions }) => {
-          this.suggestion = suggestions[0];
-        })
-        .catch(popupAjaxError)
-        .finally(() => {
-          this.loading = false;
-          this.menuState = this.MENU_STATES.result;
-        });
+      this._activeAIRequest.catch(popupAjaxError).finally(() => {
+        this.loading = false;
+        this.menuState = this.MENU_STATES.result;
+      });
     }
 
     return this._activeAIRequest;
@@ -195,7 +192,7 @@ export default class AIHelperOptionsMenu extends Component {
         >
           {{#if this.suggestion}}
             <div class="ai-post-helper__suggestion__text">
-              {{htmlSafe this.suggestion}}
+              {{this.suggestion}}
             </div>
             <di class="ai-post-helper__suggestion__buttons">
               <DButton
