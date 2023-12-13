@@ -5,9 +5,7 @@ RSpec.describe DiscourseAi::AiBot::Commands::SettingContextCommand do
   let(:command) { described_class.new(bot_user: bot_user, args: nil) }
 
   describe "#execute" do
-    before do
-      skip("rg is needed for these tests") if !has_rg?
-    end
+    before { skip("rg is needed for these tests") if !has_rg? }
 
     it "returns the context for core setting" do
       result = command.process(setting_name: "moderators_view_emails")
