@@ -65,7 +65,7 @@ RSpec.describe Jobs::StreamPostHelper do
       end
     end
 
-    it "publishes a final update to signal we're donea" do
+    it "publishes a final update to signal we're done" do
       explanation =
         "In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling."
 
