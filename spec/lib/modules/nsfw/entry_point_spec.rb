@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe DiscourseAi::Nsfw::EntryPoint do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
 
   describe "registering event callbacks" do
     fab!(:image_upload) { Fabricate(:upload) }
