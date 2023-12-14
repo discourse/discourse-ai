@@ -1,4 +1,4 @@
-import Component from '@glimmer/component';
+import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
 import { action } from "@ember/object";
@@ -9,10 +9,7 @@ import not from "truth-helpers/helpers/not";
 
 export default class AiHelperCustomPrompt extends Component {
   <template>
-    <div
-      class="ai-custom-prompt"
-      {{didInsert this.setupCustomPrompt}}
-    >
+    <div class="ai-custom-prompt" {{didInsert this.setupCustomPrompt}}>
       <Input
         @value={{@value}}
         placeholder={{i18n
