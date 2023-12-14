@@ -147,6 +147,9 @@ discourse_ai:
   ai_cloudflare_workers_api_token:
     default: ""
     secret: true
+  ai_gemini_api_key:
+    default: ""
+    secret: true
 
   composer_ai_helper_enabled:
     default: false
@@ -170,6 +173,7 @@ discourse_ai:
       - claude-2
       - stable-beluga-2
       - Llama2-chat-hf
+      - gemini-pro
   ai_helper_custom_prompts_allowed_groups:
     client: true
     type: group_list
@@ -233,6 +237,7 @@ discourse_ai:
       - gpt-4
       - StableBeluga2
       - Upstage-Llama-2-*-instruct-v2
+      - gemini-pro
 
   ai_summarization_discourse_service_api_endpoint: ""
   ai_summarization_discourse_service_api_key:
