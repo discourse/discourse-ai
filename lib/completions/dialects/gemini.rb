@@ -16,12 +16,7 @@ module DiscourseAi
                 text: [generic_prompt[:insts], generic_prompt[:post_insts].to_s].join("\n"),
               },
             },
-            {
-              role: "model",
-              parts: {
-                text: "Ok.",
-              },
-            },
+            { role: "model", parts: { text: "Ok." } },
           ]
 
           if generic_prompt[:examples]
