@@ -6,12 +6,43 @@ en:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
+      ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Sender"
+              description: "The user that will send the report"
+            receiver:
+              label: "Receiver"
+              description: "The user that will receive the report"
+            title:
+              label: "Title"
+              description: "The title of the report"
+            system_prompt:
+              label: "System Prompt"
+              description: "The prompt that will be used to generate the report"
+            instructions:
+              label: "Instructions"
+              description: "The instructions provided to the large language model"
+            model:
+              label: "Model"
+              description: "LLM to use for report generation"
+            category:
+              label: "Category"
+              description: "Filter topics only to this category"
+            tags:
+              label: "Tags"
+              description: "Filter topics only to these tags"
+            allow_secure_categories:
+              label: "Allow secure categories"
+              description: "Allow the report to be generated for topics in secure categories"
+
         llm_triage:
-          models:
-            gpt_4: GPT 4
-            gpt_3_5_turbo: GPT 3.5 Turbo
-            claude_2: Claude 2
           fields:
             system_prompt:
               label: "System Prompt"

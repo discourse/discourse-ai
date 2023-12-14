@@ -5,6 +5,9 @@ en:
         title: Triage posts using AI
         description: "Triage posts using a large language model"
         system_prompt_missing_post_placeholder: "System prompt must contain a placeholder for the post: %%POST%%"
+      llm_report:
+        title: Periodic report using AI
+        description: "Periodic report based on a large language model"
   site_settings:
     discourse_ai_enabled: "Enable the discourse AI plugin."
     ai_toxicity_enabled: "Enable the toxicity module."

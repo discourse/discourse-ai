@@ -81,24 +81,6 @@ if defined?(DiscourseAutomation)
 
   DiscourseAutomation::Scriptable::LLM_TRIAGE = "llm_triage"
 
-  AVAILABLE_MODELS = [
-    {
-      id: "gpt-4",
-      name:
-        "discourse_automation.scriptables.#{DiscourseAutomation::Scriptable::LLM_TRIAGE}.models.gpt_4",
-    },
-    {
-      id: "gpt-3-5-turbo",
-      name:
-        "discourse_automation.scriptables.#{DiscourseAutomation::Scriptable::LLM_TRIAGE}.models.gpt_3_5_turbo",
-    },
-    {
-      id: "claude-2",
-      name:
-        "discourse_automation.scriptables.#{DiscourseAutomation::Scriptable::LLM_TRIAGE}.models.claude_2",
-    },
-  ]
-
   DiscourseAutomation::Scriptable.add(DiscourseAutomation::Scriptable::LLM_TRIAGE) do
     version 1
     run_in_background
@@ -119,7 +101,12 @@ if defined?(DiscourseAutomation)
           end,
           accepts_placeholders: true
     field :search_for_text, component: :text, required: true
-    field :model, component: :choices, required: true, extra: { content: AVAILABLE_MODELS }
+    field :model,
+          component: :choices,
+          required: true,
+          extra: {
+            content: DiscourseAi::Automation::AVAILABLE_MODELS,
+          }
     field :category, component: :category
     field :tags, component: :tags
     field :hide_topic, component: :boolean
