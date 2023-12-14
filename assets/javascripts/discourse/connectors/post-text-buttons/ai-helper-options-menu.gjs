@@ -11,6 +11,7 @@ import { cook } from "discourse/lib/text";
 import { bind } from "discourse-common/utils/decorators";
 import eq from "truth-helpers/helpers/eq";
 import not from "truth-helpers/helpers/not";
+import AiHelperCustomPrompt from "../../components/ai-helper-custom-prompt";
 import AiHelperLoading from "../../components/ai-helper-loading";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
 
@@ -19,12 +20,14 @@ export default class AIHelperOptionsMenu extends Component {
     return showPostAIHelper(outletArgs, helper);
   }
   @service messageBus;
+  @service siteSettings;
+  @service currentUser;
   @tracked helperOptions = [];
   @tracked menuState = this.MENU_STATES.triggers;
   @tracked loading = false;
   @tracked suggestion = "";
   @tracked showMainButtons = true;
-
+  @tracked customPromptValue = "";
   @tracked copyButtonIcon = "copy";
   @tracked copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy";
 
@@ -96,18 +99,23 @@ export default class AIHelperOptionsMenu extends Component {
       this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
         method: "POST",
         data: {
-          mode: option.value,
+          mode: option.id,
           text: this.args.outletArgs.data.quoteState.buffer,
-          custom_prompt: "",
+          custom_prompt: this.customPromptValue,
         },
       });
     }
 
     if (option.name !== "Explain") {
-      this._activeAIRequest.catch(popupAjaxError).finally(() => {
-        this.loading = false;
-        this.menuState = this.MENU_STATES.result;
-      });
+      this._activeAIRequest
+        .then(({ suggestions }) => {
+          this.suggestion = suggestions[0];
+        })
+        .catch(popupAjaxError)
+        .finally(() => {
+          this.loading = false;
+          this.menuState = this.MENU_STATES.result;
+        });
     }
 
     return this._activeAIRequest;
@@ -142,15 +150,32 @@ export default class AIHelperOptionsMenu extends Component {
   async loadPrompts() {
     let prompts = await ajax("/discourse-ai/ai-helper/prompts");
 
-    this.helperOptions = prompts
-      .filter((item) => item.location.includes("post"))
-      .map((p) => {
-        return {
-          name: p.translated_name,
-          value: p.id,
-          icon: p.icon,
-        };
-      });
+    prompts = prompts.filter((item) => item.location.includes("post"));
+
+    // Find the custom_prompt object and move it to the beginning of the array
+    const customPromptIndex = prompts.findIndex(
+      (p) => p.name === "custom_prompt"
+    );
+
+    if (customPromptIndex !== -1) {
+      const customPrompt = prompts.splice(customPromptIndex, 1)[0];
+      prompts.unshift(customPrompt);
+    }
+
+    if (!this._showUserCustomPrompts()) {
+      prompts = prompts.filter((p) => p.name !== "custom_prompt");
+    }
+
+    this.helperOptions = prompts;
+  }
+
+  _showUserCustomPrompts() {
+    const allowedGroups =
+      this.siteSettings?.ai_helper_custom_prompts_allowed_groups
+        .split("|")
+        .map((id) => parseInt(id, 10));
+
+    return this.currentUser?.groups.some((g) => allowedGroups.includes(g.id));
   }
 
   <template>
@@ -170,15 +195,23 @@ export default class AIHelperOptionsMenu extends Component {
       {{else if (eq this.menuState this.MENU_STATES.options)}}
         <div class="ai-post-helper__options">
           {{#each this.helperOptions as |option|}}
-            <DButton
-              @class="btn-flat"
-              @icon={{option.icon}}
-              @translatedLabel={{option.name}}
-              @action={{this.performAISuggestion}}
-              @actionParam={{option}}
-              data-name={{option.name}}
-              data-value={{option.value}}
-            />
+            {{#if (eq option.name "custom_prompt")}}
+              <AiHelperCustomPrompt
+                @value={{this.customPromptValue}}
+                @promptArgs={{option}}
+                @submit={{this.performAISuggestion}}
+              />
+            {{else}}
+              <DButton
+                @class="btn-flat"
+                @icon={{option.icon}}
+                @translatedLabel={{option.translated_name}}
+                @action={{this.performAISuggestion}}
+                @actionParam={{option}}
+                data-name={{option.name}}
+                data-value={{option.value}}
+              />
+            {{/if}}
           {{/each}}
         </div>
 

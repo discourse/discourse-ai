@@ -17,27 +17,11 @@
         <ul class="ai-helper-context-menu__options">
           {{#each this.helperOptions as |option|}}
             {{#if (eq option.name "custom_prompt")}}
-              <div
-                class="ai-custom-prompt"
-                {{did-insert this.setupCustomPrompt}}
-              >
-                <Input
-                  @value={{this.customPromptValue}}
-                  placeholder={{i18n
-                    "discourse_ai.ai_helper.context_menu.custom_prompt.placeholder"
-                  }}
-                  class="ai-custom-prompt__input"
-                  @enter={{action (fn this.updateSelected option)}}
-                />
-
-                <DButton
-                  @class="ai-custom-prompt__submit btn-primary"
-                  @icon="discourse-sparkles"
-                  @action={{this.updateSelected}}
-                  @actionParam={{option}}
-                  @disabled={{not this.customPromptValue.length}}
-                />
-              </div>
+              <AiHelperCustomPrompt
+                @value={{this.customPromptValue}}
+                @promptArgs={{option}}
+                @submit={{this.updateSelected}}
+              />
             {{else}}
               <li data-name={{option.translated_name}} data-value={{option.id}}>
                 <DButton
