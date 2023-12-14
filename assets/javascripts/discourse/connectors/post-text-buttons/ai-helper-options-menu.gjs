@@ -5,6 +5,8 @@ import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
+import FastEdit from "discourse/components/fast-edit";
+import FastEditModal from "discourse/components/modal/fast-edit";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { cook } from "discourse/lib/text";
@@ -20,6 +22,8 @@ export default class AIHelperOptionsMenu extends Component {
     return showPostAIHelper(outletArgs, helper);
   }
   @service messageBus;
+  @service site;
+  @service modal;
   @service siteSettings;
   @service currentUser;
   @tracked helperOptions = [];
@@ -30,6 +34,8 @@ export default class AIHelperOptionsMenu extends Component {
   @tracked customPromptValue = "";
   @tracked copyButtonIcon = "copy";
   @tracked copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy";
+  @tracked showFastEdit = false;
+  @tracked showAiButtons = true;
 
   MENU_STATES = {
     triggers: "TRIGGERS",
@@ -83,7 +89,7 @@ export default class AIHelperOptionsMenu extends Component {
   async performAISuggestion(option) {
     this.menuState = this.MENU_STATES.loading;
 
-    if (option.name === "Explain") {
+    if (option.name === "explain") {
       this.menuState = this.MENU_STATES.result;
 
       const fetchUrl = `/discourse-ai/ai-helper/explain`;
@@ -106,10 +112,28 @@ export default class AIHelperOptionsMenu extends Component {
       });
     }
 
-    if (option.name !== "Explain") {
+    if (option.name !== "explain") {
       this._activeAIRequest
         .then(({ suggestions }) => {
-          this.suggestion = suggestions[0];
+          this.suggestion = suggestions[0].trim();
+
+          if (option.name === "proofread") {
+            this.showAiButtons = false;
+
+            if (this.site.desktopView) {
+              this.showFastEdit = true;
+              return;
+            } else {
+              return this.modal.show(FastEditModal, {
+                model: {
+                  initialValue: this.args.outletArgs.data.quoteState.buffer,
+                  newValue: this.suggestion,
+                  post: this.args.outletArgs.post,
+                  close: this.closeFastEdit,
+                },
+              });
+            }
+          }
         })
         .catch(popupAjaxError)
         .finally(() => {
@@ -166,6 +190,10 @@ export default class AIHelperOptionsMenu extends Component {
       prompts = prompts.filter((p) => p.name !== "custom_prompt");
     }
 
+    if (!this.args.outletArgs.data.canEditPost) {
+      prompts = prompts.filter((p) => p.name !== "proofread");
+    }
+
     this.helperOptions = prompts;
   }
 
@@ -178,75 +206,95 @@ export default class AIHelperOptionsMenu extends Component {
     return this.currentUser?.groups.some((g) => allowedGroups.includes(g.id));
   }
 
+  @action
+  async closeFastEdit() {
+    this.showFastEdit = false;
+    await this.args.outletArgs.data.hideToolbar();
+  }
+
   <template>
     {{#if this.showMainButtons}}
       {{yield}}
     {{/if}}
-    <div class="ai-post-helper">
-      {{#if (eq this.menuState this.MENU_STATES.triggers)}}
-        <DButton
-          @class="btn-flat ai-post-helper__trigger"
-          @icon="discourse-sparkles"
-          @title="discourse_ai.ai_helper.post_options_menu.title"
-          @label="discourse_ai.ai_helper.post_options_menu.trigger"
-          @action={{this.showAIHelperOptions}}
-        />
 
-      {{else if (eq this.menuState this.MENU_STATES.options)}}
-        <div class="ai-post-helper__options">
-          {{#each this.helperOptions as |option|}}
-            {{#if (eq option.name "custom_prompt")}}
-              <AiHelperCustomPrompt
-                @value={{this.customPromptValue}}
-                @promptArgs={{option}}
-                @submit={{this.performAISuggestion}}
-              />
+    {{#if this.showAiButtons}}
+      <div class="ai-post-helper">
+        {{#if (eq this.menuState this.MENU_STATES.triggers)}}
+          <DButton
+            @class="btn-flat ai-post-helper__trigger"
+            @icon="discourse-sparkles"
+            @title="discourse_ai.ai_helper.post_options_menu.title"
+            @label="discourse_ai.ai_helper.post_options_menu.trigger"
+            @action={{this.showAIHelperOptions}}
+          />
+
+        {{else if (eq this.menuState this.MENU_STATES.options)}}
+          <div class="ai-post-helper__options">
+            {{#each this.helperOptions as |option|}}
+              {{#if (eq option.name "custom_prompt")}}
+                <AiHelperCustomPrompt
+                  @value={{this.customPromptValue}}
+                  @promptArgs={{option}}
+                  @submit={{this.performAISuggestion}}
+                />
+              {{else}}
+                <DButton
+                  @class="btn-flat"
+                  @icon={{option.icon}}
+                  @translatedLabel={{option.translated_name}}
+                  @action={{this.performAISuggestion}}
+                  @actionParam={{option}}
+                  data-name={{option.name}}
+                  data-value={{option.value}}
+                />
+              {{/if}}
+            {{/each}}
+          </div>
+
+        {{else if (eq this.menuState this.MENU_STATES.loading)}}
+          <AiHelperLoading @cancel={{this.cancelAIAction}} />
+        {{else if (eq this.menuState this.MENU_STATES.result)}}
+          <div
+            class="ai-post-helper__suggestion"
+            {{didInsert this.subscribe}}
+            {{willDestroy this.unsubscribe}}
+          >
+            {{#if this.suggestion}}
+              <div class="ai-post-helper__suggestion__text">
+                {{this.suggestion}}
+              </div>
+              <di class="ai-post-helper__suggestion__buttons">
+                <DButton
+                  @class="btn-flat ai-post-helper__suggestion__cancel"
+                  @icon="times"
+                  @label="discourse_ai.ai_helper.post_options_menu.cancel"
+                  @action={{this.cancelAIAction}}
+                />
+                <DButton
+                  @class="btn-flat ai-post-helper__suggestion__copy"
+                  @icon={{this.copyButtonIcon}}
+                  @label={{this.copyButtonLabel}}
+                  @action={{this.copySuggestion}}
+                  @disabled={{not this.suggestion}}
+                />
+              </di>
             {{else}}
-              <DButton
-                @class="btn-flat"
-                @icon={{option.icon}}
-                @translatedLabel={{option.translated_name}}
-                @action={{this.performAISuggestion}}
-                @actionParam={{option}}
-                data-name={{option.name}}
-                data-value={{option.value}}
-              />
+              <AiHelperLoading @cancel={{this.cancelAIAction}} />
             {{/if}}
-          {{/each}}
-        </div>
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
 
-      {{else if (eq this.menuState this.MENU_STATES.loading)}}
-        <AiHelperLoading @cancel={{this.cancelAIAction}} />
-      {{else if (eq this.menuState this.MENU_STATES.result)}}
-        <div
-          class="ai-post-helper__suggestion"
-          {{didInsert this.subscribe}}
-          {{willDestroy this.unsubscribe}}
-        >
-          {{#if this.suggestion}}
-            <div class="ai-post-helper__suggestion__text">
-              {{this.suggestion}}
-            </div>
-            <di class="ai-post-helper__suggestion__buttons">
-              <DButton
-                @class="btn-flat ai-post-helper__suggestion__cancel"
-                @icon="times"
-                @label="discourse_ai.ai_helper.post_options_menu.cancel"
-                @action={{this.cancelAIAction}}
-              />
-              <DButton
-                @class="btn-flat ai-post-helper__suggestion__copy"
-                @icon={{this.copyButtonIcon}}
-                @label={{this.copyButtonLabel}}
-                @action={{this.copySuggestion}}
-                @disabled={{not this.suggestion}}
-              />
-            </di>
-          {{else}}
-            <AiHelperLoading @cancel={{this.cancelAIAction}} />
-          {{/if}}
-        </div>
-      {{/if}}
-    </div>
+    {{#if this.showFastEdit}}
+      <div class="ai-post-helper__fast-edit">
+        <FastEdit
+          @initialValue={{@outletArgs.data.quoteState.buffer}}
+          @newValue={{this.suggestion}}
+          @post={{@outletArgs.post}}
+          @close={{this.closeFastEdit}}
+        />
+      </div>
+    {{/if}}
   </template>
 }

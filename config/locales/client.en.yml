@@ -104,6 +104,8 @@ en:
           copy: "Copy"
           copied: "Copied!"
           cancel: "Cancel"
+        fast_edit:
+          suggest_button: "Suggest Edit"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"
