@@ -50,7 +50,7 @@ module DiscourseAi
         end
 
         def extract_prompt_for_tokenizer(prompt)
-          prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
+          prompt.to_s
         end
 
         def dig_text(response)
