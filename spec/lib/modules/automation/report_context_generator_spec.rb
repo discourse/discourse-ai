@@ -60,15 +60,8 @@ module DiscourseAi
           expect(context).to include("New topics: 5")
         end
 
-        it "orders so most liked is last then by date" do
+        it "orders so most liked are first" do
           context = ReportContextGenerator.generate(start_date: 1.day.ago, duration: 2.day)
-
-          expect(context).to match(/likes: 0\n.*likes: 10/m)
-        end
-
-        it "can order be reversed ordered" do
-          context =
-            ReportContextGenerator.generate(start_date: 1.day.ago, duration: 2.day, order: :reverse)
 
           expect(context).to match(/likes: 10\n.*likes: 0/m)
         end

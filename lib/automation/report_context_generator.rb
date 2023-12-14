@@ -11,8 +11,7 @@ module DiscourseAi
         allow_secure_categories: false,
         max_posts: 100,
         excerpt_length: 600,
-        prioritized_group_ids: nil,
-        order: nil
+        prioritized_group_ids: nil
       )
         new(
           start_date: start_date,
@@ -23,7 +22,6 @@ module DiscourseAi
           max_posts: max_posts,
           excerpt_length: excerpt_length,
           prioritized_group_ids: prioritized_group_ids,
-          order: order,
         ).generate
       end
 
@@ -35,8 +33,7 @@ module DiscourseAi
         allow_secure_categories:,
         max_posts:,
         excerpt_length:,
-        prioritized_group_ids:,
-        order:
+        prioritized_group_ids:
       )
         @start_date = start_date
         @duration = duration
@@ -46,7 +43,6 @@ module DiscourseAi
         @max_posts = max_posts
         @excerpt_length = excerpt_length
         @prioritized_group_ids = prioritized_group_ids
-        @order = order
 
         @posts =
           Post
@@ -66,6 +62,8 @@ module DiscourseAi
           topic_ids_with_tags = TopicTag.where(tag_id: tag_ids).select(:topic_id)
           @posts = @posts.where(topic_id: topic_ids_with_tags)
         end
+
+        @group_user_ids = Set.new(GroupUser.where(group_id: @prioritized_group_ids).pluck(:user_id))
       end
 
       def format_topic(topic)
@@ -86,7 +84,7 @@ module DiscourseAi
         buffer << ""
         buffer << "post_number: #{post.post_number}"
         buffer << post.created_at.strftime("%Y-%m-%d %H:%M")
-        buffer << "user: #{post.user&.username} #{"(staff)" if post.user&.staff?}"
+        buffer << "user: #{post.user&.username} #{" *" if @group_user_ids.include? post.user_id}"
         buffer << "likes: #{post.like_count}"
         excerpt = post.raw[0..@excerpt_length]
         excerpt = "excerpt: #{excerpt}..." if excerpt.length < post.raw.length
@@ -142,8 +140,7 @@ module DiscourseAi
           topic_info[:post_likes] = topic_info[:posts].sum { |_, post_info| post_info[:likes] }
         end
 
-        topics = topics.sort { |a, b| a[1][:post_likes] <=> b[1][:post_likes] }
-        topics = topics.reverse if @order == :reverse
+        topics = topics.sort { |a, b| b[1][:post_likes] <=> a[1][:post_likes] }
 
         topics.each do |topic_id, topic_info|
           buffer << topic_info[:info]
@@ -190,58 +187,68 @@ module DiscourseAi
   end
 end
 
-#system_prompt = "You generate reports summarizing activity on a Discourse instance"
+system_prompt = "You are a helpful bot"
 
-#context =
-#  DiscourseAi::Automation::ReportContextGenerator.generate(
-#    start_date: 7.days.ago,
-#    duration: 7.days,
-#    max_posts: 200,
-#    order: :reverse,
-#    prioritized_group_ids: [45],
-#  )
+context =
+  DiscourseAi::Automation::ReportContextGenerator.generate(
+    start_date: 7.days.ago,
+    duration: 7.days,
+    max_posts: 400,
+    prioritized_group_ids: [45],
+  )
 
-#prompt = <<~PROMPT
-#CONTEXT
-#{{{
-##{context}
-#}}}
+instruction = <<INST
+Generate report for Open AI executives
 
-#Based on the above context - generate an executive summary
+## Report Guidelines:
 
-#**Report Guidelines:**
+- Length & Style: Aim for 12 dense paragraphs in a narrative style, focusing on internal forum discussions.
+- Accuracy: Only include verified information with no embellishments.
+- Sourcing: ALWAYS Back statements with links to forum discussions.
+- Markdown Usage: Enhance readability with **bold**, *italic*, and > quotes.
+- Linking: Use `https://community.openai.com/t/-/TOPIC_ID/POST_NUMBER` for direct references.
+- User Mentions: Reference users with @USERNAME
+- Context tips: Open AI staff are denoted with Username *. For example: jane * means that jane is Open AI staff. Do not render the * in the report.
+- Add many topic links: strive to link to at least 30 topics in the report. Topic Id is meaningless to end users if you need to throw in a link use [ref](...) or better still just embed it into the [sentence](...)
+- Categories and tags: use the format #TAG and #CATEGORY to denote tags and categories
+- When rendering staff highlights always link to referenced posts
 
-#- **Length & Style:** Aim for 20 paragraphs / 1000 words in a narrative style, focusing on internal forum discussions.
-#- **Accuracy:** Only include verified information with no embellishments.
-#- **Sourcing:** ALWAYS Back statements with links to forum discussions.
-#- **Markdown Usage:** Enhance readability with **bold**, *italic*, and > quotes.
-#- **Linking:** Use `https://meta.discourse.org/t/-/TOPIC_ID/POST_NUMBER` for direct references.
-#- **Analysis & Recommendations:** Identify trends and suggest actionable recommendations.
-#- **User Mentions:** Reference users with @USERNAME
-#- **Context tips**: staff are denoted with (staff) in the context. Don't output (staff) in the report next to usernames.
-#- **Add many topic links**: strive to link to at least 20 topics in the report. Topic Id is meaningless to end users if you need to throw in a link use [ref](...) or better still just embed it into the [sentence](...)
+## Structure:
 
-#**Structure:**
+- Key statistics: Specify date range, call out important stats like number of new topics and posts
+- Overview: Briefly state trends within period.
+- General trends (popular categories and tags)
+- Highlighted content: 5 paragaraphs highlighting important topics people should know about. If possible have each paragraph link to multiple related topics.
+- Key insights and trends linking to a selection of posts that back them
+- Staff highlights linking to a selection of posts staff made
 
-#- **Key statistics**: Specify date range, call out important stats like number of new topics and posts
-#- **Overview:** Briefly state trends within period.
-#- **Content:** Cover key discussions, important user contributions, and staff highlights.
-#- **Conclusion:** Summarize insights.
+INST
 
-#PROMPT
+prompt = <<~PROMPT
 
-#messages = [{ role: :system, content: system_prompt }, { role: :user, content: prompt }]
+#{instruction}
 
-#puts
-#puts "-" * 80
+CONTEXT
+{{{
+#{context}
+}}}
 
-#DiscourseAi::Inference::OpenAiCompletions.perform!(
-#  messages,
-#  "gpt-4-turbo",
-#  temperature: 0.0,
-#  max_tokens: 3000,
-#) { |partial| print partial.dig(:choices, 0, :delta, :content) }
+#{instruction}
 
-#puts "-" * 80
+PROMPT
 
-#exit
+messages = [{ role: :system, content: system_prompt }, { role: :user, content: prompt }]
+
+puts DiscourseAi::Tokenizer::OpenAiTokenizer.tokenize(prompt).length
+puts "-" * 80
+
+DiscourseAi::Inference::OpenAiCompletions.perform!(
+  messages,
+  "gpt-4-1106-preview",
+  temperature: 0,
+  max_tokens: 4000,
+) { |partial| print partial.dig(:choices, 0, :delta, :content) }
+
+puts "-" * 80
+
+exit
