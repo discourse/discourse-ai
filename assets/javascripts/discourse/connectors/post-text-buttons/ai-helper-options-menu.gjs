@@ -260,7 +260,7 @@ export default class AIHelperOptionsMenu extends Component {
             {{willDestroy this.unsubscribe}}
           >
             {{#if this.suggestion}}
-              <div class="ai-post-helper__suggestion__text">
+              <div class="ai-post-helper__suggestion__text" dir="auto">
                 {{this.suggestion}}
               </div>
               <di class="ai-post-helper__suggestion__buttons">
