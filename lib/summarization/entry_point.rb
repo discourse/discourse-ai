@@ -16,6 +16,7 @@ module DiscourseAi
             "StableBeluga2",
             max_tokens: SiteSetting.ai_hugging_face_token_limit,
           ),
+          Models::Gemini.new("gemini-pro", max_tokens: 32_768),
         ]
 
         foldable_models.each do |model|
