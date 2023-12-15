@@ -19,8 +19,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     Fabricate(
       :post,
       topic: topic,
-      raw:
-        "The Toyota Supra delivrs 382 horsepwr makin it a very farst car.",
+      raw: "The Toyota Supra delivrs 382 horsepwr makin it a very farst car.",
     )
   end
   let(:topic_page) { PageObjects::Pages::Topic.new }
@@ -102,7 +101,9 @@ RSpec.describe "AI Post helper", type: :system, js: true do
 
     context "when using proofread mode" do
       let(:mode) { CompletionPrompt::PROOFREAD }
-      let(:proofread_response) { "The Toyota Supra delivers 382 horsepower making it a very fast car." }
+      let(:proofread_response) do
+        "The Toyota Supra delivers 382 horsepower making it a very fast car."
+      end
 
       it "pre-fills fast edit with proofread text" do
         select_post_text(post_3)
@@ -140,7 +141,9 @@ RSpec.describe "AI Post helper", type: :system, js: true do
   end
 
   context "when triggering AI proofread through edit button" do
-    let(:proofread_response) { "The Toyota Supra delivers 382 horsepower making it a very fast car." }
+    let(:proofread_response) do
+      "The Toyota Supra delivers 382 horsepower making it a very fast car."
+    end
 
     it "pre-fills fast edit with proofread text" do
       select_post_text(post_3)
