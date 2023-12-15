@@ -412,7 +412,16 @@
   }
 }
 
-// ! TODO: Temporary fix, but we should find a better way to do this
-.fk-d-menu {
+.fk-d-menu[data-identifier="ai-split-topic-suggestion-menu"] {
   z-index: z("modal", "dropdown");
+}
+
+.ai-split-topic-loading-placeholder {
+  .d-icon-spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  + .ai-split-topic-suggestion-button {
+    display: none;
+  }
 }

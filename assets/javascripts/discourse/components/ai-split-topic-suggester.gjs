@@ -24,10 +24,6 @@ export default class AiSplitTopicSuggester extends Component {
     tag: "suggest_tags",
   };
 
-  constructor() {
-    super(...arguments);
-  }
-
   get input() {
     return this.args.selectedPosts.map((item) => item.cooked).join("\n");
   }
@@ -43,7 +39,6 @@ export default class AiSplitTopicSuggester extends Component {
     }
 
     this.loading = true;
-    this.icon = "spinner";
 
     ajax(`/discourse-ai/ai-helper/${this.args.mode}`, {
       method: "POST",
@@ -65,24 +60,23 @@ export default class AiSplitTopicSuggester extends Component {
       .catch(popupAjaxError)
       .finally(() => {
         this.loading = false;
-        this.icon = "discourse-sparkles";
       });
   }
 
   @action
-  applySuggestion(suggestion) {
+  applySuggestion(suggestion, menu) {
     if (!this.args.mode) {
       return;
     }
 
     if (this.args.mode === this.SUGGESTION_TYPES.title) {
       this.args.updateAction(suggestion);
-      return this.menu.close();
+      return menu.close();
     }
 
     if (this.args.mode === this.SUGGESTION_TYPES.category) {
       this.args.updateAction(suggestion.id);
-      return this.menu.close();
+      return menu.close();
     }
 
     if (this.args.mode === this.SUGGESTION_TYPES.tag) {
@@ -97,44 +91,57 @@ export default class AiSplitTopicSuggester extends Component {
       } else {
         this.args.updateAction(suggestion);
       }
-      return this.menu.close();
+      return menu.close();
     }
   }
 
   <template>
-    <DMenu @interactive={{true}} class="ai-split-topic-suggestion-button">
-      <:trigger>
-        <div {{on "click" (fn this.loadSuggestions)}}>
-          {{icon this.icon}}
-        </div>
-      </:trigger>
-      <:content>
+    {{#if this.loading}}
+      {{!
+        Dynamically changing @icon of DMenu
+        causes it to rerender after load and
+        close the menu once data is loaded.
+        This workaround mimics an icon change of
+        the button by adding an overlapping
+        disabled button while loading}}
+      <DButton
+        class="ai-split-topic-loading-placeholder"
+        @disabled={{true}}
+        @icon="spinner"
+      />
+    {{/if}}
+    <DMenu
+      @icon="discourse-sparkles"
+      @interactive={{true}}
+      @identifier="ai-split-topic-suggestion-menu"
+      class="ai-split-topic-suggestion-button"
+      {{on "click" (fn this.loadSuggestions)}}
+      as |menu|
+    >
+      <ul class="ai-split-topic-suggestion__results">
         {{#unless this.loading}}
-          <ul class="ai-split-topic-suggestion__results">
-            {{#each this.suggestions as |suggestion index|}}
-              {{#if (eq @mode "suggest_category")}}
-                <li
-                  data-name={{suggestion.name}}
-                  data-value={{suggestion.id}}
-                  class="ai-split-topic-suggestion__category-result"
-                  {{on "click" (fn this.applySuggestion suggestion)}}
-                >
-                  {{categoryBadge suggestion}}
-                </li>
-
-              {{else}}
-                <li data-name={{suggestion}} data-value={{index}}>
-                  <DButton
-                    @translatedLabel={{suggestion}}
-                    @action={{this.applySuggestion}}
-                    @actionParam={{suggestion}}
-                  />
-                </li>
-              {{/if}}
-            {{/each}}
-          </ul>
+          {{#each this.suggestions as |suggestion index|}}
+            {{#if (eq @mode "suggest_category")}}
+              <li
+                data-name={{suggestion.name}}
+                data-value={{suggestion.id}}
+                class="ai-split-topic-suggestion__category-result"
+                {{on "click" (fn this.applySuggestion suggestion menu)}}
+              >
+                {{categoryBadge suggestion}}
+              </li>
+            {{else}}
+              <li data-name={{suggestion}} data-value={{index}}>
+                <DButton
+                  @translatedLabel={{suggestion}}
+                  @action={{this.applySuggestion}}
+                  @actionParam={{suggestion}}
+                />
+              </li>
+            {{/if}}
+          {{/each}}
         {{/unless}}
-      </:content>
+      </ul>
     </DMenu>
   </template>
 }
