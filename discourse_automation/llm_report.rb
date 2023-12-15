@@ -13,8 +13,8 @@ if defined?(DiscourseAutomation)
     field :sender, component: :user, required: true
     field :receiver, component: :user, required: true
     field :title, component: :text, required: true
-    field :system_prompt, component: :message, required: true
-    field :instructions, component: :message, required: true
+    field :instructions, component: :message, required: true, default_value: "test test"
+    field :sample_size, component: :text, required: true, default_value: 100
 
     field :model,
           component: :choices,
@@ -29,8 +29,23 @@ if defined?(DiscourseAutomation)
     field :allow_secure_categories, component: :boolean
 
     script do |context, fields, automation|
-      p fields
-      p context
+      sender = context["sender"]["value"]
+      receiver = context["receiver"]["value"]
+      title = context["title"]["value"]
+      model = context["model"]["value"]
+      category_id = context.dig("category", "value")
+      tags = context.dig("tags", "value")
+      allow_secure_categories = !!context.dig("allow_secure_categories", "value")
+
+      DiscourseAi::Automation::ReportRunner.run!(
+        sender_username: sender,
+        receiver_username: receiver,
+        title: title,
+        model: model,
+        category_id: category_id,
+        tags: tags,
+        allow_secure_categories: allow_secure_categories,
+      )
     end
   end
 end

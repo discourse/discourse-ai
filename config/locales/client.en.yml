@@ -29,6 +29,9 @@ en:
             instructions:
               label: "Instructions"
               description: "The instructions provided to the large language model"
+            sample_size:
+              label: "Sample Size"
+              description: "The number of posts to sample for the report"
             model:
               label: "Model"
               description: "LLM to use for report generation"
