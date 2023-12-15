@@ -24,10 +24,7 @@ export default class AiEditSuggestionButton extends Component {
   }
 
   get disabled() {
-    return (
-      this.loading ||
-      this.suggestion?.length > 0
-    );
+    return this.loading || this.suggestion?.length > 0;
   }
 
   async loadMode() {
