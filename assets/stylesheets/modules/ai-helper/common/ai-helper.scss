@@ -350,3 +350,69 @@
     }
   }
 }
+
+.choose-topic-modal .split-new-topic-form {
+  .control-group {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 0.25em;
+    margin-bottom: 1rem;
+
+    label {
+      flex: 100%;
+    }
+
+    input,
+    .combo-box,
+    .multi-select {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+
+  .ai-split-topic-suggestion-button {
+    .d-icon-spinner {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+.ai-split-topic-suggestion__results {
+  list-style: none;
+  margin-left: 0;
+  margin: 0;
+
+  .btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+
+    &:hover,
+    &:focus {
+      background: var(--d-hover);
+      color: var(--primary);
+    }
+  }
+
+  li:not(:last-child) {
+    border-bottom: 1px solid var(--primary-low);
+  }
+
+  .ai-split-topic-suggestion__category-result {
+    font-size: var(--font-0);
+    padding: 0.5em 1rem;
+
+    &:hover,
+    &:focus {
+      background: var(--d-hover);
+      cursor: pointer;
+    }
+  }
+}
+
+// ! TODO: Temporary fix, but we should find a better way to do this
+.fk-d-menu {
+  z-index: z("modal", "dropdown");
+}
