@@ -15,6 +15,7 @@ module DiscourseAi
             DiscourseAi::Completions::Endpoints::Anthropic,
             DiscourseAi::Completions::Endpoints::OpenAi,
             DiscourseAi::Completions::Endpoints::HuggingFace,
+            DiscourseAi::Completions::Endpoints::Gemini,
           ].detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |ek|
             ek.can_contact?(model_name)
           end

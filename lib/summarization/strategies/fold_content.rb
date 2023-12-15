@@ -151,9 +151,8 @@ module DiscourseAi
                 For example, a link to the 3rd post in the topic would be [post 3](#{opts[:resource_path]}/3)
               TEXT
 
-          insts += "The discussion title is: #{opts[:content_title]}.\n" if opts[:content_title]
-
           prompt = { insts: insts, input: <<~TEXT }
+              #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ".\n" : ""}
               Here are the posts, inside <input></input> XML tags:
 
               <input>

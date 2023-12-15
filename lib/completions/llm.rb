@@ -29,6 +29,7 @@ module DiscourseAi
           DiscourseAi::Completions::Dialects::Llama2Classic,
           DiscourseAi::Completions::Dialects::ChatGpt,
           DiscourseAi::Completions::Dialects::OrcaStyle,
+          DiscourseAi::Completions::Dialects::Gemini,
         ]
 
         dialect =

@@ -5,6 +5,7 @@ class AiApiAuditLog < ActiveRecord::Base
     OpenAI = 1
     Anthropic = 2
     HuggingFaceTextGeneration = 3
+    Gemini = 4
   end
 end
 
