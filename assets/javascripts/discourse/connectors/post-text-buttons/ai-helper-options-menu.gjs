@@ -239,7 +239,7 @@ export default class AIHelperOptionsMenu extends Component {
                 />
               {{else}}
                 <DButton
-                  @class="btn-flat"
+                  @class="btn-flat ai-post-helper__options-button"
                   @icon={{option.icon}}
                   @translatedLabel={{option.translated_name}}
                   @action={{this.performAISuggestion}}

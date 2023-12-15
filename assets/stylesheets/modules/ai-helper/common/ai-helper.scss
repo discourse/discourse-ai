@@ -317,6 +317,13 @@
     }
   }
 
+  &__options-button {
+    padding: 0.65rem 1rem;
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+
   &__suggestion {
     padding: 0.5rem;
     display: flex;
