@@ -26,8 +26,7 @@ export default class AiEditSuggestionButton extends Component {
   get disabled() {
     return (
       this.loading ||
-      this.suggestion?.length > 0 ||
-      this.args.outletArgs.newValue
+      this.suggestion?.length > 0
     );
   }
 
@@ -68,13 +67,15 @@ export default class AiEditSuggestionButton extends Component {
   }
 
   <template>
-    <DButton
-      class="btn-small btn-ai-suggest-edit"
-      @action={{this.suggest}}
-      @icon="discourse-sparkles"
-      @label="discourse_ai.ai_helper.fast_edit.suggest_button"
-      @isLoading={{this.loading}}
-      @disabled={{this.disabled}}
-    />
+    {{#unless @outletArgs.newValue}}
+      <DButton
+        class="btn-small btn-ai-suggest-edit"
+        @action={{this.suggest}}
+        @icon="discourse-sparkles"
+        @label="discourse_ai.ai_helper.fast_edit.suggest_button"
+        @isLoading={{this.loading}}
+        @disabled={{this.disabled}}
+      />
+    {{/unless}}
   </template>
 }
