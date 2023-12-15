@@ -126,7 +126,7 @@ module DiscourseAi
         when "generate_titles"
           %w[composer]
         when "proofread"
-          %w[composer]
+          %w[composer post]
         when "markdown_table"
           %w[composer]
         when "tone"

@@ -343,4 +343,10 @@
       }
     }
   }
+
+  &__fast-edit {
+    .fast-edit-container {
+      padding-top: 0.5em;
+    }
+  }
 }
