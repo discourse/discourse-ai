@@ -5,7 +5,8 @@ module PageObjects
     class AiSplitTopicSuggester < PageObjects::Components::Base
       SUGGESTION_BUTTON_SELECTOR = ".ai-split-topic-suggestion-button"
       TITLE_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}[data-suggestion-mode='suggest_title']"
-      CATEGORY_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}[data-suggestion-mode='suggest_category']"
+      CATEGORY_BUTTON_SELECTOR =
+        "#{SUGGESTION_BUTTON_SELECTOR}[data-suggestion-mode='suggest_category']"
       TAG_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}[data-suggestion-mode='suggest_tags']"
       MENU_SELECTOR = ".fk-d-menu[data-identifier='ai-split-topic-suggestion-menu']"
 

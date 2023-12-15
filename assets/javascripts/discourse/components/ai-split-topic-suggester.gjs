@@ -114,8 +114,8 @@ export default class AiSplitTopicSuggester extends Component {
       @interactive={{true}}
       @identifier="ai-split-topic-suggestion-menu"
       class="ai-split-topic-suggestion-button"
-      data-suggestion-mode={{this.args.mode}}
-      {{on "click" (fn this.loadSuggestions)}}
+      data-suggestion-mode={{@mode}}
+      {{on "click" this.loadSuggestions}}
       as |menu|
     >
       <ul class="ai-split-topic-suggestion__results">
@@ -126,6 +126,7 @@ export default class AiSplitTopicSuggester extends Component {
                 data-name={{suggestion.name}}
                 data-value={{suggestion.id}}
                 class="ai-split-topic-suggestion__category-result"
+                role="button"
                 {{on "click" (fn this.applySuggestion suggestion menu)}}
               >
                 {{categoryBadge suggestion}}
