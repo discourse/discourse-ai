@@ -15,8 +15,17 @@ RSpec.describe "AI Post helper", type: :system, js: true do
   fab!(:post_2) do
     Fabricate(:post, topic: topic, raw: "La lluvia en España se queda principalmente en el avión.")
   end
+  fab!(:post_3) do
+    Fabricate(
+      :post,
+      topic: topic,
+      raw:
+        "The Toyota Supra delivrs 382 horsepwr makin it a very farst car.",
+    )
+  end
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:post_ai_helper) { PageObjects::Components::AIHelperPostOptions.new }
+  let(:fast_editor) { PageObjects::Components::FastEditor.new }
 
   before do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
@@ -77,18 +86,31 @@ RSpec.describe "AI Post helper", type: :system, js: true do
 
       let(:translated_input) { "The rain in Spain, stays mainly in the Plane." }
 
-      skip "TODO: Fix explain option stuck in loading in test" do
-        it "shows a translation of the selected text" do
-          select_post_text(post_2)
-          post_ai_helper.click_ai_button
+      it "shows a translation of the selected text" do
+        select_post_text(post_2)
+        post_ai_helper.click_ai_button
 
-          DiscourseAi::Completions::Llm.with_prepared_responses([translated_input]) do
-            post_ai_helper.select_helper_model(mode)
+        DiscourseAi::Completions::Llm.with_prepared_responses([translated_input]) do
+          post_ai_helper.select_helper_model(mode)
 
-            wait_for { post_ai_helper.suggestion_value == translated_input }
+          wait_for { post_ai_helper.suggestion_value == translated_input }
 
-            expect(post_ai_helper.suggestion_value).to eq(translated_input)
-          end
+          expect(post_ai_helper.suggestion_value).to eq(translated_input)
+        end
+      end
+    end
+
+    context "when using proofread mode" do
+      let(:mode) { CompletionPrompt::PROOFREAD }
+      let(:proofread_response) { "The Toyota Supra delivers 382 horsepower making it a very fast car." }
+
+      it "pre-fills fast edit with proofread text" do
+        select_post_text(post_3)
+        post_ai_helper.click_ai_button
+        DiscourseAi::Completions::Llm.with_prepared_responses([proofread_response]) do
+          post_ai_helper.select_helper_model(mode)
+          wait_for { fast_editor.has_content?(proofread_response) }
+          expect(fast_editor).to have_content(proofread_response)
         end
       end
     end
@@ -114,6 +136,20 @@ RSpec.describe "AI Post helper", type: :system, js: true do
       select_post_text(post)
       expect(post_ai_helper).to have_post_selection_toolbar
       expect(post_ai_helper).to have_no_post_ai_helper
+    end
+  end
+
+  context "when triggering AI proofread through edit button" do
+    let(:proofread_response) { "The Toyota Supra delivers 382 horsepower making it a very fast car." }
+
+    it "pre-fills fast edit with proofread text" do
+      select_post_text(post_3)
+      find(".quote-edit-label").click
+      DiscourseAi::Completions::Llm.with_prepared_responses([proofread_response]) do
+        find(".btn-ai-suggest-edit", visible: :all).click
+        wait_for { fast_editor.has_content?(proofread_response) }
+        expect(fast_editor).to have_content(proofread_response)
+      end
     end
   end
 end

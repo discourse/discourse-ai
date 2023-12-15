@@ -245,7 +245,7 @@ export default class AIHelperOptionsMenu extends Component {
                   @action={{this.performAISuggestion}}
                   @actionParam={{option}}
                   data-name={{option.name}}
-                  data-value={{option.value}}
+                  data-value={{option.id}}
                 />
               {{/if}}
             {{/each}}
