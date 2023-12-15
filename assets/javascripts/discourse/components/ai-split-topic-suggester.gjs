@@ -8,7 +8,6 @@ import DButton from "discourse/components/d-button";
 import categoryBadge from "discourse/helpers/category-badge";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import icon from "discourse-common/helpers/d-icon";
 import DMenu from "float-kit/components/d-menu";
 import eq from "truth-helpers/helpers/eq";
 
@@ -115,6 +114,7 @@ export default class AiSplitTopicSuggester extends Component {
       @interactive={{true}}
       @identifier="ai-split-topic-suggestion-menu"
       class="ai-split-topic-suggestion-button"
+      data-suggestion-mode={{this.args.mode}}
       {{on "click" (fn this.loadSuggestions)}}
       as |menu|
     >
@@ -134,8 +134,7 @@ export default class AiSplitTopicSuggester extends Component {
               <li data-name={{suggestion}} data-value={{index}}>
                 <DButton
                   @translatedLabel={{suggestion}}
-                  @action={{this.applySuggestion}}
-                  @actionParam={{suggestion}}
+                  @action={{fn this.applySuggestion suggestion menu}}
                 />
               </li>
             {{/if}}
