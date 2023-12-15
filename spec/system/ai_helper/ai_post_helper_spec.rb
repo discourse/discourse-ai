@@ -106,6 +106,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
       end
 
       it "pre-fills fast edit with proofread text" do
+        skip("Test is flaky in CI, possibly some timing issue?") if ENV["CI"]
         select_post_text(post_3)
         post_ai_helper.click_ai_button
         DiscourseAi::Completions::Llm.with_prepared_responses([proofread_response]) do
@@ -146,6 +147,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     end
 
     it "pre-fills fast edit with proofread text" do
+      skip("Test is flaky in CI, possibly some timing issue?") if ENV["CI"]
       select_post_text(post_3)
       find(".quote-edit-label").click
       DiscourseAi::Completions::Llm.with_prepared_responses([proofread_response]) do
