@@ -11,9 +11,12 @@ if defined?(DiscourseAutomation)
     triggerables %i[recurring]
 
     field :sender, component: :user, required: true
-    field :receiver, component: :user, required: true
+    field :receivers, component: :users, required: true
     field :title, component: :text, required: true
-    field :instructions, component: :message, required: true, default_value: "test test"
+    field :instructions,
+          component: :message,
+          required: true,
+          default_value: DiscourseAi::Automation::ReportRunner.default_instructions
     field :sample_size, component: :text, required: true, default_value: 100
 
     field :model,
@@ -23,29 +26,45 @@ if defined?(DiscourseAutomation)
             content: DiscourseAi::Automation::AVAILABLE_MODELS,
           }
 
-    field :category, component: :category
+    field :priority_group, component: :group
+    field :categories, component: :categories
     field :tags, component: :tags
 
     field :allow_secure_categories, component: :boolean
+    field :debug_mode, component: :boolean
 
     script do |context, fields, automation|
-      sender = context["sender"]["value"]
-      receiver = context["receiver"]["value"]
-      title = context["title"]["value"]
-      model = context["model"]["value"]
-      category_id = context.dig("category", "value")
-      tags = context.dig("tags", "value")
-      allow_secure_categories = !!context.dig("allow_secure_categories", "value")
+      begin
+        sender = fields.dig("sender", "value")
+        receivers = fields.dig("receivers", "value")
+        title = fields.dig("title", "value")
+        model = fields.dig("model", "value")
+        category_ids = fields.dig("categories", "value")
+        tags = fields.dig("tags", "value")
+        allow_secure_categories = !!fields.dig("allow_secure_categories", "value")
+        debug_mode = !!fields.dig("debug_mode", "value")
+        sample_size = fields.dig("sample_size", "value")
+        instructions = fields.dig("instructions", "value")
 
-      DiscourseAi::Automation::ReportRunner.run!(
-        sender_username: sender,
-        receiver_username: receiver,
-        title: title,
-        model: model,
-        category_id: category_id,
-        tags: tags,
-        allow_secure_categories: allow_secure_categories,
-      )
+        DiscourseAi::Automation::ReportRunner.run!(
+          sender_username: sender,
+          receivers: receivers,
+          title: title,
+          model: model,
+          category_ids: category_ids,
+          tags: tags,
+          allow_secure_categories: allow_secure_categories,
+          debug_mode: debug_mode,
+          sample_size: sample_size,
+          instructions: instructions,
+        )
+      rescue => e
+        Discourse.warn_exception e, message: "Error running LLM report!"
+        if Rails.env.development?
+          p e
+          puts e.backtrace
+        end
+      end
     end
   end
 end

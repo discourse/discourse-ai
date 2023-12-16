@@ -17,9 +17,9 @@ en:
             sender:
               label: "Sender"
               description: "The user that will send the report"
-            receiver:
-              label: "Receiver"
-              description: "The user that will receive the report"
+            receivers:
+              label: "Receivers"
+              description: "The users that will receive the report (can be email or usernames)"
             title:
               label: "Title"
               description: "The title of the report"
@@ -35,15 +35,21 @@ en:
             model:
               label: "Model"
               description: "LLM to use for report generation"
-            category:
-              label: "Category"
-              description: "Filter topics only to this category"
+            categories:
+              label: "Categories"
+              description: "Filter topics only to these category"
             tags:
               label: "Tags"
               description: "Filter topics only to these tags"
             allow_secure_categories:
               label: "Allow secure categories"
               description: "Allow the report to be generated for topics in secure categories"
+            debug_mode:
+              label: "Debug Mode"
+              description: "Enable debug mode to see the raw input and output of the LLM"
+            priority_group:
+              label: "Priority Group"
+              description: "Priotize content from this group in the report"
 
         llm_triage:
           fields:

@@ -33,15 +33,84 @@ module DiscourseAi
         TEXT
       end
 
-      def self.run(
+      def self.run!(**args)
+        new(**args).run!
+      end
+
+      def initialize(
         sender_username:,
-        receiver_username:,
+        receivers:,
         title:,
         model:,
-        category_id: nil,
-        tags: nil,
-        allow_secure_categories: false
+        category_ids:,
+        tags:,
+        allow_secure_categories:,
+        debug_mode:,
+        sample_size:,
+        instructions:
       )
+        @sender = User.find_by(username: sender_username)
+        @receivers = User.where(username: receivers)
+        @title = title
+
+        @llm = DiscourseAi::Completions::Llm.proxy(model)
+        @category_ids = category_ids
+        @tags = tags
+        @allow_secure_categories = allow_secure_categories
+        @debug_mode = debug_mode
+        @sample_size = sample_size.to_i < 10 ? 10 : sample_size.to_i
+        @instructions = instructions
+      end
+
+      def run!
+        context =
+          DiscourseAi::Automation::ReportContextGenerator.generate(
+            start_date: 7.days.ago,
+            duration: 7.days,
+            max_posts: @sample_size,
+          )
+        input = <<~INPUT
+          #{@instructions}
+
+          <context>
+          #{context}
+          </context>
+
+          #{@instructions}
+        INPUT
+
+        prompt = {
+          insts: "You are a helpful bot specializing in summarizing activity Discourse sites",
+          input: input,
+        }
+
+        result = +""
+
+        puts if Rails.env.development? && @debug_mode
+
+        @llm.completion!(prompt, Discourse.system_user) do |response|
+          print response if Rails.env.development? && @debug_mode
+          result << response
+        end
+
+        post =
+          PostCreator.create!(
+            @sender,
+            raw: result,
+            title: @title,
+            archetype: Archetype.private_message,
+            target_usernames: @receivers.map(&:username).join(","),
+            skip_validations: true,
+          )
+
+        if @debug_mode
+          PostCreator.create!(
+            @sender,
+            raw: "LLM input was:\n\n#{input}",
+            topic_id: post.topic_id,
+            skip_validations: true,
+          )
+        end
       end
     end
   end
