@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "aws-sigv4"
+
 module DiscourseAi
   module Completions
     module Endpoints
@@ -12,7 +14,7 @@ module DiscourseAi
         end
 
         def default_options
-          { max_tokens_to_sample: 20_000 }
+          { max_tokens_to_sample: 2_000 }
         end
 
         def provider_id
