@@ -63,7 +63,8 @@ module DiscourseAi
         it "orders so most liked are first" do
           context = ReportContextGenerator.generate(start_date: 1.day.ago, duration: 2.day)
 
-          expect(context).to match(/likes: 10\n.*likes: 0/m)
+          regex = "topic_id: #{topic_with_likes.id}.*topic_id: #{long_post.topic.id}"
+          expect(context).to match(Regexp.new(regex, Regexp::MULTILINE))
         end
 
         it "allows you to prioritize groups" do

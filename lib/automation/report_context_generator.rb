@@ -72,7 +72,6 @@ module DiscourseAi
         info << "### #{topic.title}"
         info << "topic_id: #{topic.id}"
         info << "category: #{topic.category&.name}"
-        info << "likes: #{topic.like_count}"
         tags = topic.tags.pluck(:name)
         info << "tags: #{topic.tags.pluck(:name).join(", ")}" if tags.present?
         info << topic.created_at.strftime("%Y-%m-%d %H:%M")
@@ -89,7 +88,6 @@ module DiscourseAi
         excerpt = post.raw[0..@excerpt_length]
         excerpt = "excerpt: #{excerpt}..." if excerpt.length < post.raw.length
         buffer << "#{excerpt}"
-        buffer.join("\n")
         { likes: post.like_count, info: buffer.join("\n") }
       end
 

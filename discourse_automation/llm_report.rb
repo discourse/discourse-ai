@@ -13,6 +13,8 @@ if defined?(DiscourseAutomation)
     field :sender, component: :user, required: true
     field :receivers, component: :users, required: true
     field :title, component: :text, required: true
+    field :days, component: :text, required: true, default_value: 7
+    field :offset, component: :text, required: true, default_value: 0
     field :instructions,
           component: :message,
           required: true,
@@ -45,6 +47,9 @@ if defined?(DiscourseAutomation)
         debug_mode = !!fields.dig("debug_mode", "value")
         sample_size = fields.dig("sample_size", "value")
         instructions = fields.dig("instructions", "value")
+        days = fields.dig("days", "value")
+        offset = fields.dig("offset", "value").to_i
+        priority_group = fields.dig("priority_group", "value")
 
         DiscourseAi::Automation::ReportRunner.run!(
           sender_username: sender,
@@ -57,6 +62,9 @@ if defined?(DiscourseAutomation)
           debug_mode: debug_mode,
           sample_size: sample_size,
           instructions: instructions,
+          days: days,
+          offset: offset,
+          priority_group_id: priority_group,
         )
       rescue => e
         Discourse.warn_exception e, message: "Error running LLM report!"

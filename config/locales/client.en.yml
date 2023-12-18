@@ -23,9 +23,12 @@ en:
             title:
               label: "Title"
               description: "The title of the report"
-            system_prompt:
-              label: "System Prompt"
-              description: "The prompt that will be used to generate the report"
+            days:
+              label: "Days"
+              description: "The timespan of the report"
+            offset:
+              label: "Offset"
+              description: "When testing you may want to run the report historically, use offset to start the report in an earlier date"
             instructions:
               label: "Instructions"
               description: "The instructions provided to the large language model"
