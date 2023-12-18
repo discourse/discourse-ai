@@ -104,6 +104,23 @@ module DiscourseAi
         buffer << "End Date: #{(@start_date + @duration).to_date}"
         buffer << "New posts: #{@posts.count}"
         buffer << "New topics: #{topic_count}"
+
+        top_users =
+          Post
+            .where(id: @posts.select(:id))
+            .joins(:user)
+            .group(:user_id, :username)
+            .select(
+              "user_id, username, sum(posts.like_count) like_count, count(posts.id) post_count",
+            )
+            .order("sum(posts.like_count) desc")
+            .limit(10)
+
+        buffer << "Top users:"
+        top_users.each do |user|
+          buffer << "@#{user.username} (#{user.like_count} likes, #{user.post_count} posts)"
+        end
+
         buffer.join("\n")
       end
 
