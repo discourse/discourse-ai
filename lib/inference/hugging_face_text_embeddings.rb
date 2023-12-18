@@ -8,7 +8,7 @@ module ::DiscourseAi
         body = { inputs: content, truncate: true }.to_json
 
         if SiteSetting.ai_hugging_face_tei_endpoint_srv.present?
-          service = DiscourseAi::Helper::DnsSrvHelper.dns_srv_lookup(SiteSetting.ai_hugging_face_tei_endpoint_srv)
+          service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_hugging_face_tei_endpoint_srv)
           api_endpoint = "https://#{service.target}:#{service.port}"
         else
           api_endpoint = SiteSetting.ai_hugging_face_tei_endpoint
@@ -22,7 +22,8 @@ module ::DiscourseAi
       end
 
       def self.configured?
-        SiteSetting.ai_hugging_face_tei_endpoint.present? || SiteSetting.ai_hugging_face_tei_endpoint_srv.present?
+        SiteSetting.ai_hugging_face_tei_endpoint.present? ||
+          SiteSetting.ai_hugging_face_tei_endpoint_srv.present?
       end
     end
   end

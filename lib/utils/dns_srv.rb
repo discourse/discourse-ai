@@ -3,9 +3,9 @@
 require "resolv"
 
 module DiscourseAi
-  module Helper
-    module DnsSrvHelper
-      def self.dns_srv_lookup(domain)
+  module Utils
+    module DnsSrv
+      def self.lookup(domain)
         Discourse
           .cache
           .fetch("dns_srv_lookup:#{domain}", expires_in: 5.minutes) do
