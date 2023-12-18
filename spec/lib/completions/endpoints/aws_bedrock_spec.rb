@@ -9,48 +9,17 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
 
   let(:model_name) { "claude-2" }
   let(:bedrock_name) { "claude-v2" }
-  let(:prompt) { "Human: write 3 words\n\n" }
+  let(:generic_prompt) { { insts: "write 3 words" } }
+  let(:dialect) { DiscourseAi::Completions::Dialects::Claude.new(generic_prompt, model_name) }
+  let(:prompt) { dialect.translate }
 
   let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
-  let(:stream_request_body) { model.default_options.merge(prompt: prompt).to_json }
+  let(:stream_request_body) { request_body }
 
   before do
     SiteSetting.ai_bedrock_access_key_id = "123456"
     SiteSetting.ai_bedrock_secret_access_key = "asd-asd-asd"
     SiteSetting.ai_bedrock_region = "us-east-1"
-  end
-
-  # Copied from https://github.com/bblimke/webmock/issues/629
-  # Workaround for stubbing a streamed response
-  before do
-    mocked_http =
-      Class.new(Net::HTTP) do
-        def request(*)
-          super do |response|
-            response.instance_eval do
-              def read_body(*, &block)
-                if block_given?
-                  @body.each(&block)
-                else
-                  super
-                end
-              end
-            end
-
-            yield response if block_given?
-
-            response
-          end
-        end
-      end
-
-    @original_net_http = Net.send(:remove_const, :HTTP)
-    Net.send(:const_set, :HTTP, mocked_http)
-  end
-
-  after do
-    Net.send(:remove_const, :HTTP)
-    Net.send(:const_set, :HTTP, @original_net_http)
   end
 
   def response(content)
@@ -65,7 +34,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     }
   end
 
-  def stub_response(prompt, response_text)
+  def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(
         :post,
@@ -102,7 +71,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     encoder.encode(message)
   end
 
-  def stub_streamed_response(prompt, deltas)
+  def stub_streamed_response(prompt, deltas, tool_call: false)
     chunks =
       deltas.each_with_index.map do |_, index|
         if index == (deltas.length - 1)
@@ -120,6 +89,20 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       .with(body: stream_request_body)
       .to_return(status: 200, body: chunks)
   end
+
+  let(:tool_deltas) { ["<function", <<~REPLY] }
+  _calls>
+  <invoke>
+  <tool_name>get_weather</tool_name>
+  <parameters>
+  <location>Sydney</location>
+  <unit>c</unit>
+  </parameters>
+  </invoke>
+  </function_calls>
+  REPLY
+
+  let(:tool_call) { invocation }
 
   it_behaves_like "an endpoint that can communicate with a completion service"
 end

@@ -3,25 +3,65 @@
 module DiscourseAi
   module Completions
     module Dialects
-      class Claude
-        def self.can_translate?(model_name)
-          %w[claude-instant-1 claude-2].include?(model_name)
+      class Claude < Dialect
+        class << self
+          def can_translate?(model_name)
+            %w[claude-instant-1 claude-2].include?(model_name)
+          end
+
+          def tokenizer
+            DiscourseAi::Tokenizer::AnthropicTokenizer
+          end
         end
 
-        def translate(generic_prompt)
-          claude_prompt = +"Human: #{generic_prompt[:insts]}\n"
+        def translate
+          claude_prompt = +"Human: #{prompt[:insts]}\n"
 
-          claude_prompt << build_examples(generic_prompt[:examples]) if generic_prompt[:examples]
+          claude_prompt << build_tools_prompt if prompt[:tools]
 
-          claude_prompt << "#{generic_prompt[:input]}\n"
+          claude_prompt << build_examples(prompt[:examples]) if prompt[:examples]
 
-          claude_prompt << "#{generic_prompt[:post_insts]}\n" if generic_prompt[:post_insts]
+          claude_prompt << conversation_context if prompt[:conversation_context]
+
+          claude_prompt << "#{prompt[:input]}\n"
+
+          claude_prompt << "#{prompt[:post_insts]}\n" if prompt[:post_insts]
 
           claude_prompt << "Assistant:\n"
         end
 
-        def tokenizer
-          DiscourseAi::Tokenizer::AnthropicTokenizer
+        def max_prompt_tokens
+          50_000
+        end
+
+        def conversation_context
+          return "" if prompt[:conversation_context].blank?
+
+          trimmed_context = trim_context(prompt[:conversation_context])
+
+          trimmed_context
+            .reverse
+            .reduce(+"") do |memo, context|
+              memo << (context[:type] == "user" ? "Human:" : "Assistant:")
+
+              if context[:type] == "tool"
+                memo << <<~TEXT
+
+                <function_results>
+                <result>
+                <tool_name>#{context[:name]}</tool_name>
+                <json>
+                #{context[:content]}
+                </json>
+                </result>
+                </function_results>
+                TEXT
+              else
+                memo << " " << context[:content] << "\n"
+              end
+
+              memo
+            end
         end
 
         private

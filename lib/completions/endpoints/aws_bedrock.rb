@@ -37,7 +37,7 @@ module DiscourseAi
           URI(api_url)
         end
 
-        def prepare_payload(prompt, model_params)
+        def prepare_payload(prompt, model_params, _dialect)
           default_options.merge(prompt: prompt).merge(model_params)
         end
 

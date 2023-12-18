@@ -1,7 +1,24 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
-  subject(:dialect) { described_class.new }
+  subject(:dialect) { described_class.new(prompt, "gpt-4") }
+
+  let(:tool) do
+    {
+      name: "get_weather",
+      description: "Get the weather in a city",
+      parameters: [
+        { name: "location", type: "string", description: "the city name", required: true },
+        {
+          name: "unit",
+          type: "string",
+          description: "the unit of measurement celcius c or fahrenheit f",
+          enum: %w[c f],
+          required: true,
+        },
+      ],
+    }
+  end
 
   let(:prompt) do
     {
@@ -25,6 +42,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
     TEXT
       post_insts:
         "Please put the translation between <ai></ai> tags and separate each title with a comma.",
+      tools: [tool],
     }
   end
 
@@ -35,7 +53,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
         { role: "user", content: prompt[:input] },
       ]
 
-      translated = dialect.translate(prompt)
+      translated = dialect.translate
 
       expect(translated).to contain_exactly(*open_ai_version)
     end
@@ -55,9 +73,51 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
         { role: "user", content: prompt[:input] },
       ]
 
-      translated = dialect.translate(prompt)
+      translated = dialect.translate
 
       expect(translated).to contain_exactly(*open_ai_version)
+    end
+  end
+
+  describe "#conversation_context" do
+    let(:context) do
+      [
+        { type: "user", name: "user1", content: "This is a new message by a user" },
+        { type: "assistant", content: "I'm a previous bot reply, that's why there's no user" },
+        { type: "tool", name: "tool_id", content: "I'm a tool result" },
+      ]
+    end
+
+    it "adds conversation in reverse order (first == newer)" do
+      prompt[:conversation_context] = context
+
+      translated_context = dialect.conversation_context
+
+      expect(translated_context).to eq(
+        [
+          { role: "tool", content: context.last[:content], tool_call_id: context.last[:name] },
+          { role: "assistant", content: context.second[:content] },
+          { role: "user", content: context.first[:content], name: context.first[:name] },
+        ],
+      )
+    end
+
+    it "trims content if it's getting too long" do
+      context.last[:content] = context.last[:content] * 1000
+
+      prompt[:conversation_context] = context
+
+      translated_context = dialect.conversation_context
+
+      expect(translated_context.last[:content].length).to be < context.last[:content].length
+    end
+  end
+
+  describe "#tools" do
+    it "returns a list of available tools" do
+      open_ai_tool_f = { type: "function", tool: tool }
+
+      expect(subject.tools).to contain_exactly(open_ai_tool_f)
     end
   end
 end

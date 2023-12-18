@@ -6,22 +6,60 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::OpenAiTokenizer) }
 
   let(:model_name) { "gemini-pro" }
-  let(:prompt) do
+  let(:generic_prompt) { { insts: "You are a helpful bot.", input: "write 3 words" } }
+  let(:dialect) { DiscourseAi::Completions::Dialects::Gemini.new(generic_prompt, model_name) }
+  let(:prompt) { dialect.translate }
+
+  let(:tool_payload) do
+    {
+      name: "get_weather",
+      description: "Get the weather in a city",
+      parameters: [
+        { name: "location", type: "string", description: "the city name" },
+        {
+          name: "unit",
+          type: "string",
+          description: "the unit of measurement celcius c or fahrenheit f",
+          enum: %w[c f],
+        },
+      ],
+      required: %w[location unit],
+    }
+  end
+
+  let(:request_body) do
+    model
+      .default_options
+      .merge(contents: prompt)
+      .tap { |b| b[:tools] = [{ function_declarations: [tool_payload] }] if generic_prompt[:tools] }
+      .to_json
+  end
+  let(:stream_request_body) do
+    model
+      .default_options
+      .merge(contents: prompt)
+      .tap { |b| b[:tools] = [{ function_declarations: [tool_payload] }] if generic_prompt[:tools] }
+      .to_json
+  end
+
+  let(:tool_deltas) do
     [
-      { role: "system", content: "You are a helpful bot." },
-      { role: "user", content: "Write 3 words" },
+      { "functionCall" => { name: "get_weather", args: {} } },
+      { "functionCall" => { name: "get_weather", args: { location: "" } } },
+      { "functionCall" => { name: "get_weather", args: { location: "Sydney", unit: "c" } } },
     ]
   end
 
-  let(:request_body) { model.default_options.merge(contents: prompt).to_json }
-  let(:stream_request_body) { model.default_options.merge(contents: prompt).to_json }
+  let(:tool_call) do
+    { "functionCall" => { name: "get_weather", args: { location: "Sydney", unit: "c" } } }
+  end
 
-  def response(content)
+  def response(content, tool_call: false)
     {
       candidates: [
         {
           content: {
-            parts: [{ text: content }],
+            parts: [(tool_call ? content : { text: content })],
             role: "model",
           },
           finishReason: "STOP",
@@ -45,22 +83,22 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     }
   end
 
-  def stub_response(prompt, response_text)
+  def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(
         :post,
         "https://generativelanguage.googleapis.com/v1beta/models/#{model_name}:generateContent?key=#{SiteSetting.ai_gemini_api_key}",
       )
-      .with(body: { contents: prompt })
-      .to_return(status: 200, body: JSON.dump(response(response_text)))
+      .with(body: request_body)
+      .to_return(status: 200, body: JSON.dump(response(response_text, tool_call: tool_call)))
   end
 
-  def stream_line(delta, finish_reason: nil)
+  def stream_line(delta, finish_reason: nil, tool_call: false)
     {
       candidates: [
         {
           content: {
-            parts: [{ text: delta }],
+            parts: [(tool_call ? delta : { text: delta })],
             role: "model",
           },
           finishReason: finish_reason,
@@ -76,24 +114,24 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     }.to_json
   end
 
-  def stub_streamed_response(prompt, deltas)
+  def stub_streamed_response(prompt, deltas, tool_call: false)
     chunks =
       deltas.each_with_index.map do |_, index|
         if index == (deltas.length - 1)
-          stream_line(deltas[index], finish_reason: "STOP")
+          stream_line(deltas[index], finish_reason: "STOP", tool_call: tool_call)
         else
-          stream_line(deltas[index])
+          stream_line(deltas[index], tool_call: tool_call)
         end
       end
 
-    chunks = chunks.join("\n,\n").prepend("[\n").concat("\n]")
+    chunks = chunks.join("\n,\n").prepend("[").concat("\n]").split("")
 
     WebMock
       .stub_request(
         :post,
         "https://generativelanguage.googleapis.com/v1beta/models/#{model_name}:streamGenerateContent?key=#{SiteSetting.ai_gemini_api_key}",
       )
-      .with(body: model.default_options.merge(contents: prompt).to_json)
+      .with(body: stream_request_body)
       .to_return(status: 200, body: chunks)
   end
 

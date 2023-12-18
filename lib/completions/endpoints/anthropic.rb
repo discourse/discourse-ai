@@ -22,7 +22,7 @@ module DiscourseAi
           @uri ||= URI("https://api.anthropic.com/v1/complete")
         end
 
-        def prepare_payload(prompt, model_params)
+        def prepare_payload(prompt, model_params, _dialect)
           default_options
             .merge(model_params)
             .merge(prompt: prompt)

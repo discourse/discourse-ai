@@ -24,35 +24,26 @@ module DiscourseAi
       end
 
       def self.proxy(model_name)
-        dialects = [
-          DiscourseAi::Completions::Dialects::Claude,
-          DiscourseAi::Completions::Dialects::Llama2Classic,
-          DiscourseAi::Completions::Dialects::ChatGpt,
-          DiscourseAi::Completions::Dialects::OrcaStyle,
-          DiscourseAi::Completions::Dialects::Gemini,
-        ]
+        dialect_klass = DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name)
 
-        dialect =
-          dialects.detect(-> { raise UNKNOWN_MODEL }) { |d| d.can_translate?(model_name) }.new
-
-        return new(dialect, @canned_response, model_name) if @canned_response
+        return new(dialect_klass, @canned_response, model_name) if @canned_response
 
         gateway =
           DiscourseAi::Completions::Endpoints::Base.endpoint_for(model_name).new(
             model_name,
-            dialect.tokenizer,
+            dialect_klass.tokenizer,
           )
 
-        new(dialect, gateway, model_name)
+        new(dialect_klass, gateway, model_name)
       end
 
-      def initialize(dialect, gateway, model_name)
-        @dialect = dialect
+      def initialize(dialect_klass, gateway, model_name)
+        @dialect_klass = dialect_klass
         @gateway = gateway
         @model_name = model_name
       end
 
-      delegate :tokenizer, to: :dialect
+      delegate :tokenizer, to: :dialect_klass
 
       # @param generic_prompt { Hash } - Prompt using our generic format.
       # We use the following keys from the hash:
@@ -60,23 +51,64 @@ module DiscourseAi
       #   - input: String containing user input
       #   - examples (optional): Array of arrays with examples of input and responses. Each array is a input/response pair like [[example1, response1], [example2, response2]].
       #   - post_insts (optional): Additional instructions for the LLM. Some dialects like Claude add these at the end of the prompt.
+      #   - conversation_context (optional): Array of hashes to provide context about an ongoing conversation with the model.
+      #     We translate the array in reverse order, meaning the first element would be the most recent message in the conversation.
+      #     Example:
+      #
+      #   [
+      #    { type: "user", name: "user1", content: "This is a new message by a user" },
+      #    { type: "assistant", content: "I'm a previous bot reply, that's why there's no user" },
+      #    { type: "tool", name: "tool_id", content: "I'm a tool result" },
+      #   ]
+      #
+      #   - tools (optional - only functions supported): Array of functions a model can call. Each function is defined as a hash. Example:
+      #
+      #     {
+      #       name: "get_weather",
+      #       description: "Get the weather in a city",
+      #       parameters: [
+      #         { name: "location", type: "string", description: "the city name", required: true },
+      #         {
+      #           name: "unit",
+      #           type: "string",
+      #           description: "the unit of measurement celcius c or fahrenheit f",
+      #           enum: %w[c f],
+      #           required: true,
+      #         },
+      #       ],
+      #     }
       #
       # @param user { User } - User requesting the summary.
       #
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       #
       # @returns { String } - Completion result.
+      #
+      # When the model invokes a tool, we'll wait until the endpoint finishes replying and feed you a fully-formed tool,
+      # even if you passed a partial_read_blk block. Invocations are strings that look like this:
+      #
+      # <function_calls>
+      #   <invoke>
+      #   <tool_name>get_weather</tool_name>
+      #   <tool_id>get_weather</tool_id>
+      #   <parameters>
+      #     <location>Sydney</location>
+      #     <unit>c</unit>
+      #   </parameters>
+      #  </invoke>
+      # </function_calls>
+      #
       def completion!(generic_prompt, user, &partial_read_blk)
-        prompt = dialect.translate(generic_prompt)
-
         model_params = generic_prompt.dig(:params, model_name) || {}
 
-        gateway.perform_completion!(prompt, user, model_params, &partial_read_blk)
+        dialect = dialect_klass.new(generic_prompt, model_name, opts: model_params)
+
+        gateway.perform_completion!(dialect, user, model_params, &partial_read_blk)
       end
 
       private
 
-      attr_reader :dialect, :gateway, :model_name
+      attr_reader :dialect_klass, :gateway, :model_name
     end
   end
 end

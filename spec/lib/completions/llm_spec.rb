@@ -3,7 +3,7 @@
 RSpec.describe DiscourseAi::Completions::Llm do
   subject(:llm) do
     described_class.new(
-      DiscourseAi::Completions::Dialects::OrcaStyle.new,
+      DiscourseAi::Completions::Dialects::OrcaStyle,
       canned_response,
       "Upstage-Llama-2-*-instruct-v2",
     )

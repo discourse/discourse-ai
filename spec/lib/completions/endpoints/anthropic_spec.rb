@@ -6,7 +6,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::AnthropicTokenizer) }
 
   let(:model_name) { "claude-2" }
-  let(:prompt) { "Human: write 3 words\n\n" }
+  let(:generic_prompt) { { insts: "write 3 words" } }
+  let(:dialect) { DiscourseAi::Completions::Dialects::Claude.new(generic_prompt, model_name) }
+  let(:prompt) { dialect.translate }
 
   let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
   let(:stream_request_body) { model.default_options.merge(prompt: prompt, stream: true).to_json }
@@ -23,10 +25,10 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     }
   end
 
-  def stub_response(prompt, response_text)
+  def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(:post, "https://api.anthropic.com/v1/complete")
-      .with(body: model.default_options.merge(prompt: prompt).to_json)
+      .with(body: request_body)
       .to_return(status: 200, body: JSON.dump(response(response_text)))
   end
 
@@ -42,7 +44,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     }.to_json
   end
 
-  def stub_streamed_response(prompt, deltas)
+  def stub_streamed_response(prompt, deltas, tool_call: false)
     chunks =
       deltas.each_with_index.map do |_, index|
         if index == (deltas.length - 1)
@@ -52,13 +54,27 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
         end
       end
 
-    chunks = chunks.join("\n\n")
+    chunks = chunks.join("\n\n").split("")
 
     WebMock
       .stub_request(:post, "https://api.anthropic.com/v1/complete")
-      .with(body: model.default_options.merge(prompt: prompt, stream: true).to_json)
+      .with(body: stream_request_body)
       .to_return(status: 200, body: chunks)
   end
+
+  let(:tool_deltas) { ["<function", <<~REPLY] }
+      _calls>
+      <invoke>
+      <tool_name>get_weather</tool_name>
+      <parameters>
+      <location>Sydney</location>
+      <unit>c</unit>
+      </parameters>
+      </invoke>
+      </function_calls>
+      REPLY
+
+  let(:tool_call) { invocation }
 
   it_behaves_like "an endpoint that can communicate with a completion service"
 end
