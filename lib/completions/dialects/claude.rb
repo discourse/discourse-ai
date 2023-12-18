@@ -28,7 +28,7 @@ module DiscourseAi
           claude_prompt << "#{prompt[:post_insts]}\n" if prompt[:post_insts]
 
           claude_prompt << "Assistant:"
-          claude_prompt << " #{generic_prompt[:final_insts]}:" if generic_prompt[:final_insts]
+          claude_prompt << " #{prompt[:final_insts]}:" if prompt[:final_insts]
           claude_prompt << "\n"
         end
 

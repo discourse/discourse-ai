@@ -5,7 +5,7 @@ module DiscourseAi
     module Dialects
       class ChatGpt < Dialect
         class << self
-          def self.can_translate?(model_name)
+          def can_translate?(model_name)
             %w[
               gpt-3.5-turbo
               gpt-4
@@ -15,7 +15,7 @@ module DiscourseAi
               gpt-4-turbo
             ].include?(model_name)
           end
-          j
+
           def tokenizer
             DiscourseAi::Tokenizer::OpenAiTokenizer
           end
