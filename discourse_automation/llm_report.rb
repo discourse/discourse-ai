@@ -20,6 +20,7 @@ if defined?(DiscourseAutomation)
           required: true,
           default_value: DiscourseAi::Automation::ReportRunner.default_instructions
     field :sample_size, component: :text, required: true, default_value: 100
+    field :tokens_per_post, component: :text, required: true, default_value: 150
 
     field :model,
           component: :choices,
@@ -50,6 +51,7 @@ if defined?(DiscourseAutomation)
         days = fields.dig("days", "value")
         offset = fields.dig("offset", "value").to_i
         priority_group = fields.dig("priority_group", "value")
+        tokens_per_post = fields.dig("tokens_per_post", "value")
 
         DiscourseAi::Automation::ReportRunner.run!(
           sender_username: sender,
@@ -65,6 +67,7 @@ if defined?(DiscourseAutomation)
           days: days,
           offset: offset,
           priority_group_id: priority_group,
+          tokens_per_post: tokens_per_post,
         )
       rescue => e
         Discourse.warn_exception e, message: "Error running LLM report!"

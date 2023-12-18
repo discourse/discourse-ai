@@ -45,6 +45,20 @@ module DiscourseAi
 
         fab!(:post_with_likes3) { Fabricate(:post, topic: topic_with_likes, like_count: 3) }
 
+        if defined?(::DiscourseSolved)
+          it "will correctly denote solved topics" do
+            topic_with_likes.custom_fields[
+              ::DiscourseSolved::ACCEPTED_ANSWER_POST_ID_CUSTOM_FIELD
+            ] = post_with_likes2.id
+            topic_with_likes.save_custom_fields
+
+            context = ReportContextGenerator.generate(start_date: 1.day.ago, duration: 2.day)
+
+            expect(context).to include("solved: true")
+            expect(context).to include("solution: true")
+          end
+        end
+
         it "always includes info from last posts on topic" do
           context =
             ReportContextGenerator.generate(start_date: 1.day.ago, duration: 2.day, max_posts: 1)

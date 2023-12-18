@@ -3,37 +3,20 @@
 module DiscourseAi
   module Automation
     class ReportContextGenerator
-      def self.generate(
-        start_date:,
-        duration:,
-        category_ids: nil,
-        tags: nil,
-        allow_secure_categories: false,
-        max_posts: 100,
-        excerpt_length: 600,
-        prioritized_group_ids: nil
-      )
-        new(
-          start_date: start_date,
-          duration: duration,
-          category_ids: category_ids,
-          tags: tags,
-          allow_secure_categories: allow_secure_categories,
-          max_posts: max_posts,
-          excerpt_length: excerpt_length,
-          prioritized_group_ids: prioritized_group_ids,
-        ).generate
+      def self.generate(**args)
+        new(**args).generate
       end
 
       def initialize(
         start_date:,
         duration:,
-        category_ids:,
-        tags:,
-        allow_secure_categories:,
-        max_posts:,
-        excerpt_length:,
-        prioritized_group_ids:
+        category_ids: nil,
+        tags: nil,
+        allow_secure_categories: false,
+        max_posts: 200,
+        tokens_per_post: 100,
+        tokenizer: nil,
+        prioritized_group_ids: []
       )
         @start_date = start_date
         @duration = duration
@@ -41,7 +24,8 @@ module DiscourseAi
         @tags = tags
         @allow_secure_categories = allow_secure_categories
         @max_posts = max_posts
-        @excerpt_length = excerpt_length
+        @tokenizer = tokenizer || DiscourseAi::Tokenizer::OpenAiTokenizer
+        @tokens_per_post = tokens_per_post
         @prioritized_group_ids = prioritized_group_ids
 
         @posts =
@@ -64,6 +48,18 @@ module DiscourseAi
         end
 
         @group_user_ids = Set.new(GroupUser.where(group_id: @prioritized_group_ids).pluck(:user_id))
+
+        @solutions = {}
+        if defined?(::DiscourseSolved)
+          TopicCustomField
+            .where(name: ::DiscourseSolved::ACCEPTED_ANSWER_POST_ID_CUSTOM_FIELD)
+            .where(topic_id: @posts.select(:topic_id))
+            .pluck(:topic_id, :value)
+            .each do |topic_id, post_id|
+              @solutions[topic_id] ||= Set.new
+              @solutions[topic_id] << post_id.to_i
+            end
+        end
       end
 
       def format_topic(topic)
@@ -71,6 +67,7 @@ module DiscourseAi
         info << ""
         info << "### #{topic.title}"
         info << "topic_id: #{topic.id}"
+        info << "solved: true" if @solutions.key?(topic.id)
         info << "category: #{topic.category&.name}"
         tags = topic.tags.pluck(:name)
         info << "tags: #{topic.tags.pluck(:name).join(", ")}" if tags.present?
@@ -82,10 +79,13 @@ module DiscourseAi
         buffer = []
         buffer << ""
         buffer << "post_number: #{post.post_number}"
+        if @solutions.key?(post.topic_id) && @solutions[post.topic_id].include?(post.id)
+          buffer << "solution: true"
+        end
         buffer << post.created_at.strftime("%Y-%m-%d %H:%M")
         buffer << "user: #{post.user&.username} #{" *" if @group_user_ids.include? post.user_id}"
         buffer << "likes: #{post.like_count}"
-        excerpt = post.raw[0..@excerpt_length]
+        excerpt = @tokenizer.truncate(post.raw, @tokens_per_post)
         excerpt = "excerpt: #{excerpt}..." if excerpt.length < post.raw.length
         buffer << "#{excerpt}"
         { likes: post.like_count, info: buffer.join("\n") }

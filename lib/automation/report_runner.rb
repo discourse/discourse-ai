@@ -47,7 +47,8 @@ module DiscourseAi
         instructions:,
         days:,
         offset:,
-        priority_group_id:
+        priority_group_id:,
+        tokens_per_post:
       )
         @sender = User.find_by(username: sender_username)
         @receivers = User.where(username: receivers)
@@ -60,9 +61,10 @@ module DiscourseAi
         @debug_mode = debug_mode
         @sample_size = sample_size.to_i < 10 ? 10 : sample_size.to_i
         @instructions = instructions
-        @days = days
-        @offset = offset
+        @days = days.to_i
+        @offset = offset.to_i
         @priority_group_id = priority_group_id
+        @tokens_per_post = tokens_per_post.to_i
       end
 
       def run!
@@ -77,6 +79,8 @@ module DiscourseAi
             category_ids: @category_ids,
             prioritized_group_ids: prioritized_group_ids,
             allow_secure_categories: @allow_secure_categories,
+            tokens_per_post: @tokens_per_post,
+            tokenizer: @llm.tokenizer,
           )
         input = <<~INPUT
           #{@instructions}
@@ -122,7 +126,7 @@ module DiscourseAi
             max_posts: #{@sample_size},
             tags: #{@tags},
             category_ids: #{@category_ids},
-            priority_group: #{@priority_group}
+            priority_group: #{@priority_group_id}
             LLM context was:
             ```
 

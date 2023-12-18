@@ -35,6 +35,9 @@ en:
             sample_size:
               label: "Sample Size"
               description: "The number of posts to sample for the report"
+            tokens_per_post:
+              label: "Tokens per post"
+              description: "The number of llm tokens to use per post"
             model:
               label: "Model"
               description: "LLM to use for report generation"
