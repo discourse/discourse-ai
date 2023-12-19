@@ -70,12 +70,12 @@ module DiscourseAi
 
       def run!
         start_date = (@offset + @days).days.ago
+        end_date = start_date + @days.days
 
         @title =
           @title.gsub(
             "%DATE%",
-            start_date.strftime("%Y-%m-%d") + " - " +
-              (start_date + @days.days).strftime("%Y-%m-%d"),
+            start_date.strftime("%Y-%m-%d") + " - " + end_date.strftime("%Y-%m-%d"),
           )
 
         prioritized_group_ids = [@priority_group_id] if @priority_group_id.present?
@@ -121,16 +121,16 @@ module DiscourseAi
           result << response
         end
 
-        users = @receivers.map(&:username).join(",")
+        receiver_usernames = @receivers.map(&:username).join(",")
 
-        if users.present?
+        if receiver_usernames.present?
           post =
             PostCreator.create!(
               @sender,
               raw: result,
               title: @title,
               archetype: Archetype.private_message,
-              target_usernames: @receivers.map(&:username).join(","),
+              target_usernames: receiver_usernames,
               skip_validations: true,
             )
 
@@ -138,6 +138,7 @@ module DiscourseAi
             input = input.split("\n").map { |line| "    #{line}" }.join("\n")
             raw = <<~RAW
             ```
+            tokens: #{@llm.tokenizer.tokenize(input).length}
             start_date: #{start_date},
             duration: #{@days.days},
             max_posts: #{@sample_size},
@@ -156,12 +157,7 @@ module DiscourseAi
         if @email_receivers.present?
           @email_receivers.each do |to_address|
             Email::Sender.new(
-              ::AiReportMailer.send_report(
-                to_address,
-                subject: @title,
-                body: result,
-                from_address: SiteSetting.notification_email,
-              ),
+              ::AiReportMailer.send_report(to_address, subject: @title, body: result),
               :ai_report,
             ).send
           end
