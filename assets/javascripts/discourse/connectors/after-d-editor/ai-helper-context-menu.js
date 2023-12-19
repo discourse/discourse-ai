@@ -32,6 +32,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked popperPlacement = "top-start";
   @tracked previousMenuState = null;
   @tracked customPromptValue = "";
+  @tracked initialValue = "";
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -350,6 +351,7 @@ export default class AiHelperContextMenu extends Component {
     this._toggleLoadingState(true);
     this.lastUsedOption = option;
     this.menuState = this.CONTEXT_MENU_STATES.loading;
+    this.initialValue = this.selectedText;
 
     this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
       method: "POST",

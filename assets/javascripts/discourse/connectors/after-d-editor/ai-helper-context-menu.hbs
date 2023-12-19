@@ -96,7 +96,7 @@
   <Modal::DiffModal
     @confirm={{this.confirmChanges}}
     @diff={{this.diff}}
-    @oldValue={{this.selectedText}}
+    @oldValue={{this.initialValue}}
     @newValue={{this.newSelectedText}}
     @revert={{this.undoAIAction}}
     @closeModal={{fn (mut this.showDiffModal) false}}
