@@ -54,6 +54,7 @@ module DiscourseAi
         @receivers = User.where(username: receivers)
         @title = title
 
+        @model = model
         @llm = DiscourseAi::Completions::Llm.proxy(model)
         @category_ids = category_ids
         @tags = tags
@@ -96,6 +97,11 @@ module DiscourseAi
           insts: "You are a helpful bot specializing in summarizing activity Discourse sites",
           input: input,
           final_insts: "Here is the report I generated for you",
+          params: {
+            @model => {
+              temperature: 0,
+            },
+          },
         }
 
         result = +""

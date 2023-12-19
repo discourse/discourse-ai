@@ -11,6 +11,7 @@ en:
         gpt_4: GPT 4
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
