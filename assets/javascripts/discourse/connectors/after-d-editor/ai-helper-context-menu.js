@@ -17,6 +17,7 @@ export default class AiHelperContextMenu extends Component {
 
   @service currentUser;
   @service siteSettings;
+  @service modal;
   @tracked helperOptions = [];
   @tracked showContextMenu = false;
   @tracked caretCoords;
@@ -28,6 +29,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked newEditorValue;
   @tracked lastUsedOption = null;
   @tracked showDiffModal = false;
+  @tracked showThumbnailModal = false;
   @tracked diff;
   @tracked popperPlacement = "top-start";
   @tracked previousMenuState = null;
@@ -361,7 +363,15 @@ export default class AiHelperContextMenu extends Component {
         // resets the values if new suggestion is started:
         this.diff = null;
         this.newSelectedText = null;
-        this._updateSuggestedByAI(data);
+
+        if (option.name === "illustrate_post") {
+          this._toggleLoadingState(false);
+          this.closeContextMenu();
+          this.showThumbnailModal = true;
+          this.thumbnailSuggestions = data.thumbnails;
+        } else {
+          this._updateSuggestedByAI(data);
+        }
       })
       .catch(popupAjaxError)
       .finally(() => {

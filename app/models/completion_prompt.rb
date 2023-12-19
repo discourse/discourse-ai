@@ -10,6 +10,7 @@ class CompletionPrompt < ActiveRecord::Base
   MARKDOWN_TABLE = -304
   CUSTOM_PROMPT = -305
   EXPLAIN = -306
+  ILLUSTRATE_POST = -308
 
   enum :prompt_type, { text: 0, list: 1, diff: 2 }
 

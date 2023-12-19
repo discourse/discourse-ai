@@ -432,3 +432,28 @@
     display: none;
   }
 }
+
+.thumbnail-suggestions-modal {
+  .ai-thumbnail-suggestions {
+    display: flex;
+    flex-flow: row wrap;
+    position: relative;
+    gap: 0.5em;
+
+    &__item {
+      flex: 35%;
+      position: relative;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+
+    .btn {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+    }
+  }
+}

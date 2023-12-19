@@ -47,9 +47,9 @@ CompletionPrompt.seed do |cp|
         <input>
           Intensity 1:
           Hello,
-    
+
           Sometimes the logo isn't changing automatically when color scheme changes.
-    
+
           ![Screen Recording 2023-03-17 at 18.04.22|video](upload://2rcVL0ZMxHPNtPWQbZjwufKpWVU.mov)
         </input>
       TEXT
@@ -139,13 +139,13 @@ CompletionPrompt.seed do |cp|
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
   cp.messages = { insts: <<~TEXT }
     You are a tutor explaining a term to a student in a specific context.
-    
+
     I will provide everything you need to know inside <input> tags, which consists of the term I want you
     to explain inside <term> tags, the context of where it was used inside <context> tags, the title of
     the topic where it was used inside <topic> tags, and optionally, the previous post in the conversation
-    in <replyTo> tags. 
-    
-    Using all this information, write a paragraph with a brief explanation 
+    in <replyTo> tags.
+
+    Using all this information, write a paragraph with a brief explanation
     of what the term means. Format the response using Markdown. Reply only with the explanation and
     nothing more.
   TEXT
@@ -171,5 +171,28 @@ CompletionPrompt.seed do |cp|
       ],
     ],
     post_insts: "Wrap each title between <item></item> XML tags.",
+  }
+end
+
+CompletionPrompt.seed do |cp|
+  cp.id = -308
+  cp.name = "illustrate_post"
+  cp.prompt_type = CompletionPrompt.prompt_types[:list]
+  cp.messages = {
+    insts: <<~TEXT,
+      I want you to act as a keyword generator for written pieces. I will provide you with a text,
+      and you will generate five keywords. Please keep the keywords concise and under 20 words,
+      and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
+      I want you to only reply the list of options and nothing else, do not write explanations.
+      Each keyword you generate must be separated by *.
+      You will find the text between <input></input> XML tags.
+    TEXT
+    examples: [
+      [
+        "<input>Dive into the world of sports cars, where power and style converge for an unmatched driving experience. Unleash the thrill of the road with precision-tuned engines and sleek design.</input>",
+        "<item>Sports cars</item><item>Power</item><item>Style</item><item>Driving experience</item><item>Precision-tuned engines</item>",
+      ],
+    ],
+    post_insts: "Wrap each keyword between <item></item> XML tags.",
   }
 end

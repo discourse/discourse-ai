@@ -106,6 +106,10 @@ en:
           cancel: "Cancel"
         fast_edit:
           suggest_button: "Suggest Edit"
+        thumbnail_suggestions:
+          title: "Suggested Thumbnails"
+          select: "Select"
+          selected: "Selected"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"
@@ -138,8 +142,6 @@ en:
         summary:
           label: "sentiment"
           title: "Experimental AI-powered sentiment analysis of this person's most recent posts."
-
-
 
     review:
       types:
