@@ -7,7 +7,6 @@ DiscourseAi::Engine.routes.draw do
     post "suggest_title" => "assistant#suggest_title"
     post "suggest_category" => "assistant#suggest_category"
     post "suggest_tags" => "assistant#suggest_tags"
-    post "suggest_thumbnails" => "assistant#suggest_thumbnails"
     post "explain" => "assistant#explain"
   end
 

@@ -102,3 +102,11 @@
     @closeModal={{fn (mut this.showDiffModal) false}}
   />
 {{/if}}
+
+{{#if this.showThumbnailModal}}
+  <Modal::ThumbnailSuggestions
+    @composer={{@outletArgs.composer}}
+    @thumbnails={{this.thumbnailSuggestions}}
+    @closeModal={{fn (mut this.showThumbnailModal) false}}
+  />
+{{/if}}

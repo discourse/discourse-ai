@@ -114,6 +114,8 @@ module DiscourseAi
           "pen"
         when "explain"
           "question"
+        when "illustrate_post"
+          "images"
         else
           nil
         end
@@ -139,6 +141,8 @@ module DiscourseAi
           %w[post]
         when "summarize"
           %w[post]
+        when "illustrate_posts"
+          %w[composer]
         else
           %w[composer post]
         end

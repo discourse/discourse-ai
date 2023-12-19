@@ -32,6 +32,8 @@ module DiscourseAi
           prompt.custom_instruction = params[:custom_prompt]
         end
 
+        suggest_thumbnails(input) if prompt.id == CompletionPrompt::ILLUSTRATE_POST
+
         hijack do
           render json:
                    DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(
@@ -86,9 +88,7 @@ module DiscourseAi
                status: 200
       end
 
-      def suggest_thumbnails
-        input = get_text_param!
-
+      def suggest_thumbnails(input)
         hijack do
           thumbnails = DiscourseAi::AiHelper::Painter.new.commission_thumbnails(input, current_user)
 

@@ -128,6 +128,7 @@ en:
         markdown_table: Generate Markdown table
         custom_prompt: "Custom Prompt"
         explain: "Explain"
+        illustrate_post: "Illustrate Post"
 
     ai_bot:
       personas:
