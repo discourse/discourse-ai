@@ -14,6 +14,34 @@ module DiscourseAi
       fab!(:secure_post) { Fabricate(:post, raw: "Top secret date !!!!", topic: secure_topic) }
 
       describe "#run!" do
+        it "is able to generate email reports" do
+          freeze_time
+
+          DiscourseAi::Completions::Llm.with_prepared_responses(["magical report"]) do
+            ReportRunner.run!(
+              sender_username: user.username,
+              receivers: ["fake@discourse.com"],
+              title: "test report %DATE%",
+              model: "gpt-4",
+              category_ids: nil,
+              tags: nil,
+              allow_secure_categories: false,
+              sample_size: 100,
+              instructions: "make a magic report",
+              days: 7,
+              offset: 0,
+              priority_group_id: nil,
+              tokens_per_post: 150,
+              debug_mode: nil,
+            )
+          end
+
+          expect(ActionMailer::Base.deliveries.length).to eq(1)
+          expect(ActionMailer::Base.deliveries.first.subject).to eq(
+            "test report #{7.days.ago.strftime("%Y-%m-%d")} - #{Time.zone.now.strftime("%Y-%m-%d")}",
+          )
+        end
+
         it "generates correctly respects the params" do
           DiscourseAi::Completions::Llm.with_prepared_responses(["magical report"]) do
             ReportRunner.run!(
