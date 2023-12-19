@@ -33,13 +33,15 @@ export default class ThumbnailSuggestions extends Component {
 
   @action
   appendSelectedImages() {
-    const composerValue = this.args.composer?.reply || "";
+    const imageMarkdown = "\n\n" + this.selectedImages.join("\n");
 
-    const newValue = composerValue.concat(
-      "\n\n",
-      this.selectedImages.join("\n")
+    const dEditorInput = document.querySelector(".d-editor-input");
+    dEditorInput.setSelectionRange(
+      dEditorInput.value.length,
+      dEditorInput.value.length
     );
-    this.args.composer.set("reply", newValue);
+    dEditorInput.focus();
+    document.execCommand("insertText", false, imageMarkdown);
     this.args.closeModal();
   }
 
