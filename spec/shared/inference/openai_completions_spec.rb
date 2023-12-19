@@ -4,6 +4,8 @@ require "rails_helper"
 describe DiscourseAi::Inference::OpenAiCompletions do
   before { SiteSetting.ai_openai_api_key = "abc-123" }
 
+  fab!(:user)
+
   it "supports sending an organization id" do
     SiteSetting.ai_openai_organization = "org_123"
 
@@ -300,6 +302,31 @@ describe DiscourseAi::Inference::OpenAiCompletions do
     after do
       remove_stubbed_net_http
       restore_net_http
+    end
+
+    it "supports extremely slow streaming under new interface" do
+      raw_data = <<~TEXT
+data: {"choices":[{"delta":{"content":"test"}}]}
+
+data: {"choices":[{"delta":{"content":"test1"}}]}
+
+data: {"choices":[{"delta":{"content":"test2"}}]}
+
+data: [DONE]
+    TEXT
+
+      chunks = raw_data.split("")
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        status: 200,
+        body: chunks,
+      )
+
+      partials = []
+      llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
+      llm.completion!({ insts: "test" }, user) { |partial| partials << partial }
+
+      expect(partials.join).to eq("testtest1test2")
     end
 
     it "support extremely slow streaming" do
