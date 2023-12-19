@@ -143,7 +143,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       it "returns a list of prompts when no name_filter is provided" do
         get "/discourse-ai/ai-helper/prompts"
         expect(response.status).to eq(200)
-        expect(response.parsed_body.length).to eq(6)
+        expect(response.parsed_body.length).to eq(7)
       end
 
       it "returns a list with with filtered prompts when name_filter is provided" do
