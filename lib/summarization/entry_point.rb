@@ -7,6 +7,7 @@ module DiscourseAi
         foldable_models = [
           Models::OpenAi.new("gpt-4", max_tokens: 8192),
           Models::OpenAi.new("gpt-4-32k", max_tokens: 32_768),
+          Models::OpenAi.new("gpt-4-1106-preview", max_tokens: 100_000),
           Models::OpenAi.new("gpt-3.5-turbo", max_tokens: 4096),
           Models::OpenAi.new("gpt-3.5-turbo-16k", max_tokens: 16_384),
           Models::Anthropic.new("claude-2", max_tokens: 100_000),

@@ -40,6 +40,7 @@ register_svg_icon "meh"
 after_initialize do
   # do not autoload this cause we may have no namespace
   require_relative "discourse_automation/llm_triage"
+  require_relative "discourse_automation/llm_report"
 
   add_admin_route "discourse_ai.title", "discourse-ai"
 

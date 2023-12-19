@@ -17,9 +17,10 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::OrcaStyle,
               DiscourseAi::Completions::Dialects::Gemini,
             ]
-            dialects.detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |d|
-              d.can_translate?(model_name)
-            end
+
+            dialect = dialects.find { |d| d.can_translate?(model_name) }
+            raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL if !dialect
+            dialect
           end
 
           def tokenizer
