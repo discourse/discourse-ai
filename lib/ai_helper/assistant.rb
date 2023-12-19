@@ -141,7 +141,7 @@ module DiscourseAi
           %w[post]
         when "summarize"
           %w[post]
-        when "illustrate_posts"
+        when "illustrate_post"
           %w[composer]
         else
           %w[composer post]
