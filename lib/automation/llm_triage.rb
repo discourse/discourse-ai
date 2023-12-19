@@ -31,12 +31,19 @@ module DiscourseAi
         result = nil
 
         llm = DiscourseAi::Completions::Llm.proxy(model)
+        key =
+          if model.include?("claude")
+            :max_tokens_to_sample
+          else
+            :max_tokens
+          end
+
         prompt = {
           insts: filled_system_prompt,
           params: {
             model => {
-              max_tokens: (llm.tokenizer.tokenize(search_for_text).length * 2 + 10),
-              temperature: 0,
+              key => (llm.tokenizer.tokenize(search_for_text).length * 2 + 10),
+              :temperature => 0,
             },
           },
         }
