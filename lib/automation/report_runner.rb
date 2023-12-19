@@ -17,7 +17,6 @@ module DiscourseAi
         - Markdown Usage: Enhance readability with **bold**, *italic*, and > quotes.
         - Linking: Use `#{Discourse.base_url}/t/-/TOPIC_ID/POST_NUMBER` for direct references.
         - User Mentions: Reference users with @USERNAME
-        - Context tips: Staff are denoted with Username *. For example: jane * means that jane is a staff member. Do not render the * in the report.
         - Add many topic links: strive to link to at least 30 topics in the report. Topic Id is meaningless to end users if you need to throw in a link use [ref](...) or better still just embed it into the [sentence](...)
         - Categories and tags: use the format #TAG and #CATEGORY to denote tags and categories
 
@@ -52,6 +51,7 @@ module DiscourseAi
       )
         @sender = User.find_by(username: sender_username)
         @receivers = User.where(username: receivers)
+        @email_receivers = receivers.filter { |r| r.include? "@" }
         @title = title
 
         @model = model
@@ -70,6 +70,14 @@ module DiscourseAi
 
       def run!
         start_date = (@offset + @days).days.ago
+        end_date = start_date + @days.days
+
+        @title =
+          @title.gsub(
+            "%DATE%",
+            start_date.strftime("%Y-%m-%d") + " - " + end_date.strftime("%Y-%m-%d"),
+          )
+
         prioritized_group_ids = [@priority_group_id] if @priority_group_id.present?
         context =
           DiscourseAi::Automation::ReportContextGenerator.generate(
@@ -113,20 +121,24 @@ module DiscourseAi
           result << response
         end
 
-        post =
-          PostCreator.create!(
-            @sender,
-            raw: result,
-            title: @title,
-            archetype: Archetype.private_message,
-            target_usernames: @receivers.map(&:username).join(","),
-            skip_validations: true,
-          )
+        receiver_usernames = @receivers.map(&:username).join(",")
 
-        if @debug_mode
-          input = input.split("\n").map { |line| "    #{line}" }.join("\n")
-          raw = <<~RAW
+        if receiver_usernames.present?
+          post =
+            PostCreator.create!(
+              @sender,
+              raw: result,
+              title: @title,
+              archetype: Archetype.private_message,
+              target_usernames: receiver_usernames,
+              skip_validations: true,
+            )
+
+          if @debug_mode
+            input = input.split("\n").map { |line| "    #{line}" }.join("\n")
+            raw = <<~RAW
             ```
+            tokens: #{@llm.tokenizer.tokenize(input).length}
             start_date: #{start_date},
             duration: #{@days.days},
             max_posts: #{@sample_size},
@@ -138,7 +150,17 @@ module DiscourseAi
 
             #{input}
           RAW
-          PostCreator.create!(@sender, raw: raw, topic_id: post.topic_id, skip_validations: true)
+            PostCreator.create!(@sender, raw: raw, topic_id: post.topic_id, skip_validations: true)
+          end
+        end
+
+        if @email_receivers.present?
+          @email_receivers.each do |to_address|
+            Email::Sender.new(
+              ::AiReportMailer.send_report(to_address, subject: @title, body: result),
+              :ai_report,
+            ).send
+          end
         end
       end
     end

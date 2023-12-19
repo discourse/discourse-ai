@@ -78,6 +78,9 @@ module DiscourseAi
         def extract_completion_from(response_raw)
           parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
 
+          # half a line sent here
+          return if !parsed
+
           response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
 
           has_function_call = response_h.dig(:tool_calls).present?
