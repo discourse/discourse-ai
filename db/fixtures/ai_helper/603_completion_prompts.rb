@@ -178,21 +178,5 @@ CompletionPrompt.seed do |cp|
   cp.id = -308
   cp.name = "illustrate_post"
   cp.prompt_type = CompletionPrompt.prompt_types[:list]
-  cp.messages = {
-    insts: <<~TEXT,
-      I want you to act as a keyword generator for written pieces. I will provide you with a text,
-      and you will generate five keywords. Please keep the keywords concise and under 20 words,
-      and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
-      I want you to only reply the list of options and nothing else, do not write explanations.
-      Each keyword you generate must be separated by *.
-      You will find the text between <input></input> XML tags.
-    TEXT
-    examples: [
-      [
-        "<input>Dive into the world of sports cars, where power and style converge for an unmatched driving experience. Unleash the thrill of the road with precision-tuned engines and sleek design.</input>",
-        "<item>Sports cars</item><item>Power</item><item>Style</item><item>Driving experience</item><item>Precision-tuned engines</item>",
-      ],
-    ],
-    post_insts: "Wrap each keyword between <item></item> XML tags.",
-  }
+  cp.messages = {}
 end

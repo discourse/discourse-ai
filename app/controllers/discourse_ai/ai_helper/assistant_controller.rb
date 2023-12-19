@@ -32,16 +32,7 @@ module DiscourseAi
           prompt.custom_instruction = params[:custom_prompt]
         end
 
-        if prompt.id == CompletionPrompt::ILLUSTRATE_POST
-          keywords =
-            DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(
-              prompt,
-              input,
-              current_user,
-            )
-
-          suggest_thumbnails(keywords[:suggestions]) if keywords[:suggestions].present?
-        end
+        suggest_thumbnails(input) if prompt.id == CompletionPrompt::ILLUSTRATE_POST
 
         hijack do
           render json:
