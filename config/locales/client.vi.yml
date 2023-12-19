@@ -8,6 +8,14 @@ vi:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Tiêu đề"
+            categories:
+              label: "Danh mục"
+            tags:
+              label: "Thẻ"
         llm_triage:
           fields:
             category:
@@ -34,3 +42,4 @@ vi:
           close: "Đóng"
           copy: "Sao chép"
           copied: "Đã sao chép!"
+          cancel: "Huỷ"

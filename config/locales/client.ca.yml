@@ -8,6 +8,14 @@ ca:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Títol"
+            categories:
+              label: "Categories"
+            tags:
+              label: "Etiquetes"
         llm_triage:
           fields:
             category:
@@ -36,3 +44,4 @@ ca:
           close: "Tanca"
           copy: "Còpia"
           copied: "Copiat!"
+          cancel: "Cancel·la"

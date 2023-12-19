@@ -7,10 +7,20 @@
 tr_TR:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Gönderen"
+            title:
+              label: "Başlık"
+            categories:
+              label: "Kategoriler"
+            tags:
+              label: "Etiketler"
         llm_triage:
-          models:
-            claude_2: Claude 2
           fields:
             category:
               label: "Kategori"
@@ -45,6 +55,7 @@ tr_TR:
           close: "Bitir"
           copy: "Kopyala"
           copied: "Kopyalandı!"
+          cancel: "İptal et"
       reviewables:
         model_used: "Kullanılan model:"
         accuracy: "Doğruluk:"

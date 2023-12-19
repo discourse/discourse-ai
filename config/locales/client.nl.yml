@@ -7,10 +7,20 @@
 nl:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Afzender"
+            title:
+              label: "Titel"
+            categories:
+              label: "Categorieën"
+            tags:
+              label: "Tags"
         llm_triage:
-          models:
-            claude_2: Claude 2
           fields:
             category:
               label: "Categorie"
@@ -45,6 +55,7 @@ nl:
           close: "Sluiten"
           copy: "Kopiëren"
           copied: "Gekopieerd!"
+          cancel: "Annuleren"
       reviewables:
         model_used: "Gebruikt model:"
         accuracy: "Nauwkeurigheid:"

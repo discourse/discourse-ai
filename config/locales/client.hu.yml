@@ -8,6 +8,14 @@ hu:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Cím"
+            categories:
+              label: "Kategóriák"
+            tags:
+              label: "Címkék"
         llm_triage:
           fields:
             category:
@@ -36,3 +44,4 @@ hu:
           close: "Lezárás"
           copy: "Másolás"
           copied: "Másolva!"
+          cancel: "Mégse"

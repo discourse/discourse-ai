@@ -12,12 +12,23 @@ he:
           discourse_ai: "בינה מלאכותית ב־Discourse"
   js:
     discourse_automation:
+      ai_models:
+        gpt_4_turbo: GPT 4 טורבו
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 טורבו
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "כותרת"
+            model:
+              label: "דגם"
+            categories:
+              label: "קטגוריות"
+            tags:
+              label: "תגיות"
         llm_triage:
-          models:
-            gpt_4: GPT 4
-            gpt_3_5_turbo: GPT 3.5 טורבו
-            claude_2: Claude 2
           fields:
             system_prompt:
               label: "בקשת מערכת"
@@ -106,6 +117,9 @@ he:
           close: "סגירה"
           copy: "העתקה"
           copied: "הועתק!"
+          cancel: "ביטול"
+        fast_edit:
+          suggest_button: "הצעת עריכה"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"

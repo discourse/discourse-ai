@@ -8,6 +8,14 @@ lv:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Virsraksts"
+            categories:
+              label: "Sadaļas"
+            tags:
+              label: "Birkas"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ lv:
           close: "Aizvērt"
           copy: "Kopēt"
           copied: "Nokopēts!"
+          cancel: "Atcelt"

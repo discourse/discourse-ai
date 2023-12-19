@@ -8,6 +8,14 @@ el:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Τίτλος"
+            categories:
+              label: "Κατηγορίες"
+            tags:
+              label: "Ετικέτες"
         llm_triage:
           fields:
             category:
@@ -34,3 +42,4 @@ el:
           close: "Κλείσιμο"
           copy: "Αντιγραφή"
           copied: "Αντιγράφηκε!"
+          cancel: "Ακύρωση"

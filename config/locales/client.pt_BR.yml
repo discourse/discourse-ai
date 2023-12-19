@@ -7,10 +7,20 @@
 pt_BR:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Remetente"
+            title:
+              label: "Título"
+            categories:
+              label: "Categorias"
+            tags:
+              label: "Etiquetas"
         llm_triage:
-          models:
-            claude_2: Claude 2
           fields:
             category:
               label: "Categoria"
@@ -45,6 +55,7 @@ pt_BR:
           close: "Fechar"
           copy: "Copiar"
           copied: "Copiado!"
+          cancel: "Cancelar"
       reviewables:
         model_used: "Modelo usado:"
         accuracy: "Precisão:"

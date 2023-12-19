@@ -8,6 +8,14 @@ da:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Titel"
+            categories:
+              label: "Kategorier"
+            tags:
+              label: "Mærker"
         llm_triage:
           fields:
             category:
@@ -36,3 +44,4 @@ da:
           close: "Luk"
           copy: "Kopier"
           copied: "Kopieret!"
+          cancel: "Annuller"

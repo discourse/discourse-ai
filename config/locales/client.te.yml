@@ -8,6 +8,14 @@ te:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "శీర్షిక"
+            categories:
+              label: "వర్గాలు"
+            tags:
+              label: "ట్యాగులు"
         llm_triage:
           fields:
             category:
@@ -33,3 +41,4 @@ te:
         post_options_menu:
           close: "మూసివేయి"
           copy: "నకలు"
+          cancel: "రద్దుచేయి"

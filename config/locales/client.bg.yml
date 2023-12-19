@@ -8,6 +8,14 @@ bg:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Заглавие"
+            categories:
+              label: "Категории"
+            tags:
+              label: "Тагове"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ bg:
           close: "Затвори"
           copy: "Копирай"
           copied: "Копирано!"
+          cancel: "Прекрати"

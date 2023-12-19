@@ -8,6 +8,14 @@ cs:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Nadpis"
+            categories:
+              label: "Kategorie"
+            tags:
+              label: "Tagy"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ cs:
           close: "Zavřít"
           copy: "Kopírovat"
           copied: "Zkopírováno!"
+          cancel: "Zrušit"

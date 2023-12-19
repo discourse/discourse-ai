@@ -7,10 +7,20 @@
 ru:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Отправитель"
+            title:
+              label: "Название"
+            categories:
+              label: "Категории"
+            tags:
+              label: "Теги"
         llm_triage:
-          models:
-            claude_2: Claude 2
           fields:
             category:
               label: "Категория"
@@ -45,6 +55,7 @@ ru:
           close: "Завершить"
           copy: "Копировать"
           copied: "Скопировано!"
+          cancel: "Нет"
       reviewables:
         model_used: "Использованная модель:"
         accuracy: "Точность:"

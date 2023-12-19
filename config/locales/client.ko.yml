@@ -8,6 +8,16 @@ ko:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "발신자"
+            title:
+              label: "제목"
+            categories:
+              label: "카테고리"
+            tags:
+              label: "태그"
         llm_triage:
           fields:
             category:
@@ -36,3 +46,4 @@ ko:
           close: "닫기"
           copy: "복사"
           copied: "복사되었습니다!"
+          cancel: "취소"

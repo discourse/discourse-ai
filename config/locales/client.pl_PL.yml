@@ -7,10 +7,18 @@
 pl_PL:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Tytuł"
+            categories:
+              label: "Kategorie"
+            tags:
+              label: "Tagi"
         llm_triage:
-          models:
-            claude_2: Claude 2
           fields:
             category:
               label: "Kategoria"
@@ -45,6 +53,7 @@ pl_PL:
           close: "Zamknij"
           copy: "Kopiuj"
           copied: "Skopiowane!"
+          cancel: "Anuluj"
       reviewables:
         model_used: "Zastosowany model:"
         accuracy: "Dokładność:"

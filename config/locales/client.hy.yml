@@ -8,6 +8,14 @@ hy:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Վերնագիր"
+            categories:
+              label: "Կատեգորիաներ"
+            tags:
+              label: "Թեգեր"
         llm_triage:
           fields:
             category:
@@ -33,3 +41,4 @@ hy:
         post_options_menu:
           close: "Փակել"
           copy: "Կրկնօրինակել"
+          cancel: "Չեղարկել"
