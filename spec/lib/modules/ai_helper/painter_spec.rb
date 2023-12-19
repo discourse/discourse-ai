@@ -40,7 +40,9 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
 
       thumbnail_urls = Upload.last(4).map(&:short_url)
 
-      expect(thumbnails.map { |upload_serializer| upload_serializer.short_url }).to contain_exactly(*thumbnail_urls)
+      expect(thumbnails.map { |upload_serializer| upload_serializer.short_url }).to contain_exactly(
+        *thumbnail_urls,
+      )
     end
   end
 end
