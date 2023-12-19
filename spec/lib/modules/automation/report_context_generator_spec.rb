@@ -93,6 +93,7 @@ module DiscourseAi
 
           expect(context).to include(post_in_private_category.topic.title)
           expect(context).not_to include(post_in_other_category.topic.title)
+          expect(context).to include(group.name)
         end
 
         it "can generate context (excluding PMs)" do

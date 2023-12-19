@@ -47,8 +47,6 @@ module DiscourseAi
           @posts = @posts.where(topic_id: topic_ids_with_tags)
         end
 
-        @group_user_ids = Set.new(GroupUser.where(group_id: @prioritized_group_ids).pluck(:user_id))
-
         @solutions = {}
         if defined?(::DiscourseSolved)
           TopicCustomField
@@ -83,7 +81,7 @@ module DiscourseAi
           buffer << "solution: true"
         end
         buffer << post.created_at.strftime("%Y-%m-%d %H:%M")
-        buffer << "user: #{post.user&.username} #{" *" if @group_user_ids.include? post.user_id}"
+        buffer << "user: #{post.user&.username}"
         buffer << "likes: #{post.like_count}"
         excerpt = @tokenizer.truncate(post.raw, @tokens_per_post)
         excerpt = "excerpt: #{excerpt}..." if excerpt.length < post.raw.length
@@ -119,6 +117,30 @@ module DiscourseAi
         buffer << "Top users:"
         top_users.each do |user|
           buffer << "@#{user.username} (#{user.like_count} likes, #{user.post_count} posts)"
+        end
+
+        if @prioritized_group_ids.present?
+          group_names =
+            Group
+              .where(id: @prioritized_group_ids)
+              .pluck(:name, :full_name)
+              .map do |name, full_name|
+                if full_name.present?
+                  "#{name} (#{full_name[0..100].gsub("\n", " ")})"
+                else
+                  name
+                end
+              end
+              .join(", ")
+          buffer << ""
+          buffer << "Top users in #{group_names} group#{group_names.include?(",") ? "s" : ""}:"
+
+          group_users = GroupUser.where(group_id: @prioritized_group_ids).select(:user_id)
+          top_users
+            .where(user_id: group_users)
+            .each do |user|
+              buffer << "@#{user.username} (#{user.like_count} likes, #{user.post_count} posts)"
+            end
         end
 
         buffer.join("\n")
