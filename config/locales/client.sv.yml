@@ -8,6 +8,14 @@ sv:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Rubrik"
+            categories:
+              label: "Kategorier"
+            tags:
+              label: "Taggar"
         llm_triage:
           fields:
             category:
@@ -36,3 +44,4 @@ sv:
           close: "Stäng"
           copy: "Kopiera"
           copied: "Kopierad!"
+          cancel: "Avbryt"

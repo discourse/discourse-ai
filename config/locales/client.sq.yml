@@ -8,6 +8,14 @@ sq:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Titulli"
+            categories:
+              label: "Categories"
+            tags:
+              label: "Etiketat"
         llm_triage:
           fields:
             category:
@@ -34,3 +42,4 @@ sq:
         post_options_menu:
           close: "Mbyll"
           copy: "Kopjo"
+          cancel: "Anulo"

@@ -7,10 +7,20 @@
 fi:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Lähettäjä"
+            title:
+              label: "Otsikko"
+            categories:
+              label: "Luokat"
+            tags:
+              label: "Tunnisteet"
         llm_triage:
-          models:
-            claude_2: Claude 2
           fields:
             category:
               label: "Luokka"
@@ -45,6 +55,7 @@ fi:
           close: "Sulje"
           copy: "Kopioi"
           copied: "Kopioitiin!"
+          cancel: "Peruuta"
       reviewables:
         model_used: "Käytetty malli:"
         accuracy: "Tarkkuus:"

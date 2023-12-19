@@ -8,6 +8,14 @@ et:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Pealkiri"
+            categories:
+              label: "Liigid"
+            tags:
+              label: "Sildid"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ et:
           close: "Sulge"
           copy: "Kopeeri"
           copied: "Kopeeritud!"
+          cancel: "Tühista"

@@ -8,6 +8,14 @@ zh_TW:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "標題"
+            categories:
+              label: "分類"
+            tags:
+              label: "標記"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ zh_TW:
           close: "關閉"
           copy: "複製"
           copied: "已複製!"
+          cancel: "取消"

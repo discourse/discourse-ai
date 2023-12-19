@@ -7,10 +7,18 @@
 ar:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "العنوان"
+            categories:
+              label: "الفئات"
+            tags:
+              label: "الوسوم"
         llm_triage:
-          models:
-            claude_2: Claude 2
           fields:
             category:
               label: "الفئة"
@@ -45,6 +53,7 @@ ar:
           close: "إغلاق"
           copy: "نسخ"
           copied: "تم النسخ!"
+          cancel: "إلغاء"
       reviewables:
         model_used: "النموذج المستخدم:"
         accuracy: "الدقة:"

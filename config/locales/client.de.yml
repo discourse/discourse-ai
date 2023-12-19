@@ -12,12 +12,25 @@ de:
           discourse_ai: "Diskursen"
   js:
     discourse_automation:
+      ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Absender"
+            title:
+              label: "Titel"
+            model:
+              label: "Modell"
+            categories:
+              label: "Kategorien"
+            tags:
+              label: "Schlagwörter"
         llm_triage:
-          models:
-            gpt_4: GPT 4
-            gpt_3_5_turbo: GPT 3.5 Turbo
-            claude_2: Claude 2
           fields:
             system_prompt:
               label: "System-Eingabeaufforderung"
@@ -106,6 +119,9 @@ de:
           close: "Beenden"
           copy: "Kopieren"
           copied: "Kopiert!"
+          cancel: "Abbrechen"
+        fast_edit:
+          suggest_button: "Bearbeiten vorschlagen"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"

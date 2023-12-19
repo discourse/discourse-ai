@@ -12,6 +12,9 @@ fa_IR:
       yaxis: "تاریخ"
   discourse_ai:
     ai_bot:
+      personas:
+        dall_e3:
+          name: "DALL-E 3"
       command_summary:
         categories: "فهرست دسته‌بندی‌ها"
         search: "جستجو"

@@ -8,6 +8,14 @@ hr:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Naslov"
+            categories:
+              label: "Kategorije"
+            tags:
+              label: "Oznake"
         llm_triage:
           fields:
             category:
@@ -36,3 +44,4 @@ hr:
           close: "Zatvori"
           copy: "Kopija"
           copied: "Kopirano!"
+          cancel: "Odustani"

@@ -8,6 +8,14 @@ bs_BA:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Naslov"
+            categories:
+              label: "Kategorije"
+            tags:
+              label: "Oznake"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ bs_BA:
           close: "Zatvori"
           copy: "Copy"
           copied: "Kopirano!"
+          cancel: "Odustani"
