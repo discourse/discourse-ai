@@ -8,6 +8,14 @@ th:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "ชื่อเรื่อง"
+            categories:
+              label: "หมวดหมู่"
+            tags:
+              label: "ป้าย"
         llm_triage:
           fields:
             category:
@@ -34,3 +42,4 @@ th:
           close: "ปิด"
           copy: "คัดลอก"
           copied: "คัดลอกแล้ว!"
+          cancel: "ยกเลิก"

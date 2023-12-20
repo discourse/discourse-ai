@@ -5,26 +5,45 @@
 # https://translate.discourse.org/
 
 fa_IR:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "هوش مصنوعی دیسکورس"
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
-        llm_triage:
-          models:
-            claude_2: Claude 2
+        llm_report:
           fields:
+            title:
+              label: "عنوان"
+            categories:
+              label: "دسته‌بندی‌ها"
+            tags:
+              label: "برچسب‌ها"
+        llm_triage:
+          fields:
+            search_for_text:
+              label: "جستجوی متن"
             category:
               label: "دسته‌بندی"
             tags:
               label: "برچسب‌ها"
             canned_reply:
               label: "پاسخ"
+            canned_reply_user:
+              label: "پاسخ کاربر"
     discourse_ai:
+      title: "هوش مصنوعی"
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
       ai_persona:
         name: نام
         description: توضیح
         save: ذخیره
+        enabled: فعال شد
         new: تازه
         delete: حذف
       related_topics:
@@ -35,15 +54,20 @@ fa_IR:
         selection_hint: "نکته: شما همچنین می‌توانید بخشی از متن را قبل از باز کردن راهنما انتخاب کنید، تا فقط آن قسمت بازنویسی شود."
         context_menu:
           back: "بازگشت"
+          trigger: "هوش مصنوعی"
           undo: "بی‌اثر کردن"
           cancel: "انصراف"
           regen: "تلاش دوباره"
           confirm: "تایید"
           revert: "برگشت"
+          changes: "تغییرات"
         post_options_menu:
           close: "بستن"
           copy: "کپی"
           copied: "کپی شد!"
+          cancel: "انصراف"
+        fast_edit:
+          suggest_button: "پیشنهاد ویرایش"
       reviewables:
         model_used: "مدل مورد استفاده:"
         accuracy: "دقت:"

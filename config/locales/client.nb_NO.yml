@@ -8,6 +8,14 @@ nb_NO:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Tittel"
+            categories:
+              label: "Kategorier"
+            tags:
+              label: "Stikkord"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ nb_NO:
           close: "Lukk"
           copy: "Kopier"
           copied: "Kopiert!"
+          cancel: "Avbryt"

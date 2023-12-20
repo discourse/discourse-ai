@@ -8,6 +8,14 @@ sk:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Názov"
+            categories:
+              label: "Kategórie"
+            tags:
+              label: "Štítky"
         llm_triage:
           fields:
             category:
@@ -34,3 +42,4 @@ sk:
         post_options_menu:
           close: "Zavrieť"
           copy: "Kopírovať"
+          cancel: "Zrušiť"

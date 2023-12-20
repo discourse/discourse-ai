@@ -7,10 +7,20 @@
 zh_CN:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "发送人"
+            title:
+              label: "标题"
+            categories:
+              label: "类别"
+            tags:
+              label: "标签"
         llm_triage:
-          models:
-            claude_2: Claude 2
           fields:
             category:
               label: "类别"
@@ -45,6 +55,7 @@ zh_CN:
           close: "关闭"
           copy: "复制"
           copied: "已复制！"
+          cancel: "取消"
       reviewables:
         model_used: "使用的模型："
         accuracy: "准确性："

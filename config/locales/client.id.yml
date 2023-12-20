@@ -8,6 +8,14 @@ id:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Judul"
+            categories:
+              label: "Kategori"
+            tags:
+              label: "Label"
         llm_triage:
           fields:
             category:
@@ -34,3 +42,4 @@ id:
         post_options_menu:
           close: "Tutup"
           copied: "Disalin!"
+          cancel: "Batal"

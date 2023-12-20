@@ -12,12 +12,23 @@ lt:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
+      ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
+        claude_2: Claude 2
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Antraštė"
+            model:
+              label: "Modelis"
+            categories:
+              label: "Kategorijos"
+            tags:
+              label: "Žymos"
         llm_triage:
-          models:
-            gpt_4: GPT 4
-            gpt_3_5_turbo: GPT 3.5 Turbo
-            claude_2: Claude 2
           fields:
             system_prompt:
               label: "Sistemos pranešimas"
@@ -67,3 +78,4 @@ lt:
           close: "Uždaryti"
           copy: "Kopijuoti"
           copied: "Nukopijuota!"
+          cancel: "Atšaukti"

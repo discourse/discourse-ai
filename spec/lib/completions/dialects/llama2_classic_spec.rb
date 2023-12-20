@@ -1,7 +1,24 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Completions::Dialects::Llama2Classic do
-  subject(:dialect) { described_class.new }
+  subject(:dialect) { described_class.new(prompt, "Llama2-chat-hf") }
+
+  let(:tool) do
+    {
+      name: "get_weather",
+      description: "Get the weather in a city",
+      parameters: [
+        { name: "location", type: "string", description: "the city name", required: true },
+        {
+          name: "unit",
+          type: "string",
+          description: "the unit of measurement celcius c or fahrenheit f",
+          enum: %w[c f],
+          required: true,
+        },
+      ],
+    }
+  end
 
   let(:prompt) do
     {
@@ -31,11 +48,16 @@ RSpec.describe DiscourseAi::Completions::Dialects::Llama2Classic do
   describe "#translate" do
     it "translates a prompt written in our generic format to the Llama2 format" do
       llama2_classic_version = <<~TEXT
-      [INST]<<SYS>>#{[prompt[:insts], prompt[:post_insts]].join("\n")}<</SYS>>[/INST]
+      [INST]
+      <<SYS>>
+      #{prompt[:insts]}
+      #{prompt[:post_insts]}
+      <</SYS>>
+      [/INST]
       [INST]#{prompt[:input]}[/INST]
       TEXT
 
-      translated = dialect.translate(prompt)
+      translated = dialect.translate
 
       expect(translated).to eq(llama2_classic_version)
     end
@@ -49,15 +71,126 @@ RSpec.describe DiscourseAi::Completions::Dialects::Llama2Classic do
       ]
 
       llama2_classic_version = <<~TEXT
-      [INST]<<SYS>>#{[prompt[:insts], prompt[:post_insts]].join("\n")}<</SYS>>[/INST]
+      [INST]
+      <<SYS>>
+      #{prompt[:insts]}
+      #{prompt[:post_insts]}
+      <</SYS>>
+      [/INST]
       [INST]#{prompt[:examples][0][0]}[/INST]
       #{prompt[:examples][0][1]}
       [INST]#{prompt[:input]}[/INST]
       TEXT
 
-      translated = dialect.translate(prompt)
+      translated = dialect.translate
 
       expect(translated).to eq(llama2_classic_version)
+    end
+
+    it "include tools inside the prompt" do
+      prompt[:tools] = [tool]
+
+      llama2_classic_version = <<~TEXT
+      [INST]
+      <<SYS>>
+      #{prompt[:insts]}
+      In this environment you have access to a set of tools you can use to answer the user's question.
+      You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
+      <function_calls>
+      <invoke>
+      <tool_name>$TOOL_NAME</tool_name>
+      <parameters>
+      <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
+      ...
+      </parameters>
+      </invoke>
+      </function_calls>
+
+      Here are the tools available:
+      
+      <tools>
+      #{dialect.tools}</tools>
+      #{prompt[:post_insts]}
+      <</SYS>>
+      [/INST]
+      [INST]#{prompt[:input]}[/INST]
+      TEXT
+
+      translated = dialect.translate
+
+      expect(translated).to eq(llama2_classic_version)
+    end
+  end
+
+  describe "#conversation_context" do
+    let(:context) do
+      [
+        { type: "user", name: "user1", content: "This is a new message by a user" },
+        { type: "assistant", content: "I'm a previous bot reply, that's why there's no user" },
+        { type: "tool", name: "tool_id", content: "I'm a tool result" },
+      ]
+    end
+
+    it "adds conversation in reverse order (first == newer)" do
+      prompt[:conversation_context] = context
+
+      expected = <<~TEXT
+      [INST]
+      <function_results>
+      <result>
+      <tool_name>tool_id</tool_name>
+      <json>
+      #{context.last[:content]}
+      </json>
+      </result>
+      </function_results>
+      [/INST]
+      [INST]#{context.second[:content]}[/INST]
+      #{context.first[:content]}
+      TEXT
+
+      translated_context = dialect.conversation_context
+
+      expect(translated_context).to eq(expected)
+    end
+
+    it "trims content if it's getting too long" do
+      context.last[:content] = context.last[:content] * 1_000
+      prompt[:conversation_context] = context
+
+      translated_context = dialect.conversation_context
+
+      expect(translated_context.length).to be < context.last[:content].length
+    end
+  end
+
+  describe "#tools" do
+    it "translates functions to the tool syntax" do
+      prompt[:tools] = [tool]
+
+      translated_tool = <<~TEXT
+        <tool_description>
+        <tool_name>get_weather</tool_name>
+        <description>Get the weather in a city</description>
+        <parameters>
+        <parameter>
+        <name>location</name>
+        <type>string</type>
+        <description>the city name</description>
+        <required>true</required>
+        </parameter>
+        <parameter>
+        <name>unit</name>
+        <type>string</type>
+        <description>the unit of measurement celcius c or fahrenheit f</description>
+        <required>true</required>
+        <options>c,f</options>
+        </parameter>
+        </parameters>
+        </tool_description>
+      TEXT
+
+      expect(dialect.tools).to eq(translated_tool)
     end
   end
 end

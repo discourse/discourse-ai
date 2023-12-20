@@ -8,6 +8,14 @@ ro:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Titlu"
+            categories:
+              label: "Categorii"
+            tags:
+              label: "Etichete"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ ro:
           close: "Închide sondajul"
           copy: "Copiază"
           copied: "Copiat!"
+          cancel: "Anulare"

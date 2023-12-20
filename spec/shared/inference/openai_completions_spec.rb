@@ -3,6 +3,8 @@
 describe DiscourseAi::Inference::OpenAiCompletions do
   before { SiteSetting.ai_openai_api_key = "abc-123" }
 
+  fab!(:user)
+
   it "supports sending an organization id" do
     SiteSetting.ai_openai_organization = "org_123"
 
@@ -299,6 +301,42 @@ describe DiscourseAi::Inference::OpenAiCompletions do
     after do
       remove_stubbed_net_http
       restore_net_http
+    end
+
+    it "recovers from chunked payload issues" do
+      raw_data = <<~TEXT
+da|ta: |{"choices":[{"delta":{"content"|:"test"}}]}
+
+data: {"choices":[{"delta":{"content":"test1"}}]}
+
+data: {"choices":[{"delta":{"conte|nt":"test2"}}]|}
+
+data: {"ch|oices":[{"delta|":{"content":"test3"}}]}
+
+data: [DONE]
+    TEXT
+
+      chunks = raw_data.split("|")
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        status: 200,
+        body: chunks,
+      )
+
+      partials = []
+      DiscourseAi::Inference::OpenAiCompletions.perform!([], "gpt-3.5-turbo") do |partial, cancel|
+        partials << partial
+      end
+
+      expect(partials.length).to eq(4)
+      expect(partials).to eq(
+        [
+          { choices: [{ delta: { content: "test" } }] },
+          { choices: [{ delta: { content: "test1" } }] },
+          { choices: [{ delta: { content: "test2" } }] },
+          { choices: [{ delta: { content: "test3" } }] },
+        ],
+      )
     end
 
     it "support extremely slow streaming" do

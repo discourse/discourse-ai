@@ -7,10 +7,20 @@
 ja:
   js:
     discourse_automation:
+      ai_models:
+        claude_2: クロード 2
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "送信者"
+            title:
+              label: "タグライン"
+            categories:
+              label: "カテゴリ"
+            tags:
+              label: "タグ"
         llm_triage:
-          models:
-            claude_2: クロード 2
           fields:
             category:
               label: "カテゴリ"
@@ -45,6 +55,7 @@ ja:
           close: "クローズ"
           copy: "コピー"
           copied: "コピーしました！"
+          cancel: "キャンセル"
       reviewables:
         model_used: "使用モデル:"
         accuracy: "精度:"

@@ -6,12 +6,59 @@ en:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
+      ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
+        claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Sender"
+              description: "The user that will send the report"
+            receivers:
+              label: "Receivers"
+              description: "The users that will receive the report (can be email or usernames)"
+            title:
+              label: "Title"
+              description: "The title of the report"
+            days:
+              label: "Days"
+              description: "The timespan of the report"
+            offset:
+              label: "Offset"
+              description: "When testing you may want to run the report historically, use offset to start the report in an earlier date"
+            instructions:
+              label: "Instructions"
+              description: "The instructions provided to the large language model"
+            sample_size:
+              label: "Sample Size"
+              description: "The number of posts to sample for the report"
+            tokens_per_post:
+              label: "Tokens per post"
+              description: "The number of llm tokens to use per post"
+            model:
+              label: "Model"
+              description: "LLM to use for report generation"
+            categories:
+              label: "Categories"
+              description: "Filter topics only to these category"
+            tags:
+              label: "Tags"
+              description: "Filter topics only to these tags"
+            allow_secure_categories:
+              label: "Allow secure categories"
+              description: "Allow the report to be generated for topics in secure categories"
+            debug_mode:
+              label: "Debug Mode"
+              description: "Enable debug mode to see the raw input and output of the LLM"
+            priority_group:
+              label: "Priority Group"
+              description: "Priotize content from this group in the report"
+
         llm_triage:
-          models:
-            gpt_4: GPT 4
-            gpt_3_5_turbo: GPT 3.5 Turbo
-            claude_2: Claude 2
           fields:
             system_prompt:
               label: "System Prompt"
@@ -104,6 +151,12 @@ en:
           copy: "Copy"
           copied: "Copied!"
           cancel: "Cancel"
+        fast_edit:
+          suggest_button: "Suggest Edit"
+        thumbnail_suggestions:
+          title: "Suggested Thumbnails"
+          select: "Select"
+          selected: "Selected"
       reviewables:
         model_used: "Model used:"
         accuracy: "Accuracy:"
@@ -136,8 +189,6 @@ en:
         summary:
           label: "sentiment"
           title: "Experimental AI-powered sentiment analysis of this person's most recent posts."
-
-
 
     review:
       types:

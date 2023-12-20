@@ -5,3 +5,10 @@
 # https://translate.discourse.org/
 
 en_GB:
+  js:
+    discourse_automation:
+      scriptables:
+        llm_report:
+          fields:
+            categories:
+              label: "Categories"

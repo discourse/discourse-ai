@@ -8,6 +8,14 @@ sw:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Kichwa cha Habari"
+            categories:
+              label: "Kategoria"
+            tags:
+              label: "Lebo"
         llm_triage:
           fields:
             category:
@@ -34,3 +42,4 @@ sw:
         post_options_menu:
           close: "Funga"
           copy: "Nakili"
+          cancel: "Ghairi"

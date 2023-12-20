@@ -8,6 +8,16 @@ uk:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "Відправник"
+            title:
+              label: "Назва"
+            categories:
+              label: "Розділи"
+            tags:
+              label: "Теґи"
         llm_triage:
           fields:
             category:
@@ -36,3 +46,4 @@ uk:
           close: "Закрити"
           copy: "Копіювати"
           copied: "Скопійовано!"
+          cancel: "Скасувати"

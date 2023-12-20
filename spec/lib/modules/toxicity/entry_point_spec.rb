@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Toxicity::EntryPoint do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
 
   describe "registering event callbacks" do
     before { SiteSetting.ai_toxicity_enabled = true }

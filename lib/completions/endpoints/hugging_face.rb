@@ -11,7 +11,7 @@ module DiscourseAi
         end
 
         def default_options
-          { parameters: { repetition_penalty: 1.1, temperature: 0.7 } }
+          { parameters: { repetition_penalty: 1.1, temperature: 0.7, return_full_text: false } }
         end
 
         def provider_id
@@ -24,7 +24,7 @@ module DiscourseAi
           URI(SiteSetting.ai_hugging_face_api_url)
         end
 
-        def prepare_payload(prompt, model_params)
+        def prepare_payload(prompt, model_params, _dialect)
           default_options
             .merge(inputs: prompt)
             .tap do |payload|
@@ -33,7 +33,6 @@ module DiscourseAi
               token_limit = SiteSetting.ai_hugging_face_token_limit || 4_000
 
               payload[:parameters][:max_new_tokens] = token_limit - prompt_size(prompt)
-              payload[:parameters][:return_full_text] = false
 
               payload[:stream] = true if @streaming_mode
             end

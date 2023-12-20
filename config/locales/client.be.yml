@@ -8,6 +8,14 @@ be:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Загаловак"
+            categories:
+              label: "катэгорыі"
+            tags:
+              label: "тэгі"
         llm_triage:
           fields:
             category:
@@ -33,3 +41,4 @@ be:
         post_options_menu:
           close: "зачыніць"
           copy: "капіяваць"
+          cancel: "адмяніць"

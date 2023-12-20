@@ -85,6 +85,8 @@ module DiscourseAi
           </input>
           <output>
           </output>
+          <result>
+          </result>
         ]
 
         result.dup.tap { |dup_result| tags_to_remove.each { |tag| dup_result.gsub!(tag, "") } }
@@ -112,6 +114,8 @@ module DiscourseAi
           "pen"
         when "explain"
           "question"
+        when "illustrate_post"
+          "images"
         else
           nil
         end
@@ -124,19 +128,21 @@ module DiscourseAi
         when "generate_titles"
           %w[composer]
         when "proofread"
-          %w[composer]
+          %w[composer post]
         when "markdown_table"
           %w[composer]
         when "tone"
           %w[composer]
         when "custom_prompt"
-          %w[composer]
+          %w[composer post]
         when "rewrite"
           %w[composer]
         when "explain"
           %w[post]
         when "summarize"
           %w[post]
+        when "illustrate_post"
+          %w[composer]
         else
           %w[composer post]
         end

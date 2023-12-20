@@ -8,6 +8,14 @@ pt:
   js:
     discourse_automation:
       scriptables:
+        llm_report:
+          fields:
+            title:
+              label: "Título"
+            categories:
+              label: "Categorias"
+            tags:
+              label: "Etiquetas"
         llm_triage:
           fields:
             category:
@@ -35,3 +43,4 @@ pt:
           close: "Fechar"
           copy: "Copiar"
           copied: "Copiado!"
+          cancel: "Cancelar"
