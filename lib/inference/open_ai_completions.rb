@@ -45,7 +45,7 @@ module ::DiscourseAi
           end
         headers = { "Content-Type" => "application/json" }
 
-        if url.host.include? ("azure")
+        if url.host.include?("azure")
           headers["api-key"] = SiteSetting.ai_openai_api_key
         else
           headers["Authorization"] = "Bearer #{SiteSetting.ai_openai_api_key}"
@@ -131,7 +131,7 @@ module ::DiscourseAi
               response.read_body do |chunk|
                 if cancelled
                   http.finish
-                  return
+                  break
                 end
 
                 response_raw << chunk

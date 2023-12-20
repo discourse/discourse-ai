@@ -114,4 +114,103 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   end
 
   it_behaves_like "an endpoint that can communicate with a completion service"
+
+  context "when chunked encoding returns partial chunks" do
+    # See: https://github.com/bblimke/webmock/issues/629
+    let(:mock_net_http) do
+      Class.new(Net::HTTP) do
+        def request(*)
+          super do |response|
+            response.instance_eval do
+              def read_body(*, &)
+                @body.each(&)
+              end
+            end
+
+            yield response if block_given?
+
+            response
+          end
+        end
+      end
+    end
+
+    let(:remove_original_net_http) { Net.send(:remove_const, :HTTP) }
+    let(:original_http) { remove_original_net_http }
+    let(:stub_net_http) { Net.send(:const_set, :HTTP, mock_net_http) }
+
+    let(:remove_stubbed_net_http) { Net.send(:remove_const, :HTTP) }
+    let(:restore_net_http) { Net.send(:const_set, :HTTP, original_http) }
+
+    before do
+      mock_net_http
+      remove_original_net_http
+      stub_net_http
+    end
+
+    after do
+      remove_stubbed_net_http
+      restore_net_http
+    end
+
+    it "will automatically recover from a bad payload" do
+      # this should not happen, but lets ensure nothing bad happens
+      # the row with test1 is invalid json
+      raw_data = <<~TEXT
+d|a|t|a|:| |{|"choices":[{"delta":{"content":"test,"}}]}
+
+data: {"choices":[{"delta":{"content":"test1,"}}]
+
+data: {"choices":[{"delta":|{"content":"test2,"}}]}
+
+data: {"choices":[{"delta":{"content":"test3,"}}]|}
+
+data: {"choices":[{|"|d|elta":{"content":"test4"}}]|}
+
+data: [D|ONE]
+    TEXT
+
+      chunks = raw_data.split("|")
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        status: 200,
+        body: chunks,
+      )
+
+      partials = []
+      llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
+      llm.completion!({ insts: "test" }, Discourse.system_user) { |partial| partials << partial }
+
+      expect(partials.join).to eq("test,test2,test3,test4")
+    end
+
+    it "supports chunked encoding properly" do
+      raw_data = <<~TEXT
+da|ta: {"choices":[{"delta":{"content":"test,"}}]}
+
+data: {"choices":[{"delta":{"content":"test1,"}}]}
+
+data: {"choices":[{"delta":|{"content":"test2,"}}]}
+
+data: {"choices":[{"delta":{"content":"test3,"}}]|}
+
+data: {"choices":[{|"|d|elta":{"content":"test4"}}]|}
+
+data: [D|ONE]
+    TEXT
+
+      chunks = raw_data.split("|")
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        status: 200,
+        body: chunks,
+      )
+
+      partials = []
+      llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
+      llm.completion!({ insts: "test" }, Discourse.system_user) { |partial| partials << partial }
+
+      expect(partials.join).to eq("test,test1,test2,test3,test4")
+    end
+  end
 end
