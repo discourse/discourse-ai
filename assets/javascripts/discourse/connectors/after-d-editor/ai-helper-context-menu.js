@@ -25,8 +25,6 @@ export default class AiHelperContextMenu extends Component {
   @tracked selectedText = "";
   @tracked newSelectedText;
   @tracked loading = false;
-  @tracked oldEditorValue;
-  @tracked newEditorValue;
   @tracked lastUsedOption = null;
   @tracked showDiffModal = false;
   @tracked showThumbnailModal = false;
@@ -34,6 +32,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked popperPlacement = "top-start";
   @tracked previousMenuState = null;
   @tracked customPromptValue = "";
+  @tracked initialValue = "";
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -128,6 +127,13 @@ export default class AiHelperContextMenu extends Component {
         )
       : "";
 
+    this.selectionRange = canSelect
+      ? {
+          x: document.activeElement.selectionStart,
+          y: document.activeElement.selectionEnd,
+        }
+      : { x: 0, y: 0 };
+
     if (this.selectedText?.length === 0) {
       this.closeContextMenu();
       return;
@@ -151,12 +157,6 @@ export default class AiHelperContextMenu extends Component {
 
   @bind
   onKeyDown(event) {
-    const cmdOrCtrl = event.ctrlKey || event.metaKey;
-
-    if (cmdOrCtrl && event.key === "z" && this.oldEditorValue) {
-      return this.undoAIAction();
-    }
-
     if (event.key === "Escape") {
       return this.closeContextMenu();
     }
@@ -205,20 +205,24 @@ export default class AiHelperContextMenu extends Component {
   }
 
   _updateSuggestedByAI(data) {
-    const composer = this.args.outletArgs.composer;
-    this.oldEditorValue = this._dEditorInput.value;
     this.newSelectedText = data.suggestions[0];
-
-    this.newEditorValue = this.oldEditorValue.replace(
-      this.selectedText,
-      this.newSelectedText
-    );
 
     if (data.diff) {
       this.diff = data.diff;
     }
-    composer.set("reply", this.newEditorValue);
+
+    this._insertAt(
+      this.selectionRange.x,
+      this.selectionRange.y,
+      this.newSelectedText
+    );
     this.menuState = this.CONTEXT_MENU_STATES.review;
+  }
+
+  _insertAt(start, end, text) {
+    this._dEditorInput.setSelectionRange(start, end);
+    this._dEditorInput.focus();
+    document.execCommand("insertText", false, text);
   }
 
   _toggleLoadingState(loading) {
@@ -335,8 +339,7 @@ export default class AiHelperContextMenu extends Component {
 
   @action
   undoAIAction() {
-    const composer = this.args.outletArgs.composer;
-    composer.set("reply", this.oldEditorValue);
+    document.execCommand("undo", false, null);
     // context menu is prevented from closing when in review state
     // so we change to reset state quickly before closing
     this.menuState = this.CONTEXT_MENU_STATES.resets;
@@ -348,6 +351,7 @@ export default class AiHelperContextMenu extends Component {
     this._toggleLoadingState(true);
     this.lastUsedOption = option;
     this.menuState = this.CONTEXT_MENU_STATES.loading;
+    this.initialValue = this.selectedText;
 
     this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
       method: "POST",
