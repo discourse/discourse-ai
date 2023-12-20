@@ -160,6 +160,10 @@ export default class AiHelperContextMenu extends Component {
     if (event.key === "Escape") {
       return this.closeContextMenu();
     }
+
+    if (event.key === "Backspace" && this.selectedText) {
+      return this.closeContextMenu();
+    }
   }
 
   @debounce(INPUT_DELAY)
