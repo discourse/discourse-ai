@@ -304,18 +304,20 @@ describe DiscourseAi::Inference::OpenAiCompletions do
       restore_net_http
     end
 
-    it "supports extremely slow streaming under new interface" do
+    it "recovers from chunked payload issues" do
       raw_data = <<~TEXT
-data: {"choices":[{"delta":{"content":"test"}}]}
+da|ta: |{"choices":[{"delta":{"content"|:"test"}}]}
 
 data: {"choices":[{"delta":{"content":"test1"}}]}
 
-data: {"choices":[{"delta":{"content":"test2"}}]}
+data: {"choices":[{"delta":{"conte|nt":"test2"}}]|}
+
+data: {"ch|oices":[{"delta|":{"content":"test3"}}]}
 
 data: [DONE]
     TEXT
 
-      chunks = raw_data.split("")
+      chunks = raw_data.split("|")
 
       stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
         status: 200,
@@ -323,10 +325,19 @@ data: [DONE]
       )
 
       partials = []
-      llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
-      llm.completion!({ insts: "test" }, user) { |partial| partials << partial }
+      DiscourseAi::Inference::OpenAiCompletions.perform!([], "gpt-3.5-turbo") do |partial, cancel|
+        partials << partial
+      end
 
-      expect(partials.join).to eq("testtest1test2")
+      expect(partials.length).to eq(4)
+      expect(partials).to eq(
+        [
+          { choices: [{ delta: { content: "test" } }] },
+          { choices: [{ delta: { content: "test1" } }] },
+          { choices: [{ delta: { content: "test2" } }] },
+          { choices: [{ delta: { content: "test3" } }] },
+        ],
+      )
     end
 
     it "support extremely slow streaming" do

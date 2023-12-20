@@ -90,30 +90,41 @@ module DiscourseAi
 
                 leftover = ""
                 function_buffer = build_buffer # Nokogiri document
+                prev_processed_partials = 0
 
                 response.read_body do |chunk|
                   if cancelled
                     http.finish
-                    return
+                    break
                   end
 
                   decoded_chunk = decode(chunk)
                   response_raw << decoded_chunk
 
-                  # Buffering for extremely slow streaming.
-                  if (leftover + decoded_chunk).length < "data: [DONE]".length
-                    leftover += decoded_chunk
+                  redo_chunk = leftover + decoded_chunk
+
+                  raw_partials = partials_from(redo_chunk)
+
+                  raw_partials =
+                    raw_partials[prev_processed_partials..-1] if prev_processed_partials > 0
+
+                  if raw_partials.blank? || (raw_partials.size == 1 && raw_partials.first.blank?)
+                    leftover = redo_chunk
                     next
                   end
 
-                  partials_from(leftover + decoded_chunk).each do |raw_partial|
+                  json_error = false
+
+                  raw_partials.each do |raw_partial|
+                    json_error = false
+                    prev_processed_partials += 1
+
                     next if cancelled
                     next if raw_partial.blank?
 
                     begin
                       partial = extract_completion_from(raw_partial)
                       next if partial.nil?
-                      leftover = ""
 
                       if has_tool?(response_data, partial)
                         function_buffer = add_to_buffer(function_buffer, response_data, partial)
@@ -134,9 +145,17 @@ module DiscourseAi
                         yield partial, cancel if partial
                       end
                     rescue JSON::ParserError
-                      leftover += decoded_chunk
+                      leftover = redo_chunk
+                      json_error = true
                     end
                   end
+
+                  if json_error
+                    prev_processed_partials -= 1
+                  else
+                    leftover = ""
+                  end
+                  prev_processed_partials = 0 if leftover.blank?
                 end
               rescue IOError, StandardError
                 raise if !cancelled
