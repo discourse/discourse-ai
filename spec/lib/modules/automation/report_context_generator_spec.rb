@@ -59,6 +59,14 @@ module DiscourseAi
           end
         end
 
+        it "will exclude non visible topics" do
+          post_with_likes3.topic.update(visible: false)
+
+          context = ReportContextGenerator.generate(start_date: 1.day.ago, duration: 2.day)
+
+          expect(context).not_to include("topic_id: #{topic_with_likes.id}")
+        end
+
         it "always includes info from last posts on topic" do
           context =
             ReportContextGenerator.generate(start_date: 1.day.ago, duration: 2.day, max_posts: 1)
