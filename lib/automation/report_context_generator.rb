@@ -33,6 +33,7 @@ module DiscourseAi
             .where("posts.created_at >= ?", @start_date)
             .joins(topic: :category)
             .includes(:topic, :user)
+            .where("topics.visible")
             .where("posts.created_at < ?", @start_date + @duration)
             .where("posts.post_type = ?", Post.types[:regular])
             .where("posts.hidden_at IS NULL")
