@@ -6,7 +6,9 @@ module DiscourseAi
       class Mixtral < Dialect
         class << self
           def can_translate?(model_name)
-            %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(model_name)
+            %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(
+              model_name,
+            )
           end
 
           def tokenizer

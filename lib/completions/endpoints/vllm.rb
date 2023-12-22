@@ -5,7 +5,9 @@ module DiscourseAi
     module Endpoints
       class Vllm < Base
         def self.can_contact?(model_name)
-          %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(model_name)
+          %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(
+            model_name,
+          )
         end
 
         def default_options
