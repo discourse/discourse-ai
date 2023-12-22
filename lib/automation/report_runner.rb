@@ -35,25 +35,30 @@ module DiscourseAi
 
       def initialize(
         sender_username:,
-        receivers:,
-        title:,
         model:,
-        category_ids:,
-        tags:,
-        allow_secure_categories:,
-        debug_mode:,
         sample_size:,
         instructions:,
+        tokens_per_post:,
         days:,
         offset:,
-        priority_group_id:,
-        tokens_per_post:
+        receivers: nil,
+        topic_id: nil,
+        title: nil,
+        category_ids: nil,
+        tags: nil,
+        priority_group_id: nil,
+        allow_secure_categories: false,
+        debug_mode: false
       )
         @sender = User.find_by(username: sender_username)
         @receivers = User.where(username: receivers)
-        @email_receivers = receivers.filter { |r| r.include? "@" }
-        @title = title
-
+        @email_receivers = receivers&.filter { |r| r.include? "@" }
+        @title =
+          if title.present?
+            title
+          else
+            I18n.t("discourse_automation.llm_report.title")
+          end
         @model = model
         @llm = DiscourseAi::Completions::Llm.proxy(model)
         @category_ids = category_ids
@@ -66,13 +71,18 @@ module DiscourseAi
         @offset = offset.to_i
         @priority_group_id = priority_group_id
         @tokens_per_post = tokens_per_post.to_i
+        @topic_id = topic_id.presence&.to_i
+
+        if !@topic_id && !@receivers.present? && !@email_receivers.present?
+          raise ArgumentError, "Must specify topic_id or receivers"
+        end
       end
 
       def run!
         start_date = (@offset + @days).days.ago
         end_date = start_date + @days.days
 
-        @title =
+        title =
           @title.gsub(
             "%DATE%",
             start_date.strftime("%Y-%m-%d") + " - " + end_date.strftime("%Y-%m-%d"),
@@ -102,7 +112,7 @@ module DiscourseAi
         INPUT
 
         prompt = {
-          insts: "You are a helpful bot specializing in summarizing activity Discourse sites",
+          insts: "You are a helpful bot specializing in summarizing activity on Discourse sites",
           input: input,
           final_insts: "Here is the report I generated for you",
           params: {
@@ -123,12 +133,17 @@ module DiscourseAi
 
         receiver_usernames = @receivers.map(&:username).join(",")
 
+        if @topic_id
+          PostCreator.create!(@sender, raw: result, topic_id: @topic_id, skip_validations: true)
+          # no debug mode for topics, it is too noisy
+        end
+
         if receiver_usernames.present?
           post =
             PostCreator.create!(
               @sender,
               raw: result,
-              title: @title,
+              title: title,
               archetype: Archetype.private_message,
               target_usernames: receiver_usernames,
               skip_validations: true,
@@ -157,7 +172,7 @@ module DiscourseAi
         if @email_receivers.present?
           @email_receivers.each do |to_address|
             Email::Sender.new(
-              ::AiReportMailer.send_report(to_address, subject: @title, body: result),
+              ::AiReportMailer.send_report(to_address, subject: title, body: result),
               :ai_report,
             ).send
           end
