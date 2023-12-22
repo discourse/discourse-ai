@@ -35,20 +35,20 @@ module DiscourseAi
 
       def initialize(
         sender_username:,
-        receivers:,
-        topic_id:,
-        title:,
         model:,
-        category_ids:,
-        tags:,
-        allow_secure_categories:,
-        debug_mode:,
         sample_size:,
         instructions:,
+        tokens_per_post:,
         days:,
         offset:,
-        priority_group_id:,
-        tokens_per_post:
+        receivers: nil,
+        topic_id: nil,
+        title: nil,
+        category_ids: nil,
+        tags: nil,
+        priority_group_id: nil,
+        allow_secure_categories: false,
+        debug_mode: false
       )
         @sender = User.find_by(username: sender_username)
         @receivers = User.where(username: receivers)
