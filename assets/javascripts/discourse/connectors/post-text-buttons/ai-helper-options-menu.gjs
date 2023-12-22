@@ -26,6 +26,7 @@ export default class AIHelperOptionsMenu extends Component {
   @service modal;
   @service siteSettings;
   @service currentUser;
+  @service menu;
   @tracked helperOptions = [];
   @tracked menuState = this.MENU_STATES.triggers;
   @tracked loading = false;
@@ -58,6 +59,7 @@ export default class AIHelperOptionsMenu extends Component {
   async showAIHelperOptions() {
     this.showMainButtons = false;
     this.menuState = this.MENU_STATES.options;
+    this.menu.activeMenu.options.placement = "bottom";
   }
 
   @bind
