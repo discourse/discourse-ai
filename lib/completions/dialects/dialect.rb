@@ -16,6 +16,7 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::ChatGpt,
               DiscourseAi::Completions::Dialects::OrcaStyle,
               DiscourseAi::Completions::Dialects::Gemini,
+              DiscourseAi::Completions::Dialects::Mixtral,
             ]
 
             dialect = dialects.find { |d| d.can_translate?(model_name) }

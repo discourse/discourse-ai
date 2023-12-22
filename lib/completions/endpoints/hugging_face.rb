@@ -5,9 +5,14 @@ module DiscourseAi
     module Endpoints
       class HuggingFace < Base
         def self.can_contact?(model_name)
-          %w[StableBeluga2 Upstage-Llama-2-*-instruct-v2 Llama2-*-chat-hf Llama2-chat-hf].include?(
-            model_name,
-          )
+          %w[
+            StableBeluga2
+            Upstage-Llama-2-*-instruct-v2
+            Llama2-*-chat-hf
+            Llama2-chat-hf
+            mistralai/Mixtral-8x7B-Instruct-v0.1
+            mistralai/Mistral-7B-Instruct-v0.2
+          ].include?(model_name)
         end
 
         def default_options

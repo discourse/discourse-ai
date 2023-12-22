@@ -6,7 +6,7 @@ module DiscourseAi
       class Mixtral < Dialect
         class << self
           def can_translate?(model_name)
-            %w[Mixtral-8x7B-Instruct Mistral-7B-Instruct].include?(model_name)
+            %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(model_name)
           end
 
           def tokenizer
@@ -15,23 +15,23 @@ module DiscourseAi
         end
 
         def translate
-          prompt = +<<~TEXT
+          mixtral_prompt = +<<~TEXT
           <s> [INST]
           #{prompt[:insts]}
           #{build_tools_prompt}#{prompt[:post_insts]}
-          [/INST] "Ok </s>"
+          [/INST] Ok </s>
           TEXT
 
           if prompt[:examples]
             prompt[:examples].each do |example_pair|
-              llama2_prompt << "[INST] #{example_pair.first} [/INST]\n"
-              llama2_prompt << "#{example_pair.second}\n"
+              mixtral_prompt << "[INST] #{example_pair.first} [/INST]\n"
+              mixtral_prompt << "#{example_pair.second}\n"
             end
           end
 
-          llama2_prompt << conversation_context if prompt[:conversation_context].present?
+          mixtral_prompt << conversation_context if prompt[:conversation_context].present?
 
-          llama2_prompt << "[INST] #{prompt[:input]} [/INST]\n"
+          mixtral_prompt << "[INST] #{prompt[:input]} [/INST]\n"
         end
 
         def conversation_context
