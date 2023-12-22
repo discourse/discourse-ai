@@ -20,7 +20,10 @@ en:
               description: "The user that will send the report"
             receivers:
               label: "Receivers"
-              description: "The users that will receive the report (can be email or usernames)"
+              description: "The users that will receive the report (emails will be sent direct emails, usernames will be sent a PM)"
+            topic_id:
+              label: "Topic ID"
+              description: "The topic id to post the report to"
             title:
               label: "Title"
               description: "The title of the report"

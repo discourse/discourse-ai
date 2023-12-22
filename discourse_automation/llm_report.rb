@@ -11,8 +11,9 @@ if defined?(DiscourseAutomation)
     triggerables %i[recurring]
 
     field :sender, component: :user, required: true
-    field :receivers, component: :users, required: true
-    field :title, component: :text, required: true
+    field :receivers, component: :users
+    field :topic_id, component: :text
+    field :title, component: :text
     field :days, component: :text, required: true, default_value: 7
     field :offset, component: :text, required: true, default_value: 0
     field :instructions,
@@ -40,6 +41,7 @@ if defined?(DiscourseAutomation)
       begin
         sender = fields.dig("sender", "value")
         receivers = fields.dig("receivers", "value")
+        topic_id = fields.dig("topic_id", "value")
         title = fields.dig("title", "value")
         model = fields.dig("model", "value")
         category_ids = fields.dig("categories", "value")
@@ -56,6 +58,7 @@ if defined?(DiscourseAutomation)
         DiscourseAi::Automation::ReportRunner.run!(
           sender_username: sender,
           receivers: receivers,
+          topic_id: topic_id,
           title: title,
           model: model,
           category_ids: category_ids,
