@@ -153,6 +153,11 @@ discourse_ai:
   ai_gemini_api_key:
     default: ""
     secret: true
+  ai_vllm_endpoint:
+    default: ""
+  ai_vllm_endpoint_srv:
+    default: ""
+    hidden: true
 
   composer_ai_helper_enabled:
     default: false
@@ -177,6 +182,8 @@ discourse_ai:
       - stable-beluga-2
       - Llama2-chat-hf
       - gemini-pro
+      - mistralai/Mixtral-8x7B-Instruct-v0.1
+      - mistralai/Mistral-7B-Instruct-v0.2
   ai_helper_custom_prompts_allowed_groups:
     client: true
     type: group_list
@@ -241,6 +248,8 @@ discourse_ai:
       - StableBeluga2
       - Upstage-Llama-2-*-instruct-v2
       - gemini-pro
+      - mistralai/Mixtral-8x7B-Instruct-v0.1
+      - mistralai/Mistral-7B-Instruct-v0.2
 
   ai_summarization_discourse_service_api_endpoint: ""
   ai_summarization_discourse_service_api_key:

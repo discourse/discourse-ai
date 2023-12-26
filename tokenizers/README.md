@@ -21,3 +21,7 @@ Licensed under MIT License
 ## bge-large-en
 
 Licensed under MIT License
+
+## mixtral
+
+Licensed under Apache 2.0 License
