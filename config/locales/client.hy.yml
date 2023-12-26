@@ -10,6 +10,8 @@ hy:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Թեմայի ID"
             title:
               label: "Վերնագիր"
             categories:

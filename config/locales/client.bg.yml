@@ -10,6 +10,8 @@ bg:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Тема ID "
             title:
               label: "Заглавие"
             categories:

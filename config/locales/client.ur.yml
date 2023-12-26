@@ -10,6 +10,8 @@ ur:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ٹاپک ID"
             title:
               label: "عنوان"
             categories:

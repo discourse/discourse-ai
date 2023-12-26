@@ -10,6 +10,8 @@ sr:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID Teme"
             title:
               label: "Naslov"
             categories:

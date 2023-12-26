@@ -12,6 +12,8 @@ pl_PL:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID tematu"
             title:
               label: "Tytuł"
             categories:
@@ -54,6 +56,9 @@ pl_PL:
           copy: "Kopiuj"
           copied: "Skopiowane!"
           cancel: "Anuluj"
+        thumbnail_suggestions:
+          select: "Wybierz"
+          selected: "Wybrany"
       reviewables:
         model_used: "Zastosowany model:"
         accuracy: "Dokładność:"

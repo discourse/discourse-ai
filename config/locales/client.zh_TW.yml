@@ -10,6 +10,8 @@ zh_TW:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "話題 ID"
             title:
               label: "標題"
             categories:
@@ -44,3 +46,6 @@ zh_TW:
           copy: "複製"
           copied: "已複製!"
           cancel: "取消"
+        thumbnail_suggestions:
+          select: "選擇"
+          selected: "已選"

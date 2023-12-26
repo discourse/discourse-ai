@@ -10,6 +10,8 @@ cs:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID tématu"
             title:
               label: "Nadpis"
             categories:
@@ -44,3 +46,6 @@ cs:
           copy: "Kopírovat"
           copied: "Zkopírováno!"
           cancel: "Zrušit"
+        thumbnail_suggestions:
+          select: "Vybrat"
+          selected: "Vybrané"

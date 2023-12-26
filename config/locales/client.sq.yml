@@ -10,6 +10,8 @@ sq:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID e temës"
             title:
               label: "Titulli"
             categories:

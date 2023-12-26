@@ -10,6 +10,8 @@ vi:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID Chủ đề"
             title:
               label: "Tiêu đề"
             categories:
@@ -43,3 +45,5 @@ vi:
           copy: "Sao chép"
           copied: "Đã sao chép!"
           cancel: "Huỷ"
+        thumbnail_suggestions:
+          select: "Chọn"

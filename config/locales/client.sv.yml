@@ -10,6 +10,8 @@ sv:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Ämnes-ID"
             title:
               label: "Rubrik"
             categories:
@@ -45,3 +47,5 @@ sv:
           copy: "Kopiera"
           copied: "Kopierad!"
           cancel: "Avbryt"
+        thumbnail_suggestions:
+          selected: "Markerat"

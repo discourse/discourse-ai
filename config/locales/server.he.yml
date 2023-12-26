@@ -11,6 +11,9 @@ he:
         title: מיון ראשוני של פוסטים באמצעות בינה מלאכותית
         description: "מיון ראשוני של פוסטים באמצעות דגם שפה גדול"
         system_prompt_missing_post_placeholder: "בקשת המערכת חייבת להכיל ממלא מקום לפוסט: %%POST%%"
+      llm_report:
+        title: דוח תקופתי בעזרת בינה מלאכותית
+        description: "דוח תקופתי שמבוסס על דגם שפה גדול"
   site_settings:
     discourse_ai_enabled: "הפעלת תוסף הבינה המלאכותית של Discourse."
     ai_toxicity_enabled: "הפעלת מודול הרעילות."
@@ -115,6 +118,7 @@ he:
         markdown_table: יצירת טבלה ב־Markdown
         custom_prompt: "בקשה מותאמת אישית"
         explain: "הסבר"
+        illustrate_post: "איור פוסט"
     ai_bot:
       personas:
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"

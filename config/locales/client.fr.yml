@@ -14,6 +14,8 @@ fr:
           fields:
             sender:
               label: "Expéditeur"
+            topic_id:
+              label: "ID du sujet"
             title:
               label: "Titre"
             categories:
@@ -56,6 +58,9 @@ fr:
           copy: "Copie"
           copied: "Copié !"
           cancel: "Annuler"
+        thumbnail_suggestions:
+          select: "Sélectionner"
+          selected: "Sélectionné"
       reviewables:
         model_used: "Modèle utilisé :"
         accuracy: "Précision :"

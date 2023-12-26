@@ -12,6 +12,8 @@ ko:
           fields:
             sender:
               label: "발신자"
+            topic_id:
+              label: "토픽 ID"
             title:
               label: "제목"
             categories:
@@ -47,3 +49,5 @@ ko:
           copy: "복사"
           copied: "복사되었습니다!"
           cancel: "취소"
+        thumbnail_suggestions:
+          select: "선택"

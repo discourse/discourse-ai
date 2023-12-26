@@ -10,6 +10,8 @@ th:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "หมายเลขกระทู้"
             title:
               label: "ชื่อเรื่อง"
             categories:

@@ -12,6 +12,8 @@ ar:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "معرِّف الموضوع"
             title:
               label: "العنوان"
             categories:
@@ -54,6 +56,9 @@ ar:
           copy: "نسخ"
           copied: "تم النسخ!"
           cancel: "إلغاء"
+        thumbnail_suggestions:
+          select: "تحديد"
+          selected: "محدَّد"
       reviewables:
         model_used: "النموذج المستخدم:"
         accuracy: "الدقة:"

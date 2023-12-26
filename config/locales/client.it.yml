@@ -14,6 +14,8 @@ it:
           fields:
             sender:
               label: "Mittente"
+            topic_id:
+              label: "ID dell'argomento"
             title:
               label: "Titolo"
             categories:
@@ -56,6 +58,9 @@ it:
           copy: "Copia"
           copied: "Copiato!"
           cancel: "Annulla"
+        thumbnail_suggestions:
+          select: "Seleziona"
+          selected: "Selezionato"
       reviewables:
         model_used: "Modello utilizzato:"
         accuracy: "Precisione:"

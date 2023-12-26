@@ -14,6 +14,8 @@ fi:
           fields:
             sender:
               label: "Lähettäjä"
+            topic_id:
+              label: "Ketjun tunnus"
             title:
               label: "Otsikko"
             categories:
@@ -56,6 +58,9 @@ fi:
           copy: "Kopioi"
           copied: "Kopioitiin!"
           cancel: "Peruuta"
+        thumbnail_suggestions:
+          select: "Valitse"
+          selected: "Valittu"
       reviewables:
         model_used: "Käytetty malli:"
         accuracy: "Tarkkuus:"

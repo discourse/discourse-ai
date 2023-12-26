@@ -43,3 +43,5 @@ id:
           close: "Tutup"
           copied: "Disalin!"
           cancel: "Batal"
+        thumbnail_suggestions:
+          selected: "Dipilih"

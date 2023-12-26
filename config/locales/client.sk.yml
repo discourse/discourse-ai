@@ -10,6 +10,8 @@ sk:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID témy"
             title:
               label: "Názov"
             categories:
@@ -43,3 +45,5 @@ sk:
           close: "Zavrieť"
           copy: "Kopírovať"
           cancel: "Zrušiť"
+        thumbnail_suggestions:
+          select: "Vyberte"

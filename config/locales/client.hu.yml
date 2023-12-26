@@ -10,6 +10,8 @@ hu:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Témaazonosító"
             title:
               label: "Cím"
             categories:

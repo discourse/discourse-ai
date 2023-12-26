@@ -10,6 +10,8 @@ pt:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID do Tópico"
             title:
               label: "Título"
             categories:
@@ -44,3 +46,5 @@ pt:
           copy: "Copiar"
           copied: "Copiado!"
           cancel: "Cancelar"
+        thumbnail_suggestions:
+          select: "Selecionar"
