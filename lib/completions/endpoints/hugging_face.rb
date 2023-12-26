@@ -12,7 +12,7 @@ module DiscourseAi
             Llama2-chat-hf
             mistralai/Mixtral-8x7B-Instruct-v0.1
             mistralai/Mistral-7B-Instruct-v0.2
-          ].include?(model_name)
+          ].include?(model_name) && SiteSetting.ai_hugging_face_api_url.present?
         end
 
         def default_options
