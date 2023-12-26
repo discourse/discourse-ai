@@ -18,6 +18,7 @@ module DiscourseAi
             max_tokens: SiteSetting.ai_hugging_face_token_limit,
           ),
           Models::Gemini.new("gemini-pro", max_tokens: 32_768),
+          Models::Mixtral.new("mistralai/Mixtral-8x7B-Instruct-v0.1", max_tokens: 32_000),
         ]
 
         foldable_models.each do |model|

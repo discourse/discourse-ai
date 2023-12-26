@@ -11,7 +11,7 @@ module DiscourseAi
         end
 
         def default_options
-          { max_tokens_to_sample: 2000, model: model }
+          { max_tokens: 2000, model: model }
         end
 
         def provider_id
