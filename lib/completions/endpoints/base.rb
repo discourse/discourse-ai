@@ -229,7 +229,8 @@ module DiscourseAi
           <invoke>
           <tool_name></tool_name>
           <tool_id></tool_id>
-          <parameters></parameters>
+          <parameters>
+          </parameters>
           </invoke>
           </function_calls>
           TEXT
@@ -240,17 +241,28 @@ module DiscourseAi
         end
 
         def add_to_buffer(function_buffer, response_data, partial)
-          new_buffer = Nokogiri::HTML5.fragment(response_data + partial)
-          if tool_name = new_buffer.at("tool_name").text
-            if new_buffer.at("tool_id").nil?
-              tool_id_node =
-                Nokogiri::HTML5::DocumentFragment.parse("\n<tool_id>#{tool_name}</tool_id>")
+          read_function = Nokogiri::HTML5.fragment(response_data + partial)
 
-              new_buffer.at("invoke").children[1].add_next_sibling(tool_id_node)
-            end
+          if tool_name = read_function.at("tool_name").text
+            function_buffer.at("tool_name").inner_html = tool_name
+            function_buffer.at("tool_id").inner_html = tool_name
           end
 
-          new_buffer
+          read_parameters =
+            read_function
+              .at("parameters")
+              .elements
+              .each do |elem|
+                if paramenter = function_buffer.at(elem.name)&.text
+                  function_buffer.at(elem.name).inner_html = paramenter
+                else
+                  param_node = read_function.at(elem.name)
+                  function_buffer.at("parameters").add_child(param_node)
+                  function_buffer.at("parameters").add_child("\n")
+                end
+              end
+
+          function_buffer
         end
 
         def buffering_finished?(_available_functions, buffer)
