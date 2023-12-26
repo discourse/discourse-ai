@@ -59,8 +59,8 @@ module DiscourseAi
                 </function_results>
                 TEXT
               else
-                memo << " " << context[:content] << "\n"
-                memo << " [/INST]" if context[:type] == "user"
+                memo << context[:content] << "\n"
+                memo << "[/INST]" if context[:type] == "user"
               end
 
               memo

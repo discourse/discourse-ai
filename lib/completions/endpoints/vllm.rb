@@ -22,7 +22,11 @@ module DiscourseAi
 
         def model_uri
           service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_vllm_endpoint_srv)
-          api_endpoint = "https://#{service.target}:#{service.port}/v1/completions"
+          if service.present?
+            api_endpoint = "https://#{service.target}:#{service.port}/v1/completions"
+          else
+            api_endpoint = "#{SiteSetting.ai_vllm_endpoint}/v1/completions"
+          end
           @uri ||= URI(api_endpoint)
         end
 
@@ -40,7 +44,6 @@ module DiscourseAi
         end
 
         def extract_completion_from(response_raw)
-          pp response_raw
           parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
 
           # half a line sent here

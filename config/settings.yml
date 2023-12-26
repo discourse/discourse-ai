@@ -153,6 +153,8 @@ discourse_ai:
   ai_gemini_api_key:
     default: ""
     secret: true
+  ai_vllm_endpoint:
+    default: ""
   ai_vllm_endpoint_srv:
     default: ""
     hidden: true

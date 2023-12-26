@@ -88,6 +88,7 @@ module DiscourseAi
         def trim_context(conversation_context)
           prompt_limit = max_prompt_tokens
           current_token_count = calculate_token_count_without_context
+          message_step_size = (max_prompt_tokens / 25).to_i * -1
 
           conversation_context.reduce([]) do |memo, context|
             break(memo) if current_token_count >= prompt_limit
@@ -99,7 +100,7 @@ module DiscourseAi
             # Trimming content to make sure we respect token limit.
             while dupped_context[:content].present? &&
                     message_tokens + current_token_count + per_message_overhead > prompt_limit
-              dupped_context[:content] = dupped_context[:content][0..-100] || ""
+              dupped_context[:content] = dupped_context[:content][0..message_step_size] || ""
               message_tokens = calculate_message_token(dupped_context)
             end
 
