@@ -33,10 +33,6 @@ Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::Discours
 
 require_relative "lib/engine"
 
-register_svg_icon "smile"
-register_svg_icon "frown"
-register_svg_icon "meh"
-
 after_initialize do
   # do not autoload this cause we may have no namespace
   require_relative "discourse_automation/llm_triage"
@@ -59,67 +55,6 @@ after_initialize do
 
   on(:reviewable_transitioned_to) do |new_status, reviewable|
     ModelAccuracy.adjust_model_accuracy(new_status, reviewable)
-  end
-
-  require_dependency "user_summary"
-  class ::UserSummary
-    def sentiment
-      neutral, positive, negative = DB.query_single(<<~SQL, user_id: @user.id)
-        WITH last_interactions_classified AS (
-          SELECT
-            1 AS total,
-            CASE WHEN (classification::jsonb->'positive')::integer >= 60 THEN 1 ELSE 0 END AS positive,
-            CASE WHEN (classification::jsonb->'negative')::integer >= 60 THEN 1 ELSE 0 END AS negative
-          FROM
-            classification_results AS cr
-          INNER JOIN
-            posts AS p ON
-            p.id = cr.target_id AND
-            cr.target_type = 'Post'
-          INNER JOIN topics AS t ON
-            t.id = p.topic_id
-          INNER JOIN categories AS c ON
-            c.id = t.category_id
-          WHERE
-            model_used = 'sentiment' AND
-            p.user_id = :user_id
-          ORDER BY
-            p.created_at DESC
-          LIMIT
-            100
-        )
-        SELECT
-          SUM(total) - SUM(positive) - SUM(negative) AS neutral,
-          SUM(positive) AS positive,
-          SUM(negative) AS negative
-        FROM
-          last_interactions_classified
-      SQL
-
-      neutral = neutral || 0
-      positive = positive || 0
-      negative = negative || 0
-
-      return nil if neutral + positive + negative < 5
-
-      case [neutral / 5, positive, negative].max
-      when positive
-        :positive
-      when negative
-        :negative
-      else
-        :neutral
-      end
-    end
-  end
-
-  require_dependency "user_summary_serializer"
-  class ::UserSummarySerializer
-    attributes :sentiment
-
-    def sentiment
-      object.sentiment.to_s
-    end
   end
 
   if Rails.env.test?
