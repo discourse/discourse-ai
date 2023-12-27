@@ -10,6 +10,8 @@ ro:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID discuție"
             title:
               label: "Titlu"
             categories:

@@ -14,6 +14,8 @@ pt_BR:
           fields:
             sender:
               label: "Remetente"
+            topic_id:
+              label: "ID do tópico"
             title:
               label: "Título"
             categories:
@@ -56,6 +58,9 @@ pt_BR:
           copy: "Copiar"
           copied: "Copiado!"
           cancel: "Cancelar"
+        thumbnail_suggestions:
+          select: "Selecionar"
+          selected: "Selecionado(a)"
       reviewables:
         model_used: "Modelo usado:"
         accuracy: "Precisão:"

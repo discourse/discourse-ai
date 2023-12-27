@@ -10,6 +10,8 @@ gl:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID do tema"
             title:
               label: "Título"
             categories:

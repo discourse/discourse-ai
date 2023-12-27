@@ -10,6 +10,8 @@ ca:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID de tema"
             title:
               label: "Títol"
             categories:

@@ -20,6 +20,8 @@ lt:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Temos ID"
             title:
               label: "Antraštė"
             model:

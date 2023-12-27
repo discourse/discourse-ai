@@ -14,6 +14,8 @@ nl:
           fields:
             sender:
               label: "Afzender"
+            topic_id:
+              label: "Topic-ID"
             title:
               label: "Titel"
             categories:
@@ -56,6 +58,9 @@ nl:
           copy: "Kopiëren"
           copied: "Gekopieerd!"
           cancel: "Annuleren"
+        thumbnail_suggestions:
+          select: "Selecteren"
+          selected: "Geselecteerd"
       reviewables:
         model_used: "Gebruikt model:"
         accuracy: "Nauwkeurigheid:"

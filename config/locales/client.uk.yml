@@ -12,6 +12,8 @@ uk:
           fields:
             sender:
               label: "Відправник"
+            topic_id:
+              label: "ID теми"
             title:
               label: "Назва"
             categories:
@@ -47,3 +49,6 @@ uk:
           copy: "Копіювати"
           copied: "Скопійовано!"
           cancel: "Скасувати"
+        thumbnail_suggestions:
+          select: "Вибрати"
+          selected: "Вибрано"

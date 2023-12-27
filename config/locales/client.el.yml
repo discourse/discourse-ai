@@ -10,6 +10,8 @@ el:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "ID Θέματος"
             title:
               label: "Τίτλος"
             categories:

@@ -14,6 +14,8 @@ zh_CN:
           fields:
             sender:
               label: "发送人"
+            topic_id:
+              label: "话题 ID"
             title:
               label: "标题"
             categories:
@@ -56,6 +58,9 @@ zh_CN:
           copy: "复制"
           copied: "已复制！"
           cancel: "取消"
+        thumbnail_suggestions:
+          select: "选择"
+          selected: "已选择"
       reviewables:
         model_used: "使用的模型："
         accuracy: "准确性："

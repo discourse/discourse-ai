@@ -11,6 +11,9 @@ de:
         title: Triage Beiträge mithilfe von KI
         description: "Triage Beiträge mithilfe eines großen Sprachmodells"
         system_prompt_missing_post_placeholder: "System-Eingabeaufforderung muss einen Platzhalter für den Beitrag enthalten: %%POST%%"
+      llm_report:
+        title: Regelmäßiger Bericht mit KI
+        description: "Regelmäßiger Bericht auf der Grundlage eines großen Sprachmodells"
   site_settings:
     discourse_ai_enabled: "Aktiviere das Discourse-KI-Plug-in."
     ai_toxicity_enabled: "Aktiviere das Toxizitätsmodul."
@@ -115,6 +118,7 @@ de:
         markdown_table: Markdown-Tabelle generieren
         custom_prompt: "Benutzerdefinierte Eingabeaufforderung"
         explain: "Erklären"
+        illustrate_post: "Beitrag illustrieren"
     ai_bot:
       personas:
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"

@@ -10,6 +10,8 @@ be:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Номер тэмы"
             title:
               label: "Загаловак"
             categories:

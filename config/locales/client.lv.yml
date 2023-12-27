@@ -10,6 +10,8 @@ lv:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Tēmas ID"
             title:
               label: "Virsraksts"
             categories:

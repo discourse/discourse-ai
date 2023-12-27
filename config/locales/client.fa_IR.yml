@@ -17,6 +17,8 @@ fa_IR:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "شناسه موضوع"
             title:
               label: "عنوان"
             categories:
@@ -68,6 +70,8 @@ fa_IR:
           cancel: "انصراف"
         fast_edit:
           suggest_button: "پیشنهاد ویرایش"
+        thumbnail_suggestions:
+          select: "انتخاب"
       reviewables:
         model_used: "مدل مورد استفاده:"
         accuracy: "دقت:"

@@ -10,6 +10,8 @@ nb_NO:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Emne-ID"
             title:
               label: "Tittel"
             categories:

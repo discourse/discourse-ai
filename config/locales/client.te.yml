@@ -10,6 +10,8 @@ te:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "విషయపు ఐడీ"
             title:
               label: "శీర్షిక"
             categories:

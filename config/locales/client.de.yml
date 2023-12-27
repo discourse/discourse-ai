@@ -17,19 +17,55 @@ de:
         gpt_4: GPT 4
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
             sender:
               label: "Absender"
+              description: "Der Benutzer, der den Bericht senden wird"
+            receivers:
+              label: "Empfänger"
+              description: "Die Benutzer, die den Bericht erhalten sollen (E-Mails werden direkt verschickt, Benutzernamen werden per PM verschickt)"
+            topic_id:
+              label: "Themen-ID"
+              description: "Die Themen-ID, um den Bericht zu posten"
             title:
               label: "Titel"
+              description: "Der Titel des Berichts"
+            days:
+              label: "Tage"
+              description: "Die Zeitspanne des Berichts"
+            offset:
+              label: "Offset"
+              description: "Wenn du den Bericht zu Testzwecken in der Vergangenheit ausführen möchtest, kannst du den Bericht mit einem Offset zu einem früheren Zeitpunkt starten."
+            instructions:
+              label: "Anweisungen"
+              description: "Die Anweisungen für das große Sprachmodell"
+            sample_size:
+              label: "Stichprobengröße"
+              description: "Die Anzahl der Beiträge, die für den Bericht ausgewählt werden sollen"
+            tokens_per_post:
+              label: "Token pro Beitrag"
+              description: "Die Anzahl der pro Beitrag zu verwendenden LLM-Token"
             model:
               label: "Modell"
+              description: "LLM für die Berichterstellung verwenden"
             categories:
               label: "Kategorien"
+              description: "Themen nur nach diesen Kategorien filtern"
             tags:
               label: "Schlagwörter"
+              description: "Themen nur nach diesen Tags filtern"
+            allow_secure_categories:
+              label: "Sichere Kategorien zulassen"
+              description: "Erlaube, dass der Bericht für Themen in sicheren Kategorien erstellt wird"
+            debug_mode:
+              label: "Debug-Modus"
+              description: "Aktivieren Sie den Debug-Modus, um die Roheingabe und -ausgabe des LLM anzuzeigen"
+            priority_group:
+              label: "Prioritätsgruppe"
+              description: "Inhalte aus dieser Gruppe im Bericht hervorheben"
         llm_triage:
           fields:
             system_prompt:
@@ -122,6 +158,10 @@ de:
           cancel: "Abbrechen"
         fast_edit:
           suggest_button: "Bearbeiten vorschlagen"
+        thumbnail_suggestions:
+          title: "Vorgeschlagene Miniaturansichten"
+          select: "Auswählen"
+          selected: "Ausgewählt"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"

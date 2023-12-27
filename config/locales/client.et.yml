@@ -10,6 +10,8 @@ et:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Teema ID"
             title:
               label: "Pealkiri"
             categories:

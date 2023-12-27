@@ -14,6 +14,8 @@ tr_TR:
           fields:
             sender:
               label: "Gönderen"
+            topic_id:
+              label: "Konu kimliği"
             title:
               label: "Başlık"
             categories:
@@ -56,6 +58,9 @@ tr_TR:
           copy: "Kopyala"
           copied: "Kopyalandı!"
           cancel: "İptal et"
+        thumbnail_suggestions:
+          select: "Seç"
+          selected: "Seçili"
       reviewables:
         model_used: "Kullanılan model:"
         accuracy: "Doğruluk:"

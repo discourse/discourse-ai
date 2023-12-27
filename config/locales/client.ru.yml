@@ -14,6 +14,8 @@ ru:
           fields:
             sender:
               label: "Отправитель"
+            topic_id:
+              label: "ID темы"
             title:
               label: "Название"
             categories:
@@ -56,6 +58,9 @@ ru:
           copy: "Копировать"
           copied: "Скопировано!"
           cancel: "Нет"
+        thumbnail_suggestions:
+          select: "Выбрать"
+          selected: "Выбрано"
       reviewables:
         model_used: "Использованная модель:"
         accuracy: "Точность:"

@@ -17,17 +17,53 @@ he:
         gpt_4: GPT 4
         gpt_3_5_turbo: GPT 3.5 טורבו
         claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
+            sender:
+              label: "מוען"
+              description: "המשתמש שישלח את הדוח"
+            receivers:
+              label: "נמענים"
+            topic_id:
+              label: "מזהה נושא"
             title:
               label: "כותרת"
+              description: "כותרת הדוח"
+            days:
+              label: "ימים"
+              description: "פרק הזמן שמכסה הדוח"
+            offset:
+              label: "היסט"
+              description: "בזמן בדיקה כדאי להריץ את הדוח היסטורית, יש להשתמש בהיסט כדי להתחיל את הדוח בתאריך מוקדם יותר"
+            instructions:
+              label: "הנחיות"
+              description: "ההנחיות שסופקו לדגם השפה הגדול"
+            sample_size:
+              label: "גודל דגימה"
+              description: "מספר הפוסטים לדגימה לדוח"
+            tokens_per_post:
+              label: "אסימונים לפוסט"
+              description: "מספר אסימוני ה־llm לשימוש לפוסט"
             model:
               label: "דגם"
+              description: "LLM לשימוש להפקת דוחות"
             categories:
               label: "קטגוריות"
+              description: "סינון הנושאים לקטגוריות האלו בלבד"
             tags:
               label: "תגיות"
+              description: "סינון נושאים רק לתגיות האלה"
+            allow_secure_categories:
+              label: "לאפשר קטגוריות מאובטחות"
+              description: "לאפשר את הפקת הדוח לנושאים בקטגוריות מאובטחות"
+            debug_mode:
+              label: "מצב ניפוי תקלות"
+              description: "יש להפעיל מצב ניפוי תקלות כדי לצפות בקלט והפלט הגולמיים של ה־LLM"
+            priority_group:
+              label: "קבוצת עדיפות"
+              description: "תעדוף תוכן מקבוצה זו בדוח"
         llm_triage:
           fields:
             system_prompt:
@@ -120,6 +156,10 @@ he:
           cancel: "ביטול"
         fast_edit:
           suggest_button: "הצעת עריכה"
+        thumbnail_suggestions:
+          title: "תמונות ממוזערות מומלצות"
+          select: "בחירה"
+          selected: "נבחרים"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"

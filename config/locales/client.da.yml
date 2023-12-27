@@ -10,6 +10,8 @@ da:
       scriptables:
         llm_report:
           fields:
+            topic_id:
+              label: "Emne ID"
             title:
               label: "Titel"
             categories:
@@ -45,3 +47,5 @@ da:
           copy: "Kopier"
           copied: "Kopieret!"
           cancel: "Annuller"
+        thumbnail_suggestions:
+          select: "Vælg"
