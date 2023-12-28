@@ -8,10 +8,6 @@ import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 import ShareModal from "../discourse/components/modal/share-modal";
 import copyConversation from "../discourse/lib/copy-conversation";
-import {
-  recentlyCopiedShare,
-  showShareAlert,
-} from "../discourse/lib/share-ai-response";
 
 const AUTO_COPY_THRESHOLD = 4;
 
@@ -202,16 +198,19 @@ function initializeShareButton(api) {
   const modal = api.container.lookup("service:modal");
 
   api.attachWidgetAction("post", "shareAiResponse", function () {
-    if (recentlyCopiedShare(this.model.id)) {
-      return;
-    }
-    if (this.model.post_number <= AUTO_COPY_THRESHOLD) {
-      copyConversation(this.model.topic, 1, this.model.post_number).then(() => {
-        showShareAlert(this.model.id);
-      });
-    } else {
-      modal.show(ShareModal, { model: this.model });
-    }
+    api.postActionFeedback({
+      postId: this.model.id,
+      actionClass: "post-action-menu__share",
+      messageKey: "discourse_ai.ai_bot.conversation_shared",
+      actionCallback: () => {
+        if (this.model.post_number <= AUTO_COPY_THRESHOLD) {
+          return copyConversation(this.model.topic, 1, this.model.post_number);
+        } else {
+          modal.show(ShareModal, { model: this.model });
+          return Promise.reject();
+        }
+      },
+    });
   });
 }
 export default {
@@ -227,7 +226,7 @@ export default {
       }
       withPluginApi("1.6.0", initializeAIBotReplies);
       withPluginApi("1.6.0", initializePersonaDecorator);
-      withPluginApi("1.6.0", (api) => initializeShareButton(api, container));
+      withPluginApi("1.22.0", (api) => initializeShareButton(api, container));
     }
   },
 };
