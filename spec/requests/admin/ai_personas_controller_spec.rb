@@ -14,7 +14,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
       expect(response.parsed_body["ai_personas"].length).to eq(AiPersona.count)
       expect(response.parsed_body["meta"]["commands"].length).to eq(
-        DiscourseAi::AiBot::Personas::Persona.all_available_commands.length,
+        DiscourseAi::AiBot::Personas::Persona.all_available_tools.length,
       )
     end
 
@@ -34,7 +34,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       serializer_persona2 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona2.id }
 
       commands = response.parsed_body["meta"]["commands"]
-      search_command = commands.find { |c| c["id"] == "SearchCommand" }
+      search_command = commands.find { |c| c["id"] == "Search" }
 
       expect(search_command["help"]).to eq(I18n.t("discourse_ai.ai_bot.command_help.search"))
 

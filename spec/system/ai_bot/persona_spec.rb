@@ -38,7 +38,7 @@ RSpec.describe "AI personas", type: :system, js: true do
 
     command_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__commands")
     command_selector.expand
-    command_selector.select_row_by_value("ReadCommand")
+    command_selector.select_row_by_value("Read")
 
     find(".ai-persona-editor__save").click()
 
@@ -50,7 +50,7 @@ RSpec.describe "AI personas", type: :system, js: true do
     expect(persona.name).to eq("Test Persona")
     expect(persona.description).to eq("I am a test persona")
     expect(persona.system_prompt).to eq("You are a helpful bot")
-    expect(persona.commands).to eq(["ReadCommand"])
+    expect(persona.commands).to eq(["Read"])
   end
 
   it "will not allow deletion or editing of system personas" do

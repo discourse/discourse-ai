@@ -4,12 +4,12 @@ module DiscourseAi
   module AiBot
     module Personas
       class DallE3 < Persona
-        def commands
-          [Commands::DallECommand]
+        def tools
+          [Tools::DallE]
         end
 
-        def required_commands
-          [Commands::DallECommand]
+        def required_tools
+          [Tools::DallE]
         end
 
         def system_prompt

@@ -11,7 +11,7 @@ module ::Jobs
 
       return unless post.topic.custom_fields[DiscourseAi::AiBot::EntryPoint::REQUIRE_TITLE_UPDATE]
 
-      bot.update_pm_title(post)
+      DiscourseAi::AiBot::Playground.new(bot).title_playground(post)
     end
   end
 end

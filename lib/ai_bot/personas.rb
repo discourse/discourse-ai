@@ -21,7 +21,7 @@ module DiscourseAi
 
       def self.all(user:)
         # this needs to be dynamic cause site settings may change
-        all_available_commands = Persona.all_available_commands
+        all_available_tools = Persona.all_available_tools
 
         AiPersona.all_personas.filter do |persona|
           next false if !user.in_any_groups?(persona.allowed_group_ids)
@@ -29,8 +29,8 @@ module DiscourseAi
           if persona.system
             instance = persona.new
             (
-              instance.required_commands == [] ||
-                (instance.required_commands - all_available_commands).empty?
+              instance.required_tools == [] ||
+                (instance.required_tools - all_available_tools).empty?
             )
           else
             true

@@ -12,11 +12,11 @@ module DiscourseAi
             # localized for system personas
             LocalizedAiPersonaSerializer.new(persona, root: false)
           end
-        commands =
-          DiscourseAi::AiBot::Personas::Persona.all_available_commands.map do |command|
-            AiCommandSerializer.new(command, root: false)
+        tools =
+          DiscourseAi::AiBot::Personas::Persona.all_available_tools.map do |tool|
+            AiToolSerializer.new(tool, root: false)
           end
-        render json: { ai_personas: ai_personas, meta: { commands: commands } }
+        render json: { ai_personas: ai_personas, meta: { commands: tools } }
       end
 
       def show

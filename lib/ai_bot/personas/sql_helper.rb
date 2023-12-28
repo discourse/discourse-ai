@@ -27,12 +27,8 @@ module DiscourseAi
           @schema = schema
         end
 
-        def commands
-          all_available_commands
-        end
-
-        def all_available_commands
-          [DiscourseAi::AiBot::Commands::DbSchemaCommand]
+        def tools
+          [Tools::DbSchema]
         end
 
         def system_prompt

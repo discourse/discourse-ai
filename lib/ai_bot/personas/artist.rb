@@ -4,12 +4,12 @@ module DiscourseAi
   module AiBot
     module Personas
       class Artist < Persona
-        def commands
-          [Commands::ImageCommand]
+        def tools
+          [Tools::Image]
         end
 
-        def required_commands
-          [Commands::ImageCommand]
+        def required_tools
+          [Tools::Image]
         end
 
         def system_prompt

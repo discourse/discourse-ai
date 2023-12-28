@@ -264,7 +264,7 @@ module DiscourseAi
 
           read_function = Nokogiri::HTML5.fragment(raw_data)
 
-          if tool_name = read_function.at("tool_name").text
+          if tool_name = read_function.at("tool_name")&.text
             function_buffer.at("tool_name").inner_html = tool_name
             function_buffer.at("tool_id").inner_html = tool_name
           end
@@ -272,7 +272,8 @@ module DiscourseAi
           _read_parameters =
             read_function
               .at("parameters")
-              .elements
+              &.elements
+              .to_a
               .each do |elem|
                 if paramenter = function_buffer.at(elem.name)&.text
                   function_buffer.at(elem.name).inner_html = paramenter
