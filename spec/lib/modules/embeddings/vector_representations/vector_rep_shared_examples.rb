@@ -12,7 +12,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
     end
   end
 
-  describe "#generate_topic_representation_from" do
+  describe "#generate_representation_from" do
     fab!(:topic) { Fabricate(:topic) }
     fab!(:post) { Fabricate(:post, post_number: 1, topic: topic) }
 
@@ -25,7 +25,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
         )
       stub_vector_mapping(text, @expected_embedding)
 
-      vector_rep.generate_topic_representation_from(topic)
+      vector_rep.generate_representation_from(topic)
 
       expect(vector_rep.topic_id_from_representation(@expected_embedding)).to eq(topic.id)
     end
@@ -44,7 +44,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
           vector_rep.max_sequence_length - 2,
         )
       stub_vector_mapping(text, @expected_embedding)
-      vector_rep.generate_topic_representation_from(topic)
+      vector_rep.generate_representation_from(topic)
 
       expect(
         vector_rep.asymmetric_topics_similarity_search(similar_vector, limit: 1, offset: 0),

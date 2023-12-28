@@ -14,7 +14,7 @@ class MigrateEmbeddingsFromDedicatedDatabase < ActiveRecord::Migration[7.0]
       ].map { |k| k.new(truncation) }
 
     vector_reps.each do |vector_rep|
-      new_table_name = vector_rep.table_name
+      new_table_name = vector_rep.topic_table_name
       old_table_name = "topic_embeddings_#{vector_rep.name.underscore}"
 
       begin

@@ -21,62 +21,66 @@ module DiscourseAi
         end
 
         def consider_indexing(memory: "100MB")
-          # Using extension maintainer's recommendation for ivfflat indexes
-          # Results are not as good as without indexes, but it's much faster
-          # Disk usage is ~1x the size of the table, so this doubles table total size
-          count = DB.query_single("SELECT count(*) FROM #{table_name};").first
-          lists = [count < 1_000_000 ? count / 1000 : Math.sqrt(count).to_i, 10].max
-          probes = [count < 1_000_000 ? lists / 10 : Math.sqrt(lists).to_i, 1].max
+          [topic_table_name, post_table_name].each do |table_name|
+            index_name = index_name(table_name)
+            # Using extension maintainer's recommendation for ivfflat indexes
+            # Results are not as good as without indexes, but it's much faster
+            # Disk usage is ~1x the size of the table, so this doubles table total size
+            count = DB.query_single("SELECT count(*) FROM #{table_name};").first
+            lists = [count < 1_000_000 ? count / 1000 : Math.sqrt(count).to_i, 10].max
+            probes = [count < 1_000_000 ? lists / 10 : Math.sqrt(lists).to_i, 1].max
 
-          existing_index = DB.query_single(<<~SQL, index_name: index_name).first
-            SELECT
-              indexdef
-            FROM
-              pg_indexes
-            WHERE
-              indexname = :index_name
-            LIMIT 1
-          SQL
+            existing_index = DB.query_single(<<~SQL, index_name: index_name).first
+              SELECT
+                indexdef
+              FROM
+                pg_indexes
+              WHERE
+                indexname = :index_name
+              LIMIT 1
+            SQL
 
-          if !existing_index.present?
-            Rails.logger.info("Index #{index_name} does not exist, creating...")
-            return create_index!(memory, lists, probes)
-          end
-
-          existing_index_age =
-            DB
-              .query_single(
-                "SELECT pg_catalog.obj_description((:index_name)::regclass, 'pg_class');",
-                index_name: index_name,
-              )
-              .first
-              .to_i || 0
-          new_rows =
-            DB.query_single(
-              "SELECT count(*) FROM #{table_name} WHERE created_at > '#{Time.at(existing_index_age)}';",
-            ).first
-          existing_lists = existing_index.match(/lists='(\d+)'/)&.captures&.first&.to_i
-
-          if existing_index_age > 0 && existing_index_age < 1.hour.ago.to_i
-            if new_rows > 10_000
-              Rails.logger.info(
-                "Index #{index_name} is #{existing_index_age} seconds old, and there are #{new_rows} new rows, updating...",
-              )
-              return create_index!(memory, lists, probes)
-            elsif existing_lists != lists
-              Rails.logger.info(
-                "Index #{index_name} already exists, but lists is #{existing_lists} instead of #{lists}, updating...",
-              )
-              return create_index!(memory, lists, probes)
+            if !existing_index.present?
+              Rails.logger.info("Index #{index_name} does not exist, creating...")
+              return create_index!(table_name, memory, lists, probes)
             end
-          end
 
-          Rails.logger.info(
-            "Index #{index_name} kept. #{Time.now.to_i - existing_index_age} seconds old, #{new_rows} new rows, #{existing_lists} lists, #{probes} probes.",
-          )
+            existing_index_age =
+              DB
+                .query_single(
+                  "SELECT pg_catalog.obj_description((:index_name)::regclass, 'pg_class');",
+                  index_name: index_name,
+                )
+                .first
+                .to_i || 0
+            new_rows =
+              DB.query_single(
+                "SELECT count(*) FROM #{table_name} WHERE created_at > '#{Time.at(existing_index_age)}';",
+              ).first
+            existing_lists = existing_index.match(/lists='(\d+)'/)&.captures&.first&.to_i
+
+            if existing_index_age > 0 && existing_index_age < 1.hour.ago.to_i
+              if new_rows > 10_000
+                Rails.logger.info(
+                  "Index #{index_name} is #{existing_index_age} seconds old, and there are #{new_rows} new rows, updating...",
+                )
+                return create_index!(table_name, memory, lists, probes)
+              elsif existing_lists != lists
+                Rails.logger.info(
+                  "Index #{index_name} already exists, but lists is #{existing_lists} instead of #{lists}, updating...",
+                )
+                return create_index!(table_name, memory, lists, probes)
+              end
+            end
+
+            Rails.logger.info(
+              "Index #{index_name} kept. #{Time.now.to_i - existing_index_age} seconds old, #{new_rows} new rows, #{existing_lists} lists, #{probes} probes.",
+            )
+          end
         end
 
-        def create_index!(memory, lists, probes)
+        def create_index!(table_name, memory, lists, probes)
+          index_name = index_name(table_name)
           DB.exec("SET work_mem TO '#{memory}';")
           DB.exec("SET maintenance_work_mem TO '#{memory}';")
           DB.exec(<<~SQL)
@@ -102,17 +106,17 @@ module DiscourseAi
           raise NotImplementedError
         end
 
-        def generate_topic_representation_from(target, persist: true)
+        def generate_representation_from(target, persist: true)
           text = @strategy.prepare_text_from(target, tokenizer, max_sequence_length - 2)
 
           new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
-          current_digest = DB.query_single(<<~SQL, topic_id: target.id).first
+          current_digest = DB.query_single(<<~SQL, target_id: target.id).first
             SELECT
               digest
             FROM
-              #{table_name}
+              #{table_name(target)}
             WHERE
-              topic_id = :topic_id
+              #{target.is_a?(Topic) ? "topic_id" : "post_id"} = :target_id
             LIMIT 1
           SQL
           return if current_digest == new_digest
@@ -127,7 +131,7 @@ module DiscourseAi
             SELECT
               topic_id
             FROM
-              #{table_name}
+              #{topic_table_name}
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
             LIMIT 1
@@ -182,11 +186,26 @@ module DiscourseAi
           raise MissingEmbeddingError
         end
 
-        def table_name
+        def topic_table_name
           "ai_topic_embeddings_#{id}_#{@strategy.id}"
         end
 
-        def index_name
+        def post_table_name
+          "ai_post_embeddings_#{id}_#{@strategy.id}"
+        end
+
+        def table_name(target)
+          case target
+          when Topic
+            topic_table_name
+          when Post
+            post_table_name
+          else
+            raise ArgumentError, "Invalid target type"
+          end
+        end
+
+        def index_name(table_name)
           "#{table_name}_search"
         end
 
@@ -221,24 +240,47 @@ module DiscourseAi
         protected
 
         def save_to_db(target, vector, digest)
-          DB.exec(
-            <<~SQL,
-            INSERT INTO #{table_name} (topic_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
-            VALUES (:topic_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            ON CONFLICT (topic_id)
-            DO UPDATE SET
-              model_version = :model_version,
-              strategy_version = :strategy_version,
-              digest = :digest,
-              embeddings = '[:embeddings]',
-              updated_at = CURRENT_TIMESTAMP
-            SQL
-            topic_id: target.id,
-            model_version: version,
-            strategy_version: @strategy.version,
-            digest: digest,
-            embeddings: vector,
-          )
+          if target.is_a?(Topic)
+            DB.exec(
+              <<~SQL,
+              INSERT INTO #{topic_table_name} (topic_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
+              VALUES (:topic_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              ON CONFLICT (topic_id)
+              DO UPDATE SET
+                model_version = :model_version,
+                strategy_version = :strategy_version,
+                digest = :digest,
+                embeddings = '[:embeddings]',
+                updated_at = CURRENT_TIMESTAMP
+              SQL
+              topic_id: target.id,
+              model_version: version,
+              strategy_version: @strategy.version,
+              digest: digest,
+              embeddings: vector,
+            )
+          elsif target.is_a?(Post)
+            DB.exec(
+              <<~SQL,
+              INSERT INTO #{post_table_name} (post_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
+              VALUES (:post_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              ON CONFLICT (post_id)
+              DO UPDATE SET
+                model_version = :model_version,
+                strategy_version = :strategy_version,
+                digest = :digest,
+                embeddings = '[:embeddings]',
+                updated_at = CURRENT_TIMESTAMP
+              SQL
+              post_id: target.id,
+              model_version: version,
+              strategy_version: @strategy.version,
+              digest: digest,
+              embeddings: vector,
+            )
+          else
+            raise ArgumentError, "Invalid target type"
+          end
         end
       end
     end

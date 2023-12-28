@@ -6,18 +6,19 @@ module Jobs
 
     def execute(args)
       return unless SiteSetting.ai_embeddings_enabled
-      return if (topic_id = args[:topic_id]).blank?
+      target = args[:target_type].constantize.find_by_id(args[:target_id])
+      return if target.nil? || target.deleted_at.present?
 
-      topic = Topic.find_by_id(topic_id)
-      return if topic.nil? || topic.private_message? && !SiteSetting.ai_embeddings_generate_for_pms
-      post = topic.first_post
-      return if post.nil? || post.raw.blank?
+      topic = target.is_a?(Topic) ? target : target.topic
+      post = target.is_a?(Post) ? target : target.first_post
+      return if topic.private_message? && !SiteSetting.ai_embeddings_generate_for_pms
+      return if post.raw.blank?
 
       strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
       vector_rep =
         DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
 
-      vector_rep.generate_topic_representation_from(topic)
+      vector_rep.generate_representation_from(target)
     end
   end
 end
