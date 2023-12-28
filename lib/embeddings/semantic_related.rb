@@ -58,6 +58,30 @@ module DiscourseAi
         end
       end
 
+      def self.related_topics_for_crawler(controller)
+        return "" if !controller.instance_of? TopicsController
+        return "" if !SiteSetting.ai_embeddings_semantic_related_topics_enabled
+        return "" if SiteSetting.ai_embeddings_semantic_related_topics < 1
+
+        topic_view = controller.instance_variable_get(:@topic_view)
+        topic = topic_view&.topic
+        return "" if !topic
+
+        related_topics ||= SemanticTopicQuery.new(nil).list_semantic_related_topics(topic).topics
+
+        return "" if related_topics.empty?
+
+        render_result =
+          ApplicationController.render(
+            template: "list/related_topics",
+            layout: false,
+            assigns: {
+              list: related_topics,
+              topic: topic,
+            },
+          )
+      end
+
       private
 
       def semantic_suggested_key(topic_id)
