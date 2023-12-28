@@ -35,17 +35,7 @@ export default class SemanticSearch extends Component {
   }
 
   get searchStateText() {
-    if (this.preventAISearch) {
-      return I18n.t("discourse_ai.embeddings.semantic_search_disabled_sort");
-    }
-    if (this.searching) {
-      return I18n.t("discourse_ai.embeddings.semantic_search_loading");
-    }
-
-    if (this.AIResults.length === 0) {
-      return I18n.t("discourse_ai.embeddings.semantic_search_results.none");
-    }
-
+    // Search results:
     if (this.AIResults.length > 0) {
       if (this.showingAIResults) {
         return I18n.t(
@@ -63,12 +53,34 @@ export default class SemanticSearch extends Component {
         );
       }
     }
+
+    // Search disabled for sort order:
+    if (this.preventAISearch) {
+      return I18n.t("discourse_ai.embeddings.semantic_search_disabled_sort");
+    }
+
+    // Search loading:
+    if (this.searching) {
+      return I18n.t("discourse_ai.embeddings.semantic_search_loading");
+    }
+
+    // Typing to search:
+    if (
+      this.AIResults.length === 0 &&
+      this.searchTerm !== this.initialSearchTerm
+    ) {
+      return I18n.t("discourse_ai.embeddings.semantic_search_results.new");
+    }
+
+    // No results:
+    if (this.AIResults.length === 0) {
+      return I18n.t("discourse_ai.embeddings.semantic_search_results.none");
+    }
   }
 
   get searchTerm() {
     if (this.initialSearchTerm !== this.args.outletArgs.search) {
       this.initialSearchTerm = undefined;
-      this.resetAIResults();
     }
 
     return this.args.outletArgs.search;
@@ -115,6 +127,8 @@ export default class SemanticSearch extends Component {
     if (this.initialSearchTerm) {
       return this.performHyDESearch();
     }
+
+    this.resetAIResults();
 
     withPluginApi("1.15.0", (api) => {
       api.onAppEvent("full-page-search:trigger-search", () => {

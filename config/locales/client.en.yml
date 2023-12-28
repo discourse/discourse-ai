@@ -172,6 +172,7 @@ en:
           toggle: "Showing %{count} results found using AI"
           toggle_hidden: "Hiding %{count} results found using AI"
           none: "Sorry, our AI search found no matching topics."
+          new: "Press 'Search' to begin looking for new results with AI"
         ai_generated_result: "Search result found using AI"
 
       ai_bot:
