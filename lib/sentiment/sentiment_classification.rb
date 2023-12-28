@@ -28,8 +28,7 @@ module DiscourseAi
       end
 
       def request(target_to_classify)
-        target_content =
-          DiscourseAi::Tokenizer::BertTokenizer.truncate(content_of(target_to_classify), 500)
+        target_content = content_of(target_to_classify)
 
         available_models.reduce({}) do |memo, model|
           memo[model] = request_with(model, target_content)
