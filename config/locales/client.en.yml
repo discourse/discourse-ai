@@ -179,6 +179,16 @@ en:
         cancel_streaming: "Stop reply"
         default_pm_prefix: "[Untitled AI bot PM]"
         shortcut_title: "Start a PM with an AI bot"
+        share: "Share AI conversation"
+        conversation_shared: "Conversation copied to clipboard"
+
+        ai_label: "AI"
+        ai_title: "Conversation with AI"
+
+        share_modal:
+          title: "Share AI conversation"
+          copy: "Copy"
+          context: "Interactions to share:"
 
         bot_names:
           gpt-4: "GPT-4"
