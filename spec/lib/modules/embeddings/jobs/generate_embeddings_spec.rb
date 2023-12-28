@@ -29,7 +29,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
         )
       EmbeddingsGenerationStubs.discourse_service(vector_rep.name, text, expected_embedding)
 
-      job.execute(topic_id: topic.id)
+      job.execute(target_id: topic.id, target_type: "Topic")
 
       expect(vector_rep.topic_id_from_representation(expected_embedding)).to eq(topic.id)
     end

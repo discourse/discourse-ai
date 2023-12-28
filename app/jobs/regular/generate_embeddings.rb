@@ -6,6 +6,7 @@ module Jobs
 
     def execute(args)
       return unless SiteSetting.ai_embeddings_enabled
+      return if args[:target_type].blank? || args[:target_id].blank?
       target = args[:target_type].constantize.find_by_id(args[:target_id])
       return if target.nil? || target.deleted_at.present?
 
