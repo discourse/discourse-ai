@@ -144,7 +144,7 @@ module DiscourseAi
               topic_id,
               embeddings #{pg_function} '[:query_embedding]' AS distance
             FROM
-              #{table_name}
+              #{topic_table_name}
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
             LIMIT :limit
@@ -166,13 +166,13 @@ module DiscourseAi
             SELECT
               topic_id
             FROM
-              #{table_name}
+              #{topic_table_name}
             ORDER BY
               embeddings #{pg_function} (
                 SELECT
                   embeddings
                 FROM
-                  #{table_name}
+                  #{topic_table_name}
                 WHERE
                   topic_id = :topic_id
                 LIMIT 1
