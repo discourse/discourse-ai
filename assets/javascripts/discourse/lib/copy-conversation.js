@@ -1,8 +1,17 @@
 import { ajax } from "discourse/lib/ajax";
-import { clipboardCopy } from "discourse/lib/utilities";
+import { clipboardCopyAsync } from "discourse/lib/utilities";
 import I18n from "discourse-i18n";
 
 export default async function (topic, fromPostNumber, toPostNumber) {
+  await clipboardCopyAsync(async () => {
+    const text = await generateClipboard(topic, fromPostNumber, toPostNumber);
+    return new Blob([text], {
+      type: "text/plain",
+    });
+  });
+}
+
+async function generateClipboard(topic, fromPostNumber, toPostNumber) {
   const stream = topic.get("postStream");
 
   let postNumbers = [];
@@ -51,5 +60,5 @@ export default async function (topic, fromPostNumber, toPostNumber) {
     window.discourseAiClipboard = text;
   }
 
-  await clipboardCopy(text);
+  return text;
 }
