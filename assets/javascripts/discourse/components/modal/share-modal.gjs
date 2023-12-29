@@ -6,6 +6,7 @@ import { action } from "@ember/object";
 import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
+import discourseLater from "discourse-common/lib/later";
 import I18n from "I18n";
 import copyConversation from "../../lib/copy-conversation";
 
@@ -64,7 +65,7 @@ export default class ShareModal extends Component {
     const to = this.args.model.post_number;
     await copyConversation(this.args.model.topic, from, to);
     this.justCopiedText = t("discourse_ai.ai_bot.conversation_shared");
-    setTimeout(() => {
+    discourseLater(() => {
       this.justCopiedText = "";
     }, 2000);
   }
