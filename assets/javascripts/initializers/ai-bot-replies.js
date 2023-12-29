@@ -176,6 +176,15 @@ function initializeShareButton(api) {
     return;
   }
 
+  let shareAiResponse = async function (args) {
+    if (args.post.post_number <= AUTO_COPY_THRESHOLD) {
+      await copyConversation(args.post.topic, 1, args.post.post_number);
+      args.showFeedback("discourse_ai.ai_bot.conversation_shared");
+    } else {
+      modal.show(ShareModal, { model: args.post });
+    }
+  };
+
   api.addPostMenuButton("share", (post) => {
     // very hacky and ugly, but there is no `.topic` in attrs
     if (
@@ -187,7 +196,7 @@ function initializeShareButton(api) {
     }
 
     return {
-      action: "shareAiResponse",
+      action: shareAiResponse,
       icon: "share",
       className: "post-action-menu__share",
       title: "discourse_ai.ai_bot.share",
@@ -196,23 +205,8 @@ function initializeShareButton(api) {
   });
 
   const modal = api.container.lookup("service:modal");
-
-  api.attachWidgetAction("post", "shareAiResponse", function () {
-    api.postActionFeedback({
-      postId: this.model.id,
-      actionClass: "post-action-menu__share",
-      messageKey: "discourse_ai.ai_bot.conversation_shared",
-      actionCallback: () => {
-        if (this.model.post_number <= AUTO_COPY_THRESHOLD) {
-          return copyConversation(this.model.topic, 1, this.model.post_number);
-        } else {
-          modal.show(ShareModal, { model: this.model });
-          return Promise.reject();
-        }
-      },
-    });
-  });
 }
+
 export default {
   name: "discourse-ai-bot-replies",
 
