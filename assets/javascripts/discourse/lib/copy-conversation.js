@@ -25,26 +25,32 @@ export default async function (topic, fromPostNumber, toPostNumber) {
 
   const response = await ajax(url, { data });
 
-  let formatted = [];
-  formatted.push("<details class='ai-quote'>");
-  formatted.push("<summary>");
-  formatted.push(`<span>${topic.title}</span>`);
-  formatted.push(
+  let buffer = [];
+  buffer.push("<details class='ai-quote'>");
+  buffer.push("<summary>");
+  buffer.push(`<span>${topic.title}</span>`);
+  buffer.push(
     `<span title='${I18n.t("discourse_ai.ai_bot.ai_title")}'>${I18n.t(
       "discourse_ai.ai_bot.ai_label"
     )}</span>`
   );
-  formatted.push("</summary>");
-  formatted.push("");
+  buffer.push("</summary>");
+  buffer.push("");
 
   response.post_stream.posts.forEach((post) => {
-    formatted.push("");
-    formatted.push(`**${post.username}:**`);
-    formatted.push("");
-    formatted.push(post.raw);
+    buffer.push("");
+    buffer.push(`**${post.username}:**`);
+    buffer.push("");
+    buffer.push(post.raw);
   });
 
-  formatted.push("</details>");
+  buffer.push("</details>");
 
-  await clipboardCopy(formatted.join("\n"));
+  const text = buffer.join("\n");
+
+  if (window.discourseAiTestClipboard) {
+    window.discourseAiClipboard = text;
+  }
+
+  await clipboardCopy(text);
 }
