@@ -138,6 +138,18 @@ module DiscourseAi
           SQL
         end
 
+        def post_id_from_representation(raw_vector)
+          DB.query_single(<<~SQL, query_embedding: raw_vector).first
+            SELECT
+              post_id
+            FROM
+              #{post_table_name}
+            ORDER BY
+              embeddings #{pg_function} '[:query_embedding]'
+            LIMIT 1
+          SQL
+        end
+
         def asymmetric_topics_similarity_search(raw_vector, limit:, offset:, return_distance: false)
           results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
             SELECT
