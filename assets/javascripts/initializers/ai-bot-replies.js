@@ -176,12 +176,12 @@ function initializeShareButton(api) {
     return;
   }
 
-  let shareAiResponse = async function (args) {
-    if (args.post.post_number <= AUTO_COPY_THRESHOLD) {
-      await copyConversation(args.post.topic, 1, args.post.post_number);
-      args.showFeedback("discourse_ai.ai_bot.conversation_shared");
+  let shareAiResponse = async function ({ post, showFeedback }) {
+    if (post.post_number <= AUTO_COPY_THRESHOLD) {
+      await copyConversation(post.topic, 1, post.post_number);
+      showFeedback("discourse_ai.ai_bot.conversation_shared");
     } else {
-      modal.show(ShareModal, { model: args.post });
+      modal.show(ShareModal, { model: post });
     }
   };
 
