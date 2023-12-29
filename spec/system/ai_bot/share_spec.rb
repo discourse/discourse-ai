@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-RSpec.describe "Share conversation", type: :system, js: true do
+RSpec.describe "Share conversation", type: :system do
   fab!(:admin)
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
 
