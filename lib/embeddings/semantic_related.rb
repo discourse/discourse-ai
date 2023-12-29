@@ -67,7 +67,7 @@ module DiscourseAi
         topic = topic_view&.topic
         return "" if !topic
 
-        related_topics ||= SemanticTopicQuery.new(nil).list_semantic_related_topics(topic).topics
+        related_topics = SemanticTopicQuery.new(nil).list_semantic_related_topics(topic).topics
 
         return "" if related_topics.empty?
 

@@ -28,14 +28,20 @@ module DiscourseAi
         def topic_information(topic)
           info = +""
 
-          info << topic.title
-          info << "\n\n"
-          info << topic.category.name if topic&.category&.name
-          if SiteSetting.tagging_enabled
+          if topic&.title.present?
+            info << topic.title
             info << "\n\n"
-            info << topic.tags.pluck(:name).join(", ")
           end
-          info << "\n\n"
+          if topic&.category&.name.present?
+            info << topic.category.name
+            info << "\n\n"
+          end
+          if SiteSetting.tagging_enabled && topic&.tags.present?
+            info << topic.tags.pluck(:name).join(", ")
+            info << "\n\n"
+          end
+
+          info
         end
 
         def topic_truncation(topic, tokenizer, max_length)
