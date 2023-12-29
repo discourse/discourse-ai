@@ -35,7 +35,6 @@ export default async function (topic, fromPostNumber, toPostNumber) {
     )}</span>`
   );
   buffer.push("</summary>");
-  buffer.push("");
 
   response.post_stream.posts.forEach((post) => {
     buffer.push("");

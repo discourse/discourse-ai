@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 RSpec.describe "Share conversation", type: :system do
-  fab!(:admin)
+  fab!(:admin) { Fabricate(:admin, username: "ai_sharer") }
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
 
   let(:pm) do
@@ -32,6 +32,8 @@ RSpec.describe "Share conversation", type: :system do
     SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
     sign_in(admin)
 
+    bot_user.update!(username: "gpt-4")
+
     Group.refresh_automatic_groups!
     pm
     pm_posts
@@ -55,10 +57,24 @@ RSpec.describe "Share conversation", type: :system do
 
     clip_text = page.evaluate_script("window.discourseAiClipboard")
 
-    expect(clip_text).to include("Conversation with AI")
-    expect(clip_text).to include("user reply 1")
-    expect(clip_text).to include("bot reply 1")
-    expect(clip_text).not_to include("bot reply 2")
+    conversation = (<<~TEXT).strip
+      <details class='ai-quote'>
+      <summary>
+      <span>This is my special PM</span>
+      <span title='Conversation with AI'>AI</span>
+      </summary>
+
+      **ai_sharer:**
+
+      test test test user reply 1
+
+      **gpt-4:**
+
+      test test test bot reply 1
+      </details>
+    TEXT
+
+    expect(conversation).to eq(clip_text)
 
     # Test modal functionality as well
     page.evaluate_script("window.discourseAiClipboard = null")
@@ -74,11 +90,31 @@ RSpec.describe "Share conversation", type: :system do
 
     clip_text = page.evaluate_script("window.discourseAiClipboard")
 
-    expect(clip_text).not_to include("user reply 1")
-    expect(clip_text).not_to include("bot reply 1")
-    expect(clip_text).to include("bot reply 2")
-    expect(clip_text).to include("user reply 2")
-    expect(clip_text).to include("bot reply 3")
-    expect(clip_text).to include("user reply 3")
+    conversation = (<<~TEXT).strip
+      <details class='ai-quote'>
+      <summary>
+      <span>This is my special PM</span>
+      <span title='Conversation with AI'>AI</span>
+      </summary>
+
+      **ai_sharer:**
+
+      test test test user reply 2
+
+      **gpt-4:**
+
+      test test test bot reply 2
+
+      **ai_sharer:**
+
+      test test test user reply 3
+
+      **gpt-4:**
+
+      test test test bot reply 3
+      </details>
+    TEXT
+
+    expect(conversation).to eq(clip_text)
   end
 end
