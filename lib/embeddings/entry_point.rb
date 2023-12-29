@@ -43,14 +43,20 @@ module DiscourseAi
 
         # embeddings generation.
         callback =
-          Proc.new do |topic|
+          Proc.new do |target|
             if SiteSetting.ai_embeddings_enabled
-              Jobs.enqueue(:generate_embeddings, topic_id: topic.id)
+              Jobs.enqueue(
+                :generate_embeddings,
+                target_id: target.id,
+                target_type: target.class.name,
+              )
             end
           end
 
         plugin.on(:topic_created, &callback)
         plugin.on(:topic_edited, &callback)
+        plugin.on(:post_created, &callback)
+        plugin.on(:post_edited, &callback)
       end
     end
   end

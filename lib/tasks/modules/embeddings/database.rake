@@ -1,23 +1,33 @@
 # frozen_string_literal: true
 
-desc "Backfill embeddings for all topics"
-task "ai:embeddings:backfill", [:start_topic] => [:environment] do |_, args|
+desc "Backfill embeddings for all topics and posts"
+task "ai:embeddings:backfill" => [:environment] do
   public_categories = Category.where(read_restricted: false).pluck(:id)
 
   strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
   vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-  table_name = vector_rep.table_name
+  table_name = vector_rep.topic_table_name
 
   Topic
     .joins("LEFT JOIN #{table_name} ON #{table_name}.topic_id = topics.id")
     .where("#{table_name}.topic_id IS NULL")
-    .where("topics.id >= ?", args[:start_topic].to_i || 0)
     .where("category_id IN (?)", public_categories)
     .where(deleted_at: nil)
-    .order("topics.id ASC")
+    .order("topics.id DESC")
     .find_each do |t|
       print "."
-      vector_rep.generate_topic_representation_from(t)
+      vector_rep.generate_representation_from(t)
+    end
+
+  table_name = vector_rep.post_table_name
+  Post
+    .joins("LEFT JOIN #{table_name} ON #{table_name}.post_id = posts.id")
+    .where("#{table_name}.post_id IS NULL")
+    .where(deleted_at: nil)
+    .order("posts.id DESC")
+    .find_each do |t|
+      print "."
+      vector_rep.generate_representation_from(t)
     end
 end
 

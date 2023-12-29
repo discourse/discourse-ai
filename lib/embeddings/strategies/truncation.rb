@@ -50,9 +50,9 @@ module DiscourseAi
           tokenizer.truncate(text, max_length)
         end
 
-        def post_truncation(topic, tokenizer, max_length)
+        def post_truncation(post, tokenizer, max_length)
           text = +topic_information(post.topic)
-          text << post.raw
+          text << Nokogiri::HTML5.fragment(post.cooked).text
 
           tokenizer.truncate(text, max_length)
         end

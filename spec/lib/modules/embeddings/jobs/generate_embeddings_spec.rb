@@ -18,7 +18,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
       DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
     end
 
-    it "works" do
+    it "works for topics" do
       expected_embedding = [0.0038493] * vector_rep.dimensions
 
       text =
@@ -29,9 +29,21 @@ RSpec.describe Jobs::GenerateEmbeddings do
         )
       EmbeddingsGenerationStubs.discourse_service(vector_rep.name, text, expected_embedding)
 
-      job.execute(topic_id: topic.id)
+      job.execute(target_id: topic.id, target_type: "Topic")
 
       expect(vector_rep.topic_id_from_representation(expected_embedding)).to eq(topic.id)
+    end
+
+    it "works for posts" do
+      expected_embedding = [0.0038493] * vector_rep.dimensions
+
+      text =
+        truncation.prepare_text_from(post, vector_rep.tokenizer, vector_rep.max_sequence_length - 2)
+      EmbeddingsGenerationStubs.discourse_service(vector_rep.name, text, expected_embedding)
+
+      job.execute(target_id: post.id, target_type: "Post")
+
+      expect(vector_rep.post_id_from_representation(expected_embedding)).to eq(post.id)
     end
   end
 end
