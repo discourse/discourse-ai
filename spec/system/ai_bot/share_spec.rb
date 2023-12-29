@@ -40,6 +40,8 @@ RSpec.describe "Share conversation", type: :system do
   end
 
   it "can share a conversation" do
+    clip_text = nil
+
     visit(pm.url)
 
     # clipboard functionality is extremely hard to test
