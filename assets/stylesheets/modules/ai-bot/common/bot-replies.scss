@@ -67,3 +67,37 @@ article.streaming nav.post-controls .actions button.cancel-streaming {
   font-size: var(--font-down-1);
   padding-top: 3px;
 }
+
+details.ai-quote {
+  > summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    span:first-child {
+      margin-right: auto;
+    }
+    span:nth-child(2) {
+      font-size: var(--font-down-2);
+      background: var(--primary-medium);
+      padding: 2px 6px 0;
+      color: var(--secondary);
+    }
+  }
+}
+
+.ai-share-modal {
+  .d-modal__footer {
+    position: relative;
+    padding: 10px 20px 25px;
+    .btn-primary {
+      margin-left: auto;
+    }
+  }
+  &__just-copied {
+    position: absolute;
+    font-size: var(--font-down-1);
+    right: 20px;
+    bottom: 5px;
+    color: var(--success);
+  }
+}

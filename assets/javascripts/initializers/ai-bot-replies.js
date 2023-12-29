@@ -6,6 +6,10 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { cook } from "discourse/lib/text";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
+import ShareModal from "../discourse/components/modal/share-modal";
+import copyConversation from "../discourse/lib/copy-conversation";
+
+const AUTO_COPY_THRESHOLD = 4;
 
 function isGPTBot(user) {
   return user && [-110, -111, -112, -113].includes(user.id);
@@ -166,6 +170,43 @@ function initializePersonaDecorator(api) {
   );
 }
 
+function initializeShareButton(api) {
+  const currentUser = api.getCurrentUser();
+  if (!currentUser || !currentUser.ai_enabled_chat_bots) {
+    return;
+  }
+
+  let shareAiResponse = async function ({ post, showFeedback }) {
+    if (post.post_number <= AUTO_COPY_THRESHOLD) {
+      await copyConversation(post.topic, 1, post.post_number);
+      showFeedback("discourse_ai.ai_bot.conversation_shared");
+    } else {
+      modal.show(ShareModal, { model: post });
+    }
+  };
+
+  api.addPostMenuButton("share", (post) => {
+    // very hacky and ugly, but there is no `.topic` in attrs
+    if (
+      !currentUser.ai_enabled_chat_bots.any(
+        (bot) => post.username === bot.username
+      )
+    ) {
+      return;
+    }
+
+    return {
+      action: shareAiResponse,
+      icon: "share",
+      className: "post-action-menu__share",
+      title: "discourse_ai.ai_bot.share",
+      position: "first",
+    };
+  });
+
+  const modal = api.container.lookup("service:modal");
+}
+
 export default {
   name: "discourse-ai-bot-replies",
 
@@ -179,6 +220,7 @@ export default {
       }
       withPluginApi("1.6.0", initializeAIBotReplies);
       withPluginApi("1.6.0", initializePersonaDecorator);
+      withPluginApi("1.22.0", (api) => initializeShareButton(api, container));
     }
   },
 };
