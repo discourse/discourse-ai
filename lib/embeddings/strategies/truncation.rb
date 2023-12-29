@@ -40,6 +40,8 @@ module DiscourseAi
             info << topic.tags.pluck(:name).join(", ")
             info << "\n\n"
           end
+
+          info
         end
 
         def topic_truncation(topic, tokenizer, max_length)
