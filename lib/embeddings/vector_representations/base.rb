@@ -108,6 +108,7 @@ module DiscourseAi
 
         def generate_representation_from(target, persist: true)
           text = @strategy.prepare_text_from(target, tokenizer, max_sequence_length - 2)
+          return if text.blank?
 
           new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
           current_digest = DB.query_single(<<~SQL, target_id: target.id).first
