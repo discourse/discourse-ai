@@ -55,8 +55,6 @@ RSpec.describe "Share conversation", type: :system do
       expect(clip_text).to be_present
     end
 
-    clip_text = page.evaluate_script("window.discourseAiClipboard")
-
     conversation = (<<~TEXT).strip
       <details class='ai-quote'>
       <summary>
@@ -87,8 +85,6 @@ RSpec.describe "Share conversation", type: :system do
       clip_text = page.evaluate_script("window.discourseAiClipboard")
       expect(clip_text).to be_present
     end
-
-    clip_text = page.evaluate_script("window.discourseAiClipboard")
 
     conversation = (<<~TEXT).strip
       <details class='ai-quote'>
