@@ -10,6 +10,52 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     defends himself, but instead exclaims: 'You too, my son!' Shakespeare and Quevedo capture the pathetic cry.
   STRING
 
+  describe("#available_prompts") do
+    context "when no name filter is provided" do
+      it "returns all available prompts" do
+        prompts = subject.available_prompts
+
+        expect(prompts.length).to eq(6)
+        expect(prompts.map { |p| p[:name] }).to contain_exactly(
+          "translate",
+          "generate_titles",
+          "proofread",
+          "markdown_table",
+          "custom_prompt",
+          "explain",
+        )
+      end
+    end
+
+    context "when name filter is provided" do
+      it "returns the prompt with the given name" do
+        prompts = subject.available_prompts(name_filter: "translate")
+
+        expect(prompts.length).to eq(1)
+        expect(prompts.first[:name]).to eq("translate")
+      end
+    end
+
+    context "when stability API key is present" do
+      before { SiteSetting.ai_stability_api_key = "foo" }
+
+      it "returns the illustrate_post prompt in the list of all prompts" do
+        prompts = subject.available_prompts
+
+        expect(prompts.length).to eq(7)
+        expect(prompts.map { |p| p[:name] }).to contain_exactly(
+          "translate",
+          "generate_titles",
+          "proofread",
+          "markdown_table",
+          "custom_prompt",
+          "explain",
+          "illustrate_post",
+        )
+      end
+    end
+  end
+
   describe "#generate_and_send_prompt" do
     context "when using a prompt that returns text" do
       let(:mode) { CompletionPrompt::TRANSLATE }
