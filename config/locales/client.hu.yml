@@ -47,3 +47,6 @@ hu:
           copy: "Másolás"
           copied: "Másolva!"
           cancel: "Mégse"
+      ai_bot:
+        share_modal:
+          copy: "Másolás"

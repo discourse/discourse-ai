@@ -46,3 +46,6 @@ ro:
           copy: "Copiază"
           copied: "Copiat!"
           cancel: "Anulare"
+      ai_bot:
+        share_modal:
+          copy: "Copiază"

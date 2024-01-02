@@ -46,3 +46,6 @@ lv:
           copy: "Kopēt"
           copied: "Nokopēts!"
           cancel: "Atcelt"
+      ai_bot:
+        share_modal:
+          copy: "Kopēt"

@@ -47,3 +47,6 @@ gl:
           copy: "Copiar"
           copied: "Copiado!"
           cancel: "Cancelar"
+      ai_bot:
+        share_modal:
+          copy: "Copiar"

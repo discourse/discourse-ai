@@ -49,3 +49,6 @@ sv:
           cancel: "Avbryt"
         thumbnail_suggestions:
           selected: "Markerat"
+      ai_bot:
+        share_modal:
+          copy: "Kopiera"

@@ -49,3 +49,6 @@ cs:
         thumbnail_suggestions:
           select: "Vybrat"
           selected: "Vybrané"
+      ai_bot:
+        share_modal:
+          copy: "Kopírovat"

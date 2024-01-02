@@ -81,3 +81,7 @@ lt:
           copy: "Kopijuoti"
           copied: "Nukopijuota!"
           cancel: "Atšaukti"
+      ai_bot:
+        ai_label: "AI"
+        share_modal:
+          copy: "Kopijuoti"

@@ -51,3 +51,6 @@ ko:
           cancel: "취소"
         thumbnail_suggestions:
           select: "선택"
+      ai_bot:
+        share_modal:
+          copy: "복사"

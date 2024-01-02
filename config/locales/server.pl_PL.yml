@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 pl_PL:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: Oceniaj posty za pomocą sztucznej inteligencji
+        description: "Oceniaj posty przy użyciu dużego modelu językowego"
+        system_prompt_missing_post_placeholder: "Monit systemowy musi zawierać symbol zastępczy dla postu: %%POST%%"
+      llm_report:
+        title: Raport okresowy z wykorzystaniem AI
+        description: "Okresowy raport oparty na dużym modelu językowym"
   site_settings:
     discourse_ai_enabled: "Włącz wtyczkę Discourse AI."
     ai_toxicity_enabled: "Włącz moduł toksyczności."
@@ -35,7 +44,12 @@ pl_PL:
     ai_nsfw_flag_threshold_sexy: "Próg uznania obrazu zaklasyfikowanego jako seksowny, aby został uznany za NSFW."
     ai_nsfw_models: "Modele używane do wnioskowania NSFW."
     ai_openai_gpt35_url: "Niestandardowy adres URL używany do uzupełniania czatu GPT 3.5. (dla wsparcia platformy Azure)"
+    ai_openai_gpt35_16k_url: "Niestandardowy adres URL używany do zakończenia czatu GPT 3.5 16k (dla wsparcia Azure)"
     ai_openai_gpt4_url: "Niestandardowy adres URL używany do uzupełniania czatu GPT 4. (dla wsparcia platformy Azure)"
+    ai_openai_gpt4_32k_url: "Niestandardowy adres URL używany do zakończenia czatu GPT 4 32k (dla wsparcia Azure)"
+    ai_openai_gpt4_turbo_url: "Niestandardowy adres URL używany do kończenia czatu GPT 4 Turbo. (dla wsparcia Azure)"
+    ai_openai_dall_e_3_url: "Niestandardowy adres URL używany do generowania obrazu DALL-E 3. (dla wsparcia Azure)"
+    ai_openai_organization: "(Opcjonalnie, pozostaw puste, aby pominąć) Identyfikator organizacji używany w interfejsie API OpenAI. Przekazywany przy użyciu nagłówka OpenAI-Organization."
     ai_openai_embeddings_url: "Niestandardowy adres URL używany w interfejsie API osadzania OpenAI. (w przypadku Azure może to być: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "Klucz dla API OpenAI"
     ai_anthropic_api_key: "Klucz dla Anthropic API"
@@ -44,6 +58,9 @@ pl_PL:
     ai_helper_allowed_groups: "Użytkownicy w tych grupach zobaczą przycisk pomocy AI w kompozytorze."
     ai_helper_allowed_in_pm: "Włącz asystenta AI kompozytora w PW."
     ai_helper_model: "Model do użycia dla pomocnika AI."
+    ai_helper_custom_prompts_allowed_groups: "Użytkownicy w tych grupach zobaczą opcję niestandardowego monitu w pomocniku AI."
+    ai_helper_automatic_chat_thread_title_delay: "Opóźnienie w minutach, zanim pomocnik AI automatycznie ustawi tytuł wątku czatu."
+    ai_helper_automatic_chat_thread_title: "Automatycznie ustawiaj tytuły wątków czatu na podstawie zawartości wątku."
     ai_embeddings_enabled: "Włącz moduł osadzania."
     ai_embeddings_discourse_service_api_endpoint: "Adres URL, pod którym działa interfejs API dla modułu osadzania"
     ai_embeddings_discourse_service_api_key: "Klucz dla interfejsu API osadzania"
@@ -51,19 +68,28 @@ pl_PL:
     ai_embeddings_generate_for_pms: "Generuj osadzenia dla wiadomości osobistych."
     ai_embeddings_semantic_related_topics_enabled: "Użyj wyszukiwania semantycznego dla powiązanych tematów."
     ai_embeddings_semantic_related_topics: "Maksymalna liczba tematów do wyświetlenia w sekcji powiązanych tematów."
+    ai_embeddings_backfill_batch_size: "Liczba osadzań do uzupełnienia co 15 minut."
     ai_embeddings_pg_connection_string: "Parametry połączenia PostgreSQL dla modułu osadzania. Wymaga włączenia rozszerzenia pgvector i utworzenia serii tabel. Zobacz dokumentacje, aby uzyskać więcej informacji."
     ai_embeddings_semantic_search_enabled: "Włącz wyszukiwanie semantyczne na całej stronie."
     ai_embeddings_semantic_related_include_closed_topics: "Uwzględnij zamknięte tematy w semantycznych wynikach wyszukiwania"
+    ai_embeddings_semantic_search_hyde_model: "Model używany do rozwijania słów kluczowych w celu uzyskania lepszych wyników podczas wyszukiwania semantycznego"
     ai_summarization_discourse_service_api_endpoint: "Adres URL, pod którym działa interfejs API podsumowania Discourse."
     ai_summarization_discourse_service_api_key: "Klucz API dla interfejsu API podsumowania Discourse."
     ai_bot_enabled: "Włącz moduł bota AI."
+    ai_bot_enable_chat_warning: "Wyświetl ostrzeżenie po zainicjowaniu czatu PW. Można je zastąpić, edytując ciąg tłumaczenia: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Gdy bot GPT uzyska dostęp do PW, odpowie członkom tych grup."
     ai_bot_enabled_chat_bots: "Dostępne modele do działania jako bot AI"
     ai_bot_add_to_header: "Wyświetl przycisk w nagłówku, aby rozpocząć PW z botem AI"
     ai_stability_api_key: "Klucz dla API stability.ai"
+    ai_stability_engine: "Silnik generowania obrazów do wykorzystania w stability.ai API"
     ai_stability_api_url: "Adres URL interfejsu API stability.ai"
     ai_google_custom_search_api_key: "Klucz dla Google Custom Search API, zobacz: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX dla Google Custom Search API"
+    ai_bedrock_access_key_id: "Identyfikator klucza dostępu dla API Bedrock"
+    ai_bedrock_secret_access_key: "Tajny klucz dostępu do API Bedrock"
+    ai_bedrock_region: "Region AWS dla API Bedrock"
+    ai_cloudflare_workers_account_id: "ID konta Cloudflare dla Cloudflare Workers AI API"
+    ai_cloudflare_workers_api_token: "Token API dla Cloudflare Workers AI API"
   reviewables:
     reasons:
       flagged_by_toxicity: Wtyczka AI oznaczyła to po sklasyfikowaniu jako toksyczne.
@@ -73,7 +99,13 @@ pl_PL:
     invalid_prompt_role: Wiadomość %{idx} ma nieprawidłową rolę.
   reports:
     overall_sentiment:
+      title: "Ogólny sentyment"
+      description: "Ten wykres porównuje liczbę postów sklasyfikowanych jako pozytywne lub negatywne."
+      xaxis: "Pozytywny(%)"
       yaxis: "Data"
+    post_emotion:
+      title: "Emocje postu"
+      description: "Liczba postów sklasyfikowanych z jedną z poniższych emocji, pogrupowanych według poziomu zaufania autora posta."
   discourse_ai:
     ai_helper:
       errors:
@@ -81,19 +113,78 @@ pl_PL:
       prompts:
         translate: Przetłumacz na angielski
         generate_titles: Zaproponuj tytuły tematu
+        proofread: Popraw tekst
         markdown_table: Wygeneruj tabelę Markdown
+        custom_prompt: "Niestandardowy monit"
+        explain: "Wyjaśnij"
+        illustrate_post: "Zilustruj post"
     ai_bot:
+      personas:
+        cannot_delete_system_persona: "Person systemowych nie można usunąć, zamiast tego wyłącz je."
+        cannot_edit_system_persona: "Personom systemowym można zmieniać tylko nazwy, nie możesz edytować poleceń ani monitu systemowego, zamiast tego wyłącz je i utwórz kopię."
+        general:
+          name: Pomocnik forumowy
+          description: "Bot AI ogólnego przeznaczenia zdolny do wykonywania różnych zadań"
+        artist:
+          name: Artysta
+          description: "Bot AI specjalizujący się w generowaniu obrazów"
+        sql_helper:
+          name: Pomocnik SQL
+          description: "Bot AI specjalizujący się w pomaganiu w tworzeniu zapytań SQL na tej instancji Discourse."
+        settings_explorer:
+          name: Eksplorator ustawień
+          description: "Bot AI specjalizujący się w eksploracji ustawień strony Discourse"
+        researcher:
+          name: Badacz
+          description: "Bot AI z dostępem do Google, który może wyszukiwać informacje za Ciebie"
+        creative:
+          name: Kreatywny
+          description: "Bot AI bez zewnętrznych integracji specjalizujący się w zadaniach kreatywnych"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "Bot AI specjalizujący się w generowaniu obrazów przy użyciu DALL-E 3"
       topic_not_found: "Podsumowanie niedostępne, nie znaleziono tematu!"
+      searching: "Wyszukiwanie: '%{query}'"
+      command_options:
+        search:
+          max_results:
+            name: "Maksymalna liczba wyników"
+            description: "Maksymalna liczba wyników do uwzględnienia w wyszukiwaniu - jeśli zostaną użyte puste reguły domyślne, liczba zostanie przeskalowana w zależności od użytego modelu. Najwyższa wartość to 100."
+          base_query:
+            name: "Podstawowe zapytanie wyszukiwania"
+            description: "Podstawowe zapytanie używane podczas wyszukiwania. Przykład: '#pilne' spowoduje dodanie '#pilne' do zapytania wyszukiwania i uwzględnienie tylko tematów z kategorią lub tagiem pilne."
       command_summary:
+        categories: "Wymień kategorie"
         search: "Szukaj"
+        tags: "Wymień tagi"
         time: "Czas"
         summarize: "Podsumuj"
         image: "Wygeneruj obraz"
         google: "Szukaj w Google"
+        read: "Przeczytaj temat"
+        setting_context: "Wyszukaj kontekst ustawienia witryny"
+        schema: "Wyszukaj schemat bazy danych"
+        search_settings: "Wyszukiwanie ustawień witryny"
         dall_e: "Wygeneruj obraz"
+      command_help:
+        categories: "Wyświetl wszystkie publicznie widoczne kategorie na forum"
+        search: "Przeszukaj wszystkie publiczne tematy na forum"
+        tags: "Wymień wszystkie tagi na forum"
+        time: "Znajdź czas w różnych strefach czasowych"
+        summarize: "Podsumuj temat"
+        image: "Wygeneruj obraz przy użyciu Stable Diffusion"
+        google: "Wyszukaj zapytanie w Google"
+        read: "Przeczytaj temat publiczny na forum"
+        setting_context: "Sprawdź kontekst ustawień witryny"
+        schema: "Wyszukaj schemat bazy danych"
+        search_settings: "Wyszukaj ustawienia witryny"
+        dall_e: "Wygeneruj obraz za pomocą DALL-E 3"
       command_description:
+        read: "Czytanie: <a href='%{url}'>%{title}</a>"
         time: "Czas w %{timezone} wynosi %{time}"
         summarize: "Podsumowano <a href='%{url}'>%{title}</a>"
+        dall_e: "%{prompt}"
+        image: "%{prompt}"
         categories:
           one: "Znaleziono %{count} kategorię"
           few: "Znaleziono %{count} kategorie"
@@ -114,6 +205,13 @@ pl_PL:
           few: "Znaleziono %{count} <a href='%{url}'>wyniki</a> dla '%{query}'"
           many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
+        setting_context: "Kontekst czytania dla: %{setting_name}"
+        schema: "%{tables}"
+        search_settings:
+          one: "Znaleziono %{count} wynik dla '%{query}'"
+          few: "Znaleziono %{count} wyniki dla '%{query}'"
+          many: "Znaleziono %{count} wyników dla '%{query}'"
+          other: "Znaleziono %{count} wyników dla '%{query}'"
     summarization:
       configuration_hint:
         one: "Najpierw skonfiguruj ustawienie `%{setting}`."
@@ -122,5 +220,16 @@ pl_PL:
         other: "Najpierw skonfiguruj ustawienia: %{settings}"
     sentiment:
       reports:
+        overall_sentiment:
+          positive: "Pozytywne"
+          negative: "Negatywne"
         post_emotion:
+          tl_01: "Poziomy zaufania 0-1"
+          tl_234: "Poziomy zaufania 2+"
+          sadness: "Smutek"
+          surprise: "Niespodzianka"
           neutral: "Neutralne"
+          fear: "Strach"
+          anger: "Gniew"
+          joy: "Radość"
+          disgust: "Niesmak"

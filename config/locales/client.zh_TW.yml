@@ -49,3 +49,6 @@ zh_TW:
         thumbnail_suggestions:
           select: "選擇"
           selected: "已選"
+      ai_bot:
+        share_modal:
+          copy: "複製"

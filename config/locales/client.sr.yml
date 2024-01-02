@@ -41,3 +41,6 @@ sr:
           copy: "Kopija"
           copied: "Kopirano!"
           cancel: "Odustani"
+      ai_bot:
+        share_modal:
+          copy: "Kopija"

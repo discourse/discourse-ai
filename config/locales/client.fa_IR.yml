@@ -79,6 +79,10 @@ fa_IR:
         semantic_search: "موضوعات (معنایی)"
       ai_bot:
         cancel_streaming: "توقف پاسخ"
+        conversation_shared: "گفتگو کپی شد"
+        ai_label: "هوش مصنوعی"
+        share_modal:
+          copy: "کپی"
         bot_names:
           gpt-4: "GPT-4"
           gpt-3:

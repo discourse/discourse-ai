@@ -70,6 +70,8 @@ es:
         cancel_streaming: "Detener respuesta"
         default_pm_prefix: "[MP de bot IA sin título]"
         shortcut_title: "Iniciar un MP con un bot de IA"
+        share_modal:
+          copy: "Copiar"
         bot_names:
           gpt-4: "GPT-4"
           gpt-3:

@@ -173,12 +173,21 @@ de:
           toggle: "Zeigt %{count} Ergebnisse, die mit KI gefunden wurden"
           toggle_hidden: "Ausblenden von %{count} mit KI gefundenen Ergebnissen"
           none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden."
+          new: "Drücke auf \"Suchen\", um mit der KI nach neuen Ergebnissen zu suchen"
         ai_generated_result: "Suchergebnis mit KI gefunden"
       ai_bot:
         pm_warning: "AI chatbot messages are monitored regularly by moderators."
         cancel_streaming: "Antwort abbrechen"
         default_pm_prefix: "[KI-Bot-PN ohne Titel]"
         shortcut_title: "Starte eine PN mit einem KI-Bot"
+        share: "KI-Unterhaltung teilen"
+        conversation_shared: "Unterhaltung kopiert"
+        ai_label: "KI"
+        ai_title: "Unterhaltung mit KI"
+        share_modal:
+          title: "KI-Unterhaltung teilen"
+          copy: "Kopieren"
+          context: "Interaktionen zum Teilen:"
         bot_names:
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
@@ -188,9 +197,6 @@ de:
       sentiments:
         dashboard:
           title: "Stimmung"
-        summary:
-          label: "Stimmung"
-          title: "Experimentelle, KI-gestützte Stimmungsanalyse der letzten Beiträge dieser Person."
     review:
       types:
         reviewable_ai_post:

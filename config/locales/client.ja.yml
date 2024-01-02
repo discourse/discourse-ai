@@ -70,6 +70,8 @@ ja:
         cancel_streaming: "返信を停止する"
         default_pm_prefix: "[無題の AI ボット PM]"
         shortcut_title: "AI ボットと PM を開始する"
+        share_modal:
+          copy: "コピー"
         bot_names:
           gpt-4: "GPT-4"
           gpt-3:

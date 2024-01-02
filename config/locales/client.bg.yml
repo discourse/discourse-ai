@@ -46,3 +46,6 @@ bg:
           copy: "Копирай"
           copied: "Копирано!"
           cancel: "Прекрати"
+      ai_bot:
+        share_modal:
+          copy: "Копирай"

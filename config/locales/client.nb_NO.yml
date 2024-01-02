@@ -46,3 +46,6 @@ nb_NO:
           copy: "Kopier"
           copied: "Kopiert!"
           cancel: "Avbryt"
+      ai_bot:
+        share_modal:
+          copy: "Kopier"

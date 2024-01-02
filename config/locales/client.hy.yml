@@ -44,3 +44,6 @@ hy:
           close: "Փակել"
           copy: "Կրկնօրինակել"
           cancel: "Չեղարկել"
+      ai_bot:
+        share_modal:
+          copy: "Կրկնօրինակել"

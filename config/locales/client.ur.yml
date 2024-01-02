@@ -46,3 +46,6 @@ ur:
           copy: "کاپی"
           copied: "کاپی کر لیا!"
           cancel: "منسوخ"
+      ai_bot:
+        share_modal:
+          copy: "کاپی"

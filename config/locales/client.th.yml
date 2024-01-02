@@ -45,3 +45,6 @@ th:
           copy: "คัดลอก"
           copied: "คัดลอกแล้ว!"
           cancel: "ยกเลิก"
+      ai_bot:
+        share_modal:
+          copy: "คัดลอก"

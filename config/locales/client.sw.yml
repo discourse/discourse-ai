@@ -45,3 +45,6 @@ sw:
           close: "Funga"
           copy: "Nakili"
           cancel: "Ghairi"
+      ai_bot:
+        share_modal:
+          copy: "Nakili"

@@ -70,6 +70,8 @@ fi:
         cancel_streaming: "Lopeta vastaus"
         default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
         shortcut_title: "Aloita yksityiskeskustelu tekoälybotin kanssa"
+        share_modal:
+          copy: "Kopioi"
         bot_names:
           gpt-4: "GPT-4"
           gpt-3:
