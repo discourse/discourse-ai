@@ -5,8 +5,18 @@ module DiscourseAi
     class Assistant
       def available_prompts(name_filter: nil)
         cp = CompletionPrompt
+        prompts = []
 
-        prompts = name_filter ? [cp.enabled_by_name(name_filter)] : cp.where(enabled: true)
+        if name_filter
+          prompts = [cp.enabled_by_name(name_filter)]
+        else
+          prompts = cp.where(enabled: true)
+          # Only show the illustrate_post prompt if the API key is present
+          prompts =
+            prompts.where.not(
+              name: "illustrate_post",
+            ) if !SiteSetting.ai_stability_api_key.present?
+        end
 
         prompts.map do |prompt|
           translation =
