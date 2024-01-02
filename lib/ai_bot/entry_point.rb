@@ -50,7 +50,7 @@ module DiscourseAi
               scope.user.in_any_groups?(SiteSetting.ai_bot_allowed_groups_map)
           end,
         ) do
-          DiscourseAi::AiBot::Personas
+          DiscourseAi::AiBot::Personas::Persona
             .all(user: scope.user)
             .map do |persona|
               { id: persona.id, name: persona.name, description: persona.description }
@@ -92,7 +92,8 @@ module DiscourseAi
           include_condition: -> { SiteSetting.ai_bot_enabled && object.topic.private_message? },
         ) do
           id = topic.custom_fields["ai_persona_id"]
-          name = DiscourseAi::AiBot::Personas.find_by(user: scope.user, id: id.to_i)&.name if id
+          name =
+            DiscourseAi::AiBot::Personas::Persona.find_by(user: scope.user, id: id.to_i)&.name if id
           name || topic.custom_fields["ai_persona"]
         end
 

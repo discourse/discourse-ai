@@ -108,7 +108,12 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           [
             { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
             "time",
-            "function",
+            "tool",
+          ],
+          [
+            { name: "time", arguments: { name: "time", timezone: "Buenos Aires" } }.to_json,
+            "time",
+            "tool_call",
           ],
           ["I replied this thanks to the time command", bot_user.username],
         ]
@@ -120,7 +125,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         expect(context).to contain_exactly(
           *[
             { type: "user", name: user.username, content: third_post.raw },
-            { type: "assistant", content: custom_prompt.second.first },
+            { type: "assistant", content: custom_prompt.third.first },
+            { type: "tool_call", content: custom_prompt.second.first, name: "time" },
             { type: "tool", name: "time", content: custom_prompt.first.first },
             { type: "user", name: user.username, content: first_post.raw },
           ],
@@ -133,7 +139,12 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         [
           { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
           "time",
-          "function",
+          "tool",
+        ],
+        [
+          { name: "time", arguments: { name: "time", timezone: "Buenos Aires" }.to_json }.to_json,
+          "time",
+          "tool_call",
         ],
         ["I replied this thanks to the time command", bot_user.username],
       ]
@@ -145,8 +156,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(context).to contain_exactly(
         *[
           { type: "user", name: user.username, content: third_post.raw },
-          { type: "assistant", content: custom_prompt.second.first },
+          { type: "assistant", content: custom_prompt.third.first },
+          { type: "tool_call", content: custom_prompt.second.first, name: "time" },
           { type: "tool", name: "time", content: custom_prompt.first.first },
+          { type: "tool_call", content: custom_prompt.second.first, name: "time" },
           { type: "tool", name: "time", content: custom_prompt.first.first },
         ],
       )

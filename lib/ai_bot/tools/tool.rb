@@ -32,23 +32,28 @@ module DiscourseAi
 
         attr_accessor :custom_raw
 
-        def initialize(parameters, persona_options: {})
+        def initialize(parameters, tool_call_id: "", persona_options: {})
           @parameters = parameters
+          @tool_call_id = tool_call_id
           @persona_options = persona_options
         end
 
-        attr_reader :parameters
+        attr_reader :parameters, :tool_call_id
+
+        def name
+          self.class.name
+        end
 
         def summary
-          I18n.t("discourse_ai.ai_bot.command_summary.#{self.class.name}")
+          I18n.t("discourse_ai.ai_bot.command_summary.#{name}")
         end
 
         def details
-          I18n.t("discourse_ai.ai_bot.command_description.#{self.class.name}", description_args)
+          I18n.t("discourse_ai.ai_bot.command_description.#{name}", description_args)
         end
 
         def help
-          I18n.t("discourse_ai.ai_bot.command_help.#{self.class.name}")
+          I18n.t("discourse_ai.ai_bot.command_help.#{name}")
         end
 
         def options

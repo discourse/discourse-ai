@@ -129,6 +129,7 @@ module DiscourseAi
                       partial = extract_completion_from(raw_partial)
                       next if response_data.empty? && partial.blank?
                       next if partial.nil?
+                      partials_raw << partial.to_s
 
                       # Skip yield for tools. We'll buffer and yield later.
                       if has_tool?(partials_raw)
@@ -138,8 +139,6 @@ module DiscourseAi
 
                         yield partial, cancel if partial
                       end
-
-                      partials_raw << partial.to_s
                     rescue JSON::ParserError
                       leftover = redo_chunk
                       json_error = true

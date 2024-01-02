@@ -83,7 +83,7 @@ module DiscourseAi::AiBot::Personas
             allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
           )
 
-        custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        custom_persona = DiscourseAi::AiBot::Personas::Persona.all(user: user).last
         expect(custom_persona.name).to eq("zzzpun_bot")
         expect(custom_persona.description).to eq("you write puns")
 
@@ -93,19 +93,19 @@ module DiscourseAi::AiBot::Personas
 
         # should update
         persona.update!(name: "zzzpun_bot2")
-        custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        custom_persona = DiscourseAi::AiBot::Personas::Persona.all(user: user).last
         expect(custom_persona.name).to eq("zzzpun_bot2")
 
         # can be disabled
         persona.update!(enabled: false)
-        last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        last_persona = DiscourseAi::AiBot::Personas::Persona.all(user: user).last
         expect(last_persona.name).not_to eq("zzzpun_bot2")
 
         persona.update!(enabled: true)
         # no groups have access
         persona.update!(allowed_group_ids: [])
 
-        last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        last_persona = DiscourseAi::AiBot::Personas::Persona.all(user: user).last
         expect(last_persona.name).not_to eq("zzzpun_bot2")
       end
     end
@@ -120,7 +120,7 @@ module DiscourseAi::AiBot::Personas
         SiteSetting.ai_google_custom_search_cx = "abc123"
 
         # should be ordered by priority and then alpha
-        expect(DiscourseAi::AiBot::Personas.all(user: user)).to eq(
+        expect(DiscourseAi::AiBot::Personas::Persona.all(user: user)).to eq(
           [General, Artist, Creative, Researcher, SettingsExplorer, SqlHelper],
         )
 
@@ -128,18 +128,18 @@ module DiscourseAi::AiBot::Personas
         SiteSetting.ai_stability_api_key = ""
         SiteSetting.ai_google_custom_search_api_key = ""
 
-        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
+        expect(DiscourseAi::AiBot::Personas::Persona.all(user: user)).to contain_exactly(
           General,
           SqlHelper,
           SettingsExplorer,
           Creative,
         )
 
-        AiPersona.find(DiscourseAi::AiBot::Personas.system_personas[General]).update!(
+        AiPersona.find(DiscourseAi::AiBot::Personas::Persona.system_personas[General]).update!(
           enabled: false,
         )
 
-        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
+        expect(DiscourseAi::AiBot::Personas::Persona.all(user: user)).to contain_exactly(
           SqlHelper,
           SettingsExplorer,
           Creative,

@@ -5,6 +5,44 @@ module DiscourseAi
     module Personas
       class Persona
         class << self
+          def system_personas
+            @system_personas ||= {
+              Personas::General => -1,
+              Personas::SqlHelper => -2,
+              Personas::Artist => -3,
+              Personas::SettingsExplorer => -4,
+              Personas::Researcher => -5,
+              Personas::Creative => -6,
+              Personas::DallE3 => -7,
+            }
+          end
+
+          def system_personas_by_id
+            @system_personas_by_id ||= system_personas.invert
+          end
+
+          def all(user:)
+            # listing tools has to be dynamic cause site settings may change
+
+            AiPersona.all_personas.filter do |persona|
+              next false if !user.in_any_groups?(persona.allowed_group_ids)
+
+              if persona.system
+                instance = persona.new
+                (
+                  instance.required_tools == [] ||
+                    (instance.required_tools - all_available_tools).empty?
+                )
+              else
+                true
+              end
+            end
+          end
+
+          def find_by(id: nil, name: nil, user:)
+            all(user: user).find { |persona| persona.id == id || persona.name == name }
+          end
+
           def name
             I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.name")
           end
@@ -77,11 +115,12 @@ module DiscourseAi
 
         def find_tool(partial)
           parsed_function = Nokogiri::HTML5.fragment(partial)
+          function_id = parsed_function.at("tool_id")&.text
           function_name = parsed_function.at("tool_name")&.text
-          return nil if function_name.nil?
+          return false if function_name.nil?
 
           tool_klass = available_tools.find { |c| c.signature.dig(:name) == function_name }
-          return nil if tool_klass.nil?
+          return false if tool_klass.nil?
 
           arguments =
             tool_klass.signature[:parameters]
@@ -94,7 +133,11 @@ module DiscourseAi
                 memo
               end
 
-          tool_klass.new(arguments, persona_options: options[tool_klass])
+          tool_klass.new(
+            arguments,
+            tool_call_id: function_id,
+            persona_options: options[tool_klass].to_h,
+          )
         end
       end
     end

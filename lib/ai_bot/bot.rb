@@ -48,36 +48,46 @@ module DiscourseAi
           llm = DiscourseAi::Completions::Llm.proxy(current_model)
 
           llm.completion!(prompt, context[:user]) do |partial, cancel|
-            if (tool = persona.find_tool(partial))
+            if ongoing_chain && (tool = persona.find_tool(partial))
               ongoing_chain = tool.chain_next_response?
               low_cost = tool.low_cost?
-              tool_name = tool.class.name
+              tool_call_id = tool.tool_call_id
               invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
 
-              context = { type: "tool", name: tool_name, content: invocation_result_json }
+              invocation_context = {
+                type: "tool",
+                name: tool_call_id,
+                content: invocation_result_json,
+              }
+              tool_context = {
+                type: "tool_call",
+                name: tool_call_id,
+                content: { name: tool.name, arguments: tool.parameters }.to_json,
+              }
 
               prompt[:conversation_context] ||= []
 
               if tool.standalone?
-                prompt[:conversation_context] = [context]
+                prompt[:conversation_context] = [invocation_context, tool_context]
               else
-                prompt[:conversation_context] << context
+                prompt[:conversation_context] = [invocation_context, tool_context] +
+                  prompt[:conversation_context]
               end
 
-              raw_context << [invocation_result_json, tool_name, "function"]
+              raw_context << [tool_context[:content], tool_call_id, "tool_call"]
+              raw_context << [invocation_result_json, tool_call_id, "tool"]
             else
               ongoing_chain = false
               low_cost = false
-              reply = update_blk.call(partial, cancel, nil)
 
-              raw_context << [reply, bot_user.username]
+              update_blk.call(partial, cancel, nil)
             end
-
-            total_completions += 1
-
-            # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS)
-            prompt.delete(:tools) if total_completions == MAX_COMPLETIONS
           end
+
+          total_completions += 1
+
+          # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS)
+          prompt.delete(:tools) if total_completions == MAX_COMPLETIONS
         end
 
         raw_context
@@ -111,7 +121,7 @@ module DiscourseAi
           when DiscourseAi::AiBot::EntryPoint::GPT4_ID
             "gpt-4"
           when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
-            "gpt-3.5-turbo"
+            "gpt-3.5-turbo-16k"
           else
             nil
           end
@@ -131,7 +141,7 @@ module DiscourseAi
           <summary>#{summary}</summary>
           <p>#{details}</p>
         </details>
-        #{progress}#{custom_raw}
+        #{progress}#{custom_raw}\n
         HTML
       end
     end

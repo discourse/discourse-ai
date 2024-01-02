@@ -97,6 +97,13 @@ module DiscourseAi
 
             message_tokens = calculate_message_token(dupped_context)
 
+            # Don't trim tool call metadata.
+            if context[:type] == "tool_call"
+              current_token_count += calculate_message_token(context) + per_message_overhead
+              memo << context
+              next(memo)
+            end
+
             # Trimming content to make sure we respect token limit.
             while dupped_context[:content].present? &&
                     message_tokens + current_token_count + per_message_overhead > prompt_limit

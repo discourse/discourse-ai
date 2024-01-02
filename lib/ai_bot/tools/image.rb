@@ -132,6 +132,12 @@ module DiscourseAi
             seeds: uploads.map { |item| item[:seed] },
           }
         end
+
+        protected
+
+        def description_args
+          { prompt: prompts.first }
+        end
       end
     end
   end

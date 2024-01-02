@@ -71,9 +71,12 @@ module DiscourseAi
 
           trimmed_context.reverse.map do |context|
             if context[:type] == "tool_call"
+              function = JSON.parse(context[:content], symbolize_names: true)
+              function[:arguments] = function[:arguments].to_json
+
               {
                 role: "assistant",
-                tool_calls: [{ type: "function", function: context[:content], id: context[:name] }],
+                tool_calls: [{ type: "function", function: function, id: context[:name] }],
               }
             else
               translated = context.slice(:content)

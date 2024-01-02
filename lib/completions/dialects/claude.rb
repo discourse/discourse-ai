@@ -39,12 +39,13 @@ module DiscourseAi
         def conversation_context
           return "" if prompt[:conversation_context].blank?
 
-          trimmed_context = trim_context(prompt[:conversation_context])
+          conclean_contexttext =
+            prompt[:conversation_context].select { |cc| cc[:type] != "tool_call" }
+          trimmed_context = trim_context(clean_context)
 
           trimmed_context
             .reverse
             .reduce(+"") do |memo, context|
-              next(memo) if context[:type] == "tool_call"
               memo << (context[:type] == "user" ? "Human:" : "Assistant:")
 
               if context[:type] == "tool"

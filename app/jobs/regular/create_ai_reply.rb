@@ -11,13 +11,15 @@ module ::Jobs
       begin
         persona = nil
         if persona_id = post.topic.custom_fields["ai_persona_id"]
-          persona = DiscourseAi::AiBot::Personas.find_by(user: post.user, id: persona_id)
-          raise BOT_NOT_FOUND if persona.nil?
+          persona =
+            DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id.to_i)
+          raise DiscourseAi::AiBot::Bot::BOT_NOT_FOUND if persona.nil?
         end
 
         if !persona && persona_name = post.topic.custom_fields["ai_persona"]
-          persona = DiscourseAi::AiBot::Personas.find_by(user: post.user, name: persona_name)
-          raise BOT_NOT_FOUND if persona.nil?
+          persona =
+            DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, name: persona_name)
+          raise DiscourseAi::AiBot::Bot::BOT_NOT_FOUND if persona.nil?
         end
 
         persona ||= DiscourseAi::AiBot::Personas::General

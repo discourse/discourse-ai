@@ -126,7 +126,7 @@ module DiscourseAi
           results_limit = results_limit - max_semantic_results if should_try_semantic_search
 
           posts = results&.posts || []
-          posts = posts[0..results_limit - 1]
+          posts = posts[0..results_limit.to_i - 1]
 
           if should_try_semantic_search
             semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.new())
@@ -191,6 +191,16 @@ module DiscourseAi
               row
             end
           end
+        end
+
+        protected
+
+        def description_args
+          {
+            count: @last_num_results || 0,
+            query: @last_query || "",
+            url: "#{Discourse.base_path}/search?q=#{CGI.escape(@last_query || "")}",
+          }
         end
 
         private

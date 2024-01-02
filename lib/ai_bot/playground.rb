@@ -41,14 +41,18 @@ module DiscourseAi
         context.each do |raw, username, custom_prompt|
           custom_prompt_translation =
             Proc.new do |message|
-              custom_context = {
-                content: message[0],
-                type: (message[2] == "function" ? "tool" : "assistant"),
-              }
+              # We can't keep backwards-compatibility for stored functions.
+              # Tool syntax requires a tool_call_id which we don't have.
+              if message[2] != "function"
+                custom_context = {
+                  content: message[0],
+                  type: message[2].present? ? message[2] : "assistant",
+                }
 
-              custom_context[:name] = message[1] if custom_context[:type] == "tool"
+                custom_context[:name] = message[1] if custom_context[:type] != "assistant"
 
-              result << custom_context
+                result << custom_context
+              end
             end
 
           if custom_prompt.present?
@@ -56,7 +60,8 @@ module DiscourseAi
               custom_prompt.reverse_each(&custom_prompt_translation)
               first = false
             else
-              custom_prompt_translation.call(custom_prompt.first)
+              tool_call_and_tool = custom_prompt.first(2)
+              tool_call_and_tool.reverse_each(&custom_prompt_translation)
             end
           else
             context = {
@@ -104,55 +109,55 @@ module DiscourseAi
 
         reply_post =
           PostCreator.create!(
-            post.user,
+            bot.bot_user,
             topic_id: post.topic_id,
             raw: I18n.t("discourse_ai.ai_bot.placeholder_reply"),
             skip_validations: true,
           )
 
         redis_stream_key = "gpt_cancel:#{reply_post.id}"
-        redis_stream_initialized = false
+        Discourse.redis.setex(redis_stream_key, 60, 1)
 
         new_custom_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
-            if !redis_stream_initialized
-              Discourse.redis.setex(redis_stream_key, 60, 1)
-              redis_stream_initialized = true
-            end
+            reply << partial
+            raw = reply.dup
+            raw << "\n\n" << placeholder if placeholder.present?
 
             if !Discourse.redis.get(redis_stream_key)
               cancel&.call
-
-              reply << "\n\n" << placeholder if placeholder
 
               reply_post.update!(raw: reply, cooked: PrettyText.cook(reply))
             end
 
             # Minor hack to skip the delay during tests.
-            next if (Time.now - start < 0.5) && !Rails.env.test?
+            if placeholder.blank?
+              next if (Time.now - start < 0.5) && !Rails.env.test?
+              start = Time.now
+            end
 
             Discourse.redis.expire(redis_stream_key, 60)
-            start = Time.now
-
-            reply << partial if placeholder.nil?
-
-            raw = reply.dup
-            raw << "\n\n" << placeholder if placeholder
 
             publish_update(reply_post, raw: raw)
           end
 
-        return if reply.empty?
+        return if reply.blank?
 
-        reply_post.tap do |rpost|
-          publish_update(rpost, done: true)
+        reply_post.tap do |bot_reply|
+          publish_update(bot_reply, done: true)
 
-          rpost.revise(bot.bot_user, { raw: reply }, skip_validations: true, skip_revision: true)
+          bot_reply.revise(
+            bot.bot_user,
+            { raw: reply },
+            skip_validations: true,
+            skip_revision: true,
+          )
 
-          post.post_custom_prompt ||= rpost.build_post_custom_prompt(custom_prompt: [])
-          prompt = rpost.post_custom_prompt.custom_prompt || []
+          bot_reply.post_custom_prompt ||= bot_reply.build_post_custom_prompt(custom_prompt: [])
+          prompt = bot_reply.post_custom_prompt.custom_prompt || []
           prompt.concat(new_custom_prompts)
-          rpost.post_custom_prompt.update!(custom_prompt: prompt)
+          prompt << [reply, bot.bot_user.username]
+          bot_reply.post_custom_prompt.update!(custom_prompt: prompt)
         end
       end
 

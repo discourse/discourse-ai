@@ -67,7 +67,7 @@ class AiPersona < ActiveRecord::Base
     id = self.id
     system = self.system
 
-    persona_class = DiscourseAi::AiBot::Personas.system_personas_by_id[self.id]
+    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
       persona_class.define_singleton_method :allowed_group_ids do
         allowed_group_ids
