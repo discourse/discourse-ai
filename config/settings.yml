@@ -274,6 +274,7 @@ discourse_ai:
       - gpt-4
       - gpt-4-turbo
       - claude-2
+      - mixtral-8x7B-Instruct-V0.1
   ai_bot_add_to_header:
     default: true
     client: true

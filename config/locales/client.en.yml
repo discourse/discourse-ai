@@ -197,6 +197,8 @@ en:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+          mixtral-8x7B-Instruct-V0:
+            "1": "Mixtral-8x7B V0.1"
       sentiments:
         dashboard:
           title: "Sentiment"
