@@ -15,6 +15,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
 
   before { SiteSetting.ai_vllm_endpoint = "https://test.dev" }
 
+  let(:tool_id) { "get_weather" }
+
   def response(content)
     {
       id: "cmpl-6sZfAb30Rnv9Q7ufzFwvQsMpjZh8S",

@@ -16,6 +16,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
   let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
   let(:stream_request_body) { request_body }
 
+  let(:tool_id) { "get_weather" }
+
   before do
     SiteSetting.ai_bedrock_access_key_id = "123456"
     SiteSetting.ai_bedrock_secret_access_key = "asd-asd-asd"

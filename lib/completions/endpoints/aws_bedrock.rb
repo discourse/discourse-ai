@@ -14,7 +14,7 @@ module DiscourseAi
         end
 
         def default_options
-          { max_tokens_to_sample: 2_000 }
+          { max_tokens_to_sample: 2_000, stop_sequences: ["\n\nHuman:", "</function_calls>"] }
         end
 
         def provider_id
