@@ -10,6 +10,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
   let(:dialect) { DiscourseAi::Completions::Dialects::Gemini.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
 
+  let(:tool_id) { "get_weather" }
+
   let(:tool_payload) do
     {
       name: "get_weather",

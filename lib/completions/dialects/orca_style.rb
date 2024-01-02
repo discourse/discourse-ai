@@ -41,6 +41,7 @@ module DiscourseAi
           trimmed_context
             .reverse
             .reduce(+"") do |memo, context|
+              next(memo) if context[:type] == "tool_call"
               memo << (context[:type] == "user" ? "### User:" : "### Assistant:")
 
               if context[:type] == "tool"

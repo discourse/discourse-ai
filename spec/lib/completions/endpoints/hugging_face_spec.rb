@@ -12,6 +12,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
   end
   let(:prompt) { dialect.translate }
 
+  let(:tool_id) { "get_weather" }
+
   let(:request_body) do
     model
       .default_options

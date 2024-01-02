@@ -33,7 +33,7 @@ module DiscourseAi
             end
           end
 
-          open_ai_prompt.concat!(conversation_context) if prompt[:conversation_context]
+          open_ai_prompt.concat(conversation_context) if prompt[:conversation_context]
 
           open_ai_prompt << { role: "user", content: prompt[:input] } if prompt[:input]
 
@@ -43,7 +43,25 @@ module DiscourseAi
         def tools
           return if prompt[:tools].blank?
 
-          prompt[:tools].map { |t| { type: "function", tool: t } }
+          prompt[:tools].map do |t|
+            tool = t.dup
+
+            if tool[:parameters]
+              tool[:parameters] = t[:parameters].reduce(
+                { type: "object", properties: {}, required: [] },
+              ) do |memo, p|
+                name = p[:name]
+                memo[:required] << name if p[:required]
+
+                memo[:properties][name] = p.except(:name, :required, :item_type)
+
+                memo[:properties][name][:items] = { type: p[:item_type] } if p[:item_type]
+                memo
+              end
+            end
+
+            { type: "function", function: tool }
+          end
         end
 
         def conversation_context
@@ -52,18 +70,25 @@ module DiscourseAi
           trimmed_context = trim_context(prompt[:conversation_context])
 
           trimmed_context.reverse.map do |context|
-            translated = context.slice(:content)
-            translated[:role] = context[:type]
+            if context[:type] == "tool_call"
+              {
+                role: "assistant",
+                tool_calls: [{ type: "function", function: context[:content], id: context[:name] }],
+              }
+            else
+              translated = context.slice(:content)
+              translated[:role] = context[:type]
 
-            if context[:name]
-              if translated[:role] == "tool"
-                translated[:tool_call_id] = context[:name]
-              else
-                translated[:name] = context[:name]
+              if context[:name]
+                if translated[:role] == "tool"
+                  translated[:tool_call_id] = context[:name]
+                else
+                  translated[:name] = context[:name]
+                end
               end
-            end
 
-            translated
+              translated
+            end
           end
         end
 
@@ -94,7 +119,7 @@ module DiscourseAi
 
         def model_max_tokens
           case model_name
-          when "gpt-3.5-turbo", "gpt-3.5-turbo-16k"
+          when "gpt-3.5-turbo-16k"
             16_384
           when "gpt-4"
             8192

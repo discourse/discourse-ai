@@ -32,7 +32,7 @@ module DiscourseAi
             end
           end
 
-          gemini_prompt.concat!(conversation_context) if prompt[:conversation_context]
+          gemini_prompt.concat(conversation_context) if prompt[:conversation_context]
 
           gemini_prompt << { role: "user", parts: { text: prompt[:input] } }
         end

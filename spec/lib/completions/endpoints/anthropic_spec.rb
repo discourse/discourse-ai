@@ -13,6 +13,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
   let(:stream_request_body) { model.default_options.merge(prompt: prompt, stream: true).to_json }
 
+  let(:tool_id) { "get_weather" }
+
   def response(content)
     {
       completion: content,

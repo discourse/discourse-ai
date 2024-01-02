@@ -43,8 +43,8 @@ module DiscourseAi
 
           response_h = parsed.dig(:candidates, 0, :content, :parts, 0)
 
-          has_function_call = response_h.dig(:functionCall).present?
-          has_function_call ? response_h[:functionCall] : response_h.dig(:text)
+          @has_function_call ||= response_h.dig(:functionCall).present?
+          @has_function_call ? response_h[:functionCall] : response_h.dig(:text)
         end
 
         def partials_from(decoded_chunk)
@@ -68,8 +68,8 @@ module DiscourseAi
           prompt.to_s
         end
 
-        def has_tool?(_response_data, partial)
-          partial.is_a?(Hash) && partial.has_key?(:name) # Has function name
+        def has_tool?(_response_data)
+          @has_function_call
         end
 
         def add_to_buffer(function_buffer, _response_data, partial)
@@ -90,21 +90,6 @@ module DiscourseAi
           end
 
           function_buffer
-        end
-
-        def buffering_finished?(available_functions, buffer)
-          tool_name = buffer.at("tool_name")&.text
-          return false if tool_name.blank?
-
-          signature =
-            available_functions.dig(0, :function_declarations).find { |f| f[:name] == tool_name }
-
-          signature[:parameters].reduce(true) do |memo, param|
-            param_present = buffer.at(param[:name]).present?
-            next(memo) if param_present || !signature[:required].include?(param[:name])
-
-            memo && param_present
-          end
         end
       end
     end

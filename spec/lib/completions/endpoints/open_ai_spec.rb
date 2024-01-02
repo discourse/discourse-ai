@@ -10,45 +10,49 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   let(:dialect) { DiscourseAi::Completions::Dialects::ChatGpt.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
 
+  let(:tool_id) { "eujbuebfe" }
+
   let(:tool_deltas) do
     [
-      { id: "get_weather", name: "get_weather", arguments: {} },
-      { id: "get_weather", name: "get_weather", arguments: { location: "" } },
-      { id: "get_weather", name: "get_weather", arguments: { location: "Sydney", unit: "c" } },
+      { id: tool_id, function: {} },
+      { id: tool_id, function: { name: "get_weather", arguments: "" } },
+      { id: tool_id, function: { name: "get_weather", arguments: "" } },
+      { id: tool_id, function: { name: "get_weather", arguments: "{" } },
+      { id: tool_id, function: { name: "get_weather", arguments: " \"location\": \"Sydney\"" } },
+      { id: tool_id, function: { name: "get_weather", arguments: " ,\"unit\": \"c\" }" } },
     ]
   end
 
   let(:tool_call) do
-    { id: "get_weather", name: "get_weather", arguments: { location: "Sydney", unit: "c" } }
+    {
+      id: tool_id,
+      function: {
+        name: "get_weather",
+        arguments: { location: "Sydney", unit: "c" }.to_json,
+      },
+    }
   end
 
   let(:request_body) do
     model
       .default_options
       .merge(messages: prompt)
-      .tap do |b|
-        b[:tools] = generic_prompt[:tools].map do |t|
-          { type: "function", tool: t }
-        end if generic_prompt[:tools]
-      end
+      .tap { |b| b[:tools] = dialect.tools if generic_prompt[:tools] }
       .to_json
   end
+
   let(:stream_request_body) do
     model
       .default_options
       .merge(messages: prompt, stream: true)
-      .tap do |b|
-        b[:tools] = generic_prompt[:tools].map do |t|
-          { type: "function", tool: t }
-        end if generic_prompt[:tools]
-      end
+      .tap { |b| b[:tools] = dialect.tools if generic_prompt[:tools] }
       .to_json
   end
 
   def response(content, tool_call: false)
     message_content =
       if tool_call
-        { tool_calls: [{ function: content }] }
+        { tool_calls: [content] }
       else
         { content: content }
       end
@@ -79,7 +83,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   def stream_line(delta, finish_reason: nil, tool_call: false)
     message_content =
       if tool_call
-        { tool_calls: [{ function: delta }] }
+        { tool_calls: [delta] }
       else
         { content: delta }
       end

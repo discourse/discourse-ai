@@ -115,7 +115,25 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
 
   describe "#tools" do
     it "returns a list of available tools" do
-      open_ai_tool_f = { type: "function", tool: tool }
+      open_ai_tool_f = {
+        function: {
+          description: tool[:description],
+          name: tool[:name],
+          parameters: {
+            properties:
+              tool[:parameters].reduce({}) do |memo, p|
+                memo[p[:name]] = { description: p[:description], type: p[:type] }
+
+                memo[p[:name]][:enum] = p[:enum] if p[:enum]
+
+                memo
+              end,
+            required: %w[location unit],
+            type: "object",
+          },
+        },
+        type: "function",
+      }
 
       expect(subject.tools).to contain_exactly(open_ai_tool_f)
     end

@@ -83,8 +83,9 @@ module DiscourseAi
 
           response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
 
-          has_function_call = response_h.dig(:tool_calls).present?
-          has_function_call ? response_h.dig(:tool_calls, 0, :function) : response_h.dig(:content)
+          @has_function_call ||= response_h.dig(:tool_calls).present?
+
+          @has_function_call ? response_h.dig(:tool_calls, 0) : response_h.dig(:content)
         end
 
         def partials_from(decoded_chunk)
@@ -101,40 +102,37 @@ module DiscourseAi
           prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
         end
 
-        def has_tool?(_response_data, partial)
-          partial.is_a?(Hash) && partial.has_key?(:name) # Has function name
+        def has_tool?(_response_data)
+          @has_function_call
         end
 
         def add_to_buffer(function_buffer, _response_data, partial)
-          function_buffer.at("tool_name").content = partial[:name] if partial[:name].present?
-          function_buffer.at("tool_id").content = partial[:id] if partial[:id].present?
+          @args_buffer ||= +""
 
-          if partial[:arguments]
-            argument_fragments =
-              partial[:arguments].reduce(+"") do |memo, (arg_name, value)|
-                memo << "\n<#{arg_name}>#{value}</#{arg_name}>"
-              end
-            argument_fragments << "\n"
+          f_name = partial.dig(:function, :name)
+          function_buffer.at("tool_name").content = f_name if f_name
+          function_buffer.at("tool_id").content = partial[:id] if partial[:id]
 
-            function_buffer.at("parameters").children =
-              Nokogiri::HTML5::DocumentFragment.parse(argument_fragments)
+          if partial.dig(:function, :arguments).present?
+            @args_buffer << partial.dig(:function, :arguments)
+
+            begin
+              json_args = JSON.parse(@args_buffer, symbolize_names: true)
+
+              argument_fragments =
+                json_args.reduce(+"") do |memo, (arg_name, value)|
+                  memo << "\n<#{arg_name}>#{value}</#{arg_name}>"
+                end
+              argument_fragments << "\n"
+
+              function_buffer.at("parameters").children =
+                Nokogiri::HTML5::DocumentFragment.parse(argument_fragments)
+            rescue JSON::ParserError
+              return function_buffer
+            end
           end
 
           function_buffer
-        end
-
-        def buffering_finished?(available_functions, buffer)
-          tool_name = buffer.at("tool_name")&.text
-          return false if tool_name.blank?
-
-          signature = available_functions.find { |f| f.dig(:tool, :name) == tool_name }[:tool]
-
-          signature[:parameters].reduce(true) do |memo, param|
-            param_present = buffer.at(param[:name]).present?
-            next(memo) if param_present && !param[:required]
-
-            memo && param_present
-          end
         end
       end
     end

@@ -74,7 +74,7 @@ module DiscourseAi
                 response_data = extract_completion_from(response_raw)
                 partials_raw = response_data.to_s
 
-                if has_tool?("", response_data)
+                if has_tool?(response_data)
                   function_buffer = build_buffer # Nokogiri document
                   function_buffer = add_to_buffer(function_buffer, "", response_data)
 
@@ -125,26 +125,19 @@ module DiscourseAi
 
                     begin
                       partial = extract_completion_from(raw_partial)
+                      next if response_data.empty? && partial.blank?
                       next if partial.nil?
 
-                      if has_tool?(response_data, partial)
-                        function_buffer = add_to_buffer(function_buffer, response_data, partial)
-
-                        if buffering_finished?(dialect.tools, function_buffer)
-                          invocation = +function_buffer.at("function_calls").to_s
-                          invocation << "\n"
-
-                          partials_raw << partial.to_s
-                          response_data << invocation
-
-                          yield invocation, cancel
-                        end
+                      # Skip yield for tools. We'll buffer and yield later.
+                      if has_tool?(partials_raw)
+                        function_buffer = add_to_buffer(function_buffer, partials_raw, partial)
                       else
-                        partials_raw << partial
                         response_data << partial
 
                         yield partial, cancel if partial
                       end
+
+                      partials_raw << partial.to_s
                     rescue JSON::ParserError
                       leftover = redo_chunk
                       json_error = true
@@ -160,6 +153,17 @@ module DiscourseAi
                 end
               rescue IOError, StandardError
                 raise if !cancelled
+              end
+
+              # Once we have the full response, try to return the tool as a XML doc.
+              if has_tool?(partials_raw)
+                if function_buffer.at("tool_name").text.present?
+                  invocation = +function_buffer.at("function_calls").to_s
+                  invocation << "\n"
+
+                  response_data << invocation
+                  yield invocation, cancel
+                end
               end
 
               return response_data
@@ -236,12 +240,22 @@ module DiscourseAi
           TEXT
         end
 
-        def has_tool?(response, partial)
-          (response + partial).include?("<function_calls>")
+        def has_tool?(response)
+          response.include?("<function")
         end
 
         def add_to_buffer(function_buffer, response_data, partial)
-          read_function = Nokogiri::HTML5.fragment(response_data + partial)
+          raw_data = (response_data + partial)
+
+          # recover stop word potentially
+          raw_data =
+            raw_data.split("</invoke>").first + "</invoke>\n</function_calls>" if raw_data.split(
+            "</invoke>",
+          ).length > 1
+
+          return function_buffer unless raw_data.include?("</invoke>")
+
+          read_function = Nokogiri::HTML5.fragment(raw_data)
 
           if tool_name = read_function.at("tool_name").text
             function_buffer.at("tool_name").inner_html = tool_name
@@ -263,10 +277,6 @@ module DiscourseAi
               end
 
           function_buffer
-        end
-
-        def buffering_finished?(_available_functions, buffer)
-          buffer.to_s.include?("</function_calls>")
         end
       end
     end
