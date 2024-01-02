@@ -46,3 +46,6 @@ sl:
           copy: "Kopiraj"
           copied: "Kopirano!"
           cancel: "Prekliči"
+      ai_bot:
+        share_modal:
+          copy: "Kopiraj"

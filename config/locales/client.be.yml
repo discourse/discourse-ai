@@ -44,3 +44,6 @@ be:
           close: "зачыніць"
           copy: "капіяваць"
           cancel: "адмяніць"
+      ai_bot:
+        share_modal:
+          copy: "капіяваць"

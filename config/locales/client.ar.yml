@@ -68,6 +68,8 @@ ar:
         cancel_streaming: "إيقاف الرد"
         default_pm_prefix: "[رسالة خاصة دون عنوان من روبوت ذكاء اصطناعي]"
         shortcut_title: "بدء رسالة خاصة باستخدام روبوت ذكاء اصطناعي"
+        share_modal:
+          copy: "نسخ"
         bot_names:
           gpt-4: "GPT-4"
           gpt-3:

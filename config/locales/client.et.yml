@@ -46,3 +46,6 @@ et:
           copy: "Kopeeri"
           copied: "Kopeeritud!"
           cancel: "Tühista"
+      ai_bot:
+        share_modal:
+          copy: "Kopeeri"

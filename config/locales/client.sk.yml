@@ -47,3 +47,6 @@ sk:
           cancel: "Zrušiť"
         thumbnail_suggestions:
           select: "Vyberte"
+      ai_bot:
+        share_modal:
+          copy: "Kopírovať"

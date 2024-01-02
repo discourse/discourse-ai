@@ -47,3 +47,6 @@ ca:
           copy: "Còpia"
           copied: "Copiat!"
           cancel: "Cancel·la"
+      ai_bot:
+        share_modal:
+          copy: "Còpia"

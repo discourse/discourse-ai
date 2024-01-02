@@ -47,3 +47,6 @@ vi:
           cancel: "Huỷ"
         thumbnail_suggestions:
           select: "Chọn"
+      ai_bot:
+        share_modal:
+          copy: "Sao chép"

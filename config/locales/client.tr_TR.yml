@@ -70,6 +70,8 @@ tr_TR:
         cancel_streaming: "Yanıtı durdur"
         default_pm_prefix: "[Adsız YZ botu kişisel mesajı]"
         shortcut_title: "YZ botuyla kişisel mesaj başlatın"
+        share_modal:
+          copy: "Kopyala"
         bot_names:
           gpt-4: "GPT-4"
           gpt-3:

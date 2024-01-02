@@ -33,7 +33,6 @@ de:
     ai_sentiment_inference_service_api_endpoint: "URL, unter der die API für das Stimmungsmodul läuft"
     ai_sentiment_inference_service_api_key: "API-Schlüssel für die Stimmungsmodul-API"
     ai_sentiment_models: "Modelle, die für die Inferenz verwendet werden. Das Stimmungsmodul klassifiziert Beiträge in den Bereichen positiv/neutral/negativ. Emotionen werden in die Bereiche Wut/Ekel/Furcht/Freude/neutral/Traurigkeit/Überraschung eingeordnet."
-    ai_sentiment_show_sentiment_public_profile: "Mach die dominante Stimmung eines Nutzers in seinem öffentlichen Profil sichtbar."
     ai_nsfw_detection_enabled: "Aktiviere das NSFW-Modul."
     ai_nsfw_inference_service_api_endpoint: "URL, unter der die API für das NSFW-Modul läuft"
     ai_nsfw_inference_service_api_key: "API-Schlüssel für die NSFW-API"

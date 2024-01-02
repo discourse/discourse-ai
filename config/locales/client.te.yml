@@ -44,3 +44,6 @@ te:
           close: "మూసివేయి"
           copy: "నకలు"
           cancel: "రద్దుచేయి"
+      ai_bot:
+        share_modal:
+          copy: "నకలు"

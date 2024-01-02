@@ -70,6 +70,8 @@ zh_CN:
         cancel_streaming: "停止回复"
         default_pm_prefix: "[无标题 AI 机器人私信]"
         shortcut_title: "使用 AI 机器人启动私信"
+        share_modal:
+          copy: "复制"
         bot_names:
           gpt-4: "GPT-4"
           gpt-3:

@@ -70,6 +70,8 @@ nl:
         cancel_streaming: "Stoppen met antwoorden"
         default_pm_prefix: "[PB naamloze AI-bot]"
         shortcut_title: "Start een PB met een AI-bot"
+        share_modal:
+          copy: "Kopiëren"
         bot_names:
           gpt-4: "GPT-4"
           gpt-3:

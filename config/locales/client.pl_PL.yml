@@ -5,58 +5,161 @@
 # https://translate.discourse.org/
 
 pl_PL:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse AI"
   js:
     discourse_automation:
       ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
+            sender:
+              label: "Nadawca"
+              description: "Użytkownik, który wyśle raport"
+            receivers:
+              label: "Odbiorcy"
+              description: "Użytkownicy, którzy otrzymają raport (e-maile zostaną wysłane bezpośrednio, nazwy użytkowników zostaną wysłane w wiadomości prywatnej)"
             topic_id:
               label: "ID tematu"
+              description: "Identyfikator tematu, w którym chcesz opublikować raport"
             title:
               label: "Tytuł"
+              description: "Tytuł raportu"
+            days:
+              label: "Dni"
+              description: "Zakres czasowy raportu"
+            offset:
+              label: "Przesunięcie"
+              description: "Podczas testowania możesz chcieć uruchomić raport historycznie, użyj przesunięcia, aby rozpocząć raport we wcześniejszej dacie"
+            instructions:
+              label: "Instrukcje"
+              description: "Instrukcje dostarczone do dużego modelu językowego"
+            sample_size:
+              label: "Wielkość próbki"
+              description: "Liczba postów do pobrania na potrzeby raportu"
+            tokens_per_post:
+              label: "Tokeny za post"
+              description: "Liczba tokenów llm do wykorzystania na post"
+            model:
+              label: "Model"
+              description: "LLM do wykorzystania do generowania raportów"
             categories:
               label: "Kategorie"
+              description: "Filtruj tematy tylko do tej kategorii"
             tags:
               label: "Tagi"
+              description: "Filtruj tematy tylko do tych tagów"
+            allow_secure_categories:
+              label: "Zezwalaj na bezpieczne kategorie"
+              description: "Zezwalaj na generowanie raportu dla tematów w bezpiecznych kategoriach"
+            debug_mode:
+              label: "Tryb debugowania"
+              description: "Włącz tryb debugowania, aby zobaczyć nieprzetworzone dane wejściowe i wyjściowe LLM."
+            priority_group:
+              label: "Grupa priorytetowa"
+              description: "Nadaj priorytet treściom z tej grupy w raporcie"
         llm_triage:
           fields:
+            system_prompt:
+              label: "Monit systemowy"
+              description: "Wskazówka, która zostanie użyta do trializacji, upewnij się, że odpowiedziałaś jednym słowem, którego możesz użyć do uruchomienia akcji"
+            search_for_text:
+              label: "Wyszukaj tekst"
+              description: "Jeśli w odpowiedzi llm pojawi się następujący tekst, zastosuj te działania"
             category:
               label: "Kategoria"
+              description: "Kategoria do zastosowania w temacie"
             tags:
               label: "Tagi"
+              description: "Tagi do zastosowania w temacie"
             canned_reply:
               label: "Odpowiedz"
+              description: "Surowy tekst gotowej odpowiedzi na post w temacie"
+            canned_reply_user:
+              label: "Odpowiedz użytkownikowi"
+              description: "Nazwa użytkownika, który ma opublikować odpowiedź w szablonie"
+            hide_topic:
+              label: "Ukryj temat"
+              description: "Spraw, by temat nie był widoczny publicznie, jeśli zostanie uruchomiony."
+            model:
+              label: "Model"
+              description: "Albo gpt-4 lub gpt-3-5-turbo lub claude-2"
     discourse_ai:
+      title: "AI"
       modals:
         select_option: "Wybierz opcję..."
       ai_persona:
         name: Nazwa
         description: Opis
+        system_prompt: Monit systemowy
         save: Zapisz
+        saved: Zapisano AI Persona
         enabled: Włączona
+        commands: Włączone polecenia
+        allowed_groups: Dozwolone grupy
+        confirm_delete: Czy na pewno chcesz usunąć tę personę?
         new: Nowa
+        title: "AI Personas"
         delete: Usuń
+        priority: Priorytet
+        priority_help: Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie.
+        command_options: "Opcje poleceń"
+        no_persona_selected: |
+          ## Czym są Personas AI?
+
+          Personas AI to potężna funkcja, która pozwala dostosować zachowanie silnika AI na Twoim forum Discourse. Działa ona jak 'wiadomość systemowa', która kieruje reakcjami i interakcjami sztucznej inteligencji, pomagając stworzyć bardziej spersonalizowane i angażujące doświadczenie użytkownika.
+
+          ## Dlaczego warto używać AI Personas?
+
+          Dzięki AI Personas możesz dostosować zachowanie sztucznej inteligencji, aby lepiej pasowało do kontekstu i tonu twojego forum. Niezależnie od tego, czy chcesz, aby sztuczna inteligencja była bardziej formalna w środowisku zawodowym, bardziej swobodna na forum społecznościowym, czy nawet wcielała się w określoną postać w grze fabularnej, AI Personas zapewnia elastyczność w tym zakresie.
+
+          ## Dostęp do AI Personas dla określonych grup
+
+          Co więcej, możesz skonfigurować go tak, aby określone grupy użytkowników miały dostęp do określonych person. Oznacza to, że możesz mieć różne zachowania AI dla różnych sekcji swojego forum, co jeszcze bardziej zwiększy różnorodność i bogactwo interakcji twojej społeczności.
       related_topics:
+        title: "Powiązane tematy"
         pill: "Powiązane"
       ai_helper:
         title: "Zaproponuj zmiany za pomocą AI"
         description: "Wybierz jedną z poniższych opcji, a sztuczna inteligencja zasugeruje Ci nową wersję tekstu."
         selection_hint: "Wskazówka: Możesz także zaznaczyć część tekstu przed otwarciem pomocnika, aby przepisać tylko ten fragment."
+        suggest: "Zasugeruj za pomocą AI"
+        missing_content: "Wprowadź treść, aby wygenerować sugestie."
         context_menu:
           back: "Poprzednia"
+          trigger: "AI"
           undo: "Cofnij"
+          loading: "AI generuje"
           cancel: "Anuluj"
           regen: "Spróbuj ponownie"
+          view_changes: "Zobacz zmiany"
           confirm: "Potwierdź"
           revert: "Przywróć"
+          changes: "Zmiany"
+          custom_prompt:
+            title: "Niestandardowy monit"
+            placeholder: "Wprowadź niestandardowy monit..."
+            submit: "Wyślij monit"
         post_options_menu:
+          trigger: "Zapytaj AI"
+          title: "Zapytaj AI"
+          loading: "AI generuje"
           close: "Zamknij"
           copy: "Kopiuj"
           copied: "Skopiowane!"
           cancel: "Anuluj"
+        fast_edit:
+          suggest_button: "Zaproponuj edycję"
         thumbnail_suggestions:
+          title: "Sugerowane miniatury"
           select: "Wybierz"
           selected: "Wybrany"
       reviewables:
@@ -64,14 +167,36 @@ pl_PL:
         accuracy: "Dokładność:"
       embeddings:
         semantic_search: "Tematy (semantyczne)"
+        semantic_search_loading: "Wyszukiwanie większej liczby wyników przy użyciu AI"
+        semantic_search_disabled_sort: "Wyszukiwanie AI wyłączone dla tej kolejności sortowania, sortuj według trafności, aby włączyć."
+        semantic_search_results:
+          toggle: "Wyświetlanie %{count} wyników znalezionych przy użyciu AI"
+          toggle_hidden: "Ukrywanie %{count} wyników znalezionych przy użyciu AI"
+          none: "Przepraszamy, nasze wyszukiwanie AI nie znalazło pasujących tematów."
+          new: "Naciśnij 'Szukaj', aby rozpocząć wyszukiwanie nowych wyników za pomocą sztucznej inteligencji."
+        ai_generated_result: "Wynik wyszukiwania znaleziony przy użyciu AI"
       ai_bot:
+        pm_warning: "Wiadomości wysyłane przez chatboty AI są regularnie monitorowane przez moderatorów."
         cancel_streaming: "Zatrzymaj odpowiedź"
+        default_pm_prefix: "[PW bota AI bez tytułu]"
         shortcut_title: "Rozpocznij PW z botem AI"
+        share: "Udostępnij rozmowę AI"
+        conversation_shared: "Rozmowa skopiowana"
+        ai_label: "AI"
+        ai_title: "Rozmowa z AI"
+        share_modal:
+          title: "Udostępnij rozmowę AI"
+          copy: "Kopiuj"
+          context: "Interakcje do udostępnienia:"
         bot_names:
           gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+      sentiments:
+        dashboard:
+          title: "Sentiment"
     review:
       types:
         reviewable_ai_post:

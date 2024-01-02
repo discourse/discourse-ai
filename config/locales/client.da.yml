@@ -49,3 +49,6 @@ da:
           cancel: "Annuller"
         thumbnail_suggestions:
           select: "Vælg"
+      ai_bot:
+        share_modal:
+          copy: "Kopier"

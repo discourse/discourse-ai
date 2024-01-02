@@ -48,3 +48,6 @@ pt:
           cancel: "Cancelar"
         thumbnail_suggestions:
           select: "Selecionar"
+      ai_bot:
+        share_modal:
+          copy: "Copiar"

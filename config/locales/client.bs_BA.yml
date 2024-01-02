@@ -46,3 +46,6 @@ bs_BA:
           copy: "Copy"
           copied: "Kopirano!"
           cancel: "Odustani"
+      ai_bot:
+        share_modal:
+          copy: "Copy"

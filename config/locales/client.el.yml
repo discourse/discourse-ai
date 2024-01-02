@@ -45,3 +45,6 @@ el:
           copy: "Αντιγραφή"
           copied: "Αντιγράφηκε!"
           cancel: "Ακύρωση"
+      ai_bot:
+        share_modal:
+          copy: "Αντιγραφή"

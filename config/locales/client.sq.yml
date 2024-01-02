@@ -45,3 +45,6 @@ sq:
           close: "Mbyll"
           copy: "Kopjo"
           cancel: "Anulo"
+      ai_bot:
+        share_modal:
+          copy: "Kopjo"
