@@ -13,9 +13,7 @@ module DiscourseAi
           prompts = cp.where(enabled: true)
           # Only show the illustrate_post prompt if the API key is present
           prompts =
-            prompts.where.not(
-              name: "illustrate_post",
-            ) if !SiteSetting.ai_stability_api_key.present?
+            prompts.where.not(name: "illustrate_post") if !SiteSetting.ai_stability_api_key.present?
         end
 
         prompts.map do |prompt|
