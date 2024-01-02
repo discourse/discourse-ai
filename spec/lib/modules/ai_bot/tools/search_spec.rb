@@ -70,11 +70,6 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
         SiteSetting.ai_embeddings_semantic_search_enabled = true
         SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
 
-        WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
-          status: 200,
-          body: JSON.dump(OpenAiCompletionsInferenceStubs.response(query)),
-        )
-
         hyde_embedding = [0.049382, 0.9999]
         EmbeddingsGenerationStubs.discourse_service(
           SiteSetting.ai_embeddings_model,

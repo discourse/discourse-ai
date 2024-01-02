@@ -39,8 +39,7 @@ module DiscourseAi
         def conversation_context
           return "" if prompt[:conversation_context].blank?
 
-          conclean_contexttext =
-            prompt[:conversation_context].select { |cc| cc[:type] != "tool_call" }
+          clean_context = prompt[:conversation_context].select { |cc| cc[:type] != "tool_call" }
           trimmed_context = trim_context(clean_context)
 
           trimmed_context

@@ -35,7 +35,7 @@ module DiscourseAi
         end
 
         def prompts
-          parameters[:prompts]
+          JSON.parse(parameters[:prompts].to_s)
         end
 
         def seeds
