@@ -20,7 +20,10 @@ module DiscourseAi
           f.binmode
           f.write(Base64.decode64(artifact))
           f.rewind
-          upload = UploadCreator.new(f, "ai_helper_image_#{i}.png").create_for(user.id)
+          upload =
+            UploadCreator.new(f, I18n.t("discourse_ai.ai_helper.painter.attribution")).create_for(
+              user.id,
+            )
           f.unlink
 
           UploadSerializer.new(upload, root: false)
