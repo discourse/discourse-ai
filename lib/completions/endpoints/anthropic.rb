@@ -23,7 +23,7 @@ module DiscourseAi
         def default_options
           {
             model: model,
-            max_tokens_to_sample: 2_000,
+            max_tokens_to_sample: 3_000,
             stop_sequences: ["\n\nHuman:", "</function_calls>"],
           }
         end

@@ -46,10 +46,9 @@ module DiscourseAi
           prompt[:tools].map do |t|
             tool = t.dup
 
-            if tool[:parameters]
-              tool[:parameters] = t[:parameters].reduce(
-                { type: "object", properties: {}, required: [] },
-              ) do |memo, p|
+            tool[:parameters] = t[:parameters]
+              .to_a
+              .reduce({ type: "object", properties: {}, required: [] }) do |memo, p|
                 name = p[:name]
                 memo[:required] << name if p[:required]
 
@@ -58,7 +57,6 @@ module DiscourseAi
                 memo[:properties][name][:items] = { type: p[:item_type] } if p[:item_type]
                 memo
               end
-            end
 
             { type: "function", function: tool }
           end

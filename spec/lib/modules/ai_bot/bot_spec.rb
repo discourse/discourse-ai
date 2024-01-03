@@ -25,7 +25,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
   let!(:pm_post) { Fabricate(:post, topic: pm, user: user, raw: "Does my site has tags?") }
 
   let(:function_call) { <<~TEXT }
-    <function_calls>
+    Let me try using a function to get more info:<function_calls>
     <invoke>
     <tool_name>categories</tool_name>
     </invoke>

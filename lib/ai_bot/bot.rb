@@ -46,9 +46,11 @@ module DiscourseAi
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
           current_model = model(prefer_low_cost: low_cost)
           llm = DiscourseAi::Completions::Llm.proxy(current_model)
+          tool_found = false
 
           llm.completion!(prompt, context[:user]) do |partial, cancel|
-            if ongoing_chain && (tool = persona.find_tool(partial))
+            if (tool = persona.find_tool(partial))
+              tool_found = true
               ongoing_chain = tool.chain_next_response?
               low_cost = tool.low_cost?
               tool_call_id = tool.tool_call_id
@@ -77,13 +79,11 @@ module DiscourseAi
               raw_context << [tool_context[:content], tool_call_id, "tool_call"]
               raw_context << [invocation_result_json, tool_call_id, "tool"]
             else
-              ongoing_chain = false
-              low_cost = false
-
               update_blk.call(partial, cancel, nil)
             end
           end
 
+          ongoing_chain = false if !tool_found
           total_completions += 1
 
           # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS)
@@ -98,16 +98,15 @@ module DiscourseAi
       attr_reader :persona
 
       def invoke_tool(tool, llm, cancel, &update_blk)
-        update_blk.call("", cancel, build_placeholder(tool.summary))
+        update_blk.call("", cancel, build_placeholder(tool.summary, ""))
 
         result =
           tool.invoke(bot_user, llm) do |progress|
-            placeholder = build_placeholder(tool.summary, progress: progress)
+            placeholder = build_placeholder(tool.summary, progress)
             update_blk.call("", cancel, placeholder)
           end
 
-        tool_details =
-          build_placeholder(tool.summary, custom_raw: tool.custom_raw, details: tool.details)
+        tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
         update_blk.call(tool_details, cancel, nil)
 
         result
@@ -135,13 +134,13 @@ module DiscourseAi
         Nokogiri::HTML5.fragment(partial).at("invoke").present?
       end
 
-      def build_placeholder(summary, custom_raw: nil, details: nil, progress: nil)
+      def build_placeholder(summary, details, custom_raw: nil)
         +(<<~HTML).strip
         <details>
           <summary>#{summary}</summary>
           <p>#{details}</p>
         </details>
-        #{progress}#{custom_raw}\n
+        #{custom_raw}\n
         HTML
       end
     end

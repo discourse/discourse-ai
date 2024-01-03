@@ -87,6 +87,8 @@ module DiscourseAi
                 return response_data
               end
 
+              has_tool = false
+
               begin
                 cancelled = false
                 cancel = lambda { cancelled = true }
@@ -131,8 +133,11 @@ module DiscourseAi
                       next if partial.nil?
                       partials_raw << partial.to_s
 
-                      # Skip yield for tools. We'll buffer and yield later.
-                      if has_tool?(partials_raw)
+                      # Stop streaming the response as soon as you find a tool.
+                      # We'll buffer and yield it later.
+                      has_tool = true if has_tool?(partials_raw)
+
+                      if has_tool
                         function_buffer = add_to_buffer(function_buffer, partials_raw, partial)
                       else
                         response_data << partial
@@ -157,7 +162,7 @@ module DiscourseAi
               end
 
               # Once we have the full response, try to return the tool as a XML doc.
-              if has_tool?(partials_raw)
+              if has_tool
                 if function_buffer.at("tool_name").text.present?
                   invocation = +function_buffer.at("function_calls").to_s
                   invocation << "\n"
