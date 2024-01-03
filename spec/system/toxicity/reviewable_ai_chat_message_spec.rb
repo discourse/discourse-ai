@@ -25,9 +25,7 @@ RSpec.describe "Toxicity-flagged chat messages", type: :system, js: true do
   end
 
   context "when the message is hard deleted" do
-      before do
-        chat_message.destroy!
-      end
+    before { chat_message.destroy! }
 
     it "does not throw an error" do
       visit("/review")
