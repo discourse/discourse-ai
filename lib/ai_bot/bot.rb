@@ -119,13 +119,17 @@ module DiscourseAi
             "claude-2"
           when DiscourseAi::AiBot::EntryPoint::GPT4_ID
             "gpt-4"
+          when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
+            "gpt-4-turbo"
           when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
             "gpt-3.5-turbo-16k"
           else
             nil
           end
 
-        return "gpt-3.5-turbo-16k" if default_model == "gpt-4" && prefer_low_cost
+        if %w[gpt-4 gpt-4-turbo].include?(default_model) && prefer_low_cost
+          return "gpt-3.5-turbo-16k"
+        end
 
         default_model
       end
@@ -135,13 +139,16 @@ module DiscourseAi
       end
 
       def build_placeholder(summary, details, custom_raw: nil)
-        +(<<~HTML).strip
+        placeholder = +(<<~HTML)
         <details>
           <summary>#{summary}</summary>
           <p>#{details}</p>
         </details>
-        #{custom_raw}\n
         HTML
+
+        placeholder << custom_raw << "\n" if custom_raw
+
+        placeholder
       end
     end
   end
