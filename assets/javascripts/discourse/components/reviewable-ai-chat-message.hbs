@@ -1,15 +1,17 @@
-<div class="flagged-post-header">
-  <LinkTo
-    @route="chat.channel.near-message"
-    @models={{array
-      this.chatChannel.slugifiedTitle
-      this.chatChannel.id
-      @reviewable.target_id
-    }}
-  >
-    <ChatChannelTitle @channel={{this.chatChannel}} />
-  </LinkTo>
-</div>
+{{#if this.chatChannel}}
+  <div class="flagged-post-header">
+    <LinkTo
+      @route="chat.channel.near-message"
+      @models={{array
+        this.chatChannel.slugifiedTitle
+        this.chatChannel.id
+        @reviewable.target_id
+      }}
+    >
+      <ChatChannelTitle @channel={{this.chatChannel}} />
+    </LinkTo>
+  </div>
+{{/if}}
 
 <div class="post-contents-wrapper">
   <ReviewableCreatedBy @user={{@reviewable.target_created_by}} @tagName="" />
