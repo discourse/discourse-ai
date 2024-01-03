@@ -128,6 +128,8 @@ en:
         custom_prompt: "Custom Prompt"
         explain: "Explain"
         illustrate_post: "Illustrate Post"
+      painter:
+        attribution: "Image by Stable Diffusion XL"
 
     ai_bot:
       personas:
