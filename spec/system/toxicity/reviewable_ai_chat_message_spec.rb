@@ -23,4 +23,22 @@ RSpec.describe "Toxicity-flagged chat messages", type: :system, js: true do
 
     expect(page).to have_selector(".reviewable-ai-chat-message .reviewable-actions")
   end
+
+  context "when the message is hard deleted" do
+      before do
+        chat_message.destroy!
+      end
+
+    it "does not throw an error" do
+      visit("/review")
+
+      expect(page).to have_selector(".reviewable-ai-chat-message .reviewable-actions")
+    end
+
+    it "adds the option to ignore the flag" do
+      visit("/review")
+
+      expect(page).to have_selector(".reviewable-actions .chat-message-ignore")
+    end
+  end
 end

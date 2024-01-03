@@ -10,7 +10,7 @@ class ReviewableAiChatMessageSerializer < ReviewableSerializer
   has_one :chat_channel, serializer: AiChatChannelSerializer, root: false, embed: :objects
 
   def chat_channel
-    object.chat_message.chat_channel
+    object.chat_message&.chat_channel
   end
 
   def target_id
