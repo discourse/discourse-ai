@@ -54,7 +54,7 @@ module DiscourseAi
         protected
 
         def description_args
-          { tables: tables.join(", ") }
+          { tables: tables }
         end
       end
     end
