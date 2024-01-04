@@ -96,15 +96,19 @@ CompletionPrompt.seed do |cp|
   cp.id = -304
   cp.name = "markdown_table"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
+  cp.temperature = 0.5
+  cp.stop_sequences = ["\n</output>"]
   cp.messages = {
     insts: <<~TEXT,
     You are a markdown table formatter, I will provide you text inside <input></input> XML tags and you will format it into a markdown table
     TEXT
     examples: [
       ["<input>sam,joe,jane\nage: 22|  10|11</input>", <<~TEXT],
+      <output>
       |   | sam | joe | jane |
       |---|---|---|---|
       | age | 22 | 10 | 11 |
+      </output>
       TEXT
       [<<~TEXT, <<~TEXT],
         <input>
@@ -113,22 +117,26 @@ CompletionPrompt.seed do |cp|
         fred: height 22
         </input>
       TEXT
+      <output>
       |   | speed | age | height |
       |---|---|---|---|
       | sam | 100 | 22 | - |
       | jane | - | 10 | - |
       | fred | - | - | 22 |
+      </output>
       TEXT
       [<<~TEXT, <<~TEXT],
         <input>
-          chrome 22ms (first load 10ms)
-          firefox 10ms (first load: 9ms)
+        chrome 22ms (first load 10ms)
+        firefox 10ms (first load: 9ms)
         </input>
       TEXT
+      <output>
       | Browser | Load Time (ms) | First Load Time (ms) |
       |---|---|---|
       | Chrome | 22 | 10 |
       | Firefox | 10 | 9 |
+      </output>
       TEXT
     ],
   }
