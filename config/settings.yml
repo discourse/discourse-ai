@@ -199,6 +199,13 @@ discourse_ai:
     default: false
   ai_helper_automatic_chat_thread_title_delay:
     default: 5
+  ai_helper_illustrate_post_model:
+    default: disabled
+    type: enum
+    choices:
+      - stable_diffusion_xl
+      - dall_e_3
+      - disabled
 
   ai_embeddings_enabled:
     default: false

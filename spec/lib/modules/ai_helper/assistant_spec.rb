@@ -36,8 +36,8 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       end
     end
 
-    context "when stability API key is present" do
-      before { SiteSetting.ai_stability_api_key = "foo" }
+    context "when illustrate post model is enabled" do
+      before { SiteSetting.ai_helper_illustrate_post_model = "stable_diffusion_xl" }
 
       it "returns the illustrate_post prompt in the list of all prompts" do
         prompts = subject.available_prompts
