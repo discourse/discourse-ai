@@ -27,7 +27,7 @@ module DiscourseAi
           if prompt[:examples]
             prompt[:examples].each do |example_pair|
               mixtral_prompt << "[INST] #{example_pair.first} [/INST]\n"
-              mixtral_prompt << "#{example_pair.second}\n"
+              mixtral_prompt << "#{example_pair.second}</s>\n"
             end
           end
 

@@ -32,6 +32,8 @@ module DiscourseAi
         end
 
         def perform_completion!(dialect, user, model_params = {})
+          model_params = normalize_model_params(model_params)
+
           @streaming_mode = block_given?
 
           prompt = dialect.translate
@@ -199,6 +201,11 @@ module DiscourseAi
 
         attr_reader :model
 
+        # should normalize temperature, max_tokens, stop_words to endpoint specific values
+        def normalize_model_params(model_params)
+          raise NotImplementedError
+        end
+
         def model_uri
           raise NotImplementedError
         end
@@ -262,7 +269,7 @@ module DiscourseAi
             function_buffer.at("tool_id").inner_html = tool_name
           end
 
-          read_parameters =
+          _read_parameters =
             read_function
               .at("parameters")
               .elements

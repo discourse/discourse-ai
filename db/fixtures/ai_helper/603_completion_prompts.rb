@@ -5,47 +5,55 @@ CompletionPrompt.seed do |cp|
   cp.id = -301
   cp.name = "translate"
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
-  cp.messages = { insts: <<~TEXT }
-    I want you to act as an English translator, spelling corrector and improver. I will write to you
-    in any language and you will detect the language, translate it and answer in the corrected and
-    improved version of my text, in English. I want you to replace my simplified A0-level words and
-    sentences with more beautiful and elegant, upper level English words and sentences.
-    Keep the meaning same, but make them more literary. I want you to only reply the correction,
-    the improvements and nothing else, do not write explanations.
-    You will find the text between <input></input> XML tags.
-  TEXT
+  cp.stop_sequences = ["\n</output>", "</output>"]
+  cp.temperature = 0.2
+  cp.messages = {
+    insts: <<~TEXT,
+      I want you to act as an English translator, spelling corrector and improver. I will write to you
+      in any language and you will detect the language, translate it and answer in the corrected and
+      improved version of my text, in English. I want you to replace my simplified A0-level words and
+      sentences with more beautiful and elegant, upper level English words and sentences.
+      Keep the meaning same, but make them more literary. I want you to only reply the correction,
+      the improvements and nothing else, do not write explanations.
+      You will find the text between <input></input> XML tags.
+      Include your translation between <output></output> XML tags.
+    TEXT
+    examples: [
+      ["<input>Hello world</input>", "<output>Hello world</output>"],
+      ["<input>Bonjour le monde</input>", "<output>Hello world</output>"],
+    ],
+  }
 end
 
 CompletionPrompt.seed do |cp|
   cp.id = -303
   cp.name = "proofread"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
+  cp.temperature = 0
+  cp.stop_sequences = ["\n</output>"]
   cp.messages = {
     insts: <<~TEXT,
       You are a markdown proofreader. You correct egregious typos and phrasing issues but keep the user's original voice.
       You do not touch code blocks. I will provide you with text to proofread. If nothing needs fixing, then you will echo the text back.
-      Optionally, a user can specify intensity. Intensity 10 is a pedantic English teacher correcting the text.
-      Intensity 1 is a minimal proofreader. By default, you operate at intensity 1.
       You will find the text between <input></input> XML tags.
+      You will ALWAYS return the corrected text between <output></output> XML tags.
     TEXT
     examples: [
       [
         "<input>![amazing car|100x100, 22%](upload://hapy.png)</input>",
-        "![Amazing car|100x100, 22%](upload://hapy.png)",
+        "<output>![Amazing car|100x100, 22%](upload://hapy.png)</output>",
       ],
       [<<~TEXT, "The rain in Spain, stays mainly in the Plane."],
         <input>
-          Intensity 1:
           The rain in spain stays mainly in the plane.
         </input>
        TEXT
       [
-        "The rain in Spain, stays mainly in the Plane.",
-        "The rain in Spain, stays mainly in the Plane.",
+        "<input>The rain in Spain, stays mainly in the Plane.</input>",
+        "<output>The rain in Spain, stays mainly in the Plane.</output>",
       ],
       [<<~TEXT, <<~TEXT],
         <input>
-          Intensity 1:
           Hello,
 
           Sometimes the logo isn't changing automatically when color scheme changes.
@@ -53,13 +61,14 @@ CompletionPrompt.seed do |cp|
           ![Screen Recording 2023-03-17 at 18.04.22|video](upload://2rcVL0ZMxHPNtPWQbZjwufKpWVU.mov)
         </input>
       TEXT
+        <output>
         Hello,
         Sometimes the logo does not change automatically when the color scheme changes.
         ![Screen Recording 2023-03-17 at 18.04.22|video](upload://2rcVL0ZMxHPNtPWQbZjwufKpWVU.mov)
+        </output>
       TEXT
       [<<~TEXT, <<~TEXT],
         <input>
-          Intensity 1:
           Any ideas what is wrong with this peace of cod?
           > This quot contains a typo
           ```ruby
@@ -69,6 +78,7 @@ CompletionPrompt.seed do |cp|
           ```
         </input>
       TEXT
+        <output>
         Any ideas what is wrong with this piece of code?
         > This quot contains a typo
         ```ruby
@@ -76,6 +86,7 @@ CompletionPrompt.seed do |cp|
         testing.a_typo = 11
         bad = "bad"
         ```
+        </output>
     TEXT
     ],
   }
@@ -85,15 +96,19 @@ CompletionPrompt.seed do |cp|
   cp.id = -304
   cp.name = "markdown_table"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
+  cp.temperature = 0.5
+  cp.stop_sequences = ["\n</output>"]
   cp.messages = {
     insts: <<~TEXT,
     You are a markdown table formatter, I will provide you text inside <input></input> XML tags and you will format it into a markdown table
     TEXT
     examples: [
       ["<input>sam,joe,jane\nage: 22|  10|11</input>", <<~TEXT],
+      <output>
       |   | sam | joe | jane |
       |---|---|---|---|
       | age | 22 | 10 | 11 |
+      </output>
       TEXT
       [<<~TEXT, <<~TEXT],
         <input>
@@ -102,22 +117,26 @@ CompletionPrompt.seed do |cp|
         fred: height 22
         </input>
       TEXT
+      <output>
       |   | speed | age | height |
       |---|---|---|---|
       | sam | 100 | 22 | - |
       | jane | - | 10 | - |
       | fred | - | - | 22 |
+      </output>
       TEXT
       [<<~TEXT, <<~TEXT],
         <input>
-          chrome 22ms (first load 10ms)
-          firefox 10ms (first load: 9ms)
+        chrome 22ms (first load 10ms)
+        firefox 10ms (first load: 9ms)
         </input>
       TEXT
+      <output>
       | Browser | Load Time (ms) | First Load Time (ms) |
       |---|---|---|
       | Chrome | 22 | 10 |
       | Firefox | 10 | 9 |
+      </output>
       TEXT
     ],
   }

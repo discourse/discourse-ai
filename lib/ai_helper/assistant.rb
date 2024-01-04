@@ -36,20 +36,26 @@ module DiscourseAi
         llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
         generic_prompt = completion_prompt.messages_with_input(input)
 
-        llm.completion!(generic_prompt, user, &block)
+        llm.generate(
+          generic_prompt,
+          user: user,
+          temperature: completion_prompt.temperature,
+          stop_sequences: completion_prompt.stop_sequences,
+          &block
+        )
       end
 
       def generate_and_send_prompt(completion_prompt, input, user)
         completion_result = generate_prompt(completion_prompt, input, user)
         result = { type: completion_prompt.prompt_type }
 
-        result[:diff] = parse_diff(input, completion_result) if completion_prompt.diff?
-
         result[:suggestions] = (
           if completion_prompt.list?
             parse_list(completion_result).map { |suggestion| sanitize_result(suggestion) }
           else
-            [sanitize_result(completion_result)]
+            sanitized = sanitize_result(completion_result)
+            result[:diff] = parse_diff(input, sanitized) if completion_prompt.diff?
+            [sanitized]
           end
         )
 
@@ -79,25 +85,15 @@ module DiscourseAi
 
       private
 
-      def sanitize_result(result)
-        tags_to_remove = %w[
-          <term>
-          </term>
-          <context>
-          </context>
-          <topic>
-          </topic>
-          <replyTo>
-          </replyTo>
-          <input>
-          </input>
-          <output>
-          </output>
-          <result>
-          </result>
-        ]
+      SANITIZE_REGEX_STR =
+        %w[term context topic replyTo input output result]
+          .map { |tag| "<#{tag}>\\n?|\\n?</#{tag}>" }
+          .join("|")
 
-        result.dup.tap { |dup_result| tags_to_remove.each { |tag| dup_result.gsub!(tag, "") } }
+      SANITIZE_REGEX = Regexp.new(SANITIZE_REGEX_STR, Regexp::IGNORECASE | Regexp::MULTILINE)
+
+      def sanitize_result(result)
+        result.gsub(SANITIZE_REGEX, "")
       end
 
       def publish_update(channel, payload, user)

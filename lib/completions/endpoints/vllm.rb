@@ -10,6 +10,17 @@ module DiscourseAi
           )
         end
 
+        def normalize_model_params(model_params)
+          model_params = model_params.dup
+
+          # max_tokens, temperature are already supported
+          if model_params[:stop_sequences]
+            model_params[:stop] = model_params.delete(:stop_sequences)
+          end
+
+          model_params
+        end
+
         def default_options
           { max_tokens: 2000, model: model }
         end
@@ -39,7 +50,6 @@ module DiscourseAi
 
         def prepare_request(payload)
           headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
-
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 

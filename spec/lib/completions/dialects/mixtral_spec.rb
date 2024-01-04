@@ -74,7 +74,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mixtral do
       #{prompt[:post_insts]}
       [/INST] Ok </s>
       [INST] #{prompt[:examples][0][0]} [/INST]
-      #{prompt[:examples][0][1]}
+      #{prompt[:examples][0][1]}</s>
       [INST] #{prompt[:input]} [/INST]
       TEXT
 
@@ -102,7 +102,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mixtral do
       </function_calls>
 
       Here are the tools available:
-      
+
       <tools>
       #{dialect.tools}</tools>
       #{prompt[:post_insts]}

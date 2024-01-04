@@ -112,7 +112,7 @@ module DiscourseAi
         llm_response =
           DiscourseAi::Completions::Llm.proxy(
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
-          ).completion!(prompt, @guardian.user)
+          ).generate(prompt, user: @guardian.user)
 
         Nokogiri::HTML5.fragment(llm_response).at("ai")&.text&.presence || llm_response
       end

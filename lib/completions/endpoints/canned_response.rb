@@ -16,6 +16,11 @@ module DiscourseAi
           @prompt = nil
         end
 
+        def normalize_model_params(model_params)
+          # max_tokens, temperature, stop_sequences are already supported
+          model_params
+        end
+
         attr_reader :responses, :completions, :prompt
 
         def perform_completion!(prompt, _user, _model_params)

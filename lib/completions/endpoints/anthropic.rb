@@ -8,8 +8,24 @@ module DiscourseAi
           %w[claude-instant-1 claude-2].include?(model_name)
         end
 
+        def normalize_model_params(model_params)
+          model_params = model_params.dup
+
+          # temperature, stop_sequences are already supported
+          #
+          if model_params[:max_tokens]
+            model_params[:max_tokens_to_sample] = model_params.delete(:max_tokens)
+          end
+
+          model_params
+        end
+
         def default_options
-          { max_tokens_to_sample: 2000, model: model }
+          {
+            model: model,
+            max_tokens_to_sample: 2_000,
+            stop_sequences: ["\n\nHuman:", "</function_calls>"],
+          }
         end
 
         def provider_id

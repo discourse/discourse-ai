@@ -19,6 +19,20 @@ module DiscourseAi
           { parameters: { repetition_penalty: 1.1, temperature: 0.7, return_full_text: false } }
         end
 
+        def normalize_model_params(model_params)
+          model_params = model_params.dup
+
+          if model_params[:stop_sequences]
+            model_params[:stop] = model_params.delete(:stop_sequences)
+          end
+
+          if model_params[:max_tokens]
+            model_params[:max_new_tokens] = model_params.delete(:max_tokens)
+          end
+
+          model_params
+        end
+
         def provider_id
           AiApiAuditLog::Provider::HuggingFaceTextGeneration
         end

@@ -99,7 +99,7 @@ module DiscourseAi
         def summarize_single(llm, text, user, opts, &on_partial_blk)
           prompt = summarization_prompt(text, opts)
 
-          llm.completion!(prompt, user, &on_partial_blk)
+          llm.generate(prompt, user: user, &on_partial_blk)
         end
 
         def summarize_in_chunks(llm, chunks, user, opts)
@@ -107,7 +107,7 @@ module DiscourseAi
             prompt = summarization_prompt(chunk[:summary], opts)
             prompt[:post_insts] = "Don't use more than 400 words for the summary."
 
-            chunk[:summary] = llm.completion!(prompt, user)
+            chunk[:summary] = llm.generate(prompt, user: user)
             chunk
           end
         end
@@ -117,7 +117,7 @@ module DiscourseAi
           prompt[:insts] = <<~TEXT
             You are a summarization bot that effectively concatenates disjoint summaries, creating a cohesive narrative.
             The narrative you create is in the form of one or multiple paragraphs.
-            Your reply MUST BE a single concatenated summary using the summaries I'll provide to you. 
+            Your reply MUST BE a single concatenated summary using the summaries I'll provide to you.
             I'm NOT interested in anything other than the concatenated summary, don't include additional text or comments.
             You understand and generate Discourse forum Markdown.
             You format the response, including links, using Markdown.
@@ -131,7 +131,7 @@ module DiscourseAi
             </input>
           TEXT
 
-          llm.completion!(prompt, user, &on_partial_blk)
+          llm.generate(prompt, user: user, &on_partial_blk)
         end
 
         def summarization_prompt(input, opts)

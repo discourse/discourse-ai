@@ -13,8 +13,24 @@ module DiscourseAi
             SiteSetting.ai_bedrock_region.present?
         end
 
+        def normalize_model_params(model_params)
+          model_params = model_params.dup
+
+          # temperature, stop_sequences are already supported
+          #
+          if model_params[:max_tokens]
+            model_params[:max_tokens_to_sample] = model_params.delete(:max_tokens)
+          end
+
+          model_params
+        end
+
         def default_options
-          { max_tokens_to_sample: 2_000, stop_sequences: ["\n\nHuman:", "</function_calls>"] }
+          {
+            model: model,
+            max_tokens_to_sample: 2_000,
+            stop_sequences: ["\n\nHuman:", "</function_calls>"],
+          }
         end
 
         def provider_id

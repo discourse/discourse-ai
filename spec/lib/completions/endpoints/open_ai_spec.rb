@@ -183,7 +183,7 @@ data: [D|ONE]
 
       partials = []
       llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
-      llm.completion!({ insts: "test" }, Discourse.system_user) { |partial| partials << partial }
+      llm.generate({ insts: "test" }, user: Discourse.system_user) { |partial| partials << partial }
 
       expect(partials.join).to eq("test,test2,test3,test4")
     end
@@ -212,7 +212,7 @@ data: [D|ONE]
 
       partials = []
       llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
-      llm.completion!({ insts: "test" }, Discourse.system_user) { |partial| partials << partial }
+      llm.generate({ insts: "test" }, user: Discourse.system_user) { |partial| partials << partial }
 
       expect(partials.join).to eq("test,test1,test2,test3,test4")
     end
