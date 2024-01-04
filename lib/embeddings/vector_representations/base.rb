@@ -96,7 +96,7 @@ module DiscourseAi
               WITH
                 (lists = #{lists});
             SQL
-          rescue PG::ProgramLimitExceeded => e 
+          rescue PG::ProgramLimitExceeded => e
             parsed_error = e.message.match(/memory required is (\d+ [A-Z]{2}), ([a-z_]+)/)
             if parsed_error[1].present? && parsed_error[2].present?
               DB.exec("SET #{parsed_error[2]} TO '#{parsed_error[1].tr(" ", "")}';")
@@ -106,7 +106,6 @@ module DiscourseAi
               raise e
             end
           end
-
 
           DB.exec("COMMENT ON INDEX #{index_name} IS '#{Time.now.to_i}';")
           DB.exec("RESET work_mem;")
