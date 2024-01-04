@@ -47,8 +47,13 @@ module DiscourseAi
         def topic_truncation(topic, tokenizer, max_length)
           text = +topic_information(topic)
 
+          if topic&.topic_embed&.embed_content_cache&.present?
+            text << Nokogiri::HTML5.fragment(topic.topic_embed.embed_content_cache).text
+            text << "\n\n"
+          end
+
           topic.posts.find_each do |post|
-            text << post.raw
+            text << Nokogiri::HTML5.fragment(post.cooked).text
             break if tokenizer.size(text) >= max_length #maybe keep a partial counter to speed this up?
             text << "\n\n"
           end
@@ -58,7 +63,12 @@ module DiscourseAi
 
         def post_truncation(post, tokenizer, max_length)
           text = +topic_information(post.topic)
-          text << Nokogiri::HTML5.fragment(post.cooked).text
+
+          if post.is_first_post? && post.topic&.topic_embed&.embed_content_cache&.present?
+            text << Nokogiri::HTML5.fragment(post.topic.topic_embed.embed_content_cache).text
+          else
+            text << Nokogiri::HTML5.fragment(post.cooked).text
+          end
 
           tokenizer.truncate(text, max_length)
         end
