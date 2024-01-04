@@ -5,15 +5,24 @@ CompletionPrompt.seed do |cp|
   cp.id = -301
   cp.name = "translate"
   cp.prompt_type = CompletionPrompt.prompt_types[:text]
-  cp.messages = { insts: <<~TEXT }
-    I want you to act as an English translator, spelling corrector and improver. I will write to you
-    in any language and you will detect the language, translate it and answer in the corrected and
-    improved version of my text, in English. I want you to replace my simplified A0-level words and
-    sentences with more beautiful and elegant, upper level English words and sentences.
-    Keep the meaning same, but make them more literary. I want you to only reply the correction,
-    the improvements and nothing else, do not write explanations.
-    You will find the text between <input></input> XML tags.
-  TEXT
+  cp.stop_sequences = ["\n</output>", "</output>"]
+  cp.temperature = 0.2
+  cp.messages = {
+    insts: <<~TEXT,
+      I want you to act as an English translator, spelling corrector and improver. I will write to you
+      in any language and you will detect the language, translate it and answer in the corrected and
+      improved version of my text, in English. I want you to replace my simplified A0-level words and
+      sentences with more beautiful and elegant, upper level English words and sentences.
+      Keep the meaning same, but make them more literary. I want you to only reply the correction,
+      the improvements and nothing else, do not write explanations.
+      You will find the text between <input></input> XML tags.
+      Include your translation between <output></output> XML tags.
+    TEXT
+    examples: [
+      ["<input>Hello world</input>", "<output>Hello world</output>"],
+      ["<input>Bonjour le monde</input>", "<output>Hello world</output>"],
+    ],
+  }
 end
 
 CompletionPrompt.seed do |cp|
