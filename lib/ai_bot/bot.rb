@@ -125,6 +125,8 @@ module DiscourseAi
             "gpt-3.5-turbo-16k"
           when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
             "mistralai/Mixtral-8x7B-Instruct-v0.1"
+          when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
+            "gemini-pro"
           else
             nil
           end
@@ -146,9 +148,10 @@ module DiscourseAi
           <summary>#{summary}</summary>
           <p>#{details}</p>
         </details>
+
         HTML
 
-        placeholder << custom_raw << "\n" if custom_raw
+        placeholder << custom_raw if custom_raw
 
         placeholder
       end

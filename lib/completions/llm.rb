@@ -62,6 +62,8 @@ module DiscourseAi
       #    { type: "user", name: "user1", content: "This is a new message by a user" },
       #    { type: "assistant", content: "I'm a previous bot reply, that's why there's no user" },
       #    { type: "tool", name: "tool_id", content: "I'm a tool result" },
+      #    { type: "tool_call_id", name: "tool_id", content: { name: "tool", args: { ...tool_args } } },
+      #    { type: "multi_turn", content: [assistant_reply_from_a_tool, tool_call, tool_call_id] }
       #   ]
       #
       #   - tools (optional - only functions supported): Array of functions a model can call. Each function is defined as a hash. Example:

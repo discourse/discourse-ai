@@ -98,18 +98,18 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
       expect(translated_context).to eq(
         [
           {
-            role: "model",
-            parts: [
-              {
-                "functionResponse" => {
-                  name: context.last[:name],
+            role: "function",
+            parts: {
+              functionResponse: {
+                name: context.last[:name],
+                response: {
                   content: context.last[:content],
                 },
               },
-            ],
+            },
           },
-          { role: "model", parts: [{ text: context.second[:content] }] },
-          { role: "user", parts: [{ text: context.first[:content] }] },
+          { role: "model", parts: { text: context.second[:content] } },
+          { role: "user", parts: { text: context.first[:content] } },
         ],
       )
     end
@@ -121,7 +121,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
 
       translated_context = dialect.conversation_context
 
-      expect(translated_context.last.dig(:parts, 0, :text).length).to be <
+      expect(translated_context.last.dig(:parts, :text).length).to be <
         context.last[:content].length
     end
   end
@@ -133,16 +133,21 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
           {
             name: "get_weather",
             description: "Get the weather in a city",
-            parameters: [
-              { name: "location", type: "string", description: "the city name" },
-              {
-                name: "unit",
-                type: "string",
-                description: "the unit of measurement celcius c or fahrenheit f",
-                enum: %w[c f],
+            parameters: {
+              type: "object",
+              required: %w[location unit],
+              properties: {
+                "location" => {
+                  type: "string",
+                  description: "the city name",
+                },
+                "unit" => {
+                  type: "string",
+                  description: "the unit of measurement celcius c or fahrenheit f",
+                  enum: %w[c f],
+                },
               },
-            ],
-            required: %w[location unit],
+            },
           },
         ],
       }

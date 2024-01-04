@@ -10,12 +10,14 @@ module DiscourseAi
       CLAUDE_V2_ID = -112
       GPT4_TURBO_ID = -113
       MIXTRAL_ID = -114
+      GEMINI_ID = -115
       BOTS = [
         [GPT4_ID, "gpt4_bot", "gpt-4"],
         [GPT3_5_TURBO_ID, "gpt3.5_bot", "gpt-3.5-turbo"],
         [CLAUDE_V2_ID, "claude_bot", "claude-2"],
         [GPT4_TURBO_ID, "gpt4t_bot", "gpt-4-turbo"],
         [MIXTRAL_ID, "mixtral_bot", "mixtral-8x7B-Instruct-V0.1"],
+        [GEMINI_ID, "gemini_bot", "gemini-pro"],
       ]
 
       def self.map_bot_model_to_user_id(model_name)
@@ -30,6 +32,8 @@ module DiscourseAi
           CLAUDE_V2_ID
         in "mixtral-8x7B-Instruct-V0.1"
           MIXTRAL_ID
+        in "gemini-pro"
+          GEMINI_ID
         else
           nil
         end

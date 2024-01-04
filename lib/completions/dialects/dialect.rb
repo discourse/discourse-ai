@@ -164,6 +164,27 @@ module DiscourseAi
             #{tools}</tools>
           TEXT
         end
+
+        def flatten_context(context)
+          found_first_multi_turn = false
+
+          context
+            .map do |a_context|
+              if a_context[:type] == "multi_turn"
+                if found_first_multi_turn
+                  # Only take tool and tool_call_id from subsequent multi-turn interactions.
+                  # Drop assistant responses
+                  a_context[:content].last(2)
+                else
+                  found_first_multi_turn = true
+                  a_context[:content]
+                end
+              else
+                a_context
+              end
+            end
+            .flatten
+        end
       end
     end
   end
