@@ -273,20 +273,19 @@ module DiscourseAi
             function_buffer.at("tool_id").inner_html = tool_name
           end
 
-          _read_parameters =
-            read_function
-              .at("parameters")
-              &.elements
-              .to_a
-              .each do |elem|
-                if paramenter = function_buffer.at(elem.name)&.text
-                  function_buffer.at(elem.name).inner_html = paramenter
-                else
-                  param_node = read_function.at(elem.name)
-                  function_buffer.at("parameters").add_child(param_node)
-                  function_buffer.at("parameters").add_child("\n")
-                end
+          read_function
+            .at("parameters")
+            &.elements
+            .to_a
+            .each do |elem|
+              if paramenter = function_buffer.at(elem.name)&.text
+                function_buffer.at(elem.name).inner_html = paramenter
+              else
+                param_node = read_function.at(elem.name)
+                function_buffer.at("parameters").add_child(param_node)
+                function_buffer.at("parameters").add_child("\n")
               end
+            end
 
           function_buffer
         end

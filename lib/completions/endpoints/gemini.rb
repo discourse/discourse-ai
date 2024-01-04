@@ -42,10 +42,12 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
+          tools = dialect.tools
+
           default_options
             .merge(contents: prompt)
             .tap do |payload|
-              payload[:tools] = dialect.tools if dialect.tools.present?
+              payload[:tools] = tools if tools.present?
               payload[:generationConfig].merge!(model_params) if model_params.present?
             end
         end
@@ -57,8 +59,12 @@ module DiscourseAi
         end
 
         def extract_completion_from(response_raw)
-          parsed = JSON.parse(response_raw, symbolize_names: true)
-
+          parsed =
+            if @streaming_mode
+              response_raw
+            else
+              JSON.parse(response_raw, symbolize_names: true)
+            end
           response_h = parsed.dig(:candidates, 0, :content, :parts, 0)
 
           @has_function_call ||= response_h.dig(:functionCall).present?
@@ -66,20 +72,11 @@ module DiscourseAi
         end
 
         def partials_from(decoded_chunk)
-          decoded_chunk
-            .split("\n")
-            .map do |line|
-              if line == ","
-                nil
-              elsif line.starts_with?("[")
-                line[1..-1]
-              elsif line.ends_with?("]")
-                line[0..-1]
-              else
-                line
-              end
-            end
-            .compact_blank
+          begin
+            JSON.parse(decoded_chunk, symbolize_names: true)
+          rescue JSON::ParserError
+            []
+          end
         end
 
         def extract_prompt_for_tokenizer(prompt)

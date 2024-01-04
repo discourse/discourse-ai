@@ -15,6 +15,9 @@ module DiscourseAi
         end
 
         def translate
+          # Gemini complains if we don't alternate model/user roles.
+          noop_model_response = { role: "model", parts: { text: "Ok." } }
+
           gemini_prompt = [
             {
               role: "user",
@@ -22,7 +25,7 @@ module DiscourseAi
                 text: [prompt[:insts], prompt[:post_insts].to_s].join("\n"),
               },
             },
-            { role: "model", parts: { text: "Ok." } },
+            noop_model_response,
           ]
 
           if prompt[:examples]
@@ -34,7 +37,13 @@ module DiscourseAi
 
           gemini_prompt.concat(conversation_context) if prompt[:conversation_context]
 
-          gemini_prompt << { role: "user", parts: { text: prompt[:input] } }
+          if prompt[:input]
+            gemini_prompt << noop_model_response.dup if gemini_prompt.last[:role] == "user"
+
+            gemini_prompt << { role: "user", parts: { text: prompt[:input] } }
+          end
+
+          gemini_prompt
         end
 
         def tools
@@ -42,16 +51,23 @@ module DiscourseAi
 
           translated_tools =
             prompt[:tools].map do |t|
-              required_fields = []
-              tool = t.dup
+              tool = t.slice(:name, :description)
 
-              tool[:parameters] = t[:parameters].map do |p|
-                required_fields << p[:name] if p[:required]
+              if t[:parameters]
+                tool[:parameters] = t[:parameters].reduce(
+                  { type: "object", required: [], properties: {} },
+                ) do |memo, p|
+                  name = p[:name]
+                  memo[:required] << name if p[:required]
 
-                p.except(:required)
+                  memo[:properties][name] = p.except(:name, :required, :item_type)
+
+                  memo[:properties][name][:items] = { type: p[:item_type] } if p[:item_type]
+                  memo
+                end
               end
 
-              tool.merge(required: required_fields)
+              tool
             end
 
           [{ function_declarations: translated_tools }]
@@ -60,23 +76,42 @@ module DiscourseAi
         def conversation_context
           return [] if prompt[:conversation_context].blank?
 
-          trimmed_context = trim_context(prompt[:conversation_context])
+          flattened_context = flatten_context(prompt[:conversation_context])
+          trimmed_context = trim_context(flattened_context)
 
           trimmed_context.reverse.map do |context|
-            translated = {}
-            translated[:role] = (context[:type] == "user" ? "user" : "model")
+            if context[:type] == "tool_call"
+              function = JSON.parse(context[:content], symbolize_names: true)
 
-            part = {}
-
-            if context[:type] == "tool"
-              part["functionResponse"] = { name: context[:name], content: context[:content] }
+              {
+                role: "model",
+                parts: {
+                  functionCall: {
+                    name: function[:name],
+                    args: function[:arguments],
+                  },
+                },
+              }
+            elsif context[:type] == "tool"
+              {
+                role: "function",
+                parts: {
+                  functionResponse: {
+                    name: context[:name],
+                    response: {
+                      content: context[:content],
+                    },
+                  },
+                },
+              }
             else
-              part[:text] = context[:content]
+              {
+                role: context[:type] == "assistant" ? "model" : "user",
+                parts: {
+                  text: context[:content],
+                },
+              }
             end
-
-            translated[:parts] = [part]
-
-            translated
           end
         end
 
@@ -88,6 +123,19 @@ module DiscourseAi
 
         def calculate_message_token(context)
           self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
+        end
+
+        private
+
+        def flatten_context(context)
+          context.map do |a_context|
+            if a_context[:type] == "multi_turn"
+              # Drop old tool calls and only keep bot response.
+              a_context[:content].find { |c| c[:type] == "assistant" }
+            else
+              a_context
+            end
+          end
         end
       end
     end

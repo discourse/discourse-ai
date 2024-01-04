@@ -45,6 +45,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
           <summary>#{tool.summary}</summary>
           <p></p>
         </details>
+
         HTML
 
         context = {}

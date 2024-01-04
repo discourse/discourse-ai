@@ -16,16 +16,21 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     {
       name: "get_weather",
       description: "Get the weather in a city",
-      parameters: [
-        { name: "location", type: "string", description: "the city name" },
-        {
-          name: "unit",
-          type: "string",
-          description: "the unit of measurement celcius c or fahrenheit f",
-          enum: %w[c f],
+      parameters: {
+        type: "object",
+        required: %w[location unit],
+        properties: {
+          "location" => {
+            type: "string",
+            description: "the city name",
+          },
+          "unit" => {
+            type: "string",
+            description: "the unit of measurement celcius c or fahrenheit f",
+            enum: %w[c f],
+          },
         },
-      ],
-      required: %w[location unit],
+      },
     }
   end
 
@@ -126,7 +131,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
         end
       end
 
-    chunks = chunks.join("\n,\n").prepend("[").concat("\n]").split("")
+    chunks = chunks.join("\n,\n").prepend("[\n").concat("\n]").split("")
 
     WebMock
       .stub_request(

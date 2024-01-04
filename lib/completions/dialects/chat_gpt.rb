@@ -65,7 +65,8 @@ module DiscourseAi
         def conversation_context
           return [] if prompt[:conversation_context].blank?
 
-          trimmed_context = trim_context(prompt[:conversation_context])
+          flattened_context = flatten_context(prompt[:conversation_context])
+          trimmed_context = trim_context(flattened_context)
 
           trimmed_context.reverse.map do |context|
             if context[:type] == "tool_call"

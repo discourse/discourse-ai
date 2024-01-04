@@ -37,7 +37,6 @@ module DiscourseAi
 
         result = []
 
-        first = true
         context.each do |raw, username, custom_prompt|
           custom_prompt_translation =
             Proc.new do |message|
@@ -51,25 +50,22 @@ module DiscourseAi
 
                 custom_context[:name] = message[1] if custom_context[:type] != "assistant"
 
-                result << custom_context
+                custom_context
               end
             end
 
           if custom_prompt.present?
-            if first
-              custom_prompt.reverse_each(&custom_prompt_translation)
-              first = false
-            else
-              tool_call_and_tool = custom_prompt.first(2)
-              tool_call_and_tool.reverse_each(&custom_prompt_translation)
-            end
+            result << {
+              type: "multi_turn",
+              content: custom_prompt.reverse_each.map(&custom_prompt_translation).compact,
+            }
           else
             context = {
               content: raw,
               type: (available_bot_usernames.include?(username) ? "assistant" : "user"),
             }
 
-            context[:name] = username if context[:type] == "user"
+            context[:name] = clean_username(username) if context[:type] == "user"
 
             result << context
           end
