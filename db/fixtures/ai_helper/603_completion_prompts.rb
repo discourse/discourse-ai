@@ -20,32 +20,31 @@ CompletionPrompt.seed do |cp|
   cp.id = -303
   cp.name = "proofread"
   cp.prompt_type = CompletionPrompt.prompt_types[:diff]
+  cp.temperature = 0
+  cp.stop_sequences = ["\n</output>"]
   cp.messages = {
     insts: <<~TEXT,
       You are a markdown proofreader. You correct egregious typos and phrasing issues but keep the user's original voice.
       You do not touch code blocks. I will provide you with text to proofread. If nothing needs fixing, then you will echo the text back.
-      Optionally, a user can specify intensity. Intensity 10 is a pedantic English teacher correcting the text.
-      Intensity 1 is a minimal proofreader. By default, you operate at intensity 1.
       You will find the text between <input></input> XML tags.
+      You will ALWAYS return the corrected text between <output></output> XML tags.
     TEXT
     examples: [
       [
         "<input>![amazing car|100x100, 22%](upload://hapy.png)</input>",
-        "![Amazing car|100x100, 22%](upload://hapy.png)",
+        "<output>![Amazing car|100x100, 22%](upload://hapy.png)</output>",
       ],
       [<<~TEXT, "The rain in Spain, stays mainly in the Plane."],
         <input>
-          Intensity 1:
           The rain in spain stays mainly in the plane.
         </input>
        TEXT
       [
-        "The rain in Spain, stays mainly in the Plane.",
-        "The rain in Spain, stays mainly in the Plane.",
+        "<input>The rain in Spain, stays mainly in the Plane.</input>",
+        "<output>The rain in Spain, stays mainly in the Plane.</output>",
       ],
       [<<~TEXT, <<~TEXT],
         <input>
-          Intensity 1:
           Hello,
 
           Sometimes the logo isn't changing automatically when color scheme changes.
@@ -53,13 +52,14 @@ CompletionPrompt.seed do |cp|
           ![Screen Recording 2023-03-17 at 18.04.22|video](upload://2rcVL0ZMxHPNtPWQbZjwufKpWVU.mov)
         </input>
       TEXT
+        <output>
         Hello,
         Sometimes the logo does not change automatically when the color scheme changes.
         ![Screen Recording 2023-03-17 at 18.04.22|video](upload://2rcVL0ZMxHPNtPWQbZjwufKpWVU.mov)
+        </output>
       TEXT
       [<<~TEXT, <<~TEXT],
         <input>
-          Intensity 1:
           Any ideas what is wrong with this peace of cod?
           > This quot contains a typo
           ```ruby
@@ -69,6 +69,7 @@ CompletionPrompt.seed do |cp|
           ```
         </input>
       TEXT
+        <output>
         Any ideas what is wrong with this piece of code?
         > This quot contains a typo
         ```ruby
@@ -76,6 +77,7 @@ CompletionPrompt.seed do |cp|
         testing.a_typo = 11
         bad = "bad"
         ```
+        </output>
     TEXT
     ],
   }

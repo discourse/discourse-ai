@@ -9,7 +9,23 @@ module DiscourseAi
         end
 
         def default_options
-          {}
+          { generationConfig: {} }
+        end
+
+        def normalize_model_params(model_params)
+          model_params = model_params.dup
+
+          if model_params[:stop_sequences]
+            model_params[:stopSequences] = model_params.delete(:stop_sequences)
+          end
+
+          if model_params[:temperature]
+            model_params[:maxOutputTokens] = model_params.delete(:max_tokens)
+          end
+
+          # temperature already supported
+
+          model_params
         end
 
         def provider_id
@@ -27,9 +43,11 @@ module DiscourseAi
 
         def prepare_payload(prompt, model_params, dialect)
           default_options
-            .merge(model_params)
             .merge(contents: prompt)
-            .tap { |payload| payload[:tools] = dialect.tools if dialect.tools.present? }
+            .tap do |payload|
+              payload[:tools] = dialect.tools if dialect.tools.present?
+              payload[:generationConfig].merge!(model_params) if model_params.present?
+            end
         end
 
         def prepare_request(payload)

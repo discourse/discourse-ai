@@ -59,7 +59,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       it "returns a generic error when the completion call fails" do
         DiscourseAi::Completions::Llm
           .any_instance
-          .expects(:completion!)
+          .expects(:generate)
           .raises(DiscourseAi::Completions::Endpoints::Base::CompletionFailed)
 
         post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text_to_proofread }

@@ -106,6 +106,27 @@ module DiscourseAi
         gateway.perform_completion!(dialect, user, model_params, &partial_read_blk)
       end
 
+      def generate(
+        generic_prompt,
+        temperature: nil,
+        max_tokens: nil,
+        stop_sequences: nil,
+        user:,
+        &partial_read_blk
+      )
+        model_params = {
+          temperature: temperature,
+          max_tokens: max_tokens,
+          stop_sequences: stop_sequences,
+        }
+
+        model_params.merge!(generic_prompt.dig(:params, model_name) || {})
+        model_params.keys.each { |key| model_params.delete(key) if model_params[key].nil? }
+
+        dialect = dialect_klass.new(generic_prompt, model_name, opts: model_params)
+        gateway.perform_completion!(dialect, user, model_params, &partial_read_blk)
+      end
+
       private
 
       attr_reader :dialect_klass, :gateway, :model_name

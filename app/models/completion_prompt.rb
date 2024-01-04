@@ -67,6 +67,8 @@ end
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  messages        :jsonb
+#  temperature     :integer
+#  stop_sequences  :string           is an Array
 #
 # Indexes
 #

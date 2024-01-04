@@ -15,6 +15,17 @@ module DiscourseAi
           ].include?(model_name)
         end
 
+        def normalize_model_params(model_params)
+          model_params = model_params.dup
+
+          # max_tokens, temperature are already supported
+          if model_params[:stop_sequences]
+            model_params[:stop] = model_params.delete(:stop_sequences)
+          end
+
+          model_params
+        end
+
         def default_options
           { model: model == "gpt-4-turbo" ? "gpt-4-1106-preview" : model }
         end

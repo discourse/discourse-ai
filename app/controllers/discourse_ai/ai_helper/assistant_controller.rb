@@ -43,7 +43,7 @@ module DiscourseAi
                    ),
                  status: 200
         end
-      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end
@@ -63,7 +63,7 @@ module DiscourseAi
                    ),
                  status: 200
         end
-      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end
@@ -111,7 +111,7 @@ module DiscourseAi
         )
 
         render json: { success: true }, status: 200
-      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end
