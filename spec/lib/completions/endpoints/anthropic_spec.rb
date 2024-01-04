@@ -64,7 +64,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       .to_return(status: 200, body: chunks)
   end
 
-  let(:tool_deltas) { ["<function", <<~REPLY] }
+  let(:tool_deltas) { ["Let me use a tool for that<function", <<~REPLY] }
       _calls>
       <invoke>
       <tool_name>get_weather</tool_name>

@@ -14,7 +14,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
       expect(response.parsed_body["ai_personas"].length).to eq(AiPersona.count)
       expect(response.parsed_body["meta"]["commands"].length).to eq(
-        DiscourseAi::AiBot::Personas::Persona.all_available_commands.length,
+        DiscourseAi::AiBot::Personas::Persona.all_available_tools.length,
       )
     end
 
@@ -34,7 +34,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       serializer_persona2 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona2.id }
 
       commands = response.parsed_body["meta"]["commands"]
-      search_command = commands.find { |c| c["id"] == "SearchCommand" }
+      search_command = commands.find { |c| c["id"] == "Search" }
 
       expect(search_command["help"]).to eq(I18n.t("discourse_ai.ai_bot.command_help.search"))
 
@@ -71,7 +71,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         "Général Description",
       )
 
-      id = DiscourseAi::AiBot::Personas.system_personas[DiscourseAi::AiBot::Personas::General]
+      id =
+        DiscourseAi::AiBot::Personas::Persona.system_personas[DiscourseAi::AiBot::Personas::General]
       name = I18n.t("discourse_ai.ai_bot.personas.general.name")
       description = I18n.t("discourse_ai.ai_bot.personas.general.description")
       persona = response.parsed_body["ai_personas"].find { |p| p["id"] == id }
@@ -147,7 +148,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     context "with system personas" do
       it "does not allow editing of system prompts" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 system_prompt: "you are not a helpful bot",
@@ -160,7 +161,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does not allow editing of commands" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 commands: %w[SearchCommand ImageCommand],
@@ -173,7 +174,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does not allow editing of name and description cause it is localized" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 name: "bob",
@@ -187,7 +188,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does allow some actions" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_1]],
@@ -225,7 +226,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     it "is not allowed to delete system personas" do
       expect {
-        delete "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}.json"
+        delete "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json"
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"].join).not_to be_blank
         # let's make sure this is translated

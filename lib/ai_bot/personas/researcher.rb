@@ -4,12 +4,12 @@ module DiscourseAi
   module AiBot
     module Personas
       class Researcher < Persona
-        def commands
-          [Commands::GoogleCommand]
+        def tools
+          [Tools::Google]
         end
 
-        def required_commands
-          [Commands::GoogleCommand]
+        def required_tools
+          [Tools::Google]
         end
 
         def system_prompt

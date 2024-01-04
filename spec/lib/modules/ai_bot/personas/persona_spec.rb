@@ -1,11 +1,11 @@
 #frozen_string_literal: true
 
 class TestPersona < DiscourseAi::AiBot::Personas::Persona
-  def commands
+  def tools
     [
-      DiscourseAi::AiBot::Commands::TagsCommand,
-      DiscourseAi::AiBot::Commands::SearchCommand,
-      DiscourseAi::AiBot::Commands::ImageCommand,
+      DiscourseAi::AiBot::Tools::ListTags,
+      DiscourseAi::AiBot::Tools::Search,
+      DiscourseAi::AiBot::Tools::Image,
     ]
   end
 
@@ -37,41 +37,36 @@ module DiscourseAi::AiBot::Personas
       AiPersona.persona_cache.flush!
     end
 
-    fab!(:user)
-
-    it "can disable commands" do
-      persona = TestPersona.new
-
-      rendered = persona.render_system_prompt(topic: topic_with_users, allow_commands: false)
-
-      expect(rendered).not_to include("!tags")
-      expect(rendered).not_to include("!search")
+    let(:context) do
+      {
+        site_url: Discourse.base_url,
+        site_title: "test site title",
+        site_description: "test site description",
+        time: Time.zone.now,
+        participants: topic_with_users.allowed_users.map(&:username).join(", "),
+      }
     end
+
+    fab!(:user)
 
     it "renders the system prompt" do
       freeze_time
 
-      SiteSetting.title = "test site title"
-      SiteSetting.site_description = "test site description"
+      rendered = persona.craft_prompt(context)
 
-      rendered =
-        persona.render_system_prompt(topic: topic_with_users, render_function_instructions: true)
+      expect(rendered[:insts]).to include(Discourse.base_url)
+      expect(rendered[:insts]).to include("test site title")
+      expect(rendered[:insts]).to include("test site description")
+      expect(rendered[:insts]).to include("joe, jane")
+      expect(rendered[:insts]).to include(Time.zone.now.to_s)
 
-      expect(rendered).to include(Discourse.base_url)
-      expect(rendered).to include("test site title")
-      expect(rendered).to include("test site description")
-      expect(rendered).to include("joe, jane")
-      expect(rendered).to include(Time.zone.now.to_s)
-      expect(rendered).to include("<tool_name>search</tool_name>")
-      expect(rendered).to include("<tool_name>tags</tool_name>")
+      tools = rendered[:tools]
+
+      expect(tools.find { |t| t[:name] == "search" }).to be_present
+      expect(tools.find { |t| t[:name] == "tags" }).to be_present
+
       # needs to be configured so it is not available
-      expect(rendered).not_to include("<tool_name>image</tool_name>")
-
-      rendered =
-        persona.render_system_prompt(topic: topic_with_users, render_function_instructions: false)
-
-      expect(rendered).not_to include("<tool_name>search</tool_name>")
-      expect(rendered).not_to include("<tool_name>tags</tool_name>")
+      expect(tools.find { |t| t[:name] == "image" }).to be_nil
     end
 
     describe "custom personas" do
@@ -88,31 +83,29 @@ module DiscourseAi::AiBot::Personas
             allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
           )
 
-        custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        custom_persona = DiscourseAi::AiBot::Personas::Persona.all(user: user).last
         expect(custom_persona.name).to eq("zzzpun_bot")
         expect(custom_persona.description).to eq("you write puns")
 
         instance = custom_persona.new
-        expect(instance.commands).to eq([DiscourseAi::AiBot::Commands::ImageCommand])
-        expect(instance.render_system_prompt(render_function_instructions: true)).to eq(
-          "you are pun bot",
-        )
+        expect(instance.tools).to eq([DiscourseAi::AiBot::Tools::Image])
+        expect(instance.craft_prompt(context).dig(:insts)).to eq("you are pun bot\n\n")
 
         # should update
         persona.update!(name: "zzzpun_bot2")
-        custom_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        custom_persona = DiscourseAi::AiBot::Personas::Persona.all(user: user).last
         expect(custom_persona.name).to eq("zzzpun_bot2")
 
         # can be disabled
         persona.update!(enabled: false)
-        last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        last_persona = DiscourseAi::AiBot::Personas::Persona.all(user: user).last
         expect(last_persona.name).not_to eq("zzzpun_bot2")
 
         persona.update!(enabled: true)
         # no groups have access
         persona.update!(allowed_group_ids: [])
 
-        last_persona = DiscourseAi::AiBot::Personas.all(user: user).last
+        last_persona = DiscourseAi::AiBot::Personas::Persona.all(user: user).last
         expect(last_persona.name).not_to eq("zzzpun_bot2")
       end
     end
@@ -127,7 +120,7 @@ module DiscourseAi::AiBot::Personas
         SiteSetting.ai_google_custom_search_cx = "abc123"
 
         # should be ordered by priority and then alpha
-        expect(DiscourseAi::AiBot::Personas.all(user: user)).to eq(
+        expect(DiscourseAi::AiBot::Personas::Persona.all(user: user)).to eq(
           [General, Artist, Creative, Researcher, SettingsExplorer, SqlHelper],
         )
 
@@ -135,18 +128,18 @@ module DiscourseAi::AiBot::Personas
         SiteSetting.ai_stability_api_key = ""
         SiteSetting.ai_google_custom_search_api_key = ""
 
-        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
+        expect(DiscourseAi::AiBot::Personas::Persona.all(user: user)).to contain_exactly(
           General,
           SqlHelper,
           SettingsExplorer,
           Creative,
         )
 
-        AiPersona.find(DiscourseAi::AiBot::Personas.system_personas[General]).update!(
+        AiPersona.find(DiscourseAi::AiBot::Personas::Persona.system_personas[General]).update!(
           enabled: false,
         )
 
-        expect(DiscourseAi::AiBot::Personas.all(user: user)).to contain_exactly(
+        expect(DiscourseAi::AiBot::Personas::Persona.all(user: user)).to contain_exactly(
           SqlHelper,
           SettingsExplorer,
           Creative,

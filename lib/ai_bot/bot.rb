@@ -3,464 +3,152 @@
 module DiscourseAi
   module AiBot
     class Bot
-      class FunctionCalls
-        attr_accessor :maybe_buffer, :maybe_found, :custom
-
-        def initialize
-          @functions = []
-          @current_function = nil
-          @found = false
-          @cancel_completion = false
-          @maybe_buffer = +""
-          @maybe_found = false
-          @custom = false
-        end
-
-        def custom?
-          @custom
-        end
-
-        def found?
-          !@functions.empty? || @found
-        end
-
-        def found!
-          @found = true
-        end
-
-        def maybe_found?
-          @maybe_found
-        end
-
-        def cancel_completion?
-          @cancel_completion
-        end
-
-        def cancel_completion!
-          @cancel_completion = true
-        end
-
-        def add_function(name)
-          @current_function = { name: name, arguments: +"" }
-          @functions << @current_function
-        end
-
-        def add_argument_fragment(fragment)
-          @current_function[:arguments] << fragment
-        end
-
-        def length
-          @functions.length
-        end
-
-        def each
-          @functions.each { |function| yield function }
-        end
-
-        def to_a
-          @functions
-        end
-      end
-
-      attr_reader :bot_user, :persona
-
       BOT_NOT_FOUND = Class.new(StandardError)
       MAX_COMPLETIONS = 5
 
-      def self.as(bot_user, persona_id: nil, persona_name: nil, user: nil)
-        available_bots = [DiscourseAi::AiBot::OpenAiBot, DiscourseAi::AiBot::AnthropicBot]
-
-        bot =
-          available_bots.detect(-> { raise BOT_NOT_FOUND }) do |bot_klass|
-            bot_klass.can_reply_as?(bot_user)
-          end
-
-        persona = nil
-        if persona_id
-          persona = DiscourseAi::AiBot::Personas.find_by(user: user, id: persona_id)
-          raise BOT_NOT_FOUND if persona.nil?
-        end
-
-        if !persona && persona_name
-          persona = DiscourseAi::AiBot::Personas.find_by(user: user, name: persona_name)
-          raise BOT_NOT_FOUND if persona.nil?
-        end
-
-        bot.new(bot_user, persona: persona&.new)
+      def self.as(bot_user, persona: DiscourseAi::AiBot::Personas::General.new)
+        new(bot_user, persona)
       end
 
-      def initialize(bot_user, persona: nil)
+      def initialize(bot_user, persona)
         @bot_user = bot_user
-        @persona = persona || DiscourseAi::AiBot::Personas::General.new
+        @persona = persona
       end
 
-      def update_pm_title(post)
-        prompt = title_prompt(post)
+      attr_reader :bot_user
 
-        new_title = get_updated_title(prompt).strip.split("\n").last
-
-        PostRevisor.new(post.topic.first_post, post.topic).revise!(
-          bot_user,
-          title: new_title.sub(/\A"/, "").sub(/"\Z/, ""),
-        )
-        post.topic.custom_fields.delete(DiscourseAi::AiBot::EntryPoint::REQUIRE_TITLE_UPDATE)
-        post.topic.save_custom_fields
-      end
-
-      def reply_to(
-        post,
-        total_completions: 0,
-        bot_reply_post: nil,
-        prefer_low_cost: false,
-        standalone: false
-      )
-        return if total_completions > MAX_COMPLETIONS
-
-        # do not allow commands when we are at the end of chain (total completions == MAX_COMPLETIONS)
-        allow_commands = (total_completions < MAX_COMPLETIONS)
-
-        prompt =
-          if standalone && post.post_custom_prompt
-            username, standalone_prompt = post.post_custom_prompt.custom_prompt.last
-            [build_message(username, standalone_prompt)]
-          else
-            bot_prompt_with_topic_context(post, allow_commands: allow_commands)
-          end
-
-        redis_stream_key = nil
-        partial_reply = +""
-        reply = +(bot_reply_post ? bot_reply_post.raw.dup : "")
-        start = Time.now
-
-        setup_cancel = false
-        context = {}
-        functions = FunctionCalls.new
-
-        submit_prompt(prompt, post: post, prefer_low_cost: prefer_low_cost) do |partial, cancel|
-          current_delta = get_delta(partial, context)
-          partial_reply << current_delta
-
-          if !available_functions.empty?
-            populate_functions(
-              partial: partial,
-              reply: partial_reply,
-              functions: functions,
-              current_delta: current_delta,
-              done: false,
-            )
-
-            cancel&.call if functions.cancel_completion?
-          end
-
-          if functions.maybe_buffer.present? && !functions.maybe_found?
-            reply << functions.maybe_buffer
-            functions.maybe_buffer = +""
-          end
-
-          reply << current_delta if !functions.found? && !functions.maybe_found?
-
-          if redis_stream_key && !Discourse.redis.get(redis_stream_key)
-            cancel&.call
-
-            bot_reply_post.update!(raw: reply, cooked: PrettyText.cook(reply)) if bot_reply_post
-          end
-
-          # Minor hack to skip the delay during tests.
-          next if (Time.now - start < 0.5) && !Rails.env.test?
-
-          if bot_reply_post
-            Discourse.redis.expire(redis_stream_key, 60)
-            start = Time.now
-
-            publish_update(bot_reply_post, raw: reply.dup)
-          else
-            bot_reply_post =
-              PostCreator.create!(
-                bot_user,
-                topic_id: post.topic_id,
-                raw: reply,
-                skip_validations: true,
-              )
-          end
-
-          if !setup_cancel && bot_reply_post
-            redis_stream_key = "gpt_cancel:#{bot_reply_post.id}"
-            Discourse.redis.setex(redis_stream_key, 60, 1)
-            setup_cancel = true
-          end
-        end
-
-        if !available_functions.empty?
-          populate_functions(
-            partial: nil,
-            reply: partial_reply,
-            current_delta: "",
-            functions: functions,
-            done: true,
-          )
-        end
-
-        if functions.maybe_buffer.present?
-          reply << functions.maybe_buffer
-          functions.maybe_buffer = +""
-        end
-
-        if bot_reply_post
-          publish_update(bot_reply_post, done: true)
-
-          bot_reply_post.revise(
-            bot_user,
-            { raw: reply },
-            skip_validations: true,
-            skip_revision: true,
-          )
-
-          bot_reply_post.post_custom_prompt ||= post.build_post_custom_prompt(custom_prompt: [])
-          prompt = post.post_custom_prompt.custom_prompt || []
-
-          truncated_reply = partial_reply
-
-          # TODO: we may want to move this code
-          if functions.length > 0 && partial_reply.include?("</invoke>")
-            # recover stop word potentially
-            truncated_reply =
-              partial_reply.split("</invoke>").first + "</invoke>\n</function_calls>"
-          end
-
-          prompt << [truncated_reply, bot_user.username] if truncated_reply.present?
-
-          post.post_custom_prompt.update!(custom_prompt: prompt)
-        end
-
-        if functions.length > 0
-          chain = false
-          standalone = false
-
-          functions.each do |function|
-            name, args = function[:name], function[:arguments]
-
-            if command_klass = available_commands.detect { |cmd| cmd.invoked?(name) }
-              command =
-                command_klass.new(
-                  bot: self,
-                  args: args,
-                  post: bot_reply_post,
-                  parent_post: post,
-                  xml_format: !functions.custom?,
-                )
-              chain_intermediate, bot_reply_post = command.invoke!
-              chain ||= chain_intermediate
-              standalone ||= command.standalone?
-            end
-          end
-
-          if chain
-            reply_to(
-              bot_reply_post,
-              total_completions: total_completions + 1,
-              bot_reply_post: bot_reply_post,
-              standalone: standalone,
-            )
-          end
-        end
-      rescue => e
-        if Rails.env.development?
-          p e
-          puts e.backtrace
-        end
-        raise e if Rails.env.test?
-        Discourse.warn_exception(e, message: "ai-bot: Reply failed")
-      end
-
-      def extra_tokens_per_message
-        0
-      end
-
-      def bot_prompt_with_topic_context(post, allow_commands:)
-        messages = []
-        conversation = conversation_context(post)
-
-        rendered_system_prompt = system_prompt(post, allow_commands: allow_commands)
-        total_prompt_tokens = tokenize(rendered_system_prompt).length + extra_tokens_per_message
-
-        prompt_limit = self.prompt_limit(allow_commands: allow_commands)
-
-        conversation.each do |raw, username, function|
-          break if total_prompt_tokens >= prompt_limit
-
-          tokens = tokenize(raw.to_s + username.to_s)
-
-          while !raw.blank? &&
-                  tokens.length + total_prompt_tokens + extra_tokens_per_message > prompt_limit
-            raw = raw[0..-100] || ""
-            tokens = tokenize(raw.to_s + username.to_s)
-          end
-
-          next if raw.blank?
-
-          total_prompt_tokens += tokens.length + extra_tokens_per_message
-          messages.unshift(build_message(username, raw, function: !!function))
-        end
-
-        messages.unshift(build_message(bot_user.username, rendered_system_prompt, system: true))
-
-        messages
-      end
-
-      def prompt_limit(allow_commands: false)
-        raise NotImplemented
-      end
-
-      def title_prompt(post)
-        prompt = <<~TEXT
-          You are titlebot. Given a topic you will figure out a title.
-          You will never respond with anything but a 7 word topic title.
+      def get_updated_title(conversation_context, post_user)
+        title_prompt = { insts: <<~TEXT, conversation_context: conversation_context }
+          You are titlebot. Given a topic, you will figure out a title.
+          You will never respond with anything but 7 word topic title.
         TEXT
-        messages = [build_message(bot_user.username, prompt, system: true)]
 
-        messages << build_message("User", <<~TEXT)
-          Suggest a 7 word title for the following topic without quoting any of it:
+        title_prompt[
+          :input
+        ] = "Based on our previous conversation, suggest a 7 word title without quoting any of it."
 
-          <content>
-          #{post.topic.posts.map(&:raw).join("\n\n")[0..prompt_limit(allow_commands: false)]}
-          </content>
-        TEXT
-        messages
+        DiscourseAi::Completions::Llm
+          .proxy(model)
+          .generate(title_prompt, user: post_user)
+          .strip
+          .split("\n")
+          .last
       end
 
-      def available_commands
-        @persona.available_commands
-      end
+      def reply(context, &update_blk)
+        prompt = persona.craft_prompt(context)
 
-      def system_prompt_style!(style)
-        @style = style
-      end
+        total_completions = 0
+        ongoing_chain = true
+        low_cost = false
+        raw_context = []
 
-      def system_prompt(post, allow_commands:)
-        return "You are a helpful Bot" if @style == :simple
+        while total_completions <= MAX_COMPLETIONS && ongoing_chain
+          current_model = model(prefer_low_cost: low_cost)
+          llm = DiscourseAi::Completions::Llm.proxy(current_model)
+          tool_found = false
 
-        @persona.render_system_prompt(
-          topic: post.topic,
-          allow_commands: allow_commands,
-          render_function_instructions:
-            allow_commands && include_function_instructions_in_system_prompt?,
-        )
-      end
+          llm.generate(prompt, user: context[:user]) do |partial, cancel|
+            if (tool = persona.find_tool(partial))
+              tool_found = true
+              ongoing_chain = tool.chain_next_response?
+              low_cost = tool.low_cost?
+              tool_call_id = tool.tool_call_id
+              invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
 
-      def include_function_instructions_in_system_prompt?
-        true
-      end
+              invocation_context = {
+                type: "tool",
+                name: tool_call_id,
+                content: invocation_result_json,
+              }
+              tool_context = {
+                type: "tool_call",
+                name: tool_call_id,
+                content: { name: tool.name, arguments: tool.parameters }.to_json,
+              }
 
-      def function_list
-        @persona.function_list
-      end
+              prompt[:conversation_context] ||= []
 
-      def tokenizer
-        raise NotImplemented
-      end
-
-      def tokenize(text)
-        tokenizer.tokenize(text)
-      end
-
-      def submit_prompt(
-        prompt,
-        post:,
-        prefer_low_cost: false,
-        temperature: nil,
-        max_tokens: nil,
-        &blk
-      )
-        raise NotImplemented
-      end
-
-      def get_delta(partial, context)
-        raise NotImplemented
-      end
-
-      def populate_functions(partial:, reply:, functions:, done:, current_delta:)
-        if !done
-          search_length = "<function_calls>".length
-          index = -1
-          while index > -search_length
-            substr = reply[index..-1] || reply
-            index -= 1
-
-            functions.maybe_found = "<function_calls>".start_with?(substr)
-            break if functions.maybe_found?
-          end
-
-          functions.maybe_buffer << current_delta if functions.maybe_found?
-          functions.found! if reply.match?(/^<function_calls>/i)
-          if functions.found?
-            functions.maybe_buffer = functions.maybe_buffer.to_s.split("<")[0..-2].join("<")
-            functions.cancel_completion! if reply.match?(%r{</function_calls>}i)
-          end
-        else
-          functions_string = reply.scan(%r{(<function_calls>(.*?)</invoke>)}im)&.first&.first
-          if functions_string
-            function_list
-              .parse_prompt(functions_string + "</function_calls>")
-              .each do |function|
-                functions.add_function(function[:name])
-                functions.add_argument_fragment(function[:arguments].to_json)
+              if tool.standalone?
+                prompt[:conversation_context] = [invocation_context, tool_context]
+              else
+                prompt[:conversation_context] = [invocation_context, tool_context] +
+                  prompt[:conversation_context]
               end
-          end
-        end
-      end
 
-      def available_functions
-        @persona.available_functions
-      end
-
-      protected
-
-      def get_updated_title(prompt)
-        raise NotImplemented
-      end
-
-      def model_for(bot)
-        raise NotImplemented
-      end
-
-      def conversation_context(post)
-        context =
-          post
-            .topic
-            .posts
-            .includes(:user)
-            .joins("LEFT JOIN post_custom_prompts ON post_custom_prompts.post_id = posts.id")
-            .where("post_number <= ?", post.post_number)
-            .order("post_number desc")
-            .where("post_type = ?", Post.types[:regular])
-            .limit(50)
-            .pluck(:raw, :username, "post_custom_prompts.custom_prompt")
-
-        result = []
-
-        first = true
-        context.each do |raw, username, custom_prompt|
-          if custom_prompt.present?
-            if first
-              custom_prompt.reverse_each { |message| result << message }
-              first = false
+              raw_context << [tool_context[:content], tool_call_id, "tool_call"]
+              raw_context << [invocation_result_json, tool_call_id, "tool"]
             else
-              result << custom_prompt.first
+              update_blk.call(partial, cancel, nil)
             end
-          else
-            result << [raw, username]
           end
+
+          ongoing_chain = false if !tool_found
+          total_completions += 1
+
+          # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS)
+          prompt.delete(:tools) if total_completions == MAX_COMPLETIONS
         end
+
+        raw_context
+      end
+
+      private
+
+      attr_reader :persona
+
+      def invoke_tool(tool, llm, cancel, &update_blk)
+        update_blk.call("", cancel, build_placeholder(tool.summary, ""))
+
+        result =
+          tool.invoke(bot_user, llm) do |progress|
+            placeholder = build_placeholder(tool.summary, progress)
+            update_blk.call("", cancel, placeholder)
+          end
+
+        tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
+        update_blk.call(tool_details, cancel, nil)
 
         result
       end
 
-      def publish_update(bot_reply_post, payload)
-        MessageBus.publish(
-          "discourse-ai/ai-bot/topic/#{bot_reply_post.topic_id}",
-          payload.merge(post_id: bot_reply_post.id, post_number: bot_reply_post.post_number),
-          user_ids: bot_reply_post.topic.allowed_user_ids,
-        )
+      def model(prefer_low_cost: false)
+        default_model =
+          case bot_user.id
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
+            "claude-2"
+          when DiscourseAi::AiBot::EntryPoint::GPT4_ID
+            "gpt-4"
+          when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
+            "gpt-4-turbo"
+          when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
+            "gpt-3.5-turbo-16k"
+          else
+            nil
+          end
+
+        if %w[gpt-4 gpt-4-turbo].include?(default_model) && prefer_low_cost
+          return "gpt-3.5-turbo-16k"
+        end
+
+        default_model
+      end
+
+      def tool_invocation?(partial)
+        Nokogiri::HTML5.fragment(partial).at("invoke").present?
+      end
+
+      def build_placeholder(summary, details, custom_raw: nil)
+        placeholder = +(<<~HTML)
+        <details>
+          <summary>#{summary}</summary>
+          <p>#{details}</p>
+        </details>
+        HTML
+
+        placeholder << custom_raw << "\n" if custom_raw
+
+        placeholder
       end
     end
   end

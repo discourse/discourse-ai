@@ -15,7 +15,7 @@ RSpec.describe "AI personas", type: :system, js: true do
     find(".d-header .ai-bot-button").click()
     persona_selector = PageObjects::Components::SelectKit.new(".persona-selector__dropdown")
 
-    id = DiscourseAi::AiBot::Personas.all(user: admin).first.id
+    id = DiscourseAi::AiBot::Personas::Persona.all(user: admin).first.id
 
     expect(persona_selector).to have_selected_value(id)
 
@@ -38,7 +38,7 @@ RSpec.describe "AI personas", type: :system, js: true do
 
     command_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__commands")
     command_selector.expand
-    command_selector.select_row_by_value("ReadCommand")
+    command_selector.select_row_by_value("Read")
 
     find(".ai-persona-editor__save").click()
 
@@ -50,11 +50,11 @@ RSpec.describe "AI personas", type: :system, js: true do
     expect(persona.name).to eq("Test Persona")
     expect(persona.description).to eq("I am a test persona")
     expect(persona.system_prompt).to eq("You are a helpful bot")
-    expect(persona.commands).to eq(["ReadCommand"])
+    expect(persona.commands).to eq(["Read"])
   end
 
   it "will not allow deletion or editing of system personas" do
-    visit "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas.system_personas.values.first}"
+    visit "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}"
     expect(page).not_to have_selector(".ai-persona-editor__delete")
     expect(find(".ai-persona-editor__system_prompt")).to be_disabled
   end

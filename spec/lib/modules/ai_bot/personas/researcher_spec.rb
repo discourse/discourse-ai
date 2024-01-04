@@ -6,6 +6,6 @@ RSpec.describe DiscourseAi::AiBot::Personas::Researcher do
   end
 
   it "renders schema" do
-    expect(researcher.commands).to eq([DiscourseAi::AiBot::Commands::GoogleCommand])
+    expect(researcher.tools).to eq([DiscourseAi::AiBot::Tools::Google])
   end
 end

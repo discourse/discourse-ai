@@ -132,6 +132,8 @@ en:
         attribution: "Image by Stable Diffusion XL"
 
     ai_bot:
+      placeholder_reply: "I will reply shortly..."
+
       personas:
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
         cannot_edit_system_persona: "System personas can only be renamed, you may not edit commands or system prompt, instead disable and make a copy"
@@ -157,6 +159,7 @@ en:
           name: "DALL-E 3"
           description: "AI Bot specialized in generating images using DALL-E 3"
       topic_not_found: "Summary unavailable, topic not found!"
+      summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
       command_options:
         search:

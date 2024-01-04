@@ -4,15 +4,15 @@ module DiscourseAi
   module AiBot
     module Personas
       class General < Persona
-        def commands
+        def tools
           [
-            Commands::SearchCommand,
-            Commands::GoogleCommand,
-            Commands::ImageCommand,
-            Commands::ReadCommand,
-            Commands::ImageCommand,
-            Commands::CategoriesCommand,
-            Commands::TagsCommand,
+            Tools::Search,
+            Tools::Google,
+            Tools::Image,
+            Tools::Read,
+            Tools::Image,
+            Tools::ListCategories,
+            Tools::ListTags,
           ]
         end
 

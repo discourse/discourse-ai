@@ -4,7 +4,7 @@ module DiscourseAi
   module AiBot
     module Personas
       class Creative < Persona
-        def commands
+        def tools
           []
         end
 

@@ -87,6 +87,8 @@ module DiscourseAi
                 return response_data
               end
 
+              has_tool = false
+
               begin
                 cancelled = false
                 cancel = lambda { cancelled = true }
@@ -129,17 +131,19 @@ module DiscourseAi
                       partial = extract_completion_from(raw_partial)
                       next if response_data.empty? && partial.blank?
                       next if partial.nil?
+                      partials_raw << partial.to_s
 
-                      # Skip yield for tools. We'll buffer and yield later.
-                      if has_tool?(partials_raw)
+                      # Stop streaming the response as soon as you find a tool.
+                      # We'll buffer and yield it later.
+                      has_tool = true if has_tool?(partials_raw)
+
+                      if has_tool
                         function_buffer = add_to_buffer(function_buffer, partials_raw, partial)
                       else
                         response_data << partial
 
                         yield partial, cancel if partial
                       end
-
-                      partials_raw << partial.to_s
                     rescue JSON::ParserError
                       leftover = redo_chunk
                       json_error = true
@@ -158,7 +162,7 @@ module DiscourseAi
               end
 
               # Once we have the full response, try to return the tool as a XML doc.
-              if has_tool?(partials_raw)
+              if has_tool
                 if function_buffer.at("tool_name").text.present?
                   invocation = +function_buffer.at("function_calls").to_s
                   invocation << "\n"
@@ -264,7 +268,7 @@ module DiscourseAi
 
           read_function = Nokogiri::HTML5.fragment(raw_data)
 
-          if tool_name = read_function.at("tool_name").text
+          if tool_name = read_function.at("tool_name")&.text
             function_buffer.at("tool_name").inner_html = tool_name
             function_buffer.at("tool_id").inner_html = tool_name
           end
@@ -272,7 +276,8 @@ module DiscourseAi
           _read_parameters =
             read_function
               .at("parameters")
-              .elements
+              &.elements
+              .to_a
               .each do |elem|
                 if paramenter = function_buffer.at(elem.name)&.text
                   function_buffer.at(elem.name).inner_html = paramenter

@@ -4,15 +4,8 @@ module DiscourseAi
   module AiBot
     module Personas
       class SettingsExplorer < Persona
-        def commands
-          all_available_commands
-        end
-
-        def all_available_commands
-          [
-            DiscourseAi::AiBot::Commands::SettingContextCommand,
-            DiscourseAi::AiBot::Commands::SearchSettingsCommand,
-          ]
+        def tools
+          [Tools::SettingContext, Tools::SearchSettings]
         end
 
         def system_prompt

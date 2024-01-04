@@ -4,19 +4,84 @@ module DiscourseAi
   module AiBot
     module Personas
       class Persona
-        def self.name
-          I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.name")
+        class << self
+          def system_personas
+            @system_personas ||= {
+              Personas::General => -1,
+              Personas::SqlHelper => -2,
+              Personas::Artist => -3,
+              Personas::SettingsExplorer => -4,
+              Personas::Researcher => -5,
+              Personas::Creative => -6,
+              Personas::DallE3 => -7,
+            }
+          end
+
+          def system_personas_by_id
+            @system_personas_by_id ||= system_personas.invert
+          end
+
+          def all(user:)
+            # listing tools has to be dynamic cause site settings may change
+
+            AiPersona.all_personas.filter do |persona|
+              next false if !user.in_any_groups?(persona.allowed_group_ids)
+
+              if persona.system
+                instance = persona.new
+                (
+                  instance.required_tools == [] ||
+                    (instance.required_tools - all_available_tools).empty?
+                )
+              else
+                true
+              end
+            end
+          end
+
+          def find_by(id: nil, name: nil, user:)
+            all(user: user).find { |persona| persona.id == id || persona.name == name }
+          end
+
+          def name
+            I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.name")
+          end
+
+          def description
+            I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.description")
+          end
+
+          def all_available_tools
+            tools = [
+              Tools::ListCategories,
+              Tools::Time,
+              Tools::Search,
+              Tools::Summarize,
+              Tools::Read,
+              Tools::DbSchema,
+              Tools::SearchSettings,
+              Tools::Summarize,
+              Tools::SettingContext,
+            ]
+
+            tools << Tools::ListTags if SiteSetting.tagging_enabled
+            tools << Tools::Image if SiteSetting.ai_stability_api_key.present?
+
+            tools << Tools::DallE if SiteSetting.ai_openai_api_key.present?
+            if SiteSetting.ai_google_custom_search_api_key.present? &&
+                 SiteSetting.ai_google_custom_search_cx.present?
+              tools << Tools::Google
+            end
+
+            tools
+          end
         end
 
-        def self.description
-          I18n.t("discourse_ai.ai_bot.personas.#{to_s.demodulize.underscore}.description")
-        end
-
-        def commands
+        def tools
           []
         end
 
-        def required_commands
+        def required_tools
           []
         end
 
@@ -24,104 +89,55 @@ module DiscourseAi
           {}
         end
 
-        def render_commands(render_function_instructions:)
-          return +"" if available_commands.empty?
-
-          result = +""
-          if render_function_instructions
-            result << "\n"
-            result << function_list.system_prompt
-            result << "\n"
-          end
-          result << available_commands.map(&:custom_system_message).compact.join("\n")
-          result
+        def available_tools
+          self.class.all_available_tools.filter { |tool| tools.include?(tool) }
         end
 
-        def render_system_prompt(
-          topic: nil,
-          render_function_instructions: true,
-          allow_commands: true
-        )
-          substitutions = {
-            site_url: Discourse.base_url,
-            site_title: SiteSetting.title,
-            site_description: SiteSetting.site_description,
-            time: Time.zone.now,
-          }
-
-          substitutions[:participants] = topic.allowed_users.map(&:username).join(", ") if topic
-
-          prompt =
+        def craft_prompt(context)
+          system_insts =
             system_prompt.gsub(/\{(\w+)\}/) do |match|
-              found = substitutions[match[1..-2].to_sym]
+              found = context[match[1..-2].to_sym]
               found.nil? ? match : found.to_s
             end
 
-          if allow_commands
-            prompt += render_commands(render_function_instructions: render_function_instructions)
+          insts = <<~TEXT
+          #{system_insts}
+          #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
+          TEXT
+
+          { insts: insts }.tap do |prompt|
+            prompt[:tools] = available_tools.map(&:signature) if available_tools
+            prompt[:conversation_context] = context[:conversation_context] if context[
+              :conversation_context
+            ]
           end
-
-          prompt
         end
 
-        def available_commands
-          return @available_commands if @available_commands
-          @available_commands = all_available_commands.filter { |cmd| commands.include?(cmd) }
-        end
+        def find_tool(partial)
+          parsed_function = Nokogiri::HTML5.fragment(partial)
+          function_id = parsed_function.at("tool_id")&.text
+          function_name = parsed_function.at("tool_name")&.text
+          return false if function_name.nil?
 
-        def available_functions
-          # note if defined? can be a problem in test
-          # this can never be nil so it is safe
-          return @available_functions if @available_functions
+          tool_klass = available_tools.find { |c| c.signature.dig(:name) == function_name }
+          return false if tool_klass.nil?
 
-          functions = []
+          arguments =
+            tool_klass.signature[:parameters]
+              .to_a
+              .reduce({}) do |memo, p|
+                argument = parsed_function.at(p[:name])&.text
+                next(memo) unless argument
 
-          functions =
-            available_commands.map do |command|
-              function =
-                DiscourseAi::Inference::Function.new(name: command.name, description: command.desc)
-              command.parameters.each { |parameter| function.add_parameter(parameter) }
-              function
-            end
+                memo[p[:name].to_sym] = argument
+                memo
+              end
 
-          @available_functions = functions
-        end
-
-        def function_list
-          return @function_list if @function_list
-
-          @function_list = DiscourseAi::Inference::FunctionList.new
-          available_functions.each { |function| @function_list << function }
-          @function_list
-        end
-
-        def self.all_available_commands
-          all_commands = [
-            Commands::CategoriesCommand,
-            Commands::TimeCommand,
-            Commands::SearchCommand,
-            Commands::SummarizeCommand,
-            Commands::ReadCommand,
-            Commands::DbSchemaCommand,
-            Commands::SearchSettingsCommand,
-            Commands::SummarizeCommand,
-            Commands::SettingContextCommand,
-          ]
-
-          all_commands << Commands::TagsCommand if SiteSetting.tagging_enabled
-          all_commands << Commands::ImageCommand if SiteSetting.ai_stability_api_key.present?
-
-          all_commands << Commands::DallECommand if SiteSetting.ai_openai_api_key.present?
-          if SiteSetting.ai_google_custom_search_api_key.present? &&
-               SiteSetting.ai_google_custom_search_cx.present?
-            all_commands << Commands::GoogleCommand
-          end
-
-          all_commands
-        end
-
-        def all_available_commands
-          @cmds ||= self.class.all_available_commands
+          tool_klass.new(
+            arguments,
+            tool_call_id: function_id,
+            persona_options: options[tool_klass].to_h,
+          )
         end
       end
     end

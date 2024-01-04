@@ -67,7 +67,7 @@ class AiPersona < ActiveRecord::Base
     id = self.id
     system = self.system
 
-    persona_class = DiscourseAi::AiBot::Personas.system_personas_by_id[self.id]
+    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
       persona_class.define_singleton_method :allowed_group_ids do
         allowed_group_ids
@@ -90,8 +90,10 @@ class AiPersona < ActiveRecord::Base
 
     options = {}
 
-    commands =
-      self.commands.filter_map do |element|
+    tools = self.respond_to?(:commands) ? self.commands : self.tools
+
+    tools =
+      tools.filter_map do |element|
         inner_name = element
         current_options = nil
 
@@ -100,8 +102,12 @@ class AiPersona < ActiveRecord::Base
           current_options = element[1]
         end
 
+        # Won't migrate data yet. Let's rewrite to the tool name.
+        inner_name = inner_name.gsub("Command", "")
+        inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
+
         begin
-          klass = ("DiscourseAi::AiBot::Commands::#{inner_name}").constantize
+          klass = ("DiscourseAi::AiBot::Tools::#{inner_name}").constantize
           options[klass] = current_options if current_options
           klass
         rescue StandardError
@@ -143,8 +149,8 @@ class AiPersona < ActiveRecord::Base
         super(*args, **kwargs)
       end
 
-      define_method :commands do
-        commands
+      define_method :tools do
+        tools
       end
 
       define_method :options do

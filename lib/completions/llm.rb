@@ -20,7 +20,10 @@ module DiscourseAi
       def self.with_prepared_responses(responses)
         @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(responses)
 
-        yield(@canned_response).tap { @canned_response = nil }
+        yield(@canned_response)
+      ensure
+        # Don't leak prepared response if there's an exception.
+        @canned_response = nil
       end
 
       def self.proxy(model_name)
@@ -119,9 +122,15 @@ module DiscourseAi
         gateway.perform_completion!(dialect, user, model_params, &partial_read_blk)
       end
 
+      def max_prompt_tokens
+        dialect_klass.new({}, model_name).max_prompt_tokens
+      end
+
+      attr_reader :model_name
+
       private
 
-      attr_reader :dialect_klass, :gateway, :model_name
+      attr_reader :dialect_klass, :gateway
     end
   end
 end

@@ -50,7 +50,7 @@ module DiscourseAi
               scope.user.in_any_groups?(SiteSetting.ai_bot_allowed_groups_map)
           end,
         ) do
-          DiscourseAi::AiBot::Personas
+          DiscourseAi::AiBot::Personas::Persona
             .all(user: scope.user)
             .map do |persona|
               { id: persona.id, name: persona.name, description: persona.description }
@@ -92,32 +92,19 @@ module DiscourseAi
           include_condition: -> { SiteSetting.ai_bot_enabled && object.topic.private_message? },
         ) do
           id = topic.custom_fields["ai_persona_id"]
-          name = DiscourseAi::AiBot::Personas.find_by(user: scope.user, id: id.to_i)&.name if id
+          name =
+            DiscourseAi::AiBot::Personas::Persona.find_by(user: scope.user, id: id.to_i)&.name if id
           name || topic.custom_fields["ai_persona"]
         end
 
         plugin.on(:post_created) do |post|
           bot_ids = BOTS.map(&:first)
 
-          if post.post_type == Post.types[:regular] && post.topic.private_message? &&
-               !bot_ids.include?(post.user_id)
-            if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).present?
-              bot_id = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user_id
-
-              if bot_id
-                if post.post_number == 1
-                  post.topic.custom_fields[REQUIRE_TITLE_UPDATE] = true
-                  post.topic.save_custom_fields
-                end
-                ::Jobs.enqueue(:create_ai_reply, post_id: post.id, bot_user_id: bot_id)
-                ::Jobs.enqueue_in(
-                  5.minutes,
-                  :update_ai_bot_pm_title,
-                  post_id: post.id,
-                  bot_user_id: bot_id,
-                )
-              end
-            end
+          # Don't schedule a reply for a bot reply.
+          if !bot_ids.include?(post.user_id)
+            bot_user = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user
+            bot = DiscourseAi::AiBot::Bot.as(bot_user)
+            DiscourseAi::AiBot::Playground.new(bot).update_playground_with(post)
           end
         end
 

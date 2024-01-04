@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-DiscourseAi::AiBot::Personas.system_personas.each do |persona_class, id|
+DiscourseAi::AiBot::Personas::Persona.system_personas.each do |persona_class, id|
   persona = AiPersona.find_by(id: id)
   if !persona
     persona = AiPersona.new
@@ -32,7 +32,7 @@ DiscourseAi::AiBot::Personas.system_personas.each do |persona_class, id|
 
   persona.system = true
   instance = persona_class.new
-  persona.commands = instance.commands.map { |command| command.to_s.split("::").last }
+  persona.commands = instance.tools.map { |tool| tool.to_s.split("::").last }
   persona.system_prompt = instance.system_prompt
   persona.save!(validate: false)
 end
