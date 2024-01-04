@@ -123,6 +123,8 @@ module DiscourseAi
             "gpt-4-turbo"
           when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
             "gpt-3.5-turbo-16k"
+          when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
+            "mistralai/Mixtral-8x7B-Instruct-v0.1"
           else
             nil
           end

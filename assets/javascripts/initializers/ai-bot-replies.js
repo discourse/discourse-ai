@@ -12,7 +12,7 @@ import copyConversation from "../discourse/lib/copy-conversation";
 const AUTO_COPY_THRESHOLD = 4;
 
 function isGPTBot(user) {
-  return user && [-110, -111, -112, -113].includes(user.id);
+  return user && [-110, -111, -112, -113, -114].includes(user.id);
 }
 
 function attachHeaderIcon(api) {
