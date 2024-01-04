@@ -138,9 +138,8 @@ module DiscourseAi
             progress_blk.call(progress)
 
             prompt = section_prompt(topic, section, guidance)
-            prompt[:params] = { llm.model_name => { temperature: 0.6, max_tokens: 400 } }
 
-            summary = llm.completion!(prompt, bot_user)
+            summary = llm.generate(prompt, temperature: 0.6, max_tokens: 400, user: bot_user)
 
             summaries << summary
           end
@@ -153,15 +152,9 @@ module DiscourseAi
               insts: "You are a helpful bot",
               input:
                 "concatenated the disjoint summaries, creating a cohesive narrative:\n#{summaries.join("\n")}}",
-              params: {
-                llm.model_name => {
-                  temperature: 0.6,
-                  max_tokens: 500,
-                },
-              },
             }
 
-            llm.completion!(contatenation_prompt, bot_user)
+            llm.generate(contatenation_prompt, temperature: 0.6, max_tokens: 500, user: bot_user)
           else
             summaries.first
           end

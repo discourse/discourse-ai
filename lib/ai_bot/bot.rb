@@ -29,7 +29,7 @@ module DiscourseAi
 
         DiscourseAi::Completions::Llm
           .proxy(model)
-          .completion!(title_prompt, post_user)
+          .generate(title_prompt, user: post_user)
           .strip
           .split("\n")
           .last
@@ -48,7 +48,7 @@ module DiscourseAi
           llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
-          llm.completion!(prompt, context[:user]) do |partial, cancel|
+          llm.generate(prompt, user: context[:user]) do |partial, cancel|
             if (tool = persona.find_tool(partial))
               tool_found = true
               ongoing_chain = tool.chain_next_response?
