@@ -13,7 +13,9 @@ module DiscourseAi
           prompts = cp.where(enabled: true)
           # Hide illustrate_post if disabled
           prompts =
-            prompts.where.not(name: "illustrate_post") if SiteSetting.ai_helper_illustrate_post_model == "disabled"
+            prompts.where.not(
+              name: "illustrate_post",
+            ) if SiteSetting.ai_helper_illustrate_post_model == "disabled"
         end
 
         prompts.map do |prompt|

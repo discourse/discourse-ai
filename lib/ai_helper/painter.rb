@@ -25,7 +25,7 @@ module DiscourseAi
           api_key = SiteSetting.ai_openai_api_key
           api_url = SiteSetting.ai_openai_dall_e_3_url
 
-          artifacts = 
+          artifacts =
             DiscourseAi::Inference::OpenAiImageGenerator
               .perform!(input, api_key: api_key, api_url: api_url)
               .dig(:data)
@@ -39,7 +39,10 @@ module DiscourseAi
       private
 
       def base64_to_image(artifacts, user_id)
-        attribution = I18n.t("discourse_ai.ai_helper.painter.attribution.#{SiteSetting.ai_helper_illustrate_post_model}")
+        attribution =
+          I18n.t(
+            "discourse_ai.ai_helper.painter.attribution.#{SiteSetting.ai_helper_illustrate_post_model}",
+          )
 
         artifacts.each_with_index.map do |art, i|
           f = Tempfile.new("v1_txt2img_#{i}.png")
