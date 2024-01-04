@@ -45,9 +45,9 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
 
         thumbnail_urls = Upload.last(4).map(&:short_url)
 
-        expect(thumbnails.map { |upload_serializer| upload_serializer.short_url }).to contain_exactly(
-          *thumbnail_urls,
-        )
+        expect(
+          thumbnails.map { |upload_serializer| upload_serializer.short_url },
+        ).to contain_exactly(*thumbnail_urls)
       end
     end
 
@@ -68,21 +68,20 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
         post = Fabricate(:post)
 
         data = [{ b64_json: artifacts.first, revised_prompt: "colors on a canvas" }]
-         WebMock
+        WebMock
           .stub_request(:post, "https://api.openai.com/v1/images/generations")
           .with do |request|
             json = JSON.parse(request.body, symbolize_names: true)
             true
           end
-        .to_return(status: 200, body: { data: data }.to_json)
+          .to_return(status: 200, body: { data: data }.to_json)
 
         thumbnails = subject.commission_thumbnails(raw_content, user)
         thumbnail_urls = Upload.last(1).map(&:short_url)
 
-
-        expect(thumbnails.map { |upload_serializer| upload_serializer.short_url }).to contain_exactly(
-          *thumbnail_urls,
-        )
+        expect(
+          thumbnails.map { |upload_serializer| upload_serializer.short_url },
+        ).to contain_exactly(*thumbnail_urls)
       end
     end
   end
