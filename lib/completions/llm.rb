@@ -98,14 +98,6 @@ module DiscourseAi
       #  </invoke>
       # </function_calls>
       #
-      def completion!(generic_prompt, user, &partial_read_blk)
-        model_params = generic_prompt.dig(:params, model_name) || {}
-
-        dialect = dialect_klass.new(generic_prompt, model_name, opts: model_params)
-
-        gateway.perform_completion!(dialect, user, model_params, &partial_read_blk)
-      end
-
       def generate(
         generic_prompt,
         temperature: nil,

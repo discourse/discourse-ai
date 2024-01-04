@@ -31,24 +31,16 @@ module DiscourseAi
         result = nil
 
         llm = DiscourseAi::Completions::Llm.proxy(model)
-        key =
-          if model.include?("claude")
-            :max_tokens_to_sample
-          else
-            :max_tokens
-          end
 
-        prompt = {
-          insts: filled_system_prompt,
-          params: {
-            model => {
-              key => (llm.tokenizer.tokenize(search_for_text).length * 2 + 10),
-              :temperature => 0,
-            },
-          },
-        }
+        prompt = { insts: filled_system_prompt }
 
-        result = llm.completion!(prompt, Discourse.system_user)
+        result =
+          llm.generate(
+            prompt,
+            temperature: 0,
+            max_tokens: llm.tokenizer.tokenize(search_for_text).length * 2 + 10,
+            user: Discourse.system_user,
+          )
 
         if result.strip == search_for_text.strip
           user = User.find_by_username(canned_reply_user) if canned_reply_user.present?

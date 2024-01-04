@@ -21,7 +21,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
     end
   end
 
-  describe "#completion!" do
+  describe "#generate" do
     let(:prompt) do
       {
         insts: <<~TEXT,
@@ -52,7 +52,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
 
     context "when getting the full response" do
       it "processes the prompt and return the response" do
-        llm_response = llm.completion!(prompt, user)
+        llm_response = llm.generate(prompt, user: user)
 
         expect(llm_response).to eq(canned_response.responses[0])
       end
@@ -62,7 +62,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
       it "processes the prompt and call the given block with the partial response" do
         llm_response = +""
 
-        llm.completion!(prompt, user) { |partial, cancel_fn| llm_response << partial }
+        llm.generate(prompt, user: user) { |partial, cancel_fn| llm_response << partial }
 
         expect(llm_response).to eq(canned_response.responses[0])
       end

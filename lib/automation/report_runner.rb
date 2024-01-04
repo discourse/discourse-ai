@@ -115,18 +115,13 @@ module DiscourseAi
           insts: "You are a helpful bot specializing in summarizing activity on Discourse sites",
           input: input,
           final_insts: "Here is the report I generated for you",
-          params: {
-            @model => {
-              temperature: 0,
-            },
-          },
         }
 
         result = +""
 
         puts if Rails.env.development? && @debug_mode
 
-        @llm.completion!(prompt, Discourse.system_user) do |response|
+        @llm.generate(prompt, temperature: 0, user: Discourse.system_user) do |response|
           print response if Rails.env.development? && @debug_mode
           result << response
         end

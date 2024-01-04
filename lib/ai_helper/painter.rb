@@ -38,7 +38,10 @@ module DiscourseAi
           You'll find the post between <input></input> XML tags.
         TEXT
 
-        DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model).completion!(prompt, user)
+        DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model).generate(
+          prompt,
+          user: user,
+        )
       end
     end
   end
