@@ -75,6 +75,7 @@ module DiscourseAi
 
               {
                 role: "assistant",
+                content: nil,
                 tool_calls: [{ type: "function", function: function, id: context[:name] }],
               }
             else
