@@ -150,6 +150,7 @@ module DiscourseAi
           prompt.concat(new_custom_prompts)
           reply_post.post_custom_prompt.update!(custom_prompt: prompt)
         end
+
         reply_post
       end
 
