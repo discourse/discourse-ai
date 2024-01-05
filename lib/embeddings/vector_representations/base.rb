@@ -80,20 +80,33 @@ module DiscourseAi
         end
 
         def create_index!(table_name, memory, lists, probes)
+          tries = 0
           index_name = index_name(table_name)
           DB.exec("SET work_mem TO '#{memory}';")
           DB.exec("SET maintenance_work_mem TO '#{memory}';")
-          DB.exec(<<~SQL)
-            DROP INDEX IF EXISTS #{index_name};
-            CREATE INDEX IF NOT EXISTS
-              #{index_name}
-            ON
-              #{table_name}
-            USING
-              ivfflat (embeddings #{pg_index_type})
-            WITH
-              (lists = #{lists});
-          SQL
+          begin
+            DB.exec(<<~SQL)
+              DROP INDEX IF EXISTS #{index_name};
+              CREATE INDEX IF NOT EXISTS
+                #{index_name}
+              ON
+                #{table_name}
+              USING
+                ivfflat (embeddings #{pg_index_type})
+              WITH
+                (lists = #{lists});
+            SQL
+          rescue PG::ProgramLimitExceeded => e
+            parsed_error = e.message.match(/memory required is (\d+ [A-Z]{2}), ([a-z_]+)/)
+            if parsed_error[1].present? && parsed_error[2].present?
+              DB.exec("SET #{parsed_error[2]} TO '#{parsed_error[1].tr(" ", "")}';")
+              tries += 1
+              retry if tries < 3
+            else
+              raise e
+            end
+          end
+
           DB.exec("COMMENT ON INDEX #{index_name} IS '#{Time.now.to_i}';")
           DB.exec("RESET work_mem;")
           DB.exec("RESET maintenance_work_mem;")
