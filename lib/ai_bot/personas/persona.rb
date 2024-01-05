@@ -122,16 +122,22 @@ module DiscourseAi
           tool_klass = available_tools.find { |c| c.signature.dig(:name) == function_name }
           return false if tool_klass.nil?
 
-          arguments =
-            tool_klass.signature[:parameters]
-              .to_a
-              .reduce({}) do |memo, p|
-                argument = parsed_function.at(p[:name])&.text
-                next(memo) unless argument
+          arguments = {}
+          tool_klass.signature[:parameters].to_a.each do |param|
+            name = param[:name]
+            value = parsed_function.at(name)&.text
 
-                memo[p[:name].to_sym] = argument
-                memo
-              end
+            if param[:type] == "array" && value
+              value =
+                begin
+                  JSON.parse(value)
+                rescue JSON::ParserError
+                  nil
+                end
+            end
+
+            arguments[name.to_sym] = value if value
+          end
 
           tool_klass.new(
             arguments,

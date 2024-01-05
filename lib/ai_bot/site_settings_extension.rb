@@ -24,14 +24,14 @@ module DiscourseAi::AiBot::SiteSettingsExtension
             )
           user.save!(validate: false)
         else
-          user.update!(active: true)
+          user.update_columns(active: true)
         end
       elsif !active && user
         # will include deleted
         has_posts = DB.query_single("SELECT 1 FROM posts WHERE user_id = #{id} LIMIT 1").present?
 
         if has_posts
-          user.update!(active: false) if user.active
+          user.update_columns(active: false) if user.active
         else
           user.destroy
         end

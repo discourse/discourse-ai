@@ -99,17 +99,17 @@ module DiscourseAi
           end
 
           self.custom_raw = <<~RAW
-    
-          [grid]
-          #{
+
+            [grid]
+            #{
             uploads
               .map do |item|
                 "![#{item[:prompt].gsub(/\|\'\"/, "")}|512x512, 50%](#{item[:upload].short_url})"
               end
               .join(" ")
           }
-          [/grid]
-        RAW
+            [/grid]
+          RAW
 
           { prompts: uploads.map { |item| item[:prompt] } }
         end
