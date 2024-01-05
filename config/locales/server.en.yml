@@ -59,6 +59,7 @@ en:
     ai_helper_custom_prompts_allowed_groups: "Users on these groups will see the custom prompt option in the AI helper."
     ai_helper_automatic_chat_thread_title_delay: "Delay in minutes before the AI helper automatically sets the chat thread title."
     ai_helper_automatic_chat_thread_title: "Automatically set the chat thread titles based on thread contents."
+    ai_helper_illustrate_post_model: "Model to use for the composer AI helper's illustrate post feature"
 
     ai_embeddings_enabled: "Enable the embeddings module."
     ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"
@@ -129,7 +130,9 @@ en:
         explain: "Explain"
         illustrate_post: "Illustrate Post"
       painter:
-        attribution: "Image by Stable Diffusion XL"
+        attribution: 
+          stable_diffusion_xl: "Image by Stable Diffusion XL"
+          dall_e_3: "Image by DALL-E 3"
 
     ai_bot:
       placeholder_reply: "I will reply shortly..."

@@ -138,7 +138,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         sign_in(user)
         user.group_ids = [Group::AUTO_GROUPS[:trust_level_1]]
         SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
-        SiteSetting.ai_stability_api_key = "foo"
+        SiteSetting.ai_helper_illustrate_post_model = "stable_diffusion_xl"
       end
 
       it "returns a list of prompts when no name_filter is provided" do

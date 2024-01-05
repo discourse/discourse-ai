@@ -11,9 +11,11 @@ module DiscourseAi
           prompts = [cp.enabled_by_name(name_filter)]
         else
           prompts = cp.where(enabled: true)
-          # Only show the illustrate_post prompt if the API key is present
+          # Hide illustrate_post if disabled
           prompts =
-            prompts.where.not(name: "illustrate_post") if !SiteSetting.ai_stability_api_key.present?
+            prompts.where.not(
+              name: "illustrate_post",
+            ) if SiteSetting.ai_helper_illustrate_post_model == "disabled"
         end
 
         prompts.map do |prompt|
