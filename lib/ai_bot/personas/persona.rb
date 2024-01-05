@@ -136,9 +136,7 @@ module DiscourseAi
                 end
             end
 
-            if value
-              arguments[name.to_sym] = value if value
-            end
+            arguments[name.to_sym] = value if value
           end
 
           tool_klass.new(
