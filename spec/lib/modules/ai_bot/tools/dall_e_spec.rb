@@ -13,7 +13,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
 
   describe "#process" do
     it "can generate correct info with azure" do
-      post = Fabricate(:post)
+      _post = Fabricate(:post)
 
       SiteSetting.ai_openai_api_key = "abc"
       SiteSetting.ai_openai_dall_e_3_url = "https://test.azure.com/some_url"
@@ -43,8 +43,6 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
     end
 
     it "can generate correct info" do
-      post = Fabricate(:post)
-
       SiteSetting.ai_openai_api_key = "abc"
 
       image =
