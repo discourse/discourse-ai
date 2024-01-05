@@ -48,42 +48,46 @@ module DiscourseAi
           llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
-          llm.generate(prompt, user: context[:user]) do |partial, cancel|
-            if (tool = persona.find_tool(partial))
-              tool_found = true
-              ongoing_chain = tool.chain_next_response?
-              low_cost = tool.low_cost?
-              tool_call_id = tool.tool_call_id
-              invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
+          result =
+            llm.generate(prompt, user: context[:user]) do |partial, cancel|
+              if (tool = persona.find_tool(partial))
+                tool_found = true
+                ongoing_chain = tool.chain_next_response?
+                low_cost = tool.low_cost?
+                tool_call_id = tool.tool_call_id
+                invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
 
-              invocation_context = {
-                type: "tool",
-                name: tool_call_id,
-                content: invocation_result_json,
-              }
-              tool_context = {
-                type: "tool_call",
-                name: tool_call_id,
-                content: { name: tool.name, arguments: tool.parameters }.to_json,
-              }
+                invocation_context = {
+                  type: "tool",
+                  name: tool_call_id,
+                  content: invocation_result_json,
+                }
+                tool_context = {
+                  type: "tool_call",
+                  name: tool_call_id,
+                  content: { name: tool.name, arguments: tool.parameters }.to_json,
+                }
 
-              prompt[:conversation_context] ||= []
+                prompt[:conversation_context] ||= []
 
-              if tool.standalone?
-                prompt[:conversation_context] = [invocation_context, tool_context]
+                if tool.standalone?
+                  prompt[:conversation_context] = [invocation_context, tool_context]
+                else
+                  prompt[:conversation_context] = [invocation_context, tool_context] +
+                    prompt[:conversation_context]
+                end
+
+                raw_context << [tool_context[:content], tool_call_id, "tool_call"]
+                raw_context << [invocation_result_json, tool_call_id, "tool"]
               else
-                prompt[:conversation_context] = [invocation_context, tool_context] +
-                  prompt[:conversation_context]
+                update_blk.call(partial, cancel, nil)
               end
-
-              raw_context << [tool_context[:content], tool_call_id, "tool_call"]
-              raw_context << [invocation_result_json, tool_call_id, "tool"]
-            else
-              update_blk.call(partial, cancel, nil)
             end
-          end
 
-          ongoing_chain = false if !tool_found
+          if !tool_found
+            ongoing_chain = false
+            raw_context << [result, bot_user.username]
+          end
           total_completions += 1
 
           # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS)
@@ -93,9 +97,9 @@ module DiscourseAi
         raw_context
       end
 
-      private
-
       attr_reader :persona
+
+      private
 
       def invoke_tool(tool, llm, cancel, &update_blk)
         update_blk.call("", cancel, build_placeholder(tool.summary, ""))

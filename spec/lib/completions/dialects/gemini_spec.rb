@@ -124,6 +124,69 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
       expect(translated_context.last.dig(:parts, :text).length).to be <
         context.last[:content].length
     end
+
+    context "when working with multi-turn contexts" do
+      context "when the multi-turn is for turn that doesn't chain" do
+        it "uses the tool_call context" do
+          prompt[:conversation_context] = [
+            {
+              type: "multi_turn",
+              content: [
+                {
+                  type: "tool_call",
+                  name: "get_weather",
+                  content: {
+                    name: "get_weather",
+                    arguments: {
+                      location: "Sydney",
+                      unit: "c",
+                    },
+                  }.to_json,
+                },
+                { type: "tool", name: "get_weather", content: "I'm a tool result" },
+              ],
+            },
+          ]
+
+          translated_context = dialect.conversation_context
+
+          expect(translated_context.size).to eq(1)
+          expect(translated_context.last[:role]).to eq("model")
+          expect(translated_context.last.dig(:parts, :functionCall)).to be_present
+        end
+      end
+
+      context "when the multi-turn is from a chainable tool" do
+        it "uses the assistand context" do
+          prompt[:conversation_context] = [
+            {
+              type: "multi_turn",
+              content: [
+                {
+                  type: "tool_call",
+                  name: "get_weather",
+                  content: {
+                    name: "get_weather",
+                    arguments: {
+                      location: "Sydney",
+                      unit: "c",
+                    },
+                  }.to_json,
+                },
+                { type: "tool", name: "get_weather", content: "I'm a tool result" },
+                { type: "assistant", content: "I'm a bot reply!" },
+              ],
+            },
+          ]
+
+          translated_context = dialect.conversation_context
+
+          expect(translated_context.size).to eq(1)
+          expect(translated_context.last[:role]).to eq("model")
+          expect(translated_context.last.dig(:parts, :text)).to be_present
+        end
+      end
+    end
   end
 
   describe "#tools" do

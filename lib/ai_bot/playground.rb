@@ -139,22 +139,19 @@ module DiscourseAi
 
         return if reply.blank?
 
-        reply_post.tap do |bot_reply|
-          publish_update(bot_reply, done: true)
+        publish_update(reply_post, done: true)
 
-          bot_reply.revise(
-            bot.bot_user,
-            { raw: reply },
-            skip_validations: true,
-            skip_revision: true,
-          )
+        reply_post.revise(bot.bot_user, { raw: reply }, skip_validations: true, skip_revision: true)
 
-          bot_reply.post_custom_prompt ||= bot_reply.build_post_custom_prompt(custom_prompt: [])
-          prompt = bot_reply.post_custom_prompt.custom_prompt || []
+        # not need to add a custom prompt for a single reply
+        if new_custom_prompts.length > 1
+          reply_post.post_custom_prompt ||= reply_post.build_post_custom_prompt(custom_prompt: [])
+          prompt = reply_post.post_custom_prompt.custom_prompt || []
           prompt.concat(new_custom_prompts)
-          prompt << [reply, bot.bot_user.username]
-          bot_reply.post_custom_prompt.update!(custom_prompt: prompt)
+          reply_post.post_custom_prompt.update!(custom_prompt: prompt)
         end
+
+        reply_post
       end
 
       private

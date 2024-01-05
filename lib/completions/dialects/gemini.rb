@@ -130,8 +130,13 @@ module DiscourseAi
         def flatten_context(context)
           context.map do |a_context|
             if a_context[:type] == "multi_turn"
-              # Drop old tool calls and only keep bot response.
-              a_context[:content].find { |c| c[:type] == "assistant" }
+              # Some multi-turn, like the ones that generate images, doesn't chain a next
+              # response. We don't have an assistant call for those, so we use the tool_call instead.
+              # We cannot use tool since it confuses the model, making it stop calling tools in next responses,
+              # and replying with a JSON.
+
+              a_context[:content].find { |c| c[:type] == "assistant" } ||
+                a_context[:content].find { |c| c[:type] == "tool_call" }
             else
               a_context
             end

@@ -4,11 +4,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   subject(:playground) { described_class.new(bot) }
 
   before do
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
     SiteSetting.ai_bot_enabled = true
   end
 
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
+  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
   let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user) }
 
   fab!(:user) { Fabricate(:user) }
@@ -72,6 +72,77 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         end
 
         expect(pm.reload.posts.last.cooked).to eq(PrettyText.cook(expected_bot_response))
+      end
+    end
+
+    it "does not include placeholders in conversation context but includes all completions" do
+      response1 = (<<~TXT).strip
+          <function_calls>
+          <invoke>
+          <tool_name>search</tool_name>
+          <tool_id>search</tool_id>
+          <parameters>
+          <search_query>testing various things</search_query>
+          </parameters>
+          </invoke>
+          </function_calls>
+       TXT
+
+      response2 = "I found some really amazing stuff!"
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([response1, response2]) do
+        playground.reply_to(third_post)
+      end
+
+      last_post = third_post.topic.reload.posts.order(:post_number).last
+      custom_prompt = PostCustomPrompt.where(post_id: last_post.id).first.custom_prompt
+
+      expect(custom_prompt.length).to eq(3)
+      expect(custom_prompt.to_s).not_to include("<details>")
+      expect(custom_prompt.last.first).to eq(response2)
+      expect(custom_prompt.last.last).to eq(bot_user.username)
+    end
+
+    context "with Dall E bot" do
+      let(:bot) do
+        DiscourseAi::AiBot::Bot.as(bot_user, persona: DiscourseAi::AiBot::Personas::DallE3.new)
+      end
+
+      it "does not include placeholders in conversation context (simulate DALL-E)" do
+        SiteSetting.ai_openai_api_key = "123"
+
+        response = (<<~TXT).strip
+          <function_calls>
+          <invoke>
+          <tool_name>dall_e</tool_name>
+          <tool_id>dall_e</tool_id>
+          <parameters>
+          <prompts>["a pink cow"]</prompts>
+          </parameters>
+          </invoke>
+          </function_calls>
+       TXT
+
+        image =
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+
+        data = [{ b64_json: image, revised_prompt: "a pink cow 1" }]
+
+        WebMock.stub_request(:post, SiteSetting.ai_openai_dall_e_3_url).to_return(
+          status: 200,
+          body: { data: data }.to_json,
+        )
+
+        DiscourseAi::Completions::Llm.with_prepared_responses([response]) do
+          playground.reply_to(third_post)
+        end
+
+        last_post = third_post.topic.reload.posts.order(:post_number).last
+        custom_prompt = PostCustomPrompt.where(post_id: last_post.id).first.custom_prompt
+
+        # DALL E has custom_raw, we do not want to inject this into the prompt stream
+        expect(custom_prompt.length).to eq(2)
+        expect(custom_prompt.to_s).not_to include("<details>")
       end
     end
   end
