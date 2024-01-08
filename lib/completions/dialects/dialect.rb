@@ -142,9 +142,7 @@ module DiscourseAi
           self.class.tokenizer.size(context[:content].to_s)
         end
 
-        def build_tools_prompt
-          return "" if prompt[:tools].blank?
-
+        def self.tool_pramble
           <<~TEXT
             In this environment you have access to a set of tools you can use to answer the user's question.
             You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
@@ -158,8 +156,18 @@ module DiscourseAi
             </invoke>
             </function_calls>
 
-            Here are the tools available:
+            if a parameter type is an array, return a JSON array of values. For example:
+            [1,"two",3.0]
 
+            Here are the tools available:
+          TEXT
+        end
+
+        def build_tools_prompt
+          return "" if prompt[:tools].blank?
+
+          <<~TEXT
+            #{self.class.tool_pramble}
             <tools>
             #{tools}</tools>
           TEXT

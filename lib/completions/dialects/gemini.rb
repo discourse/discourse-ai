@@ -128,19 +128,20 @@ module DiscourseAi
         private
 
         def flatten_context(context)
-          context.map do |a_context|
-            if a_context[:type] == "multi_turn"
-              # Some multi-turn, like the ones that generate images, doesn't chain a next
-              # response. We don't have an assistant call for those, so we use the tool_call instead.
-              # We cannot use tool since it confuses the model, making it stop calling tools in next responses,
-              # and replying with a JSON.
+          flattend = []
+          context.each do |c|
+            if c[:type] == "multi_turn"
+              # gemini quirk
+              if c[:content].first[:type] == "tool"
+                flattend << { type: "assistant", content: "ok." }
+              end
 
-              a_context[:content].find { |c| c[:type] == "assistant" } ||
-                a_context[:content].find { |c| c[:type] == "tool_call" }
+              flattend.concat(c[:content])
             else
-              a_context
+              flattend << c
             end
           end
+          flattend
         end
       end
     end

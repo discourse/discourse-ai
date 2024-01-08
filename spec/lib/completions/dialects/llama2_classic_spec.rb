@@ -94,20 +94,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Llama2Classic do
       [INST]
       <<SYS>>
       #{prompt[:insts]}
-      In this environment you have access to a set of tools you can use to answer the user's question.
-      You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
-      <function_calls>
-      <invoke>
-      <tool_name>$TOOL_NAME</tool_name>
-      <parameters>
-      <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
-      ...
-      </parameters>
-      </invoke>
-      </function_calls>
-
-      Here are the tools available:
-      
+      #{DiscourseAi::Completions::Dialects::Llama2Classic.tool_pramble}
       <tools>
       #{dialect.tools}</tools>
       #{prompt[:post_insts]}
