@@ -91,7 +91,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
 
       anthropic_version = <<~TEXT
       #{prompt[:insts]}
-      #{DiscourseAi::Completions::Dialects::Claude.tool_pramble}
+      #{DiscourseAi::Completions::Dialects::Claude.tool_preamble}
       <tools>
       #{dialect.tools}</tools>
       #{prompt[:input]}

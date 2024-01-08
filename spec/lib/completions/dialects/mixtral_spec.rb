@@ -89,7 +89,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mixtral do
       orca_style_version = <<~TEXT
       <s> [INST]
       #{prompt[:insts]}
-      #{DiscourseAi::Completions::Dialects::Mixtral.tool_pramble}
+      #{DiscourseAi::Completions::Dialects::Mixtral.tool_preamble}
       <tools>
       #{dialect.tools}</tools>
       #{prompt[:post_insts]}

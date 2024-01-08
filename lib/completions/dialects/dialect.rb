@@ -142,7 +142,7 @@ module DiscourseAi
           self.class.tokenizer.size(context[:content].to_s)
         end
 
-        def self.tool_pramble
+        def self.tool_preamble
           <<~TEXT
             In this environment you have access to a set of tools you can use to answer the user's question.
             You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
@@ -167,7 +167,7 @@ module DiscourseAi
           return "" if prompt[:tools].blank?
 
           <<~TEXT
-            #{self.class.tool_pramble}
+            #{self.class.tool_preamble}
             <tools>
             #{tools}</tools>
           TEXT

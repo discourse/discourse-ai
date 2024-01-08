@@ -128,7 +128,7 @@ module DiscourseAi
         private
 
         def flatten_context(context)
-          flattend = []
+          flattened = []
           context.each do |c|
             if c[:type] == "multi_turn"
               # gemini quirk
@@ -136,12 +136,12 @@ module DiscourseAi
                 flattend << { type: "assistant", content: "ok." }
               end
 
-              flattend.concat(c[:content])
+              flattened.concat(c[:content])
             else
-              flattend << c
+              flattened << c
             end
           end
-          flattend
+          flattened
         end
       end
     end

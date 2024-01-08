@@ -93,7 +93,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::OrcaStyle do
       orca_style_version = <<~TEXT
       ### System:
       #{prompt[:insts]}
-      #{DiscourseAi::Completions::Dialects::OrcaStyle.tool_pramble}
+      #{DiscourseAi::Completions::Dialects::OrcaStyle.tool_preamble}
       <tools>
       #{dialect.tools}</tools>
       #{prompt[:post_insts]}

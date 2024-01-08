@@ -94,7 +94,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Llama2Classic do
       [INST]
       <<SYS>>
       #{prompt[:insts]}
-      #{DiscourseAi::Completions::Dialects::Llama2Classic.tool_pramble}
+      #{DiscourseAi::Completions::Dialects::Llama2Classic.tool_preamble}
       <tools>
       #{dialect.tools}</tools>
       #{prompt[:post_insts]}
