@@ -48,9 +48,11 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
   describe "#translate" do
     it "translates a prompt written in our generic format to Claude's format" do
       anthropic_version = <<~TEXT
-      Human: #{prompt[:insts]}
+      #{prompt[:insts]}
       #{prompt[:input]}
       #{prompt[:post_insts]}
+
+
       Assistant:
       TEXT
 
@@ -67,13 +69,15 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
         ],
       ]
       anthropic_version = <<~TEXT
-      Human: #{prompt[:insts]}
+      #{prompt[:insts]}
       <example>
       H: #{prompt[:examples][0][0]}
       A: #{prompt[:examples][0][1]}
       </example>
       #{prompt[:input]}
       #{prompt[:post_insts]}
+
+
       Assistant:
       TEXT
 
@@ -86,25 +90,14 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       prompt[:tools] = [tool]
 
       anthropic_version = <<~TEXT
-      Human: #{prompt[:insts]}
-      In this environment you have access to a set of tools you can use to answer the user's question.
-      You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
-      <function_calls>
-      <invoke>
-      <tool_name>$TOOL_NAME</tool_name>
-      <parameters>
-      <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
-      ...
-      </parameters>
-      </invoke>
-      </function_calls>
-
-      Here are the tools available:
-      
+      #{prompt[:insts]}
+      #{DiscourseAi::Completions::Dialects::Claude.tool_preamble}
       <tools>
       #{dialect.tools}</tools>
       #{prompt[:input]}
       #{prompt[:post_insts]}
+
+
       Assistant:
       TEXT
 

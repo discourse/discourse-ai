@@ -15,7 +15,8 @@ module DiscourseAi
         end
 
         def translate
-          claude_prompt = +"Human: #{prompt[:insts]}\n"
+          claude_prompt = uses_system_message? ? +"" : +"Human: "
+          claude_prompt << prompt[:insts] << "\n"
 
           claude_prompt << build_tools_prompt if prompt[:tools]
 
@@ -27,6 +28,7 @@ module DiscourseAi
 
           claude_prompt << "#{prompt[:post_insts]}\n" if prompt[:post_insts]
 
+          claude_prompt << "\n\n"
           claude_prompt << "Assistant:"
           claude_prompt << " #{prompt[:final_insts]}:" if prompt[:final_insts]
           claude_prompt << "\n"
@@ -69,6 +71,10 @@ module DiscourseAi
         end
 
         private
+
+        def uses_system_message?
+          model_name == "claude-2"
+        end
 
         def build_examples(examples_arr)
           examples_arr.reduce("") do |memo, example|

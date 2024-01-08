@@ -150,14 +150,38 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
 
           translated_context = dialect.conversation_context
 
-          expect(translated_context.size).to eq(1)
-          expect(translated_context.last[:role]).to eq("model")
-          expect(translated_context.last.dig(:parts, :functionCall)).to be_present
+          expected = [
+            {
+              role: "function",
+              parts: {
+                functionResponse: {
+                  name: "get_weather",
+                  response: {
+                    content: "I'm a tool result",
+                  },
+                },
+              },
+            },
+            {
+              role: "model",
+              parts: {
+                functionCall: {
+                  name: "get_weather",
+                  args: {
+                    location: "Sydney",
+                    unit: "c",
+                  },
+                },
+              },
+            },
+          ]
+
+          expect(translated_context).to eq(expected)
         end
       end
 
       context "when the multi-turn is from a chainable tool" do
-        it "uses the assistand context" do
+        it "uses the assistant context" do
           prompt[:conversation_context] = [
             {
               type: "multi_turn",
@@ -181,9 +205,34 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
 
           translated_context = dialect.conversation_context
 
-          expect(translated_context.size).to eq(1)
-          expect(translated_context.last[:role]).to eq("model")
-          expect(translated_context.last.dig(:parts, :text)).to be_present
+          expected = [
+            { role: "model", parts: { text: "I'm a bot reply!" } },
+            {
+              role: "function",
+              parts: {
+                functionResponse: {
+                  name: "get_weather",
+                  response: {
+                    content: "I'm a tool result",
+                  },
+                },
+              },
+            },
+            {
+              role: "model",
+              parts: {
+                functionCall: {
+                  name: "get_weather",
+                  args: {
+                    location: "Sydney",
+                    unit: "c",
+                  },
+                },
+              },
+            },
+          ]
+
+          expect(translated_context).to eq(expected)
         end
       end
     end
