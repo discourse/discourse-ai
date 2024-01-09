@@ -130,13 +130,11 @@ en:
         explain: "Explain"
         illustrate_post: "Illustrate Post"
       painter:
-        attribution: 
+        attribution:
           stable_diffusion_xl: "Image by Stable Diffusion XL"
           dall_e_3: "Image by DALL-E 3"
 
     ai_bot:
-      placeholder_reply: "I will reply shortly..."
-
       personas:
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
         cannot_edit_system_persona: "System personas can only be renamed, you may not edit commands or system prompt, instead disable and make a copy"

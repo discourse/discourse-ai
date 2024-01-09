@@ -152,10 +152,17 @@ module DiscourseAi
           <summary>#{summary}</summary>
           <p>#{details}</p>
         </details>
-
         HTML
 
-        placeholder << custom_raw if custom_raw
+        if custom_raw
+          placeholder << "\n"
+          placeholder << custom_raw
+        else
+          # we need this for cursor placeholder to work
+          # doing this in CSS is very hard
+          # if changing test with a custom tool such as search
+          placeholder << "<span></span>\n\n"
+        end
 
         placeholder
       end

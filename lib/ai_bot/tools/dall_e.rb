@@ -36,7 +36,7 @@ module DiscourseAi
         def invoke(bot_user, _llm)
           # max 4 prompts
           max_prompts = prompts.take(4)
-          progress = +""
+          progress = prompts.first
 
           yield(progress)
 
@@ -70,11 +70,7 @@ module DiscourseAi
             end
           end
 
-          while true
-            progress << "."
-            yield(progress)
-            break if threads.all? { |t| t.join(2) }
-          end
+          break if threads.all? { |t| t.join(2) } while true
 
           results = threads.filter_map(&:value)
 

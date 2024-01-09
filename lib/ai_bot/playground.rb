@@ -107,9 +107,11 @@ module DiscourseAi
           PostCreator.create!(
             bot.bot_user,
             topic_id: post.topic_id,
-            raw: I18n.t("discourse_ai.ai_bot.placeholder_reply"),
+            raw: "",
             skip_validations: true,
           )
+
+        publish_update(reply_post, raw: "<p></p>")
 
         redis_stream_key = "gpt_cancel:#{reply_post.id}"
         Discourse.redis.setex(redis_stream_key, 60, 1)
