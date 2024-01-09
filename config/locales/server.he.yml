@@ -61,6 +61,7 @@ he:
     ai_helper_custom_prompts_allowed_groups: "משתמשים בקבוצות אלה יראו את אפשרות הבקשה המותאמת אישית במסייע הבינה המלאכותית."
     ai_helper_automatic_chat_thread_title_delay: "השהייה בשניות לפני שמסייע הבינה המלאכותית מגדיר את כותרת שרשור הצ׳אט אוטומטית."
     ai_helper_automatic_chat_thread_title: "הגדרת כותרות שרשור הצ׳אט אוטומטית לפי תוכן השרשור."
+    ai_helper_illustrate_post_model: "דגם לשימוש ליכולת הדמיית הפוסט של מסייע הבינה המלאכותית בכתיבה"
     ai_embeddings_enabled: "הפעלת מודול ההטמעות."
     ai_embeddings_discourse_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול ההטמעות"
     ai_embeddings_discourse_service_api_key: "מפתח API ל־API של ההטמעות"
@@ -118,6 +119,10 @@ he:
         custom_prompt: "בקשה מותאמת אישית"
         explain: "הסבר"
         illustrate_post: "איור פוסט"
+      painter:
+        attribution:
+          stable_diffusion_xl: "תמונה מאת Stable Diffusion XL"
+          dall_e_3: "תמונה מאת DALL-E 3"
     ai_bot:
       personas:
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
@@ -144,6 +149,7 @@ he:
           name: "DALL-E 3"
           description: "בוט בינה מלאכותית שמתמחה ביצירת תמונות באמצעות DALL-E 3"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
+      summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
       command_options:
         search:

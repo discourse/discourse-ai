@@ -180,15 +180,23 @@ he:
         cancel_streaming: "עצירת התגובה"
         default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
         shortcut_title: "התחלת הודעה פרטית עם בוט בינה מלאכותית"
+        share: "שיתוף דיון עם בינה מלאכותית"
+        conversation_shared: "הדיון הועתק"
         ai_label: "בינה מלאכותית"
+        ai_title: "דיון עם בינה מלאכותית"
         share_modal:
+          title: "שיתוף דיון עם בינה מלאכותית"
           copy: "העתקה"
+          context: "פעילויות לשיתוף:"
         bot_names:
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT 4 טורבו"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+          gemini-pro: "Gemini"
+          mixtral-8x7B-Instruct-V0:
+            "1": "Mixtral-8x7B V0.1"
       sentiments:
         dashboard:
           title: "רגש"
