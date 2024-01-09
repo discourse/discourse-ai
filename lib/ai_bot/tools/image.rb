@@ -51,7 +51,7 @@ module DiscourseAi
           selected_prompts = prompts.take(4)
           seeds = seeds.take(4) if seeds
 
-          progress = +""
+          progress = prompts.first
           yield(progress)
 
           results = nil
@@ -85,11 +85,7 @@ module DiscourseAi
             end
           end
 
-          while true
-            progress << "."
-            yield(progress)
-            break if threads.all? { |t| t.join(2) }
-          end
+          break if threads.all? { |t| t.join(2) } while true
 
           results = threads.map(&:value).compact
 
@@ -115,7 +111,7 @@ module DiscourseAi
           end
 
           @custom_raw = <<~RAW
-    
+
           [grid]
           #{
             uploads

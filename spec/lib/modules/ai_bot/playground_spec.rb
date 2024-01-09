@@ -67,7 +67,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         done_signal = messages.pop
         expect(done_signal.data[:done]).to eq(true)
 
-        messages.each_with_index do |m, idx|
+        # we need this for styling
+        expect(messages.first.data[:raw]).to eq("<p></p>")
+        messages[1..-1].each_with_index do |m, idx|
           expect(m.data[:raw]).to eq(expected_bot_response[0..idx])
         end
 
