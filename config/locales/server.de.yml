@@ -61,6 +61,7 @@ de:
     ai_helper_custom_prompts_allowed_groups: "Die Benutzer dieser Gruppen sehen die Option \"Benutzerdefinierte Eingabeaufforderung\" in der KI-Hilfe."
     ai_helper_automatic_chat_thread_title_delay: "Verzögerung in Minuten, bevor der KI-Helfer automatisch den Titel des Chat-Threads festlegt."
     ai_helper_automatic_chat_thread_title: "Setze die Titel der Chat-Themen automatisch anhand der Themeninhalte."
+    ai_helper_illustrate_post_model: "Modell, das für die Funktion \"Beitrag illustrieren\" des Composer-KI-Helfers verwendet wird"
     ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
     ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
     ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
@@ -118,6 +119,10 @@ de:
         custom_prompt: "Benutzerdefinierte Eingabeaufforderung"
         explain: "Erklären"
         illustrate_post: "Beitrag illustrieren"
+      painter:
+        attribution:
+          stable_diffusion_xl: "Bild von Stable Diffusion XL"
+          dall_e_3: "Bild von DALL-E 3"
     ai_bot:
       personas:
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
@@ -144,6 +149,7 @@ de:
           name: "DALL-E 3"
           description: "KI-Bot, spezialisiert auf die Erstellung von Bildern mit DALL-E 3"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
+      summarizing: "Thema zusammenfassen"
       searching: "Suche nach: '%{query}'"
       command_options:
         search:
