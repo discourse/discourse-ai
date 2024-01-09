@@ -22,7 +22,7 @@ module DiscourseAi
 
         def default_options
           {
-            model: model,
+            model: model == "claude-2" ? "claude-2.1" : model,
             max_tokens_to_sample: 3_000,
             stop_sequences: ["\n\nHuman:", "</function_calls>"],
           }

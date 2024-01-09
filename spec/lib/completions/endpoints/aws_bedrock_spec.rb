@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::AnthropicTokenizer) }
 
   let(:model_name) { "claude-2" }
-  let(:bedrock_name) { "claude-v2" }
+  let(:bedrock_name) { "claude-v2:1" }
   let(:generic_prompt) { { insts: "write 3 words" } }
   let(:dialect) { DiscourseAi::Completions::Dialects::Claude.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
@@ -62,7 +62,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
                     stop_reason: finish_reason,
                     truncated: false,
                     log_id: "12b029451c6d18094d868bc04ce83f63",
-                    model: "claude-2",
+                    model: "claude-2.1",
                     exception: nil,
                   }.to_json,
                 ),

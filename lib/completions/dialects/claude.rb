@@ -24,7 +24,10 @@ module DiscourseAi
 
           claude_prompt << conversation_context if prompt[:conversation_context]
 
-          claude_prompt << "#{prompt[:input]}\n"
+          if uses_system_message? && (prompt[:input] || prompt[:post_insts])
+            claude_prompt << "Human: "
+          end
+          claude_prompt << "#{prompt[:input]}\n" if prompt[:input]
 
           claude_prompt << "#{prompt[:post_insts]}\n" if prompt[:post_insts]
 
@@ -35,7 +38,7 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          50_000
+          100_000 # Claude-2.1 has a 200k context window.
         end
 
         def conversation_context
