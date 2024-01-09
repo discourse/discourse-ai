@@ -49,7 +49,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
     it "translates a prompt written in our generic format to Claude's format" do
       anthropic_version = <<~TEXT
       #{prompt[:insts]}
-      #{prompt[:input]}
+      Human: #{prompt[:input]}
       #{prompt[:post_insts]}
 
 
@@ -74,7 +74,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       H: #{prompt[:examples][0][0]}
       A: #{prompt[:examples][0][1]}
       </example>
-      #{prompt[:input]}
+      Human: #{prompt[:input]}
       #{prompt[:post_insts]}
 
 
@@ -94,7 +94,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       #{DiscourseAi::Completions::Dialects::Claude.tool_preamble}
       <tools>
       #{dialect.tools}</tools>
-      #{prompt[:input]}
+      Human: #{prompt[:input]}
       #{prompt[:post_insts]}
 
 
@@ -139,7 +139,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
     end
 
     it "trims content if it's getting too long" do
-      context.last[:content] = context.last[:content] * 10_000
+      context.last[:content] = context.last[:content] * 20_000
       prompt[:conversation_context] = context
 
       translated_context = dialect.conversation_context

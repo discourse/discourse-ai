@@ -37,9 +37,12 @@ module DiscourseAi
 
         def model_uri
           # Bedrock uses slightly different names
+          # See: https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
           bedrock_model_id = model.split("-")
           bedrock_model_id[-1] = "v#{bedrock_model_id.last}"
-          bedrock_model_id = bedrock_model_id.join("-")
+          bedrock_model_id = +(bedrock_model_id.join("-"))
+
+          bedrock_model_id << ":1" if model == "claude-2" # For claude-2.1
 
           api_url =
             "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{bedrock_model_id}/invoke"
