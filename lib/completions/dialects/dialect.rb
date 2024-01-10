@@ -19,6 +19,10 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::Mixtral,
             ]
 
+            if Rails.env.test? || Rails.env.development?
+              dialects << DiscourseAi::Completions::Dialects::Fake
+            end
+
             dialect = dialects.find { |d| d.can_translate?(model_name) }
             raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL if !dialect
             dialect

@@ -131,6 +131,8 @@ module DiscourseAi
             "mistralai/Mixtral-8x7B-Instruct-v0.1"
           when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
             "gemini-pro"
+          when DiscourseAi::AiBot::EntryPoint::FAKE_ID
+            "fake"
           else
             nil
           end
