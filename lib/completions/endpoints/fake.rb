@@ -70,7 +70,7 @@ module DiscourseAi
         end
 
         def self.delays
-          @delays ||= Array.new(10) { rand * 3 }
+          @delays ||= Array.new(10) { rand * 6 }
         end
 
         def self.delays=(delays)
