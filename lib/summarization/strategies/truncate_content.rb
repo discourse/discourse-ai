@@ -44,11 +44,23 @@ module DiscourseAi
 
         def completion(prompt)
           ::DiscourseAi::Inference::DiscourseClassifier.perform!(
-            "#{SiteSetting.ai_summarization_discourse_service_api_endpoint}/api/v1/classify",
+            "#{endpoint}/api/v1/classify",
             completion_model.model,
             prompt,
             SiteSetting.ai_summarization_discourse_service_api_key,
           ).dig(:summary_text)
+        end
+
+        def endpoint
+          if SiteSetting.ai_summarization_discourse_service_api_endpoint_srv.present?
+            service =
+              DiscourseAi::Utils::DnsSrv.lookup(
+                SiteSetting.ai_summarization_discourse_service_api_endpoint_srv,
+              )
+            "https://#{service.target}:#{service.port}"
+          else
+            SiteSetting.ai_summarization_discourse_service_api_endpoint
+          end
         end
       end
     end

@@ -14,6 +14,10 @@ module ::DiscourseAi
           api_endpoint = SiteSetting.ai_hugging_face_tei_endpoint
         end
 
+        if SiteSetting.ai_hugging_face_tei_api_key.present?
+          headers["X-API-KEY"] = SiteSetting.ai_hugging_face_tei_api_key
+        end
+
         response = Faraday.post(api_endpoint, body, headers)
 
         raise Net::HTTPBadResponse if ![200].include?(response.status)

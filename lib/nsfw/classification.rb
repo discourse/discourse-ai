@@ -55,7 +55,7 @@ module DiscourseAi
         upload_url = "#{Discourse.base_url_no_prefix}#{upload_url}" if upload_url.starts_with?("/")
 
         DiscourseAi::Inference::DiscourseClassifier.perform!(
-          "#{SiteSetting.ai_nsfw_inference_service_api_endpoint}/api/v1/classify",
+          "#{endpoint}/api/v1/classify",
           model,
           upload_url,
           SiteSetting.ai_nsfw_inference_service_api_key,
@@ -77,6 +77,18 @@ module DiscourseAi
       def nsfw_detector_verdict?(classification)
         classification.any? do |key, value|
           value.to_i >= SiteSetting.send("ai_nsfw_flag_threshold_#{key}")
+        end
+      end
+
+      def endpoint
+        if SiteSetting.ai_nsfw_inference_service_api_endpoint_srv.present?
+          service =
+            DiscourseAi::Utils::DnsSrv.lookup(
+              SiteSetting.ai_nsfw_inference_service_api_endpoint_srv,
+            )
+          "https://#{service.target}:#{service.port}"
+        else
+          SiteSetting.ai_nsfw_inference_service_api_endpoint
         end
       end
     end

@@ -308,6 +308,18 @@ module DiscourseAi
             raise ArgumentError, "Invalid target type"
           end
         end
+
+        def discourse_embeddings_endpoint
+          if SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present?
+            service =
+              DiscourseAi::Utils::DnsSrv.lookup(
+                SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv,
+              )
+            "https://#{service.target}:#{service.port}"
+          else
+            SiteSetting.ai_embeddings_discourse_service_api_endpoint
+          end
+        end
       end
     end
   end
