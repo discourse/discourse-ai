@@ -17,56 +17,44 @@ module DiscourseAi
         end
 
         def translate
-          mixtral_prompt = +<<~TEXT
-          <s> [INST]
-          #{prompt[:insts]}
-          #{build_tools_prompt}#{prompt[:post_insts]}
-          [/INST] Ok </s>
-          TEXT
+          messages = prompt.messages
 
-          if prompt[:examples]
-            prompt[:examples].each do |example_pair|
-              mixtral_prompt << "[INST] #{example_pair.first} [/INST]\n"
-              mixtral_prompt << "#{example_pair.second}</s>\n"
-            end
-          end
+          mixtral_prompt =
+            trim_messages(messages).reduce(+"") do |memo, msg|
+              next(memo) if msg[:type] == :tool_call
 
-          mixtral_prompt << conversation_context if prompt[:conversation_context].present?
+              if msg[:type] == :system
+                memo << (<<~TEXT).strip
+                <s> [INST]
+                #{msg[:content]}
+                #{build_tools_prompt}
+                [/INST] Ok </s>
+                TEXT
+              elsif msg[:type] == :model
+                memo << "\n#{msg[:content]}</s>"
+              elsif msg[:type] == :tool
+                memo << "\n"
 
-          mixtral_prompt << "[INST] #{prompt[:input]} [/INST]\n"
-        end
-
-        def conversation_context
-          return "" if prompt[:conversation_context].blank?
-
-          clean_context = prompt[:conversation_context].select { |cc| cc[:type] != "tool_call" }
-          flattened_context = flatten_context(clean_context)
-          trimmed_context = trim_context(flattened_context)
-
-          trimmed_context
-            .reverse
-            .reduce(+"") do |memo, context|
-              memo << "[INST] " if context[:type] == "user"
-
-              if context[:type] == "tool"
-                memo << <<~TEXT
-
+                memo << (<<~TEXT).strip
                 <function_results>
                 <result>
-                <tool_name>#{context[:name]}</tool_name>
+                <tool_name>#{msg[:id]}</tool_name>
                 <json>
-                #{context[:content]}
+                #{msg[:content]}
                 </json>
                 </result>
                 </function_results>
                 TEXT
               else
-                memo << context[:content] << "\n"
-                memo << "[/INST]" if context[:type] == "user"
+                memo << "\n[INST]#{msg[:content]}[/INST]"
               end
 
               memo
             end
+
+          mixtral_prompt << "\n" if mixtral_prompt.ends_with?("[/INST]")
+
+          mixtral_prompt
         end
 
         def max_prompt_tokens

@@ -52,14 +52,15 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     freeze_time
 
     rendered = persona.craft_prompt(context)
+    system_message = rendered.messages.first[:content]
 
-    expect(rendered[:insts]).to include(Discourse.base_url)
-    expect(rendered[:insts]).to include("test site title")
-    expect(rendered[:insts]).to include("test site description")
-    expect(rendered[:insts]).to include("joe, jane")
-    expect(rendered[:insts]).to include(Time.zone.now.to_s)
+    expect(system_message).to include(Discourse.base_url)
+    expect(system_message).to include("test site title")
+    expect(system_message).to include("test site description")
+    expect(system_message).to include("joe, jane")
+    expect(system_message).to include(Time.zone.now.to_s)
 
-    tools = rendered[:tools]
+    tools = rendered.tools
 
     expect(tools.find { |t| t[:name] == "search" }).to be_present
     expect(tools.find { |t| t[:name] == "tags" }).to be_present
@@ -107,7 +108,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
 
       instance = custom_persona.new
       expect(instance.tools).to eq([DiscourseAi::AiBot::Tools::Image])
-      expect(instance.craft_prompt(context).dig(:insts)).to eq("you are pun bot\n\n")
+      expect(instance.craft_prompt(context).messages.first[:content]).to eq("you are pun bot")
 
       # should update
       persona.update!(name: "zzzpun_bot2")

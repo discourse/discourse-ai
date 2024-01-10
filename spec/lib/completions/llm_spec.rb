@@ -29,15 +29,21 @@ RSpec.describe DiscourseAi::Completions::Llm do
 
     let(:llm) { described_class.proxy("fake") }
 
+    let(:prompt) do
+      DiscourseAi::Completions::Prompt.new(
+        "You are fake",
+        messages: [{ type: :user, content: "fake orders" }],
+      )
+    end
+
     it "can generate a response" do
-      response = llm.generate({ input: "fake prompt" }, user: user)
+      response = llm.generate(prompt, user: user)
       expect(response).to be_present
     end
 
     it "can generate content via a block" do
       partials = []
-      response =
-        llm.generate({ input: "fake prompt" }, user: user) { |partial| partials << partial }
+      response = llm.generate(prompt, user: user) { |partial| partials << partial }
 
       expect(partials.length).to eq(10)
       expect(response).to eq(DiscourseAi::Completions::Endpoints::Fake.fake_content)
@@ -48,23 +54,22 @@ RSpec.describe DiscourseAi::Completions::Llm do
 
   describe "#generate" do
     let(:prompt) do
-      {
-        insts: <<~TEXT,
-        I want you to act as a title generator for written pieces. I will provide you with a text,
-        and you will generate five attention-grabbing titles. Please keep the title concise and under 20 words,
-        and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
+      system_insts = (<<~TEXT).strip
+      I want you to act as a title generator for written pieces. I will provide you with a text,
+      and you will generate five attention-grabbing titles. Please keep the title concise and under 20 words,
+      and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
       TEXT
-        input: <<~TEXT,
-        Here is the text, inside <input></input> XML tags:
-        <input>
-          To perfect his horror, Caesar, surrounded at the base of the statue by the impatient daggers of his friends,
-          discovers among the faces and blades that of Marcus Brutus, his protege, perhaps his son, and he no longer
-          defends himself, but instead exclaims: 'You too, my son!' Shakespeare and Quevedo capture the pathetic cry.
-        </input>
-      TEXT
-        post_insts:
-          "Please put the translation between <ai></ai> tags and separate each title with a comma.",
-      }
+
+      DiscourseAi::Completions::Prompt
+        .new(system_insts)
+        .tap { |a_prompt| a_prompt.push(type: :user, content: (<<~TEXT).strip) }
+          Here is the text, inside <input></input> XML tags:
+          <input>
+            To perfect his horror, Caesar, surrounded at the base of the statue by the impatient daggers of his friends,
+            discovers among the faces and blades that of Marcus Brutus, his protege, perhaps his son, and he no longer
+            defends himself, but instead exclaims: 'You too, my son!' Shakespeare and Quevedo capture the pathetic cry.
+          </input>
+          TEXT
     end
 
     let(:canned_response) do

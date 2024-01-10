@@ -9,7 +9,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
 
   let(:model_name) { "claude-2" }
   let(:bedrock_name) { "claude-v2:1" }
-  let(:generic_prompt) { { insts: "write 3 words" } }
   let(:dialect) { DiscourseAi::Completions::Dialects::Claude.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
 

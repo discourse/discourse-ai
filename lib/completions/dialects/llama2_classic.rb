@@ -15,58 +15,48 @@ module DiscourseAi
         end
 
         def translate
-          llama2_prompt = +<<~TEXT
-          [INST]
-          <<SYS>>
-          #{prompt[:insts]}
-          #{build_tools_prompt}#{prompt[:post_insts]}
-          <</SYS>>
-          [/INST]
-          TEXT
+          messages = prompt.messages
 
-          if prompt[:examples]
-            prompt[:examples].each do |example_pair|
-              llama2_prompt << "[INST]#{example_pair.first}[/INST]\n"
-              llama2_prompt << "#{example_pair.second}\n"
-            end
-          end
+          llama2_prompt =
+            trim_messages(messages).reduce(+"") do |memo, msg|
+              next(memo) if msg[:type] == :tool_call
 
-          llama2_prompt << conversation_context if prompt[:conversation_context].present?
-
-          llama2_prompt << "[INST]#{prompt[:input]}[/INST]\n"
-        end
-
-        def conversation_context
-          return "" if prompt[:conversation_context].blank?
-
-          clean_context = prompt[:conversation_context].select { |cc| cc[:type] != "tool_call" }
-          flattened_context = flatten_context(clean_context)
-          trimmed_context = trim_context(flattened_context)
-
-          trimmed_context
-            .reverse
-            .reduce(+"") do |memo, context|
-              if context[:type] == "tool"
-                memo << <<~TEXT
+              if msg[:type] == :system
+                memo << (<<~TEXT).strip
                 [INST]
+                <<SYS>>
+                #{msg[:content]}
+                #{build_tools_prompt}
+                <</SYS>>
+                [/INST]
+                TEXT
+              elsif msg[:type] == :model
+                memo << "\n#{msg[:content]}"
+              elsif msg[:type] == :tool
+                tool = JSON.parse(msg[:content], symbolize_names: true)
+                memo << "\n[INST]\n"
+
+                memo << (<<~TEXT).strip
                 <function_results>
                 <result>
-                <tool_name>#{context[:name]}</tool_name>
+                <tool_name>#{msg[:id]}</tool_name>
                 <json>
-                #{context[:content]}
+                #{msg[:content]}
                 </json>
                 </result>
                 </function_results>
                 [/INST]
                 TEXT
-              elsif context[:type] == "assistant"
-                memo << "[INST]" << context[:content] << "[/INST]\n"
               else
-                memo << context[:content] << "\n"
+                memo << "\n[INST]#{msg[:content]}[/INST]"
               end
 
               memo
             end
+
+          llama2_prompt << "\n" if llama2_prompt.ends_with?("[/INST]")
+
+          llama2_prompt
         end
 
         def max_prompt_tokens

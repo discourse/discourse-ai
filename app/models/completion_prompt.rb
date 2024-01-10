@@ -33,11 +33,18 @@ class CompletionPrompt < ActiveRecord::Base
         input
       end
 
-    messages_hash.merge(input: <<~TEXT)
-    <input>
-    #{user_input}
-    </input>
-    TEXT
+    instructions = [messages_hash[:insts], messages_hash[:post_insts].to_s].join("\n")
+
+    prompt = DiscourseAi::Completions::Prompt.new(instructions)
+
+    messages_hash[:examples].to_a do |example_pair|
+      prompt.push(type: :user, content: example_pair.first)
+      prompt.push(type: :model, content: example_pair.second)
+    end
+
+    prompt.push(type: :user, content: "<input>#{user_input}</input>")
+
+    prompt
   end
 
   private

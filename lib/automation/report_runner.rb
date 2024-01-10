@@ -101,7 +101,7 @@ module DiscourseAi
             tokens_per_post: @tokens_per_post,
             tokenizer: @llm.tokenizer,
           )
-        input = <<~INPUT
+        input = <<~INPUT.strip
           #{@instructions}
 
           <context>
@@ -111,11 +111,14 @@ module DiscourseAi
           #{@instructions}
         INPUT
 
-        prompt = {
-          insts: "You are a helpful bot specializing in summarizing activity on Discourse sites",
-          input: input,
-          final_insts: "Here is the report I generated for you",
-        }
+        prompt =
+          DiscourseAi::Completions::Prompt.new(
+            "You are a helpful bot specializing in summarizing activity on Discourse sites",
+            messages: [
+              { type: :user, content: input },
+              { type: :model, content: "Here is the report I generated for you" },
+            ],
+          )
 
         result = +""
 

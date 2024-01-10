@@ -36,10 +36,10 @@ module DiscourseAi
 
       def generate_prompt(completion_prompt, input, user, &block)
         llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
-        generic_prompt = completion_prompt.messages_with_input(input)
+        prompt = completion_prompt.messages_with_input(input)
 
         llm.generate(
-          generic_prompt,
+          prompt,
           user: user,
           temperature: completion_prompt.temperature,
           stop_sequences: completion_prompt.stop_sequences,

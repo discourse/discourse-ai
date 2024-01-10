@@ -57,27 +57,30 @@ module DiscourseAi
                 tool_call_id = tool.tool_call_id
                 invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
 
-                invocation_context = {
-                  type: "tool",
-                  name: tool_call_id,
-                  content: invocation_result_json,
-                }
-                tool_context = {
-                  type: "tool_call",
-                  name: tool_call_id,
+                tool_call_message = {
+                  type: :tool_call,
+                  id: tool_call_id,
                   content: { name: tool.name, arguments: tool.parameters }.to_json,
                 }
 
-                prompt[:conversation_context] ||= []
+                tool_message = { type: :tool, id: tool_call_id, content: invocation_result_json }
 
                 if tool.standalone?
-                  prompt[:conversation_context] = [invocation_context, tool_context]
+                  standalone_conext =
+                    context.dup.merge(
+                      conversation_context: [
+                        context[:conversation_context].last,
+                        tool_call_message,
+                        tool_message,
+                      ],
+                    )
+                  prompt = persona.craft_prompt(standalone_conext)
                 else
-                  prompt[:conversation_context] = [invocation_context, tool_context] +
-                    prompt[:conversation_context]
+                  prompt.push(**tool_call_message)
+                  prompt.push(**tool_message)
                 end
 
-                raw_context << [tool_context[:content], tool_call_id, "tool_call"]
+                raw_context << [tool_call_message[:content], tool_call_id, "tool_call"]
                 raw_context << [invocation_result_json, tool_call_id, "tool"]
               else
                 update_blk.call(partial, cancel, nil)
@@ -91,7 +94,7 @@ module DiscourseAi
           total_completions += 1
 
           # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS)
-          prompt.delete(:tools) if total_completions == MAX_COMPLETIONS
+          prompt.tools = [] if total_completions == MAX_COMPLETIONS
         end
 
         raw_context

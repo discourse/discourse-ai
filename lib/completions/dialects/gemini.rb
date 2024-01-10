@@ -18,39 +18,57 @@ module DiscourseAi
           # Gemini complains if we don't alternate model/user roles.
           noop_model_response = { role: "model", parts: { text: "Ok." } }
 
-          gemini_prompt = [
-            {
-              role: "user",
-              parts: {
-                text: [prompt[:insts], prompt[:post_insts].to_s].join("\n"),
-              },
-            },
-            noop_model_response,
-          ]
+          messages = prompt.messages
 
-          if prompt[:examples]
-            prompt[:examples].each do |example_pair|
-              gemini_prompt << { role: "user", parts: { text: example_pair.first } }
-              gemini_prompt << { role: "model", parts: { text: example_pair.second } }
+          # Gemini doesn't use an assistant msg to improve long-context responses.
+          messages.pop if messages.last[:type] == :model
+
+          trim_messages(messages).reduce([]) do |memo, msg|
+            if msg[:type] == :system
+              memo << { role: "user", parts: { text: msg[:content] } }
+              memo << noop_model_response.dup
+            elsif msg[:type] == :model
+              memo << { role: "model", parts: { text: msg[:content] } }
+            elsif msg[:type] == :tool_call
+              call_details = JSON.parse(msg[:content], symbolize_names: true)
+
+              memo << {
+                role: "model",
+                parts: {
+                  functionCall: {
+                    name: call_details[:name],
+                    args: call_details[:arguments],
+                  },
+                },
+              }
+            elsif msg[:type] == :tool
+              memo << {
+                role: "function",
+                parts: {
+                  functionResponse: {
+                    name: msg[:id],
+                    response: {
+                      content: msg[:content],
+                    },
+                  },
+                },
+              }
+              memo << noop_model_response.dup
+            else
+              memo << noop_model_response.dup if memo.last&.dig(:role) == "user"
+
+              memo << { role: "user", parts: { text: msg[:content] } }
             end
+
+            memo
           end
-
-          gemini_prompt.concat(conversation_context) if prompt[:conversation_context]
-
-          if prompt[:input]
-            gemini_prompt << noop_model_response.dup if gemini_prompt.last[:role] == "user"
-
-            gemini_prompt << { role: "user", parts: { text: prompt[:input] } }
-          end
-
-          gemini_prompt
         end
 
         def tools
-          return if prompt[:tools].blank?
+          return if prompt.tools.blank?
 
           translated_tools =
-            prompt[:tools].map do |t|
+            prompt.tools.map do |t|
               tool = t.slice(:name, :description)
 
               if t[:parameters]
@@ -73,48 +91,6 @@ module DiscourseAi
           [{ function_declarations: translated_tools }]
         end
 
-        def conversation_context
-          return [] if prompt[:conversation_context].blank?
-
-          flattened_context = flatten_context(prompt[:conversation_context])
-          trimmed_context = trim_context(flattened_context)
-
-          trimmed_context.reverse.map do |context|
-            if context[:type] == "tool_call"
-              function = JSON.parse(context[:content], symbolize_names: true)
-
-              {
-                role: "model",
-                parts: {
-                  functionCall: {
-                    name: function[:name],
-                    args: function[:arguments],
-                  },
-                },
-              }
-            elsif context[:type] == "tool"
-              {
-                role: "function",
-                parts: {
-                  functionResponse: {
-                    name: context[:name],
-                    response: {
-                      content: context[:content],
-                    },
-                  },
-                },
-              }
-            else
-              {
-                role: context[:type] == "assistant" ? "model" : "user",
-                parts: {
-                  text: context[:content],
-                },
-              }
-            end
-          end
-        end
-
         def max_prompt_tokens
           16_384 # 50% of model tokens
         end
@@ -123,25 +99,6 @@ module DiscourseAi
 
         def calculate_message_token(context)
           self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
-        end
-
-        private
-
-        def flatten_context(context)
-          flattened = []
-          context.each do |c|
-            if c[:type] == "multi_turn"
-              # gemini quirk
-              if c[:content].first[:type] == "tool"
-                flattend << { type: "assistant", content: "ok." }
-              end
-
-              flattened.concat(c[:content])
-            else
-              flattened << c
-            end
-          end
-          flattened
         end
       end
     end
