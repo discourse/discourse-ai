@@ -137,6 +137,7 @@ discourse_ai:
   ai_hugging_face_tei_endpoint_srv:
     default: ""
     hidden: true
+  ai_hugging_face_tei_api_key: ""
   ai_google_custom_search_api_key:
     default: ""
     secret: true
@@ -164,6 +165,7 @@ discourse_ai:
   ai_vllm_endpoint_srv:
     default: ""
     hidden: true
+  ai_vllm_api_key: ""
 
   composer_ai_helper_enabled:
     default: false
