@@ -40,7 +40,7 @@ module DiscourseAi
 
       def request_with(model, content)
         ::DiscourseAi::Inference::DiscourseClassifier.perform!(
-          "#{SiteSetting.ai_sentiment_inference_service_api_endpoint}/api/v1/classify",
+          "#{endpoint}/api/v1/classify",
           model,
           content,
           SiteSetting.ai_sentiment_inference_service_api_key,
@@ -52,6 +52,15 @@ module DiscourseAi
           "#{target_to_classify.topic.title}\n#{target_to_classify.raw}"
         else
           target_to_classify.raw
+        end
+      end
+
+      def endpoint
+        if SiteSetting.ai_sentiment_inference_service_api_endpoint_srv.present?
+          service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_sentiment_inference_service_api_endpoint_srv)
+          "https://#{service.target}:#{service.port}"
+        else
+          SiteSetting.ai_sentiment_inference_service_api_endpoint
         end
       end
     end

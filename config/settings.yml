@@ -8,6 +8,8 @@ discourse_ai:
     client: true
   ai_toxicity_inference_service_api_endpoint:
     default: "https://disorder-testing.demo-by-discourse.com"
+  ai_toxicity_inference_service_api_endpoint_srv:
+    default: ""
   ai_toxicity_inference_service_api_key:
     default: ""
     secret: true
@@ -55,6 +57,8 @@ discourse_ai:
     client: true
   ai_sentiment_inference_service_api_endpoint:
     default: "https://sentiment-testing.demo-by-discourse.com"
+  ai_sentiment_inference_service_api_endpoint_srv:
+    default: ""
   ai_sentiment_inference_service_api_key:
     default: ""
     secret: true
@@ -70,6 +74,8 @@ discourse_ai:
   ai_nsfw_detection_enabled: false
   ai_nsfw_inference_service_api_endpoint:
     default: "https://nsfw-testing.demo-by-discourse.com"
+  ai_nsfw_inference_service_api_endpoint_srv:
+    default: ""
   ai_nsfw_inference_service_api_key:
     default: ""
     secret: true
@@ -211,6 +217,7 @@ discourse_ai:
     default: false
     client: true
   ai_embeddings_discourse_service_api_endpoint: ""
+  ai_embeddings_discourse_service_api_endpoint_srv: ""
   ai_embeddings_discourse_service_api_key:
     default: ""
     secret: true
@@ -257,6 +264,7 @@ discourse_ai:
       - mistralai/Mistral-7B-Instruct-v0.2
 
   ai_summarization_discourse_service_api_endpoint: ""
+  ai_summarization_discourse_service_api_endpoint_srv: ""
   ai_summarization_discourse_service_api_key:
     default: ""
     secret: true

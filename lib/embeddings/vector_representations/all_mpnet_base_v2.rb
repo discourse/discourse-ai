@@ -6,7 +6,7 @@ module DiscourseAi
       class AllMpnetBaseV2 < Base
         def vector_from(text)
           DiscourseAi::Inference::DiscourseClassifier.perform!(
-            "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
+            "#{discourse_embeddings_endpoint}/api/v1/classify",
             name,
             text,
             SiteSetting.ai_embeddings_discourse_service_api_key,

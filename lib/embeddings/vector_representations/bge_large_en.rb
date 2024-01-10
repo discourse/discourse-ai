@@ -13,9 +13,9 @@ module DiscourseAi
           elsif DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured?
             truncated_text = tokenizer.truncate(text, max_sequence_length - 2)
             DiscourseAi::Inference::HuggingFaceTextEmbeddings.perform!(truncated_text).first
-          elsif SiteSetting.ai_embeddings_discourse_service_api_endpoint.present?
+          elsif discourse_embeddings_endpoint.present?
             DiscourseAi::Inference::DiscourseClassifier.perform!(
-              "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
+              "#{discourse_embeddings_endpoint}/api/v1/classify",
               inference_model_name.split("/").last,
               text,
               SiteSetting.ai_embeddings_discourse_service_api_key,
