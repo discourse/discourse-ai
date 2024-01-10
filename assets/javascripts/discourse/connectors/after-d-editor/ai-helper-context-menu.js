@@ -33,6 +33,7 @@ export default class AiHelperContextMenu extends Component {
   @tracked previousMenuState = null;
   @tracked customPromptValue = "";
   @tracked initialValue = "";
+  @tracked thumbnailSuggestions = null;
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -371,6 +372,7 @@ export default class AiHelperContextMenu extends Component {
         // resets the values if new suggestion is started:
         this.diff = null;
         this.newSelectedText = null;
+        this.thumbnailSuggestions = null;
 
         if (option.name === "illustrate_post") {
           this._toggleLoadingState(false);
