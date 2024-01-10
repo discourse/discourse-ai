@@ -4,12 +4,13 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { inject as service } from "@ember/service";
+import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import FastEdit from "discourse/components/fast-edit";
 import FastEditModal from "discourse/components/modal/fast-edit";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cook } from "discourse/lib/text";
+import { clipboardCopy } from "discourse/lib/utilities";
 import { bind } from "discourse-common/utils/decorators";
 import eq from "truth-helpers/helpers/eq";
 import not from "truth-helpers/helpers/not";
@@ -78,13 +79,7 @@ export default class AIHelperOptionsMenu extends Component {
 
   @bind
   _updateResult(result) {
-    const suggestion = result.result;
-
-    if (suggestion.length > 0) {
-      cook(suggestion).then((cooked) => {
-        this.suggestion = cooked;
-      });
-    }
+    this.suggestion = result.result;
   }
 
   @action
@@ -160,16 +155,13 @@ export default class AIHelperOptionsMenu extends Component {
   @action
   copySuggestion() {
     if (this.suggestion?.length > 0) {
-      navigator.clipboard.writeText(this.suggestion).then(() => {
-        this.copyButtonIcon = "check";
-        this.copyButtonLabel =
-          "discourse_ai.ai_helper.post_options_menu.copied";
-        setTimeout(() => {
-          this.copyButtonIcon = "copy";
-          this.copyButtonLabel =
-            "discourse_ai.ai_helper.post_options_menu.copy";
-        }, 3500);
-      });
+      clipboardCopy(this.suggestion);
+      this.copyButtonIcon = "check";
+      this.copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copied";
+      setTimeout(() => {
+        this.copyButtonIcon = "copy";
+        this.copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy";
+      }, 3500);
     }
   }
 
@@ -263,7 +255,7 @@ export default class AIHelperOptionsMenu extends Component {
           >
             {{#if this.suggestion}}
               <div class="ai-post-helper__suggestion__text" dir="auto">
-                {{this.suggestion}}
+                <CookText @rawText={{this.suggestion}} />
               </div>
               <di class="ai-post-helper__suggestion__buttons">
                 <DButton
