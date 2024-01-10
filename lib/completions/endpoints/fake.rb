@@ -95,7 +95,8 @@ module DiscourseAi
             [0, *split_indices, content.length].each_cons(2)
               .map { |start, finish| content[start...finish] }
               .each do |chunk|
-                if delay = self.class.delays[i % self.class.delays.length]
+                if self.class.delays.present? &&
+                     (delay = self.class.delays[i % self.class.delays.length])
                   sleep(delay)
                   i += 1
                 end
