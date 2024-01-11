@@ -11,7 +11,7 @@ module DiscourseAi
       GPT4_TURBO_ID = -113
       MIXTRAL_ID = -114
       GEMINI_ID = -115
-      FAKE_ID = -116
+      FAKE_ID = -116 # only used for dev and test
 
       BOTS = [
         [GPT4_ID, "gpt4_bot", "gpt-4"],
