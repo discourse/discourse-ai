@@ -21,6 +21,31 @@ RSpec.describe DiscourseAi::Completions::Llm do
     end
   end
 
+  describe "#generate with fake model" do
+    before do
+      DiscourseAi::Completions::Endpoints::Fake.delays = []
+      DiscourseAi::Completions::Endpoints::Fake.chunk_count = 10
+    end
+
+    let(:llm) { described_class.proxy("fake") }
+
+    it "can generate a response" do
+      response = llm.generate({ input: "fake prompt" }, user: user)
+      expect(response).to be_present
+    end
+
+    it "can generate content via a block" do
+      partials = []
+      response =
+        llm.generate({ input: "fake prompt" }, user: user) { |partial| partials << partial }
+
+      expect(partials.length).to eq(10)
+      expect(response).to eq(DiscourseAi::Completions::Endpoints::Fake.fake_content)
+
+      expect(partials.join).to eq(response)
+    end
+  end
+
   describe "#generate" do
     let(:prompt) do
       {

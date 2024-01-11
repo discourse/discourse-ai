@@ -10,14 +10,20 @@ module DiscourseAi
         def self.endpoint_for(model_name)
           # Order is important.
           # Bedrock has priority over Anthropic if creadentials are present.
-          [
+          endpoints = [
             DiscourseAi::Completions::Endpoints::AwsBedrock,
             DiscourseAi::Completions::Endpoints::Anthropic,
             DiscourseAi::Completions::Endpoints::OpenAi,
             DiscourseAi::Completions::Endpoints::HuggingFace,
             DiscourseAi::Completions::Endpoints::Gemini,
             DiscourseAi::Completions::Endpoints::Vllm,
-          ].detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |ek|
+          ]
+
+          if Rails.env.test? || Rails.env.development?
+            endpoints << DiscourseAi::Completions::Endpoints::Fake
+          end
+
+          endpoints.detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |ek|
             ek.can_contact?(model_name)
           end
         end

@@ -1,19 +1,17 @@
-import { later } from "@ember/runloop";
 import { hbs } from "ember-cli-htmlbars";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import loadScript from "discourse/lib/load-script";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { cook } from "discourse/lib/text";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 import ShareModal from "../discourse/components/modal/share-modal";
+import streamText from "../discourse/lib/ai-streamer";
 import copyConversation from "../discourse/lib/copy-conversation";
 
 const AUTO_COPY_THRESHOLD = 4;
 
 function isGPTBot(user) {
-  return user && [-110, -111, -112, -113, -114, -115].includes(user.id);
+  return user && [-110, -111, -112, -113, -114, -115, -116].includes(user.id);
 }
 
 function attachHeaderIcon(api) {
@@ -93,62 +91,7 @@ function initializeAIBotReplies(api) {
     pluginId: "discourse-ai",
 
     onAIBotStreamedReply: function (data) {
-      const post = this.model.postStream.findLoadedPost(data.post_id);
-
-      // it may take us a few seconds to load the post
-      // we need to requeue the event
-      if (!post && !data.done) {
-        const refresh = this.onAIBotStreamedReply.bind(this);
-        data.retries = data.retries || 5;
-        data.retries -= 1;
-        data.skipIfStreaming = true;
-        if (data.retries > 0) {
-          later(() => {
-            refresh(data);
-          }, 1000);
-        }
-      }
-
-      if (post) {
-        if (data.raw) {
-          const postElement = document.querySelector(
-            `#post_${data.post_number}`
-          );
-
-          if (
-            data.skipIfStreaming &&
-            postElement.classList.contains("streaming")
-          ) {
-            return;
-          }
-
-          cook(data.raw).then((cooked) => {
-            post.set("raw", data.raw);
-            post.set("cooked", cooked);
-
-            // resets animation
-            postElement.classList.remove("streaming");
-            void postElement.offsetWidth;
-            postElement.classList.add("streaming");
-
-            const cookedElement = document.createElement("div");
-            cookedElement.innerHTML = cooked;
-
-            let element = document.querySelector(
-              `#post_${data.post_number} .cooked`
-            );
-
-            loadScript("/javascripts/diffhtml.min.js").then(() => {
-              window.diff.innerHTML(element, cookedElement.innerHTML);
-            });
-          });
-        }
-        if (data.done) {
-          document
-            .querySelector(`#post_${data.post_number}`)
-            .classList.remove("streaming");
-        }
-      }
+      streamText(this.model.postStream, data);
     },
     subscribe: function () {
       this._super();
