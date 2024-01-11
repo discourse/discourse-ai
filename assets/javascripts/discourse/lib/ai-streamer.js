@@ -92,7 +92,7 @@ async function applyProgress(postStatus, postStream) {
 
     addProgressDot(cookedElement);
 
-    let element = document.querySelector(
+    const element = document.querySelector(
       `#post_${postStatus.post_number} .cooked`
     );
 
