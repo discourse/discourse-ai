@@ -3,6 +3,7 @@
 class EmbeddingsGenerationStubs
   class << self
     def discourse_service(model, string, embedding)
+      model = "bge-large-en-v1.5" if model == "bge-large-en"
       WebMock
         .stub_request(
           :post,

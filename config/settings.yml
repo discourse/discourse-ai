@@ -231,7 +231,7 @@ discourse_ai:
   ai_embeddings_model:
     type: enum
     list_type: compact
-    default: "all-mpnet-base-v2"
+    default: "bge-large-en"
     allow_any: false
     choices:
       - all-mpnet-base-v2

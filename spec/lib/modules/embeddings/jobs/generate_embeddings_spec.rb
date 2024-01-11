@@ -7,7 +7,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
     before do
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
       SiteSetting.ai_embeddings_enabled = true
-      SiteSetting.ai_embeddings_model = "all-mpnet-base-v2"
+      SiteSetting.ai_embeddings_model = "bge-large-en"
     end
 
     fab!(:topic) { Fabricate(:topic) }

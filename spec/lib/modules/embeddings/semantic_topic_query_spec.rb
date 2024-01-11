@@ -12,7 +12,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
       fab!(:target) { Fabricate(:topic) }
 
       def stub_semantic_search_with(results)
-        DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2
+        DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
           .any_instance
           .expects(:symmetric_topics_similarity_search)
           .returns(results.concat([target.id]))
