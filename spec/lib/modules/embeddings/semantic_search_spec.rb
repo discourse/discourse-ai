@@ -15,7 +15,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
 
       hyde_embedding = [0.049382, 0.9999]
       EmbeddingsGenerationStubs.discourse_service(
-        "bge-large-en-v1.5",
+        SiteSetting.ai_embeddings_model,
         hypothetical_post,
         hyde_embedding,
       )

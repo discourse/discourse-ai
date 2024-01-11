@@ -71,7 +71,11 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
         SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
 
         hyde_embedding = [0.049382, 0.9999]
-        EmbeddingsGenerationStubs.discourse_service("bge-large-en-v1.5", query, hyde_embedding)
+        EmbeddingsGenerationStubs.discourse_service(
+          SiteSetting.ai_embeddings_model,
+          query,
+          hyde_embedding,
+        )
 
         post1 = Fabricate(:post, topic: topic_with_tags)
         search = described_class.new({ search_query: "hello world, sam", status: "public" })
