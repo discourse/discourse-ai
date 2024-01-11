@@ -38,7 +38,7 @@ module DiscourseAi
         end
 
         plugin.register_html_builder("server:topic-show-after-posts-crawler") do |controller|
-          SemanticRelated.related_topics_for_crawler(controller)
+          ::DiscourseAi::Embeddings::SemanticRelated.related_topics_for_crawler(controller)
         end
 
         # embeddings generation.
