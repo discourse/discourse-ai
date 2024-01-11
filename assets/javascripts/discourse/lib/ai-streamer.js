@@ -110,7 +110,7 @@ async function applyProgress(postStatus, postStream) {
 }
 
 async function handleProgress(postStream) {
-  let status = postStream.aiStreamingStatus;
+  const status = postStream.aiStreamingStatus;
 
   let keepPolling = false;
 
