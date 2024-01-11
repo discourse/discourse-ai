@@ -15,7 +15,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
 
       hyde_embedding = [0.049382, 0.9999]
       EmbeddingsGenerationStubs.discourse_service(
-        SiteSetting.ai_embeddings_model,
+        DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn.,
         hypothetical_post,
         hyde_embedding,
       )
@@ -24,7 +24,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
     after { described_class.clear_cache_for(query) }
 
     def stub_candidate_ids(candidate_ids)
-      DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2
+      DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
         .any_instance
         .expects(:asymmetric_topics_similarity_search)
         .returns(candidate_ids)
