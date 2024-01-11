@@ -47,11 +47,10 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
 
   describe "#translate" do
     it "translates a prompt written in our generic format to Claude's format" do
-      anthropic_version = <<~TEXT
+      anthropic_version = (<<~TEXT).strip + " "
       #{prompt[:insts]}
       Human: #{prompt[:input]}
       #{prompt[:post_insts]}
-
 
       Assistant:
       TEXT
@@ -68,7 +67,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
           "<ai>The solitary horse.,The horse etched in gold.,A horse's infinite journey.,A horse lost in time.,A horse's last ride.</ai>",
         ],
       ]
-      anthropic_version = <<~TEXT
+      anthropic_version = (<<~TEXT).strip + " "
       #{prompt[:insts]}
       <example>
       H: #{prompt[:examples][0][0]}
@@ -77,7 +76,6 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
 
       Human: #{prompt[:input]}
       #{prompt[:post_insts]}
-
 
       Assistant:
       TEXT
@@ -90,7 +88,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
     it "include tools inside the prompt" do
       prompt[:tools] = [tool]
 
-      anthropic_version = <<~TEXT
+      anthropic_version = (<<~TEXT).strip + " "
       #{prompt[:insts]}
       #{DiscourseAi::Completions::Dialects::Claude.tool_preamble}
       <tools>
@@ -99,13 +97,40 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       Human: #{prompt[:input]}
       #{prompt[:post_insts]}
 
-
       Assistant:
       TEXT
 
       translated = dialect.translate
 
       expect(translated).to eq(anthropic_version)
+    end
+
+    it "includes all the right newlines" do
+      prompt.clear
+      prompt.merge!(
+        {
+          insts: "You are an artist",
+          conversation_context: [
+            { content: "draw another funny cat", type: "user", name: "sam" },
+            { content: "ok", type: "assistant" },
+            { content: "draw a funny cat", type: "user", name: "sam" },
+          ],
+        },
+      )
+
+      expected = (<<~TEXT).strip + " "
+        You are an artist
+
+        Human: draw a funny cat
+
+        Assistant: ok
+
+        Human: draw another funny cat
+
+        Assistant:
+      TEXT
+
+      expect(dialect.translate).to eq(expected)
     end
   end
 
@@ -121,7 +146,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
     it "adds conversation in reverse order (first == newer)" do
       prompt[:conversation_context] = context
 
-      expected = <<~TEXT
+      expected = (<<~TEXT).strip
       Assistant:
       <function_results>
       <result>
@@ -131,7 +156,9 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       </json>
       </result>
       </function_results>
+
       Assistant: #{context.second[:content]}
+
       Human: #{context.first[:content]}
       TEXT
 

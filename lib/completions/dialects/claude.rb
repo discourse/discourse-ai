@@ -14,6 +14,14 @@ module DiscourseAi
           end
         end
 
+        def pad_newlines!(prompt)
+          if prompt[-1..-1] != "\n"
+            prompt << "\n\n"
+          elsif prompt[-2..-1] != "\n\n"
+            prompt << "\n"
+          end
+        end
+
         def translate
           claude_prompt = uses_system_message? ? +"" : +"Human: "
           claude_prompt << prompt[:insts] << "\n"
@@ -22,11 +30,11 @@ module DiscourseAi
 
           claude_prompt << build_examples(prompt[:examples]) if prompt[:examples]
 
+          pad_newlines!(claude_prompt)
+
           claude_prompt << conversation_context if prompt[:conversation_context]
 
-          # this is critical otherwise prompt will not seperate system from user messages
-          claude_prompt << "\n" if claude_prompt[-1..-1] != "\n"
-          claude_prompt << "\n" if claude_prompt[-2..-1] != "\n\n"
+          pad_newlines!(claude_prompt)
 
           if uses_system_message? && (prompt[:input] || prompt[:post_insts])
             claude_prompt << "Human: "
@@ -35,10 +43,11 @@ module DiscourseAi
 
           claude_prompt << "#{prompt[:post_insts]}\n" if prompt[:post_insts]
 
-          claude_prompt << "\n\n"
-          claude_prompt << "Assistant:"
+          pad_newlines!(claude_prompt)
+
+          claude_prompt << "Assistant: "
           claude_prompt << " #{prompt[:final_insts]}:" if prompt[:final_insts]
-          claude_prompt << "\n"
+          claude_prompt
         end
 
         def max_prompt_tokens
@@ -54,27 +63,27 @@ module DiscourseAi
 
           trimmed_context
             .reverse
-            .reduce(+"") do |memo, context|
-              memo << (context[:type] == "user" ? "Human:" : "Assistant:")
+            .map do |context|
+              row = context[:type] == "user" ? +"Human:" : +"Assistant:"
 
               if context[:type] == "tool"
-                memo << <<~TEXT
-
-                <function_results>
-                <result>
-                <tool_name>#{context[:name]}</tool_name>
-                <json>
-                #{context[:content]}
-                </json>
-                </result>
-                </function_results>
+                row << "\n"
+                row << (<<~TEXT).strip
+                  <function_results>
+                  <result>
+                  <tool_name>#{context[:name]}</tool_name>
+                  <json>
+                  #{context[:content]}
+                  </json>
+                  </result>
+                  </function_results>
                 TEXT
               else
-                memo << " " << context[:content] << "\n"
+                row << " "
+                row << context[:content]
               end
-
-              memo
             end
+            .join("\n\n")
         end
 
         private
