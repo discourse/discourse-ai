@@ -15,23 +15,23 @@
         </tr>
       </thead>
       <tbody>
-        <% @list.each_with_index do |t,i| %>
-          <tr class="topic-list-item">
+        <% @list.each_with_index do |topic, idx| %>
+          <tr class="topic-list-item" id="topic-list-item-<%= topic.id %>">
             <td class="main-link" itemprop='itemListElement' itemscope itemtype='http://schema.org/ListItem'>
-              <meta itemprop='position' content='<%= i + 1 %>'>
+              <meta itemprop='position' content='<%= idx + 1 %>'>
               <span class="link-top-line">
-                <a itemprop='url' href='<%= t.url %>' class='title raw-link raw-topic-link'><%= t.title %></a>
+                <a itemprop='url' href='<%= topic.url %>' class='title raw-link raw-topic-link'><%= topic.title %></a>
               </span>
               <div class="link-bottom-line">
-                <% if (!@category || @category.has_children?) && t.category && !t.category.uncategorized? %>
-                  <a href='<%= t.category.url %>' class='badge-wrapper bullet'>
-                    <span class='badge-category-bg' style='background-color: #<%= t.category.color %>'></span>
+                <% if (!@category || @category.has_children?) && topic.category && !topic.category.uncategorized? %>
+                  <a href='<%= topic.category.url %>' class='badge-wrapper bullet'>
+                    <span class='badge-category-bg' style='background-color: #<%= topic.category.color %>'></span>
                     <span class='badge-category clear-badge'>
-                      <span class='category-name'><%= t.category.name %></span>
+                      <span class='category-name'><%= topic.category.name %></span>
                     </span>
                   </a>
                 <% end %>
-                <% if tags = t.visible_tags(guardian) %>
+                <% if tags = topic.visible_tags(guardian) %>
                   <div class="discourse-tags">
                     <% tags.each_with_index do |tag, index| %>
                       <a href='<%= tag.full_url %>' class='discourse-tag'><%= tag.name %></a>
@@ -42,13 +42,13 @@
               </div>
             </td>
             <td class="replies">
-              <span class='posts' title='<%= t 'posts' %>'><%= t.posts_count - 1 %></span>
+              <span class='posts' title='<%= t 'posts' %>'><%= topic.posts_count - 1 %></span>
             </td>
             <td class="views">
-              <span class='views' title='<%= t 'views' %>'><%= t.views %></span>
+              <span class='views' title='<%= t 'views' %>'><%= topic.views %></span>
             </td>
             <td>
-              <%= I18n.l(t.last_posted_at || t.created_at, format: :date_only) %>
+              <%= I18n.l(topic.last_posted_at || topic.created_at, format: :date_only) %>
             </td>
           </tr>
         <% end %>
