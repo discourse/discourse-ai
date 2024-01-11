@@ -114,7 +114,7 @@ async function handleProgress(postStream) {
 
   let keepPolling = false;
 
-  let promises = Object.keys(status).map(async (postId) => {
+  const promises = Object.keys(status).map(async (postId) => {
     let postStatus = status[postId];
 
     const done = await applyProgress(postStatus, postStream);
