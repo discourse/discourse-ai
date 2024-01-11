@@ -18,6 +18,7 @@ export default class AiHelperContextMenu extends Component {
   @service currentUser;
   @service siteSettings;
   @service modal;
+  @service capabilities;
   @tracked helperOptions = [];
   @tracked showContextMenu = false;
   @tracked caretCoords;
@@ -34,6 +35,8 @@ export default class AiHelperContextMenu extends Component {
   @tracked customPromptValue = "";
   @tracked initialValue = "";
   @tracked thumbnailSuggestions = null;
+  @tracked selectionRange = { x: 0, y: 0 };
+  @tracked lastSelectionRange = null;
 
   CONTEXT_MENU_STATES = {
     triggers: "TRIGGERS",
@@ -344,7 +347,17 @@ export default class AiHelperContextMenu extends Component {
 
   @action
   undoAIAction() {
-    document.execCommand("undo", false, null);
+    if (this.capabilities.isFirefox) {
+      // execCommand("undo") is no not supported in Firefox so we insert old text at range
+      this._insertAt(
+        this.lastSelectionRange.x,
+        this.lastSelectionRange.y,
+        this.initialValue
+      );
+    } else {
+      document.execCommand("undo", false, null);
+    }
+
     // context menu is prevented from closing when in review state
     // so we change to reset state quickly before closing
     this.menuState = this.CONTEXT_MENU_STATES.resets;
@@ -357,6 +370,7 @@ export default class AiHelperContextMenu extends Component {
     this.lastUsedOption = option;
     this.menuState = this.CONTEXT_MENU_STATES.loading;
     this.initialValue = this.selectedText;
+    this.lastSelectionRange = this.selectionRange;
 
     this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
       method: "POST",
