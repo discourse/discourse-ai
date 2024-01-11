@@ -5,7 +5,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 import ShareModal from "../discourse/components/modal/share-modal";
-import streamText from "../discourse/lib/ai-bot-streamer";
+import streamText from "../discourse/lib/ai-streamer";
 import copyConversation from "../discourse/lib/copy-conversation";
 
 const AUTO_COPY_THRESHOLD = 4;

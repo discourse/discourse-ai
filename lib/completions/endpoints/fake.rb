@@ -90,18 +90,29 @@ module DiscourseAi
 
           if block_given?
             split_indices = (1...content.length).to_a.sample(self.class.chunk_count - 1).sort
+            indexes = [0, *split_indices, content.length]
+
+            original_content = content
+            content = +""
+
+            cancel = false
+            cancel_proc = -> { cancel = true }
 
             i = 0
-            [0, *split_indices, content.length].each_cons(2)
-              .map { |start, finish| content[start...finish] }
+            indexes
+              .each_cons(2)
+              .map { |start, finish| original_content[start...finish] }
               .each do |chunk|
+                break if cancel
                 if self.class.delays.present? &&
                      (delay = self.class.delays[i % self.class.delays.length])
                   sleep(delay)
                   i += 1
                 end
+                break if cancel
 
-                yield(chunk, -> {})
+                content << chunk
+                yield(chunk, cancel_proc)
               end
           end
 

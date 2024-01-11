@@ -8,6 +8,42 @@ const LETTERS_PER_INTERVAL = 6;
 
 let progressTimer = null;
 
+function lastNonEmptyChild(element) {
+  let lastChild = element.lastChild;
+  while (
+    lastChild &&
+    lastChild.nodeType === Node.TEXT_NODE &&
+    !/\S/.test(lastChild.textContent)
+  ) {
+    lastChild = lastChild.previousSibling;
+  }
+  return lastChild;
+}
+
+export function addProgressDot(element) {
+  // add a <span class="progress-dot"> as the last child of the element
+  let dot = document.createElement("span");
+  dot.classList.add("progress-dot");
+
+  // find the last nested block element in the element
+  let lastBlock = element;
+
+  while (true) {
+    let lastChild = lastNonEmptyChild(lastBlock);
+    if (!lastChild) {
+      break;
+    }
+
+    if (lastChild.nodeType === Node.ELEMENT_NODE) {
+      lastBlock = lastChild;
+    } else {
+      break;
+    }
+  }
+
+  lastBlock.appendChild(dot);
+}
+
 async function applyProgress(postStatus, postStream) {
   postStatus.startTime = postStatus.startTime || Date.now();
   let post = postStream.findLoadedPost(postStatus.post_id);
@@ -27,9 +63,13 @@ async function applyProgress(postStatus, postStream) {
   }
 
   const oldRaw = post.get("raw") || "";
+
   if (postStatus.raw === oldRaw && !postStatus.done) {
-    // nothing to do for now
-    return false;
+    const hasProgressDot =
+      postElement && postElement.querySelector(".progress-dot");
+    if (hasProgressDot) {
+      return false;
+    }
   }
 
   if (postStatus.raw) {
@@ -49,6 +89,8 @@ async function applyProgress(postStatus, postStream) {
 
     const cookedElement = document.createElement("div");
     cookedElement.innerHTML = cooked;
+
+    addProgressDot(cookedElement);
 
     let element = document.querySelector(
       `#post_${postStatus.post_number} .cooked`
