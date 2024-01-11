@@ -24,6 +24,10 @@ module DiscourseAi
 
           claude_prompt << conversation_context if prompt[:conversation_context]
 
+          # this is critical otherwise prompt will not seperate system from user messages
+          claude_prompt << "\n" if claude_prompt[-1..-1] != "\n"
+          claude_prompt << "\n" if claude_prompt[-2..-1] != "\n\n"
+
           if uses_system_message? && (prompt[:input] || prompt[:post_insts])
             claude_prompt << "Human: "
           end

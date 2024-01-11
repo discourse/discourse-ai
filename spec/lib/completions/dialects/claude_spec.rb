@@ -74,6 +74,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       H: #{prompt[:examples][0][0]}
       A: #{prompt[:examples][0][1]}
       </example>
+
       Human: #{prompt[:input]}
       #{prompt[:post_insts]}
 
@@ -94,6 +95,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       #{DiscourseAi::Completions::Dialects::Claude.tool_preamble}
       <tools>
       #{dialect.tools}</tools>
+
       Human: #{prompt[:input]}
       #{prompt[:post_insts]}
 
