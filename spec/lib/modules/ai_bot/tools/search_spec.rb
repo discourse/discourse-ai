@@ -72,7 +72,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
         hyde_embedding = [0.049382, 0.9999]
         EmbeddingsGenerationStubs.discourse_service(
-          SiteSetting.ai_embeddings_model,
+          "bge-large-en-v1.5",
           query,
           hyde_embedding,
         )
@@ -80,7 +80,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
         post1 = Fabricate(:post, topic: topic_with_tags)
         search = described_class.new({ search_query: "hello world, sam", status: "public" })
 
-        DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2
+        DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
           .any_instance
           .expects(:asymmetric_topics_similarity_search)
           .returns([post1.topic_id])
