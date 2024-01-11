@@ -21,11 +21,6 @@ function lastNonEmptyChild(element) {
 }
 
 export function addProgressDot(element) {
-  // add a <span class="progress-dot"> as the last child of the element
-  let dot = document.createElement("span");
-  dot.classList.add("progress-dot");
-
-  // find the last nested block element in the element
   let lastBlock = element;
 
   while (true) {
@@ -41,7 +36,9 @@ export function addProgressDot(element) {
     }
   }
 
-  lastBlock.appendChild(dot);
+  const dotElement = document.createElement("span");
+  dotElement.classList.add("progress-dot");
+  lastBlock.appendChild(dotElement);
 }
 
 async function applyProgress(postStatus, postStream) {
