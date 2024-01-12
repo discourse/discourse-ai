@@ -6,11 +6,10 @@ import { action } from "@ember/object";
 import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
+import i18n from "discourse-common/helpers/i18n";
 import discourseLater from "discourse-common/lib/later";
-import I18n from "I18n";
+import I18n from "discourse-i18n";
 import copyConversation from "../../lib/copy-conversation";
-
-const t = I18n.t.bind(I18n);
 
 export default class ShareModal extends Component {
   @tracked contextValue = 1;
@@ -63,8 +62,10 @@ export default class ShareModal extends Component {
     const from =
       this.allPosts[this.allPosts.length - this.contextValue * 2].post_number;
     const to = this.args.model.post_number;
+
     await copyConversation(this.args.model.topic, from, to);
-    this.justCopiedText = t("discourse_ai.ai_bot.conversation_shared");
+    this.justCopiedText = I18n.t("discourse_ai.ai_bot.conversation_shared");
+
     discourseLater(() => {
       this.justCopiedText = "";
     }, 2000);
@@ -73,7 +74,7 @@ export default class ShareModal extends Component {
   <template>
     <DModal
       class="ai-share-modal"
-      @title={{t "discourse_ai.ai_bot.share_modal.title"}}
+      @title={{i18n "discourse_ai.ai_bot.share_modal.title"}}
       @closeModal={{@closeModal}}
     >
       <:body>
@@ -92,7 +93,7 @@ export default class ShareModal extends Component {
             {{on "change" this.updateHtmlContext}}
           />
           <div class="ai-share-modal__context">
-            {{t "discourse_ai.ai_bot.share_modal.context"}}
+            {{i18n "discourse_ai.ai_bot.share_modal.context"}}
             {{this.contextValue}}
           </div>
         </div>

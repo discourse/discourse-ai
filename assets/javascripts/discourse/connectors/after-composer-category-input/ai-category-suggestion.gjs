@@ -3,7 +3,7 @@ import { inject as service } from "@ember/service";
 import AISuggestionDropdown from "../../components/ai-suggestion-dropdown";
 import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
-export default class AICategorySuggestion extends Component {
+export default class AiCategorySuggestion extends Component {
   static shouldRender(outletArgs, helper) {
     return showComposerAIHelper(outletArgs, helper);
   }

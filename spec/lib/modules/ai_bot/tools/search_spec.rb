@@ -30,7 +30,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#invoke" do
-    it "can retreive options from persona correctly" do
+    it "can retrieve options from persona correctly" do
       persona_options = { "base_query" => "#funny" }
 
       search_post = Fabricate(:post, topic: topic_with_tags)
@@ -61,9 +61,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
     end
 
     describe "semantic search" do
-      let (:query) {
-        "this is an expanded search"
-      }
+      let(:query) { "this is an expanded search" }
       after { DiscourseAi::Embeddings::SemanticSearch.clear_cache_for(query) }
 
       it "supports semantic search when enabled" do

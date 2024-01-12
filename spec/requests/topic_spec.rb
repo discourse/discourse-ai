@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe ::TopicsController do
   fab!(:topic) { Fabricate(:topic) }
   fab!(:topic1) { Fabricate(:topic) }

@@ -26,10 +26,9 @@
               <li data-name={{option.translated_name}} data-value={{option.id}}>
                 <DButton
                   @icon={{option.icon}}
-                  @class="btn-flat"
                   @translatedLabel={{option.translated_name}}
-                  @action={{this.updateSelected}}
-                  @actionParam={{option}}
+                  @action={{fn this.updateSelected option}}
+                  class="btn-flat"
                 />
               </li>
             {{/if}}
@@ -81,8 +80,7 @@
             <DButton
               @icon="discourse-sparkles"
               @label="discourse_ai.ai_helper.context_menu.regen"
-              @action={{this.updateSelected}}
-              @actionParam={{this.lastUsedOption}}
+              @action={{fn this.updateSelected this.lastUsedOption}}
               class="btn-flat"
             />
           </li>
