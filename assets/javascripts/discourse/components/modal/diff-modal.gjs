@@ -3,9 +3,7 @@ import { action } from "@ember/object";
 import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
-import I18n from "I18n";
-
-const t = I18n.t.bind(I18n);
+import i18n from "discourse-common/helpers/i18n";
 
 export default class ModalDiffModal extends Component {
   @action
@@ -23,7 +21,7 @@ export default class ModalDiffModal extends Component {
   <template>
     <DModal
       class="composer-ai-helper-modal"
-      @title={{t "discourse_ai.ai_helper.context_menu.changes"}}
+      @title={{i18n "discourse_ai.ai_helper.context_menu.changes"}}
       @closeModal={{@closeModal}}
     >
       <:body>

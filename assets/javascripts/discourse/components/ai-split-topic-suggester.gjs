@@ -14,9 +14,11 @@ import eq from "truth-helpers/helpers/eq";
 export default class AiSplitTopicSuggester extends Component {
   @service site;
   @service menu;
+
   @tracked suggestions = [];
   @tracked loading = false;
   @tracked icon = "discourse-sparkles";
+
   SUGGESTION_TYPES = {
     title: "suggest_title",
     category: "suggest_category",

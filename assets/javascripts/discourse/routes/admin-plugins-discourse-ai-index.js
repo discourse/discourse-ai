@@ -2,7 +2,7 @@ import { inject as service } from "@ember/service";
 import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
-  router: service("router"),
+  router: service(),
   beforeModel() {
     this.router.transitionTo("adminPlugins.discourse-ai.ai-personas");
   },

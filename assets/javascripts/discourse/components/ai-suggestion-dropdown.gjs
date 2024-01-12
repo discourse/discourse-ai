@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { fn } from "@ember/helper";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { inject as service } from "@ember/service";
@@ -13,12 +14,14 @@ export default class AISuggestionDropdown extends Component {
   @service dialog;
   @service siteSettings;
   @service composer;
+
   @tracked loading = false;
   @tracked showMenu = false;
   @tracked generatedSuggestions = [];
   @tracked suggestIcon = "discourse-sparkles";
   @tracked showErrors = false;
   @tracked error = "";
+
   SUGGESTION_TYPES = {
     title: "suggest_title",
     category: "suggest_category",
@@ -213,11 +216,11 @@ export default class AISuggestionDropdown extends Component {
   <template>
     {{#if this.showAIButton}}
       <DButton
-        @class="suggestion-button {{if this.loading 'is-loading'}}"
         @icon={{this.suggestIcon}}
         @title="discourse_ai.ai_helper.suggest"
         @action={{this.performSuggestion}}
         @disabled={{this.disableSuggestionButton}}
+        class="suggestion-button {{if this.loading 'is-loading'}}"
         ...attributes
       />
     {{/if}}
@@ -234,10 +237,9 @@ export default class AISuggestionDropdown extends Component {
         {{#each this.generatedSuggestions as |suggestion index|}}
           <li data-name={{suggestion}} data-value={{index}}>
             <DButton
-              @class="popup-menu-btn"
               @translatedLabel={{suggestion}}
-              @action={{this.applySuggestion}}
-              @actionParam={{suggestion}}
+              @action={{fn this.applySuggestion suggestion}}
+              class="popup-menu-btn"
             />
           </li>
         {{/each}}

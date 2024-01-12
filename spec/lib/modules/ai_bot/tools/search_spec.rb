@@ -61,9 +61,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
     end
 
     describe "semantic search" do
-      let (:query) {
-        "this is an expanded search"
-      }
+      let(:query) { "this is an expanded search" }
       after { DiscourseAi::Embeddings::SemanticSearch.clear_cache_for(query) }
 
       it "supports semantic search when enabled" do

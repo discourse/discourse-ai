@@ -19,9 +19,7 @@ describe DiscourseAi::Embeddings::SemanticRelated do
 
   describe "#related_topic_ids_for" do
     context "when embeddings do not exist" do
-      let (:topic) do
-        Fabricate(:topic).tap { described_class.clear_cache_for(target) }
-      end
+      let(:topic) { Fabricate(:topic).tap { described_class.clear_cache_for(target) } }
 
       it "queues job only once per 15 minutes" do
         results = nil

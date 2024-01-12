@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { fn } from "@ember/helper";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
@@ -22,12 +23,14 @@ export default class AIHelperOptionsMenu extends Component {
   static shouldRender(outletArgs, helper) {
     return showPostAIHelper(outletArgs, helper);
   }
+
   @service messageBus;
   @service site;
   @service modal;
   @service siteSettings;
   @service currentUser;
   @service menu;
+
   @tracked helperOptions = [];
   @tracked menuState = this.MENU_STATES.triggers;
   @tracked loading = false;
@@ -215,11 +218,11 @@ export default class AIHelperOptionsMenu extends Component {
       <div class="ai-post-helper">
         {{#if (eq this.menuState this.MENU_STATES.triggers)}}
           <DButton
-            @class="btn-flat ai-post-helper__trigger"
             @icon="discourse-sparkles"
             @title="discourse_ai.ai_helper.post_options_menu.title"
             @label="discourse_ai.ai_helper.post_options_menu.trigger"
             @action={{this.showAIHelperOptions}}
+            class="btn-flat ai-post-helper__trigger"
           />
 
         {{else if (eq this.menuState this.MENU_STATES.options)}}
@@ -233,13 +236,12 @@ export default class AIHelperOptionsMenu extends Component {
                 />
               {{else}}
                 <DButton
-                  @class="btn-flat ai-post-helper__options-button"
                   @icon={{option.icon}}
                   @translatedLabel={{option.translated_name}}
-                  @action={{this.performAISuggestion}}
-                  @actionParam={{option}}
+                  @action={{fn this.performAISuggestion option}}
                   data-name={{option.name}}
                   data-value={{option.id}}
+                  class="btn-flat ai-post-helper__options-button"
                 />
               {{/if}}
             {{/each}}
@@ -259,17 +261,17 @@ export default class AIHelperOptionsMenu extends Component {
               </div>
               <di class="ai-post-helper__suggestion__buttons">
                 <DButton
-                  @class="btn-flat ai-post-helper__suggestion__cancel"
                   @icon="times"
                   @label="discourse_ai.ai_helper.post_options_menu.cancel"
                   @action={{this.cancelAIAction}}
+                  class="btn-flat ai-post-helper__suggestion__cancel"
                 />
                 <DButton
-                  @class="btn-flat ai-post-helper__suggestion__copy"
                   @icon={{this.copyButtonIcon}}
                   @label={{this.copyButtonLabel}}
                   @action={{this.copySuggestion}}
                   @disabled={{not this.suggestion}}
+                  class="btn-flat ai-post-helper__suggestion__copy"
                 />
               </di>
             {{else}}

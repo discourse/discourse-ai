@@ -1,6 +1,6 @@
 import { Input } from "@ember/component";
 
-<template>
+const AiPersonaCommandOptionEditor = <template>
   <div class="control-group ai-persona-command-option-editor">
     <label>
       {{@option.name}}
@@ -12,4 +12,6 @@ import { Input } from "@ember/component";
       {{@option.description}}
     </div>
   </div>
-</template>
+</template>;
+
+export default AiPersonaCommandOptionEditor;

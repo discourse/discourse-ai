@@ -6,7 +6,7 @@ module ::DiscourseAi
       def self.perform!(content, model = nil)
         headers = { "Content-Type" => "application/json" }
 
-        if SiteSetting.ai_openai_embeddings_url.include? ("azure")
+        if SiteSetting.ai_openai_embeddings_url.include?("azure")
           headers["api-key"] = SiteSetting.ai_openai_api_key
         else
           headers["Authorization"] = "Bearer #{SiteSetting.ai_openai_api_key}"
