@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe ModelAccuracy do
   describe "#calculate_accuracy" do
     let(:accuracy) { ModelAccuracy.new(model: "test_model", classification_type: "test") }
