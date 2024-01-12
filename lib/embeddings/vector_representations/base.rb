@@ -112,7 +112,13 @@ module DiscourseAi
           DB.exec("RESET maintenance_work_mem;")
 
           database = DB.query_single("SELECT current_database();").first
-          DB.exec("ALTER DATABASE #{database} SET ivfflat.probes = #{probes};")
+
+          # This is a global setting, if we set it based on post count
+          # we will be unable to use the index for topics
+          # Hopefully https://github.com/pgvector/pgvector/issues/235 will make this better
+          if table_name == topic_table_name
+            DB.exec("ALTER DATABASE #{database} SET ivfflat.probes = #{probes};")
+          end
         end
 
         def vector_from(text)
