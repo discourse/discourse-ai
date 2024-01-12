@@ -124,7 +124,7 @@ export default class SemanticSearch extends Component {
       this.preventAISearch = false;
     }
 
-    if (this.initialSearchTerm) {
+    if (this.initialSearchTerm && !this.searching) {
       return this.performHyDESearch();
     }
 
@@ -132,7 +132,9 @@ export default class SemanticSearch extends Component {
 
     withPluginApi("1.15.0", (api) => {
       api.onAppEvent("full-page-search:trigger-search", () => {
-        return this.performHyDESearch();
+        if (!this.searching) {
+          return this.performHyDESearch();
+        }
       });
     });
   }
