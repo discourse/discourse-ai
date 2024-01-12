@@ -7,6 +7,22 @@ RSpec.describe DiscourseAi::Completions::Prompt do
   let(:user_msg) { "Write something nice" }
   let(:username) { "username1" }
 
+  describe ".new" do
+    it "raises for invalid attributes" do
+      expect { described_class.new("a bot", messages: {}) }.to raise_error(ArgumentError)
+      expect { described_class.new("a bot", tools: {}) }.to raise_error(ArgumentError)
+
+      bad_messages = [{ type: :user, content: "a system message", unknown_attribute: :random }]
+      expect { described_class.new("a bot", messages: bad_messages) }.to raise_error(ArgumentError)
+
+      bad_messages2 = [{ type: :user }]
+      expect { described_class.new("a bot", messages: bad_messages2) }.to raise_error(ArgumentError)
+
+      bad_messages3 = [{ content: "some content associated to no one" }]
+      expect { described_class.new("a bot", messages: bad_messages3) }.to raise_error(ArgumentError)
+    end
+  end
+
   describe "#push" do
     describe "turn validations" do
       it "validates that tool messages have a previous tool_call message" do
