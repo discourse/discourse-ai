@@ -18,14 +18,19 @@ module DiscourseAi
       attr_reader :bot_user
 
       def get_updated_title(conversation_context, post_user)
-        title_prompt = { insts: <<~TEXT, conversation_context: conversation_context }
-          You are titlebot. Given a topic, you will figure out a title.
-          You will never respond with anything but 7 word topic title.
+        system_insts = <<~TEXT.strip
+        You are titlebot. Given a topic, you will figure out a title.
+        You will never respond with anything but 7 word topic title.
         TEXT
 
-        title_prompt[
-          :input
-        ] = "Based on our previous conversation, suggest a 7 word title without quoting any of it."
+        title_prompt =
+          DiscourseAi::Completions::Prompt.new(system_insts, messages: conversation_context)
+
+        title_prompt.push(
+          type: :user,
+          content:
+            "Based on our previous conversation, suggest a 7 word title without quoting any of it.",
+        )
 
         DiscourseAi::Completions::Llm
           .proxy(model)

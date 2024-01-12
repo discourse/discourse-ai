@@ -53,9 +53,12 @@ module DiscourseAi
                   },
                 },
               }
-              memo << noop_model_response.dup
             else
-              memo << noop_model_response.dup if memo.last&.dig(:role) == "user"
+              # Gemini quirk. Doesn't accept tool -> user or user -> user msgs.
+              previous_msg_role = memo.last&.dig(:role)
+              if previous_msg_role == "user" || previous_msg_role == "tool"
+                memo << noop_model_response.dup
+              end
 
               memo << { role: "user", parts: { text: msg[:content] } }
             end

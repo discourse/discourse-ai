@@ -55,7 +55,6 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
               },
             },
           },
-          { role: "model", parts: { text: "Ok." } },
         ],
       )
     end

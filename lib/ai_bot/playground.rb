@@ -38,7 +38,7 @@ module DiscourseAi
         result = []
         first = true
 
-        context.each do |raw, username, custom_prompt|
+        context.reverse_each do |raw, username, custom_prompt|
           custom_prompt_translation =
             Proc.new do |message|
               # We can't keep backwards-compatibility for stored functions.
