@@ -30,7 +30,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#invoke" do
-    it "can retreive options from persona correctly" do
+    it "can retrieve options from persona correctly" do
       persona_options = { "base_query" => "#funny" }
 
       search_post = Fabricate(:post, topic: topic_with_tags)

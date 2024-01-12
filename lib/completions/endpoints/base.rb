@@ -9,7 +9,7 @@ module DiscourseAi
 
         def self.endpoint_for(model_name)
           # Order is important.
-          # Bedrock has priority over Anthropic if creadentials are present.
+          # Bedrock has priority over Anthropic if credentials are present.
           endpoints = [
             DiscourseAi::Completions::Endpoints::AwsBedrock,
             DiscourseAi::Completions::Endpoints::Anthropic,
@@ -284,8 +284,8 @@ module DiscourseAi
             &.elements
             .to_a
             .each do |elem|
-              if paramenter = function_buffer.at(elem.name)&.text
-                function_buffer.at(elem.name).inner_html = paramenter
+              if parameter = function_buffer.at(elem.name)&.text
+                function_buffer.at(elem.name).inner_html = parameter
               else
                 param_node = read_function.at(elem.name)
                 function_buffer.at("parameters").add_child(param_node)
