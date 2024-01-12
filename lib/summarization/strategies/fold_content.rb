@@ -105,16 +105,14 @@ module DiscourseAi
         def summarize_in_chunks(llm, chunks, user, opts)
           chunks.map do |chunk|
             prompt = summarization_prompt(chunk[:summary], opts)
-            prompt[:post_insts] = "Don't use more than 400 words for the summary."
 
-            chunk[:summary] = llm.generate(prompt, user: user)
+            chunk[:summary] = llm.generate(prompt, user: user, max_tokens: 300)
             chunk
           end
         end
 
         def concatenate_summaries(llm, summaries, user, &on_partial_blk)
-          prompt = {}
-          prompt[:insts] = <<~TEXT
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
             You are a summarization bot that effectively concatenates disjoint summaries, creating a cohesive narrative.
             The narrative you create is in the form of one or multiple paragraphs.
             Your reply MUST BE a single concatenated summary using the summaries I'll provide to you.
@@ -123,7 +121,7 @@ module DiscourseAi
             You format the response, including links, using Markdown.
           TEXT
 
-          prompt[:input] = <<~TEXT
+          prompt.push(type: :user, content: <<~TEXT.strip)
             THESE are the summaries, each one separated by a newline, all of them inside <input></input> XML tags:
 
             <input>
@@ -151,27 +149,38 @@ module DiscourseAi
                 For example, a link to the 3rd post in the topic would be [post 3](#{opts[:resource_path]}/3)
               TEXT
 
-          prompt = { insts: insts, input: <<~TEXT }
-              #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ".\n" : ""}
-              Here are the posts, inside <input></input> XML tags:
-
-              <input>
-                #{input}
-              </input>
-          TEXT
+          prompt = DiscourseAi::Completions::Prompt.new(insts.strip)
 
           if opts[:resource_path]
-            prompt[:examples] = [
-              [
-                "<input>1) user1 said: I love Mondays 2) user2 said: I hate Mondays</input>",
+            prompt.push(
+              type: :user,
+              content: "<input>1) user1 said: I love Mondays 2) user2 said: I hate Mondays</input>",
+            )
+            prompt.push(
+              type: :model,
+              content:
                 "Two users are sharing their feelings toward Mondays. [user1](#{opts[:resource_path]}/1) hates them, while [user2](#{opts[:resource_path]}/2) loves them.",
-              ],
-              [
-                "<input>3) usuario1: Amo los lunes 6) usuario2: Odio los lunes</input>",
+            )
+
+            prompt.push(
+              type: :user,
+              content: "<input>3) usuario1: Amo los lunes 6) usuario2: Odio los lunes</input>",
+            )
+            prompt.push(
+              type: :model,
+              content:
                 "Dos usuarios charlan sobre los lunes. [usuario1](#{opts[:resource_path]}/3) dice que los ama, mientras que [usuario2](#{opts[:resource_path]}/2) los odia.",
-              ],
-            ]
+            )
           end
+
+          prompt.push(type: :user, content: <<~TEXT.strip)
+          #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ".\n" : ""}
+          Here are the posts, inside <input></input> XML tags:
+
+          <input>
+            #{input}
+          </input>
+          TEXT
 
           prompt
         end

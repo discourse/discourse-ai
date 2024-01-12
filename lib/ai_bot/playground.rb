@@ -36,8 +36,9 @@ module DiscourseAi
             .pluck(:raw, :username, "post_custom_prompts.custom_prompt")
 
         result = []
+        first = true
 
-        context.each do |raw, username, custom_prompt|
+        context.reverse_each do |raw, username, custom_prompt|
           custom_prompt_translation =
             Proc.new do |message|
               # We can't keep backwards-compatibility for stored functions.
@@ -45,27 +46,29 @@ module DiscourseAi
               if message[2] != "function"
                 custom_context = {
                   content: message[0],
-                  type: message[2].present? ? message[2] : "assistant",
+                  type: message[2].present? ? message[2].to_sym : :model,
                 }
 
-                custom_context[:name] = message[1] if custom_context[:type] != "assistant"
+                custom_context[:id] = message[1] if custom_context[:type] != :model
 
-                custom_context
+                result << custom_context
               end
             end
 
           if custom_prompt.present?
-            result << {
-              type: "multi_turn",
-              content: custom_prompt.reverse_each.map(&custom_prompt_translation).compact,
-            }
+            if first
+              custom_prompt.each(&custom_prompt_translation)
+              first = false
+            else
+              custom_prompt.first(2).each(&custom_prompt_translation)
+            end
           else
             context = {
               content: raw,
-              type: (available_bot_usernames.include?(username) ? "assistant" : "user"),
+              type: (available_bot_usernames.include?(username) ? :model : :user),
             }
 
-            context[:name] = clean_username(username) if context[:type] == "user"
+            context[:id] = username if context[:type] == :user
 
             result << context
           end
@@ -207,16 +210,6 @@ module DiscourseAi
 
       def available_bot_usernames
         @bot_usernames ||= DiscourseAi::AiBot::EntryPoint::BOTS.map(&:second)
-      end
-
-      def clean_username(username)
-        if username.match?(/\0[a-zA-Z0-9_-]{1,64}\z/)
-          username
-        else
-          # not the best in the world, but this is what we have to work with
-          # if sites enable unicode usernames this can get messy
-          username.gsub(/[^a-zA-Z0-9_-]/, "_")[0..63]
-        end
       end
     end
   end

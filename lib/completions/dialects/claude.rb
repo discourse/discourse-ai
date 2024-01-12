@@ -14,39 +14,50 @@ module DiscourseAi
           end
         end
 
-        def pad_newlines!(prompt)
-          if prompt[-1..-1] != "\n"
-            prompt << "\n\n"
-          elsif prompt[-2..-1] != "\n\n"
-            prompt << "\n"
-          end
-        end
-
         def translate
-          claude_prompt = uses_system_message? ? +"" : +"Human: "
-          claude_prompt << prompt[:insts] << "\n"
+          messages = prompt.messages
 
-          claude_prompt << build_tools_prompt if prompt[:tools]
+          trimmed_messages = trim_messages(messages)
 
-          claude_prompt << build_examples(prompt[:examples]) if prompt[:examples]
+          # Need to include this differently
+          last_message = trimmed_messages.last[:type] == :assistant ? trimmed_messages.pop : nil
 
-          pad_newlines!(claude_prompt)
+          claude_prompt =
+            trimmed_messages.reduce(+"") do |memo, msg|
+              next(memo) if msg[:type] == :tool_call
 
-          claude_prompt << conversation_context if prompt[:conversation_context]
+              if msg[:type] == :system
+                memo << "Human: " unless uses_system_message?
+                memo << msg[:content]
+                if prompt.tools
+                  memo << "\n"
+                  memo << build_tools_prompt
+                end
+              elsif msg[:type] == :model
+                memo << "\n\nAssistant: #{msg[:content]}"
+              elsif msg[:type] == :tool
+                memo << "\n\nAssistant:\n"
 
-          pad_newlines!(claude_prompt)
+                memo << (<<~TEXT).strip
+                <function_results>
+                <result>
+                <tool_name>#{msg[:id]}</tool_name>
+                <json>
+                #{msg[:content]}
+                </json>
+                </result>
+                </function_results>
+                TEXT
+              else
+                memo << "\n\nHuman: #{msg[:content]}"
+              end
 
-          if uses_system_message? && (prompt[:input] || prompt[:post_insts])
-            claude_prompt << "Human: "
-          end
-          claude_prompt << "#{prompt[:input]}\n" if prompt[:input]
+              memo
+            end
 
-          claude_prompt << "#{prompt[:post_insts]}\n" if prompt[:post_insts]
+          claude_prompt << "\n\nAssistant:"
+          claude_prompt << " #{last_message[:content]}:" if last_message
 
-          pad_newlines!(claude_prompt)
-
-          claude_prompt << "Assistant: "
-          claude_prompt << " #{prompt[:final_insts]}:" if prompt[:final_insts]
           claude_prompt
         end
 
@@ -54,48 +65,10 @@ module DiscourseAi
           100_000 # Claude-2.1 has a 200k context window.
         end
 
-        def conversation_context
-          return "" if prompt[:conversation_context].blank?
-
-          clean_context = prompt[:conversation_context].select { |cc| cc[:type] != "tool_call" }
-          flattened_context = flatten_context(clean_context)
-          trimmed_context = trim_context(flattened_context)
-
-          trimmed_context
-            .reverse
-            .map do |context|
-              row = context[:type] == "user" ? +"Human:" : +"Assistant:"
-
-              if context[:type] == "tool"
-                row << "\n"
-                row << (<<~TEXT).strip
-                  <function_results>
-                  <result>
-                  <tool_name>#{context[:name]}</tool_name>
-                  <json>
-                  #{context[:content]}
-                  </json>
-                  </result>
-                  </function_results>
-                TEXT
-              else
-                row << " "
-                row << context[:content]
-              end
-            end
-            .join("\n\n")
-        end
-
         private
 
         def uses_system_message?
           model_name == "claude-2"
-        end
-
-        def build_examples(examples_arr)
-          examples_arr.reduce("") do |memo, example|
-            memo += "<example>\nH: #{example[0]}\nA: #{example[1]}\n</example>\n"
-          end
         end
       end
     end

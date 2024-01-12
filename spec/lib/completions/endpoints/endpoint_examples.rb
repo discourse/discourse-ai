@@ -34,6 +34,13 @@ RSpec.shared_examples "an endpoint that can communicate with a completion servic
     Net.send(:const_set, :HTTP, @original_net_http)
   end
 
+  let(:generic_prompt) do
+    DiscourseAi::Completions::Prompt.new(
+      "You write words",
+      messages: [{ type: :user, content: "write 3 words" }],
+    )
+  end
+
   describe "#perform_completion!" do
     fab!(:user) { Fabricate(:user) }
 
@@ -97,15 +104,10 @@ RSpec.shared_examples "an endpoint that can communicate with a completion servic
       end
 
       context "with functions" do
-        let(:generic_prompt) do
-          {
-            insts: "You can tell me the weather",
-            input: "Return the weather in Sydney",
-            tools: [tool],
-          }
+        before do
+          generic_prompt.tools = [tool]
+          stub_response(prompt, tool_call, tool_call: true)
         end
-
-        before { stub_response(prompt, tool_call, tool_call: true) }
 
         it "returns a function invocation" do
           completion_response = model.perform_completion!(dialect, user)
@@ -153,15 +155,10 @@ RSpec.shared_examples "an endpoint that can communicate with a completion servic
       end
 
       context "with functions" do
-        let(:generic_prompt) do
-          {
-            insts: "You can tell me the weather",
-            input: "Return the weather in Sydney",
-            tools: [tool],
-          }
+        before do
+          generic_prompt.tools = [tool]
+          stub_streamed_response(prompt, tool_deltas, tool_call: true)
         end
-
-        before { stub_streamed_response(prompt, tool_deltas, tool_call: true) }
 
         it "waits for the invocation to finish before calling the partial" do
           buffered_partial = ""

@@ -6,7 +6,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::AnthropicTokenizer) }
 
   let(:model_name) { "claude-2" }
-  let(:generic_prompt) { { insts: "write 3 words" } }
   let(:dialect) { DiscourseAi::Completions::Dialects::Claude.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
 

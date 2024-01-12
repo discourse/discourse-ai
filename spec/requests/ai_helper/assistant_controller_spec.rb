@@ -85,11 +85,9 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         expected_diff =
           "<div class=\"inline-diff\"><p><ins>Un </ins><ins>usuario </ins><ins>escribio </ins><ins>esto</ins><del>A </del><del>user </del><del>wrote </del><del>this</del></p></div>"
 
-        expected_input = <<~TEXT
-        <input>
-        Translate to Spanish:
-        A user wrote this
-        </input>
+        expected_input = <<~TEXT.strip
+        <input>Translate to Spanish:
+        A user wrote this</input>
         TEXT
 
         DiscourseAi::Completions::Llm.with_prepared_responses([translated_text]) do |spy|

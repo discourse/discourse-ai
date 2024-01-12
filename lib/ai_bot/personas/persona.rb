@@ -100,17 +100,18 @@ module DiscourseAi
               found.nil? ? match : found.to_s
             end
 
-          insts = <<~TEXT
-          #{system_insts}
-          #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
+          prompt =
+            DiscourseAi::Completions::Prompt.new(
+              <<~TEXT.strip,
+            #{system_insts}
+            #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
           TEXT
+              messages: context[:conversation_context].to_a,
+            )
 
-          { insts: insts }.tap do |prompt|
-            prompt[:tools] = available_tools.map(&:signature) if available_tools
-            prompt[:conversation_context] = context[:conversation_context] if context[
-              :conversation_context
-            ]
-          end
+          prompt.tools = available_tools.map(&:signature) if available_tools
+
+          prompt
         end
 
         def find_tool(partial)

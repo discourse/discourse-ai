@@ -22,28 +22,39 @@ module DiscourseAi
         end
 
         def translate
-          open_ai_prompt = [
-            { role: "system", content: [prompt[:insts], prompt[:post_insts].to_s].join("\n") },
-          ]
+          messages = prompt.messages
 
-          if prompt[:examples]
-            prompt[:examples].each do |example_pair|
-              open_ai_prompt << { role: "user", content: example_pair.first }
-              open_ai_prompt << { role: "assistant", content: example_pair.second }
+          # ChatGPT doesn't use an assistant msg to improve long-context responses.
+          messages.pop if messages.last[:type] == :model
+
+          trimmed_messages = trim_messages(messages)
+
+          trimmed_messages.map do |msg|
+            if msg[:type] == :system
+              { role: "system", content: msg[:content] }
+            elsif msg[:type] == :model
+              { role: "assistant", content: msg[:content] }
+            elsif msg[:type] == :tool_call
+              call_details = JSON.parse(msg[:content], symbolize_names: true)
+              call_details[:arguments] = call_details[:arguments].to_json
+
+              {
+                role: "assistant",
+                content: nil,
+                tool_calls: [{ type: "function", function: call_details, id: msg[:id] }],
+              }
+            elsif msg[:type] == :tool
+              { role: "tool", tool_call_id: msg[:id], content: msg[:content] }
+            else
+              { role: "user", content: msg[:content] }.tap do |user_msg|
+                user_msg[:name] = msg[:id] if msg[:id]
+              end
             end
           end
-
-          open_ai_prompt.concat(conversation_context) if prompt[:conversation_context]
-
-          open_ai_prompt << { role: "user", content: prompt[:input] } if prompt[:input]
-
-          open_ai_prompt
         end
 
         def tools
-          return if prompt[:tools].blank?
-
-          prompt[:tools].map do |t|
+          prompt.tools.map do |t|
             tool = t.dup
 
             tool[:parameters] = t[:parameters]
@@ -59,39 +70,6 @@ module DiscourseAi
               end
 
             { type: "function", function: tool }
-          end
-        end
-
-        def conversation_context
-          return [] if prompt[:conversation_context].blank?
-
-          flattened_context = flatten_context(prompt[:conversation_context])
-          trimmed_context = trim_context(flattened_context)
-
-          trimmed_context.reverse.map do |context|
-            if context[:type] == "tool_call"
-              function = JSON.parse(context[:content], symbolize_names: true)
-              function[:arguments] = function[:arguments].to_json
-
-              {
-                role: "assistant",
-                content: nil,
-                tool_calls: [{ type: "function", function: function, id: context[:name] }],
-              }
-            else
-              translated = context.slice(:content)
-              translated[:role] = context[:type]
-
-              if context[:name]
-                if translated[:role] == "tool"
-                  translated[:tool_call_id] = context[:name]
-                else
-                  translated[:name] = context[:name]
-                end
-              end
-
-              translated
-            end
           end
         end
 

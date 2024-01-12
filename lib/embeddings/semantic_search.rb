@@ -95,19 +95,19 @@ module DiscourseAi
       end
 
       def hypothetical_post_from(search_term)
-        prompt = {
-          insts: <<~TEXT,
+        prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
           You are a content creator for a forum. The forum description is as follows:
           #{SiteSetting.title}
           #{SiteSetting.site_description}
+
+          Put the forum post between <ai></ai> tags.
         TEXT
-          input: <<~TEXT,
+
+        prompt.push(type: :user, content: <<~TEXT.strip)
           Using this description, write a forum post about the subject inside the <input></input> XML tags:
 
           <input>#{search_term}</input>
         TEXT
-          post_insts: "Put the forum post between <ai></ai> tags.",
-        }
 
         llm_response =
           DiscourseAi::Completions::Llm.proxy(

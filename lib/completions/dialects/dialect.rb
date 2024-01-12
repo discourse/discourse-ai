@@ -31,6 +31,27 @@ module DiscourseAi
           def tokenizer
             raise NotImplemented
           end
+
+          def tool_preamble
+            <<~TEXT
+              In this environment you have access to a set of tools you can use to answer the user's question.
+              You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
+              <function_calls>
+              <invoke>
+              <tool_name>$TOOL_NAME</tool_name>
+              <parameters>
+              <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
+              ...
+              </parameters>
+              </invoke>
+              </function_calls>
+  
+              if a parameter type is an array, return a JSON array of values. For example:
+              [1,"two",3.0]
+  
+              Here are the tools available:
+            TEXT
+          end
         end
 
         def initialize(generic_prompt, model_name, opts: {})
@@ -46,7 +67,7 @@ module DiscourseAi
         def tools
           tools = +""
 
-          prompt[:tools].each do |function|
+          prompt.tools.each do |function|
             parameters = +""
             if function[:parameters].present?
               function[:parameters].each do |parameter|
@@ -89,113 +110,59 @@ module DiscourseAi
 
         attr_reader :prompt, :model_name, :opts
 
-        def trim_context(conversation_context)
+        def trim_messages(messages)
           prompt_limit = max_prompt_tokens
-          current_token_count = calculate_token_count_without_context
+          current_token_count = 0
           message_step_size = (max_prompt_tokens / 25).to_i * -1
 
-          conversation_context.reduce([]) do |memo, context|
-            break(memo) if current_token_count >= prompt_limit
+          reversed_trimmed_msgs =
+            messages
+              .reverse
+              .reduce([]) do |acc, msg|
+                message_tokens = calculate_message_token(msg)
 
-            dupped_context = context.dup
+                dupped_msg = msg.dup
 
-            message_tokens = calculate_message_token(dupped_context)
+                # Don't trim tool call metadata.
+                if msg[:type] == :tool_call
+                  current_token_count += message_tokens + per_message_overhead
+                  acc << dupped_msg
+                  next(acc)
+                end
 
-            # Don't trim tool call metadata.
-            if context[:type] == "tool_call"
-              current_token_count += calculate_message_token(context) + per_message_overhead
-              memo << context
-              next(memo)
-            end
+                # Trimming content to make sure we respect token limit.
+                while dupped_msg[:content].present? &&
+                        message_tokens + current_token_count + per_message_overhead > prompt_limit
+                  dupped_msg[:content] = dupped_msg[:content][0..message_step_size] || ""
+                  message_tokens = calculate_message_token(dupped_msg)
+                end
 
-            # Trimming content to make sure we respect token limit.
-            while dupped_context[:content].present? &&
-                    message_tokens + current_token_count + per_message_overhead > prompt_limit
-              dupped_context[:content] = dupped_context[:content][0..message_step_size] || ""
-              message_tokens = calculate_message_token(dupped_context)
-            end
+                next(acc) if dupped_msg[:content].blank?
 
-            next(memo) if dupped_context[:content].blank?
+                current_token_count += message_tokens + per_message_overhead
 
-            current_token_count += message_tokens + per_message_overhead
+                acc << dupped_msg
+              end
 
-            memo << dupped_context
-          end
-        end
-
-        def calculate_token_count_without_context
-          tokenizer = self.class.tokenizer
-
-          examples_count =
-            prompt[:examples].to_a.sum do |pair|
-              tokenizer.size(pair.join) + (per_message_overhead * 2)
-            end
-          input_count = tokenizer.size(prompt[:input].to_s) + per_message_overhead
-
-          examples_count + input_count +
-            prompt
-              .except(:conversation_context, :tools, :examples, :input)
-              .sum { |_, v| tokenizer.size(v) + per_message_overhead }
+          reversed_trimmed_msgs.reverse
         end
 
         def per_message_overhead
           0
         end
 
-        def calculate_message_token(context)
-          self.class.tokenizer.size(context[:content].to_s)
-        end
-
-        def self.tool_preamble
-          <<~TEXT
-            In this environment you have access to a set of tools you can use to answer the user's question.
-            You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
-            <function_calls>
-            <invoke>
-            <tool_name>$TOOL_NAME</tool_name>
-            <parameters>
-            <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
-            ...
-            </parameters>
-            </invoke>
-            </function_calls>
-
-            if a parameter type is an array, return a JSON array of values. For example:
-            [1,"two",3.0]
-
-            Here are the tools available:
-          TEXT
+        def calculate_message_token(msg)
+          self.class.tokenizer.size(msg[:content].to_s)
         end
 
         def build_tools_prompt
-          return "" if prompt[:tools].blank?
+          return "" if prompt.tools.blank?
 
-          <<~TEXT
+          (<<~TEXT).strip
             #{self.class.tool_preamble}
             <tools>
             #{tools}</tools>
           TEXT
-        end
-
-        def flatten_context(context)
-          found_first_multi_turn = false
-
-          context
-            .map do |a_context|
-              if a_context[:type] == "multi_turn"
-                if found_first_multi_turn
-                  # Only take tool and tool_call_id from subsequent multi-turn interactions.
-                  # Drop assistant responses
-                  a_context[:content].last(2)
-                else
-                  found_first_multi_turn = true
-                  a_context[:content]
-                end
-              else
-                a_context
-              end
-            end
-            .flatten
         end
       end
     end

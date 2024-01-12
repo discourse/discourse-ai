@@ -26,18 +26,16 @@ RSpec.describe CompletionPrompt do
       let(:custom_prompt) { described_class.find(described_class::CUSTOM_PROMPT) }
 
       it "wraps the user input with <input> XML tags and adds a custom instruction if given" do
-        expected = <<~TEXT
-        <input>
-        Translate to Turkish:
-        #{user_input}
-        </input>
+        expected = <<~TEXT.strip
+        <input>Translate to Turkish:
+        #{user_input}</input>
         TEXT
 
         custom_prompt.custom_instruction = "Translate to Turkish"
 
         prompt = custom_prompt.messages_with_input(user_input)
 
-        expect(prompt[:input]).to eq(expected)
+        expect(prompt.messages.last[:content]).to eq(expected)
       end
     end
 
@@ -45,16 +43,13 @@ RSpec.describe CompletionPrompt do
       let(:title_prompt) { described_class.find(described_class::GENERATE_TITLES) }
 
       it "wraps user input with <input> XML tags" do
-        expected = <<~TEXT
-        <input>
-        #{user_input}
-        </input>
-        TEXT
+        expected = "<input>#{user_input}</input>"
+
         title_prompt.custom_instruction = "Translate to Turkish"
 
         prompt = title_prompt.messages_with_input(user_input)
 
-        expect(prompt[:input]).to eq(expected)
+        expect(prompt.messages.last[:content]).to eq(expected)
       end
     end
   end

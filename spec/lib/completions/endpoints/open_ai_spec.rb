@@ -6,7 +6,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::OpenAiTokenizer) }
 
   let(:model_name) { "gpt-3.5-turbo" }
-  let(:generic_prompt) { { insts: "You are a helpful bot.", input: "write 3 words" } }
   let(:dialect) { DiscourseAi::Completions::Dialects::ChatGpt.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
 
@@ -37,7 +36,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     model
       .default_options
       .merge(messages: prompt)
-      .tap { |b| b[:tools] = dialect.tools if generic_prompt[:tools] }
+      .tap { |b| b[:tools] = dialect.tools if generic_prompt.tools.present? }
       .to_json
   end
 
@@ -45,7 +44,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     model
       .default_options
       .merge(messages: prompt, stream: true)
-      .tap { |b| b[:tools] = dialect.tools if generic_prompt[:tools] }
+      .tap { |b| b[:tools] = dialect.tools if generic_prompt.tools.present? }
       .to_json
   end
 
@@ -183,7 +182,10 @@ data: [D|ONE]
 
       partials = []
       llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
-      llm.generate({ insts: "test" }, user: Discourse.system_user) { |partial| partials << partial }
+      llm.generate(
+        DiscourseAi::Completions::Prompt.new("test"),
+        user: Discourse.system_user,
+      ) { |partial| partials << partial }
 
       expect(partials.join).to eq("test,test2,test3,test4")
     end
@@ -212,7 +214,10 @@ data: [D|ONE]
 
       partials = []
       llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
-      llm.generate({ insts: "test" }, user: Discourse.system_user) { |partial| partials << partial }
+      llm.generate(
+        DiscourseAi::Completions::Prompt.new("test"),
+        user: Discourse.system_user,
+      ) { |partial| partials << partial }
 
       expect(partials.join).to eq("test,test1,test2,test3,test4")
     end

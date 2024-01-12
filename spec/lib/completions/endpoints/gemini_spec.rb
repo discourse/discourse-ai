@@ -6,7 +6,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::OpenAiTokenizer) }
 
   let(:model_name) { "gemini-pro" }
-  let(:generic_prompt) { { insts: "You are a helpful bot.", input: "write 3 words" } }
   let(:dialect) { DiscourseAi::Completions::Dialects::Gemini.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
 
@@ -38,14 +37,18 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     model
       .default_options
       .merge(contents: prompt)
-      .tap { |b| b[:tools] = [{ function_declarations: [tool_payload] }] if generic_prompt[:tools] }
+      .tap do |b|
+        b[:tools] = [{ function_declarations: [tool_payload] }] if generic_prompt.tools.present?
+      end
       .to_json
   end
   let(:stream_request_body) do
     model
       .default_options
       .merge(contents: prompt)
-      .tap { |b| b[:tools] = [{ function_declarations: [tool_payload] }] if generic_prompt[:tools] }
+      .tap do |b|
+        b[:tools] = [{ function_declarations: [tool_payload] }] if generic_prompt.tools.present?
+      end
       .to_json
   end
 

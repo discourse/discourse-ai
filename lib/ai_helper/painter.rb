@@ -57,10 +57,14 @@ module DiscourseAi
       end
 
       def difussion_prompt(text, user)
-        prompt = { insts: <<~TEXT, input: text }
+        prompt =
+          DiscourseAi::Completions::Prompt.new(
+            <<~TEXT.strip,
           Provide me a StableDiffusion prompt to generate an image that illustrates the following post in 40 words or less, be creative.
           You'll find the post between <input></input> XML tags.
         TEXT
+            messages: [{ type: :user, content: text, id: user.username }],
+          )
 
         DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model).generate(
           prompt,

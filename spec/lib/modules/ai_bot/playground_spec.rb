@@ -155,9 +155,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       expect(context).to contain_exactly(
         *[
-          { type: "user", name: user.username, content: third_post.raw },
-          { type: "assistant", content: second_post.raw },
-          { type: "user", name: user.username, content: first_post.raw },
+          { type: :user, id: user.username, content: third_post.raw },
+          { type: :model, content: second_post.raw },
+          { type: :user, id: user.username, content: first_post.raw },
         ],
       )
     end
@@ -169,8 +169,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       expect(context).to contain_exactly(
         *[
-          { type: "user", name: user.username, content: third_post.raw },
-          { type: "assistant", content: second_post.raw },
+          { type: :user, id: user.username, content: third_post.raw },
+          { type: :model, content: second_post.raw },
         ],
       )
     end
@@ -197,16 +197,42 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         expect(context).to contain_exactly(
           *[
-            { type: "user", name: user.username, content: third_post.raw },
-            {
-              type: "multi_turn",
-              content: [
-                { type: "assistant", content: custom_prompt.third.first },
-                { type: "tool_call", content: custom_prompt.second.first, name: "time" },
-                { type: "tool", name: "time", content: custom_prompt.first.first },
-              ],
-            },
-            { type: "user", name: user.username, content: first_post.raw },
+            { type: :user, id: user.username, content: third_post.raw },
+            { type: :model, content: custom_prompt.third.first },
+            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
+            { type: :tool, id: "time", content: custom_prompt.first.first },
+            { type: :user, id: user.username, content: first_post.raw },
+          ],
+        )
+      end
+
+      it "include replies generated from tools only once" do
+        custom_prompt = [
+          [
+            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
+            "time",
+            "tool",
+          ],
+          [
+            { name: "time", arguments: { name: "time", timezone: "Buenos Aires" } }.to_json,
+            "time",
+            "tool_call",
+          ],
+          ["I replied this thanks to the time command", bot_user.username],
+        ]
+        PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
+        PostCustomPrompt.create!(post: first_post, custom_prompt: custom_prompt)
+
+        context = playground.conversation_context(third_post)
+
+        expect(context).to contain_exactly(
+          *[
+            { type: :user, id: user.username, content: third_post.raw },
+            { type: :model, content: custom_prompt.third.first },
+            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
+            { type: :tool, id: "time", content: custom_prompt.first.first },
+            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
+            { type: :tool, id: "time", content: custom_prompt.first.first },
           ],
         )
       end

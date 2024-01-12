@@ -15,54 +15,48 @@ module DiscourseAi
         end
 
         def translate
-          orca_style_prompt = +<<~TEXT
-          ### System:
-          #{prompt[:insts]}
-          #{build_tools_prompt}#{prompt[:post_insts]}
-          TEXT
+          messages = prompt.messages
+          trimmed_messages = trim_messages(messages)
 
-          if prompt[:examples]
-            prompt[:examples].each do |example_pair|
-              orca_style_prompt << "### User:\n#{example_pair.first}\n"
-              orca_style_prompt << "### Assistant:\n#{example_pair.second}\n"
-            end
-          end
+          # Need to include this differently
+          last_message = trimmed_messages.last[:type] == :assistant ? trimmed_messages.pop : nil
 
-          orca_style_prompt << "### User:\n#{prompt[:input]}\n"
+          llama2_prompt =
+            trimmed_messages.reduce(+"") do |memo, msg|
+              next(memo) if msg[:type] == :tool_call
 
-          orca_style_prompt << "### Assistant:\n"
-        end
+              if msg[:type] == :system
+                memo << (<<~TEXT).strip
+                ### System:
+                #{msg[:content]}
+                #{build_tools_prompt}
+                TEXT
+              elsif msg[:type] == :model
+                memo << "\n### Assistant:\n#{msg[:content]}"
+              elsif msg[:type] == :tool
+                memo << "\n### Assistant:\n"
 
-        def conversation_context
-          return "" if prompt[:conversation_context].blank?
-
-          clean_context = prompt[:conversation_context].select { |cc| cc[:type] != "tool_call" }
-          flattened_context = flatten_context(clean_context)
-          trimmed_context = trim_context(flattened_context)
-
-          trimmed_context
-            .reverse
-            .reduce(+"") do |memo, context|
-              memo << (context[:type] == "user" ? "### User:" : "### Assistant:")
-
-              if context[:type] == "tool"
-                memo << <<~TEXT
-
+                memo << (<<~TEXT).strip
                 <function_results>
                 <result>
-                <tool_name>#{context[:name]}</tool_name>
+                <tool_name>#{msg[:id]}</tool_name>
                 <json>
-                #{context[:content]}
+                #{msg[:content]}
                 </json>
                 </result>
                 </function_results>
                 TEXT
               else
-                memo << " " << context[:content] << "\n"
+                memo << "\n### User:\n#{msg[:content]}"
               end
 
               memo
             end
+
+          llama2_prompt << "\n### Assistant:\n"
+          llama2_prompt << "#{last_message[:content]}:" if last_message
+
+          llama2_prompt
         end
 
         def max_prompt_tokens

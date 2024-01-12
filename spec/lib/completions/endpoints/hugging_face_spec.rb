@@ -6,7 +6,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::Llama2Tokenizer) }
 
   let(:model_name) { "Llama2-*-chat-hf" }
-  let(:generic_prompt) { { insts: "You are a helpful bot.", input: "write 3 words" } }
   let(:dialect) do
     DiscourseAi::Completions::Dialects::Llama2Classic.new(generic_prompt, model_name)
   end

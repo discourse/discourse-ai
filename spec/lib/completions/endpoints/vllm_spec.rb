@@ -6,7 +6,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
   subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::MixtralTokenizer) }
 
   let(:model_name) { "mistralai/Mixtral-8x7B-Instruct-v0.1" }
-  let(:generic_prompt) { { insts: "You are a helpful bot.", input: "write 3 words" } }
   let(:dialect) { DiscourseAi::Completions::Dialects::Mixtral.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
 

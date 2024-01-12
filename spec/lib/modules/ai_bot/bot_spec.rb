@@ -11,18 +11,6 @@ RSpec.describe DiscourseAi::AiBot::Bot do
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
 
   let!(:user) { Fabricate(:user) }
-  let!(:pm) do
-    Fabricate(
-      :private_message_topic,
-      title: "This is my special PM",
-      user: user,
-      topic_allowed_users: [
-        Fabricate.build(:topic_allowed_user, user: user),
-        Fabricate.build(:topic_allowed_user, user: bot_user),
-      ],
-    )
-  end
-  let!(:pm_post) { Fabricate(:post, topic: pm, user: user, raw: "Does my site has tags?") }
 
   let(:function_call) { <<~TEXT }
     Let me try using a function to get more info:<function_calls>
@@ -49,7 +37,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
         HTML
 
-        context = {}
+        context = { conversation_context: [{ type: :user, content: "Does my site has tags?" }] }
 
         DiscourseAi::Completions::Llm.with_prepared_responses(llm_responses) do
           bot.reply(context) do |_bot_reply_post, cancel, placeholder|
