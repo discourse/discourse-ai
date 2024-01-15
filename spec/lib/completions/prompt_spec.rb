@@ -21,6 +21,18 @@ RSpec.describe DiscourseAi::Completions::Prompt do
       bad_messages3 = [{ content: "some content associated to no one" }]
       expect { described_class.new("a bot", messages: bad_messages3) }.to raise_error(ArgumentError)
     end
+
+    it "cleans unicode usernames" do
+      unicode_username = "罗马罗马"
+
+      prompt =
+        described_class.new(
+          "a bot",
+          messages: [{ type: :user, content: user_msg, id: unicode_username }],
+        )
+
+      expect(prompt.messages.last[:id]).to eq("____")
+    end
   end
 
   describe "#push" do
@@ -61,6 +73,15 @@ RSpec.describe DiscourseAi::Completions::Prompt do
       expect(system_message[:type]).to eq(:user)
       expect(system_message[:content]).to eq(user_msg)
       expect(system_message[:id]).to eq(username)
+    end
+
+    it "cleans unicode usernames" do
+      unicode_username = "罗马罗马"
+      prompt.push(type: :user, content: user_msg, id: unicode_username)
+
+      user_message = prompt.messages.last
+
+      expect(user_message[:id]).to eq("____")
     end
   end
 end
