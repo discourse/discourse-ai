@@ -1,5 +1,49 @@
 import { module, test } from "qunit";
-import { addProgressDot } from "discourse/plugins/discourse-ai/discourse/lib/ai-streamer";
+import {
+  addProgressDot,
+  applyProgress,
+  MIN_LETTERS_PER_INTERVAL,
+} from "discourse/plugins/discourse-ai/discourse/lib/ai-streamer";
+
+class FakeStreamUpdater {
+  constructor() {
+    this._streaming = true;
+    this._raw = "";
+    this._cooked = "";
+    this._element = document.createElement("div");
+  }
+
+  get streaming() {
+    return this._streaming;
+  }
+  set streaming(value) {
+    this._streaming = value;
+  }
+
+  get cooked() {
+    return this._cooked;
+  }
+
+  get raw() {
+    return this._raw;
+  }
+
+  async setRaw(value) {
+    this._raw = value;
+    // just fake it, calling cook is tricky
+    const cooked = `<p>${value}</p>`;
+    await this.setCooked(cooked);
+  }
+
+  async setCooked(value) {
+    this._cooked = value;
+    this._element.innerHTML = value;
+  }
+
+  get element() {
+    return this._element;
+  }
+}
 
 module("Discourse AI | Unit | Lib | ai-streamer", function () {
   function confirmPlaceholder(html, expected, assert) {
@@ -68,5 +112,56 @@ module("Discourse AI | Unit | Lib | ai-streamer", function () {
 `;
 
     confirmPlaceholder(html, expected, assert);
+  });
+
+  test("can perform delta updates", async function (assert) {
+    const status = {
+      startTime: Date.now(),
+      raw: "some raw content",
+      done: false,
+    };
+
+    const streamUpdater = new FakeStreamUpdater();
+
+    let done = await applyProgress(status, streamUpdater);
+
+    assert.notOk(done, "The update should not be done.");
+
+    assert.equal(
+      streamUpdater.raw,
+      status.raw.substring(0, MIN_LETTERS_PER_INTERVAL),
+      "The raw content should delta update."
+    );
+
+    done = await applyProgress(status, streamUpdater);
+
+    assert.notOk(done, "The update should not be done.");
+
+    assert.equal(
+      streamUpdater.raw,
+      status.raw.substring(0, MIN_LETTERS_PER_INTERVAL * 2),
+      "The raw content should delta update."
+    );
+
+    // last chunk
+    await applyProgress(status, streamUpdater);
+
+    const innerHtml = streamUpdater.element.innerHTML;
+    assert.equal(
+      innerHtml,
+      "<p>some raw content</p>",
+      "The cooked content should be updated."
+    );
+
+    status.done = true;
+    status.cooked = "<p>updated cooked</p>";
+
+    await applyProgress(status, streamUpdater);
+
+    assert.equal(
+      streamUpdater.element.innerHTML,
+      "<p>updated cooked</p>",
+      "The cooked content should be updated."
+    );
   });
 });

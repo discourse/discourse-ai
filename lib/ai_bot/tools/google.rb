@@ -24,11 +24,11 @@ module DiscourseAi
         end
 
         def query
-          parameters[:query].to_s
+          parameters[:query].to_s.strip
         end
 
         def invoke(bot_user, llm)
-          yield("") # Triggers placeholder update
+          yield(query)
 
           api_key = SiteSetting.ai_google_custom_search_api_key
           cx = SiteSetting.ai_google_custom_search_cx

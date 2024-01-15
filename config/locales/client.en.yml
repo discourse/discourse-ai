@@ -59,7 +59,7 @@ en:
               description: "Enable debug mode to see the raw input and output of the LLM"
             priority_group:
               label: "Priority Group"
-              description: "Priotize content from this group in the report"
+              description: "Prioritize content from this group in the report"
 
         llm_triage:
           fields:

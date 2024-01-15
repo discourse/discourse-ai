@@ -3,8 +3,9 @@ import loadScript from "discourse/lib/load-script";
 import { cook } from "discourse/lib/text";
 
 const PROGRESS_INTERVAL = 40;
-const GIVE_UP_INTERVAL = 10000;
-const LETTERS_PER_INTERVAL = 6;
+const GIVE_UP_INTERVAL = 60000;
+export const MIN_LETTERS_PER_INTERVAL = 6;
+const MAX_FLUSH_TIME = 800;
 
 let progressTimer = null;
 
@@ -41,69 +42,146 @@ export function addProgressDot(element) {
   lastBlock.appendChild(dotElement);
 }
 
-async function applyProgress(postStatus, postStream) {
-  postStatus.startTime = postStatus.startTime || Date.now();
-  let post = postStream.findLoadedPost(postStatus.post_id);
+// this is the interface we need to implement
+// for a streaming updater
+class StreamUpdater {
+  set streaming(value) {
+    throw "not implemented";
+  }
 
-  const postElement = document.querySelector(`#post_${postStatus.post_number}`);
+  async setCooked() {
+    throw "not implemented";
+  }
 
-  if (Date.now() - postStatus.startTime > GIVE_UP_INTERVAL) {
-    if (postElement) {
-      postElement.classList.remove("streaming");
+  async setRaw() {
+    throw "not implemented";
+  }
+
+  get element() {
+    throw "not implemented";
+  }
+
+  get raw() {
+    throw "not implemented";
+  }
+}
+
+class PostUpdater extends StreamUpdater {
+  constructor(postStream, postId) {
+    super();
+    this.postStream = postStream;
+    this.postId = postId;
+    this.post = postStream.findLoadedPost(postId);
+
+    if (this.post) {
+      this.postElement = document.querySelector(
+        `#post_${this.post.post_number}`
+      );
     }
+  }
+
+  get element() {
+    return this.postElement;
+  }
+
+  set streaming(value) {
+    if (this.postElement) {
+      if (value) {
+        this.postElement.classList.add("streaming");
+      } else {
+        this.postElement.classList.remove("streaming");
+      }
+    }
+  }
+
+  async setRaw(value, done) {
+    this.post.set("raw", value);
+    const cooked = await cook(value);
+
+    // resets animation
+    this.element.classList.remove("streaming");
+    void this.element.offsetWidth;
+    this.element.classList.add("streaming");
+
+    const cookedElement = document.createElement("div");
+    cookedElement.innerHTML = cooked;
+
+    if (!done) {
+      addProgressDot(cookedElement);
+    }
+
+    await this.setCooked(cookedElement.innerHTML);
+  }
+
+  async setCooked(value) {
+    this.post.set("cooked", value);
+
+    const oldElement = this.postElement.querySelector(".cooked");
+
+    await loadScript("/javascripts/diffhtml.min.js");
+    window.diff.innerHTML(oldElement, value);
+  }
+
+  get raw() {
+    return this.post.get("raw") || "";
+  }
+}
+
+export async function applyProgress(status, updater) {
+  status.startTime = status.startTime || Date.now();
+
+  if (Date.now() - status.startTime > GIVE_UP_INTERVAL) {
+    updater.streaming = false;
     return true;
   }
 
-  if (!post) {
+  if (!updater.element) {
     // wait till later
     return false;
   }
 
-  const oldRaw = post.get("raw") || "";
+  const oldRaw = updater.raw;
 
-  if (postStatus.raw === oldRaw && !postStatus.done) {
-    const hasProgressDot =
-      postElement && postElement.querySelector(".progress-dot");
+  if (status.raw === oldRaw && !status.done) {
+    const hasProgressDot = updater.element.querySelector(".progress-dot");
     if (hasProgressDot) {
       return false;
     }
   }
 
-  if (postStatus.raw) {
-    const newRaw = postStatus.raw.substring(
-      0,
-      oldRaw.length + LETTERS_PER_INTERVAL
-    );
-    const cooked = await cook(newRaw);
+  if (status.raw !== undefined) {
+    let newRaw = status.raw;
 
-    post.set("raw", newRaw);
-    post.set("cooked", cooked);
+    if (!status.done) {
+      // rush update if we have a </details> tag (function call)
+      if (oldRaw.length === 0 && newRaw.indexOf("</details>") !== -1) {
+        newRaw = status.raw;
+      } else {
+        const diff = newRaw.length - oldRaw.length;
 
-    // resets animation
-    postElement.classList.remove("streaming");
-    void postElement.offsetWidth;
-    postElement.classList.add("streaming");
+        // progress interval is 40ms
+        // by default we add 6 letters per interval
+        // but ... we want to be done in MAX_FLUSH_TIME
+        let letters = Math.floor(diff / (MAX_FLUSH_TIME / PROGRESS_INTERVAL));
+        if (letters < MIN_LETTERS_PER_INTERVAL) {
+          letters = MIN_LETTERS_PER_INTERVAL;
+        }
 
-    const cookedElement = document.createElement("div");
-    cookedElement.innerHTML = cooked;
-
-    addProgressDot(cookedElement);
-
-    const element = document.querySelector(
-      `#post_${postStatus.post_number} .cooked`
-    );
-
-    await loadScript("/javascripts/diffhtml.min.js");
-    window.diff.innerHTML(element, cookedElement.innerHTML);
-  }
-
-  if (postStatus.done) {
-    if (postElement) {
-      postElement.classList.remove("streaming");
+        newRaw = status.raw.substring(0, oldRaw.length + letters);
+      }
     }
+
+    await updater.setRaw(newRaw, status.done);
   }
 
-  return postStatus.done;
+  if (status.done) {
+    if (status.cooked) {
+      await updater.setCooked(status.cooked);
+    }
+    updater.streaming = false;
+  }
+
+  return status.done;
 }
 
 async function handleProgress(postStream) {
@@ -114,7 +192,8 @@ async function handleProgress(postStream) {
   const promises = Object.keys(status).map(async (postId) => {
     let postStatus = status[postId];
 
-    const done = await applyProgress(postStatus, postStream);
+    const postUpdater = new PostUpdater(postStream, postStatus.post_id);
+    const done = await applyProgress(postStatus, postUpdater);
 
     if (done) {
       delete status[postId];
@@ -142,6 +221,10 @@ function ensureProgress(postStream) {
 }
 
 export default function streamText(postStream, data) {
+  if (data.noop) {
+    return;
+  }
+
   let status = (postStream.aiStreamingStatus =
     postStream.aiStreamingStatus || {});
   status[data.post_id] = data;

@@ -25,7 +25,10 @@ module DiscourseAi
           messages = prompt.messages
 
           # ChatGPT doesn't use an assistant msg to improve long-context responses.
-          messages.pop if messages.last[:type] == :model
+          if messages.last[:type] == :model
+            messages = messages.dup
+            messages.pop
+          end
 
           trimmed_messages = trim_messages(messages)
 

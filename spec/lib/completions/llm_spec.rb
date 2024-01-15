@@ -52,6 +52,26 @@ RSpec.describe DiscourseAi::Completions::Llm do
     end
   end
 
+  describe "#generate with various style prompts" do
+    let :canned_response do
+      DiscourseAi::Completions::Endpoints::CannedResponse.new(["world"])
+    end
+
+    it "can generate a response to a simple string" do
+      response = llm.generate("hello", user: user)
+      expect(response).to eq("world")
+    end
+
+    it "can generate a response from an array" do
+      response =
+        llm.generate(
+          [{ type: :system, content: "you are a bot" }, { type: :user, content: "hello" }],
+          user: user,
+        )
+      expect(response).to eq("world")
+    end
+  end
+
   describe "#generate" do
     let(:prompt) do
       system_insts = (<<~TEXT).strip

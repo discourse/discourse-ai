@@ -112,9 +112,10 @@ module DiscourseAi
             topic_id: post.topic_id,
             raw: "",
             skip_validations: true,
+            skip_jobs: true,
           )
 
-        publish_update(reply_post, raw: "<p></p>")
+        publish_update(reply_post, { raw: reply_post.cooked })
 
         redis_stream_key = "gpt_cancel:#{reply_post.id}"
         Discourse.redis.setex(redis_stream_key, 60, 1)
@@ -139,12 +140,14 @@ module DiscourseAi
 
             Discourse.redis.expire(redis_stream_key, 60)
 
-            publish_update(reply_post, raw: raw)
+            publish_update(reply_post, { raw: raw })
           end
 
         return if reply.blank?
 
-        publish_update(reply_post, done: true)
+        # land the final message prior to saving so we don't clash
+        reply_post.cooked = PrettyText.cook(reply)
+        publish_final_update(reply_post)
 
         reply_post.revise(bot.bot_user, { raw: reply }, skip_validations: true, skip_revision: true)
 
@@ -157,9 +160,24 @@ module DiscourseAi
         end
 
         reply_post
+      ensure
+        publish_final_update(reply_post)
       end
 
       private
+
+      def publish_final_update(reply_post)
+        return if @published_final_update
+        if reply_post
+          publish_update(reply_post, { cooked: reply_post.cooked, done: true })
+          # we subscribe at position -2 so we will always get this message
+          # moving all cooked on every page load is wasteful ... this means
+          # we have a benign message at the end, 2 is set to ensure last message
+          # is delivered
+          publish_update(reply_post, { noop: true })
+          @published_final_update = true
+        end
+      end
 
       attr_reader :bot
 
@@ -201,10 +219,15 @@ module DiscourseAi
       end
 
       def publish_update(bot_reply_post, payload)
+        payload = { post_id: bot_reply_post.id, post_number: bot_reply_post.post_number }.merge(
+          payload,
+        )
         MessageBus.publish(
           "discourse-ai/ai-bot/topic/#{bot_reply_post.topic_id}",
-          payload.merge(post_id: bot_reply_post.id, post_number: bot_reply_post.post_number),
+          payload,
           user_ids: bot_reply_post.topic.allowed_user_ids,
+          max_backlog_size: 2,
+          max_backlog_age: 60,
         )
       end
 
