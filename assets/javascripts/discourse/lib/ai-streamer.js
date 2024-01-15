@@ -4,7 +4,7 @@ import { cook } from "discourse/lib/text";
 
 const PROGRESS_INTERVAL = 40;
 const GIVE_UP_INTERVAL = 60000;
-const MIN_LETTERS_PER_INTERVAL = 6;
+export const MIN_LETTERS_PER_INTERVAL = 6;
 const MAX_FLUSH_TIME = 800;
 
 let progressTimer = null;
@@ -121,7 +121,7 @@ class PostUpdater extends StreamUpdater {
   }
 }
 
-async function applyProgress(status, updater) {
+export async function applyProgress(status, updater) {
   status.startTime = status.startTime || Date.now();
 
   if (Date.now() - status.startTime > GIVE_UP_INTERVAL) {
