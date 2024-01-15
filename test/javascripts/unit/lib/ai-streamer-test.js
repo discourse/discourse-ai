@@ -13,10 +13,6 @@ class FakeStreamUpdater {
     this._element = document.createElement("div");
   }
 
-  get loaded() {
-    return true;
-  }
-
   get streaming() {
     return this._streaming;
   }

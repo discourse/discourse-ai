@@ -45,15 +45,25 @@ export function addProgressDot(element) {
 // this is the interface we need to implement
 // for a streaming updater
 class StreamUpdater {
-  set streaming(value) {}
+  set streaming(value) {
+    throw "not implemented";
+  }
 
-  async setCooked() {}
-  async setRaw() {}
+  async setCooked() {
+    throw "not implemented";
+  }
 
-  set raw(value) {}
-  get loaded() {}
+  async setRaw() {
+    throw "not implemented";
+  }
 
-  get element() {}
+  get element() {
+    throw "not implemented";
+  }
+
+  get raw() {
+    throw "not implemented";
+  }
 }
 
 class PostUpdater extends StreamUpdater {
@@ -72,10 +82,6 @@ class PostUpdater extends StreamUpdater {
 
   get element() {
     return this.postElement;
-  }
-
-  get loaded() {
-    return !!this.postElement;
   }
 
   set streaming(value) {
@@ -129,7 +135,7 @@ export async function applyProgress(status, updater) {
     return true;
   }
 
-  if (!updater.loaded) {
+  if (!updater.element) {
     // wait till later
     return false;
   }
