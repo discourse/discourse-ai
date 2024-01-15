@@ -22,6 +22,10 @@ module DiscourseAi
         @messages.concat(messages)
 
         @messages.each { |message| validate_message(message) }
+        @messages.each do |message|
+          message[:id] = clean_username(message[:id]) if message[:type] == :user &&
+            message[:id].present?
+        end
         @messages.each_cons(2) { |last_turn, new_turn| validate_turn(last_turn, new_turn) }
 
         @tools = tools
