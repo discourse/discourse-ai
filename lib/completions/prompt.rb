@@ -5,17 +5,17 @@ module DiscourseAi
     class Prompt
       INVALID_TURN = Class.new(StandardError)
 
-      attr_reader :system_message, :messages
+      attr_reader :messages
       attr_accessor :tools
 
-      def initialize(system_msg = nil, messages: [], tools: [])
+      def initialize(system_message_text = nil, messages: [], tools: [])
         raise ArgumentError, "messages must be an array" if !messages.is_a?(Array)
         raise ArgumentError, "tools must be an array" if !tools.is_a?(Array)
 
         @messages = []
 
-        if system_msg
-          system_message = { type: :system, content: system_msg }
+        if system_message_text
+          system_message = { type: :system, content: system_message_text }
           @messages << system_message
         end
 

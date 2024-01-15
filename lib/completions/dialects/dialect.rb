@@ -117,15 +117,17 @@ module DiscourseAi
 
           trimmed_messages = []
 
+          range = (0..-1)
           if messages.dig(0, :type) == :system
-            system_message = messages.shift
+            system_message = messages[0]
             trimmed_messages << system_message
             current_token_count += calculate_message_token(system_message)
+            range = (1..-1)
           end
 
           reversed_trimmed_msgs = []
 
-          messages.reverse.each do |msg|
+          messages[range].reverse.each do |msg|
             break if current_token_count >= prompt_limit
 
             message_tokens = calculate_message_token(msg)
