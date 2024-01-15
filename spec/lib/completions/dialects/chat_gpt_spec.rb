@@ -50,6 +50,21 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
       expect(translated.last[:role]).to eq("user")
       expect(translated.last[:content].length).to be < context.long_message_text.length
     end
+
+    it "always preserves system message when trimming" do
+      # gpt-4 is 8k tokens so last message totally blows everything
+      prompt = DiscourseAi::Completions::Prompt.new("You are a bot")
+      prompt.push(type: :user, content: "a " * 100)
+      prompt.push(type: :model, content: "b " * 100)
+      prompt.push(type: :user, content: "zjk " * 10_000)
+
+      translated = context.dialect(prompt).translate
+
+      expect(translated.length).to eq(2)
+      expect(translated.first).to eq(content: "You are a bot", role: "system")
+      expect(translated.last[:role]).to eq("user")
+      expect(translated.last[:content].length).to be < (8000 * 4)
+    end
   end
 
   describe "#tools" do

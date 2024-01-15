@@ -45,10 +45,10 @@ module DiscourseAi
               </parameters>
               </invoke>
               </function_calls>
-  
+
               if a parameter type is an array, return a JSON array of values. For example:
               [1,"two",3.0]
-  
+
               Here are the tools available:
             TEXT
           end
@@ -115,36 +115,47 @@ module DiscourseAi
           current_token_count = 0
           message_step_size = (max_prompt_tokens / 25).to_i * -1
 
-          reversed_trimmed_msgs =
-            messages
-              .reverse
-              .reduce([]) do |acc, msg|
-                message_tokens = calculate_message_token(msg)
+          trimmed_messages = []
 
-                dupped_msg = msg.dup
+          if messages.dig(0, :type) == :system
+            system_message = messages.shift
+            trimmed_messages << system_message
+            current_token_count += calculate_message_token(system_message)
+          end
 
-                # Don't trim tool call metadata.
-                if msg[:type] == :tool_call
-                  current_token_count += message_tokens + per_message_overhead
-                  acc << dupped_msg
-                  next(acc)
-                end
+          reversed_trimmed_msgs = []
 
-                # Trimming content to make sure we respect token limit.
-                while dupped_msg[:content].present? &&
-                        message_tokens + current_token_count + per_message_overhead > prompt_limit
-                  dupped_msg[:content] = dupped_msg[:content][0..message_step_size] || ""
-                  message_tokens = calculate_message_token(dupped_msg)
-                end
+          messages.reverse.each do |msg|
+            break if current_token_count >= prompt_limit
 
-                next(acc) if dupped_msg[:content].blank?
+            message_tokens = calculate_message_token(msg)
 
-                current_token_count += message_tokens + per_message_overhead
+            dupped_msg = msg.dup
 
-                acc << dupped_msg
-              end
+            # Don't trim tool call metadata.
+            if msg[:type] == :tool_call
+              break if current_token_count + message_tokens + per_message_overhead > prompt_limit
 
-          reversed_trimmed_msgs.reverse
+              current_token_count += message_tokens + per_message_overhead
+              reversed_trimmed_msgs << dupped_msg
+              next
+            end
+
+            # Trimming content to make sure we respect token limit.
+            while dupped_msg[:content].present? &&
+                    message_tokens + current_token_count + per_message_overhead > prompt_limit
+              dupped_msg[:content] = dupped_msg[:content][0..message_step_size] || ""
+              message_tokens = calculate_message_token(dupped_msg)
+            end
+
+            next if dupped_msg[:content].blank?
+
+            current_token_count += message_tokens + per_message_overhead
+
+            reversed_trimmed_msgs << dupped_msg
+          end
+
+          trimmed_messages.concat(reversed_trimmed_msgs.reverse)
         end
 
         def per_message_overhead
