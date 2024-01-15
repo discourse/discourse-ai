@@ -83,6 +83,16 @@ module DiscourseAi
           stop_sequences: stop_sequences,
         }
 
+        if prompt.is_a?(String)
+          prompt =
+            DiscourseAi::Completions::Prompt.new(
+              "You are a helpful bot",
+              messages: [{ type: :user, content: prompt }],
+            )
+        elsif prompt.is_a?(Array)
+          prompt = DiscourseAi::Completions::Prompt.new(messages: prompt)
+        end
+
         model_params.keys.each { |key| model_params.delete(key) if model_params[key].nil? }
 
         dialect = dialect_klass.new(prompt, model_name, opts: model_params)

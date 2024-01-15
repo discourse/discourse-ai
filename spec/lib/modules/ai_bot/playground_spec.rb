@@ -64,16 +64,21 @@ RSpec.describe DiscourseAi::AiBot::Playground do
             playground.reply_to(third_post)
           end
 
+        reply = pm.reload.posts.last
+
+        noop_signal = messages.pop
+        expect(noop_signal.data[:noop]).to eq(true)
+
         done_signal = messages.pop
         expect(done_signal.data[:done]).to eq(true)
+        expect(done_signal.data[:cooked]).to eq(reply.cooked)
 
-        # we need this for styling
-        expect(messages.first.data[:raw]).to eq("<p></p>")
+        expect(messages.first.data[:raw]).to eq("")
         messages[1..-1].each_with_index do |m, idx|
           expect(m.data[:raw]).to eq(expected_bot_response[0..idx])
         end
 
-        expect(pm.reload.posts.last.cooked).to eq(PrettyText.cook(expected_bot_response))
+        expect(reply.cooked).to eq(PrettyText.cook(expected_bot_response))
       end
     end
 
