@@ -27,6 +27,8 @@ sw:
             canned_reply:
               label: "Jibu"
     discourse_ai:
+      modals:
+        select_option: "Chagua chaguo moja..."
       ai_persona:
         name: Jina
         description: Elezo

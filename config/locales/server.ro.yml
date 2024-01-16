@@ -8,3 +8,9 @@ ro:
   reports:
     overall_sentiment:
       yaxis: "Dată"
+  discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Caută"
+        time: "Oră"
+        summarize: "Rezumat"

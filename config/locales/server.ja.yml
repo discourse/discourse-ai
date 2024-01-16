@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 ja:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: AI を使った投稿のトリアージ
+        description: "大規模言語モデルを使って投稿に優先順位を付けます"
+        system_prompt_missing_post_placeholder: "システムプロンプトには投稿のプレースホルダーが含まれている必要があります: %%POST%%"
+      llm_report:
+        title: AI を使った定期レポート
+        description: "大規模言語モデルに基づく定期レポート"
   site_settings:
     discourse_ai_enabled: "Discourse AI プラグインを有効にします。"
     ai_toxicity_enabled: "毒コメントモジュールを有効にします。"
@@ -34,8 +43,13 @@ ja:
     ai_nsfw_flag_threshold_porn: "ポルノとして分類された画像が NSFW として見なされるためのしきい値。"
     ai_nsfw_flag_threshold_sexy: "官能的として分類された画像が NSFW として見なされるためのしきい値。"
     ai_nsfw_models: "NSFW 推論に使用するモデル。"
-    ai_openai_gpt35_url: "GPT 3.5 チャット補完に使用されるカスタム URL。(Azure サポート用)"
+    ai_openai_gpt35_url: "GPT 3.5 チャットの補完に使用されるカスタム URL。(Azure サポート用)"
+    ai_openai_gpt35_16k_url: "GPT 3.5 16k チャットの補完に使用されるカスタム URL。(Azure サポート用)"
     ai_openai_gpt4_url: "GPT 4 チャット補完に使用されるカスタム URL。(Azure サポート用)"
+    ai_openai_gpt4_32k_url: "GPT 4 32k チャットの補完に使用されるカスタム URL。(Azure サポート用)"
+    ai_openai_gpt4_turbo_url: "GPT 4 Turbo チャットの補完に使用されるカスタム URL。(Azure サポート用)"
+    ai_openai_dall_e_3_url: "DALL-E 3 画像生成に使用されるカスタム URL。(Azure サポート用)"
+    ai_openai_organization: "(オプション。省略する場合は空白にします) OpenAI API に使用される組織 ID。OpenAI-Organization ヘッダーを使って渡されます。"
     ai_openai_embeddings_url: "OpenAI 埋め込み API に使用されるカスタム URL。(Azure の場合: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "OpenAI API の API キー"
     ai_anthropic_api_key: "Anthropic API の API キー"
@@ -44,6 +58,10 @@ ja:
     ai_helper_allowed_groups: "これらのグループのユーザーの作成ツールには、AI ヘルパーボタンが表示されます。"
     ai_helper_allowed_in_pm: "PM で作成ツールの AI ヘルパーを有効にします。"
     ai_helper_model: "AI ヘルパーに使用するモデル。"
+    ai_helper_custom_prompts_allowed_groups: "これらのグループのユーザーには、AI ヘルパーにカスタムプロンプトオプションが表示されます。"
+    ai_helper_automatic_chat_thread_title_delay: "AI ヘルパーがチャットスレッドのタイトルを自動的に設定するまでの遅延 (分単位)。"
+    ai_helper_automatic_chat_thread_title: "スレッドのコンテンツに基づいてチャットスレッドのタイトルを自動的に設定する。"
+    ai_helper_illustrate_post_model: "作成ツールの AI ヘルパーの投稿のイラスト化機能に使用するモデル"
     ai_embeddings_enabled: "埋め込みモジュールを有効にします。"
     ai_embeddings_discourse_service_api_endpoint: "埋め込みモジュールの API が実行している URL"
     ai_embeddings_discourse_service_api_key: "埋め込み API の API キー"
@@ -51,19 +69,28 @@ ja:
     ai_embeddings_generate_for_pms: "個人メッセージの埋め込みを生成します。"
     ai_embeddings_semantic_related_topics_enabled: "関連トピックのセマンティック検索を使用します。"
     ai_embeddings_semantic_related_topics: "関連トピックセクションに表示する最大トピック数。"
+    ai_embeddings_backfill_batch_size: "15 分ごとにバックフィルする埋め込みの数。"
     ai_embeddings_pg_connection_string: "埋め込みモジュールの PostgreSQL 接続文字列。pgvector 拡張機能が有効であり、一連のテーブルが作成される必要があります。詳細はドキュメントをご覧ください。"
     ai_embeddings_semantic_search_enabled: "全ページのセマンティック検索を有効にします。"
     ai_embeddings_semantic_related_include_closed_topics: "閉鎖トピックをセマンティック検索結果に含める"
+    ai_embeddings_semantic_search_hyde_model: "セマンティック検索中に得られる結果を改善するためにキーワードの拡張に使用されるモデル"
     ai_summarization_discourse_service_api_endpoint: "Discourse 要約 API が実行している URL。"
     ai_summarization_discourse_service_api_key: "Discourse 要約 API の API キー。"
     ai_bot_enabled: "AI ボットモジュールを有効にします。"
+    ai_bot_enable_chat_warning: "PM チャットが開始されたら警告を表示する。翻訳文字列の discourse_ai.ai_bot.pm_warning を編集して上書き可能"
     ai_bot_allowed_groups: "GPT ボットが PM にアクセスできる場合、これらのグループのメンバーに返信します。"
     ai_bot_enabled_chat_bots: "AI ボットとして機能する利用可能なモデル"
     ai_bot_add_to_header: "AI ボットとの PM を開始するためのボタンをヘッダーに表示する"
     ai_stability_api_key: "stability.ai API の API キー"
+    ai_stability_engine: "stability.ai API に使用する画像生成エンジン"
     ai_stability_api_url: "stability.ai API の URL"
     ai_google_custom_search_api_key: "Google カスタム検索 API の API キーは https://developers.google.com/custom-search を参照してください"
     ai_google_custom_search_cx: "Google カスタム検索 API の CX"
+    ai_bedrock_access_key_id: "Bedrock API のアクセスキー ID"
+    ai_bedrock_secret_access_key: "Bedrock API のシークレットアクセスキー"
+    ai_bedrock_region: "Bedrock API の AWS リージョン"
+    ai_cloudflare_workers_account_id: "Cloudflare Workers AI API の Cloudflare アカウント ID"
+    ai_cloudflare_workers_api_token: "Cloudflare Workers AI API の API トークン"
   reviewables:
     reasons:
       flagged_by_toxicity: AI プラグインは、これを毒コメントとして分類した後に通報しました。
@@ -73,7 +100,13 @@ ja:
     invalid_prompt_role: メッセージ %{idx} には無効な権限があります。
   reports:
     overall_sentiment:
+      title: "全体的なセンチメント"
+      description: "このチャートは、ポジティブまたはネガティブのいずれかに分類された投稿数を比較します。"
+      xaxis: "ポジティブ(%)"
       yaxis: "日付"
+    post_emotion:
+      title: "投稿の感情"
+      description: "次のいずれかの感情で分類された投稿数。投稿者の信頼レベルによってグループ化されています。"
   discourse_ai:
     ai_helper:
       errors:
@@ -83,8 +116,49 @@ ja:
         generate_titles: トピックのタイトルを提案
         proofread: テキストを構成
         markdown_table: Markdown テーブルを生成
+        custom_prompt: "カスタムプロンプト"
+        explain: "説明"
+        illustrate_post: "投稿のイラスト化"
+      painter:
+        attribution:
+          stable_diffusion_xl: "Stable Diffusion XL による画像"
+          dall_e_3: "DALL-E 3 による画像"
     ai_bot:
+      personas:
+        cannot_delete_system_persona: "システムペルソナは削除できません。代わりに無効にしてください"
+        cannot_edit_system_persona: "システムペルソナは名前変更のみ可能です。コマンドまたはシステムプロンプトは編集できません。代わりに無効にするかコピーを作成してください"
+        general:
+          name: フォーラムヘルパー
+          description: "さまざまなタスクを実行できる汎用 AI ボット"
+        artist:
+          name: アーティスト
+          description: "画像の生成を専門とする AI ボット"
+        sql_helper:
+          name: SQL ヘルパー
+          description: "この Discourse インスタンスでの SQL クエリの作成支援を専門とする AI ボット"
+        settings_explorer:
+          name: 設定エクスプローラー
+          description: "Discourse のサイト設定のナビ支援を専門とする AI ボット"
+        researcher:
+          name: リサーチャー
+          description: "ユーザーに代わって Google にアクセスして情報を調査できる AI ボット"
+        creative:
+          name: クリエイティブ
+          description: "外部統合のないクリエイティブ系タスクを専門とする AI ボット"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "DALL-E 3 を使って画像の生成を専門とする AI ボット"
       topic_not_found: "要約がありません。トピックが見つかりません！"
+      summarizing: "トピックの要約を生成中"
+      searching: "検索中: '%{query}'"
+      command_options:
+        search:
+          max_results:
+            name: "結果の最大件数"
+            description: "検索に含める結果の最大件数 - 空白の場合はデフォルトのルールが使用され、件数は使用されるモデルに応じて調整されます。最高値は 100 です。"
+          base_query:
+            name: "ベース検索クエリ"
+            description: "検索時に使用するベースクエリ。例: '#urgent' は検索クエリの先頭に '#urgent' を追加し、緊急のカテゴリまたはタグを持つトピックのみが含まれます。"
       command_summary:
         categories: "カテゴリをリスト表示"
         search: "検索"
@@ -93,8 +167,26 @@ ja:
         summarize: "要約"
         image: "画像を生成"
         google: "Google で検索"
+        read: "トピックを読む"
+        setting_context: "サイト設定のコンテキストを検索"
+        schema: "データベーススキーマを検索"
+        search_settings: "サイト設定を検索中"
         dall_e: "画像を生成"
+      command_help:
+        categories: "フォーラムのすべての公開カテゴリをリストします"
+        search: "フォーラムのすべての公開トピックを検索します"
+        tags: "フォーラムのすべてのタグをリストします"
+        time: "様々なタイムゾーンの時間を調べます"
+        summarize: "トピックを要約します"
+        image: "Stable Diffusion を使って画像を生成します"
+        google: "Googleでクエリを検索します"
+        read: "フォーラムの公開トピックを読み取ります"
+        setting_context: "サイト設定のコンテキストを検索します"
+        schema: "データベーススキーマを検索します"
+        search_settings: "サイト設定を検索します"
+        dall_e: "DALL-E 3 を使って画像を生成します"
       command_description:
+        read: "読み取り中: <a href='%{url}'>%{title}</a>"
         time: "%{timezone} での時刻は %{time} です"
         summarize: "<a href='%{url}'>%{title}</a> の要約"
         dall_e: "%{prompt}"
@@ -107,10 +199,25 @@ ja:
           other: "「%{query}」の<a href='%{url}'>結果</a> が %{count} 件見つかりました"
         google:
           other: "「%{query}」の<a href='%{url}'>結果</a>が %{count} 件見つかりました"
+        setting_context: "コンテキストを読み取り中: %{setting_name}"
+        schema: "%{tables}"
+        search_settings:
+          other: "'%{query}' の結果が %{count} 件見つかりました"
     summarization:
       configuration_hint:
         other: "先に次の設定を構成します: %{settings}"
     sentiment:
       reports:
+        overall_sentiment:
+          positive: "ポジティブ"
+          negative: "ネガティブ"
         post_emotion:
+          tl_01: "信頼レベル 0～1"
+          tl_234: "信頼レベル 2～"
+          sadness: "悲しみ"
+          surprise: "驚き"
           neutral: "ニュートラル"
+          fear: "恐怖"
+          anger: "怒り"
+          joy: "喜び"
+          disgust: "嫌悪"

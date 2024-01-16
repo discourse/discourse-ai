@@ -9,6 +9,10 @@ et:
     overall_sentiment:
       yaxis: "Date"
   discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Otsi"
+        time: "Aeg"
     sentiment:
       reports:
         post_emotion:

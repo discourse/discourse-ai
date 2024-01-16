@@ -8,3 +8,9 @@ pt:
   reports:
     overall_sentiment:
       yaxis: "Data"
+  discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Pesquisar"
+        time: "Hora"
+        summarize: "Resumir"

@@ -27,6 +27,8 @@ lv:
             canned_reply:
               label: "Atbilde"
     discourse_ai:
+      modals:
+        select_option: "Izvēlieties opciju..."
       ai_persona:
         name: Vārds
         description: Apraksts

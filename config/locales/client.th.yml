@@ -27,6 +27,8 @@ th:
             canned_reply:
               label: "ตอบ"
     discourse_ai:
+      modals:
+        select_option: "เลือกตัวเลือก..."
       ai_persona:
         name: ชื่อ
         description: รายละเอียด

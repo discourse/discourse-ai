@@ -27,6 +27,8 @@ pt:
             canned_reply:
               label: "Responder"
     discourse_ai:
+      modals:
+        select_option: "Selecione uma opção..."
       ai_persona:
         name: Nome
         description: Descrição

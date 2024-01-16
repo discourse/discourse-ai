@@ -60,6 +60,7 @@ lt:
       ai_persona:
         name: Vardas
         description: Aprašymas
+        system_prompt: Sistemos pranešimas
         save: Išsaugoti
         enabled: Galimas
         commands: Įgalintos komandos
@@ -69,6 +70,7 @@ lt:
       ai_helper:
         context_menu:
           back: "Atgal"
+          trigger: "AI"
           undo: "Anuliuoti"
           cancel: "Atšaukti"
           regen: "Bandyti dar kartą"
@@ -85,3 +87,5 @@ lt:
         ai_label: "AI"
         share_modal:
           copy: "Kopijuoti"
+        bot_names:
+          claude-2: "Claude 2"

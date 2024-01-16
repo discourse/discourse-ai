@@ -5,60 +5,161 @@
 # https://translate.discourse.org/
 
 nl:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse-AI"
   js:
     discourse_automation:
       ai_models:
+        gpt_4_turbo: GPT-4 Turbo
+        gpt_4: GPT-4
+        gpt_3_5_turbo: GPT-3.5 Turbo
         claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
             sender:
               label: "Afzender"
+              description: "De gebruiker die het rapport verzendt"
+            receivers:
+              label: "Ontvangers"
+              description: "De gebruikers die het rapport ontvangen (e-mails worden rechtstreeks verzonden, gebruikersnamen ontvangen een PB)"
             topic_id:
               label: "Topic-ID"
+              description: "De ID van het topic waarin het rapport moet worden geplaatst"
             title:
               label: "Titel"
+              description: "De titel van het rapport"
+            days:
+              label: "Dagen"
+              description: "Het tijdsbestek van het rapport"
+            offset:
+              label: "Offset"
+              description: "Bij het testen wil je het rapport wellicht historisch uitvoeren. Gebruik offset om het rapport op een eerdere datum te starten"
+            instructions:
+              label: "Instructies"
+              description: "De instructies voor het grote taalmodel"
+            sample_size:
+              label: "Monstergrootte"
+              description: "Het aantal berichten om te gebruiken voor het rapport"
+            tokens_per_post:
+              label: "Tokens per bericht"
+              description: "Het aantal LLM-tokens dat per bericht moet worden gebruikt"
+            model:
+              label: "Model"
+              description: "Te gebruiken LLM voor het genereren van het rapport"
             categories:
               label: "Categorieën"
+              description: "Filter topics alleen op deze categorie"
             tags:
               label: "Tags"
+              description: "Filter topics alleen op deze tags"
+            allow_secure_categories:
+              label: "Beveiligde categorieën toestaan"
+              description: "Sta toe dat het rapport wordt gegenereerd voor topics in beveiligde categorieën"
+            debug_mode:
+              label: "Foutopsporingsmodus"
+              description: "Schakel de foutopsporingsmodus in om de onbewerkte in- en uitvoer van het LLM te bekijken"
+            priority_group:
+              label: "Prioriteitsgroep"
+              description: "Geef prioriteit aan content van deze groep in het rapport"
         llm_triage:
           fields:
+            system_prompt:
+              label: "Systeemprompt"
+              description: "De prompt die wordt gebruikt voor triage. Antwoord met een enkel woord dat kan worden gebruikt om de actie te activeren"
+            search_for_text:
+              label: "Tekst zoeken"
+              description: "Pas deze acties toe als de volgende tekst voorkomt in het LLM-antwoord"
             category:
               label: "Categorie"
+              description: "Toe te passen categorie op het onderwerp"
             tags:
               label: "Tags"
+              description: "Toe te passen tags op het onderwerp"
             canned_reply:
               label: "Antwoorden"
+              description: "Ruwe tekst van standaard antwoord te plaatsen in het topic"
+            canned_reply_user:
+              label: "Antwoordgebruiker"
+              description: "Gebruikersnaam van de gebruiker die het standaardantwoord plaatst"
+            hide_topic:
+              label: "Topic verbergen"
+              description: "Maak het topic onzichtbaar voor het publiek als dit wordt geactiveerd"
+            model:
+              label: "Model"
+              description: "Gpt-4, gpt-3-5-turbo of claude-2"
     discourse_ai:
+      title: "AI"
       modals:
         select_option: "Selecteer een optie..."
       ai_persona:
         name: Naam
         description: Beschrijving
+        system_prompt: Systeemprompt
         save: Opslaan
+        saved: AI-persona opgeslagen
         enabled: Ingeschakeld
+        commands: Ingeschakelde opdrachten
+        allowed_groups: Toegestane groepen
+        confirm_delete: Weet je zeker dat je deze persona wilt verwijderen?
         new: Nieuw
+        title: "AI-persona's"
         delete: Verwijderen
+        priority: Prioriteit
+        priority_help: Prioritaire persona's worden bovenaan de personalijst weergegeven voor gebruikers. Als meerdere persona's prioriteit hebben, worden deze alfabetisch gesorteerd.
+        command_options: "Opdrachtopties"
+        no_persona_selected: |
+          ## Wat zijn AI-persona's?
+
+          AI-persona's zijn een krachtige functie waarmee je het gedrag van de AI-engine van je Discourse-forum kunt aanpassen. Ze fungeren als een 'systeemboodschap' die de reacties en interacties van de AI stuurt, waardoor je een persoonlijkere en boeiendere gebruikerservaring creëert.
+
+          ## Waarom AI-persona's gebruiken?
+
+          Met AI-persona's kun je het gedrag van de AI beter afstemmen op de context en toon van je forum. Of je nu wilt dat de AI formeler is voor een professionele omgeving, informeler voor een communityforum of zelfs een specifiek personage belichaamt voor een rollenspel, AI-persona's geven je de flexibiliteit om dat te doen.
+
+          ## Groepsspecifieke toegang tot AI-persona's
+
+          Bovendien kun je het zo instellen dat bepaalde gebruikersgroepen toegang hebben tot specifieke persona's. Dit betekent dat je verschillende AI-gedragingen kunt hebben voor verschillende delen van je forum, waardoor de diversiteit en rijkdom van de interacties in je community verder wordt vergroot.
       related_topics:
+        title: "Gerelateerde topics"
         pill: "Gerelateerd"
       ai_helper:
         title: "Stel wijzigingen voor met behulp van AI"
         description: "Kies een van de onderstaande opties, dan zal de AI je een nieuwe versie van de tekst voorstellen."
         selection_hint: "Tip: je kunt ook een deel van de tekst selecteren voordat je de hulp opent om alleen dat deel te herschrijven."
+        suggest: "Voorstellen met AI"
+        missing_content: "Voer wat inhoud in om suggesties te genereren."
         context_menu:
           back: "Vorige"
+          trigger: "AI"
           undo: "Ongedaan maken"
+          loading: "AI is aan het genereren"
           cancel: "Annuleren"
           regen: "Opnieuw proberen"
+          view_changes: "Wijzigingen weergeven"
           confirm: "Bevestigen"
           revert: "Herstellen"
+          changes: "Wijzigingen"
+          custom_prompt:
+            title: "Aangepaste prompt"
+            placeholder: "Voer een aangepaste prompt in..."
+            submit: "Prompt verzenden"
         post_options_menu:
+          trigger: "AI vragen"
+          title: "AI vragen"
+          loading: "AI is aan het genereren"
           close: "Sluiten"
           copy: "Kopiëren"
           copied: "Gekopieerd!"
           cancel: "Annuleren"
+        fast_edit:
+          suggest_button: "Bewerking voorstellen"
         thumbnail_suggestions:
+          title: "Voorgestelde miniaturen"
           select: "Selecteren"
           selected: "Geselecteerd"
       reviewables:
@@ -66,17 +167,39 @@ nl:
         accuracy: "Nauwkeurigheid:"
       embeddings:
         semantic_search: "Topics (semantisch)"
+        semantic_search_loading: "Zoeken naar meer resultaten met behulp van AI"
+        semantic_search_disabled_sort: "AI zoeken uitgeschakeld voor deze sorteervolgorde, sorteer op Relevantie om in te schakelen."
+        semantic_search_results:
+          toggle: "%{count} resultaten gevonden met AI worden weergegeven"
+          toggle_hidden: "%{count} resultaten gevonden met AI zijn verborgen"
+          none: "Sorry, AI zoeken heeft geen overeenkomende topics gevonden."
+          new: "Druk op 'Zoeken' om nieuwe resultaten te zoeken met AI"
+        ai_generated_result: "Zoekresultaat gevonden met AI"
       ai_bot:
+        pm_warning: "AI-chatbotberichten worden regelmatig gecontroleerd door moderators."
         cancel_streaming: "Stoppen met antwoorden"
         default_pm_prefix: "[PB naamloze AI-bot]"
         shortcut_title: "Start een PB met een AI-bot"
+        share: "AI-gesprek delen"
+        conversation_shared: "Gesprek gekopieerd"
+        ai_label: "AI"
+        ai_title: "Gesprek met AI"
         share_modal:
+          title: "AI-gesprek delen"
           copy: "Kopiëren"
+          context: "Te delen interacties:"
         bot_names:
           gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+          gemini-pro: "Gemini"
+          mixtral-8x7B-Instruct-V0:
+            "1": "Mixtral-8x7B V0.1"
+      sentiments:
+        dashboard:
+          title: "Sentiment"
     review:
       types:
         reviewable_ai_post:

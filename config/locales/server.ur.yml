@@ -9,6 +9,11 @@ ur:
     overall_sentiment:
       yaxis: "تاریخ"
   discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "تلاش کریں"
+        time: "وقت"
+        summarize: "خلاصہ"
     sentiment:
       reports:
         post_emotion:

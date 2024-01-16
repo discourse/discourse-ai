@@ -5,60 +5,161 @@
 # https://translate.discourse.org/
 
 fi:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse AI"
   js:
     discourse_automation:
       ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
             sender:
               label: "Lähettäjä"
+              description: "Käyttäjä, joka lähettää raportin"
+            receivers:
+              label: "Vastaanottajat"
+              description: "Käyttäjät, jotka saavat raportin (sähköpostit lähetetään suorina sähköposteina, käyttäjätunnuksille lähetetään yksityisviesti)"
             topic_id:
               label: "Ketjun tunnus"
+              description: "Sen ketjun tunnus, johon raportti julkaistaan"
             title:
               label: "Otsikko"
+              description: "Raportin otsikko"
+            days:
+              label: "Päivät"
+              description: "Raportin aikaväli"
+            offset:
+              label: "Siirtymä"
+              description: "Testatessasi voi olla hyvä idea laatia raportti historiallisesti, käyttää siirtymää ja aloittaa raportti aikaisemmasta päivämäärästä"
+            instructions:
+              label: "Ohjeet"
+              description: "Suurelle kielimallille annetut ohjeet"
+            sample_size:
+              label: "Otoksen koko"
+              description: "Viestin määrä raportin otantaa varten"
+            tokens_per_post:
+              label: "Saneita viestiä kohden"
+              description: "Viestiä kohden käytettävien suuren kielimallin saneiden määrä"
+            model:
+              label: "Malli"
+              description: "Raportin luomiseen käytettävä LLM"
             categories:
               label: "Luokat"
+              description: "Suodata ketjut vain näihin alueisiin"
             tags:
               label: "Tunnisteet"
+              description: "Suodata ketjut vain näihin tunnisteisiin"
+            allow_secure_categories:
+              label: "Salli suojatut alueet"
+              description: "Salli raportin luominen suojattujen alueiden ketjuista"
+            debug_mode:
+              label: "Virheenkorjaustila"
+              description: "Ota virheenkorjaustila käyttöön nähdäksesi LLM:n raakasyötteen ja -tuotoksen"
+            priority_group:
+              label: "Prioriteettiryhmä"
+              description: "Priorisoi tämän ryhmän sisältö raportissa"
         llm_triage:
           fields:
+            system_prompt:
+              label: "Järjestelmäkehote"
+              description: "Kehote, jota käytetään luokitteluun; varmista, että se vastaa yhdellä sanalla, jota voit käyttää toiminnon käynnistämiseen"
+            search_for_text:
+              label: "Hae tekstiä"
+              description: "Jos suuren kielimallin vastauksessa näkyy seuraava teksti, tee nämä toimet"
             category:
               label: "Luokka"
+              description: "Ketjuun sovellettava alue"
             tags:
               label: "Tunnisteet"
+              description: "Ketjuun sovellettavat tunnisteet"
             canned_reply:
               label: "Vastaa"
+              description: "Ketjuun lähetettävän valmiin vastauksen raaka teksti"
+            canned_reply_user:
+              label: "Vastauskäyttäjä"
+              description: "Valmiin vastauksen lähettävän käyttäjän käyttäjätunnus"
+            hide_topic:
+              label: "Piilota ketju"
+              description: "Tee ketjusta näkymätön yleisölle, jos tämä laukaistaan"
+            model:
+              label: "Malli"
+              description: "Joko gpt-4 tai gpt-3-5-turbo tai claude-2"
     discourse_ai:
+      title: "Tekoäly"
       modals:
         select_option: "Valitse vaihtoehto..."
       ai_persona:
         name: Nimi
         description: Kuvaus
+        system_prompt: Järjestelmäkehote
         save: Tallenna
+        saved: Tekoälypersoona tallennettu
         enabled: Käytössä
+        commands: Käytössä olevat komennot
+        allowed_groups: Sallitut ryhmät
+        confirm_delete: Oletko varma, että haluat poistaa tämän persoonan?
         new: Uudet
+        title: "Tekoälypersoonat"
         delete: Poista
+        priority: Prioriteetti
+        priority_help: Prioriteettipersoonat näytetään käyttäjille ensimmäisinä persoonaluettelossa. Jos useilla persoonilla on prioriteetti, ne järjestetään aakkosjärjestyksessä.
+        command_options: "Komentoasetukset"
+        no_persona_selected: |
+          ## Mitä ovat tekoälypersoonat?
+
+          Tekoälypersoonat on tehokas ominaisuus, jonka avulla voit mukauttaa tekoälymoduulin toimintaa Discourse-foorumillasi. Ne toimivat "järjestelmäviestinä", joka ohjaa tekoälyvastauksia ja -vuorovaikutusta ja auttaa luomaan personoidumman ja kiinnostavamman käyttökokemuksen.
+
+          ## Miksi käyttää tekoälypersoonia?
+
+          Tekoälypersoonilla voit räätälöidä tekoälyn toimintaa sopimaan paremmin foorumisi kontekstiin ja sävyyn. Halusitpa tekoälyn olevan muodollisempi ammattimaisessa ympäristössä, rennompi yhteisöfoorumilla tai jopa ilmentää tiettyä hahmoa roolipelissä, Tekoälypersoonat antavat sinulle joustavuuden tehdä niin.
+
+          ## Ryhmäkohtainen tekoälypersoonien käyttöoikeus
+
+          Lisäksi voit määrittää siten, että tietyillä käyttäjäryhmillä on pääsy tiettyihin persooniin. Tämä tarkoittaa, että sinulla voi olla erilaisia tekoälykäyttäytymismalleja foorumisi eri osioissa, mikä lisää entisestään yhteisösi vuorovaikutuksen monimuotoisuutta ja monipuolisuutta.
       related_topics:
+        title: "Liittyvät ketjut"
         pill: "Liittyy aiheeseen"
       ai_helper:
         title: "Ehdota muutoksia tekoälyn avulla"
         description: "Valitse yksi seuraavista vaihtoehdoista, niin tekoäly ehdottaa sinulle uutta versiota tekstistä."
         selection_hint: "Vihje: voit myös valita osan tekstistä ennen apuohjelman avaamista kirjoittaaksesi vain sen uudelleen."
+        suggest: "Ehdota tekoälyllä"
+        missing_content: "Anna sisältöä ehdotusten luomiseksi."
         context_menu:
           back: "Takaisin"
+          trigger: "Tekoäly"
           undo: "Kumoa"
+          loading: "Tekoäly tuottaa"
           cancel: "Peruuta"
           regen: "Yritä uudelleen"
+          view_changes: "Näytä muutokset"
           confirm: "Vahvista"
           revert: "Palauta"
+          changes: "Muutokset"
+          custom_prompt:
+            title: "Mukautettu kehote"
+            placeholder: "Anna mukautettu kehote..."
+            submit: "Lähetä kehote"
         post_options_menu:
+          trigger: "Kysy tekoälyltä"
+          title: "Kysy tekoälyltä"
+          loading: "Tekoäly tuottaa"
           close: "Sulje"
           copy: "Kopioi"
           copied: "Kopioitiin!"
           cancel: "Peruuta"
+        fast_edit:
+          suggest_button: "Ehdota muokkausta"
         thumbnail_suggestions:
+          title: "Ehdotetut pikkukuvat"
           select: "Valitse"
           selected: "Valittu"
       reviewables:
@@ -66,17 +167,39 @@ fi:
         accuracy: "Tarkkuus:"
       embeddings:
         semantic_search: "Ketjut (semanttinen)"
+        semantic_search_loading: "Haetaan lisää tuloksia tekoälyllä"
+        semantic_search_disabled_sort: "Tekoälyhaku ei ole käytössä tässä lajittelujärjestyksessä, lajittele tulokset olennaisuuden mukaan, jotta voit ottaa sen käyttöön."
+        semantic_search_results:
+          toggle: "Näytetään %{count} tulosta, jotka löydettiin tekoälyllä"
+          toggle_hidden: "Piilotetaan %{count} tulosta, jotka löydettiin tekoälyllä"
+          none: "Tekoälyhakumme ei valitettavasti löytänyt vastaavia aiheita."
+          new: "Aloita uusien tulosten etsiminen tekoälyllä painamalla hakupainiketta"
+        ai_generated_result: "Tekoälyllä löydetty hakutulos"
       ai_bot:
+        pm_warning: "Valvojat tarkkailevat säännöllisesti tekoälychatbotin viestejä"
         cancel_streaming: "Lopeta vastaus"
         default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
         shortcut_title: "Aloita yksityiskeskustelu tekoälybotin kanssa"
+        share: "Jaa tekoälykeskustelu"
+        conversation_shared: "Keskustelu kopioitu"
+        ai_label: "Tekoäly"
+        ai_title: "Keskustelu tekoälyn kanssa"
         share_modal:
+          title: "Jaa tekoälykeskustelu"
           copy: "Kopioi"
+          context: "Jaettavat vuorovaikutukset:"
         bot_names:
           gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+          gemini-pro: "Gemini"
+          mixtral-8x7B-Instruct-V0:
+            "1": "Mixtral-8x7B V0.1"
+      sentiments:
+        dashboard:
+          title: "Tunne"
     review:
       types:
         reviewable_ai_post:

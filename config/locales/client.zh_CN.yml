@@ -5,60 +5,161 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse AI"
   js:
     discourse_automation:
       ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
             sender:
               label: "发送人"
+              description: "将发送报告的用户"
+            receivers:
+              label: "接收人"
+              description: "将收到报告的用户（电子邮件地址将收到直接电子邮件，用户名将收到私信）"
             topic_id:
               label: "话题 ID"
+              description: "要将报告发布到的话题 ID"
             title:
               label: "标题"
+              description: "报告的标题"
+            days:
+              label: "天数"
+              description: "报告的时间范围"
+            offset:
+              label: "偏移"
+              description: "在测试时，您可能希望运行历史报告，请使用“偏移”启动较早日期的报告"
+            instructions:
+              label: "指令"
+              description: "提供给大语言模型的指令"
+            sample_size:
+              label: "样本大小"
+              description: "要为报告抽样的帖子数"
+            tokens_per_post:
+              label: "每个帖子的词例数"
+              description: "每个帖子要使用的 LLM 词例数"
+            model:
+              label: "模型"
+              description: "用于生成报告的 LLM"
             categories:
               label: "类别"
+              description: "仅筛选这些类别的话题"
             tags:
               label: "标签"
+              description: "仅筛选这些标签的话题"
+            allow_secure_categories:
+              label: "允许安全类别"
+              description: "允许为安全类别中的话题生成报告"
+            debug_mode:
+              label: "调试模式"
+              description: "启用调试模式以查看 LLM 的原始输入和输出"
+            priority_group:
+              label: "优先群组"
+              description: "在报告中优先考虑来自此群组的内容"
         llm_triage:
           fields:
+            system_prompt:
+              label: "系统提示"
+              description: "将用于分类的提示，请确保它回复一个您可用于触发操作的字词"
+            search_for_text:
+              label: "搜索文本"
+              description: "如果 LLM 回复中出现以下文本，则应用此操作"
             category:
               label: "类别"
+              description: "应用于话题的类别"
             tags:
               label: "标签"
+              description: "应用于话题的标签"
             canned_reply:
               label: "回复"
+              description: "要为话题发布的预设回复的原始文本"
+            canned_reply_user:
+              label: "回复用户"
+              description: "发布预设回复的用户的用户名"
+            hide_topic:
+              label: "隐藏话题"
+              description: "如果触发，使话题对公众不可见"
+            model:
+              label: "模型"
+              description: "gpt-4、gpt-3-5-turbo 或 claude-2"
     discourse_ai:
+      title: "AI"
       modals:
         select_option: "选择一个选项…"
       ai_persona:
         name: 名称
         description: 描述
+        system_prompt: 系统提示
         save: 保存
+        saved: AI 角色已保存
         enabled: 已启用
+        commands: 启用的命令
+        allowed_groups: 允许的群组
+        confirm_delete: 确定要删除此角色吗？
         new: 新
+        title: "AI 角色"
         delete: 删除
+        priority: 优先
+        priority_help: 优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。
+        command_options: "命令选项"
+        no_persona_selected: |
+          ## 什么是 AI 角色？
+
+          AI 角色是一项强大的功能，让您可以在 Discourse 论坛中自定义 AI 引擎的行为。这些角色作为“系统消息”，指导 AI 的响应和交互，帮助打造更加个性化和引人入胜的用户体验。
+
+          ## 为何使用 AI 角色？
+
+          借助 AI 角色，您可以定制 AI 的行为，以更好地适应论坛的环境和基调。无论您是希望 AI 在专业环境中显得更正式，还是在社区论坛中显得更休闲，甚至是在角色扮演游戏中体现特定角色，您都可以灵活地通过 AI 角色来实现。
+
+          ## 对 AI 角色的群组特定的访问
+
+          此外，您还可以对其进行设置，以便某些用户群组可以访问特定角色。这意味着您可以为论坛的不同部分设置不同的 AI 行为，从而进一步增强社区互动的多元化和丰富性。
       related_topics:
+        title: "相关话题"
         pill: "相关"
       ai_helper:
         title: "使用 AI 提出更改建议"
         description: "选择以下选项之一，AI 将向您推荐新版本文本。"
         selection_hint: "提示：您也可以在打开助手之前选择文本的一部分来仅重写该文本。"
+        suggest: "通过 AI 提出建议"
+        missing_content: "请输入一些内容以生成建议。"
         context_menu:
           back: "返回"
+          trigger: "AI"
           undo: "撤消"
+          loading: "AI 正在生成"
           cancel: "取消"
           regen: "重试"
+          view_changes: "查看更改"
           confirm: "确认"
           revert: "还原"
+          changes: "更改"
+          custom_prompt:
+            title: "自定义提示"
+            placeholder: "输入自定义提示…"
+            submit: "发送提示"
         post_options_menu:
+          trigger: "询问 AI"
+          title: "询问 AI"
+          loading: "AI 正在生成"
           close: "关闭"
           copy: "复制"
           copied: "已复制！"
           cancel: "取消"
+        fast_edit:
+          suggest_button: "建议编辑"
         thumbnail_suggestions:
+          title: "建议缩略图"
           select: "选择"
           selected: "已选择"
       reviewables:
@@ -66,17 +167,39 @@ zh_CN:
         accuracy: "准确性："
       embeddings:
         semantic_search: "话题（语义）"
+        semantic_search_loading: "正在使用 AI 搜索更多结果"
+        semantic_search_disabled_sort: "已禁用此排序顺序的 AI 搜索，按“相关性”排序以启用。"
+        semantic_search_results:
+          toggle: "显示使用 AI 找到的 %{count} 个结果"
+          toggle_hidden: "隐藏使用 AI 找到的 %{count} 个结果"
+          none: "抱歉，我们的 AI 搜索没有找到匹配的话题。"
+          new: "按“搜索”开始使用 AI 查找新结果"
+        ai_generated_result: "使用 AI 找到的搜索结果"
       ai_bot:
+        pm_warning: "版主会定期监控 AI 聊天机器人消息。"
         cancel_streaming: "停止回复"
         default_pm_prefix: "[无标题 AI 机器人私信]"
         shortcut_title: "使用 AI 机器人启动私信"
+        share: "分享 AI 对话"
+        conversation_shared: "对话已复制"
+        ai_label: "AI"
+        ai_title: "与 AI 的对话"
         share_modal:
+          title: "分享 AI 对话"
           copy: "复制"
+          context: "要分享的互动："
         bot_names:
           gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+          gemini-pro: "Gemini"
+          mixtral-8x7B-Instruct-V0:
+            "1": "Mixtral-8x7B V0.1"
+      sentiments:
+        dashboard:
+          title: "情绪"
     review:
       types:
         reviewable_ai_post:

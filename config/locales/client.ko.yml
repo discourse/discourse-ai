@@ -29,6 +29,8 @@ ko:
             canned_reply:
               label: "댓글쓰기"
     discourse_ai:
+      modals:
+        select_option: "옵션 선택..."
       ai_persona:
         name: 그룹명
         description: 내용

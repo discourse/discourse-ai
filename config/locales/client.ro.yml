@@ -27,6 +27,8 @@ ro:
             canned_reply:
               label: "Răspunde"
     discourse_ai:
+      modals:
+        select_option: "Alege o opțiune..."
       ai_persona:
         name: Nume
         description: Descriere

@@ -27,6 +27,8 @@ cs:
             canned_reply:
               label: "Odpověď"
     discourse_ai:
+      modals:
+        select_option: "Zvolit možnost..."
       ai_persona:
         name: Jméno
         description: Popis
@@ -40,6 +42,7 @@ cs:
           undo: "Zpět"
           cancel: "Zrušit"
           regen: "Zkusit znovu"
+          confirm: "Potvrdit"
           revert: "Vrátit"
         post_options_menu:
           close: "Zavřít"

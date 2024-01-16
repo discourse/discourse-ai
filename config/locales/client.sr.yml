@@ -23,6 +23,8 @@ sr:
             canned_reply:
               label: "Odgovori"
     discourse_ai:
+      modals:
+        select_option: "Izaberi jednu od opcija..."
       ai_persona:
         name: Ime foruma
         description: Opis

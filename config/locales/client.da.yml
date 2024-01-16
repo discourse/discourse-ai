@@ -27,6 +27,8 @@ da:
             canned_reply:
               label: "Svar"
     discourse_ai:
+      modals:
+        select_option: "Vælg en indstilling..."
       ai_persona:
         name: Navn
         description: Beskrivelse

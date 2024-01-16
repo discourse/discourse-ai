@@ -9,6 +9,11 @@ lt:
     overall_sentiment:
       yaxis: "Data"
   discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Paieška"
+        time: "Laikas"
+        summarize: "Apibendrinti"
     sentiment:
       reports:
         post_emotion:

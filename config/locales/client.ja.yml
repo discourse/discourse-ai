@@ -5,60 +5,161 @@
 # https://translate.discourse.org/
 
 ja:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse AI"
   js:
     discourse_automation:
       ai_models:
-        claude_2: クロード 2
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
+        claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
             sender:
               label: "送信者"
+              description: "レポートを送信するユーザー"
+            receivers:
+              label: "受信者"
+              description: "レポートを受け取るユーザー (メールはダイレクトメールで送信され、ユーザー名に PM が送信されます)"
             topic_id:
               label: "トピック ID"
+              description: "レポートを投稿するトピック ID"
             title:
-              label: "タグライン"
+              label: "タイトル"
+              description: "レポートのタイトル"
+            days:
+              label: "日数"
+              description: "レポートの期間"
+            offset:
+              label: "オフセット"
+              description: "テスト時にレポートを過去にさかのぼって実行する必要がある場合は、オフセットを使用してレポートをより前の日付から開始します"
+            instructions:
+              label: "指示"
+              description: "大規模言語モデルに提供する指示"
+            sample_size:
+              label: "サンプルサイズ"
+              description: "レポート用にサンプリングする投稿の数"
+            tokens_per_post:
+              label: "投稿あたりのトークン"
+              description: "投稿あたりに使用する LLM トークンの数"
+            model:
+              label: "モデル"
+              description: "レポートの生成に使用する LLM"
             categories:
               label: "カテゴリ"
+              description: "トピックをこれらのカテゴリのみにフィルタします"
             tags:
               label: "タグ"
+              description: "トピックをこれらのタグのみにフィルタします"
+            allow_secure_categories:
+              label: "安全なカテゴリを許可する"
+              description: "安全なカテゴリに含まれるトピックに対しレポートの生成を許可します"
+            debug_mode:
+              label: "デバッグモード"
+              description: "デバッグモードを有効にして、LLM の生の入力と出力を確認します"
+            priority_group:
+              label: "優先グループ"
+              description: "レポートでこのグループのコンテンツを優先します"
         llm_triage:
           fields:
+            system_prompt:
+              label: "システムプロンプト"
+              description: "トリアージに使用されるプロンプト。ユーザーがアクションのトリガーに使用できる 1 つの単語でプロンプトが応答できるようにしてください"
+            search_for_text:
+              label: "テキストを検索する"
+              description: "LLM の返信に後続のテキストが表示される場合は、このアクションを適用します"
             category:
               label: "カテゴリ"
+              description: "トピックに適用するカテゴリ"
             tags:
               label: "タグ"
+              description: "トピックに適用するタグ"
             canned_reply:
               label: "返信"
+              description: "トピックに投稿する定型返信の生のテキスト"
+            canned_reply_user:
+              label: "ユーザーに返信"
+              description: "定型返信を投稿するユーザーのユーザー名"
+            hide_topic:
+              label: "トピックを非表示"
+              description: "トリガーされると、トピックを一般公開しないようにします"
+            model:
+              label: "モデル"
+              description: "gpt-4 または gpt-3-5-turbo または claude-2 のいずれか"
     discourse_ai:
+      title: "AI"
       modals:
         select_option: "オプションを選択..."
       ai_persona:
         name: 名前
         description: 説明
+        system_prompt: システムプロンプト
         save: 保存
+        saved: AI ペルソナが保存されました
         enabled: 有効
+        commands: 有効なコマンド
+        allowed_groups: 許可されたグループ
+        confirm_delete: このペルソナを削除してもよろしいですか？
         new: 新規
+        title: "AI ペルソナ"
         delete: 削除
+        priority: 優先度
+        priority_help: 優先ペルソナはペルソナリストの先頭に表示されます。複数のペルソナが優先されている場合は、アルファベット順に並べ替えられます。
+        command_options: "コマンドオプション"
+        no_persona_selected: |
+          ## AI ペルソナとは？
+
+          AI ペルソナは、Discourse フォーラムの AI エンジンの動作をカスタマイズできる強力な機能です。AI の応答と操作を誘導する「システムメッセージ」として機能し、よりパーソナル化された魅力的なユーザーエクスペリエンスの作成に役立ちます。
+
+          ## AI ペルソナを使用する理由
+
+          AI ペルソナを使用すると、フォーラムのコンテキストや雰囲気により適した AI の動作を提供できます。プロフェッショナルな状況ではよりフォーマルに振る舞い、コミュニティーフォーラムにはよりカジュアルに振る舞い、ロールプレイングゲームでは特定のキャラクターを体現化するなど、AI ペルソナでは自由な設定が可能です。
+
+          ## AI ペルソナへのアクセスをグループごとに指定
+
+          さらに、特定のユーザーグループが特定のペルソナにアクセスできるようにセットアップできます。つまり、フォーラムのセクションごとに AI の動作を変えることで、コミュニティー内のやり取りの多様性と充実度をさらに強化することが可能です。
       related_topics:
+        title: "関連トピック"
         pill: "関連"
       ai_helper:
         title: "AI を使用して変更を提案"
         description: "以下のいずれかのオプションを選択すると、AI が新しいバージョンのテキストを提案します。"
         selection_hint: "ヒント: ヘルパーを開く前にテキストの一部を選択すると、その部分のみを書き換えることもできます。"
+        suggest: "AI で提案"
+        missing_content: "提案を生成するにはコンテンツを入力してください。"
         context_menu:
           back: "戻る"
+          trigger: "AI"
           undo: "元に戻す"
+          loading: "AI が生成中です"
           cancel: "キャンセル"
           regen: "やり直す"
+          view_changes: "変更を表示"
           confirm: "確認"
           revert: "戻す"
+          changes: "変更"
+          custom_prompt:
+            title: "カスタムプロンプト"
+            placeholder: "カスタムプロンプトを入力してください..."
+            submit: "プロンプトを送信"
         post_options_menu:
-          close: "クローズ"
+          trigger: "AI に尋ねる"
+          title: "AI に尋ねる"
+          loading: "AI が生成中です"
+          close: "閉じる"
           copy: "コピー"
           copied: "コピーしました！"
           cancel: "キャンセル"
+        fast_edit:
+          suggest_button: "編集を提案"
         thumbnail_suggestions:
+          title: "提案されたサムネイル"
           select: "選択"
           selected: "選択済み"
       reviewables:
@@ -66,17 +167,39 @@ ja:
         accuracy: "精度:"
       embeddings:
         semantic_search: "トピック (セマンティック)"
+        semantic_search_loading: "AI を使ってさらに多くの結果を検索中"
+        semantic_search_disabled_sort: "この並べ替え順では AI 検索は無効です。有効にするには関連性で並べ替えてください。"
+        semantic_search_results:
+          toggle: "AI で見つかった %{count} 件の結果を表示中"
+          toggle_hidden: "AI で見つかった %{count} 件の結果を非表示"
+          none: "AI 検索ではどのトピックも一致しませんでした。"
+          new: "「検索」を押すと、AI が新しい結果を検索し始めるます"
+        ai_generated_result: "AI で見つかった検索結果"
       ai_bot:
+        pm_warning: "AI チャットボットのメッセージは、モデレーターによって定期的に監視されます。"
         cancel_streaming: "返信を停止する"
         default_pm_prefix: "[無題の AI ボット PM]"
         shortcut_title: "AI ボットと PM を開始する"
+        share: "AI の会話を共有"
+        conversation_shared: "会話をコピーしました"
+        ai_label: "AI"
+        ai_title: "AI との会話"
         share_modal:
+          title: "AI の会話を共有"
           copy: "コピー"
+          context: "共有する対話:"
         bot_names:
           gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "クロード 2"
+          gemini-pro: "Gemini"
+          mixtral-8x7B-Instruct-V0:
+            "1": "Mixtral-8x7B V0.1"
+      sentiments:
+        dashboard:
+          title: "センチメント"
     review:
       types:
         reviewable_ai_post:

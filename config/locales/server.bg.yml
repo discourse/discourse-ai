@@ -8,3 +8,9 @@ bg:
   reports:
     overall_sentiment:
       yaxis: "Дата"
+  discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Търсене"
+        time: "Време "
+        summarize: "Обобщаване"

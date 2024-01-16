@@ -8,3 +8,9 @@ cs:
   reports:
     overall_sentiment:
       yaxis: "Datum"
+  discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Vyhledat"
+        tags: "Seznam značek"
+        time: "Čas"

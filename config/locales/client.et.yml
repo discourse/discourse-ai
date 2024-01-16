@@ -27,6 +27,8 @@ et:
             canned_reply:
               label: "Vasta"
     discourse_ai:
+      modals:
+        select_option: "Vali võimalus..."
       ai_persona:
         name: Nimi
         description: Kirjeldus

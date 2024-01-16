@@ -27,6 +27,8 @@ sq:
             canned_reply:
               label: "Përgjigju"
     discourse_ai:
+      modals:
+        select_option: "Zgjidhni një opsion..."
       ai_persona:
         name: Emri
         description: Përshkrimi

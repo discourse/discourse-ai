@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 tr_TR:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: AI kullanarak gönderileri triyajla
+        description: "Büyük bir dil modeli kullanarak gönderileri triyajla"
+        system_prompt_missing_post_placeholder: "Sistem istemi gönderi için bir yer tutucu içermelidir: %%POST%%"
+      llm_report:
+        title: AI kullanarak periyodik raporla
+        description: "Geniş bir dil modeline dayalı periyodik raporla"
   site_settings:
     discourse_ai_enabled: "Discourse YZ eklentisini etkinleştirin."
     ai_toxicity_enabled: "Toksiklik modülünü etkinleştirin."
@@ -35,7 +44,12 @@ tr_TR:
     ai_nsfw_flag_threshold_sexy: "Seksi olarak sınıflandırılan bir görüntünün NSFW olarak değerlendirilmesi için eşik."
     ai_nsfw_models: "NSFW çıkarımı için kullanılacak modeller."
     ai_openai_gpt35_url: "GPT 3.5 sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
+    ai_openai_gpt35_16k_url: "GPT 3.5 16k sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
     ai_openai_gpt4_url: "GPT 4 sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
+    ai_openai_gpt4_32k_url: "GPT 4 32k sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
+    ai_openai_gpt4_turbo_url: "GPT 4 Turbo sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
+    ai_openai_dall_e_3_url: "DALL-E 3 görüntü oluşturma için kullanılan özel URL. (Azure desteği için)"
+    ai_openai_organization: "(İsteğe bağlı, atlamak için boş bırakın) OpenAI API için kullanılan kuruluş kimliği. OpenAI-Organization başlığı kullanılarak aktarılır."
     ai_openai_embeddings_url: "OpenAI gömme API'si için kullanılan özel URL. (Azure söz konusu olduğunda şu olabilir: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "OpenAI API'si için API anahtarı"
     ai_anthropic_api_key: "Antropik API'si için API anahtarı"
@@ -44,6 +58,10 @@ tr_TR:
     ai_helper_allowed_groups: "Bu gruplardaki kullanıcılar, bestecide YZ yardımcı düğmesini görür."
     ai_helper_allowed_in_pm: "Kişisel mesajlarda bestecinin YZ yardımcıyı etkinleştirin."
     ai_helper_model: "YZ yardımcı için kullanılacak model."
+    ai_helper_custom_prompts_allowed_groups: "Bu gruplardaki kullanıcılar AI yardımcısında özel istem seçeneğini görürler."
+    ai_helper_automatic_chat_thread_title_delay: "AI yardımcısının sohbet dizisi başlığını otomatik olarak ayarlamasından önceki dakika cinsinden gecikme."
+    ai_helper_automatic_chat_thread_title: "Sohbet konu başlıklarını konu içeriklerine göre otomatik olarak ayarlayın."
+    ai_helper_illustrate_post_model: "Besteci AI yardımcısının gönderiyi gösterme özelliği için kullanılacak model"
     ai_embeddings_enabled: "Gömme modülünü etkinleştirin."
     ai_embeddings_discourse_service_api_endpoint: "Gömme modülü için API'nin çalıştığı URL"
     ai_embeddings_discourse_service_api_key: "Gömme API'si için API anahtarı"
@@ -51,19 +69,28 @@ tr_TR:
     ai_embeddings_generate_for_pms: "Kişisel mesajlar için gömmeler oluşturun."
     ai_embeddings_semantic_related_topics_enabled: "İlgili konular için Semantik Arama'yı kullanın."
     ai_embeddings_semantic_related_topics: "İlgili konu bölümünde gösterilecek maksimum konu sayısı."
+    ai_embeddings_backfill_batch_size: "Her 15 dakikada bir geri doldurulacak gömme sayısı."
     ai_embeddings_pg_connection_string: "Gömme modülü için PostgreSQL bağlantı dizesi. pgvector uzantısının etkinleştirilmesi ve bir dizi tablonun oluşturulması gerekir. Daha fazla bilgi için belgelere bakın."
     ai_embeddings_semantic_search_enabled: "Tam sayfa semantik aramayı etkinleştirin."
     ai_embeddings_semantic_related_include_closed_topics: "Kapalı konuları semantik arama sonuçlarına dâhil edin"
+    ai_embeddings_semantic_search_hyde_model: "Anlamsal arama sırasında daha iyi sonuçlar elde etmek için anahtar kelimeleri genişletmek üzere kullanılan model"
     ai_summarization_discourse_service_api_endpoint: "Discourse özetleme API'sinin çalıştığı URL."
     ai_summarization_discourse_service_api_key: "Discourse özetleme API'si için API anahtarı."
     ai_bot_enabled: "YZ Botu modülünü etkinleştirin."
+    ai_bot_enable_chat_warning: "Kişisel mesaj sohbeti başlatıldığında bir uyarı görüntüleyin. Çeviri dizesi düzenlenerek geçersiz kılınabilir: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "GPT Botunun Kişisel Mesaja erişimi olduğunda, bu grupların üyelerine yanıt verir."
     ai_bot_enabled_chat_bots: "YZ Botu görevi görecek mevcut modeller"
     ai_bot_add_to_header: "Bir YZ Botu ile bir kişisel mesaj başlatmak için başlıkta bir düğme gösterin"
     ai_stability_api_key: "stability.ai API'si için API anahtarı"
+    ai_stability_engine: "stability.ai API'si için kullanılacak görüntü oluşturma motoru"
     ai_stability_api_url: "stability.ai API'si için URL"
     ai_google_custom_search_api_key: "Google Özel Arama API'sı için API anahtarı bkz.: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "Google Özel Arama API'sı için CX"
+    ai_bedrock_access_key_id: "Bedrock API'sine yönelik erişim anahtarı kimliği"
+    ai_bedrock_secret_access_key: "Bedrock API'si için gizli erişim anahtarı"
+    ai_bedrock_region: "Bedrock API için AWS bölgesi"
+    ai_cloudflare_workers_account_id: "Cloudflare Workers AI API için Cloudflare hesap kimliği"
+    ai_cloudflare_workers_api_token: "Cloudflare Workers AI API için API token'ı"
   reviewables:
     reasons:
       flagged_by_toxicity: YZ eklentisi, toksik olarak sınıflandırdıktan sonra buna bayrak ekledi.
@@ -73,7 +100,13 @@ tr_TR:
     invalid_prompt_role: '%{idx} mesajının geçersiz bir rolü var.'
   reports:
     overall_sentiment:
+      title: "Genel duyarlılık"
+      description: "Bu grafik, olumlu ya da olumsuz olarak sınıflandırılan paylaşımların sayısını karşılaştırmaktadır."
+      xaxis: "Pozitif(%)"
       yaxis: "Tarih"
+    post_emotion:
+      title: "Duygu gönder"
+      description: "Aşağıdaki duygulardan biriyle sınıflandırılan ve gönderi sahibinin güven seviyesine göre gruplandırılan gönderilerin sayısı."
   discourse_ai:
     ai_helper:
       errors:
@@ -83,8 +116,49 @@ tr_TR:
         generate_titles: Konu başlıkları öner
         proofread: Yazım hataları düzeltilmiş metin
         markdown_table: Markdown tablosu oluştur
+        custom_prompt: "Özel İstem"
+        explain: "Açıkla"
+        illustrate_post: "Gönderiyi göster"
+      painter:
+        attribution:
+          stable_diffusion_xl: "Stable Diffusion XL tarafından görsel"
+          dall_e_3: "DALL-E 3'den görsel"
     ai_bot:
+      personas:
+        cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
+        cannot_edit_system_persona: "Sistem kişileri yalnızca yeniden adlandırılabilir, komutları veya sistem istemini düzenleyemezsiniz, bunun yerine devre dışı bırakıp bir kopyasını oluşturabilirsiniz"
+        general:
+          name: Forum Yardımcısı
+          description: "Çeşitli görevleri yerine getirebilen genel amaçlı AI Botu"
+        artist:
+          name: Sanatçı
+          description: "Görsel üretme konusunda uzmanlaşmış AI Bot"
+        sql_helper:
+          name: SQL Yardımcısı
+          description: "Bu Discourse örneğinde SQL sorguları oluşturmaya yardımcı olma konusunda uzmanlaşmış AI Bot"
+        settings_explorer:
+          name: Ayarlar Gezgini
+          description: "Discourse site ayarlarını keşfetmeye yardımcı olma konusunda uzmanlaşmış AI Bot"
+        researcher:
+          name: Araştırmacı
+          description: "Sizin için bilgi araştırabilen Google erişimli AI Bot"
+        creative:
+          name: Yaratıcı
+          description: "Yaratıcı görevlerde uzmanlaşmış, harici entegrasyonları olmayan AI Bot"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "DALL-E 3 kullanarak görüntü üretme konusunda uzmanlaşmış AI Bot"
       topic_not_found: "Özet mevcut değil, konu bulunamadı!"
+      summarizing: "Konu özetleniyor"
+      searching: "Aranıyor: '%{query}'"
+      command_options:
+        search:
+          max_results:
+            name: "Maksimum sonuç sayısı"
+            description: "Aramaya dahil edilecek maksimum sonuç sayısı; boşsa varsayılan kurallar kullanılır ve kullanılan modele bağlı olarak sayım ölçeklendirilir. En yüksek değer 100'dür."
+          base_query:
+            name: "Temel Arama Sorgusu"
+            description: "Arama yaparken kullanılacak temel sorgu. Örnek: '#urgent', arama sorgusuna '#urgent' ekler ve yalnızca acil kategorisine veya etiketine sahip konuları içerir."
       command_summary:
         categories: "Kategorileri listele"
         search: "Ara"
@@ -93,8 +167,26 @@ tr_TR:
         summarize: "Özetle"
         image: "Görüntü oluştur"
         google: "Google'da Ara"
+        read: "Konuyu oku"
+        setting_context: "Site ayarı bağlamına bakın"
+        schema: "Veri tabanı şemasına bakma"
+        search_settings: "Site ayarları aranıyor"
         dall_e: "Görüntü oluştur"
+      command_help:
+        categories: "Forumdaki herkese açık tüm kategorileri listeleyin"
+        search: "Forumdaki tüm genel konuları ara"
+        tags: "Forumdaki tüm etiketleri listele"
+        time: "Çeşitli saat dilimlerinde zamanı bul"
+        summarize: "Bir konuyu özetle"
+        image: "Kararlı Difüzyon kullanarak görsel oluştur"
+        google: "Bir sorgu için Google'da arama yap"
+        read: "Forumdaki herkese açık konuyu oku"
+        setting_context: "Site ayarı bağlamına bak"
+        schema: "Veri tabanı şemasına bak"
+        search_settings: "Site ayarlarını ara"
+        dall_e: "DALL-E 3 kullanarak görsel oluştur"
       command_description:
+        read: "Okunuyor: <a href='%{url}'>%{title}</a>"
         time: "%{timezone} saat diliminde saat %{time}"
         summarize: "<a href='%{url}'>%{title}</a> özetlendi"
         dall_e: "%{prompt}"
@@ -111,11 +203,27 @@ tr_TR:
         google:
           one: "\"%{query}\" için %{count} <a href='%{url}'>sonuç</a> bulundu"
           other: "\"%{query}\" için %{count} <a href='%{url}'>sonuç</a> bulundu"
+        setting_context: "Şunun için bağlam okunuyor: %{setting_name}"
+        schema: "%{tables}"
+        search_settings:
+          one: "'%{query}' için %{count} sonuç bulundu"
+          other: "'%{query}' için %{count} sonuç bulundu"
     summarization:
       configuration_hint:
         one: "Önce `%{setting}` ayarını yapılandırın"
         other: "Önce şu ayarları yapılandırın: %{settings}"
     sentiment:
       reports:
+        overall_sentiment:
+          positive: "Pozitif"
+          negative: "Negatif"
         post_emotion:
+          tl_01: "Güven seviyeleri 0-1"
+          tl_234: "Güven seviyeleri 2+"
+          sadness: "Üzüntü"
+          surprise: "Sürpriz"
           neutral: "Nötr"
+          fear: "Korku"
+          anger: "Öfke"
+          joy: "Neşe"
+          disgust: "İğrenme"

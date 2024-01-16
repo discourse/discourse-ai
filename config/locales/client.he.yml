@@ -65,7 +65,6 @@ he:
               description: "יש להפעיל מצב ניפוי תקלות כדי לצפות בקלט והפלט הגולמיים של ה־LLM"
             priority_group:
               label: "קבוצת עדיפות"
-              description: "תעדוף תוכן מקבוצה זו בדוח"
         llm_triage:
           fields:
             system_prompt:

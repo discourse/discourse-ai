@@ -5,3 +5,8 @@
 # https://translate.discourse.org/
 
 sr:
+  discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Pretraži"
+        time: "Vreme"

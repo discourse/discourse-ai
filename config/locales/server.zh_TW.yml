@@ -9,6 +9,11 @@ zh_TW:
     overall_sentiment:
       yaxis: "日期"
   discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "搜尋"
+        time: "時間"
+        summarize: "總結"
     sentiment:
       reports:
         post_emotion:

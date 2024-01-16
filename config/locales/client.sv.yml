@@ -27,6 +27,8 @@ sv:
             canned_reply:
               label: "Svara"
     discourse_ai:
+      modals:
+        select_option: "Välj ett alternativ..."
       ai_persona:
         name: Namn
         description: Beskrivning
@@ -48,6 +50,7 @@ sv:
           copied: "Kopierad!"
           cancel: "Avbryt"
         thumbnail_suggestions:
+          select: "Välj"
           selected: "Markerat"
       ai_bot:
         share_modal:

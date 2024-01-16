@@ -65,7 +65,6 @@ pl_PL:
               description: "Włącz tryb debugowania, aby zobaczyć nieprzetworzone dane wejściowe i wyjściowe LLM."
             priority_group:
               label: "Grupa priorytetowa"
-              description: "Nadaj priorytet treściom z tej grupy w raporcie"
         llm_triage:
           fields:
             system_prompt:

@@ -27,6 +27,8 @@ bg:
             canned_reply:
               label: "Отговорете"
     discourse_ai:
+      modals:
+        select_option: "Изберете опция..."
       ai_persona:
         name: Име
         description: Описание
