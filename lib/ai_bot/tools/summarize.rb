@@ -161,7 +161,7 @@ module DiscourseAi
         end
 
         def section_prompt(topic, text, guidance)
-          insts = <<~TEXT
+          system_prompt = <<~TEXT
           You are a summarization bot.
           You effectively summarise any text.
           You condense it into a shorter version.
@@ -169,13 +169,16 @@ module DiscourseAi
           Try generating links as well the format is #{topic.url}/POST_NUMBER. eg: [ref](#{topic.url}/77)
           TEXT
 
-          { insts: insts, input: <<~TEXT }
+          user_prompt = <<~TEXT
             Guidance: #{guidance}
             You are summarizing the topic: #{topic.title}
             Summarize the following in 400 words:
-    
+
             #{text}
-            TEXT
+          TEXT
+
+          messages = [{ type: :user, content: user_prompt }]
+          DiscourseAi::Completions::Prompt.new(system_prompt, messages: messages)
         end
       end
     end

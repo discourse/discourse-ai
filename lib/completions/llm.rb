@@ -93,6 +93,10 @@ module DiscourseAi
           prompt = DiscourseAi::Completions::Prompt.new(messages: prompt)
         end
 
+        if !prompt.is_a?(DiscourseAi::Completions::Prompt)
+          raise ArgumentError, "Prompt must be either a string, array, of Prompt object"
+        end
+
         model_params.keys.each { |key| model_params.delete(key) if model_params[key].nil? }
 
         dialect = dialect_klass.new(prompt, model_name, opts: model_params)
