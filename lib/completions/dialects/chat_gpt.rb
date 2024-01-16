@@ -21,6 +21,8 @@ module DiscourseAi
           end
         end
 
+        VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
+
         def translate
           messages = prompt.messages
 
@@ -31,6 +33,11 @@ module DiscourseAi
           end
 
           trimmed_messages = trim_messages(messages)
+
+          embed_user_ids =
+            trimmed_messages.any? do |m|
+              m[:id] && m[:type] == :user && !m[:id].to_s.match?(VALID_ID_REGEX)
+            end
 
           trimmed_messages.map do |msg|
             if msg[:type] == :system
@@ -49,9 +56,15 @@ module DiscourseAi
             elsif msg[:type] == :tool
               { role: "tool", tool_call_id: msg[:id], content: msg[:content] }
             else
-              { role: "user", content: msg[:content] }.tap do |user_msg|
-                user_msg[:name] = msg[:id] if msg[:id]
+              user_message = { role: "user", content: msg[:content] }
+              if msg[:id]
+                if embed_user_ids
+                  user_message[:content] = "#{msg[:id]}: #{msg[:content]}"
+                else
+                  user_message[:name] = msg[:id]
+                end
               end
+              user_message
             end
           end
         end
@@ -109,6 +122,10 @@ module DiscourseAi
             8192
           when "gpt-4-32k"
             32_768
+          when "gpt-4-1106-preview"
+            131_072
+          when "gpt-4-turbo"
+            131_072
           else
             8192
           end

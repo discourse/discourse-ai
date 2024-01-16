@@ -157,6 +157,8 @@ module DiscourseAi
             reversed_trimmed_msgs << dupped_msg
           end
 
+          reversed_trimmed_msgs.pop if reversed_trimmed_msgs.last&.dig(:type) == :tool
+
           trimmed_messages.concat(reversed_trimmed_msgs.reverse)
         end
 

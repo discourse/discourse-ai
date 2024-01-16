@@ -22,10 +22,6 @@ module DiscourseAi
         @messages.concat(messages)
 
         @messages.each { |message| validate_message(message) }
-        @messages.each do |message|
-          message[:id] = clean_username(message[:id]) if message[:type] == :user &&
-            message[:id].present?
-        end
         @messages.each_cons(2) { |last_turn, new_turn| validate_turn(last_turn, new_turn) }
 
         @tools = tools
@@ -34,8 +30,7 @@ module DiscourseAi
       def push(type:, content:, id: nil)
         return if type == :system
         new_message = { type: type, content: content }
-
-        new_message[:id] = type == :user ? clean_username(id) : id if id && type != :model
+        new_message[:id] = id.to_s if id
 
         validate_message(new_message)
         validate_turn(messages.last, new_message)
@@ -44,16 +39,6 @@ module DiscourseAi
       end
 
       private
-
-      def clean_username(username)
-        if username.match?(/\0[a-zA-Z0-9_-]{1,64}\z/)
-          username
-        else
-          # not the best in the world, but this is what we have to work with
-          # if sites enable unicode usernames this can get messy
-          username.gsub(/[^a-zA-Z0-9_-]/, "_")[0..63]
-        end
-      end
 
       def validate_message(message)
         valid_types = %i[system user model tool tool_call]

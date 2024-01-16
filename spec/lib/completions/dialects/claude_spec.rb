@@ -15,7 +15,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       #{context.dialect_tools}</tools>
 
       Human: #{context.simple_user_input}
-      
+
       Assistant:
       TEXT
 
@@ -31,11 +31,11 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       <tools>
       #{context.dialect_tools}</tools>
 
-      Human: This is a message by a user
+      Human: user1: This is a message by a user
 
       Assistant: I'm a previous bot reply, that's why there's no user
 
-      Human: This is a new message by a user
+      Human: user1: This is a new message by a user
 
       Assistant:
       <function_results>
@@ -46,7 +46,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       </json>
       </result>
       </function_results>
-      
+
       Assistant:
       TEXT
 
@@ -59,6 +59,32 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
       translated = context.long_user_input_scenario(length: length)
 
       expect(translated.length).to be < context.long_message_text(length: length).length
+    end
+
+    it "retains usernames in generated prompt" do
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [
+            { id: "👻", type: :user, content: "Message1" },
+            { type: :model, content: "Ok" },
+            { id: "joe", type: :user, content: "Message2" },
+          ],
+        )
+
+      translated = context.dialect(prompt).translate
+
+      expect(translated).to eq(<<~TEXT.strip)
+        You are a bot
+
+        Human: 👻: Message1
+
+        Assistant: Ok
+
+        Human: joe: Message2
+
+        Assistant:
+        TEXT
     end
   end
 end
