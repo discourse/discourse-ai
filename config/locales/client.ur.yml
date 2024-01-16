@@ -27,6 +27,8 @@ ur:
             canned_reply:
               label: "جواب"
     discourse_ai:
+      modals:
+        select_option: "ایک آپشن منتخب کریں..."
       ai_persona:
         name: نام
         description: تفصیل

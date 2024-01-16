@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 it:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: Triage dei messaggi con IA
+        description: "Triage dei messaggi con LLM"
+        system_prompt_missing_post_placeholder: "Il comando di sistema deve contenere un segnaposto per il messaggio: %%POST%%"
+      llm_report:
+        title: Report periodico con IA
+        description: "Report periodico basato su LLM"
   site_settings:
     discourse_ai_enabled: "Abilita il plugin Discourse AI."
     ai_toxicity_enabled: "Abilita il modulo tossicità."
@@ -35,7 +44,12 @@ it:
     ai_nsfw_flag_threshold_sexy: "Soglia per un'immagine classificata come sexy per essere considerata NSFW."
     ai_nsfw_models: "Modelli da utilizzare per l'inferenza NSFW."
     ai_openai_gpt35_url: "URL personalizzato utilizzato per i completamenti della chat GPT 3.5. (per il supporto di Azure)"
+    ai_openai_gpt35_16k_url: "URL personalizzato utilizzato per i completamenti della chat GPT 3.5 16k. (per il supporto di Azure)"
     ai_openai_gpt4_url: "URL personalizzato utilizzato per i completamenti della chat GPT 4. (per il supporto di Azure)"
+    ai_openai_gpt4_32k_url: "URL personalizzato utilizzato per i completamenti della chat GPT 4 32k. (per il supporto di Azure)"
+    ai_openai_gpt4_turbo_url: "URL personalizzato utilizzato per i completamenti della chat GPT 4 Turbo. (per il supporto di Azure)"
+    ai_openai_dall_e_3_url: "URL personalizzato utilizzato per la generazione di immagini DALL-E 3. (per il supporto di Azure)"
+    ai_openai_organization: "(Facoltativo, lascia vuoto per omettere) ID organizzazione utilizzato per l'API OpenAI. Passato utilizzando l'intestazione OpenAI-Organization."
     ai_openai_embeddings_url: "URL personalizzato utilizzato per l'API di integrazione OpenAI. (nel caso di Azure può essere: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "Chiave API per l'API OpenAI"
     ai_anthropic_api_key: "Chiave API per Anthropic API"
@@ -44,6 +58,10 @@ it:
     ai_helper_allowed_groups: "Gli utenti di questi gruppi vedranno il pulsante dell'assistente IA nella sezione di scrittura."
     ai_helper_allowed_in_pm: "Abilita l'assistente IA nei MP."
     ai_helper_model: "Modello da utilizzare per l'assistente IA."
+    ai_helper_custom_prompts_allowed_groups: "Gli utenti di questi gruppi vedranno l'opzione di comando personalizzato nell'assistente IA."
+    ai_helper_automatic_chat_thread_title_delay: "Ritardo in minuti prima che l'assistente IA imposti automaticamente il titolo del thread della chat."
+    ai_helper_automatic_chat_thread_title: "Imposta automaticamente i titoli dei thread della chat in base ai contenuti del thread."
+    ai_helper_illustrate_post_model: "Modello da utilizzare per la funzionalità di messaggio illustrato dell'assistente IA compositore"
     ai_embeddings_enabled: "Abilita il modulo di integrazioni."
     ai_embeddings_discourse_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo di integrazioni"
     ai_embeddings_discourse_service_api_key: "Chiave API per l'API di integrazioni"
@@ -51,19 +69,28 @@ it:
     ai_embeddings_generate_for_pms: "Genera integrazioni per messaggi personali."
     ai_embeddings_semantic_related_topics_enabled: "Usa la ricerca semantica per argomenti correlati."
     ai_embeddings_semantic_related_topics: "Numero massimo di argomenti da mostrare nella sezione degli argomenti correlati."
+    ai_embeddings_backfill_batch_size: "Numero di incorporamenti da riempire ogni 15 minuti."
     ai_embeddings_pg_connection_string: "Stringa di connessione PostgreSQL per il modulo di integrazioni. Richiede l'estensione pgvector abilitata e la creazione di una serie di tabelle. Consulta i documenti per maggiori informazioni."
     ai_embeddings_semantic_search_enabled: "Abilita la ricerca semantica a pagina intera."
     ai_embeddings_semantic_related_include_closed_topics: "Includi argomenti chiusi nei risultati della ricerca semantica"
+    ai_embeddings_semantic_search_hyde_model: "Modello utilizzato per espandere le parole chiave per ottenere risultati migliori durante una ricerca semantica"
     ai_summarization_discourse_service_api_endpoint: "URL in cui è in esecuzione l'API di riepilogo del discorso."
     ai_summarization_discourse_service_api_key: "Chiave API per l'API di riepilogo del discorso."
     ai_bot_enabled: "Abilita il modulo Bot IA."
+    ai_bot_enable_chat_warning: "Visualizza un avviso quando viene avviata la chat MP. Può essere sovrascritto modificando la stringa di traduzione: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Quando il bot GPT ha accesso a un MP, risponderà ai membri di questi gruppi."
     ai_bot_enabled_chat_bots: "Modelli disponibili per agire come robot IA"
     ai_bot_add_to_header: "Mostra un pulsante nell'intestazione per avviare un MP con un Bot IA"
     ai_stability_api_key: "Chiave API per l'API stability.ai"
+    ai_stability_engine: "Sistema di generazione di immagini da utilizzare per l'API stability.ai"
     ai_stability_api_url: "URL per l'API stability.ai"
     ai_google_custom_search_api_key: "Chiave API per l'API della ricerca personalizzata di Google: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX per l'API di ricerca personalizzata di Google"
+    ai_bedrock_access_key_id: "ID chiave di accesso per l'API Bedrock"
+    ai_bedrock_secret_access_key: "Chiave di accesso segreta per l'API Bedrock"
+    ai_bedrock_region: "Area geografica AWS per l'API Bedrock"
+    ai_cloudflare_workers_account_id: "ID account Cloudflare per l'API Cloudflare Workers AI"
+    ai_cloudflare_workers_api_token: "Token API per l'API Cloudflare Workers AI"
   reviewables:
     reasons:
       flagged_by_toxicity: Il plugin IA lo ha segnalato dopo averlo classificato come tossico.
@@ -73,7 +100,13 @@ it:
     invalid_prompt_role: Il messaggio %{idx} ha un ruolo non valido.
   reports:
     overall_sentiment:
+      title: "Sentimento generale"
+      description: "Questo grafico confronta il numero di messaggi classificati positivi o negativi."
+      xaxis: "Positiva(%)"
       yaxis: "Data"
+    post_emotion:
+      title: "Emozione del messaggio"
+      description: "Numero di messaggi classificati con una delle seguenti emozioni, raggruppati in base al livello di attendibilità dell'utente che ha pubblicato."
   discourse_ai:
     ai_helper:
       errors:
@@ -83,8 +116,49 @@ it:
         generate_titles: Suggerisci i titoli degli argomenti
         proofread: Testo corretto
         markdown_table: Genera tabella di markdown
+        custom_prompt: "Comando personalizzato"
+        explain: "Spiega"
+        illustrate_post: "Illustra messaggio"
+      painter:
+        attribution:
+          stable_diffusion_xl: "Immagine di Stable Diffusion XL"
+          dall_e_3: "Immagine di DALL-E 3"
     ai_bot:
+      personas:
+        cannot_delete_system_persona: "I personaggi di sistema non possono essere eliminati, vanno invece disattivati"
+        cannot_edit_system_persona: "I personaggi di sistema possono solo essere rinominati, non è possibile modificare comandi di sistema, piuttosto disabilitali e crearne una copia"
+        general:
+          name: Assistente del forum
+          description: "Bot IA per scopi generici in grado di eseguire vari compiti"
+        artist:
+          name: Artista
+          description: "Bot IA specializzato nella generazione di immagini"
+        sql_helper:
+          name: Assistente SQL
+          description: "Bot IA specializzato nell'aiutare a creare query SQL su questa istanza di Discourse"
+        settings_explorer:
+          name: Esploratore di impostazioni
+          description: "Bot IA specializzato nell'aiutare a esplorare le impostazioni del sito Discourse"
+        researcher:
+          name: Ricercatore
+          description: "Bot IA con accesso a Google che può ricercare informazioni per te"
+        creative:
+          name: Creativo
+          description: "Bot IA senza integrazioni esterne specializzato in attività creative"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "Bot IA specializzato nella generazione di immagini tramite DALL-E 3"
       topic_not_found: "Riepilogo non disponibile, argomento non trovato!"
+      summarizing: "Riepilogo argomento"
+      searching: "Ricerca di: '%{query}'"
+      command_options:
+        search:
+          max_results:
+            name: "Numero massimo di risultati"
+            description: "Numero massimo di risultati da includere nella ricerca: se vuoto verranno utilizzate le regole predefinite e il conteggio verrà scalato in base al modello utilizzato. Il valore più alto è 100."
+          base_query:
+            name: "Query di ricerca di base"
+            description: "Query di base da utilizzare durante la ricerca. Esempio: \"#urgente\" anteporrà \"#urgente\" alla query di ricerca e includerà solo gli argomenti con la categoria o il tag urgente."
       command_summary:
         categories: "Elenca le categorie"
         search: "Cerca"
@@ -94,7 +168,23 @@ it:
         image: "Genera immagine"
         google: "Cerca su Google"
         read: "Leggi l'argomento"
+        setting_context: "Cerca il contesto delle impostazioni del sito"
+        schema: "Cerca lo schema del database"
+        search_settings: "Ricerca nelle impostazioni del sito"
         dall_e: "Genera immagine"
+      command_help:
+        categories: "Elenca tutte le categorie visibili pubblicamente sul forum"
+        search: "Cerca tutti gli argomenti pubblici sul forum"
+        tags: "Elenca tutte le etichette sul forum"
+        time: "Trova l'ora in diversi fusi orari"
+        summarize: "Riassumi un argomento"
+        image: "Genera un'immagine utilizzando la diffusione stabile"
+        google: "Cerca una query su Google"
+        read: "Leggi l'argomento pubblico sul forum"
+        setting_context: "Cerca il contesto dell'impostazione del sito"
+        schema: "Cerca lo schema del database"
+        search_settings: "Cerca le impostazioni del sito"
+        dall_e: "Genera immagine utilizzando DALL-E 3"
       command_description:
         read: "Lettura: <a href='%{url}'>%{title}</a>"
         time: "L'orario in %{timezone} è %{time}"
@@ -113,11 +203,27 @@ it:
         google:
           one: "Trovato %{count} <a href='%{url}'>risultato</a> per '%{query}'"
           other: "Trovati %{count} <a href='%{url}'>risultati</a> per '%{query}'"
+        setting_context: "Contesto di lettura per: %{setting_name}"
+        schema: "%{tables}"
+        search_settings:
+          one: "Trovato %{count} risultato per '%{query}'"
+          other: "Trovati %{count} risultati per '%{query}'"
     summarization:
       configuration_hint:
         one: "Configura prima l'impostazione \"%{setting}\"."
         other: "Configura prima queste impostazioni: %{settings}"
     sentiment:
       reports:
+        overall_sentiment:
+          positive: "Positiva"
+          negative: "Negativa"
         post_emotion:
+          tl_01: "Livelli di attendibilità 0-1"
+          tl_234: "Livelli di attendibilità 2+"
+          sadness: "Tristezza"
+          surprise: "Sorpresa"
           neutral: "Neutro"
+          fear: "Paura"
+          anger: "Rabbia"
+          joy: "Gioia"
+          disgust: "Disgusto"

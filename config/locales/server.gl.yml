@@ -9,6 +9,10 @@ gl:
     overall_sentiment:
       yaxis: "Data"
   discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Buscar"
+        time: "Hora"
     sentiment:
       reports:
         post_emotion:

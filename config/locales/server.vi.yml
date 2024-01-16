@@ -8,3 +8,9 @@ vi:
   reports:
     overall_sentiment:
       yaxis: "Ngày"
+  discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Tìm kiếm"
+        time: "Thời gian"
+        summarize: "Tóm tắt"

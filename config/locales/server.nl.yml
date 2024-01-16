@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 nl:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: Berichten triageren met AI
+        description: "Triageer berichten met behulp van een groot taalmodel"
+        system_prompt_missing_post_placeholder: "De systeemprompt moet een tijdelijke aanduiding bevatten voor het bericht: %%POST%%"
+      llm_report:
+        title: Periodiek rapport met AI
+        description: "Periodiek rapport op basis van een groot taalmodel"
   site_settings:
     discourse_ai_enabled: "Schakel de discours-AI-plug-in in."
     ai_toxicity_enabled: "Schakel de toxiciteitsmodule in."
@@ -35,7 +44,12 @@ nl:
     ai_nsfw_flag_threshold_sexy: "Drempelwaarde voor een als sexy geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_models: "Te gebruiken modellen voor NVWW-inferentie."
     ai_openai_gpt35_url: "Aangepaste URL voor voltooiingen van GPT 3.5-chats. (voor Azure-ondersteuning)"
+    ai_openai_gpt35_16k_url: "Aangepaste URL voor het voltooien van GPT-3.5 16k-chats. (voor Azure-ondersteuning)"
     ai_openai_gpt4_url: "Aangepaste URL voor voltooiingen van GPT 4-chats. (voor Azure-ondersteuning)"
+    ai_openai_gpt4_32k_url: "Aangepaste URL voor het voltooien van GPT-4 32k-chats. (voor Azure-ondersteuning)"
+    ai_openai_gpt4_turbo_url: "Aangepaste URL voor het voltooien van GPT-4 Turbo-chats. (voor Azure-ondersteuning)"
+    ai_openai_dall_e_3_url: "Aangepaste URL voor het genereren van DALL-E 3-afbeeldingen (voor Azure-ondersteuning)"
+    ai_openai_organization: "(Laat dit optioneel leeg om het weg te laten) Organisatie-ID voor OpenAI APL Passed in met behulp van de OpenAI-Organization-header."
     ai_openai_embeddings_url: "Aangepaste URL voor de OpenAI-insluitings-API. (in het geval van Azure kan dit zijn: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API-sleutel voor de OpenAI-API"
     ai_anthropic_api_key: "API-sleutel voor de Anthropic-API"
@@ -44,6 +58,10 @@ nl:
     ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
     ai_helper_allowed_in_pm: "Schakel de AI-hulp van de editor in in PB's."
     ai_helper_model: "Te gebruiken model voor de AI-hulp."
+    ai_helper_custom_prompts_allowed_groups: "Gebruikers in deze groepen zien de optie voor een aangepaste prompt in de AI-helper."
+    ai_helper_automatic_chat_thread_title_delay: "Vertraging in minuten voordat de AI-helper automatisch de titel van de chatthread instelt."
+    ai_helper_automatic_chat_thread_title: "Stel automatisch de titel van chatthreads in op basis van de threadinhoud."
+    ai_helper_illustrate_post_model: "Te gebruiken model voor de berichtillustratiefunctie van de opstellings-AI-helper"
     ai_embeddings_enabled: "Schakel de insluitingsmodule in."
     ai_embeddings_discourse_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de insluitingsmodule"
     ai_embeddings_discourse_service_api_key: "API-sleutel voor de insluitings-API"
@@ -51,19 +69,28 @@ nl:
     ai_embeddings_generate_for_pms: "Genereer insluitingen voor persoonlijke berichten."
     ai_embeddings_semantic_related_topics_enabled: "Gebruik semantisch zoeken voor gerelateerde topics."
     ai_embeddings_semantic_related_topics: "Maximaal aantal topics om weer te geven in de sectie met gerelateerde topics."
+    ai_embeddings_backfill_batch_size: "Aantal insluitingen dat elke 15 minuten moet worden aangevuld."
     ai_embeddings_pg_connection_string: "PostgreSQL-verbindingsreeks voor de insluitingsmodule. Vereist dat de pgvector-extensie is ingeschakeld en dat een reeks tabellen is gemaakt. Zie de documentatie voor meer informatie."
     ai_embeddings_semantic_search_enabled: "Schakel semantisch zoeken op volledige pagina's in."
     ai_embeddings_semantic_related_include_closed_topics: "Neem gesloten topics op in semantische zoekresultaten"
+    ai_embeddings_semantic_search_hyde_model: "Gebruikt model voor het uitbreiden van trefwoorden om betere resultaten te krijgen bij semantisch zoeken"
     ai_summarization_discourse_service_api_endpoint: "URL waar de Discourse-samenvattings-API wordt uitgevoerd."
     ai_summarization_discourse_service_api_key: "API-sleutel voor de Discourse-samenvattings-API."
     ai_bot_enabled: "Schakel de AI-botmodule in."
+    ai_bot_enable_chat_warning: "Geef een waarschuwing weer wanneer een privéchat wordt gestart. Kan worden genegeerd door de vertaling te bewerken: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wanneer de GPT-bot toegang heeft tot het privébericht, zal deze reageren op leden van deze groepen."
     ai_bot_enabled_chat_bots: "Beschikbare modellen om op te treden als AI-bot"
     ai_bot_add_to_header: "Geef een knop weer in de kop om een privéchat te starten met een AI-bot"
     ai_stability_api_key: "API-sleutel voor de stability.ai-API"
+    ai_stability_engine: "Te gebruiken engine voor het genereren van afbeeldingen voor de stability.ai-API"
     ai_stability_api_url: "URL voor de stability.ai-API"
     ai_google_custom_search_api_key: "API-sleutel voor de Google Custom Search-API zie: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX voor Google Custom Search-API"
+    ai_bedrock_access_key_id: "Toegangssleutel-ID voor de Bedrock-API"
+    ai_bedrock_secret_access_key: "Geheime toegangssleutel voor de Bedrock-API"
+    ai_bedrock_region: "AWS-regio voor de Bedrock-API"
+    ai_cloudflare_workers_account_id: "Cloudflare-account-ID voor de Cloudflare Workers AI-API"
+    ai_cloudflare_workers_api_token: "API-token voor de Cloudflare Workers AI-API"
   reviewables:
     reasons:
       flagged_by_toxicity: De AI-plug-in heeft dit gemarkeerd nadat het als toxisch was geclassificeerd.
@@ -73,7 +100,13 @@ nl:
     invalid_prompt_role: Het bericht %{idx} heeft een ongeldige rol.
   reports:
     overall_sentiment:
+      title: "Algemeen sentiment"
+      description: "Dit diagram vergelijkt het aantal berichten dat als positief of negatief is geclassificeerd."
+      xaxis: "Positief (%)"
       yaxis: "Datum"
+    post_emotion:
+      title: "Berichtemotie"
+      description: "Aantal berichten geclassificeerd met een van de volgende emoties, gegroepeerd op vertrouwensniveau van de plaatser."
   discourse_ai:
     ai_helper:
       errors:
@@ -83,8 +116,49 @@ nl:
         generate_titles: Topictitels voorstellen
         proofread: Tekst proeflezen
         markdown_table: Markdowntabel genereren
+        custom_prompt: "Aangepaste prompt"
+        explain: "Uitleggen"
+        illustrate_post: "Bericht illustreren"
+      painter:
+        attribution:
+          stable_diffusion_xl: "Afbeelding door Stable Diffusion XL"
+          dall_e_3: "Afbeelding door DALL-E 3"
     ai_bot:
+      personas:
+        cannot_delete_system_persona: "Systeempersona's kunnen niet worden verwijderd. Schakel deze in plaats daarvan uit"
+        cannot_edit_system_persona: "Systeempersona's kunnen alleen worden hernoemd. Je kunt opdrachten of systeemprompts niet bewerken. Je kunt ze wel uitschakelen en een kopie maken"
+        general:
+          name: Forumhelper
+          description: "AI-bot voor algemeen gebruik die verschillende taken kan uitvoeren"
+        artist:
+          name: Artiest
+          description: "AI-bot gespecialiseerd in het genereren van afbeeldingen"
+        sql_helper:
+          name: SQL-helper
+          description: "AI-bot gespecialiseerd in het helpen opstellen van SQL-query's in dit Discourse-exemplaar"
+        settings_explorer:
+          name: Instellingenverkenner
+          description: "AI-bot gespecialiseerd in het verkennen van Discourse-site-instellingen"
+        researcher:
+          name: Onderzoeker
+          description: "AI-bot met toegang tot Google die informatie voor je kan onderzoeken"
+        creative:
+          name: Creatief
+          description: "AI-bot zonder externe integraties, gespecialiseerd in creatieve taken"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "AI-bot gespecialiseerd in het genereren van afbeeldingen met DALL-E 3"
       topic_not_found: "Samenvatting niet beschikbaar, topic niet gevonden!"
+      summarizing: "Topic samenvatten"
+      searching: "Zoeken naar: '%{query}'"
+      command_options:
+        search:
+          max_results:
+            name: "Maximaal aantal resultaten"
+            description: "Maximaal aantal resultaten dat in de zoekopdracht moet worden opgenomen. Indien leeg worden er lege standaardregels gebruikt en wordt het aantal geschaald, afhankelijk van het gebruikte model. De hoogste waarde is 100."
+          base_query:
+            name: "Basiszoekquery"
+            description: "Basisquery om te gebruiken bij het zoeken. Voorbeeld: '#urgent' voegt '#urgent' toe aan de zoekquery en neemt alleen topics mee met de categorie of tag 'urgent'."
       command_summary:
         categories: "Categorieën weergeven"
         search: "Zoeken"
@@ -93,8 +167,26 @@ nl:
         summarize: "Samenvatten"
         image: "Afbeelding genereren"
         google: "Zoeken op Google"
+        read: "Topic lezen"
+        setting_context: "Context van site-instellingen opzoeken"
+        schema: "Databaseschema opzoeken"
+        search_settings: "Site-instellingen zoeken"
         dall_e: "Afbeelding genereren"
+      command_help:
+        categories: "Geef een lijst weer van alle openbaar zichtbare categorieën op het forum"
+        search: "Doorzoek alle openbare topics op het forum"
+        tags: "Geef een lijst weer van alle tags op het forum"
+        time: "Zoek de tijd in verschillende tijdzones"
+        summarize: "Vat een topic samen"
+        image: "Afbeelding genereren met Stable Diffusion"
+        google: "Zoek op Google naar een query"
+        read: "Lees een openbaar topic op het forum"
+        setting_context: "Zoek de context van site-instellingen op"
+        schema: "Zoek een databaseschema op"
+        search_settings: "Zoek site-instellingen"
+        dall_e: "Genereer een afbeelding met DALL-E 3"
       command_description:
+        read: "Lezen: <a href='%{url}'>%{title}</a>"
         time: "De tijd in %{timezone} is %{time}"
         summarize: "<a href='%{url}'>%{title}</a> samengevat"
         dall_e: "%{prompt}"
@@ -111,11 +203,27 @@ nl:
         google:
           one: "%{count} <a href='%{url}'>resultaat</a> gevonden voor '%{query}'"
           other: "%{count} <a href='%{url}'>resultaten</a> gevonden voor '%{query}'"
+        setting_context: "Context lezen voor: %{setting_name}"
+        schema: "%{tables}"
+        search_settings:
+          one: "%{count} resultaat gevonden voor '%{query}'"
+          other: "%{count} resultaten gevonden voor '%{query}'"
     summarization:
       configuration_hint:
         one: "Configureer eerst de instelling '%{setting}'."
         other: "Configureer eerst deze instellingen: '%{settings}'."
     sentiment:
       reports:
+        overall_sentiment:
+          positive: "Positief"
+          negative: "Negatief"
         post_emotion:
+          tl_01: "Vertrouwensniveau 0-1"
+          tl_234: "Vertrouwensniveau 2+"
+          sadness: "Droefheid"
+          surprise: "Verrassing"
           neutral: "Neutraal"
+          fear: "Angst"
+          anger: "Boosheid"
+          joy: "Vreugde"
+          disgust: "Afschuw"

@@ -9,6 +9,12 @@ hu:
     overall_sentiment:
       yaxis: "Dátum"
   discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Keresés"
+        tags: "Címkék listázása"
+        time: "Idő"
+        summarize: "Összefoglalás"
     sentiment:
       reports:
         post_emotion:

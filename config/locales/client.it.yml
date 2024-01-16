@@ -5,60 +5,161 @@
 # https://translate.discourse.org/
 
 it:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse AI"
   js:
     discourse_automation:
       ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
+        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
             sender:
               label: "Mittente"
+              description: "L'utente che invierà il report"
+            receivers:
+              label: "Destinatari"
+              description: "Gli utenti che riceveranno il report (le e-mail verranno inviate direttamente, i nomi utente verranno inviati un MP)"
             topic_id:
               label: "ID dell'argomento"
+              description: "L'ID dell'argomento in cui pubblicare il report"
             title:
               label: "Titolo"
+              description: "Il titolo del report"
+            days:
+              label: "Giorni"
+              description: "L'arco temporale del report"
+            offset:
+              label: "Scostamento"
+              description: "Durante il test, potresti voler eseguire il report in modo cronologico, utilizza lo scostamento per avviare il report in una data precedente"
+            instructions:
+              label: "Istruzioni"
+              description: "Le istruzioni fornite al large language model"
+            sample_size:
+              label: "Dimensione del campione"
+              description: "Il numero di messaggi da campionare per il report"
+            tokens_per_post:
+              label: "Token per post"
+              description: "Il numero di token llm da utilizzare per messaggio"
+            model:
+              label: "Modello"
+              description: "LLM da utilizzare per la generazione del report"
             categories:
               label: "Categorie"
+              description: "Filtra gli argomenti solo in queste categorie"
             tags:
               label: "Etichette"
+              description: "Filtra gli argomenti solo in base a questi tag"
+            allow_secure_categories:
+              label: "Consenti categorie sicure"
+              description: "Consenti la generazione del report per argomenti in categorie sicure"
+            debug_mode:
+              label: "Modalità di debug"
+              description: "Abilita la modalità di debug per visualizzare input e output non elaborati del LLM"
+            priority_group:
+              label: "Gruppo prioritario"
+              description: "Dai la priorità ai contenuti di questo gruppo nel report"
         llm_triage:
           fields:
+            system_prompt:
+              label: "Comando di sistema"
+              description: "Il comando che verrà utilizzato per il triage, assicurati che risponda con una sola parola che puoi usare per attivare l'azione"
+            search_for_text:
+              label: "Cerca testo"
+              description: "Se nella risposta del LLM viene visualizzato il testo seguente, applica queste azioni"
             category:
               label: "Categoria"
+              description: "Categoria da applicare all'argomento"
             tags:
               label: "Etichette"
+              description: "Tag da applicare all'argomento"
             canned_reply:
               label: "Rispondi"
+              description: "Testo non elaborato della risposta predefinita al messaggio sull'argomento"
+            canned_reply_user:
+              label: "Utente della risposta"
+              description: "Nome utente dell'utente che pubblicherà la risposta predefinita"
+            hide_topic:
+              label: "Nascondi argomento"
+              description: "Rendi l'argomento non visibile al pubblico se attivato"
+            model:
+              label: "Modello"
+              description: "O gpt-4 o gpt-3-5-turbo o claude-2"
     discourse_ai:
+      title: "IA"
       modals:
         select_option: "Scegli un'opzione..."
       ai_persona:
         name: Nome
         description: Descrizione
+        system_prompt: Comando di sistema
         save: Salva
+        saved: Personaggio IA salvato
         enabled: Abilitato
+        commands: Comandi abilitati
+        allowed_groups: Gruppi ammessi
+        confirm_delete: Vuoi davvero eliminare questo personaggio?
         new: Nuovo
+        title: "Personaggi IA"
         delete: Elimina
+        priority: Priorità
+        priority_help: I personaggi prioritari vengono visualizzati agli utenti nella parte superiore dell'elenco dei personaggi. Se più personaggi hanno la priorità, verranno ordinati in ordine alfabetico.
+        command_options: "Opzioni di comando"
+        no_persona_selected: |
+          ## Cosa sono i personaggi IA?
+
+          I personaggi IA sono una potente funzionalità che ti consente di personalizzare il comportamento del motore IA nel tuo forum Discourse. Fungono da "messaggi di sistema" che guidano le risposte e le interazioni dell'intelligenza artificiale, contribuendo a creare un'esperienza utente più personalizzata e coinvolgente.
+
+          ## Perché utilizzare i personaggi IA?
+
+          Con i personaggi IA puoi personalizzare il comportamento dell'IA per adattarlo meglio al contesto e al tono del tuo forum. Sia che tu voglia che l'IA sia più formale per un ambiente professionale, più casual per un forum di community o addirittura incarni un personaggio specifico per un gioco di ruolo, i personaggi IA ti danno la flessibilità per farlo.
+
+          ## Accesso specifico per gruppo ai personaggi IA
+
+          Inoltre, puoi configurarli in modo che determinati gruppi di utenti abbiano accesso a personaggi specifici. Ciò significa che puoi avere comportamenti IA diversi per le diverse sezioni del tuo forum, migliorando ulteriormente la diversità e la ricchezza delle interazioni della tua community.
       related_topics:
+        title: "Argomenti correlati"
         pill: "Correlato"
       ai_helper:
         title: "Suggerisci modifiche utilizzando l'IA"
         description: "Scegli una delle opzioni seguenti e l'IA ti suggerirà una nuova versione del testo."
         selection_hint: "Suggerimento: puoi anche selezionare una parte del testo prima di aprire l'assistente per riscrivere solo quel pezzo."
+        suggest: "Suggerisci con l'IA"
+        missing_content: "Inserisci alcuni contenuti per generare suggerimenti."
         context_menu:
           back: "Indietro"
+          trigger: "IA"
           undo: "Annulla"
+          loading: "L'IA sta generando"
           cancel: "Annulla"
           regen: "Riprova"
+          view_changes: "Visualizza modifiche"
           confirm: "Conferma"
           revert: "Ripristina"
+          changes: "Modifiche"
+          custom_prompt:
+            title: "Comando personalizzato"
+            placeholder: "Inserisci un comando personalizzato..."
+            submit: "Invia comando"
         post_options_menu:
+          trigger: "Chiedi all'IA"
+          title: "Chiedi all'IA"
+          loading: "L'IA sta generando"
           close: "Chiudi"
           copy: "Copia"
           copied: "Copiato!"
           cancel: "Annulla"
+        fast_edit:
+          suggest_button: "Suggerisci modifica"
         thumbnail_suggestions:
+          title: "Miniature suggerite"
           select: "Seleziona"
           selected: "Selezionato"
       reviewables:
@@ -66,17 +167,39 @@ it:
         accuracy: "Precisione:"
       embeddings:
         semantic_search: "Argomenti (semantici)"
+        semantic_search_loading: "Ricerca di altri risultati tramite intelligenza artificiale"
+        semantic_search_disabled_sort: "Ricerca IA disabilitata per questo ordinamento, ordina per Rilevanza per abilitarla."
+        semantic_search_results:
+          toggle: "Stai vedendo %{count} risultati trovati utilizzando l'IA"
+          toggle_hidden: "%{count} risultati trovati utilizzando l'IA sono stati nascosti"
+          none: "Spiacenti, la nostra ricerca IA non ha trovato argomenti corrispondenti."
+          new: "Premi \"Cerca\" per iniziare a cercare nuovi risultati con l'intelligenza artificiale"
+        ai_generated_result: "Risultato della ricerca trovato utilizzando l'intelligenza artificiale"
       ai_bot:
+        pm_warning: "I messaggi del chatbot IA vengono controllati regolarmente dai moderatori."
         cancel_streaming: "Interrompi risposta"
         default_pm_prefix: "[Bot IA senza titolo MP]"
         shortcut_title: "Avvia un MP con un bot IA"
+        share: "Condividi la conversazione con IA"
+        conversation_shared: "Conversazione copiata"
+        ai_label: "IA"
+        ai_title: "Conversazione con IA"
         share_modal:
+          title: "Condividi la conversazione con IA"
           copy: "Copia"
+          context: "Interazioni da condividere:"
         bot_names:
           gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+          gemini-pro: "Gemini"
+          mixtral-8x7B-Instruct-V0:
+            "1": "Mixtral-8x7B V0.1"
+      sentiments:
+        dashboard:
+          title: "Sentimento"
     review:
       types:
         reviewable_ai_post:

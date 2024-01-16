@@ -27,6 +27,8 @@ ca:
             canned_reply:
               label: "Respon"
     discourse_ai:
+      modals:
+        select_option: "Trieu una opció..."
       ai_persona:
         name: Nom
         description: Descripció

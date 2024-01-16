@@ -27,6 +27,8 @@ hy:
             canned_reply:
               label: "Պատասխանել"
     discourse_ai:
+      modals:
+        select_option: "Ընտրել..."
       ai_persona:
         name: Անուն
         description: Նկարագրությունը

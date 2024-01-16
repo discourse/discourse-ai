@@ -27,6 +27,8 @@ sl:
             canned_reply:
               label: "Odgovori"
     discourse_ai:
+      modals:
+        select_option: "Izberi možnost..."
       ai_persona:
         name: Ime
         description: Opis
@@ -40,6 +42,7 @@ sl:
           undo: "Razveljavi"
           cancel: "Prekliči"
           regen: "Poskusi ponovno"
+          confirm: "Potrdi"
           revert: "Povrni"
         post_options_menu:
           close: "Zapri"

@@ -27,6 +27,8 @@ nb_NO:
             canned_reply:
               label: "Svar"
     discourse_ai:
+      modals:
+        select_option: "Velg et alternativ..."
       ai_persona:
         name: Navn
         description: Beskrivelse

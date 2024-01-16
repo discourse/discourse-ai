@@ -27,6 +27,8 @@ sk:
             canned_reply:
               label: "Odpoveď"
     discourse_ai:
+      modals:
+        select_option: "Vyberte možnosť..."
       ai_persona:
         name: Meno
         description: Popis
@@ -40,6 +42,7 @@ sk:
           undo: "Späť"
           cancel: "Zrušiť"
           regen: "Skúsiť znova"
+          confirm: "Potvrďte"
           revert: "Vrátiť zmeny"
         post_options_menu:
           close: "Zavrieť"

@@ -29,6 +29,8 @@ uk:
             canned_reply:
               label: "Відповідь"
     discourse_ai:
+      modals:
+        select_option: "Вибрати опцію..."
       ai_persona:
         name: Імʼя
         description: Опис

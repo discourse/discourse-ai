@@ -5,3 +5,8 @@
 # https://translate.discourse.org/
 
 sq:
+  discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Kërko"
+        time: "Koha"

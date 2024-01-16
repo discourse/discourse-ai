@@ -27,6 +27,8 @@ hu:
             canned_reply:
               label: "Válasz"
     discourse_ai:
+      modals:
+        select_option: "Válasszon egy lehetőséget..."
       ai_persona:
         name: Név
         description: Leírás

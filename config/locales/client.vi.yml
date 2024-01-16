@@ -27,6 +27,8 @@ vi:
             canned_reply:
               label: "Trả lời"
     discourse_ai:
+      modals:
+        select_option: "Chọn một tùy Chọn..."
       ai_persona:
         name: Tên
         description: Mô tả
@@ -39,6 +41,7 @@ vi:
           undo: "Hoàn tác"
           cancel: "Huỷ"
           regen: "Thử lại"
+          confirm: "Xác nhận"
           revert: "Phục hồi"
         post_options_menu:
           close: "Đóng"

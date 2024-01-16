@@ -25,6 +25,8 @@ id:
             canned_reply:
               label: "Balas"
     discourse_ai:
+      modals:
+        select_option: "Memilih sebuah pilihan..."
       ai_persona:
         name: Nama
         description: Deskripsi

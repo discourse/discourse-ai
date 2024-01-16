@@ -9,7 +9,7 @@ de:
     admin:
       site_settings:
         categories:
-          discourse_ai: "Diskursen"
+          discourse_ai: "Discourse-KI"
   js:
     discourse_automation:
       ai_models:
@@ -26,10 +26,10 @@ de:
               description: "Der Benutzer, der den Bericht senden wird"
             receivers:
               label: "Empfänger"
-              description: "Die Benutzer, die den Bericht erhalten sollen (E-Mails werden direkt verschickt, Benutzernamen werden per PM verschickt)"
+              description: "Die Benutzer, die den Bericht erhalten sollen (an E-Mail-Adressen wird eine E-Mail verschickt, Benutzernamen erhalten eine PN)"
             topic_id:
               label: "Themen-ID"
-              description: "Die Themen-ID, um den Bericht zu posten"
+              description: "Die Themen-ID für die Veröffentlichung des Berichts"
             title:
               label: "Titel"
               description: "Der Titel des Berichts"
@@ -50,19 +50,19 @@ de:
               description: "Die Anzahl der pro Beitrag zu verwendenden LLM-Token"
             model:
               label: "Modell"
-              description: "LLM für die Berichterstellung verwenden"
+              description: "LLM zur Berichtserstellung"
             categories:
               label: "Kategorien"
               description: "Themen nur nach diesen Kategorien filtern"
             tags:
               label: "Schlagwörter"
-              description: "Themen nur nach diesen Tags filtern"
+              description: "Themen nur nach diesen Schlagwörtern filtern"
             allow_secure_categories:
               label: "Sichere Kategorien zulassen"
               description: "Erlaube, dass der Bericht für Themen in sicheren Kategorien erstellt wird"
             debug_mode:
               label: "Debug-Modus"
-              description: "Aktivieren Sie den Debug-Modus, um die Roheingabe und -ausgabe des LLM anzuzeigen"
+              description: "Aktiviere den Debug-Modus, um die Roheingabe und -ausgabe des LLM anzuzeigen"
             priority_group:
               label: "Prioritätsgruppe"
               description: "Inhalte aus dieser Gruppe im Bericht hervorheben"
@@ -79,16 +79,16 @@ de:
               description: "Kategorie, die auf das Thema anzuwenden ist"
             tags:
               label: "Schlagwörter"
-              description: "Schlagworte, die auf das Thema anzuwenden sind"
+              description: "Schlagwörter, die auf das Thema anzuwenden sind"
             canned_reply:
               label: "Antworten"
               description: "Rohtext einer vorgefertigten Antwort auf einen Beitrag zum Thema"
             canned_reply_user:
-              label: "Antwort Benutzer"
-              description: "Nutzername des Benutzers, der die vorgefertigte Antwort posten soll"
+              label: "Antwortender Benutzer"
+              description: "Benutzername des Benutzers, der die vorgefertigte Antwort posten soll"
             hide_topic:
               label: "Thema ausblenden"
-              description: "Thema für die Öffentlichkeit nicht sichtbar machen, wenn es ausgelöst wird"
+              description: "Thema nicht für die Öffentlichkeit sichtbar machen, wenn ausgelöst"
             model:
               label: "Modell"
               description: "Entweder gpt-4 oder gpt-3-5-turbo oder claude-2"
@@ -110,20 +110,20 @@ de:
         title: "KI-Personas"
         delete: Löschen
         priority: Priorität
-        priority_help: Personas mit Priorität werden den Nutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
+        priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
         command_options: "Befehlsoptionen"
         no_persona_selected: |
-          ## Was sind KI Personas?
+          ## Was sind KI-Personas?
 
-          KI-Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als "Systemnachricht", die die Antworten und Interaktionen der KI steuert und so zu einem persönlicheren und ansprechenderen Nutzererlebnis beiträgt.
+          KI-Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als „Systemnachricht“, welche die Antworten und Interaktionen der KI steuert und so zu einem persönlicheren sowie ansprechenderen Benutzererlebnis beiträgt.
 
-          ## Warum KI Personas?
+          ## Warum KI-Personas?
 
-          Mit KI-Personen kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI in einem professionellen Umfeld förmlicher oder in einem Community-Forum lockerer auftritt oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert, KI Personas geben dir die Flexibilität dazu.
+          Mit KI-Personas kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI in einem professionellen Umfeld förmlicher oder in einem Community-Forum lockerer auftritt oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert – KI-Personas geben dir die Flexibilität dazu.
 
-          ## Gruppenspezifischer Zugang zu KI-Personen
+          ## Gruppenspezifischer Zugang zu KI-Personas
 
-          Außerdem kannst du einstellen, dass bestimmte Benutzergruppen Zugang zu bestimmten Personas haben. Das bedeutet, dass du für verschiedene Bereiche deines Forums unterschiedliche KI-Verhaltensweisen festlegen kannst, was die Vielfalt und den Reichtum der Interaktionen in deiner Community weiter erhöht.
+          Außerdem kannst du einstellen, dass bestimmte Benutzergruppen Zugang zu bestimmten Personas haben. Das bedeutet, dass du für verschiedene Bereiche deines Forums unterschiedliche KI-Verhaltensweisen festlegen kannst, was die Vielfalt und die Reichhaltigkeit der Interaktionen in deiner Community weiter erhöht.
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -146,13 +146,13 @@ de:
           changes: "Änderungen"
           custom_prompt:
             title: "Benutzerdefinierte Eingabeaufforderung"
-            placeholder: "Eigene Aufforderung..."
+            placeholder: "Benutzerdefinierte Eingabeaufforderung …"
             submit: "Aufforderung senden"
         post_options_menu:
           trigger: "KI fragen"
           title: "KI fragen"
           loading: "KI generiert"
-          close: "Beenden"
+          close: "Schließen"
           copy: "Kopieren"
           copied: "Kopiert!"
           cancel: "Abbrechen"
@@ -167,16 +167,16 @@ de:
         accuracy: "Genauigkeit:"
       embeddings:
         semantic_search: "Themen (semantisch)"
-        semantic_search_loading: "Suche mehr Ergebnisse mit Hilfe der KI"
-        semantic_search_disabled_sort: "Die KI-Suche ist für diese Sortierreihenfolge deaktiviert, sortiere nach Relevanz, um sie zu aktivieren."
+        semantic_search_loading: "Suche mehr Ergebnisse mithilfe der KI"
+        semantic_search_disabled_sort: "Die KI-Suche ist für diese Sortierreihenfolge deaktiviert. Sortiere nach Relevanz, um sie zu aktivieren."
         semantic_search_results:
-          toggle: "Zeigt %{count} Ergebnisse, die mit KI gefunden wurden"
-          toggle_hidden: "Ausblenden von %{count} mit KI gefundenen Ergebnissen"
+          toggle: "%{count} Ergebnisse, die mit KI gefunden wurden, werden angezeigt"
+          toggle_hidden: "%{count} mit KI gefundene Ergebnisse werden ausgeblendet"
           none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden."
-          new: "Drücke auf \"Suchen\", um mit der KI nach neuen Ergebnissen zu suchen"
+          new: "Drücke auf „Suchen“, um mit der KI nach neuen Ergebnissen zu suchen"
         ai_generated_result: "Suchergebnis mit KI gefunden"
       ai_bot:
-        pm_warning: "AI chatbot messages are monitored regularly by moderators."
+        pm_warning: "KI-Chatbot-Nachrichten werden regelmäßig von Moderatoren überwacht."
         cancel_streaming: "Antwort abbrechen"
         default_pm_prefix: "[KI-Bot-PN ohne Titel]"
         shortcut_title: "Starte eine PN mit einem KI-Bot"

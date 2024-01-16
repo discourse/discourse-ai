@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 fi:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: Luokittele viestit tekoälyllä
+        description: "Luokittele viestit suurella kielimallilla"
+        system_prompt_missing_post_placeholder: "Järjestelmäkehotteen täytyy sisältää viestin paikkamerkki: %%POST%%"
+      llm_report:
+        title: Säännöllinen raportti tekoälyllä
+        description: "Säännöllinen raportti laajan kielimallin perusteella"
   site_settings:
     discourse_ai_enabled: "Ota Discoursen tekoälylisäosa käyttöön."
     ai_toxicity_enabled: "Ota toksisuusmoduuli käyttöön."
@@ -35,7 +44,12 @@ fi:
     ai_nsfw_flag_threshold_sexy: "Raja, jolloin seksikkääksi luokiteltua kuvaa pidetään NSFW:nä."
     ai_nsfw_models: "NSFW-päätelmiin käytettävät mallit."
     ai_openai_gpt35_url: "Mukautettu URL, jota käytetään GPT 3.5 -chat-suorituksiin. (Azuren tukea varten)"
+    ai_openai_gpt35_16k_url: "Mukautettu URL, jota käytetään GPT 3.5 16k -chat-suorituksiin. (Azuren tukea varten)"
     ai_openai_gpt4_url: "Mukautettu URL, jota käytetään GPT 4 -chat-suorituksiin. (Azuren tukea varten)"
+    ai_openai_gpt4_32k_url: "Mukautettu URL, jota käytetään GPT 4 32k -chat-suorituksiin. (Azuren tukea varten)"
+    ai_openai_gpt4_turbo_url: "Mukautettu URL, jota käytetään GPT 4 Turbo -chat-suorituksiin. (Azuren tukea varten)"
+    ai_openai_dall_e_3_url: "Mukautettu URL, jota käytetään DALL-E 3 -kuvanluontiin. (Azuren tukea varten)"
+    ai_openai_organization: "(Valinnainen, ohita jättämällä tyhjäksi) OpenAI APIssa käytetty organisaatiotunnus. Välitetään käyttämällä OpenAI-Organization-ylätunnistetta."
     ai_openai_embeddings_url: "Mukautettu URL, jota käytetään OpenAI:n upotus-APIssa. (Azuren tapauksessa se voi olla: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "OpenAI APIn API-avain"
     ai_anthropic_api_key: "Anthropic APIn API-avain"
@@ -44,6 +58,10 @@ fi:
     ai_helper_allowed_groups: "Näiden ryhmien käyttäjät näkevät tekoälyavustajan painikkeen kirjoitustoiminnossa."
     ai_helper_allowed_in_pm: "Ota kirjoitustoiminnon tekoälyavustaja käyttöön yksityisviesteissä."
     ai_helper_model: "Tekoälyavustajassa käytettävä malli."
+    ai_helper_custom_prompts_allowed_groups: "Näiden ryhmien käyttäjät näkevät mukautetun kehotteen vaihtoehdon tekoälyapuohjelmassa."
+    ai_helper_automatic_chat_thread_title_delay: "Viive minuuteissa ennen kuin tekoälyapuohjelma asettaa chat-ketjun otsikon automaattisesti."
+    ai_helper_automatic_chat_thread_title: "Aseta chat-ketjujen otsikot automaattisesti ketjun sisällön perusteella."
+    ai_helper_illustrate_post_model: "Malli, jota käytetään tekstieditorin tekoälyapuohjelman viestin havainnollistamisominaisuudessa"
     ai_embeddings_enabled: "Ota upotusmoduuli käyttöön."
     ai_embeddings_discourse_service_api_endpoint: "URL-osoite, jossa upotusmoduulin API on käynnissä"
     ai_embeddings_discourse_service_api_key: "Upotus-APIn API-avain"
@@ -51,19 +69,28 @@ fi:
     ai_embeddings_generate_for_pms: "Luo upotuksia yksityisviesteille."
     ai_embeddings_semantic_related_topics_enabled: "Käytä semanttista hakua aiheeseen liittyviä ketjuja varten."
     ai_embeddings_semantic_related_topics: "Aiheeseen liittyvien ketjujen osiossa näytettävien ketjujen enimmäismäärä."
+    ai_embeddings_backfill_batch_size: "15 minuutin välein täydennettävien upotusten määrä."
     ai_embeddings_pg_connection_string: "PostgreSQL-yhteysmerkkijono upotusmoduulille. Edellyttää, että pgvector-laajennus on käytössä ja taulukoiden sarja on luotu. Katso lisätietoja ohjeista."
     ai_embeddings_semantic_search_enabled: "Ota koko sivun semanttinen haku käyttöön."
     ai_embeddings_semantic_related_include_closed_topics: "Sisällytä suljetut ketjut semanttisiin hakutuloksiin"
+    ai_embeddings_semantic_search_hyde_model: "Malli, jota käytetään avainsanojen laajentamiseen parempien tulosten saamiseksi semanttisen haun aikana"
     ai_summarization_discourse_service_api_endpoint: "URL-osoite, jossa Discoursen yhteenveto-API on käynnissä."
     ai_summarization_discourse_service_api_key: "Discoursen yhteenveto-APIn API-avain."
     ai_bot_enabled: "Ota tekoälybottimoduuli käyttöön."
+    ai_bot_enable_chat_warning: "Näytä varoitus, kun yksityisviesti-chat aloitetaan. Voidaan ohittaa muokkaamalla käännösmerkkijonoa: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Kun GPT-botilla on yksityisviestin käyttöoikeus, se vastaa näiden ryhmien jäsenille."
     ai_bot_enabled_chat_bots: "Käytettävissä olevat mallit tekoälybottina toimimiseen"
     ai_bot_add_to_header: "Näytä painike yläpalkissa yksityiskeskustelun aloittamiseksi tekoälybotin kanssa"
     ai_stability_api_key: "stability.ai-APIn API-avain"
+    ai_stability_engine: "stability.ai-APIssa käytettävä kuvanluontimoduuli"
     ai_stability_api_url: "stability.ai-APIn URL"
     ai_google_custom_search_api_key: "Google Custom Search APIn API-avain, katso: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "Google Custom Search APIn CX"
+    ai_bedrock_access_key_id: "Bedrock APIn käyttöoikeusavaintunnus"
+    ai_bedrock_secret_access_key: "Bedrock APIn salainen käyttöoikeusavain"
+    ai_bedrock_region: "Bedrock APIn AWS-alue"
+    ai_cloudflare_workers_account_id: "Cloudflare Workers AI APIn Cloudflare-tilin tunnus"
+    ai_cloudflare_workers_api_token: "Cloudflare Workers AI APIn API-tunnus"
   reviewables:
     reasons:
       flagged_by_toxicity: Tekoälylisäosa liputti tämän luokiteltuaan sen toksiseksi.
@@ -73,7 +100,13 @@ fi:
     invalid_prompt_role: Viestillä %{idx} on virheellinen rooli.
   reports:
     overall_sentiment:
+      title: "Yleinen tunne"
+      description: "Tämä kaavio vertaa positiivisiksi tai negatiivisiksi luokiteltujen viestien määrää."
+      xaxis: "Positiivinen (%)"
       yaxis: "Päivämäärä"
+    post_emotion:
+      title: "Viestin tunne"
+      description: "Niiden viestien määrä, jotka on luokiteltu jollakin seuraavista tunteista ryhmiteltynä julkaisijan luottamustason mukaan."
   discourse_ai:
     ai_helper:
       errors:
@@ -83,8 +116,49 @@ fi:
         generate_titles: Ehdota ketjujen otsikoita
         proofread: Oikolue teksti
         markdown_table: Luo markdown-taulukko
+        custom_prompt: "Mukautettu kehote"
+        explain: "Selitä"
+        illustrate_post: "Havainnollista viestiä"
+      painter:
+        attribution:
+          stable_diffusion_xl: "Kuvan tarjoaa Stable Diffusion XL"
+          dall_e_3: "Kuvan tarjoaa DALL-E 3"
     ai_bot:
+      personas:
+        cannot_delete_system_persona: "Järjestelmäpersoonia ei voi poistaa, poista se sen sijaan käytöstä"
+        cannot_edit_system_persona: "Järjestelmäpersoonia voi vain nimetä uudelleen, et saa muokata komentoja tai järjestelmäkehotetta, sen sijaan voit poistaa ne käytöstä ja tehdä kopion"
+        general:
+          name: Foorumin apulainen
+          description: "Yleiskäyttöinen tekoälybotti, joka pystyy suorittamaan erilaisia tehtäviä"
+        artist:
+          name: Taiteilija
+          description: "Kuvien luomiseen erikoistunut tekoälybotti"
+        sql_helper:
+          name: SQL-apuohjelma
+          description: "Tekoälybotti, joka on erikoistunut SQL-kyselyiden laatimiseen tässä Discourse-esiintymässä"
+        settings_explorer:
+          name: Asetusapuri
+          description: "Tekoälybotti, joka on erikoistunut auttamaan Discoursen sivustoasetuksiin tutustumisessa"
+        researcher:
+          name: Tutkija
+          description: "Tekoälybotti, joka voi käyttää Googlea ja etsiä tietoja puolestasi"
+        creative:
+          name: Luova
+          description: "Tekoälybotti ilman ulkoisia integraatioita, joka on erikoistuneet luoviin tehtäviin"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "Kuvien luomiseen DALL-E 3:lla erikoistunut tekoälybotti"
       topic_not_found: "Yhteenveto ei ole saatavilla, ketjua ei löydy!"
+      summarizing: "Laaditaan yhteenvetoa ketjusta"
+      searching: "Haetaan: \"%{query}\""
+      command_options:
+        search:
+          max_results:
+            name: "Tulosten enimmäismäärä"
+            description: "Hakuun sisällytettävien tulosten enimmäismäärä – jos tämä on tyhjä, oletussääntöjä käytetään ja määrää skaalataan käytettävän mallin mukaan. Korkein arvo on 100."
+          base_query:
+            name: "Perushakukysely"
+            description: "Peruskysely, jota käytetään haussa. Esimerkki: \"#kiireellinen\" lisää hakukyselyn alkuun \"#kiireellinen\" ja sisältää vain ketjut, joissa on kiireellinen alue tai tunniste."
       command_summary:
         categories: "Listaa alueet"
         search: "Haku"
@@ -93,8 +167,26 @@ fi:
         summarize: "Tee yhteenveto"
         image: "Luo kuva"
         google: "Hae Googlesta"
+        read: "Lue ketju"
+        setting_context: "Etsi sivustoasetuksen konteksti"
+        schema: "Etsi tietokantaskeema"
+        search_settings: "Sivustoasetusten hakeminen"
         dall_e: "Luo kuva"
+      command_help:
+        categories: "Listaa kaikki foorumin julkisesti näkyvät alueet"
+        search: "Hae kaikista foorumin julkisista ketjuista"
+        tags: "Listaa kaikki foorumin tunnisteet"
+        time: "Etsi aika eri aikavyöhykkeillä"
+        summarize: "Laadi yhteenveto ketjusta"
+        image: "Luo kuva Stable Diffusionilla"
+        google: "Hae Googlesta kyselyä"
+        read: "Lue julkinen ketju foorumilla"
+        setting_context: "Etsi sivustoasetuksen konteksti"
+        schema: "Etsi tietokantaskeema"
+        search_settings: "Hae sivustoasetuksia"
+        dall_e: "Luo kuva DALL-E 3:lla"
       command_description:
+        read: "Luetaan: <a href='%{url}'>%{title}</a>"
         time: "Aika aikavyöhykkeellä %{timezone} on %{time}"
         summarize: "Yhteenveto: <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
@@ -111,11 +203,27 @@ fi:
         google:
           one: "Ehdolla \"%{query}\" löytyi %{count} <a href='%{url}'>tulos</a>"
           other: "Ehdolla \"%{query}\" löytyi %{count} <a href='%{url}'>tulosta</a>"
+        setting_context: "Luetaan konteksti asetukselle: %{setting_name}"
+        schema: "%{tables}"
+        search_settings:
+          one: "Ehdolla \"%{query}\" löytyi %{count} tulos"
+          other: "Ehdolla \"%{query}\" löytyi %{count} tulosta"
     summarization:
       configuration_hint:
         one: "Määritä ensin %{setting}-asetus."
         other: "Määritä ensin nämä asetukset: %{settings}"
     sentiment:
       reports:
+        overall_sentiment:
+          positive: "Positiivinen"
+          negative: "Negatiivinen"
         post_emotion:
+          tl_01: "Luottamustasot 0–1"
+          tl_234: "Luottamustasot 2+"
+          sadness: "Suru"
+          surprise: "Yllätys"
           neutral: "Neutraali"
+          fear: "Pelko"
+          anger: "Viha"
+          joy: "Ilo"
+          disgust: "Inho"

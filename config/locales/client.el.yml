@@ -27,6 +27,8 @@ el:
             canned_reply:
               label: "Απάντηση"
     discourse_ai:
+      modals:
+        select_option: "Διαλέξτε μία επιλογή..."
       ai_persona:
         name: Όνομα
         description: Περιγραφή

@@ -27,6 +27,8 @@ hr:
             canned_reply:
               label: "Odgovor"
     discourse_ai:
+      modals:
+        select_option: "Odaberi opciju..."
       ai_persona:
         name: Ime
         description: Opis

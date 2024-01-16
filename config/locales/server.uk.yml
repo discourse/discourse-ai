@@ -9,6 +9,12 @@ uk:
     overall_sentiment:
       yaxis: "Дата"
   discourse_ai:
+    ai_bot:
+      command_summary:
+        search: "Пошук"
+        tags: "Список тегів"
+        time: "Час"
+        summarize: "Підсумок"
     sentiment:
       reports:
         post_emotion:
