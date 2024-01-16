@@ -32,11 +32,9 @@ module DiscourseAi
 
         llm = DiscourseAi::Completions::Llm.proxy(model)
 
-        prompt = { insts: filled_system_prompt }
-
         result =
           llm.generate(
-            prompt,
+            filled_system_prompt,
             temperature: 0,
             max_tokens: llm.tokenizer.tokenize(search_for_text).length * 2 + 10,
             user: Discourse.system_user,
