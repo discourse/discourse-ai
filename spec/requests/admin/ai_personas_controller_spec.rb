@@ -58,26 +58,45 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(serializer_persona2["commands"]).to eq([["SearchCommand", { "base_query" => "test" }]])
     end
 
-    it "returns localized persona names and descriptions" do
-      SiteSetting.default_locale = "fr"
+    context "with translations" do
+      before do
+        SiteSetting.default_locale = "fr"
 
-      get "/admin/plugins/discourse-ai/ai_personas.json"
+        TranslationOverride.upsert!(
+          SiteSetting.default_locale,
+          "discourse_ai.ai_bot.personas.general.name",
+          "Général",
+        )
+        TranslationOverride.upsert!(
+          SiteSetting.default_locale,
+          "discourse_ai.ai_bot.personas.general.description",
+          "Général Description",
+        )
+      end
 
-      TranslationOverride.upsert!(:fr, "discourse_ai.ai_bot.personas.general.name", "Général")
-      TranslationOverride.upsert!(
-        :fr,
-        "discourse_ai.ai_bot.personas.general.description",
-        "Général Description",
-      )
+      after do
+        TranslationOverride.revert!(
+          SiteSetting.default_locale,
+          "discourse_ai.ai_bot.personas.general.name",
+        )
+        TranslationOverride.revert!(
+          SiteSetting.default_locale,
+          "discourse_ai.ai_bot.personas.general.description",
+        )
+      end
 
-      id =
-        DiscourseAi::AiBot::Personas::Persona.system_personas[DiscourseAi::AiBot::Personas::General]
-      name = I18n.t("discourse_ai.ai_bot.personas.general.name")
-      description = I18n.t("discourse_ai.ai_bot.personas.general.description")
-      persona = response.parsed_body["ai_personas"].find { |p| p["id"] == id }
+      it "returns localized persona names and descriptions" do
+        get "/admin/plugins/discourse-ai/ai_personas.json"
 
-      expect(persona["name"]).to eq(name)
-      expect(persona["description"]).to eq(description)
+        id =
+          DiscourseAi::AiBot::Personas::Persona.system_personas[
+            DiscourseAi::AiBot::Personas::General
+          ]
+        persona = response.parsed_body["ai_personas"].find { |p| p["id"] == id }
+
+        expect(persona["name"]).to eq("Général")
+        expect(persona["description"]).to eq("Général Description")
+      end
     end
   end
 
