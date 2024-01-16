@@ -18,6 +18,29 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
       expect(translated).to contain_exactly(*open_ai_version)
     end
 
+    it "will retain usernames for unicode usernames, correctly in mixed mode" do
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [
+            { id: "👻", type: :user, content: "Message1" },
+            { type: :model, content: "Ok" },
+            { id: "joe", type: :user, content: "Message2" },
+          ],
+        )
+
+      translated = context.dialect(prompt).translate
+
+      expect(translated).to eq(
+        [
+          { role: "system", content: "You are a bot" },
+          { role: "user", content: "👻: Message1" },
+          { role: "assistant", content: "Ok" },
+          { role: "user", content: "joe: Message2" },
+        ],
+      )
+    end
+
     it "translates tool_call and tool messages" do
       expect(context.multi_turn_scenario).to eq(
         [

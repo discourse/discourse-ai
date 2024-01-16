@@ -29,7 +29,7 @@ module DiscourseAi
               if msg[:type] == :system
                 memo << "Human: " unless uses_system_message?
                 memo << msg[:content]
-                if prompt.tools
+                if prompt.tools.present?
                   memo << "\n"
                   memo << build_tools_prompt
                 end
@@ -49,7 +49,9 @@ module DiscourseAi
                 </function_results>
                 TEXT
               else
-                memo << "\n\nHuman: #{msg[:content]}"
+                memo << "\n\nHuman: "
+                memo << "#{msg[:id]}: " if msg[:id]
+                memo << msg[:content]
               end
 
               memo
