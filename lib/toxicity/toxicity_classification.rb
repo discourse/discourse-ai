@@ -59,13 +59,18 @@ module DiscourseAi
       end
 
       def content_of(target_to_classify)
-        return target_to_classify.message if target_to_classify.is_a?(Chat::Message)
+        content =
+          if target_to_classify.is_a?(Chat::Message)
+            target_to_classify.message
+          else
+            if target_to_classify.post_number == 1
+              "#{target_to_classify.topic.title}\n#{target_to_classify.raw}"
+            else
+              target_to_classify.raw
+            end
+          end
 
-        if target_to_classify.post_number == 1
-          "#{target_to_classify.topic.title}\n#{target_to_classify.raw}"
-        else
-          target_to_classify.raw
-        end
+        Tokenizer::BertTokenizer.truncate(content, 512)
       end
 
       def endpoint
