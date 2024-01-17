@@ -1,69 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "endpoint_examples"
+require_relative "endpoint_compliance"
 
-RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
-  subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::OpenAiTokenizer) }
-
-  let(:model_name) { "gemini-pro" }
-  let(:dialect) { DiscourseAi::Completions::Dialects::Gemini.new(generic_prompt, model_name) }
-  let(:prompt) { dialect.translate }
-
-  let(:tool_id) { "get_weather" }
-
-  let(:tool_payload) do
-    {
-      name: "get_weather",
-      description: "Get the weather in a city",
-      parameters: {
-        type: "object",
-        required: %w[location unit],
-        properties: {
-          "location" => {
-            type: "string",
-            description: "the city name",
-          },
-          "unit" => {
-            type: "string",
-            description: "the unit of measurement celcius c or fahrenheit f",
-            enum: %w[c f],
-          },
-        },
-      },
-    }
-  end
-
-  let(:request_body) do
-    model
-      .default_options
-      .merge(contents: prompt)
-      .tap do |b|
-        b[:tools] = [{ function_declarations: [tool_payload] }] if generic_prompt.tools.present?
-      end
-      .to_json
-  end
-  let(:stream_request_body) do
-    model
-      .default_options
-      .merge(contents: prompt)
-      .tap do |b|
-        b[:tools] = [{ function_declarations: [tool_payload] }] if generic_prompt.tools.present?
-      end
-      .to_json
-  end
-
-  let(:tool_deltas) do
-    [
-      { "functionCall" => { name: "get_weather", args: {} } },
-      { "functionCall" => { name: "get_weather", args: { location: "" } } },
-      { "functionCall" => { name: "get_weather", args: { location: "Sydney", unit: "c" } } },
-    ]
-  end
-
-  let(:tool_call) do
-    { "functionCall" => { name: "get_weather", args: { location: "Sydney", unit: "c" } } }
-  end
-
+class GeminiMock < EndpointMock
   def response(content, tool_call: false)
     {
       candidates: [
@@ -97,9 +36,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     WebMock
       .stub_request(
         :post,
-        "https://generativelanguage.googleapis.com/v1beta/models/#{model_name}:generateContent?key=#{SiteSetting.ai_gemini_api_key}",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=#{SiteSetting.ai_gemini_api_key}",
       )
-      .with(body: request_body)
+      .with(body: request_body(prompt, tool_call))
       .to_return(status: 200, body: JSON.dump(response(response_text, tool_call: tool_call)))
   end
 
@@ -139,11 +78,93 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     WebMock
       .stub_request(
         :post,
-        "https://generativelanguage.googleapis.com/v1beta/models/#{model_name}:streamGenerateContent?key=#{SiteSetting.ai_gemini_api_key}",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent?key=#{SiteSetting.ai_gemini_api_key}",
       )
-      .with(body: stream_request_body)
+      .with(body: request_body(prompt, tool_call))
       .to_return(status: 200, body: chunks)
   end
 
-  it_behaves_like "an endpoint that can communicate with a completion service"
+  def tool_payload
+    {
+      name: "get_weather",
+      description: "Get the weather in a city",
+      parameters: {
+        type: "object",
+        required: %w[location unit],
+        properties: {
+          "location" => {
+            type: "string",
+            description: "the city name",
+          },
+          "unit" => {
+            type: "string",
+            description: "the unit of measurement celcius c or fahrenheit f",
+            enum: %w[c f],
+          },
+        },
+      },
+    }
+  end
+
+  def request_body(prompt, tool_call)
+    model
+      .default_options
+      .merge(contents: prompt)
+      .tap { |b| b[:tools] = [{ function_declarations: [tool_payload] }] if tool_call }
+      .to_json
+  end
+
+  def tool_deltas
+    [
+      { "functionCall" => { name: "get_weather", args: {} } },
+      { "functionCall" => { name: "get_weather", args: { location: "" } } },
+      { "functionCall" => { name: "get_weather", args: { location: "Sydney", unit: "c" } } },
+    ]
+  end
+
+  def tool_response
+    { "functionCall" => { name: "get_weather", args: { location: "Sydney", unit: "c" } } }
+  end
+end
+
+RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
+  subject(:endpoint) { described_class.new("gemini-pro", DiscourseAi::Tokenizer::OpenAiTokenizer) }
+
+  fab!(:user) { Fabricate(:user) }
+
+  let(:bedrock_mock) { GeminiMock.new(endpoint) }
+
+  let(:compliance) do
+    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Gemini, user)
+  end
+
+  describe "#perform_completion!" do
+    context "when using regular mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.regular_mode_simple_prompt(bedrock_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invocation" do
+          compliance.regular_mode_tools(bedrock_mock)
+        end
+      end
+    end
+
+    describe "when using streaming mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.streaming_mode_simple_prompt(bedrock_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invoncation" do
+          compliance.streaming_mode_tools(bedrock_mock)
+        end
+      end
+    end
+  end
 end

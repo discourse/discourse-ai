@@ -1,19 +1,8 @@
 # frozen_String_literal: true
 
-require_relative "endpoint_examples"
+require_relative "endpoint_compliance"
 
-RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
-  subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::AnthropicTokenizer) }
-
-  let(:model_name) { "claude-2" }
-  let(:dialect) { DiscourseAi::Completions::Dialects::Claude.new(generic_prompt, model_name) }
-  let(:prompt) { dialect.translate }
-
-  let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
-  let(:stream_request_body) { model.default_options.merge(prompt: prompt, stream: true).to_json }
-
-  let(:tool_id) { "get_weather" }
-
+class AnthropicMock < EndpointMock
   def response(content)
     {
       completion: content,
@@ -21,7 +10,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       stop_reason: "stop_sequence",
       truncated: false,
       log_id: "12dcc7feafbee4a394e0de9dffde3ac5",
-      model: model_name,
+      model: "claude-2",
       exception: nil,
     }
   end
@@ -29,7 +18,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(:post, "https://api.anthropic.com/v1/complete")
-      .with(body: request_body)
+      .with(body: model.default_options.merge(prompt: prompt).to_json)
       .to_return(status: 200, body: JSON.dump(response(response_text)))
   end
 
@@ -59,23 +48,49 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     WebMock
       .stub_request(:post, "https://api.anthropic.com/v1/complete")
-      .with(body: stream_request_body)
+      .with(body: model.default_options.merge(prompt: prompt, stream: true).to_json)
       .to_return(status: 200, body: chunks)
   end
+end
 
-  let(:tool_deltas) { ["Let me use a tool for that<function", <<~REPLY] }
-      _calls>
-      <invoke>
-      <tool_name>get_weather</tool_name>
-      <parameters>
-      <location>Sydney</location>
-      <unit>c</unit>
-      </parameters>
-      </invoke>
-      </function_calls>
-      REPLY
+RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
+  subject(:endpoint) { described_class.new("claude-2", DiscourseAi::Tokenizer::AnthropicTokenizer) }
 
-  let(:tool_call) { invocation }
+  fab!(:user) { Fabricate(:user) }
 
-  it_behaves_like "an endpoint that can communicate with a completion service"
+  let(:anthropic_mock) { AnthropicMock.new(endpoint) }
+
+  let(:compliance) do
+    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Claude, user)
+  end
+
+  describe "#perform_completion!" do
+    context "when using regular mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.regular_mode_simple_prompt(anthropic_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invocation" do
+          compliance.regular_mode_tools(anthropic_mock)
+        end
+      end
+    end
+
+    describe "when using streaming mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.streaming_mode_simple_prompt(anthropic_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invoncation" do
+          compliance.streaming_mode_tools(anthropic_mock)
+        end
+      end
+    end
+  end
 end

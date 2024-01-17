@@ -1,28 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "endpoint_examples"
+require_relative "endpoint_compliance"
 require "aws-eventstream"
 require "aws-sigv4"
 
-RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
-  subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::AnthropicTokenizer) }
-
-  let(:model_name) { "claude-2" }
-  let(:bedrock_name) { "claude-v2:1" }
-  let(:dialect) { DiscourseAi::Completions::Dialects::Claude.new(generic_prompt, model_name) }
-  let(:prompt) { dialect.translate }
-
-  let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
-  let(:stream_request_body) { request_body }
-
-  let(:tool_id) { "get_weather" }
-
-  before do
-    SiteSetting.ai_bedrock_access_key_id = "123456"
-    SiteSetting.ai_bedrock_secret_access_key = "asd-asd-asd"
-    SiteSetting.ai_bedrock_region = "us-east-1"
-  end
-
+class BedrockMock < EndpointMock
   def response(content)
     {
       completion: content,
@@ -30,19 +12,16 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       stop_reason: "stop_sequence",
       truncated: false,
       log_id: "12dcc7feafbee4a394e0de9dffde3ac5",
-      model: model_name,
+      model: "claude",
       exception: nil,
     }
   end
 
-  def stub_response(prompt, response_text, tool_call: false)
+  def stub_response(prompt, response_content, tool_call: false)
     WebMock
-      .stub_request(
-        :post,
-        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{bedrock_name}/invoke",
-      )
-      .with(body: request_body)
-      .to_return(status: 200, body: JSON.dump(response(response_text)))
+      .stub_request(:post, "#{base_url}/invoke")
+      .with(body: model.default_options.merge(prompt: prompt).to_json)
+      .to_return(status: 200, body: JSON.dump(response(response_content)))
   end
 
   def stream_line(delta, finish_reason: nil)
@@ -83,27 +62,60 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       end
 
     WebMock
-      .stub_request(
-        :post,
-        "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.#{bedrock_name}/invoke-with-response-stream",
-      )
-      .with(body: stream_request_body)
+      .stub_request(:post, "#{base_url}/invoke-with-response-stream")
+      .with(body: model.default_options.merge(prompt: prompt).to_json)
       .to_return(status: 200, body: chunks)
   end
 
-  let(:tool_deltas) { ["<function", <<~REPLY] }
-  _calls>
-  <invoke>
-  <tool_name>get_weather</tool_name>
-  <parameters>
-  <location>Sydney</location>
-  <unit>c</unit>
-  </parameters>
-  </invoke>
-  </function_calls>
-  REPLY
+  def base_url
+    "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.claude-v2:1"
+  end
+end
 
-  let(:tool_call) { invocation }
+RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
+  subject(:endpoint) { described_class.new("claude-2", DiscourseAi::Tokenizer::AnthropicTokenizer) }
 
-  it_behaves_like "an endpoint that can communicate with a completion service"
+  fab!(:user) { Fabricate(:user) }
+
+  let(:bedrock_mock) { BedrockMock.new(endpoint) }
+
+  let(:compliance) do
+    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Claude, user)
+  end
+
+  before do
+    SiteSetting.ai_bedrock_access_key_id = "123456"
+    SiteSetting.ai_bedrock_secret_access_key = "asd-asd-asd"
+    SiteSetting.ai_bedrock_region = "us-east-1"
+  end
+
+  describe "#perform_completion!" do
+    context "when using regular mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.regular_mode_simple_prompt(bedrock_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invocation" do
+          compliance.regular_mode_tools(bedrock_mock)
+        end
+      end
+    end
+
+    describe "when using streaming mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.streaming_mode_simple_prompt(bedrock_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invoncation" do
+          compliance.streaming_mode_tools(bedrock_mock)
+        end
+      end
+    end
+  end
 end
