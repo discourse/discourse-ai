@@ -1,42 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "endpoint_examples"
+require_relative "endpoint_compliance"
 
-RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
-  subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::Llama2Tokenizer) }
-
-  let(:model_name) { "Llama2-*-chat-hf" }
-  let(:dialect) do
-    DiscourseAi::Completions::Dialects::Llama2Classic.new(generic_prompt, model_name)
-  end
-  let(:prompt) { dialect.translate }
-
-  let(:tool_id) { "get_weather" }
-
-  let(:request_body) do
-    model
-      .default_options
-      .merge(inputs: prompt)
-      .tap do |payload|
-        payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) -
-          model.prompt_size(prompt)
-      end
-      .to_json
-  end
-  let(:stream_request_body) do
-    model
-      .default_options
-      .merge(inputs: prompt)
-      .tap do |payload|
-        payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) -
-          model.prompt_size(prompt)
-        payload[:stream] = true
-      end
-      .to_json
-  end
-
-  before { SiteSetting.ai_hugging_face_api_url = "https://test.dev" }
-
+class HuggingFaceMock < EndpointMock
   def response(content)
     [{ generated_text: content }]
   end
@@ -44,7 +10,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
   def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(:post, "#{SiteSetting.ai_hugging_face_api_url}")
-      .with(body: request_body)
+      .with(body: request_body(prompt))
       .to_return(status: 200, body: JSON.dump(response(response_text)))
   end
 
@@ -75,33 +41,65 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
 
     WebMock
       .stub_request(:post, "#{SiteSetting.ai_hugging_face_api_url}")
-      .with(body: stream_request_body)
+      .with(body: request_body(prompt, stream: true))
       .to_return(status: 200, body: chunks)
   end
 
-  let(:tool_deltas) { ["<function", <<~REPLY, <<~REPLY] }
-      _calls>
-      <invoke>
-      <tool_name>get_weather</tool_name>
-      <parameters>
-      <location>Sydney</location>
-      <unit>c</unit>
-      </parameters>
-      </invoke>
-      </function_calls>
-      REPLY
-      <function_calls>
-      <invoke>
-      <tool_name>get_weather</tool_name>
-      <parameters>
-      <location>Sydney</location>
-      <unit>c</unit>
-      </parameters>
-      </invoke>
-      </function_calls>
-      REPLY
+  def request_body(prompt, stream: false)
+    model
+      .default_options
+      .merge(inputs: prompt)
+      .tap do |payload|
+        payload[:parameters][:max_new_tokens] = (SiteSetting.ai_hugging_face_token_limit || 4_000) -
+          model.prompt_size(prompt)
+        payload[:stream] = true if stream
+      end
+      .to_json
+  end
+end
 
-  let(:tool_call) { invocation }
+RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
+  subject(:endpoint) do
+    described_class.new("Llama2-*-chat-hf", DiscourseAi::Tokenizer::Llama2Tokenizer)
+  end
 
-  it_behaves_like "an endpoint that can communicate with a completion service"
+  before { SiteSetting.ai_hugging_face_api_url = "https://test.dev" }
+
+  fab!(:user) { Fabricate(:user) }
+
+  let(:hf_mock) { HuggingFaceMock.new(endpoint) }
+
+  let(:compliance) do
+    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Llama2Classic, user)
+  end
+
+  describe "#perform_completion!" do
+    context "when using regular mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.regular_mode_simple_prompt(hf_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invocation" do
+          compliance.regular_mode_tools(hf_mock)
+        end
+      end
+    end
+
+    describe "when using streaming mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.streaming_mode_simple_prompt(hf_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invoncation" do
+          compliance.streaming_mode_tools(hf_mock)
+        end
+      end
+    end
+  end
 end

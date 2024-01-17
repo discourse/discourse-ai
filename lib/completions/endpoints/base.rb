@@ -205,11 +205,9 @@ module DiscourseAi
           tokenizer.size(extract_prompt_for_tokenizer(prompt))
         end
 
-        attr_reader :tokenizer
+        attr_reader :tokenizer, :model
 
         protected
-
-        attr_reader :model
 
         # should normalize temperature, max_tokens, stop_words to endpoint specific values
         def normalize_model_params(model_params)

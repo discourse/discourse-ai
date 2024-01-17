@@ -1,53 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "endpoint_examples"
+require_relative "endpoint_compliance"
 
-RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
-  subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::OpenAiTokenizer) }
-
-  let(:model_name) { "gpt-3.5-turbo" }
-  let(:dialect) { DiscourseAi::Completions::Dialects::ChatGpt.new(generic_prompt, model_name) }
-  let(:prompt) { dialect.translate }
-
-  let(:tool_id) { "eujbuebfe" }
-
-  let(:tool_deltas) do
-    [
-      { id: tool_id, function: {} },
-      { id: tool_id, function: { name: "get_weather", arguments: "" } },
-      { id: tool_id, function: { name: "get_weather", arguments: "" } },
-      { id: tool_id, function: { name: "get_weather", arguments: "{" } },
-      { id: tool_id, function: { name: "get_weather", arguments: " \"location\": \"Sydney\"" } },
-      { id: tool_id, function: { name: "get_weather", arguments: " ,\"unit\": \"c\" }" } },
-    ]
-  end
-
-  let(:tool_call) do
-    {
-      id: tool_id,
-      function: {
-        name: "get_weather",
-        arguments: { location: "Sydney", unit: "c" }.to_json,
-      },
-    }
-  end
-
-  let(:request_body) do
-    model
-      .default_options
-      .merge(messages: prompt)
-      .tap { |b| b[:tools] = dialect.tools if generic_prompt.tools.present? }
-      .to_json
-  end
-
-  let(:stream_request_body) do
-    model
-      .default_options
-      .merge(messages: prompt, stream: true)
-      .tap { |b| b[:tools] = dialect.tools if generic_prompt.tools.present? }
-      .to_json
-  end
-
+class OpenAiMock < EndpointMock
   def response(content, tool_call: false)
     message_content =
       if tool_call
@@ -75,7 +30,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(:post, "https://api.openai.com/v1/chat/completions")
-      .with(body: request_body)
+      .with(body: request_body(prompt, tool_call: tool_call))
       .to_return(status: 200, body: JSON.dump(response(response_text, tool_call: tool_call)))
   end
 
@@ -112,114 +67,144 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
     WebMock
       .stub_request(:post, "https://api.openai.com/v1/chat/completions")
-      .with(body: stream_request_body)
+      .with(body: request_body(prompt, stream: true, tool_call: tool_call))
       .to_return(status: 200, body: chunks)
   end
 
-  it_behaves_like "an endpoint that can communicate with a completion service"
+  def tool_deltas
+    [
+      { id: tool_id, function: {} },
+      { id: tool_id, function: { name: "get_weather", arguments: "" } },
+      { id: tool_id, function: { name: "get_weather", arguments: "" } },
+      { id: tool_id, function: { name: "get_weather", arguments: "{" } },
+      { id: tool_id, function: { name: "get_weather", arguments: " \"location\": \"Sydney\"" } },
+      { id: tool_id, function: { name: "get_weather", arguments: " ,\"unit\": \"c\" }" } },
+    ]
+  end
 
-  context "when chunked encoding returns partial chunks" do
-    # See: https://github.com/bblimke/webmock/issues/629
-    let(:mock_net_http) do
-      Class.new(Net::HTTP) do
-        def request(*)
-          super do |response|
-            response.instance_eval do
-              def read_body(*, &)
-                @body.each(&)
-              end
-            end
+  def tool_response
+    {
+      id: tool_id,
+      function: {
+        name: "get_weather",
+        arguments: { location: "Sydney", unit: "c" }.to_json,
+      },
+    }
+  end
 
-            yield response if block_given?
+  def tool_id
+    "eujbuebfe"
+  end
 
-            response
-          end
+  def tool_payload
+    {
+      type: "function",
+      function: {
+        name: "get_weather",
+        description: "Get the weather in a city",
+        parameters: {
+          type: "object",
+          properties: {
+            location: {
+              type: "string",
+              description: "the city name",
+            },
+            unit: {
+              type: "string",
+              description: "the unit of measurement celcius c or fahrenheit f",
+              enum: %w[c f],
+            },
+          },
+          required: %w[location unit],
+        },
+      },
+    }
+  end
+
+  def request_body(prompt, stream: false, tool_call: false)
+    model
+      .default_options
+      .merge(messages: prompt)
+      .tap do |b|
+        b[:stream] = true if stream
+        b[:tools] = [tool_payload] if tool_call
+      end
+      .to_json
+  end
+end
+
+RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
+  subject(:endpoint) do
+    described_class.new("gpt-3.5-turbo", DiscourseAi::Tokenizer::OpenAiTokenizer)
+  end
+
+  fab!(:user) { Fabricate(:user) }
+
+  let(:open_ai_mock) { OpenAiMock.new(endpoint) }
+
+  let(:compliance) do
+    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::ChatGpt, user)
+  end
+
+  describe "#perform_completion!" do
+    context "when using regular mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.regular_mode_simple_prompt(open_ai_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invocation" do
+          compliance.regular_mode_tools(open_ai_mock)
         end
       end
     end
 
-    let(:remove_original_net_http) { Net.send(:remove_const, :HTTP) }
-    let(:original_http) { remove_original_net_http }
-    let(:stub_net_http) { Net.send(:const_set, :HTTP, mock_net_http) }
+    describe "when using streaming mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.streaming_mode_simple_prompt(open_ai_mock)
+        end
 
-    let(:remove_stubbed_net_http) { Net.send(:remove_const, :HTTP) }
-    let(:restore_net_http) { Net.send(:const_set, :HTTP, original_http) }
+        it "will automatically recover from a bad payload" do
+          # this should not happen, but lets ensure nothing bad happens
+          # the row with test1 is invalid json
+          raw_data = <<~TEXT.strip
+            d|a|t|a|:| |{|"choices":[{"delta":{"content":"test,"}}]}
+    
+            data: {"choices":[{"delta":{"content":"test1,"}}]
+    
+            data: {"choices":[{"delta":|{"content":"test2,"}}]}
+    
+            data: {"choices":[{"delta":{"content":"test3,"}}]|}
+    
+            data: {"choices":[{|"|d|elta":{"content":"test4"}}]|}
+    
+            data: [D|ONE]
+          TEXT
 
-    before do
-      mock_net_http
-      remove_original_net_http
-      stub_net_http
-    end
+          chunks = raw_data.split("|")
 
-    after do
-      remove_stubbed_net_http
-      restore_net_http
-    end
+          open_ai_mock.with_chunk_array_support do
+            open_ai_mock.stub_streamed_response(compliance.dialect.translate, chunks) do
+              partials = []
 
-    it "will automatically recover from a bad payload" do
-      # this should not happen, but lets ensure nothing bad happens
-      # the row with test1 is invalid json
-      raw_data = <<~TEXT
-d|a|t|a|:| |{|"choices":[{"delta":{"content":"test,"}}]}
+              endpoint.perform_completion!(compliance.dialect, user) do |partial|
+                partials << partial
+              end
 
-data: {"choices":[{"delta":{"content":"test1,"}}]
+              expect(partials.join).to eq("test,test1,test2,test3,test4")
+            end
+          end
+        end
+      end
 
-data: {"choices":[{"delta":|{"content":"test2,"}}]}
-
-data: {"choices":[{"delta":{"content":"test3,"}}]|}
-
-data: {"choices":[{|"|d|elta":{"content":"test4"}}]|}
-
-data: [D|ONE]
-    TEXT
-
-      chunks = raw_data.split("|")
-
-      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
-        status: 200,
-        body: chunks,
-      )
-
-      partials = []
-      llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
-      llm.generate(
-        DiscourseAi::Completions::Prompt.new("test"),
-        user: Discourse.system_user,
-      ) { |partial| partials << partial }
-
-      expect(partials.join).to eq("test,test2,test3,test4")
-    end
-
-    it "supports chunked encoding properly" do
-      raw_data = <<~TEXT
-da|ta: {"choices":[{"delta":{"content":"test,"}}]}
-
-data: {"choices":[{"delta":{"content":"test1,"}}]}
-
-data: {"choices":[{"delta":|{"content":"test2,"}}]}
-
-data: {"choices":[{"delta":{"content":"test3,"}}]|}
-
-data: {"choices":[{|"|d|elta":{"content":"test4"}}]|}
-
-data: [D|ONE]
-    TEXT
-
-      chunks = raw_data.split("|")
-
-      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
-        status: 200,
-        body: chunks,
-      )
-
-      partials = []
-      llm = DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo")
-      llm.generate(
-        DiscourseAi::Completions::Prompt.new("test"),
-        user: Discourse.system_user,
-      ) { |partial| partials << partial }
-
-      expect(partials.join).to eq("test,test1,test2,test3,test4")
+      context "with tools" do
+        it "returns a function invoncation" do
+          compliance.streaming_mode_tools(open_ai_mock)
+        end
+      end
     end
   end
 end

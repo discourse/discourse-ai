@@ -1,27 +1,14 @@
 # frozen_string_literal: true
 
-require_relative "endpoint_examples"
+require_relative "endpoint_compliance"
 
-RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
-  subject(:model) { described_class.new(model_name, DiscourseAi::Tokenizer::MixtralTokenizer) }
-
-  let(:model_name) { "mistralai/Mixtral-8x7B-Instruct-v0.1" }
-  let(:dialect) { DiscourseAi::Completions::Dialects::Mixtral.new(generic_prompt, model_name) }
-  let(:prompt) { dialect.translate }
-
-  let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
-  let(:stream_request_body) { model.default_options.merge(prompt: prompt, stream: true).to_json }
-
-  before { SiteSetting.ai_vllm_endpoint = "https://test.dev" }
-
-  let(:tool_id) { "get_weather" }
-
+class VllmMock < EndpointMock
   def response(content)
     {
       id: "cmpl-6sZfAb30Rnv9Q7ufzFwvQsMpjZh8S",
       object: "text_completion",
       created: 1_678_464_820,
-      model: model_name,
+      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
       usage: {
         prompt_tokens: 337,
         completion_tokens: 162,
@@ -34,7 +21,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
   def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(:post, "#{SiteSetting.ai_vllm_endpoint}/v1/completions")
-      .with(body: request_body)
+      .with(body: model.default_options.merge(prompt: prompt).to_json)
       .to_return(status: 200, body: JSON.dump(response(response_text)))
   end
 
@@ -42,7 +29,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
     +"data: " << {
       id: "cmpl-#{SecureRandom.hex}",
       created: 1_681_283_881,
-      model: model_name,
+      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
       choices: [{ text: delta, finish_reason: finish_reason, index: 0 }],
       index: 0,
     }.to_json
@@ -62,33 +49,62 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
 
     WebMock
       .stub_request(:post, "#{SiteSetting.ai_vllm_endpoint}/v1/completions")
-      .with(body: stream_request_body)
+      .with(body: model.default_options.merge(prompt: prompt, stream: true).to_json)
       .to_return(status: 200, body: chunks)
   end
+end
 
-  let(:tool_deltas) { ["<function", <<~REPLY, <<~REPLY] }
-      _calls>
-      <invoke>
-      <tool_name>get_weather</tool_name>
-      <parameters>
-      <location>Sydney</location>
-      <unit>c</unit>
-      </parameters>
-      </invoke>
-      </function_calls>
-      REPLY
-      <function_calls>
-      <invoke>
-      <tool_name>get_weather</tool_name>
-      <parameters>
-      <location>Sydney</location>
-      <unit>c</unit>
-      </parameters>
-      </invoke>
-      </function_calls>
-      REPLY
+RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
+  subject(:endpoint) do
+    described_class.new(
+      "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      DiscourseAi::Tokenizer::MixtralTokenizer,
+    )
+  end
 
-  let(:tool_call) { invocation }
+  fab!(:user) { Fabricate(:user) }
 
-  it_behaves_like "an endpoint that can communicate with a completion service"
+  let(:anthropic_mock) { VllmMock.new(endpoint) }
+
+  let(:compliance) do
+    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Mixtral, user)
+  end
+
+  let(:dialect) { DiscourseAi::Completions::Dialects::Mixtral.new(generic_prompt, model_name) }
+  let(:prompt) { dialect.translate }
+
+  let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
+  let(:stream_request_body) { model.default_options.merge(prompt: prompt, stream: true).to_json }
+
+  before { SiteSetting.ai_vllm_endpoint = "https://test.dev" }
+
+  describe "#perform_completion!" do
+    context "when using regular mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.regular_mode_simple_prompt(anthropic_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invocation" do
+          compliance.regular_mode_tools(anthropic_mock)
+        end
+      end
+    end
+
+    describe "when using streaming mode" do
+      context "with simple prompts" do
+        it "completes a trivial prompt and logs the response" do
+          compliance.streaming_mode_simple_prompt(anthropic_mock)
+        end
+      end
+
+      context "with tools" do
+        it "returns a function invoncation" do
+          compliance.streaming_mode_tools(anthropic_mock)
+        end
+      end
+    end
+  end
 end
