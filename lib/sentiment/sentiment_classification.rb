@@ -48,11 +48,14 @@ module DiscourseAi
       end
 
       def content_of(target_to_classify)
-        if target_to_classify.post_number == 1
-          "#{target_to_classify.topic.title}\n#{target_to_classify.raw}"
-        else
-          target_to_classify.raw
-        end
+        content =
+          if target_to_classify.post_number == 1
+            "#{target_to_classify.topic.title}\n#{target_to_classify.raw}"
+          else
+            target_to_classify.raw
+          end
+
+        Tokenizer::BertTokenizer.truncate(content, 512)
       end
 
       def endpoint
