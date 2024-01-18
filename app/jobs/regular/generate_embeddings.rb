@@ -12,6 +12,7 @@ module Jobs
 
       topic = target.is_a?(Topic) ? target : target.topic
       post = target.is_a?(Post) ? target : target.first_post
+      return unless topic.present? && post.present?
       return if topic.private_message? && !SiteSetting.ai_embeddings_generate_for_pms
       return if post.raw.blank?
 
