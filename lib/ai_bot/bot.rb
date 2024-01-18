@@ -71,7 +71,7 @@ module DiscourseAi
                 tool_message = { type: :tool, id: tool_call_id, content: invocation_result_json }
 
                 if tool.standalone?
-                  standalone_conext =
+                  standalone_context =
                     context.dup.merge(
                       conversation_context: [
                         context[:conversation_context].last,
@@ -79,7 +79,7 @@ module DiscourseAi
                         tool_message,
                       ],
                     )
-                  prompt = persona.craft_prompt(standalone_conext)
+                  prompt = persona.craft_prompt(standalone_context)
                 else
                   prompt.push(**tool_call_message)
                   prompt.push(**tool_message)

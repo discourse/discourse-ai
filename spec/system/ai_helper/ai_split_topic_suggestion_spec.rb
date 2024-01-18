@@ -109,7 +109,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     context "when suggesting tags with AI tag suggester" do
       before { SiteSetting.ai_embeddings_enabled = true }
 
-      it "updatse the tag with the suggested tag" do
+      it "update the tag with the suggested tag" do
         response =
           Tag
             .take(5)

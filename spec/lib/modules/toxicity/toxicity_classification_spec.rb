@@ -22,7 +22,7 @@ describe DiscourseAi::Toxicity::ToxicityClassification do
 
     let(:toxic_verdict) { { SiteSetting.ai_toxicity_inference_service_api_model => true } }
 
-    it "returns false when toxicity flaggin is disabled" do
+    it "returns false when toxicity flagging is disabled" do
       SiteSetting.ai_toxicity_flag_automatically = false
 
       should_flag = subject.should_flag_based_on?(toxic_verdict)

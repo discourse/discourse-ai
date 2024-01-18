@@ -39,7 +39,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   describe "when performing a search in the full page search page" do
-    skip "TODO: Implement test after doing LLM abrstraction" do
+    skip "TODO: Implement test after doing LLM abstraction" do
       it "performs AI search in the background and hides results by default" do
         visit("/search?expanded=true")
         search_page.type_in_search("apple pie")

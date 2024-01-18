@@ -3,7 +3,7 @@
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
   describe "#suggest" do
     let(:text_to_proofread) { "The rain in spain stays mainly in the plane." }
-    let(:proofreaded_text) { "The rain in Spain, stays mainly in the Plane." }
+    let(:proofread_text) { "The rain in Spain, stays mainly in the Plane." }
     let(:mode) { CompletionPrompt::PROOFREAD }
 
     context "when not logged in" do
@@ -71,11 +71,11 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         expected_diff =
           "<div class=\"inline-diff\"><p>The rain in <ins>Spain</ins><ins>,</ins><ins> </ins><del>spain </del>stays mainly in the <ins>Plane</ins><del>plane</del>.</p></div>"
 
-        DiscourseAi::Completions::Llm.with_prepared_responses([proofreaded_text]) do
+        DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
           post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text_to_proofread }
 
           expect(response.status).to eq(200)
-          expect(response.parsed_body["suggestions"].first).to eq(proofreaded_text)
+          expect(response.parsed_body["suggestions"].first).to eq(proofread_text)
           expect(response.parsed_body["diff"]).to eq(expected_diff)
         end
       end

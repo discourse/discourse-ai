@@ -10,7 +10,7 @@ module DiscourseAi
         attribution = "discourse_ai.ai_helper.painter.attribution.#{model}"
 
         if model == "stable_diffusion_xl"
-          stable_diffusion_prompt = difussion_prompt(input, user)
+          stable_diffusion_prompt = diffusion_prompt(input, user)
           return [] if stable_diffusion_prompt.blank?
 
           artifacts =
@@ -56,7 +56,7 @@ module DiscourseAi
         end
       end
 
-      def difussion_prompt(text, user)
+      def diffusion_prompt(text, user)
         prompt =
           DiscourseAi::Completions::Prompt.new(
             <<~TEXT.strip,

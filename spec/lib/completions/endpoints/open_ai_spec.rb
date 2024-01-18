@@ -172,15 +172,15 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
           # the row with test1 is invalid json
           raw_data = <<~TEXT.strip
             d|a|t|a|:| |{|"choices":[{"delta":{"content":"test,"}}]}
-    
+
             data: {"choices":[{"delta":{"content":"test1,"}}]
-    
+
             data: {"choices":[{"delta":|{"content":"test2,"}}]}
-    
+
             data: {"choices":[{"delta":{"content":"test3,"}}]|}
-    
+
             data: {"choices":[{|"|d|elta":{"content":"test4"}}]|}
-    
+
             data: [D|ONE]
           TEXT
 
@@ -201,7 +201,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
       end
 
       context "with tools" do
-        it "returns a function invoncation" do
+        it "returns a function invocation" do
           compliance.streaming_mode_tools(open_ai_mock)
         end
       end

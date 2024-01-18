@@ -3,7 +3,7 @@
 # A facade that abstracts multiple LLMs behind a single interface.
 #
 # Internally, it consists of the combination of a dialect and an endpoint.
-# After recieving a prompt using our generic format, it translates it to
+# After receiving a prompt using our generic format, it translates it to
 # the target model and routes the completion request through the correct gateway.
 #
 # Use the .proxy method to instantiate an object.

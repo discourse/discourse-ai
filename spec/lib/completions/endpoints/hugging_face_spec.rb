@@ -96,7 +96,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
       end
 
       context "with tools" do
-        it "returns a function invoncation" do
+        it "returns a function invocation" do
           compliance.streaming_mode_tools(hf_mock)
         end
       end

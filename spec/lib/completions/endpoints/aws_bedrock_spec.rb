@@ -112,7 +112,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       end
 
       context "with tools" do
-        it "returns a function invoncation" do
+        it "returns a function invocation" do
           compliance.streaming_mode_tools(bedrock_mock)
         end
       end
