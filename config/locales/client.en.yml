@@ -47,7 +47,7 @@ en:
               description: "LLM to use for report generation"
             categories:
               label: "Categories"
-              description: "Filter topics only to these category"
+              description: "Filter topics only to these categories"
             tags:
               label: "Tags"
               description: "Filter topics only to these tags"
