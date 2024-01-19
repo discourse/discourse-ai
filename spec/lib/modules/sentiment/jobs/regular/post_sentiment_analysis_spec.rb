@@ -41,7 +41,7 @@ describe Jobs::PostSentimentAnalysis do
       end
     end
 
-    it "succesfully classifies the post" do
+    it "successfully classifies the post" do
       expected_analysis = SiteSetting.ai_sentiment_models.split("|").length
       SentimentInferenceStubs.stub_classification(post)
 

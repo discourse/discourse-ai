@@ -22,7 +22,7 @@ module DiscourseAi
             - You can specify subject, medium (e.g. oil on canvas), artist (person who drew it or photographed it)
             - You can specify details about lighting or time of day.
             - You can specify a particular website you would like to emulate (artstation or deviantart)
-            - You can specify additional details such as "beutiful, dystopian, futuristic, etc."
+            - You can specify additional details such as "beautiful, dystopian, futuristic, etc."
             - Prompts should generally be 10-20 words long
             - Do not include any connector words such as "and" or "but" etc.
             - You are extremely creative, when given short non descriptive prompts from a user you add your own details

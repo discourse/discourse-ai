@@ -70,8 +70,8 @@ module DiscourseAi
         target_to_classify.uploads.to_a.select { |u| FileHelper.is_supported_image?(u.url) }
       end
 
-      def opennsfw2_verdict?(clasification)
-        clasification.values.first.to_i >= SiteSetting.ai_nsfw_flag_threshold_general
+      def opennsfw2_verdict?(classification)
+        classification.values.first.to_i >= SiteSetting.ai_nsfw_flag_threshold_general
       end
 
       def nsfw_detector_verdict?(classification)

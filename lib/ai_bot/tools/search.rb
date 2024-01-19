@@ -16,7 +16,7 @@ module DiscourseAi
                 {
                   name: "search_query",
                   description:
-                    "Specific keywords to search for, space seperated (correct bad spelling, remove connector words)",
+                    "Specific keywords to search for, space separated (correct bad spelling, remove connector words)",
                   type: "string",
                 },
                 {

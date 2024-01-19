@@ -24,7 +24,7 @@ module DiscourseAi
 
         - Key statistics: Specify date range, call out important stats like number of new topics and posts
         - Overview: Briefly state trends within period.
-        - Highlighted content: 5 paragaraphs highlighting important topics people should know about. If possible have each paragraph link to multiple related topics.
+        - Highlighted content: 5 paragraphs highlighting important topics people should know about. If possible have each paragraph link to multiple related topics.
         - Key insights and trends linking to a selection of posts that back them
         TEXT
       end

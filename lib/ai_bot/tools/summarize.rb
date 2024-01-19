@@ -148,13 +148,13 @@ module DiscourseAi
             progress << "."
             progress_blk.call(progress)
 
-            contatenation_prompt = {
+            concatenation_prompt = {
               insts: "You are a helpful bot",
               input:
                 "concatenated the disjoint summaries, creating a cohesive narrative:\n#{summaries.join("\n")}}",
             }
 
-            llm.generate(contatenation_prompt, temperature: 0.6, max_tokens: 500, user: bot_user)
+            llm.generate(concatenation_prompt, temperature: 0.6, max_tokens: 500, user: bot_user)
           else
             summaries.first
           end

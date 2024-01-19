@@ -4,7 +4,7 @@ class ConvertAiPersonasCommandsToJson < ActiveRecord::Migration[7.0]
     # this all may be a bit surprising, but interestingly this makes all our backend code
     # cross compatible
     # upgrading ["a", "b", "c"] to json simply works cause in both cases
-    # rails will cast to a string array and all code simply expectes a string array
+    # rails will cast to a string array and all code simply expects a string array
     #
     # this change was made so we can also start storing parameters with the commands
     execute <<~SQL

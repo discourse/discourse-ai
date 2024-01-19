@@ -196,7 +196,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
             params: {
               ai_persona: {
                 name: "bob",
-                dscription: "the bob",
+                description: "the bob",
               },
             }
 

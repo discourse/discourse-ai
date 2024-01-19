@@ -80,7 +80,7 @@ describe DiscourseAi::Nsfw::Classification do
 
     let(:negative_verdict) { { "opennsfw2" => false } }
 
-    it "returns false when NSFW flaggin is disabled" do
+    it "returns false when NSFW flagging is disabled" do
       SiteSetting.ai_nsfw_flag_automatically = false
 
       should_flag = subject.should_flag_based_on?(positive_verdict)

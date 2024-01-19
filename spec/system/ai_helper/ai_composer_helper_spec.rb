@@ -37,7 +37,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       expect(ai_helper_context_menu).to have_context_menu
     end
 
-    it "does not show the context menu when selecting insuffient text" do
+    it "does not show the context menu when selecting insufficient text" do
       visit("/latest")
       page.find("#create-topic").click
       composer.fill_content(input)

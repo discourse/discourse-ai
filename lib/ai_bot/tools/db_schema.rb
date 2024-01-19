@@ -12,7 +12,7 @@ module DiscourseAi
               {
                 name: "tables",
                 description:
-                  "list of tables to load schema information for, comma seperated list eg: (users,posts))",
+                  "list of tables to load schema information for, comma separated list eg: (users,posts))",
                 type: "string",
                 required: true,
               },

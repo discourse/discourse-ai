@@ -5,7 +5,7 @@ describe DiscourseAi::Inference::StabilityGenerator do
     DiscourseAi::Inference::StabilityGenerator.perform!(prompt)
   end
 
-  it "sets dimentions to 512x512 for non XL model" do
+  it "sets dimensions to 512x512 for non XL model" do
     SiteSetting.ai_stability_engine = "stable-diffusion-v1-5"
     SiteSetting.ai_stability_api_url = "http://www.a.b.c"
     SiteSetting.ai_stability_api_key = "123"
@@ -25,7 +25,7 @@ describe DiscourseAi::Inference::StabilityGenerator do
     gen("a cow")
   end
 
-  it "sets dimentions to 1024x1024 for XL model" do
+  it "sets dimensions to 1024x1024 for XL model" do
     SiteSetting.ai_stability_engine = "stable-diffusion-xl-1024-v1-0"
     SiteSetting.ai_stability_api_url = "http://www.a.b.c"
     SiteSetting.ai_stability_api_key = "123"

@@ -6,7 +6,7 @@ module DiscourseAi
   module Automation
     describe ReportRunner do
       fab!(:user)
-      fab!(:reciever) { Fabricate(:user) }
+      fab!(:receiver) { Fabricate(:user) }
       fab!(:post) { Fabricate(:post, user: user) }
       fab!(:group)
       fab!(:secure_category) { Fabricate(:private_category, group: group) }
@@ -46,7 +46,7 @@ module DiscourseAi
           DiscourseAi::Completions::Llm.with_prepared_responses(["magical report"]) do
             ReportRunner.run!(
               sender_username: user.username,
-              receivers: [reciever.username],
+              receivers: [receiver.username],
               title: "test report",
               model: "gpt-4",
               category_ids: nil,

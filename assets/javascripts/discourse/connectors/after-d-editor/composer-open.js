@@ -34,10 +34,10 @@ export default class extends Component {
       this.composerModel.targetRecipients &&
       this.currentUser.ai_enabled_chat_bots
     ) {
-      let reciepients = this.composerModel.targetRecipients.split(",");
+      let recipients = this.composerModel.targetRecipients.split(",");
 
       return this.currentUser.ai_enabled_chat_bots.any((bot) =>
-        reciepients.any((username) => username === bot.username)
+        recipients.any((username) => username === bot.username)
       );
     }
     return false;

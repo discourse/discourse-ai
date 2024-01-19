@@ -23,7 +23,7 @@ module ::DiscourseAi
           "Authorization" => "Bearer #{api_key}",
         }
 
-        sdxl_allowed_dimentions = [
+        sdxl_allowed_dimensions = [
           [1024, 1024],
           [1152, 896],
           [1216, 832],
@@ -37,7 +37,7 @@ module ::DiscourseAi
 
         if (!width && !height)
           if engine.include? "xl"
-            width, height = sdxl_allowed_dimentions[0]
+            width, height = sdxl_allowed_dimensions[0]
           else
             width, height = [512, 512]
           end

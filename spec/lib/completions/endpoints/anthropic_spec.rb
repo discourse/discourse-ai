@@ -87,7 +87,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       end
 
       context "with tools" do
-        it "returns a function invoncation" do
+        it "returns a function invocation" do
           compliance.streaming_mode_tools(anthropic_mock)
         end
       end
