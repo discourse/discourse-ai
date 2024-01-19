@@ -7,29 +7,54 @@ module DiscourseAi
         CompletionFailed = Class.new(StandardError)
         TIMEOUT = 60
 
-        def self.endpoint_for(model_name)
-          # Order is important.
-          # Bedrock has priority over Anthropic if credentials are present.
-          endpoints = [
-            DiscourseAi::Completions::Endpoints::AwsBedrock,
-            DiscourseAi::Completions::Endpoints::Anthropic,
-            DiscourseAi::Completions::Endpoints::OpenAi,
-            DiscourseAi::Completions::Endpoints::HuggingFace,
-            DiscourseAi::Completions::Endpoints::Gemini,
-            DiscourseAi::Completions::Endpoints::Vllm,
-          ]
+        class << self
+          def endpoint_for(provider_name, model_name)
+            endpoints = [
+              DiscourseAi::Completions::Endpoints::AwsBedrock,
+              DiscourseAi::Completions::Endpoints::Anthropic,
+              DiscourseAi::Completions::Endpoints::OpenAi,
+              DiscourseAi::Completions::Endpoints::HuggingFace,
+              DiscourseAi::Completions::Endpoints::Gemini,
+              DiscourseAi::Completions::Endpoints::Vllm,
+            ]
 
-          if Rails.env.test? || Rails.env.development?
-            endpoints << DiscourseAi::Completions::Endpoints::Fake
+            if Rails.env.test? || Rails.env.development?
+              endpoints << DiscourseAi::Completions::Endpoints::Fake
+            end
+
+            endpoints.detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |ek|
+              ek.can_contact?(provider_name, model_name)
+            end
           end
 
-          endpoints.detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |ek|
-            ek.can_contact?(model_name)
+          def configuration_hint
+            settings = dependant_setting_names
+            I18n.t(
+              "discourse_ai.llm.endpoints.configuration_hint",
+              settings: settings.join(", "),
+              count: settings.length,
+            )
           end
-        end
 
-        def self.can_contact?(_model_name)
-          raise NotImplementedError
+          def display_name(model_name)
+            to_display = name(model_name)
+
+            return to_display if correctly_configured?(model_name)
+
+            I18n.t("discourse_ai.llm.endpoints.not_configured", display_name: to_display)
+          end
+
+          def dependant_setting_names
+            raise NotImplementedError
+          end
+
+          def name(_model_name)
+            raise NotImplementedError
+          end
+
+          def can_contact?(_endpoint_name, _model_name)
+            raise NotImplementedError
+          end
         end
 
         def initialize(model_name, tokenizer)

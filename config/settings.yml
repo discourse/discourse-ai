@@ -170,6 +170,7 @@ discourse_ai:
   composer_ai_helper_enabled:
     default: false
     client: true
+    validator: "DiscourseAi::Configuration::LlmDependencyValidator"
   ai_helper_allowed_groups:
     client: true
     type: group_list
@@ -181,17 +182,11 @@ discourse_ai:
     default: false
     client: true
   ai_helper_model:
-    default: gpt-3.5-turbo
+    default: ""
+    allow_any: false
     type: enum
-    choices:
-      - gpt-3.5-turbo
-      - gpt-4
-      - claude-2
-      - stable-beluga-2
-      - Llama2-chat-hf
-      - gemini-pro
-      - mistralai/Mixtral-8x7B-Instruct-v0.1
-      - mistralai/Mistral-7B-Instruct-v0.2
+    enum: "DiscourseAi::Configuration::LlmEnumerator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
   ai_helper_custom_prompts_allowed_groups:
     client: true
     type: group_list
@@ -255,21 +250,13 @@ discourse_ai:
   ai_embeddings_semantic_search_enabled:
     default: false
     client: true
+    validator: "DiscourseAi::Configuration::LlmDependencyValidator"
   ai_embeddings_semantic_search_hyde_model:
-    default: "gpt-3.5-turbo"
+    default: ""
     type: enum
     allow_any: false
-    choices:
-      - Llama2-*-chat-hf
-      - claude-instant-1
-      - claude-2
-      - gpt-3.5-turbo
-      - gpt-4
-      - StableBeluga2
-      - Upstage-Llama-2-*-instruct-v2
-      - gemini-pro
-      - mistralai/Mixtral-8x7B-Instruct-v0.1
-      - mistralai/Mistral-7B-Instruct-v0.2
+    enum: "DiscourseAi::Configuration::LlmEnumerator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
 
   ai_summarization_discourse_service_api_endpoint: ""
   ai_summarization_discourse_service_api_endpoint_srv:

@@ -4,8 +4,22 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Anthropic < Base
-        def self.can_contact?(model_name)
-          %w[claude-instant-1 claude-2].include?(model_name)
+        class << self
+          def can_contact?(endpoint_name, model_name)
+            endpoint_name == "anthropic" && %w[claude-instant-1 claude-2].include?(model_name)
+          end
+
+          def dependant_setting_names
+            %w[ai_anthropic_api_key]
+          end
+
+          def correctly_configured?(_model_name)
+            SiteSetting.ai_anthropic_api_key.present?
+          end
+
+          def name(model_name)
+            "Anthropic - #{model_name}"
+          end
         end
 
         def normalize_model_params(model_params)

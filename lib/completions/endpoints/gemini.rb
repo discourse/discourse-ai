@@ -4,8 +4,23 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Gemini < Base
-        def self.can_contact?(model_name)
-          %w[gemini-pro].include?(model_name)
+        class << self
+          def can_contact?(endpoint_name, model_name)
+            return false unless endpoint_name == "google"
+            %w[gemini-pro].include?(model_name)
+          end
+
+          def dependant_setting_names
+            %w[ai_gemini_api_key]
+          end
+
+          def correctly_configured?(_model_name)
+            SiteSetting.ai_gemini_api_key.present?
+          end
+
+          def name(model_name)
+            "Google - #{model_name}"
+          end
         end
 
         def default_options

@@ -5,7 +5,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
     described_class.new(
       DiscourseAi::Completions::Dialects::OrcaStyle,
       canned_response,
-      "Upstage-Llama-2-*-instruct-v2",
+      "hugging_face:Upstage-Llama-2-*-instruct-v2",
     )
   end
 
@@ -13,7 +13,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
 
   describe ".proxy" do
     it "raises an exception when we can't proxy the model" do
-      fake_model = "unknown_v2"
+      fake_model = "unknown:unknown_v2"
 
       expect { described_class.proxy(fake_model) }.to(
         raise_error(DiscourseAi::Completions::Llm::UNKNOWN_MODEL),
@@ -27,7 +27,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
       DiscourseAi::Completions::Endpoints::Fake.chunk_count = 10
     end
 
-    let(:llm) { described_class.proxy("fake") }
+    let(:llm) { described_class.proxy("fake:fake") }
 
     let(:prompt) do
       DiscourseAi::Completions::Prompt.new(

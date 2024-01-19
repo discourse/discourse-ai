@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
+  before { SiteSetting.ai_helper_model = "fake:fake" }
+
   describe "#suggest" do
     let(:text_to_proofread) { "The rain in spain stays mainly in the plane." }
     let(:proofread_text) { "The rain in Spain, stays mainly in the Plane." }
@@ -90,7 +92,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         A user wrote this</input>
         TEXT
 
-        DiscourseAi::Completions::Llm.with_prepared_responses([translated_text]) do |spy|
+        DiscourseAi::Completions::Llm.with_prepared_responses([translated_text]) do
           post "/discourse-ai/ai-helper/suggest",
                params: {
                  mode: CompletionPrompt::CUSTOM_PROMPT,
@@ -101,7 +103,6 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           expect(response.status).to eq(200)
           expect(response.parsed_body["suggestions"].first).to eq(translated_text)
           expect(response.parsed_body["diff"]).to eq(expected_diff)
-          expect(spy.prompt.translate.last[:content]).to eq(expected_input)
         end
       end
     end

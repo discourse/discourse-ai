@@ -240,3 +240,13 @@ en:
           anger: "Anger"
           joy: "Joy"
           disgust: "Disgust"
+
+    llm:
+      configuration:
+        disable_module_first: "You have to disable %{setting} first."
+        set_llm_first: "Set %{setting} first."
+      endpoints:
+        not_configured: "%{display_name} (not configured)"
+        configuration_hint:
+          one: "Make sure the `%{settings}` setting was configured."
+          other: "Make sure these settings were configured: %{settings}"

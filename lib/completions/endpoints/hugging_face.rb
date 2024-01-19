@@ -4,15 +4,31 @@ module DiscourseAi
   module Completions
     module Endpoints
       class HuggingFace < Base
-        def self.can_contact?(model_name)
-          %w[
-            StableBeluga2
-            Upstage-Llama-2-*-instruct-v2
-            Llama2-*-chat-hf
-            Llama2-chat-hf
-            mistralai/Mixtral-8x7B-Instruct-v0.1
-            mistralai/Mistral-7B-Instruct-v0.2
-          ].include?(model_name) && SiteSetting.ai_hugging_face_api_url.present?
+        class << self
+          def can_contact?(endpoint_name, model_name)
+            return false unless endpoint_name == "hugging_face"
+
+            %w[
+              StableBeluga2
+              Upstage-Llama-2-*-instruct-v2
+              Llama2-*-chat-hf
+              Llama2-chat-hf
+              mistralai/Mixtral-8x7B-Instruct-v0.1
+              mistralai/Mistral-7B-Instruct-v0.2
+            ].include?(model_name)
+          end
+
+          def dependant_setting_names
+            %w[ai_hugging_face_api_url]
+          end
+
+          def correctly_configured?(_model_name)
+            SiteSetting.ai_hugging_face_api_url.present?
+          end
+
+          def name(model_name)
+            "Hugging Face - #{model_name}"
+          end
         end
 
         def default_options

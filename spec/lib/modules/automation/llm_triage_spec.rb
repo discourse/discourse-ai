@@ -10,7 +10,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["good"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "fake:fake",
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -20,25 +20,11 @@ describe DiscourseAi::Automation::LlmTriage do
     expect(post.topic.reload.visible).to eq(true)
   end
 
-  it "can hide topics on triage with claude" do
+  it "can hide topics on triage" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "claude-2",
-        hide_topic: true,
-        system_prompt: "test %%POST%%",
-        search_for_text: "bad",
-      )
-    end
-
-    expect(post.topic.reload.visible).to eq(false)
-  end
-
-  it "can hide topics on triage with claude" do
-    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-      triage(
-        post: post,
-        model: "gpt-4",
+        model: "fake:fake",
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -54,7 +40,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "fake:fake",
         category_id: category.id,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -69,7 +55,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "fake:fake",
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         canned_reply: "test canned reply 123",

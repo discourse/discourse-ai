@@ -6,6 +6,7 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
   fab!(:user) { Fabricate(:user) }
 
   before do
+    SiteSetting.ai_helper_model = "fake:fake"
     SiteSetting.ai_stability_api_url = "https://api.stability.dev"
     SiteSetting.ai_stability_api_key = "abc"
     SiteSetting.ai_openai_api_key = "abc"

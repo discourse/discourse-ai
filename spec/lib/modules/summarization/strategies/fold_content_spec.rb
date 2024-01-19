@@ -12,7 +12,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
     end
 
     let(:model) do
-      DiscourseAi::Summarization::Models::OpenAi.new("gpt-4", max_tokens: model_tokens)
+      DiscourseAi::Summarization::Models::OpenAi.new("fake:fake", max_tokens: model_tokens)
     end
 
     let(:content) { { contents: [{ poster: "asd", id: 1, text: summarize_text }] } }

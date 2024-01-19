@@ -3,6 +3,8 @@
 RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
   subject(:titler) { described_class.new(thread) }
 
+  before { SiteSetting.ai_helper_model = "fake:fake" }
+
   fab!(:thread) { Fabricate(:chat_thread) }
   fab!(:user) { Fabricate(:user) }
 

@@ -7,7 +7,7 @@
 # the target model and routes the completion request through the correct gateway.
 #
 # Use the .proxy method to instantiate an object.
-# It chooses the best dialect and endpoint for the model you want to interact with.
+# It chooses the correct dialect and endpoint for the model you want to interact with.
 #
 # Tests of modules that perform LLM calls can use .with_prepared_responses to return canned responses
 # instead of relying on WebMock stubs like we did in the past.
@@ -17,27 +17,55 @@ module DiscourseAi
     class Llm
       UNKNOWN_MODEL = Class.new(StandardError)
 
-      def self.with_prepared_responses(responses)
-        @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(responses)
+      class << self
+        def models_by_provider
+          # ChatGPT models are listed under open_ai but they are actually available through OpenAI and Azure.
+          # However, since they use the same URL/key settings, there's no reason to duplicate them.
+          {
+            aws_bedrock: %w[claude-instant-1 claude-2],
+            anthropic: %w[claude-instant-1 claude-2],
+            vllm: %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2],
+            hugging_face: %w[
+              mistralai/Mixtral-8x7B-Instruct-v0.1
+              mistralai/Mistral-7B-Instruct-v0.2
+              StableBeluga2
+              Upstage-Llama-2-*-instruct-v2
+              Llama2-*-chat-hf
+              Llama2-chat-hf
+            ],
+            open_ai: %w[gpt-3.5-turbo gpt-4 gpt-3.5-turbo-16k gpt-4-32k gpt-4-turbo],
+            google: %w[gemini-pro],
+          }.tap { |h| h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development? }
+        end
 
-        yield(@canned_response)
-      ensure
-        # Don't leak prepared response if there's an exception.
-        @canned_response = nil
-      end
+        def with_prepared_responses(responses)
+          @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(responses)
 
-      def self.proxy(model_name)
-        dialect_klass = DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name)
+          yield(@canned_response)
+        ensure
+          # Don't leak prepared response if there's an exception.
+          @canned_response = nil
+        end
 
-        return new(dialect_klass, @canned_response, model_name) if @canned_response
+        def proxy(model_name)
+          provider_and_model_name = model_name.split(":")
 
-        gateway =
-          DiscourseAi::Completions::Endpoints::Base.endpoint_for(model_name).new(
-            model_name,
-            dialect_klass.tokenizer,
-          )
+          provider_name = provider_and_model_name.first
+          model_name_without_prov = provider_and_model_name[1..].join
 
-        new(dialect_klass, gateway, model_name)
+          dialect_klass =
+            DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name_without_prov)
+
+          return new(dialect_klass, @canned_response, model_name) if @canned_response
+
+          gateway =
+            DiscourseAi::Completions::Endpoints::Base.endpoint_for(
+              provider_name,
+              model_name_without_prov,
+            ).new(model_name_without_prov, dialect_klass.tokenizer)
+
+          new(dialect_klass, gateway, model_name_without_prov)
+        end
       end
 
       def initialize(dialect_klass, gateway, model_name)

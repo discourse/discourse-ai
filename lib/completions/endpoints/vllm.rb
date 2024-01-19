@@ -4,10 +4,25 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Vllm < Base
-        def self.can_contact?(model_name)
-          %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(
-            model_name,
-          )
+        class << self
+          def can_contact?(endpoint_name, model_name)
+            endpoint_name == "vllm" &&
+              %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(
+                model_name,
+              )
+          end
+
+          def dependant_setting_names
+            %w[ai_vllm_endpoint_srv ai_vllm_endpoint]
+          end
+
+          def correctly_configured?(_model_name)
+            SiteSetting.ai_vllm_endpoint_srv.present? || SiteSetting.ai_vllm_endpoint.present?
+          end
+
+          def name(model_name)
+            "vLLM - #{model_name}"
+          end
         end
 
         def normalize_model_params(model_params)

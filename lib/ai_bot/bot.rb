@@ -125,28 +125,39 @@ module DiscourseAi
       end
 
       def model(prefer_low_cost: false)
+        # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
         default_model =
           case bot_user.id
           when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
-            "claude-2"
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
+              "aws_bedrock:claude-2"
+            else
+              "anthropic:claude-2"
+            end
           when DiscourseAi::AiBot::EntryPoint::GPT4_ID
-            "gpt-4"
+            "open_ai:gpt-4"
           when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
-            "gpt-4-turbo"
+            "open_ai:gpt-4-turbo"
           when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
-            "gpt-3.5-turbo-16k"
+            "open_ai:gpt-3.5-turbo-16k"
           when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
-            "mistralai/Mixtral-8x7B-Instruct-v0.1"
+            if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(
+                 "mistralai/Mixtral-8x7B-Instruct-v0.1",
+               )
+              "vllm:mistralai/Mixtral-8x7B-Instruct-v0.1"
+            else
+              "hugging_face:mistralai/Mixtral-8x7B-Instruct-v0.1"
+            end
           when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
-            "gemini-pro"
+            "google:gemini-pro"
           when DiscourseAi::AiBot::EntryPoint::FAKE_ID
-            "fake"
+            "fake:fake"
           else
             nil
           end
 
-        if %w[gpt-4 gpt-4-turbo].include?(default_model) && prefer_low_cost
-          return "gpt-3.5-turbo-16k"
+        if %w[open_ai:gpt-4 open_ai:gpt-4-turbo].include?(default_model) && prefer_low_cost
+          return "open_ai:gpt-3.5-turbo-16k"
         end
 
         default_model

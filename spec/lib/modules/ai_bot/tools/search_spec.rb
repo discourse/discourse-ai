@@ -4,8 +4,10 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
   before { SearchIndexer.enable }
   after { SearchIndexer.disable }
 
+  before { SiteSetting.ai_openai_api_key = "asd" }
+
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo") }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
 
   fab!(:admin)
@@ -65,6 +67,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
       after { DiscourseAi::Embeddings::SemanticSearch.clear_cache_for(query) }
 
       it "supports semantic search when enabled" do
+        SiteSetting.ai_embeddings_semantic_search_hyde_model = "fake:fake"
         SiteSetting.ai_embeddings_semantic_search_enabled = true
         SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
 
