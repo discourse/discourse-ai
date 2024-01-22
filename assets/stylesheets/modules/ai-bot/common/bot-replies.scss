@@ -71,7 +71,7 @@ article.streaming .cooked {
     color: var(--tertiary-medium);
   }
 
-  > span.progress-dot:only-child::after {
+  > .progress-dot:only-child::after {
     // if the progress dot is the only content
     // we are likely waiting longer for a response
     // so it can start animating instantly
