@@ -72,7 +72,7 @@ pt_BR:
               label: "Prompt do sistema"
               description: "O prompt que será usado para triagem, verifique se responderá com uma única palavra que pode ser usada para acionar a ação"
             search_for_text:
-              label: "Procurar texto"
+              label: "Pesquisar texto"
               description: "Se o texto a seguir aparecer na resposta do LLM, aplicar estas ações"
             category:
               label: "Categoria"

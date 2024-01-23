@@ -53,7 +53,6 @@ pl_PL:
               description: "LLM do wykorzystania do generowania raportów"
             categories:
               label: "Kategorie"
-              description: "Filtruj tematy tylko do tej kategorii"
             tags:
               label: "Tagi"
               description: "Filtruj tematy tylko do tych tagów"

@@ -53,7 +53,6 @@ ar:
               description: "النموذج اللغوي الكبير لاستخدامه في إنشاء التقرير"
             categories:
               label: "الفئات"
-              description: "تصفية الموضوعات لهذه الفئات فقط"
             tags:
               label: "الوسوم"
               description: "تصفية الموضوعات لهذه الوسوم فقط"
@@ -69,8 +68,8 @@ ar:
         llm_triage:
           fields:
             system_prompt:
-              label: "أمر النظام"
-              description: "الأمر الذي سيتم استخدامه للفرز، تأكَّد من رده بكلمة واحدة يمكنك استخدامها لبدء الإجراء"
+              label: "رسالة مطالبة النظام"
+              description: "رسالة المطالبة التي سيتم استخدامها للفرز، تأكَّد من رده بكلمة واحدة يمكنك استخدامها لبدء الإجراء"
             search_for_text:
               label: "البحث عن نص"
               description: "إذا ظهر النص التالي في الرد، فطبِّق هذه الإجراءات"
@@ -99,14 +98,14 @@ ar:
       ai_persona:
         name: الاسم
         description: الوصف
-        system_prompt: أمر النظام
+        system_prompt: رسالة مطالبة النظام
         save: حفظ
         saved: تم حفظ شخصية الذكاء الاصطناعي
         enabled: مفعَّلة
         commands: الأوامر المفعَّلة
         allowed_groups: المجموعات المسموح بها
         confirm_delete: هل تريد بالتأكيد حذف هذه الشخصية؟
-        new: الجديدة
+        new: جديدة
         title: "شخصيات الذكاء الاصطناعي"
         delete: حذف
         priority: الأولوية
@@ -134,7 +133,7 @@ ar:
         suggest: "الاقتراح باستخدام الذكاء الاصطناعي"
         missing_content: "يُرجى إدخال بعض المحتوى لإنشاء الاقتراحات."
         context_menu:
-          back: "الرجوع"
+          back: "رجوع"
           trigger: "الذكاء الاصطناعي"
           undo: "تراجع"
           loading: "الذكاء الاصطناعي قيد إنشاء المحتوى"
@@ -145,9 +144,9 @@ ar:
           revert: "عودة"
           changes: "التغييرات"
           custom_prompt:
-            title: "أمر مخصَّص"
-            placeholder: "أدخل أمرًا مخصصًا..."
-            submit: "إرسال أمر"
+            title: "رسالة مطالبة مخصَّصة"
+            placeholder: "أدخل رسالة مطالبة مخصَّصة..."
+            submit: "إرسال رسالة مطالبة"
         post_options_menu:
           trigger: "اسأل الذكاء الاصطناعي"
           title: "اسأل الذكاء الاصطناعي"
@@ -161,7 +160,7 @@ ar:
         thumbnail_suggestions:
           title: "الصور المصغَّرة المقترحة"
           select: "تحديد"
-          selected: "محدَّد"
+          selected: "محدَّدة"
       reviewables:
         model_used: "النموذج المستخدم:"
         accuracy: "الدقة:"

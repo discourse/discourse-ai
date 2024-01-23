@@ -121,8 +121,8 @@ tr_TR:
         illustrate_post: "Gönderiyi göster"
       painter:
         attribution:
-          stable_diffusion_xl: "Stable Diffusion XL tarafından görsel"
-          dall_e_3: "DALL-E 3'den görsel"
+          stable_diffusion_xl: "Stable Diffusion XL'den görüntü"
+          dall_e_3: "DALL-E 3'den görüntü"
     ai_bot:
       personas:
         cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
@@ -168,23 +168,23 @@ tr_TR:
         image: "Görüntü oluştur"
         google: "Google'da Ara"
         read: "Konuyu oku"
-        setting_context: "Site ayarı bağlamına bakın"
-        schema: "Veri tabanı şemasına bakma"
+        setting_context: "Site ayarı bağlamına bak"
+        schema: "Veri tabanı şemasına bak"
         search_settings: "Site ayarları aranıyor"
         dall_e: "Görüntü oluştur"
       command_help:
         categories: "Forumdaki herkese açık tüm kategorileri listeleyin"
-        search: "Forumdaki tüm genel konuları ara"
+        search: "Forumdaki tüm herkese açık konuları ara"
         tags: "Forumdaki tüm etiketleri listele"
         time: "Çeşitli saat dilimlerinde zamanı bul"
         summarize: "Bir konuyu özetle"
-        image: "Kararlı Difüzyon kullanarak görsel oluştur"
+        image: "Stable Diffusion kullanarak görüntü oluştur"
         google: "Bir sorgu için Google'da arama yap"
         read: "Forumdaki herkese açık konuyu oku"
         setting_context: "Site ayarı bağlamına bak"
         schema: "Veri tabanı şemasına bak"
         search_settings: "Site ayarlarını ara"
-        dall_e: "DALL-E 3 kullanarak görsel oluştur"
+        dall_e: "DALL-E 3 kullanarak görüntü oluştur"
       command_description:
         read: "Okunuyor: <a href='%{url}'>%{title}</a>"
         time: "%{timezone} saat diliminde saat %{time}"

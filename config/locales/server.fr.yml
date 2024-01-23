@@ -93,8 +93,8 @@ fr:
     ai_cloudflare_workers_api_token: "Jeton d'API pour l'API Cloudflare Workers AI"
   reviewables:
     reasons:
-      flagged_by_toxicity: Le plugin IA l'a signalé après l'avoir classé comme toxique.
-      flagged_by_nsfw: Le plugin IA l'a signalé après avoir classé au moins une des images jointes comme NSFW.
+      flagged_by_toxicity: L'extension IA l'a signalé après l'avoir classé comme toxique.
+      flagged_by_nsfw: L'extension IA l'a signalé après avoir classé au moins une des images jointes comme NSFW.
   errors:
     prompt_message_length: Le message %{idx} dépasse la limite de 1 000 caractères.
     invalid_prompt_role: Le message %{idx} a un rôle invalide.
@@ -206,8 +206,8 @@ fr:
         setting_context: "Contexte de lecture pour : %{setting_name}"
         schema: "%{tables}"
         search_settings:
-          one: "%{count} résultat trouvé pour '%{query}'"
-          other: "%{count} résultats trouvés pour '%{query}'"
+          one: "%{count} résultat trouvé pour « %{query} »"
+          other: "%{count} résultats trouvés pour « %{query} »"
     summarization:
       configuration_hint:
         one: "Configurez d'abord le paramètre « %{setting} »."

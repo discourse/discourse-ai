@@ -202,7 +202,7 @@ zh_CN:
         setting_context: "阅读上下文：%{setting_name}"
         schema: "%{tables}"
         search_settings:
-          other: "为 '%{query}' 找到 %{count} 个结果"
+          other: "找到“%{query}”的 %{count} 个结果"
     summarization:
       configuration_hint:
         other: "首先配置这些设置：%{settings}"

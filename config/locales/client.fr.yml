@@ -53,7 +53,6 @@ fr:
               description: "LLM à utiliser pour la génération de rapports"
             categories:
               label: "Catégories"
-              description: "Filtrer les sujets uniquement selon cette catégorie"
             tags:
               label: "Étiquettes"
               description: "Filtrer les sujets uniquement selon ces étiquettes"

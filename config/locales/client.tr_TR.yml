@@ -53,7 +53,6 @@ tr_TR:
               description: "Rapor oluşturmak için kullanılacak LLM"
             categories:
               label: "Kategoriler"
-              description: "Konuları yalnızca bu kategorilere filtrele"
             tags:
               label: "Etiketler"
               description: "Konuları yalnızca bu etiketlere filtrele"
@@ -65,6 +64,7 @@ tr_TR:
               description: "LLM'nin ham giriş ve çıkışını görmek için hata ayıklama modunu etkinleştirin"
             priority_group:
               label: "Öncelikli Grup"
+              description: "Raporda bu gruptan gelen içeriği önceliklendirin"
         llm_triage:
           fields:
             system_prompt:

@@ -53,7 +53,6 @@ ja:
               description: "レポートの生成に使用する LLM"
             categories:
               label: "カテゴリ"
-              description: "トピックをこれらのカテゴリのみにフィルタします"
             tags:
               label: "タグ"
               description: "トピックをこれらのタグのみにフィルタします"
@@ -193,7 +192,7 @@ ja:
           gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
-          claude-2: "クロード 2"
+          claude-2: "Claude 2"
           gemini-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"

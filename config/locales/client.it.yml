@@ -46,17 +46,16 @@ it:
               label: "Dimensione del campione"
               description: "Il numero di messaggi da campionare per il report"
             tokens_per_post:
-              label: "Token per post"
+              label: "Token per messaggio"
               description: "Il numero di token llm da utilizzare per messaggio"
             model:
               label: "Modello"
               description: "LLM da utilizzare per la generazione del report"
             categories:
               label: "Categorie"
-              description: "Filtra gli argomenti solo in queste categorie"
             tags:
               label: "Etichette"
-              description: "Filtra gli argomenti solo in base a questi tag"
+              description: "Filtra gli argomenti solo in base a queste etichette"
             allow_secure_categories:
               label: "Consenti categorie sicure"
               description: "Consenti la generazione del report per argomenti in categorie sicure"
@@ -79,7 +78,7 @@ it:
               description: "Categoria da applicare all'argomento"
             tags:
               label: "Etichette"
-              description: "Tag da applicare all'argomento"
+              description: "Etichette da applicare all'argomento"
             canned_reply:
               label: "Rispondi"
               description: "Testo non elaborato della risposta predefinita al messaggio sull'argomento"
@@ -203,6 +202,6 @@ it:
     review:
       types:
         reviewable_ai_post:
-          title: "Post contrassegnato da IA"
+          title: "Messaggio contrassegnato da IA"
         reviewable_ai_chat_message:
           title: "Messaggio di chat contrassegnato da IA"
