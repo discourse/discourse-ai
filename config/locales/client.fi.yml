@@ -53,7 +53,6 @@ fi:
               description: "Raportin luomiseen käytettävä LLM"
             categories:
               label: "Luokat"
-              description: "Suodata ketjut vain näihin alueisiin"
             tags:
               label: "Tunnisteet"
               description: "Suodata ketjut vain näihin tunnisteisiin"

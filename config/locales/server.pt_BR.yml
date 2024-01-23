@@ -55,9 +55,9 @@ pt_BR:
     ai_anthropic_api_key: "Chave de API para API da Anthropic"
     ai_hugging_face_api_url: "URL personalizada usada para inferência com LLM da OpenSource. Compatível com https://github.com/huggingface/text-generation-inference"
     composer_ai_helper_enabled: "Ative o ajudante de IA do Compositor."
-    ai_helper_allowed_groups: "Os(as) usuários(as) destes grupos verão o botão do ajudante com IA no compositor."
-    ai_helper_allowed_in_pm: "Ative o ajudante com IA do compositor em MPs."
-    ai_helper_model: "Modelo usado para o ajudante com IA."
+    ai_helper_allowed_groups: "Os(as) usuários(as) destes grupos verão o botão do ajudante de IA no compositor."
+    ai_helper_allowed_in_pm: "Ative o ajudante de IA do compositor em MPs."
+    ai_helper_model: "Modelo usado para o ajudante de IA."
     ai_helper_custom_prompts_allowed_groups: "Os(as) usuários(as) que estiverem nestes grupos verão um prompt personalizado no ajudante da IA."
     ai_helper_automatic_chat_thread_title_delay: "O atraso, em minutos, até que o ajudante de IA defina automaticamente o título da thread do chat."
     ai_helper_automatic_chat_thread_title: "Defina automaticamente os títulos das linhas de discussão do chat com base no conteúdo delas."
@@ -80,7 +80,7 @@ pt_BR:
     ai_bot_enable_chat_warning: "Exiba um aviso quando o chat por MP for iniciado. Pode ser substituído ao editar a string de tradução: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Quando o Bot com GPT tiver acesso às MPs, ele responderá aos membros destes grupos."
     ai_bot_enabled_chat_bots: "Modelos disponíveis para agora como Bot com IA"
-    ai_bot_add_to_header: "Mostrar botão no cabeçalho para começar uma MP com um Bot de IA"
+    ai_bot_add_to_header: "Exibir botão no cabeçalho para começar uma MP com um Bot de IA"
     ai_stability_api_key: "Chave de API para a API stability.ai"
     ai_stability_engine: "Mecanismo de geração de imagem usado para a API stability.ai"
     ai_stability_api_url: "URL para a API stability.ai"
@@ -143,7 +143,7 @@ pt_BR:
           name: Pesquisador(a)
           description: "Esta informação pode ser pesquisada com um Bot de IA com acesso ao Google para você"
         creative:
-          name: Criativo(a)
+          name: Criativa
           description: "Bot de IA sem integrações externas especializado em tarefas criativas"
         dall_e3:
           name: "DALL-E 3"
@@ -183,7 +183,7 @@ pt_BR:
         read: "Ler tópico público no fórum"
         setting_context: "Procurar contexto de configuração do site"
         schema: "Procurar esquema de banco de dados"
-        search_settings: "Procurar configurações do site"
+        search_settings: "Pesquisar configurações do site"
         dall_e: "Gerar imagem usando DALL-E 3"
       command_description:
         read: "Lendo: <a href='%{url}'>%{title}</a>"

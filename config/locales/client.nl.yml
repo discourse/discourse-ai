@@ -53,7 +53,6 @@ nl:
               description: "Te gebruiken LLM voor het genereren van het rapport"
             categories:
               label: "Categorieën"
-              description: "Filter topics alleen op deze categorie"
             tags:
               label: "Tags"
               description: "Filter topics alleen op deze tags"
@@ -76,10 +75,10 @@ nl:
               description: "Pas deze acties toe als de volgende tekst voorkomt in het LLM-antwoord"
             category:
               label: "Categorie"
-              description: "Toe te passen categorie op het onderwerp"
+              description: "Toe te passen categorie op het topic"
             tags:
               label: "Tags"
-              description: "Toe te passen tags op het onderwerp"
+              description: "Toe te passen tags op het topic"
             canned_reply:
               label: "Antwoorden"
               description: "Ruwe tekst van standaard antwoord te plaatsen in het topic"
@@ -180,12 +179,12 @@ nl:
         cancel_streaming: "Stoppen met antwoorden"
         default_pm_prefix: "[PB naamloze AI-bot]"
         shortcut_title: "Start een PB met een AI-bot"
-        share: "AI-gesprek delen"
-        conversation_shared: "Gesprek gekopieerd"
+        share: "AI-conversatie delen"
+        conversation_shared: "Conversatie gekopieerd"
         ai_label: "AI"
-        ai_title: "Gesprek met AI"
+        ai_title: "Conversatie met AI"
         share_modal:
-          title: "AI-gesprek delen"
+          title: "AI-conversatie delen"
           copy: "Kopiëren"
           context: "Te delen interacties:"
         bot_names:

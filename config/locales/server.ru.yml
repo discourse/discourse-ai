@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 ru:
+  discourse_automation:
+    scriptables:
+      llm_triage:
+        title: Сортировка публикаций с помощью AI
+        description: "Сортировка публикаций с использованием большой языковой модели"
+        system_prompt_missing_post_placeholder: "Системная подсказка должна содержать плейсхолдер для публикации: %%POST%%"
+      llm_report:
+        title: Периодический отчет с использованием AI
+        description: "Периодический отчет на основе большой языковой модели"
   site_settings:
     discourse_ai_enabled: "Включить плагин AI для Discourse."
     ai_toxicity_enabled: "Включить модуль проверки на токсичность."
@@ -18,7 +27,7 @@ ru:
     ai_toxicity_flag_threshold_identity_attack: "Атака на личность"
     ai_toxicity_flag_threshold_insult: "Оскорбление"
     ai_toxicity_flag_threshold_threat: "Угроза"
-    ai_toxicity_flag_threshold_sexual_explicit: "Контент сексуального характера "
+    ai_toxicity_flag_threshold_sexual_explicit: "Контент сексуального характера"
     ai_toxicity_groups_bypass: "Сообщения пользователей в этих группах не будут оцениваться модулем проверки на токсичность."
     ai_sentiment_enabled: "Включить модуль оценки настроения."
     ai_sentiment_inference_service_api_endpoint: "URL-адрес, по которому работает API для модуля оценки настроения"
@@ -35,7 +44,12 @@ ru:
     ai_nsfw_flag_threshold_sexy: "Пороговое значение, при котором изображение, отнесенное к категории «сексуальное», определяется как NSFW-контент."
     ai_nsfw_models: "Модели, используемые для оценки NSFW-контента."
     ai_openai_gpt35_url: "Специальный URL-адрес для запросов Chat Completion к GPT 3.5 (для поддержки Azure)."
+    ai_openai_gpt35_16k_url: "Специальный URL-адрес для запросов Chat Completion к GPT 3.5 16k (для поддержки Azure)."
     ai_openai_gpt4_url: "Специальный URL-адрес для запросов Chat Completion к GPT 4 (для поддержки Azure)."
+    ai_openai_gpt4_32k_url: "Специальный URL-адрес для запросов Chat Completion к GPT 4 32k (для поддержки Azure)."
+    ai_openai_gpt4_turbo_url: "Специальный URL-адрес для запросов Chat Completion к GPT 4 Turbo (для поддержки Azure)."
+    ai_openai_dall_e_3_url: "Специальный URL-адрес для генерации изображений для DALL-E 3 (для поддержки Azure)."
+    ai_openai_organization: "(Необязательно, оставьте поле пустым, чтобы опустить) Идентификатор организации, используемый для API OpenAI. Передан с использованием заголовка OpenAI-Organization."
     ai_openai_embeddings_url: "Специальный URL-адрес для API векторных представлений OpenAI (в случае с Azure это может быть https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
     ai_openai_api_key: "API-ключ для API OpenAI"
     ai_anthropic_api_key: "API-ключ для API Anthropic"
@@ -44,6 +58,10 @@ ru:
     ai_helper_allowed_groups: "Для пользователей в этих группах будет отображаться кнопка AI-помощника в редакторе."
     ai_helper_allowed_in_pm: "Включить AI-помощник для редактора в личных сообщениях."
     ai_helper_model: "Модели, используемые для AI-помощника."
+    ai_helper_custom_prompts_allowed_groups: "Пользователи этих групп увидят опцию пользовательского запроса в AI- помощнике."
+    ai_helper_automatic_chat_thread_title_delay: "Задержка в минутах, прежде чем AI-помощник автоматически установит заголовок темы чата."
+    ai_helper_automatic_chat_thread_title: "Автоматически устанавливать заголовки тем чата в зависимости от содержимого темы."
+    ai_helper_illustrate_post_model: "Модель, которая будет использоваться для функции иллюстрации публикации AI-помощника для редактора"
     ai_embeddings_enabled: "Включить модуль векторных представлений."
     ai_embeddings_discourse_service_api_endpoint: "URL-адрес, по которому работает API для модуля векторных представлений"
     ai_embeddings_discourse_service_api_key: "API-ключ для API векторных представлений"
@@ -51,19 +69,28 @@ ru:
     ai_embeddings_generate_for_pms: "Генерировать векторные представления для личных сообщений."
     ai_embeddings_semantic_related_topics_enabled: "Использовать семантический поиск для связанных тем."
     ai_embeddings_semantic_related_topics: "Максимальное количество тем для показа в разделе связанных тем."
+    ai_embeddings_backfill_batch_size: "Количество векторных представлений для обратного заполнения каждые 15 минут."
     ai_embeddings_pg_connection_string: "Строка подключения PostgreSQL для модуля векторных представлений. Необходимо включить расширение «pgvector» и создать таблицы. Подробнее см. в документации."
     ai_embeddings_semantic_search_enabled: "Включить полностраничный семантический поиск."
     ai_embeddings_semantic_related_include_closed_topics: "Включать в результаты семантического поиска закрытые темы"
+    ai_embeddings_semantic_search_hyde_model: "Модель, используемая для расширения ключевых слов, чтобы получить лучшие результаты во время семантического поиска"
     ai_summarization_discourse_service_api_endpoint: "URL-адрес, по которому работает API сводок Discourse."
     ai_summarization_discourse_service_api_key: "API-ключ для API сводок Discourse."
     ai_bot_enabled: "Включить модуль AI-бота."
+    ai_bot_enable_chat_warning: "Показывать предупреждение при запуске личного чата. Можно переопределить путем редактирования строки перевода: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Если у GPT-бота есть доступ к личным сообщениям, он будет отвечать участникам указанных групп."
     ai_bot_enabled_chat_bots: "Доступные модели для использования в качестве AI-бота"
     ai_bot_add_to_header: "Кнопка в заголовке для начала личного разговора с AI-ботом"
     ai_stability_api_key: "API-ключ для API stability.ai"
+    ai_stability_engine: "Движок генерации изображений для использования в API stability.ai"
     ai_stability_api_url: "URL-адрес для API stability.ai"
     ai_google_custom_search_api_key: "API-ключ для API программируемого поиска Google — см. https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX для API программируемого поиска Google"
+    ai_bedrock_access_key_id: "Идентификатор ключа доступа к API Bedrock"
+    ai_bedrock_secret_access_key: "Секретный ключ доступа к API Bedrock"
+    ai_bedrock_region: "Регион AWS для API Bedrock"
+    ai_cloudflare_workers_account_id: "Идентификатор аккаунта Cloudflare для API Cloudflare Workers AI"
+    ai_cloudflare_workers_api_token: "Токен API для API Cloudflare Workers AI"
   reviewables:
     reasons:
       flagged_by_toxicity: Плагин AI определил этот контент как токсичный и отправил жалобу.
@@ -73,7 +100,13 @@ ru:
     invalid_prompt_role: Для сообщения %{idx} указана недопустимая роль.
   reports:
     overall_sentiment:
+      title: "Общее настроение"
+      description: "На этой диаграмме сравнивается количество публикаций, отнесенных как к позитивным, так и к негативным."
+      xaxis: "Позитивные(%)"
       yaxis: "Дата"
+    post_emotion:
+      title: "Эмоция публикации"
+      description: "Количество публикаций, отнесенных к одной из следующих эмоций, сгруппированных по уровню доверия автора."
   discourse_ai:
     ai_helper:
       errors:
@@ -83,8 +116,49 @@ ru:
         generate_titles: Предложить названия для темы
         proofread: Вычитать текст
         markdown_table: Сгенерировать таблицу в формате Markdown
+        custom_prompt: "Пользовательский запрос"
+        explain: "Объяснить"
+        illustrate_post: "Проиллюстрировать публикацию"
+      painter:
+        attribution:
+          stable_diffusion_xl: "Изображение от Stable Diffusion XL"
+          dall_e_3: "Изображение от DALL-E 3"
     ai_bot:
+      personas:
+        cannot_delete_system_persona: "Системные персоны нельзя удалить, вместо этого отключите их"
+        cannot_edit_system_persona: "Системные персоны можно только переименовать, вы не можете редактировать команды или системную подсказку, вместо этого отключите их и создайте копию"
+        general:
+          name: Помощник по форуму
+          description: "AI-бот общего назначения, способный выполнять различные задачи."
+        artist:
+          name: Художник
+          description: "AI-бот, специализирующийся на генерации изображений"
+        sql_helper:
+          name: Помощник по SQL
+          description: "AI-бот, специализирующийся на создании SQL-запросов в этом экземпляре Discourse"
+        settings_explorer:
+          name: Обозреватель настроек
+          description: "AI-бот, специализирующийся на помощи в изучении настроек сайта Discourse"
+        researcher:
+          name: Исследователь
+          description: "AI-бот с доступом к Google, который может искать для вас информацию"
+        creative:
+          name: Автор
+          description: "AI-бот без внешних интеграций, специализирующийся на творческих задачах"
+        dall_e3:
+          name: "DALL-E 3"
+          description: "AI-бот, специализирующийся на генерации изображений с использованием DALL-E 3"
       topic_not_found: "Сводка недоступна: тема не найдена!"
+      summarizing: "Аналитик темы"
+      searching: "Поиск: '%{query}'"
+      command_options:
+        search:
+          max_results:
+            name: "Максимальное количество результатов"
+            description: "Максимальное количество результатов, включаемых в поиск, — если будут использоваться пустые правила по умолчанию, а количество будет масштабироваться в зависимости от используемой модели. Максимальное значение — 100."
+          base_query:
+            name: "Базовый поисковый запрос"
+            description: "Базовый запрос, используемый при поиске. Пример: '#urgent' добавит '#urgent' к поисковому запросу и будет включать только темы со срочной категорией или тегом."
       command_summary:
         categories: "Вывод списка категорий"
         search: "Поиск"
@@ -93,8 +167,26 @@ ru:
         summarize: "Сводка"
         image: "Сгенерировать изображение"
         google: "Искать в Google"
+        read: "Прочитать тему"
+        setting_context: "Найти контекст настроек сайта"
+        schema: "Найти схему базы данных"
+        search_settings: "Поиск настроек сайта"
         dall_e: "Сгенерировать изображение"
+      command_help:
+        categories: "Вывод всех общедоступных категорий на форуме"
+        search: "Поиск по всем общедоступным темам на форуме"
+        tags: "Вывод всех тегов на форуме"
+        time: "Определить время в разных часовых поясах"
+        summarize: "Краткое изложение темы"
+        image: "Генерировать изображение с помощью Stable Diffusion"
+        google: "Поиск в Google по запросу"
+        read: "Читать общедоступную тему на форуме"
+        setting_context: "Найти контекст настроек сайта"
+        schema: "Найти схему базы данных"
+        search_settings: "Настройки поиска по сайту"
+        dall_e: "Создать изображение с помощью DALL-E 3"
       command_description:
+        read: "Чтение: <a href='%{url}'>%{title}</a>"
         time: "Время по %{timezone} — %{time}"
         summarize: "Получена сводка: <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
@@ -119,6 +211,13 @@ ru:
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
           many: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
           other: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
+        setting_context: "Чтение контекста для: %{setting_name}"
+        schema: "%{tables}"
+        search_settings:
+          one: "Найден %{count} результат по запросу «%{query}»"
+          few: "Найдено %{count} результата по запросу «%{query}»"
+          many: "Найдено %{count} результатов по запросу «%{query}»"
+          other: "Найдено %{count} результата по запросу «%{query}»"
     summarization:
       configuration_hint:
         one: "Сначала настройте следующие параметры: %{settings}"
@@ -127,5 +226,16 @@ ru:
         other: "Сначала настройте следующие параметры: %{settings}"
     sentiment:
       reports:
+        overall_sentiment:
+          positive: "Позитивное"
+          negative: "Негативное"
         post_emotion:
-          neutral: "Нейтральная"
+          tl_01: "Уровни доверия 0–1"
+          tl_234: "Уровни доверия 2+"
+          sadness: "Грусть"
+          surprise: "Удивление"
+          neutral: "Нейтральность"
+          fear: "Страх"
+          anger: "Гнев"
+          joy: "Радость"
+          disgust: "Отвращение"

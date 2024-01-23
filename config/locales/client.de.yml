@@ -53,7 +53,6 @@ de:
               description: "LLM zur Berichtserstellung"
             categories:
               label: "Kategorien"
-              description: "Themen nur nach diesen Kategorien filtern"
             tags:
               label: "Schlagwörter"
               description: "Themen nur nach diesen Schlagwörtern filtern"

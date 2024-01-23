@@ -53,7 +53,6 @@ es:
               description: "LLM a utilizar para la generación de informes"
             categories:
               label: "Categorías"
-              description: "Filtrar temas solo para estas categorías"
             tags:
               label: "Etiquetas"
               description: "Filtrar temas solo para estas etiquetas"
@@ -115,7 +114,7 @@ es:
         no_persona_selected: |
           ## ¿Qué son las Personas de IA?
 
-          Las Personas de IA son una potente función que te permite personalizar el comportamiento del motor de IA en tu foro de Discourse. Actúan como un «aviso del sistema» que guía las respuestas e interacciones de la IA, ayudando a crear una experiencia de usuario más personalizada y atractiva.
+          Las Personas de IA son una potente característica que te permite personalizar el comportamiento del motor de IA en tu foro de Discourse. Actúan como un «aviso del sistema» que guía las respuestas e interacciones de la IA, ayudando a crear una experiencia de usuario más personalizada y atractiva.
 
           ## ¿Por qué utilizar las Personas de la IA?
 

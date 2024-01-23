@@ -15,7 +15,7 @@ nl:
         title: Periodiek rapport met AI
         description: "Periodiek rapport op basis van een groot taalmodel"
   site_settings:
-    discourse_ai_enabled: "Schakel de discours-AI-plug-in in."
+    discourse_ai_enabled: "Schakel de Discours-AI-plug-in in."
     ai_toxicity_enabled: "Schakel de toxiciteitsmodule in."
     ai_toxicity_inference_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de toxiciteitsmodule"
     ai_toxicity_inference_service_api_key: "API-sleutel voor de toxiciteits-API"
@@ -49,7 +49,7 @@ nl:
     ai_openai_gpt4_32k_url: "Aangepaste URL voor het voltooien van GPT-4 32k-chats. (voor Azure-ondersteuning)"
     ai_openai_gpt4_turbo_url: "Aangepaste URL voor het voltooien van GPT-4 Turbo-chats. (voor Azure-ondersteuning)"
     ai_openai_dall_e_3_url: "Aangepaste URL voor het genereren van DALL-E 3-afbeeldingen (voor Azure-ondersteuning)"
-    ai_openai_organization: "(Laat dit optioneel leeg om het weg te laten) Organisatie-ID voor OpenAI APL Passed in met behulp van de OpenAI-Organization-header."
+    ai_openai_organization: "(Optioneel, leeg laten om het weg te laten) Organisatie-ID voor OpenAI API. Ingevoegd met behulp van de header OpenAI-Organization."
     ai_openai_embeddings_url: "Aangepaste URL voor de OpenAI-insluitings-API. (in het geval van Azure kan dit zijn: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API-sleutel voor de OpenAI-API"
     ai_anthropic_api_key: "API-sleutel voor de Anthropic-API"

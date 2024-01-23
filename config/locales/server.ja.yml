@@ -61,7 +61,7 @@ ja:
     ai_helper_custom_prompts_allowed_groups: "これらのグループのユーザーには、AI ヘルパーにカスタムプロンプトオプションが表示されます。"
     ai_helper_automatic_chat_thread_title_delay: "AI ヘルパーがチャットスレッドのタイトルを自動的に設定するまでの遅延 (分単位)。"
     ai_helper_automatic_chat_thread_title: "スレッドのコンテンツに基づいてチャットスレッドのタイトルを自動的に設定する。"
-    ai_helper_illustrate_post_model: "作成ツールの AI ヘルパーの投稿のイラスト化機能に使用するモデル"
+    ai_helper_illustrate_post_model: "作成ツールの AI ヘルパーのイラスト投稿機能に使用するモデル"
     ai_embeddings_enabled: "埋め込みモジュールを有効にします。"
     ai_embeddings_discourse_service_api_endpoint: "埋め込みモジュールの API が実行している URL"
     ai_embeddings_discourse_service_api_key: "埋め込み API の API キー"
@@ -118,7 +118,7 @@ ja:
         markdown_table: Markdown テーブルを生成
         custom_prompt: "カスタムプロンプト"
         explain: "説明"
-        illustrate_post: "投稿のイラスト化"
+        illustrate_post: "イラスト投稿"
       painter:
         attribution:
           stable_diffusion_xl: "Stable Diffusion XL による画像"
@@ -202,7 +202,7 @@ ja:
         setting_context: "コンテキストを読み取り中: %{setting_name}"
         schema: "%{tables}"
         search_settings:
-          other: "'%{query}' の結果が %{count} 件見つかりました"
+          other: "「%{query}」の結果が %{count} 件見つかりました"
     summarization:
       configuration_hint:
         other: "先に次の設定を構成します: %{settings}"
