@@ -16,10 +16,16 @@ describe DiscourseAi::Embeddings::EntryPoint do
       it "queues a job on create if embeddings is enabled" do
         SiteSetting.ai_embeddings_enabled = true
 
-        expect { creator.create }.to change(Jobs::GenerateEmbeddings.jobs, :size).by(2) # topic_created and post_created
+        expect { creator.create }.to change(Jobs::GenerateEmbeddings.jobs, :size).by(1) # topic_created
       end
 
-      it "does nothing if sentiment analysis is disabled" do
+      it "queues two jobs on create if embeddings is enabled" do
+        SiteSetting.ai_embeddings_enabled = true
+
+        expect { creator.create }.to change(Jobs::GenerateEmbeddings.jobs, :size).by(1) # topic_created AND post_created
+      end
+
+      it "does nothing if embeddings analysis is disabled" do
         SiteSetting.ai_embeddings_enabled = false
 
         expect { creator.create }.not_to change(Jobs::GenerateEmbeddings.jobs, :size)
