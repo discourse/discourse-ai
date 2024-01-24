@@ -99,13 +99,13 @@ class EndpointMock
 
   def with_chunk_array_support
     mock = mocked_http
-    @original_net_http = ::Net.send(:remove_const, :HTTP)
-    ::Net.send(:const_set, :HTTP, mock)
+    @original_net_http = ::FinalDestination.send(:remove_const, :HTTP)
+    ::FinalDestination.send(:const_set, :HTTP, mock)
 
     yield
   ensure
-    ::Net.send(:remove_const, :HTTP)
-    ::Net.send(:const_set, :HTTP, @original_net_http)
+    ::FinalDestination.send(:remove_const, :HTTP)
+    ::FinalDestination.send(:const_set, :HTTP, @original_net_http)
   end
 
   protected
@@ -113,7 +113,7 @@ class EndpointMock
   # Copied from https://github.com/bblimke/webmock/issues/629
   # Workaround for stubbing a streamed response
   def mocked_http
-    Class.new(::Net::HTTP) do
+    Class.new(FinalDestination::HTTP) do
       def request(*)
         super do |response|
           response.instance_eval do

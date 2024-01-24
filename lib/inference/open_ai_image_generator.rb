@@ -28,7 +28,7 @@ module ::DiscourseAi
           response_format: "b64_json",
         }
 
-        Net::HTTP.start(
+        FinalDestination::HTTP.start(
           uri.host,
           uri.port,
           use_ssl: uri.scheme == "https",

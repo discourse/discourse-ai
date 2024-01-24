@@ -8,7 +8,8 @@ module ::DiscourseAi
 
         headers["X-API-KEY"] = api_key if api_key.present?
 
-        response = Faraday.post(endpoint, { model: model, content: content }.to_json, headers)
+        conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
+        response = conn.post(endpoint, { model: model, content: content }.to_json, headers)
 
         raise Net::HTTPBadResponse if ![200, 415].include?(response.status)
 
