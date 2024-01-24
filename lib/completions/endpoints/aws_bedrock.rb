@@ -21,7 +21,7 @@ module DiscourseAi
               SiteSetting.ai_bedrock_region.present?
           end
 
-          def name(model_name)
+          def endpoint_name(model_name)
             "AWS Bedrock - #{model_name}"
           end
         end

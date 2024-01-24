@@ -57,7 +57,7 @@ module DiscourseAi
             url.present?
           end
 
-          def name(model_name)
+          def endpoint_name(model_name)
             "OpenAI - #{model_name}"
           end
         end

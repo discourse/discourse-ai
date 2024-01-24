@@ -4,8 +4,8 @@ module DiscourseAi
   module Summarization
     module Models
       class Base
-        def initialize(model, max_tokens:)
-          @model = model
+        def initialize(model_name, max_tokens:)
+          @model_name = model_name
           @max_tokens = max_tokens
         end
 
@@ -25,7 +25,11 @@ module DiscourseAi
           max_tokens - reserved_tokens
         end
 
-        attr_reader :model, :max_tokens
+        def model
+          model_name.split(":").last
+        end
+
+        attr_reader :model_name, :max_tokens
 
         protected
 

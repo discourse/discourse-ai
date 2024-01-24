@@ -17,7 +17,7 @@ module DiscourseAi
             SiteSetting.ai_anthropic_api_key.present?
           end
 
-          def name(model_name)
+          def endpoint_name(model_name)
             "Anthropic - #{model_name}"
           end
         end

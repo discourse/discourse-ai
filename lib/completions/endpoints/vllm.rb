@@ -20,7 +20,7 @@ module DiscourseAi
             SiteSetting.ai_vllm_endpoint_srv.present? || SiteSetting.ai_vllm_endpoint.present?
           end
 
-          def name(model_name)
+          def endpoint_name(model_name)
             "vLLM - #{model_name}"
           end
         end

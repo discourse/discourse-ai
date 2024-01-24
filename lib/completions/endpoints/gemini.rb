@@ -18,7 +18,7 @@ module DiscourseAi
             SiteSetting.ai_gemini_api_key.present?
           end
 
-          def name(model_name)
+          def endpoint_name(model_name)
             "Google - #{model_name}"
           end
         end

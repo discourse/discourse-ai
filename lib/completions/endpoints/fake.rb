@@ -13,7 +13,7 @@ module DiscourseAi
             true
           end
 
-          def name(_model_name)
+          def endpoint_name(_model_name)
             "Test - fake model"
           end
         end

@@ -26,7 +26,7 @@ module DiscourseAi
             SiteSetting.ai_hugging_face_api_url.present?
           end
 
-          def name(model_name)
+          def endpoint_name(model_name)
             "Hugging Face - #{model_name}"
           end
         end

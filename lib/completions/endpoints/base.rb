@@ -37,7 +37,7 @@ module DiscourseAi
           end
 
           def display_name(model_name)
-            to_display = name(model_name)
+            to_display = endpoint_name(model_name)
 
             return to_display if correctly_configured?(model_name)
 
@@ -48,7 +48,7 @@ module DiscourseAi
             raise NotImplementedError
           end
 
-          def name(_model_name)
+          def endpoint_name(_model_name)
             raise NotImplementedError
           end
 
