@@ -20,14 +20,18 @@ module ::DiscourseAi
             { model: model, input: content }.to_json,
             headers,
           )
-        if response.status != 200
+
+        case response.status
+        when 200
+          JSON.parse(response.body, symbolize_names: true)
+        when 429
+          # TODO add a AdminDashboard Problem?
+        else
           Rails.logger.warn(
             "OpenAI Embeddings failed with status: #{response.status} body: #{response.body}",
           )
           raise Net::HTTPBadResponse
         end
-
-        JSON.parse(response.body, symbolize_names: true)
       end
     end
   end
