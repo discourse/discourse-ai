@@ -65,6 +65,8 @@ module Jobs
 
       return if rebaked >= limit
 
+      return unless SiteSetting.ai_embeddings_per_post_enabled
+
       # Now for posts
       table_name = vector_rep.post_table_name
 
