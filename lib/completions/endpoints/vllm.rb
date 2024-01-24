@@ -7,9 +7,14 @@ module DiscourseAi
         class << self
           def can_contact?(endpoint_name, model_name)
             endpoint_name == "vllm" &&
-              %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(
-                model_name,
-              )
+              %w[
+                mistralai/Mixtral-8x7B-Instruct-v0.1
+                mistralai/Mistral-7B-Instruct-v0.2
+                StableBeluga2
+                Upstage-Llama-2-*-instruct-v2
+                Llama2-*-chat-hf
+                Llama2-chat-hf
+              ].include?(model_name)
           end
 
           def dependant_setting_names

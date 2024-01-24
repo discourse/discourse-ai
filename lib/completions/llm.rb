@@ -24,7 +24,14 @@ module DiscourseAi
           {
             aws_bedrock: %w[claude-instant-1 claude-2],
             anthropic: %w[claude-instant-1 claude-2],
-            vllm: %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2],
+            vllm: %w[
+              mistralai/Mixtral-8x7B-Instruct-v0.1
+              mistralai/Mistral-7B-Instruct-v0.2
+              StableBeluga2
+              Upstage-Llama-2-*-instruct-v2
+              Llama2-*-chat-hf
+              Llama2-chat-hf
+            ],
             hugging_face: %w[
               mistralai/Mixtral-8x7B-Instruct-v0.1
               mistralai/Mistral-7B-Instruct-v0.2
