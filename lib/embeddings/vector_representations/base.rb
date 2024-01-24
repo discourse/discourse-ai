@@ -37,6 +37,7 @@ module DiscourseAi
                 pg_indexes
               WHERE
                 indexname = :index_name
+                AND schemaname = 'public'
               LIMIT 1
             SQL
 
