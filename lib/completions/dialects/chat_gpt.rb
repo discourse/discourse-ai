@@ -11,7 +11,7 @@ module DiscourseAi
               gpt-4
               gpt-3.5-turbo-16k
               gpt-4-32k
-              gpt-4-1106-preview
+              gpt-4-0125-preview
               gpt-4-turbo
             ].include?(model_name)
           end
@@ -122,7 +122,7 @@ module DiscourseAi
             8192
           when "gpt-4-32k"
             32_768
-          when "gpt-4-1106-preview"
+          when "gpt-4-0125-preview"
             131_072
           when "gpt-4-turbo"
             131_072
