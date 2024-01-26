@@ -236,6 +236,8 @@ discourse_ai:
     choices:
       - all-mpnet-base-v2
       - text-embedding-ada-002
+      - text-embedding-3-small
+      - text-embedding-3-large
       - multilingual-e5-large
       - bge-large-en
       - gemini
