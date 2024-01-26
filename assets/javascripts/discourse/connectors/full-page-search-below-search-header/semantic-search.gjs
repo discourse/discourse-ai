@@ -7,7 +7,6 @@ import { inject as service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
 import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { isValidSearchTerm, translateResults } from "discourse/lib/search";
 import icon from "discourse-common/helpers/d-icon";
@@ -160,7 +159,6 @@ export default class SemanticSearch extends Component {
 
         this.AIResults = model.posts;
       })
-      .catch(popupAjaxError)
       .finally(() => (this.searching = false));
   }
 
