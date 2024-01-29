@@ -10,7 +10,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["good"]) do
       triage(
         post: post,
-        model: "fake:fake",
+        model: "gpt-4",
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -24,7 +24,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "fake:fake",
+        model: "gpt-4",
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -40,7 +40,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "fake:fake",
+        model: "gpt-4",
         category_id: category.id,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -55,7 +55,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "fake:fake",
+        model: "gpt-4",
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         canned_reply: "test canned reply 123",
