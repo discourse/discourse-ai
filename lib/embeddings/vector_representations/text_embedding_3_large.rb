@@ -3,9 +3,9 @@
 module DiscourseAi
   module Embeddings
     module VectorRepresentations
-      class TextEmbeddingAda002 < Base
+      class TextEmbedding3Large < Base
         def id
-          2
+          7
         end
 
         def version
@@ -13,11 +13,13 @@ module DiscourseAi
         end
 
         def name
-          "text-embedding-ada-002"
+          "text-embedding-3-large"
         end
 
         def dimensions
-          1536
+          # real dimentions are 3072, but we only support up to 2000 in the
+          # indexes, so we downsample to 2000 via API
+          2000
         end
 
         def max_sequence_length
@@ -33,7 +35,12 @@ module DiscourseAi
         end
 
         def vector_from(text)
-          response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(text, model: name)
+          response =
+            DiscourseAi::Inference::OpenAiEmbeddings.perform!(
+              text,
+              model: name,
+              dimensions: dimensions,
+            )
           response[:data].first[:embedding]
         end
 

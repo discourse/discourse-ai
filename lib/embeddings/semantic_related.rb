@@ -18,20 +18,19 @@ module DiscourseAi
           DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
         cache_for = results_ttl(topic)
 
-        asd =
-          Discourse
-            .cache
-            .fetch(semantic_suggested_key(topic.id), expires_in: cache_for) do
-              vector_rep
-                .symmetric_topics_similarity_search(topic)
-                .tap do |candidate_ids|
-                  # Happens when the topic doesn't have any embeddings
-                  # I'd rather not use Exceptions to control the flow, so this should be refactored soon
-                  if candidate_ids.empty? || !candidate_ids.include?(topic.id)
-                    raise MissingEmbeddingError, "No embeddings found for topic #{topic.id}"
-                  end
+        Discourse
+          .cache
+          .fetch(semantic_suggested_key(topic.id), expires_in: cache_for) do
+            vector_rep
+              .symmetric_topics_similarity_search(topic)
+              .tap do |candidate_ids|
+                # Happens when the topic doesn't have any embeddings
+                # I'd rather not use Exceptions to control the flow, so this should be refactored soon
+                if candidate_ids.empty? || !candidate_ids.include?(topic.id)
+                  raise MissingEmbeddingError, "No embeddings found for topic #{topic.id}"
                 end
-            end
+              end
+          end
       rescue MissingEmbeddingError
         # avoid a flood of jobs when visiting topic
         if Discourse.redis.set(
@@ -71,15 +70,14 @@ module DiscourseAi
 
         return "" if related_topics.empty?
 
-        render_result =
-          ApplicationController.render(
-            template: "list/related_topics",
-            layout: false,
-            assigns: {
-              list: related_topics,
-              topic: topic,
-            },
-          )
+        ApplicationController.render(
+          template: "list/related_topics",
+          layout: false,
+          assigns: {
+            list: related_topics,
+            topic: topic,
+          },
+        )
       end
 
       private

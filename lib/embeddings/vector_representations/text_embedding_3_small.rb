@@ -3,9 +3,9 @@
 module DiscourseAi
   module Embeddings
     module VectorRepresentations
-      class TextEmbeddingAda002 < Base
+      class TextEmbedding3Small < Base
         def id
-          2
+          6
         end
 
         def version
@@ -13,7 +13,7 @@ module DiscourseAi
         end
 
         def name
-          "text-embedding-ada-002"
+          "text-embedding-3-small"
         end
 
         def dimensions

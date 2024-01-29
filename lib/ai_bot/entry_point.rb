@@ -46,7 +46,8 @@ module DiscourseAi
 
       def inject_into(plugin)
         plugin.on(:site_setting_changed) do |name, _old_value, _new_value|
-          if name == :ai_bot_enabled_chat_bots || name == :ai_bot_enabled
+          if name == :ai_bot_enabled_chat_bots || name == :ai_bot_enabled ||
+               name == :discourse_ai_enabled
             DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
           end
         end

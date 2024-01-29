@@ -13,6 +13,8 @@ module DiscourseAi
             DiscourseAi::Embeddings::VectorRepresentations::Gemini,
             DiscourseAi::Embeddings::VectorRepresentations::MultilingualE5Large,
             DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002,
+            DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Small,
+            DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Large,
           ].map { _1.new(strategy) }.find { _1.name == SiteSetting.ai_embeddings_model }
         end
 
