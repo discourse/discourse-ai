@@ -4,6 +4,8 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
   fab!(:user) { Fabricate(:user) }
   let(:prompt) { CompletionPrompt.find_by(id: mode) }
 
+  before { SiteSetting.ai_helper_model = "fake:fake" }
+
   let(:english_text) { <<~STRING }
     To perfect his horror, Caesar, surrounded at the base of the statue by the impatient daggers of his friends,
     discovers among the faces and blades that of Marcus Brutus, his protege, perhaps his son, and he no longer

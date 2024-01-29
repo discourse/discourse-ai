@@ -6,11 +6,24 @@ module DiscourseAi
   module Completions
     module Endpoints
       class AwsBedrock < Base
-        def self.can_contact?(model_name)
-          %w[claude-instant-1 claude-2].include?(model_name) &&
+        class << self
+          def can_contact?(endpoint_name, model_name)
+            endpoint_name == "aws_bedrock" && %w[claude-instant-1 claude-2].include?(model_name)
+          end
+
+          def dependant_setting_names
+            %w[ai_bedrock_access_key_id ai_bedrock_secret_access_key ai_bedrock_region]
+          end
+
+          def correctly_configured?(_model_name)
             SiteSetting.ai_bedrock_access_key_id.present? &&
-            SiteSetting.ai_bedrock_secret_access_key.present? &&
-            SiteSetting.ai_bedrock_region.present?
+              SiteSetting.ai_bedrock_secret_access_key.present? &&
+              SiteSetting.ai_bedrock_region.present?
+          end
+
+          def endpoint_name(model_name)
+            "AWS Bedrock - #{model_name}"
+          end
         end
 
         def normalize_model_params(model_params)

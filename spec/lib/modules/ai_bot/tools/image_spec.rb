@@ -3,7 +3,7 @@
 RSpec.describe DiscourseAi::AiBot::Tools::Image do
   subject(:tool) { described_class.new({ prompts: prompts, seeds: [99, 32] }) }
 
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo") }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
 
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }

@@ -3,6 +3,8 @@
 RSpec.describe Jobs::StreamPostHelper do
   subject(:job) { described_class.new }
 
+  before { SiteSetting.ai_helper_model = "fake:fake" }
+
   describe "#execute" do
     fab!(:topic) { Fabricate(:topic) }
     fab!(:post) do

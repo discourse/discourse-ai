@@ -10,7 +10,7 @@ end
 
 RSpec.describe DiscourseAi::AiBot::Tools::SettingContext, if: has_rg? do
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("gpt-3.5-turbo") }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
 
   before { SiteSetting.ai_bot_enabled = true }
 

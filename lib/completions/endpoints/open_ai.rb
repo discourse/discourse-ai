@@ -4,15 +4,62 @@ module DiscourseAi
   module Completions
     module Endpoints
       class OpenAi < Base
-        def self.can_contact?(model_name)
-          %w[
-            gpt-3.5-turbo
-            gpt-4
-            gpt-3.5-turbo-16k
-            gpt-4-32k
-            gpt-4-0125-preview
-            gpt-4-turbo
-          ].include?(model_name)
+        class << self
+          def can_contact?(endpoint_name, model_name)
+            return false unless endpoint_name == "open_ai"
+
+            %w[
+              gpt-3.5-turbo
+              gpt-4
+              gpt-3.5-turbo-16k
+              gpt-4-32k
+              gpt-4-0125-preview
+              gpt-4-turbo
+            ].include?(model_name)
+          end
+
+          def dependant_setting_names
+            %w[
+              ai_openai_api_key
+              ai_openai_gpt4_32k_url
+              ai_openai_gpt4_turbo_url
+              ai_openai_gpt4_url
+              ai_openai_gpt4_url
+              ai_openai_gpt35_16k_url
+              ai_openai_gpt35_url
+            ]
+          end
+
+          def correctly_configured?(model_name)
+            SiteSetting.ai_openai_api_key.present? && has_url?(model_name)
+          end
+
+          def has_url?(model)
+            url =
+              if model.include?("gpt-4")
+                if model.include?("32k")
+                  SiteSetting.ai_openai_gpt4_32k_url
+                else
+                  if model.include?("1106") || model.include?("turbo")
+                    SiteSetting.ai_openai_gpt4_turbo_url
+                  else
+                    SiteSetting.ai_openai_gpt4_url
+                  end
+                end
+              else
+                if model.include?("16k")
+                  SiteSetting.ai_openai_gpt35_16k_url
+                else
+                  SiteSetting.ai_openai_gpt35_url
+                end
+              end
+
+            url.present?
+          end
+
+          def endpoint_name(model_name)
+            "OpenAI - #{model_name}"
+          end
         end
 
         def normalize_model_params(model_params)
