@@ -62,13 +62,15 @@ class ExplicitProviderBackwardsCompat < ActiveRecord::Migration[7.0]
     # Models available through multiple providers
     claude_models = %w[claude-instant-1 claude-2]
     if claude_models.include?(value)
-      has_anthropic_key =
-        DB.query_single("SELECT value FROM site_settings WHERE name = 'ai_anthropic_api_key' ")
+      has_bedrock_creds =
+        DB.query_single(
+          "SELECT value FROM site_settings WHERE name = 'ai_bedrock_secret_access_key' OR name = 'ai_bedrock_access_key_id' ",
+        ).length > 0
 
-      if has_anthropic_key
-        return "anthropic:#{value}"
-      else
+      if has_bedrock_creds
         return "aws_bedrock:#{value}"
+      else
+        return "anthropic:#{value}"
       end
     end
 
