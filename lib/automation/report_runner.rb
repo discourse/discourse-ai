@@ -60,7 +60,7 @@ module DiscourseAi
             I18n.t("discourse_automation.llm_report.title")
           end
         @model = model
-        @llm = DiscourseAi::Completions::Llm.proxy(model)
+        @llm = DiscourseAi::Completions::Llm.proxy(translate_model(model))
         @category_ids = category_ids
         @tags = tags
         @allow_secure_categories = allow_secure_categories
@@ -174,6 +174,17 @@ module DiscourseAi
               :ai_report,
             ).send
           end
+        end
+      end
+
+      def translate_model(model)
+        return "google:gemini-pro" if model == "gemini-pro"
+        return "open_ai:#{model}" if model != "claude-2"
+
+        if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
+          "aws_bedrock:claude-2"
+        else
+          "anthropic:claude-2"
         end
       end
     end

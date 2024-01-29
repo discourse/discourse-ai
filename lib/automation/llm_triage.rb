@@ -30,7 +30,7 @@ module DiscourseAi
 
         result = nil
 
-        llm = DiscourseAi::Completions::Llm.proxy(model)
+        llm = DiscourseAi::Completions::Llm.proxy(translate_model(model))
 
         result =
           llm.generate(
@@ -65,6 +65,17 @@ module DiscourseAi
           end
 
           post.topic.update!(visible: false) if hide_topic
+        end
+      end
+
+      def self.translate_model(model)
+        return "google:gemini-pro" if model == "gemini-pro"
+        return "open_ai:#{model}" if model != "claude-2"
+
+        if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
+          "aws_bedrock:claude-2"
+        else
+          "anthropic:claude-2"
         end
       end
     end
