@@ -26,9 +26,17 @@ module DiscourseAi
 
         return false if endpoint.nil?
 
-        endpoint
-          .correctly_configured?(model_name_without_prov)
-          .tap { |is_valid| @endpoint = endpoint if !is_valid }
+        if !endpoint.correctly_configured?(model_name_without_prov)
+          @endpoint = endpoint
+          return false
+        end
+
+        if !can_talk_to_model?(val)
+          @unreachable = true
+          return false
+        end
+
+        true
       end
 
       def error_message
@@ -41,7 +49,9 @@ module DiscourseAi
           )
         end
 
-        @endpoint.configuration_hint
+        return(I18n.t("discourse_ai.llm.configuration.model_unreachable")) if @unreachable
+
+        @endpoint&.configuration_hint
       end
 
       def parent_module_name
@@ -50,6 +60,17 @@ module DiscourseAi
         else
           :composer_ai_helper_enabled
         end
+      end
+
+      private
+
+      def can_talk_to_model?(model_name)
+        DiscourseAi::Completions::Llm
+          .proxy(model_name)
+          .generate("How much is 1 + 1?", user: nil)
+          .present?
+      rescue StandardError
+        false
       end
     end
   end
