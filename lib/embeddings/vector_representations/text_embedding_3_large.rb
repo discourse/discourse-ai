@@ -17,7 +17,9 @@ module DiscourseAi
         end
 
         def dimensions
-          3072
+          # real dimentions are 3072, but we only support up to 2000 in the
+          # indexes, so we downsample to 2000 via API
+          2000
         end
 
         def max_sequence_length
@@ -33,7 +35,12 @@ module DiscourseAi
         end
 
         def vector_from(text)
-          response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(text, name)
+          response =
+            DiscourseAi::Inference::OpenAiEmbeddings.perform!(
+              text,
+              model: name,
+              dimensions: dimensions,
+            )
           response[:data].first[:embedding]
         end
 

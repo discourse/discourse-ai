@@ -25,7 +25,8 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
       },
     ).to_return(status: 200, body: body_json, headers: {})
 
-    result = DiscourseAi::Inference::OpenAiEmbeddings.perform!("hello")
+    result =
+      DiscourseAi::Inference::OpenAiEmbeddings.perform!("hello", model: "text-embedding-ada-002")
 
     expect(result[:usage]).to eq({ prompt_tokens: 1, total_tokens: 1 })
     expect(result[:data].first).to eq({ object: "embedding", embedding: [0.0, 0.1] })
@@ -42,15 +43,22 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
       data: [{ object: "embedding", embedding: [0.0, 0.1] }],
     }.to_json
 
+    body = { model: "text-embedding-ada-002", input: "hello", dimensions: 1000 }.to_json
+
     stub_request(:post, "https://api.openai.com/v1/embeddings").with(
-      body: "{\"model\":\"text-embedding-ada-002\",\"input\":\"hello\"}",
+      body: body,
       headers: {
         "Authorization" => "Bearer 123456",
         "Content-Type" => "application/json",
       },
     ).to_return(status: 200, body: body_json, headers: {})
 
-    result = DiscourseAi::Inference::OpenAiEmbeddings.perform!("hello")
+    result =
+      DiscourseAi::Inference::OpenAiEmbeddings.perform!(
+        "hello",
+        model: "text-embedding-ada-002",
+        dimensions: 1000,
+      )
 
     expect(result[:usage]).to eq({ prompt_tokens: 1, total_tokens: 1 })
     expect(result[:data].first).to eq({ object: "embedding", embedding: [0.0, 0.1] })

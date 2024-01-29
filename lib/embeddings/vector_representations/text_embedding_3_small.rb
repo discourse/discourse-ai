@@ -33,7 +33,7 @@ module DiscourseAi
         end
 
         def vector_from(text)
-          response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(text, name)
+          response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(text, model: name)
           response[:data].first[:embedding]
         end
 

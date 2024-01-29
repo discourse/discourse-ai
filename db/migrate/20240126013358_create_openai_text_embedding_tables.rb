@@ -18,7 +18,7 @@ class CreateOpenaiTextEmbeddingTables < ActiveRecord::Migration[7.0]
       t.integer :model_version, null: false
       t.integer :strategy_version, null: false
       t.text :digest, null: false
-      t.column :embeddings, "vector(3072)", null: false
+      t.column :embeddings, "vector(2000)", null: false
       t.timestamps
 
       t.index :topic_id, unique: true
@@ -40,7 +40,7 @@ class CreateOpenaiTextEmbeddingTables < ActiveRecord::Migration[7.0]
       t.integer :model_version, null: false
       t.integer :strategy_version, null: false
       t.text :digest, null: false
-      t.column :embeddings, "vector(3072)", null: false
+      t.column :embeddings, "vector(2000)", null: false
       t.timestamps
 
       t.index :post_id, unique: true

@@ -3,7 +3,7 @@
 module ::DiscourseAi
   module Inference
     class OpenAiEmbeddings
-      def self.perform!(content, model = nil)
+      def self.perform!(content, model:, dimensions: nil)
         headers = { "Content-Type" => "application/json" }
 
         if SiteSetting.ai_openai_embeddings_url.include?("azure")
@@ -12,14 +12,10 @@ module ::DiscourseAi
           headers["Authorization"] = "Bearer #{SiteSetting.ai_openai_api_key}"
         end
 
-        model ||= "text-embedding-ada-002"
+        payload = { model: model, input: content }
+        payload[:dimensions] = dimensions if dimensions.present?
 
-        response =
-          Faraday.post(
-            SiteSetting.ai_openai_embeddings_url,
-            { model: model, input: content }.to_json,
-            headers,
-          )
+        response = Faraday.post(SiteSetting.ai_openai_embeddings_url, payload.to_json, headers)
 
         case response.status
         when 200
