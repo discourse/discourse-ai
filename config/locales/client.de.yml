@@ -53,9 +53,16 @@ de:
               description: "LLM zur Berichtserstellung"
             categories:
               label: "Kategorien"
+              description: "Themen nur nach diesen Kategorien filtern"
             tags:
               label: "Schlagwörter"
               description: "Themen nur nach diesen Schlagwörtern filtern"
+            exclude_tags:
+              label: "Schlagworte ausschließen"
+              description: "Themen mit diesen Schlagwörtern ausschließen"
+            exclude_categories:
+              label: "Kategorien ausschließen"
+              description: "Themen mit diesen Kategorien ausschließen"
             allow_secure_categories:
               label: "Sichere Kategorien zulassen"
               description: "Erlaube, dass der Bericht für Themen in sicheren Kategorien erstellt wird"

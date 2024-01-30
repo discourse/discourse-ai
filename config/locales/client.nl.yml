@@ -9,7 +9,7 @@ nl:
     admin:
       site_settings:
         categories:
-          discourse_ai: "Discourse-AI"
+          discourse_ai: "Discourse AI"
   js:
     discourse_automation:
       ai_models:
@@ -177,7 +177,7 @@ nl:
       ai_bot:
         pm_warning: "AI-chatbotberichten worden regelmatig gecontroleerd door moderators."
         cancel_streaming: "Stoppen met antwoorden"
-        default_pm_prefix: "[PB naamloze AI-bot]"
+        default_pm_prefix: "[Ongetitelde PB van AI-bot]"
         shortcut_title: "Start een PB met een AI-bot"
         share: "AI-conversatie delen"
         conversation_shared: "Conversatie gekopieerd"

@@ -170,7 +170,7 @@ fi:
         read: "Lue ketju"
         setting_context: "Etsi sivustoasetuksen konteksti"
         schema: "Etsi tietokantaskeema"
-        search_settings: "Sivustoasetusten hakeminen"
+        search_settings: "Haetaan sivustoasetuksia"
         dall_e: "Luo kuva"
       command_help:
         categories: "Listaa kaikki foorumin julkisesti näkyvät alueet"

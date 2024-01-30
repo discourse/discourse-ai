@@ -187,7 +187,7 @@ ja:
         dall_e: "DALL-E 3 を使って画像を生成します"
       command_description:
         read: "読み取り中: <a href='%{url}'>%{title}</a>"
-        time: "%{timezone} での時刻は %{time} です"
+        time: "%{timezone} の時刻は %{time} です"
         summarize: "<a href='%{url}'>%{title}</a> の要約"
         dall_e: "%{prompt}"
         image: "%{prompt}"

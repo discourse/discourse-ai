@@ -61,7 +61,7 @@ tr_TR:
     ai_helper_custom_prompts_allowed_groups: "Bu gruplardaki kullanıcılar AI yardımcısında özel istem seçeneğini görürler."
     ai_helper_automatic_chat_thread_title_delay: "AI yardımcısının sohbet dizisi başlığını otomatik olarak ayarlamasından önceki dakika cinsinden gecikme."
     ai_helper_automatic_chat_thread_title: "Sohbet konu başlıklarını konu içeriklerine göre otomatik olarak ayarlayın."
-    ai_helper_illustrate_post_model: "Besteci AI yardımcısının gönderiyi gösterme özelliği için kullanılacak model"
+    ai_helper_illustrate_post_model: "Besteci AI yardımcısının gönderiyi çizme özelliği için kullanılacak model"
     ai_embeddings_enabled: "Gömme modülünü etkinleştirin."
     ai_embeddings_discourse_service_api_endpoint: "Gömme modülü için API'nin çalıştığı URL"
     ai_embeddings_discourse_service_api_key: "Gömme API'si için API anahtarı"
@@ -187,7 +187,7 @@ tr_TR:
         dall_e: "DALL-E 3 kullanarak görüntü oluştur"
       command_description:
         read: "Okunuyor: <a href='%{url}'>%{title}</a>"
-        time: "%{timezone} saat diliminde saat %{time}"
+        time: "%{timezone} konumunda saat %{time}"
         summarize: "<a href='%{url}'>%{title}</a> özetlendi"
         dall_e: "%{prompt}"
         image: "%{prompt}"
