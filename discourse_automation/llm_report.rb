@@ -38,6 +38,10 @@ if defined?(DiscourseAutomation)
     field :exclude_tags, component: :tags
 
     field :allow_secure_categories, component: :boolean
+
+    field :top_p, component: :text, required: true, default_value: 0.1
+    field :temperature, component: :text, required: true, default_value: 0.2
+
     field :debug_mode, component: :boolean
 
     script do |context, fields, automation|
@@ -61,6 +65,13 @@ if defined?(DiscourseAutomation)
         exclude_category_ids = fields.dig("exclude_categories", "value")
         exclude_tags = fields.dig("exclude_tags", "value")
 
+        # set defaults in code to support easy migration for old rules
+        top_p = 0.1
+        top_p = fields.dig("top_p", "value").to_f if fields.dig("top_p", "value")
+
+        temperature = 0.2
+        temperature = fields.dig("temperature", "value").to_f if fields.dig("temperature", "value")
+
         DiscourseAi::Automation::ReportRunner.run!(
           sender_username: sender,
           receivers: receivers,
@@ -79,6 +90,8 @@ if defined?(DiscourseAutomation)
           tokens_per_post: tokens_per_post,
           exclude_category_ids: exclude_category_ids,
           exclude_tags: exclude_tags,
+          temperature: temperature,
+          top_p: top_p,
         )
       rescue => e
         Discourse.warn_exception e, message: "Error running LLM report!"

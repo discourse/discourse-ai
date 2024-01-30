@@ -34,9 +34,11 @@ module DiscourseAi
             model_params[:stopSequences] = model_params.delete(:stop_sequences)
           end
 
-          if model_params[:temperature]
+          if model_params[:max_tokens]
             model_params[:maxOutputTokens] = model_params.delete(:max_tokens)
           end
+
+          model_params[:topP] = model_params.delete(:top_p) if model_params[:top_p]
 
           # temperature already supported
 

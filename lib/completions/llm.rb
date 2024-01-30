@@ -107,16 +107,16 @@ module DiscourseAi
       def generate(
         prompt,
         temperature: nil,
+        top_p: nil,
         max_tokens: nil,
         stop_sequences: nil,
         user:,
         &partial_read_blk
       )
-        model_params = {
-          temperature: temperature,
-          max_tokens: max_tokens,
-          stop_sequences: stop_sequences,
-        }
+        model_params = { max_tokens: max_tokens, stop_sequences: stop_sequences }
+
+        model_params[:temperature] = temperature if temperature
+        model_params[:top_p] = top_p if top_p
 
         if prompt.is_a?(String)
           prompt =
