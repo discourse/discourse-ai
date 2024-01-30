@@ -50,7 +50,7 @@ module DiscourseAi
           ) if exclude_category_ids.present?
 
         if exclude_tags.present?
-          exclude_tag_ids = Tag.where(name: exclude_tags).select(:id)
+          exclude_tag_ids = Tag.where_name(exclude_tags).select(:id)
           @posts =
             @posts.where(
               "topics.id NOT IN (?)",
@@ -59,7 +59,7 @@ module DiscourseAi
         end
 
         if @tags.present?
-          tag_ids = Tag.where(name: @tags).select(:id)
+          tag_ids = Tag.where_name(@tags).select(:id)
           topic_ids_with_tags = TopicTag.where(tag_id: tag_ids).select(:topic_id)
           @posts = @posts.where(topic_id: topic_ids_with_tags)
         end
