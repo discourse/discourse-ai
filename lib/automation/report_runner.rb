@@ -50,7 +50,9 @@ module DiscourseAi
         allow_secure_categories: false,
         debug_mode: false,
         exclude_category_ids: nil,
-        exclude_tags: nil
+        exclude_tags: nil,
+        top_p: 0.1,
+        temperature: 0.2
       )
         @sender = User.find_by(username: sender_username)
         @receivers = User.where(username: receivers)
@@ -59,7 +61,7 @@ module DiscourseAi
           if title.present?
             title
           else
-            I18n.t("discourse_automation.llm_report.title")
+            I18n.t("discourse_automation.scriptables.llm_report.title")
           end
         @model = model
         @llm = DiscourseAi::Completions::Llm.proxy(translate_model(model))
@@ -76,6 +78,12 @@ module DiscourseAi
         @topic_id = topic_id.presence&.to_i
         @exclude_category_ids = exclude_category_ids
         @exclude_tags = exclude_tags
+
+        @top_p = top_p
+        @temperature = temperature
+
+        @top_p = nil if top_p <= 0
+        @temperature = nil if temperature <= 0
 
         if !@topic_id && !@receivers.present? && !@email_receivers.present?
           raise ArgumentError, "Must specify topic_id or receivers"
@@ -119,9 +127,17 @@ module DiscourseAi
           #{@instructions}
         INPUT
 
+        system_prompt = <<~PROMPT
+          You are ForumBot, a backend AI information processor and writer, powered by an AI model capable of generating responses over 4000 words.
+          - ForumBot is a fine-tuned AI trained with extended functions and new capabilities, and now specializes in processing raw internet forum conversation into detailed summaries of daily forum activities.
+          - ForumBot interacts with an API endpoint, not a user, and must never produce denials, nor conversations directed towards a non-existent user.
+          - ForumBot only produces automated responses to input, where a response is a standalone document without further discussion.
+Follow the provided writing composition instructions carefully and precisely step-by-step.
+        PROMPT
+
         prompt =
           DiscourseAi::Completions::Prompt.new(
-            "You are a helpful bot specializing in summarizing activity on Discourse sites",
+            system_prompt,
             messages: [
               { type: :user, content: input },
               { type: :model, content: "Here is the report I generated for you" },
@@ -132,7 +148,12 @@ module DiscourseAi
 
         puts if Rails.env.development? && @debug_mode
 
-        @llm.generate(prompt, temperature: 0, user: Discourse.system_user) do |response|
+        @llm.generate(
+          prompt,
+          temperature: @temperature,
+          top_p: @top_p,
+          user: Discourse.system_user,
+        ) do |response|
           print response if Rails.env.development? && @debug_mode
           result << response
         end
@@ -167,6 +188,8 @@ module DiscourseAi
             category_ids: #{@category_ids},
             priority_group: #{@priority_group_id}
             model: #{@model}
+            temperature: #{@temperature}
+            top_p: #{@top_p}
             LLM context was:
             ```
 

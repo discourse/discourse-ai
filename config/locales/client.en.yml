@@ -66,6 +66,12 @@ en:
             priority_group:
               label: "Priority Group"
               description: "Prioritize content from this group in the report"
+            temperature:
+              label: "Temperature"
+              description: "Temperature to use for the LLM, increase to increase randomness (0 to use model default)"
+            top_p:
+              label: "Top P"
+              description: "Top P to use for the LLM, increase to increase randomness (0 to use model default)"
 
         llm_triage:
           fields:
