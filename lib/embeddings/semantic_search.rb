@@ -75,7 +75,7 @@ module DiscourseAi
             .public_posts
             .where("topics.visible")
             .where(topic_id: candidate_topic_ids, post_number: 1)
-            .order("array_position(ARRAY#{candidate_topic_ids}, topic_id)")
+            .order("array_position(ARRAY#{candidate_topic_ids}, posts.topic_id)")
 
         query_filter_results = search.apply_filters(semantic_results)
 
