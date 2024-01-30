@@ -48,7 +48,9 @@ module DiscourseAi
         tags: nil,
         priority_group_id: nil,
         allow_secure_categories: false,
-        debug_mode: false
+        debug_mode: false,
+        exclude_category_ids: nil,
+        exclude_tags: nil
       )
         @sender = User.find_by(username: sender_username)
         @receivers = User.where(username: receivers)
@@ -72,6 +74,8 @@ module DiscourseAi
         @priority_group_id = priority_group_id
         @tokens_per_post = tokens_per_post.to_i
         @topic_id = topic_id.presence&.to_i
+        @exclude_category_ids = exclude_category_ids
+        @exclude_tags = exclude_tags
 
         if !@topic_id && !@receivers.present? && !@email_receivers.present?
           raise ArgumentError, "Must specify topic_id or receivers"
@@ -100,9 +104,13 @@ module DiscourseAi
             allow_secure_categories: @allow_secure_categories,
             tokens_per_post: @tokens_per_post,
             tokenizer: @llm.tokenizer,
+            exclude_category_ids: @exclude_category_ids,
+            exclude_tags: @exclude_tags,
           )
         input = <<~INPUT.strip
           #{@instructions}
+
+          Real and accurate context from the Discourse forum is included in the <context> tag below.
 
           <context>
           #{context}
@@ -158,6 +166,7 @@ module DiscourseAi
             tags: #{@tags},
             category_ids: #{@category_ids},
             priority_group: #{@priority_group_id}
+            model: #{@model}
             LLM context was:
             ```
 

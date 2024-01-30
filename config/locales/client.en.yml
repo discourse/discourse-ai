@@ -51,6 +51,12 @@ en:
             tags:
               label: "Tags"
               description: "Filter topics only to these tags"
+            exclude_tags:
+              label: "Exclude Tags"
+              description: "Exclude topics with these tags"
+            exclude_categories:
+              label: "Exclude Categories"
+              description: "Exclude topics with these categories"
             allow_secure_categories:
               label: "Allow secure categories"
               description: "Allow the report to be generated for topics in secure categories"
