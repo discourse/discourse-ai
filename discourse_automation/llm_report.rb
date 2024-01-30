@@ -34,6 +34,9 @@ if defined?(DiscourseAutomation)
     field :categories, component: :categories
     field :tags, component: :tags
 
+    field :exclude_categories, component: :categories
+    field :exclude_tags, component: :tags
+
     field :allow_secure_categories, component: :boolean
     field :debug_mode, component: :boolean
 
@@ -55,6 +58,9 @@ if defined?(DiscourseAutomation)
         priority_group = fields.dig("priority_group", "value")
         tokens_per_post = fields.dig("tokens_per_post", "value")
 
+        exclude_category_ids = fields.dig("exclude_categories", "value")
+        exclude_tags = fields.dig("exclude_tags", "value")
+
         DiscourseAi::Automation::ReportRunner.run!(
           sender_username: sender,
           receivers: receivers,
@@ -71,6 +77,8 @@ if defined?(DiscourseAutomation)
           offset: offset,
           priority_group_id: priority_group,
           tokens_per_post: tokens_per_post,
+          exclude_category_ids: exclude_category_ids,
+          exclude_tags: exclude_tags,
         )
       rescue => e
         Discourse.warn_exception e, message: "Error running LLM report!"

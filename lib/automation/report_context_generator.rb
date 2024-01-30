@@ -16,7 +16,9 @@ module DiscourseAi
         max_posts: 200,
         tokens_per_post: 100,
         tokenizer: nil,
-        prioritized_group_ids: []
+        prioritized_group_ids: [],
+        exclude_category_ids: nil,
+        exclude_tags: nil
       )
         @start_date = start_date
         @duration = duration
@@ -41,9 +43,23 @@ module DiscourseAi
             .where("topics.archetype = ?", Archetype.default)
         @posts = @posts.where("categories.read_restricted = ?", false) if !@allow_secure_categories
         @posts = @posts.where("categories.id IN (?)", @category_ids) if @category_ids.present?
+        @posts =
+          @posts.where(
+            "categories.id NOT IN (?)",
+            exclude_category_ids,
+          ) if exclude_category_ids.present?
+
+        if exclude_tags.present?
+          exclude_tag_ids = Tag.where_name(exclude_tags).select(:id)
+          @posts =
+            @posts.where(
+              "topics.id NOT IN (?)",
+              TopicTag.where(tag_id: exclude_tag_ids).select(:topic_id),
+            )
+        end
 
         if @tags.present?
-          tag_ids = Tag.where(name: @tags).select(:id)
+          tag_ids = Tag.where_name(@tags).select(:id)
           topic_ids_with_tags = TopicTag.where(tag_id: tag_ids).select(:topic_id)
           @posts = @posts.where(topic_id: topic_ids_with_tags)
         end
