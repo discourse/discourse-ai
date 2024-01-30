@@ -188,7 +188,7 @@ pt_BR:
       command_description:
         read: "Lendo: <a href='%{url}'>%{title}</a>"
         time: "A hora em %{timezone} é %{time}"
-        summarize: "<a href='%{url}'>%{title}</a> resumido(a)"
+        summarize: "Resumo de <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:

@@ -149,7 +149,7 @@ fr:
           name: "DALL-E 3"
           description: "Bot IA spécialisé dans la génération d'images utilisant DALL-E 3"
       topic_not_found: "Résumé indisponible, sujet introuvable !"
-      summarizing: "Récapitulatif du sujet"
+      summarizing: "Synthèse du sujet"
       searching: "Recherche de : '%{query}'"
       command_options:
         search:

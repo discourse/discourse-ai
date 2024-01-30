@@ -143,13 +143,13 @@ es:
           name: Investigador
           description: "Bot de IA con acceso a Google que puede buscar información por ti"
         creative:
-          name: Creativo
+          name: Creativa
           description: "Bot de IA sin integraciones externas especializado en tareas creativas"
         dall_e3:
           name: "DALL-E 3"
           description: "Bot de IA especializado en generar imágenes usando DALL-E 3"
       topic_not_found: "¡Resumen no disponible, tema no encontrado!"
-      summarizing: "Tema de resumen"
+      summarizing: "Resumiendo tema"
       searching: "Buscando: '%{query}'"
       command_options:
         search:
@@ -168,7 +168,7 @@ es:
         image: "Generar imagen"
         google: "Buscar en Google"
         read: "Leer tema"
-        setting_context: "Buscar contexto de ajustes del sitio"
+        setting_context: "Buscar contexto de ajuste del sitio"
         schema: "Buscar esquema de base de datos"
         search_settings: "Buscando los ajustes del sitio"
         dall_e: "Generar imagen"
@@ -188,7 +188,7 @@ es:
       command_description:
         read: "Leyendo: <a href='%{url}'>%{title}</a>"
         time: "La hora en %{timezone} es %{time}"
-        summarize: "<a href='%{url}'>%{title}</a> resumido"
+        summarize: "Resumido <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:

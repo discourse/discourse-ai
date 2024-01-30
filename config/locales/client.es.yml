@@ -9,7 +9,7 @@ es:
     admin:
       site_settings:
         categories:
-          discourse_ai: "IA de Discourse"
+          discourse_ai: "Discourse AI"
   js:
     discourse_automation:
       ai_models:
@@ -177,7 +177,7 @@ es:
       ai_bot:
         pm_warning: "Los moderadores supervisan periódicamente los mensajes del chatbot de IA."
         cancel_streaming: "Detener respuesta"
-        default_pm_prefix: "[MP de bot IA sin título]"
+        default_pm_prefix: "[MP de bot de IA sin título]"
         shortcut_title: "Iniciar un MP con un bot de IA"
         share: "Compartir conversación de IA"
         conversation_shared: "Conversación copiada"

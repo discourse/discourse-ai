@@ -227,3 +227,13 @@ de:
           anger: "Wut"
           joy: "Freude"
           disgust: "Ekel"
+    llm:
+      configuration:
+        disable_module_first: "Du musst zuerst %{setting} deaktivieren."
+        set_llm_first: "Stelle zuerst %{setting} ein."
+        model_unreachable: "Wir konnten keine Antwort von diesem Modell bekommen. Überprüfe zuerst deine Einstellungen."
+      endpoints:
+        not_configured: "%{display_name} (nicht konfiguriert)"
+        configuration_hint:
+          one: "Vergewissere dich, dass die Einstellung \"%{settings}\" konfiguriert wurde."
+          other: "Vergewissere dich, dass diese Einstellungen konfiguriert wurden: %{settings}"

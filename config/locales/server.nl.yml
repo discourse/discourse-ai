@@ -157,7 +157,7 @@ nl:
             name: "Maximaal aantal resultaten"
             description: "Maximaal aantal resultaten dat in de zoekopdracht moet worden opgenomen. Indien leeg worden er lege standaardregels gebruikt en wordt het aantal geschaald, afhankelijk van het gebruikte model. De hoogste waarde is 100."
           base_query:
-            name: "Basiszoekquery"
+            name: "Basiszoekopdracht"
             description: "Basisquery om te gebruiken bij het zoeken. Voorbeeld: '#urgent' voegt '#urgent' toe aan de zoekquery en neemt alleen topics mee met de categorie of tag 'urgent'."
       command_summary:
         categories: "Categorieën weergeven"
@@ -168,9 +168,9 @@ nl:
         image: "Afbeelding genereren"
         google: "Zoeken op Google"
         read: "Topic lezen"
-        setting_context: "Context van site-instellingen opzoeken"
+        setting_context: "Site-instellingscontext opzoeken"
         schema: "Databaseschema opzoeken"
-        search_settings: "Site-instellingen zoeken"
+        search_settings: "Zoeken in site-instellingen"
         dall_e: "Afbeelding genereren"
       command_help:
         categories: "Geef een lijst weer van alle openbaar zichtbare categorieën op het forum"

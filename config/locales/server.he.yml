@@ -239,3 +239,15 @@ he:
           anger: "כעס"
           joy: "הנאה"
           disgust: "גועל"
+    llm:
+      configuration:
+        disable_module_first: "קודם צריך להשבית את %{setting}."
+        set_llm_first: "קודם יש להגדיר את %{setting}."
+        model_unreachable: "לא הצלחנו לקבל תגובה מהמודל הזה. נא לוודא שההגדרות שלך נכונות קודם."
+      endpoints:
+        not_configured: "%{display_name} (לא מוגדר)"
+        configuration_hint:
+          one: "נא לוודא שההגדרה `%{settings}` הוגדרה."
+          two: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
+          many: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
+          other: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"

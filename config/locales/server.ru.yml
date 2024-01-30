@@ -168,7 +168,7 @@ ru:
         image: "Сгенерировать изображение"
         google: "Искать в Google"
         read: "Прочитать тему"
-        setting_context: "Найти контекст настроек сайта"
+        setting_context: "Поиск контекста настроек сайта"
         schema: "Найти схему базы данных"
         search_settings: "Поиск настроек сайта"
         dall_e: "Сгенерировать изображение"
@@ -187,7 +187,7 @@ ru:
         dall_e: "Создать изображение с помощью DALL-E 3"
       command_description:
         read: "Чтение: <a href='%{url}'>%{title}</a>"
-        time: "Время по %{timezone} — %{time}"
+        time: "Время по часовому поясу %{timezone} — %{time}"
         summarize: "Получена сводка: <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
         image: "%{prompt}"
