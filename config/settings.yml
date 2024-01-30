@@ -236,7 +236,9 @@ discourse_ai:
       - multilingual-e5-large
       - bge-large-en
       - gemini
-  ai_embeddings_per_post_enabled: false
+  ai_embeddings_per_post_enabled:
+    default: false
+    hidden: true
   ai_embeddings_generate_for_pms: false
   ai_embeddings_semantic_related_topics_enabled:
     default: false
