@@ -39,7 +39,7 @@ module DiscourseAi
              ex: 15.minutes.to_i,
              nx: true,
            )
-          Jobs.enqueue(:generate_embeddings, topic_id: topic.id)
+          Jobs.enqueue(:generate_embeddings, target_type: "Topic", target_id: topic.id)
         end
         []
       end
