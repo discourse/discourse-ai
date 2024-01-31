@@ -2,7 +2,7 @@
 
 module Jobs
   class EmbeddingsBackfill < ::Jobs::Scheduled
-    every 15.minutes
+    every 5.minutes
     sidekiq_options queue: "low"
     cluster_concurrency 1
 
