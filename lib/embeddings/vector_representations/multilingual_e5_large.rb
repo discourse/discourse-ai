@@ -4,30 +4,6 @@ module DiscourseAi
   module Embeddings
     module VectorRepresentations
       class MultilingualE5Large < Base
-        class << self
-          def name
-            "multilingual-e5-large"
-          end
-
-          def correctly_configured?
-            DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured? ||
-              (
-                SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present? ||
-                  SiteSetting.ai_embeddings_discourse_service_api_endpoint.present?
-              )
-          end
-
-          def dependant_setting_names
-            %w[
-              ai_hugging_face_tei_endpoint_srv
-              ai_hugging_face_tei_endpoint
-              ai_embeddings_discourse_service_api_key
-              ai_embeddings_discourse_service_api_endpoint_srv
-              ai_embeddings_discourse_service_api_endpoint
-            ]
-          end
-        end
-
         def vector_from(text)
           if DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured?
             truncated_text = tokenizer.truncate(text, max_sequence_length - 2)
@@ -35,7 +11,7 @@ module DiscourseAi
           elsif discourse_embeddings_endpoint.present?
             DiscourseAi::Inference::DiscourseClassifier.perform!(
               "#{discourse_embeddings_endpoint}/api/v1/classify",
-              self.class.name,
+              name,
               "query: #{text}",
               SiteSetting.ai_embeddings_discourse_service_api_key,
             )
@@ -50,6 +26,10 @@ module DiscourseAi
 
         def version
           1
+        end
+
+        def name
+          "multilingual-e5-large"
         end
 
         def dimensions

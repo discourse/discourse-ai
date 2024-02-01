@@ -4,32 +4,17 @@ module DiscourseAi
   module Embeddings
     module VectorRepresentations
       class AllMpnetBaseV2 < Base
-        class << self
-          def name
-            "all-mpnet-base-v2"
-          end
-
-          def correctly_configured?
-            SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present? ||
-              SiteSetting.ai_embeddings_discourse_service_api_endpoint.present?
-          end
-
-          def dependant_setting_names
-            %w[
-              ai_embeddings_discourse_service_api_key
-              ai_embeddings_discourse_service_api_endpoint_srv
-              ai_embeddings_discourse_service_api_endpoint
-            ]
-          end
-        end
-
         def vector_from(text)
           DiscourseAi::Inference::DiscourseClassifier.perform!(
             "#{discourse_embeddings_endpoint}/api/v1/classify",
-            self.class.name,
+            name,
             text,
             SiteSetting.ai_embeddings_discourse_service_api_key,
           )
+        end
+
+        def name
+          "all-mpnet-base-v2"
         end
 
         def dimensions

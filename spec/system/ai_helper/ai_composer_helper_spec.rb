@@ -327,10 +327,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when suggesting the category with AI category suggester" do
-    before do
-      SiteSetting.ai_embeddings_model = "bge-large-en"
-      SiteSetting.ai_embeddings_enabled = true
-    end
+    before { SiteSetting.ai_embeddings_enabled = true }
 
     it "updates the category with the suggested category" do
       response =
@@ -355,10 +352,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when suggesting the tags with AI tag suggester" do
-    before do
-      SiteSetting.ai_embeddings_model = "bge-large-en"
-      SiteSetting.ai_embeddings_enabled = true
-    end
+    before { SiteSetting.ai_embeddings_enabled = true }
 
     it "updates the tag with the suggested tag" do
       response =

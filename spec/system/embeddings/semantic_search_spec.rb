@@ -11,7 +11,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
   before do
     SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-    SiteSetting.ai_embeddings_model = "bge-large-en"
     prompt = DiscourseAi::Embeddings::HydeGenerators::OpenAi.new.prompt(query)
     OpenAiCompletionsInferenceStubs.stub_response(
       prompt,

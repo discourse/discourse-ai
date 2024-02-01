@@ -25,7 +25,6 @@ RSpec.describe Jobs::EmbeddingsBackfill do
   end
 
   it "backfills topics based on bumped_at date" do
-    SiteSetting.ai_embeddings_model = "bge-large-en"
     SiteSetting.ai_embeddings_enabled = true
     SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
     SiteSetting.ai_embeddings_backfill_batch_size = 1
