@@ -216,6 +216,7 @@ discourse_ai:
   ai_embeddings_enabled:
     default: false
     client: true
+    validator: "DiscourseAi::Configuration::EmbeddingsModuleValidator"
   ai_embeddings_discourse_service_api_endpoint: ""
   ai_embeddings_discourse_service_api_endpoint_srv:
     default: ""
@@ -225,7 +226,6 @@ discourse_ai:
     secret: true
   ai_embeddings_model:
     type: enum
-    list_type: compact
     default: "bge-large-en"
     allow_any: false
     choices:
@@ -236,6 +236,7 @@ discourse_ai:
       - multilingual-e5-large
       - bge-large-en
       - gemini
+    validator: "DiscourseAi::Configuration::EmbeddingsModelValidator"
   ai_embeddings_per_post_enabled:
     default: false
     hidden: true

@@ -7,7 +7,6 @@ RSpec.describe Jobs::GenerateEmbeddings do
     before do
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
       SiteSetting.ai_embeddings_enabled = true
-      SiteSetting.ai_embeddings_model = "bge-large-en"
     end
 
     fab!(:topic) { Fabricate(:topic) }
@@ -27,7 +26,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
           vector_rep.tokenizer,
           vector_rep.max_sequence_length - 2,
         )
-      EmbeddingsGenerationStubs.discourse_service(vector_rep.name, text, expected_embedding)
+      EmbeddingsGenerationStubs.discourse_service(vector_rep.class.name, text, expected_embedding)
 
       job.execute(target_id: topic.id, target_type: "Topic")
 
@@ -39,7 +38,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
 
       text =
         truncation.prepare_text_from(post, vector_rep.tokenizer, vector_rep.max_sequence_length - 2)
-      EmbeddingsGenerationStubs.discourse_service(vector_rep.name, text, expected_embedding)
+      EmbeddingsGenerationStubs.discourse_service(vector_rep.class.name, text, expected_embedding)
 
       job.execute(target_id: post.id, target_type: "Post")
 

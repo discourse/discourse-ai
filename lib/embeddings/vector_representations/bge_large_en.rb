@@ -4,6 +4,32 @@ module DiscourseAi
   module Embeddings
     module VectorRepresentations
       class BgeLargeEn < Base
+        class << self
+          def name
+            "bge-large-en"
+          end
+
+          def correctly_configured?
+            SiteSetting.ai_cloudflare_workers_api_token.present? ||
+              DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured? ||
+              (
+                SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present? ||
+                  SiteSetting.ai_embeddings_discourse_service_api_endpoint.present?
+              )
+          end
+
+          def dependant_setting_names
+            %w[
+              ai_cloudflare_workers_api_token
+              ai_hugging_face_tei_endpoint_srv
+              ai_hugging_face_tei_endpoint
+              ai_embeddings_discourse_service_api_key
+              ai_embeddings_discourse_service_api_endpoint_srv
+              ai_embeddings_discourse_service_api_endpoint
+            ]
+          end
+        end
+
         def vector_from(text)
           if SiteSetting.ai_cloudflare_workers_api_token.present?
             DiscourseAi::Inference::CloudflareWorkersAi
@@ -23,10 +49,6 @@ module DiscourseAi
           else
             raise "No inference endpoint configured"
           end
-        end
-
-        def name
-          "bge-large-en"
         end
 
         def inference_model_name
