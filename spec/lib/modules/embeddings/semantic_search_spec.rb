@@ -14,7 +14,6 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
 
     before do
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-      SiteSetting.ai_embeddings_model = "bge-large-en"
 
       hyde_embedding = [0.049382, 0.9999]
       EmbeddingsGenerationStubs.discourse_service(

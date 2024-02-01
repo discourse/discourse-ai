@@ -2,16 +2,21 @@
 
 module DiscourseAi
   module Configuration
-    class EmbeddingsModelValidator
+    class EmbeddingsModuleValidator
       def initialize(opts = {})
         @opts = opts
       end
 
       def valid_value?(val)
+        return true if val == "f"
         return true if Rails.env.test?
 
+        chosen_model = SiteSetting.ai_embeddings_model
+
+        return false if !chosen_model
+
         representation =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.find_representation(val)
+          DiscourseAi::Embeddings::VectorRepresentations::Base.find_representation(chosen_model)
 
         return false if representation.nil?
 
@@ -20,7 +25,7 @@ module DiscourseAi
           return false
         end
 
-        if !can_generate_embeddings?(val)
+        if !can_generate_embeddings?(chosen_model)
           @unreachable = true
           return false
         end

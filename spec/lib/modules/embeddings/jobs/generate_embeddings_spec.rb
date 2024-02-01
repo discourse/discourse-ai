@@ -6,7 +6,6 @@ RSpec.describe Jobs::GenerateEmbeddings do
   describe "#execute" do
     before do
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-      SiteSetting.ai_embeddings_model = "bge-large-en"
       SiteSetting.ai_embeddings_enabled = true
     end
 
