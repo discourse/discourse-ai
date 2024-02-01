@@ -4,26 +4,16 @@ module DiscourseAi
   module Embeddings
     module VectorRepresentations
       class Gemini < Base
-        class << self
-          def name
-            "gemini"
-          end
-
-          def correctly_configured?
-            SiteSetting.ai_gemini_api_key.present?
-          end
-
-          def dependant_setting_names
-            %w[ai_gemini_api_key]
-          end
-        end
-
         def id
           5
         end
 
         def version
           1
+        end
+
+        def name
+          "gemini"
         end
 
         def dimensions

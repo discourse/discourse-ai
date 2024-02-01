@@ -11,7 +11,7 @@ RSpec.describe DiscourseAi::Embeddings::VectorRepresentations::MultilingualE5Lar
 
   def stub_vector_mapping(text, expected_embedding)
     EmbeddingsGenerationStubs.discourse_service(
-      described_class.name,
+      vector_rep.name,
       "query: #{text}",
       expected_embedding,
     )
