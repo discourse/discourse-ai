@@ -4,6 +4,8 @@ describe DiscourseAi::Embeddings::EntryPoint do
   fab!(:user) { Fabricate(:user) }
 
   describe "SemanticTopicQuery extension" do
+    before { SiteSetting.ai_embeddings_model = "bge-large-en" }
+
     describe "#list_semantic_related_topics" do
       subject(:topic_query) { DiscourseAi::Embeddings::SemanticTopicQuery.new(user) }
 

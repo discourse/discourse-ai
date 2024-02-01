@@ -216,6 +216,7 @@ discourse_ai:
   ai_embeddings_enabled:
     default: false
     client: true
+    validator: "DiscourseAi::Configuration::EmbeddingsDependencyValidator"
   ai_embeddings_discourse_service_api_endpoint: ""
   ai_embeddings_discourse_service_api_endpoint_srv:
     default: ""
@@ -225,17 +226,10 @@ discourse_ai:
     secret: true
   ai_embeddings_model:
     type: enum
-    list_type: compact
-    default: "bge-large-en"
+    default: ""
     allow_any: false
-    choices:
-      - all-mpnet-base-v2
-      - text-embedding-ada-002
-      - text-embedding-3-small
-      - text-embedding-3-large
-      - multilingual-e5-large
-      - bge-large-en
-      - gemini
+    enum: "DiscourseAi::Configuration::EmbeddingsModelEnumerator"
+    validator: "DiscourseAi::Configuration::EmbeddingsModelValidator"
   ai_embeddings_per_post_enabled:
     default: false
     hidden: true
