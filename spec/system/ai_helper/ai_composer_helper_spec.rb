@@ -412,4 +412,25 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       expect(ai_suggestion_dropdown).to have_no_suggestion_button
     end
   end
+
+  context "when suggestion features are disabled" do
+    let(:mode) { CompletionPrompt::GENERATE_TITLES }
+    before { SiteSetting.ai_helper_enabled_features = "context_menu" }
+
+    it "does not show suggestion buttons in the composer" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(input)
+      expect(ai_suggestion_dropdown).to have_no_suggestion_button
+    end
+  end
+
+  context "when context menu feature is disabled" do
+    before { SiteSetting.ai_helper_enabled_features = "suggestions" }
+
+    it "does not show context menu in the composer" do
+      trigger_context_menu(input)
+      expect(ai_helper_context_menu).to have_no_context_menu
+    end
+  end
 end
