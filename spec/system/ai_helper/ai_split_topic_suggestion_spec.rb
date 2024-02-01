@@ -80,7 +80,10 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     end
 
     context "when suggesting categories with AI category suggester" do
-      before { SiteSetting.ai_embeddings_enabled = true }
+      before do
+        SiteSetting.ai_embeddings_model = "bge-large-en"
+        SiteSetting.ai_embeddings_enabled = true
+      end
 
       skip "TODO: Category suggester only loading one category in test" do
         it "updates the category with the suggested category" do
@@ -108,7 +111,10 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     end
 
     context "when suggesting tags with AI tag suggester" do
-      before { SiteSetting.ai_embeddings_enabled = true }
+      before do
+        SiteSetting.ai_embeddings_model = "bge-large-en"
+        SiteSetting.ai_embeddings_enabled = true
+      end
 
       it "update the tag with the suggested tag" do
         response =

@@ -13,6 +13,8 @@ describe DiscourseAi::Embeddings::EntryPoint do
         )
       end
 
+      before { SiteSetting.ai_embeddings_model = "bge-large-en" }
+
       it "queues a job on create if embeddings is enabled" do
         SiteSetting.ai_embeddings_enabled = true
 
