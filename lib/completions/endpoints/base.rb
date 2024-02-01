@@ -135,6 +135,9 @@ module DiscourseAi
                   end
 
                   decoded_chunk = decode(chunk)
+                  if decoded_chunk.nil?
+                    raise CompletionFailed, "#{self.class.name}: Failed to decode LLM completion"
+                  end
                   response_raw << decoded_chunk
 
                   redo_chunk = leftover + decoded_chunk
