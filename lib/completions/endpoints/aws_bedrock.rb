@@ -93,15 +93,23 @@ module DiscourseAi
         end
 
         def decode(chunk)
-          Aws::EventStream::Decoder
-            .new
-            .decode_chunk(chunk)
-            .first
-            .payload
-            .string
-            .then { JSON.parse(_1) }
-            .dig("bytes")
-            .then { Base64.decode64(_1) }
+          parsed =
+            Aws::EventStream::Decoder
+              .new
+              .decode_chunk(chunk)
+              .first
+              .payload
+              .string
+              .then { JSON.parse(_1) }
+
+          bytes = parsed.dig("bytes")
+
+          if !bytes
+            Rails.logger.error("#{self.class.name}: #{parsed.to_s[0..500]}")
+            nil
+          else
+            Base64.decode64(parsed.dig("bytes"))
+          end
         rescue JSON::ParserError,
                Aws::EventStream::Errors::MessageChecksumError,
                Aws::EventStream::Errors::PreludeChecksumError => e
