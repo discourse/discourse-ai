@@ -13,7 +13,10 @@ describe DiscourseAi::Embeddings::SemanticRelated do
   fab!(:secured_category_topic) { Fabricate(:topic, category: secured_category) }
   fab!(:closed_topic) { Fabricate(:topic, closed: true) }
 
-  before { SiteSetting.ai_embeddings_semantic_related_topics_enabled = true }
+  before do
+    SiteSetting.ai_embeddings_model = "bge-large-en"
+    SiteSetting.ai_embeddings_semantic_related_topics_enabled = true
+  end
 
   describe "#related_topic_ids_for" do
     context "when embeddings do not exist" do

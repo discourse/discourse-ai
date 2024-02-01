@@ -251,3 +251,12 @@ en:
         configuration_hint:
           one: "Make sure the `%{settings}` setting was configured."
           other: "Make sure these settings were configured: %{settings}"
+
+    embeddings:
+      configuration:
+        disable_embeddings: "You have to disable 'ai embeddings enabled' first."
+        choose_model: "Set 'ai embeddings model' first."
+        model_unreachable: "We failed to generate a test embedding with this model. Check your settings are correct."
+        hint: 
+          one: "Make sure the `%{settings}` setting was configured."
+          other: "Make sure the settings of the provider you want were configured. Options are: %{settings}"

@@ -4,16 +4,26 @@ module DiscourseAi
   module Embeddings
     module VectorRepresentations
       class TextEmbedding3Small < Base
+        class << self
+          def name
+            "text-embedding-3-small"
+          end
+
+          def correctly_configured?
+            SiteSetting.ai_openai_api_key.present?
+          end
+
+          def dependant_setting_names
+            %w[ai_openai_api_key]
+          end
+        end
+
         def id
           6
         end
 
         def version
           1
-        end
-
-        def name
-          "text-embedding-3-small"
         end
 
         def dimensions
@@ -33,7 +43,7 @@ module DiscourseAi
         end
 
         def vector_from(text)
-          response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(text, model: name)
+          response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(text, model: self.class.name)
           response[:data].first[:embedding]
         end
 
