@@ -4,7 +4,7 @@ import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
 export default class AiTitleSuggestion extends Component {
   static shouldRender(outletArgs, helper) {
-    return showComposerAIHelper(outletArgs, helper);
+    return showComposerAIHelper(outletArgs, helper, "suggestions");
   }
 
   <template>

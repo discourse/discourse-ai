@@ -12,7 +12,7 @@ import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
 export default class AiHelperContextMenu extends Component {
   static shouldRender(outletArgs, helper) {
-    return showComposerAIHelper(outletArgs, helper);
+    return showComposerAIHelper(outletArgs, helper, "context_menu");
   }
 
   @service currentUser;

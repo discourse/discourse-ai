@@ -5,7 +5,7 @@ import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
 export default class AiCategorySuggestion extends Component {
   static shouldRender(outletArgs, helper) {
-    return showComposerAIHelper(outletArgs, helper);
+    return showComposerAIHelper(outletArgs, helper, "suggestions");
   }
 
   @service siteSettings;

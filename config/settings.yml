@@ -212,6 +212,16 @@ discourse_ai:
       - stable_diffusion_xl
       - dall_e_3
       - disabled
+  ai_helper_enabled_features:
+    client: true
+    default: "suggestions|context_menu"
+    type: list
+    list_type: compact
+    allow_any: false
+    refresh: true
+    choices:
+      - "suggestions"
+      - "context_menu"
 
   ai_embeddings_enabled:
     default: false
