@@ -23,7 +23,6 @@ module DiscourseAi
 
           def all(user:)
             # listing tools has to be dynamic cause site settings may change
-
             AiPersona.all_personas.filter do |persona|
               next false if !user.in_any_groups?(persona.allowed_group_ids)
 
@@ -83,6 +82,14 @@ module DiscourseAi
 
         def required_tools
           []
+        end
+
+        def temperature
+          nil
+        end
+
+        def top_p
+          nil
         end
 
         def options

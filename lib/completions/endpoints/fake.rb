@@ -95,7 +95,17 @@ module DiscourseAi
           @chunk_count = chunk_count
         end
 
+        def self.last_call
+          @last_call
+        end
+
+        def self.last_call=(params)
+          @last_call = params
+        end
+
         def perform_completion!(dialect, user, model_params = {})
+          self.class.last_call = { dialect: dialect, user: user, model_params: model_params }
+
           content = self.class.fake_content
 
           if block_given?

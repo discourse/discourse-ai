@@ -10,6 +10,8 @@ const ATTRIBUTES = [
   "enabled",
   "system",
   "priority",
+  "top_p",
+  "temperature",
 ];
 
 class CommandOption {

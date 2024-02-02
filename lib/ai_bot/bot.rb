@@ -48,13 +48,19 @@ module DiscourseAi
         low_cost = false
         raw_context = []
 
+        user = context[:user]
+
+        llm_kwargs = { user: user }
+        llm_kwargs[:temperature] = persona.temperature if persona.temperature
+        llm_kwargs[:top_p] = persona.top_p if persona.top_p
+
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
           current_model = model(prefer_low_cost: low_cost)
           llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
           result =
-            llm.generate(prompt, user: context[:user]) do |partial, cancel|
+            llm.generate(prompt, **llm_kwargs) do |partial, cancel|
               if (tool = persona.find_tool(partial))
                 tool_found = true
                 ongoing_chain = tool.chain_next_response?

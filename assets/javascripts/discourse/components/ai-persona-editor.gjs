@@ -73,6 +73,14 @@ export default class PersonaEditor extends Component {
     }
   }
 
+  get showTemperature() {
+    return this.editingModel?.temperature || !this.editingModel?.system;
+  }
+
+  get showTopP() {
+    return this.editingModel?.top_p || !this.editingModel?.system;
+  }
+
   @action
   delete() {
     return this.dialog.confirm({
@@ -213,6 +221,36 @@ export default class PersonaEditor extends Component {
           disabled={{this.editingModel.system}}
         />
       </div>
+      {{#if this.showTemperature}}
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.ai_persona.temperature"}}</label>
+          <Input
+            @type="number"
+            class="ai-persona-editor__temperature"
+            @value={{this.editingModel.temperature}}
+            disabled={{this.editingModel.system}}
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.ai_persona.temperature_help"}}
+          />
+        </div>
+      {{/if}}
+      {{#if this.showTopP}}
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.ai_persona.top_p"}}</label>
+          <Input
+            @type="number"
+            class="ai-persona-editor__top_p"
+            @value={{this.editingModel.top_p}}
+            disabled={{this.editingModel.system}}
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.ai_persona.top_p_help"}}
+          />
+        </div>
+      {{/if}}
       <div class="control-group ai-persona-editor__action_panel">
         <DButton
           class="btn-primary ai-persona-editor__save"
