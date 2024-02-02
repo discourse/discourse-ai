@@ -39,6 +39,8 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       system_prompt: "System Prompt",
       priority: false,
       description: "Description",
+      top_p: 0.8,
+      temperature: 0.7,
     };
 
     const aiPersona = AiPersona.create({ ...properties });
@@ -63,6 +65,8 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       system_prompt: "System Prompt",
       priority: false,
       description: "Description",
+      top_p: 0.8,
+      temperature: 0.7,
     };
 
     const aiPersona = AiPersona.create({ ...properties });

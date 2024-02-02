@@ -157,6 +157,14 @@ class AiPersona < ActiveRecord::Base
         options
       end
 
+      define_method :temperature do
+        @ai_persona&.temperature
+      end
+
+      define_method :top_p do
+        @ai_persona&.top_p
+      end
+
       define_method :system_prompt do
         @ai_persona&.system_prompt || "You are a helpful bot."
       end
@@ -166,7 +174,8 @@ class AiPersona < ActiveRecord::Base
   private
 
   def system_persona_unchangeable
-    if system_prompt_changed? || commands_changed? || name_changed? || description_changed?
+    if top_p_changed? || temperature_changed? || system_prompt_changed? || commands_changed? ||
+         name_changed? || description_changed?
       errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
     end
   end
@@ -186,7 +195,7 @@ end
 #  id                :bigint           not null, primary key
 #  name              :string(100)      not null
 #  description       :string(2000)     not null
-#  commands          :string           default([]), not null, is an Array
+#  commands          :json             not null
 #  system_prompt     :string(10000000) not null
 #  allowed_group_ids :integer          default([]), not null, is an Array
 #  created_by_id     :integer
@@ -194,7 +203,9 @@ end
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  system            :boolean          default(FALSE), not null
-#  priority          :integer          default(0), not null
+#  priority          :boolean          default(FALSE), not null
+#  temperature       :float
+#  top_p             :float
 #
 # Indexes
 #

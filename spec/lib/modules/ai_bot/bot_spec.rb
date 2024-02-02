@@ -3,6 +3,8 @@
 RSpec.describe DiscourseAi::AiBot::Bot do
   subject(:bot) { described_class.as(bot_user) }
 
+  fab!(:admin) { Fabricate(:admin) }
+
   before do
     SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
     SiteSetting.ai_bot_enabled = true
@@ -25,6 +27,40 @@ RSpec.describe DiscourseAi::AiBot::Bot do
   let(:llm_responses) { [function_call, response] }
 
   describe "#reply" do
+    it "sets top_p and temperature params" do
+      # full integration test so we have certainty it is passed through
+
+      DiscourseAi::Completions::Endpoints::Fake.delays = []
+      DiscourseAi::Completions::Endpoints::Fake.last_call = nil
+
+      SiteSetting.ai_bot_enabled_chat_bots = "fake"
+      SiteSetting.ai_bot_enabled = true
+      Group.refresh_automatic_groups!
+
+      bot_user = User.find(DiscourseAi::AiBot::EntryPoint::FAKE_ID)
+      AiPersona.create!(
+        name: "TestPersona",
+        top_p: 0.5,
+        temperature: 0.4,
+        system_prompt: "test",
+        description: "test",
+        allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+      )
+
+      personaClass = DiscourseAi::AiBot::Personas::Persona.find_by(user: admin, name: "TestPersona")
+
+      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: personaClass.new)
+      bot.reply(
+        { conversation_context: [{ type: :user, content: "test" }] },
+      ) do |_partial, _cancel, _placeholder|
+        # we just need the block so bot has something to call with results
+      end
+
+      last_call = DiscourseAi::Completions::Endpoints::Fake.last_call
+      expect(last_call[:model_params][:top_p]).to eq(0.5)
+      expect(last_call[:model_params][:temperature]).to eq(0.4)
+    end
+
     context "when using function chaining" do
       it "yields a loading placeholder while proceeds to invoke the command" do
         tool = DiscourseAi::AiBot::Tools::ListCategories.new({})

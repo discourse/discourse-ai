@@ -116,6 +116,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           description: "Assists with tasks",
           system_prompt: "you are a helpful bot",
           commands: [["search", { "base_query" => "test" }]],
+          top_p: 0.1,
+          temperature: 0.5,
         }
       end
 
@@ -127,8 +129,17 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
                  "CONTENT_TYPE" => "application/json",
                }
           expect(response).to be_successful
-          persona = AiPersona.find(response.parsed_body["ai_persona"]["id"])
+          persona_json = response.parsed_body["ai_persona"]
+
+          expect(persona_json["name"]).to eq("superbot")
+          expect(persona_json["top_p"]).to eq(0.1)
+          expect(persona_json["temperature"]).to eq(0.5)
+
+          persona = AiPersona.find(persona_json["id"])
+
           expect(persona.commands).to eq([["search", { "base_query" => "test" }]])
+          expect(persona.top_p).to eq(0.1)
+          expect(persona.temperature).to eq(0.5)
         }.to change(AiPersona, :count).by(1)
       end
     end
@@ -143,6 +154,36 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   end
 
   describe "PUT #update" do
+    it "allows us to trivially clear top_p and temperature" do
+      persona = Fabricate(:ai_persona, name: "test_bot2", top_p: 0.5, temperature: 0.1)
+
+      put "/admin/plugins/discourse-ai/ai_personas/#{persona.id}.json",
+          params: {
+            ai_persona: {
+              top_p: "",
+              temperature: "",
+            },
+          }
+
+      expect(response).to have_http_status(:ok)
+      persona.reload
+
+      expect(persona.top_p).to eq(nil)
+      expect(persona.temperature).to eq(nil)
+    end
+
+    it "does not allow temperature and top p changes on stock personas" do
+      put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+          params: {
+            ai_persona: {
+              top_p: 0.5,
+              temperature: 0.1,
+            },
+          }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
     context "with valid params" do
       it "updates the requested ai_persona" do
         put "/admin/plugins/discourse-ai/ai_personas/#{ai_persona.id}.json",

@@ -62,6 +62,8 @@ module DiscourseAi
             :enabled,
             :system_prompt,
             :priority,
+            :top_p,
+            :temperature,
             allowed_group_ids: [],
           )
 

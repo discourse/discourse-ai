@@ -118,6 +118,10 @@ en:
         new: New
         title: "AI Personas"
         delete: Delete
+        temperature: Temperature
+        temperature_help: Temperature to use for the LLM, increase to increase creativity (leave empty to use model default, generally a value from 0.0 to 2.0)
+        top_p: Top P
+        top_p_help: Top P to use for the LLM, increase to increase randomness (leave empty to use model default, generally a value from 0.0 to 1.0)
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
         command_options: "Command Options"

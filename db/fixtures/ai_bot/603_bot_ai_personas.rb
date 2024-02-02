@@ -34,5 +34,7 @@ DiscourseAi::AiBot::Personas::Persona.system_personas.each do |persona_class, id
   instance = persona_class.new
   persona.commands = instance.tools.map { |tool| tool.to_s.split("::").last }
   persona.system_prompt = instance.system_prompt
+  persona.top_p = instance.top_p
+  persona.temperature = instance.temperature
   persona.save!(validate: false)
 end

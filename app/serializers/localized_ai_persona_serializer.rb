@@ -11,7 +11,9 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :priority,
              :commands,
              :system_prompt,
-             :allowed_group_ids
+             :allowed_group_ids,
+             :temperature,
+             :top_p
 
   def name
     object.class_instance.name
