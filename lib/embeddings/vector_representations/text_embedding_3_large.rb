@@ -48,7 +48,7 @@ module DiscourseAi
           response =
             DiscourseAi::Inference::OpenAiEmbeddings.perform!(
               text,
-              model: self.clas.name,
+              model: self.class.name,
               dimensions: dimensions,
             )
           response[:data].first[:embedding]

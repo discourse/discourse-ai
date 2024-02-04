@@ -13,10 +13,10 @@ class EmbeddingsGenerationStubs
         .to_return(status: 200, body: JSON.dump(embedding))
     end
 
-    def openai_service(model, string, embedding)
+    def openai_service(model, string, embedding, extra_args: {})
       WebMock
         .stub_request(:post, "https://api.openai.com/v1/embeddings")
-        .with(body: JSON.dump({ model: model, input: string }))
+        .with(body: JSON.dump({ model: model, input: string }.merge(extra_args)))
         .to_return(status: 200, body: JSON.dump({ data: [{ embedding: embedding }] }))
     end
   end
