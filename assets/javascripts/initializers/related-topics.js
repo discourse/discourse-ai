@@ -6,7 +6,10 @@ export default {
   initialize(container) {
     const settings = container.lookup("service:site-settings");
 
-    if (settings.ai_embeddings_semantic_related_topics_enabled) {
+    if (
+      settings.ai_embeddings_enabled &&
+      settings.ai_embeddings_semantic_related_topics_enabled
+    ) {
       withPluginApi("1.1.0", (api) => {
         api.modifyClass("model:post-stream", {
           pluginId: "discourse-ai",
