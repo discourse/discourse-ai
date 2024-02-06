@@ -72,6 +72,12 @@ de:
             priority_group:
               label: "Prioritätsgruppe"
               description: "Inhalte aus dieser Gruppe im Bericht hervorheben"
+            temperature:
+              label: "Temperatur"
+              description: "Temperatur, die für das LLM verwendet werden soll, erhöhen, um die Zufälligkeit zu erhöhen (0, um das Standardmodell zu verwenden)"
+            top_p:
+              label: "Top P"
+              description: "Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (0, um das Standardmodell zu verwenden)"
         llm_triage:
           fields:
             system_prompt:
@@ -115,6 +121,10 @@ de:
         new: Neu
         title: "KI-Personas"
         delete: Löschen
+        temperature: Temperatur
+        temperature_help: Temperatur, die für das LLM verwendet werden soll, erhöhen, um die Kreativität zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, im Allgemeinen ein Wert zwischen 0,0 und 2,0)
+        top_p: Top P
+        top_p_help: Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (leer lassen, um die Modellvorgabe zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)
         priority: Priorität
         priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
         command_options: "Befehlsoptionen"

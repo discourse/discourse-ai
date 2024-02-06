@@ -53,9 +53,16 @@ zh_CN:
               description: "用于生成报告的 LLM"
             categories:
               label: "类别"
+              description: "只看这些类别的话题"
             tags:
               label: "标签"
               description: "仅筛选这些标签的话题"
+            exclude_tags:
+              label: "排除标签"
+              description: "排除带有这些标签的话题"
+            exclude_categories:
+              label: "排除类别"
+              description: "排除这些类别的话题"
             allow_secure_categories:
               label: "允许安全类别"
               description: "允许为安全类别中的话题生成报告"
@@ -65,6 +72,12 @@ zh_CN:
             priority_group:
               label: "优先群组"
               description: "在报告中优先考虑来自此群组的内容"
+            temperature:
+              label: "温度"
+              description: "用于 LLM 的温度，增大它可提升随机性 （0 表示使用模型默认值）"
+            top_p:
+              label: "Top P"
+              description: "用于 LLM 的 Top P，增大它可提升随机性（0 表示使用模型默认值）"
         llm_triage:
           fields:
             system_prompt:
@@ -108,6 +121,10 @@ zh_CN:
         new: 新
         title: "AI 角色"
         delete: 删除
+        temperature: 温度
+        temperature_help: 用于 LLM 的温度，增大它可提升创造力（留空以使用模型默认值，通常为 0.0 到 2.0 之间的值）
+        top_p: Top P
+        top_p_help: 用于 LLM 的 Top P，增大它可提升创造力（留空以使用模型默认值，通常为 0.0 到 1.0 之间的值）
         priority: 优先
         priority_help: 优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。
         command_options: "命令选项"

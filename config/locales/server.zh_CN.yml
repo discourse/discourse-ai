@@ -62,6 +62,7 @@ zh_CN:
     ai_helper_automatic_chat_thread_title_delay: "在 AI 助手自动设置聊天对话标题之前的延迟（以分钟为单位）。"
     ai_helper_automatic_chat_thread_title: "根据话题内容自动设置聊天对话标题。"
     ai_helper_illustrate_post_model: "用于编辑器 AI 助手的为帖子创建插图功能的模型"
+    ai_helper_enabled_features: "选择要在 AI 助手中启用的功能。"
     ai_embeddings_enabled: "启用嵌入向量模块。"
     ai_embeddings_discourse_service_api_endpoint: "为嵌入向量模块运行 API 的 URL"
     ai_embeddings_discourse_service_api_key: "嵌入向量 API 的 API 密钥"
@@ -221,3 +222,19 @@ zh_CN:
           anger: "愤怒"
           joy: "开心"
           disgust: "厌恶"
+    llm:
+      configuration:
+        disable_module_first: "您必须先禁用 %{setting} 。"
+        set_llm_first: "首先设置 %{setting} 。"
+        model_unreachable: "我们无法从该模型得到回应。请先检查您的设置。"
+      endpoints:
+        not_configured: "%{display_name} （未配置）"
+        configuration_hint:
+          other: "请确保配置了这些设置： %{settings}"
+    embeddings:
+      configuration:
+        disable_embeddings: "您必须先禁用 \"启用 AI 嵌入\"。"
+        choose_model: "首先请设置“AI 嵌入模型”。"
+        model_unreachable: "我们未能使用此模型生成测试嵌入。请检查设置是否正确。"
+        hint:
+          other: "确保您所需的提供商的设置已配置。选项有： %{settings}"
