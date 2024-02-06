@@ -62,6 +62,7 @@ he:
     ai_helper_automatic_chat_thread_title_delay: "השהייה בשניות לפני שמסייע הבינה המלאכותית מגדיר את כותרת שרשור הצ׳אט אוטומטית."
     ai_helper_automatic_chat_thread_title: "הגדרת כותרות שרשור הצ׳אט אוטומטית לפי תוכן השרשור."
     ai_helper_illustrate_post_model: "דגם לשימוש ליכולת הדמיית הפוסט של מסייע הבינה המלאכותית בכתיבה"
+    ai_helper_enabled_features: "נא לבחור יכולות להפעלה במסייע הבינה המלאכותית."
     ai_embeddings_enabled: "הפעלת מודול ההטמעות."
     ai_embeddings_discourse_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול ההטמעות"
     ai_embeddings_discourse_service_api_key: "מפתח API ל־API של ההטמעות"
@@ -251,3 +252,13 @@ he:
           two: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           many: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           other: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
+    embeddings:
+      configuration:
+        disable_embeddings: "יש להשבית קודם את ‚הטמעת בינה מלאכותית פעילה’."
+        choose_model: "יש להגדיר קודם את ‚הטמעת בינה מלאכותית פעילה’."
+        model_unreachable: "כשלנו בייצור הטמעות בדיקה עם הדגם הזה. נא לבדוק שההגדרות שלך נכונות."
+        hint:
+          one: "נא לוודא שההגדרה `%{settings}` הוגדרה."
+          two: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
+          many: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
+          other: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"

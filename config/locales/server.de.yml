@@ -62,6 +62,7 @@ de:
     ai_helper_automatic_chat_thread_title_delay: "Verzögerung in Minuten, bevor der KI-Helfer automatisch den Titel des Chat-Threads festlegt."
     ai_helper_automatic_chat_thread_title: "Lege die Titel der Chat-Threads automatisch anhand der Thread-Inhalte fest."
     ai_helper_illustrate_post_model: "Modell, das für die Funktion „Beitrag illustrieren“ des Composer-KI-Helfers verwendet wird"
+    ai_helper_enabled_features: "Wähle die Funktionen aus, die im KI-Helfer aktiviert werden sollen."
     ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
     ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
     ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
@@ -237,3 +238,11 @@ de:
         configuration_hint:
           one: "Vergewissere dich, dass die Einstellung \"%{settings}\" konfiguriert wurde."
           other: "Vergewissere dich, dass diese Einstellungen konfiguriert wurden: %{settings}"
+    embeddings:
+      configuration:
+        disable_embeddings: "Du musst zuerst \"KI-Einbettungen aktiviert\" deaktivieren."
+        choose_model: "Lege zuerst „KI-Einbettungsmodell“ fest."
+        model_unreachable: "Es ist uns nicht gelungen, eine Testeinbettung mit diesem Modell zu erstellen. Prüfe, ob deine Einstellungen korrekt sind."
+        hint:
+          one: "Vergewissere dich, dass die Einstellung \"%{settings}\" konfiguriert wurde."
+          other: "Vergewissere dich, dass die Einstellungen des gewünschten Anbieters konfiguriert wurden. Die Optionen sind: %{settings}"
