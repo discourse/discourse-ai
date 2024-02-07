@@ -6,17 +6,51 @@ RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
   before { SiteSetting.ai_helper_model = "fake:fake" }
 
   fab!(:thread) { Fabricate(:chat_thread) }
+  fab!(:chat_message) { Fabricate(:chat_message, thread: thread) }
   fab!(:user) { Fabricate(:user) }
 
-  describe "#suggested_title" do
-    it "suggest the first option from the generate_titles prompt" do
-      titles =
-        "<item>The solitary horse</item><item>The horse etched in gold</item><item>A horse's infinite journey</item><item>A horse lost in time</item><item>A horse's last ride</item>"
+  describe "#cleanup" do
+    it "picks the first when there are multiple" do
+      titles = "The solitary horse\nThe horse etched in gold"
       expected_title = "The solitary horse"
-      result =
-        DiscourseAi::Completions::Llm.with_prepared_responses([titles]) { titler.suggested_title }
+
+      result = titler.cleanup(titles)
 
       expect(result).to eq(expected_title)
+    end
+
+    it "cleans up double quotes enclosing the whole title" do
+      titles = '"The solitary horse"'
+      expected_title = "The solitary horse"
+
+      result = titler.cleanup(titles)
+
+      expect(result).to eq(expected_title)
+    end
+
+    it "cleans up single quotes enclosing the whole title" do
+      titles = "'The solitary horse'"
+      expected_title = "The solitary horse"
+
+      result = titler.cleanup(titles)
+
+      expect(result).to eq(expected_title)
+    end
+
+    it "leaves quotes in the middle of title" do
+      titles = "The 'solitary' horse"
+      expected_title = "The 'solitary' horse"
+
+      result = titler.cleanup(titles)
+
+      expect(result).to eq(expected_title)
+    end
+  end
+
+  describe "#thread_content" do
+    it "returns the chat message and user" do
+      expect(titler.thread_content(thread)).to include(chat_message.message)
+      expect(titler.thread_content(thread)).to include(chat_message.user.username)
     end
   end
 end
