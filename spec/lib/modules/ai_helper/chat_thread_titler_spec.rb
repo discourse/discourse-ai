@@ -45,6 +45,23 @@ RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
 
       expect(result).to eq(expected_title)
     end
+
+    it "parses the XML" do
+      titles = "Here is your title <title>The solitary horse</title> my friend"
+      expected_title = "The solitary horse"
+
+      result = titler.cleanup(titles)
+
+      expect(result).to eq(expected_title)
+    end
+
+    it "truncates long titles" do
+      titles = "O cavalo trota pelo campo" + " Pocotó" * 100
+
+      result = titler.cleanup(titles)
+
+      expect(result.size).to be <= 100
+    end
   end
 
   describe "#thread_content" do

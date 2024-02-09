@@ -23,7 +23,7 @@ module DiscourseAi
             and you will generate a single attention-grabbing title. Please keep the title concise and under 15 words
             and ensure that the meaning is maintained. The title will utilize the same language type of the chat.
             I want you to only reply the suggested title and nothing else, do not write explanations.
-            You will find the chat between <input></input> XML tags.
+            You will find the chat between <input></input> XML tags. Return the suggested title between <title> tags.
           TEXT
             messages: [{ type: :user, content: chat, id: "User" }],
           )
@@ -31,11 +31,16 @@ module DiscourseAi
         DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model).generate(
           prompt,
           user: Discourse.system_user,
+          stop_sequences: ["</input>"],
         )
       end
 
       def cleanup(title)
-        title.split("\n").first.then { _1.match?(/^("|')(.*)("|')$/) ? title[1..-2] : _1 }
+        (Nokogiri::HTML5.fragment(title).at("title")&.text || title)
+          .split("\n")
+          .first
+          .then { _1.match?(/^("|')(.*)("|')$/) ? _1[1..-2] : _1 }
+          .truncate(100, separator: " ")
       end
 
       def thread_content(thread)
