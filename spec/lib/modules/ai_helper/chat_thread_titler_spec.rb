@@ -54,7 +54,7 @@ RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
 
       expect(result).to eq(expected_title)
     end
-    
+
     it "truncates long titles" do
       titles = "O cavalo trota pelo campo" + " Pocotó" * 100
 
