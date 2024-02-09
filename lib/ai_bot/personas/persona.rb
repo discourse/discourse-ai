@@ -61,6 +61,7 @@ module DiscourseAi
               Tools::SearchSettings,
               Tools::Summarize,
               Tools::SettingContext,
+              Tools::RandomPicker,
             ]
 
             tools << Tools::ListTags if SiteSetting.tagging_enabled
