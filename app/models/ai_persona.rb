@@ -9,6 +9,9 @@ class AiPersona < ActiveRecord::Base
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
 
+  belongs_to :created_by, class_name: "User"
+  belongs_to :user
+
   before_destroy :ensure_not_system
 
   class MultisiteHash
@@ -54,6 +57,17 @@ class AiPersona < ActiveRecord::Base
       .all
       .limit(MAX_PERSONAS_PER_SITE)
       .map(&:class_instance)
+  end
+
+  def self.mentionables
+    persona_cache[:mentionable_usernames] ||= AiPersona
+      .where(mentionable: true)
+      .where(enabled: true)
+      .joins(:user)
+      .pluck("users.username, allowed_group_ids")
+      .map do |username, allowed_group_ids|
+        { username: username, allowed_group_ids: allowed_group_ids }
+      end
   end
 
   after_commit :bump_cache
@@ -171,6 +185,26 @@ class AiPersona < ActiveRecord::Base
     end
   end
 
+  def create_user!
+    raise "User already exists" if user_id
+
+    user =
+      User.new(
+        email: "no_email_#{name}",
+        name: name.titleize,
+        username: UserNameSuggester.suggest(name),
+        active: true,
+        approved: true,
+        admin: true,
+        moderator: true,
+        trust_level: TrustLevel[4],
+      )
+    user.save!(validate: false)
+
+    update!(user_id: user.id)
+    user
+  end
+
   private
 
   def system_persona_unchangeable
@@ -206,6 +240,9 @@ end
 #  priority          :boolean          default(FALSE), not null
 #  temperature       :float
 #  top_p             :float
+#  user_id           :integer
+#  mentionable       :boolean          default(FALSE), not null
+#  default_llm       :text
 #
 # Indexes
 #

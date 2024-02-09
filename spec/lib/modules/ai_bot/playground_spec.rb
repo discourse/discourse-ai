@@ -3,16 +3,15 @@
 RSpec.describe DiscourseAi::AiBot::Playground do
   subject(:playground) { described_class.new(bot) }
 
-  before do
+  fab!(:bot_user) do
     SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
     SiteSetting.ai_bot_enabled = true
+    User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
   end
-
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
-  let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user) }
+  fab!(:bot) { DiscourseAi::AiBot::Bot.as(bot_user) }
 
   fab!(:user) { Fabricate(:user) }
-  let!(:pm) do
+  fab!(:pm) do
     Fabricate(
       :private_message_topic,
       title: "This is my special PM",
@@ -23,13 +22,13 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       ],
     )
   end
-  let!(:first_post) do
+  fab!(:first_post) do
     Fabricate(:post, topic: pm, user: user, post_number: 1, raw: "This is a reply by the user")
   end
-  let!(:second_post) do
+  fab!(:second_post) do
     Fabricate(:post, topic: pm, user: bot_user, post_number: 2, raw: "This is a bot reply")
   end
-  let!(:third_post) do
+  fab!(:third_post) do
     Fabricate(
       :post,
       topic: pm,
@@ -37,6 +36,36 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       post_number: 3,
       raw: "This is a second reply by the user",
     )
+  end
+
+  describe "persona mention support" do
+    before { Jobs.run_immediately! }
+
+    it "allows mentioning a persona" do
+      persona =
+        AiPersona.create!(
+          name: "Test Persona",
+          description: "A test persona",
+          allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+          enabled: true,
+          system_prompt: "You are a helpful bot",
+        )
+
+      persona.create_user!
+      persona.update!(default_llm: "test", mentionable: true)
+
+      post = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
+        post =
+          create_post(
+            title: "My public topic",
+            raw: "Hey @#{persona.user.username}, can you help me?",
+          )
+      end
+
+      post.topic.reload
+      expect(post.topic.posts.order(:post_number).last.raw).to eq("Yes I can")
+    end
   end
 
   describe "#title_playground" do
