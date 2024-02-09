@@ -85,7 +85,15 @@ module DiscourseAi
               ).first
             existing_lists = existing_index.match(/lists='(\d+)'/)&.captures&.first&.to_i
 
-            if existing_index_age > 0 && existing_index_age < 1.hour.ago.to_i
+            if existing_index_age > 0 &&
+                 existing_index_age <
+                   (
+                     if SiteSetting.ai_embeddings_semantic_related_topics_enabled
+                       1.hour.ago.to_i
+                     else
+                       1.day.ago.to_i
+                     end
+                   )
               if new_rows > 10_000
                 Rails.logger.info(
                   "Index #{index_name} is #{existing_index_age} seconds old, and there are #{new_rows} new rows, updating...",
