@@ -20,6 +20,10 @@ module DiscourseAi
         bot_user = nil
         mentioned = nil
 
+        if post.topic.private_message?
+          bot_user = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user
+        end
+
         if AiPersona.mentionables.length > 0
           mentions = post.mentions.map(&:downcase)
           mentioned =
@@ -28,7 +32,8 @@ module DiscourseAi
                 (post.user.group_ids & mentionable[:allowed_group_ids]).present?
             end
 
-          if mentioned
+          # PM always takes precedence
+          if mentioned && !bot_user
             user_id =
               DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(mentioned[:default_llm])
 
@@ -43,10 +48,6 @@ module DiscourseAi
               bot_user = User.find_by(id: user_id)
             end
           end
-        end
-
-        if !bot_user && post.topic.private_message?
-          bot_user = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user
         end
 
         if bot_user
@@ -167,9 +168,14 @@ module DiscourseAi
           user: post.user,
         }
 
+        reply_user = bot.bot_user
+        if bot.persona.class.respond_to?(:user_id)
+          reply_user = User.find_by(id: bot.persona.class.user_id) || reply_user
+        end
+
         reply_post =
           PostCreator.create!(
-            bot.bot_user,
+            reply_user,
             topic_id: post.topic_id,
             raw: "",
             skip_validations: true,
@@ -265,11 +271,14 @@ module DiscourseAi
       end
 
       def schedule_bot_reply(post)
+        persona_id =
+          DiscourseAi::AiBot::Personas::Persona.system_personas[bot.persona.class] ||
+            bot.persona.class.id
         ::Jobs.enqueue(
           :create_ai_reply,
           post_id: post.id,
           bot_user_id: bot.bot_user.id,
-          persona_id: bot.persona.class.id,
+          persona_id: persona_id,
         )
       end
 

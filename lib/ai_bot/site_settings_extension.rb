@@ -4,11 +4,11 @@ module DiscourseAi::AiBot::SiteSettingsExtension
   def self.enable_or_disable_ai_bots
     enabled_bots = SiteSetting.ai_bot_enabled_chat_bots_map
     enabled_bots = [] if !SiteSetting.ai_bot_enabled
+
     DiscourseAi::AiBot::EntryPoint::BOTS.each do |id, bot_name, name|
       if id == DiscourseAi::AiBot::EntryPoint::FAKE_ID
         next if Rails.env.production?
       end
-
       active = enabled_bots.include?(name)
       user = User.find_by(id: id)
 

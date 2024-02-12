@@ -56,13 +56,15 @@ module DiscourseAi
           @valid_provider_models = Set.new(valid_provider_models)
         end
 
-        def with_prepared_responses(responses)
+        def with_prepared_responses(responses, llm: nil)
           @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(responses)
+          @canned_llm = llm
 
-          yield(@canned_response)
+          yield(@canned_response, llm)
         ensure
           # Don't leak prepared response if there's an exception.
           @canned_response = nil
+          @canned_llm = nil
         end
 
         def proxy(model_name)
@@ -74,7 +76,12 @@ module DiscourseAi
           dialect_klass =
             DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name_without_prov)
 
-          return new(dialect_klass, @canned_response, model_name) if @canned_response
+          if @canned_response
+            if @canned_llm && @canned_llm != model_name
+              raise "Invalid call LLM call, expected #{@canned_llm} but got #{model_name}"
+            end
+            return new(dialect_klass, @canned_response, model_name)
+          end
 
           gateway =
             DiscourseAi::Completions::Endpoints::Base.endpoint_for(

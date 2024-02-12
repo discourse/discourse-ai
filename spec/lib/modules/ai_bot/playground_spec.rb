@@ -10,7 +10,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
   fab!(:bot) { DiscourseAi::AiBot::Bot.as(bot_user) }
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
+
+  fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
   fab!(:pm) do
     Fabricate(
       :private_message_topic,
@@ -38,12 +40,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     )
   end
 
-  describe "persona mention support" do
+  describe "persona with user support" do
     before { Jobs.run_immediately! }
 
-    it "allows mentioning a persona" do
-      SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
-
+    fab!(:persona) do
       persona =
         AiPersona.create!(
           name: "Test Persona",
@@ -55,6 +55,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       persona.create_user!
       persona.update!(default_llm: "claude-2", mentionable: true)
+      persona
+    end
+
+    it "allows mentioning a persona" do
+      SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
 
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
@@ -66,7 +71,37 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       post.topic.reload
-      expect(post.topic.posts.order(:post_number).last.raw).to eq("Yes I can")
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Yes I can")
+      expect(last_post.user_id).to eq(persona.user_id)
+    end
+
+    it "picks the correct llm for persona in PMs" do
+      # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
+      SiteSetting.ai_bot_enabled = true
+      SiteSetting.ai_bot_enabled_chat_bots = "gpt-3.5-turbo|claude-2"
+
+      post = nil
+      gpt3_5_bot_user = User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID)
+
+      # title is queued first, ensures it uses the llm targeted via target_usernames not claude
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Magic title", "Yes I can"],
+        llm: "open_ai:gpt-3.5-turbo-16k",
+      ) do
+        post =
+          create_post(
+            title: "I just made a PM",
+            raw: "Hey @#{persona.user.username}, can you help me?",
+            target_usernames: "#{user.username},#{gpt3_5_bot_user.username}",
+            archetype: Archetype.private_message,
+            user: admin,
+          )
+      end
+
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Yes I can")
+      expect(last_post.user_id).to eq(persona.user_id)
     end
   end
 
