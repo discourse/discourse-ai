@@ -9,14 +9,75 @@ module DiscourseAi
 
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
 
+      def self.schedule_reply(post)
+        bot_ids = DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS
+
+        return if bot_ids.include?(post.user_id)
+        if AiPersona.mentionables.any? { |mentionable| mentionable[:user_id] == post.user_id }
+          return
+        end
+
+        bot_user = nil
+        mentioned = nil
+
+        if AiPersona.mentionables.length > 0
+          mentions = post.mentions.map(&:downcase)
+          mentioned =
+            AiPersona.mentionables.find do |mentionable|
+              mentions.include?(mentionable[:username]) &&
+                (post.user.group_ids & mentionable[:allowed_group_ids]).present?
+            end
+
+          if mentioned
+            user_id =
+              DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(mentioned[:default_llm])
+
+            if !user_id
+              Rails.logger.warn(
+                "Model #{mentioned[:default_llm]} not found for persona #{mentioned[:username]}",
+              )
+              if Rails.env.development? || Rails.env.test?
+                raise "Model #{mentioned[:default_llm]} not found for persona #{mentioned[:username]}"
+              end
+            else
+              bot_user = User.find_by(id: user_id)
+            end
+          end
+        end
+
+        if !bot_user && post.topic.private_message?
+          bot_user = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user
+        end
+
+        if bot_user
+          persona_id = mentioned&.dig(:id) || post.topic.custom_fields["ai_persona_id"]
+          persona = nil
+
+          if persona_id
+            persona =
+              DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id.to_i)
+          end
+
+          if !persona && persona_name = post.topic.custom_fields["ai_persona"]
+            persona =
+              DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, name: persona_name)
+          end
+
+          persona ||= DiscourseAi::AiBot::Personas::General
+
+          bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.new)
+          new(bot).update_playground_with(post)
+        end
+      end
+
       def initialize(bot)
         @bot = bot
       end
 
       def update_playground_with(post)
-        if can_attach?(post) && bot.bot_user
-          schedule_playground_titling(post, bot.bot_user)
-          schedule_bot_reply(post, bot.bot_user)
+        if can_attach?(post)
+          schedule_playground_titling(post)
+          schedule_bot_reply(post)
         end
       end
 
@@ -184,28 +245,32 @@ module DiscourseAi
       def can_attach?(post)
         return false if bot.bot_user.nil?
         return false if post.post_type != Post.types[:regular]
-        return false unless post.topic.private_message?
         return false if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).blank?
 
         true
       end
 
-      def schedule_playground_titling(post, bot_user)
-        if post.post_number == 1
+      def schedule_playground_titling(post)
+        if post.post_number == 1 && post.topic.private_message?
           post.topic.custom_fields[REQUIRE_TITLE_UPDATE] = true
           post.topic.save_custom_fields
-        end
 
-        ::Jobs.enqueue_in(
-          5.minutes,
-          :update_ai_bot_pm_title,
-          post_id: post.id,
-          bot_user_id: bot_user.id,
-        )
+          ::Jobs.enqueue_in(
+            5.minutes,
+            :update_ai_bot_pm_title,
+            post_id: post.id,
+            bot_user_id: bot.bot_user.id,
+          )
+        end
       end
 
-      def schedule_bot_reply(post, bot_user)
-        ::Jobs.enqueue(:create_ai_reply, post_id: post.id, bot_user_id: bot_user.id)
+      def schedule_bot_reply(post)
+        ::Jobs.enqueue(
+          :create_ai_reply,
+          post_id: post.id,
+          bot_user_id: bot.bot_user.id,
+          persona_id: bot.persona.class.id,
+        )
       end
 
       def context(topic)

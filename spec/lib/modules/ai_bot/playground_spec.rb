@@ -42,6 +42,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     before { Jobs.run_immediately! }
 
     it "allows mentioning a persona" do
+      SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+
       persona =
         AiPersona.create!(
           name: "Test Persona",
@@ -52,7 +54,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         )
 
       persona.create_user!
-      persona.update!(default_llm: "test", mentionable: true)
+      persona.update!(default_llm: "claude-2", mentionable: true)
 
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do

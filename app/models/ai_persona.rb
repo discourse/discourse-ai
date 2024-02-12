@@ -64,9 +64,15 @@ class AiPersona < ActiveRecord::Base
       .where(mentionable: true)
       .where(enabled: true)
       .joins(:user)
-      .pluck("users.username, allowed_group_ids")
-      .map do |username, allowed_group_ids|
-        { username: username, allowed_group_ids: allowed_group_ids }
+      .pluck("ai_personas.id, users.id, lower(users.username), allowed_group_ids, default_llm")
+      .map do |id, user_id, username, allowed_group_ids, default_llm|
+        {
+          id: id,
+          user_id: user_id,
+          username: username,
+          allowed_group_ids: allowed_group_ids,
+          default_llm: default_llm,
+        }
       end
   end
 
