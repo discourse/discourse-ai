@@ -24,13 +24,21 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           :ai_persona,
           name: "search2",
           commands: [["SearchCommand", { base_query: "test" }]],
+          mentionable: true,
+          default_llm: "anthropic:claude-2",
         )
+      persona2.create_user!
 
       get "/admin/plugins/discourse-ai/ai_personas.json"
       expect(response).to be_successful
 
       serializer_persona1 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona1.id }
       serializer_persona2 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona2.id }
+
+      expect(serializer_persona2["mentionable"]).to eq(true)
+      expect(serializer_persona2["default_llm"]).to eq("anthropic:claude-2")
+      expect(serializer_persona2["user_id"]).to eq(persona2.user_id)
+      expect(serializer_persona2["user"]["id"]).to eq(persona2.user_id)
 
       commands = response.parsed_body["meta"]["commands"]
       search_command = commands.find { |c| c["id"] == "Search" }
@@ -118,6 +126,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           commands: [["search", { "base_query" => "test" }]],
           top_p: 0.1,
           temperature: 0.5,
+          mentionable: true,
+          default_llm: "anthropic:claude-2",
         }
       end
 
@@ -134,6 +144,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           expect(persona_json["name"]).to eq("superbot")
           expect(persona_json["top_p"]).to eq(0.1)
           expect(persona_json["temperature"]).to eq(0.5)
+          expect(persona_json["mentionable"]).to eq(true)
+          expect(persona_json["default_llm"]).to eq("anthropic:claude-2")
 
           persona = AiPersona.find(persona_json["id"])
 
@@ -153,10 +165,19 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
   end
 
+  describe "POST #create_user" do
+    it "creates a user for the persona" do
+      post "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}/create_user.json"
+      ai_persona.reload
+
+      expect(response).to be_successful
+      expect(response.parsed_body["user"]["id"]).to eq(ai_persona.user_id)
+    end
+  end
+
   describe "PUT #update" do
     it "allows us to trivially clear top_p and temperature" do
       persona = Fabricate(:ai_persona, name: "test_bot2", top_p: 0.5, temperature: 0.1)
-
       put "/admin/plugins/discourse-ai/ai_personas/#{persona.id}.json",
           params: {
             ai_persona: {

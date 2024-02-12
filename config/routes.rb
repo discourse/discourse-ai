@@ -28,8 +28,11 @@ Discourse::Application.routes.draw do
 
   scope "/admin/plugins/discourse-ai", constraints: AdminConstraint.new do
     get "/", to: redirect("/admin/plugins/discourse-ai/ai_personas")
+
     resources :ai_personas,
               only: %i[index create show update destroy],
               controller: "discourse_ai/admin/ai_personas"
+
+    post "/ai-personas/:id/create_user", to: "discourse_ai/admin/ai_personas#create_user"
   end
 end

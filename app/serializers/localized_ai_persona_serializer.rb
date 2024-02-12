@@ -13,7 +13,12 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :system_prompt,
              :allowed_group_ids,
              :temperature,
-             :top_p
+             :top_p,
+             :mentionable,
+             :default_llm,
+             :user_id
+
+  has_one :user, serializer: BasicUserSerializer, embed: :object
 
   def name
     object.class_instance.name

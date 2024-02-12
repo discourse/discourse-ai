@@ -3,7 +3,7 @@
 module DiscourseAi
   module Admin
     class AiPersonasController < ::Admin::AdminController
-      before_action :find_ai_persona, only: %i[show update destroy]
+      before_action :find_ai_persona, only: %i[show update destroy create_user]
 
       def index
         ai_personas =
@@ -30,6 +30,11 @@ module DiscourseAi
         else
           render_json_error ai_persona
         end
+      end
+
+      def create_user
+        user = @ai_persona.create_user!
+        render json: BasicUserSerializer.new(user, root: "user")
       end
 
       def update
@@ -64,6 +69,9 @@ module DiscourseAi
             :priority,
             :top_p,
             :temperature,
+            :default_llm,
+            :user_id,
+            :mentionable,
             allowed_group_ids: [],
           )
 
