@@ -173,19 +173,23 @@ module DiscourseAi
           reply_user = User.find_by(id: bot.persona.class.user_id) || reply_user
         end
 
-        reply_post =
-          PostCreator.create!(
-            reply_user,
-            topic_id: post.topic_id,
-            raw: "",
-            skip_validations: true,
-            skip_jobs: true,
-          )
+        stream_reply = post.topic.private_message?
 
-        publish_update(reply_post, { raw: reply_post.cooked })
+        if stream_reply
+          reply_post =
+            PostCreator.create!(
+              reply_user,
+              topic_id: post.topic_id,
+              raw: "",
+              skip_validations: true,
+              skip_jobs: true,
+            )
 
-        redis_stream_key = "gpt_cancel:#{reply_post.id}"
-        Discourse.redis.setex(redis_stream_key, 60, 1)
+          publish_update(reply_post, { raw: reply_post.cooked })
+
+          redis_stream_key = "gpt_cancel:#{reply_post.id}"
+          Discourse.redis.setex(redis_stream_key, 60, 1)
+        end
 
         new_custom_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
@@ -193,30 +197,46 @@ module DiscourseAi
             raw = reply.dup
             raw << "\n\n" << placeholder if placeholder.present?
 
-            if !Discourse.redis.get(redis_stream_key)
+            if stream_reply && !Discourse.redis.get(redis_stream_key)
               cancel&.call
-
               reply_post.update!(raw: reply, cooked: PrettyText.cook(reply))
             end
 
-            # Minor hack to skip the delay during tests.
-            if placeholder.blank?
-              next if (Time.now - start < 0.5) && !Rails.env.test?
-              start = Time.now
+            if stream_reply
+              # Minor hack to skip the delay during tests.
+              if placeholder.blank?
+                next if (Time.now - start < 0.5) && !Rails.env.test?
+                start = Time.now
+              end
+
+              Discourse.redis.expire(redis_stream_key, 60)
+
+              publish_update(reply_post, { raw: raw })
             end
-
-            Discourse.redis.expire(redis_stream_key, 60)
-
-            publish_update(reply_post, { raw: raw })
           end
 
         return if reply.blank?
 
-        # land the final message prior to saving so we don't clash
-        reply_post.cooked = PrettyText.cook(reply)
-        publish_final_update(reply_post)
+        if stream_reply
+          # land the final message prior to saving so we don't clash
+          reply_post.cooked = PrettyText.cook(reply)
+          publish_final_update(reply_post)
 
-        reply_post.revise(bot.bot_user, { raw: reply }, skip_validations: true, skip_revision: true)
+          reply_post.revise(
+            bot.bot_user,
+            { raw: reply },
+            skip_validations: true,
+            skip_revision: true,
+          )
+        else
+          reply_post =
+            PostCreator.create!(
+              reply_user,
+              topic_id: post.topic_id,
+              raw: reply,
+              skip_validations: true,
+            )
+        end
 
         # not need to add a custom prompt for a single reply
         if new_custom_prompts.length > 1
@@ -228,7 +248,7 @@ module DiscourseAi
 
         reply_post
       ensure
-        publish_final_update(reply_post)
+        publish_final_update(reply_post) if stream_reply
       end
 
       private
