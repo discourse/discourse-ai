@@ -13,6 +13,7 @@ module DiscourseAi
               gpt-4-32k
               gpt-4-0125-preview
               gpt-4-turbo
+              gpt-4-vision-preview
             ].include?(model_name)
           end
 

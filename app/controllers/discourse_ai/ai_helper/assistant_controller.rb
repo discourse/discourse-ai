@@ -116,6 +116,25 @@ module DiscourseAi
                           status: 502
       end
 
+      def caption_image
+        image_url = params[:image_url]
+        raise Discourse::InvalidParameters.new(:image_url) if !image_url
+
+        image = Upload.where(url: params[:image_url])
+
+        hijack do
+          render json:
+                   DiscourseAi::AiHelper::Assistant.new.generate_image_caption(
+                     image_url,
+                     current_user,
+                   ),
+                 status: 200
+        end
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
+        render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
+                          status: 502
+      end
+
       private
 
       def get_text_param!
