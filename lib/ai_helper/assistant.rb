@@ -85,6 +85,20 @@ module DiscourseAi
         end
       end
 
+      def generate_image_caption(image_url, user)
+        generic_prompt = {
+          insts: "You are a helpful bot",
+          input: "Describe an image",
+          post_insts: "The image url is #{image_url}",
+        }
+
+        instructions = [generic_prompt[:insts], generic_prompt[:post_insts].to_s].join("\n")
+        prompt = DiscourseAi::Completions::Prompt.new(instructions)
+        llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
+
+        llm.generate(prompt, user: user)
+      end
+
       private
 
       SANITIZE_REGEX_STR =
