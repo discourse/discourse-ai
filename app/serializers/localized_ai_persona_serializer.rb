@@ -16,7 +16,8 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :top_p,
              :mentionable,
              :default_llm,
-             :user_id
+             :user_id,
+             :max_context_posts
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
 

@@ -8,7 +8,19 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     SiteSetting.ai_bot_enabled = true
     User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
   end
-  fab!(:bot) { DiscourseAi::AiBot::Bot.as(bot_user) }
+
+  fab!(:bot) do
+    persona =
+      AiPersona
+        .find(
+          DiscourseAi::AiBot::Personas::Persona.system_personas[
+            DiscourseAi::AiBot::Personas::General
+          ],
+        )
+        .class_instance
+        .new
+    DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+  end
 
   fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
 
@@ -181,7 +193,16 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     context "with Dall E bot" do
       let(:bot) do
-        DiscourseAi::AiBot::Bot.as(bot_user, persona: DiscourseAi::AiBot::Personas::DallE3.new)
+        persona =
+          AiPersona
+            .find(
+              DiscourseAi::AiBot::Personas::Persona.system_personas[
+                DiscourseAi::AiBot::Personas::DallE3
+              ],
+            )
+            .class_instance
+            .new
+        DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
       end
 
       it "does not include placeholders in conversation context (simulate DALL-E)" do
@@ -224,6 +245,24 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
 
   describe "#conversation_context" do
+    context "with limited context" do
+      before do
+        @old_persona = playground.bot.persona
+        persona = Fabricate(:ai_persona, max_context_posts: 1)
+        playground.bot.persona = persona.class_instance.new
+      end
+
+      after { playground.bot.persona = @old_persona }
+
+      it "respects max_context_post" do
+        context = playground.conversation_context(third_post)
+
+        expect(context).to contain_exactly(
+          *[{ type: :user, id: user.username, content: third_post.raw }],
+        )
+      end
+    end
+
     it "includes previous posts ordered by post_number" do
       context = playground.conversation_context(third_post)
 

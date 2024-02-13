@@ -306,6 +306,18 @@ export default class PersonaEditor extends Component {
           disabled={{this.editingModel.system}}
         />
       </div>
+      <div class="control-group">
+        <label>{{I18n.t "discourse_ai.ai_persona.max_context_posts"}}</label>
+        <Input
+          @type="number"
+          class="ai-persona-editor__max_context_posts"
+          @value={{this.editingModel.max_context_posts}}
+        />
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t "discourse_ai.ai_persona.max_context_posts_help"}}
+        />
+      </div>
       {{#if this.showTemperature}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.ai_persona.temperature"}}</label>

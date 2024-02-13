@@ -17,6 +17,7 @@ const ATTRIBUTES = [
   "mentionable",
   "default_llm",
   "user",
+  "max_context_posts",
 ];
 
 class CommandOption {

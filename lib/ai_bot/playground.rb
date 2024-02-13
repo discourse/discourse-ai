@@ -3,6 +3,8 @@
 module DiscourseAi
   module AiBot
     class Playground
+      attr_reader :bot
+
       # An abstraction to manage the bot and topic interactions.
       # The bot will take care of completions while this class updates the topic title
       # and stream replies.
@@ -86,6 +88,10 @@ module DiscourseAi
       def conversation_context(post)
         # Pay attention to the `post_number <= ?` here.
         # We want to inject the last post as context because they are translated differently.
+
+        # also setting default to 40, allowing huge contexts costs lots of tokens
+        max_posts = bot.persona.class.max_context_posts || 40
+
         context =
           post
             .topic
@@ -95,7 +101,7 @@ module DiscourseAi
             .where("post_number <= ?", post.post_number)
             .order("post_number desc")
             .where("post_type = ?", Post.types[:regular])
-            .limit(50)
+            .limit(max_posts)
             .pluck(:raw, :username, "post_custom_prompts.custom_prompt")
 
         result = []
@@ -273,8 +279,6 @@ module DiscourseAi
           @published_final_update = true
         end
       end
-
-      attr_reader :bot
 
       def can_attach?(post)
         return false if bot.bot_user.nil?

@@ -76,6 +76,7 @@ module DiscourseAi
             :default_llm,
             :user_id,
             :mentionable,
+            :max_context_posts,
             allowed_group_ids: [],
           )
 
