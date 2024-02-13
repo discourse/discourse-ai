@@ -92,7 +92,11 @@ module DiscourseAi
           post_insts: "The image url is #{image_url}",
         }
 
-        instructions = [generic_prompt[:input], generic_prompt[:insts], generic_prompt[:post_insts].to_s].join("\n")
+        instructions = [
+          generic_prompt[:input],
+          generic_prompt[:insts],
+          generic_prompt[:post_insts].to_s,
+        ].join("\n")
         prompt = DiscourseAi::Completions::Prompt.new(instructions)
         llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
 
