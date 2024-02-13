@@ -54,6 +54,14 @@ tr_TR:
     ai_openai_api_key: "OpenAI API'si için API anahtarı"
     ai_anthropic_api_key: "Antropik API'si için API anahtarı"
     ai_hugging_face_api_url: "OpenSource LLM çıkarımı için kullanılan özel URL. https://github.com/huggingface/text-generation-inference ile uyumlu"
+    ai_hugging_face_api_key: Hugging Face API'si için API anahtarı
+    ai_hugging_face_token_limit: Hugging Face API'nin istek başına kullanabileceği maksimum jeton sayısı
+    ai_hugging_face_model_display_name: Hugging Face AI modeli için görüntülenen ad
+    ai_hugging_face_tei_endpoint: Hugging Face metni yerleştirme çıkarımı için API'nin çalıştığı URL
+    ai_hugging_face_tei_api_key: Hugging Face metni yerleştirme çıkarımı için API anahtarı
+    ai_gemini_api_key: Google Gemini API'sı için API anahtarı
+    ai_vllm_endpoint: vLLM için API'nin çalıştığı URL
+    ai_vllm_api_key: vLLM API'si için API anahtarı
     composer_ai_helper_enabled: "Bestecinin YZ yardımcısını etkinleştirin."
     ai_helper_allowed_groups: "Bu gruplardaki kullanıcılar, bestecide YZ yardımcı düğmesini görür."
     ai_helper_allowed_in_pm: "Kişisel mesajlarda bestecinin YZ yardımcıyı etkinleştirin."
@@ -62,6 +70,8 @@ tr_TR:
     ai_helper_automatic_chat_thread_title_delay: "AI yardımcısının sohbet dizisi başlığını otomatik olarak ayarlamasından önceki dakika cinsinden gecikme."
     ai_helper_automatic_chat_thread_title: "Sohbet konu başlıklarını konu içeriklerine göre otomatik olarak ayarlayın."
     ai_helper_illustrate_post_model: "Besteci AI yardımcısının gönderiyi çizme özelliği için kullanılacak model"
+    ai_helper_enabled_features: "Yapay zeka yardımcısında etkinleştirilecek özellikleri seçin."
+    post_ai_helper_allowed_groups: "Gönderilerde AI Yardımcısı özelliklerine erişmesine izin verilen kullanıcı grupları"
     ai_embeddings_enabled: "Gömme modülünü etkinleştirin."
     ai_embeddings_discourse_service_api_endpoint: "Gömme modülü için API'nin çalıştığı URL"
     ai_embeddings_discourse_service_api_key: "Gömme API'si için API anahtarı"
@@ -74,6 +84,7 @@ tr_TR:
     ai_embeddings_semantic_search_enabled: "Tam sayfa semantik aramayı etkinleştirin."
     ai_embeddings_semantic_related_include_closed_topics: "Kapalı konuları semantik arama sonuçlarına dâhil edin"
     ai_embeddings_semantic_search_hyde_model: "Anlamsal arama sırasında daha iyi sonuçlar elde etmek için anahtar kelimeleri genişletmek üzere kullanılan model"
+    ai_embeddings_per_post_enabled: Her gönderi için yerleştirmeler oluşturma
     ai_summarization_discourse_service_api_endpoint: "Discourse özetleme API'sinin çalıştığı URL."
     ai_summarization_discourse_service_api_key: "Discourse özetleme API'si için API anahtarı."
     ai_bot_enabled: "YZ Botu modülünü etkinleştirin."
@@ -227,3 +238,21 @@ tr_TR:
           anger: "Öfke"
           joy: "Neşe"
           disgust: "İğrenme"
+    llm:
+      configuration:
+        disable_module_first: "Önce %{setting} 'i devre dışı bırakmanız gerekir."
+        set_llm_first: "Önce %{setting} 'i ayarlayın."
+        model_unreachable: "Bu modelden yanıt alamadık. Önce ayarlarınızı kontrol edin."
+      endpoints:
+        not_configured: "%{display_name} (yapılandırılmadı)"
+        configuration_hint:
+          one: "%{settings}` ayarının yapılandırıldığından emin olun."
+          other: "Bu ayarların yapılandırıldığından emin olun: %{settings}"
+    embeddings:
+      configuration:
+        disable_embeddings: "Önce 'ai yerleştirmeleri etkin' seçeneğini devre dışı bırakmanız gerekir."
+        choose_model: "Önce 'ai yerleştirme modelini' ayarlayın."
+        model_unreachable: "Bu modelle bir test yerleştirmesi oluşturamadık. Ayarlarınızın doğru olup olmadığını kontrol edin."
+        hint:
+          one: "%{settings}` ayarının yapılandırıldığından emin olun."
+          other: "İstediğiniz sağlayıcının ayarlarının yapılandırıldığından emin olun. Seçenekler şunlardır: %{settings}"
