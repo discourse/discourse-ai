@@ -5,17 +5,21 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
+import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
+import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
 import I18n from "discourse-i18n";
+import AdminUser from "admin/models/admin-user";
 import GroupChooser from "select-kit/components/group-chooser";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiCommandSelector from "./ai-command-selector";
+import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaCommandOptions from "./ai-persona-command-options";
 
 export default class PersonaEditor extends Component {
@@ -81,6 +85,22 @@ export default class PersonaEditor extends Component {
     return this.editingModel?.top_p || !this.editingModel?.system;
   }
 
+  get adminUser() {
+    return AdminUser.create(this.editingModel?.user);
+  }
+
+  get mappedDefaultLlm() {
+    return this.editingModel?.default_llm || "blank";
+  }
+
+  set mappedDefaultLlm(value) {
+    if (value === "blank") {
+      this.editingModel.default_llm = null;
+    } else {
+      this.editingModel.default_llm = value;
+    }
+  }
+
   @action
   delete() {
     return this.dialog.confirm({
@@ -103,26 +123,37 @@ export default class PersonaEditor extends Component {
 
   @action
   async toggleEnabled() {
-    this.args.model.set("enabled", !this.args.model.enabled);
-    this.editingModel.set("enabled", this.args.model.enabled);
-    if (!this.args.model.isNew) {
-      try {
-        await this.args.model.update({ enabled: this.args.model.enabled });
-      } catch (e) {
-        popupAjaxError(e);
-      }
-    }
+    this.toggleField("enabled");
   }
 
   @action
   async togglePriority() {
-    this.args.model.set("priority", !this.args.model.priority);
-    this.editingModel.set("priority", this.args.model.priority);
+    this.toggleField("priority", true);
+  }
+
+  @action
+  async toggleMentionable() {
+    this.toggleField("mentionable");
+  }
+
+  @action
+  async createUser() {
+    let user = await this.args.model.createUser();
+    this.editingModel.set("user", user);
+  }
+
+  async toggleField(field, sortPersonas) {
+    this.args.model.set(field, !this.args.model[field]);
+    this.editingModel.set("field", this.args.model[field]);
     if (!this.args.model.isNew) {
       try {
-        await this.args.model.update({ priority: this.args.model.priority });
+        const args = {};
+        args[field] = this.args.model[field];
 
-        this.#sortPersonas();
+        await this.args.model.update(args);
+        if (sortPersonas) {
+          this.#sortPersonas();
+        }
       } catch (e) {
         popupAjaxError(e);
       }
@@ -170,6 +201,20 @@ export default class PersonaEditor extends Component {
           @content={{I18n.t "discourse_ai.ai_persona.priority_help"}}
         />
       </div>
+      {{#if this.editingModel.user}}
+        <div class="control-group ai-persona-editor__mentionable">
+          <DToggleSwitch
+            class="ai-persona-editor__mentionable_toggle"
+            @state={{@model.mentionable}}
+            @label="discourse_ai.ai_persona.mentionable"
+            {{on "click" this.toggleMentionable}}
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.ai_persona.mentionable_help"}}
+          />
+        </div>
+      {{/if}}
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai_persona.name"}}</label>
         <Input
@@ -187,6 +232,46 @@ export default class PersonaEditor extends Component {
           disabled={{this.editingModel.system}}
         />
       </div>
+      <div class="control-group">
+        <label>{{I18n.t "discourse_ai.ai_persona.default_llm"}}</label>
+        <AiLlmSelector
+          class="ai-persona-editor__llms"
+          @value={{this.mappedDefaultLlm}}
+          @llms={{@personas.resultSetMeta.llms}}
+        />
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t "discourse_ai.ai_persona.default_llm_help"}}
+        />
+      </div>
+      {{#unless @model.isNew}}
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.ai_persona.user"}}</label>
+          {{#if this.editingModel.user}}
+            <a
+              class="avatar"
+              href={{this.editingModel.user.path}}
+              data-user-card={{this.editingModel.user.username}}
+            >
+              {{Avatar this.editingModel.user.avatar_template "small"}}
+            </a>
+            <LinkTo @route="adminUser" @model={{this.adminUser}}>
+              {{this.editingModel.user.username}}
+            </LinkTo>
+          {{else}}
+            <DButton
+              @action={{this.createUser}}
+              class="ai-persona-editor__create-user"
+            >
+              {{I18n.t "discourse_ai.ai_persona.create_user"}}
+            </DButton>
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t "discourse_ai.ai_persona.create_user_help"}}
+            />
+          {{/if}}
+        </div>
+      {{/unless}}
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai_persona.commands"}}</label>
         <AiCommandSelector

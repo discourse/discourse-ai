@@ -199,15 +199,14 @@ class AiPersona < ActiveRecord::Base
   def create_user!
     raise "User already exists" if user_id
 
+    # note .invalid is a reserved TLD which will route nowhere
     user =
       User.new(
-        email: "no_email_#{name}",
+        email: "no_email_#{name}@does-not-exist.invalid",
         name: name.titleize,
-        username: UserNameSuggester.suggest(name),
+        username: UserNameSuggester.suggest(name + "_bot"),
         active: true,
         approved: true,
-        admin: true,
-        moderator: true,
         trust_level: TrustLevel[4],
       )
     user.save!(validate: false)

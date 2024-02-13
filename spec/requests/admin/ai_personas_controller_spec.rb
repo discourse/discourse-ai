@@ -17,6 +17,15 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       )
     end
 
+    it "sideloads llms" do
+      get "/admin/plugins/discourse-ai/ai_personas.json"
+      expect(response).to be_successful
+
+      expect(response.parsed_body["meta"]["llms"]).to eq(
+        JSON.parse(DiscourseAi::Configuration::LlmEnumerator.values.to_json),
+      )
+    end
+
     it "returns commands options with each command" do
       persona1 = Fabricate(:ai_persona, name: "search1", commands: ["SearchCommand"])
       persona2 =

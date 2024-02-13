@@ -31,6 +31,10 @@
 }
 
 .ai-persona-editor {
+  .fk-d-tooltip__icon {
+    padding-left: 0.25em;
+    color: var(--primary-medium);
+  }
   label {
     display: block;
   }
@@ -53,10 +57,9 @@
   &__priority {
     display: flex;
     align-items: center;
-
-    .fk-d-tooltip__icon {
-      padding-left: 0.25em;
-      color: var(--primary-medium);
-    }
+  }
+  &__mentionable {
+    display: flex;
+    align-items: center;
   }
 }

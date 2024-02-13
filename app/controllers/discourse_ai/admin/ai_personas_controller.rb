@@ -16,7 +16,11 @@ module DiscourseAi
           DiscourseAi::AiBot::Personas::Persona.all_available_tools.map do |tool|
             AiToolSerializer.new(tool, root: false)
           end
-        render json: { ai_personas: ai_personas, meta: { commands: tools } }
+        llms =
+          DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
+            { id: hash[:value], name: hash[:name] }
+          end
+        render json: { ai_personas: ai_personas, meta: { commands: tools, llms: llms } }
       end
 
       def show

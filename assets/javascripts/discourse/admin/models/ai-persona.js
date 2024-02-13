@@ -1,4 +1,5 @@
 import { tracked } from "@glimmer/tracking";
+import { ajax } from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
 
 const ATTRIBUTES = [
@@ -12,6 +13,10 @@ const ATTRIBUTES = [
   "priority",
   "top_p",
   "temperature",
+  "user_id",
+  "mentionable",
+  "default_llm",
+  "user",
 ];
 
 class CommandOption {
@@ -43,6 +48,18 @@ export default class AiPersona extends RestModel {
     }
     super.init(properties);
     this.commands = properties.commands;
+  }
+
+  async createUser() {
+    const result = await ajax(
+      `/admin/plugins/discourse-ai/ai-personas/${this.id}/create_user.json`,
+      {
+        type: "POST",
+      }
+    );
+    this.user = result["user"];
+    this.user_id = result["user"]["id"];
+    return result["user"];
   }
 
   getCommandOption(commandId, optionId) {
