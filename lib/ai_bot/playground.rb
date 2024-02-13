@@ -34,8 +34,9 @@ module DiscourseAi
 
           # PM always takes precedence
           if mentioned && !bot_user
+            model_without_provider = mentioned[:default_llm].split(":").last
             user_id =
-              DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(mentioned[:default_llm])
+              DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(model_without_provider)
 
             if !user_id
               Rails.logger.warn(
@@ -174,6 +175,13 @@ module DiscourseAi
         end
 
         stream_reply = post.topic.private_message?
+
+        # we need to ensure persona user is allowed to reply to the pm
+        if post.topic.private_message?
+          if !post.topic.topic_allowed_users.where(user_id: reply_user.id).exists?
+            post.topic.topic_allowed_users.create!(user_id: reply_user.id)
+          end
+        end
 
         if stream_reply
           reply_post =

@@ -197,7 +197,7 @@ class AiPersona < ActiveRecord::Base
   end
 
   def create_user!
-    raise "User already exists" if user_id
+    raise "User already exists" if user_id && User.exists?(user_id)
 
     # note .invalid is a reserved TLD which will route nowhere
     user =

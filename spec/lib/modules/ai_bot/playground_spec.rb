@@ -102,6 +102,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
       expect(last_post.user_id).to eq(persona.user_id)
+
+      last_post.topic.reload
+      expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
     end
   end
 

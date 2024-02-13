@@ -22,7 +22,9 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(response).to be_successful
 
       expect(response.parsed_body["meta"]["llms"]).to eq(
-        JSON.parse(DiscourseAi::Configuration::LlmEnumerator.values.to_json),
+        DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
+          { "id" => hash[:value], "name" => hash[:name] }
+        end,
       )
     end
 
