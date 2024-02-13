@@ -53,9 +53,16 @@ tr_TR:
               description: "Rapor oluşturmak için kullanılacak LLM"
             categories:
               label: "Kategoriler"
+              description: "Konuları yalnızca bu kategorilere filtrele"
             tags:
               label: "Etiketler"
               description: "Konuları yalnızca bu etiketlere filtrele"
+            exclude_tags:
+              label: "Etiketleri Hariç Tut"
+              description: "Bu etiketlere sahip konuları hariç tut"
+            exclude_categories:
+              label: "Kategorileri Dışla"
+              description: "Bu kategorilere sahip konuları hariç tut"
             allow_secure_categories:
               label: "Güvenli kategorilere izin ver"
               description: "Güvenli kategorilerdeki konular için rapor oluşturulmasına izin ver"
@@ -65,6 +72,12 @@ tr_TR:
             priority_group:
               label: "Öncelikli Grup"
               description: "Raporda bu gruptan gelen içeriği önceliklendirin"
+            temperature:
+              label: "Sıcaklık"
+              description: "LLM için kullanılacak sıcaklık, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için 0)"
+            top_p:
+              label: "Üst P"
+              description: "LLM için kullanılacak en iyi P, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için 0)"
         llm_triage:
           fields:
             system_prompt:
@@ -108,6 +121,10 @@ tr_TR:
         new: Yeni
         title: "YZ Kişilikleri"
         delete: Sil
+        temperature: Sıcaklık
+        temperature_help: LLM için kullanılacak sıcaklık, yaratıcılığı artırmak için artırın (model varsayılanını kullanmak için boş bırakın, genellikle 0.0 ila 2.0 arasında bir değer)
+        top_p: Üst P
+        top_p_help: LLM için kullanılacak en yüksek P, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için boş bırakın, genellikle 0.0 ila 1.0 arasında bir değer)
         priority: Öncelik
         priority_help: Öncelikli kişilikler kullanıcılara kişilik listesinin en üstünde gösterilir. Birden fazla kişiliğin önceliği varsa bunlar alfabetik olarak sıralanır.
         command_options: "Komut Seçenekleri"
