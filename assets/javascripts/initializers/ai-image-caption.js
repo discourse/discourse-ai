@@ -32,16 +32,16 @@ export default apiInitializer("1.25.0", (api) => {
             image_url: imageSrc,
           },
         })
-          .then((data) => {
-            console.log("data", data);
+          .then(() => {
+            // console.log("data", data);
             // TODO add loading state while caption is being generated
             // TODO populate imageCaptionPopup's input with new caption
             imageCaptionPopup.imageSrc = imageSrc;
             imageCaptionPopup.imageIndex = imageIndex;
             imageCaptionPopup.showPopup = !imageCaptionPopup.showPopup;
           })
-          .catch((error) => {
-            console.log("error", error);
+          .catch(() => {
+            // console.log("error", error);
           });
       }
     }
