@@ -40,7 +40,14 @@ module DiscourseAi
               Llama2-*-chat-hf
               Llama2-chat-hf
             ],
-            open_ai: %w[gpt-3.5-turbo gpt-4 gpt-3.5-turbo-16k gpt-4-32k gpt-4-turbo gpt-4-vision-preview],
+            open_ai: %w[
+              gpt-3.5-turbo
+              gpt-4
+              gpt-3.5-turbo-16k
+              gpt-4-32k
+              gpt-4-turbo
+              gpt-4-vision-preview
+            ],
             google: %w[gemini-pro],
           }.tap { |h| h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development? }
         end
