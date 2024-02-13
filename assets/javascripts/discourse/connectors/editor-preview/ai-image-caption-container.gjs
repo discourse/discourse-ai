@@ -8,7 +8,7 @@ import DButton from "discourse/components/d-button";
 import autoFocus from "discourse/modifiers/auto-focus";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
-import { IMAGE_MARKDOWN_REGEX } from "../lib/utilities";
+import { IMAGE_MARKDOWN_REGEX } from "../../lib/utilities";
 
 export default class AiImageCaptionContainer extends Component {
   @service imageCaptionPopup;
