@@ -92,6 +92,9 @@ module DiscourseAi
         # also setting default to 40, allowing huge contexts costs lots of tokens
         max_posts = bot.persona.class.max_context_posts || 40
 
+        post_types = [Post.types[:regular]]
+        post_types << Post.types[:whisper] if post.post_type == Post.types[:whisper]
+
         context =
           post
             .topic
@@ -100,7 +103,7 @@ module DiscourseAi
             .joins("LEFT JOIN post_custom_prompts ON post_custom_prompts.post_id = posts.id")
             .where("post_number <= ?", post.post_number)
             .order("post_number desc")
-            .where("post_type = ?", Post.types[:regular])
+            .where("post_type in (?)", post_types)
             .limit(max_posts)
             .pluck(:raw, :username, "post_custom_prompts.custom_prompt")
 
@@ -165,6 +168,9 @@ module DiscourseAi
         reply = +""
         start = Time.now
 
+        post_type =
+          post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
+
         context = {
           site_url: Discourse.base_url,
           site_title: SiteSetting.title,
@@ -197,6 +203,7 @@ module DiscourseAi
               raw: "",
               skip_validations: true,
               skip_jobs: true,
+              post_type: post_type,
             )
 
           publish_update(reply_post, { raw: reply_post.cooked })
@@ -249,6 +256,7 @@ module DiscourseAi
               topic_id: post.topic_id,
               raw: reply,
               skip_validations: true,
+              post_type: post_type,
             )
         end
 
@@ -282,7 +290,7 @@ module DiscourseAi
 
       def can_attach?(post)
         return false if bot.bot_user.nil?
-        return false if post.post_type != Post.types[:regular]
+        return false if post.topic.private_message? && post.post_type != Post.types[:regular]
         return false if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).blank?
 
         true

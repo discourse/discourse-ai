@@ -238,7 +238,7 @@ class AiPersona < ActiveRecord::Base
     # note .invalid is a reserved TLD which will route nowhere
     user =
       User.new(
-        email: "no_email_#{name}@does-not-exist.invalid",
+        email: "#{SecureRandom.hex}@does-not-exist.invalid",
         name: name.titleize,
         username: UserNameSuggester.suggest(name + "_bot"),
         active: true,

@@ -138,8 +138,13 @@ export default class PersonaEditor extends Component {
 
   @action
   async createUser() {
-    let user = await this.args.model.createUser();
-    this.editingModel.set("user", user);
+    try {
+      let user = await this.args.model.createUser();
+      this.editingModel.set("user", user);
+      this.editingModel.set("user_id", user.id);
+    } catch (e) {
+      popupAjaxError(e);
+    }
   }
 
   async toggleField(field, sortPersonas) {

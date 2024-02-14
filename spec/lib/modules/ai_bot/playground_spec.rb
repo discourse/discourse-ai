@@ -53,7 +53,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
 
   describe "persona with user support" do
-    before { Jobs.run_immediately! }
+    before do
+      Jobs.run_immediately!
+      SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+    end
 
     fab!(:persona) do
       persona =
@@ -70,9 +73,25 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       persona
     end
 
-    it "allows mentioning a persona" do
-      SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+    it "replies to whispers with a whisper" do
+      post = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
+        post =
+          create_post(
+            title: "My public topic",
+            raw: "Hey @#{persona.user.username}, can you help me?",
+            post_type: Post.types[:whisper],
+          )
+      end
 
+      post.topic.reload
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Yes I can")
+      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.post_type).to eq(Post.types[:whisper])
+    end
+
+    it "allows mentioning a persona" do
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
         post =
