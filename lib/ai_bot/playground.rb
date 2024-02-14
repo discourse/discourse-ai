@@ -90,7 +90,10 @@ module DiscourseAi
         # We want to inject the last post as context because they are translated differently.
 
         # also setting default to 40, allowing huge contexts costs lots of tokens
-        max_posts = bot.persona.class.max_context_posts || 40
+        max_posts = 40
+        if bot.persona.class.respond_to?(:max_context_posts)
+          max_posts = bot.persona.class.max_context_posts || 40
+        end
 
         post_types = [Post.types[:regular]]
         post_types << Post.types[:whisper] if post.post_type == Post.types[:whisper]
