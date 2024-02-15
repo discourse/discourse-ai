@@ -23,4 +23,21 @@ describe Plugin::Instance do
       expect(accuracy.flags_agreed).to eq(1)
     end
   end
+
+  describe "current_user_serializer#ai_helper_prompts" do
+    fab!(:user)
+
+    before do
+      SiteSetting.ai_helper_model = "fake:fake"
+      SiteSetting.composer_ai_helper_enabled = true
+      Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
+    end
+
+    let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)) }
+
+    it "returns the available prompts" do
+      expect(serializer.ai_helper_prompts).to be_present
+      expect(serializer.ai_helper_prompts.object.count).to eq(6)
+    end
+  end
 end
