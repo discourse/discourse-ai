@@ -103,6 +103,7 @@ module DiscourseAi
           DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
             prompt,
             user: Discourse.system_user,
+            max_tokens: 1024,
           )
         elsif SiteSetting.ai_helper_image_caption_model == "llava"
           parameters = {
