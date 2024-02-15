@@ -178,7 +178,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
   describe "POST #create_user" do
     it "creates a user for the persona" do
-      post "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}/create_user.json"
+      post "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}/create-user.json"
       ai_persona.reload
 
       expect(response).to be_successful

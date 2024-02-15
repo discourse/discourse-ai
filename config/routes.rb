@@ -33,6 +33,6 @@ Discourse::Application.routes.draw do
               only: %i[index create show update destroy],
               controller: "discourse_ai/admin/ai_personas"
 
-    post "/ai-personas/:id/create_user", to: "discourse_ai/admin/ai_personas#create_user"
+    post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
   end
 end

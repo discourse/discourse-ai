@@ -53,7 +53,7 @@ export default class AiPersona extends RestModel {
 
   async createUser() {
     const result = await ajax(
-      `/admin/plugins/discourse-ai/ai-personas/${this.id}/create_user.json`,
+      `/admin/plugins/discourse-ai/ai-personas/${this.id}/create-user.json`,
       {
         type: "POST",
       }
