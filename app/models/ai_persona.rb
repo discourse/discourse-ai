@@ -232,8 +232,27 @@ class AiPersona < ActiveRecord::Base
     end
   end
 
+  FIRST_PERSONA_USER_ID = -1200
+
   def create_user!
     raise "User already exists" if user_id && User.exists?(user_id)
+
+    # find the first id smaller than FIRST_USER_ID that is not taken
+    id = nil
+
+    id = DB.query_single(<<~SQL, FIRST_PERSONA_USER_ID, FIRST_PERSONA_USER_ID - 200).first
+        WITH seq AS (
+          SELECT generate_series(?, ?, -1) AS id
+          )
+        SELECT seq.id FROM seq
+        LEFT JOIN users ON users.id = seq.id
+        WHERE users.id IS NULL
+        ORDER BY seq.id DESC
+      SQL
+
+    id = DB.query_single(<<~SQL).first if id.nil?
+        SELECT min(id) - 1 FROM users
+      SQL
 
     # note .invalid is a reserved TLD which will route nowhere
     user =
@@ -244,6 +263,7 @@ class AiPersona < ActiveRecord::Base
         active: true,
         approved: true,
         trust_level: TrustLevel[4],
+        id: id,
       )
     user.save!(validate: false)
 

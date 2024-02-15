@@ -149,7 +149,7 @@ export default class PersonaEditor extends Component {
 
   async toggleField(field, sortPersonas) {
     this.args.model.set(field, !this.args.model[field]);
-    this.editingModel.set("field", this.args.model[field]);
+    this.editingModel.set(field, this.args.model[field]);
     if (!this.args.model.isNew) {
       try {
         const args = {};

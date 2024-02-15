@@ -24,6 +24,23 @@ RSpec.describe AiPersona do
     expect(persona.valid?).to eq(true)
   end
 
+  it "allows creation of user" do
+    persona =
+      AiPersona.create!(
+        name: "test",
+        description: "test",
+        system_prompt: "test",
+        commands: [],
+        allowed_group_ids: [],
+      )
+
+    user = persona.create_user!
+    expect(user.username).to eq("test_bot")
+    expect(user.name).to eq("Test")
+    expect(user.bot?).to be(true)
+    expect(user.id).to be <= AiPersona::FIRST_PERSONA_USER_ID
+  end
+
   it "defines singleton methods on system persona classes" do
     forum_helper = AiPersona.find_by(name: "Forum Helper")
     forum_helper.update!(

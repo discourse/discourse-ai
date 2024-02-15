@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
   describe "GET #index" do
     it "returns a success response" do
-      get "/admin/plugins/discourse-ai/ai_personas.json"
+      get "/admin/plugins/discourse-ai/ai-personas.json"
       expect(response).to be_successful
 
       expect(response.parsed_body["ai_personas"].length).to eq(AiPersona.count)
@@ -18,7 +18,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
 
     it "sideloads llms" do
-      get "/admin/plugins/discourse-ai/ai_personas.json"
+      get "/admin/plugins/discourse-ai/ai-personas.json"
       expect(response).to be_successful
 
       expect(response.parsed_body["meta"]["llms"]).to eq(
@@ -40,7 +40,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         )
       persona2.create_user!
 
-      get "/admin/plugins/discourse-ai/ai_personas.json"
+      get "/admin/plugins/discourse-ai/ai-personas.json"
       expect(response).to be_successful
 
       serializer_persona1 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona1.id }
@@ -105,7 +105,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "returns localized persona names and descriptions" do
-        get "/admin/plugins/discourse-ai/ai_personas.json"
+        get "/admin/plugins/discourse-ai/ai-personas.json"
 
         id =
           DiscourseAi::AiBot::Personas::Persona.system_personas[
@@ -121,7 +121,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
   describe "GET #show" do
     it "returns a success response" do
-      get "/admin/plugins/discourse-ai/ai_personas/#{ai_persona.id}.json"
+      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
       expect(response).to be_successful
       expect(response.parsed_body["ai_persona"]["name"]).to eq(ai_persona.name)
     end
@@ -144,7 +144,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
       it "creates a new AiPersona" do
         expect {
-          post "/admin/plugins/discourse-ai/ai_personas.json",
+          post "/admin/plugins/discourse-ai/ai-personas.json",
                params: { ai_persona: valid_attributes }.to_json,
                headers: {
                  "CONTENT_TYPE" => "application/json",
@@ -169,7 +169,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     context "with invalid params" do
       it "renders a JSON response with errors for the new ai_persona" do
-        post "/admin/plugins/discourse-ai/ai_personas.json", params: { ai_persona: { foo: "" } } # invalid attribute
+        post "/admin/plugins/discourse-ai/ai-personas.json", params: { ai_persona: { foo: "" } } # invalid attribute
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to include("application/json")
       end
@@ -189,7 +189,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   describe "PUT #update" do
     it "allows us to trivially clear top_p and temperature" do
       persona = Fabricate(:ai_persona, name: "test_bot2", top_p: 0.5, temperature: 0.1)
-      put "/admin/plugins/discourse-ai/ai_personas/#{persona.id}.json",
+      put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",
           params: {
             ai_persona: {
               top_p: "",
@@ -205,7 +205,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
 
     it "does not allow temperature and top p changes on stock personas" do
-      put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+      put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
           params: {
             ai_persona: {
               top_p: 0.5,
@@ -218,7 +218,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     context "with valid params" do
       it "updates the requested ai_persona" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{ai_persona.id}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json",
             params: {
               ai_persona: {
                 name: "SuperBot",
@@ -239,7 +239,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     context "with system personas" do
       it "does not allow editing of system prompts" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 system_prompt: "you are not a helpful bot",
@@ -252,7 +252,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does not allow editing of commands" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 commands: %w[SearchCommand ImageCommand],
@@ -265,7 +265,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does not allow editing of name and description cause it is localized" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 name: "bob",
@@ -279,7 +279,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does allow some actions" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_1]],
@@ -294,7 +294,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     context "with invalid params" do
       it "renders a JSON response with errors for the ai_persona" do
-        put "/admin/plugins/discourse-ai/ai_personas/#{ai_persona.id}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json",
             params: {
               ai_persona: {
                 name: "",
@@ -309,7 +309,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   describe "DELETE #destroy" do
     it "destroys the requested ai_persona" do
       expect {
-        delete "/admin/plugins/discourse-ai/ai_personas/#{ai_persona.id}.json"
+        delete "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
 
         expect(response).to have_http_status(:no_content)
       }.to change(AiPersona, :count).by(-1)
@@ -317,7 +317,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     it "is not allowed to delete system personas" do
       expect {
-        delete "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json"
+        delete "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json"
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"].join).not_to be_blank
         # let's make sure this is translated
