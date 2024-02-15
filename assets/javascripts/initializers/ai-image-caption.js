@@ -33,15 +33,15 @@ export default apiInitializer("1.25.0", (api) => {
           },
         })
           .then(() => {
-            // console.log("data", data);
+            console.log("data", data);
             // TODO add loading state while caption is being generated
             // TODO populate imageCaptionPopup's input with new caption
             imageCaptionPopup.imageSrc = imageSrc;
             imageCaptionPopup.imageIndex = imageIndex;
             imageCaptionPopup.showPopup = !imageCaptionPopup.showPopup;
           })
-          .catch(() => {
-            // console.log("error", error);
+          .catch((error) => {
+            console.log("error", error);
           });
       }
     }

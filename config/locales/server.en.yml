@@ -72,6 +72,7 @@ en:
     ai_helper_illustrate_post_model: "Model to use for the composer AI helper's illustrate post feature"
     ai_helper_enabled_features: "Select the features to enable in the AI helper."
     post_ai_helper_allowed_groups: "User groups allowed to access AI Helper features in posts"
+    ai_helper_image_caption_model: "Select the model to use for generating image captions"
 
     ai_embeddings_enabled: "Enable the embeddings module."
     ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"
