@@ -193,7 +193,7 @@ module DiscourseAi
 
         # we need to ensure persona user is allowed to reply to the pm
         if post.topic.private_message?
-          if !post.topic.topic_allowed_users.where(user_id: reply_user.id).exists?
+          if !post.topic.topic_allowed_users.exists?(user_id: reply_user.id)
             post.topic.topic_allowed_users.create!(user_id: reply_user.id)
           end
         end
