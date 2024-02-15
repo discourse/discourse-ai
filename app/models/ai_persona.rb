@@ -8,6 +8,10 @@ class AiPersona < ActiveRecord::Base
   validates :description, presence: true, length: { maximum: 2000 }
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
+  validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
+
+  belongs_to :created_by, class_name: "User"
+  belongs_to :user
 
   before_destroy :ensure_not_system
 
@@ -56,6 +60,23 @@ class AiPersona < ActiveRecord::Base
       .map(&:class_instance)
   end
 
+  def self.mentionables
+    persona_cache[:mentionable_usernames] ||= AiPersona
+      .where(mentionable: true)
+      .where(enabled: true)
+      .joins(:user)
+      .pluck("ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm")
+      .map do |id, user_id, username, allowed_group_ids, default_llm|
+        {
+          id: id,
+          user_id: user_id,
+          username: username,
+          allowed_group_ids: allowed_group_ids,
+          default_llm: default_llm,
+        }
+      end
+  end
+
   after_commit :bump_cache
 
   def bump_cache
@@ -66,6 +87,10 @@ class AiPersona < ActiveRecord::Base
     allowed_group_ids = self.allowed_group_ids
     id = self.id
     system = self.system
+    user_id = self.user_id
+    mentionable = self.mentionable
+    default_llm = self.default_llm
+    max_context_posts = self.max_context_posts
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
@@ -79,6 +104,22 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :system do
         system
+      end
+
+      persona_class.define_singleton_method :user_id do
+        user_id
+      end
+
+      persona_class.define_singleton_method :mentionable do
+        mentionable
+      end
+
+      persona_class.define_singleton_method :default_llm do
+        default_llm
+      end
+
+      persona_class.define_singleton_method :max_context_posts do
+        max_context_posts
       end
 
       return persona_class
@@ -124,6 +165,10 @@ class AiPersona < ActiveRecord::Base
         name
       end
 
+      define_singleton_method :user_id do
+        user_id
+      end
+
       define_singleton_method :description do
         description
       end
@@ -134,6 +179,22 @@ class AiPersona < ActiveRecord::Base
 
       define_singleton_method :allowed_group_ids do
         allowed_group_ids
+      end
+
+      define_singleton_method :user_id do
+        user_id
+      end
+
+      define_singleton_method :mentionable do
+        mentionable
+      end
+
+      define_singleton_method :default_llm do
+        default_llm
+      end
+
+      define_singleton_method :max_context_posts do
+        max_context_posts
       end
 
       define_singleton_method :to_s do
@@ -171,6 +232,45 @@ class AiPersona < ActiveRecord::Base
     end
   end
 
+  FIRST_PERSONA_USER_ID = -1200
+
+  def create_user!
+    raise "User already exists" if user_id && User.exists?(user_id)
+
+    # find the first id smaller than FIRST_USER_ID that is not taken
+    id = nil
+
+    id = DB.query_single(<<~SQL, FIRST_PERSONA_USER_ID, FIRST_PERSONA_USER_ID - 200).first
+        WITH seq AS (
+          SELECT generate_series(?, ?, -1) AS id
+          )
+        SELECT seq.id FROM seq
+        LEFT JOIN users ON users.id = seq.id
+        WHERE users.id IS NULL
+        ORDER BY seq.id DESC
+      SQL
+
+    id = DB.query_single(<<~SQL).first if id.nil?
+        SELECT min(id) - 1 FROM users
+      SQL
+
+    # note .invalid is a reserved TLD which will route nowhere
+    user =
+      User.new(
+        email: "#{SecureRandom.hex}@does-not-exist.invalid",
+        name: name.titleize,
+        username: UserNameSuggester.suggest(name + "_bot"),
+        active: true,
+        approved: true,
+        trust_level: TrustLevel[4],
+        id: id,
+      )
+    user.save!(validate: false)
+
+    update!(user_id: user.id)
+    user
+  end
+
   private
 
   def system_persona_unchangeable
@@ -192,20 +292,26 @@ end
 #
 # Table name: ai_personas
 #
-#  id                :bigint           not null, primary key
-#  name              :string(100)      not null
-#  description       :string(2000)     not null
-#  commands          :json             not null
-#  system_prompt     :string(10000000) not null
-#  allowed_group_ids :integer          default([]), not null, is an Array
-#  created_by_id     :integer
-#  enabled           :boolean          default(TRUE), not null
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  system            :boolean          default(FALSE), not null
-#  priority          :boolean          default(FALSE), not null
-#  temperature       :float
-#  top_p             :float
+#  id                      :bigint           not null, primary key
+#  name                    :string(100)      not null
+#  description             :string(2000)     not null
+#  commands                :json             not null
+#  system_prompt           :string(10000000) not null
+#  allowed_group_ids       :integer          default([]), not null, is an Array
+#  created_by_id           :integer
+#  enabled                 :boolean          default(TRUE), not null
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  system                  :boolean          default(FALSE), not null
+#  priority                :boolean          default(FALSE), not null
+#  temperature             :float
+#  top_p                   :float
+#  user_id                 :integer
+#  mentionable             :boolean          default(FALSE), not null
+#  default_llm             :text
+#  max_context_posts       :integer
+#  max_post_context_tokens :integer
+#  max_context_tokens      :integer
 #
 # Indexes
 #

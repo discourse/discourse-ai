@@ -182,6 +182,7 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       command_summary:
+        random_picker: "Random Picker"
         categories: "List categories"
         search: "Search"
         tags: "List tags"
@@ -195,6 +196,7 @@ en:
         search_settings: "Searching site settings"
         dall_e: "Generate image"
       command_help:
+        random_picker: "Pick a random number or a random element of a list"
         categories: "List all publicly visible categories on the forum"
         search: "Search all public topics on the forum"
         tags: "List all tags on the forum"
@@ -208,6 +210,7 @@ en:
         search_settings: "Search site settings"
         dall_e: "Generate image using DALL-E 3"
       command_description:
+        random_picker: "Picking from %{options}, picked: %{result}"
         read: "Reading: <a href='%{url}'>%{title}</a>"
         time: "Time in %{timezone} is %{time}"
         summarize: "Summarized <a href='%{url}'>%{title}</a>"
@@ -268,6 +271,6 @@ en:
         disable_embeddings: "You have to disable 'ai embeddings enabled' first."
         choose_model: "Set 'ai embeddings model' first."
         model_unreachable: "We failed to generate a test embedding with this model. Check your settings are correct."
-        hint: 
+        hint:
           one: "Make sure the `%{settings}` setting was configured."
           other: "Make sure the settings of the provider you want were configured. Options are: %{settings}"

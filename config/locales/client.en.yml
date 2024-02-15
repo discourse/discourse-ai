@@ -108,6 +108,16 @@ en:
       ai_persona:
         name: Name
         description: Description
+        no_llm_selected: "No language model selected"
+        max_context_posts: "Max Context Posts"
+        max_context_posts_help: "The maximum number of posts to use as context for the AI when responding to a user. (empty for default)"
+        mentionable: Mentionable
+        mentionable_help: If enabled, users in allowed groups can mention this user in posts and messages, the AI will respond as this persona.
+        user: User
+        create_user: Create User
+        create_user_help: You can optionally attach a user to this persona. If you do, the AI will use this user to respond to requests.
+        default_llm: Default Language Model
+        default_llm_help: The default language model to use for this persona. Required if you wish to mention persona on public posts.
         system_prompt: System Prompt
         save: Save
         saved: AI Persona Saved

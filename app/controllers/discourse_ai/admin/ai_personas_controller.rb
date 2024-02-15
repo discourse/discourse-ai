@@ -3,7 +3,7 @@
 module DiscourseAi
   module Admin
     class AiPersonasController < ::Admin::AdminController
-      before_action :find_ai_persona, only: %i[show update destroy]
+      before_action :find_ai_persona, only: %i[show update destroy create_user]
 
       def index
         ai_personas =
@@ -16,7 +16,11 @@ module DiscourseAi
           DiscourseAi::AiBot::Personas::Persona.all_available_tools.map do |tool|
             AiToolSerializer.new(tool, root: false)
           end
-        render json: { ai_personas: ai_personas, meta: { commands: tools } }
+        llms =
+          DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
+            { id: hash[:value], name: hash[:name] }
+          end
+        render json: { ai_personas: ai_personas, meta: { commands: tools, llms: llms } }
       end
 
       def show
@@ -30,6 +34,11 @@ module DiscourseAi
         else
           render_json_error ai_persona
         end
+      end
+
+      def create_user
+        user = @ai_persona.create_user!
+        render json: BasicUserSerializer.new(user, root: "user")
       end
 
       def update
@@ -64,6 +73,10 @@ module DiscourseAi
             :priority,
             :top_p,
             :temperature,
+            :default_llm,
+            :user_id,
+            :mentionable,
+            :max_context_posts,
             allowed_group_ids: [],
           )
 

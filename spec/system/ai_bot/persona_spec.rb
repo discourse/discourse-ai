@@ -30,7 +30,7 @@ RSpec.describe "AI personas", type: :system, js: true do
   end
 
   it "allows creation of a persona" do
-    visit "/admin/plugins/discourse-ai/ai_personas"
+    visit "/admin/plugins/discourse-ai/ai-personas"
     find(".ai-persona-list-editor__header .btn-primary").click()
     find(".ai-persona-editor__name").set("Test Persona")
     find(".ai-persona-editor__description").fill_in(with: "I am a test persona")
@@ -42,7 +42,7 @@ RSpec.describe "AI personas", type: :system, js: true do
 
     find(".ai-persona-editor__save").click()
 
-    expect(page).not_to have_current_path("/admin/plugins/discourse-ai/ai_personas/new")
+    expect(page).not_to have_current_path("/admin/plugins/discourse-ai/ai-personas/new")
 
     persona_id = page.current_path.split("/").last.to_i
 
@@ -54,7 +54,7 @@ RSpec.describe "AI personas", type: :system, js: true do
   end
 
   it "will not allow deletion or editing of system personas" do
-    visit "/admin/plugins/discourse-ai/ai_personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}"
+    visit "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}"
     expect(page).not_to have_selector(".ai-persona-editor__delete")
     expect(find(".ai-persona-editor__system_prompt")).to be_disabled
   end
@@ -62,7 +62,7 @@ RSpec.describe "AI personas", type: :system, js: true do
   it "will enable persona right away when you click on enable but does not save side effects" do
     persona = Fabricate(:ai_persona, enabled: false)
 
-    visit "/admin/plugins/discourse-ai/ai_personas/#{persona.id}"
+    visit "/admin/plugins/discourse-ai/ai-personas/#{persona.id}"
 
     find(".ai-persona-editor__name").set("Test Persona 1")
     PageObjects::Components::DToggleSwitch.new(".ai-persona-editor__enabled").toggle
