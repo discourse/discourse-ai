@@ -58,9 +58,9 @@ export default class AiPersona extends RestModel {
         type: "POST",
       }
     );
-    this.user = result["user"];
-    this.user_id = result["user"]["id"];
-    return result["user"];
+    this.user = result.user;
+    this.user_id = this.user.id;
+    return this.user;
   }
 
   getCommandOption(commandId, optionId) {
