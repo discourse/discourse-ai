@@ -59,6 +59,8 @@ en:
     ai_gemini_api_key: API key for Google Gemini API
     ai_vllm_endpoint: URL where the API is running for vLLM
     ai_vllm_api_key: API key for vLLM API
+    ai_llava_endpoint: URL where the API is running for llava
+    ai_llava_api_key: API key for llava API
 
     composer_ai_helper_enabled: "Enable the Composer's AI helper."
     ai_helper_allowed_groups: "Users on these groups will see the AI helper button in the composer."
