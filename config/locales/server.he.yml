@@ -54,6 +54,14 @@ he:
     ai_openai_api_key: "מפתח API ל־API של OpenAI"
     ai_anthropic_api_key: "מפתח API ל־API של Anthropic"
     ai_hugging_face_api_url: "כתובת משלך להסקה על בסיס OpenSource LLM. עם תאימות ל־https://github.com/huggingface/text-generation-inference"
+    ai_hugging_face_api_key: מפתח API ל־API של Hugging Face
+    ai_hugging_face_token_limit: כמות אסימונים מרבית שה־API של Hugging Face יכול להשתמש בה לכל בקשה
+    ai_hugging_face_model_display_name: השם שיוצג לדגם הבינה המלאכותית של Hugging Face
+    ai_hugging_face_tei_endpoint: כתובת בה פועל ה־API להסקת הטמעת הטקסט ב־Hugging Face
+    ai_hugging_face_tei_api_key: מפתח API להסרת הטמעת טקסט ב־Hugging Face
+    ai_gemini_api_key: מפתח API ל־API של Google Gemini
+    ai_vllm_endpoint: הכתובת בה פועל ה־API של vLLM
+    ai_vllm_api_key: מפתח API ל־API של vLLM
     composer_ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית של כותב ההודעות."
     ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
     ai_helper_allowed_in_pm: "הפעלת מסייע הבינה המלאכותית בכותב ההודעות בהודעות הפרטיות."
@@ -62,6 +70,8 @@ he:
     ai_helper_automatic_chat_thread_title_delay: "השהייה בשניות לפני שמסייע הבינה המלאכותית מגדיר את כותרת שרשור הצ׳אט אוטומטית."
     ai_helper_automatic_chat_thread_title: "הגדרת כותרות שרשור הצ׳אט אוטומטית לפי תוכן השרשור."
     ai_helper_illustrate_post_model: "דגם לשימוש ליכולת הדמיית הפוסט של מסייע הבינה המלאכותית בכתיבה"
+    ai_helper_enabled_features: "נא לבחור יכולות להפעלה במסייע הבינה המלאכותית."
+    post_ai_helper_allowed_groups: "קבוצות משתמשים שמורשות לגשת ליכולות מסייע בינה מלאכותית בפוסטים"
     ai_embeddings_enabled: "הפעלת מודול ההטמעות."
     ai_embeddings_discourse_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול ההטמעות"
     ai_embeddings_discourse_service_api_key: "מפתח API ל־API של ההטמעות"
@@ -74,6 +84,7 @@ he:
     ai_embeddings_semantic_search_enabled: "הפעלת חיפוש סמנטי בעמוד מלא."
     ai_embeddings_semantic_related_include_closed_topics: "כולל נושאים סגורים בתוצאות החיפוש הסמנטיות"
     ai_embeddings_semantic_search_hyde_model: "הדגם שמשמש להרחבת מילות החיפוש לקבלת תוצאות טובות יותר במהלך חיפוש סמנטי"
+    ai_embeddings_per_post_enabled: יצירת הטמעות בכל פוסט בנפרד
     ai_summarization_discourse_service_api_endpoint: "כתובת בה API הסיכום של Dicourse פעיל."
     ai_summarization_discourse_service_api_key: "מפתח API ל־API הסיכומים של Discourse."
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."
@@ -251,3 +262,13 @@ he:
           two: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           many: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           other: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
+    embeddings:
+      configuration:
+        disable_embeddings: "יש להשבית קודם את ‚הטמעת בינה מלאכותית פעילה’."
+        choose_model: "יש להגדיר קודם את ‚הטמעת בינה מלאכותית פעילה’."
+        model_unreachable: "כשלנו בייצור הטמעות בדיקה עם הדגם הזה. נא לבדוק שההגדרות שלך נכונות."
+        hint:
+          one: "נא לוודא שההגדרה `%{settings}` הוגדרה."
+          two: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
+          many: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
+          other: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"

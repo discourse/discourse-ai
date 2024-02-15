@@ -106,6 +106,7 @@ export default class SemanticSearch extends Component {
   resetAIResults() {
     this.AIResults = [];
     this.showingAIResults = false;
+    this.args.outletArgs.addSearchResults([], "topic_id");
   }
 
   @action
@@ -127,11 +128,10 @@ export default class SemanticSearch extends Component {
       return this.performHyDESearch();
     }
 
-    this.resetAIResults();
-
     withPluginApi("1.15.0", (api) => {
       api.onAppEvent("full-page-search:trigger-search", () => {
         if (!this.searching) {
+          this.resetAIResults();
           return this.performHyDESearch();
         }
       });

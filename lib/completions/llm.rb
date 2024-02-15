@@ -21,44 +21,57 @@ module DiscourseAi
         def models_by_provider
           # ChatGPT models are listed under open_ai but they are actually available through OpenAI and Azure.
           # However, since they use the same URL/key settings, there's no reason to duplicate them.
-          {
-            aws_bedrock: %w[claude-instant-1 claude-2],
-            anthropic: %w[claude-instant-1 claude-2],
-            vllm: %w[
-              mistralai/Mixtral-8x7B-Instruct-v0.1
-              mistralai/Mistral-7B-Instruct-v0.2
-              StableBeluga2
-              Upstage-Llama-2-*-instruct-v2
-              Llama2-*-chat-hf
-              Llama2-chat-hf
-            ],
-            hugging_face: %w[
-              mistralai/Mixtral-8x7B-Instruct-v0.1
-              mistralai/Mistral-7B-Instruct-v0.2
-              StableBeluga2
-              Upstage-Llama-2-*-instruct-v2
-              Llama2-*-chat-hf
-              Llama2-chat-hf
-            ],
-            open_ai: %w[
-              gpt-3.5-turbo
-              gpt-4
-              gpt-3.5-turbo-16k
-              gpt-4-32k
-              gpt-4-turbo
-              gpt-4-vision-preview
-            ],
-            google: %w[gemini-pro],
-          }.tap { |h| h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development? }
+          @models_by_provider ||=
+            {
+              aws_bedrock: %w[claude-instant-1 claude-2],
+              anthropic: %w[claude-instant-1 claude-2],
+              vllm: %w[
+                mistralai/Mixtral-8x7B-Instruct-v0.1
+                mistralai/Mistral-7B-Instruct-v0.2
+                StableBeluga2
+                Upstage-Llama-2-*-instruct-v2
+                Llama2-*-chat-hf
+                Llama2-chat-hf
+              ],
+              hugging_face: %w[
+                mistralai/Mixtral-8x7B-Instruct-v0.1
+                mistralai/Mistral-7B-Instruct-v0.2
+                StableBeluga2
+                Upstage-Llama-2-*-instruct-v2
+                Llama2-*-chat-hf
+                Llama2-chat-hf
+              ],
+              open_ai: %w[
+                gpt-3.5-turbo
+                gpt-4
+                gpt-3.5-turbo-16k
+                gpt-4-32k
+                gpt-4-turbo
+                gpt-4-vision-preview
+              ],
+              google: %w[gemini-pro],
+            }.tap { |h| h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development? }
         end
 
-        def with_prepared_responses(responses)
-          @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(responses)
+        def valid_provider_models
+          return @valid_provider_models if defined?(@valid_provider_models)
 
-          yield(@canned_response)
+          valid_provider_models = []
+          models_by_provider.each do |provider, models|
+            valid_provider_models.concat(models.map { |model| "#{provider}:#{model}" })
+          end
+          @valid_provider_models = Set.new(valid_provider_models)
+        end
+
+        def with_prepared_responses(responses, llm: nil)
+          @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(responses)
+          @canned_llm = llm
+
+          yield(@canned_response, llm)
         ensure
           # Don't leak prepared response if there's an exception.
           @canned_response = nil
+          @canned_llm = nil
         end
 
         def proxy(model_name)
@@ -70,7 +83,12 @@ module DiscourseAi
           dialect_klass =
             DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name_without_prov)
 
-          return new(dialect_klass, @canned_response, model_name) if @canned_response
+          if @canned_response
+            if @canned_llm && @canned_llm != model_name
+              raise "Invalid call LLM call, expected #{@canned_llm} but got #{model_name}"
+            end
+            return new(dialect_klass, @canned_response, model_name)
+          end
 
           gateway =
             DiscourseAi::Completions::Endpoints::Base.endpoint_for(

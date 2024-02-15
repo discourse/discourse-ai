@@ -7,22 +7,11 @@ module ::Jobs
     def execute(args)
       return unless bot_user = User.find_by(id: args[:bot_user_id])
       return unless post = Post.includes(:topic).find_by(id: args[:post_id])
+      persona_id = args[:persona_id]
 
       begin
-        persona = nil
-        if persona_id = post.topic.custom_fields["ai_persona_id"]
-          persona =
-            DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id.to_i)
-          raise DiscourseAi::AiBot::Bot::BOT_NOT_FOUND if persona.nil?
-        end
-
-        if !persona && persona_name = post.topic.custom_fields["ai_persona"]
-          persona =
-            DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, name: persona_name)
-          raise DiscourseAi::AiBot::Bot::BOT_NOT_FOUND if persona.nil?
-        end
-
-        persona ||= DiscourseAi::AiBot::Personas::General
+        persona = DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id)
+        raise DiscourseAi::AiBot::Bot::BOT_NOT_FOUND if persona.nil?
 
         bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.new)
 

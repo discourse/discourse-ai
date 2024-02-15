@@ -41,6 +41,11 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       description: "Description",
       top_p: 0.8,
       temperature: 0.7,
+      mentionable: false,
+      default_llm: "Default LLM",
+      user: null,
+      user_id: null,
+      max_context_posts: 5,
     };
 
     const aiPersona = AiPersona.create({ ...properties });
@@ -67,6 +72,11 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       description: "Description",
       top_p: 0.8,
       temperature: 0.7,
+      user: null,
+      user_id: null,
+      default_llm: "Default LLM",
+      mentionable: false,
+      max_context_posts: 5,
     };
 
     const aiPersona = AiPersona.create({ ...properties });

@@ -54,6 +54,14 @@ de:
     ai_openai_api_key: "API-Schlüssel für OpenAI-API"
     ai_anthropic_api_key: "API-Schlüssel für Anthropic-API"
     ai_hugging_face_api_url: "Benutzerdefinierte URL, die für OpenSource-LLM-Inferenz verwendet wird. Kompatibel mit https://github.com/huggingface/text-generation-inference"
+    ai_hugging_face_api_key: API-Schlüssel für Hugging Face API
+    ai_hugging_face_token_limit: Maximale Token, die Hugging Face API pro Anfrage verwenden kann
+    ai_hugging_face_model_display_name: Angezeigter Name für das KI-Modell Hugging Face
+    ai_hugging_face_tei_endpoint: URL, auf der die API für die Inferenz der Texteinbettungen von Hugging Face ausgeführt wird
+    ai_hugging_face_tei_api_key: API-Schlüssel für die Inferenz von Texteinbettungen bei Hugging Face
+    ai_gemini_api_key: API-Schlüssel für Google Gemini API
+    ai_vllm_endpoint: URL, unter der die API für vLLM ausgeführt wird
+    ai_vllm_api_key: API-Schlüssel für vLLM API
     composer_ai_helper_enabled: "Aktiviere den Composer-KI-Helfer."
     ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
     ai_helper_allowed_in_pm: "Aktiviere den Composer-KI-Helfer in PN."
@@ -62,6 +70,8 @@ de:
     ai_helper_automatic_chat_thread_title_delay: "Verzögerung in Minuten, bevor der KI-Helfer automatisch den Titel des Chat-Threads festlegt."
     ai_helper_automatic_chat_thread_title: "Lege die Titel der Chat-Threads automatisch anhand der Thread-Inhalte fest."
     ai_helper_illustrate_post_model: "Modell, das für die Funktion „Beitrag illustrieren“ des Composer-KI-Helfers verwendet wird"
+    ai_helper_enabled_features: "Wähle die Funktionen aus, die im KI-Helfer aktiviert werden sollen."
+    post_ai_helper_allowed_groups: "Benutzergruppen, die auf KI Helper-Funktionen in Beiträgen zugreifen dürfen"
     ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
     ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
     ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
@@ -74,6 +84,7 @@ de:
     ai_embeddings_semantic_search_enabled: "Aktiviere die semantische Ganzseitensuche."
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"
     ai_embeddings_semantic_search_hyde_model: "Modell zur Erweiterung von Schlüsselwörtern, um bessere Ergebnisse bei der semantischen Suche zu erzielen"
+    ai_embeddings_per_post_enabled: Erstelle Einbettungen für jeden Beitrag
     ai_summarization_discourse_service_api_endpoint: "URL, unter der die Discourse-Zusammenfassungs-API läuft."
     ai_summarization_discourse_service_api_key: "API-Schlüssel für die Discourse-Zusammenfassungs-API."
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
@@ -237,3 +248,11 @@ de:
         configuration_hint:
           one: "Vergewissere dich, dass die Einstellung \"%{settings}\" konfiguriert wurde."
           other: "Vergewissere dich, dass diese Einstellungen konfiguriert wurden: %{settings}"
+    embeddings:
+      configuration:
+        disable_embeddings: "Du musst zuerst \"KI-Einbettungen aktiviert\" deaktivieren."
+        choose_model: "Lege zuerst „KI-Einbettungsmodell“ fest."
+        model_unreachable: "Es ist uns nicht gelungen, eine Testeinbettung mit diesem Modell zu erstellen. Prüfe, ob deine Einstellungen korrekt sind."
+        hint:
+          one: "Vergewissere dich, dass die Einstellung \"%{settings}\" konfiguriert wurde."
+          other: "Vergewissere dich, dass die Einstellungen des gewünschten Anbieters konfiguriert wurden. Die Optionen sind: %{settings}"

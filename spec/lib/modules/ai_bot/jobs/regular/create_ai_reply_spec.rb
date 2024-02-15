@@ -14,10 +14,12 @@ RSpec.describe Jobs::CreateAiReply do
     before { SiteSetting.min_personal_message_post_length = 5 }
 
     it "adds a reply from the bot" do
+      persona_id = AiPersona.find_by(name: "Forum Helper").id
       DiscourseAi::Completions::Llm.with_prepared_responses([expected_response]) do
         subject.execute(
           post_id: topic.first_post.id,
           bot_user_id: DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID,
+          persona_id: persona_id,
         )
       end
 

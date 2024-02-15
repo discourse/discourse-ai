@@ -23,6 +23,8 @@ module DiscourseAi
         [FAKE_ID, "fake_bot", "fake"],
       ]
 
+      BOT_USER_IDS = BOTS.map(&:first)
+
       def self.map_bot_model_to_user_id(model_name)
         case model_name
         in "gpt-4-turbo"
@@ -111,16 +113,7 @@ module DiscourseAi
           name || topic.custom_fields["ai_persona"]
         end
 
-        plugin.on(:post_created) do |post|
-          bot_ids = BOTS.map(&:first)
-
-          # Don't schedule a reply for a bot reply.
-          if !bot_ids.include?(post.user_id)
-            bot_user = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user
-            bot = DiscourseAi::AiBot::Bot.as(bot_user)
-            DiscourseAi::AiBot::Playground.new(bot).update_playground_with(post)
-          end
-        end
+        plugin.on(:post_created) { |post| DiscourseAi::AiBot::Playground.schedule_reply(post) }
 
         if plugin.respond_to?(:register_editable_topic_custom_field)
           plugin.register_editable_topic_custom_field(:ai_persona_id)

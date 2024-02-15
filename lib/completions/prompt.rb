@@ -51,7 +51,7 @@ module DiscourseAi
           raise ArgumentError, "message contains invalid keys: #{invalid_keys}"
         end
 
-        raise ArgumentError, "message content must be a string" if !message[:content].is_a?(String)
+        #raise ArgumentError, "message content must be a string" if !message[:content].is_a?(String)
       end
 
       def validate_turn(last_turn, new_turn)

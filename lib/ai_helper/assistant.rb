@@ -86,21 +86,37 @@ module DiscourseAi
       end
 
       def generate_image_caption(image_url, user)
-        generic_prompt = {
-          insts: "You are a helpful bot",
-          input: "Describe this image in a single sentence",
-          post_insts: "The image url is #{image_url}",
-        }
+        if SiteSetting.ai_helper_image_caption_model == "open_ai:gpt-4-vision-preview"
+          prompt =
+            DiscourseAi::Completions::Prompt.new(
+              messages: [
+                {
+                  type: :user,
+                  content: [
+                    { type: "text", text: "Describe this image in a single sentence" },
+                    { type: "image_url", image_url: image_url },
+                  ],
+                },
+              ],
+            )
 
-        instructions = [
-          generic_prompt[:input],
-          generic_prompt[:insts],
-          generic_prompt[:post_insts].to_s,
-        ].join("\n")
-        prompt = DiscourseAi::Completions::Prompt.new(instructions)
-        llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
+          DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
+            prompt,
+            user: Discourse.system_user,
+          )
+        elsif SiteSetting.ai_helper_image_caption_model == "llava"
+          parameters = {
+            input: {
+              image: image_url,
+              top_p: 1,
+              max_tokens: 1024,
+              temperature: 0.2,
+              prompt: "Please describe this image in a single sentence",
+            },
+          }
 
-        llm.generate(prompt, user: user)
+          ::DiscourseAi::Inference::Llava.perform!(parameters).dig(:output).join
+        end
       end
 
       private

@@ -51,6 +51,16 @@ en:
     ai_openai_api_key: "API key for OpenAI API"
     ai_anthropic_api_key: "API key for Anthropic API"
     ai_hugging_face_api_url: "Custom URL used for OpenSource LLM inference. Compatible with https://github.com/huggingface/text-generation-inference"
+    ai_hugging_face_api_key: API key for Hugging Face API
+    ai_hugging_face_token_limit: Max tokens Hugging Face API can use per request
+    ai_hugging_face_model_display_name: Name displayed for the Hugging Face AI model
+    ai_hugging_face_tei_endpoint: URL where the API is running for the Hugging Face text embeddings inference
+    ai_hugging_face_tei_api_key: API key for Hugging Face text embeddings inference
+    ai_gemini_api_key: API key for Google Gemini API
+    ai_vllm_endpoint: URL where the API is running for vLLM
+    ai_vllm_api_key: API key for vLLM API
+    ai_llava_endpoint: URL where the API is running for llava
+    ai_llava_api_key: API key for llava API
 
     composer_ai_helper_enabled: "Enable the Composer's AI helper."
     ai_helper_allowed_groups: "Users on these groups will see the AI helper button in the composer."
@@ -61,6 +71,7 @@ en:
     ai_helper_automatic_chat_thread_title: "Automatically set the chat thread titles based on thread contents."
     ai_helper_illustrate_post_model: "Model to use for the composer AI helper's illustrate post feature"
     ai_helper_enabled_features: "Select the features to enable in the AI helper."
+    post_ai_helper_allowed_groups: "User groups allowed to access AI Helper features in posts"
 
     ai_embeddings_enabled: "Enable the embeddings module."
     ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"
@@ -74,6 +85,7 @@ en:
     ai_embeddings_semantic_search_enabled: "Enable full-page semantic search."
     ai_embeddings_semantic_related_include_closed_topics: "Include closed topics in semantic search results"
     ai_embeddings_semantic_search_hyde_model: "Model used to expand keywords to get better results during a semantic search"
+    ai_embeddings_per_post_enabled: Generate embeddings for each post
 
     ai_summarization_discourse_service_api_endpoint: "URL where the Discourse summarization API is running."
     ai_summarization_discourse_service_api_key: "API key for the Discourse summarization API."
@@ -172,6 +184,7 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       command_summary:
+        random_picker: "Random Picker"
         categories: "List categories"
         search: "Search"
         tags: "List tags"
@@ -185,6 +198,7 @@ en:
         search_settings: "Searching site settings"
         dall_e: "Generate image"
       command_help:
+        random_picker: "Pick a random number or a random element of a list"
         categories: "List all publicly visible categories on the forum"
         search: "Search all public topics on the forum"
         tags: "List all tags on the forum"
@@ -198,6 +212,7 @@ en:
         search_settings: "Search site settings"
         dall_e: "Generate image using DALL-E 3"
       command_description:
+        random_picker: "Picking from %{options}, picked: %{result}"
         read: "Reading: <a href='%{url}'>%{title}</a>"
         time: "Time in %{timezone} is %{time}"
         summarize: "Summarized <a href='%{url}'>%{title}</a>"
@@ -258,6 +273,6 @@ en:
         disable_embeddings: "You have to disable 'ai embeddings enabled' first."
         choose_model: "Set 'ai embeddings model' first."
         model_unreachable: "We failed to generate a test embedding with this model. Check your settings are correct."
-        hint: 
+        hint:
           one: "Make sure the `%{settings}` setting was configured."
           other: "Make sure the settings of the provider you want were configured. Options are: %{settings}"

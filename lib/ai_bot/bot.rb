@@ -16,6 +16,7 @@ module DiscourseAi
       end
 
       attr_reader :bot_user
+      attr_accessor :persona
 
       def get_updated_title(conversation_context, post_user)
         system_insts = <<~TEXT.strip
@@ -110,8 +111,6 @@ module DiscourseAi
 
         raw_context
       end
-
-      attr_reader :persona
 
       private
 

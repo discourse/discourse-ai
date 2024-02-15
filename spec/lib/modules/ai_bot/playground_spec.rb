@@ -3,16 +3,29 @@
 RSpec.describe DiscourseAi::AiBot::Playground do
   subject(:playground) { described_class.new(bot) }
 
-  before do
+  fab!(:bot_user) do
     SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
     SiteSetting.ai_bot_enabled = true
+    User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
   end
 
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
-  let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user) }
+  fab!(:bot) do
+    persona =
+      AiPersona
+        .find(
+          DiscourseAi::AiBot::Personas::Persona.system_personas[
+            DiscourseAi::AiBot::Personas::General
+          ],
+        )
+        .class_instance
+        .new
+    DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+  end
 
-  fab!(:user) { Fabricate(:user) }
-  let!(:pm) do
+  fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
+
+  fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
+  fab!(:pm) do
     Fabricate(
       :private_message_topic,
       title: "This is my special PM",
@@ -23,13 +36,13 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       ],
     )
   end
-  let!(:first_post) do
+  fab!(:first_post) do
     Fabricate(:post, topic: pm, user: user, post_number: 1, raw: "This is a reply by the user")
   end
-  let!(:second_post) do
+  fab!(:second_post) do
     Fabricate(:post, topic: pm, user: bot_user, post_number: 2, raw: "This is a bot reply")
   end
-  let!(:third_post) do
+  fab!(:third_post) do
     Fabricate(
       :post,
       topic: pm,
@@ -37,6 +50,93 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       post_number: 3,
       raw: "This is a second reply by the user",
     )
+  end
+
+  describe "persona with user support" do
+    before do
+      Jobs.run_immediately!
+      SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+    end
+
+    fab!(:persona) do
+      persona =
+        AiPersona.create!(
+          name: "Test Persona",
+          description: "A test persona",
+          allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+          enabled: true,
+          system_prompt: "You are a helpful bot",
+        )
+
+      persona.create_user!
+      persona.update!(default_llm: "claude-2", mentionable: true)
+      persona
+    end
+
+    it "replies to whispers with a whisper" do
+      post = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
+        post =
+          create_post(
+            title: "My public topic",
+            raw: "Hey @#{persona.user.username}, can you help me?",
+            post_type: Post.types[:whisper],
+          )
+      end
+
+      post.topic.reload
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Yes I can")
+      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.post_type).to eq(Post.types[:whisper])
+    end
+
+    it "allows mentioning a persona" do
+      post = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
+        post =
+          create_post(
+            title: "My public topic",
+            raw: "Hey @#{persona.user.username}, can you help me?",
+          )
+      end
+
+      post.topic.reload
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Yes I can")
+      expect(last_post.user_id).to eq(persona.user_id)
+    end
+
+    it "picks the correct llm for persona in PMs" do
+      # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
+      SiteSetting.ai_bot_enabled = true
+      SiteSetting.ai_bot_enabled_chat_bots = "gpt-3.5-turbo|claude-2"
+
+      post = nil
+      gpt3_5_bot_user = User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID)
+
+      # title is queued first, ensures it uses the llm targeted via target_usernames not claude
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Magic title", "Yes I can"],
+        llm: "open_ai:gpt-3.5-turbo-16k",
+      ) do
+        post =
+          create_post(
+            title: "I just made a PM",
+            raw: "Hey @#{persona.user.username}, can you help me?",
+            target_usernames: "#{user.username},#{gpt3_5_bot_user.username}",
+            archetype: Archetype.private_message,
+            user: admin,
+          )
+      end
+
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Yes I can")
+      expect(last_post.user_id).to eq(persona.user_id)
+
+      last_post.topic.reload
+      expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
+    end
   end
 
   describe "#title_playground" do
@@ -112,7 +212,16 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     context "with Dall E bot" do
       let(:bot) do
-        DiscourseAi::AiBot::Bot.as(bot_user, persona: DiscourseAi::AiBot::Personas::DallE3.new)
+        persona =
+          AiPersona
+            .find(
+              DiscourseAi::AiBot::Personas::Persona.system_personas[
+                DiscourseAi::AiBot::Personas::DallE3
+              ],
+            )
+            .class_instance
+            .new
+        DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
       end
 
       it "does not include placeholders in conversation context (simulate DALL-E)" do
@@ -155,6 +264,24 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
 
   describe "#conversation_context" do
+    context "with limited context" do
+      before do
+        @old_persona = playground.bot.persona
+        persona = Fabricate(:ai_persona, max_context_posts: 1)
+        playground.bot.persona = persona.class_instance.new
+      end
+
+      after { playground.bot.persona = @old_persona }
+
+      it "respects max_context_post" do
+        context = playground.conversation_context(third_post)
+
+        expect(context).to contain_exactly(
+          *[{ type: :user, id: user.username, content: third_post.raw }],
+        )
+      end
+    end
+
     it "includes previous posts ordered by post_number" do
       context = playground.conversation_context(third_post)
 
