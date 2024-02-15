@@ -33,7 +33,7 @@ module DiscourseAi
         def invoke(_bot_user, _llm)
           result = nil
           # can be a naive list of strings
-          if options.all? { |option| !option.match?(/\A\d+-\d+\z/) && !option.include?(",") }
+          if options.none? { |option| option.match?(/\A\d+-\d+\z/) || option.include?(",") }
             result = options.sample
           else
             result =
