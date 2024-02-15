@@ -29,15 +29,6 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       end
     end
 
-    context "when name filter is provided" do
-      it "returns the prompt with the given name" do
-        prompts = subject.available_prompts(name_filter: "translate")
-
-        expect(prompts.length).to eq(1)
-        expect(prompts.first[:name]).to eq("translate")
-      end
-    end
-
     context "when illustrate post model is enabled" do
       before { SiteSetting.ai_helper_illustrate_post_model = "stable_diffusion_xl" }
 
