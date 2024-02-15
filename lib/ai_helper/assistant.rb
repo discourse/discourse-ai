@@ -6,37 +6,34 @@ module DiscourseAi
       AI_HELPER_PROMPTS_CACHE_KEY = "ai_helper_prompts"
 
       def available_prompts
-        prompts = Discourse.cache.read(AI_HELPER_PROMPTS_CACHE_KEY)
+        Discourse
+          .cache
+          .fetch(AI_HELPER_PROMPTS_CACHE_KEY) do
+            prompts = CompletionPrompt.where(enabled: true)
 
-        if !prompts
-          prompts = CompletionPrompt.where(enabled: true)
+            # Hide illustrate_post if disabled
+            prompts =
+              prompts.where.not(
+                name: "illustrate_post",
+              ) if SiteSetting.ai_helper_illustrate_post_model == "disabled"
 
-          # Hide illustrate_post if disabled
-          prompts =
-            prompts.where.not(
-              name: "illustrate_post",
-            ) if SiteSetting.ai_helper_illustrate_post_model == "disabled"
+            prompts =
+              prompts.map do |prompt|
+                translation =
+                  I18n.t("discourse_ai.ai_helper.prompts.#{prompt.name}", default: nil) ||
+                    prompt.translated_name || prompt.name
 
-          prompts =
-            prompts.map do |prompt|
-              translation =
-                I18n.t("discourse_ai.ai_helper.prompts.#{prompt.name}", default: nil) ||
-                  prompt.translated_name || prompt.name
-
-              {
-                id: prompt.id,
-                name: prompt.name,
-                translated_name: translation,
-                prompt_type: prompt.prompt_type,
-                icon: icon_map(prompt.name),
-                location: location_map(prompt.name),
-              }
-            end
-
-          Discourse.cache.write(AI_HELPER_PROMPTS_CACHE_KEY, prompts)
-        end
-
-        prompts
+                {
+                  id: prompt.id,
+                  name: prompt.name,
+                  translated_name: translation,
+                  prompt_type: prompt.prompt_type,
+                  icon: icon_map(prompt.name),
+                  location: location_map(prompt.name),
+                }
+              end
+            prompts
+          end
       end
 
       def generate_prompt(completion_prompt, input, user, &block)
