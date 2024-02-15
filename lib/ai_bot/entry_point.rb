@@ -98,6 +98,18 @@ module DiscourseAi
           bots
         end
 
+        plugin.add_to_serializer(:current_user, :can_use_assistant) do
+          scope.user.in_any_groups?(SiteSetting.ai_helper_allowed_groups_map)
+        end
+
+        plugin.add_to_serializer(:current_user, :can_use_assistant_in_post) do
+          scope.user.in_any_groups?(SiteSetting.post_ai_helper_allowed_groups_map)
+        end
+
+        plugin.add_to_serializer(:current_user, :can_use_custom_prompts) do
+          scope.user.in_any_groups?(SiteSetting.ai_helper_custom_prompts_allowed_groups_map)
+        end
+
         plugin.register_svg_icon("robot")
 
         plugin.add_to_serializer(

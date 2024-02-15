@@ -46,7 +46,6 @@ discourse_ai:
     default: 60
     client: false
   ai_toxicity_groups_bypass:
-    client: true
     type: group_list
     list_type: compact
     default: "3" # 3: @staff
@@ -172,7 +171,6 @@ discourse_ai:
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
   ai_helper_allowed_groups:
-    client: true
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
@@ -188,14 +186,12 @@ discourse_ai:
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
   ai_helper_custom_prompts_allowed_groups:
-    client: true
     type: group_list
     list_type: compact
     default: "3" # 3: @staff
     allow_any: false
     refresh: true
   post_ai_helper_allowed_groups:
-    client: true
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
