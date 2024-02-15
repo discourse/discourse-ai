@@ -123,17 +123,17 @@ export default class PersonaEditor extends Component {
 
   @action
   async toggleEnabled() {
-    this.toggleField("enabled");
+    await this.toggleField("enabled");
   }
 
   @action
   async togglePriority() {
-    this.toggleField("priority", true);
+    await this.toggleField("priority", true);
   }
 
   @action
   async toggleMentionable() {
-    this.toggleField("mentionable");
+    await this.toggleField("mentionable");
   }
 
   @action
