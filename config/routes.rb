@@ -2,7 +2,6 @@
 
 DiscourseAi::Engine.routes.draw do
   scope module: :ai_helper, path: "/ai-helper", defaults: { format: :json } do
-    get "prompts" => "assistant#prompts"
     post "suggest" => "assistant#suggest"
     post "suggest_title" => "assistant#suggest_title"
     post "suggest_category" => "assistant#suggest_category"

@@ -8,17 +8,6 @@ module DiscourseAi
       before_action :ensure_can_request_suggestions
       before_action :rate_limiter_performed!, except: %i[prompts]
 
-      def prompts
-        name_filter = params[:name_filter]
-
-        render json:
-                 ActiveModel::ArraySerializer.new(
-                   DiscourseAi::AiHelper::Assistant.new.available_prompts(name_filter: name_filter),
-                   root: false,
-                 ),
-               status: 200
-      end
-
       def suggest
         input = get_text_param!
 

@@ -19,6 +19,20 @@ module DiscourseAi
             thread_id: thread.id,
           )
         end
+
+        plugin.add_to_serializer(
+          :current_user,
+          :ai_helper_prompts,
+          include_condition: -> do
+            SiteSetting.composer_ai_helper_enabled && scope.authenticated? &&
+              scope.user.in_any_groups?(SiteSetting.ai_helper_allowed_groups_map)
+          end,
+        ) do
+          ActiveModel::ArraySerializer.new(
+            DiscourseAi::AiHelper::Assistant.new.available_prompts,
+            root: false,
+          )
+        end
       end
     end
   end
