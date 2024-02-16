@@ -30,12 +30,6 @@ module DiscourseAi
                   enum: %w[latest latest_topic oldest views likes],
                 },
                 {
-                  name: "limit",
-                  description:
-                    "limit number of results returned (generally prefer to just keep to default)",
-                  type: "integer",
-                },
-                {
                   name: "max_posts",
                   description:
                     "maximum number of posts on the topics (topics where lots of people posted)",
