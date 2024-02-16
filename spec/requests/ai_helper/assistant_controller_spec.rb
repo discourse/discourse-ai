@@ -107,4 +107,47 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       end
     end
   end
+
+  describe "#caption_image" do
+    let(:image_url) { "https://example.com/image.jpg" }
+    let(:caption) { "A picture of a cat sitting on a table" }
+
+    context "when logged in as an allowed user" do
+      fab!(:user)
+
+      before do
+        sign_in(user)
+        user.group_ids = [Group::AUTO_GROUPS[:trust_level_1]]
+        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
+        SiteSetting.ai_helper_model = "open_ai:gpt-4-vision-preview"
+        SiteSetting.ai_helper_image_caption_model = "open_ai:gpt-4-vision-preview"
+      end
+
+      it "returns the suggested caption for the image" do
+        DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
+          post "/discourse-ai/ai-helper/caption-image", params: { image_url: image_url }
+
+          expect(response.status).to eq(200)
+          expect(response.parsed_body["caption"]).to eq(caption)
+        end
+      end
+
+      it "returns a 502 error when the completion call fails" do
+        DiscourseAi::Completions::Llm
+          .any_instance
+          .expects(:generate)
+          .raises(DiscourseAi::Completions::Endpoints::Base::CompletionFailed)
+
+        post "/discourse-ai/ai-helper/caption-image", params: { image_url: image_url }
+
+        expect(response.status).to eq(502)
+      end
+
+      it "returns a 400 error when the image_url is blank" do
+        post "/discourse-ai/ai-helper/caption-image"
+
+        expect(response.status).to eq(400)
+      end
+    end
+  end
 end
