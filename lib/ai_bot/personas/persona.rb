@@ -14,6 +14,7 @@ module DiscourseAi
               Personas::Researcher => -5,
               Personas::Creative => -6,
               Personas::DallE3 => -7,
+              Personas::DiscourseHelper => -8,
             }
           end
 
@@ -62,6 +63,7 @@ module DiscourseAi
               Tools::Summarize,
               Tools::SettingContext,
               Tools::RandomPicker,
+              Tools::DiscourseMetaSearch,
             ]
 
             tools << Tools::ListTags if SiteSetting.tagging_enabled

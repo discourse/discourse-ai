@@ -37,7 +37,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
       search_post = Fabricate(:post, topic: topic_with_tags)
 
-      bot_post = Fabricate(:post)
+      _bot_post = Fabricate(:post)
 
       search = described_class.new({ order: "latest" }, persona_options: persona_options)
 
@@ -53,7 +53,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
     end
 
     it "can handle no results" do
-      post1 = Fabricate(:post, topic: topic_with_tags)
+      _post1 = Fabricate(:post, topic: topic_with_tags)
       search = described_class.new({ search_query: "ABDDCDCEDGDG", order: "fake" })
 
       results = search.invoke(bot_user, llm, &progress_blk)
