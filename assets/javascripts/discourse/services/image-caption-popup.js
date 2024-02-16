@@ -5,4 +5,6 @@ export default class ImageCaptionPopup extends Service {
   @tracked showPopup = false;
   @tracked imageIndex = null;
   @tracked imageSrc = null;
+  @tracked newCaption = null;
+  @tracked loading = false;
 }

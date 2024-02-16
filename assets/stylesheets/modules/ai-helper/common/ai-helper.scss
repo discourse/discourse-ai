@@ -480,6 +480,17 @@
       color: white;
       cursor: pointer;
     }
+
+    &.disabled {
+      pointer-events: none;
+      cursor: not-allowed;
+      opacity: 0.8;
+      &:hover,
+      &:focus {
+        background: var(--tertiary-100);
+        color: var(--tertiary-900);
+      }
+    }
   }
 }
 
@@ -504,5 +515,10 @@
       margin-left: auto;
       color: var(--tertiary);
     }
+  }
+
+  .spinner {
+    border-color: var(--tertiary-600);
+    border-right-color: var(--tertiary);
   }
 }

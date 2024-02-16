@@ -4,6 +4,7 @@ import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
+import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
 import autoFocus from "discourse/modifiers/auto-focus";
 import icon from "discourse-common/helpers/d-icon";
@@ -14,7 +15,7 @@ export default class AiImageCaptionContainer extends Component {
   @service imageCaptionPopup;
   @service appEvents;
   @service composer;
-  @tracked newCaption = "Another caption";
+  @tracked newCaption = this.imageCaptionPopup.newCaption || "";
 
   @action
   updateCaption(event) {
@@ -38,7 +39,6 @@ export default class AiImageCaptionContainer extends Component {
 
   <template>
     {{#if this.imageCaptionPopup.showPopup}}
-
       <div class="composer-popup education-message ai-caption-popup">
         <DButton
           @class="btn-transparent close"
@@ -46,10 +46,15 @@ export default class AiImageCaptionContainer extends Component {
           @action={{fn (mut this.imageCaptionPopup.showPopup) false}}
           @icon="times"
         />
-        <textarea
-          {{on "input" this.updateCaption}}
-          {{autoFocus}}
-        >{{this.newCaption}}</textarea>
+
+        <ConditionalLoadingSpinner
+          @condition={{this.imageCaptionPopup.loading}}
+        >
+          <textarea
+            {{on "input" this.updateCaption}}
+            {{autoFocus}}
+          >{{this.newCaption}}</textarea>
+        </ConditionalLoadingSpinner>
 
         <div class="actions">
           <DButton

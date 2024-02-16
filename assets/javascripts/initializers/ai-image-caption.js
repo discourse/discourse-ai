@@ -1,4 +1,5 @@
 import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { apiInitializer } from "discourse/lib/api";
 import I18n from "discourse-i18n";
 
@@ -26,22 +27,25 @@ export default apiInitializer("1.25.0", (api) => {
           .querySelector("img")
           .getAttribute("src");
 
+        imageCaptionPopup.loading = true;
+        imageCaptionPopup.showPopup = !imageCaptionPopup.showPopup;
+
         ajax(`/discourse-ai/ai-helper/caption_image`, {
           method: "POST",
           data: {
             image_url: imageSrc,
           },
         })
-          .then(() => {
-            console.log("data", data);
-            // TODO add loading state while caption is being generated
-            // TODO populate imageCaptionPopup's input with new caption
+          .then(({ caption }) => {
+            event.target.classList.add("disabled");
             imageCaptionPopup.imageSrc = imageSrc;
             imageCaptionPopup.imageIndex = imageIndex;
-            imageCaptionPopup.showPopup = !imageCaptionPopup.showPopup;
+            imageCaptionPopup.newCaption = caption;
           })
-          .catch((error) => {
-            console.log("error", error);
+          .catch(popupAjaxError)
+          .finally(() => {
+            imageCaptionPopup.loading = false;
+            event.target.classList.remove("disabled");
           });
       }
     }
