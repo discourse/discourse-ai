@@ -75,7 +75,7 @@ module DiscourseAi
         end
 
         def search_args
-          parameters.slice(:user, :order, :max_posts, :tags, :before, :after, :status)
+          parameters.slice(:category, :user, :order, :max_posts, :tags, :before, :after, :status)
         end
 
         def invoke(bot_user, llm)
