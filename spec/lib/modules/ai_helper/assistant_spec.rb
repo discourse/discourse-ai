@@ -13,33 +13,30 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
   STRING
 
   describe("#available_prompts") do
-    context "when no name filter is provided" do
-      it "returns all available prompts" do
-        prompts = subject.available_prompts
-
-        expect(prompts.length).to eq(6)
-        expect(prompts.map { |p| p[:name] }).to contain_exactly(
-          "translate",
-          "generate_titles",
-          "proofread",
-          "markdown_table",
-          "custom_prompt",
-          "explain",
-        )
-      end
+    before do
+      SiteSetting.ai_helper_illustrate_post_model = "disabled"
+      Discourse.cache.delete(DiscourseAi::AiHelper::Assistant::AI_HELPER_PROMPTS_CACHE_KEY)
     end
 
-    context "when name filter is provided" do
-      it "returns the prompt with the given name" do
-        prompts = subject.available_prompts(name_filter: "translate")
+    it "returns all available prompts" do
+      prompts = subject.available_prompts
 
-        expect(prompts.length).to eq(1)
-        expect(prompts.first[:name]).to eq("translate")
-      end
+      expect(prompts.length).to eq(6)
+      expect(prompts.map { |p| p[:name] }).to contain_exactly(
+        "translate",
+        "generate_titles",
+        "proofread",
+        "markdown_table",
+        "custom_prompt",
+        "explain",
+      )
     end
 
     context "when illustrate post model is enabled" do
-      before { SiteSetting.ai_helper_illustrate_post_model = "stable_diffusion_xl" }
+      before do
+        SiteSetting.ai_helper_illustrate_post_model = "stable_diffusion_xl"
+        Discourse.cache.delete(DiscourseAi::AiHelper::Assistant::AI_HELPER_PROMPTS_CACHE_KEY)
+      end
 
       it "returns the illustrate_post prompt in the list of all prompts" do
         prompts = subject.available_prompts

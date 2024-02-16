@@ -31,7 +31,6 @@ export default class AIHelperOptionsMenu extends Component {
   @service currentUser;
   @service menu;
 
-  @tracked helperOptions = [];
   @tracked menuState = this.MENU_STATES.triggers;
   @tracked loading = false;
   @tracked suggestion = "";
@@ -50,14 +49,6 @@ export default class AIHelperOptionsMenu extends Component {
   };
 
   @tracked _activeAIRequest = null;
-
-  constructor() {
-    super(...arguments);
-
-    if (this.helperOptions.length === 0) {
-      this.loadPrompts();
-    }
-  }
 
   @action
   async showAIHelperOptions() {
@@ -168,8 +159,8 @@ export default class AIHelperOptionsMenu extends Component {
     }
   }
 
-  async loadPrompts() {
-    let prompts = await ajax("/discourse-ai/ai-helper/prompts");
+  get helperOptions() {
+    let prompts = this.currentUser?.ai_helper_prompts;
 
     prompts = prompts.filter((item) => item.location.includes("post"));
 
@@ -191,7 +182,7 @@ export default class AIHelperOptionsMenu extends Component {
       prompts = prompts.filter((p) => p.name !== "proofread");
     }
 
-    this.helperOptions = prompts;
+    return prompts;
   }
 
   _showUserCustomPrompts() {

@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -11,31 +12,19 @@ export default class AiEditSuggestionButton extends Component {
     return showPostAIHelper(outletArgs, helper);
   }
 
+  @service currentUser;
   @tracked loading = false;
   @tracked suggestion = "";
   @tracked _activeAIRequest = null;
-
-  constructor() {
-    super(...arguments);
-
-    if (!this.mode) {
-      this.loadMode();
-    }
-  }
 
   get disabled() {
     return this.loading || this.suggestion?.length > 0;
   }
 
-  async loadMode() {
-    let mode = await ajax("/discourse-ai/ai-helper/prompts", {
-      method: "GET",
-      data: {
-        name_filter: "proofread",
-      },
-    });
-
-    this.mode = mode[0];
+  get mode() {
+    return this.currentUser?.ai_helper_prompts.find(
+      (prompt) => prompt.name === "proofread"
+    );
   }
 
   @action
