@@ -144,6 +144,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           DiscourseAi::AiBot::Personas::General,
           DiscourseAi::AiBot::Personas::Artist,
           DiscourseAi::AiBot::Personas::Creative,
+          DiscourseAi::AiBot::Personas::DiscourseHelper,
           DiscourseAi::AiBot::Personas::Researcher,
           DiscourseAi::AiBot::Personas::SettingsExplorer,
           DiscourseAi::AiBot::Personas::SqlHelper,
@@ -159,6 +160,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         DiscourseAi::AiBot::Personas::SqlHelper,
         DiscourseAi::AiBot::Personas::SettingsExplorer,
         DiscourseAi::AiBot::Personas::Creative,
+        DiscourseAi::AiBot::Personas::DiscourseHelper,
       )
 
       AiPersona.find(
@@ -171,6 +173,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         DiscourseAi::AiBot::Personas::SqlHelper,
         DiscourseAi::AiBot::Personas::SettingsExplorer,
         DiscourseAi::AiBot::Personas::Creative,
+        DiscourseAi::AiBot::Personas::DiscourseHelper,
       )
     end
   end
