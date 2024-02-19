@@ -109,11 +109,16 @@ module DiscourseAi
         image_url = params[:image_url]
         raise Discourse::InvalidParameters.new(:image_url) if !image_url
 
-        image = Upload.where(url: params[:image_url])
+        image = Upload.find_by(sha1: Upload.sha1_from_long_url(image_url))
+
+        if image&.secure?
+          url = Upload.signed_url_from_secure_uploads_url(image_url)
+        else
+          url = UrlHelper.absolute(image_url)
+        end
 
         hijack do
-          caption =
-            DiscourseAi::AiHelper::Assistant.new.generate_image_caption(image_url, current_user)
+          caption = DiscourseAi::AiHelper::Assistant.new.generate_image_caption(url, current_user)
           render json: { caption: caption }, status: 200
         end
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed, Net::HTTPBadResponse
