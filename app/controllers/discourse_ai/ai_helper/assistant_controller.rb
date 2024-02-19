@@ -109,7 +109,9 @@ module DiscourseAi
         image_url = params[:image_url]
         raise Discourse::InvalidParameters.new(:image_url) if !image_url
 
-        if SiteSetting.secure_uploads?
+        image = Upload.find_by(sha1: Upload.sha1_from_long_url(image_url))
+
+        if image.secure?
           url = Upload.signed_url_from_secure_uploads_url(image_url)
         else
           url = UrlHelper.absolute(image_url)
