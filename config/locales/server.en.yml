@@ -170,6 +170,9 @@ en:
         dall_e3:
           name: "DALL-E 3"
           description: "AI Bot specialized in generating images using DALL-E 3"
+        discourse_helper:
+          name: "Discourse Helper"
+          description: "AI Bot specialized in helping with Discourse related tasks"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
@@ -195,6 +198,7 @@ en:
         schema: "Look up database schema"
         search_settings: "Searching site settings"
         dall_e: "Generate image"
+        search_meta_discourse: "Search Meta Discourse"
       command_help:
         random_picker: "Pick a random number or a random element of a list"
         categories: "List all publicly visible categories on the forum"
@@ -209,6 +213,7 @@ en:
         schema: "Look up database schema"
         search_settings: "Search site settings"
         dall_e: "Generate image using DALL-E 3"
+        search_meta_discourse: "Search Meta Discourse"
       command_description:
         random_picker: "Picking from %{options}, picked: %{result}"
         read: "Reading: <a href='%{url}'>%{title}</a>"
@@ -223,6 +228,9 @@ en:
           one: "Found %{count} tag"
           other: "Found %{count} tags"
         search:
+          one: "Found %{count} <a href='%{url}'>result</a> for '%{query}'"
+          other: "Found %{count} <a href='%{url}'>results</a> for '%{query}'"
+        search_meta_discourse:
           one: "Found %{count} <a href='%{url}'>result</a> for '%{query}'"
           other: "Found %{count} <a href='%{url}'>results</a> for '%{query}'"
         google:

@@ -3,9 +3,7 @@
 module DiscourseAi
   module AiBot
     module Tools
-      class Search < Tool
-        MIN_SEMANTIC_RESULTS = 5
-
+      class DiscourseMetaSearch < Tool
         class << self
           def signature
             {
@@ -30,12 +28,6 @@ module DiscourseAi
                   description: "search result order",
                   type: "string",
                   enum: %w[latest latest_topic oldest views likes],
-                },
-                {
-                  name: "limit",
-                  description:
-                    "limit number of results returned (generally prefer to just keep to default)",
-                  type: "integer",
                 },
                 {
                   name: "max_posts",
@@ -71,19 +63,14 @@ module DiscourseAi
           end
 
           def name
-            "search"
+            "search_meta_discourse"
           end
 
           def custom_system_message
             <<~TEXT
-            You were trained on OLD data, lean on search to get up to date information about this forum
-            When searching try to SIMPLIFY search terms
+            You were trained on OLD data, lean on search to get up to date information
             Discourse search joins all terms with AND. Reduce and simplify terms to find more results.
           TEXT
-          end
-
-          def accepted_options
-            [option(:base_query, type: :string), option(:max_results, type: :integer)]
           end
         end
 
@@ -106,87 +93,45 @@ module DiscourseAi
             search_string = "#{search_string} #{options[:base_query]}"
           end
 
-          results =
-            ::Search.execute(
-              search_string.to_s + " status:public",
-              search_type: :full_page,
-              guardian: Guardian.new(),
-            )
+          url = "https://meta.discourse.org/search.json?q=#{CGI.escape(search_string)}"
+
+          json = JSON.parse(Net::HTTP.get(URI(url)))
 
           # let's be frugal with tokens, 50 results is too much and stuff gets cut off
           max_results = calculate_max_results(llm)
           results_limit = parameters[:limit] || max_results
           results_limit = max_results if parameters[:limit].to_i > max_results
 
-          should_try_semantic_search =
-            SiteSetting.ai_embeddings_semantic_search_enabled && results_limit == max_results &&
-              parameters[:search_query].present?
-
-          max_semantic_results = max_results / 4
-          results_limit = results_limit - max_semantic_results if should_try_semantic_search
-
-          posts = results&.posts || []
+          posts = json["posts"] || []
           posts = posts[0..results_limit.to_i - 1]
 
-          if should_try_semantic_search
-            semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.new())
-            topic_ids = Set.new(posts.map(&:topic_id))
-
-            search = ::Search.new(search_string, guardian: Guardian.new)
-
-            results = nil
-            begin
-              results = semantic_search.search_for_topics(search.term)
-            rescue => e
-              Discourse.warn_exception(e, message: "Semantic search failed")
-            end
-
-            if results
-              results = search.apply_filters(results)
-
-              results.each do |post|
-                next if topic_ids.include?(post.topic_id)
-
-                topic_ids << post.topic_id
-                posts << post
-
-                break if posts.length >= max_results
-              end
-            end
-          end
-
           @last_num_results = posts.length
-          # this is the general pattern from core
-          # if there are millions of hidden tags it may fail
-          hidden_tags = nil
 
           if posts.blank?
             { args: parameters, rows: [], instruction: "nothing was found, expand your search" }
           else
-            format_results(posts, args: parameters) do |post|
-              category_names = [
-                post.topic.category&.parent_category&.name,
-                post.topic.category&.name,
-              ].compact.join(" > ")
-              row = {
-                title: post.topic.title,
-                url: Discourse.base_path + post.url,
-                username: post.user&.username,
-                excerpt: post.excerpt,
-                created: post.created_at,
-                category: category_names,
-                likes: post.like_count,
-                topic_views: post.topic.views,
-                topic_likes: post.topic.like_count,
-                topic_replies: post.topic.posts_count - 1,
-              }
+            categories = self.class.categories
+            topics = (json["topics"]).map { |t| [t["id"], t] }.to_h
 
-              if SiteSetting.tagging_enabled
-                hidden_tags ||= DiscourseTagging.hidden_tag_names
-                # using map over pluck to avoid n+1 (assuming caller preloading)
-                tags = post.topic.tags.map(&:name) - hidden_tags
-                row[:tags] = tags.join(", ") if tags.present?
+            format_results(posts, args: parameters) do |post|
+              topic = topics[post["topic_id"]]
+
+              category = categories[topic["category_id"]]
+              category_names = +""
+              if category["parent_category_id"]
+                category_names << categories[category["parent_category_id"]]["name"] << " > "
               end
+              category_names << category["name"]
+              row = {
+                title: topic["title"],
+                url: "https://meta.discourse.org/t/-/#{post["topic_id"]}/#{post["post_number"]}",
+                username: post["username"],
+                excerpt: post["blurb"],
+                created: post["created_at"],
+                category: category_names,
+                likes: post["like_count"],
+                tags: topic["tags"].join(", "),
+              }
 
               row
             end
@@ -195,11 +140,23 @@ module DiscourseAi
 
         protected
 
+        def self.categories
+          return @categories if defined?(@categories)
+          url = "https://meta.discourse.org/site.json"
+          json = JSON.parse(Net::HTTP.get(URI(url)))
+          @categories =
+            json["categories"]
+              .map do |c|
+                [c["id"], { "name" => c["name"], "parent_category_id" => c["parent_category_id"] }]
+              end
+              .to_h
+        end
+
         def description_args
           {
             count: @last_num_results || 0,
             query: @last_query || "",
-            url: "#{Discourse.base_path}/search?q=#{CGI.escape(@last_query || "")}",
+            url: "https://meta.discourse.org/search?q=#{CGI.escape(@last_query || "")}",
           }
         end
 
