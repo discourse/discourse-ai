@@ -186,12 +186,7 @@ export default class AIHelperOptionsMenu extends Component {
   }
 
   _showUserCustomPrompts() {
-    const allowedGroups =
-      this.siteSettings?.ai_helper_custom_prompts_allowed_groups
-        .split("|")
-        .map((id) => parseInt(id, 10));
-
-    return this.currentUser?.groups.some((g) => allowedGroups.includes(g.id));
+    return this.currentUser?.can_use_custom_prompts;
   }
 
   @action
