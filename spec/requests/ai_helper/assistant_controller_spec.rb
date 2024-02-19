@@ -135,9 +135,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       end
 
       it "returns a 502 error when the completion call fails" do
-        stub_request(:post, "https://example.com/predictions").to_return(
-          status: 502
-        )
+        stub_request(:post, "https://example.com/predictions").to_return(status: 502)
 
         post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
 
