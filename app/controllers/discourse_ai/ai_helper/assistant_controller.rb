@@ -109,7 +109,9 @@ module DiscourseAi
         image_url = params[:image_url]
         raise Discourse::InvalidParameters.new(:image_url) if !image_url
 
-        image = Upload.where(url: params[:image_url])
+        if SiteSetting.secure_uploads?
+          image_url = Upload.signed_url_from_secure_uploads_url(image_url)
+        end
 
         hijack do
           caption =

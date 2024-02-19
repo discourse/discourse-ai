@@ -10,7 +10,11 @@ export default apiInitializer("1.25.0", (api) => {
     class: "generate-caption",
   };
   const imageCaptionPopup = api.container.lookup("service:imageCaptionPopup");
+  const settings = container.lookup("service:site-settings");
 
+  if (!settings.ai_helper_enabled_features.includes("image_caption")) {
+    return;
+  }
   api.addComposerImageWrapperButton(
     buttonAttrs.label,
     buttonAttrs.class,
