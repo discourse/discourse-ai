@@ -111,7 +111,7 @@ module DiscourseAi
 
         image = Upload.find_by(sha1: Upload.sha1_from_long_url(image_url))
 
-        if image.secure?
+        if image&.secure?
           url = Upload.signed_url_from_secure_uploads_url(image_url)
         else
           url = UrlHelper.absolute(image_url)
