@@ -17,17 +17,19 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
     File.read(File.expand_path("../../../../../fixtures/search_meta/site.json", __FILE__))
   end
 
+  before do
+    stub_request(:get, "https://meta.discourse.org/site.json").to_return(
+      status: 200,
+      body: mock_site_json,
+      headers: {
+      },
+    )
+  end
+
   it "searches meta.discourse.org" do
     stub_request(:get, "https://meta.discourse.org/search.json?q=test").to_return(
       status: 200,
       body: mock_search_json,
-      headers: {
-      },
-    )
-
-    stub_request(:get, "https://meta.discourse.org/site.json").to_return(
-      status: 200,
-      body: mock_site_json,
       headers: {
       },
     )
@@ -39,5 +41,28 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
     expect(results[:rows].first[results[:column_names].index("category")]).to eq(
       "documentation > developers",
     )
+  end
+
+  it "passes on all search parameters" do
+    url =
+      "https://meta.discourse.org/search.json?q=test%20category:test%20user:test%20order:test%20max_posts:1%20tags:test%20before:test%20after:test%20status:test"
+
+    stub_request(:get, url).to_return(status: 200, body: mock_search_json, headers: {})
+    params =
+      described_class.signature[:parameters]
+        .map do |param|
+          if param[:type] == "integer"
+            [param[:name], 1]
+          else
+            [param[:name], "test"]
+          end
+        end
+        .to_h
+        .symbolize_keys
+
+    search = described_class.new(params)
+    results = search.invoke(bot_user, llm, &progress_blk)
+
+    expect(results[:args]).to eq(params)
   end
 end

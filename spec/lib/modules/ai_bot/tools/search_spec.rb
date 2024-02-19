@@ -107,6 +107,25 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
       expect(results[:rows].to_s).to include("/subfolder" + post1.url)
     end
 
+    it "passes on all search params" do
+      params =
+        described_class.signature[:parameters]
+          .map do |param|
+            if param[:type] == "integer"
+              [param[:name], 1]
+            else
+              [param[:name], "test"]
+            end
+          end
+          .to_h
+          .symbolize_keys
+
+      search = described_class.new(params)
+      results = search.invoke(bot_user, llm, &progress_blk)
+
+      expect(results[:args]).to eq(params)
+    end
+
     it "returns rich topic information" do
       post1 = Fabricate(:post, like_count: 1, topic: topic_with_tags)
       search = described_class.new({ user: post1.user.username })
