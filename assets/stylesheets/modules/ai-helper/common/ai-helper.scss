@@ -457,3 +457,68 @@
     }
   }
 }
+
+// AI Image Caption Feature:
+.image-wrapper .button-wrapper {
+  .generate-caption {
+    background: var(--tertiary-100);
+    color: var(--tertiary-900);
+    font-weight: 600;
+    position: absolute;
+    top: -3.5rem;
+    left: 1rem;
+    padding: 0.5em;
+    transition: background 0.25s ease;
+
+    .d-icon {
+      margin-right: 0.25rem;
+    }
+
+    &:hover,
+    &:focus {
+      background: var(--tertiary-hover);
+      color: white;
+      cursor: pointer;
+    }
+
+    &.disabled {
+      pointer-events: none;
+      cursor: not-allowed;
+      opacity: 0.8;
+      &:hover,
+      &:focus {
+        background: var(--tertiary-100);
+        color: var(--tertiary-900);
+      }
+    }
+  }
+}
+
+.ai-caption-popup {
+  width: 400px;
+  right: unset;
+  bottom: 1.5rem;
+  top: unset;
+
+  textarea {
+    width: 95%;
+    height: 100px;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .credits {
+      font-size: var(--font-down-1);
+      margin-left: auto;
+      color: var(--tertiary);
+    }
+  }
+
+  .spinner {
+    border-color: var(--tertiary-600);
+    border-right-color: var(--tertiary);
+  }
+}

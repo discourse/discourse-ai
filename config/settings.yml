@@ -165,6 +165,12 @@ discourse_ai:
     default: ""
     hidden: true
   ai_vllm_api_key: ""
+  ai_llava_endpoint:
+    default: ""
+  ai_llava_endpoint_srv:
+    default: ""
+    hidden: true
+  ai_llava_api_key: ""
 
   composer_ai_helper_enabled:
     default: false
@@ -218,6 +224,13 @@ discourse_ai:
     choices:
       - "suggestions"
       - "context_menu"
+  ai_helper_image_caption_model:
+    default: "llava"
+    type: enum
+    choices:
+      - "llava"
+      - "open_ai:gpt-4-vision-preview"
+    
 
   ai_embeddings_enabled:
     default: false

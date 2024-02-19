@@ -7,6 +7,7 @@ DiscourseAi::Engine.routes.draw do
     post "suggest_category" => "assistant#suggest_category"
     post "suggest_tags" => "assistant#suggest_tags"
     post "explain" => "assistant#explain"
+    post "caption_image" => "assistant#caption_image"
   end
 
   scope module: :embeddings, path: "/embeddings", defaults: { format: :json } do
