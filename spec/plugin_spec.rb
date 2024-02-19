@@ -32,6 +32,8 @@ describe Plugin::Instance do
       SiteSetting.composer_ai_helper_enabled = true
       SiteSetting.ai_helper_illustrate_post_model = "disabled"
       Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
+
+      DiscourseAi::AiHelper::Assistant.clear_prompt_cache!
     end
 
     let(:serializer) { CurrentUserSerializer.new(user, scope: Guardian.new(user)) }

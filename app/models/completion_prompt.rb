@@ -17,6 +17,8 @@ class CompletionPrompt < ActiveRecord::Base
   validates :messages, length: { maximum: 20 }
   validate :each_message_length
 
+  after_commit { DiscourseAi::AiHelper::Assistant.clear_prompt_cache! }
+
   def self.enabled_by_name(name)
     where(enabled: true).find_by(name: name)
   end

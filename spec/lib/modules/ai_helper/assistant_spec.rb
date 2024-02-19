@@ -15,7 +15,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
   describe("#available_prompts") do
     before do
       SiteSetting.ai_helper_illustrate_post_model = "disabled"
-      Discourse.cache.delete(DiscourseAi::AiHelper::Assistant::AI_HELPER_PROMPTS_CACHE_KEY)
+      DiscourseAi::AiHelper::Assistant.clear_prompt_cache!
     end
 
     it "returns all available prompts" do
@@ -35,7 +35,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     context "when illustrate post model is enabled" do
       before do
         SiteSetting.ai_helper_illustrate_post_model = "stable_diffusion_xl"
-        Discourse.cache.delete(DiscourseAi::AiHelper::Assistant::AI_HELPER_PROMPTS_CACHE_KEY)
+        DiscourseAi::AiHelper::Assistant.clear_prompt_cache!
       end
 
       it "returns the illustrate_post prompt in the list of all prompts" do
