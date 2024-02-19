@@ -229,7 +229,7 @@ discourse_ai:
       - "suggestions"
       - "context_menu"
   ai_helper_image_caption_model:
-    default: ""
+    default: "llava"
     type: enum
     choices:
       - "llava"
