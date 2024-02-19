@@ -8,11 +8,12 @@ module DiscourseAi
       attr_reader :messages
       attr_accessor :tools
 
-      def initialize(system_message_text = nil, messages: [], tools: [])
+      def initialize(system_message_text = nil, messages: [], tools: [], skip_validations: false)
         raise ArgumentError, "messages must be an array" if !messages.is_a?(Array)
         raise ArgumentError, "tools must be an array" if !tools.is_a?(Array)
 
         @messages = []
+        @skip_validations = skip_validations
 
         if system_message_text
           system_message = { type: :system, content: system_message_text }
@@ -41,6 +42,7 @@ module DiscourseAi
       private
 
       def validate_message(message)
+        return if @skip_validations
         valid_types = %i[system user model tool tool_call]
         if !valid_types.include?(message[:type])
           raise ArgumentError, "message type must be one of #{valid_types}"
@@ -51,10 +53,11 @@ module DiscourseAi
           raise ArgumentError, "message contains invalid keys: #{invalid_keys}"
         end
 
-        #raise ArgumentError, "message content must be a string" if !message[:content].is_a?(String)
+        raise ArgumentError, "message content must be a string" if !message[:content].is_a?(String)
       end
 
       def validate_turn(last_turn, new_turn)
+        return if @skip_validations
         valid_types = %i[tool tool_call model user]
         raise INVALID_TURN if !valid_types.include?(new_turn[:type])
 
