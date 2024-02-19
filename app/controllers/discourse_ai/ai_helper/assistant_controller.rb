@@ -116,7 +116,7 @@ module DiscourseAi
             DiscourseAi::AiHelper::Assistant.new.generate_image_caption(image_url, current_user)
           render json: { caption: caption }, status: 200
         end
-      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed, Net::HTTPBadResponse
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
       end

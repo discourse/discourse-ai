@@ -88,7 +88,19 @@ module DiscourseAi
       end
 
       def generate_image_caption(image_url, user)
-        if SiteSetting.ai_helper_image_caption_model == "open_ai:gpt-4-vision-preview"
+        if SiteSetting.ai_helper_image_caption_model == "llava"
+          parameters = {
+            input: {
+              image: image_url,
+              top_p: 1,
+              max_tokens: 1024,
+              temperature: 0.2,
+              prompt: "Please describe this image in a single sentence",
+            },
+          }
+
+          ::DiscourseAi::Inference::Llava.perform!(parameters).dig(:output).join
+        else
           prompt =
             DiscourseAi::Completions::Prompt.new(
               messages: [
@@ -108,18 +120,6 @@ module DiscourseAi
             user: Discourse.system_user,
             max_tokens: 1024,
           )
-        elsif SiteSetting.ai_helper_image_caption_model == "llava"
-          parameters = {
-            input: {
-              image: image_url,
-              top_p: 1,
-              max_tokens: 1024,
-              temperature: 0.2,
-              prompt: "Please describe this image in a single sentence",
-            },
-          }
-
-          ::DiscourseAi::Inference::Llava.perform!(parameters).dig(:output).join
         end
       end
 

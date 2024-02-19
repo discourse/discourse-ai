@@ -119,32 +119,33 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         sign_in(user)
         user.group_ids = [Group::AUTO_GROUPS[:trust_level_1]]
         SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
-        SiteSetting.ai_helper_model = "open_ai:gpt-4-vision-preview"
-        SiteSetting.ai_helper_image_caption_model = "open_ai:gpt-4-vision-preview"
+        SiteSetting.ai_llava_endpoint = "https://example.com"
+
+        stub_request(:post, "https://example.com/predictions").to_return(
+          status: 200,
+          body: { output: caption.gsub(" ", " |").split("|") }.to_json,
+        )
       end
 
       it "returns the suggested caption for the image" do
-        DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
-          post "/discourse-ai/ai-helper/caption-image", params: { image_url: image_url }
+        post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
 
-          expect(response.status).to eq(200)
-          expect(response.parsed_body["caption"]).to eq(caption)
-        end
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["caption"]).to eq(caption)
       end
 
       it "returns a 502 error when the completion call fails" do
-        DiscourseAi::Completions::Llm
-          .any_instance
-          .expects(:generate)
-          .raises(DiscourseAi::Completions::Endpoints::Base::CompletionFailed)
+        stub_request(:post, "https://example.com/predictions").to_return(
+          status: 502
+        )
 
-        post "/discourse-ai/ai-helper/caption-image", params: { image_url: image_url }
+        post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
 
         expect(response.status).to eq(502)
       end
 
       it "returns a 400 error when the image_url is blank" do
-        post "/discourse-ai/ai-helper/caption-image"
+        post "/discourse-ai/ai-helper/caption_image"
 
         expect(response.status).to eq(400)
       end
