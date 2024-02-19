@@ -116,8 +116,7 @@ module DiscourseAi
         end
 
         hijack do
-          caption =
-            DiscourseAi::AiHelper::Assistant.new.generate_image_caption(url, current_user)
+          caption = DiscourseAi::AiHelper::Assistant.new.generate_image_caption(url, current_user)
           render json: { caption: caption }, status: 200
         end
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed, Net::HTTPBadResponse
