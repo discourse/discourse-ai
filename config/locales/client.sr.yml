@@ -28,6 +28,7 @@ sr:
       ai_persona:
         name: Ime foruma
         description: Opis
+        user: Korisnik
         save: Sačuvaj
         new: Nova
         delete: Obriši
@@ -43,6 +44,8 @@ sr:
           copy: "Kopija"
           copied: "Kopirano!"
           cancel: "Odustani"
+        image_caption:
+          save_caption: "Sačuvaj"
       ai_bot:
         share_modal:
           copy: "Kopija"

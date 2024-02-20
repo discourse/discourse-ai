@@ -32,6 +32,7 @@ ca:
       ai_persona:
         name: Nom
         description: Descripció
+        user: Usuari
         save: Desa
         enabled: Activat
         new: Nou
@@ -49,6 +50,8 @@ ca:
           copy: "Còpia"
           copied: "Copiat!"
           cancel: "Cancel·la"
+        image_caption:
+          save_caption: "Desa"
       ai_bot:
         share_modal:
           copy: "Còpia"

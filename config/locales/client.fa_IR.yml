@@ -44,6 +44,7 @@ fa_IR:
       ai_persona:
         name: نام
         description: توضیح
+        user: کاربر
         save: ذخیره
         enabled: فعال شد
         new: تازه
@@ -72,6 +73,8 @@ fa_IR:
           suggest_button: "پیشنهاد ویرایش"
         thumbnail_suggestions:
           select: "انتخاب"
+        image_caption:
+          save_caption: "ذخیره"
       reviewables:
         model_used: "مدل مورد استفاده:"
         accuracy: "دقت:"

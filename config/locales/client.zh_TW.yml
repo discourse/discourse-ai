@@ -30,6 +30,7 @@ zh_TW:
       ai_persona:
         name: 名字
         description: 簡述
+        user: 使用者
         save: 保存
         enabled: 啟用
         new: 新使用者
@@ -49,6 +50,8 @@ zh_TW:
         thumbnail_suggestions:
           select: "選擇"
           selected: "已選"
+        image_caption:
+          save_caption: "保存"
       ai_bot:
         share_modal:
           copy: "複製"

@@ -32,6 +32,7 @@ lv:
       ai_persona:
         name: Vārds
         description: Apraksts
+        user: Lietotājs
         save: Saglabāt
         enabled: Ieslēgts
         new: jauns
@@ -48,6 +49,8 @@ lv:
           copy: "Kopēt"
           copied: "Nokopēts!"
           cancel: "Atcelt"
+        image_caption:
+          save_caption: "Saglabāt"
       ai_bot:
         share_modal:
           copy: "Kopēt"

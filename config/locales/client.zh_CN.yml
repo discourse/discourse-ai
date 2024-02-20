@@ -111,6 +111,7 @@ zh_CN:
       ai_persona:
         name: 名称
         description: 描述
+        user: 用户
         system_prompt: 系统提示
         save: 保存
         saved: AI 角色已保存
@@ -178,6 +179,8 @@ zh_CN:
           title: "建议缩略图"
           select: "选择"
           selected: "已选择"
+        image_caption:
+          save_caption: "保存"
       reviewables:
         model_used: "使用的模型："
         accuracy: "准确性："

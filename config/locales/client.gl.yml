@@ -32,6 +32,7 @@ gl:
       ai_persona:
         name: Nome
         description: Descrición
+        user: Usuario
         save: Gardar
         enabled: Activado
         new: Novo
@@ -49,6 +50,8 @@ gl:
           copy: "Copiar"
           copied: "Copiado!"
           cancel: "Cancelar"
+        image_caption:
+          save_caption: "Gardar"
       ai_bot:
         share_modal:
           copy: "Copiar"

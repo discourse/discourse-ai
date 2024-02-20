@@ -212,6 +212,13 @@ ar:
           few: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
           many: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
           other: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+        search_meta_discourse:
+          zero: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
+          one: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          two: "تم العثور على <a href='%{url}'>نتيجتين (%{count})</a> لاستعلام البحث '%{query}'"
+          few: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
+          many: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
+          other: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
         google:
           zero: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
           one: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"

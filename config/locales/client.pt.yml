@@ -32,6 +32,7 @@ pt:
       ai_persona:
         name: Nome
         description: Descrição
+        user: Utilizador
         save: Guardar
         enabled: Ativado
         new: Novo
@@ -50,6 +51,8 @@ pt:
           cancel: "Cancelar"
         thumbnail_suggestions:
           select: "Selecionar"
+        image_caption:
+          save_caption: "Guardar"
       ai_bot:
         share_modal:
           copy: "Copiar"

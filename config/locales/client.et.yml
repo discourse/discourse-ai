@@ -32,6 +32,7 @@ et:
       ai_persona:
         name: Nimi
         description: Kirjeldus
+        user: Kasutaja
         save: Salvesta
         enabled: Sisse lülitatud
         new: Uus
@@ -48,6 +49,8 @@ et:
           copy: "Kopeeri"
           copied: "Kopeeritud!"
           cancel: "Tühista"
+        image_caption:
+          save_caption: "Salvesta"
       ai_bot:
         share_modal:
           copy: "Kopeeri"

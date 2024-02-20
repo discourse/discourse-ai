@@ -99,6 +99,7 @@ pt_BR:
       ai_persona:
         name: Nome
         description: Descrição
+        user: Usuário(a)
         system_prompt: Prompt do sistema
         save: Salvar
         saved: Persona de IA salva
@@ -162,6 +163,8 @@ pt_BR:
           title: "Miniaturas sugeridas"
           select: "Selecionar"
           selected: "Selecionado(a)"
+        image_caption:
+          save_caption: "Salvar"
       reviewables:
         model_used: "Modelo usado:"
         accuracy: "Precisão:"

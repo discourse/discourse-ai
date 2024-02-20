@@ -32,6 +32,7 @@ th:
       ai_persona:
         name: ชื่อ
         description: รายละเอียด
+        user: ผู้ใช้
         save: บันทึก
         new: ใหม่
         delete: ลบ
@@ -47,6 +48,8 @@ th:
           copy: "คัดลอก"
           copied: "คัดลอกแล้ว!"
           cancel: "ยกเลิก"
+        image_caption:
+          save_caption: "บันทึก"
       ai_bot:
         share_modal:
           copy: "คัดลอก"

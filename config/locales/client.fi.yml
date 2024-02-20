@@ -98,6 +98,7 @@ fi:
       ai_persona:
         name: Nimi
         description: Kuvaus
+        user: Käyttäjä
         system_prompt: Järjestelmäkehote
         save: Tallenna
         saved: Tekoälypersoona tallennettu
@@ -161,6 +162,8 @@ fi:
           title: "Ehdotetut pikkukuvat"
           select: "Valitse"
           selected: "Valittu"
+        image_caption:
+          save_caption: "Tallenna"
       reviewables:
         model_used: "Käytetty malli:"
         accuracy: "Tarkkuus:"

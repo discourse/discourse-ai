@@ -32,6 +32,7 @@ el:
       ai_persona:
         name: Όνομα
         description: Περιγραφή
+        user: Χρήστης
         save: Αποθήκευση
         new: Νέο
         delete: Σβήσιμο
@@ -47,6 +48,8 @@ el:
           copy: "Αντιγραφή"
           copied: "Αντιγράφηκε!"
           cancel: "Ακύρωση"
+        image_caption:
+          save_caption: "Αποθήκευση"
       ai_bot:
         share_modal:
           copy: "Αντιγραφή"

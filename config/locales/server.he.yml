@@ -62,6 +62,8 @@ he:
     ai_gemini_api_key: מפתח API ל־API של Google Gemini
     ai_vllm_endpoint: הכתובת בה פועל ה־API של vLLM
     ai_vllm_api_key: מפתח API ל־API של vLLM
+    ai_llava_endpoint: כתובת בה פועל ה־API עבור llava
+    ai_llava_api_key: מפתח API ל־API של llava
     composer_ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית של כותב ההודעות."
     ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
     ai_helper_allowed_in_pm: "הפעלת מסייע הבינה המלאכותית בכותב ההודעות בהודעות הפרטיות."
@@ -72,6 +74,7 @@ he:
     ai_helper_illustrate_post_model: "דגם לשימוש ליכולת הדמיית הפוסט של מסייע הבינה המלאכותית בכתיבה"
     ai_helper_enabled_features: "נא לבחור יכולות להפעלה במסייע הבינה המלאכותית."
     post_ai_helper_allowed_groups: "קבוצות משתמשים שמורשות לגשת ליכולות מסייע בינה מלאכותית בפוסטים"
+    ai_helper_image_caption_model: "נא לבחור את הדגם שישמש ליצירת כותרות לתמונות"
     ai_embeddings_enabled: "הפעלת מודול ההטמעות."
     ai_embeddings_discourse_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול ההטמעות"
     ai_embeddings_discourse_service_api_key: "מפתח API ל־API של ההטמעות"
@@ -159,6 +162,9 @@ he:
         dall_e3:
           name: "DALL-E 3"
           description: "בוט בינה מלאכותית שמתמחה ביצירת תמונות באמצעות DALL-E 3"
+        discourse_helper:
+          name: "מסייע Discourse"
+          description: "בוט בינה מלאכותית שמתמחה בסיוע במשימות שקשורות ב־Discourse"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
@@ -171,6 +177,7 @@ he:
             name: "שאילתת חיפוש בסיסית"
             description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‚‎#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
       command_summary:
+        random_picker: "בורר אקראי"
         categories: "הצגת קטגוריות"
         search: "חיפוש"
         tags: "הצגת תגיות"
@@ -183,7 +190,9 @@ he:
         schema: "חיפוש סכמת מסד נתונים"
         search_settings: "מתבצע חיפוש בהגדרות האתר"
         dall_e: "יצירת תמונה"
+        search_meta_discourse: "חיפוש ב־Meta Discrouse"
       command_help:
+        random_picker: "נא לבחור מספר אקראי או רכיב אקראי מרשימה"
         categories: "הצגת כל הקטגוריות החשופות לציבור בפורום"
         search: "חיפוש בכל הנושאים הציבוריים בפורום"
         tags: "הצגת כל התגיות בפורום"
@@ -196,7 +205,9 @@ he:
         schema: "חיפוש סכמת מסד נתונים"
         search_settings: "חיפוש בהגדרות האתר"
         dall_e: "יצירת תמונה באמצעות DALL-E 3"
+        search_meta_discourse: "חיפוש ב־Meta Discrouse"
       command_description:
+        random_picker: "בחירה מתוך %{options}, נבחר: %{result}"
         read: "קריאה: <a href='%{url}'>%{title}</a>"
         time: "השעה ב־%{timezone} היא %{time}"
         summarize: "<a href='%{url}'>%{title}</a> סוכם"
@@ -213,6 +224,11 @@ he:
           many: "נמצאו %{count} תגיות"
           other: "נמצאו %{count} תגיות"
         search:
+          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
+          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+        search_meta_discourse:
           one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
           two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"

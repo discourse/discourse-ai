@@ -98,6 +98,7 @@ fr:
       ai_persona:
         name: Nom
         description: Description
+        user: Utilisateur
         system_prompt: Invite du système
         save: Enregistrer
         saved: Personnage IA enregistré
@@ -161,6 +162,8 @@ fr:
           title: "Miniatures suggérées"
           select: "Sélectionner"
           selected: "Sélectionné"
+        image_caption:
+          save_caption: "Enregistrer"
       reviewables:
         model_used: "Modèle utilisé :"
         accuracy: "Précision :"

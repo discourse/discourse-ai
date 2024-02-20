@@ -206,6 +206,11 @@ ru:
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
           many: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
           other: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
+        search_meta_discourse:
+          one: "Найден %{count} <a href='%{url}'>результат</a> по запросу «%{query}»"
+          few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
+          many: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
+          other: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
         google:
           one: "Найден %{count} <a href='%{url}'>результат</a> по запросу «%{query}»"
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"

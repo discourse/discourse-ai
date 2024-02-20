@@ -32,6 +32,7 @@ sl:
       ai_persona:
         name: Ime
         description: Opis
+        user: Uporabnik
         save: Shrani
         enabled: Vključeno
         new: Nova
@@ -49,6 +50,8 @@ sl:
           copy: "Kopiraj"
           copied: "Kopirano!"
           cancel: "Prekliči"
+        image_caption:
+          save_caption: "Shrani"
       ai_bot:
         share_modal:
           copy: "Kopiraj"

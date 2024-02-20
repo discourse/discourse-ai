@@ -53,9 +53,16 @@ pl_PL:
               description: "LLM do wykorzystania do generowania raportów"
             categories:
               label: "Kategorie"
+              description: "Filtruj tematy tylko do tych kategorii"
             tags:
               label: "Tagi"
               description: "Filtruj tematy tylko do tych tagów"
+            exclude_tags:
+              label: "Wyklucz tagi"
+              description: "Wyklucz tematy z tymi tagami"
+            exclude_categories:
+              label: "Wyklucz kategorie"
+              description: "Wyklucz tematy z tych kategorii"
             allow_secure_categories:
               label: "Zezwalaj na bezpieczne kategorie"
               description: "Zezwalaj na generowanie raportu dla tematów w bezpiecznych kategoriach"
@@ -64,6 +71,10 @@ pl_PL:
               description: "Włącz tryb debugowania, aby zobaczyć nieprzetworzone dane wejściowe i wyjściowe LLM."
             priority_group:
               label: "Grupa priorytetowa"
+              description: "Nadaj priorytet treściom z tej grupy w raporcie"
+            temperature:
+              label: "Temperatura"
+              description: "Temperatura używana dla LLM, zwiększ, aby zwiększyć losowość (0, aby użyć domyślnego modelu)"
         llm_triage:
           fields:
             system_prompt:
@@ -97,6 +108,16 @@ pl_PL:
       ai_persona:
         name: Nazwa
         description: Opis
+        no_llm_selected: "Nie wybrano modelu językowego"
+        max_context_posts: "Maksymalna liczba postów kontekstowych"
+        max_context_posts_help: "Maksymalna liczba postów do wykorzystania jako kontekst dla sztucznej inteligencji podczas odpowiadania użytkownikowi. (domyślnie puste)"
+        mentionable: Wzmiankowalny
+        mentionable_help: Jeśli ta opcja jest włączona, użytkownicy w dozwolonych grupach mogą wspominać o tym użytkowniku w postach i wiadomościach, a sztuczna inteligencja będzie odpowiadać jako ta osoba.
+        user: Użytkownik
+        create_user: Utwórz użytkownika
+        create_user_help: Opcjonalnie możesz przypisać użytkownika do tej osoby. Jeśli to zrobisz, sztuczna inteligencja użyje tego użytkownika do odpowiedzi na żądania.
+        default_llm: Domyślny model językowy
+        default_llm_help: Domyślny model językowy używany dla tej persony. Wymagane, jeśli chcesz wspomnieć o osobie w postach publicznych.
         system_prompt: Monit systemowy
         save: Zapisz
         saved: Zapisano AI Persona
@@ -107,6 +128,8 @@ pl_PL:
         new: Nowa
         title: "AI Personas"
         delete: Usuń
+        temperature: Temperatura
+        temperature_help: Temperatura do zastosowania w LLM, zwiększ, aby zwiększyć kreatywność (pozostaw puste, aby użyć domyślnego modelu, zazwyczaj wartość od 0,0 do 2,0)
         priority: Priorytet
         priority_help: Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie.
         command_options: "Opcje poleceń"
@@ -160,6 +183,8 @@ pl_PL:
           title: "Sugerowane miniatury"
           select: "Wybierz"
           selected: "Wybrany"
+        image_caption:
+          save_caption: "Zapisz"
       reviewables:
         model_used: "Zastosowany model:"
         accuracy: "Dokładność:"

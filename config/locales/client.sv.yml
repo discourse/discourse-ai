@@ -32,6 +32,7 @@ sv:
       ai_persona:
         name: Namn
         description: Beskrivning
+        user: Användare
         save: Spara
         enabled: Aktiverad
         new: Nya
@@ -52,6 +53,8 @@ sv:
         thumbnail_suggestions:
           select: "Välj"
           selected: "Markerat"
+        image_caption:
+          save_caption: "Spara"
       ai_bot:
         share_modal:
           copy: "Kopiera"

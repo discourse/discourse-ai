@@ -32,6 +32,7 @@ sw:
       ai_persona:
         name: Jina
         description: Elezo
+        user: Mtumiaji
         save: Hifadhi
         enabled: Imeruhusiwa
         new: Mpya
@@ -47,6 +48,8 @@ sw:
           close: "Funga"
           copy: "Nakili"
           cancel: "Ghairi"
+        image_caption:
+          save_caption: "Hifadhi"
       ai_bot:
         share_modal:
           copy: "Nakili"

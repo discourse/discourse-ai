@@ -200,6 +200,8 @@ zh_CN:
           other: "找到 %{count} 个标签"
         search:
           other: "找到“%{query}”的 %{count} <a href='%{url}'>个结果</a>"
+        search_meta_discourse:
+          other: "找到“%{query}”的 %{count} <a href='%{url}'>个结果</a>"
         google:
           other: "找到“%{query}”的 %{count} <a href='%{url}'>个结果</a>"
         setting_context: "阅读上下文：%{setting_name}"

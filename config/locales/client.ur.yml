@@ -32,6 +32,7 @@ ur:
       ai_persona:
         name: نام
         description: تفصیل
+        user: صارف
         save: محفوظ کریں
         new: نئی
         delete: مٹائیں
@@ -48,6 +49,8 @@ ur:
           copy: "کاپی"
           copied: "کاپی کر لیا!"
           cancel: "منسوخ"
+        image_caption:
+          save_caption: "محفوظ کریں"
       ai_bot:
         share_modal:
           copy: "کاپی"

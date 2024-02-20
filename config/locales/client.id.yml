@@ -30,6 +30,7 @@ id:
       ai_persona:
         name: Nama
         description: Deskripsi
+        user: Pengguna
         save: Simpan
         enabled: Diaktifkan
         new: New
@@ -47,3 +48,5 @@ id:
           cancel: "Batal"
         thumbnail_suggestions:
           selected: "Dipilih"
+        image_caption:
+          save_caption: "Simpan"
