@@ -39,13 +39,6 @@ export default class AiImageCaptionContainer extends Component {
   <template>
     {{#if this.imageCaptionPopup.showPopup}}
       <div class="composer-popup education-message ai-caption-popup">
-        <DButton
-          @class="btn-transparent close"
-          @title="close"
-          @action={{fn (mut this.imageCaptionPopup.showPopup) false}}
-          @icon="times"
-        />
-
         <ConditionalLoadingSpinner
           @condition={{this.imageCaptionPopup.loading}}
         >
@@ -71,7 +64,7 @@ export default class AiImageCaptionContainer extends Component {
 
           <span class="credits">
             {{icon "discourse-sparkles"}}
-            {{i18n "discourse_ai.ai_helper.image_caption.credits"}}
+            <span>{{i18n "discourse_ai.ai_helper.image_caption.credits"}}</span>
           </span>
         </div>
       </div>
