@@ -8,6 +8,8 @@ module DiscourseAi
       before_action :ensure_can_request_suggestions
       before_action :rate_limiter_performed!, except: %i[prompts]
 
+      include SecureUploadEndpointHelpers
+
       def suggest
         input = get_text_param!
 
@@ -109,16 +111,16 @@ module DiscourseAi
         image_url = params[:image_url]
         raise Discourse::InvalidParameters.new(:image_url) if !image_url
 
-        image = Upload.find_by(sha1: Upload.sha1_from_long_url(image_url))
-
-        if image&.secure?
-          url = Upload.signed_url_from_secure_uploads_url(image_url)
-        else
-          url = UrlHelper.absolute(image_url)
-        end
+        image = upload_from_full_url(image_url)
+        raise Discourse::NotFound if image.blank?
+        final_image_url = get_caption_url(image, image_url)
 
         hijack do
-          caption = DiscourseAi::AiHelper::Assistant.new.generate_image_caption(url, current_user)
+          caption =
+            DiscourseAi::AiHelper::Assistant.new.generate_image_caption(
+              final_image_url,
+              current_user,
+            )
           render json: { caption: caption }, status: 200
         end
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed, Net::HTTPBadResponse
@@ -141,14 +143,18 @@ module DiscourseAi
       end
 
       def ensure_can_request_suggestions
-        user_group_ids = current_user.group_ids
+        if !current_user.in_any_groups?(SiteSetting.ai_helper_allowed_groups_map)
+          raise Discourse::InvalidAccess
+        end
+      end
 
-        allowed =
-          SiteSetting.ai_helper_allowed_groups_map.any? do |group_id|
-            user_group_ids.include?(group_id)
-          end
+      def get_caption_url(image_upload, image_url)
+        if image_upload.secure?
+          check_secure_upload_permission(image_upload)
+          return Discourse.store.url_for(image_upload)
+        end
 
-        raise Discourse::InvalidAccess if !allowed
+        UrlHelper.absolute(image_url)
       end
     end
   end
