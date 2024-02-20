@@ -10,17 +10,17 @@ import autoFocus from "discourse/modifiers/auto-focus";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import { IMAGE_MARKDOWN_REGEX } from "../../lib/utilities";
+import DTextarea from "discourse/components/d-textarea";
 
 export default class AiImageCaptionContainer extends Component {
   @service imageCaptionPopup;
   @service appEvents;
   @service composer;
-  @tracked newCaption = this.imageCaptionPopup.newCaption || "";
 
   @action
   updateCaption(event) {
     event.preventDefault();
-    this.newCaption = event.target.value;
+    this.imageCaptionPopup.newCaption = event.target.value;
   }
 
   @action
@@ -31,7 +31,7 @@ export default class AiImageCaptionContainer extends Component {
     const match = matchingPlaceholder[index];
     const replacement = match.replace(
       IMAGE_MARKDOWN_REGEX,
-      `![${this.newCaption}|$2$3$4]($5)`
+      `![${this.imageCaptionPopup.newCaption}|$2$3$4]($5)`
     );
     this.appEvents.trigger("composer:replace-text", match, replacement);
     this.imageCaptionPopup.showPopup = false;
@@ -50,10 +50,11 @@ export default class AiImageCaptionContainer extends Component {
         <ConditionalLoadingSpinner
           @condition={{this.imageCaptionPopup.loading}}
         >
-          <textarea
-            {{on "input" this.updateCaption}}
+          <DTextarea
+            @value={{this.imageCaptionPopup.newCaption}}
+            {{on "change" this.updateCaption}}
             {{autoFocus}}
-          >{{this.newCaption}}</textarea>
+          />
         </ConditionalLoadingSpinner>
 
         <div class="actions">
