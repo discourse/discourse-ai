@@ -35,11 +35,56 @@ RSpec.describe "Share conversation", type: :system do
     bot_user.update!(username: "gpt-4")
 
     Group.refresh_automatic_groups!
-    pm
-    pm_posts
+  end
+
+  it "can share a conversation with a persona user" do
+    clip_text = nil
+
+    persona = Fabricate(:ai_persona, name: "Tester")
+    persona.create_user!
+
+    Fabricate(:post, topic: pm, user: admin, raw: "How do I do stuff?")
+    Fabricate(:post, topic: pm, user: persona.user, raw: "No idea")
+
+    visit(pm.url)
+
+    # clipboard functionality is extremely hard to test
+    # we would need special permissions in chrome driver to enable full access
+    # instead we use a secret variable to signal that we want to store clipboard
+    # data in window.discourseAiClipboard
+    page.execute_script("window.discourseAiTestClipboard = true")
+
+    find("#post_2 .post-action-menu__share").click
+
+    try_until_success do
+      clip_text = page.evaluate_script("window.discourseAiClipboard")
+      expect(clip_text).to be_present
+    end
+
+    conversation = (<<~TEXT).strip
+      <details class='ai-quote'>
+      <summary>
+      <span>This is my special PM</span>
+      <span title='Conversation with AI'>AI</span>
+      </summary>
+
+      **ai_sharer:**
+
+      How do I do stuff?
+
+      **Tester_bot:**
+
+      No idea
+      </details>
+    TEXT
+
+    expect(conversation).to eq(clip_text)
   end
 
   it "can share a conversation" do
+    pm
+    pm_posts
+
     clip_text = nil
 
     visit(pm.url)

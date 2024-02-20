@@ -143,6 +143,8 @@ function initializePersonaDecorator(api) {
   );
 }
 
+const MAX_PERSONA_USER_ID = -1200;
+
 function initializeShareButton(api) {
   const currentUser = api.getCurrentUser();
   if (!currentUser || !currentUser.ai_enabled_chat_bots) {
@@ -159,13 +161,20 @@ function initializeShareButton(api) {
   };
 
   api.addPostMenuButton("share", (post) => {
-    // very hacky and ugly, but there is no `.topic` in attrs
+    // for backwards compat so we don't break if topic is undefined
+    if (post.topic?.archetype !== "private_message") {
+      return;
+    }
+
     if (
       !currentUser.ai_enabled_chat_bots.any(
         (bot) => post.username === bot.username
       )
     ) {
-      return;
+      // special handling for personas (larger than -1200 means real user)
+      if (post.user_id > MAX_PERSONA_USER_ID) {
+        return;
+      }
     }
 
     return {
