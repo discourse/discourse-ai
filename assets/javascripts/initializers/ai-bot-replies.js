@@ -171,7 +171,7 @@ function initializeShareButton(api) {
         (bot) => post.username === bot.username
       )
     ) {
-      // special handling for personas (larger than -1200 means real user)
+      // special handling for personas (persona bot users start at ID -1200 and go down)
       if (post.user_id > MAX_PERSONA_USER_ID) {
         return;
       }
