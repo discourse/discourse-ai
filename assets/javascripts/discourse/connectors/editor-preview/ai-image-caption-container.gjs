@@ -1,16 +1,15 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
+import DTextarea from "discourse/components/d-textarea";
 import autoFocus from "discourse/modifiers/auto-focus";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import { IMAGE_MARKDOWN_REGEX } from "../../lib/utilities";
-import DTextarea from "discourse/components/d-textarea";
 
 export default class AiImageCaptionContainer extends Component {
   @service imageCaptionPopup;
