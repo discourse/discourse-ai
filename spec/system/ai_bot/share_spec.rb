@@ -27,6 +27,8 @@ RSpec.describe "Share conversation", type: :system do
     posts
   end
 
+  let(:cdp) { PageObjects::CDP.new }
+
   before do
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
@@ -35,26 +37,62 @@ RSpec.describe "Share conversation", type: :system do
     bot_user.update!(username: "gpt-4")
 
     Group.refresh_automatic_groups!
-    pm
-    pm_posts
+
+    cdp.allow_clipboard
+    page.execute_script("window.navigator.clipboard.writeText('')")
+  end
+
+  it "can share a conversation with a persona user" do
+    clip_text = nil
+
+    persona = Fabricate(:ai_persona, name: "Tester")
+    persona.create_user!
+
+    Fabricate(:post, topic: pm, user: admin, raw: "How do I do stuff?")
+    Fabricate(:post, topic: pm, user: persona.user, raw: "No idea")
+
+    visit(pm.url)
+
+    find("#post_2 .post-action-menu__share").click
+
+    try_until_success do
+      clip_text = cdp.read_clipboard
+      expect(clip_text).not_to eq("")
+    end
+
+    conversation = (<<~TEXT).strip
+      <details class='ai-quote'>
+      <summary>
+      <span>This is my special PM</span>
+      <span title='Conversation with AI'>AI</span>
+      </summary>
+
+      **ai_sharer:**
+
+      How do I do stuff?
+
+      **Tester_bot:**
+
+      No idea
+      </details>
+    TEXT
+
+    expect(conversation).to eq(clip_text)
   end
 
   it "can share a conversation" do
     clip_text = nil
 
-    visit(pm.url)
+    pm
+    pm_posts
 
-    # clipboard functionality is extremely hard to test
-    # we would need special permissions in chrome driver to enable full access
-    # instead we use a secret variable to signal that we want to store clipboard
-    # data in window.discourseAiClipboard
-    page.execute_script("window.discourseAiTestClipboard = true")
+    visit(pm.url)
 
     find("#post_2 .post-action-menu__share").click
 
     try_until_success do
-      clip_text = page.evaluate_script("window.discourseAiClipboard")
-      expect(clip_text).to be_present
+      clip_text = cdp.read_clipboard
+      expect(clip_text).not_to eq("")
     end
 
     conversation = (<<~TEXT).strip
@@ -76,16 +114,15 @@ RSpec.describe "Share conversation", type: :system do
 
     expect(conversation).to eq(clip_text)
 
-    # Test modal functionality as well
-    page.evaluate_script("window.discourseAiClipboard = null")
+    page.execute_script("window.navigator.clipboard.writeText('')")
 
     find("#post_6 .post-action-menu__share").click
     find(".ai-share-modal__slider input").set("2")
     find(".ai-share-modal button.btn-primary").click
 
     try_until_success do
-      clip_text = page.evaluate_script("window.discourseAiClipboard")
-      expect(clip_text).to be_present
+      clip_text = cdp.read_clipboard
+      expect(clip_text).not_to eq("")
     end
 
     conversation = (<<~TEXT).strip
