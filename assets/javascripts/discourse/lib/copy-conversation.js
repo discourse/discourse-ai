@@ -56,9 +56,5 @@ async function generateClipboard(topic, fromPostNumber, toPostNumber) {
 
   const text = buffer.join("\n");
 
-  if (window.discourseAiTestClipboard) {
-    window.discourseAiClipboard = text;
-  }
-
   return text;
 }
