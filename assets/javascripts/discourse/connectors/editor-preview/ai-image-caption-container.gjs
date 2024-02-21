@@ -2,6 +2,8 @@ import Component from "@glimmer/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { inject as service } from "@ember/service";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
@@ -36,6 +38,12 @@ export default class AiImageCaptionContainer extends Component {
     this.imageCaptionPopup.showPopup = false;
   }
 
+  @action
+  resizeTextarea(target) {
+    target.style.height = `${target.scrollHeight + 5}px`;
+    target.scrollTop = 0;
+  }
+
   <template>
     {{#if this.imageCaptionPopup.showPopup}}
       <div class="composer-popup education-message ai-caption-popup">
@@ -43,6 +51,8 @@ export default class AiImageCaptionContainer extends Component {
           @condition={{this.imageCaptionPopup.loading}}
         >
           <DTextarea
+            {{didInsert this.resizeTextarea}}
+            {{didUpdate this.resizeTextarea this.imageCaptionPopup.newCaption}}
             @value={{this.imageCaptionPopup.newCaption}}
             {{on "change" this.updateCaption}}
             {{autoFocus}}
