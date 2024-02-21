@@ -112,6 +112,9 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     fab!(:upload) { Fabricate(:upload) }
     let(:image_url) { "#{Discourse.base_url}#{upload.url}" }
     let(:caption) { "A picture of a cat sitting on a table" }
+    let(:caption_with_attrs) do
+      "A picture of a cat sitting on a table (#{I18n.t("discourse_ai.ai_helper.image_caption.attribution")})"
+    end
 
     context "when logged in as an allowed user" do
       fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
@@ -131,7 +134,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
 
         expect(response.status).to eq(200)
-        expect(response.parsed_body["caption"]).to eq(caption)
+        expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
       end
 
       it "returns a 502 error when the completion call fails" do
@@ -177,7 +180,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           group.add(user)
           post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
           expect(response.status).to eq(200)
-          expect(response.parsed_body["caption"]).to eq(caption)
+          expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
         end
 
         context "if the input URL is for a secure upload but not on the secure-uploads path" do
@@ -187,7 +190,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
             group.add(user)
             post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
             expect(response.status).to eq(200)
-            expect(response.parsed_body["caption"]).to eq(caption)
+            expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
           end
         end
       end
