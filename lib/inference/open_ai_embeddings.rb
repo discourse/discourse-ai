@@ -15,7 +15,8 @@ module ::DiscourseAi
         payload = { model: model, input: content }
         payload[:dimensions] = dimensions if dimensions.present?
 
-        response = Faraday.post(SiteSetting.ai_openai_embeddings_url, payload.to_json, headers)
+        conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
+        response = conn.post(SiteSetting.ai_openai_embeddings_url, payload.to_json, headers)
 
         case response.status
         when 200

@@ -18,7 +18,8 @@ module ::DiscourseAi
           headers["X-API-KEY"] = SiteSetting.ai_hugging_face_tei_api_key
         end
 
-        response = Faraday.post(api_endpoint, body, headers)
+        conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
+        response = conn.post(api_endpoint, body, headers)
 
         raise Net::HTTPBadResponse if ![200].include?(response.status)
 

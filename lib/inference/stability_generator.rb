@@ -57,7 +57,8 @@ module ::DiscourseAi
 
         endpoint = "v1/generation/#{engine}/text-to-image"
 
-        response = Faraday.post("#{api_url}/#{endpoint}", payload.to_json, headers)
+        conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
+        response = conn.post("#{api_url}/#{endpoint}", payload.to_json, headers)
 
         if response.status != 200
           Rails.logger.error(

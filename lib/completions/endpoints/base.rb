@@ -69,7 +69,7 @@ module DiscourseAi
 
           prompt = dialect.translate
 
-          Net::HTTP.start(
+          FinalDestination::HTTP.start(
             model_uri.host,
             model_uri.port,
             use_ssl: true,

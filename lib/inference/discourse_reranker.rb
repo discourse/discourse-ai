@@ -8,8 +8,9 @@ module ::DiscourseAi
 
         headers["X-API-KEY"] = api_key if api_key.present?
 
+        conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
         response =
-          Faraday.post(
+          conn.post(
             endpoint,
             { model: model, content: content, candidates: candidates }.to_json,
             headers,

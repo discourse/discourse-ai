@@ -14,7 +14,8 @@ module ::DiscourseAi
 
         endpoint = "#{base_url}#{model}"
 
-        response = Faraday.post(endpoint, content.to_json, headers)
+        conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
+        response = conn.post(endpoint, content.to_json, headers)
 
         raise Net::HTTPBadResponse if ![200].include?(response.status)
 
