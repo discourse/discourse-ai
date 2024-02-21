@@ -147,6 +147,8 @@ en:
         attribution:
           stable_diffusion_xl: "Image by Stable Diffusion XL"
           dall_e_3: "Image by DALL-E 3"
+      image_caption:
+        attribution: "Captioned by AI"
 
     ai_bot:
       personas:
