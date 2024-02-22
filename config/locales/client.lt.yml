@@ -17,13 +17,27 @@ lt:
         gpt_4: GPT 4
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
+        gemini_pro: '“Gemini Pro”'
       scriptables:
         llm_report:
           fields:
+            sender:
+              label: "Siuntėjas"
+              description: "Vartotojas, kuris atsiųs ataskaitą"
+            receivers:
+              label: "Gavėjai"
+              description: "Vartotojai, kurie gaus ataskaitą (el. laiškai bus siunčiami tiesioginiais el. laiškais, naudotojų vardai bus išsiųsti PM)"
             topic_id:
               label: "Temos ID"
+              description: "Temos ID, kuriuo norite paskelbti ataskaitą"
             title:
               label: "Antraštė"
+              description: "Pranešimo pavadinimas"
+            days:
+              label: "Dienos"
+              description: "Ataskaitos laikotarpis"
+            sample_size:
+              label: "Pavyzdžio dydis"
             model:
               label: "Modelis"
             categories:
@@ -60,6 +74,7 @@ lt:
       ai_persona:
         name: Vardas
         description: Aprašymas
+        user: Narys
         system_prompt: Sistemos pranešimas
         save: Išsaugoti
         enabled: Galimas
@@ -83,6 +98,11 @@ lt:
           copy: "Kopijuoti"
           copied: "Nukopijuota!"
           cancel: "Atšaukti"
+        image_caption:
+          button_label: "Antraštė su AI"
+          generating: "Generuojama antraštė..."
+          credits: "Antraštė teikiama AI"
+          save_caption: "Išsaugoti"
       ai_bot:
         ai_label: "AI"
         share_modal:

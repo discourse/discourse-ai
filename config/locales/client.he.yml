@@ -111,6 +111,11 @@ he:
       ai_persona:
         name: שם
         description: תיאור
+        no_llm_selected: "לא נבחר דגם שפה"
+        user: משתמש
+        create_user: יצירת משתמש
+        default_llm: דגם שפה כברירת מחדל
+        default_llm_help: דגם ברירת המחדל לשימוש לדמות הזאת. נחוץ כדי לאזכר דמות בפוסטים ציבוריים.
         system_prompt: בקשת מערכת
         save: שמירה
         saved: דמות בינה מלאכותית נשמרה
@@ -178,6 +183,11 @@ he:
           title: "תמונות ממוזערות מומלצות"
           select: "בחירה"
           selected: "נבחרים"
+        image_caption:
+          button_label: "מתן כותרת עם בינה מלאכותית"
+          generating: "הכותרת מתחוללת…"
+          credits: "הכותרת נוספה ע״י בינה מלאכותית"
+          save_caption: "שמירה"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"

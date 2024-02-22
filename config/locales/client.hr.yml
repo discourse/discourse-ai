@@ -32,6 +32,7 @@ hr:
       ai_persona:
         name: Ime
         description: Opis
+        user: Korisnik
         save: Spremi
         enabled: Omogućeno
         new: Novo
@@ -49,6 +50,8 @@ hr:
           copy: "Kopija"
           copied: "Kopirano!"
           cancel: "Odustani"
+        image_caption:
+          save_caption: "Spremi"
       ai_bot:
         share_modal:
           copy: "Kopija"

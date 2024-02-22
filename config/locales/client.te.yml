@@ -30,6 +30,7 @@ te:
       ai_persona:
         name: పేరు
         description: వివరణ
+        user: సభ్యుడు
         save: భద్రపరుచు
         new: కొత్త
         delete: తొలగించు
@@ -44,6 +45,8 @@ te:
           close: "మూసివేయి"
           copy: "నకలు"
           cancel: "రద్దుచేయి"
+        image_caption:
+          save_caption: "భద్రపరుచు"
       ai_bot:
         share_modal:
           copy: "నకలు"

@@ -32,6 +32,7 @@ bs_BA:
       ai_persona:
         name: Ime
         description: Opis
+        user: User
         save: Save
         enabled: Omogućen
         new: Novi
@@ -48,6 +49,8 @@ bs_BA:
           copy: "Copy"
           copied: "Kopirano!"
           cancel: "Odustani"
+        image_caption:
+          save_caption: "Save"
       ai_bot:
         share_modal:
           copy: "Copy"

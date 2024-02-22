@@ -32,6 +32,7 @@ cs:
       ai_persona:
         name: Jméno
         description: Popis
+        user: Uživatel
         save: Uložit
         enabled: Zapnutý
         new: Noví
@@ -52,6 +53,8 @@ cs:
         thumbnail_suggestions:
           select: "Vybrat"
           selected: "Vybrané"
+        image_caption:
+          save_caption: "Uložit"
       ai_bot:
         share_modal:
           copy: "Kopírovat"

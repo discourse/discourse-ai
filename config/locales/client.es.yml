@@ -98,6 +98,7 @@ es:
       ai_persona:
         name: Nombre
         description: Descripción
+        user: Usuario
         system_prompt: Aviso del sistema
         save: Guardar
         saved: Persona de IA guardada
@@ -161,6 +162,8 @@ es:
           title: "Miniaturas sugeridas"
           select: "Seleccionar"
           selected: "Seleccionado"
+        image_caption:
+          save_caption: "Guardar"
       reviewables:
         model_used: "Modelo utilizado:"
         accuracy: "Precisión:"

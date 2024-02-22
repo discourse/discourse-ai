@@ -200,6 +200,9 @@ fi:
         search:
           one: "Ehdolla \"%{query}\" löytyi %{count} <a href='%{url}'>tulos</a>"
           other: "Ehdolla \"%{query}\" löytyi %{count} <a href='%{url}'>tulosta</a>"
+        search_meta_discourse:
+          one: "Ehdolla \"%{query}\" löytyi %{count} <a href='%{url}'>tulos</a>"
+          other: "Ehdolla \"%{query}\" löytyi %{count} <a href='%{url}'>tulosta</a>"
         google:
           one: "Ehdolla \"%{query}\" löytyi %{count} <a href='%{url}'>tulos</a>"
           other: "Ehdolla \"%{query}\" löytyi %{count} <a href='%{url}'>tulosta</a>"

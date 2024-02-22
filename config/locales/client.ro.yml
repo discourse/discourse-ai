@@ -32,6 +32,7 @@ ro:
       ai_persona:
         name: Nume
         description: Descriere
+        user: Utilizatori
         save: Salvare
         enabled: Activat
         new: Nou
@@ -48,6 +49,8 @@ ro:
           copy: "Copiază"
           copied: "Copiat!"
           cancel: "Anulare"
+        image_caption:
+          save_caption: "Salvare"
       ai_bot:
         share_modal:
           copy: "Copiază"

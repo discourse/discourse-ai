@@ -111,6 +111,16 @@ tr_TR:
       ai_persona:
         name: Ad
         description: Açıklama
+        no_llm_selected: "Dil modeli seçilmedi"
+        max_context_posts: "Maksimum Bağlam Gönderileri"
+        max_context_posts_help: "Bir kullanıcıya yanıt verirken yapay zeka için bağlam olarak kullanılacak maksimum gönderi sayısı. (varsayılan için boş)"
+        mentionable: Bahsedilebilir
+        mentionable_help: Etkinleştirilirse, izin verilen gruplardaki kullanıcılar gönderilerde ve mesajlarda bu kullanıcıdan bahsedebilir, yapay zeka bu kişi olarak yanıt verir.
+        user: Kullanıcı
+        create_user: Kullanıcı Oluştur
+        create_user_help: İsteğe bağlı olarak bu personaya bir kullanıcı ekleyebilirsiniz. Bunu yaparsanız, AI isteklere yanıt vermek için bu kullanıcıyı kullanacaktır.
+        default_llm: Varsayılan Dil Modeli
+        default_llm_help: Bu persona için kullanılacak varsayılan dil modeli. Herkese açık gönderilerde personadan bahsetmek istiyorsanız gereklidir.
         system_prompt: Sistem İstemi
         save: Kaydet
         saved: YZ Kişiliği Kaydedildi
@@ -178,6 +188,11 @@ tr_TR:
           title: "Önerilen Küçük Resimler"
           select: "Seç"
           selected: "Seçili"
+        image_caption:
+          button_label: "AI ile altyazı"
+          generating: "Altyazı oluşturuluyor..."
+          credits: "AI tarafından altyazılı"
+          save_caption: "Kaydet"
       reviewables:
         model_used: "Kullanılan model:"
         accuracy: "Doğruluk:"

@@ -171,6 +171,7 @@ de:
             name: "Basissuchanfrage"
             description: "Basisanfrage, die bei der Suche verwendet wird. Beispiel: Bei „#dringend“ wird der Suchanfrage „#dringend“ vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort „dringend“ angezeigt."
       command_summary:
+        random_picker: "Zufallsauswahl"
         categories: "Kategorien auflisten"
         search: "Suche"
         tags: "Schlagwörter auflisten"
@@ -184,6 +185,7 @@ de:
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild generieren"
       command_help:
+        random_picker: "Wähle eine Zufallszahl oder ein zufälliges Element aus einer Liste"
         categories: "Alle öffentlich sichtbaren Kategorien im Forum auflisten"
         search: "Alle öffentlichen Themen im Forum durchsuchen"
         tags: "Alle Schlagwörter im Forum auflisten"
@@ -197,6 +199,7 @@ de:
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild mit DALL-E 3 generieren"
       command_description:
+        random_picker: "Auswahl aus %{options}, ausgewählt: %{result}"
         read: "Lesen: <a href='%{url}'>%{title}</a>"
         time: "Die Uhrzeit in %{timezone} ist %{time}"
         summarize: "<a href='%{url}'>%{title}</a> zusammengefasst"
@@ -209,6 +212,9 @@ de:
           one: "%{count} Schlagwort gefunden"
           other: "%{count} Schlagwörter gefunden"
         search:
+          one: "%{count} <a href='%{url}'>Ergebnis</a> für „%{query}“ gefunden"
+          other: "%{count} <a href='%{url}'>Ergebnisse</a> für „%{query}“ gefunden"
+        search_meta_discourse:
           one: "%{count} <a href='%{url}'>Ergebnis</a> für „%{query}“ gefunden"
           other: "%{count} <a href='%{url}'>Ergebnisse</a> für „%{query}“ gefunden"
         google:

@@ -34,6 +34,7 @@ ko:
       ai_persona:
         name: 그룹명
         description: 내용
+        user: 사용자
         save: 저장
         enabled: 활성화
         new: 신규
@@ -53,6 +54,8 @@ ko:
           cancel: "취소"
         thumbnail_suggestions:
           select: "선택"
+        image_caption:
+          save_caption: "저장"
       ai_bot:
         share_modal:
           copy: "복사"

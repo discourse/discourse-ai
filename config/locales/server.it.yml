@@ -200,6 +200,9 @@ it:
         search:
           one: "Trovato %{count} <a href='%{url}'>risultato</a> per '%{query}'"
           other: "Trovati %{count} <a href='%{url}'>risultati</a> per '%{query}'"
+        search_meta_discourse:
+          one: "Trovato %{count} <a href='%{url}'>risultato</a> per '%{query}'"
+          other: "Trovati %{count} <a href='%{url}'>risultati</a> per '%{query}'"
         google:
           one: "Trovato %{count} <a href='%{url}'>risultato</a> per '%{query}'"
           other: "Trovati %{count} <a href='%{url}'>risultati</a> per '%{query}'"

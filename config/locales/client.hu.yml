@@ -32,6 +32,7 @@ hu:
       ai_persona:
         name: Név
         description: Leírás
+        user: Felhasználó
         save: Mentés
         enabled: Engedélyezed
         new: Új
@@ -49,6 +50,8 @@ hu:
           copy: "Másolás"
           copied: "Másolva!"
           cancel: "Mégse"
+        image_caption:
+          save_caption: "Mentés"
       ai_bot:
         share_modal:
           copy: "Másolás"

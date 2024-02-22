@@ -32,6 +32,7 @@ nb_NO:
       ai_persona:
         name: Navn
         description: Beskrivelse
+        user: Bruker
         save: Lagre
         enabled: Aktivert
         new: Ny
@@ -48,6 +49,8 @@ nb_NO:
           copy: "Kopier"
           copied: "Kopiert!"
           cancel: "Avbryt"
+        image_caption:
+          save_caption: "Lagre"
       ai_bot:
         share_modal:
           copy: "Kopier"

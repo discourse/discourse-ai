@@ -98,6 +98,7 @@ ar:
       ai_persona:
         name: الاسم
         description: الوصف
+        user: المستخدم
         system_prompt: رسالة مطالبة النظام
         save: حفظ
         saved: تم حفظ شخصية الذكاء الاصطناعي
@@ -161,6 +162,8 @@ ar:
           title: "الصور المصغَّرة المقترحة"
           select: "تحديد"
           selected: "محدَّدة"
+        image_caption:
+          save_caption: "حفظ"
       reviewables:
         model_used: "النموذج المستخدم:"
         accuracy: "الدقة:"

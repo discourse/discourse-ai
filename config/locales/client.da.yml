@@ -32,6 +32,7 @@ da:
       ai_persona:
         name: Navn
         description: Beskrivelse
+        user: Bruger
         save: Gem
         enabled: Aktiveret
         new: Nye
@@ -51,6 +52,8 @@ da:
           cancel: "Annuller"
         thumbnail_suggestions:
           select: "Vælg"
+        image_caption:
+          save_caption: "Gem"
       ai_bot:
         share_modal:
           copy: "Kopier"

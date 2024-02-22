@@ -32,6 +32,7 @@ vi:
       ai_persona:
         name: Tên
         description: Mô tả
+        user: Người dùng
         save: Lưu lại
         new: Mới
         delete: Xóa
@@ -50,6 +51,8 @@ vi:
           cancel: "Huỷ"
         thumbnail_suggestions:
           select: "Chọn"
+        image_caption:
+          save_caption: "Lưu lại"
       ai_bot:
         share_modal:
           copy: "Sao chép"

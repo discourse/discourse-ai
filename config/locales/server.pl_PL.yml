@@ -54,6 +54,7 @@ pl_PL:
     ai_openai_api_key: "Klucz dla API OpenAI"
     ai_anthropic_api_key: "Klucz dla Anthropic API"
     ai_hugging_face_api_url: "Niestandardowy adres URL używany do wnioskowania OpenSource LLM. Kompatybilny z https://github.com/huggingface/text-generation-inference"
+    ai_hugging_face_api_key: Klucz API dla Hugging Face API
     composer_ai_helper_enabled: "Włącz pomocnika AI kompozytora."
     ai_helper_allowed_groups: "Użytkownicy w tych grupach zobaczą przycisk pomocy AI w kompozytorze."
     ai_helper_allowed_in_pm: "Włącz asystenta AI kompozytora w PW."
@@ -144,6 +145,7 @@ pl_PL:
           name: "DALL-E 3"
           description: "Bot AI specjalizujący się w generowaniu obrazów przy użyciu DALL-E 3"
       topic_not_found: "Podsumowanie niedostępne, nie znaleziono tematu!"
+      summarizing: "Podsumowanie tematu"
       searching: "Wyszukiwanie: '%{query}'"
       command_options:
         search:
@@ -154,6 +156,7 @@ pl_PL:
             name: "Podstawowe zapytanie wyszukiwania"
             description: "Podstawowe zapytanie używane podczas wyszukiwania. Przykład: '#pilne' spowoduje dodanie '#pilne' do zapytania wyszukiwania i uwzględnienie tylko tematów z kategorią lub tagiem pilne."
       command_summary:
+        random_picker: "Losowy selektor"
         categories: "Wymień kategorie"
         search: "Szukaj"
         tags: "Wymień tagi"
@@ -167,6 +170,7 @@ pl_PL:
         search_settings: "Wyszukiwanie ustawień witryny"
         dall_e: "Wygeneruj obraz"
       command_help:
+        random_picker: "Wybierz losową liczbę lub losowy element listy"
         categories: "Wyświetl wszystkie publicznie widoczne kategorie na forum"
         search: "Przeszukaj wszystkie publiczne tematy na forum"
         tags: "Wymień wszystkie tagi na forum"
@@ -180,6 +184,7 @@ pl_PL:
         search_settings: "Wyszukaj ustawienia witryny"
         dall_e: "Wygeneruj obraz za pomocą DALL-E 3"
       command_description:
+        random_picker: "Wybieranie z %{options}, wybrane: %{result}"
         read: "Czytanie: <a href='%{url}'>%{title}</a>"
         time: "Czas w %{timezone} wynosi %{time}"
         summarize: "Podsumowano <a href='%{url}'>%{title}</a>"
@@ -197,6 +202,11 @@ pl_PL:
           other: "Znaleziono %{count} tagów"
         search:
           one: "Znaleziono %{count} <a href='%{url}'>wynik</a> dla '%{query}'"
+          few: "Znaleziono %{count} <a href='%{url}'>wyniki</a> dla '%{query}'"
+          many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
+          other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
+        search_meta_discourse:
+          one: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           few: "Znaleziono %{count} <a href='%{url}'>wyniki</a> dla '%{query}'"
           many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
@@ -233,3 +243,8 @@ pl_PL:
           anger: "Gniew"
           joy: "Radość"
           disgust: "Niesmak"
+    llm:
+      configuration:
+        disable_module_first: "Najpierw musisz wyłączyć %{setting}."
+        set_llm_first: "Najpierw ustaw %{setting}."
+        model_unreachable: "Nie mogliśmy uzyskać odpowiedzi od tego modelu. Sprawdź najpierw swoje ustawienia."

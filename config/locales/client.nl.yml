@@ -98,6 +98,7 @@ nl:
       ai_persona:
         name: Naam
         description: Beschrijving
+        user: Gebruiker
         system_prompt: Systeemprompt
         save: Opslaan
         saved: AI-persona opgeslagen
@@ -161,6 +162,8 @@ nl:
           title: "Voorgestelde miniaturen"
           select: "Selecteren"
           selected: "Geselecteerd"
+        image_caption:
+          save_caption: "Opslaan"
       reviewables:
         model_used: "Gebruikt model:"
         accuracy: "Nauwkeurigheid:"

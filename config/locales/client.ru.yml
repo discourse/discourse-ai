@@ -98,6 +98,7 @@ ru:
       ai_persona:
         name: Название
         description: Описание
+        user: Пользователь
         system_prompt: Системная подсказка
         save: Сохранить
         saved: AI-персона сохранена
@@ -161,6 +162,8 @@ ru:
           title: "Рекомендуемые миниатюры"
           select: "Выбрать"
           selected: "Выбрано"
+        image_caption:
+          save_caption: "Сохранить"
       reviewables:
         model_used: "Использованная модель:"
         accuracy: "Точность:"

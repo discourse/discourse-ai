@@ -98,6 +98,7 @@ it:
       ai_persona:
         name: Nome
         description: Descrizione
+        user: Utente
         system_prompt: Comando di sistema
         save: Salva
         saved: Personaggio IA salvato
@@ -161,6 +162,8 @@ it:
           title: "Miniature suggerite"
           select: "Seleziona"
           selected: "Selezionato"
+        image_caption:
+          save_caption: "Salva"
       reviewables:
         model_used: "Modello utilizzato:"
         accuracy: "Precisione:"

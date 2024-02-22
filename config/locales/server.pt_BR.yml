@@ -200,6 +200,9 @@ pt_BR:
         search:
           one: "%{count} <a href='%{url}'>resultado</a> encontrado para \"%{query}\""
           other: "%{count} <a href='%{url}'>resultados</a> encontrados para \"%{query}\""
+        search_meta_discourse:
+          one: "%{count} <a href='%{url}'>resultado</a> encontrado para \"%{query}\""
+          other: "%{count} <a href='%{url}'>resultados</a> encontrados para \"%{query}\""
         google:
           one: "%{count} <a href='%{url}'>resultado</a> encontrado para \"%{query}\""
           other: "%{count} <a href='%{url}'>resultados</a> encontrados para \"%{query}\""

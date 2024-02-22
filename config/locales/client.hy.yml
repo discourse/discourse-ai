@@ -32,6 +32,7 @@ hy:
       ai_persona:
         name: Անուն
         description: Նկարագրությունը
+        user: Օգտատեր
         save: Պահպանել
         new: Նոր
         delete: Ջնջել
@@ -46,6 +47,8 @@ hy:
           close: "Փակել"
           copy: "Կրկնօրինակել"
           cancel: "Չեղարկել"
+        image_caption:
+          save_caption: "Պահպանել"
       ai_bot:
         share_modal:
           copy: "Կրկնօրինակել"

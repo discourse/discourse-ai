@@ -200,6 +200,9 @@ fr:
         search:
           one: "%{count} <a href='%{url}'>résultat</a> trouvé pour « %{query} »"
           other: "%{count} <a href='%{url}'>résultats</a> trouvés pour « %{query} »"
+        search_meta_discourse:
+          one: "%{count} <a href='%{url}'>résultat</a> trouvé pour « %{query} »"
+          other: "%{count} <a href='%{url}'>résultats</a> trouvés pour « %{query} »"
         google:
           one: "%{count} <a href='%{url}'>résultat</a> trouvé pour « %{query} »"
           other: "%{count} <a href='%{url}'>résultats</a> trouvés pour « %{query} »"

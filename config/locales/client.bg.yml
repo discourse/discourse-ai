@@ -32,6 +32,7 @@ bg:
       ai_persona:
         name: Име
         description: Описание
+        user: Потребител
         save: Запази
         enabled: Да е включен
         new: Нова
@@ -48,6 +49,8 @@ bg:
           copy: "Копирай"
           copied: "Копирано!"
           cancel: "Прекрати"
+        image_caption:
+          save_caption: "Запази "
       ai_bot:
         share_modal:
           copy: "Копирай"

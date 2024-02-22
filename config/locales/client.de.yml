@@ -111,6 +111,16 @@ de:
       ai_persona:
         name: Name
         description: Beschreibung
+        no_llm_selected: "Kein Sprachmodell ausgewählt"
+        max_context_posts: "Max. Kontext-Beiträge"
+        max_context_posts_help: "Die maximale Anzahl von Beiträgen, die die KI als Kontext für die Antwort auf einen Nutzer verwenden soll. (leer für Standard)"
+        mentionable: Erwähnenswert
+        mentionable_help: Wenn diese Funktion aktiviert ist, können Benutzer in erlaubten Gruppen diese Persona in Beiträgen und Nachrichten erwähnen und die KI wird als diese Persona antworten.
+        user: Benutzer
+        create_user: Benutzer erstellen
+        create_user_help: Du kannst dieser Persona optional einen Benutzer zuordnen. Wenn du das tust, wird die KI diesen Benutzer verwenden, um auf Anfragen zu antworten.
+        default_llm: Standard-Sprachmodell
+        default_llm_help: Das Standard-Sprachmodell, das für diese Persona verwendet werden soll. Erforderlich, wenn du die Persona in öffentlichen Beiträgen erwähnen möchtest.
         system_prompt: System-Eingabeaufforderung
         save: Speichern
         saved: KI-Persona gespeichert
@@ -178,6 +188,8 @@ de:
           title: "Vorgeschlagene Miniaturansichten"
           select: "Auswählen"
           selected: "Ausgewählt"
+        image_caption:
+          save_caption: "Speichern"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"

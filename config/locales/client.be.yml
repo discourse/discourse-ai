@@ -30,6 +30,7 @@ be:
       ai_persona:
         name: імя
         description: Апісанне
+        user: карыстальнік
         save: Захаваць
         new: Новыя
         delete: выдаляць
@@ -44,6 +45,8 @@ be:
           close: "зачыніць"
           copy: "капіяваць"
           cancel: "адмяніць"
+        image_caption:
+          save_caption: "захаваць"
       ai_bot:
         share_modal:
           copy: "капіяваць"

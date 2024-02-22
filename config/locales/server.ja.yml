@@ -197,6 +197,8 @@ ja:
           other: "%{count} 個のタグが見つかりました"
         search:
           other: "「%{query}」の<a href='%{url}'>結果</a> が %{count} 件見つかりました"
+        search_meta_discourse:
+          other: "「%{query}」の<a href='%{url}'>結果</a>が %{count} 件見つかりました"
         google:
           other: "「%{query}」の<a href='%{url}'>結果</a>が %{count} 件見つかりました"
         setting_context: "コンテキストを読み取り中: %{setting_name}"

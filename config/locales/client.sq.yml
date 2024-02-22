@@ -32,6 +32,7 @@ sq:
       ai_persona:
         name: Emri
         description: Përshkrimi
+        user: User
         save: Ruaj
         enabled: Aktivizuar
         new: I Ri
@@ -47,6 +48,8 @@ sq:
           close: "Mbyll"
           copy: "Kopjo"
           cancel: "Anulo"
+        image_caption:
+          save_caption: "Ruaj"
       ai_bot:
         share_modal:
           copy: "Kopjo"

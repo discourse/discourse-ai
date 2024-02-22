@@ -98,6 +98,7 @@ ja:
       ai_persona:
         name: 名前
         description: 説明
+        user: ユーザー
         system_prompt: システムプロンプト
         save: 保存
         saved: AI ペルソナが保存されました
@@ -161,6 +162,8 @@ ja:
           title: "提案されたサムネイル"
           select: "選択"
           selected: "選択済み"
+        image_caption:
+          save_caption: "保存"
       reviewables:
         model_used: "使用モデル:"
         accuracy: "精度:"

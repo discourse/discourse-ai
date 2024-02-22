@@ -34,6 +34,7 @@ uk:
       ai_persona:
         name: Імʼя
         description: Опис
+        user: Користувач
         save: Зберегти
         enabled: Включено
         new: Нові
@@ -54,6 +55,8 @@ uk:
         thumbnail_suggestions:
           select: "Вибрати"
           selected: "Вибрано"
+        image_caption:
+          save_caption: "Зберегти"
       ai_bot:
         share_modal:
           copy: "Копіювати"
