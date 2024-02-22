@@ -4,6 +4,7 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
+import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { inject as service } from "@ember/service";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
@@ -29,24 +30,48 @@ export default class AiImageCaptionContainer extends Component {
     const index = this.imageCaptionPopup.imageIndex;
     const matchingPlaceholder =
       this.composer.model.reply.match(IMAGE_MARKDOWN_REGEX);
-    const match = matchingPlaceholder[index];
-    const replacement = match.replace(
-      IMAGE_MARKDOWN_REGEX,
-      `![${this.imageCaptionPopup.newCaption}|$2$3$4]($5)`
-    );
-    this.appEvents.trigger("composer:replace-text", match, replacement);
-    this.imageCaptionPopup.showPopup = false;
+
+    if (matchingPlaceholder) {
+      const match = matchingPlaceholder[index];
+      const replacement = match.replace(
+        IMAGE_MARKDOWN_REGEX,
+        `![${this.imageCaptionPopup.newCaption}|$2$3$4]($5)`
+      );
+
+      if (match) {
+        this.appEvents.trigger("composer:replace-text", match, replacement);
+      }
+    }
+
+    this.hidePopup();
   }
 
   @action
   resizeTextarea(target) {
-    target.style.height = `${target.scrollHeight + 5}px`;
+    const style = window.getComputedStyle(target);
+
+    // scrollbars will show based on scrollHeight alone
+    // so we need to consider borders too
+    const borderTopWidth = parseInt(style.borderTopWidth, 10);
+    const borderBottomWidth = parseInt(style.borderBottomWidth, 10);
+
     target.scrollTop = 0;
+    target.style.height = `${
+      target.scrollHeight + borderTopWidth + borderBottomWidth
+    }px`;
+  }
+
+  @action
+  hidePopup() {
+    this.imageCaptionPopup.showPopup = false;
   }
 
   <template>
     {{#if this.imageCaptionPopup.showPopup}}
-      <div class="composer-popup education-message ai-caption-popup">
+      <div
+        class="composer-popup education-message ai-caption-popup"
+        {{willDestroy this.hidePopup}}
+      >
         <ConditionalLoadingSpinner
           @condition={{this.imageCaptionPopup.loading}}
         >
@@ -69,7 +94,7 @@ export default class AiImageCaptionContainer extends Component {
           <DButton
             class="btn-flat"
             @label="cancel"
-            @action={{fn (mut this.imageCaptionPopup.showPopup) false}}
+            @action={{this.hidePopup}}
           />
 
           <span class="credits">

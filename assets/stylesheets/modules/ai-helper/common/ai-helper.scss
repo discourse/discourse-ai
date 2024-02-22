@@ -465,6 +465,7 @@
     color: var(--tertiary);
     box-shadow: var(--shadow-dropdown);
     position: absolute;
+    white-space: nowrap;
     top: -3.15rem;
     left: 0.75rem;
     padding: 0.5em 0.75em;
@@ -506,6 +507,7 @@
   }
 
   textarea {
+    box-sizing: border-box;
     width: 100%;
     max-width: 40dvw;
     max-height: calc(100dvh - var(--header-offset) - 10em);
