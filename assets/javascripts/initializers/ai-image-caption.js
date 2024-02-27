@@ -12,7 +12,6 @@ export default apiInitializer("1.25.0", (api) => {
   };
   const imageCaptionPopup = api.container.lookup("service:imageCaptionPopup");
   const settings = api.container.lookup("service:site-settings");
-  const composer = api.container.lookup("service:composer");
   const appEvents = api.container.lookup("service:app-events");
   const site = api.container.lookup("site:main");
 
@@ -56,6 +55,8 @@ export default apiInitializer("1.25.0", (api) => {
 
             if (site.mobileView) {
               // Auto-saves caption on mobile view
+              const composer = api.container.lookup("service:composer");
+
               const matchingPlaceholder =
                 composer.model.reply.match(IMAGE_MARKDOWN_REGEX);
               const match = matchingPlaceholder[imageIndex];
