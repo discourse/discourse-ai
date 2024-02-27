@@ -144,7 +144,12 @@ module DiscourseAi
                 {
                   type: :user,
                   content: [
-                    { type: "text", text: "Describe this image in a single sentence" },
+                    {
+                      type: "text",
+                      text:
+                        "Describe this image in a single sentence" +
+                          custom_locale_instructions(user),
+                    },
                     { type: "image_url", image_url: image_url },
                   ],
                 },
