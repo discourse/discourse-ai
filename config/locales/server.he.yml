@@ -137,6 +137,8 @@ he:
         attribution:
           stable_diffusion_xl: "תמונה מאת Stable Diffusion XL"
           dall_e_3: "תמונה מאת DALL-E 3"
+      image_caption:
+        attribution: "הכותרת נוספה ע״י בינה מלאכותית"
     ai_bot:
       personas:
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"

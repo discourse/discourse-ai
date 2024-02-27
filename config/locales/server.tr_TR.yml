@@ -137,6 +137,8 @@ tr_TR:
         attribution:
           stable_diffusion_xl: "Stable Diffusion XL'den görüntü"
           dall_e_3: "DALL-E 3'den görüntü"
+      image_caption:
+        attribution: "AI tarafından altyazılı"
     ai_bot:
       personas:
         cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
