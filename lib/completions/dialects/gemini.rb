@@ -23,7 +23,9 @@ module DiscourseAi
           # Gemini doesn't use an assistant msg to improve long-context responses.
           messages.pop if messages.last[:type] == :model
 
-          trim_messages(messages).reduce([]) do |memo, msg|
+          memo = []
+
+          trim_messages(messages).each do |msg|
             if msg[:type] == :system
               memo << { role: "user", parts: { text: msg[:content] } }
               memo << noop_model_response.dup
@@ -56,15 +58,15 @@ module DiscourseAi
             else
               # Gemini quirk. Doesn't accept tool -> user or user -> user msgs.
               previous_msg_role = memo.last&.dig(:role)
-              if previous_msg_role == "user" || previous_msg_role == "tool"
+              if previous_msg_role == "user" || previous_msg_role == "function"
                 memo << noop_model_response.dup
               end
 
               memo << { role: "user", parts: { text: msg[:content] } }
             end
-
-            memo
           end
+
+          memo
         end
 
         def tools

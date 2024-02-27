@@ -25,6 +25,24 @@ class DialectContext
     dialect(a_prompt).translate
   end
 
+  def image_generation_scenario
+    context_and_multi_turn = [
+      { type: :user, id: "user1", content: "draw a cat" },
+      {
+        type: :tool_call,
+        id: "tool_id",
+        content: { name: "draw", arguments: { picture: "Cat" } }.to_json,
+      },
+      { type: :tool, id: "tool_id", content: "I'm a tool result".to_json },
+      { type: :user, id: "user1", content: "draw another cat" },
+    ]
+
+    a_prompt = prompt
+    context_and_multi_turn.each { |msg| a_prompt.push(**msg) }
+
+    dialect(a_prompt).translate
+  end
+
   def multi_turn_scenario
     context_and_multi_turn = [
       { type: :user, id: "user1", content: "This is a message by a user" },

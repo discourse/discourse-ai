@@ -19,6 +19,30 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
       expect(translated).to eq(gemini_version)
     end
 
+    it "injects model after tool call" do
+      expect(context.image_generation_scenario).to eq(
+        [
+          { role: "user", parts: { text: context.system_insts } },
+          { parts: { text: "Ok." }, role: "model" },
+          { parts: { text: "draw a cat" }, role: "user" },
+          { parts: { functionCall: { args: { picture: "Cat" }, name: "draw" } }, role: "model" },
+          {
+            parts: {
+              functionResponse: {
+                name: "tool_id",
+                response: {
+                  content: "\"I'm a tool result\"",
+                },
+              },
+            },
+            role: "function",
+          },
+          { parts: { text: "Ok." }, role: "model" },
+          { parts: { text: "draw another cat" }, role: "user" },
+        ],
+      )
+    end
+
     it "translates tool_call and tool messages" do
       expect(context.multi_turn_scenario).to eq(
         [
