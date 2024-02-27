@@ -13,6 +13,9 @@ lt:
     overall_sentiment:
       yaxis: "Data"
   discourse_ai:
+    ai_helper:
+      image_caption:
+        attribution: "Antraštė teikiama AI"
     ai_bot:
       command_summary:
         search: "Paieška"

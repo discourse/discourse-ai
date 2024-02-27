@@ -62,6 +62,8 @@ de:
     ai_gemini_api_key: API-Schlüssel für Google Gemini API
     ai_vllm_endpoint: URL, unter der die API für vLLM ausgeführt wird
     ai_vllm_api_key: API-Schlüssel für vLLM API
+    ai_llava_endpoint: URL, unter der die API für llava ausgeführt wird
+    ai_llava_api_key: API-Schlüssel für die Llava-API
     composer_ai_helper_enabled: "Aktiviere den Composer-KI-Helfer."
     ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
     ai_helper_allowed_in_pm: "Aktiviere den Composer-KI-Helfer in PN."
@@ -72,6 +74,7 @@ de:
     ai_helper_illustrate_post_model: "Modell, das für die Funktion „Beitrag illustrieren“ des Composer-KI-Helfers verwendet wird"
     ai_helper_enabled_features: "Wähle die Funktionen aus, die im KI-Helfer aktiviert werden sollen."
     post_ai_helper_allowed_groups: "Benutzergruppen, die auf KI Helper-Funktionen in Beiträgen zugreifen dürfen"
+    ai_helper_image_caption_model: "Wähle das Modell aus, das für die Erstellung von Bildunterschriften verwendet werden soll"
     ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
     ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
     ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
@@ -134,6 +137,8 @@ de:
         attribution:
           stable_diffusion_xl: "Bild von Stable Diffusion XL"
           dall_e_3: "Bild von DALL-E 3"
+      image_caption:
+        attribution: "Untertitelt von KI"
     ai_bot:
       personas:
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
@@ -159,6 +164,9 @@ de:
         dall_e3:
           name: "DALL-E 3"
           description: "KI-Bot, spezialisiert auf die Erstellung von Bildern mit DALL-E 3"
+        discourse_helper:
+          name: "Discourse-Helfer"
+          description: "KI-Bot, der auf die Unterstützung bei Discourse-bezogenen Aufgaben spezialisiert ist"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
@@ -184,6 +192,7 @@ de:
         schema: "Datenbankschema nachschlagen"
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild generieren"
+        search_meta_discourse: "Suche Meta Discourse"
       command_help:
         random_picker: "Wähle eine Zufallszahl oder ein zufälliges Element aus einer Liste"
         categories: "Alle öffentlich sichtbaren Kategorien im Forum auflisten"
@@ -198,6 +207,7 @@ de:
         schema: "Datenbankschema nachschlagen"
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild mit DALL-E 3 generieren"
+        search_meta_discourse: "Suche Meta Discourse"
       command_description:
         random_picker: "Auswahl aus %{options}, ausgewählt: %{result}"
         read: "Lesen: <a href='%{url}'>%{title}</a>"

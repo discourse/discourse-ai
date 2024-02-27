@@ -189,6 +189,9 @@ de:
           select: "Auswählen"
           selected: "Ausgewählt"
         image_caption:
+          button_label: "Beschriftung mit KI"
+          generating: "Beschriftung generieren..."
+          credits: "Untertitelt von KI"
           save_caption: "Speichern"
       reviewables:
         model_used: "Verwendetes Modell:"
