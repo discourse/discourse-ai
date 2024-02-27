@@ -31,7 +31,7 @@ module DiscourseAi
         end
 
         def max_sequence_length
-          2048
+          1536 # Gemini has a max sequence length of 2048, but the API has a limit of 10000 bytes, hence the lower value
         end
 
         def pg_function
