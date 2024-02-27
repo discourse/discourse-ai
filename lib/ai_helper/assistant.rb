@@ -40,9 +40,42 @@ module DiscourseAi
           end
       end
 
+      def custom_locale_instructions(user = nil)
+        locale = SiteSetting.default_locale
+        locale = user.locale || SiteSetting.default_locale if SiteSetting.allow_user_locale && user
+        locale_hash = LocaleSiteSetting.language_names[locale]
+
+        if locale != "en" && locale_hash
+          locale_description = "#{locale_hash["name"]} (#{locale_hash["nativeName"]})"
+          "It is imperative that you write your answer in #{locale_description}, you are interacting with a #{locale_description} speaking user. Leave tag names in English."
+        else
+          nil
+        end
+      end
+
+      def localize_prompt!(prompt, user = nil)
+        locale_instructions = custom_locale_instructions(user)
+        if locale_instructions
+          prompt.messages[0][:content] = prompt.messages[0][:content] + locale_instructions
+        end
+
+        if prompt.messages[0][:content].include?("%LANGUAGE%")
+          locale = SiteSetting.default_locale
+          locale = user.locale || SiteSetting.default_locale if SiteSetting.allow_user_locale &&
+            user
+          locale_hash = LocaleSiteSetting.language_names[locale]
+
+          prompt.messages[0][:content] = prompt.messages[0][:content].gsub(
+            "%LANGUAGE%",
+            "#{locale_hash["name"]}",
+          )
+        end
+      end
+
       def generate_prompt(completion_prompt, input, user, &block)
         llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
         prompt = completion_prompt.messages_with_input(input)
+        localize_prompt!(prompt, user)
 
         llm.generate(
           prompt,

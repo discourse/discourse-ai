@@ -12,6 +12,22 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     defends himself, but instead exclaims: 'You too, my son!' Shakespeare and Quevedo capture the pathetic cry.
   STRING
 
+  describe("#custom_locale_instructions") do
+    it "Properly generates the per locale system instruction" do
+      SiteSetting.default_locale = "ko"
+      expect(subject.custom_locale_instructions).to eq(
+        "It is imperative that you write your answer in Korean (한국어), you are interacting with a Korean (한국어) speaking user. Leave tag names in English.",
+      )
+
+      SiteSetting.allow_user_locale = true
+      user.update!(locale: "he")
+
+      expect(subject.custom_locale_instructions(user)).to eq(
+        "It is imperative that you write your answer in Hebrew (עברית), you are interacting with a Hebrew (עברית) speaking user. Leave tag names in English.",
+      )
+    end
+  end
+
   describe("#available_prompts") do
     before do
       SiteSetting.ai_helper_illustrate_post_model = "disabled"
@@ -52,6 +68,19 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
           "illustrate_post",
         )
       end
+    end
+  end
+
+  describe("#localize_prompt!") do
+    it "is able to perform %LANGUAGE% replacements" do
+      prompt =
+        CompletionPrompt.new(messages: { insts: "This is a %LANGUAGE% test" }).messages_with_input(
+          "test",
+        )
+
+      subject.localize_prompt!(prompt, user)
+
+      expect(prompt.messages[0][:content].strip).to eq("This is a English (US) test")
     end
   end
 
