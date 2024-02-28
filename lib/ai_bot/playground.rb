@@ -11,46 +11,46 @@ module DiscourseAi
 
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
 
-      def self.schedule_reply(post)
+      def self.is_bot_user_id?(user_id)
         bot_ids = DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS
+        bot_ids.include?(user_id) ||
+          begin
+            mentionable_ids = AiPersona.mentionables.map { |mentionable| mentionable[:user_id] }
+            mentionable_ids.include?(user_id)
+          end
+      end
 
-        return if bot_ids.include?(post.user_id)
-        if AiPersona.mentionables.any? { |mentionable| mentionable[:user_id] == post.user_id }
-          return
-        end
+      def self.schedule_reply(post)
+        return if is_bot_user_id?(post.user_id)
+
+        bot_ids = DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS
+        mentionables = AiPersona.mentionables(user: post.user)
 
         bot_user = nil
         mentioned = nil
 
         if post.topic.private_message?
           bot_user = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user
+          bot_user ||=
+            post
+              .topic
+              .topic_allowed_users
+              .where(user_id: mentionables.map { |m| m[:user_id] })
+              .first
+              &.user
         end
 
-        if AiPersona.mentionables.length > 0
+        if mentionables.present?
           mentions = post.mentions.map(&:downcase)
-          mentioned =
-            AiPersona.mentionables.find do |mentionable|
-              mentions.include?(mentionable[:username]) &&
-                (post.user.group_ids & mentionable[:allowed_group_ids]).present?
-            end
+          mentioned = mentionables.find { |mentionable| mentions.include?(mentionable[:username]) }
 
-          # PM always takes precedence
-          if mentioned && !bot_user
-            model_without_provider = mentioned[:default_llm].split(":").last
-            user_id =
-              DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(model_without_provider)
-
-            if !user_id
-              Rails.logger.warn(
-                "Model #{mentioned[:default_llm]} not found for persona #{mentioned[:username]}",
-              )
-              if Rails.env.development? || Rails.env.test?
-                raise "Model #{mentioned[:default_llm]} not found for persona #{mentioned[:username]}"
-              end
-            else
-              bot_user = User.find_by(id: user_id)
-            end
+          # direct PM to mentionable
+          if !mentioned && bot_user.id
+            mentioned = mentionables.find { |mentionable| bot_user.id == mentionable[:user_id] }
           end
+
+          # public topic so we need to use the persona user
+          bot_user ||= User.find_by(id: mentioned[:user_id]) if mentioned
         end
 
         if bot_user
@@ -309,6 +309,7 @@ module DiscourseAi
             :update_ai_bot_pm_title,
             post_id: post.id,
             bot_user_id: bot.bot_user.id,
+            model: bot.model,
           )
         end
       end
