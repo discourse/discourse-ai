@@ -10,10 +10,7 @@ export default apiInitializer("1.25.0", (api) => {
     icon: "discourse-sparkles",
     class: "generate-caption",
   };
-  const imageCaptionPopup = api.container.lookup("service:imageCaptionPopup");
   const settings = api.container.lookup("service:site-settings");
-  const appEvents = api.container.lookup("service:app-events");
-  const site = api.container.lookup("site:main");
 
   if (!settings.ai_helper_enabled_features.includes("image_caption")) {
     return;
@@ -33,8 +30,13 @@ export default apiInitializer("1.25.0", (api) => {
           .closest(".image-wrapper")
           .querySelector("img")
           .getAttribute("src");
+        const imageCaptionPopup = api.container.lookup(
+          "service:imageCaptionPopup"
+        );
 
         imageCaptionPopup.loading = true;
+
+        const site = api.container.lookup("site:main");
 
         if (!site.mobileView) {
           imageCaptionPopup.showPopup = !imageCaptionPopup.showPopup;
@@ -64,6 +66,7 @@ export default apiInitializer("1.25.0", (api) => {
                 IMAGE_MARKDOWN_REGEX,
                 `![${imageCaptionPopup.newCaption}|$2$3$4]($5)`
               );
+              const appEvents = api.container.lookup("service:app-events");
               appEvents.trigger("composer:replace-text", match, replacement);
             }
           })
