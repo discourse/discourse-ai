@@ -78,9 +78,7 @@ class AiPersona < ActiveRecord::Base
         end
 
     if user
-      all_mentionables.select do |mentionable|
-        user.in_any_groups?(mentionable[:allowed_group_ids])
-      end
+      all_mentionables.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
     else
       all_mentionables
     end
