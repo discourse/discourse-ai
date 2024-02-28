@@ -79,7 +79,7 @@ class AiPersona < ActiveRecord::Base
 
     if user
       all_mentionables.select do |mentionable|
-        (user.group_ids & mentionable[:allowed_group_ids]).present?
+        user.in_any_groups?(mentionable[:allowed_group_ids])
       end
     else
       all_mentionables
