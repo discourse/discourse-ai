@@ -36,6 +36,15 @@ RSpec.describe "AI image caption", type: :system, js: true do
       wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
       expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
     end
+
+    it "should allow you to cancel a caption request" do
+      visit("/latest")
+      page.find("#create-topic").click
+      attach_file([file_path]) { composer.click_toolbar_button("upload") }
+      popup.click_generate_caption
+      popup.cancel_caption
+      expect(popup).to have_no_disabled_generate_button
+    end
   end
 
   context "when triggering caption with AI on mobile", mobile: true do

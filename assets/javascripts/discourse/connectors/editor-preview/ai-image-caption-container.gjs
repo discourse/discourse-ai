@@ -63,6 +63,12 @@ export default class AiImageCaptionContainer extends Component {
   @action
   hidePopup() {
     this.imageCaptionPopup.showPopup = false;
+    if (this.imageCaptionPopup._request) {
+      this.imageCaptionPopup._request.abort();
+      this.imageCaptionPopup._request = null;
+      this.imageCaptionPopup.loading = false;
+      this.imageCaptionPopup.popupTrigger.classList.remove("disabled");
+    }
   }
 
   <template>
@@ -91,7 +97,7 @@ export default class AiImageCaptionContainer extends Component {
             @action={{this.saveCaption}}
           />
           <DButton
-            class="btn-flat"
+            class="btn-flat cancel-request"
             @label="cancel"
             @action={{this.hidePopup}}
           />

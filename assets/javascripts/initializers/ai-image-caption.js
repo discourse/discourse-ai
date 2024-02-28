@@ -23,7 +23,11 @@ export default apiInitializer("1.25.0", (api) => {
     buttonAttrs.class,
     buttonAttrs.icon,
     (event) => {
-      if (event.target.classList.contains("generate-caption")) {
+      imageCaptionPopup.popupTrigger = event.target;
+
+      if (
+        imageCaptionPopup.popupTrigger.classList.contains("generate-caption")
+      ) {
         const buttonWrapper = event.target.closest(".button-wrapper");
         const imageIndex = parseInt(
           buttonWrapper.getAttribute("data-image-index"),
@@ -40,14 +44,19 @@ export default apiInitializer("1.25.0", (api) => {
           imageCaptionPopup.showPopup = !imageCaptionPopup.showPopup;
         }
 
-        event.target.classList.add("disabled");
+        imageCaptionPopup.popupTrigger.classList.add("disabled");
 
-        ajax(`/discourse-ai/ai-helper/caption_image`, {
-          method: "POST",
-          data: {
-            image_url: imageSrc,
-          },
-        })
+        imageCaptionPopup._request = ajax(
+          `/discourse-ai/ai-helper/caption_image`,
+          {
+            method: "POST",
+            data: {
+              image_url: imageSrc,
+            },
+          }
+        );
+
+        imageCaptionPopup._request
           .then(({ caption }) => {
             imageCaptionPopup.imageSrc = imageSrc;
             imageCaptionPopup.imageIndex = imageIndex;
@@ -70,7 +79,7 @@ export default apiInitializer("1.25.0", (api) => {
           .catch(popupAjaxError)
           .finally(() => {
             imageCaptionPopup.loading = false;
-            event.target.classList.remove("disabled");
+            imageCaptionPopup.popupTrigger.classList.remove("disabled");
           });
       }
     }
