@@ -9,9 +9,7 @@ export default apiInitializer("1.25.0", (api) => {
     icon: "discourse-sparkles",
     class: "generate-caption",
   };
-  const imageCaptionPopup = api.container.lookup("service:imageCaptionPopup");
   const settings = api.container.lookup("service:site-settings");
-  const site = api.container.lookup("site:main");
 
   if (!settings.ai_helper_enabled_features.includes("image_caption")) {
     return;
@@ -21,6 +19,10 @@ export default apiInitializer("1.25.0", (api) => {
     buttonAttrs.class,
     buttonAttrs.icon,
     (event) => {
+      const imageCaptionPopup = api.container.lookup(
+        "service:imageCaptionPopup"
+      );
+
       imageCaptionPopup.popupTrigger = event.target;
 
       if (
@@ -38,6 +40,7 @@ export default apiInitializer("1.25.0", (api) => {
 
         imageCaptionPopup.toggleLoadingState(true);
 
+        const site = api.container.lookup("site:main");
         if (!site.mobileView) {
           imageCaptionPopup.showPopup = !imageCaptionPopup.showPopup;
         }
