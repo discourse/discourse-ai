@@ -75,10 +75,6 @@ module DiscourseAi
           false
         end
 
-        def low_cost?
-          false
-        end
-
         protected
 
         def accepted_options

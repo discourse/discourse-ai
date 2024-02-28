@@ -60,21 +60,28 @@ class AiPersona < ActiveRecord::Base
       .map(&:class_instance)
   end
 
-  def self.mentionables
-    persona_cache[:mentionable_usernames] ||= AiPersona
-      .where(mentionable: true)
-      .where(enabled: true)
-      .joins(:user)
-      .pluck("ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm")
-      .map do |id, user_id, username, allowed_group_ids, default_llm|
-        {
-          id: id,
-          user_id: user_id,
-          username: username,
-          allowed_group_ids: allowed_group_ids,
-          default_llm: default_llm,
-        }
-      end
+  def self.mentionables(user: nil)
+    all_mentionables =
+      persona_cache[:mentionable_usernames] ||= AiPersona
+        .where(mentionable: true)
+        .where(enabled: true)
+        .joins(:user)
+        .pluck("ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm")
+        .map do |id, user_id, username, allowed_group_ids, default_llm|
+          {
+            id: id,
+            user_id: user_id,
+            username: username,
+            allowed_group_ids: allowed_group_ids,
+            default_llm: default_llm,
+          }
+        end
+
+    if user
+      all_mentionables.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
+    else
+      all_mentionables
+    end
   end
 
   after_commit :bump_cache

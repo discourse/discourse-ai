@@ -3,16 +3,19 @@
 module DiscourseAi
   module AiBot
     class Bot
+      attr_reader :model
+
       BOT_NOT_FOUND = Class.new(StandardError)
       MAX_COMPLETIONS = 5
 
-      def self.as(bot_user, persona: DiscourseAi::AiBot::Personas::General.new)
-        new(bot_user, persona)
+      def self.as(bot_user, persona: DiscourseAi::AiBot::Personas::General.new, model: nil)
+        new(bot_user, persona, model)
       end
 
-      def initialize(bot_user, persona)
+      def initialize(bot_user, persona, model = nil)
         @bot_user = bot_user
         @persona = persona
+        @model = model || self.class.guess_model(bot_user) || @persona.class.default_llm
       end
 
       attr_reader :bot_user
@@ -46,7 +49,6 @@ module DiscourseAi
 
         total_completions = 0
         ongoing_chain = true
-        low_cost = false
         raw_context = []
 
         user = context[:user]
@@ -56,7 +58,7 @@ module DiscourseAi
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
 
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
-          current_model = model(prefer_low_cost: low_cost)
+          current_model = model
           llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
@@ -65,7 +67,6 @@ module DiscourseAi
               if (tool = persona.find_tool(partial))
                 tool_found = true
                 ongoing_chain = tool.chain_next_response?
-                low_cost = tool.low_cost?
                 tool_call_id = tool.tool_call_id
                 invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
 
@@ -129,43 +130,36 @@ module DiscourseAi
         result
       end
 
-      def model(prefer_low_cost: false)
+      def self.guess_model(bot_user)
         # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
-        default_model =
-          case bot_user.id
-          when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
-            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-              "aws_bedrock:claude-2"
-            else
-              "anthropic:claude-2"
-            end
-          when DiscourseAi::AiBot::EntryPoint::GPT4_ID
-            "open_ai:gpt-4"
-          when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
-            "open_ai:gpt-4-turbo"
-          when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
-            "open_ai:gpt-3.5-turbo-16k"
-          when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
-            if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(
-                 "mistralai/Mixtral-8x7B-Instruct-v0.1",
-               )
-              "vllm:mistralai/Mixtral-8x7B-Instruct-v0.1"
-            else
-              "hugging_face:mistralai/Mixtral-8x7B-Instruct-v0.1"
-            end
-          when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
-            "google:gemini-pro"
-          when DiscourseAi::AiBot::EntryPoint::FAKE_ID
-            "fake:fake"
+        case bot_user.id
+        when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
+          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
+            "aws_bedrock:claude-2"
           else
-            nil
+            "anthropic:claude-2"
           end
-
-        if %w[open_ai:gpt-4 open_ai:gpt-4-turbo].include?(default_model) && prefer_low_cost
-          return "open_ai:gpt-3.5-turbo-16k"
+        when DiscourseAi::AiBot::EntryPoint::GPT4_ID
+          "open_ai:gpt-4"
+        when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
+          "open_ai:gpt-4-turbo"
+        when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
+          "open_ai:gpt-3.5-turbo-16k"
+        when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
+          if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(
+               "mistralai/Mixtral-8x7B-Instruct-v0.1",
+             )
+            "vllm:mistralai/Mixtral-8x7B-Instruct-v0.1"
+          else
+            "hugging_face:mistralai/Mixtral-8x7B-Instruct-v0.1"
+          end
+        when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
+          "google:gemini-pro"
+        when DiscourseAi::AiBot::EntryPoint::FAKE_ID
+          "fake:fake"
+        else
+          nil
         end
-
-        default_model
       end
 
       def tool_invocation?(partial)

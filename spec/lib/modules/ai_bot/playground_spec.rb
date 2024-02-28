@@ -69,7 +69,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         )
 
       persona.create_user!
-      persona.update!(default_llm: "claude-2", mentionable: true)
+      persona.update!(default_llm: "anthropic:claude-2", mentionable: true)
       persona
     end
 
@@ -92,6 +92,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     it "allows mentioning a persona" do
+      # we still should be able to mention with no bots
+      SiteSetting.ai_bot_enabled_chat_bots = ""
+
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
         post =
@@ -105,6 +108,33 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
       expect(last_post.user_id).to eq(persona.user_id)
+    end
+
+    it "allows PMing a persona even when no particular bots are enabled" do
+      SiteSetting.ai_bot_enabled = true
+      SiteSetting.ai_bot_enabled_chat_bots = ""
+      post = nil
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Magic title", "Yes I can"],
+        llm: "anthropic:claude-2",
+      ) do
+        post =
+          create_post(
+            title: "I just made a PM",
+            raw: "Hey there #{persona.user.username}, can you help me?",
+            target_usernames: "#{user.username},#{persona.user.username}",
+            archetype: Archetype.private_message,
+            user: admin,
+          )
+      end
+
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Yes I can")
+      expect(last_post.user_id).to eq(persona.user_id)
+
+      last_post.topic.reload
+      expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
     end
 
     it "picks the correct llm for persona in PMs" do
