@@ -18,6 +18,14 @@ module PageObjects
       def save_caption
         find("#{CAPTION_POPUP_SELECTOR} .btn-primary").click
       end
+
+      def cancel_caption
+        find("#{CAPTION_POPUP_SELECTOR} .cancel-request").click
+      end
+
+      def has_no_disabled_generate_button?
+        page.has_no_css?("#{GENERATE_CAPTION_SELECTOR}.disabled", visible: false)
+      end
     end
   end
 end

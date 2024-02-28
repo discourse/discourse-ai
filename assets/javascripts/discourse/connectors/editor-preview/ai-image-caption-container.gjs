@@ -11,12 +11,9 @@ import DTextarea from "discourse/components/d-textarea";
 import autoFocus from "discourse/modifiers/auto-focus";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
-import { IMAGE_MARKDOWN_REGEX } from "../../lib/utilities";
 
 export default class AiImageCaptionContainer extends Component {
   @service imageCaptionPopup;
-  @service appEvents;
-  @service composer;
 
   @action
   updateCaption(event) {
@@ -26,22 +23,7 @@ export default class AiImageCaptionContainer extends Component {
 
   @action
   saveCaption() {
-    const index = this.imageCaptionPopup.imageIndex;
-    const matchingPlaceholder =
-      this.composer.model.reply.match(IMAGE_MARKDOWN_REGEX);
-
-    if (matchingPlaceholder) {
-      const match = matchingPlaceholder[index];
-      const replacement = match.replace(
-        IMAGE_MARKDOWN_REGEX,
-        `![${this.imageCaptionPopup.newCaption}|$2$3$4]($5)`
-      );
-
-      if (match) {
-        this.appEvents.trigger("composer:replace-text", match, replacement);
-      }
-    }
-
+    this.imageCaptionPopup.updateCaption();
     this.hidePopup();
   }
 
@@ -63,6 +45,11 @@ export default class AiImageCaptionContainer extends Component {
   @action
   hidePopup() {
     this.imageCaptionPopup.showPopup = false;
+    if (this.imageCaptionPopup._request) {
+      this.imageCaptionPopup._request.abort();
+      this.imageCaptionPopup._request = null;
+      this.imageCaptionPopup.toggleLoadingState(false);
+    }
   }
 
   <template>
@@ -91,7 +78,7 @@ export default class AiImageCaptionContainer extends Component {
             @action={{this.saveCaption}}
           />
           <DButton
-            class="btn-flat"
+            class="btn-flat cancel-request"
             @label="cancel"
             @action={{this.hidePopup}}
           />
