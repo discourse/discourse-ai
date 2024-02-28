@@ -45,7 +45,7 @@ module DiscourseAi
           mentioned = mentionables.find { |mentionable| mentions.include?(mentionable[:username]) }
 
           # direct PM to mentionable
-          if !mentioned && bot_user.id
+          if !mentioned && bot_user
             mentioned = mentionables.find { |mentionable| bot_user.id == mentionable[:user_id] }
           end
 
