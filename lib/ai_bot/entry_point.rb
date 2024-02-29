@@ -97,6 +97,14 @@ module DiscourseAi
           SQL
 
           bots.each { |hash| hash["model_name"] = model_map[hash["id"]] }
+          mentionables = AiPersona.mentionables(user: scope.user)
+          if mentionables.present?
+            bots.concat(
+              mentionables.map do |mentionable|
+                { "id" => mentionable[:user_id], "username" => mentionable[:username] }
+              end,
+            )
+          end
           bots
         end
 

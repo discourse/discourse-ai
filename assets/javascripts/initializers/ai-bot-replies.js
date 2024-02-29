@@ -10,8 +10,9 @@ import copyConversation from "../discourse/lib/copy-conversation";
 
 const AUTO_COPY_THRESHOLD = 4;
 
+let enabledChatBotIds = [];
 function isGPTBot(user) {
-  return user && [-110, -111, -112, -113, -114, -115, -116].includes(user.id);
+  return user && enabledChatBotIds.includes(user.id);
 }
 
 function attachHeaderIcon(api) {
@@ -197,6 +198,7 @@ export default {
     const user = container.lookup("service:current-user");
 
     if (user?.ai_enabled_chat_bots) {
+      enabledChatBotIds = user.ai_enabled_chat_bots.map((bot) => bot.id);
       if (settings.ai_bot_add_to_header) {
         withPluginApi("1.6.0", attachHeaderIcon);
       }
