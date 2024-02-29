@@ -174,7 +174,7 @@ module DiscourseAi
 
           # allow for SPACE within arguments
           if args && args != ""
-            @args_buffer << partial.dig(:function, :arguments)
+            @args_buffer << args
 
             begin
               json_args = JSON.parse(@args_buffer, symbolize_names: true)
