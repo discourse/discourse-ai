@@ -71,7 +71,6 @@ if defined?(DiscourseAutomation)
           canned_reply_user: canned_reply_user,
           hide_topic: hide_topic,
           flag_post: flag_post,
-          automation: automation,
         )
       rescue => e
         Discourse.warn_exception(e, message: "llm_triage: failed to run inference")

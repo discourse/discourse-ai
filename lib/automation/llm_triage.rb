@@ -13,8 +13,7 @@ module DiscourseAi
         canned_reply: nil,
         canned_reply_user: nil,
         hide_topic: nil,
-        flag_post: nil,
-        automation:
+        flag_post: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
              flag_post.blank?
