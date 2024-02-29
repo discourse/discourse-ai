@@ -30,6 +30,7 @@ describe DiscourseAi::Automation::LlmTriage do
     add_automation_field("category", category.id, type: "category")
     add_automation_field("tags", %w[aaa bbb], type: "tags")
     add_automation_field("hide_topic", true, type: "boolean")
+    add_automation_field("flag_post", true, type: "boolean")
     add_automation_field("canned_reply", "Yo this is a reply")
     add_automation_field("canned_reply_user", user.username, type: "user")
 

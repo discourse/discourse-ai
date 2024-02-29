@@ -32,6 +32,7 @@ if defined?(DiscourseAutomation)
     field :category, component: :category
     field :tags, component: :tags
     field :hide_topic, component: :boolean
+    field :flag_post, component: :boolean
     field :canned_reply, component: :message
     field :canned_reply_user, component: :user
 
@@ -49,6 +50,7 @@ if defined?(DiscourseAutomation)
       category_id = fields.dig("category", "value")
       tags = fields.dig("tags", "value")
       hide_topic = fields.dig("hide_topic", "value")
+      flag_post = fields.dig("flag_post", "value")
       canned_reply = fields.dig("canned_reply", "value")
       canned_reply_user = fields.dig("canned_reply_user", "value")
 
@@ -68,6 +70,7 @@ if defined?(DiscourseAutomation)
           canned_reply: canned_reply,
           canned_reply_user: canned_reply_user,
           hide_topic: hide_topic,
+          flag_post: flag_post,
         )
       rescue => e
         Discourse.warn_exception(e, message: "llm_triage: failed to run inference")

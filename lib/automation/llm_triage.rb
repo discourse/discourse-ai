@@ -12,9 +12,11 @@ module DiscourseAi
         tags: nil,
         canned_reply: nil,
         canned_reply_user: nil,
-        hide_topic: nil
+        hide_topic: nil,
+        flag_post: nil
       )
-        if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank?
+        if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
+             flag_post.blank?
           raise ArgumentError, "llm_triage: no action specified!"
         end
 
@@ -65,6 +67,8 @@ module DiscourseAi
           end
 
           post.topic.update!(visible: false) if hide_topic
+
+          ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user) if flag_post
         end
       end
 
