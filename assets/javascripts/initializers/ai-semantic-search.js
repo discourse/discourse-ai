@@ -6,4 +6,13 @@ export default apiInitializer("1.15.0", (api) => {
 
     classNameBindings: ["bulkSelectEnabled", "post.generatedByAI:ai-result"],
   });
+
+  api.addSearchMenuAssistantSelectCallback((args) => {
+    console.log("args", args);
+    if (args.usage !== "recent-search") {
+      return true;
+    }
+    args.searchTermChanged(args.updatedTerm);
+    return false;
+  });
 });
