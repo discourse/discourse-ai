@@ -222,18 +222,34 @@ module DiscourseAi
             user: message.user,
           )
 
-        message = nil
+        reply = nil
         guardian = Guardian.new(persona_user)
+
+        channel.update!(threading_enabled: true) if !channel.threading_enabled?
 
         _new_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
-            if !message
-              message =
-                ChatSDK::Message.create(raw: partial, channel_id: channel.id, guardian: guardian)
-              ChatSDK::Message.start_stream(message_id: message.id, guardian: guardian)
+            if !reply
+              if !message.thread
+                thread =
+                  Chat::Thread.create!(
+                    original_message: message,
+                    original_message_user: message.user,
+                    channel: channel,
+                  )
+                message.update!(thread_id: thread.id)
+              end
+              reply =
+                ChatSDK::Message.create(
+                  raw: partial,
+                  thread_id: message.thread_id,
+                  channel_id: channel.id,
+                  guardian: guardian,
+                )
+              ChatSDK::Message.start_stream(message_id: reply.id, guardian: guardian)
             else
               streaming =
-                ChatSDK::Message.stream(message_id: message.id, raw: partial, guardian: guardian)
+                ChatSDK::Message.stream(message_id: reply.id, raw: partial, guardian: guardian)
 
               if !streaming
                 cancel&.call
@@ -242,9 +258,9 @@ module DiscourseAi
             end
           end
 
-        ChatSDK::Message.stop_stream(message_id: message.id, guardian: guardian) if message
+        ChatSDK::Message.stop_stream(message_id: reply.id, guardian: guardian) if reply
 
-        message
+        reply
       end
 
       def get_context(participants:, conversation_context:, user:)
