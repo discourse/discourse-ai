@@ -22,14 +22,19 @@ module DiscourseAi
       attr_reader :bot_user
       attr_accessor :persona
 
-      def get_updated_title(conversation_context, post_user)
+      def get_updated_title(conversation_context, post)
         system_insts = <<~TEXT.strip
         You are titlebot. Given a topic, you will figure out a title.
         You will never respond with anything but 7 word topic title.
         TEXT
 
         title_prompt =
-          DiscourseAi::Completions::Prompt.new(system_insts, messages: conversation_context)
+          DiscourseAi::Completions::Prompt.new(
+            system_insts,
+            messages: conversation_context,
+            topic_id: post.topic_id,
+            post_id: post.id,
+          )
 
         title_prompt.push(
           type: :user,
@@ -39,7 +44,7 @@ module DiscourseAi
 
         DiscourseAi::Completions::Llm
           .proxy(model)
-          .generate(title_prompt, user: post_user)
+          .generate(title_prompt, user: post.user)
           .strip
           .split("\n")
           .last

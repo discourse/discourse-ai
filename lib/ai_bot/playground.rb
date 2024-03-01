@@ -156,7 +156,7 @@ module DiscourseAi
         context = conversation_context(post)
 
         bot
-          .get_updated_title(context, post.user)
+          .get_updated_title(context, post)
           .tap do |new_title|
             PostRevisor.new(post.topic.first_post, post.topic).revise!(
               bot.bot_user,
