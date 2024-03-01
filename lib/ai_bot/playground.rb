@@ -182,6 +182,8 @@ module DiscourseAi
           participants: post.topic.allowed_users.map(&:username).join(", "),
           conversation_context: conversation_context(post),
           user: post.user,
+          post_id: post.id,
+          topic_id: post.topic_id,
         }
 
         reply_user = bot.bot_user

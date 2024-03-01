@@ -106,9 +106,11 @@ module DiscourseAi
           raise NotImplemented
         end
 
+        attr_reader :prompt
+
         private
 
-        attr_reader :prompt, :model_name, :opts
+        attr_reader :model_name, :opts
 
         def trim_messages(messages)
           prompt_limit = max_prompt_tokens
