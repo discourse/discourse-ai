@@ -8,7 +8,7 @@ module PageObjects
       CAPTION_TEXTAREA_SELECTOR = "#{CAPTION_POPUP_SELECTOR} textarea"
 
       def hover_image_wrapper
-        image_wrapper = find('.d-editor-preview .image-wrapper')
+        image_wrapper = find(".d-editor-preview .image-wrapper")
         image_wrapper.hover
       end
 
