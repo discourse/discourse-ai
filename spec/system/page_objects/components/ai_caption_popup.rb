@@ -7,7 +7,13 @@ module PageObjects
       CAPTION_POPUP_SELECTOR = ".ai-caption-popup"
       CAPTION_TEXTAREA_SELECTOR = "#{CAPTION_POPUP_SELECTOR} textarea"
 
+      def hover_image_wrapper
+        image_wrapper = find(".d-editor-preview .image-wrapper")
+        image_wrapper.hover
+      end
+
       def click_generate_caption
+        hover_image_wrapper
         page.find(GENERATE_CAPTION_SELECTOR, visible: false).click
       end
 
@@ -16,10 +22,12 @@ module PageObjects
       end
 
       def save_caption
+        hover_image_wrapper
         find("#{CAPTION_POPUP_SELECTOR} .btn-primary").click
       end
 
       def cancel_caption
+        hover_image_wrapper
         find("#{CAPTION_POPUP_SELECTOR} .cancel-request").click
       end
 
