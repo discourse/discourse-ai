@@ -227,6 +227,29 @@ module DiscourseAi
           raise MissingEmbeddingError
         end
 
+        def asymmetric_posts_similarity_search(raw_vector, limit:, offset:, return_distance: false)
+          results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
+            SELECT
+              post_id,
+              embeddings #{pg_function} '[:query_embedding]' AS distance
+            FROM
+              #{post_table_name}
+            ORDER BY
+              embeddings #{pg_function} '[:query_embedding]'
+            LIMIT :limit
+            OFFSET :offset
+          SQL
+
+          if return_distance
+            results.map { |r| [r.topic_id, r.distance] }
+          else
+            results.map(&:topic_id)
+          end
+        rescue PG::Error => e
+          Rails.logger.error("Error #{e} querying embeddings for model #{name}")
+          raise MissingEmbeddingError
+        end
+
         def symmetric_topics_similarity_search(topic)
           DB.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
             SELECT
