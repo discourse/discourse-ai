@@ -156,7 +156,7 @@ module DiscourseAi
         context = conversation_context(post)
 
         bot
-          .get_updated_title(context, post.user)
+          .get_updated_title(context, post)
           .tap do |new_title|
             PostRevisor.new(post.topic.first_post, post.topic).revise!(
               bot.bot_user,
@@ -182,6 +182,8 @@ module DiscourseAi
           participants: post.topic.allowed_users.map(&:username).join(", "),
           conversation_context: conversation_context(post),
           user: post.user,
+          post_id: post.id,
+          topic_id: post.topic_id,
         }
 
         reply_user = bot.bot_user

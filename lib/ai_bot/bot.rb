@@ -7,6 +7,7 @@ module DiscourseAi
 
       BOT_NOT_FOUND = Class.new(StandardError)
       MAX_COMPLETIONS = 5
+      MAX_TOOLS = 5
 
       def self.as(bot_user, persona: DiscourseAi::AiBot::Personas::General.new, model: nil)
         new(bot_user, persona, model)
@@ -21,14 +22,19 @@ module DiscourseAi
       attr_reader :bot_user
       attr_accessor :persona
 
-      def get_updated_title(conversation_context, post_user)
+      def get_updated_title(conversation_context, post)
         system_insts = <<~TEXT.strip
         You are titlebot. Given a topic, you will figure out a title.
         You will never respond with anything but 7 word topic title.
         TEXT
 
         title_prompt =
-          DiscourseAi::Completions::Prompt.new(system_insts, messages: conversation_context)
+          DiscourseAi::Completions::Prompt.new(
+            system_insts,
+            messages: conversation_context,
+            topic_id: post.topic_id,
+            post_id: post.id,
+          )
 
         title_prompt.push(
           type: :user,
@@ -38,7 +44,7 @@ module DiscourseAi
 
         DiscourseAi::Completions::Llm
           .proxy(model)
-          .generate(title_prompt, user: post_user)
+          .generate(title_prompt, user: post.user)
           .strip
           .split("\n")
           .last
@@ -64,37 +70,14 @@ module DiscourseAi
 
           result =
             llm.generate(prompt, **llm_kwargs) do |partial, cancel|
-              if (tool = persona.find_tool(partial))
+              tools = persona.find_tools(partial)
+
+              if (tools.present?)
                 tool_found = true
-                ongoing_chain = tool.chain_next_response?
-                tool_call_id = tool.tool_call_id
-                invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
-
-                tool_call_message = {
-                  type: :tool_call,
-                  id: tool_call_id,
-                  content: { name: tool.name, arguments: tool.parameters }.to_json,
-                }
-
-                tool_message = { type: :tool, id: tool_call_id, content: invocation_result_json }
-
-                if tool.standalone?
-                  standalone_context =
-                    context.dup.merge(
-                      conversation_context: [
-                        context[:conversation_context].last,
-                        tool_call_message,
-                        tool_message,
-                      ],
-                    )
-                  prompt = persona.craft_prompt(standalone_context)
-                else
-                  prompt.push(**tool_call_message)
-                  prompt.push(**tool_message)
+                tools[0..MAX_TOOLS].each do |tool|
+                  ongoing_chain &&= tool.chain_next_response?
+                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
                 end
-
-                raw_context << [tool_call_message[:content], tool_call_id, "tool_call"]
-                raw_context << [invocation_result_json, tool_call_id, "tool"]
               else
                 update_blk.call(partial, cancel, nil)
               end
@@ -114,6 +97,37 @@ module DiscourseAi
       end
 
       private
+
+      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
+        tool_call_id = tool.tool_call_id
+        invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
+
+        tool_call_message = {
+          type: :tool_call,
+          id: tool_call_id,
+          content: { name: tool.name, arguments: tool.parameters }.to_json,
+        }
+
+        tool_message = { type: :tool, id: tool_call_id, content: invocation_result_json }
+
+        if tool.standalone?
+          standalone_context =
+            context.dup.merge(
+              conversation_context: [
+                context[:conversation_context].last,
+                tool_call_message,
+                tool_message,
+              ],
+            )
+          prompt = persona.craft_prompt(standalone_context)
+        else
+          prompt.push(**tool_call_message)
+          prompt.push(**tool_message)
+        end
+
+        raw_context << [tool_call_message[:content], tool_call_id, "tool_call"]
+        raw_context << [invocation_result_json, tool_call_id, "tool"]
+      end
 
       def invoke_tool(tool, llm, cancel, &update_blk)
         update_blk.call("", cancel, build_placeholder(tool.summary, ""))

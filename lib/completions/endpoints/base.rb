@@ -100,6 +100,8 @@ module DiscourseAi
                   user_id: user&.id,
                   raw_request_payload: request_body,
                   request_tokens: prompt_size(prompt),
+                  topic_id: dialect.prompt.topic_id,
+                  post_id: dialect.prompt.post_id,
                 )
 
               if !@streaming_mode
@@ -273,13 +275,19 @@ module DiscourseAi
         def build_buffer
           Nokogiri::HTML5.fragment(<<~TEXT)
           <function_calls>
-          <invoke>
-          <tool_name></tool_name>
-          <tool_id></tool_id>
-          <parameters>
-          </parameters>
-          </invoke>
+          #{noop_function_call_text}
           </function_calls>
+          TEXT
+        end
+
+        def noop_function_call_text
+          (<<~TEXT).strip
+            <invoke>
+            <tool_name></tool_name>
+            <tool_id></tool_id>
+            <parameters>
+            </parameters>
+            </invoke>
           TEXT
         end
 

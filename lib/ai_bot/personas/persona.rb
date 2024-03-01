@@ -117,6 +117,8 @@ module DiscourseAi
             #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
           TEXT
               messages: context[:conversation_context].to_a,
+              topic_id: context[:topic_id],
+              post_id: context[:post_id],
             )
 
           prompt.tools = available_tools.map(&:signature) if available_tools
@@ -124,8 +126,16 @@ module DiscourseAi
           prompt
         end
 
-        def find_tool(partial)
+        def find_tools(partial)
+          return [] if !partial.include?("</invoke>")
+
           parsed_function = Nokogiri::HTML5.fragment(partial)
+          parsed_function.css("invoke").map { |fragment| find_tool(fragment) }.compact
+        end
+
+        protected
+
+        def find_tool(parsed_function)
           function_id = parsed_function.at("tool_id")&.text
           function_name = parsed_function.at("tool_name")&.text
           return false if function_name.nil?
