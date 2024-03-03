@@ -135,6 +135,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post.topic.reload
       expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
+
+      expect(last_post.topic.participant_count).to eq(2)
     end
 
     it "picks the correct llm for persona in PMs" do

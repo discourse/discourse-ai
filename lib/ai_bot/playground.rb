@@ -273,6 +273,12 @@ module DiscourseAi
           reply_post.post_custom_prompt.update!(custom_prompt: prompt)
         end
 
+        # since we are skipping validations and jobs we
+        # may need to fix participant count
+        if reply_post.topic.private_message? && reply_post.topic.participant_count < 2
+          reply_post.topic.update!(participant_count: 2)
+        end
+
         reply_post
       ensure
         publish_final_update(reply_post) if stream_reply
