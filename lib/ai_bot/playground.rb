@@ -12,12 +12,10 @@ module DiscourseAi
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
 
       def self.is_bot_user_id?(user_id)
-        bot_ids = DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS
-        bot_ids.include?(user_id) ||
-          begin
-            mentionable_ids = AiPersona.mentionables.map { |mentionable| mentionable[:user_id] }
-            mentionable_ids.include?(user_id)
-          end
+        # this will catch everything and avoid any feedback loops
+        # we could get feedback loops between say discobot and ai-bot or third party plugins
+        # and bots
+        user_id.to_i <= 0
       end
 
       def self.schedule_reply(post)

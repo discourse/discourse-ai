@@ -52,6 +52,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     )
   end
 
+  describe "is_bot_user_id?" do
+    it "properly detects ALL bots as bot users" do
+      persona = Fabricate(:ai_persona, enabled: false)
+      persona.create_user!
+
+      expect(DiscourseAi::AiBot::Playground.is_bot_user_id?(persona.user_id)).to eq(true)
+    end
+  end
+
   describe "persona with user support" do
     before do
       Jobs.run_immediately!
