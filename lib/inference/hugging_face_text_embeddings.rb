@@ -34,7 +34,9 @@ module ::DiscourseAi
 
           if SiteSetting.ai_hugging_face_tei_reranker_endpoint_srv.present?
             service =
-              DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_hugging_face_tei_reranker_endpoint_srv)
+              DiscourseAi::Utils::DnsSrv.lookup(
+                SiteSetting.ai_hugging_face_tei_reranker_endpoint_srv,
+              )
             api_endpoint = "https://#{service.target}:#{service.port}"
           else
             api_endpoint = SiteSetting.ai_hugging_face_tei_reranker_endpoint

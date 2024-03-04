@@ -1,5 +1,4 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import AssistantItem from "discourse/components/search-menu/results/assistant-item";
@@ -11,7 +10,7 @@ export default class AiQuickSemanticSearch extends Component {
   @action
   searchTermChanged() {
     // todo handle the HyDE search
-    console.log("searchTermChanged", this);
+    // console.log("searchTermChanged", this);
   }
 
   <template>
