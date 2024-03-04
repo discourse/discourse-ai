@@ -54,7 +54,6 @@ export default class AIHelperOptionsMenu extends Component {
   async showAIHelperOptions() {
     this.showMainButtons = false;
     this.menuState = this.MENU_STATES.options;
-    this.menu.activeMenu.options.placement = "bottom";
   }
 
   @bind
@@ -82,6 +81,7 @@ export default class AIHelperOptionsMenu extends Component {
 
     if (option.name === "explain") {
       this.menuState = this.MENU_STATES.result;
+      this.menu.activeMenu.options.placement = "bottom";
 
       const fetchUrl = `/discourse-ai/ai-helper/explain`;
       this._activeAIRequest = ajax(fetchUrl, {
