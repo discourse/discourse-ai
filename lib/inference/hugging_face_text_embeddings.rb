@@ -32,22 +32,20 @@ module ::DiscourseAi
           headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
           body = { query: content, texts: candidates, truncate: true }.to_json
 
-          if SiteSetting.ai_hugging_face_tei_endpoint_srv.present?
+          if SiteSetting.ai_hugging_face_tei_reranker_endpoint_srv.present?
             service =
-              DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_hugging_face_tei_endpoint_srv)
+              DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_hugging_face_tei_reranker_endpoint_srv)
             api_endpoint = "https://#{service.target}:#{service.port}"
           else
-            api_endpoint = SiteSetting.ai_hugging_face_tei_endpoint
+            api_endpoint = SiteSetting.ai_hugging_face_tei_reranker_endpoint
           end
 
-          if SiteSetting.ai_hugging_face_tei_api_key.present?
-            headers["X-API-KEY"] = SiteSetting.ai_hugging_face_tei_api_key
+          if SiteSetting.ai_hugging_face_tei_reranker_api_key.present?
+            headers["X-API-KEY"] = SiteSetting.ai_hugging_face_tei_reranker_api_key
           end
 
           conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
           response = conn.post("#{api_endpoint}/rerank", body, headers)
-
-          pp response
 
           raise Net::HTTPBadResponse if ![200].include?(response.status)
 

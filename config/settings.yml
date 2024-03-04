@@ -137,6 +137,12 @@ discourse_ai:
     default: ""
     hidden: true
   ai_hugging_face_tei_api_key: ""
+  ai_hugging_face_tei_reranker_endpoint:
+    default: ""
+  ai_hugging_face_tei_reranker_endpoint_srv:
+    default: ""
+    hidden: true
+  ai_hugging_face_tei_reranker_api_key: ""
   ai_google_custom_search_api_key:
     default: ""
     secret: true

@@ -155,7 +155,7 @@ module DiscourseAi
           end
         end
 
-        def vector_from(text)
+        def vector_from(text, asymetric: false)
           raise NotImplementedError
         end
 
@@ -323,6 +323,10 @@ module DiscourseAi
         end
 
         def tokenizer
+          raise NotImplementedError
+        end
+
+        def asymmetric_query_prefix
           raise NotImplementedError
         end
 

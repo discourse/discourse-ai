@@ -106,7 +106,9 @@ module DiscourseAi
         search_term_embedding =
           Discourse
             .cache
-            .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(search_term) }
+            .fetch(embedding_key, expires_in: 1.week) do
+              vector_rep.vector_from(search_term, asymetric: true)
+            end
 
         candidate_post_ids =
           vector_rep.asymmetric_posts_similarity_search(
@@ -134,7 +136,7 @@ module DiscourseAi
             rerank_posts_payload,
           )
 
-        reordered_ids = reranked_results.map { _1[:index] }.map { filtered_results[_1].id }
+        reordered_ids = reranked_results.map { _1[:index] }.map { filtered_results[_1].id }.take(5)
 
         reranked_semantic_results =
           ::Post
