@@ -59,9 +59,7 @@ module DiscourseAi
         end
 
         hijack do
-          semantic_search
-            .quick_search_for_topics(query)
-            .each { |topic_post| grouped_results.add(topic_post) }
+          semantic_search.quick_search(query).each { |topic_post| grouped_results.add(topic_post) }
 
           render_serialized(grouped_results, GroupedSearchResultSerializer, result: grouped_results)
         end
