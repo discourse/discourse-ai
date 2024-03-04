@@ -154,8 +154,11 @@ export default class AiHelperContextMenu extends Component {
     if (event.key === "Escape") {
       return this.closeContextMenu();
     }
-
-    if (event.key === "Backspace" && this.selectedText) {
+    if (
+      event.key === "Backspace" &&
+      this.selectedText &&
+      this.menuState === this.CONTEXT_MENU_STATES.triggers
+    ) {
       return this.closeContextMenu();
     }
   }
