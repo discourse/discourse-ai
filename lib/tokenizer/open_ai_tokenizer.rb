@@ -14,7 +14,7 @@ module DiscourseAi
 
         def truncate(text, max_length)
           # Fast track the common case where the text is already short enough.
-          return text if text.size < max_length
+          # return text if text.size < max_length
 
           tokenizer.decode(tokenize(text).take(max_length))
         rescue Tiktoken::UnicodeError
@@ -23,7 +23,7 @@ module DiscourseAi
         end
 
         def can_expand_tokens?(text, addition, max_length)
-          return true if text.size + addition.size < max_length
+          # return true if text.size + addition.size < max_length
 
           tokenizer.encode(text).length + tokenizer.encode(addition).length < max_length
         end
