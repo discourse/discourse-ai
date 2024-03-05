@@ -121,7 +121,7 @@ describe ReviewableAiPost do
     let(:reviewable) do
       described_class.needs_review!(target: target, created_by: Discourse.system_user)
     end
-    fab!(:admin) { Fabricate(:admin) }
+    fab!(:admin)
 
     before do
       reviewable.add_score(

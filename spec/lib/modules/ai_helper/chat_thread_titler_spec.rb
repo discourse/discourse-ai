@@ -7,7 +7,7 @@ RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
 
   fab!(:thread) { Fabricate(:chat_thread) }
   fab!(:chat_message) { Fabricate(:chat_message, thread: thread) }
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   describe "#cleanup" do
     it "picks the first when there are multiple" do

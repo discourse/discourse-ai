@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 describe DiscourseAi::Automation::LlmTriage do
-  fab!(:post) { Fabricate(:post) }
+  fab!(:post)
 
   def triage(**args)
     DiscourseAi::Automation::LlmTriage.handle(**args)

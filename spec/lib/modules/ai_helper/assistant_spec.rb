@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::Assistant do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
   let(:prompt) { CompletionPrompt.find_by(id: mode) }
 
   before { SiteSetting.ai_helper_model = "fake:fake" }

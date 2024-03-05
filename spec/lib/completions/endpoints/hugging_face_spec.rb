@@ -65,7 +65,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
 
   before { SiteSetting.ai_hugging_face_api_url = "https://test.dev" }
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   let(:hf_mock) { HuggingFaceMock.new(endpoint) }
 

@@ -56,7 +56,7 @@ end
 RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   subject(:endpoint) { described_class.new("claude-2", DiscourseAi::Tokenizer::AnthropicTokenizer) }
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   let(:anthropic_mock) { AnthropicMock.new(endpoint) }
 

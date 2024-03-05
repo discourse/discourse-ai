@@ -9,7 +9,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
     )
   end
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   describe ".proxy" do
     it "raises an exception when we can't proxy the model" do

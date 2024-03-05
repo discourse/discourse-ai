@@ -3,7 +3,7 @@
 RSpec.describe DiscourseAi::AiBot::Bot do
   subject(:bot) { described_class.as(bot_user) }
 
-  fab!(:admin) { Fabricate(:admin) }
+  fab!(:admin)
 
   before do
     SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"

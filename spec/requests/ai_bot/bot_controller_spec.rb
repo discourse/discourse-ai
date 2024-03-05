@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::BotController do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
   before { sign_in(user) }
 
   describe "#stop_streaming_response" do

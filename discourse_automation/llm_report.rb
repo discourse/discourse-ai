@@ -4,9 +4,7 @@ if defined?(DiscourseAutomation)
   module DiscourseAutomation::LlmReport
   end
 
-  DiscourseAutomation::Scriptable::LLM_REPORT = "llm_report"
-
-  DiscourseAutomation::Scriptable.add(DiscourseAutomation::Scriptable::LLM_REPORT) do
+  DiscourseAutomation::Scriptable.add("llm_report") do
     version 1
     triggerables %i[recurring]
 
