@@ -10,7 +10,7 @@ describe Jobs::ToxicityClassifyPost do
       SiteSetting.ai_toxicity_flag_automatically = true
     end
 
-    fab!(:post) { Fabricate(:post) }
+    fab!(:post)
 
     describe "scenarios where we return early without doing anything" do
       it "does nothing when ai_toxicity_enabled is disabled" do

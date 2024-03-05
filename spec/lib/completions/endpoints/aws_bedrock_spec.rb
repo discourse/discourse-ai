@@ -75,7 +75,7 @@ end
 RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
   subject(:endpoint) { described_class.new("claude-2", DiscourseAi::Tokenizer::AnthropicTokenizer) }
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   let(:bedrock_mock) { BedrockMock.new(endpoint) }
 

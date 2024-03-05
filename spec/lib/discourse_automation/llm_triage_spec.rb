@@ -3,7 +3,7 @@
 return if !defined?(DiscourseAutomation)
 
 describe DiscourseAi::Automation::LlmTriage do
-  fab!(:post) { Fabricate(:post) }
+  fab!(:post)
 
   let(:automation) { Fabricate(:automation, script: "llm_triage", enabled: true) }
 

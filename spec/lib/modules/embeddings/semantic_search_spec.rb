@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
-  fab!(:post) { Fabricate(:post) }
-  fab!(:user) { Fabricate(:user) }
+  fab!(:post)
+  fab!(:user)
 
   let(:query) { "test_query" }
   let(:subject) { described_class.new(Guardian.new(user)) }
@@ -104,7 +104,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
       end
 
       context "when the post belongs to a secured category" do
-        fab!(:group) { Fabricate(:group) }
+        fab!(:group)
         fab!(:private_category) { Fabricate(:private_category, group: group) }
 
         before do

@@ -130,7 +130,7 @@ end
 RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
   subject(:endpoint) { described_class.new("gemini-pro", DiscourseAi::Tokenizer::OpenAiTokenizer) }
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   let(:bedrock_mock) { GeminiMock.new(endpoint) }
 

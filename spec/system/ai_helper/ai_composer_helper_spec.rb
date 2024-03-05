@@ -17,7 +17,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:ai_helper_context_menu) { PageObjects::Components::AIHelperContextMenu.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
   let(:ai_suggestion_dropdown) { PageObjects::Components::AISuggestionDropdown.new }
-  fab!(:category) { Fabricate(:category) }
+  fab!(:category)
   fab!(:category_2) { Fabricate(:category) }
   fab!(:video) { Fabricate(:tag) }
   fab!(:music) { Fabricate(:tag) }

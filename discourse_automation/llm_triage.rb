@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 if defined?(DiscourseAutomation)
-  DiscourseAutomation::Scriptable::LLM_TRIAGE = "llm_triage"
-
-  DiscourseAutomation::Scriptable.add(DiscourseAutomation::Scriptable::LLM_TRIAGE) do
+  DiscourseAutomation::Scriptable.add("llm_triage") do
     version 1
     run_in_background
 
@@ -17,7 +15,7 @@ if defined?(DiscourseAutomation)
           validator: ->(input) do
             if !input.include?("%%POST%%")
               I18n.t(
-                "discourse_automation.scriptables.#{DiscourseAutomation::Scriptable::LLM_TRIAGE}.system_prompt_missing_post_placeholder",
+                "discourse_automation.scriptables.llm_triage.system_prompt_missing_post_placeholder",
               )
             end
           end,

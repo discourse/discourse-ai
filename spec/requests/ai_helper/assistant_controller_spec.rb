@@ -32,7 +32,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     end
 
     context "when logged in as an allowed user" do
-      fab!(:user) { Fabricate(:user) }
+      fab!(:user)
 
       before do
         sign_in(user)
@@ -109,7 +109,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
   end
 
   describe "#caption_image" do
-    fab!(:upload) { Fabricate(:upload) }
+    fab!(:upload)
     let(:image_url) { "#{Discourse.base_url}#{upload.url}" }
     let(:caption) { "A picture of a cat sitting on a table" }
     let(:caption_with_attrs) do
@@ -161,7 +161,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       end
 
       context "for secure uploads" do
-        fab!(:group) { Fabricate(:group) }
+        fab!(:group)
         fab!(:private_category) { Fabricate(:private_category, group: group) }
         fab!(:post_in_secure_context) do
           Fabricate(:post, topic: Fabricate(:topic, category: private_category))

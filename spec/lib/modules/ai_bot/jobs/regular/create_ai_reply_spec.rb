@@ -4,7 +4,7 @@ RSpec.describe Jobs::CreateAiReply do
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#execute" do
-    fab!(:topic) { Fabricate(:topic) }
+    fab!(:topic)
     fab!(:post) { Fabricate(:post, topic: topic) }
 
     let(:expected_response) do

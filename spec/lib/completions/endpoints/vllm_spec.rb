@@ -62,7 +62,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
     )
   end
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   let(:anthropic_mock) { VllmMock.new(endpoint) }
 

@@ -3,6 +3,8 @@
 module DiscourseAi
   module Admin
     class AiPersonasController < ::Admin::AdminController
+      requires_plugin ::DiscourseAi::PLUGIN_NAME
+
       before_action :find_ai_persona, only: %i[show update destroy create_user]
 
       def index

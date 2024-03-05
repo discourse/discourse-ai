@@ -3,7 +3,7 @@
 RSpec.describe DiscourseAi::AiHelper::Painter do
   subject(:painter) { described_class.new }
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   before do
     SiteSetting.ai_helper_model = "fake:fake"
