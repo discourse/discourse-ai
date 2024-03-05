@@ -109,7 +109,6 @@ module DiscourseAi
             .pluck(:raw, :username, "post_custom_prompts.custom_prompt")
 
         result = []
-        first = true
 
         context.reverse_each do |raw, username, custom_prompt|
           custom_prompt_translation =
@@ -129,12 +128,7 @@ module DiscourseAi
             end
 
           if custom_prompt.present?
-            if first
-              custom_prompt.each(&custom_prompt_translation)
-              first = false
-            else
-              custom_prompt.first(2).each(&custom_prompt_translation)
-            end
+            custom_prompt.each(&custom_prompt_translation)
           else
             context = {
               content: raw,

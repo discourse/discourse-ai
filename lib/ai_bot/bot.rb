@@ -171,6 +171,10 @@ module DiscourseAi
           "google:gemini-pro"
         when DiscourseAi::AiBot::EntryPoint::FAKE_ID
           "fake:fake"
+        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
+          "anthropic:claude-3-opus"
+        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
+          "anthropic:claude-3-sonnet"
         else
           nil
         end

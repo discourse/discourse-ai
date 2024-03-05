@@ -12,6 +12,8 @@ module DiscourseAi
       MIXTRAL_ID = -114
       GEMINI_ID = -115
       FAKE_ID = -116 # only used for dev and test
+      CLAUDE_3_OPUS_ID = -117
+      CLAUDE_3_SONNET_ID = -118
 
       BOTS = [
         [GPT4_ID, "gpt4_bot", "gpt-4"],
@@ -21,6 +23,8 @@ module DiscourseAi
         [MIXTRAL_ID, "mixtral_bot", "mixtral-8x7B-Instruct-V0.1"],
         [GEMINI_ID, "gemini_bot", "gemini-pro"],
         [FAKE_ID, "fake_bot", "fake"],
+        [CLAUDE_3_OPUS_ID, "claude_3_opus_bot", "claude-3-opus"],
+        [CLAUDE_3_SONNET_ID, "claude_3_sonnet_bot", "claude-3-sonnet"],
       ]
 
       BOT_USER_IDS = BOTS.map(&:first)
@@ -41,6 +45,10 @@ module DiscourseAi
           GEMINI_ID
         in "fake"
           FAKE_ID
+        in "claude-3-opus"
+          CLAUDE_3_OPUS_ID
+        in "claude-3-sonnet"
+          CLAUDE_3_SONNET_ID
         else
           nil
         end
