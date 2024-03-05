@@ -17,6 +17,7 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::OrcaStyle,
               DiscourseAi::Completions::Dialects::Gemini,
               DiscourseAi::Completions::Dialects::Mixtral,
+              DiscourseAi::Completions::Dialects::ClaudeMessages,
             ]
 
             if Rails.env.test? || Rails.env.development?
@@ -62,6 +63,38 @@ module DiscourseAi
 
         def translate
           raise NotImplemented
+        end
+
+        def tool_result_to_xml(message)
+          (<<~TEXT).strip
+            <function_results>
+            <result>
+            <tool_name>#{message[:id]}</tool_name>
+            <json>
+            #{message[:content]}
+            </json>
+            </result>
+            </function_results>
+          TEXT
+        end
+
+        def tool_call_to_xml(message)
+          parsed = JSON.parse(message[:content], symbolize_names: true)
+          parameters = +""
+
+          if parsed[:arguments]
+            parameters << "<parameters>\n"
+            parsed[:arguments].each { |k, v| parameters << "<#{k}>#{v}</#{k}>\n" }
+            parameters << "</parameters>\n"
+          end
+
+          (<<~TEXT).strip
+            <function_calls>
+            <invoke>
+            <tool_name>#{parsed[:name]}</tool_name>
+            #{parameters}</invoke>
+            </function_calls>
+          TEXT
         end
 
         def tools

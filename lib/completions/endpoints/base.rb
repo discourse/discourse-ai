@@ -16,6 +16,7 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::HuggingFace,
               DiscourseAi::Completions::Endpoints::Gemini,
               DiscourseAi::Completions::Endpoints::Vllm,
+              DiscourseAi::Completions::Endpoints::AnthropicMessages,
             ]
 
             if Rails.env.test? || Rails.env.development?
@@ -165,8 +166,9 @@ module DiscourseAi
 
                     begin
                       partial = extract_completion_from(raw_partial)
-                      next if response_data.empty? && partial.blank?
                       next if partial.nil?
+                      # empty vs blank... we still accept " "
+                      next if response_data.empty? && partial.empty?
                       partials_raw << partial.to_s
 
                       # Stop streaming the response as soon as you find a tool.
@@ -213,6 +215,7 @@ module DiscourseAi
               if log
                 log.raw_response_payload = response_raw
                 log.response_tokens = tokenizer.size(partials_raw)
+                final_log_update(log)
                 log.save!
 
                 if Rails.env.development?
@@ -221,6 +224,10 @@ module DiscourseAi
               end
             end
           end
+        end
+
+        def final_log_update(log)
+          # for people that need to override
         end
 
         def default_options

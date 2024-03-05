@@ -147,7 +147,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     described_class.new("gpt-3.5-turbo", DiscourseAi::Tokenizer::OpenAiTokenizer)
   end
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   let(:open_ai_mock) { OpenAiMock.new(endpoint) }
 
