@@ -57,11 +57,22 @@ module DiscourseAi
             system_prompt << build_tools_prompt
           end
 
-          # TODO decide if we correct the interleaving here
-          # eg what if this ends in a role assistant message
+          interleving_messages = []
 
-          p messages
-          ClaudePrompt.new(system_prompt.presence, messages)
+          previous_message = nil
+          messages.each do |message|
+            if previous_message
+              if previous_message[:role] == "user" && message[:role] == "user"
+                interleving_messages << { role: "assistant", content: "OK" }
+              elsif previous_message[:role] == "assistant" && message[:role] == "assistant"
+                interleving_messages << { role: "user", content: "OK" }
+              end
+            end
+            interleving_messages << message
+            previous_message = message
+          end
+
+          ClaudePrompt.new(system_prompt.presence, interleving_messages)
         end
 
         def max_prompt_tokens
