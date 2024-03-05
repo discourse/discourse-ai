@@ -12,6 +12,8 @@ en:
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
         gemini_pro: Gemini Pro
+        claude_3_opus: Claude 3 Opus
+        claude_3_sonnet: Claude 3 Sonnet
       scriptables:
         llm_report:
           fields:
