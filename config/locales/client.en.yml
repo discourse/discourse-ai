@@ -127,6 +127,7 @@ en:
         confirm_delete: Are you sure you want to delete this persona?
         new: New
         title: "AI Personas"
+        short_title: "Personas"
         delete: Delete
         temperature: Temperature
         temperature_help: Temperature to use for the LLM, increase to increase creativity (leave empty to use model default, generally a value from 0.0 to 2.0)

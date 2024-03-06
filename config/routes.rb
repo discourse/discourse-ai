@@ -27,8 +27,6 @@ Discourse::Application.routes.draw do
       :constraints => StaffConstraint.new
 
   scope "/admin/plugins/discourse-ai", constraints: AdminConstraint.new do
-    get "/", to: redirect("/admin/plugins/discourse-ai/ai-personas")
-
     resources :ai_personas,
               only: %i[index create show update destroy],
               path: "ai-personas",

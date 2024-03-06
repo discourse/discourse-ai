@@ -58,7 +58,7 @@ export default class PersonaEditor extends Component {
       if (isNew) {
         this.args.personas.addObject(this.args.model);
         this.router.transitionTo(
-          "adminPlugins.discourse-ai.ai-personas.show",
+          "adminPlugins.show.discourse-ai.ai-personas.show",
           this.args.model
         );
       } else {
@@ -109,7 +109,7 @@ export default class PersonaEditor extends Component {
         return this.args.model.destroyRecord().then(() => {
           this.args.personas.removeObject(this.args.model);
           this.router.transitionTo(
-            "adminPlugins.discourse-ai.ai-personas.index"
+            "adminPlugins.show.discourse-ai.ai-personas.index"
           );
         });
       },

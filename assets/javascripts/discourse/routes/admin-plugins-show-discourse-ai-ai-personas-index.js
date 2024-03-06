@@ -1,7 +1,7 @@
 import DiscourseRoute from "discourse/routes/discourse";
 
 export default DiscourseRoute.extend({
-  async model() {
-    return this.store.findAll("ai-persona");
+  model() {
+    return this.modelFor("adminPlugins.show.discourse-ai.ai-personas");
   },
 });

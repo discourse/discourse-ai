@@ -23,10 +23,10 @@ export default class AiPersonaListEditor extends Component {
 
   <template>
     <div class="ai-persona-list-editor__header">
-      <h3>{{I18n.t "discourse_ai.ai_persona.title"}}</h3>
+      <h3></h3>
       {{#unless @currentPersona.isNew}}
         <LinkTo
-          @route="adminPlugins.discourse-ai.ai-personas.new"
+          @route="adminPlugins.show.discourse-ai.ai-personas.new"
           class="btn btn-primary"
         >
           {{icon "plus"}}
@@ -34,31 +34,32 @@ export default class AiPersonaListEditor extends Component {
         </LinkTo>
       {{/unless}}
     </div>
-    <div class="content-list ai-persona-list-editor">
-      <ul>
-        {{#each @personas as |persona|}}
-          <li
-            class={{concatClass
-              (if persona.enabled "" "diabled")
-              (if persona.priority "priority")
-            }}
-          >
-            <LinkTo
-              @route="adminPlugins.discourse-ai.ai-personas.show"
-              current-when="true"
-              @model={{persona}}
-            >{{persona.name}}
-            </LinkTo>
-          </li>
-        {{/each}}
-      </ul>
-    </div>
     <section class="ai-persona-list-editor__current content-body">
       {{#if @currentPersona}}
         <AiPersonaEditor @model={{@currentPersona}} @personas={{@personas}} />
       {{else}}
         <div class="ai-persona-list-editor__empty">
           {{this.noPersonaText}}
+        </div>
+
+        <div class="content-list ai-persona-list-editor">
+          <ul>
+            {{#each @personas as |persona|}}
+              <li
+                class={{concatClass
+                  (if persona.enabled "" "diabled")
+                  (if persona.priority "priority")
+                }}
+              >
+                <LinkTo
+                  @route="adminPlugins.show.discourse-ai.ai-personas.show"
+                  current-when="true"
+                  @model={{persona}}
+                >{{persona.name}}
+                </LinkTo>
+              </li>
+            {{/each}}
+          </ul>
         </div>
       {{/if}}
     </section>
