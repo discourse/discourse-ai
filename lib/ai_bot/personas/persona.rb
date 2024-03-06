@@ -64,6 +64,8 @@ module DiscourseAi
               Tools::SettingContext,
               Tools::RandomPicker,
               Tools::DiscourseMetaSearch,
+              Tools::GithubFileContent,
+              Tools::GithubPullRequestDiff,
             ]
 
             tools << Tools::ListTags if SiteSetting.tagging_enabled

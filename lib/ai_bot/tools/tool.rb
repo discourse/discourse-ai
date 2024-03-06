@@ -77,6 +77,21 @@ module DiscourseAi
 
         protected
 
+        def truncate(text, llm:, percent_length: nil, max_length: nil)
+          if !percent_length && !max_length
+            raise ArgumentError, "You must provide either percent_length or max_length"
+          end
+
+          target = llm.max_prompt_tokens
+          target = (target * percent_length).to_i if percent_length
+
+          if max_length
+            target = max_length if target > max_length
+          end
+
+          llm.tokenizer.truncate(text, target)
+        end
+
         def accepted_options
           []
         end
