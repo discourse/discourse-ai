@@ -48,6 +48,10 @@ module DiscourseAi
           parameters[:branch] || "main"
         end
 
+        def description_args
+          { repo_name: repo_name, file_paths: file_paths.join(", "), branch: branch }
+        end
+
         def invoke(_bot_user, llm)
           owner, repo = repo_name.split("/")
           file_contents = {}
@@ -56,12 +60,22 @@ module DiscourseAi
             api_url =
               "https://api.github.com/repos/#{owner}/#{repo}/contents/#{file_path}?ref=#{branch}"
 
-            uri = URI(api_url)
-            response = Net::HTTP.get_response(uri)
-            file_data = JSON.parse(response.body)
+            response =
+              send_http_request(api_url, headers: { "Accept" => "application/vnd.github.v3+json" })
 
-            content = Base64.decode64(file_data["content"])
-            file_contents[file_path] = content
+            if response.code == "200"
+              file_data = JSON.parse(response.body)
+
+              content = Base64.decode64(file_data["content"])
+              file_contents[file_path] = content
+            else
+              return(
+                {
+                  error:
+                    "Failed to retrieve the content of #{file_path}. Status code: #{response.code}",
+                }
+              )
+            end
           end
 
           blob = file_contents.map { |path, content| "File Path: #{path}:\n#{content}" }.join("\n")

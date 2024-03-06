@@ -154,6 +154,9 @@ en:
       personas:
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
         cannot_edit_system_persona: "System personas can only be renamed, you may not edit commands or system prompt, instead disable and make a copy"
+        github_helper:
+          name: "GitHub Helper"
+          description: "AI Bot specialized in assisting with GitHub-related tasks and questions"
         general:
           name: Forum Helper
           description: "General purpose AI Bot capable of performing various tasks"
@@ -190,6 +193,7 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       command_summary:
+        github_file_content: "GitHub file content"
         github_pull_request_diff: "GitHub pull request diff"
         random_picker: "Random Picker"
         categories: "List categories"
@@ -206,6 +210,7 @@ en:
         dall_e: "Generate image"
         search_meta_discourse: "Search Meta Discourse"
       command_help:
+        github_file_content: "Retrieve content of files from a GitHub repository"
         github_pull_request_diff: "Retrieve a GitHub pull request diff"
         random_picker: "Pick a random number or a random element of a list"
         categories: "List all publicly visible categories on the forum"
@@ -223,6 +228,7 @@ en:
         search_meta_discourse: "Search Meta Discourse"
       command_description:
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
+        github_file_content: "Retrieved content of %{file_paths} from %{repo_name}@%{branch}"
         random_picker: "Picking from %{options}, picked: %{result}"
         read: "Reading: <a href='%{url}'>%{title}</a>"
         time: "Time in %{timezone} is %{time}"

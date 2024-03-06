@@ -15,6 +15,7 @@ module DiscourseAi
               Personas::Creative => -6,
               Personas::DallE3 => -7,
               Personas::DiscourseHelper => -8,
+              Personas::GithubHelper => -9,
             }
           end
 

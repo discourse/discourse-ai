@@ -15,7 +15,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
       stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
         headers: {
           "Accept" => "application/vnd.github.v3.diff",
-          "User-Agent" => "Ruby",
+          "User-Agent" => "Discourse AI Bot 1.0 (www.discourse.org)",
         },
       ).to_return(status: 200, body: "sample diff")
 

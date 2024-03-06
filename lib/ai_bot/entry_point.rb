@@ -2,6 +2,8 @@
 
 module DiscourseAi
   module AiBot
+    USER_AGENT = "Discourse AI Bot 1.0 (https://www.discourse.org)"
+
     class EntryPoint
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
 

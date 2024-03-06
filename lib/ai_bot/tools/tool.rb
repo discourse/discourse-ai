@@ -77,6 +77,17 @@ module DiscourseAi
 
         protected
 
+        def send_http_request(url, headers: {})
+          uri = URI(url)
+          request = Net::HTTP::Get.new(uri)
+          request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
+          headers.each { |k, v| request[k] = v }
+
+          FinalDestination::HTTP.start(uri.hostname, uri.port, use_ssl: uri.port != 80) do |http|
+            http.request(request)
+          end
+        end
+
         def truncate(text, llm:, percent_length: nil, max_length: nil)
           if !percent_length && !max_length
             raise ArgumentError, "You must provide either percent_length or max_length"

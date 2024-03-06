@@ -45,7 +45,8 @@ module DiscourseAi
           api_url = "https://api.github.com/repos/#{repo}/pulls/#{pull_id}"
           @url = "https://github.com/#{repo}/pull/#{pull_id}"
 
-          response = send_request(api_url)
+          response =
+            send_http_request(api_url, headers: { "Accept" => "application/vnd.github.v3.diff" })
 
           if response.code == "200"
             diff = response.body
@@ -54,17 +55,6 @@ module DiscourseAi
           else
             { error: "Failed to retrieve the diff. Status code: #{response.code}" }
           end
-        end
-
-        private
-
-        def send_request(api_url)
-          uri = URI(api_url)
-          request = Net::HTTP::Get.new(uri)
-          request["Accept"] = "application/vnd.github.v3.diff"
-          request["User-Agent"] = "Ruby"
-
-          Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(request) }
         end
 
         def description_args
