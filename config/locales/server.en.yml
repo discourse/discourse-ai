@@ -190,6 +190,7 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       command_summary:
+        github_pull_request_diff: "GitHub pull request diff"
         random_picker: "Random Picker"
         categories: "List categories"
         search: "Search"
@@ -205,6 +206,7 @@ en:
         dall_e: "Generate image"
         search_meta_discourse: "Search Meta Discourse"
       command_help:
+        github_pull_request_diff: "Retrieve a GitHub pull request diff"
         random_picker: "Pick a random number or a random element of a list"
         categories: "List all publicly visible categories on the forum"
         search: "Search all public topics on the forum"
@@ -220,6 +222,7 @@ en:
         dall_e: "Generate image using DALL-E 3"
         search_meta_discourse: "Search Meta Discourse"
       command_description:
+        github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
         random_picker: "Picking from %{options}, picked: %{result}"
         read: "Reading: <a href='%{url}'>%{title}</a>"
         time: "Time in %{timezone} is %{time}"

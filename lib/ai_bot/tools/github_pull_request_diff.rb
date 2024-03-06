@@ -37,12 +37,13 @@ module DiscourseAi
           parameters[:pull_id]
         end
 
-        def chain_next_response?
-          false
+        def url
+          @url
         end
 
         def invoke(_bot_user, llm)
           api_url = "https://api.github.com/repos/#{repo}/pulls/#{pull_id}"
+          @url = "https://github.com/repos/#{repo}/pulls/#{pull_id}"
 
           response = send_request(api_url)
 
@@ -67,7 +68,7 @@ module DiscourseAi
         end
 
         def description_args
-          { repo: repo, pull_id: pull_id }
+          { repo: repo, pull_id: pull_id, url: url }
         end
       end
     end
