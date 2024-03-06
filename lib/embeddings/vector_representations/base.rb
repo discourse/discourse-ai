@@ -241,9 +241,9 @@ module DiscourseAi
           SQL
 
           if return_distance
-            results.map { |r| [r.topic_id, r.distance] }
+            results.map { |r| [r.post_id, r.distance] }
           else
-            results.map(&:topic_id)
+            results.map(&:post_id)
           end
         rescue PG::Error => e
           Rails.logger.error("Error #{e} querying embeddings for model #{name}")
