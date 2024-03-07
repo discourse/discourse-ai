@@ -237,7 +237,6 @@ discourse_ai:
     choices:
       - "llava"
       - "open_ai:gpt-4-vision-preview"
-    
 
   ai_embeddings_enabled:
     default: false
@@ -288,6 +287,10 @@ discourse_ai:
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
+  ai_embeddings_semantic_quick_search_enabled:
+    default: false
+    client: true
+    validator: "DiscourseAi::Configuration::LlmDependencyValidator"
 
   ai_summarization_discourse_service_api_endpoint: ""
   ai_summarization_discourse_service_api_endpoint_srv:
