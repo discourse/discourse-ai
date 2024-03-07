@@ -5,7 +5,7 @@ module DiscourseAi
     module Personas
       class GithubHelper < Persona
         def tools
-          [Tools::GithubFileContent, Tools::GithubPullRequestDiff]
+          [Tools::GithubFileContent, Tools::GithubPullRequestDiff, Tools::GithubSearchCode]
         end
 
         def system_prompt
@@ -16,7 +16,6 @@ module DiscourseAi
 
             Your purpose is to assist users with GitHub-related tasks and questions.
             When asked about a specific repository, pull request, or file, try to use the available tools to provide accurate and helpful information.
-            If you don't have enough context to answer a question, ask for clarification or additional details.
           PROMPT
         end
       end

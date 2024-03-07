@@ -69,6 +69,8 @@ module DiscourseAi
               Tools::GithubPullRequestDiff,
             ]
 
+            tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
+
             tools << Tools::ListTags if SiteSetting.tagging_enabled
             tools << Tools::Image if SiteSetting.ai_stability_api_key.present?
 

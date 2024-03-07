@@ -46,7 +46,13 @@ module DiscourseAi
           @url = "https://github.com/#{repo}/pull/#{pull_id}"
 
           response =
-            send_http_request(api_url, headers: { "Accept" => "application/vnd.github.v3.diff" })
+            send_http_request(
+              api_url,
+              headers: {
+                "Accept" => "application/vnd.github.v3.diff",
+              },
+              authenticate_github: true,
+            )
 
           if response.code == "200"
             diff = response.body

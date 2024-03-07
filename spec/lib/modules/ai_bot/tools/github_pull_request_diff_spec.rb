@@ -15,7 +15,23 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
       stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
         headers: {
           "Accept" => "application/vnd.github.v3.diff",
-          "User-Agent" => "Discourse AI Bot 1.0 (www.discourse.org)",
+          "User-Agent" => DiscourseAi::AiBot::USER_AGENT,
+        },
+      ).to_return(status: 200, body: "sample diff")
+
+      result = tool.invoke(bot_user, llm)
+      expect(result[:diff]).to eq("sample diff")
+      expect(result[:error]).to be_nil
+    end
+
+    it "uses the github access token if present" do
+      SiteSetting.ai_bot_github_access_token = "ABC"
+
+      stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
+        headers: {
+          "Accept" => "application/vnd.github.v3.diff",
+          "User-Agent" => DiscourseAi::AiBot::USER_AGENT,
+          "Authorization" => "Bearer ABC",
         },
       ).to_return(status: 200, body: "sample diff")
 
@@ -33,7 +49,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
       stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
         headers: {
           "Accept" => "application/vnd.github.v3.diff",
-          "User-Agent" => "Ruby",
+          "User-Agent" => DiscourseAi::AiBot::USER_AGENT,
         },
       ).to_return(status: 404)
 

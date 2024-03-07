@@ -61,7 +61,13 @@ module DiscourseAi
               "https://api.github.com/repos/#{owner}/#{repo}/contents/#{file_path}?ref=#{branch}"
 
             response =
-              send_http_request(api_url, headers: { "Accept" => "application/vnd.github.v3+json" })
+              send_http_request(
+                api_url,
+                headers: {
+                  "Accept" => "application/vnd.github.v3+json",
+                },
+                authenticate_github: true,
+              )
 
             if response.code == "200"
               file_data = JSON.parse(response.body)

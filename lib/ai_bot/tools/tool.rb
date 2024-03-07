@@ -77,11 +77,14 @@ module DiscourseAi
 
         protected
 
-        def send_http_request(url, headers: {})
+        def send_http_request(url, headers: {}, authenticate_github: false)
           uri = URI(url)
           request = Net::HTTP::Get.new(uri)
           request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
           headers.each { |k, v| request[k] = v }
+          if authenticate_github
+            request["Authorization"] = "Bearer #{SiteSetting.ai_bot_github_access_token}"
+          end
 
           FinalDestination::HTTP.start(uri.hostname, uri.port, use_ssl: uri.port != 80) do |http|
             http.request(request)

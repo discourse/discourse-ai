@@ -47,8 +47,10 @@ module DiscourseAi
               </invoke>
               </function_calls>
 
-              if a parameter type is an array, return a JSON array of values. For example:
+              If a parameter type is an array, return a JSON array of values. For example:
               [1,"two",3.0]
+
+              Always wrap <invoke> calls in <function_calls> tags.
 
               Here are the tools available:
             TEXT
