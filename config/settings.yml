@@ -322,6 +322,11 @@ discourse_ai:
       - claude-2
       - gemini-pro
       - mixtral-8x7B-Instruct-V0.1
+      - claude-3-opus
+      - claude-3-sonnet
   ai_bot_add_to_header:
     default: true
     client: true
+  ai_bot_github_access_token:
+    default: ""
+    secret: true

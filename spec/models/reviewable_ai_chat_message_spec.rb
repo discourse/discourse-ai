@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe ReviewableAiChatMessage, type: :model do
-  fab!(:moderator) { Fabricate(:moderator) }
-  fab!(:user) { Fabricate(:user) }
-  fab!(:chat_channel) { Fabricate(:chat_channel) }
+  fab!(:moderator)
+  fab!(:user)
+  fab!(:chat_channel)
   fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
   fab!(:reviewable) { described_class.needs_review!(target: chat_message, created_by: moderator) }
 

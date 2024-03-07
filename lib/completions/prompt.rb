@@ -6,11 +6,21 @@ module DiscourseAi
       INVALID_TURN = Class.new(StandardError)
 
       attr_reader :messages
-      attr_accessor :tools
+      attr_accessor :tools, :topic_id, :post_id
 
-      def initialize(system_message_text = nil, messages: [], tools: [], skip_validations: false)
+      def initialize(
+        system_message_text = nil,
+        messages: [],
+        tools: [],
+        skip_validations: false,
+        topic_id: nil,
+        post_id: nil
+      )
         raise ArgumentError, "messages must be an array" if !messages.is_a?(Array)
         raise ArgumentError, "tools must be an array" if !tools.is_a?(Array)
+
+        @topic_id = topic_id
+        @post_id = post_id
 
         @messages = []
         @skip_validations = skip_validations
@@ -37,6 +47,10 @@ module DiscourseAi
         validate_turn(messages.last, new_message)
 
         messages << new_message
+      end
+
+      def has_tools?
+        tools.present?
       end
 
       private

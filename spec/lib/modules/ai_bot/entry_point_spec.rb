@@ -3,7 +3,7 @@
 RSpec.describe DiscourseAi::AiBot::EntryPoint do
   describe "#inject_into" do
     describe "subscribes to the post_created event" do
-      fab!(:admin) { Fabricate(:admin) }
+      fab!(:admin)
       let(:gpt_bot) { User.find(described_class::GPT4_ID) }
       fab!(:bot_allowed_group) { Fabricate(:group) }
 
@@ -21,6 +21,27 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
         SiteSetting.ai_bot_enabled = true
         SiteSetting.ai_bot_allowed_groups = bot_allowed_group.id
         bot_allowed_group.add(admin)
+      end
+
+      it "adds mentionables to current_user_serializer" do
+        Group.refresh_automatic_groups!
+
+        persona =
+          Fabricate(
+            :ai_persona,
+            mentionable: true,
+            enabled: true,
+            allowed_group_ids: [bot_allowed_group.id],
+          )
+        persona.create_user!
+
+        serializer = CurrentUserSerializer.new(admin, scope: Guardian.new(admin))
+        serializer = serializer.as_json
+        bots = serializer[:current_user][:ai_enabled_chat_bots]
+
+        persona_bot = bots.find { |bot| bot["id"] == persona.user_id }
+
+        expect(persona_bot["username"]).to eq(persona.user.username)
       end
 
       it "queues a job to generate a reply by the AI" do

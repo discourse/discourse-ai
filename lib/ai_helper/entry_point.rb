@@ -10,14 +10,23 @@ module DiscourseAi
         additional_icons = %w[spell-check language images]
         additional_icons.each { |icon| plugin.register_svg_icon(icon) }
 
-        plugin.on(:chat_thread_created) do |thread|
+        plugin.on(:chat_message_created) do |message, channel, user, extra|
           next unless SiteSetting.composer_ai_helper_enabled
           next unless SiteSetting.ai_helper_automatic_chat_thread_title
-          ::Jobs.enqueue_in(
-            SiteSetting.ai_helper_automatic_chat_thread_title_delay.minutes,
-            :generate_chat_thread_title,
-            thread_id: thread.id,
-          )
+          next unless extra[:thread].present?
+          next unless extra[:thread].title.blank?
+
+          reply_count = extra[:thread].replies.count
+
+          if reply_count.between?(1, 4)
+            ::Jobs.enqueue_in(
+              SiteSetting.ai_helper_automatic_chat_thread_title_delay.minutes,
+              :generate_chat_thread_title,
+              thread_id: extra[:thread].id,
+            )
+          elsif reply_count >= 5
+            ::Jobs.enqueue(:generate_chat_thread_title, thread_id: extra[:thread].id)
+          end
         end
 
         plugin.add_to_serializer(

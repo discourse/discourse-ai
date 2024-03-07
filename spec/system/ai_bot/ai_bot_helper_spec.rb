@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 RSpec.describe "AI chat channel summarization", type: :system, js: true do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
   fab!(:group) { Fabricate(:group, visibility_level: Group.visibility_levels[:staff]) }
 
   before do

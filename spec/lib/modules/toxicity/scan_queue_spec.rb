@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Toxicity::ScanQueue do
-  fab!(:group) { Fabricate(:group) }
+  fab!(:group)
 
   before do
     SiteSetting.ai_toxicity_enabled = true
@@ -9,7 +9,7 @@ describe DiscourseAi::Toxicity::ScanQueue do
   end
 
   describe "#enqueue_post" do
-    fab!(:post) { Fabricate(:post) }
+    fab!(:post)
 
     it "queues a job" do
       expect { described_class.enqueue_post(post) }.to change(
@@ -38,7 +38,7 @@ describe DiscourseAi::Toxicity::ScanQueue do
   end
 
   describe "#enqueue_chat_message" do
-    fab!(:chat_message) { Fabricate(:chat_message) }
+    fab!(:chat_message)
 
     it "queues a job" do
       expect { described_class.enqueue_chat_message(chat_message) }.to change(

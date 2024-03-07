@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe AiChatChannelSerializer do
-  fab!(:admin) { Fabricate(:admin) }
+  fab!(:admin)
 
   describe "#title" do
     context "when the channel is a DM" do

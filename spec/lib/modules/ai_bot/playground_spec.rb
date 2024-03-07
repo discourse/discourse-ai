@@ -52,6 +52,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     )
   end
 
+  describe "is_bot_user_id?" do
+    it "properly detects ALL bots as bot users" do
+      persona = Fabricate(:ai_persona, enabled: false)
+      persona.create_user!
+
+      expect(DiscourseAi::AiBot::Playground.is_bot_user_id?(persona.user_id)).to eq(true)
+    end
+  end
+
   describe "persona with user support" do
     before do
       Jobs.run_immediately!
@@ -135,6 +144,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post.topic.reload
       expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
+
+      expect(last_post.topic.participant_count).to eq(2)
     end
 
     it "picks the correct llm for persona in PMs" do
@@ -210,6 +221,39 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         expect(reply.cooked).to eq(PrettyText.cook(expected_bot_response))
       end
+    end
+
+    it "supports multiple function calls" do
+      response1 = (<<~TXT).strip
+          <function_calls>
+          <invoke>
+          <tool_name>search</tool_name>
+          <tool_id>search</tool_id>
+          <parameters>
+          <search_query>testing various things</search_query>
+          </parameters>
+          </invoke>
+          <invoke>
+          <tool_name>search</tool_name>
+          <tool_id>search</tool_id>
+          <parameters>
+          <search_query>another search</search_query>
+          </parameters>
+          </invoke>
+          </function_calls>
+       TXT
+
+      response2 = "I found stuff"
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([response1, response2]) do
+        playground.reply_to(third_post)
+      end
+
+      last_post = third_post.topic.reload.posts.order(:post_number).last
+
+      expect(last_post.raw).to include("testing various things")
+      expect(last_post.raw).to include("another search")
+      expect(last_post.raw).to include("I found stuff")
     end
 
     it "does not include placeholders in conversation context but includes all completions" do
@@ -293,6 +337,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
   end
 
+  describe "#available_bot_usernames" do
+    it "includes persona users" do
+      persona = Fabricate(:ai_persona)
+      persona.create_user!
+
+      expect(playground.available_bot_usernames).to include(persona.user.username)
+    end
+  end
+
   describe "#conversation_context" do
     context "with limited context" do
       before do
@@ -368,7 +421,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         )
       end
 
-      it "include replies generated from tools only once" do
+      it "include replies generated from tools" do
         custom_prompt = [
           [
             { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
@@ -380,7 +433,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
             "time",
             "tool_call",
           ],
-          ["I replied this thanks to the time command", bot_user.username],
+          ["I replied", bot_user.username],
         ]
         PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
         PostCustomPrompt.create!(post: first_post, custom_prompt: custom_prompt)
@@ -395,6 +448,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
             { type: :tool, id: "time", content: custom_prompt.first.first },
             { type: :tool_call, content: custom_prompt.second.first, id: "time" },
             { type: :tool, id: "time", content: custom_prompt.first.first },
+            { type: :model, content: "I replied" },
           ],
         )
       end

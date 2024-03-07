@@ -7,7 +7,7 @@ RSpec.describe DiscourseAi::Embeddings::Strategies::Truncation do
     context "when using vector from OpenAI" do
       before { SiteSetting.max_post_length = 100_000 }
 
-      fab!(:topic) { Fabricate(:topic) }
+      fab!(:topic)
       fab!(:post) do
         Fabricate(:post, topic: topic, raw: "Baby, bird, bird, bird\nBird is the word\n" * 500)
       end

@@ -12,12 +12,10 @@ module DiscourseAi
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
 
       def self.is_bot_user_id?(user_id)
-        bot_ids = DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS
-        bot_ids.include?(user_id) ||
-          begin
-            mentionable_ids = AiPersona.mentionables.map { |mentionable| mentionable[:user_id] }
-            mentionable_ids.include?(user_id)
-          end
+        # this will catch everything and avoid any feedback loops
+        # we could get feedback loops between say discobot and ai-bot or third party plugins
+        # and bots
+        user_id.to_i <= 0
       end
 
       def self.schedule_reply(post)
@@ -111,7 +109,6 @@ module DiscourseAi
             .pluck(:raw, :username, "post_custom_prompts.custom_prompt")
 
         result = []
-        first = true
 
         context.reverse_each do |raw, username, custom_prompt|
           custom_prompt_translation =
@@ -131,12 +128,7 @@ module DiscourseAi
             end
 
           if custom_prompt.present?
-            if first
-              custom_prompt.each(&custom_prompt_translation)
-              first = false
-            else
-              custom_prompt.first(2).each(&custom_prompt_translation)
-            end
+            custom_prompt.each(&custom_prompt_translation)
           else
             context = {
               content: raw,
@@ -156,7 +148,7 @@ module DiscourseAi
         context = conversation_context(post)
 
         bot
-          .get_updated_title(context, post.user)
+          .get_updated_title(context, post)
           .tap do |new_title|
             PostRevisor.new(post.topic.first_post, post.topic).revise!(
               bot.bot_user,
@@ -182,6 +174,8 @@ module DiscourseAi
           participants: post.topic.allowed_users.map(&:username).join(", "),
           conversation_context: conversation_context(post),
           user: post.user,
+          post_id: post.id,
+          topic_id: post.topic_id,
         }
 
         reply_user = bot.bot_user
@@ -271,9 +265,23 @@ module DiscourseAi
           reply_post.post_custom_prompt.update!(custom_prompt: prompt)
         end
 
+        # since we are skipping validations and jobs we
+        # may need to fix participant count
+        if reply_post.topic.private_message? && reply_post.topic.participant_count < 2
+          reply_post.topic.update!(participant_count: 2)
+        end
+
         reply_post
       ensure
         publish_final_update(reply_post) if stream_reply
+      end
+
+      def available_bot_usernames
+        @bot_usernames ||=
+          AiPersona
+            .joins(:user)
+            .pluck(:username)
+            .concat(DiscourseAi::AiBot::EntryPoint::BOTS.map(&:second))
       end
 
       private
@@ -347,10 +355,6 @@ module DiscourseAi
           max_backlog_size: 2,
           max_backlog_age: 60,
         )
-      end
-
-      def available_bot_usernames
-        @bot_usernames ||= DiscourseAi::AiBot::EntryPoint::BOTS.map(&:second)
       end
     end
   end

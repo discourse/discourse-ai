@@ -9,7 +9,7 @@ describe Jobs::ToxicityClassifyChatMessage do
       SiteSetting.ai_toxicity_flag_automatically = true
     end
 
-    fab!(:chat_message) { Fabricate(:chat_message) }
+    fab!(:chat_message)
 
     describe "scenarios where we return early without doing anything" do
       it "does nothing when ai_toxicity_enabled is disabled" do

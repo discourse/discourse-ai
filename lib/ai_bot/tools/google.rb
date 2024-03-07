@@ -37,6 +37,7 @@ module DiscourseAi
             URI(
               "https://www.googleapis.com/customsearch/v1?key=#{api_key}&cx=#{cx}&q=#{escaped_query}&num=10",
             )
+
           body = Net::HTTP.get(uri)
 
           parse_search_json(body, escaped_query, llm)
@@ -65,6 +66,19 @@ module DiscourseAi
 
         def parse_search_json(json_data, escaped_query, llm)
           parsed = JSON.parse(json_data)
+          error_code = parsed.dig("error", "code")
+          if error_code == 429
+            Rails.logger.warn(
+              "Google Custom Search is Rate Limited, no search can be performed at the moment. #{json_data[0..1000]}",
+            )
+            return(
+              "Google Custom Search is Rate Limited, no search can be performed at the moment. Let the user know there is a problem."
+            )
+          elsif error_code
+            Rails.logger.warn("Google Custom Search returned an error. #{json_data[0..1000]}")
+            return "Google Custom Search returned an error. Let the user know there is a problem."
+          end
+
           results = parsed["items"]
 
           @results_count = parsed.dig("searchInformation", "totalResults").to_i

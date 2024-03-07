@@ -13,13 +13,13 @@ module DiscourseAi
       fab!(:secure_topic) { Fabricate(:topic, category: secure_category) }
       fab!(:secure_post) { Fabricate(:post, raw: "Top secret date !!!!", topic: secure_topic) }
 
-      fab!(:category) { Fabricate(:category) }
+      fab!(:category)
       fab!(:topic_in_category) { Fabricate(:topic, category: category) }
       fab!(:post_in_category) do
         Fabricate(:post, raw: "I am in a category", topic: topic_in_category)
       end
 
-      fab!(:tag) { Fabricate(:tag) }
+      fab!(:tag)
       fab!(:topic_with_tag) { Fabricate(:topic, tags: [tag]) }
       fab!(:post_with_tag) { Fabricate(:post, raw: "I am in a tag", topic: topic_with_tag) }
 

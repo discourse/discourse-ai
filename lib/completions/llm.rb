@@ -24,7 +24,7 @@ module DiscourseAi
           @models_by_provider ||=
             {
               aws_bedrock: %w[claude-instant-1 claude-2],
-              anthropic: %w[claude-instant-1 claude-2],
+              anthropic: %w[claude-instant-1 claude-2 claude-3-sonnet claude-3-opus],
               vllm: %w[
                 mistralai/Mixtral-8x7B-Instruct-v0.1
                 mistralai/Mistral-7B-Instruct-v0.2

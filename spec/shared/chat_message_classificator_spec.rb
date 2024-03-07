@@ -3,7 +3,7 @@
 require_relative "../support/toxicity_inference_stubs"
 
 describe DiscourseAi::ChatMessageClassificator do
-  fab!(:chat_message) { Fabricate(:chat_message) }
+  fab!(:chat_message)
 
   let(:model) { DiscourseAi::Toxicity::ToxicityClassification.new }
   let(:classification) { described_class.new(model) }

@@ -211,12 +211,13 @@ Follow the provided writing composition instructions carefully and precisely ste
 
       def translate_model(model)
         return "google:gemini-pro" if model == "gemini-pro"
-        return "open_ai:#{model}" if model != "claude-2"
+        return "open_ai:#{model}" if model.start_with? "gpt"
+        return "anthropic:#{model}" if model.start_with? "claude-3"
 
         if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-          "aws_bedrock:claude-2"
+          "aws_bedrock:#{model}"
         else
-          "anthropic:claude-2"
+          "anthropic:#{model}"
         end
       end
     end

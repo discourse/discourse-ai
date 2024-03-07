@@ -20,6 +20,18 @@ const ATTRIBUTES = [
   "max_context_posts",
 ];
 
+const SYSTEM_ATTRIBUTES = [
+  "allowed_group_ids",
+  "enabled",
+  "system",
+  "priority",
+  "user_id",
+  "mentionable",
+  "default_llm",
+  "user",
+  "max_context_posts",
+];
+
 class CommandOption {
   @tracked value = null;
 }
@@ -97,7 +109,9 @@ export default class AiPersona extends RestModel {
   }
 
   updateProperties() {
-    let attrs = this.getProperties(ATTRIBUTES);
+    let attrs = this.system
+      ? this.getProperties(SYSTEM_ATTRIBUTES)
+      : this.getProperties(ATTRIBUTES);
     attrs.id = this.id;
     this.populateCommandOptions(attrs);
     return attrs;
