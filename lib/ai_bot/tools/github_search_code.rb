@@ -57,7 +57,7 @@ module DiscourseAi
             search_data = JSON.parse(response.body)
             results =
               search_data["items"]
-                .map { |item| "#{item["name"]}:\n#{item["text_matches"][0]["fragment"]}" }
+                .map { |item| "#{item["path"]}:\n#{item["text_matches"][0]["fragment"]}" }
                 .join("\n---\n")
 
             results = truncate(results, max_length: 20_000, percent_length: 0.3, llm: llm)

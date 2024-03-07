@@ -25,13 +25,18 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubSearchCode do
         body: {
           total_count: 1,
           items: [
-            { name: "hello.rb", text_matches: [{ fragment: "def hello\n  puts 'hello'\nend" }] },
+            {
+              path: "test/hello.rb",
+              name: "hello.rb",
+              text_matches: [{ fragment: "def hello\n  puts 'hello'\nend" }],
+            },
           ],
         }.to_json,
       )
 
       result = tool.invoke(bot_user, llm)
       expect(result[:search_results]).to include("def hello\n  puts 'hello'\nend")
+      expect(result[:search_results]).to include("test/hello.rb")
       expect(result[:error]).to be_nil
     end
   end
