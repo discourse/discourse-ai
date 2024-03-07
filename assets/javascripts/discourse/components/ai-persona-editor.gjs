@@ -315,6 +315,7 @@ export default class PersonaEditor extends Component {
         <label>{{I18n.t "discourse_ai.ai_persona.max_context_posts"}}</label>
         <Input
           @type="number"
+          lang="en"
           class="ai-persona-editor__max_context_posts"
           @value={{this.editingModel.max_context_posts}}
         />
@@ -329,6 +330,8 @@ export default class PersonaEditor extends Component {
           <Input
             @type="number"
             class="ai-persona-editor__temperature"
+            step="any"
+            lang="en"
             @value={{this.editingModel.temperature}}
             disabled={{this.editingModel.system}}
           />
@@ -343,6 +346,8 @@ export default class PersonaEditor extends Component {
           <label>{{I18n.t "discourse_ai.ai_persona.top_p"}}</label>
           <Input
             @type="number"
+            step="any"
+            lang="en"
             class="ai-persona-editor__top_p"
             @value={{this.editingModel.top_p}}
             disabled={{this.editingModel.system}}
