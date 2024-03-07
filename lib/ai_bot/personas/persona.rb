@@ -167,7 +167,7 @@ module DiscourseAi
 
           tool_klass.new(
             arguments,
-            tool_call_id: function_id,
+            tool_call_id: function_id || function_name,
             persona_options: options[tool_klass].to_h,
           )
         end

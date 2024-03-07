@@ -36,7 +36,8 @@ module DiscourseAi
           def tool_preamble
             <<~TEXT
               In this environment you have access to a set of tools you can use to answer the user's question.
-              You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
+              You may call them like this.
+
               <function_calls>
               <invoke>
               <tool_name>$TOOL_NAME</tool_name>
@@ -51,6 +52,7 @@ module DiscourseAi
               [1,"two",3.0]
 
               Always wrap <invoke> calls in <function_calls> tags.
+              You may call multiple function via <invoke> in a single <function_calls> block.
 
               Here are the tools available:
             TEXT

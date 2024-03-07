@@ -49,6 +49,10 @@ module DiscourseAi
         messages << new_message
       end
 
+      def has_tools?
+        tools.present?
+      end
+
       private
 
       def validate_message(message)

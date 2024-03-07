@@ -10,6 +10,36 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AnthropicMessages do
     )
   end
 
+  let(:echo_tool) do
+    {
+      name: "echo",
+      description: "echo something",
+      parameters: [{ name: "text", type: "string", description: "text to echo", required: true }],
+    }
+  end
+
+  let(:google_tool) do
+    {
+      name: "google",
+      description: "google something",
+      parameters: [
+        { name: "query", type: "string", description: "text to google", required: true },
+      ],
+    }
+  end
+
+  let(:prompt_with_echo_tool) do
+    prompt_with_tools = prompt
+    prompt.tools = [echo_tool]
+    prompt_with_tools
+  end
+
+  let(:prompt_with_google_tool) do
+    prompt_with_tools = prompt
+    prompt.tools = [echo_tool]
+    prompt_with_tools
+  end
+
   before { SiteSetting.ai_anthropic_api_key = "123" }
 
   it "does not eat spaces with tool calls" do
@@ -165,16 +195,18 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AnthropicMessages do
     stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(status: 200, body: body)
 
     result = +""
-    llm.generate(prompt, user: Discourse.system_user) { |partial| result << partial }
+    llm.generate(prompt_with_google_tool, user: Discourse.system_user) do |partial|
+      result << partial
+    end
 
     expected = (<<~TEXT).strip
       <function_calls>
       <invoke>
       <tool_name>google</tool_name>
-      <tool_id>google</tool_id>
       <parameters>
       <query>top 10 things to do in japan for tourists</query>
       </parameters>
+      <tool_id>tool_0</tool_id>
       </invoke>
       </function_calls>
     TEXT
@@ -232,7 +264,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AnthropicMessages do
     expected_body = {
       model: "claude-3-opus-20240229",
       max_tokens: 3000,
-      stop_sequences: ["</function_calls>"],
       messages: [{ role: "user", content: "user1: hello" }],
       system: "You are hello bot",
       stream: true,
@@ -243,6 +274,70 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AnthropicMessages do
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
     expect(log.request_tokens).to eq(25)
     expect(log.response_tokens).to eq(15)
+  end
+
+  it "can return multiple function calls" do
+    functions = <<~FUNCTIONS
+      <function_calls>
+      <invoke>
+      <tool_name>echo</tool_name>
+      <parameters>
+      <text>something</text>
+      </parameters>
+      </invoke>
+      <invoke>
+      <tool_name>echo</tool_name>
+      <parameters>
+      <text>something else</text>
+      </parameters>
+      </invoke>
+    FUNCTIONS
+
+    body = <<~STRING
+      {
+        "content": [
+          {
+            "text": "Hello!\n\n#{functions}\njunk",
+            "type": "text"
+          }
+        ],
+        "id": "msg_013Zva2CMHLNnXjNJJKqJ2EF",
+        "model": "claude-3-opus-20240229",
+        "role": "assistant",
+        "stop_reason": "end_turn",
+        "stop_sequence": null,
+        "type": "message",
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 25
+        }
+      }
+    STRING
+
+    stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(status: 200, body: body)
+
+    result = llm.generate(prompt_with_echo_tool, user: Discourse.system_user)
+
+    expected = (<<~EXPECTED).strip
+      <function_calls>
+      <invoke>
+      <tool_name>echo</tool_name>
+      <parameters>
+      <text>something</text>
+      </parameters>
+      <tool_id>tool_0</tool_id>
+      </invoke>
+      <invoke>
+      <tool_name>echo</tool_name>
+      <parameters>
+      <text>something else</text>
+      </parameters>
+      <tool_id>tool_1</tool_id>
+      </invoke>
+      </function_calls>
+    EXPECTED
+
+    expect(result.strip).to eq(expected)
   end
 
   it "can operate in regular mode" do
@@ -287,7 +382,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AnthropicMessages do
     expected_body = {
       model: "claude-3-opus-20240229",
       max_tokens: 3000,
-      stop_sequences: ["</function_calls>"],
       messages: [{ role: "user", content: "user1: hello" }],
       system: "You are hello bot",
     }

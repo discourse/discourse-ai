@@ -64,6 +64,7 @@ module DiscourseAi
         end
 
         def perform_completion!(dialect, user, model_params = {})
+          allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
 
           @streaming_mode = block_given?
@@ -110,9 +111,11 @@ module DiscourseAi
                 response_data = extract_completion_from(response_raw)
                 partials_raw = response_data.to_s
 
-                if has_tool?(response_data)
+                if allow_tools && has_tool?(response_data)
                   function_buffer = build_buffer # Nokogiri document
-                  function_buffer = add_to_buffer(function_buffer, "", response_data)
+                  function_buffer = add_to_function_buffer(function_buffer, payload: response_data)
+
+                  normalize_function_ids!(function_buffer)
 
                   response_data = +function_buffer.at("function_calls").to_s
                   response_data << "\n"
@@ -156,6 +159,7 @@ module DiscourseAi
                   end
 
                   json_error = false
+                  buffered_partials = []
 
                   raw_partials.each do |raw_partial|
                     json_error = false
@@ -173,14 +177,30 @@ module DiscourseAi
 
                       # Stop streaming the response as soon as you find a tool.
                       # We'll buffer and yield it later.
-                      has_tool = true if has_tool?(partials_raw)
+                      has_tool = true if allow_tools && has_tool?(partials_raw)
 
                       if has_tool
-                        function_buffer = add_to_buffer(function_buffer, partials_raw, partial)
+                        if buffered_partials.present?
+                          joined = buffered_partials.join
+                          joined = joined.gsub(/<.+/, "")
+                          yield joined, cancel if joined.present?
+                          buffered_partials = []
+                        end
+                        function_buffer = add_to_function_buffer(function_buffer, partial: partial)
                       else
-                        response_data << partial
-
-                        yield partial, cancel if partial
+                        if maybe_has_tool?(partials_raw)
+                          buffered_partials << partial
+                        else
+                          if buffered_partials.present?
+                            buffered_partials.each do |buffered_partial|
+                              response_data << buffered_partial
+                              yield buffered_partial, cancel
+                            end
+                            buffered_partials = []
+                          end
+                          response_data << partial
+                          yield partial, cancel if partial
+                        end
                       end
                     rescue JSON::ParserError
                       leftover = redo_chunk
@@ -201,7 +221,11 @@ module DiscourseAi
 
               # Once we have the full response, try to return the tool as a XML doc.
               if has_tool
+                function_buffer = add_to_function_buffer(function_buffer, payload: partials_raw)
+
                 if function_buffer.at("tool_name").text.present?
+                  normalize_function_ids!(function_buffer)
+
                   invocation = +function_buffer.at("function_calls").to_s
                   invocation << "\n"
 
@@ -224,6 +248,21 @@ module DiscourseAi
               end
             end
           end
+        end
+
+        def normalize_function_ids!(function_buffer)
+          function_buffer
+            .css("invoke")
+            .each_with_index do |invoke, index|
+              if invoke.at("tool_id")
+                invoke.at("tool_id").content = "tool_#{index}" if invoke
+                  .at("tool_id")
+                  .content
+                  .blank?
+              else
+                invoke.add_child("<tool_id>tool_#{index}</tool_id>\n") if !invoke.at("tool_id")
+              end
+            end
         end
 
         def final_log_update(log)
@@ -291,48 +330,36 @@ module DiscourseAi
           (<<~TEXT).strip
             <invoke>
             <tool_name></tool_name>
-            <tool_id></tool_id>
             <parameters>
             </parameters>
+            <tool_id></tool_id>
             </invoke>
           TEXT
         end
 
         def has_tool?(response)
-          response.include?("<function")
+          response.include?("<function_calls>")
         end
 
-        def add_to_buffer(function_buffer, response_data, partial)
-          raw_data = (response_data + partial)
+        def maybe_has_tool?(response)
+          # 16 is the length of function calls
+          substring = response[-16..-1] || response
+          split = substring.split("<")
 
-          # recover stop word potentially
-          raw_data =
-            raw_data.split("</invoke>").first + "</invoke>\n</function_calls>" if raw_data.split(
-            "</invoke>",
-          ).length > 1
-
-          return function_buffer unless raw_data.include?("</invoke>")
-
-          read_function = Nokogiri::HTML5.fragment(raw_data)
-
-          if tool_name = read_function.at("tool_name")&.text
-            function_buffer.at("tool_name").inner_html = tool_name
-            function_buffer.at("tool_id").inner_html = tool_name
+          if split.length > 1
+            match = "<" + split.last
+            "<function_calls>".start_with?(match)
+          else
+            false
           end
+        end
 
-          read_function
-            .at("parameters")
-            &.elements
-            .to_a
-            .each do |elem|
-              if parameter = function_buffer.at(elem.name)&.text
-                function_buffer.at(elem.name).inner_html = parameter
-              else
-                param_node = read_function.at(elem.name)
-                function_buffer.at("parameters").add_child(param_node)
-                function_buffer.at("parameters").add_child("\n")
-              end
-            end
+        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
+          if payload&.include?("</invoke>")
+            matches = payload.match(%r{<function_calls>.*</invoke>}m)
+            function_buffer =
+              Nokogiri::HTML5.fragment(matches[0] + "\n</function_calls>") if matches
+          end
 
           function_buffer
         end

@@ -66,11 +66,11 @@ class EndpointMock
       <function_calls>
       <invoke>
       <tool_name>get_weather</tool_name>
-      <tool_id>#{tool_id}</tool_id>
       <parameters>
       <location>Sydney</location>
       <unit>c</unit>
       </parameters>
+      <tool_id>tool_0</tool_id>
       </invoke>
       </function_calls>
     TEXT

@@ -102,7 +102,7 @@ class OpenAiMock < EndpointMock
   end
 
   def tool_id
-    "eujbuebfe"
+    "tool_0"
   end
 
   def tool_payload
@@ -148,6 +148,16 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   end
 
   fab!(:user)
+
+  let(:echo_tool) do
+    {
+      name: "echo",
+      description: "echo something",
+      parameters: [{ name: "text", type: "string", description: "text to echo", required: true }],
+    }
+  end
+
+  let(:tools) { [echo_tool] }
 
   let(:open_ai_mock) { OpenAiMock.new(endpoint) }
 
@@ -260,23 +270,25 @@ TEXT
           open_ai_mock.stub_raw(raw_data)
           content = +""
 
-          endpoint.perform_completion!(compliance.dialect, user) { |partial| content << partial }
+          dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+
+          endpoint.perform_completion!(dialect, user) { |partial| content << partial }
 
           expected = <<~TEXT
             <function_calls>
             <invoke>
             <tool_name>search</tool_name>
-            <tool_id>call_3Gyr3HylFJwfrtKrL6NaIit1</tool_id>
             <parameters>
             <search_query>Discourse AI bot</search_query>
             </parameters>
+            <tool_id>call_3Gyr3HylFJwfrtKrL6NaIit1</tool_id>
             </invoke>
             <invoke>
             <tool_name>search</tool_name>
-            <tool_id>call_H7YkbgYurHpyJqzwUN4bghwN</tool_id>
             <parameters>
             <query>Discourse AI bot</query>
             </parameters>
+            <tool_id>call_H7YkbgYurHpyJqzwUN4bghwN</tool_id>
             </invoke>
             </function_calls>
           TEXT
@@ -321,7 +333,8 @@ TEXT
             open_ai_mock.stub_raw(chunks)
             partials = []
 
-            endpoint.perform_completion!(compliance.dialect, user) { |partial| partials << partial }
+            dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+            endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
 
             expect(partials.length).to eq(1)
 
@@ -329,10 +342,10 @@ TEXT
             <function_calls>
             <invoke>
             <tool_name>google</tool_name>
-            <tool_id>func_id</tool_id>
             <parameters>
             <query>Adabas 9.1</query>
             </parameters>
+            <tool_id>func_id</tool_id>
             </invoke>
             </function_calls>
             TXT

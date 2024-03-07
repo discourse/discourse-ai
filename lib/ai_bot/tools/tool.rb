@@ -79,7 +79,7 @@ module DiscourseAi
 
         def send_http_request(url, headers: {}, authenticate_github: false)
           uri = URI(url)
-          request = Net::HTTP::Get.new(uri)
+          request = FinalDestination::HTTP::Get.new(uri)
           request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
           headers.each { |k, v| request[k] = v }
           if authenticate_github
