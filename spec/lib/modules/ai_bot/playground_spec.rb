@@ -337,6 +337,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
   end
 
+  describe "#available_bot_usernames" do
+    it "includes persona users" do
+      persona = Fabricate(:ai_persona)
+      persona.create_user!
+
+      expect(playground.available_bot_usernames).to include(persona.user.username)
+    end
+  end
+
   describe "#conversation_context" do
     context "with limited context" do
       before do
