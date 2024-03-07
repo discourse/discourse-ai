@@ -82,7 +82,7 @@ module DiscourseAi
           request = FinalDestination::HTTP::Get.new(uri)
           request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
           headers.each { |k, v| request[k] = v }
-          if authenticate_github
+          if authenticate_github && SiteSetting.ai_bot_github_access_token.present?
             request["Authorization"] = "Bearer #{SiteSetting.ai_bot_github_access_token}"
           end
 
