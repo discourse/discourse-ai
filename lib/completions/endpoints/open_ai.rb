@@ -163,7 +163,18 @@ module DiscourseAi
           @has_function_call
         end
 
-        def add_to_buffer(function_buffer, _response_data, partial)
+        def maybe_has_tool?(_partial_raw)
+          # we always get a full partial
+          false
+        end
+
+        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
+          if @streaming_mode
+            return function_buffer if !partial
+          else
+            partial = payload
+          end
+
           @args_buffer ||= +""
 
           f_name = partial.dig(:function, :name)

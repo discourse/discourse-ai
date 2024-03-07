@@ -318,3 +318,6 @@ discourse_ai:
   ai_bot_add_to_header:
     default: true
     client: true
+  ai_bot_github_access_token:
+    default: ""
+    secret: true

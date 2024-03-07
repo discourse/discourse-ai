@@ -15,6 +15,7 @@ module DiscourseAi
               Personas::Creative => -6,
               Personas::DallE3 => -7,
               Personas::DiscourseHelper => -8,
+              Personas::GithubHelper => -9,
             }
           end
 
@@ -64,7 +65,11 @@ module DiscourseAi
               Tools::SettingContext,
               Tools::RandomPicker,
               Tools::DiscourseMetaSearch,
+              Tools::GithubFileContent,
+              Tools::GithubPullRequestDiff,
             ]
+
+            tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
 
             tools << Tools::ListTags if SiteSetting.tagging_enabled
             tools << Tools::Image if SiteSetting.ai_stability_api_key.present?
@@ -162,7 +167,7 @@ module DiscourseAi
 
           tool_klass.new(
             arguments,
-            tool_call_id: function_id,
+            tool_call_id: function_id || function_name,
             persona_options: options[tool_klass].to_h,
           )
         end

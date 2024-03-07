@@ -27,8 +27,11 @@ module DiscourseAi
           model_params
         end
 
-        def default_options
-          { model: model + "-20240229", max_tokens: 3_000, stop_sequences: ["</function_calls>"] }
+        def default_options(dialect)
+          options = { model: model + "-20240229", max_tokens: 3_000 }
+
+          options[:stop_sequences] = ["</function_calls>"] if dialect.prompt.has_tools?
+          options
         end
 
         def provider_id
@@ -46,8 +49,8 @@ module DiscourseAi
           @uri ||= URI("https://api.anthropic.com/v1/messages")
         end
 
-        def prepare_payload(prompt, model_params, _dialect)
-          payload = default_options.merge(model_params).merge(messages: prompt.messages)
+        def prepare_payload(prompt, model_params, dialect)
+          payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
 
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
           payload[:stream] = true if @streaming_mode

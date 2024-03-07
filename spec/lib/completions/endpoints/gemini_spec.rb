@@ -132,7 +132,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
   fab!(:user)
 
-  let(:bedrock_mock) { GeminiMock.new(endpoint) }
+  let(:gemini_mock) { GeminiMock.new(endpoint) }
 
   let(:compliance) do
     EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Gemini, user)
@@ -142,13 +142,13 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     context "when using regular mode" do
       context "with simple prompts" do
         it "completes a trivial prompt and logs the response" do
-          compliance.regular_mode_simple_prompt(bedrock_mock)
+          compliance.regular_mode_simple_prompt(gemini_mock)
         end
       end
 
       context "with tools" do
         it "returns a function invocation" do
-          compliance.regular_mode_tools(bedrock_mock)
+          compliance.regular_mode_tools(gemini_mock)
         end
       end
     end
@@ -156,13 +156,13 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     describe "when using streaming mode" do
       context "with simple prompts" do
         it "completes a trivial prompt and logs the response" do
-          compliance.streaming_mode_simple_prompt(bedrock_mock)
+          compliance.streaming_mode_simple_prompt(gemini_mock)
         end
       end
 
       context "with tools" do
         it "returns a function invocation" do
-          compliance.streaming_mode_tools(bedrock_mock)
+          compliance.streaming_mode_tools(gemini_mock)
         end
       end
     end
