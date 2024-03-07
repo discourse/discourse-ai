@@ -55,6 +55,7 @@ module DiscourseAi
         def invoke(_bot_user, llm)
           owner, repo = repo_name.split("/")
           file_contents = {}
+          missing_files = []
 
           file_paths.each do |file_path|
             api_url =
@@ -71,23 +72,24 @@ module DiscourseAi
 
             if response.code == "200"
               file_data = JSON.parse(response.body)
-
               content = Base64.decode64(file_data["content"])
               file_contents[file_path] = content
             else
-              return(
-                {
-                  error:
-                    "Failed to retrieve the content of #{file_path}. Status code: #{response.code}",
-                }
-              )
+              missing_files << file_path
             end
           end
 
-          blob = file_contents.map { |path, content| "File Path: #{path}:\n#{content}" }.join("\n")
-          blob = truncate(blob, max_length: 20_000, percent_length: 0.3, llm: llm)
+          result = {}
+          unless file_contents.empty?
+            blob =
+              file_contents.map { |path, content| "File Path: #{path}:\n#{content}" }.join("\n")
+            truncated_blob = truncate(blob, max_length: 20_000, percent_length: 0.3, llm: llm)
+            result[:file_contents] = truncated_blob
+          end
 
-          { file_contents: blob }
+          result[:missing_files] = missing_files unless missing_files.empty?
+
+          result.empty? ? { error: "No files found or retrieved." } : result
         end
       end
     end
