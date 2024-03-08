@@ -54,6 +54,7 @@ module DiscourseAi
             count = DB.query_single("SELECT count(*) FROM #{table_name};").first
             lists = [count < 1_000_000 ? count / 1000 : Math.sqrt(count).to_i, 10].max
             probes = [count < 1_000_000 ? lists / 10 : Math.sqrt(lists).to_i, 1].max
+            Discourse.cache.write("#{table_name}-probes", probes)
 
             existing_index = DB.query_single(<<~SQL, index_name: index_name).first
               SELECT
@@ -144,15 +145,6 @@ module DiscourseAi
           DB.exec("COMMENT ON INDEX #{index_name} IS '#{Time.now.to_i}';")
           DB.exec("RESET work_mem;")
           DB.exec("RESET maintenance_work_mem;")
-
-          database = DB.query_single("SELECT current_database();").first
-
-          # This is a global setting, if we set it based on post count
-          # we will be unable to use the index for topics
-          # Hopefully https://github.com/pgvector/pgvector/issues/235 will make this better
-          if table_name == topic_table_name
-            DB.exec("ALTER DATABASE #{database} SET ivfflat.probes = #{probes};")
-          end
         end
 
         def vector_from(text, asymetric: false)
@@ -206,6 +198,7 @@ module DiscourseAi
 
         def asymmetric_topics_similarity_search(raw_vector, limit:, offset:, return_distance: false)
           results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
+            #{probes_sql(topic_table_name)}
             SELECT
               topic_id,
               embeddings #{pg_function} '[:query_embedding]' AS distance
@@ -229,6 +222,7 @@ module DiscourseAi
 
         def asymmetric_posts_similarity_search(raw_vector, limit:, offset:, return_distance: false)
           results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
+            #{probes_sql(post_table_name)}
             SELECT
               post_id,
               embeddings #{pg_function} '[:query_embedding]' AS distance
@@ -256,6 +250,7 @@ module DiscourseAi
 
         def symmetric_topics_similarity_search(topic)
           DB.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
+            #{probes_sql(topic_table_name)}
             SELECT
               topic_id
             FROM
@@ -300,6 +295,11 @@ module DiscourseAi
 
         def index_name(table_name)
           "#{table_name}_search"
+        end
+
+        def probes_sql(table_name)
+          probes = Discourse.cache.read("#{table_name}-probes")
+          probes.present? ? "SET LOCAL ivfflat.probes TO #{probes};" : ""
         end
 
         def name
