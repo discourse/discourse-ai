@@ -52,7 +52,7 @@ module DiscourseAi
               [1,"two",3.0]
 
               If you wish to call multiple function in one reply, wrap multiple <invoke>
-              blocke in a single <function_calls> block.
+              block in a single <function_calls> block.
 
               Always prefer to lead with tool calls, if you need to execute any.
               Avoid all niceties prior to tool calls, Eg: "Let me look this up for you.." etc.
