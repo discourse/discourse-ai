@@ -143,10 +143,10 @@ module DiscourseAi
         def find_tool(parsed_function)
           function_id = parsed_function.at("tool_id")&.text
           function_name = parsed_function.at("tool_name")&.text
-          return false if function_name.nil?
+          return nil if function_name.nil?
 
           tool_klass = available_tools.find { |c| c.signature.dig(:name) == function_name }
-          return false if tool_klass.nil?
+          return nil if tool_klass.nil?
 
           arguments = {}
           tool_klass.signature[:parameters].to_a.each do |param|

@@ -62,7 +62,12 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
               },
             ],
           },
-          { role: "tool", content: "I'm a tool result".to_json, tool_call_id: "tool_id" },
+          {
+            role: "tool",
+            content: "I'm a tool result".to_json,
+            tool_call_id: "tool_id",
+            name: "get_weather",
+          },
         ],
       )
     end

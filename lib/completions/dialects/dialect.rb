@@ -54,7 +54,7 @@ module DiscourseAi
               Always wrap <invoke> calls in <function_calls> tags.
               You may call multiple function via <invoke> in a single <function_calls> block.
 
-              Here are the tools available:
+              Here are the COMPLETE list of tools available:
             TEXT
           end
         end
@@ -73,7 +73,7 @@ module DiscourseAi
           (<<~TEXT).strip
             <function_results>
             <result>
-            <tool_name>#{message[:id]}</tool_name>
+            <tool_name>#{message[:name] || message[:id]}</tool_name>
             <json>
             #{message[:content]}
             </json>
@@ -95,7 +95,7 @@ module DiscourseAi
           (<<~TEXT).strip
             <function_calls>
             <invoke>
-            <tool_name>#{parsed[:name]}</tool_name>
+            <tool_name>#{message[:name] || parsed[:name]}</tool_name>
             #{parameters}</invoke>
             </function_calls>
           TEXT

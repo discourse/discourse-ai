@@ -21,9 +21,10 @@ module DiscourseAi
 
           mixtral_prompt =
             trim_messages(messages).reduce(+"") do |memo, msg|
-              next(memo) if msg[:type] == :tool_call
-
-              if msg[:type] == :system
+              if msg[:type] == :tool_call
+                memo << "\n"
+                memo << tool_call_to_xml(msg)
+              elsif msg[:type] == :system
                 memo << (<<~TEXT).strip
                 <s> [INST]
                 #{msg[:content]}
@@ -34,17 +35,7 @@ module DiscourseAi
                 memo << "\n#{msg[:content]}</s>"
               elsif msg[:type] == :tool
                 memo << "\n"
-
-                memo << (<<~TEXT).strip
-                <function_results>
-                <result>
-                <tool_name>#{msg[:id]}</tool_name>
-                <json>
-                #{msg[:content]}
-                </json>
-                </result>
-                </function_results>
-                TEXT
+                memo << tool_result_to_xml(msg)
               else
                 memo << "\n[INST]#{msg[:content]}[/INST]"
               end

@@ -89,11 +89,19 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         <prompts>["pic3"]</prompts>
         </parameters>
         </invoke>
+        <invoke>
+        <tool_name>unknown</tool_name>
+        <tool_id>abc</tool_id>
+        <parameters>
+        <prompts>["pic3"]</prompts>
+        </parameters>
+        </invoke>
       </function_calls>
     XML
-    dall_e1, dall_e2 = DiscourseAi::AiBot::Personas::DallE3.new.find_tools(xml)
+    dall_e1, dall_e2 = tools = DiscourseAi::AiBot::Personas::DallE3.new.find_tools(xml)
     expect(dall_e1.parameters[:prompts]).to eq(["cat oil painting", "big car"])
     expect(dall_e2.parameters[:prompts]).to eq(["pic3"])
+    expect(tools.length).to eq(2)
   end
 
   describe "custom personas" do

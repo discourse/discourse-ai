@@ -38,9 +38,10 @@ module DiscourseAi
         @tools = tools
       end
 
-      def push(type:, content:, id: nil)
+      def push(type:, content:, id: nil, name: nil)
         return if type == :system
         new_message = { type: type, content: content }
+        new_message[:name] = name.to_s if name
         new_message[:id] = id.to_s if id
 
         validate_message(new_message)
@@ -62,7 +63,7 @@ module DiscourseAi
           raise ArgumentError, "message type must be one of #{valid_types}"
         end
 
-        valid_keys = %i[type content id]
+        valid_keys = %i[type content id name]
         if (invalid_keys = message.keys - valid_keys).any?
           raise ArgumentError, "message contains invalid keys: #{invalid_keys}"
         end
