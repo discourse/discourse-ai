@@ -234,6 +234,10 @@ module DiscourseAi
               embeddings #{pg_function} '[:query_embedding]' AS distance
             FROM
               #{post_table_name}
+            INNER JOIN
+              posts AS p ON p.id = post_id
+            INNER JOIN
+              topics AS t ON t.id = p.topic_id AND t.archetype = 'regular'
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
             LIMIT :limit

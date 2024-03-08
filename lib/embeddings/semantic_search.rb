@@ -83,8 +83,7 @@ module DiscourseAi
       end
 
       def quick_search(query)
-        max_results_per_page = 100
-        limit = [Search.per_filter, max_results_per_page].min + 1
+        max_semantic_results_per_page = 100
         search = Search.new(query, { guardian: guardian })
         search_term = search.term
 
@@ -113,7 +112,7 @@ module DiscourseAi
         candidate_post_ids =
           vector_rep.asymmetric_posts_similarity_search(
             search_term_embedding,
-            limit: limit,
+            limit: max_semantic_results_per_page,
             offset: 0,
           )
 
@@ -128,7 +127,10 @@ module DiscourseAi
         filtered_results = search.apply_filters(semantic_results)
 
         rerank_posts_payload =
-          filtered_results.map(&:cooked).map { _1.truncate(1000, omission: "") }
+          filtered_results
+            .map(&:cooked)
+            .map { Nokogiri::HTML5.fragment(_1).text }
+            .map { _1.truncate(2000, omission: "") }
 
         reranked_results =
           DiscourseAi::Inference::HuggingFaceTextEmbeddings.rerank(

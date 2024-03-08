@@ -49,7 +49,9 @@ module ::DiscourseAi
           conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
           response = conn.post("#{api_endpoint}/rerank", body, headers)
 
-          raise Net::HTTPBadResponse if ![200].include?(response.status)
+          if response.status != 200
+            raise Net::HTTPBadResponse.new("Status: #{response.status}\n\n#{response.body}")
+          end
 
           JSON.parse(response.body, symbolize_names: true)
         end
