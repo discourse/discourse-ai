@@ -51,10 +51,13 @@ module DiscourseAi
               If a parameter type is an array, return a JSON array of values. For example:
               [1,"two",3.0]
 
-              Always wrap <invoke> calls in <function_calls> tags.
-              You may call multiple function via <invoke> in a single <function_calls> block.
+              If you wish to call multiple function in one reply, wrap multiple <invoke>
+              blocke in a single <function_calls> block.
 
-              Here are the COMPLETE list of tools available:
+              Always prefer to lead with tool calls, if you need to execute any.
+              Avoid all niceties prior to tool calls, Eg: "Let me look this up for you.." etc.
+
+              Here are the complete list of tools available:
             TEXT
           end
         end

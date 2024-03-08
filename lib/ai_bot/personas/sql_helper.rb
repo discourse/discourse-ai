@@ -8,7 +8,16 @@ module DiscourseAi
           return @schema if defined?(@schema)
 
           tables = Hash.new
-          priority_tables = %w[posts topics notifications users user_actions user_emails]
+          priority_tables = %w[
+            posts
+            topics
+            notifications
+            users
+            user_actions
+            user_emails
+            categories
+            groups
+          ]
 
           DB.query(<<~SQL).each { |row| (tables[row.table_name] ||= []) << row.column_name }
         select table_name, column_name from information_schema.columns
@@ -16,15 +25,16 @@ module DiscourseAi
         order by table_name
       SQL
 
-          schema = +(priority_tables.map { |name| "#{name}(#{tables[name].join(",")})" }.join("\n"))
+          priority =
+            +(priority_tables.map { |name| "#{name}(#{tables[name].join(",")})" }.join("\n"))
 
-          schema << "\nOther tables (schema redacted, available on request): "
+          other_tables = +""
           tables.each do |table_name, _|
             next if priority_tables.include?(table_name)
-            schema << "#{table_name} "
+            other_tables << "#{table_name} "
           end
 
-          @schema = schema
+          @schema = { priority_tables: priority, other_tables: other_tables }
         end
 
         def tools
@@ -38,14 +48,15 @@ module DiscourseAi
         def system_prompt
           <<~PROMPT
             You are a PostgreSQL expert.
+            - Avoid returning any text to the user prior to a tool call.
             - You understand and generate Discourse Markdown but specialize in creating queries.
             - You live in a Discourse Forum Message.
-            - The schema in your training set MAY be out of date.
-            - When generating SQL NEVER end SQL samples with a semicolon (;).
-            - Always format SQL in a highly readable format.
+            - Format SQL for maximum readability. Use line breaks, indentation, and spaces around operators. Add comments if needed to explain complex logic.
             - Never warn or inform end user you are going to look up schema.
-            - You do not have a tool capable of executing SQL queries.
-            - When generating SQL always use ```sql markdown code blocks.
+            - Always try to get ALL the schema you need in the least tool calls.
+            - Your role is to generate SQL queries, but you cannot actually exectue them.
+            - When generating SQL always use ```sql Markdown code blocks.
+            - When generating SQL NEVER end SQL samples with a semicolon (;).
 
             Eg:
 
@@ -54,18 +65,29 @@ module DiscourseAi
             ```
 
             The user_actions tables stores likes (action_type 1).
-            the topics table stores private/personal messages it uses archetype private_message for them.
+            The topics table stores private/personal messages it uses archetype private_message for them.
             notification_level can be: {muted: 0, regular: 1, tracking: 2, watching: 3, watching_first_post: 4}.
             bookmarkable_type can be: Post,Topic,ChatMessage and more
 
             Current time is: {time}
             Participants here are: {participants}
 
+            Here is a partial list of tables in the database (you can retrieve schema from these tables as needed)
 
-            Full schema is provided for priority tables (full list of tables names are included):
-            {{
-            #{self.class.schema}
-            }}
+            ```
+            #{self.class.schema[:other_tables]}
+            ```
+
+            You may look up schema for the tables listed above.
+
+            Here is full information on priority tables:
+
+            ```
+            #{self.class.schema[:priority_tables]}
+            ```
+
+            NEVER look up schema for the tables listed above, as their full schema is already provided.
+
           PROMPT
         end
       end
