@@ -38,9 +38,19 @@ RSpec.describe DiscourseAi::Completions::Dialects::OrcaStyle do
       ### User:
       This is a new message by a user
       ### Assistant:
+      <function_calls>
+      <invoke>
+      <tool_name>get_weather</tool_name>
+      <parameters>
+      <location>Sydney</location>
+      <unit>c</unit>
+      </parameters>
+      </invoke>
+      </function_calls>
+      ### User:
       <function_results>
       <result>
-      <tool_name>tool_id</tool_name>
+      <tool_name>get_weather</tool_name>
       <json>
       "I'm a tool result"
       </json>

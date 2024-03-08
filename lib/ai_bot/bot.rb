@@ -105,10 +105,16 @@ module DiscourseAi
         tool_call_message = {
           type: :tool_call,
           id: tool_call_id,
-          content: { name: tool.name, arguments: tool.parameters }.to_json,
+          content: { arguments: tool.parameters }.to_json,
+          name: tool.name,
         }
 
-        tool_message = { type: :tool, id: tool_call_id, content: invocation_result_json }
+        tool_message = {
+          type: :tool,
+          id: tool_call_id,
+          content: invocation_result_json,
+          name: tool.name,
+        }
 
         if tool.standalone?
           standalone_context =
@@ -125,8 +131,8 @@ module DiscourseAi
           prompt.push(**tool_message)
         end
 
-        raw_context << [tool_call_message[:content], tool_call_id, "tool_call"]
-        raw_context << [invocation_result_json, tool_call_id, "tool"]
+        raw_context << [tool_call_message[:content], tool_call_id, "tool_call", tool.name]
+        raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
       end
 
       def invoke_tool(tool, llm, cancel, &update_blk)

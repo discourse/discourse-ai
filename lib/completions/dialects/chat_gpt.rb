@@ -48,6 +48,7 @@ module DiscourseAi
             elsif msg[:type] == :tool_call
               call_details = JSON.parse(msg[:content], symbolize_names: true)
               call_details[:arguments] = call_details[:arguments].to_json
+              call_details[:name] = msg[:name]
 
               {
                 role: "assistant",
@@ -55,7 +56,7 @@ module DiscourseAi
                 tool_calls: [{ type: "function", function: call_details, id: msg[:id] }],
               }
             elsif msg[:type] == :tool
-              { role: "tool", tool_call_id: msg[:id], content: msg[:content] }
+              { role: "tool", tool_call_id: msg[:id], content: msg[:content], name: msg[:name] }
             else
               user_message = { role: "user", content: msg[:content] }
               if msg[:id]

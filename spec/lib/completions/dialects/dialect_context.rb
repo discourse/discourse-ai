@@ -51,9 +51,10 @@ class DialectContext
       {
         type: :tool_call,
         id: "tool_id",
-        content: { name: "get_weather", arguments: { location: "Sydney", unit: "c" } }.to_json,
+        name: "get_weather",
+        content: { arguments: { location: "Sydney", unit: "c" } }.to_json,
       },
-      { type: :tool, id: "tool_id", content: "I'm a tool result".to_json },
+      { type: :tool, id: "tool_id", name: "get_weather", content: "I'm a tool result".to_json },
     ]
 
     a_prompt = prompt

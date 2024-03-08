@@ -122,6 +122,7 @@ module DiscourseAi
                 }
 
                 custom_context[:id] = message[1] if custom_context[:type] != :model
+                custom_context[:name] = message[3] if message[3]
 
                 result << custom_context
               end

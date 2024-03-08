@@ -34,9 +34,18 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mixtral do
       [INST]This is a message by a user[/INST]
       I'm a previous bot reply, that's why there's no user</s>
       [INST]This is a new message by a user[/INST]
+      <function_calls>
+      <invoke>
+      <tool_name>get_weather</tool_name>
+      <parameters>
+      <location>Sydney</location>
+      <unit>c</unit>
+      </parameters>
+      </invoke>
+      </function_calls>
       <function_results>
       <result>
-      <tool_name>tool_id</tool_name>
+      <tool_name>get_weather</tool_name>
       <json>
       "I'm a tool result"
       </json>

@@ -38,7 +38,7 @@ module DiscourseAi
                 role: "model",
                 parts: {
                   functionCall: {
-                    name: call_details[:name],
+                    name: msg[:name] || call_details[:name],
                     args: call_details[:arguments],
                   },
                 },
@@ -48,7 +48,7 @@ module DiscourseAi
                 role: "function",
                 parts: {
                   functionResponse: {
-                    name: msg[:id],
+                    name: msg[:name] || msg[:id],
                     response: {
                       content: msg[:content],
                     },
