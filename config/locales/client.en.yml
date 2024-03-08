@@ -211,6 +211,8 @@ en:
           none: "Sorry, our AI search found no matching topics."
           new: "Press 'Search' to begin looking for new results with AI"
         ai_generated_result: "Search result found using AI"
+        quick_search:
+          suffix: "in all topics and posts with AI"
 
       ai_bot:
         pm_warning: "AI chatbot messages are monitored regularly by moderators."

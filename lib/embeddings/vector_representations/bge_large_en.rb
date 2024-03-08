@@ -30,7 +30,9 @@ module DiscourseAi
           end
         end
 
-        def vector_from(text)
+        def vector_from(text, asymetric: false)
+          text = "#{asymmetric_query_prefix} #{text}" if asymetric
+
           if SiteSetting.ai_cloudflare_workers_api_token.present?
             DiscourseAi::Inference::CloudflareWorkersAi
               .perform!(inference_model_name, { text: text })
@@ -81,6 +83,10 @@ module DiscourseAi
 
         def tokenizer
           DiscourseAi::Tokenizer::BgeLargeEnTokenizer
+        end
+
+        def asymmetric_query_prefix
+          "Represent this sentence for searching relevant passages:"
         end
       end
     end

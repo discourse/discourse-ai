@@ -28,7 +28,7 @@ module DiscourseAi
           end
         end
 
-        def vector_from(text)
+        def vector_from(text, asymetric: false)
           if DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured?
             truncated_text = tokenizer.truncate(text, max_sequence_length - 2)
             DiscourseAi::Inference::HuggingFaceTextEmbeddings.perform!(truncated_text).first
