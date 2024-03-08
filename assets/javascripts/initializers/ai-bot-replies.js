@@ -3,12 +3,11 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
-import { composeAiBotMessage } from "discourse/plugins/discourse-ai/discourse/lib/ai-bot-helper";
 import ShareModal from "../discourse/components/modal/share-modal";
 import streamText from "../discourse/lib/ai-streamer";
 import copyConversation from "../discourse/lib/copy-conversation";
-
 const AUTO_COPY_THRESHOLD = 4;
+import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
 
 let enabledChatBotIds = [];
 function isGPTBot(user) {
@@ -16,51 +15,7 @@ function isGPTBot(user) {
 }
 
 function attachHeaderIcon(api) {
-  const settings = api.container.lookup("service:site-settings");
-
-  const enabledBots = settings.ai_bot_add_to_header
-    ? settings.ai_bot_enabled_chat_bots.split("|").filter(Boolean)
-    : [];
-  if (enabledBots.length > 0) {
-    api.attachWidgetAction("header", "showAiBotPanel", function () {
-      this.state.botSelectorVisible = true;
-    });
-
-    api.attachWidgetAction("header", "hideAiBotPanel", function () {
-      this.state.botSelectorVisible = false;
-    });
-
-    api.decorateWidget("header-icons:before", (helper) => {
-      return helper.attach("header-dropdown", {
-        title: "discourse_ai.ai_bot.shortcut_title",
-        icon: "robot",
-        action: "clickStartAiBotChat",
-        active: false,
-        classNames: ["ai-bot-button"],
-      });
-    });
-
-    if (enabledBots.length === 1) {
-      api.attachWidgetAction("header", "clickStartAiBotChat", function () {
-        composeAiBotMessage(
-          enabledBots[0],
-          api.container.lookup("service:composer")
-        );
-      });
-    } else {
-      api.attachWidgetAction("header", "clickStartAiBotChat", function () {
-        this.sendWidgetAction("showAiBotPanel");
-      });
-    }
-
-    api.addHeaderPanel(
-      "ai-bot-header-panel-wrapper",
-      "botSelectorVisible",
-      function () {
-        return {};
-      }
-    );
-  }
+  api.headerIcons.add("ai", AiBotHeaderIcon);
 }
 
 function initializeAIBotReplies(api) {
@@ -194,14 +149,11 @@ export default {
   name: "discourse-ai-bot-replies",
 
   initialize(container) {
-    const settings = container.lookup("service:site-settings");
     const user = container.lookup("service:current-user");
 
     if (user?.ai_enabled_chat_bots) {
       enabledChatBotIds = user.ai_enabled_chat_bots.map((bot) => bot.id);
-      if (settings.ai_bot_add_to_header) {
-        withPluginApi("1.6.0", attachHeaderIcon);
-      }
+      withPluginApi("1.6.0", attachHeaderIcon);
       withPluginApi("1.6.0", initializeAIBotReplies);
       withPluginApi("1.6.0", initializePersonaDecorator);
       withPluginApi("1.22.0", (api) => initializeShareButton(api, container));
