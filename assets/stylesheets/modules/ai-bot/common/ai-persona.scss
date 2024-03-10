@@ -3,7 +3,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-top: 10px;
+
+    h3 {
+      margin: 0;
+    }
   }
   &__current {
     padding-left: 20px;

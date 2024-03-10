@@ -17,6 +17,7 @@ register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
+register_asset "stylesheets/modules/ai-bot/mobile/ai-persona.scss", :mobile
 
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
@@ -38,17 +39,16 @@ after_initialize do
   require_relative "discourse_automation/llm_triage"
   require_relative "discourse_automation/llm_report"
 
-  add_admin_route "discourse_ai.title", "discourse-ai", { use_new_show_route: true }
-  register_admin_config_nav_routes(
-    "discourse-ai",
-    [
-      { label: "admin.site_settings.title", route: "adminPlugins.show.settings" },
-      {
-        label: "discourse_ai.ai_persona.short_title",
-        route: "adminPlugins.show.discourse-ai.ai-personas.index",
-      },
-    ],
-  )
+  add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
+  # register_admin_config_nav_routes(
+  #   "discourse-ai",
+  #   [
+  #     {
+  #       label: "discourse_ai.ai_persona.short_title",
+  #       route: "adminPlugins.show.discourse-ai.ai-personas",
+  #     },
+  #   ],
+  # )
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,

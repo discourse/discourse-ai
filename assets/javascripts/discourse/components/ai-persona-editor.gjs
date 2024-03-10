@@ -8,6 +8,7 @@ import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
@@ -180,6 +181,10 @@ export default class PersonaEditor extends Component {
   }
 
   <template>
+    <BackButton
+      @route="adminPlugins.show.discourse-ai.ai-personas"
+      @label="discourse_ai.ai_persona.back"
+    />
     <form
       class="form-horizontal ai-persona-editor"
       {{didUpdate this.updateModel @model.id}}
