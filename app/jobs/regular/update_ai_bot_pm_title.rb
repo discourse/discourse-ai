@@ -6,7 +6,7 @@ module ::Jobs
 
     def execute(args)
       return unless bot_user = User.find_by(id: args[:bot_user_id])
-      return unless bot = DiscourseAi::AiBot::Bot.as(bot_user)
+      return unless bot = DiscourseAi::AiBot::Bot.as(bot_user, model: args[:model])
       return unless post = Post.includes(:topic).find_by(id: args[:post_id])
 
       return unless post.topic.custom_fields[DiscourseAi::AiBot::EntryPoint::REQUIRE_TITLE_UPDATE]

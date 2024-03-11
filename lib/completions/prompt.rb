@@ -6,11 +6,21 @@ module DiscourseAi
       INVALID_TURN = Class.new(StandardError)
 
       attr_reader :messages
-      attr_accessor :tools
+      attr_accessor :tools, :topic_id, :post_id
 
-      def initialize(system_message_text = nil, messages: [], tools: [], skip_validations: false)
+      def initialize(
+        system_message_text = nil,
+        messages: [],
+        tools: [],
+        skip_validations: false,
+        topic_id: nil,
+        post_id: nil
+      )
         raise ArgumentError, "messages must be an array" if !messages.is_a?(Array)
         raise ArgumentError, "tools must be an array" if !tools.is_a?(Array)
+
+        @topic_id = topic_id
+        @post_id = post_id
 
         @messages = []
         @skip_validations = skip_validations
@@ -28,15 +38,20 @@ module DiscourseAi
         @tools = tools
       end
 
-      def push(type:, content:, id: nil)
+      def push(type:, content:, id: nil, name: nil)
         return if type == :system
         new_message = { type: type, content: content }
+        new_message[:name] = name.to_s if name
         new_message[:id] = id.to_s if id
 
         validate_message(new_message)
         validate_turn(messages.last, new_message)
 
         messages << new_message
+      end
+
+      def has_tools?
+        tools.present?
       end
 
       private
@@ -48,7 +63,7 @@ module DiscourseAi
           raise ArgumentError, "message type must be one of #{valid_types}"
         end
 
-        valid_keys = %i[type content id]
+        valid_keys = %i[type content id name]
         if (invalid_keys = message.keys - valid_keys).any?
           raise ArgumentError, "message contains invalid keys: #{invalid_keys}"
         end

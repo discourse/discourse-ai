@@ -75,11 +75,36 @@ module DiscourseAi
           false
         end
 
-        def low_cost?
-          false
+        protected
+
+        def send_http_request(url, headers: {}, authenticate_github: false)
+          uri = URI(url)
+          request = FinalDestination::HTTP::Get.new(uri)
+          request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
+          headers.each { |k, v| request[k] = v }
+          if authenticate_github && SiteSetting.ai_bot_github_access_token.present?
+            request["Authorization"] = "Bearer #{SiteSetting.ai_bot_github_access_token}"
+          end
+
+          FinalDestination::HTTP.start(uri.hostname, uri.port, use_ssl: uri.port != 80) do |http|
+            http.request(request)
+          end
         end
 
-        protected
+        def truncate(text, llm:, percent_length: nil, max_length: nil)
+          if !percent_length && !max_length
+            raise ArgumentError, "You must provide either percent_length or max_length"
+          end
+
+          target = llm.max_prompt_tokens
+          target = (target * percent_length).to_i if percent_length
+
+          if max_length
+            target = max_length if target > max_length
+          end
+
+          llm.tokenizer.truncate(text, target)
+        end
 
         def accepted_options
           []

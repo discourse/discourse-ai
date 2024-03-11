@@ -72,3 +72,12 @@
     }
   }
 }
+
+// Hides other buttons and only shows loader
+// while AI quick search is in progress
+.search-input {
+  .ai-quick-search-spinner ~ a.clear-search,
+  .ai-quick-search-spinner ~ a.show-advanced-search {
+    display: none;
+  }
+}

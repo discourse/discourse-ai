@@ -17,7 +17,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:ai_helper_context_menu) { PageObjects::Components::AIHelperContextMenu.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
   let(:ai_suggestion_dropdown) { PageObjects::Components::AISuggestionDropdown.new }
-  fab!(:category) { Fabricate(:category) }
+  fab!(:category)
   fab!(:category_2) { Fabricate(:category) }
   fab!(:video) { Fabricate(:tag) }
   fab!(:music) { Fabricate(:tag) }
@@ -65,6 +65,13 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       expect(ai_helper_context_menu).to have_no_context_menu
     end
 
+    it "closes the context menu when selected text is deleted" do
+      trigger_context_menu(input)
+      expect(ai_helper_context_menu).to have_context_menu
+      page.send_keys(:backspace)
+      expect(ai_helper_context_menu).to have_no_context_menu
+    end
+
     context "when using custom prompt" do
       let(:mode) { CompletionPrompt::CUSTOM_PROMPT }
 
@@ -97,6 +104,15 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
 
           expect(composer.composer_input.value).to eq(custom_prompt_response)
         end
+      end
+
+      it "should not close the context menu if backspace is pressed" do
+        trigger_context_menu(input)
+        ai_helper_context_menu.click_ai_button
+        expect(ai_helper_context_menu).to have_context_menu
+        ai_helper_context_menu.fill_custom_prompt(custom_prompt_input)
+        page.find(".ai-custom-prompt__input").send_keys(:backspace)
+        expect(ai_helper_context_menu).to have_context_menu
       end
     end
 

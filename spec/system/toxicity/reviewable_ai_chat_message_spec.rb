@@ -3,8 +3,8 @@
 require_relative "../../support/toxicity_inference_stubs"
 
 RSpec.describe "Toxicity-flagged chat messages", type: :system, js: true do
-  fab!(:chat_message) { Fabricate(:chat_message) }
-  fab!(:admin) { Fabricate(:admin) }
+  fab!(:chat_message)
+  fab!(:admin)
 
   before do
     sign_in(admin)

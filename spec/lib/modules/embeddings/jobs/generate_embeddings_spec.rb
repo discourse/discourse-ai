@@ -9,7 +9,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
       SiteSetting.ai_embeddings_enabled = true
     end
 
-    fab!(:topic) { Fabricate(:topic) }
+    fab!(:topic)
     fab!(:post) { Fabricate(:post, post_number: 1, topic: topic) }
 
     let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }

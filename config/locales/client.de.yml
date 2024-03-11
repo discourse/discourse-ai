@@ -101,6 +101,9 @@ de:
             hide_topic:
               label: "Thema ausblenden"
               description: "Thema nicht für die Öffentlichkeit sichtbar machen, wenn ausgelöst"
+            flag_post:
+              label: "Zur Überprüfung senden"
+              description: "Setzt den Beitrag in die Überprüfungswarteschlange, wenn er ausgelöst wurde, damit die Moderatoren ihn sichten können."
             model:
               label: "Modell"
               description: "Entweder gpt-4 oder gpt-3-5-turbo oder claude-2"

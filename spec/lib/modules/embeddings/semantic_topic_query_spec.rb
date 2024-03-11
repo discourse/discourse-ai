@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Embeddings::EntryPoint do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   describe "SemanticTopicQuery extension" do
     describe "#list_semantic_related_topics" do
@@ -39,7 +39,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
       end
 
       context "when the semantic search returns a topic from a restricted category" do
-        fab!(:group) { Fabricate(:group) }
+        fab!(:group)
         fab!(:category) { Fabricate(:private_category, group: group) }
         fab!(:secured_category_topic) { Fabricate(:topic, category: category) }
 

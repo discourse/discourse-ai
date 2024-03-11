@@ -72,7 +72,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
             role: "function",
             parts: {
               functionResponse: {
-                name: "tool_id",
+                name: "get_weather",
                 response: {
                   content: "I'm a tool result".to_json,
                 },

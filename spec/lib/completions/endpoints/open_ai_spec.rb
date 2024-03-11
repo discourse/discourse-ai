@@ -53,6 +53,13 @@ class OpenAiMock < EndpointMock
     }.to_json
   end
 
+  def stub_raw(chunks)
+    WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+      status: 200,
+      body: chunks,
+    )
+  end
+
   def stub_streamed_response(prompt, deltas, tool_call: false)
     chunks =
       deltas.each_with_index.map do |_, index|
@@ -69,16 +76,18 @@ class OpenAiMock < EndpointMock
       .stub_request(:post, "https://api.openai.com/v1/chat/completions")
       .with(body: request_body(prompt, stream: true, tool_call: tool_call))
       .to_return(status: 200, body: chunks)
+
+    yield if block_given?
   end
 
   def tool_deltas
     [
       { id: tool_id, function: {} },
       { id: tool_id, function: { name: "get_weather", arguments: "" } },
-      { id: tool_id, function: { name: "get_weather", arguments: "" } },
-      { id: tool_id, function: { name: "get_weather", arguments: "{" } },
-      { id: tool_id, function: { name: "get_weather", arguments: " \"location\": \"Sydney\"" } },
-      { id: tool_id, function: { name: "get_weather", arguments: " ,\"unit\": \"c\" }" } },
+      { id: tool_id, function: { arguments: "" } },
+      { id: tool_id, function: { arguments: "{" } },
+      { id: tool_id, function: { arguments: " \"location\": \"Sydney\"" } },
+      { id: tool_id, function: { arguments: " ,\"unit\": \"c\" }" } },
     ]
   end
 
@@ -93,7 +102,7 @@ class OpenAiMock < EndpointMock
   end
 
   def tool_id
-    "eujbuebfe"
+    "tool_0"
   end
 
   def tool_payload
@@ -138,7 +147,17 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     described_class.new("gpt-3.5-turbo", DiscourseAi::Tokenizer::OpenAiTokenizer)
   end
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
+
+  let(:echo_tool) do
+    {
+      name: "echo",
+      description: "echo something",
+      parameters: [{ name: "text", type: "string", description: "text to echo", required: true }],
+    }
+  end
+
+  let(:tools) { [echo_tool] }
 
   let(:open_ai_mock) { OpenAiMock.new(endpoint) }
 
@@ -168,14 +187,16 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
         end
 
         it "will automatically recover from a bad payload" do
+          called = false
+
           # this should not happen, but lets ensure nothing bad happens
           # the row with test1 is invalid json
           raw_data = <<~TEXT.strip
             d|a|t|a|:| |{|"choices":[{"delta":{"content":"test,"}}]}
 
-            data: {"choices":[{"delta":{"content":"test1,"}}]
+            data: {"choices":[{"delta":{"content":"test|1| |,"}}]
 
-            data: {"choices":[{"delta":|{"content":"test2,"}}]}
+            data: {"choices":[{"delta":|{"content":"test2 ,"}}]}
 
             data: {"choices":[{"delta":{"content":"test3,"}}]|}
 
@@ -187,22 +208,150 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
           chunks = raw_data.split("|")
 
           open_ai_mock.with_chunk_array_support do
-            open_ai_mock.stub_streamed_response(compliance.dialect.translate, chunks) do
-              partials = []
+            open_ai_mock.stub_raw(chunks)
 
-              endpoint.perform_completion!(compliance.dialect, user) do |partial|
-                partials << partial
-              end
+            partials = []
 
-              expect(partials.join).to eq("test,test1,test2,test3,test4")
-            end
+            endpoint.perform_completion!(compliance.dialect, user) { |partial| partials << partial }
+
+            called = true
+            expect(partials.join).to eq("test,test2 ,test3,test4")
           end
+          expect(called).to be(true)
         end
       end
 
       context "with tools" do
         it "returns a function invocation" do
           compliance.streaming_mode_tools(open_ai_mock)
+        end
+
+        it "properly handles multiple tool calls" do
+          raw_data = <<~TEXT.strip
+              data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"role":"assistant","content":null},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"id":"call_3Gyr3HylFJwfrtKrL6NaIit1","type":"function","function":{"name":"search","arguments":""}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"{\\"se"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"arch_"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"query\\""}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":": \\"D"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"iscou"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"rse AI"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":" bot"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"\\"}"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"id":"call_H7YkbgYurHpyJqzwUN4bghwN","type":"function","function":{"name":"search","arguments":""}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"{\\"qu"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"ery\\":"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":" \\"Disc"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"ours"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"e AI "}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"bot\\"}"}}]},"logprobs":null,"finish_reason":null}]}
+
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"tool_calls"}]}
+
+  data: [DONE]
+TEXT
+
+          open_ai_mock.stub_raw(raw_data)
+          content = +""
+
+          dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+
+          endpoint.perform_completion!(dialect, user) { |partial| content << partial }
+
+          expected = <<~TEXT
+            <function_calls>
+            <invoke>
+            <tool_name>search</tool_name>
+            <parameters>
+            <search_query>Discourse AI bot</search_query>
+            </parameters>
+            <tool_id>call_3Gyr3HylFJwfrtKrL6NaIit1</tool_id>
+            </invoke>
+            <invoke>
+            <tool_name>search</tool_name>
+            <parameters>
+            <query>Discourse AI bot</query>
+            </parameters>
+            <tool_id>call_H7YkbgYurHpyJqzwUN4bghwN</tool_id>
+            </invoke>
+            </function_calls>
+          TEXT
+
+          expect(content).to eq(expected)
+        end
+
+        it "properly handles spaces in tools payload" do
+          raw_data = <<~TEXT.strip
+            data: {"choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"index":0,"id":"func_id","type":"function","function":{"name":"go|ogle","arg|uments":""}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "{\\""}}]}}]}
+
+            data: {"ch|oices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "query"}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "\\":\\""}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "Ad"}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "a|b"}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "as"}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": |"| "}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "9"}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "."}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"argume|nts": "1"}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": [{"index": 0, "function": {"arguments": "\\"}"}}]}}]}
+
+            data: {"choices": [{"index": 0, "delta": {"tool_calls": []}}]}
+
+            data: [D|ONE]
+          TEXT
+
+          chunks = raw_data.split("|")
+
+          open_ai_mock.with_chunk_array_support do
+            open_ai_mock.stub_raw(chunks)
+            partials = []
+
+            dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+            endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
+
+            expect(partials.length).to eq(1)
+
+            function_call = (<<~TXT).strip
+            <function_calls>
+            <invoke>
+            <tool_name>google</tool_name>
+            <parameters>
+            <query>Adabas 9.1</query>
+            </parameters>
+            <tool_id>func_id</tool_id>
+            </invoke>
+            </function_calls>
+            TXT
+
+            expect(partials[0].strip).to eq(function_call)
+          end
         end
       end
     end

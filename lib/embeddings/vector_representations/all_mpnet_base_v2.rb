@@ -23,7 +23,7 @@ module DiscourseAi
           end
         end
 
-        def vector_from(text)
+        def vector_from(text, asymetric: false)
           DiscourseAi::Inference::DiscourseClassifier.perform!(
             "#{discourse_embeddings_endpoint}/api/v1/classify",
             self.class.name,

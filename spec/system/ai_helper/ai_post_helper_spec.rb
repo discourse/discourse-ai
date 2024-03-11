@@ -3,7 +3,7 @@
 RSpec.describe "AI Post helper", type: :system, js: true do
   fab!(:user) { Fabricate(:admin) }
   fab!(:non_member_group) { Fabricate(:group) }
-  fab!(:topic) { Fabricate(:topic) }
+  fab!(:topic)
   fab!(:post) do
     Fabricate(
       :post,

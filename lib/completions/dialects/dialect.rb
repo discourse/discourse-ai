@@ -17,6 +17,7 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::OrcaStyle,
               DiscourseAi::Completions::Dialects::Gemini,
               DiscourseAi::Completions::Dialects::Mixtral,
+              DiscourseAi::Completions::Dialects::ClaudeMessages,
             ]
 
             if Rails.env.test? || Rails.env.development?
@@ -35,7 +36,8 @@ module DiscourseAi
           def tool_preamble
             <<~TEXT
               In this environment you have access to a set of tools you can use to answer the user's question.
-              You may call them like this. Only invoke one function at a time and wait for the results before invoking another function:
+              You may call them like this.
+
               <function_calls>
               <invoke>
               <tool_name>$TOOL_NAME</tool_name>
@@ -46,10 +48,16 @@ module DiscourseAi
               </invoke>
               </function_calls>
 
-              if a parameter type is an array, return a JSON array of values. For example:
+              If a parameter type is an array, return a JSON array of values. For example:
               [1,"two",3.0]
 
-              Here are the tools available:
+              If you wish to call multiple function in one reply, wrap multiple <invoke>
+              block in a single <function_calls> block.
+
+              Always prefer to lead with tool calls, if you need to execute any.
+              Avoid all niceties prior to tool calls, Eg: "Let me look this up for you.." etc.
+
+              Here are the complete list of tools available:
             TEXT
           end
         end
@@ -62,6 +70,38 @@ module DiscourseAi
 
         def translate
           raise NotImplemented
+        end
+
+        def tool_result_to_xml(message)
+          (<<~TEXT).strip
+            <function_results>
+            <result>
+            <tool_name>#{message[:name] || message[:id]}</tool_name>
+            <json>
+            #{message[:content]}
+            </json>
+            </result>
+            </function_results>
+          TEXT
+        end
+
+        def tool_call_to_xml(message)
+          parsed = JSON.parse(message[:content], symbolize_names: true)
+          parameters = +""
+
+          if parsed[:arguments]
+            parameters << "<parameters>\n"
+            parsed[:arguments].each { |k, v| parameters << "<#{k}>#{v}</#{k}>\n" }
+            parameters << "</parameters>\n"
+          end
+
+          (<<~TEXT).strip
+            <function_calls>
+            <invoke>
+            <tool_name>#{message[:name] || parsed[:name]}</tool_name>
+            #{parameters}</invoke>
+            </function_calls>
+          TEXT
         end
 
         def tools
@@ -106,9 +146,11 @@ module DiscourseAi
           raise NotImplemented
         end
 
+        attr_reader :prompt
+
         private
 
-        attr_reader :prompt, :model_name, :opts
+        attr_reader :model_name, :opts
 
         def trim_messages(messages)
           prompt_limit = max_prompt_tokens

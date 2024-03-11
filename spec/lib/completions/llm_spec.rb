@@ -9,7 +9,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
     )
   end
 
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   describe ".proxy" do
     it "raises an exception when we can't proxy the model" do
@@ -18,6 +18,40 @@ RSpec.describe DiscourseAi::Completions::Llm do
       expect { described_class.proxy(fake_model) }.to(
         raise_error(DiscourseAi::Completions::Llm::UNKNOWN_MODEL),
       )
+    end
+  end
+
+  describe "AiApiAuditLog" do
+    it "is able to keep track of post and topic id" do
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are fake",
+          messages: [{ type: :user, content: "fake orders" }],
+          topic_id: 123,
+          post_id: 1,
+        )
+
+      result = <<~TEXT
+        data: {"id":"chatcmpl-8xoPOYRmiuBANTmGqdCGVk4ZA3Orz","object":"chat.completion.chunk","created":1709265814,"model":"gpt-4-0125-preview","system_fingerprint":"fp_70b2088885","choices":[{"index":0,"delta":{"role":"assistant","content":""},"logprobs":null,"finish_reason":null}]}
+
+        data: {"id":"chatcmpl-8xoPOYRmiuBANTmGqdCGVk4ZA3Orz","object":"chat.completion.chunk","created":1709265814,"model":"gpt-4-0125-preview","system_fingerprint":"fp_70b2088885","choices":[{"index":0,"delta":{"content":"Hello"},"logprobs":null,"finish_reason":null}]}
+
+        data: [DONE]
+      TEXT
+
+      WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        status: 200,
+        body: result,
+      )
+      result = +""
+      described_class
+        .proxy("open_ai:gpt-3.5-turbo")
+        .generate(prompt, user: user) { |partial| result << partial }
+
+      expect(result).to eq("Hello")
+      log = AiApiAuditLog.order("id desc").first
+      expect(log.topic_id).to eq(123)
+      expect(log.post_id).to eq(1)
     end
   end
 

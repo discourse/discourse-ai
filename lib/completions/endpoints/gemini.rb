@@ -104,11 +104,19 @@ module DiscourseAi
           @has_function_call
         end
 
-        def add_to_buffer(function_buffer, _response_data, partial)
-          if partial[:name].present?
-            function_buffer.at("tool_name").content = partial[:name]
-            function_buffer.at("tool_id").content = partial[:name]
+        def maybe_has_tool?(_partial_raw)
+          # we always get a full partial
+          false
+        end
+
+        def add_to_function_buffer(function_buffer, payload: nil, partial: nil)
+          if @streaming_mode
+            return function_buffer if !partial
+          else
+            partial = payload
           end
+
+          function_buffer.at("tool_name").content = partial[:name] if partial[:name].present?
 
           if partial[:args]
             argument_fragments =

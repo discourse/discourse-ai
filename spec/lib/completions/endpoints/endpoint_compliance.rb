@@ -66,11 +66,11 @@ class EndpointMock
       <function_calls>
       <invoke>
       <tool_name>get_weather</tool_name>
-      <tool_id>#{tool_id}</tool_id>
       <parameters>
       <location>Sydney</location>
       <unit>c</unit>
       </parameters>
+      <tool_id>tool_0</tool_id>
       </invoke>
       </function_calls>
     TEXT
@@ -178,11 +178,9 @@ class EndpointsCompliance
   def regular_mode_tools(mock)
     prompt = generic_prompt(tools: [mock.tool])
     a_dialect = dialect(prompt: prompt)
-
     mock.stub_tool_call(a_dialect.translate)
 
     completion_response = endpoint.perform_completion!(a_dialect, user)
-
     expect(completion_response).to eq(mock.invocation_response)
   end
 

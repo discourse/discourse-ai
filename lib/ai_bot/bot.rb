@@ -3,29 +3,38 @@
 module DiscourseAi
   module AiBot
     class Bot
+      attr_reader :model
+
       BOT_NOT_FOUND = Class.new(StandardError)
       MAX_COMPLETIONS = 5
+      MAX_TOOLS = 5
 
-      def self.as(bot_user, persona: DiscourseAi::AiBot::Personas::General.new)
-        new(bot_user, persona)
+      def self.as(bot_user, persona: DiscourseAi::AiBot::Personas::General.new, model: nil)
+        new(bot_user, persona, model)
       end
 
-      def initialize(bot_user, persona)
+      def initialize(bot_user, persona, model = nil)
         @bot_user = bot_user
         @persona = persona
+        @model = model || self.class.guess_model(bot_user) || @persona.class.default_llm
       end
 
       attr_reader :bot_user
       attr_accessor :persona
 
-      def get_updated_title(conversation_context, post_user)
+      def get_updated_title(conversation_context, post)
         system_insts = <<~TEXT.strip
         You are titlebot. Given a topic, you will figure out a title.
         You will never respond with anything but 7 word topic title.
         TEXT
 
         title_prompt =
-          DiscourseAi::Completions::Prompt.new(system_insts, messages: conversation_context)
+          DiscourseAi::Completions::Prompt.new(
+            system_insts,
+            messages: conversation_context,
+            topic_id: post.topic_id,
+            post_id: post.id,
+          )
 
         title_prompt.push(
           type: :user,
@@ -35,7 +44,7 @@ module DiscourseAi
 
         DiscourseAi::Completions::Llm
           .proxy(model)
-          .generate(title_prompt, user: post_user)
+          .generate(title_prompt, user: post.user)
           .strip
           .split("\n")
           .last
@@ -46,7 +55,6 @@ module DiscourseAi
 
         total_completions = 0
         ongoing_chain = true
-        low_cost = false
         raw_context = []
 
         user = context[:user]
@@ -56,44 +64,20 @@ module DiscourseAi
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
 
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
-          current_model = model(prefer_low_cost: low_cost)
+          current_model = model
           llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
           result =
             llm.generate(prompt, **llm_kwargs) do |partial, cancel|
-              if (tool = persona.find_tool(partial))
+              tools = persona.find_tools(partial)
+
+              if (tools.present?)
                 tool_found = true
-                ongoing_chain = tool.chain_next_response?
-                low_cost = tool.low_cost?
-                tool_call_id = tool.tool_call_id
-                invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
-
-                tool_call_message = {
-                  type: :tool_call,
-                  id: tool_call_id,
-                  content: { name: tool.name, arguments: tool.parameters }.to_json,
-                }
-
-                tool_message = { type: :tool, id: tool_call_id, content: invocation_result_json }
-
-                if tool.standalone?
-                  standalone_context =
-                    context.dup.merge(
-                      conversation_context: [
-                        context[:conversation_context].last,
-                        tool_call_message,
-                        tool_message,
-                      ],
-                    )
-                  prompt = persona.craft_prompt(standalone_context)
-                else
-                  prompt.push(**tool_call_message)
-                  prompt.push(**tool_message)
+                tools[0..MAX_TOOLS].each do |tool|
+                  ongoing_chain &&= tool.chain_next_response?
+                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
                 end
-
-                raw_context << [tool_call_message[:content], tool_call_id, "tool_call"]
-                raw_context << [invocation_result_json, tool_call_id, "tool"]
               else
                 update_blk.call(partial, cancel, nil)
               end
@@ -114,6 +98,43 @@ module DiscourseAi
 
       private
 
+      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
+        tool_call_id = tool.tool_call_id
+        invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
+
+        tool_call_message = {
+          type: :tool_call,
+          id: tool_call_id,
+          content: { arguments: tool.parameters }.to_json,
+          name: tool.name,
+        }
+
+        tool_message = {
+          type: :tool,
+          id: tool_call_id,
+          content: invocation_result_json,
+          name: tool.name,
+        }
+
+        if tool.standalone?
+          standalone_context =
+            context.dup.merge(
+              conversation_context: [
+                context[:conversation_context].last,
+                tool_call_message,
+                tool_message,
+              ],
+            )
+          prompt = persona.craft_prompt(standalone_context)
+        else
+          prompt.push(**tool_call_message)
+          prompt.push(**tool_message)
+        end
+
+        raw_context << [tool_call_message[:content], tool_call_id, "tool_call", tool.name]
+        raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
+      end
+
       def invoke_tool(tool, llm, cancel, &update_blk)
         update_blk.call("", cancel, build_placeholder(tool.summary, ""))
 
@@ -129,43 +150,40 @@ module DiscourseAi
         result
       end
 
-      def model(prefer_low_cost: false)
+      def self.guess_model(bot_user)
         # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
-        default_model =
-          case bot_user.id
-          when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
-            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-              "aws_bedrock:claude-2"
-            else
-              "anthropic:claude-2"
-            end
-          when DiscourseAi::AiBot::EntryPoint::GPT4_ID
-            "open_ai:gpt-4"
-          when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
-            "open_ai:gpt-4-turbo"
-          when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
-            "open_ai:gpt-3.5-turbo-16k"
-          when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
-            if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(
-                 "mistralai/Mixtral-8x7B-Instruct-v0.1",
-               )
-              "vllm:mistralai/Mixtral-8x7B-Instruct-v0.1"
-            else
-              "hugging_face:mistralai/Mixtral-8x7B-Instruct-v0.1"
-            end
-          when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
-            "google:gemini-pro"
-          when DiscourseAi::AiBot::EntryPoint::FAKE_ID
-            "fake:fake"
+        case bot_user.id
+        when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
+          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
+            "aws_bedrock:claude-2"
           else
-            nil
+            "anthropic:claude-2"
           end
-
-        if %w[open_ai:gpt-4 open_ai:gpt-4-turbo].include?(default_model) && prefer_low_cost
-          return "open_ai:gpt-3.5-turbo-16k"
+        when DiscourseAi::AiBot::EntryPoint::GPT4_ID
+          "open_ai:gpt-4"
+        when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
+          "open_ai:gpt-4-turbo"
+        when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
+          "open_ai:gpt-3.5-turbo-16k"
+        when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
+          if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(
+               "mistralai/Mixtral-8x7B-Instruct-v0.1",
+             )
+            "vllm:mistralai/Mixtral-8x7B-Instruct-v0.1"
+          else
+            "hugging_face:mistralai/Mixtral-8x7B-Instruct-v0.1"
+          end
+        when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
+          "google:gemini-pro"
+        when DiscourseAi::AiBot::EntryPoint::FAKE_ID
+          "fake:fake"
+        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
+          "anthropic:claude-3-opus"
+        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
+          "anthropic:claude-3-sonnet"
+        else
+          nil
         end
-
-        default_model
       end
 
       def tool_invocation?(partial)

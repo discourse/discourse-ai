@@ -12,6 +12,8 @@ en:
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
         gemini_pro: Gemini Pro
+        claude_3_opus: Claude 3 Opus
+        claude_3_sonnet: Claude 3 Sonnet
       scriptables:
         llm_report:
           fields:
@@ -96,6 +98,9 @@ en:
             hide_topic:
               label: "Hide topic"
               description: "Make topic non visible to the public if triggered"
+            flag_post:
+              label: "Send to review"
+              description: "Puts the post into the review queue if triggered, for moderators to triage"
             model:
               label: "Model"
               description: "Either gpt-4 or gpt-3-5-turbo or claude-2"
@@ -208,6 +213,8 @@ en:
           none: "Sorry, our AI search found no matching topics."
           new: "Press 'Search' to begin looking for new results with AI"
         ai_generated_result: "Search result found using AI"
+        quick_search:
+          suffix: "in all topics and posts with AI"
 
       ai_bot:
         pm_warning: "AI chatbot messages are monitored regularly by moderators."
@@ -226,6 +233,9 @@ en:
           context: "Interactions to share:"
 
         bot_names:
+          fake: "Fake Test Bot"
+          claude-3-opus: "Claude 3 Opus"
+          claude-3-sonnet: "Claude 3 Sonnet"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:

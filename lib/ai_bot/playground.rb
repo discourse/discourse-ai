@@ -11,46 +11,44 @@ module DiscourseAi
 
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
 
-      def self.schedule_reply(post)
-        bot_ids = DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS
+      def self.is_bot_user_id?(user_id)
+        # this will catch everything and avoid any feedback loops
+        # we could get feedback loops between say discobot and ai-bot or third party plugins
+        # and bots
+        user_id.to_i <= 0
+      end
 
-        return if bot_ids.include?(post.user_id)
-        if AiPersona.mentionables.any? { |mentionable| mentionable[:user_id] == post.user_id }
-          return
-        end
+      def self.schedule_reply(post)
+        return if is_bot_user_id?(post.user_id)
+
+        bot_ids = DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS
+        mentionables = AiPersona.mentionables(user: post.user)
 
         bot_user = nil
         mentioned = nil
 
         if post.topic.private_message?
           bot_user = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user
+          bot_user ||=
+            post
+              .topic
+              .topic_allowed_users
+              .where(user_id: mentionables.map { |m| m[:user_id] })
+              .first
+              &.user
         end
 
-        if AiPersona.mentionables.length > 0
+        if mentionables.present?
           mentions = post.mentions.map(&:downcase)
-          mentioned =
-            AiPersona.mentionables.find do |mentionable|
-              mentions.include?(mentionable[:username]) &&
-                (post.user.group_ids & mentionable[:allowed_group_ids]).present?
-            end
+          mentioned = mentionables.find { |mentionable| mentions.include?(mentionable[:username]) }
 
-          # PM always takes precedence
-          if mentioned && !bot_user
-            model_without_provider = mentioned[:default_llm].split(":").last
-            user_id =
-              DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(model_without_provider)
-
-            if !user_id
-              Rails.logger.warn(
-                "Model #{mentioned[:default_llm]} not found for persona #{mentioned[:username]}",
-              )
-              if Rails.env.development? || Rails.env.test?
-                raise "Model #{mentioned[:default_llm]} not found for persona #{mentioned[:username]}"
-              end
-            else
-              bot_user = User.find_by(id: user_id)
-            end
+          # direct PM to mentionable
+          if !mentioned && bot_user
+            mentioned = mentionables.find { |mentionable| bot_user.id == mentionable[:user_id] }
           end
+
+          # public topic so we need to use the persona user
+          bot_user ||= User.find_by(id: mentioned[:user_id]) if mentioned
         end
 
         if bot_user
@@ -111,7 +109,6 @@ module DiscourseAi
             .pluck(:raw, :username, "post_custom_prompts.custom_prompt")
 
         result = []
-        first = true
 
         context.reverse_each do |raw, username, custom_prompt|
           custom_prompt_translation =
@@ -125,18 +122,14 @@ module DiscourseAi
                 }
 
                 custom_context[:id] = message[1] if custom_context[:type] != :model
+                custom_context[:name] = message[3] if message[3]
 
                 result << custom_context
               end
             end
 
           if custom_prompt.present?
-            if first
-              custom_prompt.each(&custom_prompt_translation)
-              first = false
-            else
-              custom_prompt.first(2).each(&custom_prompt_translation)
-            end
+            custom_prompt.each(&custom_prompt_translation)
           else
             context = {
               content: raw,
@@ -156,7 +149,7 @@ module DiscourseAi
         context = conversation_context(post)
 
         bot
-          .get_updated_title(context, post.user)
+          .get_updated_title(context, post)
           .tap do |new_title|
             PostRevisor.new(post.topic.first_post, post.topic).revise!(
               bot.bot_user,
@@ -182,6 +175,8 @@ module DiscourseAi
           participants: post.topic.allowed_users.map(&:username).join(", "),
           conversation_context: conversation_context(post),
           user: post.user,
+          post_id: post.id,
+          topic_id: post.topic_id,
         }
 
         reply_user = bot.bot_user
@@ -271,9 +266,23 @@ module DiscourseAi
           reply_post.post_custom_prompt.update!(custom_prompt: prompt)
         end
 
+        # since we are skipping validations and jobs we
+        # may need to fix participant count
+        if reply_post.topic.private_message? && reply_post.topic.participant_count < 2
+          reply_post.topic.update!(participant_count: 2)
+        end
+
         reply_post
       ensure
         publish_final_update(reply_post) if stream_reply
+      end
+
+      def available_bot_usernames
+        @bot_usernames ||=
+          AiPersona
+            .joins(:user)
+            .pluck(:username)
+            .concat(DiscourseAi::AiBot::EntryPoint::BOTS.map(&:second))
       end
 
       private
@@ -309,6 +318,7 @@ module DiscourseAi
             :update_ai_bot_pm_title,
             post_id: post.id,
             bot_user_id: bot.bot_user.id,
+            model: bot.model,
           )
         end
       end
@@ -346,10 +356,6 @@ module DiscourseAi
           max_backlog_size: 2,
           max_backlog_age: 60,
         )
-      end
-
-      def available_bot_usernames
-        @bot_usernames ||= DiscourseAi::AiBot::EntryPoint::BOTS.map(&:second)
       end
     end
   end

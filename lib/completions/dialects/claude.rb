@@ -24,9 +24,9 @@ module DiscourseAi
 
           claude_prompt =
             trimmed_messages.reduce(+"") do |memo, msg|
-              next(memo) if msg[:type] == :tool_call
-
-              if msg[:type] == :system
+              if msg[:type] == :tool_call
+                memo << "\n\nAssistant: #{tool_call_to_xml(msg)}"
+              elsif msg[:type] == :system
                 memo << "Human: " unless uses_system_message?
                 memo << msg[:content]
                 if prompt.tools.present?
@@ -36,18 +36,8 @@ module DiscourseAi
               elsif msg[:type] == :model
                 memo << "\n\nAssistant: #{msg[:content]}"
               elsif msg[:type] == :tool
-                memo << "\n\nAssistant:\n"
-
-                memo << (<<~TEXT).strip
-                <function_results>
-                <result>
-                <tool_name>#{msg[:id]}</tool_name>
-                <json>
-                #{msg[:content]}
-                </json>
-                </result>
-                </function_results>
-                TEXT
+                memo << "\n\nHuman:\n"
+                memo << tool_result_to_xml(msg)
               else
                 memo << "\n\nHuman: "
                 memo << "#{msg[:id]}: " if msg[:id]

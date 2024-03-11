@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe ::TopicsController do
-  fab!(:topic) { Fabricate(:topic) }
+  fab!(:topic)
   fab!(:topic1) { Fabricate(:topic) }
   fab!(:topic2) { Fabricate(:topic) }
   fab!(:topic3) { Fabricate(:topic) }

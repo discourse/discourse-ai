@@ -136,14 +136,12 @@ module DiscourseAi
 
         def extract_completion_from(response_raw)
           parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
-
           # half a line sent here
           return if !parsed
 
           response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
 
           @has_function_call ||= response_h.dig(:tool_calls).present?
-
           @has_function_call ? response_h.dig(:tool_calls, 0) : response_h.dig(:content)
         end
 
@@ -165,15 +163,47 @@ module DiscourseAi
           @has_function_call
         end
 
-        def add_to_buffer(function_buffer, _response_data, partial)
+        def maybe_has_tool?(_partial_raw)
+          # we always get a full partial
+          false
+        end
+
+        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
+          if @streaming_mode
+            return function_buffer if !partial
+          else
+            partial = payload
+          end
+
           @args_buffer ||= +""
 
           f_name = partial.dig(:function, :name)
-          function_buffer.at("tool_name").content = f_name if f_name
-          function_buffer.at("tool_id").content = partial[:id] if partial[:id]
 
-          if partial.dig(:function, :arguments).present?
-            @args_buffer << partial.dig(:function, :arguments)
+          @current_function ||= function_buffer.at("invoke")
+
+          if f_name
+            current_name = function_buffer.at("tool_name").content
+
+            if current_name.blank?
+              # first call
+            else
+              # we have a previous function, so we need to add a noop
+              @args_buffer = +""
+              @current_function =
+                function_buffer.at("function_calls").add_child(
+                  Nokogiri::HTML5::DocumentFragment.parse(noop_function_call_text + "\n"),
+                )
+            end
+          end
+
+          @current_function.at("tool_name").content = f_name if f_name
+          @current_function.at("tool_id").content = partial[:id] if partial[:id]
+
+          args = partial.dig(:function, :arguments)
+
+          # allow for SPACE within arguments
+          if args && args != ""
+            @args_buffer << args
 
             begin
               json_args = JSON.parse(@args_buffer, symbolize_names: true)
@@ -184,7 +214,7 @@ module DiscourseAi
                 end
               argument_fragments << "\n"
 
-              function_buffer.at("parameters").children =
+              @current_function.at("parameters").children =
                 Nokogiri::HTML5::DocumentFragment.parse(argument_fragments)
             rescue JSON::ParserError
               return function_buffer

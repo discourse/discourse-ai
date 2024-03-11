@@ -42,7 +42,7 @@ module DiscourseAi
           "vector_cosine_ops"
         end
 
-        def vector_from(text)
+        def vector_from(text, asymetric: false)
           response = DiscourseAi::Inference::GeminiEmbeddings.perform!(text)
           response[:embedding][:values]
         end

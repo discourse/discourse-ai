@@ -12,6 +12,7 @@ DiscourseAi::Engine.routes.draw do
 
   scope module: :embeddings, path: "/embeddings", defaults: { format: :json } do
     get "semantic-search" => "embeddings#search"
+    get "quick-search" => "embeddings#quick_search"
   end
 
   scope module: :ai_bot, path: "/ai-bot", defaults: { format: :json } do

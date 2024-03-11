@@ -6,8 +6,8 @@ describe Plugin::Instance do
   before { SiteSetting.discourse_ai_enabled = true }
 
   describe "on reviewable_transitioned_to event" do
-    fab!(:post) { Fabricate(:post) }
-    fab!(:admin) { Fabricate(:admin) }
+    fab!(:post)
+    fab!(:admin)
 
     it "adjusts model accuracy" do
       ToxicityInferenceStubs.stub_post_classification(post, toxic: true)
