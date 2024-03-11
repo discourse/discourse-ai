@@ -24,7 +24,7 @@ export default class ShareModal extends Component {
   get htmlContext() {
     let context = [];
 
-    this.args.model.posts.forEach((post) => {
+    this.args.model.context.forEach((post) => {
       context.push(`<p><b>${post.username}:</b></p>`);
       context.push(post.cooked);
     });

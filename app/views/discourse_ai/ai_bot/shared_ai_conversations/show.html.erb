@@ -32,7 +32,7 @@
     </div>
     <h2><%= @shared_conversation.title %></h2>
 
-    <% @shared_conversation.populated_posts.each do |post| %>
+    <% @shared_conversation.populated_context.each do |post| %>
       <div class="post">
         <div class="post-header">
           <span class="post-user"><%= post.user.username %></span>

@@ -40,16 +40,16 @@ RSpec.describe SharedAiConversation, type: :model do
       conversation = described_class.share_conversation(user, topic)
       expect(conversation.llm_name).to eq("Claude-2")
       expect(conversation.title).to eq(topic.title)
-      expect(conversation.posts.size).to eq(2)
-      expect(conversation.posts[0]["id"]).to eq(post1.id)
-      expect(conversation.posts[1]["id"]).to eq(post2.id)
+      expect(conversation.context.size).to eq(2)
+      expect(conversation.context[0]["id"]).to eq(post1.id)
+      expect(conversation.context[1]["id"]).to eq(post2.id)
 
-      populated_posts = conversation.populated_posts
+      populated_context = conversation.populated_context
 
-      expect(populated_posts[0].id).to eq(post1.id)
-      expect(populated_posts[0].user.id).to eq(post1.user.id)
-      expect(populated_posts[1].id).to eq(post2.id)
-      expect(populated_posts[1].user.id).to eq(post2.user.id)
+      expect(populated_context[0].id).to eq(post1.id)
+      expect(populated_context[0].user.id).to eq(post1.user.id)
+      expect(populated_context[1].id).to eq(post2.id)
+      expect(populated_context[1].user.id).to eq(post2.user.id)
     end
   end
 end

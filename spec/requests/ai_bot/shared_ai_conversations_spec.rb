@@ -132,7 +132,7 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
         expect(response.parsed_body["llm_name"]).to eq("Claude-2")
         expect(response.parsed_body["error"]).to eq(nil)
         expect(response.parsed_body["share_key"]).to eq(nil)
-        expect(response.parsed_body["posts"].length).to eq(3)
+        expect(response.parsed_body["context"].length).to eq(3)
 
         shared_conversation
         get "#{path}/preview/#{user_pm_share.id}.json"

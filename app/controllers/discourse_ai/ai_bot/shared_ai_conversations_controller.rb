@@ -5,14 +5,15 @@ module DiscourseAi
     class SharedAiConversationsController < ::ApplicationController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_login only: %i[create update destroy]
-      before_action :ensure_allowed_create!, only: %i[create]
-      before_action :ensure_allowed_destroy!, only: %i[destroy]
-      before_action :ensure_allowed_preview!, only: %i[preview]
       before_action :require_site_settings!
 
       skip_before_action :preload_json, :check_xhr, :redirect_to_login_if_required, only: %i[show]
 
       def create
+        ensure_allowed_create!
+
+        RateLimiter.new(current_user, "share-ai-conversation", 10, 1.minute).performed!
+
         shared_conversation = SharedAiConversation.share_conversation(current_user, @topic)
 
         if shared_conversation.persisted?
@@ -23,6 +24,7 @@ module DiscourseAi
       end
 
       def destroy
+        ensure_allowed_destroy!
         @shared_conversation.destroy
         render json: { message: "Conversation share deleted successfully" }
       end
@@ -37,7 +39,7 @@ module DiscourseAi
           # render json for json reqs
           if request.format.json?
             posts =
-              @shared_conversation.populated_posts.map do |post|
+              @shared_conversation.populated_context.map do |post|
                 {
                   id: post.id,
                   cooked: post.cooked,
@@ -60,6 +62,7 @@ module DiscourseAi
       end
 
       def preview
+        ensure_allowed_preview!
         data = SharedAiConversation.build_conversation_data(@topic, include_usernames: true)
         data[:error] = @error if @error
         data[:share_key] = @shared_conversation.share_key if @shared_conversation
@@ -80,7 +83,7 @@ module DiscourseAi
         @topic = Topic.find_by(id: params[:topic_id])
         raise Discourse::NotFound if !@topic
 
-        @shared_conversation = SharedAiConversation.find_by(topic_id: params[:topic_id])
+        @shared_conversation = SharedAiConversation.find_by(target: @topic)
 
         @error = DiscourseAi::AiBot::EntryPoint.ai_share_error(@topic, guardian)
         if @error == :not_allowed

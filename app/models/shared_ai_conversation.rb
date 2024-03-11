@@ -4,26 +4,31 @@ class SharedAiConversation < ActiveRecord::Base
   DEFAULT_MAX_POSTS = 100
 
   belongs_to :user
-  belongs_to :topic
+  belongs_to :target, polymorphic: true
 
   validates :user_id, presence: true
-  validates :topic_id, presence: true
+  validates :target, presence: true
+  validates :context, presence: true
   validates :share_key, presence: true, uniqueness: true
 
   before_validation :generate_share_key, on: :create
 
-  def self.share_conversation(user, topic, max_posts: DEFAULT_MAX_POSTS)
-    conversation = find_by(user: user, topic: topic)
-    conversation_data = build_conversation_data(topic, max_posts: max_posts)
+  def self.share_conversation(user, target, max_posts: DEFAULT_MAX_POSTS)
+    raise "Target must be a topic for now" if !target.is_a?(Topic)
+
+    conversation = find_by(user: user, target: target)
+    conversation_data = build_conversation_data(target, max_posts: max_posts)
 
     if conversation
       conversation.update(**conversation_data)
       conversation
     else
-      create(user_id: user.id, topic_id: topic.id, **conversation_data)
+      create(user_id: user.id, target: target, **conversation_data)
     end
   end
 
+  # technically this may end up being a chat message
+  # but this name works
   class SharedPost
     attr_accessor :user
     attr_reader :id, :user_id, :created_at, :cooked
@@ -35,11 +40,11 @@ class SharedAiConversation < ActiveRecord::Base
     end
   end
 
-  def populated_posts
-    return @populated_posts if @populated_posts
-    @populated_posts = posts.map { |post| SharedPost.new(post.symbolize_keys) }
-    populate_user_info!(@populated_posts)
-    @populated_posts
+  def populated_context
+    return @populated_context if @populated_context
+    @populated_context = context.map { |post| SharedPost.new(post.symbolize_keys) }
+    populate_user_info!(@populated_context)
+    @populated_context
   end
 
   def self.excerpt(posts)
@@ -81,7 +86,7 @@ class SharedAiConversation < ActiveRecord::Base
       llm_name: llm_name,
       title: topic.title,
       excerpt: excerpt(posts),
-      posts:
+      context:
         posts.map do |post|
           mapped = {
             id: post.id,
@@ -106,3 +111,26 @@ class SharedAiConversation < ActiveRecord::Base
     self.share_key = SecureRandom.urlsafe_base64(16)
   end
 end
+
+# == Schema Information
+#
+# Table name: shared_ai_conversations
+#
+#  id          :bigint           not null, primary key
+#  user_id     :integer          not null
+#  target_id   :integer          not null
+#  target_type :string           not null
+#  title       :string           not null
+#  llm_name    :string           not null
+#  context     :jsonb            not null
+#  share_key   :string           not null
+#  excerpt     :string           not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  idx_shared_ai_conversations_user_target                     (user_id,target_id,target_type) UNIQUE
+#  index_shared_ai_conversations_on_share_key                  (share_key) UNIQUE
+#  index_shared_ai_conversations_on_target_id_and_target_type  (target_id,target_type) UNIQUE
+#
