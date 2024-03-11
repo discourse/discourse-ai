@@ -10,10 +10,15 @@ export default apiInitializer("1.25.0", (api) => {
     class: "generate-caption",
   };
   const settings = api.container.lookup("service:site-settings");
+  const currentUser = api.getCurrentUser();
 
-  if (!settings.ai_helper_enabled_features.includes("image_caption")) {
+  if (
+    !settings.ai_helper_enabled_features.includes("image_caption") ||
+    !currentUser.can_use_assistant
+  ) {
     return;
   }
+
   api.addComposerImageWrapperButton(
     buttonAttrs.label,
     buttonAttrs.class,

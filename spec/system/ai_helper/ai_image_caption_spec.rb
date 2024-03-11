@@ -2,6 +2,8 @@
 
 RSpec.describe "AI image caption", type: :system, js: true do
   fab!(:user) { Fabricate(:admin, refresh_auto_groups: true) }
+  fab!(:non_member_group) { Fabricate(:group) }
+
   let(:composer) { PageObjects::Components::Composer.new }
   let(:popup) { PageObjects::Components::AiCaptionPopup.new }
   let(:file_path) { file_from_fixtures("logo.jpg", "images").path }
@@ -23,6 +25,26 @@ RSpec.describe "AI image caption", type: :system, js: true do
       status: 200,
       body: { output: caption.gsub(" ", " |").split("|") }.to_json,
     )
+  end
+
+  shared_examples "shows no image caption button" do
+    it "should not show an image caption button" do
+      visit("/latest")
+      page.find("#create-topic").click
+      attach_file([file_path]) { composer.click_toolbar_button("upload") }
+      wait_for { composer.has_no_in_progress_uploads? }
+      expect(popup).to have_no_generate_caption_button
+    end
+  end
+
+  context "when not a member of ai helper group" do
+    before { SiteSetting.ai_helper_allowed_groups = non_member_group.id.to_s }
+    include_examples "shows no image caption button"
+  end
+
+  context "when image caption feature is disabled" do
+    before { SiteSetting.ai_helper_enabled_features = "" }
+    include_examples "shows no image caption button"
   end
 
   context "when triggering caption with AI on desktop" do
