@@ -10,6 +10,14 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
   context "with a valid pull request" do
     let(:repo) { "discourse/discourse-automation" }
     let(:pull_id) { 253 }
+    let(:diff) { <<~DIFF }
+        diff --git a/lib/discourse_automation/automation.rb b/lib/discourse_automation/automation.rb
+        index 3e3e3e3..4f4f4f4 100644
+        --- a/lib/discourse_automation/automation.rb
+        +++ b/lib/discourse_automation/automation.rb
+        @@ -1,3 +1,3 @@
+        -module DiscourseAutomation
+      DIFF
 
     it "retrieves the diff for the pull request" do
       stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
@@ -17,10 +25,10 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
           "Accept" => "application/vnd.github.v3.diff",
           "User-Agent" => DiscourseAi::AiBot::USER_AGENT,
         },
-      ).to_return(status: 200, body: "sample diff")
+      ).to_return(status: 200, body: diff)
 
       result = tool.invoke(bot_user, llm)
-      expect(result[:diff]).to eq("sample diff")
+      expect(result[:diff]).to eq(diff)
       expect(result[:error]).to be_nil
     end
 
@@ -33,10 +41,10 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
           "User-Agent" => DiscourseAi::AiBot::USER_AGENT,
           "Authorization" => "Bearer ABC",
         },
-      ).to_return(status: 200, body: "sample diff")
+      ).to_return(status: 200, body: diff)
 
       result = tool.invoke(bot_user, llm)
-      expect(result[:diff]).to eq("sample diff")
+      expect(result[:diff]).to eq(diff)
       expect(result[:error]).to be_nil
     end
   end
