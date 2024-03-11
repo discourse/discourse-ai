@@ -281,6 +281,7 @@ li, p {
 
   .header {
     display: block;
+    padding: 0;
   }
 
   body {
