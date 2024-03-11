@@ -156,8 +156,8 @@ en:
     share_ai:
       errors:
         not_allowed: "You are not allowed to share this topic"
-        other_people_in_pm: "Personal messages with other people cannot be shared with the AI"
-        other_content_in_pm: "Personal messages containing posts from other people cannot be shared with the AI"
+        other_people_in_pm: "Personal messages with other humans cannot be shared publicly"
+        other_content_in_pm: "Personal messages containing posts from other people cannot be shared publicly"
     ai_bot:
       personas:
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
