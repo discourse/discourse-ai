@@ -31,12 +31,13 @@ class SharedAiConversation < ActiveRecord::Base
   # but this name works
   class SharedPost
     attr_accessor :user
-    attr_reader :id, :user_id, :created_at, :cooked
+    attr_reader :id, :user_id, :created_at, :cooked, :persona
     def initialize(post)
       @id = post[:id]
       @user_id = post[:user_id]
       @created_at = DateTime.parse(post[:created_at])
       @cooked = post[:cooked]
+      @persona = post[:persona]
     end
   end
 
@@ -73,6 +74,11 @@ class SharedAiConversation < ActiveRecord::Base
     llm_name = ActiveSupport::Inflector.humanize(llm_name) if llm_name
     llm_name ||= "unknown AI model"
 
+    persona = nil
+    if persona_id = topic.custom_fields["ai_persona_id"]
+      persona = AiPersona.find_by(id: persona_id.to_i)&.name
+    end
+
     posts =
       topic
         .posts
@@ -94,6 +100,10 @@ class SharedAiConversation < ActiveRecord::Base
             created_at: post.created_at,
             cooked: post.cooked,
           }
+
+          mapped[:persona] = persona if ::DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS.include?(
+            post.user_id,
+          )
           mapped[:username] = post.user&.username if include_usernames
           mapped
         end,

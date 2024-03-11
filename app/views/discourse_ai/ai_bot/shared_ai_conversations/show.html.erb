@@ -6,6 +6,7 @@
   <meta property="og:description" content="<%= @shared_conversation.formatted_excerpt %>">
   <meta property="og:type" content="website">
   <meta property="og:url" content="<%= request.original_url %>">
+  <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/share.css") %>">
   <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/highlight.min.css") %>">
   <script>
@@ -36,7 +37,10 @@
       <div class="post">
         <div class="post-header">
           <span class="post-user"><%= post.user.username %></span>
-          <span class="post-date"><%= post.created_at.strftime('%Y-%m-%d %H:%M') %></span>
+          <%if post.persona.present? %>
+            <span class="post-persona"><%= post.persona %></span>
+          <% end %>
+          <span class="post-date"><%= post.created_at.strftime('%Y-%m-%d') %></span>
         </div>
         <div class="post-content">
           <%= post.cooked.html_safe %>
