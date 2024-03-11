@@ -148,13 +148,14 @@ function initializeShareButton(api) {
 
 function initializeShareTopicButton(api) {
   const siteSettings = api.container.lookup("site-settings:main");
+  const modal = api.container.lookup("service:modal");
+
   api.registerTopicFooterButton({
     id: "share-ai-conversation",
     icon: "share",
     label: "discourse_ai.ai_bot.share_ai_conversation.name",
     title: "discourse_ai.ai_bot.share_ai_conversation.title",
     action() {
-      const modal = api.container.lookup("service:modal");
       showShareConversationModal(modal, this.topic.id);
     },
     classNames: ["share-ai-conversation-button"],
