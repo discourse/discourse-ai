@@ -34,6 +34,10 @@ module PageObjects
       def has_no_disabled_generate_button?
         page.has_no_css?("#{GENERATE_CAPTION_SELECTOR}.disabled", visible: false)
       end
+
+      def has_no_generate_caption_button?
+        page.has_no_css?(GENERATE_CAPTION_SELECTOR, visible: false)
+      end
     end
   end
 end
