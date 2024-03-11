@@ -1,5 +1,16 @@
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import Composer from "discourse/models/composer";
 import I18n from "I18n";
+import ShareFullTopicModal from "../components/modal/share-full-topic-modal";
+
+export function showShareConversationModal(modal, topicId) {
+  ajax(`/discourse-ai/ai-bot/shared-ai-conversations/preview/${topicId}.json`)
+    .then((payload) => {
+      modal.show(ShareFullTopicModal, { model: payload });
+    })
+    .catch(popupAjaxError);
+}
 
 export function composeAiBotMessage(targetBot, composer) {
   const currentUser = composer.currentUser;

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= @shared_conversation.title %></title>
+  <meta property="og:title" content="<%= @shared_conversation.title %>">
+  <meta property="og:description" content="<%= @shared_conversation.formatted_excerpt %>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<%= request.original_url %>">
+  <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/share.css") %>">
+  <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/highlight.min.css") %>">
+  <script>
+    window.hljs_initHighlighting = function() {
+      document.querySelectorAll('pre code').forEach((el) => {
+        hljs.highlightElement(el);
+      });
+    };
+  </script>
+  <script async src="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/highlight.min.js") %>" async onload="window.hljs_initHighlighting()" ></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="https://discourse.org/ai" class="ai-logo">
+        <img src="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/discourse_ai.png") %>" alt="AI Share" class="logo" width=193 height=61>
+      </a>
+      <a class="site-title" href="<%= Discourse.base_url %>">
+        <%= SiteSetting.title %>
+      </a>
+      <div class="llm-name">
+        <span><%= @shared_conversation.llm_name %></span>
+      </div>
+    </div>
+    <h2><%= @shared_conversation.title %></h2>
+
+    <% @shared_conversation.populated_posts.each do |post| %>
+      <div class="post">
+        <div class="post-header">
+          <span class="post-user"><%= post.user.username %></span>
+          <span class="post-date"><%= post.created_at.strftime('%Y-%m-%d %H:%M') %></span>
+        </div>
+        <div class="post-content">
+          <%= post.cooked.html_safe %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</body>
+</html>
