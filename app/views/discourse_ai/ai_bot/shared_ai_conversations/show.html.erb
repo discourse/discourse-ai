@@ -6,6 +6,9 @@
   <meta property="og:description" content="<%= @shared_conversation.formatted_excerpt %>">
   <meta property="og:type" content="website">
   <meta property="og:url" content="<%= request.original_url %>">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="<%= @shared_conversation.title %>">
+  <meta name="twitter:description" content="<%= @shared_conversation.formatted_excerpt %>">
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/share.css") %>">
   <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/highlight.min.css") %>">
