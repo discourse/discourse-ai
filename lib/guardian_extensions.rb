@@ -17,9 +17,10 @@ module DiscourseAi
       if target.is_a?(Topic)
         return false if !target.private_message?
         return false if target.topic_allowed_groups.exists?
-        return false if !target.topic_allowed_users.exists?(user_id: user.id)
-
         allowed_user_ids = target.topic_allowed_users.pluck(:user_id)
+
+        # not in PM
+        return false if !allowed_user_ids.include?(user.id)
 
         # other people in PM
         return false if allowed_user_ids.any? { |id| id > 0 && id != user.id }
