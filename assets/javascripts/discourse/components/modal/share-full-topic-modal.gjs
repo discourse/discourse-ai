@@ -32,22 +32,27 @@ export default class ShareModal extends Component {
   }
 
   async generateShareURL() {
-    const response = await ajax(
-      "/discourse-ai/ai-bot/shared-ai-conversations",
-      {
-        type: "POST",
-        data: {
-          topic_id: this.args.model.topic_id,
-        },
-      }
-    );
+    try {
+      const response = await ajax(
+        "/discourse-ai/ai-bot/shared-ai-conversations",
+        {
+          type: "POST",
+          data: {
+            topic_id: this.args.model.topic_id,
+          },
+        }
+      );
 
-    const url = getAbsoluteURL(
-      `/discourse-ai/ai-bot/shared-ai-conversations/${response.share_key}`
-    );
-    this.shareKey = response.share_key;
+      const url = getAbsoluteURL(
+        `/discourse-ai/ai-bot/shared-ai-conversations/${response.share_key}`
+      );
+      this.shareKey = response.share_key;
 
-    return new Blob([url], { type: "text/plain" });
+      return new Blob([url], { type: "text/plain" });
+    } catch (e) {
+      popupAjaxError(e);
+      return;
+    }
   }
 
   get primaryLabel() {
@@ -74,17 +79,13 @@ export default class ShareModal extends Component {
 
   @action
   async share() {
-    try {
-      await clipboardCopyAsync(this.generateShareURL.bind(this));
-      this.toasts.success({
-        duration: 3000,
-        data: {
-          message: I18n.t("discourse_ai.ai_bot.conversation_shared"),
-        },
-      });
-    } catch (e) {
-      popupAjaxError(e);
-    }
+    await clipboardCopyAsync(this.generateShareURL.bind(this));
+    this.toasts.success({
+      duration: 3000,
+      data: {
+        message: I18n.t("discourse_ai.ai_bot.conversation_shared"),
+      },
+    });
   }
 
   <template>
