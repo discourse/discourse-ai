@@ -43,6 +43,7 @@ after_initialize do
   register_admin_config_nav_routes(
     "discourse-ai",
     [
+      { label: "admin.plugins.change_settings_short", route: "adminPlugins.show.settings" },
       {
         label: "discourse_ai.ai_persona.short_title",
         route: "adminPlugins.show.discourse-ai.ai-personas",
