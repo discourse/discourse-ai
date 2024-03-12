@@ -27,7 +27,7 @@ class SharedAiConversation < ActiveRecord::Base
     end
   end
 
-  # technically this may end up being a chat message
+  # Technically this may end up being a chat message
   # but this name works
   class SharedPost
     attr_accessor :user

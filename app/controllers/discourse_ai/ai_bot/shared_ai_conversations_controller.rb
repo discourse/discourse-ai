@@ -85,13 +85,13 @@ module DiscourseAi
 
         raise Discourse::InvalidAccess if @shared_conversation.blank?
 
-        if @shared_conversation.user_id != current_user.id && !current_user.admin?
-          raise Discourse::InvalidAccess
-        end
+        guardian.ensure_can_destroy_shared_ai_bot_conversation!(@shared_conversation)
       end
 
       def ensure_allowed_create!
         @topic = Topic.find_by(id: params[:topic_id])
+        raise Discourse::NotFound if !@topic
+
         error = DiscourseAi::AiBot::EntryPoint.ai_share_error(@topic, guardian)
         if error
           raise Discourse::InvalidAccess.new(

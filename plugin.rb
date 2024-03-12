@@ -61,4 +61,6 @@ after_initialize do
     require_relative "spec/support/embeddings_generation_stubs"
     require_relative "spec/support/stable_diffusion_stubs"
   end
+
+  reloadable_patch { |plugin| Guardian.prepend DiscourseAi::GuardianExtensions }
 end

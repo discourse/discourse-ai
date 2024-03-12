@@ -64,27 +64,26 @@ module DiscourseAi
         end
       end
 
+      # Most errors are simply "not_allowed"
+      # we do not want to reveal information about this sytem
+      # the 2 exceptions are "other_people_in_pm" and "other_content_in_pm"
+      # in both cases you have access to the PM so we are not revealing anything
       def self.ai_share_error(topic, guardian)
-        # Most errors are simply "not_allowed"
-        # we do not want to reveal information about this sytem
-        # the 2 exceptions are "other_people_in_pm" and "other_content_in_pm"
-        # in both cases you have access to the PM so we are not revealing anything
-        user = guardian.user
-        return :not_allowed if !topic
-        return :not_allowed if !user
-        return :not_allowed if !SiteSetting.discourse_ai_enabled
-        return :not_allowed if !SiteSetting.ai_bot_enabled
-        return :not_allowed if !topic.private_message?
-        return :not_allowed if !(SiteSetting.ai_bot_allowed_groups_map & user.group_ids).present?
-        return :not_allowed if topic.topic_allowed_groups.exists?
-        return :not_allowed if !topic.topic_allowed_users.where("user_id = ?", user.id).exists?
-        if topic.topic_allowed_users.where("user_id > 0 and user_id <> ?", user.id).exists?
+        return nil if guardian.can_share_ai_bot_conversation?(topic)
+
+        return :not_allowed if !guardian.can_see?(topic)
+
+        # other people in PM
+        if topic.topic_allowed_users.where("user_id > 0 and user_id <> ?", guardian.user.id).exists?
           return :other_people_in_pm
         end
-        if topic.posts.where("user_id > 0 and user_id <> ?", user.id).exists?
+
+        # other content in PM
+        if topic.posts.where("user_id > 0 and user_id <> ?", guardian.user.id).exists?
           return :other_content_in_pm
         end
-        nil
+
+        :not_allowed
       end
 
       def inject_into(plugin)
@@ -98,10 +97,6 @@ module DiscourseAi
         plugin.register_seedfu_fixtures(
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_bot"),
         )
-
-        plugin.add_to_class(:guardian, :can_share_ai_conversation?) do |topic|
-          DiscourseAi::AiBot::EntryPoint.ai_share_error(topic, self).nil?
-        end
 
         plugin.add_to_serializer(
           :current_user,
