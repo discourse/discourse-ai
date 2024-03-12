@@ -188,7 +188,6 @@ pt_BR:
         ai_label: "IA"
         ai_title: "Conversação com IA"
         share_modal:
-          title: "Compartilhar conversação com IA"
           copy: "Copiar"
           context: "Interações para compartilhar:"
         bot_names:

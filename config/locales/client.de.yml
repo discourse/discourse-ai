@@ -18,6 +18,8 @@ de:
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
         gemini_pro: Gemini Pro
+        claude_3_opus: Claude 3 Opus
+        claude_3_sonnet: Claude 3 Sonett
       scriptables:
         llm_report:
           fields:
@@ -209,6 +211,8 @@ de:
           none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden."
           new: "Drücke auf „Suchen“, um mit der KI nach neuen Ergebnissen zu suchen"
         ai_generated_result: "Suchergebnis mit KI gefunden"
+        quick_search:
+          suffix: "in allen Themen und Beiträgen mit KI"
       ai_bot:
         pm_warning: "KI-Chatbot-Nachrichten werden regelmäßig von Moderatoren überwacht."
         cancel_streaming: "Antwort abbrechen"
@@ -219,10 +223,12 @@ de:
         ai_label: "KI"
         ai_title: "Unterhaltung mit KI"
         share_modal:
-          title: "KI-Unterhaltung teilen"
           copy: "Kopieren"
           context: "Interaktionen zum Teilen:"
         bot_names:
+          fake: "Fake Test Bot"
+          claude-3-opus: "Claude 3 Opus"
+          claude-3-sonnet: "Claude 3 Sonett"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:

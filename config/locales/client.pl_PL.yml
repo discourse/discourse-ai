@@ -208,7 +208,6 @@ pl_PL:
         ai_label: "AI"
         ai_title: "Rozmowa z AI"
         share_modal:
-          title: "Udostępnij rozmowę AI"
           copy: "Kopiuj"
           context: "Interakcje do udostępnienia:"
         bot_names:

@@ -187,7 +187,6 @@ ru:
         ai_label: "AI"
         ai_title: "Разговор с AI"
         share_modal:
-          title: "Поделиться разговором с AI"
           copy: "Копировать"
           context: "Поделиться взаимодействиями:"
         bot_names:

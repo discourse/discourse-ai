@@ -85,6 +85,7 @@ he:
     ai_embeddings_backfill_batch_size: "מספר ההטבעות למילוי חוזר כל 15 דקות."
     ai_embeddings_pg_connection_string: "מחרוזת חיבור ל־PostgreSQL למודול ההטמעות. הרחבת pgvector צריכה להיות פעילה ומספר טבלאות צריכות להיווצר. יש לעיין בתיעוד למידע נוסף."
     ai_embeddings_semantic_search_enabled: "הפעלת חיפוש סמנטי בעמוד מלא."
+    ai_embeddings_semantic_quick_search_enabled: "הפעלת אפשרות חיפוש סמנטי בחלונית תפריט החיפוש הקופצת."
     ai_embeddings_semantic_related_include_closed_topics: "כולל נושאים סגורים בתוצאות החיפוש הסמנטיות"
     ai_embeddings_semantic_search_hyde_model: "הדגם שמשמש להרחבת מילות החיפוש לקבלת תוצאות טובות יותר במהלך חיפוש סמנטי"
     ai_embeddings_per_post_enabled: יצירת הטמעות בכל פוסט בנפרד
@@ -93,8 +94,10 @@ he:
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."
     ai_bot_enable_chat_warning: "הצגת אזהרה עם פתיחת שיח הודעות פרטיות. אפשר לדרוס את זה על ידי עריכת מחרוזת התרגום: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "כאשר לבוט של GPT יש גישה להודעות הפרטיות, הוא יגיב לחברים בקבוצות האלה."
+    ai_bot_public_sharing_allowed_groups: "לאפשר לקבוצות האלה לשתף הודעות בינה מלאכותית פרטיות באופן ציבורי דרך קישור ייחודי שזמין לציבור"
     ai_bot_enabled_chat_bots: "מודלים זמינים שיכהנו כבוט בינה מלאכותית"
     ai_bot_add_to_header: "הצגת כפתור בכותרת כדי לפתוח הודעה פרטית עם בוט בינה מלאכותית"
+    ai_bot_github_access_token: "אסימון גישה ל־GitHub לשימוש עם כלי הבינה המלאכותית של GitHub (נחוץ לתמיכה בחיפוש)"
     ai_stability_api_key: "מפתח API ל־API של stability.ai"
     ai_stability_engine: "מנוע לחילול תמונות לשימוש עבור ה־API של stability.ai"
     ai_stability_api_url: "כתובת ל־API של stability.ai"
@@ -122,6 +125,7 @@ he:
       title: "רגש הפוסט"
       description: "מספר הפוסטים שסווגו עם אחד הרגשות הבאים, מקובצים לפי דרגות אמון המפרסמים."
   discourse_ai:
+    unknown_model: "דגם בינה מלאכותית לא ידוע"
     ai_helper:
       errors:
         completion_request_failed: "משהו השתבש במהלך הניסיון לספק הצעות. נא לנסות שוב."
@@ -139,10 +143,23 @@ he:
           dall_e_3: "תמונה מאת DALL-E 3"
       image_caption:
         attribution: "הכותרת נוספה ע״י בינה מלאכותית"
+    share_ai:
+      read_more: "הצגת התמליל המלא"
+      onebox_title: "דיון בינה מלאכותית עם %{llm_name}"
+      errors:
+        not_allowed: "אין לך הרשאה לשתף את הנושא הזה"
+        other_people_in_pm: "אי אפשר לשתף הודעות פרטיות עם אנשים אחרים באופן ציבורי"
+        other_content_in_pm: "אי אפשר לשתף הודעות שמכילות פוסטים של אנשים אחרים באופן ציבורי"
+        failed_to_share: "שיתוף השיחה נכשל"
+        conversation_deleted: "שיתוף השיחה נמחק בהצלחה"
+        formatted_excerpt: "דיון בינה מלאכותית עם %{llm_name}:\n %{excerpt}"
     ai_bot:
       personas:
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
         cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך פקודות או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
+        github_helper:
+          name: "מסייע GitHub"
+          description: "בוט בינה מלאכותית שמסייע במשימות ובשאלות שקשורות ב־GitHub"
         general:
           name: מסייע פורומים
           description: "בוט בינה מלאכותית למטרות כלליות שיכול לבצע מגוון משימות"
@@ -179,6 +196,9 @@ he:
             name: "שאילתת חיפוש בסיסית"
             description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‚‎#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
       command_summary:
+        github_search_code: "חיפוש קוד ב־GitHub"
+        github_file_content: "תוכן קובץ ב־GitHub"
+        github_pull_request_diff: "הבדל בבקשת דחיפה ב־GitHub"
         random_picker: "בורר אקראי"
         categories: "הצגת קטגוריות"
         search: "חיפוש"
@@ -194,6 +214,9 @@ he:
         dall_e: "יצירת תמונה"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
       command_help:
+        github_search_code: "חיפוש אחר קוד במאגר GitHub"
+        github_file_content: "משיכת תוכן של קבצים ממאגר ב־GitHub"
+        github_pull_request_diff: "משיכת הבדל לבקשת דחיפה ב־GitHub"
         random_picker: "נא לבחור מספר אקראי או רכיב אקראי מרשימה"
         categories: "הצגת כל הקטגוריות החשופות לציבור בפורום"
         search: "חיפוש בכל הנושאים הציבוריים בפורום"
@@ -209,6 +232,9 @@ he:
         dall_e: "יצירת תמונה באמצעות DALL-E 3"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
       command_description:
+        github_search_code: "בוצע חיפוש אחר ‚%{query}’ בתוך %{repo}"
+        github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
+        github_file_content: "התקבל תוכן של %{file_paths} מתוך %{repo_name}@%{branch}"
         random_picker: "בחירה מתוך %{options}, נבחר: %{result}"
         read: "קריאה: <a href='%{url}'>%{title}</a>"
         time: "השעה ב־%{timezone} היא %{time}"

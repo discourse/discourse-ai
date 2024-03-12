@@ -187,7 +187,6 @@ fi:
         ai_label: "Tekoäly"
         ai_title: "Keskustelu tekoälyn kanssa"
         share_modal:
-          title: "Jaa tekoälykeskustelu"
           copy: "Kopioi"
           context: "Jaettavat vuorovaikutukset:"
         bot_names:
