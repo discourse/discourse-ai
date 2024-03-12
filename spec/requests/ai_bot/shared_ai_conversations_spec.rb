@@ -16,7 +16,14 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
   fab!(:pm) { Fabricate(:private_message_topic) }
   fab!(:user_pm) { Fabricate(:private_message_topic, recipient: user) }
 
-  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
+  fab!(:bot_user) do
+    SiteSetting.discourse_ai_enabled = true
+    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
+    SiteSetting.ai_bot_enabled = true
+    SiteSetting.ai_bot_allowed_groups = "10"
+    SiteSetting.ai_bot_public_sharing_allowed_groups = "10"
+    User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
+  end
 
   fab!(:user_pm_share) do
     pm_topic = Fabricate(:private_message_topic, user: user, recipient: bot_user)
