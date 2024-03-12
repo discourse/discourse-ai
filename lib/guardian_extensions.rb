@@ -25,12 +25,11 @@ module DiscourseAi
         return false if allowed_user_ids.any? { |id| id > 0 && id != user.id }
 
         # no bot in the PM
-        bots = DiscourseAi::AiBot::EntryPoint.all_bot_ids
-        return false if allowed_user_ids.none? { |id| bots.include?(id) }
+        bot_ids = DiscourseAi::AiBot::EntryPoint.all_bot_ids
+        return false if allowed_user_ids.none? { |id| bot_ids.include?(id) }
 
         # other content in PM
         return false if target.posts.where("user_id > 0 and user_id <> ?", user.id).exists?
-        return false if !target.topic_allowed_users.where("user_id in (#{bot_id})").exists?
       else
         return false
       end
