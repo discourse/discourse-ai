@@ -314,7 +314,7 @@ module DiscourseAi
           post.topic.save_custom_fields
 
           ::Jobs.enqueue_in(
-            5.minutes,
+            1.minute,
             :update_ai_bot_pm_title,
             post_id: post.id,
             bot_user_id: bot.bot_user.id,

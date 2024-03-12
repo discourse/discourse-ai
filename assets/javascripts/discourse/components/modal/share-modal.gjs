@@ -3,15 +3,20 @@ import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import i18n from "discourse-common/helpers/i18n";
 import discourseLater from "discourse-common/lib/later";
 import I18n from "discourse-i18n";
+import { showShareConversationModal } from "../../lib/ai-bot-helper";
 import copyConversation from "../../lib/copy-conversation";
 
 export default class ShareModal extends Component {
+  @service modal;
+  @service siteSettings;
+  @service currentUser;
   @tracked contextValue = 1;
   @tracked htmlContext = "";
   @tracked maxContext = 0;
@@ -71,6 +76,14 @@ export default class ShareModal extends Component {
     }, 2000);
   }
 
+  @action
+  shareConversationModal(event) {
+    event?.preventDefault();
+    this.args.closeModal();
+    showShareConversationModal(this.modal, this.args.model.topic_id);
+    return false;
+  }
+
   <template>
     <DModal
       class="ai-share-modal"
@@ -104,6 +117,13 @@ export default class ShareModal extends Component {
           @label="discourse_ai.ai_bot.share_modal.copy"
         />
         <span class="ai-share-modal__just-copied">{{this.justCopiedText}}</span>
+        {{#if this.currentUser.can_share_ai_bot_conversations}}
+          <a href {{on "click" this.shareConversationModal}}>
+            <span class="ai-share-modal__share-tip">
+              {{i18n "discourse_ai.ai_bot.share_modal.share_tip"}}
+            </span>
+          </a>
+        {{/if}}
       </:footer>
     </DModal>
   </template>

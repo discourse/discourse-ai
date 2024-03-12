@@ -31,6 +31,14 @@ module DiscourseAi
 
       BOT_USER_IDS = BOTS.map(&:first)
 
+      Bot = Struct.new(:id, :name, :llm)
+
+      def self.find_bot_by_id(id)
+        found = DiscourseAi::AiBot::EntryPoint::BOTS.find { |bot| bot[0] == id }
+        return if !found
+        Bot.new(found[0], found[1], found[2])
+      end
+
       def self.map_bot_model_to_user_id(model_name)
         case model_name
         in "gpt-4-turbo"
@@ -56,12 +64,48 @@ module DiscourseAi
         end
       end
 
+      # Most errors are simply "not_allowed"
+      # we do not want to reveal information about this sytem
+      # the 2 exceptions are "other_people_in_pm" and "other_content_in_pm"
+      # in both cases you have access to the PM so we are not revealing anything
+      def self.ai_share_error(topic, guardian)
+        return nil if guardian.can_share_ai_bot_conversation?(topic)
+
+        return :not_allowed if !guardian.can_see?(topic)
+
+        # other people in PM
+        if topic.topic_allowed_users.where("user_id > 0 and user_id <> ?", guardian.user.id).exists?
+          return :other_people_in_pm
+        end
+
+        # other content in PM
+        if topic.posts.where("user_id > 0 and user_id <> ?", guardian.user.id).exists?
+          return :other_content_in_pm
+        end
+
+        :not_allowed
+      end
+
       def inject_into(plugin)
         plugin.on(:site_setting_changed) do |name, _old_value, _new_value|
           if name == :ai_bot_enabled_chat_bots || name == :ai_bot_enabled ||
                name == :discourse_ai_enabled
             DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
           end
+        end
+
+        Oneboxer.register_local_handler(
+          "discourse_ai/ai_bot/shared_ai_conversations",
+        ) do |url, route|
+          if route[:action] == "show" && share_key = route[:share_key]
+            if conversation = SharedAiConversation.find_by(share_key: share_key)
+              conversation.onebox
+            end
+          end
+        end
+
+        plugin.on(:reduce_excerpt) do |doc, options|
+          doc.css("details").remove if options && options[:strip_details]
         end
 
         plugin.register_seedfu_fixtures(
@@ -128,6 +172,10 @@ module DiscourseAi
 
         plugin.add_to_serializer(:current_user, :can_use_custom_prompts) do
           scope.user.in_any_groups?(SiteSetting.ai_helper_custom_prompts_allowed_groups_map)
+        end
+
+        plugin.add_to_serializer(:current_user, :can_share_ai_bot_conversations) do
+          scope.user.in_any_groups?(SiteSetting.ai_bot_public_sharing_allowed_groups_map)
         end
 
         plugin.register_svg_icon("robot")
