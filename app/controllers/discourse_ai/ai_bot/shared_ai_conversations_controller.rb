@@ -17,47 +17,31 @@ module DiscourseAi
         shared_conversation = SharedAiConversation.share_conversation(current_user, @topic)
 
         if shared_conversation.persisted?
-          render json: { share_key: shared_conversation.share_key }
+          render json: success_json.merge(share_key: shared_conversation.share_key)
         else
-          render json: { error: "Failed to share the conversation" }, status: :unprocessable_entity
+          render json: failed_json.merge(error: I18n.t("discourse_ai.share_ai.failed_to_share")),
+                 status: :unprocessable_entity
         end
       end
 
       def destroy
         ensure_allowed_destroy!
         @shared_conversation.destroy
-        render json: { message: "Conversation share deleted successfully" }
+        render json:
+                 success_json.merge(message: Ia18n.t("discourse_ai.share_ai.conversation_deleted"))
       end
 
       def show
         @shared_conversation = SharedAiConversation.find_by(share_key: params[:share_key])
+        raise Discourse::NotFound if @shared_conversation.blank?
 
-        if @shared_conversation.present?
-          expires_in 1.minute, public: true
-          response.headers["X-Robots-Tag"] = "noindex"
+        expires_in 1.minute, public: true
+        response.headers["X-Robots-Tag"] = "noindex"
 
-          # render json for json reqs
-          if request.format.json?
-            posts =
-              @shared_conversation.populated_context.map do |post|
-                {
-                  id: post.id,
-                  cooked: post.cooked,
-                  username: post.user.username,
-                  created_at: post.created_at,
-                }
-              end
-            render json: {
-                     llm_name: @shared_conversation.llm_name,
-                     share_key: @shared_conversation.share_key,
-                     title: @shared_conversation.title,
-                     posts: posts,
-                   }
-          else
-            render "show", layout: false
-          end
+        if request.format.json?
+          render json: success_json.merge(@shared_conversation.to_json)
         else
-          raise Discourse::NotFound
+          render "show", layout: false
         end
       end
 
@@ -73,7 +57,8 @@ module DiscourseAi
       private
 
       def require_site_settings!
-        if !SiteSetting.discourse_ai_enabled || !SiteSetting.ai_bot_allow_public_sharing ||
+        if !SiteSetting.discourse_ai_enabled ||
+             !SiteSetting.ai_bot_public_sharing_allowed_groups_map.any? ||
              !SiteSetting.ai_bot_enabled
           raise Discourse::NotFound
         end
@@ -98,10 +83,10 @@ module DiscourseAi
       def ensure_allowed_destroy!
         @shared_conversation = SharedAiConversation.find_by(share_key: params[:share_key])
 
-        raise Discourse::InvalidAccess.new if @shared_conversation.blank?
+        raise Discourse::InvalidAccess if @shared_conversation.blank?
 
         if @shared_conversation.user_id != current_user.id && !current_user.admin?
-          raise Discourse::InvalidAccess.new
+          raise Discourse::InvalidAccess
         end
       end
 

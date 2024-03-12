@@ -147,12 +147,12 @@ function initializeShareButton(api) {
 }
 
 function initializeShareTopicButton(api) {
-  const siteSettings = api.container.lookup("site-settings:main");
   const modal = api.container.lookup("service:modal");
+  const currentUser = api.container.lookup("current-user:main");
 
   api.registerTopicFooterButton({
     id: "share-ai-conversation",
-    icon: "share",
+    icon: "share-alt",
     label: "discourse_ai.ai_bot.share_ai_conversation.name",
     title: "discourse_ai.ai_bot.share_ai_conversation.title",
     action() {
@@ -162,7 +162,7 @@ function initializeShareTopicButton(api) {
     dependentKeys: ["topic.ai_persona_name"],
     displayed() {
       return (
-        siteSettings.ai_bot_allow_public_sharing &&
+        currentUser?.can_share_ai_bot_conversations &&
         this.topic.ai_persona_name !== undefined
       );
     },

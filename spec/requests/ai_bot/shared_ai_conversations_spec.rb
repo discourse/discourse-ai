@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
     SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "10"
-    SiteSetting.ai_bot_allow_public_sharing = true
+    SiteSetting.ai_bot_public_sharing_allowed_groups = "10"
   end
 
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
@@ -16,14 +16,7 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
   fab!(:pm) { Fabricate(:private_message_topic) }
   fab!(:user_pm) { Fabricate(:private_message_topic, recipient: user) }
 
-  fab!(:bot_user) do
-    SiteSetting.discourse_ai_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
-    SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_allowed_groups = "10"
-    SiteSetting.ai_bot_allow_public_sharing = true
-    User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
-  end
+  fab!(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
 
   fab!(:user_pm_share) do
     pm_topic = Fabricate(:private_message_topic, user: user, recipient: bot_user)
@@ -140,7 +133,7 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
         expect(response).to have_http_status(:success)
         expect(response.parsed_body["share_key"]).to eq(shared_conversation.share_key)
 
-        SiteSetting.ai_bot_allow_public_sharing = false
+        SiteSetting.ai_bot_public_sharing_allowed_groups = ""
         get "#{path}/preview/#{user_pm_share.id}.json"
         expect(response).not_to have_http_status(:success)
       end

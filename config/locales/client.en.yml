@@ -229,7 +229,7 @@ en:
           delete: "Delete Share"
 
         share_ai_conversation:
-          name: "Share AI"
+          name: "Share AI Conversation"
           title: "Share this AI conversation publicly"
 
         ai_label: "AI"

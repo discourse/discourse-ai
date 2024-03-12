@@ -311,9 +311,13 @@ discourse_ai:
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
   # Adding a new bot? Make sure to create a user for it on the seed file and update translations.
-  ai_bot_allow_public_sharing:
-    client: true
-    default: false
+  ai_bot_public_sharing_allowed_groups:
+    client: false
+    type: group_list
+    list_type: compact
+    default: "1|2" # 1: admins, 2: moderators
+    allow_any: false
+    refresh: true
   ai_bot_enabled_chat_bots:
     type: list
     default: "gpt-3.5-turbo"

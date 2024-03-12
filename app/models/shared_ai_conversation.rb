@@ -48,31 +48,42 @@ class SharedAiConversation < ActiveRecord::Base
     @populated_context
   end
 
+  def to_json
+    posts =
+      self.populated_context.map do |post|
+        {
+          id: post.id,
+          cooked: post.cooked,
+          username: post.user.username,
+          created_at: post.created_at,
+        }
+      end
+    { llm_name: self.llm_name, share_key: self.share_key, title: self.title, posts: posts }
+  end
+
   def self.excerpt(posts)
     excerpt = +""
     posts.each do |post|
-      excerpt << "#{post.user.username}: #{post.excerpt(100)} "
+      excerpt << "#{post.user.display_name}: #{post.excerpt(100)} "
       break if excerpt.length > 1000
     end
     excerpt
   end
 
   def formatted_excerpt
-    "AI Conversation with #{llm_name}:\n #{excerpt}"
+    I18n.t("discourse_ai.share_ai.formatted_excerpt", llm_name: llm_name, excerpt: excerpt)
   end
 
   def self.build_conversation_data(topic, max_posts: DEFAULT_MAX_POSTS, include_usernames: false)
     llm_name = nil
     topic.topic_allowed_users.each do |tu|
       if DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS.include?(tu.user_id)
-        _, _, llm_name =
-          DiscourseAi::AiBot::EntryPoint::BOTS.find { |user_id, _, _| user_id == tu.user_id }
-        break
+        llm_name = DiscourseAi::AiBot::EntryPoint.find_bot_by_id(tu.user_id)&.llm
       end
     end
 
     llm_name = ActiveSupport::Inflector.humanize(llm_name) if llm_name
-    llm_name ||= "unknown AI model"
+    llm_name ||= I18n.t("discourse_ai.unknown_model")
 
     persona = nil
     if persona_id = topic.custom_fields["ai_persona_id"]

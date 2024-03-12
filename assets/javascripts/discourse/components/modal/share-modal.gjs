@@ -16,6 +16,7 @@ import copyConversation from "../../lib/copy-conversation";
 export default class ShareModal extends Component {
   @service modal;
   @service siteSettings;
+  @service currentUser;
   @tracked contextValue = 1;
   @tracked htmlContext = "";
   @tracked maxContext = 0;
@@ -116,7 +117,7 @@ export default class ShareModal extends Component {
           @label="discourse_ai.ai_bot.share_modal.copy"
         />
         <span class="ai-share-modal__just-copied">{{this.justCopiedText}}</span>
-        {{#if this.siteSettings.ai_bot_allow_public_sharing}}
+        {{#if this.currentUser.can_share_ai_bot_conversations}}
           <a href {{on "click" this.shareConversationModal}}>
             <span class="ai-share-modal__share-tip">
               {{i18n "discourse_ai.ai_bot.share_modal.share_tip"}}

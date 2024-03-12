@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { inject as service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
@@ -9,11 +10,10 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
 import i18n from "discourse-common/helpers/i18n";
 import { getAbsoluteURL } from "discourse-common/lib/get-url";
-import discourseLater from "discourse-common/lib/later";
 import I18n from "discourse-i18n";
 
 export default class ShareModal extends Component {
-  @tracked justCopiedText = "";
+  @service toasts;
   @tracked shareKey = "";
 
   constructor() {
@@ -76,11 +76,12 @@ export default class ShareModal extends Component {
   async share() {
     try {
       await clipboardCopyAsync(this.generateShareURL.bind(this));
-      this.justCopiedText = I18n.t("discourse_ai.ai_bot.conversation_shared");
-
-      discourseLater(() => {
-        this.justCopiedText = "";
-      }, 2000);
+      this.toasts.success({
+        duration: 3000,
+        data: {
+          message: I18n.t("discourse_ai.ai_bot.conversation_shared"),
+        },
+      });
     } catch (e) {
       popupAjaxError(e);
     }
@@ -113,10 +114,6 @@ export default class ShareModal extends Component {
             @label="discourse_ai.ai_bot.share_full_topic_modal.delete"
           />
         {{/if}}
-
-        <span
-          class="ai-share-full-topic-modal__just-copied"
-        >{{this.justCopiedText}}</span>
       </:footer>
     </DModal>
   </template>

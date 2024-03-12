@@ -31,6 +31,14 @@ module DiscourseAi
 
       BOT_USER_IDS = BOTS.map(&:first)
 
+      Bot = Struct.new(:id, :name, :llm)
+
+      def self.find_bot_by_id(id)
+        found = DiscourseAi::AiBot::EntryPoint::BOTS.find { |bot| bot[0] == id }
+        return if !found
+        Bot.new(found[0], found[1], found[2])
+      end
+
       def self.map_bot_model_to_user_id(model_name)
         case model_name
         in "gpt-4-turbo"
@@ -155,6 +163,10 @@ module DiscourseAi
 
         plugin.add_to_serializer(:current_user, :can_use_custom_prompts) do
           scope.user.in_any_groups?(SiteSetting.ai_helper_custom_prompts_allowed_groups_map)
+        end
+
+        plugin.add_to_serializer(:current_user, :can_share_ai_bot_conversations) do
+          scope.user.in_any_groups?(SiteSetting.ai_bot_public_sharing_allowed_groups_map)
         end
 
         plugin.register_svg_icon("robot")
