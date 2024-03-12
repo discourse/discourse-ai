@@ -14,7 +14,7 @@ export default apiInitializer("1.25.0", (api) => {
 
   if (
     !settings.ai_helper_enabled_features.includes("image_caption") ||
-    !currentUser.can_use_assistant
+    !currentUser?.can_use_assistant
   ) {
     return;
   }
