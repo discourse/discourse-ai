@@ -18,6 +18,8 @@ he:
         gpt_3_5_turbo: GPT 3.5 טורבו
         claude_2: Claude 2
         gemini_pro: Gemini Pro
+        claude_3_opus: Claude 3 Opus
+        claude_3_sonnet: Claude 3 Sonnet
       scriptables:
         llm_report:
           fields:
@@ -209,6 +211,8 @@ he:
           none: "חיפוש הבינה המלאכותית שלנו לא מצא נושאים, עמך הסליחה."
           new: "יש ללחוץ על ‚חיפוש’ כדי להתחיל לחפש תוצאות חדשות עם בינה מלאכותית"
         ai_generated_result: "תוצאות חיפוש שנמצאו באמצעות בינה מלאכותית"
+        quick_search:
+          suffix: "בכל הנושאים והפוסטים עם בינה מלאכותית"
       ai_bot:
         pm_warning: "הודעות בוט שיח בינה מלאכותית לא נאכפות דרך קבע על ידי המפקחים."
         cancel_streaming: "עצירת התגובה"
@@ -216,13 +220,24 @@ he:
         shortcut_title: "התחלת הודעה פרטית עם בוט בינה מלאכותית"
         share: "שיתוף דיון עם בינה מלאכותית"
         conversation_shared: "הדיון הועתק"
+        share_full_topic_modal:
+          title: "שיתוף שיחה באופן ציבורי"
+          share: "שיתוף והעתקת קישור"
+          update: "עדכון והעתקת קישור"
+          delete: "מחיקת שיתוף"
+        share_ai_conversation:
+          name: "שיתוף דיון עם בינה מלאכותית"
         ai_label: "בינה מלאכותית"
         ai_title: "דיון עם בינה מלאכותית"
         share_modal:
-          title: "שיתוף דיון עם בינה מלאכותית"
+          title: "העתקת דיון עם בינה מלאכותית"
           copy: "העתקה"
           context: "פעילויות לשיתוף:"
+          share_tip: לחלופין, אפשר לשתף את כל הדיון.
         bot_names:
+          fake: "בוט בדיקות מזויף"
+          claude-3-opus: "Claude 3 Opus"
+          claude-3-sonnet: "Claude 3 Sonnet"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT 4 טורבו"
           gpt-3:

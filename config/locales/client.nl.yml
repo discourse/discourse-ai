@@ -187,7 +187,6 @@ nl:
         ai_label: "AI"
         ai_title: "Conversatie met AI"
         share_modal:
-          title: "AI-conversatie delen"
           copy: "Kopiëren"
           context: "Te delen interacties:"
         bot_names:
