@@ -11,16 +11,33 @@ RSpec.describe SharedAiConversation, type: :model do
 
   fab!(:user)
 
+  let(:raw_with_details) { <<~HTML }
+    <details>
+    <summary>GitHub pull request diff</summary>
+    <p><a href="https://github.com/discourse/discourse-ai/pull/521">discourse/discourse-ai 521</a></p>
+    </details>
+    <p>This is some other text</p>
+    HTML
+
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
   let!(:topic) { Fabricate(:private_message_topic, recipient: bot_user) }
   let!(:post1) { Fabricate(:post, topic: topic, post_number: 1) }
-  let!(:post2) { Fabricate(:post, topic: topic, post_number: 2) }
+  let!(:post2) { Fabricate(:post, topic: topic, post_number: 2, raw: raw_with_details) }
 
   describe ".share_conversation" do
     it "creates a new conversation if one does not exist" do
       expect { described_class.share_conversation(user, topic) }.to change {
         described_class.count
       }.by(1)
+    end
+
+    it "generates a good onebox" do
+      conversation = described_class.share_conversation(user, topic)
+      onebox = conversation.onebox
+      expect(onebox).not_to include("GitHub pull request diff")
+      expect(onebox).not_to include("<details>")
+
+      expect(onebox).to include("AI Conversation with Claude-2")
     end
 
     it "updates an existing conversation if one exists" do

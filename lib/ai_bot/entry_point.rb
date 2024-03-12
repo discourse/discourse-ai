@@ -94,6 +94,20 @@ module DiscourseAi
           end
         end
 
+        Oneboxer.register_local_handler(
+          "discourse_ai/ai_bot/shared_ai_conversations",
+        ) do |url, route|
+          if route[:action] == "show" && share_key = route[:share_key]
+            if conversation = SharedAiConversation.find_by(share_key: share_key)
+              conversation.onebox
+            end
+          end
+        end
+
+        plugin.on(:reduce_excerpt) do |doc, options|
+          doc.css("details").remove if options && options[:strip_details]
+        end
+
         plugin.register_seedfu_fixtures(
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_bot"),
         )
