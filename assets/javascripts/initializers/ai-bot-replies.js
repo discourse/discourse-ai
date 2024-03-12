@@ -163,7 +163,7 @@ function initializeShareTopicButton(api) {
     displayed() {
       return (
         currentUser?.can_share_ai_bot_conversations &&
-        this.topic.ai_persona_name !== undefined
+        this.topic.ai_persona_name
       );
     },
   });

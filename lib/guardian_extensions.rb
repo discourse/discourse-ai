@@ -19,13 +19,20 @@ module DiscourseAi
         return false if target.topic_allowed_groups.exists?
         return false if !target.topic_allowed_users.exists?(user_id: user.id)
 
+        allowed_user_ids = target.topic_allowed_users.pluck(:user_id)
+
         # other people in PM
-        if target.topic_allowed_users.where("user_id > 0 and user_id <> ?", user.id).exists?
-          return false
-        end
+        return false if allowed_user_ids.any? { |id| id > 0 && id != user.id }
+
+        # no bot in the PM
+        bots = DiscourseAi::AiBot::EntryPoint.all_bot_ids
+        return false if allowed_user_ids.none? { |id| bots.include?(id) }
 
         # other content in PM
         return false if target.posts.where("user_id > 0 and user_id <> ?", user.id).exists?
+        return false if !target.topic_allowed_users.where("user_id in (#{bot_id})").exists?
+      else
+        return false
       end
 
       true

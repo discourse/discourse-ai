@@ -33,6 +33,10 @@ module DiscourseAi
 
       Bot = Struct.new(:id, :name, :llm)
 
+      def self.all_bot_ids
+        BOT_USER_IDS.concat(AiPersona.mentionables.map { |mentionable| mentionable[:user_id] })
+      end
+
       def self.find_bot_by_id(id)
         found = DiscourseAi::AiBot::EntryPoint::BOTS.find { |bot| bot[0] == id }
         return if !found
