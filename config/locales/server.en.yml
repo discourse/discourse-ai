@@ -158,13 +158,13 @@ en:
     share_ai:
       read_more: "Read full transcript"
       onebox_title: "AI Conversation with %{llm_name}"
+      formatted_excerpt: "AI Conversation with %{llm_name}:\n %{excerpt}"
       errors:
         not_allowed: "You are not allowed to share this topic"
         other_people_in_pm: "Personal messages with other humans cannot be shared publicly"
         other_content_in_pm: "Personal messages containing posts from other people cannot be shared publicly"
         failed_to_share: "Failed to share the conversation"
         conversation_deleted: "Conversation share deleted successfully"
-        formatted_excerpt: "AI Conversation with %{llm_name}:\n %{excerpt}"
     ai_bot:
       personas:
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"

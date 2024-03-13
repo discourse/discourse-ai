@@ -26,10 +26,10 @@
   --font-up-4: 1.7511em;
   --font-up-3: 1.5157em;
   --font-up-2: 1.3195em;
-  --font-up-1: 1.1487em; 
+  --font-up-1: 1.1487em;
   --font-0: 1em;
-  --font-down-1: 0.8706em; 
-  --font-down-2: 0.7579em; 
+  --font-down-1: 0.8706em;
+  --font-down-2: 0.7579em;
   --font-down-3: 0.6599em;
   --font-down-4: 0.5745em;
   --font-down-5: 0.5em;
@@ -216,7 +216,7 @@ article {
   }
   article:last-of-type:hover {
     border-bottom-color: transparent;
-  }  
+  }
 }
 
 pre, code {
@@ -290,7 +290,7 @@ h1 h2 h3 h4 h5 h6 {
 .post__content p:last-child {
   margin-bottom: 0.4em;
 }
- 
+
 .post__date {
   color: var(--primary-500);
   margin-left: auto;
@@ -377,3 +377,13 @@ li, p {
   word-break: break-word;
 }
 
+.lightbox-wrapper .meta svg, .lightbox-wrapper .meta .informations {
+  display: none;
+}
+.lightbox-wrapper .meta .filename {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+}
