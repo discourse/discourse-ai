@@ -32,6 +32,10 @@ module DiscourseAi
       end
 
       def show
+        # we don't use an asset packager, so remember to bump this
+        # when CSS changes
+        @asset_version = 1
+
         @shared_conversation = SharedAiConversation.find_by(share_key: params[:share_key])
         raise Discourse::NotFound if @shared_conversation.blank?
 

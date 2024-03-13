@@ -10,8 +10,8 @@
     <meta name="twitter:title" content="<%= @shared_conversation.title %>">
     <meta name="twitter:description" content="<%= @shared_conversation.formatted_excerpt %>">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/share.css") %>">
-    <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/highlight.min.css") %>">
+    <link rel="stylesheet" href="<%= share_asset_url("share.css") %>">
+    <link rel="stylesheet" href="<%= share_asset_url("highlight.min.css") %>">
     <script>
       window.hljs_initHighlighting = function() {
         document.querySelectorAll('pre code').forEach((el) => {
@@ -19,7 +19,7 @@
         });
       };
     </script>
-    <script async src="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/highlight.min.js") %>" onload="window.hljs_initHighlighting()" ></script>
+    <script async src="<%= share_asset_url("highlight.min.js") %>" onload="window.hljs_initHighlighting()" ></script>
   </head>
   <body>
     <header class="site-header">
@@ -42,7 +42,6 @@
         <span><%= @shared_conversation.llm_name %></span>
       </div>
     </header>
-    
     <section>
       <header class="page-header">
         <h1><%= @shared_conversation.title %></h1>
