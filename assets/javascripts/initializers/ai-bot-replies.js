@@ -8,6 +8,7 @@ import streamText from "../discourse/lib/ai-streamer";
 import copyConversation from "../discourse/lib/copy-conversation";
 const AUTO_COPY_THRESHOLD = 4;
 import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
+import { showShareConversationModal } from "../discourse/lib/ai-bot-helper";
 
 let enabledChatBotIds = [];
 function isGPTBot(user) {
@@ -145,6 +146,29 @@ function initializeShareButton(api) {
   const modal = api.container.lookup("service:modal");
 }
 
+function initializeShareTopicButton(api) {
+  const modal = api.container.lookup("service:modal");
+  const currentUser = api.container.lookup("current-user:main");
+
+  api.registerTopicFooterButton({
+    id: "share-ai-conversation",
+    icon: "share-alt",
+    label: "discourse_ai.ai_bot.share_ai_conversation.name",
+    title: "discourse_ai.ai_bot.share_ai_conversation.title",
+    action() {
+      showShareConversationModal(modal, this.topic.id);
+    },
+    classNames: ["share-ai-conversation-button"],
+    dependentKeys: ["topic.ai_persona_name"],
+    displayed() {
+      return (
+        currentUser?.can_share_ai_bot_conversations &&
+        this.topic.ai_persona_name
+      );
+    },
+  });
+}
+
 export default {
   name: "discourse-ai-bot-replies",
 
@@ -157,6 +181,9 @@ export default {
       withPluginApi("1.6.0", initializeAIBotReplies);
       withPluginApi("1.6.0", initializePersonaDecorator);
       withPluginApi("1.22.0", (api) => initializeShareButton(api, container));
+      withPluginApi("1.22.0", (api) =>
+        initializeShareTopicButton(api, container)
+      );
     }
   },
 };

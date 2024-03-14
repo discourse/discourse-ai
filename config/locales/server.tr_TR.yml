@@ -85,6 +85,7 @@ tr_TR:
     ai_embeddings_backfill_batch_size: "Her 15 dakikada bir geri doldurulacak gömme sayısı."
     ai_embeddings_pg_connection_string: "Gömme modülü için PostgreSQL bağlantı dizesi. pgvector uzantısının etkinleştirilmesi ve bir dizi tablonun oluşturulması gerekir. Daha fazla bilgi için belgelere bakın."
     ai_embeddings_semantic_search_enabled: "Tam sayfa semantik aramayı etkinleştirin."
+    ai_embeddings_semantic_quick_search_enabled: "Arama menüsü açılır penceresinde semantik arama seçeneğini etkinleştirin."
     ai_embeddings_semantic_related_include_closed_topics: "Kapalı konuları semantik arama sonuçlarına dâhil edin"
     ai_embeddings_semantic_search_hyde_model: "Anlamsal arama sırasında daha iyi sonuçlar elde etmek için anahtar kelimeleri genişletmek üzere kullanılan model"
     ai_embeddings_per_post_enabled: Her gönderi için yerleştirmeler oluşturma
@@ -93,8 +94,10 @@ tr_TR:
     ai_bot_enabled: "YZ Botu modülünü etkinleştirin."
     ai_bot_enable_chat_warning: "Kişisel mesaj sohbeti başlatıldığında bir uyarı görüntüleyin. Çeviri dizesi düzenlenerek geçersiz kılınabilir: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "GPT Botunun Kişisel Mesaja erişimi olduğunda, bu grupların üyelerine yanıt verir."
+    ai_bot_public_sharing_allowed_groups: "Bu grupların yapay zeka kişisel mesajlarını herkese açık benzersiz bir bağlantı aracılığıyla paylaşmasına izin verin"
     ai_bot_enabled_chat_bots: "YZ Botu görevi görecek mevcut modeller"
     ai_bot_add_to_header: "Bir YZ Botu ile bir kişisel mesaj başlatmak için başlıkta bir düğme gösterin"
+    ai_bot_github_access_token: "GitHub AI araçlarıyla kullanım için GitHub erişim tokeni (arama desteği için gereklidir)"
     ai_stability_api_key: "stability.ai API'si için API anahtarı"
     ai_stability_engine: "stability.ai API'si için kullanılacak görüntü oluşturma motoru"
     ai_stability_api_url: "stability.ai API'si için URL"
@@ -122,6 +125,7 @@ tr_TR:
       title: "Duygu gönder"
       description: "Aşağıdaki duygulardan biriyle sınıflandırılan ve gönderi sahibinin güven seviyesine göre gruplandırılan gönderilerin sayısı."
   discourse_ai:
+    unknown_model: "Bilinmeyen yapay zeka modeli"
     ai_helper:
       errors:
         completion_request_failed: "Öneriler sunulmaya çalışılırken bir şeyler ters gitti. Lütfen tekrar deneyin."
@@ -139,10 +143,23 @@ tr_TR:
           dall_e_3: "DALL-E 3'den görüntü"
       image_caption:
         attribution: "AI tarafından altyazılı"
+    share_ai:
+      read_more: "Tam metni okuyun"
+      onebox_title: "%{llm_name} ile Yapay Zeka Konuşması"
+      errors:
+        not_allowed: "Bu konuyu paylaşmanıza izin verilmiyor"
+        other_people_in_pm: "Diğer insanlarla olan kişisel mesajlar herkese açık olarak paylaşılamaz"
+        other_content_in_pm: "Başkalarına ait gönderileri içeren kişisel mesajlar herkese açık olarak paylaşılamaz"
+        failed_to_share: "Görüşme paylaşılamadı"
+        conversation_deleted: "Görüşme paylaşımı başarıyla silindi"
+        formatted_excerpt: "%{llm_name} ile Yapay Zeka Sohbeti:\n %{excerpt}"
     ai_bot:
       personas:
         cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
         cannot_edit_system_persona: "Sistem kişileri yalnızca yeniden adlandırılabilir, komutları veya sistem istemini düzenleyemezsiniz, bunun yerine devre dışı bırakıp bir kopyasını oluşturabilirsiniz"
+        github_helper:
+          name: "GitHub Yardımcısı"
+          description: "GitHub ile ilgili görevlere ve sorulara yardımcı olma konusunda uzmanlaşmış yapay zeka botu"
         general:
           name: Forum Yardımcısı
           description: "Çeşitli görevleri yerine getirebilen genel amaçlı AI Botu"
@@ -179,6 +196,9 @@ tr_TR:
             name: "Temel Arama Sorgusu"
             description: "Arama yaparken kullanılacak temel sorgu. Örnek: '#urgent', arama sorgusuna '#urgent' ekler ve yalnızca acil kategorisine veya etiketine sahip konuları içerir."
       command_summary:
+        github_search_code: "GitHub kodu arama"
+        github_file_content: "GitHub dosya içeriği"
+        github_pull_request_diff: "GitHub çekme isteği farkı"
         random_picker: "Rastgele Seçici"
         categories: "Kategorileri listele"
         search: "Ara"
@@ -194,6 +214,9 @@ tr_TR:
         dall_e: "Görüntü oluştur"
         search_meta_discourse: "Discourse Metada arama yapın"
       command_help:
+        github_search_code: "GitHub deposunda kod arama"
+        github_file_content: "Bir GitHub deposundan dosyaların içeriğini alma"
+        github_pull_request_diff: "GitHub çekme isteği farkını alma"
         random_picker: "Rastgele bir sayı veya listenin rastgele bir öğesini seçme"
         categories: "Forumdaki herkese açık tüm kategorileri listeleyin"
         search: "Forumdaki tüm herkese açık konuları ara"
@@ -209,6 +232,9 @@ tr_TR:
         dall_e: "DALL-E 3 kullanarak görüntü oluştur"
         search_meta_discourse: "Discourse Metada arama yapın"
       command_description:
+        github_search_code: "%{repo} içinde '%{query}' araması yapıldı"
+        github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
+        github_file_content: "%{file_paths} içeriği %{repo_name}@%{branch} kaynağından alındı"
         random_picker: "%{options} adresinden seçildi, seçilen %{result}"
         read: "Okunuyor: <a href='%{url}'>%{title}</a>"
         time: "%{timezone} konumunda saat %{time}"

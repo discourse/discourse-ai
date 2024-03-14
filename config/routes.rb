@@ -19,6 +19,13 @@ DiscourseAi::Engine.routes.draw do
     post "post/:post_id/stop-streaming" => "bot#stop_streaming_response"
     get "bot-username" => "bot#show_bot_username"
   end
+
+  scope module: :ai_bot, path: "/ai-bot/shared-ai-conversations" do
+    post "/" => "shared_ai_conversations#create"
+    delete "/:share_key" => "shared_ai_conversations#destroy"
+    get "/:share_key" => "shared_ai_conversations#show"
+    get "/preview/:topic_id" => "shared_ai_conversations#preview"
+  end
 end
 
 Discourse::Application.routes.draw do

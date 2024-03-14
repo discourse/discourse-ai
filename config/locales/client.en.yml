@@ -224,13 +224,24 @@ en:
         share: "Share AI conversation"
         conversation_shared: "Conversation copied"
 
+        share_full_topic_modal:
+          title: "Share Conversation Publicly"
+          share: "Share and Copy Link"
+          update: "Update and Copy Link"
+          delete: "Delete Share"
+
+        share_ai_conversation:
+          name: "Share AI Conversation"
+          title: "Share this AI conversation publicly"
+
         ai_label: "AI"
         ai_title: "Conversation with AI"
 
         share_modal:
-          title: "Share AI conversation"
+          title: "Copy AI conversation"
           copy: "Copy"
           context: "Interactions to share:"
+          share_tip: Alternatively, you can share the entire conversation.
 
         bot_names:
           fake: "Fake Test Bot"

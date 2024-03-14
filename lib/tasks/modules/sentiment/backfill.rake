@@ -13,6 +13,7 @@ task "ai:sentiment:backfill", [:start_post] => [:environment] do |_, args|
     .where("posts.id >= ?", args[:start_post].to_i || 0)
     .where("category_id IN (?)", public_categories)
     .where(posts: { deleted_at: nil })
+    .where(topics: { deleted_at: nil })
     .order("posts.id ASC")
     .find_each do |post|
       print "."

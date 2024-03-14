@@ -18,6 +18,8 @@ tr_TR:
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
         gemini_pro: Gemini Pro
+        claude_3_opus: Claude 3 Opus
+        claude_3_sonnet: Claude 3 Sonnet
       scriptables:
         llm_report:
           fields:
@@ -209,6 +211,8 @@ tr_TR:
           none: "Üzgünüz, YZ aramamız eşleşen konu bulamadı."
           new: "YZ ile yeni sonuçlar aramaya başlamak için \"Ara\"ya basın"
         ai_generated_result: "YZ kullanılarak bulunan arama sonucu"
+        quick_search:
+          suffix: "AI ile tüm konularda ve gönderilerde"
       ai_bot:
         pm_warning: "YZ sohbet robotu mesajları moderatörler tarafından düzenli olarak izlenir."
         cancel_streaming: "Yanıtı durdur"
@@ -216,13 +220,25 @@ tr_TR:
         shortcut_title: "YZ botuyla kişisel mesaj başlatın"
         share: "YZ konuşmasını paylaş"
         conversation_shared: "Konuşma kopyalandı"
+        share_full_topic_modal:
+          title: "Konuşmayı Herkese Açık Olarak Paylaşın"
+          share: "Paylaş ve Bağlantıyı Kopyala"
+          update: "Güncelle ve Bağlantıyı Kopyala"
+          delete: "Paylaşımı Sil"
+        share_ai_conversation:
+          name: "Yapay Zeka Konuşmasını Paylaşın"
+          title: "Bu AI görüşmesini herkese açık olarak paylaşın"
         ai_label: "YZ"
         ai_title: "YZ ile konuşma"
         share_modal:
-          title: "YZ konuşmasını paylaş"
+          title: "AI görüşmesini kopyala"
           copy: "Kopyala"
           context: "Paylaşılacak etkileşimler:"
+          share_tip: Alternatif olarak, konuşmanın tamamını paylaşabilirsiniz.
         bot_names:
+          fake: "Sahte Test Botu"
+          claude-3-opus: "Claude 3 Opus"
+          claude-3-sonnet: "Claude 3 Sonnet"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:

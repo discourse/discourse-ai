@@ -12,8 +12,7 @@ module Jobs
       topic = post.topic
       reply_to = post.reply_to_post
 
-      guardian = Guardian.new(user)
-      return unless guardian.can_see?(post)
+      return unless user.guardian.can_see?(post)
 
       prompt = CompletionPrompt.enabled_by_name("explain")
 

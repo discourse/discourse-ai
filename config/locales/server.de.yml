@@ -85,6 +85,7 @@ de:
     ai_embeddings_backfill_batch_size: "Anzahl der Einbettungen, die alle 15 Minuten aufgefüllt werden."
     ai_embeddings_pg_connection_string: "PostgreSQL-Verbindungsstring für das Einbettungsmodul. Die pgvector-Erweiterung muss aktiviert sein und eine Reihe von Tabellen erstellt werden. Siehe Dokumentation für weitere Informationen."
     ai_embeddings_semantic_search_enabled: "Aktiviere die semantische Ganzseitensuche."
+    ai_embeddings_semantic_quick_search_enabled: "Aktiviere die semantische Suche im Popup-Menü der Suche."
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"
     ai_embeddings_semantic_search_hyde_model: "Modell zur Erweiterung von Schlüsselwörtern, um bessere Ergebnisse bei der semantischen Suche zu erzielen"
     ai_embeddings_per_post_enabled: Erstelle Einbettungen für jeden Beitrag
@@ -95,6 +96,7 @@ de:
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
     ai_bot_enabled_chat_bots: "Verfügbare Modelle, die als KI-Bot agieren können"
     ai_bot_add_to_header: "Eine Schaltfläche in der Kopfzeile anzeigen, um eine PN mit einem KI-Bot zu starten"
+    ai_bot_github_access_token: "GitHub-Zugangstoken für die Verwendung mit den GitHub-KI-Tools (erforderlich für die Suchunterstützung)"
     ai_stability_api_key: "API-Schlüssel für die stability.ai-API"
     ai_stability_engine: "Bildgenerierungsengine für die stability.ai-API"
     ai_stability_api_url: "URL für die stability.ai-API"
@@ -143,6 +145,9 @@ de:
       personas:
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
         cannot_edit_system_persona: "System-Personas können nur umbenannt werden. Du kannst keine Befehle oder die System-Eingabeaufforderung bearbeiten. Deaktiviere sie stattdessen und erstelle eine Kopie"
+        github_helper:
+          name: "GitHub-Helfer"
+          description: "KI-Bot, der auf die Unterstützung bei GitHub-bezogenen Aufgaben und Fragen spezialisiert ist"
         general:
           name: Forum-Helfer
           description: "Universeller KI-Bot, der verschiedene Aufgaben erfüllen kann"
@@ -179,6 +184,9 @@ de:
             name: "Basissuchanfrage"
             description: "Basisanfrage, die bei der Suche verwendet wird. Beispiel: Bei „#dringend“ wird der Suchanfrage „#dringend“ vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort „dringend“ angezeigt."
       command_summary:
+        github_search_code: "GitHub Code-Suche"
+        github_file_content: "Inhalt der GitHub-Datei"
+        github_pull_request_diff: "GitHub Pull-Request Unterschied"
         random_picker: "Zufallsauswahl"
         categories: "Kategorien auflisten"
         search: "Suche"
@@ -194,6 +202,9 @@ de:
         dall_e: "Bild generieren"
         search_meta_discourse: "Suche Meta Discourse"
       command_help:
+        github_search_code: "Suche nach Code in einem GitHub-Repository"
+        github_file_content: "Inhalt von Dateien aus einem GitHub-Repository abrufen"
+        github_pull_request_diff: "Abrufen eines GitHub Pull Request Unterschieds"
         random_picker: "Wähle eine Zufallszahl oder ein zufälliges Element aus einer Liste"
         categories: "Alle öffentlich sichtbaren Kategorien im Forum auflisten"
         search: "Alle öffentlichen Themen im Forum durchsuchen"
@@ -209,6 +220,9 @@ de:
         dall_e: "Bild mit DALL-E 3 generieren"
         search_meta_discourse: "Suche Meta Discourse"
       command_description:
+        github_search_code: "Gesucht wurde nach '%{query}' in %{repo}"
+        github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
+        github_file_content: "Abgerufener Inhalt von %{file_paths} von %{repo_name}@%{branch}"
         random_picker: "Auswahl aus %{options}, ausgewählt: %{result}"
         read: "Lesen: <a href='%{url}'>%{title}</a>"
         time: "Die Uhrzeit in %{timezone} ist %{time}"
