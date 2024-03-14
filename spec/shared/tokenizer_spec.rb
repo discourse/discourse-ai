@@ -81,6 +81,31 @@ describe DiscourseAi::Tokenizer::OpenAiTokenizer do
       sentence = "foo bar 👨🏿‍👩🏿‍👧🏿‍👧🏿 baz qux quux corge grault garply waldo fred plugh xyzzy thud"
       expect(described_class.truncate(sentence, 7)).to eq("foo bar 👨🏿")
     end
+
+    it "truncates unicode characters properly when they use more than one token per char" do
+      sentence = "我喜欢吃比萨"
+      original_size = described_class.size(sentence)
+      expect(described_class.size(described_class.truncate(sentence, original_size - 1))).to be <
+        original_size
+    end
+  end
+
+  describe "#can_expand_tokens?" do
+    it "returns true when the tokens can be expanded" do
+      expect(described_class.can_expand_tokens?("foo bar", "baz qux", 6)).to eq(true)
+    end
+
+    it "returns false when the tokens cannot be expanded" do
+      expect(described_class.can_expand_tokens?("foo bar", "baz qux", 3)).to eq(false)
+    end
+
+    it "returns false when the tokens cannot be expanded due to multibyte unicode characters" do
+      expect(described_class.can_expand_tokens?("foo bar 👨🏿", "baz qux", 6)).to eq(false)
+    end
+
+    it "handles unicode characters properly when they use more than one token per char" do
+      expect(described_class.can_expand_tokens?("我喜欢吃比萨", "萨", 10)).to eq(false)
+    end
   end
 end
 
