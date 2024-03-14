@@ -171,6 +171,9 @@ discourse_ai:
     default: ""
     hidden: true
   ai_llava_api_key: ""
+  ai_strict_token_counting:
+    default: false
+    hidden: true
 
   composer_ai_helper_enabled:
     default: false
