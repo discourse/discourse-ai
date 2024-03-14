@@ -159,6 +159,7 @@ en:
       read_more: "Read full transcript"
       onebox_title: "AI Conversation with %{llm_name}"
       formatted_excerpt: "AI Conversation with %{llm_name}:\n %{excerpt}"
+      title: "%{title} - AI Conversation - %{site_name}"
       errors:
         not_allowed: "You are not allowed to share this topic"
         other_people_in_pm: "Personal messages with other humans cannot be shared publicly"
