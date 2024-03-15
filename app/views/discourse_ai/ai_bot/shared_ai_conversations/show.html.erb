@@ -11,14 +11,6 @@
     <meta name="twitter:description" content="<%= @shared_conversation.formatted_excerpt %>">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/share.css") %>">
-    <script>
-      window.hljs_initHighlighting = function() {
-        document.querySelectorAll('pre code').forEach((el) => {
-          hljs.highlightElement(el);
-        });
-      };
-    </script>
-    <script async src="<%= share_asset_url("highlight.min.js") %>" onload="window.hljs_initHighlighting()" ></script>
   </head>
   <body>
     <header class="site-header">
@@ -62,5 +54,11 @@
         </article>
       <% end %>
     </section>
+    <script src="<%= share_asset_url("highlight.min.js") %>" nonce="<%= csp_nonce_placeholder %>" ></script>
+    <script nonce="<%= csp_nonce_placeholder %>">
+      document.querySelectorAll('pre code').forEach((el) => {
+        hljs.highlightElement(el);
+      });
+    </script>
   </body>
 </html>
