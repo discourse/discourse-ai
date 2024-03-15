@@ -236,13 +236,19 @@ Follow the provided writing composition instructions carefully and precisely ste
           .each do |a|
             href = a["href"]
             if href.present? && (href.start_with?("#{Discourse.base_url}") || href.start_with?("/"))
-              url, _, params = href.partition("?")
-              if params.present? && !params.include?("silent")
-                params = params + "&silent=true"
-              else
-                params = "silent=true"
+              begin
+                uri = URI.parse(href)
+                if uri.query.present?
+                  params = CGI.parse(uri.query)
+                  params["silent"] = "true"
+                  uri.query = URI.encode_www_form(params)
+                else
+                  uri.query = "silent=true"
+                end
+                a["href"] = uri.to_s
+              rescue URI::InvalidURIError
+                # skip
               end
-              a["href"] = "#{url}?#{params}"
             end
           end
 

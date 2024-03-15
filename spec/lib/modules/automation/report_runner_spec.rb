@@ -89,6 +89,8 @@ module DiscourseAi
             [test3](https://example.com) is an external link
             [test4](#{Discourse.base_url}) is an internal link
             <a href='/test'>test5</a> is an internal link
+            [test6](/test?test=test#anchor) is an internal link with fragment
+            [test7](//[[test) is a link with an invalid URL
           MD
 
           DiscourseAi::Completions::Llm.with_prepared_responses([markdown]) do
@@ -120,7 +122,9 @@ module DiscourseAi
             <a href="/test?1=2&amp;silent=true">test2</a> is an internal link<br>
             <a href="https://example.com" rel="noopener nofollow ugc">test3</a> is an external link<br>
             <a href="http://test.localhost?silent=true">test4</a> is an internal link<br>
-            <a href="/test?silent=true">test5</a> is an internal link</p>
+            <a href="/test?silent=true">test5</a> is an internal link<br>
+            <a href="/test?test=test&amp;silent=true#anchor">test6</a> is an internal link with fragment<br>
+            <a href="//%5B%5Btest?silent=true" rel="noopener nofollow ugc">test7</a> is a link with an invalid URL</p>
           HTML
 
           expect(report.ordered_posts.first.raw.strip).to eq(expected.strip)
