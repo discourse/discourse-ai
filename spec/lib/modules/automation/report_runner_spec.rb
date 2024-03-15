@@ -81,6 +81,55 @@ module DiscourseAi
           expect(debugging).not_to include(post_in_category.raw)
         end
 
+        it "can suppress notifications by remapping content" do
+          markdown = <<~MD
+            @sam is a person
+            [test1](/test) is an internal link
+            [test2](/test?1=2) is an internal link
+            [test3](https://example.com) is an external link
+            [test4](#{Discourse.base_url}) is an internal link
+            <a href='/test'>test5</a> is an internal link
+            [test6](/test?test=test#anchor) is an internal link with fragment
+            [test7](//[[test) is a link with an invalid URL
+          MD
+
+          DiscourseAi::Completions::Llm.with_prepared_responses([markdown]) do
+            ReportRunner.run!(
+              sender_username: user.username,
+              receivers: [receiver.username],
+              title: "test report",
+              model: "gpt-4",
+              category_ids: nil,
+              tags: nil,
+              allow_secure_categories: false,
+              debug_mode: false,
+              sample_size: 100,
+              instructions: "make a magic report",
+              days: 7,
+              offset: 0,
+              priority_group_id: nil,
+              tokens_per_post: 150,
+              suppress_notifications: true,
+            )
+          end
+
+          report = Topic.where(title: "test report").first
+
+          # note, magic surprise &amp; is correct HTML 5 representation
+          expected = <<~HTML
+            <p><a href="/u/sam" class="mention">@sam</a> is a person<br>
+            <a href="/test?silent=true">test1</a> is an internal link<br>
+            <a href="/test?1=2&amp;silent=true">test2</a> is an internal link<br>
+            <a href="https://example.com" rel="noopener nofollow ugc">test3</a> is an external link<br>
+            <a href="http://test.localhost?silent=true">test4</a> is an internal link<br>
+            <a href="/test?silent=true">test5</a> is an internal link<br>
+            <a href="/test?test=test&amp;silent=true#anchor">test6</a> is an internal link with fragment<br>
+            <a href="//%5B%5Btest?silent=true" rel="noopener nofollow ugc">test7</a> is a link with an invalid URL</p>
+          HTML
+
+          expect(report.ordered_posts.first.raw.strip).to eq(expected.strip)
+        end
+
         it "can exclude tags" do
           freeze_time
 
