@@ -13,8 +13,9 @@ module DiscourseAi
         end
 
         def truncate(text, max_length)
-          # Fast track the common case where the text is already short enough.
-          return text if text.size < max_length
+          # fast track common case, /2 to handle unicode chars
+          # than can take more than 1 token per char
+          return text if !SiteSetting.ai_strict_token_counting && text.size < max_length / 2
 
           tokenizer.decode(tokenize(text).take(max_length))
         rescue Tiktoken::UnicodeError
@@ -23,7 +24,11 @@ module DiscourseAi
         end
 
         def can_expand_tokens?(text, addition, max_length)
-          return true if text.size + addition.size < max_length
+          # fast track common case, /2 to handle unicode chars
+          # than can take more than 1 token per char
+          if !SiteSetting.ai_strict_token_counting && text.size + addition.size < max_length / 2
+            return true
+          end
 
           tokenizer.encode(text).length + tokenizer.encode(addition).length < max_length
         end

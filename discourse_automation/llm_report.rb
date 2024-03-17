@@ -40,6 +40,7 @@ if defined?(DiscourseAutomation)
     field :top_p, component: :text, required: true, default_value: 0.1
     field :temperature, component: :text, required: true, default_value: 0.2
 
+    field :suppress_notifications, component: :boolean
     field :debug_mode, component: :boolean
 
     script do |context, fields, automation|
@@ -70,6 +71,7 @@ if defined?(DiscourseAutomation)
         temperature = 0.2
         temperature = fields.dig("temperature", "value").to_f if fields.dig("temperature", "value")
 
+        suppress_notifications = !!fields.dig("suppress_notifications", "value")
         DiscourseAi::Automation::ReportRunner.run!(
           sender_username: sender,
           receivers: receivers,
@@ -90,6 +92,7 @@ if defined?(DiscourseAutomation)
           exclude_tags: exclude_tags,
           temperature: temperature,
           top_p: top_p,
+          suppress_notifications: suppress_notifications,
         )
       rescue => e
         Discourse.warn_exception e, message: "Error running LLM report!"

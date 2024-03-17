@@ -52,7 +52,8 @@ module DiscourseAi
         exclude_category_ids: nil,
         exclude_tags: nil,
         top_p: 0.1,
-        temperature: 0.2
+        temperature: 0.2,
+        suppress_notifications: false
       )
         @sender = User.find_by(username: sender_username)
         @receivers = User.where(username: receivers)
@@ -84,6 +85,7 @@ module DiscourseAi
 
         @top_p = nil if top_p <= 0
         @temperature = nil if temperature <= 0
+        @suppress_notifications = suppress_notifications
 
         if !@topic_id && !@receivers.present? && !@email_receivers.present?
           raise ArgumentError, "Must specify topic_id or receivers"
@@ -160,6 +162,8 @@ Follow the provided writing composition instructions carefully and precisely ste
 
         receiver_usernames = @receivers.map(&:username).join(",")
 
+        result = suppress_notifications(result) if @suppress_notifications
+
         if @topic_id
           PostCreator.create!(@sender, raw: result, topic_id: @topic_id, skip_validations: true)
           # no debug mode for topics, it is too noisy
@@ -219,6 +223,44 @@ Follow the provided writing composition instructions carefully and precisely ste
         else
           "anthropic:#{model}"
         end
+      end
+
+      private
+
+      def suppress_notifications(raw)
+        cooked = PrettyText.cook(raw, sanitize: false)
+        parsed = Nokogiri::HTML5.fragment(cooked)
+
+        parsed
+          .css("a")
+          .each do |a|
+            href = a["href"]
+            if href.present? && (href.start_with?("#{Discourse.base_url}") || href.start_with?("/"))
+              begin
+                uri = URI.parse(href)
+                if uri.query.present?
+                  params = CGI.parse(uri.query)
+                  params["silent"] = "true"
+                  uri.query = URI.encode_www_form(params)
+                else
+                  uri.query = "silent=true"
+                end
+                a["href"] = uri.to_s
+              rescue URI::InvalidURIError
+                # skip
+              end
+            end
+          end
+
+        parsed
+          .css("span.mention")
+          .each do |mention|
+            mention.replace(
+              "<a href='/u/#{mention.text.sub("@", "")}' class='mention'>#{mention.text}</a>",
+            )
+          end
+
+        parsed.to_html
       end
     end
   end

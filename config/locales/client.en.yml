@@ -62,6 +62,9 @@ en:
             allow_secure_categories:
               label: "Allow secure categories"
               description: "Allow the report to be generated for topics in secure categories"
+            suppress_notifications:
+              label: "Suppress Notifications"
+              description: "Suppress notifications the report may generate by transforming to content. This will remap mentions and internal links."
             debug_mode:
               label: "Debug Mode"
               description: "Enable debug mode to see the raw input and output of the LLM"
