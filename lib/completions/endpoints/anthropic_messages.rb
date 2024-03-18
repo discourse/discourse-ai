@@ -6,7 +6,10 @@ module DiscourseAi
       class AnthropicMessages < Base
         class << self
           def can_contact?(endpoint_name, model_name)
-            endpoint_name == "anthropic" && %w[claude-3-opus claude-3-sonnet].include?(model_name)
+            endpoint_name == "anthropic" &&
+              %w[claude-instant-1 claude-2 claude-3-haiku claude-3-opus claude-3-sonnet].include?(
+                model_name,
+              )
           end
 
           def dependant_setting_names
@@ -28,7 +31,24 @@ module DiscourseAi
         end
 
         def default_options(dialect)
-          options = { model: model + "-20240229", max_tokens: 3_000 }
+          # skipping 2.0 support for now, since other models are better
+          mapped_model =
+            case model
+            when "claude-2"
+              "claude-2.1"
+            when "claude-instant-1"
+              "claude-instant-1.2"
+            when "claude-3-haiku"
+              "claude-3-haiku-20240307"
+            when "claude-3-sonnet"
+              "claude-3-sonnet-20240229"
+            when "claude-3-opus"
+              "claude-3-opus-20240229"
+            else
+              raise "Unsupported model: #{model}"
+            end
+
+          options = { model: mapped_model, max_tokens: 3_000 }
 
           options[:stop_sequences] = ["</function_calls>"] if dialect.prompt.has_tools?
           options

@@ -11,7 +11,6 @@ module DiscourseAi
 
           def dialect_for(model_name)
             dialects = [
-              DiscourseAi::Completions::Dialects::Claude,
               DiscourseAi::Completions::Dialects::Llama2Classic,
               DiscourseAi::Completions::Dialects::ChatGpt,
               DiscourseAi::Completions::Dialects::OrcaStyle,

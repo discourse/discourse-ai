@@ -11,7 +11,6 @@ module DiscourseAi
           def endpoint_for(provider_name, model_name)
             endpoints = [
               DiscourseAi::Completions::Endpoints::AwsBedrock,
-              DiscourseAi::Completions::Endpoints::Anthropic,
               DiscourseAi::Completions::Endpoints::OpenAi,
               DiscourseAi::Completions::Endpoints::HuggingFace,
               DiscourseAi::Completions::Endpoints::Gemini,
