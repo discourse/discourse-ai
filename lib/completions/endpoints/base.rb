@@ -15,7 +15,7 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::HuggingFace,
               DiscourseAi::Completions::Endpoints::Gemini,
               DiscourseAi::Completions::Endpoints::Vllm,
-              DiscourseAi::Completions::Endpoints::AnthropicMessages,
+              DiscourseAi::Completions::Endpoints::Anthropic,
             ]
 
             if Rails.env.test? || Rails.env.development?

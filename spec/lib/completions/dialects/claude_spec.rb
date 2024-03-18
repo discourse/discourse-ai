@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DiscourseAi::Completions::Dialects::ClaudeMessages do
+RSpec.describe DiscourseAi::Completions::Dialects::Claude do
   describe "#translate" do
     it "can insert OKs to make stuff interleve properly" do
       messages = [

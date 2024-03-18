@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DiscourseAi::Completions::Endpoints::AnthropicMessages do
+RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-opus") }
 
   let(:prompt) do

@@ -3,7 +3,7 @@
 module DiscourseAi
   module Completions
     module Dialects
-      class ClaudeMessages < Dialect
+      class Claude < Dialect
         class << self
           def can_translate?(model_name)
             %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus].include?(

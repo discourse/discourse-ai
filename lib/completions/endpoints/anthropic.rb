@@ -3,7 +3,7 @@
 module DiscourseAi
   module Completions
     module Endpoints
-      class AnthropicMessages < Base
+      class Anthropic < Base
         class << self
           def can_contact?(endpoint_name, model_name)
             endpoint_name == "anthropic" &&
