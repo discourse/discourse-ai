@@ -258,9 +258,8 @@ Follow the provided writing composition instructions carefully and precisely ste
         parsed
           .css("span.mention")
           .each do |mention|
-            mention.replace(
-              "<a href='/u/#{mention.text.sub("@", "")}' class='mention'>#{mention.text}</a>",
-            )
+            no_at_username = mention.text.sub("@", "")
+            mention.replace("<a href='/u/#{no_at_username}' class='mention'>#{no_at_username}</a>")
           end
 
         parsed.to_html
