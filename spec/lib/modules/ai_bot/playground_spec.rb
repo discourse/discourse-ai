@@ -177,6 +177,35 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post.topic.reload
       expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
+
+      # does not reply if replying directly to a user
+      # nothing is mocked, so this would result in HTTP error
+      # if we were going to reply
+      create_post(
+        raw: "Please ignore this bot, I am replying to a user",
+        topic: post.topic,
+        user: admin,
+        reply_to_post_number: post.post_number,
+      )
+
+      # replies as correct persona if replying direct to persona
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Another reply"],
+        llm: "open_ai:gpt-3.5-turbo-16k",
+      ) do
+
+        create_post(
+          raw: "Please ignore this bot, I am replying to a user",
+          topic: post.topic,
+          user: admin,
+          reply_to_post_number: last_post.post_number,
+        )
+      end
+
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Another reply")
+      expect(last_post.user_id).to eq(persona.user_id)
+
     end
   end
 
