@@ -1,100 +1,87 @@
 # frozen_string_literal: true
 
-require_relative "dialect_context"
-
 RSpec.describe DiscourseAi::Completions::Dialects::Claude do
-  let(:model_name) { "claude-2" }
-  let(:context) { DialectContext.new(described_class, model_name) }
-
   describe "#translate" do
-    it "translates a prompt written in our generic format to Claude's format" do
-      anthropic_version = (<<~TEXT).strip
-      #{context.system_insts}
-      #{described_class.tool_preamble}
-      <tools>
-      #{context.dialect_tools}</tools>
+    it "can insert OKs to make stuff interleve properly" do
+      messages = [
+        { type: :user, id: "user1", content: "1" },
+        { type: :model, content: "2" },
+        { type: :user, id: "user1", content: "4" },
+        { type: :user, id: "user1", content: "5" },
+        { type: :model, content: "6" },
+      ]
 
-      Human: #{context.simple_user_input}
+      prompt = DiscourseAi::Completions::Prompt.new("You are a helpful bot", messages: messages)
 
-      Assistant:
-      TEXT
+      dialectKlass = DiscourseAi::Completions::Dialects::Dialect.dialect_for("claude-3-opus")
+      dialect = dialectKlass.new(prompt, "claude-3-opus")
+      translated = dialect.translate
 
-      translated = context.system_user_scenario
+      expected_messages = [
+        { role: "user", content: "user1: 1" },
+        { role: "assistant", content: "2" },
+        { role: "user", content: "user1: 4" },
+        { role: "assistant", content: "OK" },
+        { role: "user", content: "user1: 5" },
+        { role: "assistant", content: "6" },
+      ]
 
-      expect(translated).to eq(anthropic_version)
+      expect(translated.messages).to eq(expected_messages)
     end
 
-    it "translates tool messages" do
-      expected = +(<<~TEXT).strip
-      #{context.system_insts}
-      #{described_class.tool_preamble}
-      <tools>
-      #{context.dialect_tools}</tools>
+    it "can properly translate a prompt" do
+      dialect = DiscourseAi::Completions::Dialects::Dialect.dialect_for("claude-3-opus")
 
-      Human: user1: This is a message by a user
+      tools = [
+        {
+          name: "echo",
+          description: "echo a string",
+          parameters: [
+            { name: "text", type: "string", description: "string to echo", required: true },
+          ],
+        },
+      ]
 
-      Assistant: I'm a previous bot reply, that's why there's no user
+      tool_call_prompt = { name: "echo", arguments: { text: "something" } }
 
-      Human: user1: This is a new message by a user
+      messages = [
+        { type: :user, id: "user1", content: "echo something" },
+        { type: :tool_call, content: tool_call_prompt.to_json },
+        { type: :tool, id: "tool_id", content: "something".to_json },
+        { type: :model, content: "I did it" },
+        { type: :user, id: "user1", content: "echo something else" },
+      ]
 
-      Assistant: <function_calls>
-      <invoke>
-      <tool_name>get_weather</tool_name>
-      <parameters>
-      <location>Sydney</location>
-      <unit>c</unit>
-      </parameters>
-      </invoke>
-      </function_calls>
-
-      Human:
-      <function_results>
-      <result>
-      <tool_name>get_weather</tool_name>
-      <json>
-      "I'm a tool result"
-      </json>
-      </result>
-      </function_results>
-
-      Assistant:
-      TEXT
-
-      expect(context.multi_turn_scenario).to eq(expected)
-    end
-
-    it "trims content if it's getting too long" do
-      length = 19_000
-
-      translated = context.long_user_input_scenario(length: length)
-
-      expect(translated.length).to be < context.long_message_text(length: length).length
-    end
-
-    it "retains usernames in generated prompt" do
       prompt =
         DiscourseAi::Completions::Prompt.new(
-          "You are a bot",
-          messages: [
-            { id: "👻", type: :user, content: "Message1" },
-            { type: :model, content: "Ok" },
-            { id: "joe", type: :user, content: "Message2" },
-          ],
+          "You are a helpful bot",
+          messages: messages,
+          tools: tools,
         )
 
-      translated = context.dialect(prompt).translate
+      dialect = dialect.new(prompt, "claude-3-opus")
+      translated = dialect.translate
 
-      expect(translated).to eq(<<~TEXT.strip)
-        You are a bot
+      expect(translated.system_prompt).to start_with("You are a helpful bot")
+      expect(translated.system_prompt).to include("echo a string")
 
-        Human: 👻: Message1
+      expected = [
+        { role: "user", content: "user1: echo something" },
+        {
+          role: "assistant",
+          content:
+            "<function_calls>\n<invoke>\n<tool_name>echo</tool_name>\n<parameters>\n<text>something</text>\n</parameters>\n</invoke>\n</function_calls>",
+        },
+        {
+          role: "user",
+          content:
+            "<function_results>\n<result>\n<tool_name>tool_id</tool_name>\n<json>\n\"something\"\n</json>\n</result>\n</function_results>",
+        },
+        { role: "assistant", content: "I did it" },
+        { role: "user", content: "user1: echo something else" },
+      ]
 
-        Assistant: Ok
-
-        Human: joe: Message2
-
-        Assistant:
-        TEXT
+      expect(translated.messages).to eq(expected)
     end
   end
 end

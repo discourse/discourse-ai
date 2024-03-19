@@ -68,6 +68,9 @@ de:
             allow_secure_categories:
               label: "Sichere Kategorien zulassen"
               description: "Erlaube, dass der Bericht für Themen in sicheren Kategorien erstellt wird"
+            suppress_notifications:
+              label: "Benachrichtigungen unterdrücken"
+              description: "Unterdrücke Benachrichtigungen, die der Bericht durch die Umwandlung in Inhalt erzeugen kann. Dadurch werden Erwähnungen und interne Links umgewandelt."
             debug_mode:
               label: "Debug-Modus"
               description: "Aktiviere den Debug-Modus, um die Roheingabe und -ausgabe des LLM anzuzeigen"
@@ -220,11 +223,21 @@ de:
         shortcut_title: "Starte eine PN mit einem KI-Bot"
         share: "KI-Unterhaltung teilen"
         conversation_shared: "Unterhaltung kopiert"
+        share_full_topic_modal:
+          title: "Gespräch öffentlich teilen"
+          share: "Link teilen und kopieren"
+          update: "Link aktualisieren und kopieren"
+          delete: "Freigabe löschen"
+        share_ai_conversation:
+          name: "KI-Unterhaltung teilen"
+          title: "Diese KI-Unterhaltung öffentlich teilen"
         ai_label: "KI"
         ai_title: "Unterhaltung mit KI"
         share_modal:
+          title: "KI-Unterhaltung kopieren"
           copy: "Kopieren"
           context: "Interaktionen zum Teilen:"
+          share_tip: Alternativ kannst du auch die gesamte Unterhaltung teilen.
         bot_names:
           fake: "Fake Test Bot"
           claude-3-opus: "Claude 3 Opus"

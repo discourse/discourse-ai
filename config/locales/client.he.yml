@@ -227,6 +227,7 @@ he:
           delete: "מחיקת שיתוף"
         share_ai_conversation:
           name: "שיתוף דיון עם בינה מלאכותית"
+          title: "שיתוף שיחת בינה מלאכותית באופן ציבורי"
         ai_label: "בינה מלאכותית"
         ai_title: "דיון עם בינה מלאכותית"
         share_modal:

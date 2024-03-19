@@ -5,71 +5,6 @@ require "aws-eventstream"
 require "aws-sigv4"
 
 class BedrockMock < EndpointMock
-  def response(content)
-    {
-      completion: content,
-      stop: "\n\nHuman:",
-      stop_reason: "stop_sequence",
-      truncated: false,
-      log_id: "12dcc7feafbee4a394e0de9dffde3ac5",
-      model: "claude",
-      exception: nil,
-    }
-  end
-
-  def stub_response(prompt, response_content, tool_call: false)
-    WebMock
-      .stub_request(:post, "#{base_url}/invoke")
-      .with(body: model.default_options.merge(prompt: prompt).to_json)
-      .to_return(status: 200, body: JSON.dump(response(response_content)))
-  end
-
-  def stream_line(delta, finish_reason: nil)
-    encoder = Aws::EventStream::Encoder.new
-
-    message =
-      Aws::EventStream::Message.new(
-        payload:
-          StringIO.new(
-            {
-              bytes:
-                Base64.encode64(
-                  {
-                    completion: delta,
-                    stop: finish_reason ? "\n\nHuman:" : nil,
-                    stop_reason: finish_reason,
-                    truncated: false,
-                    log_id: "12b029451c6d18094d868bc04ce83f63",
-                    model: "claude-2.1",
-                    exception: nil,
-                  }.to_json,
-                ),
-            }.to_json,
-          ),
-      )
-
-    encoder.encode(message)
-  end
-
-  def stub_streamed_response(prompt, deltas, tool_call: false)
-    chunks =
-      deltas.each_with_index.map do |_, index|
-        if index == (deltas.length - 1)
-          stream_line(deltas[index], finish_reason: "stop_sequence")
-        else
-          stream_line(deltas[index])
-        end
-      end
-
-    WebMock
-      .stub_request(:post, "#{base_url}/invoke-with-response-stream")
-      .with(body: model.default_options.merge(prompt: prompt).to_json)
-      .to_return(status: 200, body: chunks)
-  end
-
-  def base_url
-    "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/anthropic.claude-v2:1"
-  end
 end
 
 RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
@@ -89,32 +24,98 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     SiteSetting.ai_bedrock_region = "us-east-1"
   end
 
-  describe "#perform_completion!" do
-    context "when using regular mode" do
-      context "with simple prompts" do
-        it "completes a trivial prompt and logs the response" do
-          compliance.regular_mode_simple_prompt(bedrock_mock)
-        end
-      end
+  describe "Claude 3 Sonnet support" do
+    it "supports the sonnet model" do
+      proxy = DiscourseAi::Completions::Llm.proxy("aws_bedrock:claude-3-sonnet")
 
-      context "with tools" do
-        it "returns a function invocation" do
-          compliance.regular_mode_tools(bedrock_mock)
+      request = nil
+
+      content = {
+        content: [text: "hello sam"],
+        usage: {
+          input_tokens: 10,
+          output_tokens: 20,
+        },
+      }.to_json
+
+      stub_request(
+        :post,
+        "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke",
+      )
+        .with do |inner_request|
+          request = inner_request
+          true
         end
-      end
+        .to_return(status: 200, body: content)
+
+      response = proxy.generate("hello world", user: user)
+
+      expect(request.headers["Authorization"]).to be_present
+      expect(request.headers["X-Amz-Content-Sha256"]).to be_present
+
+      expected = {
+        "max_tokens" => 3000,
+        "anthropic_version" => "bedrock-2023-05-31",
+        "messages" => [{ "role" => "user", "content" => "hello world" }],
+        "system" => "You are a helpful bot",
+      }
+      expect(JSON.parse(request.body)).to eq(expected)
+
+      expect(response).to eq("hello sam")
+
+      log = AiApiAuditLog.order(:id).last
+      expect(log.request_tokens).to eq(10)
+      expect(log.response_tokens).to eq(20)
     end
 
-    describe "when using streaming mode" do
-      context "with simple prompts" do
-        it "completes a trivial prompt and logs the response" do
-          compliance.streaming_mode_simple_prompt(bedrock_mock)
-        end
-      end
+    it "supports claude 3 sonnet streaming" do
+      proxy = DiscourseAi::Completions::Llm.proxy("aws_bedrock:claude-3-sonnet")
 
-      context "with tools" do
-        it "returns a function invocation" do
-          compliance.streaming_mode_tools(bedrock_mock)
+      request = nil
+
+      messages =
+        [
+          { type: "message_start", message: { usage: { input_tokens: 9 } } },
+          { type: "content_block_delta", delta: { text: "hello " } },
+          { type: "content_block_delta", delta: { text: "sam" } },
+          { type: "message_delta", delta: { usage: { output_tokens: 25 } } },
+        ].map do |message|
+          wrapped = { bytes: Base64.encode64(message.to_json) }.to_json
+          io = StringIO.new(wrapped)
+          aws_message = Aws::EventStream::Message.new(payload: io)
+          Aws::EventStream::Encoder.new.encode(aws_message)
         end
+
+      bedrock_mock.with_chunk_array_support do
+        stub_request(
+          :post,
+          "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke-with-response-stream",
+        )
+          .with do |inner_request|
+            request = inner_request
+            true
+          end
+          .to_return(status: 200, body: messages)
+
+        response = +""
+        proxy.generate("hello world", user: user) { |partial| response << partial }
+
+        expect(request.headers["Authorization"]).to be_present
+        expect(request.headers["X-Amz-Content-Sha256"]).to be_present
+
+        expected = {
+          "max_tokens" => 3000,
+          "anthropic_version" => "bedrock-2023-05-31",
+          "messages" => [{ "role" => "user", "content" => "hello world" }],
+          "system" => "You are a helpful bot",
+        }
+        expect(JSON.parse(request.body)).to eq(expected)
+
+        expect(response).to eq("hello sam")
+
+        log = AiApiAuditLog.order(:id).last
+        expect(log.request_tokens).to eq(9)
+        expect(log.response_tokens).to eq(25)
       end
     end
   end

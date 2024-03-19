@@ -216,13 +216,16 @@ Follow the provided writing composition instructions carefully and precisely ste
       def translate_model(model)
         return "google:gemini-pro" if model == "gemini-pro"
         return "open_ai:#{model}" if model.start_with? "gpt"
-        return "anthropic:#{model}" if model.start_with? "claude-3"
 
-        if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-          "aws_bedrock:#{model}"
-        else
-          "anthropic:#{model}"
+        if model.start_with? "claude"
+          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(model)
+            return "aws_bedrock:#{model}"
+          else
+            return "anthropic:#{model}"
+          end
         end
+
+        raise "Unknown model #{model}"
       end
 
       private
@@ -255,9 +258,8 @@ Follow the provided writing composition instructions carefully and precisely ste
         parsed
           .css("span.mention")
           .each do |mention|
-            mention.replace(
-              "<a href='/u/#{mention.text.sub("@", "")}' class='mention'>#{mention.text}</a>",
-            )
+            no_at_username = mention.text.sub("@", "")
+            mention.replace("<a href='/u/#{no_at_username}' class='mention'>#{no_at_username}</a>")
           end
 
         parsed.to_html

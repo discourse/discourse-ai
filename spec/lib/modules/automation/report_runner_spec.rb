@@ -117,7 +117,7 @@ module DiscourseAi
 
           # note, magic surprise &amp; is correct HTML 5 representation
           expected = <<~HTML
-            <p><a href="/u/sam" class="mention">@sam</a> is a person<br>
+            <p><a href="/u/sam" class="mention">sam</a> is a person<br>
             <a href="/test?silent=true">test1</a> is an internal link<br>
             <a href="/test?1=2&amp;silent=true">test2</a> is an internal link<br>
             <a href="https://example.com" rel="noopener nofollow ugc">test3</a> is an external link<br>

@@ -17,14 +17,20 @@ fa_IR:
       scriptables:
         llm_report:
           fields:
+            sender:
+              label: "فرستنده"
             topic_id:
               label: "شناسه موضوع"
             title:
               label: "عنوان"
+            model:
+              label: "مدل"
             categories:
               label: "دسته‌بندی‌ها"
             tags:
               label: "برچسب‌ها"
+            suppress_notifications:
+              label: "توقف آگاه‌سازی‌ها"
         llm_triage:
           fields:
             search_for_text:
