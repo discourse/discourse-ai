@@ -193,7 +193,6 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         ["Another reply"],
         llm: "open_ai:gpt-3.5-turbo-16k",
       ) do
-
         create_post(
           raw: "Please ignore this bot, I am replying to a user",
           topic: post.topic,
@@ -205,7 +204,6 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Another reply")
       expect(last_post.user_id).to eq(persona.user_id)
-
     end
   end
 
