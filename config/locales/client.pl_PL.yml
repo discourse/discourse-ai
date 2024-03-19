@@ -66,6 +66,9 @@ pl_PL:
             allow_secure_categories:
               label: "Zezwalaj na bezpieczne kategorie"
               description: "Zezwalaj na generowanie raportu dla tematów w bezpiecznych kategoriach"
+            suppress_notifications:
+              label: "Wyłącz powiadomienia"
+              description: "Pomiń powiadomienia, które raport może generować, przekształcając je w treść. Spowoduje to ponowne przypisanie wzmianek i linków wewnętrznych."
             debug_mode:
               label: "Tryb debugowania"
               description: "Włącz tryb debugowania, aby zobaczyć nieprzetworzone dane wejściowe i wyjściowe LLM."
@@ -205,11 +208,20 @@ pl_PL:
         shortcut_title: "Rozpocznij PW z botem AI"
         share: "Udostępnij rozmowę AI"
         conversation_shared: "Rozmowa skopiowana"
+        share_full_topic_modal:
+          title: "Udostępnij rozmowę publicznie"
+          share: "Udostępnij i skopiuj link"
+          update: "Zaktualizuj i skopiuj link"
+          delete: "Usuń udostępnienie"
+        share_ai_conversation:
+          name: "Udostępnij rozmowę AI"
         ai_label: "AI"
         ai_title: "Rozmowa z AI"
         share_modal:
+          title: "Skopiuj rozmowę AI"
           copy: "Kopiuj"
           context: "Interakcje do udostępnienia:"
+          share_tip: Alternatywnie możesz udostępnić całą rozmowę.
         bot_names:
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"

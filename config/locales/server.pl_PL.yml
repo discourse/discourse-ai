@@ -108,6 +108,7 @@ pl_PL:
       title: "Emocje postu"
       description: "Liczba postów sklasyfikowanych z jedną z poniższych emocji, pogrupowanych według poziomu zaufania autora posta."
   discourse_ai:
+    unknown_model: "Nieznany model AI"
     ai_helper:
       errors:
         completion_request_failed: "Coś poszło nie tak podczas próby przedstawienia sugestii. Spróbuj ponownie."
@@ -119,6 +120,8 @@ pl_PL:
         custom_prompt: "Niestandardowy monit"
         explain: "Wyjaśnij"
         illustrate_post: "Zilustruj post"
+    share_ai:
+      read_more: "Przeczytaj pełną transkrypcję"
     ai_bot:
       personas:
         cannot_delete_system_persona: "Person systemowych nie można usunąć, zamiast tego wyłącz je."

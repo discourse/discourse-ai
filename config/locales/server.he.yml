@@ -146,13 +146,14 @@ he:
     share_ai:
       read_more: "הצגת התמליל המלא"
       onebox_title: "דיון בינה מלאכותית עם %{llm_name}"
+      formatted_excerpt: "דיון בינה מלאכותית עם %{llm_name}:\n %{excerpt}"
+      title: "%{title} - דיון בינה מלאכותית - %{site_name}"
       errors:
         not_allowed: "אין לך הרשאה לשתף את הנושא הזה"
         other_people_in_pm: "אי אפשר לשתף הודעות פרטיות עם אנשים אחרים באופן ציבורי"
         other_content_in_pm: "אי אפשר לשתף הודעות שמכילות פוסטים של אנשים אחרים באופן ציבורי"
         failed_to_share: "שיתוף השיחה נכשל"
         conversation_deleted: "שיתוף השיחה נמחק בהצלחה"
-        formatted_excerpt: "דיון בינה מלאכותית עם %{llm_name}:\n %{excerpt}"
     ai_bot:
       personas:
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"

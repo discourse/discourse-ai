@@ -146,13 +146,14 @@ tr_TR:
     share_ai:
       read_more: "Tam metni okuyun"
       onebox_title: "%{llm_name} ile Yapay Zeka Konuşması"
+      formatted_excerpt: "%{llm_name} ile Yapay Zeka Sohbeti:\n %{excerpt}"
+      title: "%{title} - Yapay Zeka Konuşması - %{site_name}"
       errors:
         not_allowed: "Bu konuyu paylaşmanıza izin verilmiyor"
         other_people_in_pm: "Diğer insanlarla olan kişisel mesajlar herkese açık olarak paylaşılamaz"
         other_content_in_pm: "Başkalarına ait gönderileri içeren kişisel mesajlar herkese açık olarak paylaşılamaz"
         failed_to_share: "Görüşme paylaşılamadı"
         conversation_deleted: "Görüşme paylaşımı başarıyla silindi"
-        formatted_excerpt: "%{llm_name} ile Yapay Zeka Sohbeti:\n %{excerpt}"
     ai_bot:
       personas:
         cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
