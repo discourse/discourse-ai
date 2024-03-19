@@ -48,6 +48,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       max_context_posts: 5,
       vision_enabled: true,
       vision_max_pixels: 100,
+      rag_uploads: [],
     };
 
     const aiPersona = AiPersona.create({ ...properties });
@@ -81,6 +82,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       max_context_posts: 5,
       vision_enabled: true,
       vision_max_pixels: 100,
+      rag_uploads: [],
     };
 
     const aiPersona = AiPersona.create({ ...properties });

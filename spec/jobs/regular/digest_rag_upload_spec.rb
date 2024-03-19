@@ -2,7 +2,7 @@
 
 RSpec.describe Jobs::DigestRagUpload do
   fab!(:persona) { Fabricate(:ai_persona) }
-  fab!(:upload) { Fabricate(:upload) }
+  fab!(:upload)
 
   let(:document_file) { StringIO.new("some text" * 200) }
 
@@ -24,7 +24,7 @@ RSpec.describe Jobs::DigestRagUpload do
   end
 
   describe "#execute" do
-    context "Processing an upload for the first time" do
+    context "when processing an upload for the first time" do
       before { File.expects(:open).returns(document_file) }
 
       it "splits an upload into chunks" do

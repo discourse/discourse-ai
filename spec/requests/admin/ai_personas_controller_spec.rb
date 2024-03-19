@@ -4,7 +4,12 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   fab!(:admin)
   fab!(:ai_persona)
 
-  before { sign_in(admin) }
+  before do
+    sign_in(admin)
+
+    SiteSetting.ai_embeddings_enabled = true
+    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+  end
 
   describe "GET #index" do
     it "returns a success response" do

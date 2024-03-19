@@ -5,6 +5,11 @@ RSpec.describe RagDocumentFragment do
   fab!(:upload_1) { Fabricate(:upload) }
   fab!(:upload_2) { Fabricate(:upload) }
 
+  before do
+    SiteSetting.ai_embeddings_enabled = true
+    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+  end
+
   describe ".link_uploads_and_persona" do
     it "does nothing if there is no persona" do
       expect { described_class.link_persona_and_uploads(nil, [upload_1.id]) }.not_to change(

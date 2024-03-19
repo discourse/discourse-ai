@@ -1,12 +1,11 @@
 import Component from "@ember/component";
-import { action, computed } from "@ember/object";
-import { tracked } from "@glimmer/tracking";
-import UppyUploadMixin from "discourse/mixins/uppy-upload";
-import i18n from "discourse-common/helpers/i18n";
-import icon from "discourse-common/helpers/d-icon";
-import DButton from "discourse/components/d-button";
 import { fn } from "@ember/helper";
+import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
+import DButton from "discourse/components/d-button";
+import UppyUploadMixin from "discourse/mixins/uppy-upload";
+import icon from "discourse-common/helpers/d-icon";
+import I18n from "discourse-i18n";
 
 export default class PersonaRagUploader extends Component.extend(
   UppyUploadMixin
@@ -19,7 +18,8 @@ export default class PersonaRagUploader extends Component.extend(
   preventDirectS3Uploads = true;
 
   didReceiveAttrs() {
-    this._super(...arguments);
+    super.didReceiveAttrs();
+    super.didReceiveAttrs(...arguments);
     if (this.inProgressUploads?.length > 0) {
       this._uppyInstance?.cancelAll();
     }
@@ -46,27 +46,43 @@ export default class PersonaRagUploader extends Component.extend(
     <p>{{I18n.t "discourse_ai.ai_persona.uploads.description"}}</p>
 
     <table class="rag-uploads">
-      {{#each @ragUploads as |upload|}}
-        <tr>
-          <td><span class="rag-file-icon">{{icon "file"}}</span> {{upload.original_filename}}</td>
-          <td class="upload-status {{upload.status}}">{{icon "check"}} {{upload.statusText}}</td>
-          <td>
-            <DButton @icon="times" @title="discourse_ai.ai_persona.uploads.remove" @action={{fn @onRemove upload}} @class="btn-flat" />
-          </td>
-        </tr>
-      {{/each}}
-      {{#each this.inProgressUploads as |upload|}}
-        <tr>
-          <td><span class="rag-file-icon">{{icon "file"}}</span> {{upload.original_filename}}</td>
-          <td class="upload-status">
-            <div class="spinner small"></div>
-            <span>{{I18n.t "discourse_ai.ai_persona.uploads.uploading"}} {{upload.uploadProgress}}%</span>
-          </td>
-          <td>
-            <DButton @icon="times" @title="discourse_ai.ai_persona.uploads.remove" @action={{fn this.cancelUploading upload}} @class="btn-flat" />
-          </td>
-        </tr>
-      {{/each}}
+      <tbody>
+        {{#each @ragUploads as |upload|}}
+          <tr>
+            <td><span class="rag-file-icon">{{icon "file"}}</span>
+              {{upload.original_filename}}</td>
+            <td class="upload-status {{upload.status}}">{{icon "check"}}
+              {{upload.statusText}}</td>
+            <td>
+              <DButton
+                @icon="times"
+                @title="discourse_ai.ai_persona.uploads.remove"
+                @action={{fn @onRemove upload}}
+                @class="btn-flat"
+              />
+            </td>
+          </tr>
+        {{/each}}
+        {{#each this.inProgressUploads as |upload|}}
+          <tr>
+            <td><span class="rag-file-icon">{{icon "file"}}</span>
+              {{upload.original_filename}}</td>
+            <td class="upload-status">
+              <div class="spinner small"></div>
+              <span>{{I18n.t "discourse_ai.ai_persona.uploads.uploading"}}
+                {{upload.uploadProgress}}%</span>
+            </td>
+            <td>
+              <DButton
+                @icon="times"
+                @title="discourse_ai.ai_persona.uploads.remove"
+                @action={{fn this.cancelUploading upload}}
+                @class="btn-flat"
+              />
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
     </table>
 
     <input
@@ -78,7 +94,7 @@ export default class PersonaRagUploader extends Component.extend(
     />
     <DButton
       @label="discourse_ai.ai_persona.uploads.button"
-      @icon="plus"  
+      @icon="plus"
       @title="discourse_ai.ai_persona.uploads.button"
       @action={{this.submitFiles}}
       class="btn-default"

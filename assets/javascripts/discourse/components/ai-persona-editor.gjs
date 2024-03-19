@@ -15,6 +15,7 @@ import DToggleSwitch from "discourse/components/d-toggle-switch";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
+import { bind } from "discourse-common/utils/decorators";
 import I18n from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
@@ -24,7 +25,6 @@ import AiCommandSelector from "./ai-command-selector";
 import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaCommandOptions from "./ai-persona-command-options";
 import PersonaRagUploader from "./persona-rag-uploader";
-import { bind } from "discourse-common/utils/decorators";
 
 export default class PersonaEditor extends Component {
   @service router;
@@ -44,20 +44,31 @@ export default class PersonaEditor extends Component {
 =======
   constructor() {
     super(...arguments);
-    this.messageBus.subscribe("/discourse-ai/ai-bot/uploads", this.onUploadUpdate);
+    this.messageBus.subscribe(
+      "/discourse-ai/ai-bot/uploads",
+      this.onUploadUpdate
+    );
   }
 
   willDestroy() {
     super.willDestroy(...arguments);
-    this.messageBus.unsubscribe("/discourse-ai/ai-bot/uploads", this.onUploadUpdate);
+    this.messageBus.unsubscribe(
+      "/discourse-ai/ai-bot/uploads",
+      this.onUploadUpdate
+    );
   }
 
   @bind
-  onUploadUpdate(data) { 
-    const upload = this.editingModel.rag_uploads.findBy("upload_id", data.upload_id);
+  onUploadUpdate(data) {
+    const upload = this.editingModel.rag_uploads.findBy(
+      "upload_id",
+      data.upload_id
+    );
 
     upload.status = data.status;
-    upload.statusText = I18n.t(`discourse_ai.ai_persona.uploads.processing.${data.status}`);
+    upload.statusText = I18n.t(
+      `discourse_ai.ai_persona.uploads.processing.${data.status}`
+    );
   }
 >>>>>>> 8ae5131 (FEATURE: RAG embeddings for the AI Bot)
 
@@ -463,7 +474,11 @@ export default class PersonaEditor extends Component {
       </div>
       {{#if this.siteSettings.ai_embeddings_enabled}}
         <div class="control-group">
-          <PersonaRagUploader @ragUploads={{this.editingModel.rag_uploads}} @onAdd={{this.addUpload}} @onRemove={{this.removeUpload}}/>
+          <PersonaRagUploader
+            @ragUploads={{this.editingModel.rag_uploads}}
+            @onAdd={{this.addUpload}}
+            @onRemove={{this.removeUpload}}
+          />
         </div>
       {{/if}}
       <div class="control-group ai-persona-editor__action_panel">
