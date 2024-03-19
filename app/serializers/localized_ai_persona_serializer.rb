@@ -22,6 +22,11 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :vision_max_pixels
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
+  has_many :rag_uploads, serializer: UploadSerializer, embed: :object
+
+  def rag_uploads
+    object.uploads
+  end
 
   def name
     object.class_instance.name

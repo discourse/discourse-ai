@@ -20,6 +20,7 @@ const ATTRIBUTES = [
   "max_context_posts",
   "vision_enabled",
   "vision_max_pixels",
+  "rag_uploads",
 ];
 
 const SYSTEM_ATTRIBUTES = [
@@ -34,6 +35,7 @@ const SYSTEM_ATTRIBUTES = [
   "max_context_posts",
   "vision_enabled",
   "vision_max_pixels",
+  "rag_uploads",
 ];
 
 class CommandOption {

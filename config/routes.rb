@@ -41,5 +41,7 @@ Discourse::Application.routes.draw do
               controller: "discourse_ai/admin/ai_personas"
 
     post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
+    post "/ai-personas/files/upload", to: "discourse_ai/admin/ai_personas#upload_file"
+    put "/ai-personas/:id/files/remove", to: "discourse_ai/admin/ai_personas#remove_file"
   end
 end

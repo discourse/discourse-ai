@@ -23,19 +23,43 @@ import DTooltip from "float-kit/components/d-tooltip";
 import AiCommandSelector from "./ai-command-selector";
 import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaCommandOptions from "./ai-persona-command-options";
+import PersonaRagUploader from "./persona-rag-uploader";
+import { bind } from "discourse-common/utils/decorators";
 
 export default class PersonaEditor extends Component {
   @service router;
   @service store;
   @service dialog;
   @service toasts;
+  @service messageBus;
+  @service siteSettings;
 
   @tracked allGroups = [];
   @tracked isSaving = false;
   @tracked editingModel = null;
   @tracked showDelete = false;
 
+<<<<<<< HEAD
   @tracked maxPixelsValue = null;
+=======
+  constructor() {
+    super(...arguments);
+    this.messageBus.subscribe("/discourse-ai/ai-bot/uploads", this.onUploadUpdate);
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.messageBus.unsubscribe("/discourse-ai/ai-bot/uploads", this.onUploadUpdate);
+  }
+
+  @bind
+  onUploadUpdate(data) { 
+    const upload = this.editingModel.rag_uploads.findBy("upload_id", data.upload_id);
+
+    upload.status = data.status;
+    upload.statusText = I18n.t(`discourse_ai.ai_persona.uploads.processing.${data.status}`);
+  }
+>>>>>>> 8ae5131 (FEATURE: RAG embeddings for the AI Bot)
 
   @action
   updateModel() {
@@ -188,6 +212,19 @@ export default class PersonaEditor extends Component {
     } catch (e) {
       popupAjaxError(e);
     }
+  }
+
+  @action
+  addUpload(upload) {
+    const newUpload = upload;
+    newUpload.status = "uploaded";
+    newUpload.statusText = I18n.t("discourse_ai.ai_persona.uploads.uploaded");
+    this.editingModel.rag_uploads.addObject(newUpload);
+  }
+
+  @action
+  removeUpload(upload) {
+    this.editingModel.rag_uploads.removeObject(upload);
   }
 
   async toggleField(field, sortPersonas) {
@@ -392,8 +429,8 @@ export default class PersonaEditor extends Component {
           />
         </div>
       {{/if}}
-      {{#if this.showTemperature}}
-        <div class="control-group">
+      <div class="control-group">
+        {{#if this.showTemperature}}
           <label>{{I18n.t "discourse_ai.ai_persona.temperature"}}</label>
           <Input
             @type="number"
@@ -407,10 +444,8 @@ export default class PersonaEditor extends Component {
             @icon="question-circle"
             @content={{I18n.t "discourse_ai.ai_persona.temperature_help"}}
           />
-        </div>
-      {{/if}}
-      {{#if this.showTopP}}
-        <div class="control-group">
+        {{/if}}
+        {{#if this.showTopP}}
           <label>{{I18n.t "discourse_ai.ai_persona.top_p"}}</label>
           <Input
             @type="number"
@@ -424,6 +459,11 @@ export default class PersonaEditor extends Component {
             @icon="question-circle"
             @content={{I18n.t "discourse_ai.ai_persona.top_p_help"}}
           />
+        {{/if}}
+      </div>
+      {{#if this.siteSettings.ai_embeddings_enabled}}
+        <div class="control-group">
+          <PersonaRagUploader @ragUploads={{this.editingModel.rag_uploads}} @onAdd={{this.addUpload}} @onRemove={{this.removeUpload}}/>
         </div>
       {{/if}}
       <div class="control-group ai-persona-editor__action_panel">

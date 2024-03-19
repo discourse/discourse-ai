@@ -155,6 +155,18 @@ module DiscourseAi
           text = @strategy.prepare_text_from(target, tokenizer, max_sequence_length - 2)
           return if text.blank?
 
+          target_column =
+            case target
+            when Topic
+              "topic_id"
+            when Post
+              "post_id"
+            when RagDocumentFragment
+              "rag_document_fragment_id"
+            else
+              raise ArgumentError, "Invalid target type"
+            end
+
           new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
           current_digest = DB.query_single(<<~SQL, target_id: target.id).first
             SELECT
@@ -162,7 +174,7 @@ module DiscourseAi
             FROM
               #{table_name(target)}
             WHERE
-              #{target.is_a?(Topic) ? "topic_id" : "post_id"} = :target_id
+              #{target_column} = :target_id
             LIMIT 1
           SQL
           return if current_digest == new_digest
@@ -282,12 +294,18 @@ module DiscourseAi
           "ai_post_embeddings_#{id}_#{@strategy.id}"
         end
 
+        def rag_fragments_table_name
+          "ai_document_fragment_embeddings_#{id}_#{@strategy.id}"
+        end
+
         def table_name(target)
           case target
           when Topic
             topic_table_name
           when Post
             post_table_name
+          when RagDocumentFragment
+            rag_fragments_table_name
           else
             raise ArgumentError, "Invalid target type"
           end
@@ -370,6 +388,25 @@ module DiscourseAi
                 updated_at = CURRENT_TIMESTAMP
               SQL
               post_id: target.id,
+              model_version: version,
+              strategy_version: @strategy.version,
+              digest: digest,
+              embeddings: vector,
+            )
+          elsif RagDocumentFragment
+            DB.exec(
+              <<~SQL,
+              INSERT INTO #{rag_fragments_table_name} (rag_document_fragment_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
+              VALUES (:fragment_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              ON CONFLICT (rag_document_fragment_id)
+              DO UPDATE SET
+                model_version = :model_version,
+                strategy_version = :strategy_version,
+                digest = :digest,
+                embeddings = '[:embeddings]',
+                updated_at = CURRENT_TIMESTAMP
+              SQL
+              fragment_id: target.id,
               model_version: version,
               strategy_version: @strategy.version,
               digest: digest,

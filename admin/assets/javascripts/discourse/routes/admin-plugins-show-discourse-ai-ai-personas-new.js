@@ -5,6 +5,7 @@ export default DiscourseRoute.extend({
   async model() {
     const record = this.store.createRecord("ai-persona");
     record.set("allowed_group_ids", [AUTO_GROUPS.trust_level_0.id]);
+    record.set("rag_uploads", []);
     return record;
   },
 

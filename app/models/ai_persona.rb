@@ -16,6 +16,13 @@ class AiPersona < ActiveRecord::Base
   belongs_to :created_by, class_name: "User"
   belongs_to :user
 
+  has_many :upload_references, as: :target, dependent: :destroy
+  has_many :uploads, through: :upload_references
+
+  has_many :rag_document_fragment, dependent: :destroy
+
+  has_many :rag_document_fragments, through: :ai_persona_rag_document_fragments
+
   before_destroy :ensure_not_system
 
   class MultisiteHash

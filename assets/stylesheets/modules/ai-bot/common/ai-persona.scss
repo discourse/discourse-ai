@@ -76,4 +76,26 @@
     display: flex;
     align-items: center;
   }
+
+  .rag-uploads {
+    margin-bottom: 20px;
+
+    .upload-status {
+      text-align: right;
+      padding-right: 0;
+
+      &.succesful {
+        color: var(--success);  
+      }
+    }
+
+    .remove-upload {
+      text-align: right;
+      padding-left: 0;
+    }
+    
+    .rag-file-icon {
+      margin-right: 5px;
+    }  
+  }
 }
