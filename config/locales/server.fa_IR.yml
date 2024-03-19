@@ -11,6 +11,9 @@ fa_IR:
     overall_sentiment:
       yaxis: "تاریخ"
   discourse_ai:
+    share_ai:
+      formatted_excerpt: "گفتگوی هوش‌مصنوعی با %{llm_name}:\n %{excerpt}"
+      title: "%{title} - گفتگوی هوش‌مصنوعی - %{site_name}"
     ai_bot:
       personas:
         dall_e3:

@@ -94,6 +94,7 @@ de:
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
     ai_bot_enable_chat_warning: "Zeigt eine Warnung an, wenn der PN-Chat initiiert wird. Kann durch Bearbeiten der Übersetzungszeichenfolge überschrieben werden: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
+    ai_bot_public_sharing_allowed_groups: "Erlaube diesen Gruppen, persönliche KI-Nachrichten über einen eindeutigen, öffentlich zugänglichen Link mit der Öffentlichkeit zu teilen"
     ai_bot_enabled_chat_bots: "Verfügbare Modelle, die als KI-Bot agieren können"
     ai_bot_add_to_header: "Eine Schaltfläche in der Kopfzeile anzeigen, um eine PN mit einem KI-Bot zu starten"
     ai_bot_github_access_token: "GitHub-Zugangstoken für die Verwendung mit den GitHub-KI-Tools (erforderlich für die Suchunterstützung)"
@@ -124,6 +125,7 @@ de:
       title: "Beitragsemotion"
       description: "Anzahl der Beiträge, die mit einer der folgenden Emotionen klassifiziert wurden, gruppiert nach der Vertrauensstufe des Autors."
   discourse_ai:
+    unknown_model: "Unbekanntes KI-Modell"
     ai_helper:
       errors:
         completion_request_failed: "Beim Versuch, Vorschläge zu machen, ist etwas schiefgelaufen. Bitte versuche es noch einmal."
@@ -141,6 +143,17 @@ de:
           dall_e_3: "Bild von DALL-E 3"
       image_caption:
         attribution: "Untertitelt von KI"
+    share_ai:
+      read_more: "Vollständiges Transkript lesen"
+      onebox_title: "KI-Unterhaltung mit %{llm_name}"
+      formatted_excerpt: "KI-Unterhaltung mit %{llm_name}:\n %{excerpt}"
+      title: "%{title} - KI-Unterhaltung - %{site_name}"
+      errors:
+        not_allowed: "Du darfst dieses Thema nicht teilen"
+        other_people_in_pm: "Persönliche Nachrichten mit anderen Menschen können nicht öffentlich geteilt werden"
+        other_content_in_pm: "Persönliche Nachrichten, die Beiträge von anderen Personen enthalten, können nicht öffentlich geteilt werden"
+        failed_to_share: "Die Unterhaltung konnte nicht geteilt werden"
+        conversation_deleted: "Unterhaltsfreigabe erfolgreich gelöscht"
     ai_bot:
       personas:
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
