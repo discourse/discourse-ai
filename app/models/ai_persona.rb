@@ -264,6 +264,10 @@ class AiPersona < ActiveRecord::Base
       define_method :system_prompt do
         @ai_persona&.system_prompt || "You are a helpful bot."
       end
+
+      define_method :uploads do
+        @ai_persona&.uploads || []
+      end
     end
   end
 
