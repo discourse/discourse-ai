@@ -237,6 +237,10 @@ Follow the provided writing composition instructions carefully and precisely ste
         parsed
           .css("a")
           .each do |a|
+            if a["class"] == "mention"
+              a.inner_html = a.inner_html.sub("@", "")
+              next
+            end
             href = a["href"]
             if href.present? && (href.start_with?("#{Discourse.base_url}") || href.start_with?("/"))
               begin
@@ -253,13 +257,6 @@ Follow the provided writing composition instructions carefully and precisely ste
                 # skip
               end
             end
-          end
-
-        parsed
-          .css("span.mention")
-          .each do |mention|
-            no_at_username = mention.text.sub("@", "")
-            mention.replace("<a href='/u/#{no_at_username}' class='mention'>#{no_at_username}</a>")
           end
 
         parsed.to_html

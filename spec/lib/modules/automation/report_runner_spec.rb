@@ -82,8 +82,10 @@ module DiscourseAi
         end
 
         it "can suppress notifications by remapping content" do
+          user = Fabricate(:user)
+
           markdown = <<~MD
-            @sam is a person
+            @#{user.username} is a person
             [test1](/test) is an internal link
             [test2](/test?1=2) is an internal link
             [test3](https://example.com) is an external link
@@ -117,7 +119,7 @@ module DiscourseAi
 
           # note, magic surprise &amp; is correct HTML 5 representation
           expected = <<~HTML
-            <p><a href="/u/sam" class="mention">sam</a> is a person<br>
+            <p><a class="mention" href="/u/#{user.username}">#{user.username}</a> is a person<br>
             <a href="/test?silent=true">test1</a> is an internal link<br>
             <a href="/test?1=2&amp;silent=true">test2</a> is an internal link<br>
             <a href="https://example.com" rel="noopener nofollow ugc">test3</a> is an external link<br>
@@ -127,7 +129,10 @@ module DiscourseAi
             <a href="//%5B%5Btest?silent=true" rel="noopener nofollow ugc">test7</a> is a link with an invalid URL</p>
           HTML
 
-          expect(report.ordered_posts.first.raw.strip).to eq(expected.strip)
+          post = report.ordered_posts.first
+
+          expect(post.mentions.to_a).to eq([])
+          expect(post.raw.strip).to eq(expected.strip)
         end
 
         it "can exclude tags" do
