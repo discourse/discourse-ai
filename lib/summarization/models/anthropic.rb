@@ -10,7 +10,7 @@ module DiscourseAi
 
         def correctly_configured?
           SiteSetting.ai_anthropic_api_key.present? ||
-          DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
+            DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
         end
 
         def configuration_hint
