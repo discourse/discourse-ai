@@ -46,15 +46,6 @@ export default class AiPersonaListEditor extends Component {
       {{#if @currentPersona}}
         <AiPersonaEditor @model={{@currentPersona}} @personas={{@personas}} />
       {{else}}
-        <div class="ai-persona-list-editor__empty">
-          <details class="details__boxed">
-            <summary>{{i18n
-                "discourse_ai.ai_persona.what_are_personas"
-              }}</summary>
-            {{this.noPersonaText}}
-          </details>
-        </div>
-
         <div class="ai-persona-list-editor__header">
           <h3>{{i18n "discourse_ai.ai_persona.short_title"}}</h3>
           {{#unless @currentPersona.isNew}}
@@ -66,6 +57,15 @@ export default class AiPersonaListEditor extends Component {
               <span>{{I18n.t "discourse_ai.ai_persona.new"}}</span>
             </LinkTo>
           {{/unless}}
+        </div>
+
+        <div class="ai-persona-list-editor__empty">
+          <details class="details__boxed">
+            <summary>{{i18n
+                "discourse_ai.ai_persona.what_are_personas"
+              }}</summary>
+            {{this.noPersonaText}}
+          </details>
         </div>
 
         <table class="content-list ai-persona-list-editor">

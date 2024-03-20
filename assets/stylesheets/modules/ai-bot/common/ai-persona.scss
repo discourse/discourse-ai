@@ -1,14 +1,19 @@
+.admin-contents .ai-persona-list-editor {
+  margin-top: 0;
+}
+
 .ai-persona-list-editor {
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    margin: 0 0 1em 0;
 
     h3 {
       margin: 0;
     }
   }
+
   &__current {
     padding-left: 20px;
   }

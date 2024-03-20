@@ -40,16 +40,6 @@ after_initialize do
   require_relative "discourse_automation/llm_report"
 
   add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
-  register_admin_config_nav_routes(
-    "discourse-ai",
-    [
-      { label: "admin.plugins.change_settings_short", route: "adminPlugins.show.settings" },
-      {
-        label: "discourse_ai.ai_persona.short_title",
-        route: "adminPlugins.show.discourse-ai.ai-personas",
-      },
-    ],
-  )
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,
