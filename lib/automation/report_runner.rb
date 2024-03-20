@@ -140,10 +140,7 @@ Follow the provided writing composition instructions carefully and precisely ste
         prompt =
           DiscourseAi::Completions::Prompt.new(
             system_prompt,
-            messages: [
-              { type: :user, content: input },
-              { type: :model, content: "Here is the report I generated for you" },
-            ],
+            messages: [{ type: :user, content: input }],
           )
 
         result = +""
