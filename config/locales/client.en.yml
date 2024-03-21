@@ -114,7 +114,9 @@ en:
         select_option: "Select an option..."
 
       ai_persona:
+        back: Back
         name: Name
+        edit: Edit
         description: Description
         no_llm_selected: "No language model selected"
         max_context_posts: "Max Context Posts"
@@ -129,12 +131,13 @@ en:
         system_prompt: System Prompt
         save: Save
         saved: AI Persona Saved
-        enabled: Enabled
+        enabled: "Enabled?"
         commands: Enabled Commands
         allowed_groups: Allowed Groups
         confirm_delete: Are you sure you want to delete this persona?
-        new: New
+        new: "New Persona"
         title: "AI Personas"
+        short_title: "Personas"
         delete: Delete
         temperature: Temperature
         temperature_help: Temperature to use for the LLM, increase to increase creativity (leave empty to use model default, generally a value from 0.0 to 2.0)
@@ -143,16 +146,15 @@ en:
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
         command_options: "Command Options"
+        what_are_personas: "What are AI Personas?"
         no_persona_selected: |
-          ## What are AI Personas?
-
           AI Personas are a powerful feature that allows you to customize the behavior of the AI engine in your Discourse forum. They act as a 'system message' that guides the AI's responses and interactions, helping to create a more personalized and engaging user experience.
 
-          ## Why use AI Personas?
+          #### Why use AI Personas?
 
           With AI Personas, you can tailor the AI's behavior to better fit the context and tone of your forum. Whether you want the AI to be more formal for a professional setting, more casual for a community forum, or even embody a specific character for a role-playing game, AI Personas give you the flexibility to do so.
 
-          ## Group-Specific Access to AI Personas
+          #### Group-Specific Access to AI Personas
 
           Moreover, you can set it up so that certain user groups have access to specific personas. This means you can have different AI behaviors for different sections of your forum, further enhancing the diversity and richness of your community's interactions.
 

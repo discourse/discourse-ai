@@ -17,6 +17,7 @@ register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
+register_asset "stylesheets/modules/ai-bot/mobile/ai-persona.scss", :mobile
 
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
@@ -38,7 +39,7 @@ after_initialize do
   require_relative "discourse_automation/llm_triage"
   require_relative "discourse_automation/llm_report"
 
-  add_admin_route "discourse_ai.title", "discourse-ai"
+  add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,

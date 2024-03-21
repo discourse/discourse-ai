@@ -8,6 +8,7 @@ import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
@@ -58,7 +59,7 @@ export default class PersonaEditor extends Component {
       if (isNew) {
         this.args.personas.addObject(this.args.model);
         this.router.transitionTo(
-          "adminPlugins.discourse-ai.ai-personas.show",
+          "adminPlugins.show.discourse-ai.ai-personas.show",
           this.args.model
         );
       } else {
@@ -109,7 +110,7 @@ export default class PersonaEditor extends Component {
         return this.args.model.destroyRecord().then(() => {
           this.args.personas.removeObject(this.args.model);
           this.router.transitionTo(
-            "adminPlugins.discourse-ai.ai-personas.index"
+            "adminPlugins.show.discourse-ai.ai-personas.index"
           );
         });
       },
@@ -180,6 +181,10 @@ export default class PersonaEditor extends Component {
   }
 
   <template>
+    <BackButton
+      @route="adminPlugins.show.discourse-ai.ai-personas"
+      @label="discourse_ai.ai_persona.back"
+    />
     <form
       class="form-horizontal ai-persona-editor"
       {{didUpdate this.updateModel @model.id}}
