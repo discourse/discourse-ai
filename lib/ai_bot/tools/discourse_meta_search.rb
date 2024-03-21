@@ -142,14 +142,23 @@ module DiscourseAi
 
         def self.categories
           return @categories if defined?(@categories)
-          url = "https://meta.discourse.org/site.json"
-          json = JSON.parse(Net::HTTP.get(URI(url)))
-          @categories =
-            json["categories"]
-              .map do |c|
-                [c["id"], { "name" => c["name"], "parent_category_id" => c["parent_category_id"] }]
-              end
-              .to_h
+
+          @categories = []
+
+          page = 1
+          loop do
+            url = "https://meta.discourse.org/categories.json?page=#{page}"
+            json = JSON.parse(Net::HTTP.get(URI(url)))
+            next if json["categories"].blank?
+
+            @categories.concat(
+              json["categories"]
+                .map do |c|
+                  [c["id"], { "name" => c["name"], "parent_category_id" => c["parent_category_id"] }]
+                end
+                .to_h
+            )
+          end
         end
 
         def description_args

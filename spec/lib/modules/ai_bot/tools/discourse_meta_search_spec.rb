@@ -13,14 +13,27 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
     File.read(File.expand_path("../../../../../fixtures/search_meta/search.json", __FILE__))
   end
 
-  let(:mock_site_json) do
-    File.read(File.expand_path("../../../../../fixtures/search_meta/site.json", __FILE__))
+  let(:mock_categories_page_1) do
+    File.read(File.expand_path("../../../../../fixtures/search_meta/categories_page_1.json", __FILE__))
+  end
+
+  let(:mock_categories_page_2) do
+    File.read(File.expand_path("../../../../../fixtures/search_meta/categories_page_2.json", __FILE__))
   end
 
   before do
-    stub_request(:get, "https://meta.discourse.org/site.json").to_return(
+    stub_request(:get, "https://meta.discourse.org/categories.json?page=1").to_return(
       status: 200,
-      body: mock_site_json,
+      body: mock_categories_page_1,
+      headers: {
+      },
+    )
+  end
+
+  before do
+    stub_request(:get, "https://meta.discourse.org/categories.json?page=2").to_return(
+      status: 200,
+      body: mock_categories_page_2,
       headers: {
       },
     )
