@@ -262,11 +262,14 @@ module DiscourseAi
 
         def asymmetric_rag_fragment_similarity_search(
           raw_vector,
+          persona_id:,
           limit:,
           offset:,
           return_distance: false
         )
-          results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
+          results =
+            DB.query(
+              <<~SQL,
             #{probes_sql(post_table_name)}
             SELECT
               rag_document_fragment_id,
@@ -275,11 +278,18 @@ module DiscourseAi
               #{rag_fragments_table_name}
             INNER JOIN
               rag_document_fragments AS rdf ON rdf.id = rag_document_fragment_id
+            WHERE
+              rdf.ai_persona_id = :persona_id
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
             LIMIT :limit
             OFFSET :offset
           SQL
+              query_embedding: raw_vector,
+              persona_id: persona_id,
+              limit: limit,
+              offset: offset,
+            )
 
           if return_distance
             results.map { |r| [r.rag_document_fragment_id, r.distance] }
@@ -424,7 +434,7 @@ module DiscourseAi
               digest: digest,
               embeddings: vector,
             )
-          elsif RagDocumentFragment
+          elsif target.is_a?(RagDocumentFragment)
             DB.exec(
               <<~SQL,
               INSERT INTO #{rag_fragments_table_name} (rag_document_fragment_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)

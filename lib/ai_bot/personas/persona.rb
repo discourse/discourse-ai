@@ -92,6 +92,10 @@ module DiscourseAi
           end
         end
 
+        def id
+          self.class.system_personas[self.class]
+        end
+
         def tools
           []
         end
@@ -183,8 +187,11 @@ module DiscourseAi
         end
 
         def rag_fragments_prompt(conversation_context)
+          upload_refs =
+            UploadReference.where(target_id: id, target_type: "AiPersona").pluck(:upload_id)
+
           return nil if !SiteSetting.ai_embeddings_enabled?
-          return nil if conversation_context.blank? || uploads.blank?
+          return nil if conversation_context.blank? || upload_refs.blank?
 
           latest_interactions =
             conversation_context
@@ -202,19 +209,39 @@ module DiscourseAi
           candidate_fragment_ids =
             vector_rep.asymmetric_rag_fragment_similarity_search(
               interactions_vector,
-              limit: 10,
+              persona_id: id,
+              limit: 50,
               offset: 0,
             )
 
           guidance =
-            RagDocumentFragment.where(id: candidate_fragment_ids).pluck(:fragment).join("\n\n")
+            RagDocumentFragment.where(upload_id: upload_refs, id: candidate_fragment_ids).pluck(
+              :fragment,
+            )
+
+          if DiscourseAi::Inference::HuggingFaceTextEmbeddings.reranker_configured?
+            ranks =
+              DiscourseAi::Inference::HuggingFaceTextEmbeddings
+                .rerank(conversation_context.last[:content], guidance)
+                .to_a
+                .take(10)
+                .map { _1[:index] }
+
+            if ranks.empty?
+              guidance = guidance.take(10)
+            else
+              guidance = ranks.map { |idx| guidance[idx] }
+            end
+          else
+            guidance = guidance.take(10)
+          end
 
           <<~TEXT
-          The following text fragments will give you additional guidance when replying.
-          We consider them to be the most relevant pieces of information about the topic being discussed.
-          Try your best to take them into account before elaborating a response.
+          The following texts will give you additional guidance to elaborate a response.
+          We included them because we believe they are relevant to this conversation topic.
+          Take them into account to elaborate a response.
 
-          Fragments:
+          Texts:
 
           #{guidance}
 

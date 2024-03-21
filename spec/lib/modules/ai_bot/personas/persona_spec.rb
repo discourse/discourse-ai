@@ -196,4 +196,94 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       )
     end
   end
+
+  describe "#craft_prompt" do
+    before do
+      Group.refresh_automatic_groups!
+      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+      SiteSetting.ai_embeddings_enabled = true
+    end
+
+    let(:ai_persona) { DiscourseAi::AiBot::Personas::Persona.all(user: user).first.new }
+
+    let(:with_cc) do
+      context.merge(conversation_context: [{ content: "Tell me the time", type: :user }])
+    end
+
+    context "when a persona has no uploads" do
+      it "doesn't include RAG guidance" do
+        guidance_fragment =
+          "The following texts will give you additional guidance to elaborate a response."
+
+        expect(ai_persona.craft_prompt(with_cc).messages.first[:content]).not_to include(
+          guidance_fragment,
+        )
+      end
+    end
+
+    context "when a persona has RAG uploads" do
+      fab!(:upload)
+
+      before do
+        stored_ai_persona = AiPersona.find(ai_persona.id)
+        UploadReference.ensure_exist!(target: stored_ai_persona, upload_ids: [upload.id])
+
+        candidate_ids = []
+
+        15.times do |i|
+          candidate_ids << Fabricate(
+            :rag_document_fragment,
+            fragment: "fragment-n#{i}",
+            ai_persona_id: ai_persona.id,
+            upload: upload,
+          ).id
+        end
+
+        DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
+          .any_instance
+          .expects(:asymmetric_rag_fragment_similarity_search)
+          .returns(candidate_ids)
+
+        context_embedding = [0.049382, 0.9999]
+        EmbeddingsGenerationStubs.discourse_service(
+          SiteSetting.ai_embeddings_model,
+          with_cc.dig(:conversation_context, 0, :content),
+          context_embedding,
+        )
+      end
+
+      context "when the reranker is available" do
+        before { SiteSetting.ai_hugging_face_tei_reranker_endpoint = "https://test.reranker.com" }
+
+        it "uses the re-ranker to reorder the fragments and pick the top 10 candidates" do
+          expected_reranked = (0..14).to_a.reverse.map { |idx| { index: idx } }
+
+          WebMock.stub_request(:post, "https://test.reranker.com/rerank").to_return(
+            status: 200,
+            body: JSON.dump(expected_reranked),
+          )
+
+          crafted_system_prompt = ai_persona.craft_prompt(with_cc).messages.first[:content]
+
+          expect(crafted_system_prompt).to include("fragment-n14")
+          expect(crafted_system_prompt).to include("fragment-n13")
+          expect(crafted_system_prompt).to include("fragment-n12")
+
+          expect(crafted_system_prompt).not_to include("fragment-n4") # Fragment #11 not included
+        end
+      end
+
+      context "when the reranker is not available" do
+        it "picks the first 10 candidates from the similarity search" do
+          crafted_system_prompt = ai_persona.craft_prompt(with_cc).messages.first[:content]
+
+          expect(crafted_system_prompt).to include("fragment-n0")
+          expect(crafted_system_prompt).to include("fragment-n1")
+          expect(crafted_system_prompt).to include("fragment-n2")
+
+          expect(crafted_system_prompt).not_to include("fragment-n10") # Fragment #10 not included
+        end
+      end
+    end
+  end
 end

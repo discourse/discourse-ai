@@ -266,7 +266,7 @@ class AiPersona < ActiveRecord::Base
       end
 
       define_method :uploads do
-        @ai_persona&.uploads || []
+        @ai_persona&.uploads
       end
     end
   end
