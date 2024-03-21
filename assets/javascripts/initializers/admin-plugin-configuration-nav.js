@@ -1,4 +1,4 @@
-import { PLUGIN_CONFIG_NAV_MODE_TOP } from "discourse/lib/admin-plugin-config-nav";
+import { PLUGIN_NAV_MODE_TOP } from "discourse/lib/admin-plugin-config-nav";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 export default {
@@ -11,20 +11,16 @@ export default {
     }
 
     withPluginApi("1.1.0", (api) => {
-      api.addAdminPluginConfigurationNav(
-        "discourse-ai",
-        PLUGIN_CONFIG_NAV_MODE_TOP,
-        [
-          {
-            label: "admin.plugins.change_settings_short",
-            route: "adminPlugins.show.settings",
-          },
-          {
-            label: "discourse_ai.ai_persona.short_title",
-            route: "adminPlugins.show.discourse-ai.ai-personas",
-          },
-        ]
-      );
+      api.addAdminPluginConfigurationNav("discourse-ai", PLUGIN_NAV_MODE_TOP, [
+        {
+          label: "admin.plugins.change_settings_short",
+          route: "adminPlugins.show.settings",
+        },
+        {
+          label: "discourse_ai.ai_persona.short_title",
+          route: "adminPlugins.show.discourse-ai.ai-personas",
+        },
+      ]);
     });
   },
 };
