@@ -65,7 +65,9 @@ module DiscourseAi
             I18n.t("discourse_automation.scriptables.llm_report.title")
           end
         @model = model
-        @llm = DiscourseAi::Completions::Llm.proxy(translate_model(model))
+
+        translated_model = DiscourseAi::Automation.translate_model(model)
+        @llm = DiscourseAi::Completions::Llm.proxy(translated_model)
         @category_ids = category_ids
         @tags = tags
         @allow_secure_categories = allow_secure_categories
@@ -140,10 +142,7 @@ Follow the provided writing composition instructions carefully and precisely ste
         prompt =
           DiscourseAi::Completions::Prompt.new(
             system_prompt,
-            messages: [
-              { type: :user, content: input },
-              { type: :model, content: "Here is the report I generated for you" },
-            ],
+            messages: [{ type: :user, content: input }],
           )
 
         result = +""
@@ -213,21 +212,6 @@ Follow the provided writing composition instructions carefully and precisely ste
         end
       end
 
-      def translate_model(model)
-        return "google:gemini-pro" if model == "gemini-pro"
-        return "open_ai:#{model}" if model.start_with? "gpt"
-
-        if model.start_with? "claude"
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(model)
-            return "aws_bedrock:#{model}"
-          else
-            return "anthropic:#{model}"
-          end
-        end
-
-        raise "Unknown model #{model}"
-      end
-
       private
 
       def suppress_notifications(raw)
@@ -237,6 +221,10 @@ Follow the provided writing composition instructions carefully and precisely ste
         parsed
           .css("a")
           .each do |a|
+            if a["class"] == "mention"
+              a.inner_html = a.inner_html.sub("@", "")
+              next
+            end
             href = a["href"]
             if href.present? && (href.start_with?("#{Discourse.base_url}") || href.start_with?("/"))
               begin
@@ -253,13 +241,6 @@ Follow the provided writing composition instructions carefully and precisely ste
                 # skip
               end
             end
-          end
-
-        parsed
-          .css("span.mention")
-          .each do |mention|
-            no_at_username = mention.text.sub("@", "")
-            mention.replace("<a href='/u/#{no_at_username}' class='mention'>#{no_at_username}</a>")
           end
 
         parsed.to_html
