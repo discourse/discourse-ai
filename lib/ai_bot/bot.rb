@@ -181,6 +181,8 @@ module DiscourseAi
           "anthropic:claude-3-opus"
         when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
           "anthropic:claude-3-sonnet"
+        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_HAIKU_ID
+          "anthropic:claude-3-haiku"
         else
           nil
         end

@@ -14,6 +14,7 @@ en:
         gemini_pro: Gemini Pro
         claude_3_opus: Claude 3 Opus
         claude_3_sonnet: Claude 3 Sonnet
+        claude_3_haiku: Claude 3 Haiku
       scriptables:
         llm_report:
           fields:
@@ -245,6 +246,7 @@ en:
           fake: "Fake Test Bot"
           claude-3-opus: "Claude 3 Opus"
           claude-3-sonnet: "Claude 3 Sonnet"
+          claude-3-haiku: "Claude 3 Haiku"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:

@@ -8,6 +8,7 @@ module DiscourseAi
       { id: "gpt-3.5-turbo", name: "discourse_automation.ai_models.gpt_3_5_turbo" },
       { id: "claude-2", name: "discourse_automation.ai_models.claude_2" },
       { id: "gemini-pro", name: "discourse_automation.ai_models.gemini_pro" },
+      { id: "claude-3-haiku", name: "discourse_automation.ai_models.claude_3_haiku" },
       { id: "claude-3-sonnet", name: "discourse_automation.ai_models.claude_3_sonnet" },
       { id: "claude-3-opus", name: "discourse_automation.ai_models.claude_3_opus" },
     ]

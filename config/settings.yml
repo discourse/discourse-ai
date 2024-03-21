@@ -331,6 +331,7 @@ discourse_ai:
       - mixtral-8x7B-Instruct-V0.1
       - claude-3-opus
       - claude-3-sonnet
+      - claude-3-haiku
   ai_bot_add_to_header:
     default: true
     client: true
