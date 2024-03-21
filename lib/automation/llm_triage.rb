@@ -32,7 +32,8 @@ module DiscourseAi
 
         result = nil
 
-        llm = DiscourseAi::Completions::Llm.proxy(translate_model(model))
+        translated_model = DiscourseAi::Automation.translate_model(model)
+        llm = DiscourseAi::Completions::Llm.proxy(translated_model)
 
         result =
           llm.generate(
@@ -69,17 +70,6 @@ module DiscourseAi
           post.topic.update!(visible: false) if hide_topic
 
           ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user) if flag_post
-        end
-      end
-
-      def self.translate_model(model)
-        return "google:gemini-pro" if model == "gemini-pro"
-        return "open_ai:#{model}" if model != "claude-2"
-
-        if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-          "aws_bedrock:claude-2"
-        else
-          "anthropic:claude-2"
         end
       end
     end
