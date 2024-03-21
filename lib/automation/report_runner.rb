@@ -65,7 +65,9 @@ module DiscourseAi
             I18n.t("discourse_automation.scriptables.llm_report.title")
           end
         @model = model
-        @llm = DiscourseAi::Completions::Llm.proxy(translate_model(model))
+
+        translated_model = DiscourseAi::Automation.translate_model(model)
+        @llm = DiscourseAi::Completions::Llm.proxy(translated_model)
         @category_ids = category_ids
         @tags = tags
         @allow_secure_categories = allow_secure_categories
@@ -208,21 +210,6 @@ Follow the provided writing composition instructions carefully and precisely ste
             ).send
           end
         end
-      end
-
-      def translate_model(model)
-        return "google:gemini-pro" if model == "gemini-pro"
-        return "open_ai:#{model}" if model.start_with? "gpt"
-
-        if model.start_with? "claude"
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(model)
-            return "aws_bedrock:#{model}"
-          else
-            return "anthropic:#{model}"
-          end
-        end
-
-        raise "Unknown model #{model}"
       end
 
       private
