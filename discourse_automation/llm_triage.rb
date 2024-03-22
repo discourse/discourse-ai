@@ -34,7 +34,7 @@ if defined?(DiscourseAutomation)
     field :canned_reply, component: :message
     field :canned_reply_user, component: :user
 
-    script do |context, fields, automation|
+    script do |context, fields|
       post = context["post"]
       system_prompt = fields["system_prompt"]["value"]
       search_for_text = fields["search_for_text"]["value"]
@@ -51,6 +51,10 @@ if defined?(DiscourseAutomation)
       flag_post = fields.dig("flag_post", "value")
       canned_reply = fields.dig("canned_reply", "value")
       canned_reply_user = fields.dig("canned_reply_user", "value")
+
+      if post.user.username == canned_reply_user
+        next
+      end
 
       if post.raw.strip == canned_reply.to_s.strip
         # nothing to do if we already replied
