@@ -3,7 +3,8 @@
 return if !defined?(DiscourseAutomation)
 
 describe DiscourseAi::Automation::LlmTriage do
-  fab!(:post)
+  fab!(:category)
+  fab!(:reply_user) { Fabricate(:user) }
 
   let(:automation) { Fabricate(:automation, script: "llm_triage", enabled: true) }
 
@@ -18,12 +19,8 @@ describe DiscourseAi::Automation::LlmTriage do
     )
   end
 
-  it "can trigger via automation" do
+  before do
     SiteSetting.tagging_enabled = true
-
-    category = Fabricate(:category)
-    user = Fabricate(:user)
-
     add_automation_field("system_prompt", "hello %%POST%%")
     add_automation_field("search_for_text", "bad")
     add_automation_field("model", "gpt-4")
@@ -32,7 +29,11 @@ describe DiscourseAi::Automation::LlmTriage do
     add_automation_field("hide_topic", true, type: "boolean")
     add_automation_field("flag_post", true, type: "boolean")
     add_automation_field("canned_reply", "Yo this is a reply")
-    add_automation_field("canned_reply_user", user.username, type: "user")
+    add_automation_field("canned_reply_user", reply_user.username, type: "user")
+  end
+
+  it "can trigger via automation" do
+    post = Fabricate(:post)
 
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       automation.running_in_background!
@@ -45,6 +46,18 @@ describe DiscourseAi::Automation::LlmTriage do
     expect(topic.visible).to eq(false)
     reply = topic.posts.order(:post_number).last
     expect(reply.raw).to eq("Yo this is a reply")
-    expect(reply.user.id).to eq(user.id)
+    expect(reply.user.id).to eq(reply_user.id)
+  end
+
+  it "does not reply to the canned_reply_user" do
+    post = Fabricate(:post, user: reply_user)
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      automation.running_in_background!
+      automation.trigger!({ "post" => post })
+    end
+
+    last_post = post.topic.reload.posts.order(:post_number).last
+    expect(last_post.raw).to eq post.raw
   end
 end

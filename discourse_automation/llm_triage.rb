@@ -34,8 +34,15 @@ if defined?(DiscourseAutomation)
     field :canned_reply, component: :message
     field :canned_reply_user, component: :user
 
-    script do |context, fields, automation|
+    script do |context, fields|
       post = context["post"]
+      canned_reply = fields.dig("canned_reply", "value")
+      canned_reply_user = fields.dig("canned_reply_user", "value")
+
+      # nothing to do if we already replied
+      next if post.user.username == canned_reply_user
+      next if post.raw.strip == canned_reply.to_s.strip
+
       system_prompt = fields["system_prompt"]["value"]
       search_for_text = fields["search_for_text"]["value"]
       model = fields["model"]["value"]
@@ -49,13 +56,6 @@ if defined?(DiscourseAutomation)
       tags = fields.dig("tags", "value")
       hide_topic = fields.dig("hide_topic", "value")
       flag_post = fields.dig("flag_post", "value")
-      canned_reply = fields.dig("canned_reply", "value")
-      canned_reply_user = fields.dig("canned_reply_user", "value")
-
-      if post.raw.strip == canned_reply.to_s.strip
-        # nothing to do if we already replied
-        next
-      end
 
       begin
         DiscourseAi::Automation::LlmTriage.handle(
