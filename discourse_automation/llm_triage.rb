@@ -52,9 +52,7 @@ if defined?(DiscourseAutomation)
       canned_reply = fields.dig("canned_reply", "value")
       canned_reply_user = fields.dig("canned_reply_user", "value")
 
-      if post.user.username == canned_reply_user
-        next
-      end
+      next if post.user.username == canned_reply_user
 
       if post.raw.strip == canned_reply.to_s.strip
         # nothing to do if we already replied
