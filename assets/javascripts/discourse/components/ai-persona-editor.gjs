@@ -17,6 +17,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
 import I18n from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
+import ComboBox from "select-kit/components/combo-box";
 import GroupChooser from "select-kit/components/group-chooser";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiCommandSelector from "./ai-command-selector";
@@ -34,10 +35,43 @@ export default class PersonaEditor extends Component {
   @tracked editingModel = null;
   @tracked showDelete = false;
 
+  // this is a bit awkward but the model is not tracked correctly
+  @tracked visionEnabled = false;
+  @tracked maxPixelsValue = null;
+
   @action
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
+    this.visionEnabled = this.editingModel.vision_enabled;
     this.showDelete = !this.args.model.isNew && !this.args.model.system;
+    this.maxPixelsValue = this.findClosestPixelValue(
+      this.editingModel.vision_max_pixels
+    );
+  }
+
+  findClosestPixelValue(pixels) {
+    let value = "high";
+    this.maxPixelValues.forEach((info) => {
+      if (pixels === info.pixels) {
+        value = info.id;
+      }
+    });
+    return value;
+  }
+
+  get maxPixelValues() {
+    if (this._maxPixelValues) {
+      return this._maxPixelValues;
+    }
+
+    const keyPrefix = "discourse_ai.ai_persona.vision_max_pixel_sizes.";
+    const l = (key) => I18n.t(keyPrefix + key);
+    this._maxPixelValues = [
+      { id: "low", name: l("low"), pixels: 65536 },
+      { id: "medium", name: l("medium"), pixels: 262144 },
+      { id: "high", name: l("high"), pixels: 1048576 },
+    ];
+    return this._maxPixelValues;
   }
 
   @action
@@ -78,6 +112,12 @@ export default class PersonaEditor extends Component {
     }
   }
 
+  @action
+  toggleVisionEnabled() {
+    this.visionEnabled = !this.visionEnabled;
+    this.editingModel.vision_enabled = this.visionEnabled;
+  }
+
   get showTemperature() {
     return this.editingModel?.temperature || !this.editingModel?.system;
   }
@@ -100,6 +140,16 @@ export default class PersonaEditor extends Component {
     } else {
       this.editingModel.default_llm = value;
     }
+  }
+
+  @action
+  onChangeMaxPixels(value) {
+    const entry = this.maxPixelValues.find((info) => info.id === value);
+    if (!entry) {
+      return;
+    }
+    this.maxPixelsValue = value;
+    this.editingModel.vision_max_pixels = entry.pixels;
   }
 
   @action
@@ -329,6 +379,27 @@ export default class PersonaEditor extends Component {
           @content={{I18n.t "discourse_ai.ai_persona.max_context_posts_help"}}
         />
       </div>
+      <div class="control-group ai-persona-editor__vision_enabled">
+        <DToggleSwitch
+          @state={{this.visionEnabled}}
+          @label="discourse_ai.ai_persona.vision_enabled"
+          {{on "click" this.toggleVisionEnabled}}
+        />
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t "discourse_ai.ai_persona.vision_enabled_help"}}
+        />
+      </div>
+      {{#if this.visionEnabled}}
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.ai_persona.vision_max_pixels"}}</label>
+          <ComboBox
+            @value={{this.maxPixelsValue}}
+            @content={{this.maxPixelValues}}
+            @onChange={{this.onChangeMaxPixels}}
+          />
+        </div>
+      {{/if}}
       {{#if this.showTemperature}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.ai_persona.temperature"}}</label>
