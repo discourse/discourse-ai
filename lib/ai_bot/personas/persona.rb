@@ -5,6 +5,14 @@ module DiscourseAi
     module Personas
       class Persona
         class << self
+          def vision_enabled
+            false
+          end
+
+          def vision_max_pixels
+            1024 * 1024
+          end
+
           def system_personas
             @system_personas ||= {
               Personas::General => -1,
