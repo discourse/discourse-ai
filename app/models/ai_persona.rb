@@ -98,6 +98,8 @@ class AiPersona < ActiveRecord::Base
     mentionable = self.mentionable
     default_llm = self.default_llm
     max_context_posts = self.max_context_posts
+    vision_enabled = self.vision_enabled
+    vision_max_pixels = self.vision_max_pixels
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
@@ -127,6 +129,14 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :max_context_posts do
         max_context_posts
+      end
+
+      persona_class.define_singleton_method :vision_enabled do
+        vision_enabled
+      end
+
+      persona_class.define_singleton_method :vision_max_pixels do
+        vision_max_pixels
       end
 
       return persona_class
@@ -202,6 +212,14 @@ class AiPersona < ActiveRecord::Base
 
       define_singleton_method :max_context_posts do
         max_context_posts
+      end
+
+      define_singleton_method :vision_enabled do
+        vision_enabled
+      end
+
+      define_singleton_method :vision_max_pixels do
+        vision_max_pixels
       end
 
       define_singleton_method :to_s do

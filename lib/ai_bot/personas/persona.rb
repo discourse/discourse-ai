@@ -126,6 +126,7 @@ module DiscourseAi
               post_id: context[:post_id],
             )
 
+          prompt.max_pixels = self.class.vision_max_pixels if self.class.vision_enabled
           prompt.tools = available_tools.map(&:signature) if available_tools
 
           prompt

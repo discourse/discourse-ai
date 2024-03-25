@@ -48,6 +48,30 @@ module DiscourseAi
                   content << "#{msg[:id]}: " if msg[:id]
                   content << msg[:content]
 
+                  # got vision
+                  if model_name.include?("claude-3")
+                    if msg[:uploads].present?
+                      encoded_uploads = prompt.encoded_uploads(msg)
+                      if encoded_uploads.present?
+                        new_content = []
+                        new_content.concat(
+                          encoded_uploads.map do |details|
+                            {
+                              source: {
+                                type: "base64",
+                                data: details[:base64],
+                                media_type: details[:mime_type],
+                              },
+                              type: "image",
+                            }
+                          end,
+                        )
+                        new_content << { type: "text", text: content }
+                        content = new_content
+                      end
+                    end
+                  end
+
                   { role: "user", content: content }
                 end
               end

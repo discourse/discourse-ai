@@ -111,17 +111,26 @@ module DiscourseAi
           post
             .topic
             .posts
-            .includes(:user)
+            .joins(:user)
             .joins("LEFT JOIN post_custom_prompts ON post_custom_prompts.post_id = posts.id")
             .where("post_number <= ?", post.post_number)
             .order("post_number desc")
             .where("post_type in (?)", post_types)
             .limit(max_posts)
-            .pluck(:raw, :username, "post_custom_prompts.custom_prompt")
+            .pluck(
+              "posts.raw",
+              "users.username",
+              "post_custom_prompts.custom_prompt",
+              "(
+                  SELECT array_agg(ref.upload_id)
+                  FROM upload_references ref
+                  WHERE ref.target_type = 'Post' AND ref.target_id = posts.id
+               ) as upload_ids",
+            )
 
         result = []
 
-        context.reverse_each do |raw, username, custom_prompt|
+        context.reverse_each do |raw, username, custom_prompt, upload_ids|
           custom_prompt_translation =
             Proc.new do |message|
               # We can't keep backwards-compatibility for stored functions.
@@ -148,6 +157,10 @@ module DiscourseAi
             }
 
             context[:id] = username if context[:type] == :user
+
+            if upload_ids.present? && context[:type] == :user && bot.persona.class.vision_enabled
+              context[:uploads] = upload_ids.compact
+            end
 
             result << context
           end
