@@ -15,7 +15,6 @@ import DToggleSwitch from "discourse/components/d-toggle-switch";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
-import { bind } from "discourse-common/utils/decorators";
 import I18n from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
@@ -31,17 +30,14 @@ export default class PersonaEditor extends Component {
   @service store;
   @service dialog;
   @service toasts;
-  @service messageBus;
   @service siteSettings;
 
   @tracked allGroups = [];
   @tracked isSaving = false;
   @tracked editingModel = null;
   @tracked showDelete = false;
-
-<<<<<<< HEAD
   @tracked maxPixelsValue = null;
-=======
+
   constructor() {
     super(...arguments);
     this.messageBus.subscribe(
@@ -72,6 +68,8 @@ export default class PersonaEditor extends Component {
   }
 >>>>>>> 8ae5131 (FEATURE: RAG embeddings for the AI Bot)
 
+=======
+>>>>>>> 9593f80 (Uploads filter, css adjustments and file validations)
   @action
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
@@ -236,6 +234,7 @@ export default class PersonaEditor extends Component {
   @action
   removeUpload(upload) {
     this.editingModel.rag_uploads.removeObject(upload);
+    this.save();
   }
 
   async toggleField(field, sortPersonas) {

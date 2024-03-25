@@ -65,13 +65,13 @@ module DiscourseAi
 
       def upload_file
         file = params[:file] || params[:files].first
-        filename = params[:file].original_filename
 
         if !SiteSetting.ai_embeddings_enabled?
           raise Discourse::InvalidAccess.new("Embeddings not enabled")
         end
 
-        # Validate size.
+        validate_extension!(file.original_filename)
+        validate_file_size!(file.tempfile.size)
 
         hijack do
           upload =
@@ -139,6 +139,28 @@ module DiscourseAi
           else
             command
           end
+        end
+      end
+
+      def validate_extension!(filename)
+        extension = File.extname(filename)[1..-1] || ""
+        authorized_extension = "txt"
+        if extension != authorized_extension
+          raise Discourse::InvalidParameters.new(
+                  I18n.t("upload.unauthorized", authorized_extensions: authorized_extension),
+                )
+        end
+      end
+
+      def validate_file_size!(filesize)
+        max_size_bytes = 20.megabytes
+        if filesize > max_size_bytes
+          raise Discourse::InvalidParameters.new(
+                  I18n.t(
+                    "upload.attachments.too_large_humanized",
+                    max_size: ActiveSupport::NumberHelper.number_to_human_size(max_size_bytes),
+                  ),
+                )
         end
       end
     end

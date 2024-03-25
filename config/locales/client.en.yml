@@ -169,10 +169,8 @@ en:
           title: "Uploads"
           description: "Your AI persona will be able to search and reference the content of included files. Uploaded files must be formatted as plaintext (.txt)"
           button: "Add Files"
-          uploaded: "Uploaded"
-          processing: "Processing..."
-          indexing: "Indexing..."
-          completed: "Complete"
+          filter: "Filter uploads"
+          complete: "Complete"
 
       related_topics:
         title: "Related Topics"
