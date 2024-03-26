@@ -9,6 +9,9 @@ class AiPersona < ActiveRecord::Base
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
+  # leaves some room for growth but sets a maximum to avoid memory issues
+  # we may want to revisit this in the future
+  validates :vision_max_pixels, numericality: { greater_than: 0, maximum: 4_000_000 }
 
   belongs_to :created_by, class_name: "User"
   belongs_to :user

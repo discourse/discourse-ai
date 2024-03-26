@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
+import { cached, tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
@@ -56,19 +56,15 @@ export default class PersonaEditor extends Component {
     return value;
   }
 
+  @cached
   get maxPixelValues() {
-    if (this._maxPixelValues) {
-      return this._maxPixelValues;
-    }
-
     const l = (key) =>
       I18n.t(`discourse_ai.ai_persona.vision_max_pixel_sizes.${key}`);
-    this._maxPixelValues = [
+    return [
       { id: "low", name: l("low"), pixels: 65536 },
       { id: "medium", name: l("medium"), pixels: 262144 },
       { id: "high", name: l("high"), pixels: 1048576 },
     ];
-    return this._maxPixelValues;
   }
 
   @action
