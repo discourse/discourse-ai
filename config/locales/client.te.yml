@@ -28,11 +28,13 @@ te:
               label: "జవాబు"
     discourse_ai:
       ai_persona:
+        back: వెనుకకు
         name: పేరు
+        edit: సవరించండి
         description: వివరణ
         user: సభ్యుడు
         save: భద్రపరుచు
-        new: కొత్త
+        enabled: "ప్రారంభించబడిందా?"
         delete: తొలగించు
       ai_helper:
         context_menu:

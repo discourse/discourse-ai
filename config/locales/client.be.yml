@@ -28,11 +28,12 @@ be:
               label: "Адказаць"
     discourse_ai:
       ai_persona:
+        back: Назад
         name: імя
+        edit: рэдагаваць
         description: Апісанне
         user: карыстальнік
         save: Захаваць
-        new: Новыя
         delete: выдаляць
       ai_helper:
         context_menu:

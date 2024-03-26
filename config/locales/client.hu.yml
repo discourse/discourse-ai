@@ -30,12 +30,13 @@ hu:
       modals:
         select_option: "Válasszon egy lehetőséget..."
       ai_persona:
+        back: Vissza
         name: Név
+        edit: Szerkesztés
         description: Leírás
         user: Felhasználó
         save: Mentés
-        enabled: Engedélyezed
-        new: Új
+        enabled: "Engedélyezed?"
         delete: Törlés
       ai_helper:
         context_menu:

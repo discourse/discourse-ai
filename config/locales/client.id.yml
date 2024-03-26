@@ -29,11 +29,11 @@ id:
         select_option: "Memilih sebuah pilihan..."
       ai_persona:
         name: Nama
+        edit: Ubah
         description: Deskripsi
         user: Pengguna
         save: Simpan
-        enabled: Diaktifkan
-        new: New
+        enabled: "Diaktifkan?"
         delete: Hapus
       ai_helper:
         context_menu:

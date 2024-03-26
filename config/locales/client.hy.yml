@@ -30,11 +30,13 @@ hy:
       modals:
         select_option: "Ընտրել..."
       ai_persona:
+        back: Ետ
         name: Անուն
+        edit: Խմբագրել
         description: Նկարագրությունը
         user: Օգտատեր
         save: Պահպանել
-        new: Նոր
+        enabled: "Միացվա՞ծ է:"
         delete: Ջնջել
       ai_helper:
         context_menu:

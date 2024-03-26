@@ -30,12 +30,13 @@ ro:
       modals:
         select_option: "Alege o opțiune..."
       ai_persona:
+        back: Înapoi
         name: Nume
+        edit: Modifică
         description: Descriere
         user: Utilizatori
         save: Salvare
-        enabled: Activat
-        new: Nou
+        enabled: "Activat?"
         delete: Șterge
       ai_helper:
         context_menu:

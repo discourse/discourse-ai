@@ -30,11 +30,13 @@ el:
       modals:
         select_option: "Διαλέξτε μία επιλογή..."
       ai_persona:
+        back: Πίσω
         name: Όνομα
+        edit: Επεξεργασία
         description: Περιγραφή
         user: Χρήστης
         save: Αποθήκευση
-        new: Νέο
+        enabled: "Ενεργοποιημένο;"
         delete: Σβήσιμο
       ai_helper:
         context_menu:

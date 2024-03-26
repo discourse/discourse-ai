@@ -30,12 +30,13 @@ da:
       modals:
         select_option: "Vælg en indstilling..."
       ai_persona:
+        back: Tilbage
         name: Navn
+        edit: Rediger
         description: Beskrivelse
         user: Bruger
         save: Gem
-        enabled: Aktiveret
-        new: Nye
+        enabled: "Aktiveret?"
         delete: Slet
       ai_helper:
         context_menu:

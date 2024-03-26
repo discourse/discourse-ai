@@ -30,12 +30,13 @@ pt:
       modals:
         select_option: "Selecione uma opção..."
       ai_persona:
+        back: Retroceder
         name: Nome
+        edit: Editar
         description: Descrição
         user: Utilizador
         save: Guardar
-        enabled: Ativado
-        new: Novo
+        enabled: "Ativado?"
         delete: Eliminar
       ai_helper:
         context_menu:

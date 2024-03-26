@@ -30,12 +30,13 @@ sl:
       modals:
         select_option: "Izberi možnost..."
       ai_persona:
+        back: Nazaj
         name: Ime
+        edit: Uredi
         description: Opis
         user: Uporabnik
         save: Shrani
-        enabled: Vključeno
-        new: Nova
+        enabled: "Vključeno?"
         delete: Izbriši
       ai_helper:
         context_menu:

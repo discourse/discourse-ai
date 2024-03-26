@@ -32,12 +32,13 @@ ko:
       modals:
         select_option: "옵션 선택..."
       ai_persona:
+        back: 뒤로
         name: 그룹명
+        edit: 편집
         description: 내용
         user: 사용자
         save: 저장
-        enabled: 활성화
-        new: 신규
+        enabled: "활성화?"
         delete: 삭제하기
       ai_helper:
         context_menu:

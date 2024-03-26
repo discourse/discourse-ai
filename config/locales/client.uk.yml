@@ -32,12 +32,13 @@ uk:
       modals:
         select_option: "Вибрати опцію..."
       ai_persona:
+        back: Назад
         name: Імʼя
+        edit: Редагувати
         description: Опис
         user: Користувач
         save: Зберегти
-        enabled: Включено
-        new: Нові
+        enabled: "Включено?"
         delete: Видалити
       ai_helper:
         context_menu:

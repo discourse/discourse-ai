@@ -30,11 +30,13 @@ ur:
       modals:
         select_option: "ایک آپشن منتخب کریں..."
       ai_persona:
+        back: واپس
         name: نام
+        edit: ترمیم کریں
         description: تفصیل
         user: صارف
         save: محفوظ کریں
-        new: نئی
+        enabled: "فعال؟"
         delete: مٹائیں
       ai_helper:
         context_menu:

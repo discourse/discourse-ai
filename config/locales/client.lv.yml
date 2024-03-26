@@ -30,12 +30,13 @@ lv:
       modals:
         select_option: "Izvēlieties opciju..."
       ai_persona:
+        back: Atpakaļ
         name: Vārds
+        edit: Rediģēt
         description: Apraksts
         user: Lietotājs
         save: Saglabāt
-        enabled: Ieslēgts
-        new: jauns
+        enabled: "Ieslēgts?"
         delete: Dzēst
       ai_helper:
         context_menu:

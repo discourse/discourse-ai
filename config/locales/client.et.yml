@@ -30,12 +30,13 @@ et:
       modals:
         select_option: "Vali võimalus..."
       ai_persona:
+        back: Tagasi
         name: Nimi
+        edit: Muuda
         description: Kirjeldus
         user: Kasutaja
         save: Salvesta
-        enabled: Sisse lülitatud
-        new: Uus
+        enabled: "Sisse lülitatud?"
         delete: Kustuta
       ai_helper:
         context_menu:

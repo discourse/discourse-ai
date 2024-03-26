@@ -30,12 +30,13 @@ sw:
       modals:
         select_option: "Chagua chaguo moja..."
       ai_persona:
+        back: Iliyopita
         name: Jina
+        edit: Hariri
         description: Elezo
         user: Mtumiaji
         save: Hifadhi
-        enabled: Imeruhusiwa
-        new: Mpya
+        enabled: "Imeruhusiwa?"
         delete: Futa
       ai_helper:
         context_menu:
