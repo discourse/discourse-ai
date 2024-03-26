@@ -72,15 +72,16 @@ lt:
       modals:
         select_option: "Pasirink nustatymą..."
       ai_persona:
+        back: Atgal
         name: Vardas
+        edit: Redaguoti
         description: Aprašymas
         user: Narys
         system_prompt: Sistemos pranešimas
         save: Išsaugoti
-        enabled: Galimas
+        enabled: "Galimas?"
         commands: Įgalintos komandos
         allowed_groups: Leidžiamos grupės
-        new: Nauji
         delete: Pašalinti
       ai_helper:
         context_menu:

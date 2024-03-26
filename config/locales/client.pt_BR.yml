@@ -97,34 +97,23 @@ pt_BR:
       modals:
         select_option: "Selecione uma opção..."
       ai_persona:
+        back: Voltar
         name: Nome
+        edit: Editar
         description: Descrição
         user: Usuário(a)
         system_prompt: Prompt do sistema
         save: Salvar
         saved: Persona de IA salva
-        enabled: Ativada
+        enabled: "Ativado(a)?"
         commands: Comandos ativados
         allowed_groups: Grupos permitidos
         confirm_delete: Você tem certeza de que deseja excluir esta persona?
-        new: Nova
         title: "Personas de IA"
         delete: Excluir
         priority: Prioridade
         priority_help: Personas de prioridade são exibidas aos(às) usuários(as) no topo da lista de personas. Se várias personas tiverem prioridade, serão escolhidas em ordem alfabética.
         command_options: "Opções de comando"
-        no_persona_selected: |
-          ## O que são personas de IA?
-
-          Personas de IA são um recurso poderoso que permite personalizar o comportamento do mecanismo de IA no seu fórum do Discourse. Funcionam como uma "mensagem de sistema" que orienta as respostas e interações da IA, ajudando a criar uma experiência mais personalizada e envolvente para o(a) usuário(a).
-
-          ## Por que usar personas de IA?
-
-          Com as personas de IA, você pode personalizar o comportamento da IA para se adequar melhor ao contexto e tom do seu fórum. Uma IA mais formal para um cenário profissional, uma mais casual para um fórum de comunidade ou até mesmo um personagem específico para um jogo de interpretação, não importa: as personas de IA proporcionam flexibilidade para fazer tudo isso.
-
-          ## Acesso específico de grupo a personas de IA
-
-          Além disso, você pode configurar para que determinados grupos de usuários(as) tenham acesso a personas específicas. Ou seja, você pode ter diferentes comportamentos de IA para seções distintas do seu fórum, melhorando ainda mais a diversidade e riqueza das interações da sua comunidade.
       related_topics:
         title: "Tópicos relacionados"
         pill: "Relacionado(a)"

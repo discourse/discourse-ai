@@ -96,34 +96,23 @@ fr:
       modals:
         select_option: "Sélectionnez une option..."
       ai_persona:
+        back: Retour
         name: Nom
+        edit: Modifier
         description: Description
         user: Utilisateur
         system_prompt: Invite du système
         save: Enregistrer
         saved: Personnage IA enregistré
-        enabled: Activé
+        enabled: "Activée ?"
         commands: Commandes activées
         allowed_groups: Groupes autorisés
         confirm_delete: Voulez-vous vraiment supprimer ce personnage ?
-        new: Nouveau
         title: "Personnages IA"
         delete: Supprimer
         priority: Priorité
         priority_help: Les personnages prioritaires sont affichés aux utilisateurs en haut de la liste des personnages. Si plusieurs personnages sont prioritaires, ils seront triés par ordre alphabétique.
         command_options: "Options de commande"
-        no_persona_selected: |
-          ## Que sont les personnages IA ?
-
-          Les personnages IA sont une fonctionnalité puissante qui vous permet de personnaliser le comportement du moteur IA dans votre forum Discourse. Ils agissent comme un « message système » qui guide les réponses et les interactions de l'IA, en contribuant ainsi à créer une expérience utilisateur plus personnalisée et plus interactive.
-
-          ## Pourquoi utiliser les personnages IA ?
-
-          Avec les personnages IA, vous pouvez mieux adapter le comportement de l'IA au contexte et au ton de votre forum. Que vous souhaitiez que l'IA soit plus formelle pour un cadre professionnel, plus décontractée pour un forum communautaire, ou même incarner un personnage spécifique pour un jeu de rôle, les personnages IA vous offrent la flexibilité de le faire.
-
-          ## Accès spécifique à un groupe aux personnages IA
-
-          De plus, vous pouvez les configurer pour que certains groupes d'utilisateurs aient accès à des personnages spécifiques. Cela signifie que vous pouvez avoir différents comportements d'IA pour différentes sections de votre forum, et améliorer ainsi encore la diversité et la richesse des interactions de votre communauté.
       related_topics:
         title: "Sujets connexes"
         pill: "Lié"

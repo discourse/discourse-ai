@@ -26,11 +26,13 @@ sr:
       modals:
         select_option: "Izaberi jednu od opcija..."
       ai_persona:
+        back: Nazad
         name: Ime foruma
+        edit: Izmeni
         description: Opis
         user: Korisnik
         save: Sačuvaj
-        new: Nova
+        enabled: "Omgućeno"
         delete: Obriši
       ai_helper:
         context_menu:

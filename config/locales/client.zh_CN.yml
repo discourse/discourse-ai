@@ -109,17 +109,18 @@ zh_CN:
       modals:
         select_option: "选择一个选项…"
       ai_persona:
+        back: 返回
         name: 名称
+        edit: 编辑
         description: 描述
         user: 用户
         system_prompt: 系统提示
         save: 保存
         saved: AI 角色已保存
-        enabled: 已启用
+        enabled: "已启用？"
         commands: 启用的命令
         allowed_groups: 允许的群组
         confirm_delete: 确定要删除此角色吗？
-        new: 新
         title: "AI 角色"
         delete: 删除
         temperature: 温度
@@ -129,18 +130,6 @@ zh_CN:
         priority: 优先
         priority_help: 优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。
         command_options: "命令选项"
-        no_persona_selected: |
-          ## 什么是 AI 角色？
-
-          AI 角色是一项强大的功能，让您可以在 Discourse 论坛中自定义 AI 引擎的行为。这些角色作为“系统消息”，指导 AI 的响应和交互，帮助打造更加个性化和引人入胜的用户体验。
-
-          ## 为何使用 AI 角色？
-
-          借助 AI 角色，您可以定制 AI 的行为，以更好地适应论坛的环境和基调。无论您是希望 AI 在专业环境中显得更正式，还是在社区论坛中显得更休闲，甚至是在角色扮演游戏中体现特定角色，您都可以灵活地通过 AI 角色来实现。
-
-          ## 对 AI 角色的群组特定的访问
-
-          此外，您还可以对其进行设置，以便某些用户群组可以访问特定角色。这意味着您可以为论坛的不同部分设置不同的 AI 行为，从而进一步增强社区互动的多元化和丰富性。
       related_topics:
         title: "相关话题"
         pill: "相关"

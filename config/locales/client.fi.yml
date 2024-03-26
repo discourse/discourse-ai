@@ -96,34 +96,23 @@ fi:
       modals:
         select_option: "Valitse vaihtoehto..."
       ai_persona:
+        back: Takaisin
         name: Nimi
+        edit: Muokkaa
         description: Kuvaus
         user: Käyttäjä
         system_prompt: Järjestelmäkehote
         save: Tallenna
         saved: Tekoälypersoona tallennettu
-        enabled: Käytössä
+        enabled: "Otettu käyttöön?"
         commands: Käytössä olevat komennot
         allowed_groups: Sallitut ryhmät
         confirm_delete: Oletko varma, että haluat poistaa tämän persoonan?
-        new: Uudet
         title: "Tekoälypersoonat"
         delete: Poista
         priority: Prioriteetti
         priority_help: Prioriteettipersoonat näytetään käyttäjille ensimmäisinä persoonaluettelossa. Jos useilla persoonilla on prioriteetti, ne järjestetään aakkosjärjestyksessä.
         command_options: "Komentoasetukset"
-        no_persona_selected: |
-          ## Mitä ovat tekoälypersoonat?
-
-          Tekoälypersoonat on tehokas ominaisuus, jonka avulla voit mukauttaa tekoälymoduulin toimintaa Discourse-foorumillasi. Ne toimivat "järjestelmäviestinä", joka ohjaa tekoälyvastauksia ja -vuorovaikutusta ja auttaa luomaan personoidumman ja kiinnostavamman käyttökokemuksen.
-
-          ## Miksi käyttää tekoälypersoonia?
-
-          Tekoälypersoonilla voit räätälöidä tekoälyn toimintaa sopimaan paremmin foorumisi kontekstiin ja sävyyn. Halusitpa tekoälyn olevan muodollisempi ammattimaisessa ympäristössä, rennompi yhteisöfoorumilla tai jopa ilmentää tiettyä hahmoa roolipelissä, Tekoälypersoonat antavat sinulle joustavuuden tehdä niin.
-
-          ## Ryhmäkohtainen tekoälypersoonien käyttöoikeus
-
-          Lisäksi voit määrittää siten, että tietyillä käyttäjäryhmillä on pääsy tiettyihin persooniin. Tämä tarkoittaa, että sinulla voi olla erilaisia tekoälykäyttäytymismalleja foorumisi eri osioissa, mikä lisää entisestään yhteisösi vuorovaikutuksen monimuotoisuutta ja monipuolisuutta.
       related_topics:
         title: "Liittyvät ketjut"
         pill: "Liittyy aiheeseen"

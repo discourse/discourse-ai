@@ -96,34 +96,23 @@ nl:
       modals:
         select_option: "Selecteer een optie..."
       ai_persona:
+        back: Vorige
         name: Naam
+        edit: Bewerken
         description: Beschrijving
         user: Gebruiker
         system_prompt: Systeemprompt
         save: Opslaan
         saved: AI-persona opgeslagen
-        enabled: Ingeschakeld
+        enabled: "Ingeschakeld?"
         commands: Ingeschakelde opdrachten
         allowed_groups: Toegestane groepen
         confirm_delete: Weet je zeker dat je deze persona wilt verwijderen?
-        new: Nieuw
         title: "AI-persona's"
         delete: Verwijderen
         priority: Prioriteit
         priority_help: Prioritaire persona's worden bovenaan de personalijst weergegeven voor gebruikers. Als meerdere persona's prioriteit hebben, worden deze alfabetisch gesorteerd.
         command_options: "Opdrachtopties"
-        no_persona_selected: |
-          ## Wat zijn AI-persona's?
-
-          AI-persona's zijn een krachtige functie waarmee je het gedrag van de AI-engine van je Discourse-forum kunt aanpassen. Ze fungeren als een 'systeemboodschap' die de reacties en interacties van de AI stuurt, waardoor je een persoonlijkere en boeiendere gebruikerservaring creëert.
-
-          ## Waarom AI-persona's gebruiken?
-
-          Met AI-persona's kun je het gedrag van de AI beter afstemmen op de context en toon van je forum. Of je nu wilt dat de AI formeler is voor een professionele omgeving, informeler voor een communityforum of zelfs een specifiek personage belichaamt voor een rollenspel, AI-persona's geven je de flexibiliteit om dat te doen.
-
-          ## Groepsspecifieke toegang tot AI-persona's
-
-          Bovendien kun je het zo instellen dat bepaalde gebruikersgroepen toegang hebben tot specifieke persona's. Dit betekent dat je verschillende AI-gedragingen kunt hebben voor verschillende delen van je forum, waardoor de diversiteit en rijkdom van de interacties in je community verder wordt vergroot.
       related_topics:
         title: "Gerelateerde topics"
         pill: "Gerelateerd"

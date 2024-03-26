@@ -30,12 +30,13 @@ gl:
       modals:
         select_option: "Seleccione unha opción..."
       ai_persona:
+        back: Volver
         name: Nome
+        edit: Editar
         description: Descrición
         user: Usuario
         save: Gardar
-        enabled: Activado
-        new: Novo
+        enabled: "Activado?"
         delete: Eliminar
       ai_helper:
         context_menu:

@@ -30,11 +30,13 @@ vi:
       modals:
         select_option: "Chọn một tùy Chọn..."
       ai_persona:
+        back: Quay lại
         name: Tên
+        edit: Sửa
         description: Mô tả
         user: Người dùng
         save: Lưu lại
-        new: Mới
+        enabled: "Kích hoạt"
         delete: Xóa
       ai_helper:
         context_menu:

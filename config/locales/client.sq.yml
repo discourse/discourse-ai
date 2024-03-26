@@ -30,12 +30,13 @@ sq:
       modals:
         select_option: "Zgjidhni një opsion..."
       ai_persona:
+        back: Kthehu mbrapa
         name: Emri
+        edit: Redakto
         description: Përshkrimi
         user: User
         save: Ruaj
-        enabled: Aktivizuar
-        new: I Ri
+        enabled: "Aktivizuar?"
         delete: Fshij
       ai_helper:
         context_menu:

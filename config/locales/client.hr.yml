@@ -30,12 +30,13 @@ hr:
       modals:
         select_option: "Odaberi opciju..."
       ai_persona:
+        back: Natrag
         name: Ime
+        edit: Uredi
         description: Opis
         user: Korisnik
         save: Spremi
-        enabled: Omogućeno
-        new: Novo
+        enabled: "Omogućeno?"
         delete: Pobriši
       ai_helper:
         context_menu:

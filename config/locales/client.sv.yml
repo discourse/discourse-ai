@@ -30,12 +30,13 @@ sv:
       modals:
         select_option: "Välj ett alternativ..."
       ai_persona:
+        back: Tillbaka
         name: Namn
+        edit: Redigera
         description: Beskrivning
         user: Användare
         save: Spara
-        enabled: Aktiverad
-        new: Nya
+        enabled: "Aktiverad?"
         delete: Radera
       ai_helper:
         context_menu:

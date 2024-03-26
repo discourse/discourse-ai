@@ -30,12 +30,13 @@ sk:
       modals:
         select_option: "Vyberte možnosť..."
       ai_persona:
+        back: Späť
         name: Meno
+        edit: Upraviť
         description: Popis
         user: Používateľ
         save: Uložiť
-        enabled: Povolené
-        new: Nový
+        enabled: "Povolené?"
         delete: Odstrániť
       ai_helper:
         context_menu:

@@ -28,12 +28,13 @@ zh_TW:
               label: "回覆"
     discourse_ai:
       ai_persona:
+        back: 上一步
         name: 名字
+        edit: 編輯
         description: 簡述
         user: 使用者
         save: 保存
-        enabled: 啟用
-        new: 新使用者
+        enabled: "啟用?"
         delete: 刪除
       ai_helper:
         context_menu:

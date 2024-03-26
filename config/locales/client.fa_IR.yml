@@ -48,12 +48,13 @@ fa_IR:
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
       ai_persona:
+        back: بازگشت
         name: نام
+        edit: ویرایش
         description: توضیح
         user: کاربر
         save: ذخیره
-        enabled: فعال شد
-        new: تازه
+        enabled: "فعال شده؟"
         delete: حذف
       related_topics:
         title: "موضوعات مرتبط"

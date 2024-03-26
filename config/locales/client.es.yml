@@ -96,34 +96,23 @@ es:
       modals:
         select_option: "Selecciona una opción..."
       ai_persona:
+        back: Atrás
         name: Nombre
+        edit: Editar
         description: Descripción
         user: Usuario
         system_prompt: Aviso del sistema
         save: Guardar
         saved: Persona de IA guardada
-        enabled: Activado
+        enabled: "¿Activado?"
         commands: Comandos habilitados
         allowed_groups: Grupos permitidos
         confirm_delete: '¿Seguro que quieres eliminar esta persona?'
-        new: Nuevo
         title: "Personas de IA"
         delete: Eliminar
         priority: Prioridad
         priority_help: Las personas prioritarias se muestran a los usuarios en la parte superior de la lista de personas. Si varias personas tienen prioridad, se ordenarán alfabéticamente.
         command_options: "Opciones de comando"
-        no_persona_selected: |
-          ## ¿Qué son las Personas de IA?
-
-          Las Personas de IA son una potente característica que te permite personalizar el comportamiento del motor de IA en tu foro de Discourse. Actúan como un «aviso del sistema» que guía las respuestas e interacciones de la IA, ayudando a crear una experiencia de usuario más personalizada y atractiva.
-
-          ## ¿Por qué utilizar las Personas de la IA?
-
-          Con las Personas de la IA, puedes adaptar el comportamiento de la IA para que se ajuste mejor al contexto y al tono de tu foro. Tanto si quieres que la IA sea más formal para un entorno profesional, más informal para un foro comunitario, o incluso que encarne a un personaje concreto para un juego de rol, las Personas de IA te dan la flexibilidad para hacerlo.
-
-          ## Acceso específico de grupo a las Personas de IA
-
-          Además, puedes configurarlo para que determinados grupos de usuarios tengan acceso a personas concretas. Esto significa que puedes tener diferentes comportamientos de IA para diferentes secciones de tu foro, mejorando aún más la diversidad y riqueza de las interacciones de tu comunidad.
       related_topics:
         title: "Temas relacionados"
         pill: "Relacionados"

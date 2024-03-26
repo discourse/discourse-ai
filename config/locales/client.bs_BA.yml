@@ -30,12 +30,13 @@ bs_BA:
       modals:
         select_option: "Odaberi opciju..."
       ai_persona:
+        back: Prethodno
         name: Ime
+        edit: Edit
         description: Opis
         user: User
         save: Save
-        enabled: Omogućen
-        new: Novi
+        enabled: "Omogućen?"
         delete: Delete
       ai_helper:
         context_menu:

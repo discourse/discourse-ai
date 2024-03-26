@@ -30,12 +30,13 @@ ca:
       modals:
         select_option: "Trieu una opció..."
       ai_persona:
+        back: Enrere
         name: Nom
+        edit: Edita
         description: Descripció
         user: Usuari
         save: Desa
-        enabled: Activat
-        new: Nou
+        enabled: "Activat?"
         delete: Suprimeix
       ai_helper:
         context_menu:

@@ -30,11 +30,13 @@ th:
       modals:
         select_option: "เลือกตัวเลือก..."
       ai_persona:
+        back: กลับ
         name: ชื่อ
+        edit: แก้ไข
         description: รายละเอียด
         user: ผู้ใช้
         save: บันทึก
-        new: ใหม่
+        enabled: "เปิดใช้"
         delete: ลบ
       ai_helper:
         context_menu:

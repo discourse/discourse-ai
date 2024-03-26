@@ -68,6 +68,9 @@ tr_TR:
             allow_secure_categories:
               label: "Güvenli kategorilere izin ver"
               description: "Güvenli kategorilerdeki konular için rapor oluşturulmasına izin ver"
+            suppress_notifications:
+              label: "Bildirimleri Bastır"
+              description: "Raporun içeriğe dönüştürerek oluşturabileceği bildirimleri bastırın. Bu, bahsedenleri ve dahili bağlantıları yeniden eşleştirecektir."
             debug_mode:
               label: "Hata Ayıklama Modu"
               description: "LLM'nin ham giriş ve çıkışını görmek için hata ayıklama modunu etkinleştirin"
@@ -114,7 +117,9 @@ tr_TR:
       modals:
         select_option: "Seçenek belirleyin..."
       ai_persona:
+        back: Geri
         name: Ad
+        edit: Düzenle
         description: Açıklama
         no_llm_selected: "Dil modeli seçilmedi"
         max_context_posts: "Maksimum Bağlam Gönderileri"
@@ -129,12 +134,13 @@ tr_TR:
         system_prompt: Sistem İstemi
         save: Kaydet
         saved: YZ Kişiliği Kaydedildi
-        enabled: Etkin mi
+        enabled: "Etkin mi?"
         commands: Etkin Komutlar
         allowed_groups: İzin Verilen Gruplar
         confirm_delete: Bu kişiliği silmek istediğinizden emin misiniz?
-        new: Yeni
+        new: "Yeni Persona"
         title: "YZ Kişilikleri"
+        short_title: "Personalar"
         delete: Sil
         temperature: Sıcaklık
         temperature_help: LLM için kullanılacak sıcaklık, yaratıcılığı artırmak için artırın (model varsayılanını kullanmak için boş bırakın, genellikle 0.0 ila 2.0 arasında bir değer)
@@ -143,9 +149,8 @@ tr_TR:
         priority: Öncelik
         priority_help: Öncelikli kişilikler kullanıcılara kişilik listesinin en üstünde gösterilir. Birden fazla kişiliğin önceliği varsa bunlar alfabetik olarak sıralanır.
         command_options: "Komut Seçenekleri"
+        what_are_personas: "Yapay Zeka Personaları nedir?"
         no_persona_selected: |
-          ## YZ Kişilikleri nelerdir?
-
           YZ Kişilikleri, Discourse forumunuzda YZ motorunun davranışını özelleştirebilmenizi sağlayan güçlü bir özelliktir. YZ'nin yanıt ve etkileşimlerine rehberlik eden bir "sistem mesajı" görevi görerek daha kişiselleştirilmiş ve etkileşimli bir kullanıcı deneyimi oluşturmaya yardımcı olurlar.
 
           ## YZ Kişilikleri neden kullanılmalı?

@@ -96,34 +96,23 @@ it:
       modals:
         select_option: "Scegli un'opzione..."
       ai_persona:
+        back: Indietro
         name: Nome
+        edit: Modifica
         description: Descrizione
         user: Utente
         system_prompt: Comando di sistema
         save: Salva
         saved: Personaggio IA salvato
-        enabled: Abilitato
+        enabled: "Abilitato?"
         commands: Comandi abilitati
         allowed_groups: Gruppi ammessi
         confirm_delete: Vuoi davvero eliminare questo personaggio?
-        new: Nuovo
         title: "Personaggi IA"
         delete: Elimina
         priority: Priorità
         priority_help: I personaggi prioritari vengono visualizzati agli utenti nella parte superiore dell'elenco dei personaggi. Se più personaggi hanno la priorità, verranno ordinati in ordine alfabetico.
         command_options: "Opzioni di comando"
-        no_persona_selected: |
-          ## Cosa sono i personaggi IA?
-
-          I personaggi IA sono una potente funzionalità che ti consente di personalizzare il comportamento del motore IA nel tuo forum Discourse. Fungono da "messaggi di sistema" che guidano le risposte e le interazioni dell'intelligenza artificiale, contribuendo a creare un'esperienza utente più personalizzata e coinvolgente.
-
-          ## Perché utilizzare i personaggi IA?
-
-          Con i personaggi IA puoi personalizzare il comportamento dell'IA per adattarlo meglio al contesto e al tono del tuo forum. Sia che tu voglia che l'IA sia più formale per un ambiente professionale, più casual per un forum di community o addirittura incarni un personaggio specifico per un gioco di ruolo, i personaggi IA ti danno la flessibilità per farlo.
-
-          ## Accesso specifico per gruppo ai personaggi IA
-
-          Inoltre, puoi configurarli in modo che determinati gruppi di utenti abbiano accesso a personaggi specifici. Ciò significa che puoi avere comportamenti IA diversi per le diverse sezioni del tuo forum, migliorando ulteriormente la diversità e la ricchezza delle interazioni della tua community.
       related_topics:
         title: "Argomenti correlati"
         pill: "Correlato"

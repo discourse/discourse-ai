@@ -30,12 +30,13 @@ cs:
       modals:
         select_option: "Zvolit možnost..."
       ai_persona:
+        back: Zpět
         name: Jméno
+        edit: Upravit
         description: Popis
         user: Uživatel
         save: Uložit
-        enabled: Zapnutý
-        new: Noví
+        enabled: "Zapnuto?"
         delete: Smazat
       ai_helper:
         context_menu:

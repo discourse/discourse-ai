@@ -30,12 +30,13 @@ nb_NO:
       modals:
         select_option: "Velg et alternativ..."
       ai_persona:
+        back: Forrige
         name: Navn
+        edit: Endre
         description: Beskrivelse
         user: Bruker
         save: Lagre
-        enabled: Aktivert
-        new: Ny
+        enabled: "Aktivert?"
         delete: Slett
       ai_helper:
         context_menu:

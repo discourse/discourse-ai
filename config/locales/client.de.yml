@@ -117,7 +117,9 @@ de:
       modals:
         select_option: "Wähle eine Option aus..."
       ai_persona:
+        back: Zurück
         name: Name
+        edit: Bearbeiten
         description: Beschreibung
         no_llm_selected: "Kein Sprachmodell ausgewählt"
         max_context_posts: "Max. Kontext-Beiträge"
@@ -132,12 +134,13 @@ de:
         system_prompt: System-Eingabeaufforderung
         save: Speichern
         saved: KI-Persona gespeichert
-        enabled: Aktiviert
+        enabled: "Aktiviert?"
         commands: Aktivierte Befehle
         allowed_groups: Erlaubte Gruppen
         confirm_delete: Bist du sicher, dass du diese Persona löschen willst?
-        new: Neu
+        new: "Neue Persona"
         title: "KI-Personas"
+        short_title: "Personas"
         delete: Löschen
         temperature: Temperatur
         temperature_help: Temperatur, die für das LLM verwendet werden soll, erhöhen, um die Kreativität zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, im Allgemeinen ein Wert zwischen 0,0 und 2,0)
@@ -146,18 +149,17 @@ de:
         priority: Priorität
         priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
         command_options: "Befehlsoptionen"
+        what_are_personas: "Was sind KI-Personas?"
         no_persona_selected: |
-          ## Was sind KI-Personas?
+          KI-Personas sind eine leistungsstarke Funktion, mit der Sie das Verhalten der KI-Engine in Ihrem Discourse-Forum anpassen können. Sie dienen als „Systembotschaft“, die die Reaktionen und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Nutzererlebnis zu schaffen.
 
-          KI-Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als „Systemnachricht“, welche die Antworten und Interaktionen der KI steuert und so zu einem persönlicheren sowie ansprechenderen Benutzererlebnis beiträgt.
+          #### Warum KI-Personas verwenden?
 
-          ## Warum KI-Personas?
+          Mit KI-Personas kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI für ein professionelles Umfeld formeller, für ein Community-Forum lockerer ist oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert, KI-Personas bieten dir die nötige Flexibilität dafür.
 
-          Mit KI-Personas kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI in einem professionellen Umfeld förmlicher oder in einem Community-Forum lockerer auftritt oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert – KI-Personas geben dir die Flexibilität dazu.
+          #### Gruppenspezifischer Zugriff auf KI-Personas
 
-          ## Gruppenspezifischer Zugang zu KI-Personas
-
-          Außerdem kannst du einstellen, dass bestimmte Benutzergruppen Zugang zu bestimmten Personas haben. Das bedeutet, dass du für verschiedene Bereiche deines Forums unterschiedliche KI-Verhaltensweisen festlegen kannst, was die Vielfalt und die Reichhaltigkeit der Interaktionen in deiner Community weiter erhöht.
+          Außerdem kannst du ihn so einrichten, dass bestimmte Benutzergruppen Zugriff auf bestimmte Personas haben. Das bedeutet, dass Sie für verschiedene Bereiche Ihres Forums unterschiedliche KI-Verhaltensweisen verwenden können, was die Vielfalt und den Reichtum der Interaktionen Ihrer Community weiter verbessert.
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
