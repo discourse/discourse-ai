@@ -144,7 +144,7 @@ export default class PersonaEditor extends Component {
 
   @action
   onChangeMaxPixels(value) {
-    const entry = this.maxPixelValues.find((info) => info.id === value);
+    const entry = this.maxPixelValues.findBy("id", value);
     if (!entry) {
       return;
     }
