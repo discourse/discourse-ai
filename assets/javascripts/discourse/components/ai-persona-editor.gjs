@@ -65,7 +65,7 @@ export default class PersonaEditor extends Component {
     }
 
     const keyPrefix = "discourse_ai.ai_persona.vision_max_pixel_sizes.";
-    const l = (key) => I18n.t(keyPrefix + key);
+    const l = (key) => I18n.t(`discourse_ai.ai_persona.vision_max_pixel_sizes.${key}`);
     this._maxPixelValues = [
       { id: "low", name: l("low"), pixels: 65536 },
       { id: "medium", name: l("medium"), pixels: 262144 },
