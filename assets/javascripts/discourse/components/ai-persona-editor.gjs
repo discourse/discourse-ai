@@ -35,14 +35,11 @@ export default class PersonaEditor extends Component {
   @tracked editingModel = null;
   @tracked showDelete = false;
 
-  // this is a bit awkward but the model is not tracked correctly
-  @tracked visionEnabled = false;
   @tracked maxPixelsValue = null;
 
   @action
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
-    this.visionEnabled = this.editingModel.vision_enabled;
     this.showDelete = !this.args.model.isNew && !this.args.model.system;
     this.maxPixelsValue = this.findClosestPixelValue(
       this.editingModel.vision_max_pixels
@@ -64,8 +61,8 @@ export default class PersonaEditor extends Component {
       return this._maxPixelValues;
     }
 
-    const keyPrefix = "discourse_ai.ai_persona.vision_max_pixel_sizes.";
-    const l = (key) => I18n.t(`discourse_ai.ai_persona.vision_max_pixel_sizes.${key}`);
+    const l = (key) =>
+      I18n.t(`discourse_ai.ai_persona.vision_max_pixel_sizes.${key}`);
     this._maxPixelValues = [
       { id: "low", name: l("low"), pixels: 65536 },
       { id: "medium", name: l("medium"), pixels: 262144 },
@@ -110,12 +107,6 @@ export default class PersonaEditor extends Component {
         this.isSaving = false;
       }, 1000);
     }
-  }
-
-  @action
-  toggleVisionEnabled() {
-    this.visionEnabled = !this.visionEnabled;
-    this.editingModel.vision_enabled = this.visionEnabled;
   }
 
   get showTemperature() {
@@ -185,6 +176,11 @@ export default class PersonaEditor extends Component {
   @action
   async toggleMentionable() {
     await this.toggleField("mentionable");
+  }
+
+  @action
+  async toggleVisionEnabled() {
+    await this.toggleField("vision_enabled");
   }
 
   @action
@@ -275,6 +271,17 @@ export default class PersonaEditor extends Component {
           />
         </div>
       {{/if}}
+      <div class="control-group ai-persona-editor__vision_enabled">
+        <DToggleSwitch
+          @state={{@model.vision_enabled}}
+          @label="discourse_ai.ai_persona.vision_enabled"
+          {{on "click" this.toggleVisionEnabled}}
+        />
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t "discourse_ai.ai_persona.vision_enabled_help"}}
+        />
+      </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.ai_persona.name"}}</label>
         <Input
@@ -379,18 +386,7 @@ export default class PersonaEditor extends Component {
           @content={{I18n.t "discourse_ai.ai_persona.max_context_posts_help"}}
         />
       </div>
-      <div class="control-group ai-persona-editor__vision_enabled">
-        <DToggleSwitch
-          @state={{this.visionEnabled}}
-          @label="discourse_ai.ai_persona.vision_enabled"
-          {{on "click" this.toggleVisionEnabled}}
-        />
-        <DTooltip
-          @icon="question-circle"
-          @content={{I18n.t "discourse_ai.ai_persona.vision_enabled_help"}}
-        />
-      </div>
-      {{#if this.visionEnabled}}
+      {{#if @model.vision_enabled}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.ai_persona.vision_max_pixels"}}</label>
           <ComboBox
