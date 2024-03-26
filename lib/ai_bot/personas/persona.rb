@@ -10,7 +10,8 @@ module DiscourseAi
           end
 
           def vision_max_pixels
-            1024 * 1024
+            # 1024 * 1024
+            1_048_576
           end
 
           def system_personas
