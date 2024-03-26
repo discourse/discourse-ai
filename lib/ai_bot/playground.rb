@@ -11,6 +11,28 @@ module DiscourseAi
 
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
 
+      def self.schedule_chat_reply(message, channel, user, context)
+        if channel.direct_message_channel?
+          allowed_user_ids = channel.allowed_user_ids
+
+          return if AiPersona.mentionables.any? { |m| m[:user_id] == user.id }
+
+          mentionable =
+            AiPersona.mentionables.find do |m|
+              m[:user_id].in?(allowed_user_ids) && (user.group_ids & m[:allowed_group_ids])
+            end
+
+          if mentionable
+            ::Jobs.enqueue(
+              :create_ai_chat_reply,
+              channel_id: channel.id,
+              message_id: message.id,
+              persona_id: mentionable[:id],
+            )
+          end
+        end
+      end
+
       def self.is_bot_user_id?(user_id)
         # this will catch everything and avoid any feedback loops
         # we could get feedback loops between say discobot and ai-bot or third party plugins
@@ -184,6 +206,59 @@ module DiscourseAi
           end
       end
 
+      def chat_context(message, channel)
+        [{ type: :user, content: message.message }]
+      end
+
+      def reply_to_chat_message(message, channel)
+        persona_user = User.find(bot.persona.class.user_id)
+
+        participants = channel.user_chat_channel_memberships.map { |m| m.user.username }
+
+        context =
+          get_context(
+            participants: participants.join(", "),
+            conversation_context: chat_context(message, channel),
+            user: message.user,
+          )
+
+        message = nil
+        guardian = Guardian.new(persona_user)
+
+        _new_prompts =
+          bot.reply(context) do |partial, cancel, placeholder|
+            if !message
+              message =
+                ChatSDK::Message.create(raw: partial, channel_id: channel.id, guardian: guardian)
+              ChatSDK::Message.start_stream(message_id: message.id, guardian: guardian)
+            else
+              streaming =
+                ChatSDK::Message.stream(message_id: message.id, raw: partial, guardian: guardian)
+
+              if !streaming
+                cancel&.call
+                break
+              end
+            end
+          end
+
+        ChatSDK::Message.stop_stream(message_id: message.id, guardian: guardian) if message
+
+        message
+      end
+
+      def get_context(participants:, conversation_context:, user:)
+        {
+          site_url: Discourse.base_url,
+          site_title: SiteSetting.title,
+          site_description: SiteSetting.site_description,
+          time: Time.zone.now,
+          participants: participants,
+          conversation_context: conversation_context,
+          user: user,
+        }
+      end
+
       def reply_to(post)
         reply = +""
         start = Time.now
@@ -191,17 +266,14 @@ module DiscourseAi
         post_type =
           post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
 
-        context = {
-          site_url: Discourse.base_url,
-          site_title: SiteSetting.title,
-          site_description: SiteSetting.site_description,
-          time: Time.zone.now,
-          participants: post.topic.allowed_users.map(&:username).join(", "),
-          conversation_context: conversation_context(post),
-          user: post.user,
-          post_id: post.id,
-          topic_id: post.topic_id,
-        }
+        context =
+          get_context(
+            participants: post.topic.allowed_users.map(&:username).join(", "),
+            conversation_context: conversation_context(post),
+            user: post.user,
+          )
+        context[:post_id] = post.id
+        context[:topic_id] = post.topic_id
 
         reply_user = bot.bot_user
         if bot.persona.class.respond_to?(:user_id)
