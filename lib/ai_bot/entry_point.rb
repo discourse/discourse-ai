@@ -219,6 +219,10 @@ module DiscourseAi
 
         plugin.on(:post_created) { |post| DiscourseAi::AiBot::Playground.schedule_reply(post) }
 
+        plugin.on(:chat_message_created) do |chat_message, channel, user, context|
+          DiscourseAi::AiBot::Playground.schedule_chat_reply(chat_message, channel, user, context)
+        end
+
         if plugin.respond_to?(:register_editable_topic_custom_field)
           plugin.register_editable_topic_custom_field(:ai_persona_id)
         end
