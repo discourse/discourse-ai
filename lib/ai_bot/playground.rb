@@ -225,26 +225,17 @@ module DiscourseAi
         reply = nil
         guardian = Guardian.new(persona_user)
 
-        channel.update!(threading_enabled: true) if !channel.threading_enabled?
-
         _new_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
             if !reply
-              if !message.thread
-                thread =
-                  Chat::Thread.create!(
-                    original_message: message,
-                    original_message_user: message.user,
-                    channel: channel,
-                  )
-                message.update!(thread_id: thread.id)
-              end
               reply =
                 ChatSDK::Message.create(
                   raw: partial,
                   thread_id: message.thread_id,
                   channel_id: channel.id,
                   guardian: guardian,
+                  in_reply_to_id: message.id,
+                  force_thread: message.thread_id.nil?,
                 )
               ChatSDK::Message.start_stream(message_id: reply.id, guardian: guardian)
             else
