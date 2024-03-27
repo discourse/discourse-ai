@@ -121,6 +121,13 @@ en:
         no_llm_selected: "No language model selected"
         max_context_posts: "Max Context Posts"
         max_context_posts_help: "The maximum number of posts to use as context for the AI when responding to a user. (empty for default)"
+        vision_enabled: Vision Enabled
+        vision_enabled_help: If enabled, the AI will attempt to understand images users post in the topic, depends on the model being used supporting vision. Anthropic Claude 3 models support vision.
+        vision_max_pixels: Supported image size
+        vision_max_pixel_sizes:
+          low: Low Quality - cheapest (256x256)
+          medium: Medium Quality (512x512)
+          high: High Quality - slowest (1024x1024)
         mentionable: Mentionable
         mentionable_help: If enabled, users in allowed groups can mention this user in posts and messages, the AI will respond as this persona.
         user: User

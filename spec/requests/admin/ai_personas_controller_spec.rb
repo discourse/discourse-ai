@@ -204,6 +204,23 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(persona.temperature).to eq(nil)
     end
 
+    it "supports updating vision params" do
+      persona = Fabricate(:ai_persona, name: "test_bot2")
+      put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",
+          params: {
+            ai_persona: {
+              vision_enabled: true,
+              vision_max_pixels: 512 * 512,
+            },
+          }
+
+      expect(response).to have_http_status(:ok)
+      persona.reload
+
+      expect(persona.vision_enabled).to eq(true)
+      expect(persona.vision_max_pixels).to eq(512 * 512)
+    end
+
     it "does not allow temperature and top p changes on stock personas" do
       put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
           params: {

@@ -6,7 +6,7 @@ module DiscourseAi
       INVALID_TURN = Class.new(StandardError)
 
       attr_reader :messages
-      attr_accessor :tools, :topic_id, :post_id
+      attr_accessor :tools, :topic_id, :post_id, :max_pixels
 
       def initialize(
         system_message_text = nil,
@@ -14,10 +14,13 @@ module DiscourseAi
         tools: [],
         skip_validations: false,
         topic_id: nil,
-        post_id: nil
+        post_id: nil,
+        max_pixels: nil
       )
         raise ArgumentError, "messages must be an array" if !messages.is_a?(Array)
         raise ArgumentError, "tools must be an array" if !tools.is_a?(Array)
+
+        @max_pixels = max_pixels || 1_048_576
 
         @topic_id = topic_id
         @post_id = post_id
@@ -38,11 +41,12 @@ module DiscourseAi
         @tools = tools
       end
 
-      def push(type:, content:, id: nil, name: nil)
+      def push(type:, content:, id: nil, name: nil, upload_ids: nil)
         return if type == :system
         new_message = { type: type, content: content }
         new_message[:name] = name.to_s if name
         new_message[:id] = id.to_s if id
+        new_message[:upload_ids] = upload_ids if upload_ids
 
         validate_message(new_message)
         validate_turn(messages.last, new_message)
@@ -54,6 +58,13 @@ module DiscourseAi
         tools.present?
       end
 
+      # helper method to get base64 encoded uploads
+      # at the correct dimentions
+      def encoded_uploads(message)
+        return [] if message[:upload_ids].blank?
+        UploadEncoder.encode(upload_ids: message[:upload_ids], max_pixels: max_pixels)
+      end
+
       private
 
       def validate_message(message)
@@ -63,9 +74,17 @@ module DiscourseAi
           raise ArgumentError, "message type must be one of #{valid_types}"
         end
 
-        valid_keys = %i[type content id name]
+        valid_keys = %i[type content id name upload_ids]
         if (invalid_keys = message.keys - valid_keys).any?
           raise ArgumentError, "message contains invalid keys: #{invalid_keys}"
+        end
+
+        if message[:type] == :upload_ids && !message[:upload_ids].is_a?(Array)
+          raise ArgumentError, "upload_ids must be an array of ids"
+        end
+
+        if message[:upload_ids].present? && message[:type] != :user
+          raise ArgumentError, "upload_ids are only supported for users"
         end
 
         raise ArgumentError, "message content must be a string" if !message[:content].is_a?(String)

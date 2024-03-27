@@ -79,6 +79,8 @@ module DiscourseAi
             :user_id,
             :mentionable,
             :max_context_posts,
+            :vision_enabled,
+            :vision_max_pixels,
             allowed_group_ids: [],
           )
 

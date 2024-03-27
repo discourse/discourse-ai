@@ -61,6 +61,55 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
   end
 
+  describe "image support" do
+    before do
+      Jobs.run_immediately!
+      SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+    end
+
+    fab!(:persona) do
+      AiPersona.create!(
+        name: "Test Persona",
+        description: "A test persona",
+        allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+        enabled: true,
+        system_prompt: "You are a helpful bot",
+        vision_enabled: true,
+        vision_max_pixels: 1_000,
+        default_llm: "anthropic:claude-3-opus",
+        mentionable: true,
+      )
+    end
+
+    fab!(:upload)
+
+    it "sends images to llm" do
+      post = nil
+
+      persona.create_user!
+
+      image = "![image](upload://#{upload.base62_sha1}.jpg)"
+      body = "Hey @#{persona.user.username}, can you help me with this image? #{image}"
+
+      prompts = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["I understood image"],
+      ) do |_, _, inner_prompts|
+        post = create_post(title: "some new topic I created", raw: body)
+
+        prompts = inner_prompts
+      end
+
+      expect(prompts[0].messages[1][:upload_ids]).to eq([upload.id])
+      expect(prompts[0].max_pixels).to eq(1000)
+
+      post.topic.reload
+      last_post = post.topic.posts.order(:post_number).last
+
+      expect(last_post.raw).to eq("I understood image")
+    end
+  end
+
   describe "persona with user support" do
     before do
       Jobs.run_immediately!

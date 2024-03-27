@@ -2,6 +2,10 @@
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-opus") }
+  let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
+  let(:upload100x100) do
+    UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
+  end
 
   let(:prompt) do
     DiscourseAi::Completions::Prompt.new(
@@ -338,6 +342,73 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     EXPECTED
 
     expect(result.strip).to eq(expected)
+  end
+
+  it "can send images via a completion prompt" do
+    prompt =
+      DiscourseAi::Completions::Prompt.new(
+        "You are image bot",
+        messages: [type: :user, id: "user1", content: "hello", upload_ids: [upload100x100.id]],
+      )
+
+    encoded = prompt.encoded_uploads(prompt.messages.last)
+
+    request_body = {
+      model: "claude-3-opus-20240229",
+      max_tokens: 3000,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "image",
+              source: {
+                type: "base64",
+                media_type: "image/jpeg",
+                data: encoded[0][:base64],
+              },
+            },
+            { type: "text", text: "user1: hello" },
+          ],
+        },
+      ],
+      system: "You are image bot",
+    }
+
+    response_body = <<~STRING
+      {
+        "content": [
+          {
+            "text": "What a cool image",
+            "type": "text"
+          }
+        ],
+        "id": "msg_013Zva2CMHLNnXjNJJKqJ2EF",
+        "model": "claude-3-opus-20240229",
+        "role": "assistant",
+        "stop_reason": "end_turn",
+        "stop_sequence": null,
+        "type": "message",
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 25
+        }
+      }
+    STRING
+
+    requested_body = nil
+    stub_request(:post, "https://api.anthropic.com/v1/messages").with(
+      body:
+        proc do |req_body|
+          requested_body = JSON.parse(req_body, symbolize_names: true)
+          true
+        end,
+    ).to_return(status: 200, body: response_body)
+
+    result = llm.generate(prompt, user: Discourse.system_user)
+
+    expect(result).to eq("What a cool image")
+    expect(requested_body).to eq(request_body)
   end
 
   it "can operate in regular mode" do

@@ -66,12 +66,18 @@ module DiscourseAi
         def with_prepared_responses(responses, llm: nil)
           @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(responses)
           @canned_llm = llm
+          @prompts = []
 
-          yield(@canned_response, llm)
+          yield(@canned_response, llm, @prompts)
         ensure
           # Don't leak prepared response if there's an exception.
           @canned_response = nil
           @canned_llm = nil
+          @prompts = nil
+        end
+
+        def record_prompt(prompt)
+          @prompts << prompt if @prompts
         end
 
         def proxy(model_name)
@@ -138,6 +144,8 @@ module DiscourseAi
         user:,
         &partial_read_blk
       )
+        self.class.record_prompt(prompt)
+
         model_params = { max_tokens: max_tokens, stop_sequences: stop_sequences }
 
         model_params[:temperature] = temperature if temperature

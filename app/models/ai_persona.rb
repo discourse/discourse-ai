@@ -9,6 +9,9 @@ class AiPersona < ActiveRecord::Base
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
+  # leaves some room for growth but sets a maximum to avoid memory issues
+  # we may want to revisit this in the future
+  validates :vision_max_pixels, numericality: { greater_than: 0, maximum: 4_000_000 }
 
   belongs_to :created_by, class_name: "User"
   belongs_to :user
@@ -98,6 +101,8 @@ class AiPersona < ActiveRecord::Base
     mentionable = self.mentionable
     default_llm = self.default_llm
     max_context_posts = self.max_context_posts
+    vision_enabled = self.vision_enabled
+    vision_max_pixels = self.vision_max_pixels
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
@@ -127,6 +132,14 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :max_context_posts do
         max_context_posts
+      end
+
+      persona_class.define_singleton_method :vision_enabled do
+        vision_enabled
+      end
+
+      persona_class.define_singleton_method :vision_max_pixels do
+        vision_max_pixels
       end
 
       return persona_class
@@ -202,6 +215,14 @@ class AiPersona < ActiveRecord::Base
 
       define_singleton_method :max_context_posts do
         max_context_posts
+      end
+
+      define_singleton_method :vision_enabled do
+        vision_enabled
+      end
+
+      define_singleton_method :vision_max_pixels do
+        vision_max_pixels
       end
 
       define_singleton_method :to_s do

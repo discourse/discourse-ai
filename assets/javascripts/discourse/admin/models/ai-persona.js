@@ -18,6 +18,8 @@ const ATTRIBUTES = [
   "default_llm",
   "user",
   "max_context_posts",
+  "vision_enabled",
+  "vision_max_pixels",
 ];
 
 const SYSTEM_ATTRIBUTES = [
@@ -30,6 +32,8 @@ const SYSTEM_ATTRIBUTES = [
   "default_llm",
   "user",
   "max_context_posts",
+  "vision_enabled",
+  "vision_max_pixels",
 ];
 
 class CommandOption {
