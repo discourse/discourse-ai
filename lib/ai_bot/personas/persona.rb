@@ -93,7 +93,7 @@ module DiscourseAi
         end
 
         def id
-          self.class.system_personas[self.class]
+          @ai_persona&.id || self.class.system_personas[self.class]
         end
 
         def tools
@@ -127,13 +127,24 @@ module DiscourseAi
               found.nil? ? match : found.to_s
             end
 
+          prompt_insts = <<~TEXT.strip
+          #{system_insts}
+          #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
+          TEXT
+
+          fragments_guidance = rag_fragments_prompt(context[:conversation_context].to_a)&.strip
+
+          if fragments_guidance.present?
+            if system_insts.include?("{uploads}")
+              prompt_insts = prompt_insts.gsub("{uploads}", fragments_guidance)
+            else
+              prompt_insts << fragments_guidance
+            end
+          end
+
           prompt =
             DiscourseAi::Completions::Prompt.new(
-              <<~TEXT.strip,
-            #{system_insts}
-            #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
-            #{rag_fragments_prompt(context[:conversation_context].to_a)}
-          TEXT
+              prompt_insts,
               messages: context[:conversation_context].to_a,
               topic_id: context[:topic_id],
               post_id: context[:post_id],
@@ -203,6 +214,7 @@ module DiscourseAi
           strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
           vector_rep =
             DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+          reranker = DiscourseAi::Inference::HuggingFaceTextEmbeddings
 
           interactions_vector = vector_rep.vector_from(latest_interactions)
 
@@ -210,7 +222,7 @@ module DiscourseAi
             vector_rep.asymmetric_rag_fragment_similarity_search(
               interactions_vector,
               persona_id: id,
-              limit: 50,
+              limit: reranker.reranker_configured? ? 50 : 10,
               offset: 0,
             )
 
@@ -219,7 +231,7 @@ module DiscourseAi
               :fragment,
             )
 
-          if DiscourseAi::Inference::HuggingFaceTextEmbeddings.reranker_configured?
+          if reranker.reranker_configured?
             ranks =
               DiscourseAi::Inference::HuggingFaceTextEmbeddings
                 .rerank(conversation_context.last[:content], guidance)
@@ -232,19 +244,18 @@ module DiscourseAi
             else
               guidance = ranks.map { |idx| guidance[idx] }
             end
-          else
-            guidance = guidance.take(10)
           end
 
           <<~TEXT
+          <guidance>
           The following texts will give you additional guidance to elaborate a response.
           We included them because we believe they are relevant to this conversation topic.
           Take them into account to elaborate a response.
 
           Texts:
 
-          #{guidance}
-
+          #{guidance.join("\n")}
+          </guidance>
           TEXT
         end
       end

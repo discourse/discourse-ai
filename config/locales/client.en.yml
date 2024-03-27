@@ -168,6 +168,7 @@ en:
         uploads:
           title: "Uploads"
           description: "Your AI persona will be able to search and reference the content of included files. Uploaded files must be formatted as plaintext (.txt)"
+          hint: "To control where the file's content gets placed within the system prompt, include the {uploads} placeholder in the system prompt above."
           button: "Add Files"
           filter: "Filter uploads"
           complete: "Complete"

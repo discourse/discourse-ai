@@ -224,13 +224,10 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     context "when a persona has RAG uploads" do
       fab!(:upload)
 
-      before do
-        stored_ai_persona = AiPersona.find(ai_persona.id)
-        UploadReference.ensure_exist!(target: stored_ai_persona, upload_ids: [upload.id])
-
+      def stub_fragments(limit)
         candidate_ids = []
 
-        15.times do |i|
+        limit.times do |i|
           candidate_ids << Fabricate(
             :rag_document_fragment,
             fragment: "fragment-n#{i}",
@@ -243,6 +240,11 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           .any_instance
           .expects(:asymmetric_rag_fragment_similarity_search)
           .returns(candidate_ids)
+      end
+
+      before do
+        stored_ai_persona = AiPersona.find(ai_persona.id)
+        UploadReference.ensure_exist!(target: stored_ai_persona, upload_ids: [upload.id])
 
         context_embedding = [0.049382, 0.9999]
         EmbeddingsGenerationStubs.discourse_service(
@@ -252,8 +254,38 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         )
       end
 
+      context "when the system prompt has an uploads placeholder" do
+        before { stub_fragments(10) }
+
+        it "replaces the placeholder with the fragments" do
+          custom_persona_record =
+            AiPersona.create!(
+              name: "custom",
+              description: "description",
+              system_prompt: "instructions\n{uploads}\nmore instructions",
+              allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+            )
+          UploadReference.ensure_exist!(target: custom_persona_record, upload_ids: [upload.id])
+          custom_persona =
+            DiscourseAi::AiBot::Personas::Persona.find_by(
+              id: custom_persona_record.id,
+              user: user,
+            ).new
+
+          crafted_system_prompt = custom_persona.craft_prompt(with_cc).messages.first[:content]
+
+          expect(crafted_system_prompt).to include("fragment-n0")
+
+          expect(crafted_system_prompt.ends_with?("</guidance>")).to eq(false)
+        end
+      end
+
       context "when the reranker is available" do
-        before { SiteSetting.ai_hugging_face_tei_reranker_endpoint = "https://test.reranker.com" }
+        before do
+          SiteSetting.ai_hugging_face_tei_reranker_endpoint = "https://test.reranker.com"
+
+          stub_fragments(15) # Mimic limit being more than 10 results
+        end
 
         it "uses the re-ranker to reorder the fragments and pick the top 10 candidates" do
           expected_reranked = (0..14).to_a.reverse.map { |idx| { index: idx } }
@@ -274,6 +306,8 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       end
 
       context "when the reranker is not available" do
+        before { stub_fragments(10) }
+
         it "picks the first 10 candidates from the similarity search" do
           crafted_system_prompt = ai_persona.craft_prompt(with_cc).messages.first[:content]
 

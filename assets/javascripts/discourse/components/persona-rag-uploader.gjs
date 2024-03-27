@@ -72,6 +72,7 @@ export default class PersonaRagUploader extends Component.extend(
     <div class="persona-rag-uploader">
       <h3>{{I18n.t "discourse_ai.ai_persona.uploads.title"}}</h3>
       <p>{{I18n.t "discourse_ai.ai_persona.uploads.description"}}</p>
+      <p>{{I18n.t "discourse_ai.ai_persona.uploads.hint"}}</p>
 
       <div class="persona-rag-uploader__search-input-container">
         <div class="persona-rag-uploader__search-input">

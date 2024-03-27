@@ -38,38 +38,6 @@ export default class PersonaEditor extends Component {
   @tracked showDelete = false;
   @tracked maxPixelsValue = null;
 
-  constructor() {
-    super(...arguments);
-    this.messageBus.subscribe(
-      "/discourse-ai/ai-bot/uploads",
-      this.onUploadUpdate
-    );
-  }
-
-  willDestroy() {
-    super.willDestroy(...arguments);
-    this.messageBus.unsubscribe(
-      "/discourse-ai/ai-bot/uploads",
-      this.onUploadUpdate
-    );
-  }
-
-  @bind
-  onUploadUpdate(data) {
-    const upload = this.editingModel.rag_uploads.findBy(
-      "upload_id",
-      data.upload_id
-    );
-
-    upload.status = data.status;
-    upload.statusText = I18n.t(
-      `discourse_ai.ai_persona.uploads.processing.${data.status}`
-    );
-  }
->>>>>>> 8ae5131 (FEATURE: RAG embeddings for the AI Bot)
-
-=======
->>>>>>> 9593f80 (Uploads filter, css adjustments and file validations)
   @action
   updateModel() {
     this.editingModel = this.args.model.workingCopy();

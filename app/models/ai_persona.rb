@@ -245,6 +245,10 @@ class AiPersona < ActiveRecord::Base
         super(*args, **kwargs)
       end
 
+      define_method :persona_id do
+        @ai_persona&.id
+      end
+
       define_method :tools do
         tools
       end
