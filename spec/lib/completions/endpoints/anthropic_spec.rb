@@ -2,7 +2,7 @@
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-opus") }
-  let(:image100x100) { File.open(File.join(__dir__, "../../../fixtures/100x100.jpg")) }
+  let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
   let(:upload100x100) do
     UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
   end

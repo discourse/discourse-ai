@@ -9,13 +9,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
 
-  let(:mock_search_json) do
-    File.read(File.expand_path("../../../../../fixtures/search_meta/search.json", __FILE__))
-  end
+  let(:mock_search_json) { plugin_file_from_fixtures("search.json", "search_meta").read }
 
-  let(:mock_site_json) do
-    File.read(File.expand_path("../../../../../fixtures/search_meta/site.json", __FILE__))
-  end
+  let(:mock_site_json) { plugin_file_from_fixtures("site.json", "search_meta").read }
 
   before do
     stub_request(:get, "https://meta.discourse.org/site.json").to_return(

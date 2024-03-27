@@ -6,7 +6,7 @@ RSpec.describe DiscourseAi::Completions::Prompt do
   let(:system_insts) { "These are the system instructions." }
   let(:user_msg) { "Write something nice" }
   let(:username) { "username1" }
-  let(:image100x100) { File.open(File.join(__dir__, "../../fixtures/100x100.jpg")) }
+  let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
 
   describe ".new" do
     it "raises for invalid attributes" do
