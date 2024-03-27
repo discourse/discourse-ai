@@ -131,6 +131,25 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       persona
     end
 
+    context "with chat" do
+      fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, persona.user]) }
+
+      it "can reply to a chat message" do
+        SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+        Group.refresh_automatic_groups!
+
+        guardian = Guardian.new(user)
+
+        DiscourseAi::Completions::Llm.with_prepared_responses(["World"]) do
+          ChatSDK::Message.create(channel_id: dm_channel.id, raw: "Hello", guardian: guardian)
+        end
+
+        messages = ChatSDK::Channel.messages(channel_id: dm_channel.id, guardian: guardian)
+
+        expect(messages.length).to eq(2)
+      end
+    end
+
     it "replies to whispers with a whisper" do
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
