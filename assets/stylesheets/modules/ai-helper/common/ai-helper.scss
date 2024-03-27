@@ -141,6 +141,11 @@
   }
 }
 
+.ai-helper-highlighted-selection {
+  background-color: var(--tertiary-low);
+  color: var(--tertiary);
+}
+
 // AI Typing indicator (taken from: https://github.com/nzbin/three-dots)
 .dot-falling {
   position: relative;

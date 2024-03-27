@@ -50,8 +50,59 @@ export default class AIHelperOptionsMenu extends Component {
 
   @tracked _activeAIRequest = null;
 
+  highlightSelectedText() {
+    const selectedText = this.args.outletArgs.data.quoteState.buffer;
+    const postId = this.args.outletArgs.data.quoteState.postId;
+    const postElement = document.querySelector(
+      `article[data-post-id='${postId}']`
+    );
+
+    if (!postElement) {
+      return;
+    }
+
+    const highlight = document.createElement("span");
+    highlight.classList.add("ai-helper-highlighted-selection");
+    highlight.textContent = selectedText;
+
+    const postContentElement = postElement.querySelector(".cooked");
+    if (postContentElement) {
+      const range = window.getSelection().getRangeAt(0);
+
+      // Check if the range contains only text nodes
+      if (range && range.commonAncestorContainer.nodeType === Node.TEXT_NODE) {
+        const clonedRange = range.cloneRange();
+
+        // Wrap the existing text with the highlight
+        clonedRange.surroundContents(highlight);
+        this.highlightElement = highlight;
+      } else {
+        // Non-text nodes are present in the range
+      }
+    }
+  }
+
+  removeHighlightedText() {
+    if (this.highlightElement && this.highlightElement.parentNode) {
+      const parentNode = this.highlightElement.parentNode;
+      while (this.highlightElement.firstChild) {
+        parentNode.insertBefore(
+          this.highlightElement.firstChild,
+          this.highlightElement
+        );
+      }
+      parentNode.removeChild(this.highlightElement);
+    }
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.removeHighlightedText();
+  }
+
   @action
   async showAIHelperOptions() {
+    this.highlightSelectedText();
     this.showMainButtons = false;
     this.menuState = this.MENU_STATES.options;
   }
