@@ -62,41 +62,7 @@ module DiscourseAi
       # at the correct dimentions
       def encoded_uploads(message)
         return [] if message[:upload_ids].blank?
-
-        uploads =
-          message[:upload_ids].map do |upload_id|
-            upload = Upload.find(upload_id)
-            next if upload.blank?
-            next if upload.width.to_i == 0 || upload.height.to_i == 0
-
-            original_pixels = upload.width * upload.height
-
-            image = upload
-
-            if original_pixels > max_pixels
-              ratio = max_pixels.to_f / original_pixels
-
-              new_width = (ratio * upload.width).to_i
-              new_height = (ratio * upload.height).to_i
-
-              image = upload.get_optimized_image(new_width, new_height)
-            end
-
-            mime_type = MiniMime.lookup_by_filename(upload.original_filename).content_type
-
-            path = Discourse.store.path_for(image)
-            if path.blank?
-              # download is protected with a DistributedMutex
-              external_copy = Discourse.store.download_safe(image)
-              path = external_copy&.path
-            end
-
-            encoded = Base64.strict_encode64(File.read(path))
-
-            { base64: encoded, mime_type: mime_type }
-          end
-
-        uploads
+        UploadEncoder.encode(upload_ids: message[:upload_ids], max_pixels: max_pixels)
       end
 
       private
@@ -117,7 +83,7 @@ module DiscourseAi
           raise ArgumentError, "upload_ids must be an array of ids"
         end
 
-        if message[:type] == :upload_ids && message[:type] != :user
+        if message[:upload_ids].present? && message[:type] != :user
           raise ArgumentError, "upload_ids are only supported for users"
         end
 
