@@ -47,30 +47,7 @@ module DiscourseAi
                   content = +""
                   content << "#{msg[:id]}: " if msg[:id]
                   content << msg[:content]
-
-                  # got vision
-                  if model_name.include?("claude-3")
-                    if msg[:upload_ids].present?
-                      encoded_uploads = prompt.encoded_uploads(msg)
-                      if encoded_uploads.present?
-                        new_content = []
-                        new_content.concat(
-                          encoded_uploads.map do |details|
-                            {
-                              source: {
-                                type: "base64",
-                                data: details[:base64],
-                                media_type: details[:mime_type],
-                              },
-                              type: "image",
-                            }
-                          end,
-                        )
-                        new_content << { type: "text", text: content }
-                        content = new_content
-                      end
-                    end
-                  end
+                  content = inline_images(content, msg)
 
                   { role: "user", content: content }
                 end
@@ -103,6 +80,33 @@ module DiscourseAi
         def max_prompt_tokens
           # Longer term it will have over 1 million
           200_000 # Claude-3 has a 200k context window for now
+        end
+
+        private
+
+        def inline_images(content, message)
+          if model_name.include?("claude-3")
+            encoded_uploads = prompt.encoded_uploads(message)
+            if encoded_uploads.present?
+              new_content = []
+              new_content.concat(
+                encoded_uploads.map do |details|
+                  {
+                    source: {
+                      type: "base64",
+                      data: details[:base64],
+                      media_type: details[:mime_type],
+                    },
+                    type: "image",
+                  }
+                end,
+              )
+              new_content << { type: "text", text: content }
+              content = new_content
+            end
+          end
+
+          content
         end
       end
     end
