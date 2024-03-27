@@ -41,12 +41,12 @@ module DiscourseAi
         @tools = tools
       end
 
-      def push(type:, content:, id: nil, name: nil, uploads: nil)
+      def push(type:, content:, id: nil, name: nil, upload_ids: nil)
         return if type == :system
         new_message = { type: type, content: content }
         new_message[:name] = name.to_s if name
         new_message[:id] = id.to_s if id
-        new_message[:uploads] = uploads if uploads
+        new_message[:upload_ids] = upload_ids if upload_ids
 
         validate_message(new_message)
         validate_turn(messages.last, new_message)
@@ -61,10 +61,10 @@ module DiscourseAi
       # helper method to get base64 encoded uploads
       # at the correct dimentions
       def encoded_uploads(message)
-        return [] if message[:uploads].blank?
+        return [] if message[:upload_ids].blank?
 
         uploads =
-          message[:uploads].map do |upload_id|
+          message[:upload_ids].map do |upload_id|
             upload = Upload.find(upload_id)
             next if upload.blank?
             next if upload.width.to_i == 0 || upload.height.to_i == 0
@@ -108,17 +108,17 @@ module DiscourseAi
           raise ArgumentError, "message type must be one of #{valid_types}"
         end
 
-        valid_keys = %i[type content id name uploads]
+        valid_keys = %i[type content id name upload_ids]
         if (invalid_keys = message.keys - valid_keys).any?
           raise ArgumentError, "message contains invalid keys: #{invalid_keys}"
         end
 
-        if message[:type] == :uploads && !message[:uploads].is_a?(Array)
-          raise ArgumentError, "uploads must be an array"
+        if message[:type] == :upload_ids && !message[:upload_ids].is_a?(Array)
+          raise ArgumentError, "upload_ids must be an array of ids"
         end
 
-        if message[:type] == :uploads && message[:type] != :user
-          raise ArgumentError, "uploads are only supported for users"
+        if message[:type] == :upload_ids && message[:type] != :user
+          raise ArgumentError, "upload_ids are only supported for users"
         end
 
         raise ArgumentError, "message content must be a string" if !message[:content].is_a?(String)

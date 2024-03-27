@@ -29,9 +29,9 @@ RSpec.describe DiscourseAi::Completions::Prompt do
       upload = UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
 
       prompt.max_pixels = 300
-      prompt.push(type: :user, content: "hello", uploads: [upload.id])
+      prompt.push(type: :user, content: "hello", upload_ids: [upload.id])
 
-      expect(prompt.messages.last[:uploads]).to eq([upload.id])
+      expect(prompt.messages.last[:upload_ids]).to eq([upload.id])
       expect(prompt.max_pixels).to eq(300)
 
       encoded = prompt.encoded_uploads(prompt.messages.last)

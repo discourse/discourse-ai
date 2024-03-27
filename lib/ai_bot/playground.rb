@@ -159,7 +159,7 @@ module DiscourseAi
             context[:id] = username if context[:type] == :user
 
             if upload_ids.present? && context[:type] == :user && bot.persona.class.vision_enabled
-              context[:uploads] = upload_ids.compact
+              context[:upload_ids] = upload_ids.compact
             end
 
             result << context

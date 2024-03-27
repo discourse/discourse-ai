@@ -50,7 +50,7 @@ module DiscourseAi
 
                   # got vision
                   if model_name.include?("claude-3")
-                    if msg[:uploads].present?
+                    if msg[:upload_ids].present?
                       encoded_uploads = prompt.encoded_uploads(msg)
                       if encoded_uploads.present?
                         new_content = []
