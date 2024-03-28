@@ -38,7 +38,7 @@ module DiscourseAi
               html = read_response_body(response)
               text = extract_main_content(html)
               text = truncate(text, max_length: 50_000, percent_length: 0.3, llm: llm)
-              return { url: url, text: text }
+              return { url: response.uri.to_s, text: text.strip }
             else
               return { url: url, error: "Failed to retrieve the web page: #{response.code}" }
             end
