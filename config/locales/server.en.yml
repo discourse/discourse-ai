@@ -209,6 +209,7 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       command_summary:
+        web_browser: "Browse Web"
         github_search_code: "GitHub code search"
         github_file_content: "GitHub file content"
         github_pull_request_diff: "GitHub pull request diff"
@@ -227,6 +228,7 @@ en:
         dall_e: "Generate image"
         search_meta_discourse: "Search Meta Discourse"
       command_help:
+        web_browser: "Browse web page using the AI Bot"
         github_search_code: "Search for code in a GitHub repository"
         github_file_content: "Retrieve content of files from a GitHub repository"
         github_pull_request_diff: "Retrieve a GitHub pull request diff"
@@ -245,6 +247,7 @@ en:
         dall_e: "Generate image using DALL-E 3"
         search_meta_discourse: "Search Meta Discourse"
       command_description:
+        web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_code: "Searched for '%{query}' in %{repo}"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
         github_file_content: "Retrieved content of %{file_paths} from %{repo_name}@%{branch}"

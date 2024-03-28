@@ -77,8 +77,34 @@ module DiscourseAi
 
         protected
 
-        def send_http_request(url, headers: {}, authenticate_github: false)
-          uri = URI(url)
+        def send_http_request(url, headers: {}, authenticate_github: false, follow_redirects: false)
+          raise "Expecting caller to use a block" if !block_given?
+
+          uri = nil
+          url = UrlHelper.normalized_encode(url)
+          uri =
+            begin
+              URI.parse(url)
+            rescue StandardError
+              nil
+            end
+
+          return if !uri
+
+          if follow_redirects
+            fd =
+              FinalDestination.new(
+                url,
+                validate_uri: true,
+                max_redirects: 5,
+                follow_canonical: true,
+              )
+
+            uri = fd.resolve
+          end
+
+          return if uri.blank?
+
           request = FinalDestination::HTTP::Get.new(uri)
           request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
           headers.each { |k, v| request[k] = v }
@@ -87,8 +113,18 @@ module DiscourseAi
           end
 
           FinalDestination::HTTP.start(uri.hostname, uri.port, use_ssl: uri.port != 80) do |http|
-            http.request(request)
+            http.request(request) { |response| yield response }
           end
+        end
+
+        def read_response_body(response, max_length: 4.megabyte)
+          body = +""
+          response.read_body do |chunk|
+            body << chunk
+            break if body.bytesize > max_length
+          end
+
+          body[0..max_length]
         end
 
         def truncate(text, llm:, percent_length: nil, max_length: nil)
