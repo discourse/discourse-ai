@@ -224,7 +224,7 @@ section {
   }
 }
 
-article {
+article.post {
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
   transition: border-color 0.25s ease-in-out;
@@ -235,11 +235,11 @@ article {
 }
 
 @media screen and (min-width: 769px) {
-  article:hover {
+  article.post:hover {
     border-top-color: var(--primary-100);
     border-bottom-color: var(--primary-100);
   }
-  article:last-of-type:hover {
+  article.post:last-of-type:hover {
     border-bottom-color: transparent;
   }
 }
@@ -499,4 +499,94 @@ code.hljs{
 
 .hljs-meta .hljs-string{
   color:var(--hljs-sky);
+}
+
+aside.onebox {
+  border: 4px solid var(--primary-200);
+  padding: 1em;
+  font-size: 0.9em;
+}
+
+aside.onebox .source {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.9em;
+  line-height: 1;
+  margin-bottom: 1em;
+}
+
+aside.onebox .source a {
+  color: var(--primary-700);
+}
+
+aside.onebox .site-icon {
+  width: 1em;
+  height: 1em;
+}
+
+.onebox-body {
+  display: grid;
+  grid-template-areas: "avatar title" "avatar body";
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  align-items: start;
+}
+
+aside.onebox h3 {
+  margin: 0 0 0.25em 0;
+  grid-area: title;
+}
+
+.onebox-avatar {
+  width: 5.5em;
+  height: auto;
+  grid-area: avatar;
+  margin: .5em 1.5em 0 0;
+  object-fit: cover;
+}
+
+.onebox-body p {
+  grid-area: body;
+  margin-top: 0.5em;
+  font-size: 0.95em;
+}
+
+.lazy-video-container {
+  position: relative;
+}
+
+.lazy-video-container a {
+  display: block;
+  width: 100%;
+}
+
+.lazy-video-container img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.lazy-video-container:hover:before{
+  opacity: 1;
+}
+
+.lazy-video-container:before {
+  /* video play button */
+  content:"";
+  position: absolute;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3C!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--%3E%3Cpath d='M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z'  fill='white' /%3E%3C/svg%3E"); 
+  z-index: 2;
+  width: 5em;
+  height: 6.25em;
+  left: 0;
+  right: 0;
+  top: 32%;
+  pointer-events: none;
+  margin-left: auto; 
+  margin-right: auto; 
+  opacity: 0.85;
+  transition: opacity 0.25s ease-in-out;
 }
