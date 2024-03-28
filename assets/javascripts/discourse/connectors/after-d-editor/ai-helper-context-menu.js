@@ -275,6 +275,11 @@ export default class AiHelperContextMenu extends Component {
   @afterRender
   positionContextMenu() {
     this._contextMenu = document.querySelector(".ai-helper-context-menu");
+
+    if (!this._dEditorInput || !this._contextMenu) {
+      return;
+    }
+
     this.caretCoords = getCaretPosition(this._dEditorInput, {
       pos: caretPosition(this._dEditorInput),
     });

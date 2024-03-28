@@ -15,7 +15,7 @@ export function showComposerAIHelper(outletArgs, helper, featureType) {
 export function showPostAIHelper(outletArgs, helper) {
   return (
     _helperEnabled(helper.siteSettings) &&
-    helper.currentUser.can_use_assistant_in_post
+    helper.currentUser?.can_use_assistant_in_post
   );
 }
 
