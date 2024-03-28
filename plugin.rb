@@ -10,6 +10,7 @@
 
 gem "tokenizers", "0.4.3"
 gem "tiktoken_ruby", "0.0.7"
+gem "baran", "0.1.10"
 
 enabled_site_setting :discourse_ai_enabled
 

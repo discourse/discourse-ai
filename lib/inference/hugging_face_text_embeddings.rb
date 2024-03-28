@@ -56,6 +56,11 @@ module ::DiscourseAi
           JSON.parse(response.body, symbolize_names: true)
         end
 
+        def reranker_configured?
+          SiteSetting.ai_hugging_face_tei_reranker_endpoint.present? ||
+            SiteSetting.ai_hugging_face_tei_reranker_endpoint_srv.present?
+        end
+
         def configured?
           SiteSetting.ai_hugging_face_tei_endpoint.present? ||
             SiteSetting.ai_hugging_face_tei_endpoint_srv.present?

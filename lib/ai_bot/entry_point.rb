@@ -200,6 +200,17 @@ module DiscourseAi
         if plugin.respond_to?(:register_editable_topic_custom_field)
           plugin.register_editable_topic_custom_field(:ai_persona_id)
         end
+
+        plugin.on(:site_setting_changed) do |name, old_value, new_value|
+          if name == "ai_embeddings_model" && SiteSetting.ai_embeddings_enabled? &&
+               new_value != old_value
+            RagDocumentFragment.find_in_batches do |batch|
+              batch.each_slice(100) do |fragments|
+                Jobs.enqueue(:generate_rag_embeddings, fragment_ids: fragments.map(&:id))
+              end
+            end
+          end
+        end
       end
     end
   end

@@ -30,8 +30,10 @@ module DiscourseAi
       end
 
       def create
-        ai_persona = AiPersona.new(ai_persona_params)
+        ai_persona = AiPersona.new(ai_persona_params.except(:rag_uploads))
         if ai_persona.save
+          RagDocumentFragment.link_persona_and_uploads(ai_persona, attached_upload_ids)
+
           render json: { ai_persona: ai_persona }, status: :created
         else
           render_json_error ai_persona
@@ -44,7 +46,9 @@ module DiscourseAi
       end
 
       def update
-        if @ai_persona.update(ai_persona_params)
+        if @ai_persona.update(ai_persona_params.except(:rag_uploads))
+          RagDocumentFragment.update_persona_uploads(@ai_persona, attached_upload_ids)
+
           render json: @ai_persona
         else
           render_json_error @ai_persona
@@ -59,10 +63,41 @@ module DiscourseAi
         end
       end
 
+      def upload_file
+        file = params[:file] || params[:files].first
+
+        if !SiteSetting.ai_embeddings_enabled?
+          raise Discourse::InvalidAccess.new("Embeddings not enabled")
+        end
+
+        validate_extension!(file.original_filename)
+        validate_file_size!(file.tempfile.size)
+
+        hijack do
+          upload =
+            UploadCreator.new(
+              file.tempfile,
+              file.original_filename,
+              type: "discourse_ai_rag_upload",
+              skip_validations: true,
+            ).create_for(current_user.id)
+
+          if upload.persisted?
+            render json: UploadSerializer.new(upload)
+          else
+            render json: failed_json.merge(errors: upload.errors.full_messages), status: 422
+          end
+        end
+      end
+
       private
 
       def find_ai_persona
         @ai_persona = AiPersona.find(params[:id])
+      end
+
+      def attached_upload_ids
+        ai_persona_params[:rag_uploads].to_a.map { |h| h[:id] }
       end
 
       def ai_persona_params
@@ -82,6 +117,7 @@ module DiscourseAi
             :vision_enabled,
             :vision_max_pixels,
             allowed_group_ids: [],
+            rag_uploads: [:id],
           )
 
         if commands = params.dig(:ai_persona, :commands)
@@ -103,6 +139,28 @@ module DiscourseAi
           else
             command
           end
+        end
+      end
+
+      def validate_extension!(filename)
+        extension = File.extname(filename)[1..-1] || ""
+        authorized_extension = "txt"
+        if extension != authorized_extension
+          raise Discourse::InvalidParameters.new(
+                  I18n.t("upload.unauthorized", authorized_extensions: authorized_extension),
+                )
+        end
+      end
+
+      def validate_file_size!(filesize)
+        max_size_bytes = 20.megabytes
+        if filesize > max_size_bytes
+          raise Discourse::InvalidParameters.new(
+                  I18n.t(
+                    "upload.attachments.too_large_humanized",
+                    max_size: ActiveSupport::NumberHelper.number_to_human_size(max_size_bytes),
+                  ),
+                )
         end
       end
     end

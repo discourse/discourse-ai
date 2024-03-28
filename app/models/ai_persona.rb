@@ -16,6 +16,13 @@ class AiPersona < ActiveRecord::Base
   belongs_to :created_by, class_name: "User"
   belongs_to :user
 
+  has_many :upload_references, as: :target, dependent: :destroy
+  has_many :uploads, through: :upload_references
+
+  has_many :rag_document_fragment, dependent: :destroy
+
+  has_many :rag_document_fragments, through: :ai_persona_rag_document_fragments
+
   before_destroy :ensure_not_system
 
   class MultisiteHash
@@ -238,6 +245,10 @@ class AiPersona < ActiveRecord::Base
         super(*args, **kwargs)
       end
 
+      define_method :persona_id do
+        @ai_persona&.id
+      end
+
       define_method :tools do
         tools
       end
@@ -256,6 +267,10 @@ class AiPersona < ActiveRecord::Base
 
       define_method :system_prompt do
         @ai_persona&.system_prompt || "You are a helpful bot."
+      end
+
+      define_method :uploads do
+        @ai_persona&.uploads
       end
     end
   end

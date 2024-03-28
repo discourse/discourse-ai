@@ -155,6 +155,18 @@ module DiscourseAi
           text = @strategy.prepare_text_from(target, tokenizer, max_sequence_length - 2)
           return if text.blank?
 
+          target_column =
+            case target
+            when Topic
+              "topic_id"
+            when Post
+              "post_id"
+            when RagDocumentFragment
+              "rag_document_fragment_id"
+            else
+              raise ArgumentError, "Invalid target type"
+            end
+
           new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
           current_digest = DB.query_single(<<~SQL, target_id: target.id).first
             SELECT
@@ -162,7 +174,7 @@ module DiscourseAi
             FROM
               #{table_name(target)}
             WHERE
-              #{target.is_a?(Topic) ? "topic_id" : "post_id"} = :target_id
+              #{target_column} = :target_id
             LIMIT 1
           SQL
           return if current_digest == new_digest
@@ -248,6 +260,47 @@ module DiscourseAi
           raise MissingEmbeddingError
         end
 
+        def asymmetric_rag_fragment_similarity_search(
+          raw_vector,
+          persona_id:,
+          limit:,
+          offset:,
+          return_distance: false
+        )
+          results =
+            DB.query(
+              <<~SQL,
+            #{probes_sql(post_table_name)}
+            SELECT
+              rag_document_fragment_id,
+              embeddings #{pg_function} '[:query_embedding]' AS distance
+            FROM
+              #{rag_fragments_table_name}
+            INNER JOIN
+              rag_document_fragments AS rdf ON rdf.id = rag_document_fragment_id
+            WHERE
+              rdf.ai_persona_id = :persona_id
+            ORDER BY
+              embeddings #{pg_function} '[:query_embedding]'
+            LIMIT :limit
+            OFFSET :offset
+          SQL
+              query_embedding: raw_vector,
+              persona_id: persona_id,
+              limit: limit,
+              offset: offset,
+            )
+
+          if return_distance
+            results.map { |r| [r.rag_document_fragment_id, r.distance] }
+          else
+            results.map(&:rag_document_fragment_id)
+          end
+        rescue PG::Error => e
+          Rails.logger.error("Error #{e} querying embeddings for model #{name}")
+          raise MissingEmbeddingError
+        end
+
         def symmetric_topics_similarity_search(topic)
           DB.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
             #{probes_sql(topic_table_name)}
@@ -282,12 +335,18 @@ module DiscourseAi
           "ai_post_embeddings_#{id}_#{@strategy.id}"
         end
 
+        def rag_fragments_table_name
+          "ai_document_fragment_embeddings_#{id}_#{@strategy.id}"
+        end
+
         def table_name(target)
           case target
           when Topic
             topic_table_name
           when Post
             post_table_name
+          when RagDocumentFragment
+            rag_fragments_table_name
           else
             raise ArgumentError, "Invalid target type"
           end
@@ -370,6 +429,25 @@ module DiscourseAi
                 updated_at = CURRENT_TIMESTAMP
               SQL
               post_id: target.id,
+              model_version: version,
+              strategy_version: @strategy.version,
+              digest: digest,
+              embeddings: vector,
+            )
+          elsif target.is_a?(RagDocumentFragment)
+            DB.exec(
+              <<~SQL,
+              INSERT INTO #{rag_fragments_table_name} (rag_document_fragment_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
+              VALUES (:fragment_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              ON CONFLICT (rag_document_fragment_id)
+              DO UPDATE SET
+                model_version = :model_version,
+                strategy_version = :strategy_version,
+                digest = :digest,
+                embeddings = '[:embeddings]',
+                updated_at = CURRENT_TIMESTAMP
+              SQL
+              fragment_id: target.id,
               model_version: version,
               strategy_version: @strategy.version,
               digest: digest,
