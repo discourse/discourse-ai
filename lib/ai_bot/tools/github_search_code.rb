@@ -44,17 +44,27 @@ module DiscourseAi
         def invoke(_bot_user, llm)
           api_url = "https://api.github.com/search/code?q=#{query}+repo:#{repo}"
 
-          response =
-            send_http_request(
-              api_url,
-              headers: {
-                "Accept" => "application/vnd.github.v3.text-match+json",
-              },
-              authenticate_github: true,
-            )
+          response_code = "unknown error"
+          search_data = nil
 
-          if response.code == "200"
-            search_data = JSON.parse(response.body)
+          send_http_request(
+            api_url,
+            headers: {
+              "Accept" => "application/vnd.github.v3.text-match+json",
+            },
+            authenticate_github: true,
+          ) do |response|
+            response_code = response.code
+            if response_code == "200"
+              begin
+                search_data = JSON.parse(read_response_body(response))
+              rescue JSON::ParserError
+                response_code = "500 - JSON parse error"
+              end
+            end
+          end
+
+          if response_code == "200"
             results =
               search_data["items"]
                 .map { |item| "#{item["path"]}:\n#{item["text_matches"][0]["fragment"]}" }
@@ -63,7 +73,7 @@ module DiscourseAi
             results = truncate(results, max_length: 20_000, percent_length: 0.3, llm: llm)
             { search_results: results }
           else
-            { error: "Failed to perform code search. Status code: #{response.code}" }
+            { error: "Failed to perform code search. Status code: #{response_code}" }
           end
         end
       end

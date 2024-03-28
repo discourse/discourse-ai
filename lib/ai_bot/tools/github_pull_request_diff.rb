@@ -47,22 +47,27 @@ module DiscourseAi
           api_url = "https://api.github.com/repos/#{repo}/pulls/#{pull_id}"
           @url = "https://github.com/#{repo}/pull/#{pull_id}"
 
-          response =
-            send_http_request(
-              api_url,
-              headers: {
-                "Accept" => "application/vnd.github.v3.diff",
-              },
-              authenticate_github: true,
-            )
+          body = nil
+          response_code = "unknown error"
 
-          if response.code == "200"
-            diff = response.body
+          send_http_request(
+            api_url,
+            headers: {
+              "Accept" => "application/vnd.github.v3.diff",
+            },
+            authenticate_github: true,
+          ) do |response|
+            response_code = response.code
+            body = read_response_body(response)
+          end
+
+          if response_code == "200"
+            diff = body
             diff = sort_and_shorten_diff(diff)
             diff = truncate(diff, max_length: 20_000, percent_length: 0.3, llm: llm)
             { diff: diff }
           else
-            { error: "Failed to retrieve the diff. Status code: #{response.code}" }
+            { error: "Failed to retrieve the diff. Status code: #{response_code}" }
           end
         end
 
