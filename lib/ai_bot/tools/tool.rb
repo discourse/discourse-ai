@@ -81,10 +81,17 @@ module DiscourseAi
           raise "Expecting caller to use a block" if !block_given?
 
           uri = nil
+          url = UrlHelper.normalized_encode(url)
+          uri =
+            begin
+              URI.parse(url)
+            rescue StandardError
+              nil
+            end
+
+          return if !uri
 
           if follow_redirects
-            url = UrlHelper.normalized_encode(url)
-            URI.parse(url) # ensure url parses, will raise if not
             fd =
               FinalDestination.new(
                 url,
@@ -94,13 +101,6 @@ module DiscourseAi
               )
 
             uri = fd.resolve
-          else
-            uri =
-              begin
-                URI.parse(url)
-              rescue StandardError
-                nil
-              end
           end
 
           return if uri.blank?

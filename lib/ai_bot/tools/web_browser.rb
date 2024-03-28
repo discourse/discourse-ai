@@ -55,21 +55,14 @@ module DiscourseAi
 
         def extract_main_content(html)
           doc = Nokogiri.HTML(html)
-
-          # Remove script, style, and comments
           doc.search("script, style, comment").remove
 
-          # Find the main content container
           main_content = find_main_content(doc)
-
-          # If main content not found, fallback to the body
           main_content ||= doc.at("body")
 
-          # Extract text from the main content
           buffer = +""
           nodes_to_text(main_content, buffer)
 
-          # Remove excessive whitespace and line breaks
           buffer.gsub(/\s+/, " ")
         end
 
@@ -97,7 +90,6 @@ module DiscourseAi
         end
 
         def find_main_content(doc)
-          # Heuristics to find the main content container
           [
             doc.at("article"),
             doc.at("main"),
