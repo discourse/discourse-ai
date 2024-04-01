@@ -4,7 +4,12 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   fab!(:admin)
   fab!(:ai_persona)
 
-  before { sign_in(admin) }
+  before do
+    sign_in(admin)
+
+    SiteSetting.ai_embeddings_enabled = true
+    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+  end
 
   describe "GET #index" do
     it "returns a success response" do
@@ -124,6 +129,21 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
       expect(response).to be_successful
       expect(response.parsed_body["ai_persona"]["name"]).to eq(ai_persona.name)
+    end
+
+    it "includes rag uploads for each persona" do
+      upload = Fabricate(:upload)
+      RagDocumentFragment.link_persona_and_uploads(ai_persona, [upload.id])
+
+      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
+      expect(response).to be_successful
+
+      serialized_persona = response.parsed_body["ai_persona"]
+
+      expect(serialized_persona.dig("rag_uploads", 0, "id")).to eq(upload.id)
+      expect(serialized_persona.dig("rag_uploads", 0, "original_filename")).to eq(
+        upload.original_filename,
+      )
     end
   end
 
@@ -320,6 +340,17 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to include("application/json")
       end
+    end
+  end
+
+  describe "POST #upload_file" do
+    it "works" do
+      post "/admin/plugins/discourse-ai/ai-personas/files/upload.json",
+           params: {
+             file: Rack::Test::UploadedFile.new(file_from_fixtures("spec.txt", "md")),
+           }
+
+      expect(response.status).to eq(200)
     end
   end
 

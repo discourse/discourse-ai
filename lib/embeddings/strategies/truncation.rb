@@ -18,6 +18,8 @@ module DiscourseAi
             topic_truncation(target, tokenizer, max_length)
           when Post
             post_truncation(target, tokenizer, max_length)
+          when RagDocumentFragment
+            tokenizer.truncate(target.fragment, max_length)
           else
             raise ArgumentError, "Invalid target type"
           end

@@ -76,4 +76,69 @@
     display: flex;
     align-items: center;
   }
+
+  .persona-rag-uploader {
+    width: 500px;
+
+    &__search-input {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--primary-400);
+      width: 100%;
+      box-sizing: border-box;
+      height: 35px;
+      padding: 0 0.5rem;
+
+      &:focus,
+      &:focus-within {
+        @include default-focus();
+      }
+
+      &-container {
+        display: flex;
+        flex-grow: 1;
+      }
+
+      &__search-icon {
+        background: none !important;
+        color: var(--primary-medium);
+      }
+
+      &__input {
+        width: 100% !important;
+      }
+
+      &__input,
+      &__input:focus {
+        margin: 0 !important;
+        border: 0 !important;
+        appearance: none !important;
+        outline: none !important;
+        background: none !important;
+      }
+    }
+
+    &__uploads-list {
+      margin-bottom: 20px;
+
+      tbody {
+        border-top: none;
+      }
+    }
+
+    &__upload-status {
+      text-align: right;
+      padding-right: 0;
+      color: var(--success);
+    }
+
+    &__remove-file {
+      text-align: right;
+      padding-left: 0;
+    }
+
+    &__rag-file-icon {
+      margin-right: 5px;
+    }
+  }
 }

@@ -164,6 +164,14 @@ en:
           #### Group-Specific Access to AI Personas
 
           Moreover, you can set it up so that certain user groups have access to specific personas. This means you can have different AI behaviors for different sections of your forum, further enhancing the diversity and richness of your community's interactions.
+        
+        uploads:
+          title: "Uploads"
+          description: "Your AI persona will be able to search and reference the content of included files. Uploaded files must be formatted as plaintext (.txt)"
+          hint: "To control where the file's content gets placed within the system prompt, include the {uploads} placeholder in the system prompt above."
+          button: "Add Files"
+          filter: "Filter uploads"
+          complete: "Complete"
 
       related_topics:
         title: "Related Topics"

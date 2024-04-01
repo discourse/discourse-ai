@@ -16,6 +16,13 @@ class AiPersona < ActiveRecord::Base
   belongs_to :created_by, class_name: "User"
   belongs_to :user
 
+  has_many :upload_references, as: :target, dependent: :destroy
+  has_many :uploads, through: :upload_references
+
+  has_many :rag_document_fragment, dependent: :destroy
+
+  has_many :rag_document_fragments, through: :ai_persona_rag_document_fragments
+
   before_destroy :ensure_not_system
 
   class MultisiteHash
@@ -238,6 +245,10 @@ class AiPersona < ActiveRecord::Base
         super(*args, **kwargs)
       end
 
+      define_method :persona_id do
+        @ai_persona&.id
+      end
+
       define_method :tools do
         tools
       end
@@ -256,6 +267,10 @@ class AiPersona < ActiveRecord::Base
 
       define_method :system_prompt do
         @ai_persona&.system_prompt || "You are a helpful bot."
+      end
+
+      define_method :uploads do
+        @ai_persona&.uploads
       end
     end
   end
@@ -320,26 +335,26 @@ end
 #
 # Table name: ai_personas
 #
-#  id                      :bigint           not null, primary key
-#  name                    :string(100)      not null
-#  description             :string(2000)     not null
-#  commands                :json             not null
-#  system_prompt           :string(10000000) not null
-#  allowed_group_ids       :integer          default([]), not null, is an Array
-#  created_by_id           :integer
-#  enabled                 :boolean          default(TRUE), not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  system                  :boolean          default(FALSE), not null
-#  priority                :boolean          default(FALSE), not null
-#  temperature             :float
-#  top_p                   :float
-#  user_id                 :integer
-#  mentionable             :boolean          default(FALSE), not null
-#  default_llm             :text
-#  max_context_posts       :integer
-#  max_post_context_tokens :integer
-#  max_context_tokens      :integer
+#  id                :bigint           not null, primary key
+#  name              :string(100)      not null
+#  description       :string(2000)     not null
+#  commands          :json             not null
+#  system_prompt     :string(10000000) not null
+#  allowed_group_ids :integer          default([]), not null, is an Array
+#  created_by_id     :integer
+#  enabled           :boolean          default(TRUE), not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  system            :boolean          default(FALSE), not null
+#  priority          :boolean          default(FALSE), not null
+#  temperature       :float
+#  top_p             :float
+#  user_id           :integer
+#  mentionable       :boolean          default(FALSE), not null
+#  default_llm       :text
+#  max_context_posts :integer
+#  vision_enabled    :boolean          default(FALSE), not null
+#  vision_max_pixels :integer          default(1048576), not null
 #
 # Indexes
 #

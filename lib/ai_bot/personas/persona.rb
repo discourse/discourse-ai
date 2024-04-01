@@ -93,6 +93,10 @@ module DiscourseAi
           end
         end
 
+        def id
+          @ai_persona&.id || self.class.system_personas[self.class]
+        end
+
         def tools
           []
         end
@@ -124,12 +128,24 @@ module DiscourseAi
               found.nil? ? match : found.to_s
             end
 
+          prompt_insts = <<~TEXT.strip
+          #{system_insts}
+          #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
+          TEXT
+
+          fragments_guidance = rag_fragments_prompt(context[:conversation_context].to_a)&.strip
+
+          if fragments_guidance.present?
+            if system_insts.include?("{uploads}")
+              prompt_insts = prompt_insts.gsub("{uploads}", fragments_guidance)
+            else
+              prompt_insts << fragments_guidance
+            end
+          end
+
           prompt =
             DiscourseAi::Completions::Prompt.new(
-              <<~TEXT.strip,
-            #{system_insts}
-            #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
-          TEXT
+              prompt_insts,
               messages: context[:conversation_context].to_a,
               topic_id: context[:topic_id],
               post_id: context[:post_id],
@@ -180,6 +196,68 @@ module DiscourseAi
             tool_call_id: function_id || function_name,
             persona_options: options[tool_klass].to_h,
           )
+        end
+
+        def rag_fragments_prompt(conversation_context)
+          upload_refs =
+            UploadReference.where(target_id: id, target_type: "AiPersona").pluck(:upload_id)
+
+          return nil if !SiteSetting.ai_embeddings_enabled?
+          return nil if conversation_context.blank? || upload_refs.blank?
+
+          latest_interactions =
+            conversation_context
+              .select { |ctx| %i[model user].include?(ctx[:type]) }
+              .map { |ctx| ctx[:content] }
+              .last(10)
+              .join("\n")
+
+          strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
+          vector_rep =
+            DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+          reranker = DiscourseAi::Inference::HuggingFaceTextEmbeddings
+
+          interactions_vector = vector_rep.vector_from(latest_interactions)
+
+          candidate_fragment_ids =
+            vector_rep.asymmetric_rag_fragment_similarity_search(
+              interactions_vector,
+              persona_id: id,
+              limit: reranker.reranker_configured? ? 50 : 10,
+              offset: 0,
+            )
+
+          guidance =
+            RagDocumentFragment.where(upload_id: upload_refs, id: candidate_fragment_ids).pluck(
+              :fragment,
+            )
+
+          if reranker.reranker_configured?
+            ranks =
+              DiscourseAi::Inference::HuggingFaceTextEmbeddings
+                .rerank(conversation_context.last[:content], guidance)
+                .to_a
+                .take(10)
+                .map { _1[:index] }
+
+            if ranks.empty?
+              guidance = guidance.take(10)
+            else
+              guidance = ranks.map { |idx| guidance[idx] }
+            end
+          end
+
+          <<~TEXT
+          <guidance>
+          The following texts will give you additional guidance to elaborate a response.
+          We included them because we believe they are relevant to this conversation topic.
+          Take them into account to elaborate a response.
+
+          Texts:
+
+          #{guidance.join("\n")}
+          </guidance>
+          TEXT
         end
       end
     end
