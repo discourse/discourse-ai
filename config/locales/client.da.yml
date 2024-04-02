@@ -38,6 +38,8 @@ da:
         save: Gem
         enabled: "Aktiveret?"
         delete: Slet
+        uploads:
+          title: "Overførsler"
       ai_helper:
         context_menu:
           back: "Tilbage"

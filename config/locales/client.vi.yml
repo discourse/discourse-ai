@@ -38,6 +38,8 @@ vi:
         save: Lưu lại
         enabled: "Kích hoạt"
         delete: Xóa
+        uploads:
+          title: "Tải lên"
       ai_helper:
         context_menu:
           back: "Quay lại"

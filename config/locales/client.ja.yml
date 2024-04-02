@@ -113,6 +113,8 @@ ja:
         priority: 優先度
         priority_help: 優先ペルソナはペルソナリストの先頭に表示されます。複数のペルソナが優先されている場合は、アルファベット順に並べ替えられます。
         command_options: "コマンドオプション"
+        uploads:
+          title: "アップロード"
       related_topics:
         title: "関連トピック"
         pill: "関連"

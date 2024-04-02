@@ -38,6 +38,8 @@ ca:
         save: Desa
         enabled: "Activat?"
         delete: Suprimeix
+        uploads:
+          title: "Càrregues"
       ai_helper:
         context_menu:
           back: "Enrere"

@@ -38,6 +38,8 @@ bs_BA:
         save: Save
         enabled: "Omogućen?"
         delete: Delete
+        uploads:
+          title: "Uploads"
       ai_helper:
         context_menu:
           back: "Prethodno"

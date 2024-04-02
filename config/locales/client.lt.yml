@@ -83,6 +83,8 @@ lt:
         commands: Įgalintos komandos
         allowed_groups: Leidžiamos grupės
         delete: Pašalinti
+        uploads:
+          title: "Įkėlimai"
       ai_helper:
         context_menu:
           back: "Atgal"

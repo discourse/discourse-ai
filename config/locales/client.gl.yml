@@ -38,6 +38,8 @@ gl:
         save: Gardar
         enabled: "Activado?"
         delete: Eliminar
+        uploads:
+          title: "Cargas"
       ai_helper:
         context_menu:
           back: "Volver"

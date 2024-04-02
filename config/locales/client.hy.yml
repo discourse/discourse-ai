@@ -38,6 +38,8 @@ hy:
         save: Պահպանել
         enabled: "Միացվա՞ծ է:"
         delete: Ջնջել
+        uploads:
+          title: "Վերբեռնումներ"
       ai_helper:
         context_menu:
           back: "Ետ"

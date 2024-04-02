@@ -124,6 +124,13 @@ tr_TR:
         no_llm_selected: "Dil modeli seçilmedi"
         max_context_posts: "Maksimum Bağlam Gönderileri"
         max_context_posts_help: "Bir kullanıcıya yanıt verirken yapay zeka için bağlam olarak kullanılacak maksimum gönderi sayısı. (varsayılan için boş)"
+        vision_enabled: Vizyon Etkin
+        vision_enabled_help: Etkinleştirilirse, yapay zeka kullanıcıların konuya gönderdiği resimleri anlamaya çalışacaktır, kullanılan modelin görüşü desteklemesine bağlıdır. Anthropic Claude 3 modeli görmeyi destekler.
+        vision_max_pixels: Desteklenen görüntü boyutu
+        vision_max_pixel_sizes:
+          low: Düşük Kalite - en ucuz (256x256)
+          medium: Orta Kalite (512x512)
+          high: Yüksek Kalite - en yavaş (1024x1024)
         mentionable: Bahsedilebilir
         mentionable_help: Etkinleştirilirse, izin verilen gruplardaki kullanıcılar gönderilerde ve mesajlarda bu kullanıcıdan bahsedebilir, yapay zeka bu kişi olarak yanıt verir.
         user: Kullanıcı
@@ -160,6 +167,8 @@ tr_TR:
           ## YZ Kişiliklerine Gruba Özel Erişim
 
           Dahası, belirli kullanıcı gruplarının belirli kişiliklere erişime sahip olacak şekilde de belirleyebilirsiniz. Bu, forumunuzun farklı bölümleri için farklı YZ davranışlarına sahip olabileceğiniz anlamına gelir ve böylece topluluğunuzun etkileşimlerinin çeşitliliğini ve zenginliğini geliştirebilirsiniz.
+        uploads:
+          title: "Yüklemeler"
       related_topics:
         title: "İlgili Konular"
         pill: "İlgili"

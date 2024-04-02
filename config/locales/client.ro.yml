@@ -38,6 +38,8 @@ ro:
         save: Salvare
         enabled: "Activat?"
         delete: Șterge
+        uploads:
+          title: "Urcări"
       ai_helper:
         context_menu:
           back: "Înapoi"

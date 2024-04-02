@@ -38,6 +38,8 @@ pt:
         save: Guardar
         enabled: "Ativado?"
         delete: Eliminar
+        uploads:
+          title: "Uploads"
       ai_helper:
         context_menu:
           back: "Retroceder"

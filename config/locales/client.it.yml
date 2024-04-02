@@ -113,6 +113,8 @@ it:
         priority: Priorità
         priority_help: I personaggi prioritari vengono visualizzati agli utenti nella parte superiore dell'elenco dei personaggi. Se più personaggi hanno la priorità, verranno ordinati in ordine alfabetico.
         command_options: "Opzioni di comando"
+        uploads:
+          title: "Caricamenti"
       related_topics:
         title: "Argomenti correlati"
         pill: "Correlato"

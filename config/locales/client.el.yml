@@ -38,6 +38,8 @@ el:
         save: Αποθήκευση
         enabled: "Ενεργοποιημένο;"
         delete: Σβήσιμο
+        uploads:
+          title: "Μεταφορτώσεις"
       ai_helper:
         context_menu:
           back: "Πίσω"

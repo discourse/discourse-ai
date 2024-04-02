@@ -113,6 +113,8 @@ fi:
         priority: Prioriteetti
         priority_help: Prioriteettipersoonat näytetään käyttäjille ensimmäisinä persoonaluettelossa. Jos useilla persoonilla on prioriteetti, ne järjestetään aakkosjärjestyksessä.
         command_options: "Komentoasetukset"
+        uploads:
+          title: "Lataukset"
       related_topics:
         title: "Liittyvät ketjut"
         pill: "Liittyy aiheeseen"

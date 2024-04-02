@@ -38,6 +38,8 @@ ur:
         save: محفوظ کریں
         enabled: "فعال؟"
         delete: مٹائیں
+        uploads:
+          title: "اَپ لوڈز"
       ai_helper:
         context_menu:
           back: "واپس"

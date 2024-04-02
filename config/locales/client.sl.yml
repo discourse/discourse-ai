@@ -38,6 +38,8 @@ sl:
         save: Shrani
         enabled: "Vključeno?"
         delete: Izbriši
+        uploads:
+          title: "Prenosi"
       ai_helper:
         context_menu:
           back: "Nazaj"

@@ -38,6 +38,8 @@ hu:
         save: Mentés
         enabled: "Engedélyezed?"
         delete: Törlés
+        uploads:
+          title: "Feltöltések"
       ai_helper:
         context_menu:
           back: "Vissza"

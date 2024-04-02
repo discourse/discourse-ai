@@ -36,6 +36,8 @@ te:
         save: భద్రపరుచు
         enabled: "ప్రారంభించబడిందా?"
         delete: తొలగించు
+        uploads:
+          title: "అప్‌లోడ్‌లు"
       ai_helper:
         context_menu:
           back: "వెనుకకు"

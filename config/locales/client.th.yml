@@ -38,6 +38,8 @@ th:
         save: บันทึก
         enabled: "เปิดใช้"
         delete: ลบ
+        uploads:
+          title: "อัปโหลด"
       ai_helper:
         context_menu:
           back: "กลับ"

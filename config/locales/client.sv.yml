@@ -38,6 +38,8 @@ sv:
         save: Spara
         enabled: "Aktiverad?"
         delete: Radera
+        uploads:
+          title: "Uppladdningar"
       ai_helper:
         context_menu:
           back: "Tillbaka"
