@@ -40,6 +40,8 @@ uk:
         save: Зберегти
         enabled: "Включено?"
         delete: Видалити
+        uploads:
+          title: "Завантаження"
       ai_helper:
         context_menu:
           back: "Назад"

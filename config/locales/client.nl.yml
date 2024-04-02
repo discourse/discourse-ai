@@ -113,6 +113,8 @@ nl:
         priority: Prioriteit
         priority_help: Prioritaire persona's worden bovenaan de personalijst weergegeven voor gebruikers. Als meerdere persona's prioriteit hebben, worden deze alfabetisch gesorteerd.
         command_options: "Opdrachtopties"
+        uploads:
+          title: "Uploads"
       related_topics:
         title: "Gerelateerde topics"
         pill: "Gerelateerd"

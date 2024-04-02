@@ -38,6 +38,8 @@ cs:
         save: Uložit
         enabled: "Zapnuto?"
         delete: Smazat
+        uploads:
+          title: "Nahrané soubory"
       ai_helper:
         context_menu:
           back: "Zpět"

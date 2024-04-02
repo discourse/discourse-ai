@@ -197,6 +197,7 @@ he:
             name: "שאילתת חיפוש בסיסית"
             description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‚‎#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
       command_summary:
+        web_browser: "גלישה באינטרנט"
         github_search_code: "חיפוש קוד ב־GitHub"
         github_file_content: "תוכן קובץ ב־GitHub"
         github_pull_request_diff: "הבדל בבקשת דחיפה ב־GitHub"
@@ -215,6 +216,7 @@ he:
         dall_e: "יצירת תמונה"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
       command_help:
+        web_browser: "גלישה באינטרנט באמצעות בוט בינה מלאכותית"
         github_search_code: "חיפוש אחר קוד במאגר GitHub"
         github_file_content: "משיכת תוכן של קבצים ממאגר ב־GitHub"
         github_pull_request_diff: "משיכת הבדל לבקשת דחיפה ב־GitHub"
@@ -233,6 +235,7 @@ he:
         dall_e: "יצירת תמונה באמצעות DALL-E 3"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
       command_description:
+        web_browser: "קורא את <a href='%{url}'>%{url}</a>"
         github_search_code: "בוצע חיפוש אחר ‚%{query}’ בתוך %{repo}"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
         github_file_content: "התקבל תוכן של %{file_paths} מתוך %{repo_name}@%{branch}"

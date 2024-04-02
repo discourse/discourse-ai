@@ -197,6 +197,7 @@ de:
             name: "Basissuchanfrage"
             description: "Basisanfrage, die bei der Suche verwendet wird. Beispiel: Bei „#dringend“ wird der Suchanfrage „#dringend“ vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort „dringend“ angezeigt."
       command_summary:
+        web_browser: "Web durchsuchen"
         github_search_code: "GitHub Code-Suche"
         github_file_content: "Inhalt der GitHub-Datei"
         github_pull_request_diff: "GitHub Pull-Request Unterschied"
@@ -215,6 +216,7 @@ de:
         dall_e: "Bild generieren"
         search_meta_discourse: "Suche Meta Discourse"
       command_help:
+        web_browser: "Webseite mit dem KI Bot durchsuchen"
         github_search_code: "Suche nach Code in einem GitHub-Repository"
         github_file_content: "Inhalt von Dateien aus einem GitHub-Repository abrufen"
         github_pull_request_diff: "Abrufen eines GitHub Pull Request Unterschieds"
@@ -233,6 +235,7 @@ de:
         dall_e: "Bild mit DALL-E 3 generieren"
         search_meta_discourse: "Suche Meta Discourse"
       command_description:
+        web_browser: "Lesen <a href='%{url}'>%{url}</a>"
         github_search_code: "Gesucht wurde nach '%{query}' in %{repo}"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
         github_file_content: "Abgerufener Inhalt von %{file_paths} von %{repo_name}@%{branch}"

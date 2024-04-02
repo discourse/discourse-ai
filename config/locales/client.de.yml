@@ -124,6 +124,13 @@ de:
         no_llm_selected: "Kein Sprachmodell ausgewählt"
         max_context_posts: "Max. Kontext-Beiträge"
         max_context_posts_help: "Die maximale Anzahl von Beiträgen, die die KI als Kontext für die Antwort auf einen Nutzer verwenden soll. (leer für Standard)"
+        vision_enabled: Vision Aktiviert
+        vision_enabled_help: Wenn diese Funktion aktiviert ist, versucht die KI, die Bilder zu verstehen, die die Benutzer in dem Thema posten, je nachdem, welches Modell das Sehen unterstützt. Anthropic Claude 3 Modelle unterstützen das Sehen.
+        vision_max_pixels: Unterstützte Bildgröße
+        vision_max_pixel_sizes:
+          low: Niedrige Qualität - am günstigsten (256x256)
+          medium: Mittlere Qualität (512x512)
+          high: Hohe Qualität — am langsamsten (1024x1024)
         mentionable: Erwähnenswert
         mentionable_help: Wenn diese Funktion aktiviert ist, können Benutzer in erlaubten Gruppen diese Persona in Beiträgen und Nachrichten erwähnen und die KI wird als diese Persona antworten.
         user: Benutzer
@@ -160,6 +167,13 @@ de:
           #### Gruppenspezifischer Zugriff auf KI-Personas
 
           Außerdem kannst du ihn so einrichten, dass bestimmte Benutzergruppen Zugriff auf bestimmte Personas haben. Das bedeutet, dass Sie für verschiedene Bereiche Ihres Forums unterschiedliche KI-Verhaltensweisen verwenden können, was die Vielfalt und den Reichtum der Interaktionen Ihrer Community weiter verbessert.
+        uploads:
+          title: "Uploads"
+          description: "Deine KI-Persona wird in der Lage sein, den Inhalt der enthaltenen Dateien zu durchsuchen und zu referenzieren. Hochgeladene Dateien müssen als Klartext (.txt) formatiert sein."
+          hint: "Um zu kontrollieren, wo der Inhalt der Datei in der System-Eingabeaufforderung platziert wird, füge den Platzhalter {uploads} in die obige System-Eingabeaufforderung ein."
+          button: "Dateien hinzufügen"
+          filter: "Uploads filtern"
+          complete: "Vollständig"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"

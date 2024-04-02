@@ -38,6 +38,8 @@ lv:
         save: Saglabāt
         enabled: "Ieslēgts?"
         delete: Dzēst
+        uploads:
+          title: "Augšupielādes"
       ai_helper:
         context_menu:
           back: "Atpakaļ"

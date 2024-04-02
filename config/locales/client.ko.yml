@@ -40,6 +40,8 @@ ko:
         save: 저장
         enabled: "활성화?"
         delete: 삭제하기
+        uploads:
+          title: "업로드된 파일"
       ai_helper:
         context_menu:
           back: "뒤로"

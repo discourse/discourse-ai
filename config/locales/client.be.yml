@@ -35,6 +35,8 @@ be:
         user: карыстальнік
         save: Захаваць
         delete: выдаляць
+        uploads:
+          title: "Загрузкі"
       ai_helper:
         context_menu:
           back: "Назад"

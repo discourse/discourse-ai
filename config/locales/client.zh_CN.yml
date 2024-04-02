@@ -130,6 +130,8 @@ zh_CN:
         priority: 优先
         priority_help: 优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。
         command_options: "命令选项"
+        uploads:
+          title: "上传"
       related_topics:
         title: "相关话题"
         pill: "相关"

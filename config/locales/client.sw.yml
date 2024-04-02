@@ -38,6 +38,8 @@ sw:
         save: Hifadhi
         enabled: "Imeruhusiwa?"
         delete: Futa
+        uploads:
+          title: "Upakiaji"
       ai_helper:
         context_menu:
           back: "Iliyopita"

@@ -38,6 +38,8 @@ hr:
         save: Spremi
         enabled: "Omogućeno?"
         delete: Pobriši
+        uploads:
+          title: "Prijenosi"
       ai_helper:
         context_menu:
           back: "Natrag"

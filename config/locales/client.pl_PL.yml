@@ -137,6 +137,8 @@ pl_PL:
         priority: Priorytet
         priority_help: Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie.
         command_options: "Opcje poleceń"
+        uploads:
+          title: "Pliki"
       related_topics:
         title: "Powiązane tematy"
         pill: "Powiązane"

@@ -38,6 +38,8 @@ nb_NO:
         save: Lagre
         enabled: "Aktivert?"
         delete: Slett
+        uploads:
+          title: "Opplastinger"
       ai_helper:
         context_menu:
           back: "Forrige"

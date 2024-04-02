@@ -5,21 +5,95 @@
 # https://translate.discourse.org/
 
 id:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_ai: "Discourse"
   js:
     discourse_automation:
+      ai_models:
+        gpt_4_turbo: GPT 4 Turbo
+        gpt_4: GPT 4
+        gpt_3_5_turbo: GPT 3.5 Turbo
+        claude_2: Claude 2
+        gemini_pro: Gemini Pro
+        claude_3_opus: Karya Claude 3
+        claude_3_sonnet: Claude 3 Soneta
       scriptables:
         llm_report:
           fields:
+            sender:
+              label: "Pengirim"
+              description: "Pengguna yang akan mengirim laporan"
+            receivers:
+              label: "Penerima"
+              description: "Pengguna yang akan menerima laporan (email akan dikirim email langsung, nama pengguna akan dikirim PM)"
+            topic_id:
+              label: "ID Topik"
+              description: "Id topik tujuan pengiriman laporan"
             title:
               label: "Judul"
+              description: "Judul laporan"
+            days:
+              label: "Hari"
+              description: "Rentang waktu laporan"
+            offset:
+              label: "Offset"
+              description: "Saat menguji, Anda mungkin ingin mengoperasikan laporan secara historis, gunakan offset untuk memulai laporan pada tanggal yang lebih awal"
+            instructions:
+              label: "Instruksi"
+              description: "Instruksi diberikan kepada model bahasa besar"
+            sample_size:
+              label: "Ukuran sampel"
+              description: "Jumlah posting yang akan dijadikan sampel laporan"
+            tokens_per_post:
+              label: "Token per posting"
+              description: "Jumlah token llm yang akan digunakan per posting"
+            model:
+              label: "Model"
+              description: "LLM yang akan digunakan untuk pembuatan laporan"
             categories:
               label: "Kategori"
+              description: "Filter topik hanya ke kategori ini"
             tags:
               label: "Label"
+              description: "Filter topik hanya ke tag ini"
+            exclude_tags:
+              label: "Kecualikan Tag"
+              description: "Kecualikan topik dengan tag ini"
+            exclude_categories:
+              label: "Kecualikan Kategori"
+              description: "Kecualikan topik dengan kategori ini"
+            allow_secure_categories:
+              label: "Izinkan kategori aman"
+              description: "Izinkan laporan dibuat untuk topik dalam kategori aman"
+            suppress_notifications:
+              label: "Tiadakan Notifikasi"
+              description: "Tiadakan notifikasi yang mungkin dihasilkan laporan dengan mengubahnya menjadi konten. Ini akan memetakan kembali sebutan dan tautan internal."
+            debug_mode:
+              label: "Mode Debug"
+              description: "Aktifkan mode debug untuk melihat input dan output mentah LLM"
+            priority_group:
+              label: "Kelompok Prioritas"
+              description: "Prioritaskan konten dari grup ini dalam laporan"
+            temperature:
+              label: "Temperatur"
+              description: "Temperatur yang akan digunakan untuk LLM, naikkan untuk meningkatkan keacakan (0 untuk menggunakan default model)"
+            top_p:
+              label: "Top P"
+              description: "Top P yang akan digunakan untuk LLM, tingkatkan untuk meningkatkan keacakan (0 untuk menggunakan model default)"
         llm_triage:
           fields:
+            system_prompt:
+              label: "Perintah Sistem"
+              description: "Perintah yang akan digunakan untuk melakukan triase, pastikan untuk membalas dengan satu kata yang dapat Anda gunakan untuk memicu tindakan"
+            search_for_text:
+              label: "Cari teks"
+              description: "Jika teks berikut muncul di balasan llm, terapkan tindakan ini"
             category:
               label: "Kategori"
+              description: "Kategori untuk diterapkan pada topik"
             tags:
               label: "Label"
             canned_reply:
@@ -36,17 +110,78 @@ id:
         enabled: "Diaktifkan?"
         delete: Hapus
       ai_helper:
+        missing_content: "Silakan masukkan beberapa konten untuk menghasilkan saran."
         context_menu:
+          back: "Kembali"
+          trigger: "AI"
           undo: "Batalkan perintah"
+          loading: "AI sedang menghasilkan"
           cancel: "Batal"
           regen: "Coba Lagi"
+          view_changes: "Lihat Perubahan"
           confirm: "Konfirmasi"
           revert: "Dibalik"
+          changes: "Perubahan"
+          custom_prompt:
+            title: "Perintah Khusus"
+            placeholder: "Masukkan perintah khusus..."
+            submit: "Kirim Perintah"
         post_options_menu:
+          trigger: "Tanya AI"
+          title: "Tanya AI"
+          loading: "AI sedang menghasilkan"
           close: "Tutup"
+          copy: "Menyalin"
           copied: "Disalin!"
           cancel: "Batal"
+        fast_edit:
+          suggest_button: "Sarankan Edit"
         thumbnail_suggestions:
+          title: "Gambar Kecil yang Disarankan"
+          select: "Pilih"
           selected: "Dipilih"
         image_caption:
+          button_label: "Keterangan dengan AI"
+          generating: "Menghasilkan keterangan..."
+          credits: "Keterangan oleh AI"
           save_caption: "Simpan"
+      reviewables:
+        model_used: "Model yang digunakan:"
+        accuracy: "Akurasi:"
+      embeddings:
+        semantic_search: "Topik (Semantik)"
+        semantic_search_loading: "Mencari hasil lebih banyak menggunakan AI"
+        semantic_search_disabled_sort: "Pencarian AI dinonaktifkan untuk urutan ini, urutkan berdasarkan Relevansi untuk mengaktifkan."
+        semantic_search_results:
+          toggle: "Menampilkan %{count} hasil yang ditemukan menggunakan AI"
+          toggle_hidden: "Menyembunyikan %{count} hasil yang ditemukan menggunakan AI"
+          none: "Maaf, pencarian AI kami tidak menemukan topik yang cocok."
+          new: "Tekan 'Cari' untuk mulai mencari hasil baru dengan AI"
+        ai_generated_result: "Hasil pencarian ditemukan menggunakan AI"
+        quick_search:
+          suffix: "di semua topik dan posting dengan AI"
+      ai_bot:
+        pm_warning: "Pesan chatbot AI dipantau secara berkala oleh moderator."
+        cancel_streaming: "Berhenti membalas"
+        default_pm_prefix: "[PM bot AI tanpa judul]"
+        shortcut_title: "Mulai PM dengan bot AI"
+        share: "Bagikan percakapan AI"
+        conversation_shared: "Percakapan disalin"
+        share_full_topic_modal:
+          title: "Bagikan Percakapan Secara Publik"
+          share: "Bagikan dan Salin Tautan"
+          update: "Perbarui dan Salin Tautan"
+          delete: "Hapus Pembagian"
+        share_ai_conversation:
+          name: "Bagikan Percakapan AI"
+          title: "Bagikan percakapan AI ini secara publik"
+        ai_label: "AI"
+        ai_title: "Percakapan dengan AI"
+        share_modal:
+          title: "Salin percakapan AI"
+          copy: "Salin"
+          context: "Interaksi untuk dibagikan:"
+          share_tip: Alternatifnya, Anda dapat membagikan seluruh percakapan.
+        bot_names:
+          fake: "Bot Tes Palsu"
+          claude-3-opus: "Claude 3 Opus"

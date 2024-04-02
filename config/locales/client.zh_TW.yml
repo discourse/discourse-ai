@@ -36,6 +36,8 @@ zh_TW:
         save: 保存
         enabled: "啟用?"
         delete: 刪除
+        uploads:
+          title: "上傳檔案"
       ai_helper:
         context_menu:
           back: "上一步"
