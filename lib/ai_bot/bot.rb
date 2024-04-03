@@ -188,6 +188,12 @@ module DiscourseAi
           else
             "anthropic:claude-3-sonnet"
           end
+        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_HAIKU_ID
+          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-haiku")
+            "aws_bedrock:claude-3-haiku"
+          else
+            "anthropic:claude-3-haiku"
+          end
         else
           nil
         end
