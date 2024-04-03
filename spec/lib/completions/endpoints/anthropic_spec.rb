@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require_relative "endpoint_compliance"
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-opus") }
@@ -196,11 +197,17 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       data: {"type":"message_stop"}
     STRING
 
-    stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(status: 200, body: body)
-
     result = +""
-    llm.generate(prompt_with_google_tool, user: Discourse.system_user) do |partial|
-      result << partial
+    body = body.scan(/.*\n/)
+    EndpointMock.with_chunk_array_support do
+      stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(
+        status: 200,
+        body: body,
+      )
+
+      llm.generate(prompt_with_google_tool, user: Discourse.system_user) do |partial|
+        result << partial
+      end
     end
 
     expected = (<<~TEXT).strip

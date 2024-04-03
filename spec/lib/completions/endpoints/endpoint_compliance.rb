@@ -108,6 +108,10 @@ class EndpointMock
     ::FinalDestination.send(:const_set, :HTTP, @original_net_http)
   end
 
+  def self.with_chunk_array_support(&blk)
+    self.new(nil).with_chunk_array_support(&blk)
+  end
+
   protected
 
   # Copied from https://github.com/bblimke/webmock/issues/629
