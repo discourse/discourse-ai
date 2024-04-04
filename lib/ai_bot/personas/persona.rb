@@ -227,12 +227,14 @@ module DiscourseAi
               offset: 0,
             )
 
-          guidance =
+          fragments =
             RagDocumentFragment.where(upload_id: upload_refs, id: candidate_fragment_ids).pluck(
               :fragment,
+              :metadata,
             )
 
           if reranker.reranker_configured?
+            guidance = fragments.map { |fragment, _metadata| fragment }
             ranks =
               DiscourseAi::Inference::HuggingFaceTextEmbeddings
                 .rerank(conversation_context.last[:content], guidance)
@@ -241,21 +243,30 @@ module DiscourseAi
                 .map { _1[:index] }
 
             if ranks.empty?
-              guidance = guidance.take(10)
+              fragments = fragments.take(10)
             else
-              guidance = ranks.map { |idx| guidance[idx] }
+              fragments = ranks.map { |idx| fragments[idx] }
             end
           end
 
           <<~TEXT
           <guidance>
-          The following texts will give you additional guidance to elaborate a response.
+          The following texts will give you additional guidance for your response.
           We included them because we believe they are relevant to this conversation topic.
-          Take them into account to elaborate a response.
 
           Texts:
 
-          #{guidance.join("\n")}
+          #{
+            fragments
+              .map do |fragment, metadata|
+                if metadata.present?
+                  ["# #{metadata}", fragment].join("\n")
+                else
+                  fragment
+                end
+              end
+              .join("\n")
+          }
           </guidance>
           TEXT
         end

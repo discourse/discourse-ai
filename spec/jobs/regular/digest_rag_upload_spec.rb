@@ -13,9 +13,20 @@ RSpec.describe Jobs::DigestRagUpload do
 
   let(:expected_embedding) { [0.0038493] * vector_rep.dimensions }
 
+  let(:document_with_metadata) { plugin_file_from_fixtures("doc_with_metadata.txt", "rag") }
+
+  let(:parsed_document_with_metadata) do
+    plugin_file_from_fixtures("parsed_doc_with_metadata.txt", "rag")
+  end
+
+  let(:upload_with_metadata) do
+    UploadCreator.new(document_with_metadata, "document.txt").create_for(Discourse.system_user.id)
+  end
+
   before do
     SiteSetting.ai_embeddings_enabled = true
     SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+    SiteSetting.authorized_extensions = "txt"
 
     WebMock.stub_request(
       :post,
@@ -24,6 +35,29 @@ RSpec.describe Jobs::DigestRagUpload do
   end
 
   describe "#execute" do
+    context "when processing an upload containing metadata" do
+      it "correctly splits on metadata boundary" do
+        described_class.new.execute(upload_id: upload_with_metadata.id, ai_persona_id: persona.id)
+
+        parsed = +""
+        first = true
+        RagDocumentFragment
+          .where(upload: upload_with_metadata)
+          .order(:fragment_number)
+          .each do |fragment|
+            parsed << "\n\n" if !first
+            parsed << "metadata: #{fragment.metadata}\n"
+            parsed << "number: #{fragment.fragment_number}\n"
+            parsed << fragment.fragment
+            first = false
+          end
+
+        # to rebuild parsed
+        # File.write("/tmp/testing", parsed)
+
+        expect(parsed).to eq(parsed_document_with_metadata.read)
+      end
+    end
     context "when processing an upload for the first time" do
       before { File.expects(:open).returns(document_file) }
 

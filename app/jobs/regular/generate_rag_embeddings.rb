@@ -2,6 +2,8 @@
 
 module ::Jobs
   class GenerateRagEmbeddings < ::Jobs::Base
+    sidekiq_options queue: "low"
+
     def execute(args)
       return if (fragments = RagDocumentFragment.where(id: args[:fragment_ids].to_a)).empty?
 
