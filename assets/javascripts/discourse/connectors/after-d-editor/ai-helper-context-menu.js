@@ -338,11 +338,11 @@ export default class AiHelperContextMenu extends Component {
   undoAIAction() {
     if (this.capabilities.isFirefox) {
       // execCommand("undo") is no not supported in Firefox so we insert old text at range
-      this._insertAt(
-        this.lastSelectionRange.x,
-        this.lastSelectionRange.y,
-        this.initialValue
-      );
+      // we also need to calculate the length diffrence between the old and new text
+      const lengthDifference =
+        this.selectedText.length - this.initialValue.length;
+      const end = this.lastSelectionRange.y - lengthDifference;
+      this._insertAt(this.lastSelectionRange.x, end, this.initialValue);
     } else {
       document.execCommand("undo", false, null);
     }
