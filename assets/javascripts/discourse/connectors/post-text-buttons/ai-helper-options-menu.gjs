@@ -40,6 +40,8 @@ export default class AIHelperOptionsMenu extends Component {
   @tracked copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy";
   @tracked showFastEdit = false;
   @tracked showAiButtons = true;
+  @tracked originalPostHTML = null;
+  @tracked postHighlighted = false;
 
   MENU_STATES = {
     triggers: "TRIGGERS",
@@ -50,8 +52,99 @@ export default class AIHelperOptionsMenu extends Component {
 
   @tracked _activeAIRequest = null;
 
+  highlightSelectedText() {
+    const postId = this.args.outletArgs.data.quoteState.postId;
+    const postElement = document.querySelector(
+      `article[data-post-id='${postId}']`
+    );
+
+    if (!postElement) {
+      return;
+    }
+
+    this.originalPostHTML = postElement.innerHTML;
+    this.selectedText = this.args.outletArgs.data.quoteState.buffer;
+
+    const selection = window.getSelection();
+    if (!selection.rangeCount) {
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+
+    // Split start/end text nodes at their range boundary
+    if (
+      range.startContainer.nodeType === Node.TEXT_NODE &&
+      range.startOffset > 0
+    ) {
+      const newStartNode = range.startContainer.splitText(range.startOffset);
+      range.setStart(newStartNode, 0);
+    }
+    if (
+      range.endContainer.nodeType === Node.TEXT_NODE &&
+      range.endOffset < range.endContainer.length
+    ) {
+      range.endContainer.splitText(range.endOffset);
+    }
+
+    // Create a Walker to traverse text nodes within range
+    const walker = document.createTreeWalker(
+      range.commonAncestorContainer,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: (node) =>
+          range.intersectsNode(node)
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_REJECT,
+      }
+    );
+
+    const textNodes = [];
+    while (walker.nextNode()) {
+      textNodes.push(walker.currentNode);
+    }
+
+    for (let textNode of textNodes) {
+      const highlight = document.createElement("span");
+      highlight.classList.add("ai-helper-highlighted-selection");
+
+      // Replace textNode with highlighted clone
+      const clone = textNode.cloneNode(true);
+      highlight.appendChild(clone);
+
+      textNode.parentNode.replaceChild(highlight, textNode);
+    }
+
+    selection.removeAllRanges();
+    this.postHighlighted = true;
+  }
+
+  removeHighlightedText() {
+    if (!this.postHighlighted) {
+      return;
+    }
+
+    const postId = this.args.outletArgs.data.quoteState.postId;
+    const postElement = document.querySelector(
+      `article[data-post-id='${postId}']`
+    );
+
+    if (!postElement) {
+      return;
+    }
+
+    postElement.innerHTML = this.originalPostHTML;
+    this.postHighlighted = false;
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.removeHighlightedText();
+  }
+
   @action
   async showAIHelperOptions() {
+    this.highlightSelectedText();
     this.showMainButtons = false;
     this.menuState = this.MENU_STATES.options;
   }
@@ -73,6 +166,19 @@ export default class AIHelperOptionsMenu extends Component {
   @bind
   _updateResult(result) {
     this.suggestion = result.result;
+  }
+
+  get highlightedTextToggleIcon() {
+    if (this.showHighlightedText) {
+      return "angle-double-left";
+    } else {
+      return "angle-double-right";
+    }
+  }
+
+  @action
+  toggleHighlightedTextPreview() {
+    this.showHighlightedText = !this.showHighlightedText;
   }
 
   @action

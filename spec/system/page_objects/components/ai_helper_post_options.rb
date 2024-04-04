@@ -13,6 +13,7 @@ module PageObjects
       OPTIONS_SELECTOR = "#{AI_HELPER_SELECTOR}__options"
       LOADING_SELECTOR = ".ai-helper-context-menu__loading"
       SUGGESTION_SELECTOR = "#{AI_HELPER_SELECTOR}__suggestion"
+      HIGHLIGHT_SELECTOR = ".ai-helper-highlighted-selection"
 
       def click_ai_button
         find(TRIGGER_SELECTOR).click
@@ -24,6 +25,14 @@ module PageObjects
 
       def suggestion_value
         find("#{SUGGESTION_SELECTOR}__text").text
+      end
+
+      def has_highlighted_text?
+        page.has_css?(HIGHLIGHT_SELECTOR)
+      end
+
+      def has_no_highlighted_text?
+        page.has_no_css?(HIGHLIGHT_SELECTOR)
       end
 
       def has_post_ai_helper?
