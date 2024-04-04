@@ -129,7 +129,15 @@
     &__upload-status {
       text-align: right;
       padding-right: 0;
-      color: var(--success);
+
+      .indexed {
+        color: var(--success);
+      }
+
+      .uploaded,
+      .indexing {
+        color: var(--primary-low-mid);
+      }
     }
 
     &__remove-file {

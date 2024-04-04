@@ -37,6 +37,7 @@ export default class PersonaEditor extends Component {
   @tracked editingModel = null;
   @tracked showDelete = false;
   @tracked maxPixelsValue = null;
+  @tracked ragIndexingStatuses = null;
 
   @action
   updateModel() {
@@ -84,7 +85,7 @@ export default class PersonaEditor extends Component {
     try {
       await this.args.model.save();
       this.#sortPersonas();
-      if (isNew) {
+      if (isNew && this.args.model.rag_uploads.length === 0) {
         this.args.personas.addObject(this.args.model);
         this.router.transitionTo(
           "adminPlugins.show.discourse-ai.ai-personas.show",
@@ -442,6 +443,7 @@ export default class PersonaEditor extends Component {
       {{#if this.siteSettings.ai_embeddings_enabled}}
         <div class="control-group">
           <PersonaRagUploader
+            @persona={{this.editingModel}}
             @ragUploads={{this.editingModel.rag_uploads}}
             @onAdd={{this.addUpload}}
             @onRemove={{this.removeUpload}}

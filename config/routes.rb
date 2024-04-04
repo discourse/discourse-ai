@@ -43,5 +43,6 @@ Discourse::Application.routes.draw do
     post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
     post "/ai-personas/files/upload", to: "discourse_ai/admin/ai_personas#upload_file"
     put "/ai-personas/:id/files/remove", to: "discourse_ai/admin/ai_personas#remove_file"
+    get "/ai-personas/:id/files/status", to: "discourse_ai/admin/ai_personas#indexing_status_check"
   end
 end

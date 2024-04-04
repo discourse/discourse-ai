@@ -14,6 +14,13 @@ module ::Jobs
       # generate_representation_from checks compares the digest value to make sure
       # the embedding is only generated once per fragment unless something changes.
       fragments.map { |fragment| vector_rep.generate_representation_from(fragment) }
+
+      last_fragment = fragments.last
+      ai_persona = last_fragment.ai_persona
+      upload = last_fragment.upload
+
+      indexing_status = RagDocumentFragment.indexing_status(ai_persona, [upload])[upload.id]
+      RagDocumentFragment.publish_status(upload, indexing_status)
     end
   end
 end

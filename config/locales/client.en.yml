@@ -171,7 +171,9 @@ en:
           hint: "To control where the file's content gets placed within the system prompt, include the {uploads} placeholder in the system prompt above."
           button: "Add Files"
           filter: "Filter uploads"
-          complete: "Complete"
+          indexed: "Indexed"
+          indexing: "Indexing"
+          uploaded: "Ready to be indexed"
 
       related_topics:
         title: "Related Topics"
