@@ -71,13 +71,50 @@ export default class AIHelperOptionsMenu extends Component {
     }
 
     const range = selection.getRangeAt(0);
-    const originalContents = range.extractContents();
 
-    const highlight = document.createElement("span");
-    highlight.classList.add("ai-helper-highlighted-selection");
-    highlight.appendChild(originalContents.cloneNode(true));
+    // Split start/end text nodes at their range boundary
+    if (
+      range.startContainer.nodeType === Node.TEXT_NODE &&
+      range.startOffset > 0
+    ) {
+      const newStartNode = range.startContainer.splitText(range.startOffset);
+      range.setStart(newStartNode, 0);
+    }
+    if (
+      range.endContainer.nodeType === Node.TEXT_NODE &&
+      range.endOffset < range.endContainer.length
+    ) {
+      range.endContainer.splitText(range.endOffset);
+    }
 
-    range.insertNode(highlight);
+    // Create a Walker to traverse text nodes within range
+    const walker = document.createTreeWalker(
+      range.commonAncestorContainer,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: (node) =>
+          range.intersectsNode(node)
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_REJECT,
+      }
+    );
+
+    const textNodes = [];
+    while (walker.nextNode()) {
+      textNodes.push(walker.currentNode);
+    }
+
+    for (let textNode of textNodes) {
+      const highlight = document.createElement("span");
+      highlight.classList.add("ai-helper-highlighted-selection");
+
+      // Replace textNode with highlighted clone
+      const clone = textNode.cloneNode(true);
+      highlight.appendChild(clone);
+
+      textNode.parentNode.replaceChild(highlight, textNode);
+    }
+
     selection.removeAllRanges();
     this.postHighlighted = true;
   }
