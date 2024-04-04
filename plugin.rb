@@ -8,7 +8,7 @@
 # url: https://meta.discourse.org/t/discourse-ai/259214
 # required_version: 2.7.0
 
-gem "tokenizers", "0.4.3"
+gem "tokenizers", "0.4.4"
 gem "tiktoken_ruby", "0.0.7"
 
 enabled_site_setting :discourse_ai_enabled
