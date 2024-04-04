@@ -1,5 +1,5 @@
 import { later } from "@ember/runloop";
-import loadScript from "discourse/lib/load-script";
+import loadMorphlex from "discourse/lib/load-morphlex";
 import { cook } from "discourse/lib/text";
 
 const PROGRESS_INTERVAL = 40;
@@ -118,8 +118,11 @@ class PostUpdater extends StreamUpdater {
 
     const oldElement = this.postElement.querySelector(".cooked");
 
-    await loadScript("/javascripts/diffhtml.min.js");
-    window.diff.innerHTML(oldElement, value);
+    // TODO: use `morphInner` once version morphlex 0.0.16 is out
+    const newElement = oldElement.cloneNode(false);
+    newElement.innerHTML = value;
+
+    (await loadMorphlex()).morph(oldElement, newElement);
   }
 
   get raw() {
