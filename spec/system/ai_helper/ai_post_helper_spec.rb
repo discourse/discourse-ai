@@ -57,16 +57,10 @@ RSpec.describe "AI Post helper", type: :system, js: true do
       expect(post_ai_helper).to have_post_ai_helper_options
     end
 
-    it "highlights the selected text after clicking the AI button" do
+    it "highlights the selected text after clicking the AI button and removes after closing" do
       select_post_text(post)
       post_ai_helper.click_ai_button
       expect(post_ai_helper).to have_highlighted_text
-    end
-
-    it "removes the higlighted text after closing the AI helper options" do
-      select_post_text(post)
-      post_ai_helper.click_ai_button
-      # close the ai helper popup:
       find("article[data-post-id='#{post.id}']").click
       expect(post_ai_helper).to have_no_highlighted_text
     end
