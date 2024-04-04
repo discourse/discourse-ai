@@ -40,6 +40,8 @@ export default class AIHelperOptionsMenu extends Component {
   @tracked copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy";
   @tracked showFastEdit = false;
   @tracked showAiButtons = true;
+  @tracked originalPostHTML = null;
+  @tracked postHighlighted = false;
 
   MENU_STATES = {
     triggers: "TRIGGERS",
@@ -51,7 +53,6 @@ export default class AIHelperOptionsMenu extends Component {
   @tracked _activeAIRequest = null;
 
   highlightSelectedText() {
-    const selectedText = this.args.outletArgs.data.quoteState.buffer;
     const postId = this.args.outletArgs.data.quoteState.postId;
     const postElement = document.querySelector(
       `article[data-post-id='${postId}']`
@@ -61,38 +62,42 @@ export default class AIHelperOptionsMenu extends Component {
       return;
     }
 
+    this.originalPostHTML = postElement.innerHTML;
+    this.selectedText = this.args.outletArgs.data.quoteState.buffer;
+
+    const selection = window.getSelection();
+    if (!selection.rangeCount) {
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const originalContents = range.extractContents();
+
     const highlight = document.createElement("span");
     highlight.classList.add("ai-helper-highlighted-selection");
-    highlight.textContent = selectedText;
+    highlight.appendChild(originalContents.cloneNode(true));
 
-    const postContentElement = postElement.querySelector(".cooked");
-    if (postContentElement) {
-      const range = window.getSelection().getRangeAt(0);
-
-      // Check if the range contains only text nodes
-      if (range && range.commonAncestorContainer.nodeType === Node.TEXT_NODE) {
-        const clonedRange = range.cloneRange();
-
-        // Wrap the existing text with the highlight
-        clonedRange.surroundContents(highlight);
-        this.highlightElement = highlight;
-      } else {
-        // Non-text nodes are present in the range
-      }
-    }
+    range.insertNode(highlight);
+    selection.removeAllRanges();
+    this.postHighlighted = true;
   }
 
   removeHighlightedText() {
-    if (this.highlightElement && this.highlightElement.parentNode) {
-      const parentNode = this.highlightElement.parentNode;
-      while (this.highlightElement.firstChild) {
-        parentNode.insertBefore(
-          this.highlightElement.firstChild,
-          this.highlightElement
-        );
-      }
-      parentNode.removeChild(this.highlightElement);
+    if (!this.postHighlighted) {
+      return;
     }
+
+    const postId = this.args.outletArgs.data.quoteState.postId;
+    const postElement = document.querySelector(
+      `article[data-post-id='${postId}']`
+    );
+
+    if (!postElement) {
+      return;
+    }
+
+    postElement.innerHTML = this.originalPostHTML;
+    this.postHighlighted = false;
   }
 
   willDestroy() {
@@ -124,6 +129,19 @@ export default class AIHelperOptionsMenu extends Component {
   @bind
   _updateResult(result) {
     this.suggestion = result.result;
+  }
+
+  get highlightedTextToggleIcon() {
+    if (this.showHighlightedText) {
+      return "angle-double-left";
+    } else {
+      return "angle-double-right";
+    }
+  }
+
+  @action
+  toggleHighlightedTextPreview() {
+    this.showHighlightedText = !this.showHighlightedText;
   }
 
   @action
