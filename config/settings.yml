@@ -110,6 +110,9 @@ discourse_ai:
   ai_anthropic_api_key:
     default: ""
     secret: true
+  ai_cohere_api_key:
+    default: ""
+    secret: true
   ai_stability_api_key:
     default: ""
     secret: true

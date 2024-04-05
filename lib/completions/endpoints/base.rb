@@ -16,6 +16,7 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::Gemini,
               DiscourseAi::Completions::Endpoints::Vllm,
               DiscourseAi::Completions::Endpoints::Anthropic,
+              DiscourseAi::Completions::Endpoints::Cohere,
             ]
 
             if Rails.env.test? || Rails.env.development?
