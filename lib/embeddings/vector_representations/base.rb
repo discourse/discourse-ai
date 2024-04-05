@@ -52,10 +52,13 @@ module DiscourseAi
             # Using extension maintainer's recommendation for ivfflat indexes
             # Results are not as good as without indexes, but it's much faster
             # Disk usage is ~1x the size of the table, so this doubles table total size
-            count = DB.query_single("SELECT count(*) FROM #{table_name};").first
+            count =
+              DB.query_single(
+                "SELECT count(*) FROM #{table_name} WHERE model_id = #{id} AND strategy_id = #{@strategy.id};",
+              ).first
             lists = [count < 1_000_000 ? count / 1000 : Math.sqrt(count).to_i, 10].max
             probes = [count < 1_000_000 ? lists / 10 : Math.sqrt(lists).to_i, 1].max
-            Discourse.cache.write("#{table_name}-probes", probes)
+            Discourse.cache.write("#{table_name}-#{id}-#{@strategy.id}-probes", probes)
 
             existing_index = DB.query_single(<<~SQL, index_name: index_name).first
               SELECT
@@ -83,7 +86,7 @@ module DiscourseAi
                 .to_i || 0
             new_rows =
               DB.query_single(
-                "SELECT count(*) FROM #{table_name} WHERE created_at > '#{Time.at(existing_index_age)}';",
+                "SELECT count(*) FROM #{table_name} WHERE model_id = #{id} AND strategy_id = #{@strategy.id} AND created_at > '#{Time.at(existing_index_age)}';",
               ).first
             existing_lists = existing_index.match(/lists='(\d+)'/)&.captures&.first&.to_i
 
@@ -130,7 +133,9 @@ module DiscourseAi
               USING
                 ivfflat (embeddings #{pg_index_type})
               WITH
-                (lists = #{lists});
+                (lists = #{lists})
+              WHERE
+                model_id = #{id} AND strategy_id = #{@strategy.id};
             SQL
           rescue PG::ProgramLimitExceeded => e
             parsed_error = e.message.match(/memory required is (\d+ [A-Z]{2}), ([a-z_]+)/)
@@ -175,6 +180,8 @@ module DiscourseAi
             FROM
               #{table_name(target)}
             WHERE
+              model_id = #{id} AND
+              strategy_id = #{@strategy.id} AND
               #{target_column} = :target_id
             LIMIT 1
           SQL
@@ -191,6 +198,9 @@ module DiscourseAi
               topic_id
             FROM
               #{topic_table_name}
+            WHERE
+              model_id = #{id} AND
+              strategy_id = #{@strategy.id}
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
             LIMIT 1
@@ -203,6 +213,9 @@ module DiscourseAi
               post_id
             FROM
               #{post_table_name}
+            WHERE
+              model_id = #{id} AND
+              strategy_id = #{@strategy.id}
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
             LIMIT 1
@@ -217,6 +230,8 @@ module DiscourseAi
               embeddings #{pg_function} '[:query_embedding]' AS distance
             FROM
               #{topic_table_name}
+            WHERE
+              model_id = #{id} AND strategy_id = #{@strategy.id}
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
             LIMIT :limit
@@ -245,6 +260,8 @@ module DiscourseAi
               posts AS p ON p.id = post_id
             INNER JOIN
               topics AS t ON t.id = p.topic_id AND t.archetype = 'regular'
+            WHERE
+              model_id = #{id} AND strategy_id = #{@strategy.id}
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
             LIMIT :limit
@@ -280,6 +297,8 @@ module DiscourseAi
             INNER JOIN
               rag_document_fragments AS rdf ON rdf.id = rag_document_fragment_id
             WHERE
+              model_id = #{id} AND
+              strategy_id = #{@strategy.id} AND
               rdf.ai_persona_id = :persona_id
             ORDER BY
               embeddings #{pg_function} '[:query_embedding]'
@@ -309,6 +328,9 @@ module DiscourseAi
               topic_id
             FROM
               #{topic_table_name}
+            WHERE
+              model_id = #{id} AND
+              strategy_id = #{@strategy.id}
             ORDER BY
               embeddings #{pg_function} (
                 SELECT
@@ -316,6 +338,8 @@ module DiscourseAi
                 FROM
                   #{topic_table_name}
                 WHERE
+                  model_id = #{id} AND
+                  strategy_id = #{@strategy.id} AND
                   topic_id = :topic_id
                 LIMIT 1
               )
@@ -329,15 +353,15 @@ module DiscourseAi
         end
 
         def topic_table_name
-          "ai_topic_embeddings_#{id}_#{@strategy.id}"
+          "ai_topic_embeddings"
         end
 
         def post_table_name
-          "ai_post_embeddings_#{id}_#{@strategy.id}"
+          "ai_post_embeddings"
         end
 
         def rag_fragments_table_name
-          "ai_document_fragment_embeddings_#{id}_#{@strategy.id}"
+          "ai_document_fragment_embeddings"
         end
 
         def table_name(target)
@@ -354,11 +378,11 @@ module DiscourseAi
         end
 
         def index_name(table_name)
-          "#{table_name}_search"
+          "#{table_name}_#{id}_#{@strategy.id}_search"
         end
 
         def probes_sql(table_name)
-          probes = Discourse.cache.read("#{table_name}-probes")
+          probes = Discourse.cache.read("#{table_name}-#{id}-#{@strategy.id}-probes")
           probes.present? ? "SET LOCAL ivfflat.probes TO #{probes};" : ""
         end
 
@@ -400,9 +424,9 @@ module DiscourseAi
           if target.is_a?(Topic)
             DB.exec(
               <<~SQL,
-              INSERT INTO #{topic_table_name} (topic_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:topic_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-              ON CONFLICT (topic_id)
+              INSERT INTO #{topic_table_name} (topic_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
+              VALUES (:topic_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              ON CONFLICT (strategy_id, model_id, topic_id)
               DO UPDATE SET
                 model_version = :model_version,
                 strategy_version = :strategy_version,
@@ -411,7 +435,9 @@ module DiscourseAi
                 updated_at = CURRENT_TIMESTAMP
               SQL
               topic_id: target.id,
+              model_id: id,
               model_version: version,
+              strategy_id: @strategy.id,
               strategy_version: @strategy.version,
               digest: digest,
               embeddings: vector,
@@ -419,9 +445,9 @@ module DiscourseAi
           elsif target.is_a?(Post)
             DB.exec(
               <<~SQL,
-              INSERT INTO #{post_table_name} (post_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:post_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-              ON CONFLICT (post_id)
+              INSERT INTO #{post_table_name} (post_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
+              VALUES (:post_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              ON CONFLICT (model_id, strategy_id, post_id)
               DO UPDATE SET
                 model_version = :model_version,
                 strategy_version = :strategy_version,
@@ -430,7 +456,9 @@ module DiscourseAi
                 updated_at = CURRENT_TIMESTAMP
               SQL
               post_id: target.id,
+              model_id: id,
               model_version: version,
+              strategy_id: @strategy.id,
               strategy_version: @strategy.version,
               digest: digest,
               embeddings: vector,
@@ -438,9 +466,9 @@ module DiscourseAi
           elsif target.is_a?(RagDocumentFragment)
             DB.exec(
               <<~SQL,
-              INSERT INTO #{rag_fragments_table_name} (rag_document_fragment_id, model_version, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:fragment_id, :model_version, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-              ON CONFLICT (rag_document_fragment_id)
+              INSERT INTO #{rag_fragments_table_name} (rag_document_fragment_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
+              VALUES (:fragment_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              ON CONFLICT (model_id, strategy_id, rag_document_fragment_id)
               DO UPDATE SET
                 model_version = :model_version,
                 strategy_version = :strategy_version,
@@ -449,7 +477,9 @@ module DiscourseAi
                 updated_at = CURRENT_TIMESTAMP
               SQL
               fragment_id: target.id,
+              model_id: id,
               model_version: version,
+              strategy_id: @strategy.id,
               strategy_version: @strategy.version,
               digest: digest,
               embeddings: vector,
