@@ -71,7 +71,15 @@ module DiscourseAi
           parsed = JSON.parse(response_raw, symbolize_names: true)
 
           if @streaming_mode
-            raise "not implemented"
+            if parsed[:event_type] == "text-generation"
+              parsed[:text]
+            else
+              if parsed[:event_type] == "stream-end"
+                @input_tokens = parsed.dig(:response, :meta, :billed_units, :input_tokens)
+                @output_tokens = parsed.dig(:response, :meta, :billed_units, :output_tokens)
+              end
+              nil
+            end
           else
             @input_tokens = parsed.dig(:meta, :billed_units, :input_tokens)
             @output_tokent = parsed.dig(:meta, :billed_units, :output_tokens)
@@ -88,13 +96,7 @@ module DiscourseAi
         end
 
         def partials_from(decoded_chunk)
-          decoded_chunk
-            .split("\n")
-            .map do |line|
-              data = line.split("data: ", 2)[1]
-              data == "[DONE]" ? nil : data
-            end
-            .compact
+          decoded_chunk.split("\n").compact
         end
 
         def extract_prompt_for_tokenizer(prompt)
