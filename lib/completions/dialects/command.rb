@@ -79,21 +79,44 @@ module DiscourseAi
 
         def tools
           prompt.tools.map do |t|
-            tool = t.dup
+            tool = {}
 
-            tool[:parameters] = t[:parameters]
-              .to_a
-              .reduce({ type: "object", properties: {}, required: [] }) do |memo, p|
-                name = p[:name]
-                memo[:required] << name if p[:required]
+            tool[:name] = t[:name]
+            tool[:description] = t[:description]
 
-                memo[:properties][name] = p.except(:name, :required, :item_type)
+            params = {}
+            t[:parameters].each do |param|
+              params[param[:name]] = {
+                required: param[:required],
+                description: param[:description],
+                type: python_type(param[:type], param[:item_type]),
+              }
+            end
 
-                memo[:properties][name][:items] = { type: p[:item_type] } if p[:item_type]
-                memo
-              end
+            tool[:parameter_definitions] = params
 
-            { type: "function", function: tool }
+            tool
+          end
+        end
+
+        def python_type(type, item_type = nil)
+          return "#{python_type(item_type)}[]" if item_type && type == "array"
+
+          case type
+          when "string"
+            "str"
+          when "integer"
+            "int"
+          when "float"
+            "float"
+          when "boolean"
+            "bool"
+          when "list"
+            "list"
+          when "dictionary"
+            "dict"
+          else
+            "str"
           end
         end
 

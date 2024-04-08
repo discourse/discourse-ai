@@ -27,10 +27,7 @@ module DiscourseAi
         def normalize_model_params(model_params)
           model_params = model_params.dup
 
-          # max_tokens, temperature are already supported
-          if model_params[:stop_sequences]
-            model_params[:stop] = model_params.delete(:stop_sequences)
-          end
+          model_params[:p] = model_params.delete(:top_p) if model_params[:top_p]
 
           model_params
         end
@@ -70,9 +67,14 @@ module DiscourseAi
         def extract_completion_from(response_raw)
           parsed = JSON.parse(response_raw, symbolize_names: true)
 
+          @has_function_call ||= parsed.dig(:tool_calls).present?
+
           if @streaming_mode
             if parsed[:event_type] == "text-generation"
               parsed[:text]
+            elsif parsed[:event_type] == "tool-calls-generation"
+              @has_function_call = true
+              parsed[:tool_calls]
             else
               if parsed[:event_type] == "stream-end"
                 @input_tokens = parsed.dig(:response, :meta, :billed_units, :input_tokens)
@@ -83,11 +85,12 @@ module DiscourseAi
           else
             @input_tokens = parsed.dig(:meta, :billed_units, :input_tokens)
             @output_tokent = parsed.dig(:meta, :billed_units, :output_tokens)
-            parsed[:text]
+            if @has_function_call
+              parsed[:tool_calls]
+            else
+              parsed[:text].to_s
+            end
           end
-
-          #@has_function_call ||= response_h.dig(:tool_calls).present?
-          #@has_function_call ? response_h.dig(:tool_calls, 0) : response_h.dig(:content)
         end
 
         def final_log_update(log)
@@ -129,50 +132,26 @@ module DiscourseAi
             partial = payload
           end
 
-          @args_buffer ||= +""
+          function_buffer.at("function_calls").children.each(&:remove)
+          function_buffer.at("function_calls").add_child(
+            Nokogiri::HTML5::DocumentFragment.parse("\n"),
+          )
 
-          f_name = partial.dig(:function, :name)
+          partial.each do |function_call|
+            function_name = function_call[:name]
+            parameters = function_call[:parameters]
+            xml = <<~XML
+              <invoke>
+              <tool_name>#{function_name}</tool_name>
+              <parameters>
+              #{parameters.map { |k, v| "<#{k}>#{v}</#{k}>" }.join("\n")}
+              </parameters>
+              </invoke>
+            XML
 
-          @current_function ||= function_buffer.at("invoke")
-
-          if f_name
-            current_name = function_buffer.at("tool_name").content
-
-            if current_name.blank?
-              # first call
-            else
-              # we have a previous function, so we need to add a noop
-              @args_buffer = +""
-              @current_function =
-                function_buffer.at("function_calls").add_child(
-                  Nokogiri::HTML5::DocumentFragment.parse(noop_function_call_text + "\n"),
-                )
-            end
-          end
-
-          @current_function.at("tool_name").content = f_name if f_name
-          @current_function.at("tool_id").content = partial[:id] if partial[:id]
-
-          args = partial.dig(:function, :arguments)
-
-          # allow for SPACE within arguments
-          if args && args != ""
-            @args_buffer << args
-
-            begin
-              json_args = JSON.parse(@args_buffer, symbolize_names: true)
-
-              argument_fragments =
-                json_args.reduce(+"") do |memo, (arg_name, value)|
-                  memo << "\n<#{arg_name}>#{value}</#{arg_name}>"
-                end
-              argument_fragments << "\n"
-
-              @current_function.at("parameters").children =
-                Nokogiri::HTML5::DocumentFragment.parse(argument_fragments)
-            rescue JSON::ParserError
-              return function_buffer
-            end
+            function_buffer.at("function_calls").add_child(
+              Nokogiri::HTML5::DocumentFragment.parse(xml),
+            )
           end
 
           function_buffer
