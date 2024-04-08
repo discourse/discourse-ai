@@ -37,7 +37,88 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     prompt
   end
 
+  let(:prompt_with_tool_results) do
+    prompt =
+      DiscourseAi::Completions::Prompt.new(
+        "You are weather bot",
+        messages: [
+          { type: :user, id: "user1", content: "what is the weather in sydney and melbourne?" },
+          {
+            type: :tool_call,
+            id: "tool_call_1",
+            name: "weather",
+            content: { arguments: [%w[city Sydney]] }.to_json,
+          },
+          { type: :tool, id: "tool_call_1", name: "weather", content: { weather: "22c" }.to_json },
+        ],
+      )
+
+    prompt.tools = [weather_tool]
+    prompt
+  end
+
   before { SiteSetting.ai_cohere_api_key = "ABC" }
+
+  it "includes previous tool calls in prompt" do
+    body = {
+      response_id: "0a90275b-273d-4690-abce-8018edcec7d0",
+      text: "You're welcome! How can I help you today?",
+      generation_id: "cc2742f7-622c-4e42-8fd4-d95b21012e52",
+      chat_history: [
+        { role: "USER", message: "user1: hello" },
+        { role: "CHATBOT", message: "hi user" },
+        { role: "USER", message: "user1: thanks" },
+        { role: "CHATBOT", message: "You're welcome! How can I help you today?" },
+      ],
+      finish_reason: "COMPLETE",
+      token_count: {
+        prompt_tokens: 29,
+        response_tokens: 11,
+        total_tokens: 40,
+        billed_tokens: 25,
+      },
+      meta: {
+        api_version: {
+          version: "1",
+        },
+        billed_units: {
+          input_tokens: 14,
+          output_tokens: 11,
+        },
+      },
+    }.to_json
+
+    parsed_body = nil
+    stub_request(:post, "https://api.cohere.ai/v1/chat").with(
+      body:
+        proc do |req_body|
+          parsed_body = JSON.parse(req_body, symbolize_names: true)
+          true
+        end,
+      headers: {
+        "Content-Type" => "application/json",
+        "Authorization" => "Bearer ABC",
+      },
+    ).to_return(status: 200, body: body)
+
+    result = llm.generate(prompt_with_tool_results, user: user)
+
+    tool_results =
+      tool_results = [
+        {
+          call: {
+            name: "weather",
+            parameters: {
+              city: "Sydney",
+            },
+          },
+          outputs: [{ json_result: "{\"weather\":\"22c\"}" }],
+        },
+      ]
+
+    expect(parsed_body[:tool_results]).to eq(tool_results)
+    expect(result).to eq("You're welcome! How can I help you today?")
+  end
 
   it "is able to run tools in streaming mode" do
     body = <<~TEXT

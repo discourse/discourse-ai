@@ -34,6 +34,10 @@ module DiscourseAi
 
           prompt = {}
 
+          previous_tools = []
+
+          tool_pairs = {}
+
           trimmed_messages.each do |msg|
             if msg[:type] == :system
               if system_message
@@ -44,17 +48,13 @@ module DiscourseAi
             elsif msg[:type] == :model
               chat_history << { role: "CHATBOT", message: msg[:content] }
             elsif msg[:type] == :tool_call
-              call_details = JSON.parse(msg[:content], symbolize_names: true)
-              call_details[:arguments] = call_details[:arguments].to_json
-              call_details[:name] = msg[:name]
-
-              {
-                role: "assistant",
-                content: nil,
-                tool_calls: [{ type: "function", function: call_details, id: msg[:id] }],
-              }
+              tool_pairs[msg[:id]] = msg[:content]
+              tool_pairs[msg[:name]] = msg[:content]
             elsif msg[:type] == :tool
-              { role: "tool", tool_call_id: msg[:id], content: msg[:content], name: msg[:name] }
+              tool_call_args = tool_pairs[msg[:id]] || tool_pairs[msg[:name]]
+              if tool_call_args.present?
+                previous_tools << tool_result(msg[:name], tool_call_args, msg[:content])
+              end
             else
               user_message = { role: "USER", message: msg[:content] }
               user_message[:message] = "#{msg[:id]}: #{msg[:content]}" if msg[:id]
@@ -74,7 +74,15 @@ module DiscourseAi
             end
           end
 
+          prompt[:tool_results] = previous_tools if previous_tools.present?
+
           prompt
+        end
+
+        def tool_result(name, args_json, content_json)
+          parameters = {}
+          JSON.parse(args_json).dig("arguments")&.each { |k, v| parameters[k] = v }
+          { call: { name: name, parameters: parameters }, outputs: [{ json_result: content_json }] }
         end
 
         def tools
@@ -85,7 +93,7 @@ module DiscourseAi
             tool[:description] = t[:description]
 
             params = {}
-            t[:parameters].each do |param|
+            t[:parameters]&.each do |param|
               params[param[:name]] = {
                 required: param[:required],
                 description: param[:description],

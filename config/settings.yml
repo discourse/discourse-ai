@@ -338,6 +338,7 @@ discourse_ai:
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - cohere-command-r-plus
   ai_bot_add_to_header:
     default: true
     client: true
