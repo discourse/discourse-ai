@@ -100,8 +100,13 @@ export default class AIHelperOptionsMenu extends Component {
     );
 
     const textNodes = [];
-    while (walker.nextNode()) {
+
+    if (walker.currentNode?.nodeType === Node.TEXT_NODE) {
       textNodes.push(walker.currentNode);
+    } else {
+      while (walker.nextNode()) {
+        textNodes.push(walker.currentNode);
+      }
     }
 
     for (let textNode of textNodes) {
