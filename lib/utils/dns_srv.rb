@@ -11,7 +11,7 @@ module DiscourseAi
           .fetch("dns_srv_lookup:#{domain}", expires_in: 5.minutes) do
             resources = dns_srv_lookup_for_domain(domain)
 
-            select_server(resources)
+            server_election(resources)
           end
       end
 
@@ -36,9 +36,27 @@ module DiscourseAi
 
           return resource if random_weight < 0
         end
+      end
 
-        # fallback
-        resources.first
+      def self.server_available?(server)
+        begin
+          conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
+          conn.head("https://#{server.target}:#{server.port}")
+          true
+        rescue StandardError
+          false
+        end
+      end
+
+      def self.server_election(resources)
+        return resources.first if resources.length == 1
+        candidate = select_server(resources)
+
+        if server_available?(candidate)
+          candidate
+        else
+          server_election(resources - [candidate])
+        end
       end
     end
   end
