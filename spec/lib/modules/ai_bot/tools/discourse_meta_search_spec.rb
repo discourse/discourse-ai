@@ -11,12 +11,27 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
 
   let(:mock_search_json) { plugin_file_from_fixtures("search.json", "search_meta").read }
 
-  let(:mock_site_json) { plugin_file_from_fixtures("site.json", "search_meta").read }
+  let(:mock_categories_page_1) do
+    plugin_file_from_fixtures("categories_page_1.json", "search_meta").read
+  end
+
+  let(:mock_categories_page_2) do
+    plugin_file_from_fixtures("categories_page_2.json", "search_meta").read
+  end
 
   before do
-    stub_request(:get, "https://meta.discourse.org/site.json").to_return(
+    stub_request(:get, "https://meta.discourse.org/categories.json?page=1").to_return(
       status: 200,
-      body: mock_site_json,
+      body: mock_categories_page_1,
+      headers: {
+      },
+    )
+  end
+
+  before do
+    stub_request(:get, "https://meta.discourse.org/categories.json?page=2").to_return(
+      status: 200,
+      body: mock_categories_page_2,
       headers: {
       },
     )
