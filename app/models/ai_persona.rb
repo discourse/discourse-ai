@@ -13,6 +13,10 @@ class AiPersona < ActiveRecord::Base
   # we may want to revisit this in the future
   validates :vision_max_pixels, numericality: { greater_than: 0, maximum: 4_000_000 }
 
+  validates :rag_chunk_tokens, numericality: { greater_than: 0, maximum: 50_000 }
+  validates :rag_chunk_overlap_tokens, numericality: { greater_than: -1, maximum: 200 }
+  validates :rag_conversation_chunks, numericality: { greater_than: 0, maximum: 1000 }
+
   belongs_to :created_by, class_name: "User"
   belongs_to :user
 
@@ -24,6 +28,8 @@ class AiPersona < ActiveRecord::Base
   has_many :rag_document_fragments, through: :ai_persona_rag_document_fragments
 
   before_destroy :ensure_not_system
+
+  after_update :regenerate_rag_fragments
 
   class MultisiteHash
     def initialize(id)
@@ -110,6 +116,7 @@ class AiPersona < ActiveRecord::Base
     max_context_posts = self.max_context_posts
     vision_enabled = self.vision_enabled
     vision_max_pixels = self.vision_max_pixels
+    rag_conversation_chunks = self.rag_conversation_chunks
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
@@ -147,6 +154,10 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :vision_max_pixels do
         vision_max_pixels
+      end
+
+      persona_class.define_singleton_method :rag_conversation_chunks do
+        rag_conversation_chunks
       end
 
       return persona_class
@@ -232,6 +243,10 @@ class AiPersona < ActiveRecord::Base
         vision_max_pixels
       end
 
+      define_singleton_method :rag_conversation_chunks do
+        rag_conversation_chunks
+      end
+
       define_singleton_method :to_s do
         "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
       end
@@ -314,6 +329,13 @@ class AiPersona < ActiveRecord::Base
     user
   end
 
+  def regenerate_rag_fragments
+    # TODO test this is not firing
+    if rag_chunk_tokens_changed? || rag_chunk_overlap_tokens_changed?
+      RagDocumentFragment.where(ai_persona: self).delete_all
+    end
+  end
+
   private
 
   def system_persona_unchangeable
@@ -335,26 +357,31 @@ end
 #
 # Table name: ai_personas
 #
-#  id                :bigint           not null, primary key
-#  name              :string(100)      not null
-#  description       :string(2000)     not null
-#  commands          :json             not null
-#  system_prompt     :string(10000000) not null
-#  allowed_group_ids :integer          default([]), not null, is an Array
-#  created_by_id     :integer
-#  enabled           :boolean          default(TRUE), not null
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  system            :boolean          default(FALSE), not null
-#  priority          :boolean          default(FALSE), not null
-#  temperature       :float
-#  top_p             :float
-#  user_id           :integer
-#  mentionable       :boolean          default(FALSE), not null
-#  default_llm       :text
-#  max_context_posts :integer
-#  vision_enabled    :boolean          default(FALSE), not null
-#  vision_max_pixels :integer          default(1048576), not null
+#  id                       :bigint           not null, primary key
+#  name                     :string(100)      not null
+#  description              :string(2000)     not null
+#  commands                 :json             not null
+#  system_prompt            :string(10000000) not null
+#  allowed_group_ids        :integer          default([]), not null, is an Array
+#  created_by_id            :integer
+#  enabled                  :boolean          default(TRUE), not null
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  system                   :boolean          default(FALSE), not null
+#  priority                 :boolean          default(FALSE), not null
+#  temperature              :float
+#  top_p                    :float
+#  user_id                  :integer
+#  mentionable              :boolean          default(FALSE), not null
+#  default_llm              :text
+#  max_context_posts        :integer
+#  max_post_context_tokens  :integer
+#  max_context_tokens       :integer
+#  vision_enabled           :boolean          default(FALSE), not null
+#  vision_max_pixels        :integer          default(1048576), not null
+#  rag_chunk_tokens         :integer          default(374), not null
+#  rag_chunk_overlap_tokens :integer          default(10), not null
+#  rag_conversation_chunks  :integer          default(10), not null
 #
 # Indexes
 #

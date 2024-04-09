@@ -5,6 +5,10 @@ module DiscourseAi
     module Personas
       class Persona
         class << self
+          def rag_conversation_chunks
+            10
+          end
+
           def vision_enabled
             false
           end
@@ -219,11 +223,20 @@ module DiscourseAi
 
           interactions_vector = vector_rep.vector_from(latest_interactions)
 
+          rag_conversation_chunks = self.class.rag_conversation_chunks
+
           candidate_fragment_ids =
             vector_rep.asymmetric_rag_fragment_similarity_search(
               interactions_vector,
               persona_id: id,
-              limit: reranker.reranker_configured? ? 50 : 10,
+              limit:
+                (
+                  if reranker.reranker_configured?
+                    rag_conversation_chunks * 5
+                  else
+                    rag_conversation_chunks
+                  end
+                ),
               offset: 0,
             )
 
@@ -239,11 +252,11 @@ module DiscourseAi
               DiscourseAi::Inference::HuggingFaceTextEmbeddings
                 .rerank(conversation_context.last[:content], guidance)
                 .to_a
-                .take(10)
+                .take(rag_conversation_chunks)
                 .map { _1[:index] }
 
             if ranks.empty?
-              fragments = fragments.take(10)
+              fragments = fragments.take(rag_conversation_chunks)
             else
               fragments = ranks.map { |idx| fragments[idx] }
             end

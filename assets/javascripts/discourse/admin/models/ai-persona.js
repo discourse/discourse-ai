@@ -2,7 +2,7 @@ import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
 
-const ATTRIBUTES = [
+const CREATE_ATTRIBUTES = [
   "id",
   "name",
   "description",
@@ -24,6 +24,13 @@ const ATTRIBUTES = [
   "rag_uploads",
 ];
 
+// rag params are populated on save, only show it when editing
+const ATTRIBUTES = CREATE_ATTRIBUTES.concat([
+  "rag_chunk_tokens",
+  "rag_chunk_overlap_tokens",
+  "rag_conversation_chunks",
+]);
+
 const SYSTEM_ATTRIBUTES = [
   "id",
   "allowed_group_ids",
@@ -38,6 +45,9 @@ const SYSTEM_ATTRIBUTES = [
   "vision_enabled",
   "vision_max_pixels",
   "rag_uploads",
+  "rag_chunk_tokens",
+  "rag_chunk_overlap_tokens",
+  "rag_conversation_chunks",
 ];
 
 class CommandOption {
@@ -122,16 +132,19 @@ export default class AiPersona extends RestModel {
       : this.getProperties(ATTRIBUTES);
     attrs.id = this.id;
     this.populateCommandOptions(attrs);
+
     return attrs;
   }
 
   createProperties() {
-    let attrs = this.getProperties(ATTRIBUTES);
+    let attrs = this.getProperties(CREATE_ATTRIBUTES);
     this.populateCommandOptions(attrs);
     return attrs;
   }
 
   workingCopy() {
-    return AiPersona.create(this.createProperties());
+    let attrs = this.getProperties(ATTRIBUTES);
+    this.populateCommandOptions(attrs);
+    return AiPersona.create(attrs);
   }
 }

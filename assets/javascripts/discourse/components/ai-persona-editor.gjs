@@ -58,6 +58,10 @@ export default class PersonaEditor extends Component {
     return value;
   }
 
+  get showRagParams() {
+    return !this.args.model.isNew;
+  }
+
   @cached
   get maxPixelValues() {
     const l = (key) =>
@@ -449,6 +453,60 @@ export default class PersonaEditor extends Component {
             @onRemove={{this.removeUpload}}
           />
         </div>
+        {{#if this.showRagParams}}
+          <div class="control-group">
+            <label>{{I18n.t "discourse_ai.ai_persona.rag_chunk_tokens"}}</label>
+            <Input
+              @type="number"
+              step="any"
+              lang="en"
+              class="ai-persona-editor__rag_chunk_tokens"
+              @value={{this.editingModel.rag_chunk_tokens}}
+            />
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.rag_chunk_tokens_help"
+              }}
+            />
+          </div>
+          <div class="control-group">
+            <label>{{I18n.t
+                "discourse_ai.ai_persona.rag_chunk_overlap_tokens"
+              }}</label>
+            <Input
+              @type="number"
+              step="any"
+              lang="en"
+              class="ai-persona-editor__rag_chunk_overlap_tokens"
+              @value={{this.editingModel.rag_chunk_overlap_tokens}}
+            />
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.rag_chunk_overlap_tokens_help"
+              }}
+            />
+          </div>
+          <div class="control-group">
+            <label>{{I18n.t
+                "discourse_ai.ai_persona.rag_conversation_chunks"
+              }}</label>
+            <Input
+              @type="number"
+              step="any"
+              lang="en"
+              class="ai-persona-editor__rag_conversation_chunks"
+              @value={{this.editingModel.rag_conversation_chunks}}
+            />
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.rag_conversation_chunks_help"
+              }}
+            />
+          </div>
+        {{/if}}
       {{/if}}
       <div class="control-group ai-persona-editor__action_panel">
         <DButton

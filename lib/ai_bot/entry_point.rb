@@ -212,11 +212,16 @@ module DiscourseAi
         plugin.on(:site_setting_changed) do |name, old_value, new_value|
           if name == "ai_embeddings_model" && SiteSetting.ai_embeddings_enabled? &&
                new_value != old_value
-            RagDocumentFragment.find_in_batches do |batch|
-              batch.each_slice(100) do |fragments|
-                Jobs.enqueue(:generate_rag_embeddings, fragment_ids: fragments.map(&:id))
+            RagDocumentFragment.delete_all
+            UploadReference
+              .where(target: AiPersona.all)
+              .each do |ref|
+                Jobs.enqueue(
+                  :digest_rag_upload,
+                  ai_persona_id: ref.target_id,
+                  upload_id: ref.upload_id,
+                )
               end
-            end
           end
         end
       end
