@@ -185,3 +185,4 @@ id:
         bot_names:
           fake: "Bot Tes Palsu"
           claude-3-opus: "Claude 3 Opus"
+          claude-3-haiku: "Claude 3 Haiku"

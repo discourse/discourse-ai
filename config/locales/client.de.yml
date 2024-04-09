@@ -258,6 +258,7 @@ de:
           fake: "Fake Test Bot"
           claude-3-opus: "Claude 3 Opus"
           claude-3-sonnet: "Claude 3 Sonett"
+          claude-3-haiku: "Claude 3 Haiku"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:

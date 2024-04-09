@@ -169,6 +169,11 @@ tr_TR:
           Dahası, belirli kullanıcı gruplarının belirli kişiliklere erişime sahip olacak şekilde de belirleyebilirsiniz. Bu, forumunuzun farklı bölümleri için farklı YZ davranışlarına sahip olabileceğiniz anlamına gelir ve böylece topluluğunuzun etkileşimlerinin çeşitliliğini ve zenginliğini geliştirebilirsiniz.
         uploads:
           title: "Yüklemeler"
+          description: "Yapay zeka personanız, dahil edilen dosyaların içeriğini arayabilecek ve referans verebilecektir. Yüklenen dosyalar düz metin (.txt) olarak biçimlendirilmelidir"
+          hint: "Dosyanın içeriğinin sistem isteminde nereye yerleştirileceğini kontrol etmek için, yukarıdaki sistem istemine {uploads} yer tutucusunu ekleyin."
+          button: "Dosya Ekle"
+          filter: "Yüklemeleri filtrele"
+          complete: "Tamamlandı"
       related_topics:
         title: "İlgili Konular"
         pill: "İlgili"
@@ -253,6 +258,7 @@ tr_TR:
           fake: "Sahte Test Botu"
           claude-3-opus: "Claude 3 Opus"
           claude-3-sonnet: "Claude 3 Sonnet"
+          claude-3-haiku: "Claude 3 Haiku"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
