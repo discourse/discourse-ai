@@ -41,6 +41,11 @@ module ::Jobs
         end
       end
 
+      RagDocumentFragment.publish_status(
+        upload,
+        { total: fragment_ids.size, indexed: 0, left: fragment_ids.size },
+      )
+
       fragment_ids.each_slice(50) do |slice|
         Jobs.enqueue(:generate_rag_embeddings, fragment_ids: slice)
       end

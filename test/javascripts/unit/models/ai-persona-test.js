@@ -65,6 +65,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
 
   test("create properties", function (assert) {
     const properties = {
+      id: 1,
       name: "Test",
       commands: ["CommandName"],
       allowed_group_ids: [12],

@@ -34,5 +34,20 @@ RSpec.describe Jobs::GenerateRagEmbeddings do
 
       expect(embeddings_count).to eq(expected_embeddings)
     end
+
+    describe "Publishing progress updates" do
+      it "sends an update through mb after a batch finishes" do
+        updates =
+          MessageBus.track_publish(
+            "/discourse-ai/ai-persona-rag/#{rag_document_fragment_1.upload_id}",
+          ) { subject.execute(fragment_ids: [rag_document_fragment_1.id]) }
+
+        upload_index_stats = updates.last.data
+
+        expect(upload_index_stats[:total]).to eq(1)
+        expect(upload_index_stats[:indexed]).to eq(1)
+        expect(upload_index_stats[:left]).to eq(0)
+      end
+    end
   end
 end

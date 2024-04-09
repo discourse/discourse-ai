@@ -73,4 +73,47 @@ RSpec.describe RagDocumentFragment do
       ).by(1)
     end
   end
+
+  describe ".indexing_status" do
+    let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
+    let(:vector_rep) do
+      DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
+    end
+
+    fab!(:rag_document_fragment_1) do
+      Fabricate(:rag_document_fragment, upload: upload_1, ai_persona: persona)
+    end
+
+    fab!(:rag_document_fragment_2) do
+      Fabricate(:rag_document_fragment, upload: upload_1, ai_persona: persona)
+    end
+
+    let(:expected_embedding) { [0.0038493] * vector_rep.dimensions }
+
+    before do
+      SiteSetting.ai_embeddings_enabled = true
+      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+
+      WebMock.stub_request(
+        :post,
+        "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
+      ).to_return(status: 200, body: JSON.dump(expected_embedding))
+
+      vector_rep.generate_representation_from(rag_document_fragment_1)
+    end
+
+    it "returns total, indexed and unindexed fragments for each upload" do
+      results = described_class.indexing_status(persona, [upload_1, upload_2])
+
+      upload_1_status = results[upload_1.id]
+      expect(upload_1_status[:total]).to eq(2)
+      expect(upload_1_status[:indexed]).to eq(1)
+      expect(upload_1_status[:left]).to eq(1)
+
+      upload_1_status = results[upload_2.id]
+      expect(upload_1_status[:total]).to eq(0)
+      expect(upload_1_status[:indexed]).to eq(0)
+      expect(upload_1_status[:left]).to eq(0)
+    end
+  end
 end

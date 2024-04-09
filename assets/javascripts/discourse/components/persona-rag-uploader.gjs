@@ -5,10 +5,12 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
+import { ajax } from "discourse/lib/ajax";
 import UppyUploadMixin from "discourse/mixins/uppy-upload";
 import icon from "discourse-common/helpers/d-icon";
 import discourseDebounce from "discourse-common/lib/debounce";
 import I18n from "discourse-i18n";
+import RagUploadProgress from "./rag-upload-progress";
 
 export default class PersonaRagUploader extends Component.extend(
   UppyUploadMixin
@@ -17,6 +19,7 @@ export default class PersonaRagUploader extends Component.extend(
 
   @tracked term = null;
   @tracked filteredUploads = null;
+  @tracked ragIndexingStatuses = null;
   id = "discourse-ai-persona-rag-uploader";
   maxFiles = 20;
   uploadUrl = "/admin/plugins/discourse-ai/ai-personas/files/upload";
@@ -30,6 +33,14 @@ export default class PersonaRagUploader extends Component.extend(
     }
 
     this.filteredUploads = this.ragUploads || [];
+
+    if (this.ragUploads?.length) {
+      ajax(
+        `/admin/plugins/discourse-ai/ai-personas/${this.persona.id}/files/status.json`
+      ).then((statuses) => {
+        this.set("ragIndexingStatuses", statuses);
+      });
+    }
   }
 
   uploadDone(uploadedFile) {
@@ -97,9 +108,12 @@ export default class PersonaRagUploader extends Component.extend(
                 <span class="persona-rag-uploader__rag-file-icon">{{icon
                     "file"
                   }}</span>
-                {{upload.original_filename}}</td>
-              <td class="persona-rag-uploader__upload-status">{{icon "check"}}
-                {{I18n.t "discourse_ai.ai_persona.uploads.complete"}}</td>
+                {{upload.original_filename}}
+              </td>
+              <RagUploadProgress
+                @upload={{upload}}
+                @ragIndexingStatuses={{this.ragIndexingStatuses}}
+              />
               <td class="persona-rag-uploader__remove-file">
                 <DButton
                   @icon="times"

@@ -3,6 +3,7 @@ import { ajax } from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
 
 const ATTRIBUTES = [
+  "id",
   "name",
   "description",
   "commands",
@@ -24,6 +25,7 @@ const ATTRIBUTES = [
 ];
 
 const SYSTEM_ATTRIBUTES = [
+  "id",
   "allowed_group_ids",
   "enabled",
   "system",
