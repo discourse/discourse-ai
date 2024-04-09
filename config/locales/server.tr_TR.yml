@@ -197,6 +197,7 @@ tr_TR:
             name: "Temel Arama Sorgusu"
             description: "Arama yaparken kullanılacak temel sorgu. Örnek: '#urgent', arama sorgusuna '#urgent' ekler ve yalnızca acil kategorisine veya etiketine sahip konuları içerir."
       command_summary:
+        web_browser: "Web'e Gözat"
         github_search_code: "GitHub kodu arama"
         github_file_content: "GitHub dosya içeriği"
         github_pull_request_diff: "GitHub çekme isteği farkı"
@@ -215,6 +216,7 @@ tr_TR:
         dall_e: "Görüntü oluştur"
         search_meta_discourse: "Discourse Metada arama yapın"
       command_help:
+        web_browser: "Yapay Zeka Botunu kullanarak web sayfasına göz atın"
         github_search_code: "GitHub deposunda kod arama"
         github_file_content: "Bir GitHub deposundan dosyaların içeriğini alma"
         github_pull_request_diff: "GitHub çekme isteği farkını alma"
@@ -233,6 +235,7 @@ tr_TR:
         dall_e: "DALL-E 3 kullanarak görüntü oluştur"
         search_meta_discourse: "Discourse Metada arama yapın"
       command_description:
+        web_browser: "Okunuyor <a href='%{url}'>%{url}</a>"
         github_search_code: "%{repo} içinde '%{query}' araması yapıldı"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
         github_file_content: "%{file_paths} içeriği %{repo_name}@%{branch} kaynağından alındı"
