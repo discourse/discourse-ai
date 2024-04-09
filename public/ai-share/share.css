@@ -316,6 +316,10 @@ h1 h2 h3 h4 h5 h6 {
   margin-bottom: 0.4em;
 }
 
+.post__content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
 .post__date {
   color: var(--primary-500);
   margin-left: auto;
@@ -338,6 +342,7 @@ details {
   background-color: var(--primary-50);
   border-radius: var(--border-radius-small);
   transition: background-color 0.3s ease;
+  padding: 0.5em;
 }
 
 details[open] {
@@ -402,15 +407,24 @@ li, p {
   word-break: break-word;
 }
 
+.lightbox-wrapper img {
+  width: 100%;
+  height: auto;
+}
+
+blockquote {
+  background-color: var(--primary-50);
+  border-left: 6px solid var(--primary-200);
+  padding: 0.5em 1em;
+  margin: 1em 0;
+}
+
 .lightbox-wrapper .meta svg, .lightbox-wrapper .meta .informations {
   display: none;
 }
 
 .lightbox-wrapper .meta .filename {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 /* 
