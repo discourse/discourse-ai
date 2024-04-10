@@ -65,11 +65,7 @@ after_initialize do
 
   reloadable_patch { |plugin| Guardian.prepend DiscourseAi::GuardianExtensions }
 
-  register_modifier(:post_with_secure_uploads?) do |_, _, topic|
-    if SharedAiConversation.exists?(target: topic)
-      false
-    else
-      nil
-    end
+  register_modifier(:post_should_secure_uploads?) do |_, _, topic|
+    false if topic.private_message? && SharedAiConversation.exists?(target: topic)
   end
 end
