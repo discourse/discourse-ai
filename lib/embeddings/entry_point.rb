@@ -9,7 +9,7 @@ module DiscourseAi
           :topic_view_suggested_topics_options,
         ) do |suggested_options, topic_view|
           related_topics = topic_view.related_topics
-          include_random = related_topics.nil? || related_topics.length == 0
+          include_random = !related_topics || related_topics.topics.length == 0
           suggested_options.merge(include_random: include_random)
         end
 
@@ -20,10 +20,16 @@ module DiscourseAi
           end
 
           @related_topics ||=
-            ::DiscourseAi::Embeddings::SemanticTopicQuery
-              .new(@user)
-              .list_semantic_related_topics(topic)
-              .topics
+            ::DiscourseAi::Embeddings::SemanticTopicQuery.new(@user).list_semantic_related_topics(
+              topic,
+            )
+        end
+
+        # define_method must be used (instead of add_to_class) to make sure
+        # that method still works when plugin is disabled too
+        TopicView.alias_method(:categories_old, :categories)
+        TopicView.define_method(:categories) do
+          @categories ||= [*categories_old, *related_topics&.categories].flatten.uniq.compact
         end
 
         %i[topic_view TopicViewPosts].each do |serializer|
@@ -33,7 +39,7 @@ module DiscourseAi
             include_condition: -> { SiteSetting.ai_embeddings_semantic_related_topics_enabled },
           ) do
             if object.next_page.nil? && !object.topic.private_message?
-              object.related_topics.map do |t|
+              object.related_topics.topics.map do |t|
                 SuggestedTopicSerializer.new(t, scope: scope, root: false)
               end
             end
