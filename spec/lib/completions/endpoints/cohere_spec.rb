@@ -59,17 +59,12 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
 
   before { SiteSetting.ai_cohere_api_key = "ABC" }
 
-  it "includes previous tool calls in prompt" do
+  it "is able to run tools" do
     body = {
       response_id: "0a90275b-273d-4690-abce-8018edcec7d0",
-      text: "You're welcome! How can I help you today?",
+      text: "Sydney is 22c",
       generation_id: "cc2742f7-622c-4e42-8fd4-d95b21012e52",
-      chat_history: [
-        { role: "USER", message: "user1: hello" },
-        { role: "CHATBOT", message: "hi user" },
-        { role: "USER", message: "user1: thanks" },
-        { role: "CHATBOT", message: "You're welcome! How can I help you today?" },
-      ],
+      chat_history: [],
       finish_reason: "COMPLETE",
       token_count: {
         prompt_tokens: 29,
@@ -82,8 +77,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
           version: "1",
         },
         billed_units: {
-          input_tokens: 14,
-          output_tokens: 11,
+          input_tokens: 17,
+          output_tokens: 22,
         },
       },
     }.to_json
@@ -103,148 +98,28 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
 
     result = llm.generate(prompt_with_tool_results, user: user)
 
-    tool_results =
-      tool_results = [
-        {
-          call: {
-            name: "weather",
-            parameters: {
-              city: "Sydney",
-            },
-          },
-          outputs: [{ json_result: "{\"weather\":\"22c\"}" }],
-        },
-      ]
+    expect(parsed_body[:preamble]).to include("You are weather bot")
+    expect(parsed_body[:preamble]).to include("<tools>")
 
-    expect(parsed_body[:tool_results]).to eq(tool_results)
-    expect(result).to eq("You're welcome! How can I help you today?")
-  end
-
-  it "is able to run tools in streaming mode" do
-    body = <<~TEXT
-      {"is_finished":false,"event_type":"stream-start","generation_id":"d8dd0557-b51d-483c-b855-6ce7fcc5b19f"}
-      {"is_finished":false,"event_type":"tool-calls-generation","tool_calls":[{"name":"weather","parameters":{"city":"Sydney"}},{"name":"weather","parameters":{"city":"Melbourne"}}]}
-      {"is_finished":true,"event_type":"stream-end","response":{"response_id":"002516fe-6dc1-48d5-a9a9-031f5132a79f","text":"","generation_id":"d8dd0557-b51d-483c-b855-6ce7fcc5b19f","chat_history":[],"meta":{"api_version":{"version":"1"},"billed_units":{"input_tokens":24,"output_tokens":12},"tokens":{"output_tokens":12}},"tool_calls":[{"name":"weather","parameters":{"city":"Sydney"}},{"name":"weather","parameters":{"city":"Melbourne"}}]},"finish_reason":"COMPLETE"}
-    TEXT
-
-    parsed_body = nil
-
-    stub_request(:post, "https://api.cohere.ai/v1/chat").with(
-      body:
-        proc do |req_body|
-          parsed_body = JSON.parse(req_body, symbolize_names: true)
-          true
-        end,
-      headers: {
-        "Content-Type" => "application/json",
-        "Authorization" => "Bearer ABC",
-      },
-    ).to_return(status: 200, body: body)
-
-    response = +""
-    llm.generate(prompt_with_tools, user: user) { |partial| response << partial }
-
-    expect(parsed_body[:tools]).to be_present
-
-    expected = <<~XML
-      <function_calls>
-      <invoke>
+    expected_message = <<~MESSAGE
+      <function_results>
+      <result>
       <tool_name>weather</tool_name>
-      <parameters>
-      <city>Sydney</city>
-      </parameters>
-      <tool_id>tool_0</tool_id>
-      </invoke>
-      <invoke>
-      <tool_name>weather</tool_name>
-      <parameters>
-      <city>Melbourne</city>
-      </parameters>
-      <tool_id>tool_1</tool_id>
-      </invoke>
-      </function_calls>
-    XML
+      <json>
+      {"weather":"22c"}
+      </json>
+      </result>
+      </function_results>
+    MESSAGE
 
-    expect(response.strip).to eq(expected.strip)
-  end
+    expect(parsed_body[:message].strip).to eq(expected_message.strip)
 
-  it "is able to run tools" do
-    body = {
-      response_id: "c8542aec-d528-4ed0-92c9-dc863a860685",
-      text: "",
-      generation_id: "e3107038-b9d4-4ae8-a459-23f64ed512ab",
-      chat_history: [],
-      finish_reason: "COMPLETE",
-      meta: {
-        api_version: {
-          version: "1",
-        },
-        billed_units: {
-          input_tokens: 24,
-          output_tokens: 12,
-        },
-        tokens: {
-          output_tokens: 12,
-        },
-      },
-      tool_calls: [
-        { name: "weather", parameters: { city: "Sydney" } },
-        { name: "weather", parameters: { city: "Melbourne" } },
-      ],
-    }
+    expect(result).to eq("Sydney is 22c")
+    audit = AiApiAuditLog.order("id desc").first
 
-    parsed_body = nil
-
-    stub_request(:post, "https://api.cohere.ai/v1/chat").with(
-      body:
-        proc do |req_body|
-          parsed_body = JSON.parse(req_body, symbolize_names: true)
-          true
-        end,
-      headers: {
-        "Content-Type" => "application/json",
-        "Authorization" => "Bearer ABC",
-      },
-    ).to_return(status: 200, body: body.to_json)
-
-    result = llm.generate(prompt_with_tools, user: user)
-
-    expect(parsed_body[:tools]).to eq(
-      [
-        {
-          name: "weather",
-          description: "lookup weather in a city",
-          parameter_definitions: {
-            city: {
-              description: "city name",
-              type: "str",
-              required: true,
-            },
-          },
-        },
-      ],
-    )
-
-    expected = <<~XML
-      <function_calls>
-      <invoke>
-      <tool_name>weather</tool_name>
-      <parameters>
-      <city>Sydney</city>
-      </parameters>
-      <tool_id>tool_0</tool_id>
-      </invoke>
-      <invoke>
-      <tool_name>weather</tool_name>
-      <parameters>
-      <city>Melbourne</city>
-      </parameters>
-      <tool_id>tool_1</tool_id>
-      </invoke>
-      </function_calls>
-    XML
-
-    expect(result.strip).to eq(expected.strip)
+    # billing should be picked
+    expect(audit.request_tokens).to eq(17)
+    expect(audit.response_tokens).to eq(22)
   end
 
   it "is able to perform streaming completions" do

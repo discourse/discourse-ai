@@ -32,8 +32,11 @@ module DiscourseAi
           model_params
         end
 
-        def default_options
-          { model: "command-r-plus" }
+        def default_options(dialect)
+          options = { model: "command-r-plus" }
+
+          options[:stop_sequences] = ["</function_calls>"] if dialect.prompt.has_tools?
+          options
         end
 
         def provider_id
@@ -47,10 +50,9 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
-          payload = default_options.merge(model_params).merge(prompt)
+          payload = default_options(dialect).merge(model_params).merge(prompt)
 
           payload[:stream] = true if @streaming_mode
-          payload[:tools] = dialect.tools if dialect.tools.present?
 
           payload
         end
@@ -67,14 +69,9 @@ module DiscourseAi
         def extract_completion_from(response_raw)
           parsed = JSON.parse(response_raw, symbolize_names: true)
 
-          @has_function_call ||= parsed.dig(:tool_calls).present?
-
           if @streaming_mode
             if parsed[:event_type] == "text-generation"
               parsed[:text]
-            elsif parsed[:event_type] == "tool-calls-generation"
-              @has_function_call = true
-              parsed[:tool_calls]
             else
               if parsed[:event_type] == "stream-end"
                 @input_tokens = parsed.dig(:response, :meta, :billed_units, :input_tokens)
@@ -84,12 +81,8 @@ module DiscourseAi
             end
           else
             @input_tokens = parsed.dig(:meta, :billed_units, :input_tokens)
-            @output_tokent = parsed.dig(:meta, :billed_units, :output_tokens)
-            if @has_function_call
-              parsed[:tool_calls]
-            else
-              parsed[:text].to_s
-            end
+            @output_tokens = parsed.dig(:meta, :billed_units, :output_tokens)
+            parsed[:text].to_s
           end
         end
 
@@ -114,47 +107,6 @@ module DiscourseAi
           text << prompt[:preamble] if prompt[:preamble]
 
           text
-        end
-
-        def has_tool?(_response_data)
-          @has_function_call
-        end
-
-        def maybe_has_tool?(_partial_raw)
-          # we always get a full partial
-          false
-        end
-
-        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          if @streaming_mode
-            return function_buffer if !partial
-          else
-            partial = payload
-          end
-
-          function_buffer.at("function_calls").children.each(&:remove)
-          function_buffer.at("function_calls").add_child(
-            Nokogiri::HTML5::DocumentFragment.parse("\n"),
-          )
-
-          partial.each do |function_call|
-            function_name = function_call[:name]
-            parameters = function_call[:parameters]
-            xml = <<~XML
-              <invoke>
-              <tool_name>#{function_name}</tool_name>
-              <parameters>
-              #{parameters.map { |k, v| "<#{k}>#{v}</#{k}>" }.join("\n")}
-              </parameters>
-              </invoke>
-            XML
-
-            function_buffer.at("function_calls").add_child(
-              Nokogiri::HTML5::DocumentFragment.parse(xml),
-            )
-          end
-
-          function_buffer
         end
       end
     end

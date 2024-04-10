@@ -34,35 +34,30 @@ module DiscourseAi
 
           prompt = {}
 
-          previous_tools = []
-
-          tool_pairs = {}
-
           trimmed_messages.each do |msg|
-            if msg[:type] == :system
+            case msg[:type]
+            when :system
               if system_message
                 chat_history << { role: "SYSTEM", message: msg[:content] }
               else
-                system_message = msg
+                system_message = msg[:content]
               end
-            elsif msg[:type] == :model
+            when :model
               chat_history << { role: "CHATBOT", message: msg[:content] }
-            elsif msg[:type] == :tool_call
-              tool_pairs[msg[:id]] = msg[:content]
-              tool_pairs[msg[:name]] = msg[:content]
-            elsif msg[:type] == :tool
-              tool_call_args = tool_pairs[msg[:id]] || tool_pairs[msg[:name]]
-              if tool_call_args.present?
-                previous_tools << tool_result(msg[:name], tool_call_args, msg[:content])
-              end
-            else
+            when :tool_call
+              chat_history << { role: "CHATBOT", message: tool_call_to_xml(msg) }
+            when :tool
+              chat_history << { role: "USER", message: tool_result_to_xml(msg) }
+            when :user
               user_message = { role: "USER", message: msg[:content] }
               user_message[:message] = "#{msg[:id]}: #{msg[:content]}" if msg[:id]
               chat_history << user_message
             end
           end
 
-          prompt[:preamble] = system_message[:content] if system_message
+          tools_prompt = build_tools_prompt
+          prompt[:preamble] = +"#{system_message}"
+          prompt[:preamble] << "\n#{tools_prompt}" if tools_prompt.present?
 
           prompt[:chat_history] = chat_history if chat_history.present?
 
@@ -74,86 +69,10 @@ module DiscourseAi
             end
           end
 
-          prompt[:tool_results] = previous_tools if previous_tools.present?
-
           prompt
         end
 
-        def tool_result(name, args_json, content_json)
-          parameters = {}
-          JSON.parse(args_json).dig("arguments")&.each { |k, v| parameters[k] = v }
-          { call: { name: name, parameters: parameters }, outputs: [{ json_result: content_json }] }
-        end
-
-        def tools
-          prompt.tools.map do |t|
-            tool = {}
-
-            tool[:name] = t[:name]
-            tool[:description] = t[:description]
-
-            params = {}
-            t[:parameters]&.each do |param|
-              params[param[:name]] = {
-                required: param[:required],
-                description: param[:description],
-                type: python_type(param[:type], param[:item_type]),
-              }
-            end
-
-            tool[:parameter_definitions] = params
-
-            tool
-          end
-        end
-
-        def python_type(type, item_type = nil)
-          return "#{python_type(item_type)}[]" if item_type && type == "array"
-
-          case type
-          when "string"
-            "str"
-          when "integer"
-            "int"
-          when "float"
-            "float"
-          when "boolean"
-            "bool"
-          when "list"
-            "list"
-          when "dictionary"
-            "dict"
-          else
-            "str"
-          end
-        end
-
         def max_prompt_tokens
-          # provide a buffer of 120 tokens - our function counting is not
-          # 100% accurate and getting numbers to align exactly is very hard
-          buffer = (opts[:max_tokens] || 2500) + 50
-
-          if tools.present?
-            # note this is about 100 tokens over, OpenAI have a more optimal representation
-            @function_size ||= self.class.tokenizer.size(tools.to_json.to_s)
-            buffer += @function_size
-          end
-
-          model_max_tokens - buffer
-        end
-
-        private
-
-        def per_message_overhead
-          # open ai defines about 4 tokens per message of overhead
-          4
-        end
-
-        def calculate_message_token(context)
-          self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
-        end
-
-        def model_max_tokens
           case model_name
           when "command-light"
             4096
@@ -166,6 +85,16 @@ module DiscourseAi
           else
             8192
           end
+        end
+
+        private
+
+        def per_message_overhead
+          0
+        end
+
+        def calculate_message_token(context)
+          self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
         end
       end
     end
