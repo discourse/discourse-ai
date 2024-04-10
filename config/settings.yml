@@ -110,6 +110,9 @@ discourse_ai:
   ai_anthropic_api_key:
     default: ""
     secret: true
+  ai_cohere_api_key:
+    default: ""
+    secret: true
   ai_stability_api_key:
     default: ""
     secret: true
@@ -336,6 +339,7 @@ discourse_ai:
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - cohere-command-r-plus
   ai_bot_add_to_header:
     default: true
     client: true

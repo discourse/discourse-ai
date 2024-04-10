@@ -17,6 +17,7 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::Gemini,
               DiscourseAi::Completions::Dialects::Mixtral,
               DiscourseAi::Completions::Dialects::Claude,
+              DiscourseAi::Completions::Dialects::Command,
             ]
 
             if Rails.env.test? || Rails.env.development?
