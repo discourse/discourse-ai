@@ -13,7 +13,6 @@ module DiscourseAi
               gpt-4
               gpt-3.5-turbo-16k
               gpt-4-32k
-              gpt-4-0125-preview
               gpt-4-turbo
               gpt-4-vision-preview
             ].include?(model_name)
@@ -75,7 +74,7 @@ module DiscourseAi
         end
 
         def default_options
-          { model: model == "gpt-4-turbo" ? "gpt-4-0125-preview" : model }
+          { model: model }
         end
 
         def provider_id
