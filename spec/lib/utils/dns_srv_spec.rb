@@ -18,9 +18,9 @@ describe DiscourseAi::Utils::DnsSrv do
 
       Discourse.cache.delete("dns_srv_lookup:#{domain}")
 
-      Faraday.stubs(:new).returns(
-        Faraday.new { |f| f.adapter :test, Faraday::Adapter::Test::Stubs.new },
-      )
+      (1..5).each do |i|
+        stub_request(:head, "https://service#{i}.example.com/").to_return(status: 200)
+      end
     end
 
     it "picks a server" do

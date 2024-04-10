@@ -49,7 +49,9 @@ module DiscourseAi
       end
 
       def self.server_election(resources)
+        return nil if resources.empty?
         return resources.first if resources.length == 1
+
         candidate = select_server(resources)
 
         if server_available?(candidate)
