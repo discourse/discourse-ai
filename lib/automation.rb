@@ -10,6 +10,15 @@ module DiscourseAi
       { id: "claude-2", name: "discourse_automation.ai_models.claude_2" },
       { id: "claude-3-sonnet", name: "discourse_automation.ai_models.claude_3_sonnet" },
       { id: "claude-3-opus", name: "discourse_automation.ai_models.claude_3_opus" },
+      { id: "claude-3-haiku", name: "discourse_automation.ai_models.claude_3_haiku" },
+      {
+        id: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        name: "discourse_automation.ai_models.mixtral_8x7b_instruct_v0_1",
+      },
+      {
+        id: "mistralai/Mistral-7B-Instruct-v0.2",
+        name: "discourse_automation.ai_models.mistral_7b_instruct_v0_2",
+      },
     ]
 
     def self.translate_model(model)
@@ -21,6 +30,14 @@ module DiscourseAi
           return "aws_bedrock:#{model}"
         else
           return "anthropic:#{model}"
+        end
+      end
+
+      if model.start_with?("mistral")
+        if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(model)
+          return "vllm:#{model}"
+        else
+          return "hugging_face:#{model}"
         end
       end
 

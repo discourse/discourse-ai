@@ -43,7 +43,7 @@ module DiscourseAi
             user: Discourse.system_user,
           )
 
-        if result.strip == search_for_text.strip
+        if result.present? && result.strip.downcase.include?(search_for_text)
           user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
           user = user || Discourse.system_user
           if canned_reply.present?
