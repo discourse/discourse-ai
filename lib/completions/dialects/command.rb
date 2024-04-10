@@ -57,7 +57,12 @@ module DiscourseAi
 
           tools_prompt = build_tools_prompt
           prompt[:preamble] = +"#{system_message}"
-          prompt[:preamble] << "\n#{tools_prompt}" if tools_prompt.present?
+          if tools_prompt.present?
+            prompt[:preamble] << "\n#{tools_prompt}"
+            prompt[
+              :preamble
+            ] << "\nNEVER attempt to run tools using JSON, always use XML. Lives depend on it."
+          end
 
           prompt[:chat_history] = chat_history if chat_history.present?
 
