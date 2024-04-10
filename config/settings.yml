@@ -264,6 +264,7 @@ discourse_ai:
       - multilingual-e5-large
       - bge-large-en
       - gemini
+      - bge-m3
     validator: "DiscourseAi::Configuration::EmbeddingsModelValidator"
   ai_embeddings_per_post_enabled:
     default: false
