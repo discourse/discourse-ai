@@ -14,6 +14,9 @@ en:
         gemini_pro: Gemini Pro
         claude_3_opus: Claude 3 Opus
         claude_3_sonnet: Claude 3 Sonnet
+        claude_3_haiku: Claude 3 Haiku
+        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Instruct V0.1
+        mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
       scriptables:
         llm_report:
           fields:
