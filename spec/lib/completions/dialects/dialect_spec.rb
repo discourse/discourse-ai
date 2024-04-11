@@ -47,6 +47,15 @@ RSpec.describe DiscourseAi::Completions::Dialects::Dialect do
 
       expect(dialect.build_tools_prompt).to include("array")
     end
+
+    it "does not break if there are no params" do
+      prompt = DiscourseAi::Completions::Prompt.new("12345")
+      prompt.tools = [{ name: "categories", description: "lookup all categories" }]
+
+      dialect = TestDialect.new(prompt, "test")
+
+      expect(dialect.build_tools_prompt).not_to include("array")
+    end
   end
 
   describe "#trim_messages" do

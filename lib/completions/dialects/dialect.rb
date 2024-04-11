@@ -158,7 +158,7 @@ module DiscourseAi
           return "" if prompt.tools.blank?
 
           has_arrays =
-            prompt.tools.any? { |tool| tool[:parameters].any? { |p| p[:type] == "array" } }
+            prompt.tools.any? { |tool| tool[:parameters]&.any? { |p| p[:type] == "array" } }
 
           (<<~TEXT).strip
             #{self.class.tool_preamble(include_array_tip: has_arrays)}
