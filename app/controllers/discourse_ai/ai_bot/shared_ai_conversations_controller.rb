@@ -26,7 +26,9 @@ module DiscourseAi
 
       def destroy
         ensure_allowed_destroy!
-        @shared_conversation.destroy
+
+        SharedAiConversation.destroy_conversation(@shared_conversation)
+
         render json:
                  success_json.merge(message: I18n.t("discourse_ai.share_ai.conversation_deleted"))
       end
