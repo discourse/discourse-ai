@@ -165,6 +165,58 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::ChatGpt, user)
   end
 
+  let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
+  let(:upload100x100) do
+    UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
+  end
+
+  describe "image support" do
+    it "can handle images" do
+      llm = DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4-turbo")
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are image bot",
+          messages: [type: :user, id: "user1", content: "hello", upload_ids: [upload100x100.id]],
+        )
+
+      encoded = prompt.encoded_uploads(prompt.messages.last)
+
+      parsed_body = nil
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+      ).to_return(status: 200, body: { choices: [message: { content: "nice pic" }] }.to_json)
+
+      completion = llm.generate(prompt, user: user)
+
+      expect(completion).to eq("nice pic")
+      expected_body = {
+        model: "gpt-4-turbo",
+        messages: [
+          { role: "system", content: "You are image bot" },
+          {
+            role: "user",
+            content: [
+              {
+                type: "image_url",
+                image_url: {
+                  url: "data:#{encoded[0][:mime_type]};base64,#{encoded[0][:base64]}",
+                },
+              },
+              { type: "text", text: "hello" },
+            ],
+            name: "user1",
+          },
+        ],
+      }
+      expect(parsed_body).to eq(expected_body)
+    end
+  end
+
   describe "#perform_completion!" do
     context "when using regular mode" do
       context "with simple prompts" do
