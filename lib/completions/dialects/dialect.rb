@@ -33,7 +33,17 @@ module DiscourseAi
             raise NotImplemented
           end
 
-          def tool_preamble
+          def tool_preamble(include_array_tip: true)
+            array_tip =
+              if include_array_tip
+                <<~TEXT
+                If a parameter type is an array, return an array of values. For example:
+                <$PARAMETER_NAME>["one","two","three"]</$PARAMETER_NAME>
+              TEXT
+              else
+                ""
+              end
+
             <<~TEXT
               In this environment you have access to a set of tools you can use to answer the user's question.
               You may call them like this.
@@ -47,16 +57,12 @@ module DiscourseAi
               </parameters>
               </invoke>
               </function_calls>
-
-              If a parameter type is an array, return a JSON array of values. For example:
-              [1,"two",3.0]
-
+              #{array_tip}
               If you wish to call multiple function in one reply, wrap multiple <invoke>
               block in a single <function_calls> block.
 
               Always prefer to lead with tool calls, if you need to execute any.
               Avoid all niceties prior to tool calls, Eg: "Let me look this up for you.." etc.
-
               Here are the complete list of tools available:
             TEXT
           end
@@ -148,6 +154,19 @@ module DiscourseAi
 
         attr_reader :prompt
 
+        def build_tools_prompt
+          return "" if prompt.tools.blank?
+
+          has_arrays =
+            prompt.tools.any? { |tool| tool[:parameters].any? { |p| p[:type] == "array" } }
+
+          (<<~TEXT).strip
+            #{self.class.tool_preamble(include_array_tip: has_arrays)}
+            <tools>
+            #{tools}</tools>
+          TEXT
+        end
+
         private
 
         attr_reader :model_name, :opts
@@ -210,16 +229,6 @@ module DiscourseAi
 
         def calculate_message_token(msg)
           self.class.tokenizer.size(msg[:content].to_s)
-        end
-
-        def build_tools_prompt
-          return "" if prompt.tools.blank?
-
-          (<<~TEXT).strip
-            #{self.class.tool_preamble}
-            <tools>
-            #{tools}</tools>
-          TEXT
         end
       end
     end
