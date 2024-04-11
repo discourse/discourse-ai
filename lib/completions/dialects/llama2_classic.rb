@@ -33,7 +33,7 @@ module DiscourseAi
               elsif msg[:type] == :model
                 memo << "\n#{msg[:content]}"
               elsif msg[:type] == :tool
-                tool = JSON.parse(msg[:content], symbolize_names: true)
+                JSON.parse(msg[:content], symbolize_names: true)
                 memo << "\n[INST]\n"
 
                 memo << (<<~TEXT).strip

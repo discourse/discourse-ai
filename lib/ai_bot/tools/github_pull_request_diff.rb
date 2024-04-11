@@ -63,7 +63,7 @@ module DiscourseAi
 
           if response_code == "200"
             diff = body
-            diff = sort_and_shorten_diff(diff)
+            diff = self.class.sort_and_shorten_diff(diff)
             diff = truncate(diff, max_length: 20_000, percent_length: 0.3, llm: llm)
             { diff: diff }
           else
@@ -75,14 +75,12 @@ module DiscourseAi
           { repo: repo, pull_id: pull_id, url: url }
         end
 
-        private
-
-        def sort_and_shorten_diff(diff, threshold: LARGE_OBJECT_THRESHOLD)
+        def self.sort_and_shorten_diff(diff, threshold: LARGE_OBJECT_THRESHOLD)
           # This regex matches the start of a new file in the diff,
           # capturing the file paths for later use.
           file_start_regex = /^diff --git.*/
 
-          prev_start = 0
+          prev_start = -1
           prev_match = nil
 
           split = []
@@ -90,9 +88,8 @@ module DiscourseAi
           diff.scan(file_start_regex) do |match|
             match_start = $~.offset(0)[0] # Get the start position of this match
 
-            if prev_start != 0
+            if prev_start != -1
               full_diff = diff[prev_start...match_start]
-
               split << [prev_match, full_diff]
             end
 
