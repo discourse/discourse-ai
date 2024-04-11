@@ -7,6 +7,43 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
   let(:bot_user) { Fabricate(:user) }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4") }
 
+  context "with #sort_and_shorten_diff" do
+    it "sorts and shortens the diff without dropping data" do
+      diff = <<~DIFF
+      diff --git a/src/lib.rs b/src/lib.rs
+      index b466edd..66b068f 100644
+      --- a/src/lib.rs
+      +++ b/src/lib.rs
+      this is a longer diff
+      this is a longer diff
+      this is a longer diff
+      diff --git a/tests/test_encoding.py b/tests/test_encoding.py
+      index 27b2192..9f31319 100644
+      --- a/tests/test_encoding.py
+      +++ b/tests/test_encoding.py
+      short diff
+      DIFF
+
+      sorted_diff = described_class.sort_and_shorten_diff(diff)
+
+      expect(sorted_diff).to eq(<<~DIFF)
+      diff --git a/tests/test_encoding.py b/tests/test_encoding.py
+      index 27b2192..9f31319 100644
+      --- a/tests/test_encoding.py
+      +++ b/tests/test_encoding.py
+      short diff
+
+      diff --git a/src/lib.rs b/src/lib.rs
+      index b466edd..66b068f 100644
+      --- a/src/lib.rs
+      +++ b/src/lib.rs
+      this is a longer diff
+      this is a longer diff
+      this is a longer diff
+      DIFF
+    end
+  end
+
   context "with a valid pull request" do
     let(:repo) { "discourse/discourse-automation" }
     let(:pull_id) { 253 }
