@@ -11,7 +11,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mixtral do
       llama2_classic_version = <<~TEXT
       <s> [INST]
       #{context.system_insts}
-      #{described_class.tool_preamble}
+      #{described_class.tool_preamble(include_array_tip: false)}
       <tools>
       #{context.dialect_tools}</tools>
       [/INST] Ok </s>
@@ -27,7 +27,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mixtral do
       expected = +(<<~TEXT).strip
       <s> [INST]
       #{context.system_insts}
-      #{described_class.tool_preamble}
+      #{described_class.tool_preamble(include_array_tip: false)}
       <tools>
       #{context.dialect_tools}</tools>
       [/INST] Ok </s>

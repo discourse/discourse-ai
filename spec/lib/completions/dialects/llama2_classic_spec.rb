@@ -12,7 +12,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Llama2Classic do
       [INST]
       <<SYS>>
       #{context.system_insts}
-      #{described_class.tool_preamble}
+      #{described_class.tool_preamble(include_array_tip: false)}
       <tools>
       #{context.dialect_tools}</tools>
       <</SYS>>
@@ -30,7 +30,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Llama2Classic do
       [INST]
       <<SYS>>
       #{context.system_insts}
-      #{described_class.tool_preamble}
+      #{described_class.tool_preamble(include_array_tip: false)}
       <tools>
       #{context.dialect_tools}</tools>
       <</SYS>>
