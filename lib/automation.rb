@@ -19,11 +19,14 @@ module DiscourseAi
         id: "mistralai/Mistral-7B-Instruct-v0.2",
         name: "discourse_automation.ai_models.mistral_7b_instruct_v0_2",
       },
+      { id: "command-r", name: "discourse_automation.ai_models.command_r" },
+      { id: "command-r-plus", name: "discourse_automation.ai_models.command_r_plus" },
     ]
 
     def self.translate_model(model)
       return "google:gemini-pro" if model == "gemini-pro"
       return "open_ai:#{model}" if model.start_with? "gpt"
+      return "cohere:#{model}" if model.start_with? "command"
 
       if model.start_with? "claude"
         if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(model)

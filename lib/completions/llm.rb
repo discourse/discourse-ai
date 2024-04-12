@@ -41,6 +41,7 @@ module DiscourseAi
                 Llama2-*-chat-hf
                 Llama2-chat-hf
               ],
+              cohere: %w[command-light command command-r command-r-plus],
               open_ai: %w[
                 gpt-3.5-turbo
                 gpt-4
