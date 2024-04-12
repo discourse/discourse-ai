@@ -12,7 +12,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.column :embeddings, "halfvec", null: false
       t.timestamps
 
-      t.index :model_id, :strategy_id, :topic_id, unique: true
+      t.index %i[model_id strategy_id topic_id], unique: true
     end
 
     create_table :ai_post_embeddings, id: false do |t|
@@ -25,7 +25,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.column :embeddings, "halfvec", null: false
       t.timestamps
 
-      t.index :model_id, :strategy_id, :post_id, unique: true
+      t.index %i[model_id strategy_id post_id], unique: true
     end
 
     create_table :ai_document_fragment_embeddings, id: false do |t|
@@ -38,7 +38,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.column :embeddings, "halfvec", null: false
       t.timestamps
 
-      t.index :model_id, :strategy_id, :rag_document_fragment_id, unique: true
+      t.index %i[model_id strategy_id rag_document_fragment_id], unique: true
     end
 
     # Copy data from old tables to new tables
