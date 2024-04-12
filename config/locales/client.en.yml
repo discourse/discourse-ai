@@ -141,6 +141,8 @@ en:
         default_llm: Default Language Model
         default_llm_help: The default language model to use for this persona. Required if you wish to mention persona on public posts.
         system_prompt: System Prompt
+        show_indexing_options: "Show Indexing Options"
+        hide_indexing_options: "Hide Indexing Options"
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"

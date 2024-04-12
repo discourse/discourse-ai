@@ -38,6 +38,7 @@ export default class PersonaEditor extends Component {
   @tracked showDelete = false;
   @tracked maxPixelsValue = null;
   @tracked ragIndexingStatuses = null;
+  @tracked showIndexingOptions = false;
 
   @action
   updateModel() {
@@ -46,6 +47,13 @@ export default class PersonaEditor extends Component {
     this.maxPixelsValue = this.findClosestPixelValue(
       this.editingModel.vision_max_pixels
     );
+  }
+
+  @action
+  toggleIndexingOptions(event) {
+    this.showIndexingOptions = !this.showIndexingOptions;
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   findClosestPixelValue(pixels) {
@@ -58,10 +66,6 @@ export default class PersonaEditor extends Component {
     return value;
   }
 
-  get showRagParams() {
-    return !this.args.model.isNew;
-  }
-
   @cached
   get maxPixelValues() {
     const l = (key) =>
@@ -71,6 +75,12 @@ export default class PersonaEditor extends Component {
       { id: "medium", name: l("medium"), pixels: 262144 },
       { id: "high", name: l("high"), pixels: 1048576 },
     ];
+  }
+
+  get indexingOptionsText() {
+    return this.showIndexingOptions
+      ? I18n.t("discourse_ai.ai_persona.hide_indexing_options")
+      : I18n.t("discourse_ai.ai_persona.show_indexing_options");
   }
 
   @action
@@ -452,8 +462,13 @@ export default class PersonaEditor extends Component {
             @onAdd={{this.addUpload}}
             @onRemove={{this.removeUpload}}
           />
+          <a
+            href="#"
+            class="ai-persona-editor__indexing-options"
+            {{on "click" this.toggleIndexingOptions}}
+          >{{this.indexingOptionsText}}</a>
         </div>
-        {{#if this.showRagParams}}
+        {{#if this.showIndexingOptions}}
           <div class="control-group">
             <label>{{I18n.t "discourse_ai.ai_persona.rag_chunk_tokens"}}</label>
             <Input
