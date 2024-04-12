@@ -9,7 +9,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.integer :strategy_id, null: false
       t.integer :strategy_version, null: false
       t.text :digest, null: false
-      t.column :embeddings, "vector", null: false
+      t.column :embeddings, "halfvec", null: false
       t.timestamps
 
       t.index :model_id, :strategy_id, :topic_id, unique: true
@@ -22,7 +22,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.integer :strategy_id, null: false
       t.integer :strategy_version, null: false
       t.text :digest, null: false
-      t.column :embeddings, "vector", null: false
+      t.column :embeddings, "halfvec", null: false
       t.timestamps
 
       t.index :model_id, :strategy_id, :post_id, unique: true
@@ -35,7 +35,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.integer :strategy_id, null: false
       t.integer :strategy_version, null: false
       t.text :digest, null: false
-      t.column :embeddings, "vector", null: false
+      t.column :embeddings, "halfvec", null: false
       t.timestamps
 
       t.index :model_id, :strategy_id, :rag_document_fragment_id, unique: true
@@ -71,6 +71,10 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       SELECT topic_id, 7, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
       FROM ai_topic_embeddings_7_1;
 
+      INSERT INTO ai_topic_embeddings (topic_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
+      SELECT topic_id, 8, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
+      FROM ai_topic_embeddings_8_1;
+
       INSERT INTO ai_post_embeddings (post_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
       SELECT post_id, 1, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
       FROM ai_post_embeddings_1_1;
@@ -99,6 +103,10 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       SELECT post_id, 7, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
       FROM ai_post_embeddings_7_1;
 
+      INSERT INTO ai_post_embeddings (post_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
+      SELECT post_id, 8, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
+      FROM ai_post_embeddings_8_1;
+
       INSERT INTO ai_document_fragment_embeddings (rag_document_fragment_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
       SELECT rag_document_fragment_id, 1, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
       FROM ai_document_fragment_embeddings_1_1;
@@ -126,6 +134,10 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       INSERT INTO ai_document_fragment_embeddings (rag_document_fragment_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
       SELECT rag_document_fragment_id, 7, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
       FROM ai_document_fragment_embeddings_7_1;
+
+      INSERT INTO ai_document_fragment_embeddings (rag_document_fragment_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
+      SELECT rag_document_fragment_id, 8, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
+      FROM ai_document_fragment_embeddings_8_1;
     SQL
 
     drop_table :ai_topic_embeddings_1_1
@@ -135,6 +147,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
     drop_table :ai_topic_embeddings_5_1
     drop_table :ai_topic_embeddings_6_1
     drop_table :ai_topic_embeddings_7_1
+    drop_table :ai_topic_embeddings_8_1
     drop_table :ai_post_embeddings_1_1
     drop_table :ai_post_embeddings_2_1
     drop_table :ai_post_embeddings_3_1
@@ -142,6 +155,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
     drop_table :ai_post_embeddings_5_1
     drop_table :ai_post_embeddings_6_1
     drop_table :ai_post_embeddings_7_1
+    drop_table :ai_post_embeddings_8_1
     drop_table :ai_document_fragment_embeddings_1_1
     drop_table :ai_document_fragment_embeddings_2_1
     drop_table :ai_document_fragment_embeddings_3_1
@@ -149,5 +163,6 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
     drop_table :ai_document_fragment_embeddings_5_1
     drop_table :ai_document_fragment_embeddings_6_1
     drop_table :ai_document_fragment_embeddings_7_1
+    drop_table :ai_document_fragment_embeddings_8_1
   end
 end

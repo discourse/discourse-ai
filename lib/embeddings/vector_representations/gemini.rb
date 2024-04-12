@@ -39,7 +39,7 @@ module DiscourseAi
         end
 
         def pg_index_type
-          "vector_cosine_ops"
+          "halfvec_cosine_ops"
         end
 
         def vector_from(text, asymetric: false)
