@@ -210,7 +210,7 @@ module DiscourseAi
         end
 
         plugin.on(:site_setting_changed) do |name, old_value, new_value|
-          if name == "ai_embeddings_model" && SiteSetting.ai_embeddings_enabled? &&
+          if name == :ai_embeddings_model && SiteSetting.ai_embeddings_enabled? &&
                new_value != old_value
             RagDocumentFragment.delete_all
             UploadReference

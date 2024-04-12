@@ -29,7 +29,7 @@ class AiPersona < ActiveRecord::Base
 
   before_destroy :ensure_not_system
 
-  after_update :regenerate_rag_fragments
+  before_update :regenerate_rag_fragments
 
   class MultisiteHash
     def initialize(id)
@@ -330,7 +330,6 @@ class AiPersona < ActiveRecord::Base
   end
 
   def regenerate_rag_fragments
-    # TODO test this is not firing
     if rag_chunk_tokens_changed? || rag_chunk_overlap_tokens_changed?
       RagDocumentFragment.where(ai_persona: self).delete_all
     end
