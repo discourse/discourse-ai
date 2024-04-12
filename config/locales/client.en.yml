@@ -141,6 +141,8 @@ en:
         default_llm: Default Language Model
         default_llm_help: The default language model to use for this persona. Required if you wish to mention persona on public posts.
         system_prompt: System Prompt
+        show_indexing_options: "Show Indexing Options"
+        hide_indexing_options: "Hide Indexing Options"
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"
@@ -158,6 +160,12 @@ en:
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
         command_options: "Command Options"
+        rag_chunk_tokens: "RAG Chunk Tokens"
+        rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
+        rag_chunk_overlap_tokens: "RAG Chunk Overlap Tokens"
+        rag_chunk_overlap_tokens_help: "The number of tokens to overlap between chunks in the RAG model. (changing will re-index all uploads)"
+        rag_conversation_chunks: "RAG Conversation Chunks"
+        rag_conversation_chunks_help: "The number of chunks to use for the RAG model searches. Increase to increase the amount of context the AI can use."
         what_are_personas: "What are AI Personas?"
         no_persona_selected: |
           AI Personas are a powerful feature that allows you to customize the behavior of the AI engine in your Discourse forum. They act as a 'system message' that guides the AI's responses and interactions, helping to create a more personalized and engaging user experience.

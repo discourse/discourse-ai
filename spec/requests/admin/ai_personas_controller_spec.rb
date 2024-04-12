@@ -224,6 +224,26 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(persona.temperature).to eq(nil)
     end
 
+    it "supports updating rag params" do
+      persona = Fabricate(:ai_persona, name: "test_bot2")
+
+      put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",
+          params: {
+            ai_persona: {
+              rag_chunk_tokens: "102",
+              rag_chunk_overlap_tokens: "12",
+              rag_conversation_chunks: "13",
+            },
+          }
+
+      expect(response).to have_http_status(:ok)
+      persona.reload
+
+      expect(persona.rag_chunk_tokens).to eq(102)
+      expect(persona.rag_chunk_overlap_tokens).to eq(12)
+      expect(persona.rag_conversation_chunks).to eq(13)
+    end
+
     it "supports updating vision params" do
       persona = Fabricate(:ai_persona, name: "test_bot2")
       put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",

@@ -224,7 +224,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     context "when a persona has RAG uploads" do
       fab!(:upload)
 
-      def stub_fragments(limit)
+      def stub_fragments(limit, expected_limit: nil)
         candidate_ids = []
 
         limit.times do |i|
@@ -239,6 +239,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
           .any_instance
           .expects(:asymmetric_rag_fragment_similarity_search)
+          .with { |args, kwargs| kwargs[:limit] == (expected_limit || limit) }
           .returns(candidate_ids)
       end
 
@@ -280,11 +281,40 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         end
       end
 
+      context "when persona allows for less fragments" do
+        before { stub_fragments(3) }
+
+        it "will only pick 3 fragments" do
+          custom_ai_persona =
+            Fabricate(
+              :ai_persona,
+              name: "custom",
+              rag_conversation_chunks: 3,
+              allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+            )
+
+          UploadReference.ensure_exist!(target: custom_ai_persona, upload_ids: [upload.id])
+
+          custom_persona =
+            DiscourseAi::AiBot::Personas::Persona.find_by(id: custom_ai_persona.id, user: user).new
+
+          expect(custom_persona.class.rag_conversation_chunks).to eq(3)
+
+          crafted_system_prompt = custom_persona.craft_prompt(with_cc).messages.first[:content]
+
+          expect(crafted_system_prompt).to include("fragment-n0")
+          expect(crafted_system_prompt).to include("fragment-n1")
+          expect(crafted_system_prompt).to include("fragment-n2")
+          expect(crafted_system_prompt).not_to include("fragment-n3")
+        end
+      end
+
       context "when the reranker is available" do
         before do
           SiteSetting.ai_hugging_face_tei_reranker_endpoint = "https://test.reranker.com"
 
-          stub_fragments(15) # Mimic limit being more than 10 results
+          # hard coded internal implementation, reranker takes x5 number of chunks
+          stub_fragments(15, expected_limit: 50) # Mimic limit being more than 10 results
         end
 
         it "uses the re-ranker to reorder the fragments and pick the top 10 candidates" do

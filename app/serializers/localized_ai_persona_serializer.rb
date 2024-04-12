@@ -19,7 +19,10 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :user_id,
              :max_context_posts,
              :vision_enabled,
-             :vision_max_pixels
+             :vision_max_pixels,
+             :rag_chunk_tokens,
+             :rag_chunk_overlap_tokens,
+             :rag_conversation_chunks
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object

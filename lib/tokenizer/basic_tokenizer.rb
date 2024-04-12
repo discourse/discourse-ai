@@ -16,11 +16,18 @@ module DiscourseAi
           tokenize(text).size
         end
 
+        def decode(token_ids)
+          tokenizer.decode(token_ids)
+        end
+
+        def encode(tokens)
+          tokenizer.encode(tokens).ids
+        end
+
         def truncate(text, max_length)
           # fast track common case, /2 to handle unicode chars
           # than can take more than 1 token per char
           return text if !SiteSetting.ai_strict_token_counting && text.size < max_length / 2
-
           tokenizer.decode(tokenizer.encode(text).ids.take(max_length))
         end
 

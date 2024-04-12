@@ -121,6 +121,9 @@ module DiscourseAi
             :max_context_posts,
             :vision_enabled,
             :vision_max_pixels,
+            :rag_chunk_tokens,
+            :rag_chunk_overlap_tokens,
+            :rag_conversation_chunks,
             allowed_group_ids: [],
             rag_uploads: [:id],
           )
