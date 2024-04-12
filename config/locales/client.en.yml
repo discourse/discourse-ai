@@ -17,6 +17,8 @@ en:
         claude_3_haiku: Claude 3 Haiku
         mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Instruct V0.1
         mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
+        command_r: Cohere Command R
+        command_r_plus: Cohere Command R+
       scriptables:
         llm_report:
           fields:
