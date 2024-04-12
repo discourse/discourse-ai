@@ -3,6 +3,9 @@
 module ::Jobs
   class GenerateRagEmbeddings < ::Jobs::Base
     sidekiq_options queue: "low"
+    # there are lots of jobs here
+    # for now reducing concurrency to 1 so we don't starve sidekiq
+    cluster_concurrency 1
 
     def execute(args)
       return if (fragments = RagDocumentFragment.where(id: args[:fragment_ids].to_a)).empty?
