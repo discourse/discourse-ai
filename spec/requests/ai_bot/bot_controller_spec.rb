@@ -36,13 +36,20 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       SiteSetting.ai_bot_debugging_allowed_groups = user.groups.first.id.to_s
 
       get "/discourse-ai/ai-bot/post/#{pm_post.id}/show-debug-info"
-
       expect(response.status).to eq(200)
 
       expect(response.parsed_body["request_tokens"]).to eq(1)
       expect(response.parsed_body["response_tokens"]).to eq(2)
       expect(response.parsed_body["raw_request_payload"]).to eq("request")
       expect(response.parsed_body["raw_response_payload"]).to eq("response")
+
+      post2 = Fabricate(:post, topic: pm_topic)
+
+      # return previous post if current has no debug info
+      get "/discourse-ai/ai-bot/post/#{post2.id}/show-debug-info"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["request_tokens"]).to eq(1)
+      expect(response.parsed_body["response_tokens"]).to eq(2)
     end
   end
 

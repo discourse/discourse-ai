@@ -10,7 +10,13 @@ module DiscourseAi
         post = Post.find(params[:post_id])
         guardian.ensure_can_debug_ai_bot_conversation!(post)
 
-        debug_info = AiApiAuditLog.where(post_id: post.id).order(created_at: :desc).first
+        posts =
+          Post
+            .where("post_number <= ?", post.post_number)
+            .where(topic_id: post.topic_id)
+            .order("post_number DESC")
+
+        debug_info = AiApiAuditLog.where(post: posts).order(created_at: :desc).first
 
         render json: debug_info, status: 200
       end

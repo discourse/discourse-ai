@@ -144,6 +144,18 @@ span.onebox-ai-llm-title {
 
 .d-modal.ai-debug-modal {
   --modal-max-width: 99%;
+  ul {
+    padding-left: 1em;
+  }
+
+  li {
+    margin-bottom: 0.2em;
+  }
+
+  li > ul {
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+  }
 }
 
 .ai-debug-modal__tokens span {

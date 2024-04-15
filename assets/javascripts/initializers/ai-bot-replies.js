@@ -112,20 +112,8 @@ function initializeDebugButton(api) {
 
   let debugAiResponse = async function ({ post }) {
     const modal = api.container.lookup("service:modal");
-    // message is attached to previous post so look it up...
-    const postStream = post.topic.get("postStream");
 
-    let previousPost;
-
-    for (let i = 0; i < postStream.posts.length; i++) {
-      let p = postStream.posts[i];
-      if (p.id === post.id) {
-        break;
-      }
-      previousPost = p;
-    }
-
-    modal.show(DebugAiModal, { model: previousPost });
+    modal.show(DebugAiModal, { model: post });
   };
 
   api.addPostMenuButton("debugAi", (post) => {
