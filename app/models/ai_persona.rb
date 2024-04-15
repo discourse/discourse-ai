@@ -76,6 +76,32 @@ class AiPersona < ActiveRecord::Base
       .map(&:class_instance)
   end
 
+  def self.persona_users(user: nil)
+    persona_users =
+      persona_cache[:persona_users] ||= AiPersona
+        .where(enabled: true)
+        .joins(:user)
+        .pluck(
+          "ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm, mentionable",
+        )
+        .map do |id, user_id, username, allowed_group_ids, default_llm, mentionable|
+          {
+            id: id,
+            user_id: user_id,
+            username: username,
+            allowed_group_ids: allowed_group_ids,
+            default_llm: default_llm,
+            mentionable: mentionable,
+          }
+        end
+
+    if user
+      persona_users.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
+    else
+      persona_users
+    end
+  end
+
   def self.mentionables(user: nil)
     all_mentionables =
       persona_cache[:mentionable_usernames] ||= AiPersona

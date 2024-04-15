@@ -2,6 +2,19 @@
 
 module DiscourseAi
   module GuardianExtensions
+    def can_debug_ai_bot_conversation?(target)
+      return false if anonymous?
+
+      return false if !can_see?(target)
+
+      if !SiteSetting.discourse_ai_enabled || !SiteSetting.ai_bot_enabled ||
+           !SiteSetting.ai_bot_debugging_allowed_groups_map.any?
+        return false
+      end
+
+      user.in_any_groups?(SiteSetting.ai_bot_debugging_allowed_groups_map)
+    end
+
     def can_share_ai_bot_conversation?(target)
       return false if anonymous?
 

@@ -34,7 +34,7 @@ export default class PersonaRagUploader extends Component.extend(
 
     this.filteredUploads = this.ragUploads || [];
 
-    if (this.ragUploads?.length) {
+    if (this.ragUploads?.length && this.persona?.id) {
       ajax(
         `/admin/plugins/discourse-ai/ai-personas/${this.persona.id}/files/status.json`
       ).then((statuses) => {

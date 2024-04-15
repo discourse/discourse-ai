@@ -160,11 +160,11 @@ en:
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
         command_options: "Command Options"
-        rag_chunk_tokens: "RAG Chunk Tokens"
+        rag_chunk_tokens: "Upload Chunk Tokens"
         rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
-        rag_chunk_overlap_tokens: "RAG Chunk Overlap Tokens"
+        rag_chunk_overlap_tokens: "Upload Chunk Overlap Tokens"
         rag_chunk_overlap_tokens_help: "The number of tokens to overlap between chunks in the RAG model. (changing will re-index all uploads)"
-        rag_conversation_chunks: "RAG Conversation Chunks"
+        rag_conversation_chunks: "Search Conversation Chunks"
         rag_conversation_chunks_help: "The number of chunks to use for the RAG model searches. Increase to increase the amount of context the AI can use."
         what_are_personas: "What are AI Personas?"
         no_persona_selected: |
@@ -187,6 +187,8 @@ en:
           indexed: "Indexed"
           indexing: "Indexing"
           uploaded: "Ready to be indexed"
+          uploading: "Uploading..."
+          remove: "Remove upload"
 
       related_topics:
         title: "Related Topics"
@@ -256,6 +258,13 @@ en:
         shortcut_title: "Start a PM with an AI bot"
         share: "Share AI conversation"
         conversation_shared: "Conversation copied"
+        debug_ai: "View raw AI request and response"
+        debug_ai_modal:
+          title: "View AI interaction"
+          copy_request: "Copy request"
+          copy_response: "Copy response"
+          request_tokens: "Request tokens:"
+          response_tokens: "Response tokens:"
 
         share_full_topic_modal:
           title: "Share Conversation Publicly"

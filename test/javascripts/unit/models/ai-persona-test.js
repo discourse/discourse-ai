@@ -87,6 +87,9 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       vision_enabled: true,
       vision_max_pixels: 100,
       rag_uploads: [],
+      rag_chunk_tokens: 374,
+      rag_chunk_overlap_tokens: 10,
+      rag_conversation_chunks: 10,
     };
 
     const aiPersona = AiPersona.create({ ...properties });

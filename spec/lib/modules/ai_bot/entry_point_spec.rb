@@ -23,6 +23,14 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
         bot_allowed_group.add(admin)
       end
 
+      it "adds a can_debug_ai_bot_conversations method to current user" do
+        SiteSetting.ai_bot_debugging_allowed_groups = bot_allowed_group.id.to_s
+        serializer = CurrentUserSerializer.new(admin, scope: Guardian.new(admin))
+        serializer = serializer.as_json
+
+        expect(serializer[:current_user][:can_debug_ai_bot_conversations]).to eq(true)
+      end
+
       it "adds mentionables to current_user_serializer" do
         Group.refresh_automatic_groups!
 
@@ -42,6 +50,22 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
         persona_bot = bots.find { |bot| bot["id"] == persona.user_id }
 
         expect(persona_bot["username"]).to eq(persona.user.username)
+        expect(persona_bot["mentionable"]).to eq(true)
+      end
+
+      it "includes user ids for all personas in the serializer" do
+        Group.refresh_automatic_groups!
+
+        persona = Fabricate(:ai_persona, enabled: true, allowed_group_ids: [bot_allowed_group.id])
+        persona.create_user!
+
+        serializer = CurrentUserSerializer.new(admin, scope: Guardian.new(admin))
+        serializer = serializer.as_json
+        bots = serializer[:current_user][:ai_enabled_chat_bots]
+
+        persona_bot = bots.find { |bot| bot["id"] == persona.user_id }
+        expect(persona_bot["username"]).to eq(persona.user.username)
+        expect(persona_bot["mentionable"]).to eq(false)
       end
 
       it "queues a job to generate a reply by the AI" do
