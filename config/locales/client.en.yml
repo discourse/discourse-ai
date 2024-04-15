@@ -258,6 +258,13 @@ en:
         shortcut_title: "Start a PM with an AI bot"
         share: "Share AI conversation"
         conversation_shared: "Conversation copied"
+        debug_ai: "View raw AI request and response"
+        debug_ai_modal:
+          title: "View AI interaction"
+          copy_request: "Copy request"
+          copy_response: "Copy response"
+          request_tokens: "Request tokens:"
+          response_tokens: "Response tokens:"
 
         share_full_topic_modal:
           title: "Share Conversation Publicly"

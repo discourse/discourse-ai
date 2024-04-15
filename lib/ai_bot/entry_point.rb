@@ -141,6 +141,16 @@ module DiscourseAi
 
         plugin.add_to_serializer(
           :current_user,
+          :can_debug_ai_bot_conversations,
+          include_condition: -> do
+            SiteSetting.ai_bot_enabled && scope.authenticated? &&
+              SiteSetting.ai_bot_debugging_allowed_groups.present? &&
+              scope.user.in_any_groups?(SiteSetting.ai_bot_debugging_allowed_groups_map)
+          end,
+        ) { true }
+
+        plugin.add_to_serializer(
+          :current_user,
           :ai_enabled_chat_bots,
           include_condition: -> do
             SiteSetting.ai_bot_enabled && scope.authenticated? &&

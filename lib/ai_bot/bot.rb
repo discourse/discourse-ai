@@ -33,7 +33,6 @@ module DiscourseAi
             system_insts,
             messages: conversation_context,
             topic_id: post.topic_id,
-            post_id: post.id,
           )
 
         title_prompt.push(

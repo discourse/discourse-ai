@@ -2,12 +2,51 @@
 
 RSpec.describe DiscourseAi::AiBot::BotController do
   fab!(:user)
+  fab!(:pm_topic) { Fabricate(:private_message_topic) }
+  fab!(:pm_post) { Fabricate(:post, topic: pm_topic) }
+
   before { sign_in(user) }
 
-  describe "#stop_streaming_response" do
-    fab!(:pm_topic) { Fabricate(:private_message_topic) }
-    fab!(:pm_post) { Fabricate(:post, topic: pm_topic) }
+  describe "#show_debug_info" do
+    before do
+      SiteSetting.ai_bot_enabled = true
+      SiteSetting.discourse_ai_enabled = true
+    end
 
+    it "returns a 403 when the user cannot debug the AI bot conversation" do
+      get "/discourse-ai/ai-bot/post/#{pm_post.id}/show-debug-info"
+      expect(response.status).to eq(403)
+    end
+
+    it "returns debug info if the user can debug the AI bot conversation" do
+      user = pm_topic.topic_allowed_users.first.user
+      sign_in(user)
+
+      AiApiAuditLog.create!(
+        post_id: pm_post.id,
+        provider_id: 1,
+        topic_id: pm_topic.id,
+        raw_request_payload: "request",
+        raw_response_payload: "response",
+        request_tokens: 1,
+        response_tokens: 2,
+      )
+
+      Group.refresh_automatic_groups!
+      SiteSetting.ai_bot_debugging_allowed_groups = user.groups.first.id.to_s
+
+      get "/discourse-ai/ai-bot/post/#{pm_post.id}/show-debug-info"
+
+      expect(response.status).to eq(200)
+
+      expect(response.parsed_body["request_tokens"]).to eq(1)
+      expect(response.parsed_body["response_tokens"]).to eq(2)
+      expect(response.parsed_body["raw_request_payload"]).to eq("request")
+      expect(response.parsed_body["raw_response_payload"]).to eq("response")
+    end
+  end
+
+  describe "#stop_streaming_response" do
     let(:redis_stream_key) { "gpt_cancel:#{pm_post.id}" }
 
     before { Discourse.redis.setex(redis_stream_key, 60, 1) }

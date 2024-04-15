@@ -3,6 +3,7 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
+import DebugAiModal from "../discourse/components/modal/debug-ai-modal";
 import ShareModal from "../discourse/components/modal/share-modal";
 import streamText from "../discourse/lib/ai-streamer";
 import copyConversation from "../discourse/lib/copy-conversation";
@@ -11,6 +12,7 @@ import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
 import { showShareConversationModal } from "../discourse/lib/ai-bot-helper";
 
 let enabledChatBotIds = [];
+let allowDebug = false;
 function isGPTBot(user) {
   return user && enabledChatBotIds.includes(user.id);
 }
@@ -102,6 +104,56 @@ function initializePersonaDecorator(api) {
 
 const MAX_PERSONA_USER_ID = -1200;
 
+function initializeDebugButton(api) {
+  const currentUser = api.getCurrentUser();
+  if (!currentUser || !currentUser.ai_enabled_chat_bots || !allowDebug) {
+    return;
+  }
+
+  let debugAiResponse = async function ({ post }) {
+    const modal = api.container.lookup("service:modal");
+    // message is attached to previous post so look it up...
+    const postStream = post.topic.get("postStream");
+
+    let previousPost;
+
+    for (let i = 0; i < postStream.posts.length; i++) {
+      let p = postStream.posts[i];
+      if (p.id === post.id) {
+        break;
+      }
+      previousPost = p;
+    }
+
+    modal.show(DebugAiModal, { model: previousPost });
+  };
+
+  api.addPostMenuButton("debugAi", (post) => {
+    if (post.topic?.archetype !== "private_message") {
+      return;
+    }
+
+    if (
+      !currentUser.ai_enabled_chat_bots.any(
+        (bot) => post.username === bot.username
+      )
+    ) {
+      // special handling for personas (persona bot users start at ID -1200 and go down)
+      if (post.user_id > MAX_PERSONA_USER_ID) {
+        return;
+      }
+    }
+
+    return {
+      action: debugAiResponse,
+      icon: "info",
+      className: "post-action-menu__debug-ai",
+      title: "discourse_ai.ai_bot.debug_ai",
+      position: "first",
+    };
+  });
+}
+
 function initializeShareButton(api) {
   const currentUser = api.getCurrentUser();
   if (!currentUser || !currentUser.ai_enabled_chat_bots) {
@@ -113,6 +165,7 @@ function initializeShareButton(api) {
       await copyConversation(post.topic, 1, post.post_number);
       showFeedback("discourse_ai.ai_bot.conversation_shared");
     } else {
+      const modal = api.container.lookup("service:modal");
       modal.show(ShareModal, { model: post });
     }
   };
@@ -142,8 +195,6 @@ function initializeShareButton(api) {
       position: "first",
     };
   });
-
-  const modal = api.container.lookup("service:modal");
 }
 
 function initializeShareTopicButton(api) {
@@ -177,9 +228,11 @@ export default {
 
     if (user?.ai_enabled_chat_bots) {
       enabledChatBotIds = user.ai_enabled_chat_bots.map((bot) => bot.id);
+      allowDebug = user.can_debug_ai_bot_conversations;
       withPluginApi("1.6.0", attachHeaderIcon);
       withPluginApi("1.6.0", initializeAIBotReplies);
       withPluginApi("1.6.0", initializePersonaDecorator);
+      withPluginApi("1.22.0", (api) => initializeDebugButton(api, container));
       withPluginApi("1.22.0", (api) => initializeShareButton(api, container));
       withPluginApi("1.22.0", (api) =>
         initializeShareTopicButton(api, container)

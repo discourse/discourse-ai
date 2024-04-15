@@ -141,3 +141,11 @@ details.ai-quote {
 span.onebox-ai-llm-title {
   font-weight: bold;
 }
+
+.d-modal.ai-debug-modal {
+  --modal-max-width: 99%;
+}
+
+.ai-debug-modal__tokens span {
+  display: block;
+}

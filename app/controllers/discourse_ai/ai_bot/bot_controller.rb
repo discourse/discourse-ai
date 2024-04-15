@@ -6,6 +6,15 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_login
 
+      def show_debug_info
+        post = Post.find(params[:post_id])
+        guardian.ensure_can_debug_ai_bot_conversation!(post)
+
+        debug_info = AiApiAuditLog.where(post_id: post.id).order(created_at: :desc).first
+
+        render json: debug_info, status: 200
+      end
+
       def stop_streaming_response
         post = Post.find(params[:post_id])
         guardian.ensure_can_see!(post)
