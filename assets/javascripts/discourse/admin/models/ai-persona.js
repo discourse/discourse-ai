@@ -22,14 +22,10 @@ const CREATE_ATTRIBUTES = [
   "vision_enabled",
   "vision_max_pixels",
   "rag_uploads",
-];
-
-// rag params are populated on save, only show it when editing
-const ATTRIBUTES = CREATE_ATTRIBUTES.concat([
   "rag_chunk_tokens",
   "rag_chunk_overlap_tokens",
   "rag_conversation_chunks",
-]);
+];
 
 const SYSTEM_ATTRIBUTES = [
   "id",
@@ -129,7 +125,7 @@ export default class AiPersona extends RestModel {
   updateProperties() {
     let attrs = this.system
       ? this.getProperties(SYSTEM_ATTRIBUTES)
-      : this.getProperties(ATTRIBUTES);
+      : this.getProperties(CREATE_ATTRIBUTES);
     attrs.id = this.id;
     this.populateCommandOptions(attrs);
 
@@ -143,7 +139,7 @@ export default class AiPersona extends RestModel {
   }
 
   workingCopy() {
-    let attrs = this.getProperties(ATTRIBUTES);
+    let attrs = this.getProperties(CREATE_ATTRIBUTES);
     this.populateCommandOptions(attrs);
     return AiPersona.create(attrs);
   }

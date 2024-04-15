@@ -217,7 +217,9 @@ export default class PersonaEditor extends Component {
   @action
   removeUpload(upload) {
     this.editingModel.rag_uploads.removeObject(upload);
-    this.save();
+    if (!this.args.model.isNew) {
+      this.save();
+    }
   }
 
   async toggleField(field, sortPersonas) {
