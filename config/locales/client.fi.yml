@@ -115,6 +115,7 @@ fi:
         command_options: "Komentoasetukset"
         uploads:
           title: "Lataukset"
+          uploading: "Ladataan..."
       related_topics:
         title: "Liittyvät ketjut"
         pill: "Liittyy aiheeseen"

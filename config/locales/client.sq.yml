@@ -38,6 +38,8 @@ sq:
         save: Ruaj
         enabled: "Aktivizuar?"
         delete: Fshij
+        uploads:
+          uploading: "Duke ngarkuar..."
       ai_helper:
         context_menu:
           back: "Kthehu mbrapa"

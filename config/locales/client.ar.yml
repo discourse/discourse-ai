@@ -115,6 +115,7 @@ ar:
         command_options: "خيارات الأوامر"
         uploads:
           title: "التحميلات"
+          uploading: "جارٍ التحميل..."
       related_topics:
         title: "الموضوعات ذات الصلة"
         pill: "موضوعات ذات صلة"

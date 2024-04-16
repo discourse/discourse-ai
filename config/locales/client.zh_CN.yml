@@ -132,6 +132,7 @@ zh_CN:
         command_options: "命令选项"
         uploads:
           title: "上传"
+          uploading: "正在上传…"
       related_topics:
         title: "相关话题"
         pill: "相关"

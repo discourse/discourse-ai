@@ -40,6 +40,7 @@ cs:
         delete: Smazat
         uploads:
           title: "Nahrané soubory"
+          uploading: "Nahrává se..."
       ai_helper:
         context_menu:
           back: "Zpět"

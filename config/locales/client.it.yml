@@ -115,6 +115,7 @@ it:
         command_options: "Opzioni di comando"
         uploads:
           title: "Caricamenti"
+          uploading: "Caricamento..."
       related_topics:
         title: "Argomenti correlati"
         pill: "Correlato"

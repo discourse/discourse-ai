@@ -20,6 +20,7 @@ tr_TR:
         gemini_pro: Gemini Pro
         claude_3_opus: Claude 3 Opus
         claude_3_sonnet: Claude 3 Sonnet
+        claude_3_haiku: Claude 3 Haiku
       scriptables:
         llm_report:
           fields:
@@ -173,7 +174,7 @@ tr_TR:
           hint: "Dosyanın içeriğinin sistem isteminde nereye yerleştirileceğini kontrol etmek için, yukarıdaki sistem istemine {uploads} yer tutucusunu ekleyin."
           button: "Dosya Ekle"
           filter: "Yüklemeleri filtrele"
-          complete: "Tamamlandı"
+          uploading: "Yükleniyor..."
       related_topics:
         title: "İlgili Konular"
         pill: "İlgili"

@@ -40,6 +40,7 @@ el:
         delete: Σβήσιμο
         uploads:
           title: "Μεταφορτώσεις"
+          uploading: "Επιφόρτωση..."
       ai_helper:
         context_menu:
           back: "Πίσω"

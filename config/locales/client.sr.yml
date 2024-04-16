@@ -34,6 +34,8 @@ sr:
         save: Sačuvaj
         enabled: "Omgućeno"
         delete: Obriši
+        uploads:
+          uploading: "Uploading..."
       ai_helper:
         context_menu:
           back: "Nazad"

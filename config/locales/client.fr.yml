@@ -115,6 +115,7 @@ fr:
         command_options: "Options de commande"
         uploads:
           title: "Fichiers envoyés"
+          uploading: "Envoi en cours…"
       related_topics:
         title: "Sujets connexes"
         pill: "Lié"
