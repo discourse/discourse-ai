@@ -115,6 +115,7 @@ es:
         command_options: "Opciones de comando"
         uploads:
           title: "Subidos"
+          uploading: "Subiendo..."
       related_topics:
         title: "Temas relacionados"
         pill: "Relacionados"

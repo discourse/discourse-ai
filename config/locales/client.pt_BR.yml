@@ -116,6 +116,7 @@ pt_BR:
         command_options: "Opções de comando"
         uploads:
           title: "Envios"
+          uploading: "Enviando..."
       related_topics:
         title: "Tópicos relacionados"
         pill: "Relacionado(a)"

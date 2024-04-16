@@ -53,6 +53,7 @@ he:
     ai_openai_embeddings_url: "כתובת מותאמת אישית ל־API ההטמעות של OpenAI. (במקרה של Azure זה יכול להיות: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "מפתח API ל־API של OpenAI"
     ai_anthropic_api_key: "מפתח API ל־API של Anthropic"
+    ai_cohere_api_key: "מפתח API ל־API של Cohere"
     ai_hugging_face_api_url: "כתובת משלך להסקה על בסיס OpenSource LLM. עם תאימות ל־https://github.com/huggingface/text-generation-inference"
     ai_hugging_face_api_key: מפתח API ל־API של Hugging Face
     ai_hugging_face_token_limit: כמות אסימונים מרבית שה־API של Hugging Face יכול להשתמש בה לכל בקשה
@@ -94,6 +95,7 @@ he:
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."
     ai_bot_enable_chat_warning: "הצגת אזהרה עם פתיחת שיח הודעות פרטיות. אפשר לדרוס את זה על ידי עריכת מחרוזת התרגום: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "כאשר לבוט של GPT יש גישה להודעות הפרטיות, הוא יגיב לחברים בקבוצות האלה."
+    ai_bot_debugging_allowed_groups: "לאפשר לקבוצות האלו לצפות בכפתור ניפוי שיאות שמציג את בקשת ותגובה הבינה המלאכותית באופן גולמי"
     ai_bot_public_sharing_allowed_groups: "לאפשר לקבוצות האלה לשתף הודעות בינה מלאכותית פרטיות באופן ציבורי דרך קישור ייחודי שזמין לציבור"
     ai_bot_enabled_chat_bots: "מודלים זמינים שיכהנו כבוט בינה מלאכותית"
     ai_bot_add_to_header: "הצגת כפתור בכותרת כדי לפתוח הודעה פרטית עם בוט בינה מלאכותית"

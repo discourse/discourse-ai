@@ -38,6 +38,7 @@ te:
         delete: తొలగించు
         uploads:
           title: "అప్‌లోడ్‌లు"
+          uploading: "ఎగుమతవుతోంది..."
       ai_helper:
         context_menu:
           back: "వెనుకకు"

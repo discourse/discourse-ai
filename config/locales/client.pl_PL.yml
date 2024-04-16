@@ -139,6 +139,7 @@ pl_PL:
         command_options: "Opcje poleceń"
         uploads:
           title: "Pliki"
+          uploading: "Przesyłanie..."
       related_topics:
         title: "Powiązane tematy"
         pill: "Powiązane"

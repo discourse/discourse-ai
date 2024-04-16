@@ -115,6 +115,7 @@ ru:
         command_options: "Параметры команды"
         uploads:
           title: "Загрузки"
+          uploading: "Загрузка…"
       related_topics:
         title: "Связанные темы"
         pill: "Связанные"

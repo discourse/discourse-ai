@@ -115,6 +115,7 @@ ja:
         command_options: "コマンドオプション"
         uploads:
           title: "アップロード"
+          uploading: "アップロード中..."
       related_topics:
         title: "関連トピック"
         pill: "関連"

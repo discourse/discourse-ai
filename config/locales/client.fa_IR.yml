@@ -23,6 +23,8 @@ fa_IR:
               label: "شناسه موضوع"
             title:
               label: "عنوان"
+            days:
+              label: "روز"
             model:
               label: "مدل"
             categories:
@@ -58,6 +60,7 @@ fa_IR:
         delete: حذف
         uploads:
           title: "بارگذاری‌ها"
+          uploading: "در حال بار گذاری..."
       related_topics:
         title: "موضوعات مرتبط"
       ai_helper:

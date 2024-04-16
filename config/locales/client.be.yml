@@ -37,6 +37,7 @@ be:
         delete: выдаляць
         uploads:
           title: "Загрузкі"
+          uploading: "Запампоўванне ..."
       ai_helper:
         context_menu:
           back: "Назад"

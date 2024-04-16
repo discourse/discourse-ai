@@ -20,6 +20,7 @@ id:
         gemini_pro: Gemini Pro
         claude_3_opus: Karya Claude 3
         claude_3_sonnet: Claude 3 Soneta
+        claude_3_haiku: Claude 3 Haiku
       scriptables:
         llm_report:
           fields:
@@ -109,6 +110,8 @@ id:
         save: Simpan
         enabled: "Diaktifkan?"
         delete: Hapus
+        uploads:
+          uploading: "Mengunggah..."
       ai_helper:
         missing_content: "Silakan masukkan beberapa konten untuk menghasilkan saran."
         context_menu:

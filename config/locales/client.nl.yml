@@ -115,6 +115,7 @@ nl:
         command_options: "Opdrachtopties"
         uploads:
           title: "Uploads"
+          uploading: "Uploaden..."
       related_topics:
         title: "Gerelateerde topics"
         pill: "Gerelateerd"

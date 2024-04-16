@@ -40,6 +40,7 @@ vi:
         delete: Xóa
         uploads:
           title: "Tải lên"
+          uploading: "Đang đăng "
       ai_helper:
         context_menu:
           back: "Quay lại"

@@ -42,6 +42,7 @@ uk:
         delete: Видалити
         uploads:
           title: "Завантаження"
+          uploading: "Надсилання…"
       ai_helper:
         context_menu:
           back: "Назад"

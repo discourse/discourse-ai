@@ -40,6 +40,7 @@ th:
         delete: ลบ
         uploads:
           title: "อัปโหลด"
+          uploading: "กำลังอัปโหลด..."
       ai_helper:
         context_menu:
           back: "กลับ"
