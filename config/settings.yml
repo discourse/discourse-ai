@@ -339,7 +339,7 @@ discourse_ai:
       - gpt-4
       - gpt-4-turbo
       - claude-2
-      - gemini-pro
+      - gemini-1.5-pro
       - mixtral-8x7B-Instruct-V0.1
       - claude-3-opus
       - claude-3-sonnet

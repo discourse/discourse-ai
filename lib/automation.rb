@@ -7,6 +7,7 @@ module DiscourseAi
       { id: "gpt-4", name: "discourse_automation.ai_models.gpt_4" },
       { id: "gpt-3.5-turbo", name: "discourse_automation.ai_models.gpt_3_5_turbo" },
       { id: "gemini-pro", name: "discourse_automation.ai_models.gemini_pro" },
+      { id: "gemini-1.5-pro", name: "discourse_automation.ai_models.gemini_1_5_pro" },
       { id: "claude-2", name: "discourse_automation.ai_models.claude_2" },
       { id: "claude-3-sonnet", name: "discourse_automation.ai_models.claude_3_sonnet" },
       { id: "claude-3-opus", name: "discourse_automation.ai_models.claude_3_opus" },
@@ -24,7 +25,7 @@ module DiscourseAi
     ]
 
     def self.translate_model(model)
-      return "google:gemini-pro" if model == "gemini-pro"
+      return "google:#{model}" if model.start_with? "gemini"
       return "open_ai:#{model}" if model.start_with? "gpt"
       return "cohere:#{model}" if model.start_with? "command"
 

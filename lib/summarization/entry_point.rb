@@ -19,6 +19,7 @@ module DiscourseAi
             max_tokens: SiteSetting.ai_hugging_face_token_limit,
           ),
           Models::Gemini.new("google:gemini-pro", max_tokens: 32_768),
+          Models::Gemini.new("google:gemini-1.5-pro", max_tokens: 800_000),
         ]
 
         claude_prov = "anthropic"
@@ -40,8 +41,10 @@ module DiscourseAi
           max_tokens: 200_000,
         )
 
-        # no opus yet for AWS bedrock
-        foldable_models << Models::Anthropic.new("anthropic:claude-3-opus", max_tokens: 200_000)
+        foldable_models << Models::Anthropic.new(
+          "#{claude_prov}:claude-3-opus",
+          max_tokens: 200_000,
+        )
 
         mixtral_prov = "hugging_face"
         if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(
