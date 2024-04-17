@@ -23,7 +23,13 @@ module DiscourseAi
           # However, since they use the same URL/key settings, there's no reason to duplicate them.
           @models_by_provider ||=
             {
-              aws_bedrock: %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet],
+              aws_bedrock: %w[
+                claude-instant-1
+                claude-2
+                claude-3-haiku
+                claude-3-sonnet
+                claude-3-opus
+              ],
               anthropic: %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus],
               vllm: %w[
                 mistralai/Mixtral-8x7B-Instruct-v0.1

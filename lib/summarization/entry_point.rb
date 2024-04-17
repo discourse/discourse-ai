@@ -40,8 +40,10 @@ module DiscourseAi
           max_tokens: 200_000,
         )
 
-        # no opus yet for AWS bedrock
-        foldable_models << Models::Anthropic.new("anthropic:claude-3-opus", max_tokens: 200_000)
+        foldable_models << Models::Anthropic.new(
+          "#{claude_prov}:claude-3-opus",
+          max_tokens: 200_000,
+        )
 
         mixtral_prov = "hugging_face"
         if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(

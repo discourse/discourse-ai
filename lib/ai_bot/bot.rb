@@ -177,8 +177,11 @@ module DiscourseAi
         when DiscourseAi::AiBot::EntryPoint::FAKE_ID
           "fake:fake"
         when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
-          # no bedrock support yet 18-03
-          "anthropic:claude-3-opus"
+          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-opus")
+            "aws_bedrock:claude-3-opus"
+          else
+            "anthropic:claude-3-opus"
+          end
         when DiscourseAi::AiBot::EntryPoint::COHERE_COMMAND_R_PLUS
           "cohere:command-r-plus"
         when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID

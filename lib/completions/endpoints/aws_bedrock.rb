@@ -9,7 +9,9 @@ module DiscourseAi
         class << self
           def can_contact?(endpoint_name, model_name)
             endpoint_name == "aws_bedrock" &&
-              %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet].include?(model_name)
+              %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus].include?(
+                model_name,
+              )
           end
 
           def dependant_setting_names
@@ -67,6 +69,8 @@ module DiscourseAi
               "anthropic.claude-3-sonnet-20240229-v1:0"
             when "claude-instant-1"
               "anthropic.claude-instant-v1"
+            when "claude-3-opus"
+              "anthropic.claude-3-opus-20240229-v1:0"
             end
 
           api_url =
