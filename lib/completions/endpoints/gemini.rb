@@ -7,7 +7,7 @@ module DiscourseAi
         class << self
           def can_contact?(endpoint_name, model_name)
             return false unless endpoint_name == "google"
-            %w[gemini-pro].include?(model_name)
+            %w[gemini-pro gemini-1.5-pro].include?(model_name)
           end
 
           def dependant_setting_names
@@ -52,8 +52,9 @@ module DiscourseAi
         private
 
         def model_uri
+          mapped_model = model == "gemini-1.5-pro" ? "gemini-1.5-pro-latest" : model
           url =
-            "https://generativelanguage.googleapis.com/v1beta/models/#{model}:#{@streaming_mode ? "streamGenerateContent" : "generateContent"}?key=#{SiteSetting.ai_gemini_api_key}"
+            "https://generativelanguage.googleapis.com/v1beta/models/#{mapped_model}:#{@streaming_mode ? "streamGenerateContent" : "generateContent"}?key=#{SiteSetting.ai_gemini_api_key}"
 
           URI(url)
         end

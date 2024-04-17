@@ -56,7 +56,7 @@ module DiscourseAi
                 gpt-4-turbo
                 gpt-4-vision-preview
               ],
-              google: %w[gemini-pro],
+              google: %w[gemini-pro gemini-1.5-pro],
             }.tap { |h| h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development? }
         end
 

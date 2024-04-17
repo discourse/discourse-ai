@@ -25,7 +25,7 @@ module DiscourseAi
         [CLAUDE_V2_ID, "claude_bot", "claude-2"],
         [GPT4_TURBO_ID, "gpt4t_bot", "gpt-4-turbo"],
         [MIXTRAL_ID, "mixtral_bot", "mixtral-8x7B-Instruct-V0.1"],
-        [GEMINI_ID, "gemini_bot", "gemini-pro"],
+        [GEMINI_ID, "gemini_bot", "gemini-1.5-pro"],
         [FAKE_ID, "fake_bot", "fake"],
         [CLAUDE_3_OPUS_ID, "claude_3_opus_bot", "claude-3-opus"],
         [CLAUDE_3_SONNET_ID, "claude_3_sonnet_bot", "claude-3-sonnet"],
@@ -59,7 +59,7 @@ module DiscourseAi
           CLAUDE_V2_ID
         in "mixtral-8x7B-Instruct-V0.1"
           MIXTRAL_ID
-        in "gemini-pro"
+        in "gemini-1.5-pro"
           GEMINI_ID
         in "fake"
           FAKE_ID

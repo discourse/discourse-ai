@@ -19,6 +19,7 @@ module DiscourseAi
             max_tokens: SiteSetting.ai_hugging_face_token_limit,
           ),
           Models::Gemini.new("google:gemini-pro", max_tokens: 32_768),
+          Models::Gemini.new("google:gemini-1.5-pro", max_tokens: 800_000),
         ]
 
         claude_prov = "anthropic"

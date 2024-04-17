@@ -6,7 +6,7 @@ module DiscourseAi
       class Gemini < Dialect
         class << self
           def can_translate?(model_name)
-            %w[gemini-pro].include?(model_name)
+            %w[gemini-pro gemini-1.5-pro].include?(model_name)
           end
 
           def tokenizer
@@ -97,7 +97,12 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          16_384 # 50% of model tokens
+          if model_name == "gemini-1.5-pro"
+            # technically we support 1 million tokens, but we're being conservative
+            800_000
+          else
+            16_384 # 50% of model tokens
+          end
         end
 
         protected
