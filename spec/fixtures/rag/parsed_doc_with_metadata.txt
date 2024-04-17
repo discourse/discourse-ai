@@ -116,3 +116,7 @@ number: 19
 the most mundane of topics seem fascinating.
 
 In the end, Jane’s discourse AI became the stuff of legend, a shining example of what can be achieved when brilliance, determination, and a healthy dose of eccentricity come together. And as for Jane herself? Well, let’s just say that she’s already hard at work on her next project: a robot that can make the perfect cup of tea. But that, dear reader, is a story for another day.
+
+metadata: blank2
+number: 20
+abc

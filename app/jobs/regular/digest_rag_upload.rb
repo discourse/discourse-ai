@@ -98,6 +98,11 @@ module ::Jobs
           to_chunk = after_metadata
           buffer = buffer.split(metadata_regex, 2).last
           overlap = ""
+        else
+          current_metadata = new_metadata
+          buffer = buffer.split(metadata_regex, 2).last
+          overlap = ""
+          next
         end
 
         chunk, split_char = first_chunk(to_chunk, tokenizer: tokenizer, chunk_tokens: chunk_tokens)

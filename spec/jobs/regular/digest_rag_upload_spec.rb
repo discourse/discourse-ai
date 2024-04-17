@@ -57,7 +57,7 @@ RSpec.describe Jobs::DigestRagUpload do
           end
 
         # to rebuild parsed
-        # File.write("/tmp/testing", parsed)
+        #File.write("/tmp/testing", parsed)
 
         expect(parsed).to eq(parsed_document_with_metadata.read)
       end
