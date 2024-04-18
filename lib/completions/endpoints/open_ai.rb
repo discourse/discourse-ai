@@ -162,9 +162,8 @@ module DiscourseAi
           @has_function_call
         end
 
-        def maybe_has_tool?(_partial_raw)
-          # we always get a full partial
-          false
+        def native_tool_support?
+          true
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)

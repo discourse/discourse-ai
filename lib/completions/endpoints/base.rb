@@ -63,7 +63,11 @@ module DiscourseAi
           @tokenizer = tokenizer
         end
 
-        def perform_completion!(dialect, user, model_params = {})
+        def native_tool_support?
+          false
+        end
+
+        def perform_completion!(dialect, user, model_params = {}, &blk)
           allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
 
@@ -111,14 +115,21 @@ module DiscourseAi
                 response_data = extract_completion_from(response_raw)
                 partials_raw = response_data.to_s
 
-                if allow_tools && has_tool?(response_data)
-                  function_buffer = build_buffer # Nokogiri document
-                  function_buffer = add_to_function_buffer(function_buffer, payload: response_data)
+                if native_tool_support?
+                  if allow_tools && has_tool?(response_data)
+                    function_buffer = build_buffer # Nokogiri document
+                    function_buffer =
+                      add_to_function_buffer(function_buffer, payload: response_data)
+                    FunctionCallNormalizer.normalize_function_ids!(function_buffer)
 
-                  normalize_function_ids!(function_buffer)
-
-                  response_data = +function_buffer.at("function_calls").to_s
-                  response_data << "\n"
+                    response_data = +function_buffer.at("function_calls").to_s
+                    response_data << "\n"
+                  end
+                else
+                  if allow_tools
+                    response_data, function_calls = FunctionCallNormalizer.normalize(response_data)
+                    response_data = function_calls if function_calls.present?
+                  end
                 end
 
                 return response_data
@@ -128,7 +139,14 @@ module DiscourseAi
 
               begin
                 cancelled = false
-                cancel = lambda { cancelled = true }
+                cancel = -> { cancelled = true }
+
+                wrapped_blk = ->(partial, inner_cancel) do
+                  response_data << partial
+                  blk.call(partial, inner_cancel)
+                end
+
+                normalizer = FunctionCallNormalizer.new(wrapped_blk, cancel)
 
                 leftover = ""
                 function_buffer = build_buffer # Nokogiri document
@@ -159,7 +177,6 @@ module DiscourseAi
                   end
 
                   json_error = false
-                  buffered_partials = []
 
                   raw_partials.each do |raw_partial|
                     json_error = false
@@ -175,31 +192,24 @@ module DiscourseAi
                       next if response_data.empty? && partial.empty?
                       partials_raw << partial.to_s
 
-                      # Stop streaming the response as soon as you find a tool.
-                      # We'll buffer and yield it later.
-                      has_tool = true if allow_tools && has_tool?(partials_raw)
+                      if native_tool_support?
+                        # Stop streaming the response as soon as you find a tool.
+                        # We'll buffer and yield it later.
+                        has_tool = true if allow_tools && has_tool?(partials_raw)
 
-                      if has_tool
-                        if buffered_partials.present?
-                          joined = buffered_partials.join
-                          joined = joined.gsub(/<.+/, "")
-                          yield joined, cancel if joined.present?
-                          buffered_partials = []
-                        end
-                        function_buffer = add_to_function_buffer(function_buffer, partial: partial)
-                      else
-                        if maybe_has_tool?(partials_raw)
-                          buffered_partials << partial
+                        if has_tool
+                          function_buffer =
+                            add_to_function_buffer(function_buffer, partial: partial)
                         else
-                          if buffered_partials.present?
-                            buffered_partials.each do |buffered_partial|
-                              response_data << buffered_partial
-                              yield buffered_partial, cancel
-                            end
-                            buffered_partials = []
-                          end
                           response_data << partial
-                          yield partial, cancel if partial
+                          blk.call(partial, cancel) if partial
+                        end
+                      else
+                        if allow_tools
+                          normalizer << partial
+                        else
+                          response_data << partial
+                          blk.call(partial, cancel) if partial
                         end
                       end
                     rescue JSON::ParserError
@@ -220,18 +230,23 @@ module DiscourseAi
               end
 
               # Once we have the full response, try to return the tool as a XML doc.
-              if has_tool
+              if has_tool && native_tool_support?
                 function_buffer = add_to_function_buffer(function_buffer, payload: partials_raw)
 
                 if function_buffer.at("tool_name").text.present?
-                  normalize_function_ids!(function_buffer)
+                  FunctionCallNormalizer.normalize_function_ids!(function_buffer)
 
                   invocation = +function_buffer.at("function_calls").to_s
                   invocation << "\n"
 
                   response_data << invocation
-                  yield invocation, cancel
+                  blk.call(invocation, cancel)
                 end
+              end
+
+              if !native_tool_support? && function_calls = normalizer.function_calls
+                response_data << function_calls
+                blk.call(function_calls, cancel)
               end
 
               return response_data
@@ -248,21 +263,6 @@ module DiscourseAi
               end
             end
           end
-        end
-
-        def normalize_function_ids!(function_buffer)
-          function_buffer
-            .css("invoke")
-            .each_with_index do |invoke, index|
-              if invoke.at("tool_id")
-                invoke.at("tool_id").content = "tool_#{index}" if invoke
-                  .at("tool_id")
-                  .content
-                  .blank?
-              else
-                invoke.add_child("<tool_id>tool_#{index}</tool_id>\n") if !invoke.at("tool_id")
-              end
-            end
         end
 
         def final_log_update(log)
@@ -339,19 +339,6 @@ module DiscourseAi
 
         def has_tool?(response)
           response.include?("<function_calls>")
-        end
-
-        def maybe_has_tool?(response)
-          # 16 is the length of function calls
-          substring = response[-16..-1] || response
-          split = substring.split("<")
-
-          if split.length > 1
-            match = "<" + split.last
-            "<function_calls>".start_with?(match)
-          else
-            false
-          end
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
