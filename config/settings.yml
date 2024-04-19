@@ -122,6 +122,8 @@ discourse_ai:
     default: "stable-diffusion-xl-1024-v1-0"
     type: enum
     choices:
+      - "sd3"
+      - "sd3-turbo"
       - "stable-diffusion-xl-1024-v1-0"
       - "stable-diffusion-768-v2-1"
       - "stable-diffusion-v1-5"
