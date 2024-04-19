@@ -203,10 +203,6 @@ module DiscourseAi
         end
       end
 
-      def tool_invocation?(partial)
-        Nokogiri::HTML5.fragment(partial).at("invoke").present?
-      end
-
       def build_placeholder(summary, details, custom_raw: nil)
         placeholder = +(<<~HTML)
         <details>
