@@ -42,6 +42,7 @@ module ::DiscourseAi
 
         request["authorization"] = "Bearer #{api_key}"
         request["accept"] = "application/json"
+        request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
         request.set_form form_data, "multipart/form-data"
 
         response =
@@ -69,8 +70,7 @@ module ::DiscourseAi
 
       def self.perform!(
         prompt,
-        width: nil,
-        height: nil,
+        aspect_ratio: nil,
         api_key: nil,
         engine: nil,
         api_url: nil,
@@ -81,10 +81,26 @@ module ::DiscourseAi
         engine ||= SiteSetting.ai_stability_engine
         api_url ||= SiteSetting.ai_stability_api_url
 
+        image_count = 4 if image_count > 4
+
         if engine.start_with? "sd3"
-          return(
-            perform_sd3!(prompt, api_key: api_key, engine: engine, api_url: api_url, seed: seed)
-          )
+          artifacts =
+            image_count.times.map do
+              perform_sd3!(
+                prompt,
+                api_key: api_key,
+                engine: engine,
+                api_url: api_url,
+                aspect_ratio: aspect_ratio,
+                seed: seed,
+              )[
+                :artifacts
+              ][
+                0
+              ]
+            end
+
+          return { artifacts: artifacts }
         end
 
         headers = {
@@ -93,24 +109,24 @@ module ::DiscourseAi
           "Authorization" => "Bearer #{api_key}",
         }
 
-        sdxl_allowed_dimensions = [
-          [1024, 1024],
-          [1152, 896],
-          [1216, 832],
-          [1344, 768],
-          [1536, 640],
-          [640, 1536],
-          [768, 1344],
-          [832, 1216],
-          [896, 1152],
-        ]
+        ratio_to_dimension = {
+          "16:9" => [1536, 640],
+          "1:1" => [1024, 1024],
+          "21:9" => [1344, 768],
+          "2:3" => [896, 1152],
+          "3:2" => [1152, 896],
+          "4:5" => [832, 1216],
+          "5:4" => [1216, 832],
+          "9:16" => [640, 1536],
+          "9:21" => [768, 1344],
+        }
 
-        if (!width && !height)
-          if engine.include? "xl"
-            width, height = sdxl_allowed_dimensions[0]
-          else
-            width, height = [512, 512]
-          end
+        if engine.include? "xl"
+          width, height = ratio_to_dimension[aspect_ratio] if aspect_ratio
+
+          width, height = [1024, 1024] if !width || !height
+        else
+          width, height = [512, 512]
         end
 
         payload = {

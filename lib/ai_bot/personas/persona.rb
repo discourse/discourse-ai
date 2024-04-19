@@ -188,7 +188,7 @@ module DiscourseAi
                 begin
                   JSON.parse(value)
                 rescue JSON::ParserError
-                  nil
+                  [value.to_s]
                 end
             end
 
