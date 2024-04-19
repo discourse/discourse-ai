@@ -3,6 +3,70 @@
 module ::DiscourseAi
   module Inference
     class StabilityGenerator
+      TIMEOUT = 120
+
+      # there is a new api for sd3
+      def self.perform_sd3!(
+        prompt,
+        aspect_ratio: nil,
+        api_key: nil,
+        engine: nil,
+        api_url: nil,
+        output_format: "png",
+        seed: nil
+      )
+        api_key ||= SiteSetting.ai_stability_api_key
+        engine ||= SiteSetting.ai_stability_engine
+        api_url ||= SiteSetting.ai_stability_api_url
+
+        allowed_ratios = %w[16:9 1:1 21:9 2:3 3:2 4:5 5:4 9:16 9:21]
+
+        aspect_ratio = "1:1" if !aspect_ratio || !allowed_ratios.include?(aspect_ratio)
+
+        payload = {
+          prompt: prompt,
+          mode: "text-to-image",
+          model: engine,
+          output_format: output_format,
+          aspect_ratio: aspect_ratio,
+        }
+
+        payload[:seed] = seed if seed
+
+        endpoint = "v2beta/stable-image/generate/sd3"
+
+        form_data = payload.to_a.map { |k, v| [k.to_s, v.to_s] }
+
+        uri = URI("#{api_url}/#{endpoint}")
+        request = FinalDestination::HTTP::Post.new(uri)
+
+        request["authorization"] = "Bearer #{api_key}"
+        request["accept"] = "application/json"
+        request.set_form form_data, "multipart/form-data"
+
+        response =
+          FinalDestination::HTTP.start(
+            uri.hostname,
+            uri.port,
+            use_ssl: uri.port != 80,
+            read_timeout: TIMEOUT,
+            open_timeout: TIMEOUT,
+            write_timeout: TIMEOUT,
+          ) { |http| http.request(request) }
+
+        if response.code != "200"
+          Rails.logger.error(
+            "AI stability generator failed with status #{response.code}: #{response.body}}",
+          )
+          raise Net::HTTPBadResponse
+        end
+
+        parsed = JSON.parse(response.body, symbolize_names: true)
+
+        # remap to old format
+        { artifacts: [{ base64: parsed[:image], seed: parsed[:seed] }] }
+      end
+
       def self.perform!(
         prompt,
         width: nil,
@@ -16,6 +80,12 @@ module ::DiscourseAi
         api_key ||= SiteSetting.ai_stability_api_key
         engine ||= SiteSetting.ai_stability_engine
         api_url ||= SiteSetting.ai_stability_api_url
+
+        if engine.start_with? "sd3"
+          return(
+            perform_sd3!(prompt, api_key: api_key, engine: engine, api_url: api_url, seed: seed)
+          )
+        end
 
         headers = {
           "Content-Type" => "application/json",
