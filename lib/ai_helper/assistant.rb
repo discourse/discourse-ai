@@ -61,8 +61,7 @@ module DiscourseAi
 
         if prompt.messages[0][:content].include?("%LANGUAGE%")
           locale = SiteSetting.default_locale
-          locale = user.locale || SiteSetting.default_locale if SiteSetting.allow_user_locale &&
-            user
+          locale = user.locale if SiteSetting.allow_user_locale && user&.locale.present?
           locale_hash = LocaleSiteSetting.language_names[locale]
 
           prompt.messages[0][:content] = prompt.messages[0][:content].gsub(
