@@ -58,6 +58,10 @@ module DiscourseAi
           post_in_subcategory =
             Fabricate(:post, raw: "I am in a subcategory abcd", topic: topic_in_subcategory)
 
+          other_category = Fabricate(:category)
+          topic2 = Fabricate(:topic, category: other_category)
+          post2 = Fabricate(:post, raw: "I am in another category 123", topic: topic2)
+
           freeze_time
 
           DiscourseAi::Completions::Llm.with_prepared_responses(["magical report"]) do
@@ -85,6 +89,7 @@ module DiscourseAi
 
           expect(debugging).not_to include(post_in_category.raw)
           expect(debugging).not_to include(post_in_subcategory.raw)
+          expect(debugging).to include(post2.raw)
         end
 
         it "can suppress notifications by remapping content" do
