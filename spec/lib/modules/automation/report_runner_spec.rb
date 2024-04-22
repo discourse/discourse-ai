@@ -52,7 +52,12 @@ module DiscourseAi
           )
         end
 
-        it "can exclude categories" do
+        it "can exclude categories (including sub categories)" do
+          subcategory = Fabricate(:category, parent_category_id: category.id)
+          topic_in_subcategory = Fabricate(:topic, category: subcategory)
+          post_in_subcategory =
+            Fabricate(:post, raw: "I am in a subcategory abcd", topic: topic_in_subcategory)
+
           freeze_time
 
           DiscourseAi::Completions::Llm.with_prepared_responses(["magical report"]) do
@@ -79,6 +84,7 @@ module DiscourseAi
           debugging = report.ordered_posts.last.raw
 
           expect(debugging).not_to include(post_in_category.raw)
+          expect(debugging).not_to include(post_in_subcategory.raw)
         end
 
         it "can suppress notifications by remapping content" do
