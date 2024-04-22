@@ -72,6 +72,24 @@ class AiPersona < ActiveRecord::Base
     end
   end
 
+  def self.message_responder_for(group_id: nil)
+    return nil if !group_id
+
+    all_responders =
+      persona_cache[:message_responders] ||= AiPersona
+        .where(role: "message_responder")
+        .where(enabled: true)
+        .pluck(:id, :role_group_ids)
+
+    id, _ = all_responders.find { |id, role_group_ids| role_group_ids.include?(group_id) }
+
+    if id
+      { id: id }
+    else
+      nil
+    end
+  end
+
   def self.mentionables(user: nil)
     all_mentionables =
       persona_cache[:mentionable_usernames] ||= AiPersona
@@ -114,6 +132,7 @@ class AiPersona < ActiveRecord::Base
     vision_max_pixels = self.vision_max_pixels
     rag_conversation_chunks = self.rag_conversation_chunks
     question_consolidator_llm = self.question_consolidator_llm
+    role_whispers = self.role_whispers
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
@@ -159,6 +178,10 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :rag_conversation_chunks do
         rag_conversation_chunks
+      end
+
+      persona_class.define_singleton_method :role_whispers do
+        role_whispers
       end
 
       return persona_class
@@ -252,6 +275,10 @@ class AiPersona < ActiveRecord::Base
         question_consolidator_llm
       end
 
+      define_singleton_method :role_whispers do
+        role_whispers
+      end
+
       define_singleton_method :to_s do
         "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
       end
@@ -343,8 +370,8 @@ class AiPersona < ActiveRecord::Base
   private
 
   def system_persona_unchangeable
-    if top_p_changed? || temperature_changed? || system_prompt_changed? || commands_changed? ||
-         name_changed? || description_changed?
+    if role_changed? || top_p_changed? || temperature_changed? || system_prompt_changed? ||
+         commands_changed? || name_changed? || description_changed?
       errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
     end
   end
@@ -387,6 +414,12 @@ end
 #  rag_chunk_overlap_tokens    :integer          default(10), not null
 #  rag_conversation_chunks     :integer          default(10), not null
 #  question_consolidator_llm   :text
+#  role                        :enum             default("bot"), not null
+#  role_category_ids           :integer          default([]), not null, is an Array
+#  role_tags                   :string           default([]), not null, is an Array
+#  role_group_ids              :integer          default([]), not null, is an Array
+#  role_whispers               :boolean          default(FALSE), not null
+#  role_max_responses_per_hour :integer          default(50), not null
 #
 # Indexes
 #
