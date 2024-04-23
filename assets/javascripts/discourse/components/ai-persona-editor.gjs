@@ -88,7 +88,7 @@ export default class PersonaEditor extends Component {
       if (isNew && this.args.model.rag_uploads.length === 0) {
         this.args.personas.addObject(this.args.model);
         this.router.transitionTo(
-          "adminPlugins.show.discourse-ai.ai-personas.show",
+          "adminPlugins.show.discourse-ai-personas.show",
           this.args.model
         );
       } else {
@@ -149,7 +149,7 @@ export default class PersonaEditor extends Component {
         return this.args.model.destroyRecord().then(() => {
           this.args.personas.removeObject(this.args.model);
           this.router.transitionTo(
-            "adminPlugins.show.discourse-ai.ai-personas.index"
+            "adminPlugins.show.discourse-ai-personas.index"
           );
         });
       },
@@ -240,7 +240,7 @@ export default class PersonaEditor extends Component {
 
   <template>
     <BackButton
-      @route="adminPlugins.show.discourse-ai.ai-personas"
+      @route="adminPlugins.show.discourse-ai-personas"
       @label="discourse_ai.ai_persona.back"
     />
     <form

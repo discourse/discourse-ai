@@ -5,8 +5,6 @@ export default class DiscourseAiIndexRoute extends DiscourseRoute {
   @service router;
 
   beforeModel() {
-    return this.router.transitionTo(
-      "adminPlugins.show.discourse-ai.ai-personas.index"
-    );
+    // return this.router.transitionTo("discourse-ai.ai-personas.index");
   }
 }
