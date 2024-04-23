@@ -61,16 +61,6 @@ module DiscourseAi
         foldable_models.each do |model|
           plugin.register_summarization_strategy(Strategies::FoldContent.new(model))
         end
-
-        truncatable_models = [
-          Models::Discourse.new("long-t5-tglobal-base-16384-book-summary", max_tokens: 16_384),
-          Models::Discourse.new("bart-large-cnn-samsum", max_tokens: 1024),
-          Models::Discourse.new("flan-t5-base-samsum", max_tokens: 512),
-        ]
-
-        truncatable_models.each do |model|
-          plugin.register_summarization_strategy(Strategies::TruncateContent.new(model))
-        end
       end
     end
   end
