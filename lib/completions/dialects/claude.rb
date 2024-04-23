@@ -27,41 +27,13 @@ module DiscourseAi
         end
 
         def translate
-          messages = prompt.messages
-          system_prompt = +""
+          messages = super
 
-          messages =
-            trim_messages(messages)
-              .map do |msg|
-                case msg[:type]
-                when :system
-                  system_prompt << msg[:content]
-                  nil
-                when :tool_call
-                  { role: "assistant", content: tool_call_to_xml(msg) }
-                when :tool
-                  { role: "user", content: tool_result_to_xml(msg) }
-                when :model
-                  { role: "assistant", content: msg[:content] }
-                when :user
-                  content = +""
-                  content << "#{msg[:id]}: " if msg[:id]
-                  content << msg[:content]
-                  content = inline_images(content, msg)
-
-                  { role: "user", content: content }
-                end
-              end
-              .compact
-
-          if prompt.tools.present?
-            system_prompt << "\n\n"
-            system_prompt << build_tools_prompt
-          end
+          system_prompt = messages.shift[:content] if messages.first[:role] == "system"
 
           interleving_messages = []
-
           previous_message = nil
+
           messages.each do |message|
             if previous_message
               if previous_message[:role] == "user" && message[:role] == "user"
@@ -83,6 +55,29 @@ module DiscourseAi
         end
 
         private
+
+        def model_msg(msg)
+          { role: "assistant", content: msg[:content] }
+        end
+
+        def system_msg(msg)
+          msg = { role: "system", content: msg[:content] }
+
+          if tools_dialect.instructions.present?
+            msg[:content] = msg[:content].dup << "\n\n#{tools_dialect.instructions}"
+          end
+
+          msg
+        end
+
+        def user_msg(msg)
+          content = +""
+          content << "#{msg[:id]}: " if msg[:id]
+          content << msg[:content]
+          content = inline_images(content, msg)
+
+          { role: "user", content: content }
+        end
 
         def inline_images(content, message)
           if model_name.include?("claude-3")

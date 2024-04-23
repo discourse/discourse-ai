@@ -62,7 +62,7 @@ module DiscourseAi
 
         # this is an approximation, we will update it later if request goes through
         def prompt_size(prompt)
-          super(prompt.system_prompt.to_s + " " + prompt.messages.to_s)
+          tokenizer.size(prompt.system_prompt.to_s + " " + prompt.messages.to_s)
         end
 
         def model_uri

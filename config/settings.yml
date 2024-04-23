@@ -185,6 +185,9 @@ discourse_ai:
   ai_strict_token_counting:
     default: false
     hidden: true
+  ai_ollama_endpoint:
+    hidden: true
+    default: ""
 
   composer_ai_helper_enabled:
     default: false

@@ -19,6 +19,8 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::Cohere,
             ]
 
+            endpoints << DiscourseAi::Completions::Endpoints::Ollama if Rails.env.development?
+
             if Rails.env.test? || Rails.env.development?
               endpoints << DiscourseAi::Completions::Endpoints::Fake
             end
@@ -67,6 +69,10 @@ module DiscourseAi
           false
         end
 
+        def use_ssl?
+          true
+        end
+
         def perform_completion!(dialect, user, model_params = {}, &blk)
           allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
@@ -78,7 +84,7 @@ module DiscourseAi
           FinalDestination::HTTP.start(
             model_uri.host,
             model_uri.port,
-            use_ssl: true,
+            use_ssl: use_ssl?,
             read_timeout: TIMEOUT,
             open_timeout: TIMEOUT,
             write_timeout: TIMEOUT,
@@ -315,7 +321,7 @@ module DiscourseAi
         end
 
         def extract_prompt_for_tokenizer(prompt)
-          prompt
+          prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
         end
 
         def build_buffer

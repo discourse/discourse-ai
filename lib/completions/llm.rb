@@ -31,21 +31,10 @@ module DiscourseAi
                 claude-3-opus
               ],
               anthropic: %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus],
-              vllm: %w[
-                mistralai/Mixtral-8x7B-Instruct-v0.1
-                mistralai/Mistral-7B-Instruct-v0.2
-                StableBeluga2
-                Upstage-Llama-2-*-instruct-v2
-                Llama2-*-chat-hf
-                Llama2-chat-hf
-              ],
+              vllm: %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2],
               hugging_face: %w[
                 mistralai/Mixtral-8x7B-Instruct-v0.1
                 mistralai/Mistral-7B-Instruct-v0.2
-                StableBeluga2
-                Upstage-Llama-2-*-instruct-v2
-                Llama2-*-chat-hf
-                Llama2-chat-hf
               ],
               cohere: %w[command-light command command-r command-r-plus],
               open_ai: %w[
@@ -57,7 +46,10 @@ module DiscourseAi
                 gpt-4-vision-preview
               ],
               google: %w[gemini-pro gemini-1.5-pro],
-            }.tap { |h| h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development? }
+            }.tap do |h|
+              h[:ollama] = ["mistral"] if Rails.env.development?
+              h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development?
+            end
         end
 
         def valid_provider_models
@@ -120,8 +112,6 @@ module DiscourseAi
         @gateway = gateway
       end
 
-      delegate :tokenizer, to: :dialect_klass
-
       # @param generic_prompt { DiscourseAi::Completions::Prompt } - Our generic prompt object
       # @param user { User } - User requesting the summary.
       #
@@ -183,6 +173,8 @@ module DiscourseAi
       def max_prompt_tokens
         dialect_klass.new(DiscourseAi::Completions::Prompt.new(""), model_name).max_prompt_tokens
       end
+
+      delegate :tokenizer, to: :dialect_klass
 
       attr_reader :model_name
 

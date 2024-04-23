@@ -9,13 +9,13 @@ module DiscourseAi
             model_name == "fake"
           end
 
-          def translate
-            ""
-          end
-
           def tokenizer
             DiscourseAi::Tokenizer::OpenAiTokenizer
           end
+        end
+
+        def translate
+          ""
         end
       end
     end

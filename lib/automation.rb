@@ -40,8 +40,10 @@ module DiscourseAi
       if model.start_with?("mistral")
         if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(model)
           return "vllm:#{model}"
+        elsif DiscourseAi::Completions::Endpoints::HuggingFace.correctly_configured?(model)
+          "hugging_face:#{model}"
         else
-          return "hugging_face:#{model}"
+          "ollama:mistral"
         end
       end
 
