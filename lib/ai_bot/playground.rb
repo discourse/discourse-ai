@@ -29,7 +29,10 @@ module DiscourseAi
               .map { |group_id| AiPersona.message_responder_for(group_id: group_id) }
               .find { |found| !found.nil? }
 
-          AiPersona.all_personas.find { |persona| persona.id == info[:id] } if info && info[:id]
+          AiPersona.persona_class_by_id(info[:id]) if info && info[:id]
+        elsif post.post_number == 1 && post.topic && post.topic.archetype == Archetype.default
+          info = AiPersona.topic_responder_for(category_id: post.topic.category_id)
+          AiPersona.persona_class_by_id(info[:id]) if info && info[:id]
         end
       end
 
@@ -239,7 +242,7 @@ module DiscourseAi
           reply_user = User.find_by(id: bot.persona.class.user_id) || reply_user
         end
 
-        stream_reply = post.topic.private_message? && !bot.persona.role.include?("responder")
+        stream_reply = post.topic.private_message? && !bot.persona.class.role.include?("responder")
 
         # we need to ensure persona user is allowed to reply to the pm
         if post.topic.private_message?

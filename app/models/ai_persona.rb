@@ -46,6 +46,10 @@ class AiPersona < ActiveRecord::Base
       .map(&:class_instance)
   end
 
+  def self.persona_class_by_id(id)
+    AiPersona.all_personas.find { |persona| persona.id == id } if id
+  end
+
   def self.persona_users(user: nil)
     persona_users =
       persona_cache[:persona_users] ||= AiPersona
@@ -69,6 +73,24 @@ class AiPersona < ActiveRecord::Base
       persona_users.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
     else
       persona_users
+    end
+  end
+
+  def self.topic_responder_for(category_id:)
+    return nil if !category_id
+
+    all_responders =
+      persona_cache[:topic_responders] ||= AiPersona
+        .where(role: "topic_responder")
+        .where(enabled: true)
+        .pluck(:id, :role_category_ids)
+
+    id, _ = all_responders.find { |id, role_category_ids| role_category_ids.include?(category_id) }
+
+    if id
+      { id: id }
+    else
+      nil
     end
   end
 
