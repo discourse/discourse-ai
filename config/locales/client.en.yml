@@ -223,6 +223,7 @@ en:
           copy: "Copy"
           copied: "Copied!"
           cancel: "Cancel"
+          insert_footnote: "Insert as footnote"
         fast_edit:
           suggest_button: "Suggest Edit"
         thumbnail_suggestions:

@@ -14,7 +14,6 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { bind } from "discourse-common/utils/decorators";
 import eq from "truth-helpers/helpers/eq";
-import not from "truth-helpers/helpers/not";
 import AiHelperCustomPrompt from "../../components/ai-helper-custom-prompt";
 import AiHelperLoading from "../../components/ai-helper-loading";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
@@ -42,6 +41,9 @@ export default class AIHelperOptionsMenu extends Component {
   @tracked showAiButtons = true;
   @tracked originalPostHTML = null;
   @tracked postHighlighted = false;
+  @tracked streaming = false;
+  @tracked lastSelectedOption = null;
+  @tracked isSavingFootnote = false;
 
   MENU_STATES = {
     triggers: "TRIGGERS",
@@ -170,6 +172,7 @@ export default class AIHelperOptionsMenu extends Component {
 
   @bind
   _updateResult(result) {
+    this.streaming = !result.done;
     this.suggestion = result.result;
   }
 
@@ -189,6 +192,7 @@ export default class AIHelperOptionsMenu extends Component {
   @action
   async performAISuggestion(option) {
     this.menuState = this.MENU_STATES.loading;
+    this.lastSelectedOption = option;
 
     if (option.name === "explain") {
       this.menuState = this.MENU_STATES.result;
@@ -306,6 +310,41 @@ export default class AIHelperOptionsMenu extends Component {
     await this.args.outletArgs.data.hideToolbar();
   }
 
+  @action
+  async insertFootnote() {
+    this.isSavingFootnote = true;
+
+    if (this.allowInsertFootnote) {
+      try {
+        const result = await ajax(`/posts/${this.args.outletArgs.post.id}`);
+        const withFootnote = `${this.selectedText} ^[${this.suggestion}]`;
+        const newRaw = result.raw.replace(this.selectedText, withFootnote);
+
+        await this.args.outletArgs.post.save({ raw: newRaw });
+      } catch (error) {
+        popupAjaxError(error);
+      } finally {
+        this.isSavingFootnote = false;
+        this.menu.close();
+      }
+    }
+  }
+
+  get allowInsertFootnote() {
+    const siteSettings = this.siteSettings;
+    const canEditPost = this.args.outletArgs.data.canEditPost;
+
+    if (
+      !siteSettings?.enable_markdown_footnotes ||
+      !siteSettings?.display_footnotes_inline ||
+      !canEditPost
+    ) {
+      return false;
+    }
+
+    return this.lastSelectedOption?.name === "explain";
+  }
+
   <template>
     {{#if this.showMainButtons}}
       {{yield}}
@@ -356,7 +395,7 @@ export default class AIHelperOptionsMenu extends Component {
               <div class="ai-post-helper__suggestion__text" dir="auto">
                 <CookText @rawText={{this.suggestion}} />
               </div>
-              <di class="ai-post-helper__suggestion__buttons">
+              <div class="ai-post-helper__suggestion__buttons">
                 <DButton
                   @icon="times"
                   @label="discourse_ai.ai_helper.post_options_menu.cancel"
@@ -367,10 +406,20 @@ export default class AIHelperOptionsMenu extends Component {
                   @icon={{this.copyButtonIcon}}
                   @label={{this.copyButtonLabel}}
                   @action={{this.copySuggestion}}
-                  @disabled={{not this.suggestion}}
+                  @disabled={{this.streaming}}
                   class="btn-flat ai-post-helper__suggestion__copy"
                 />
-              </di>
+                {{#if this.allowInsertFootnote}}
+                  <DButton
+                    @icon="asterisk"
+                    @label="discourse_ai.ai_helper.post_options_menu.insert_footnote"
+                    @action={{this.insertFootnote}}
+                    @isLoading={{this.isSavingFootnote}}
+                    @disabled={{this.streaming}}
+                    class="btn-flat ai-post-helper__suggestion__insert-footnote"
+                  />
+                {{/if}}
+              </div>
             {{else}}
               <AiHelperLoading @cancel={{this.cancelAIAction}} />
             {{/if}}
