@@ -530,4 +530,60 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
     end
   end
+
+  describe "message_responder role" do
+    fab!(:group) do
+      Fabricate(:group, name: "test-group", messageable_level: Group::ALIAS_LEVELS[:everyone])
+    end
+
+    it "can reply with a whisper to group PM" do
+      Jobs.run_immediately!
+
+      persona =
+        AiPersona.create!(
+          name: "Responder Persona",
+          description: "A responder",
+          system_prompt: "You are a responder",
+          enabled: true,
+          role: "message_responder",
+          role_group_ids: [group.id],
+          role_whispers: true,
+          default_llm: "anthropic:claude-2",
+        )
+
+      persona.create_user!
+
+      post = nil
+
+      prompts = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["An amazing post just for you"],
+      ) do |_, _, _prompts|
+        post =
+          create_post(
+            title: "an amazing title",
+            raw: "Howdy I need help!!",
+            archetype: Archetype.private_message,
+            target_group_names: [group.name],
+          )
+        prompts = _prompts
+      end
+
+      expect(prompts.length).to eq(1)
+      expect(prompts[0].messages[0][:content]).to eq("You are a responder")
+      expect(prompts[0].messages[1][:content]).to eq("# An amazing title\n\nHowdy I need help!!")
+
+      reply = post.topic.posts.find_by(post_number: 2)
+
+      expect(reply.post_type).to eq(Post.types[:whisper])
+      expect(reply.raw).to eq("An amazing post just for you")
+
+      # should be done responding at this point so llm will not be called
+      create_post(
+        raw: "should ignore posts that are not first on message",
+        topic: post.topic,
+        user: post.user,
+      )
+    end
+  end
 end

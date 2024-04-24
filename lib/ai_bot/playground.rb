@@ -18,8 +18,29 @@ module DiscourseAi
         user_id.to_i <= 0
       end
 
+      def self.find_responder_persona(post)
+        if post.post_number == 1 && post.topic && post.topic.archetype == Archetype.private_message
+          # only supported responder for PMs is based on role_group_ids
+          group_ids = post.topic.allowed_groups.pluck(:id)
+
+          info =
+            group_ids
+              .lazy
+              .map { |group_id| AiPersona.message_responder_for(group_id: group_id) }
+              .find { |found| !found.nil? }
+
+          AiPersona.all_personas.find { |persona| persona.id == info[:id] } if info && info[:id]
+        end
+      end
+
       def self.schedule_reply(post)
         return if is_bot_user_id?(post.user_id)
+
+        if responder_persona_class = find_responder_persona(post)
+          bot = responder_persona_class.as_bot
+          new(bot).schedule_bot_reply(post, skip_persona_security_check: true) if bot
+          return
+        end
 
         bot_ids = DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS
         mentionables = AiPersona.mentionables(user: post.user)
@@ -126,11 +147,12 @@ module DiscourseAi
                   FROM upload_references ref
                   WHERE ref.target_type = 'Post' AND ref.target_id = posts.id
                ) as upload_ids",
+              "post_number",
             )
 
         result = []
 
-        context.reverse_each do |raw, username, custom_prompt, upload_ids|
+        context.reverse_each do |raw, username, custom_prompt, upload_ids, post_number|
           custom_prompt_translation =
             Proc.new do |message|
               # We can't keep backwards-compatibility for stored functions.
@@ -151,8 +173,14 @@ module DiscourseAi
           if custom_prompt.present?
             custom_prompt.each(&custom_prompt_translation)
           else
+            content = raw
+            if post_number == 1 && bot.persona.class.role.include?("responder")
+              title = Topic.where("id = ?", post.topic_id).pluck(:title).first
+              content = "# #{title}\n\n#{content}"
+            end
+
             context = {
-              content: raw,
+              content: content,
               type: (available_bot_usernames.include?(username) ? :model : :user),
             }
 
@@ -188,8 +216,11 @@ module DiscourseAi
         reply = +""
         start = Time.now
 
-        post_type =
-          post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
+        post_type = Post.types[:regular]
+
+        if post.post_type == Post.types[:whisper] || bot.persona.class.role_whispers
+          post_type = Post.types[:whisper]
+        end
 
         context = {
           site_url: Discourse.base_url,
@@ -208,7 +239,7 @@ module DiscourseAi
           reply_user = User.find_by(id: bot.persona.class.user_id) || reply_user
         end
 
-        stream_reply = post.topic.private_message?
+        stream_reply = post.topic.private_message? && !bot.persona.role.include?("responder")
 
         # we need to ensure persona user is allowed to reply to the pm
         if post.topic.private_message?
@@ -309,6 +340,19 @@ module DiscourseAi
             .concat(DiscourseAi::AiBot::EntryPoint::BOTS.map(&:second))
       end
 
+      def schedule_bot_reply(post, skip_persona_security_check: false)
+        persona_id =
+          DiscourseAi::AiBot::Personas::Persona.system_personas[bot.persona.class] ||
+            bot.persona.class.id
+        ::Jobs.enqueue(
+          :create_ai_reply,
+          post_id: post.id,
+          bot_user_id: bot.bot_user.id,
+          persona_id: persona_id,
+          skip_persona_security_check: skip_persona_security_check,
+        )
+      end
+
       private
 
       def publish_final_update(reply_post)
@@ -345,18 +389,6 @@ module DiscourseAi
             model: bot.model,
           )
         end
-      end
-
-      def schedule_bot_reply(post)
-        persona_id =
-          DiscourseAi::AiBot::Personas::Persona.system_personas[bot.persona.class] ||
-            bot.persona.class.id
-        ::Jobs.enqueue(
-          :create_ai_reply,
-          post_id: post.id,
-          bot_user_id: bot.bot_user.id,
-          persona_id: persona_id,
-        )
       end
 
       def context(topic)

@@ -132,6 +132,7 @@ class AiPersona < ActiveRecord::Base
     vision_max_pixels = self.vision_max_pixels
     rag_conversation_chunks = self.rag_conversation_chunks
     question_consolidator_llm = self.question_consolidator_llm
+    role = self.role
     role_whispers = self.role_whispers
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
@@ -182,6 +183,10 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :role_whispers do
         role_whispers
+      end
+
+      persona_class.define_singleton_method :role do
+        role
       end
 
       return persona_class
@@ -273,6 +278,10 @@ class AiPersona < ActiveRecord::Base
 
       define_singleton_method :question_consolidator_llm do
         question_consolidator_llm
+      end
+
+      define_singleton_method :role do
+        role
       end
 
       define_singleton_method :role_whispers do
