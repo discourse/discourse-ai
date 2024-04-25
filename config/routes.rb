@@ -47,3 +47,10 @@ Discourse::Application.routes.draw do
     get "/ai-personas/:id/files/status", to: "discourse_ai/admin/ai_personas#indexing_status_check"
   end
 end
+
+Discourse::Application.routes.append do
+  get "u/:username/preferences/ai" => "users#preferences",
+      :constraints => {
+        username: RouteFormat.username,
+      }
+end

@@ -19,6 +19,8 @@ export default apiInitializer("1.25.0", (api) => {
     return;
   }
 
+  api.addSaveableUserOptionField("auto_image_caption");
+
   api.addComposerImageWrapperButton(
     buttonAttrs.label,
     buttonAttrs.class,

@@ -234,6 +234,7 @@ en:
           generating: "Generating caption..."
           credits: "Captioned by AI"
           save_caption: "Save"
+          automatic_caption_setting: "Enable automatic AI image captions"
 
       reviewables:
         model_used: "Model used:"

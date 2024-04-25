@@ -42,6 +42,16 @@ module DiscourseAi
             root: false,
           )
         end
+
+        UserUpdater::OPTION_ATTR.push(:auto_image_caption)
+        plugin.add_to_serializer(
+          :user_option,
+          :auto_image_caption,
+          include_condition: -> do
+            SiteSetting.composer_ai_helper_enabled &&
+              SiteSetting.ai_helper_enabled_features.include?("image_caption")
+          end,
+        ) { object.auto_image_caption }
       end
     end
   end
