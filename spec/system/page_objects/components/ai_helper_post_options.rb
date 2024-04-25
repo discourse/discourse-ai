@@ -19,6 +19,10 @@ module PageObjects
         find(TRIGGER_SELECTOR).click
       end
 
+      def click_add_footnote
+        find("#{SUGGESTION_SELECTOR}__insert-footnote").click
+      end
+
       def select_helper_model(mode)
         find("#{OPTIONS_SELECTOR} .btn[data-value=\"#{mode}\"]").click
       end
