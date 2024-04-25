@@ -207,11 +207,8 @@ export default class PersonaEditor extends Component {
   }
 
   @action
-  addUpload(upload) {
-    const newUpload = upload;
-    newUpload.status = "uploaded";
-    newUpload.statusText = I18n.t("discourse_ai.ai_persona.uploads.uploaded");
-    this.editingModel.rag_uploads.addObject(newUpload);
+  updateUploads(uploads) {
+    this.editingModel.rag_uploads = uploads;
   }
 
   @action
@@ -460,8 +457,7 @@ export default class PersonaEditor extends Component {
         <div class="control-group">
           <PersonaRagUploader
             @persona={{this.editingModel}}
-            @ragUploads={{this.editingModel.rag_uploads}}
-            @onAdd={{this.addUpload}}
+            @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}
           />
           <a
