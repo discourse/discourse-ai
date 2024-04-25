@@ -11,6 +11,7 @@ import FastEdit from "discourse/components/fast-edit";
 import FastEditModal from "discourse/components/modal/fast-edit";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { sanitize } from "discourse/lib/text";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { bind } from "discourse-common/utils/decorators";
 import eq from "truth-helpers/helpers/eq";
@@ -310,6 +311,19 @@ export default class AIHelperOptionsMenu extends Component {
     await this.args.outletArgs.data.hideToolbar();
   }
 
+  sanitizeForFootnote(text) {
+    // Remove line breaks (line-breaks breaks the inline footnote display)
+    text = text.replace(/[\r\n]+/g, " ");
+
+    // Remove headings (headings don't work in inline footnotes)
+    text = text.replace(/^(#+)\s+/gm, "");
+
+    // Trim excess space
+    text = text.trim();
+
+    return sanitize(text);
+  }
+
   @action
   async insertFootnote() {
     this.isSavingFootnote = true;
@@ -317,7 +331,8 @@ export default class AIHelperOptionsMenu extends Component {
     if (this.allowInsertFootnote) {
       try {
         const result = await ajax(`/posts/${this.args.outletArgs.post.id}`);
-        const withFootnote = `${this.selectedText} ^[${this.suggestion}]`;
+        const sanitizedSuggestion = this.sanitizeForFootnote(this.suggestion);
+        const withFootnote = `${this.selectedText} ^[${sanitizedSuggestion}]`;
         const newRaw = result.raw.replace(this.selectedText, withFootnote);
 
         await this.args.outletArgs.post.save({ raw: newRaw });
