@@ -152,10 +152,13 @@ module DiscourseAi
 
       def validate_extension!(filename)
         extension = File.extname(filename)[1..-1] || ""
-        authorized_extension = "txt"
-        if extension != authorized_extension
+        authorized_extensions = %w[txt md]
+        if !authorized_extensions.include?(extension)
           raise Discourse::InvalidParameters.new(
-                  I18n.t("upload.unauthorized", authorized_extensions: authorized_extension),
+                  I18n.t(
+                    "upload.unauthorized",
+                    authorized_extensions: authorized_extensions.join(" "),
+                  ),
                 )
         end
       end

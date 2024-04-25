@@ -30,17 +30,27 @@ export default class RagUploadProgress extends Component {
   @bind
   onIndexingUpdate(data) {
     // Order not guaranteed. Discard old updates.
-    if (!this.updatedProgress || this.updatedProgress.left > data.left) {
+    if (
+      !this.updatedProgress ||
+      data.total === 0 ||
+      this.updatedProgress.left > data.left
+    ) {
       this.updatedProgress = data;
     }
   }
 
   get calculateProgress() {
+    if (this.progress.total === 0) {
+      return 0;
+    }
+
     return Math.ceil((this.progress.indexed * 100) / this.progress.total);
   }
 
   get fullyIndexed() {
-    return this.progress && this.progress.left === 0;
+    return (
+      this.progress && this.progress.total !== 0 && this.progress.left === 0
+    );
   }
 
   get progress() {
