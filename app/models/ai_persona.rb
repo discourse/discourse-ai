@@ -31,38 +31,8 @@ class AiPersona < ActiveRecord::Base
 
   before_update :regenerate_rag_fragments
 
-  class MultisiteHash
-    def initialize(id)
-      @hash = Hash.new { |h, k| h[k] = {} }
-      @id = id
-
-      MessageBus.subscribe(channel_name) { |message| @hash[message.data] = {} }
-    end
-
-    def channel_name
-      "/multisite-hash-#{@id}"
-    end
-
-    def current_db
-      RailsMultisite::ConnectionManagement.current_db
-    end
-
-    def [](key)
-      @hash.dig(current_db, key)
-    end
-
-    def []=(key, val)
-      @hash[current_db][key] = val
-    end
-
-    def flush!
-      @hash[current_db] = {}
-      MessageBus.publish(channel_name, current_db)
-    end
-  end
-
   def self.persona_cache
-    @persona_cache ||= MultisiteHash.new("persona_cache")
+    @persona_cache ||= ::DiscourseAi::MultisiteHash.new("persona_cache")
   end
 
   scope :ordered, -> { order("priority DESC, lower(name) ASC") }
