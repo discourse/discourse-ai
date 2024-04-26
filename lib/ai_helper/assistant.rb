@@ -3,16 +3,20 @@
 module DiscourseAi
   module AiHelper
     class Assistant
-      AI_HELPER_PROMPTS_CACHE_KEY = "ai_helper_prompts"
+      def self.prompt_cache
+        @prompt_cache ||= ::DiscourseAi::MultisiteHash.new("prompt_cache")
+      end
 
       def self.clear_prompt_cache!
-        Discourse.cache.delete(AI_HELPER_PROMPTS_CACHE_KEY)
+        prompt_cache.flush!
       end
 
       def available_prompts
-        Discourse
-          .cache
-          .fetch(AI_HELPER_PROMPTS_CACHE_KEY, expires_in: 30.minutes) do
+        key = "prompt_cache_#{I18n.locale}"
+        self
+          .class
+          .prompt_cache
+          .fetch(key) do
             prompts = CompletionPrompt.where(enabled: true)
 
             # Hide illustrate_post if disabled
