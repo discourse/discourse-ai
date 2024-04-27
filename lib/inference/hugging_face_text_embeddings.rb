@@ -18,6 +18,7 @@ module ::DiscourseAi
 
           if SiteSetting.ai_hugging_face_tei_api_key.present?
             headers["X-API-KEY"] = SiteSetting.ai_hugging_face_tei_api_key
+            headers["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_tei_api_key}"
           end
 
           conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
@@ -44,6 +45,7 @@ module ::DiscourseAi
 
           if SiteSetting.ai_hugging_face_tei_reranker_api_key.present?
             headers["X-API-KEY"] = SiteSetting.ai_hugging_face_tei_reranker_api_key
+            headers["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_tei_api_key}"
           end
 
           conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
