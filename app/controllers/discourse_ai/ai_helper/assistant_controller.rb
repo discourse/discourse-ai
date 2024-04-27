@@ -107,6 +107,21 @@ module DiscourseAi
                           status: 502
       end
 
+      def random_caption
+        captions = [
+          "A beautiful landscape",
+          "An adorable puppy",
+          "A delicious meal",
+          "A cozy fireplace",
+          "A stunning sunset",
+          "A charming cityscape",
+          "A peaceful garden",
+          "A majestic mountain range",
+          "A captivating work of art",
+        ]
+        captions.sample
+      end
+
       def caption_image
         image_url = params[:image_url]
         raise Discourse::InvalidParameters.new(:image_url) if !image_url
@@ -116,11 +131,15 @@ module DiscourseAi
         final_image_url = get_caption_url(image, image_url)
 
         hijack do
-          caption =
-            DiscourseAi::AiHelper::Assistant.new.generate_image_caption(
-              final_image_url,
-              current_user,
-            )
+          if Rails.env.development?
+            caption = random_caption
+          else
+            caption =
+              DiscourseAi::AiHelper::Assistant.new.generate_image_caption(
+                final_image_url,
+                current_user,
+              )
+          end
           render json: {
                    caption:
                      "#{caption} (#{I18n.t("discourse_ai.ai_helper.image_caption.attribution")})",

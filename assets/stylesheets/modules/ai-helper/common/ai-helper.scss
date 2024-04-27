@@ -569,3 +569,9 @@
     border-right-color: var(--tertiary);
   }
 }
+
+.ai-image-caption-prompt-dialog {
+  .dialog-content {
+    max-width: 555px;
+  }
+}
