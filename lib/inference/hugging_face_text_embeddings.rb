@@ -43,7 +43,7 @@ module ::DiscourseAi
           end
 
           if SiteSetting.ai_hugging_face_tei_reranker_api_key.present?
-            headers["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_tei_api_key}"
+            headers["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_tei_reranker_api_key}"
           end
 
           conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
