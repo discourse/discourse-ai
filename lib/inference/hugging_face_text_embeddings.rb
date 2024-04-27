@@ -17,7 +17,6 @@ module ::DiscourseAi
           end
 
           if SiteSetting.ai_hugging_face_tei_api_key.present?
-            headers["X-API-KEY"] = SiteSetting.ai_hugging_face_tei_api_key
             headers["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_tei_api_key}"
           end
 
@@ -44,7 +43,6 @@ module ::DiscourseAi
           end
 
           if SiteSetting.ai_hugging_face_tei_reranker_api_key.present?
-            headers["X-API-KEY"] = SiteSetting.ai_hugging_face_tei_reranker_api_key
             headers["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_tei_api_key}"
           end
 
