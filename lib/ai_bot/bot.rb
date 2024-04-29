@@ -50,7 +50,8 @@ module DiscourseAi
       end
 
       def reply(context, &update_blk)
-        prompt = persona.craft_prompt(context)
+        llm = DiscourseAi::Completions::Llm.proxy(model)
+        prompt = persona.craft_prompt(context, llm: llm)
 
         total_completions = 0
         ongoing_chain = true
@@ -63,8 +64,6 @@ module DiscourseAi
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
 
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
-          current_model = model
-          llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
           result =

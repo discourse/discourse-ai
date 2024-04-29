@@ -125,7 +125,7 @@ module DiscourseAi
           self.class.all_available_tools.filter { |tool| tools.include?(tool) }
         end
 
-        def craft_prompt(context)
+        def craft_prompt(context, llm: nil)
           system_insts =
             system_prompt.gsub(/\{(\w+)\}/) do |match|
               found = context[match[1..-2].to_sym]
@@ -137,7 +137,12 @@ module DiscourseAi
           #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
           TEXT
 
-          fragments_guidance = rag_fragments_prompt(context[:conversation_context].to_a)&.strip
+          fragments_guidance =
+            rag_fragments_prompt(
+              context[:conversation_context].to_a,
+              llm: llm,
+              user: context[:user],
+            )&.strip
 
           if fragments_guidance.present?
             if system_insts.include?("{uploads}")
@@ -202,7 +207,7 @@ module DiscourseAi
           )
         end
 
-        def rag_fragments_prompt(conversation_context)
+        def rag_fragments_prompt(conversation_context, llm:, user:)
           upload_refs =
             UploadReference.where(target_id: id, target_type: "AiPersona").pluck(:upload_id)
 
@@ -210,18 +215,22 @@ module DiscourseAi
           return nil if conversation_context.blank? || upload_refs.blank?
 
           latest_interactions =
-            conversation_context
-              .select { |ctx| %i[model user].include?(ctx[:type]) }
-              .map { |ctx| ctx[:content] }
-              .last(10)
-              .join("\n")
+            conversation_context.select { |ctx| %i[model user].include?(ctx[:type]) }.last(10)
+
+          # TODO: this could be an expensive model... we may want to use a cheaper one
+          consolidated_question =
+            DiscourseAi::AiBot::QuestionConsolidator.consolidate_question(
+              llm,
+              latest_interactions,
+              user,
+            )
 
           strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
           vector_rep =
             DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
           reranker = DiscourseAi::Inference::HuggingFaceTextEmbeddings
 
-          interactions_vector = vector_rep.vector_from(latest_interactions)
+          interactions_vector = vector_rep.vector_from(consolidated_question)
 
           rag_conversation_chunks = self.class.rag_conversation_chunks
 
