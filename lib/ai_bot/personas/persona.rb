@@ -137,20 +137,20 @@ module DiscourseAi
           #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
           TEXT
 
+          question_consolidator_llm = llm
+          if self.class.question_consolidator_llm.present?
+            question_consolidator_llm =
+              DiscourseAi::Completions::Llm.proxy(self.class.question_consolidator_llm)
+          end
+
           fragments_guidance =
             rag_fragments_prompt(
               context[:conversation_context].to_a,
-              llm: llm,
+              llm: question_consolidator_llm,
               user: context[:user],
             )&.strip
 
-          if fragments_guidance.present?
-            if system_insts.include?("{uploads}")
-              prompt_insts = prompt_insts.gsub("{uploads}", fragments_guidance)
-            else
-              prompt_insts << fragments_guidance
-            end
-          end
+          prompt_insts << fragments_guidance if fragments_guidance.present?
 
           prompt =
             DiscourseAi::Completions::Prompt.new(
