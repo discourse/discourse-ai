@@ -225,6 +225,8 @@ module DiscourseAi
               user,
             )
 
+          return nil if !consolidated_question
+
           strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
           vector_rep =
             DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)

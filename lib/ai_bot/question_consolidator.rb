@@ -76,10 +76,17 @@ module DiscourseAi
           Only ever reply with a consolidated question. Do not try to answer user queries.
         TEXT
 
-        DiscourseAi::Completions::Prompt.new(
-          system_message,
-          messages: [{ type: :user, content: message }],
-        )
+        response =
+          DiscourseAi::Completions::Prompt.new(
+            system_message,
+            messages: [{ type: :user, content: message }],
+          )
+
+        if response == "NO_QUESTION"
+          nil
+        else
+          response
+        end
       end
     end
   end
