@@ -133,6 +133,18 @@ export default class PersonaEditor extends Component {
     return AdminUser.create(this.editingModel?.user);
   }
 
+  get mappedQuestionConsolidatorLlm() {
+    return this.editingModel?.question_consolidator_llm || "blank";
+  }
+
+  set mappedQuestionConsolidatorLlm(value) {
+    if (value === "blank") {
+      this.editingModel.question_consolidator_llm = null;
+    } else {
+      this.editingModel.question_consolidator_llm = value;
+    }
+  }
+
   get mappedDefaultLlm() {
     return this.editingModel?.default_llm || "blank";
   }
@@ -460,11 +472,13 @@ export default class PersonaEditor extends Component {
             @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}
           />
-          <a
-            href="#"
-            class="ai-persona-editor__indexing-options"
-            {{on "click" this.toggleIndexingOptions}}
-          >{{this.indexingOptionsText}}</a>
+          {{#if this.editingModel.rag_uploads}}
+            <a
+              href="#"
+              class="ai-persona-editor__indexing-options"
+              {{on "click" this.toggleIndexingOptions}}
+            >{{this.indexingOptionsText}}</a>
+          {{/if}}
         </div>
         {{#if this.showIndexingOptions}}
           <div class="control-group">
@@ -516,6 +530,24 @@ export default class PersonaEditor extends Component {
               @icon="question-circle"
               @content={{I18n.t
                 "discourse_ai.ai_persona.rag_conversation_chunks_help"
+              }}
+            />
+          </div>
+
+          <div class="control-group">
+            <label>{{I18n.t
+                "discourse_ai.ai_persona.question_consolidator_llm"
+              }}</label>
+            <AiLlmSelector
+              class="ai-persona-editor__llms"
+              @value={{this.mappedQuestionConsolidatorLlm}}
+              @llms={{@personas.resultSetMeta.llms}}
+            />
+
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.question_consolidator_llm_help"
               }}
             />
           </div>

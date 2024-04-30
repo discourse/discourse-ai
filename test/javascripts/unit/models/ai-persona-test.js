@@ -52,6 +52,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       rag_chunk_tokens: 374,
       rag_chunk_overlap_tokens: 10,
       rag_conversation_chunks: 10,
+      question_consolidator_llm: "Question Consolidator LLM",
     };
 
     const aiPersona = AiPersona.create({ ...properties });
@@ -90,6 +91,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       rag_chunk_tokens: 374,
       rag_chunk_overlap_tokens: 10,
       rag_conversation_chunks: 10,
+      question_consolidator_llm: "Question Consolidator LLM",
     };
 
     const aiPersona = AiPersona.create({ ...properties });

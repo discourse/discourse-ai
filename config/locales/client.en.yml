@@ -141,9 +141,11 @@ en:
         create_user_help: You can optionally attach a user to this persona. If you do, the AI will use this user to respond to requests.
         default_llm: Default Language Model
         default_llm_help: The default language model to use for this persona. Required if you wish to mention persona on public posts.
+        question_consolidator_llm: Language Model for Question Consolidator
+        question_consolidator_llm_help: The language model to use for the question consolidator, you may choose a less powerful model to save costs.
         system_prompt: System Prompt
-        show_indexing_options: "Show Indexing Options"
-        hide_indexing_options: "Hide Indexing Options"
+        show_indexing_options: "Show Upload Options"
+        hide_indexing_options: "Hide Upload Options"
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"
@@ -181,8 +183,7 @@ en:
 
         uploads:
           title: "Uploads"
-          description: "Your AI persona will be able to search and reference the content of included files. Uploaded files must be formatted as plaintext (.txt)"
-          hint: "To control where the file's content gets placed within the system prompt, include the {uploads} placeholder in the system prompt above."
+          description: "Your AI persona will be able to search and reference the content of included files. Uploaded files should be formatted as plaintext (.txt) or markdown (.md)."
           button: "Add Files"
           filter: "Filter uploads"
           indexed: "Indexed"

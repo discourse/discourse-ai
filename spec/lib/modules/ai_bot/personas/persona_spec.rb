@@ -47,6 +47,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
   end
 
   fab!(:user)
+  fab!(:upload)
 
   it "renders the system prompt" do
     freeze_time
@@ -221,9 +222,56 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       end
     end
 
-    context "when a persona has RAG uploads" do
-      fab!(:upload)
+    context "when RAG is running with a question consolidator" do
+      let(:consolidated_question) { "what is the time in france?" }
 
+      it "will run the question consolidator" do
+        context_embedding = [0.049382, 0.9999]
+        EmbeddingsGenerationStubs.discourse_service(
+          SiteSetting.ai_embeddings_model,
+          consolidated_question,
+          context_embedding,
+        )
+
+        custom_ai_persona =
+          Fabricate(
+            :ai_persona,
+            name: "custom",
+            rag_conversation_chunks: 3,
+            allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+            question_consolidator_llm: "fake:fake",
+          )
+
+        UploadReference.ensure_exist!(target: custom_ai_persona, upload_ids: [upload.id])
+
+        custom_persona =
+          DiscourseAi::AiBot::Personas::Persona.find_by(id: custom_ai_persona.id, user: user).new
+
+        # this means that we will consolidate
+        ctx =
+          with_cc.merge(
+            conversation_context: [
+              { content: "Tell me the time", type: :user },
+              { content: "the time is 1", type: :model },
+              { content: "in france?", type: :user },
+            ],
+          )
+
+        DiscourseAi::Completions::Endpoints::Fake.with_fake_content(consolidated_question) do
+          custom_persona.craft_prompt(ctx).messages.first[:content]
+        end
+
+        message =
+          DiscourseAi::Completions::Endpoints::Fake.last_call[:dialect].prompt.messages.last[
+            :content
+          ]
+        expect(message).to include("Tell me the time")
+        expect(message).to include("the time is 1")
+        expect(message).to include("in france?")
+      end
+    end
+
+    context "when a persona has RAG uploads" do
       def stub_fragments(limit, expected_limit: nil)
         candidate_ids = []
 
@@ -253,32 +301,6 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           with_cc.dig(:conversation_context, 0, :content),
           context_embedding,
         )
-      end
-
-      context "when the system prompt has an uploads placeholder" do
-        before { stub_fragments(10) }
-
-        it "replaces the placeholder with the fragments" do
-          custom_persona_record =
-            AiPersona.create!(
-              name: "custom",
-              description: "description",
-              system_prompt: "instructions\n{uploads}\nmore instructions",
-              allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
-            )
-          UploadReference.ensure_exist!(target: custom_persona_record, upload_ids: [upload.id])
-          custom_persona =
-            DiscourseAi::AiBot::Personas::Persona.find_by(
-              id: custom_persona_record.id,
-              user: user,
-            ).new
-
-          crafted_system_prompt = custom_persona.craft_prompt(with_cc).messages.first[:content]
-
-          expect(crafted_system_prompt).to include("fragment-n0")
-
-          expect(crafted_system_prompt.ends_with?("</guidance>")).to eq(false)
-        end
       end
 
       context "when persona allows for less fragments" do

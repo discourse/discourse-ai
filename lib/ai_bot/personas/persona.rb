@@ -17,6 +17,10 @@ module DiscourseAi
             1_048_576
           end
 
+          def question_consolidator_llm
+            nil
+          end
+
           def system_personas
             @system_personas ||= {
               Personas::General => -1,
@@ -125,7 +129,7 @@ module DiscourseAi
           self.class.all_available_tools.filter { |tool| tools.include?(tool) }
         end
 
-        def craft_prompt(context)
+        def craft_prompt(context, llm: nil)
           system_insts =
             system_prompt.gsub(/\{(\w+)\}/) do |match|
               found = context[match[1..-2].to_sym]
@@ -137,15 +141,20 @@ module DiscourseAi
           #{available_tools.map(&:custom_system_message).compact_blank.join("\n")}
           TEXT
 
-          fragments_guidance = rag_fragments_prompt(context[:conversation_context].to_a)&.strip
-
-          if fragments_guidance.present?
-            if system_insts.include?("{uploads}")
-              prompt_insts = prompt_insts.gsub("{uploads}", fragments_guidance)
-            else
-              prompt_insts << fragments_guidance
-            end
+          question_consolidator_llm = llm
+          if self.class.question_consolidator_llm.present?
+            question_consolidator_llm =
+              DiscourseAi::Completions::Llm.proxy(self.class.question_consolidator_llm)
           end
+
+          fragments_guidance =
+            rag_fragments_prompt(
+              context[:conversation_context].to_a,
+              llm: question_consolidator_llm,
+              user: context[:user],
+            )&.strip
+
+          prompt_insts << fragments_guidance if fragments_guidance.present?
 
           prompt =
             DiscourseAi::Completions::Prompt.new(
@@ -202,7 +211,7 @@ module DiscourseAi
           )
         end
 
-        def rag_fragments_prompt(conversation_context)
+        def rag_fragments_prompt(conversation_context, llm:, user:)
           upload_refs =
             UploadReference.where(target_id: id, target_type: "AiPersona").pluck(:upload_id)
 
@@ -210,18 +219,30 @@ module DiscourseAi
           return nil if conversation_context.blank? || upload_refs.blank?
 
           latest_interactions =
-            conversation_context
-              .select { |ctx| %i[model user].include?(ctx[:type]) }
-              .map { |ctx| ctx[:content] }
-              .last(10)
-              .join("\n")
+            conversation_context.select { |ctx| %i[model user].include?(ctx[:type]) }.last(10)
+
+          return nil if latest_interactions.empty?
+
+          # first response
+          if latest_interactions.length == 1
+            consolidated_question = latest_interactions[0][:content]
+          else
+            consolidated_question =
+              DiscourseAi::AiBot::QuestionConsolidator.consolidate_question(
+                llm,
+                latest_interactions,
+                user,
+              )
+          end
+
+          return nil if !consolidated_question
 
           strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
           vector_rep =
             DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
           reranker = DiscourseAi::Inference::HuggingFaceTextEmbeddings
 
-          interactions_vector = vector_rep.vector_from(latest_interactions)
+          interactions_vector = vector_rep.vector_from(consolidated_question)
 
           rag_conversation_chunks = self.class.rag_conversation_chunks
 
