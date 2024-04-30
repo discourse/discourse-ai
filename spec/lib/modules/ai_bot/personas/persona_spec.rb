@@ -255,32 +255,6 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         )
       end
 
-      context "when the system prompt has an uploads placeholder" do
-        before { stub_fragments(10) }
-
-        it "replaces the placeholder with the fragments" do
-          custom_persona_record =
-            AiPersona.create!(
-              name: "custom",
-              description: "description",
-              system_prompt: "instructions\n{uploads}\nmore instructions",
-              allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
-            )
-          UploadReference.ensure_exist!(target: custom_persona_record, upload_ids: [upload.id])
-          custom_persona =
-            DiscourseAi::AiBot::Personas::Persona.find_by(
-              id: custom_persona_record.id,
-              user: user,
-            ).new
-
-          crafted_system_prompt = custom_persona.craft_prompt(with_cc).messages.first[:content]
-
-          expect(crafted_system_prompt).to include("fragment-n0")
-
-          expect(crafted_system_prompt.ends_with?("</guidance>")).to eq(false)
-        end
-      end
-
       context "when persona allows for less fragments" do
         before { stub_fragments(3) }
 

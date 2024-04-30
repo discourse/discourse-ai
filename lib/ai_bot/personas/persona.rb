@@ -17,6 +17,10 @@ module DiscourseAi
             1_048_576
           end
 
+          def question_consolidator_llm
+            nil
+          end
+
           def system_personas
             @system_personas ||= {
               Personas::General => -1,
@@ -217,13 +221,19 @@ module DiscourseAi
           latest_interactions =
             conversation_context.select { |ctx| %i[model user].include?(ctx[:type]) }.last(10)
 
-          # TODO: this could be an expensive model... we may want to use a cheaper one
-          consolidated_question =
-            DiscourseAi::AiBot::QuestionConsolidator.consolidate_question(
-              llm,
-              latest_interactions,
-              user,
-            )
+          return nil if latest_interactions.empty?
+
+          # first response
+          if latest_interactions.length == 1
+            consolidated_question = latest_interactions[0][:content]
+          else
+            consolidated_question =
+              DiscourseAi::AiBot::QuestionConsolidator.consolidate_question(
+                llm,
+                latest_interactions,
+                user,
+              )
+          end
 
           return nil if !consolidated_question
 

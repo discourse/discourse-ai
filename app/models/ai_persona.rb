@@ -153,12 +153,12 @@ class AiPersona < ActiveRecord::Base
         vision_max_pixels
       end
 
-      persona_class.define_singleton_method :rag_conversation_chunks do
-        rag_conversation_chunks
+      persona_class.define_singleton_method :question_consolidator_llm do
+        question_consolidator_llm
       end
 
-      presona_class.define_singleton_method :question_consolidator_llm do
-        question_consolidator_llm
+      persona_class.define_singleton_method :rag_conversation_chunks do
+        rag_conversation_chunks
       end
 
       return persona_class
