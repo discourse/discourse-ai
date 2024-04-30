@@ -144,9 +144,11 @@ de:
         create_user_help: Du kannst dieser Persona optional einen Benutzer zuordnen. Wenn du das tust, wird die KI diesen Benutzer verwenden, um auf Anfragen zu antworten.
         default_llm: Standard-Sprachmodell
         default_llm_help: Das Standard-Sprachmodell, das für diese Persona verwendet werden soll. Erforderlich, wenn du die Persona in öffentlichen Beiträgen erwähnen möchtest.
+        question_consolidator_llm: Sprachmodell für Fragenkonsolidierer
+        question_consolidator_llm_help: Das Sprachmodell, das für den Fragenkonsolidierer verwendet werden soll. Du kannst ein weniger leistungsfähiges Modell wählen, um Kosten zu sparen.
         system_prompt: System-Eingabeaufforderung
-        show_indexing_options: "Indizierungsoptionen anzeigen"
-        hide_indexing_options: "Indizierungsoptionen ausblenden"
+        show_indexing_options: "Upload-Optionen anzeigen"
+        hide_indexing_options: "Upload-Optionen ausblenden"
         save: Speichern
         saved: KI-Persona gespeichert
         enabled: "Aktiviert?"
@@ -183,8 +185,7 @@ de:
           Außerdem kannst du ihn so einrichten, dass bestimmte Benutzergruppen Zugriff auf bestimmte Personas haben. Das bedeutet, dass Sie für verschiedene Bereiche Ihres Forums unterschiedliche KI-Verhaltensweisen verwenden können, was die Vielfalt und den Reichtum der Interaktionen Ihrer Community weiter verbessert.
         uploads:
           title: "Uploads"
-          description: "Deine KI-Persona wird in der Lage sein, den Inhalt der enthaltenen Dateien zu durchsuchen und zu referenzieren. Hochgeladene Dateien müssen als Klartext (.txt) formatiert sein."
-          hint: "Um zu kontrollieren, wo der Inhalt der Datei in der System-Eingabeaufforderung platziert wird, füge den Platzhalter {uploads} in die obige System-Eingabeaufforderung ein."
+          description: "Deine KI-Persona wird in der Lage sein, den Inhalt der enthaltenen Dateien zu durchsuchen und zu referenzieren. Hochgeladene Dateien sollten als Plaintext (.txt) oder Markdown (.md) formatiert sein."
           button: "Dateien hinzufügen"
           filter: "Uploads filtern"
           indexed: "Indiziert"

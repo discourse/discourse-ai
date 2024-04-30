@@ -170,8 +170,6 @@ tr_TR:
           Dahası, belirli kullanıcı gruplarının belirli kişiliklere erişime sahip olacak şekilde de belirleyebilirsiniz. Bu, forumunuzun farklı bölümleri için farklı YZ davranışlarına sahip olabileceğiniz anlamına gelir ve böylece topluluğunuzun etkileşimlerinin çeşitliliğini ve zenginliğini geliştirebilirsiniz.
         uploads:
           title: "Yüklemeler"
-          description: "Yapay zeka personanız, dahil edilen dosyaların içeriğini arayabilecek ve referans verebilecektir. Yüklenen dosyalar düz metin (.txt) olarak biçimlendirilmelidir"
-          hint: "Dosyanın içeriğinin sistem isteminde nereye yerleştirileceğini kontrol etmek için, yukarıdaki sistem istemine {uploads} yer tutucusunu ekleyin."
           button: "Dosya Ekle"
           filter: "Yüklemeleri filtrele"
           uploading: "Yükleniyor..."
