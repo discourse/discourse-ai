@@ -139,7 +139,6 @@ module DiscourseAi
           return if !parsed
 
           response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
-
           @has_function_call ||= response_h.dig(:tool_calls).present?
           @has_function_call ? response_h.dig(:tool_calls, 0) : response_h.dig(:content)
         end

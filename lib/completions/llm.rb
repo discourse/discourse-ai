@@ -100,23 +100,24 @@ module DiscourseAi
             if @canned_llm && @canned_llm != model_name
               raise "Invalid call LLM call, expected #{@canned_llm} but got #{model_name}"
             end
-            return new(dialect_klass, @canned_response, model_name)
+            return new(dialect_klass, nil, model_name, gateway: @canned_response)
           end
 
-          gateway =
+          gateway_klass =
             DiscourseAi::Completions::Endpoints::Base.endpoint_for(
               provider_name,
               model_name_without_prov,
-            ).new(model_name_without_prov, dialect_klass.tokenizer)
+            )
 
-          new(dialect_klass, gateway, model_name_without_prov)
+          new(dialect_klass, gateway_klass, model_name_without_prov)
         end
       end
 
-      def initialize(dialect_klass, gateway, model_name)
+      def initialize(dialect_klass, gateway_klass, model_name, gateway: nil)
         @dialect_klass = dialect_klass
-        @gateway = gateway
+        @gateway_klass = gateway_klass
         @model_name = model_name
+        @gateway = gateway
       end
 
       delegate :tokenizer, to: :dialect_klass
@@ -169,11 +170,12 @@ module DiscourseAi
         end
 
         if !prompt.is_a?(DiscourseAi::Completions::Prompt)
-          raise ArgumentError, "Prompt must be either a string, array, of Prompt object"
+          raise ArgumentError, "Prom)t must be either a string, array, of Prompt object"
         end
 
         model_params.keys.each { |key| model_params.delete(key) if model_params[key].nil? }
 
+        gateway = @gateway || gateway_klass.new(model_name, dialect_klass.tokenizer)
         dialect = dialect_klass.new(prompt, model_name, opts: model_params)
         gateway.perform_completion!(dialect, user, model_params, &partial_read_blk)
       end
@@ -186,7 +188,7 @@ module DiscourseAi
 
       private
 
-      attr_reader :dialect_klass, :gateway
+      attr_reader :dialect_klass, :gateway_klass
     end
   end
 end
