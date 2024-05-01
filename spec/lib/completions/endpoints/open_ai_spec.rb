@@ -170,6 +170,89 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
   end
 
+  describe "repeat calls" do
+    it "can properly reset context" do
+      llm = DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4-turbo")
+
+      tools = [
+        {
+          name: "echo",
+          description: "echo something",
+          parameters: [
+            { name: "text", type: "string", description: "text to echo", required: true },
+          ],
+        },
+      ]
+
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [type: :user, id: "user1", content: "echo hello"],
+          tools: tools,
+        )
+
+      response = {
+        id: "chatcmpl-9JxkAzzaeO4DSV3omWvok9TKhCjBH",
+        object: "chat.completion",
+        created: 1_714_544_914,
+        model: "gpt-4-turbo-2024-04-09",
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: "assistant",
+              content: nil,
+              tool_calls: [
+                {
+                  id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+                  type: "function",
+                  function: {
+                    name: "echo",
+                    arguments: "{\"text\":\"hello\"}",
+                  },
+                },
+              ],
+            },
+            logprobs: nil,
+            finish_reason: "tool_calls",
+          },
+        ],
+        usage: {
+          prompt_tokens: 55,
+          completion_tokens: 13,
+          total_tokens: 68,
+        },
+        system_fingerprint: "fp_ea6eb70039",
+      }.to_json
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(body: response)
+
+      result = llm.generate(prompt, user: user)
+
+      expected = (<<~TXT).strip
+        <function_calls>
+        <invoke>
+        <tool_name>echo</tool_name>
+        <parameters>
+        <text>hello</text>
+        </parameters>
+        <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
+        </invoke>
+        </function_calls>
+      TXT
+
+      expect(result.strip).to eq(expected)
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        body: { choices: [message: { content: "OK" }] }.to_json,
+      )
+
+      result = llm.generate(prompt, user: user)
+
+      expect(result).to eq("OK")
+    end
+  end
+
   describe "image support" do
     it "can handle images" do
       llm = DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4-turbo")
