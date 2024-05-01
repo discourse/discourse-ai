@@ -11,11 +11,12 @@ module DiscourseAi
             [
               DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2,
               DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn,
+              DiscourseAi::Embeddings::VectorRepresentations::BgeM3,
               DiscourseAi::Embeddings::VectorRepresentations::Gemini,
               DiscourseAi::Embeddings::VectorRepresentations::MultilingualE5Large,
-              DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002,
-              DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Small,
               DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Large,
+              DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Small,
+              DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002,
             ].find { _1.name == model_name }
           end
 

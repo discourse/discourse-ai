@@ -84,4 +84,20 @@ describe DiscourseAi::Automation::LlmTriage do
 
     expect(reviewable.target).to eq(post)
   end
+
+  it "can handle garbled output from LLM" do
+    DiscourseAi::Completions::Llm.with_prepared_responses(["Bad.\n\nYo"]) do
+      triage(
+        post: post,
+        model: "gpt-4",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+      )
+    end
+
+    reviewable = ReviewablePost.last
+
+    expect(reviewable&.target).to eq(post)
+  end
 end

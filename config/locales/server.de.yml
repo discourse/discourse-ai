@@ -53,6 +53,7 @@ de:
     ai_openai_embeddings_url: "Benutzerdefinierte URL, die für die OpenAI-Embeddings-API verwendet wird (im Falle von Azure gegebenenfalls: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
     ai_openai_api_key: "API-Schlüssel für OpenAI-API"
     ai_anthropic_api_key: "API-Schlüssel für Anthropic-API"
+    ai_cohere_api_key: "API-Schlüssel für die Cohere API"
     ai_hugging_face_api_url: "Benutzerdefinierte URL, die für OpenSource-LLM-Inferenz verwendet wird. Kompatibel mit https://github.com/huggingface/text-generation-inference"
     ai_hugging_face_api_key: API-Schlüssel für Hugging Face API
     ai_hugging_face_token_limit: Maximale Token, die Hugging Face API pro Anfrage verwenden kann
@@ -94,6 +95,7 @@ de:
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
     ai_bot_enable_chat_warning: "Zeigt eine Warnung an, wenn der PN-Chat initiiert wird. Kann durch Bearbeiten der Übersetzungszeichenfolge überschrieben werden: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
+    ai_bot_debugging_allowed_groups: "Erlaube diesen Gruppen, einen Debug-Button in Beiträgen zu sehen, der die rohe KI-Anfrage und -Antwort anzeigt."
     ai_bot_public_sharing_allowed_groups: "Erlaube diesen Gruppen, persönliche KI-Nachrichten über einen eindeutigen, öffentlich zugänglichen Link mit der Öffentlichkeit zu teilen"
     ai_bot_enabled_chat_bots: "Verfügbare Modelle, die als KI-Bot agieren können"
     ai_bot_add_to_header: "Eine Schaltfläche in der Kopfzeile anzeigen, um eine PN mit einem KI-Bot zu starten"

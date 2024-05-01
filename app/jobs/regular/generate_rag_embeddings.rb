@@ -2,7 +2,8 @@
 
 module ::Jobs
   class GenerateRagEmbeddings < ::Jobs::Base
-    sidekiq_options queue: "low"
+    sidekiq_options queue: "ultra_low"
+    # we could also restrict concurrency but this takes so long if it is not concurrent
 
     def execute(args)
       return if (fragments = RagDocumentFragment.where(id: args[:fragment_ids].to_a)).empty?

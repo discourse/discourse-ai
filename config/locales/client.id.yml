@@ -20,6 +20,7 @@ id:
         gemini_pro: Gemini Pro
         claude_3_opus: Karya Claude 3
         claude_3_sonnet: Claude 3 Soneta
+        claude_3_haiku: Claude 3 Haiku
       scriptables:
         llm_report:
           fields:
@@ -106,9 +107,16 @@ id:
         edit: Ubah
         description: Deskripsi
         user: Pengguna
+        question_consolidator_llm: Model Bahasa untuk Konsolidator Pertanyaan
+        question_consolidator_llm_help: Model bahasa yang digunakan untuk konsolidator pertanyaan, Anda dapat memilih model yang kurang kuat untuk menghemat biaya.
+        show_indexing_options: "Tampilkan Opsi Unggah"
+        hide_indexing_options: "Sembunyikan Opsi Unggah"
         save: Simpan
         enabled: "Diaktifkan?"
         delete: Hapus
+        uploads:
+          description: "Persona AI Anda akan dapat mencari dan mereferensikan konten file yang disertakan. File yang diunggah harus diformat sebagai teks biasa (.txt) atau markdown (.md)."
+          uploading: "Mengunggah..."
       ai_helper:
         missing_content: "Silakan masukkan beberapa konten untuk menghasilkan saran."
         context_menu:

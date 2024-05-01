@@ -26,6 +26,7 @@ RSpec.describe Jobs::DigestRagUpload do
   before do
     SiteSetting.ai_embeddings_enabled = true
     SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+    SiteSetting.ai_embeddings_model = "bge-large-en"
     SiteSetting.authorized_extensions = "txt"
 
     WebMock.stub_request(
@@ -37,6 +38,9 @@ RSpec.describe Jobs::DigestRagUpload do
   describe "#execute" do
     context "when processing an upload containing metadata" do
       it "correctly splits on metadata boundary" do
+        # be explicit here about chunking strategy
+        persona.update!(rag_chunk_tokens: 100, rag_chunk_overlap_tokens: 10)
+
         described_class.new.execute(upload_id: upload_with_metadata.id, ai_persona_id: persona.id)
 
         parsed = +""
@@ -53,7 +57,7 @@ RSpec.describe Jobs::DigestRagUpload do
           end
 
         # to rebuild parsed
-        # File.write("/tmp/testing", parsed)
+        #File.write("/tmp/testing", parsed)
 
         expect(parsed).to eq(parsed_document_with_metadata.read)
       end

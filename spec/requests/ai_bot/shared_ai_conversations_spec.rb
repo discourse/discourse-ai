@@ -83,6 +83,59 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
         post "#{path}.json", params: { topic_id: user_pm_share.id }
         expect(response).to have_http_status(:success)
       end
+
+      context "when secure uploads are enabled" do
+        let(:upload_1) { Fabricate(:s3_image_upload, user: bot_user, secure: true) }
+        let(:upload_2) { Fabricate(:s3_image_upload, user: bot_user, secure: true) }
+        let(:post_with_upload_1) { Fabricate(:post, topic: user_pm_share, user: bot_user) }
+        let(:post_with_upload_2) { Fabricate(:post, topic: user_pm_share, user: bot_user) }
+
+        before do
+          enable_secure_uploads
+          stub_s3_store
+          SiteSetting.secure_uploads_pm_only = true
+          FileStore::S3Store.any_instance.stubs(:update_upload_ACL).returns(true)
+          Jobs.run_immediately!
+
+          upload_1.update!(
+            access_control_post: post_with_upload_1,
+            sha1: SecureRandom.hex(20),
+            original_sha1: upload_1.sha1,
+          )
+          upload_2.update!(
+            access_control_post: post_with_upload_2,
+            sha1: SecureRandom.hex(20),
+            original_sha1: upload_2.sha1,
+          )
+          post_with_upload_1.update!(
+            raw: "This is a post with a cool AI generated picture ![wow](#{upload_1.short_url})",
+          )
+          post_with_upload_2.update!(
+            raw:
+              "Another post that has been birthed by AI with a picture ![meow](#{upload_2.short_url})",
+          )
+        end
+
+        it "marks all of those uploads as not secure when sharing the topic" do
+          post "#{path}.json", params: { topic_id: user_pm_share.id }
+          expect(response).to have_http_status(:success)
+          expect(upload_1.reload.secure).to eq(false)
+          expect(upload_2.reload.secure).to eq(false)
+        end
+
+        it "rebakes any posts in the topic with uploads attached when sharing the topic so image urls become non-secure" do
+          post_1_cooked = post_with_upload_1.cooked
+          post_2_cooked = post_with_upload_2.cooked
+
+          post "#{path}.json", params: { topic_id: user_pm_share.id }
+          expect(response).to have_http_status(:success)
+
+          expect(post_with_upload_1.reload.cooked).not_to eq(post_1_cooked)
+          expect(post_with_upload_1.reload.cooked).not_to include("secure-uploads")
+          expect(post_with_upload_2.reload.cooked).not_to eq(post_2_cooked)
+          expect(post_with_upload_2.reload.cooked).not_to include("secure-uploads")
+        end
+      end
     end
 
     context "when not logged in" do
@@ -106,6 +159,57 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
       it "returns an error if the shared conversation is not found" do
         delete "#{path}/123.json"
         expect(response).not_to have_http_status(:success)
+      end
+
+      context "when secure uploads are enabled" do
+        let(:upload_1) { Fabricate(:s3_image_upload, user: bot_user, secure: false) }
+        let(:upload_2) { Fabricate(:s3_image_upload, user: bot_user, secure: false) }
+
+        before do
+          enable_secure_uploads
+          stub_s3_store
+          SiteSetting.secure_uploads_pm_only = true
+          FileStore::S3Store.any_instance.stubs(:update_upload_ACL).returns(true)
+          Jobs.run_immediately!
+
+          upload_1.update!(
+            access_control_post: shared_conversation.target.posts.first,
+            sha1: SecureRandom.hex(20),
+            original_sha1: upload_1.sha1,
+          )
+          upload_2.update!(
+            access_control_post: shared_conversation.target.posts.second,
+            sha1: SecureRandom.hex(20),
+            original_sha1: upload_2.sha1,
+          )
+          shared_conversation.target.posts.first.update!(
+            raw: "This is a post with a cool AI generated picture ![wow](#{upload_1.short_url})",
+          )
+          shared_conversation.target.posts.second.update!(
+            raw:
+              "Another post that has been birthed by AI with a picture ![meow](#{upload_2.short_url})",
+          )
+        end
+
+        it "marks all uploads in the PM back as secure when unsharing the conversation" do
+          delete "#{path}/#{shared_conversation.share_key}.json"
+          expect(response).to have_http_status(:success)
+          expect(upload_1.reload.secure).to eq(true)
+          expect(upload_2.reload.secure).to eq(true)
+        end
+
+        it "rebakes any posts in the topic with uploads attached when sharing the topic so image urls become secure" do
+          post_1_cooked = shared_conversation.target.posts.first.cooked
+          post_2_cooked = shared_conversation.target.posts.second.cooked
+
+          delete "#{path}/#{shared_conversation.share_key}.json"
+          expect(response).to have_http_status(:success)
+
+          expect(shared_conversation.target.posts.first.reload.cooked).not_to eq(post_1_cooked)
+          expect(shared_conversation.target.posts.first.reload.cooked).to include("secure-uploads")
+          expect(shared_conversation.target.posts.second.reload.cooked).not_to eq(post_2_cooked)
+          expect(shared_conversation.target.posts.second.reload.cooked).to include("secure-uploads")
+        end
       end
     end
 

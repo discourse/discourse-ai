@@ -2,7 +2,7 @@ import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
 
-const ATTRIBUTES = [
+const CREATE_ATTRIBUTES = [
   "id",
   "name",
   "description",
@@ -22,6 +22,10 @@ const ATTRIBUTES = [
   "vision_enabled",
   "vision_max_pixels",
   "rag_uploads",
+  "rag_chunk_tokens",
+  "rag_chunk_overlap_tokens",
+  "rag_conversation_chunks",
+  "question_consolidator_llm",
 ];
 
 const SYSTEM_ATTRIBUTES = [
@@ -38,6 +42,10 @@ const SYSTEM_ATTRIBUTES = [
   "vision_enabled",
   "vision_max_pixels",
   "rag_uploads",
+  "rag_chunk_tokens",
+  "rag_chunk_overlap_tokens",
+  "rag_conversation_chunks",
+  "question_consolidator_llm",
 ];
 
 class CommandOption {
@@ -119,19 +127,22 @@ export default class AiPersona extends RestModel {
   updateProperties() {
     let attrs = this.system
       ? this.getProperties(SYSTEM_ATTRIBUTES)
-      : this.getProperties(ATTRIBUTES);
+      : this.getProperties(CREATE_ATTRIBUTES);
     attrs.id = this.id;
     this.populateCommandOptions(attrs);
+
     return attrs;
   }
 
   createProperties() {
-    let attrs = this.getProperties(ATTRIBUTES);
+    let attrs = this.getProperties(CREATE_ATTRIBUTES);
     this.populateCommandOptions(attrs);
     return attrs;
   }
 
   workingCopy() {
-    return AiPersona.create(this.createProperties());
+    let attrs = this.getProperties(CREATE_ATTRIBUTES);
+    this.populateCommandOptions(attrs);
+    return AiPersona.create(attrs);
   }
 }

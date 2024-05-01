@@ -33,7 +33,6 @@ module DiscourseAi
             system_insts,
             messages: conversation_context,
             topic_id: post.topic_id,
-            post_id: post.id,
           )
 
         title_prompt.push(
@@ -51,7 +50,8 @@ module DiscourseAi
       end
 
       def reply(context, &update_blk)
-        prompt = persona.craft_prompt(context)
+        llm = DiscourseAi::Completions::Llm.proxy(model)
+        prompt = persona.craft_prompt(context, llm: llm)
 
         total_completions = 0
         ongoing_chain = true
@@ -64,8 +64,6 @@ module DiscourseAi
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
 
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
-          current_model = model
-          llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
           result =
@@ -178,8 +176,13 @@ module DiscourseAi
         when DiscourseAi::AiBot::EntryPoint::FAKE_ID
           "fake:fake"
         when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
-          # no bedrock support yet 18-03
-          "anthropic:claude-3-opus"
+          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-opus")
+            "aws_bedrock:claude-3-opus"
+          else
+            "anthropic:claude-3-opus"
+          end
+        when DiscourseAi::AiBot::EntryPoint::COHERE_COMMAND_R_PLUS
+          "cohere:command-r-plus"
         when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
           if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
                "claude-3-sonnet",
@@ -197,10 +200,6 @@ module DiscourseAi
         else
           nil
         end
-      end
-
-      def tool_invocation?(partial)
-        Nokogiri::HTML5.fragment(partial).at("invoke").present?
       end
 
       def build_placeholder(summary, details, custom_raw: nil)

@@ -45,8 +45,9 @@ module DiscourseAi
         @posts = @posts.where("categories.id IN (?)", @category_ids) if @category_ids.present?
         @posts =
           @posts.where(
-            "categories.id NOT IN (?)",
-            exclude_category_ids,
+            "categories.id NOT IN (:ids) AND
+            (parent_category_id NOT IN (:ids) OR parent_category_id IS NULL)",
+            ids: exclude_category_ids,
           ) if exclude_category_ids.present?
 
         if exclude_tags.present?

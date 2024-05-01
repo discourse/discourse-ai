@@ -40,7 +40,7 @@ class EndpointMock
   end
 
   def tool_deltas
-    ["Let me use a tool for that<function", <<~REPLY.strip, <<~REPLY.strip, <<~REPLY.strip]
+    ["<function", <<~REPLY.strip, <<~REPLY.strip, <<~REPLY.strip]
       _calls>
       <invoke>
       <tool_name>get_weather</tool_name>
@@ -185,7 +185,7 @@ class EndpointsCompliance
     mock.stub_tool_call(a_dialect.translate)
 
     completion_response = endpoint.perform_completion!(a_dialect, user)
-    expect(completion_response).to eq(mock.invocation_response)
+    expect(completion_response.strip).to eq(mock.invocation_response.strip)
   end
 
   def streaming_mode_simple_prompt(mock)
@@ -223,7 +223,7 @@ class EndpointsCompliance
         cancel.call if buffered_partial.include?("<function_calls>")
       end
 
-      expect(buffered_partial).to eq(mock.invocation_response)
+      expect(buffered_partial.strip).to eq(mock.invocation_response.strip)
     end
   end
 

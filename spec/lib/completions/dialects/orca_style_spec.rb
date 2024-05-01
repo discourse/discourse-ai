@@ -11,7 +11,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::OrcaStyle do
       llama2_classic_version = <<~TEXT
       ### System:
       #{context.system_insts}
-      #{described_class.tool_preamble}
+      #{described_class.tool_preamble(include_array_tip: false)}
       <tools>
       #{context.dialect_tools}</tools>
       ### User:
@@ -28,7 +28,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::OrcaStyle do
       expected = +(<<~TEXT)
       ### System:
       #{context.system_insts}
-      #{described_class.tool_preamble}
+      #{described_class.tool_preamble(include_array_tip: false)}
       <tools>
       #{context.dialect_tools}</tools>
       ### User:

@@ -115,6 +115,7 @@ ru:
         command_options: "Параметры команды"
         uploads:
           title: "Загрузки"
+          uploading: "Загрузка…"
       related_topics:
         title: "Связанные темы"
         pill: "Связанные"
@@ -186,7 +187,8 @@ ru:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
-          gemini-pro: "Gemini"
+          gemini-1:
+            5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
       sentiments:

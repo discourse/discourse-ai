@@ -42,6 +42,7 @@ ko:
         delete: 삭제하기
         uploads:
           title: "업로드된 파일"
+          uploading: "업로드 중..."
       ai_helper:
         context_menu:
           back: "뒤로"

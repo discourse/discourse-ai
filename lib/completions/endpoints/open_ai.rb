@@ -13,7 +13,6 @@ module DiscourseAi
               gpt-4
               gpt-3.5-turbo-16k
               gpt-4-32k
-              gpt-4-0125-preview
               gpt-4-turbo
               gpt-4-vision-preview
             ].include?(model_name)
@@ -75,7 +74,7 @@ module DiscourseAi
         end
 
         def default_options
-          { model: model == "gpt-4-turbo" ? "gpt-4-0125-preview" : model }
+          { model: model }
         end
 
         def provider_id
@@ -163,9 +162,8 @@ module DiscourseAi
           @has_function_call
         end
 
-        def maybe_has_tool?(_partial_raw)
-          # we always get a full partial
-          false
+        def native_tool_support?
+          true
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)

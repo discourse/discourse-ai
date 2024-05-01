@@ -118,10 +118,15 @@ module DiscourseAi
 
               category = categories[topic["category_id"]]
               category_names = +""
-              if category["parent_category_id"]
-                category_names << categories[category["parent_category_id"]]["name"] << " > "
+              # TODO @nbianca: this is broken now cause we are not getting child categories
+              # to avoid erroring out we simply skip
+              # sideloading from search would probably be easier
+              if category
+                if category["parent_category_id"]
+                  category_names << categories[category["parent_category_id"]]["name"] << " > "
+                end
+                category_names << category["name"]
               end
-              category_names << category["name"]
               row = {
                 title: topic["title"],
                 url: "https://meta.discourse.org/t/-/#{post["topic_id"]}/#{post["post_number"]}",

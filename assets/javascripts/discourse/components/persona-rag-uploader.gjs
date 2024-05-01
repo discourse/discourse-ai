@@ -3,6 +3,7 @@ import Component, { Input } from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
@@ -20,6 +21,7 @@ export default class PersonaRagUploader extends Component.extend(
   @tracked term = null;
   @tracked filteredUploads = null;
   @tracked ragIndexingStatuses = null;
+  @tracked ragUploads = null;
   id = "discourse-ai-persona-rag-uploader";
   maxFiles = 20;
   uploadUrl = "/admin/plugins/discourse-ai/ai-personas/files/upload";
@@ -32,19 +34,37 @@ export default class PersonaRagUploader extends Component.extend(
       this._uppyInstance?.cancelAll();
     }
 
-    this.filteredUploads = this.ragUploads || [];
+    this.ragUploads = this.persona?.rag_uploads || [];
+    this.filteredUploads = this.ragUploads;
 
-    if (this.ragUploads?.length) {
+    if (this.ragUploads?.length && this.persona?.id) {
       ajax(
         `/admin/plugins/discourse-ai/ai-personas/${this.persona.id}/files/status.json`
       ).then((statuses) => {
         this.set("ragIndexingStatuses", statuses);
       });
     }
+
+    this.appEvents.on(
+      `upload-mixin:${this.id}:all-uploads-complete`,
+      this,
+      "_updatePersonaWithUploads"
+    );
+  }
+
+  removeListener() {
+    this.appEvents.off(`upload-mixin:${this.id}:all-uploads-complete`);
+  }
+
+  _updatePersonaWithUploads() {
+    this.updateUploads(this.ragUploads);
   }
 
   uploadDone(uploadedFile) {
-    this.onAdd(uploadedFile.upload);
+    const newUpload = uploadedFile.upload;
+    newUpload.status = "uploaded";
+    newUpload.statusText = I18n.t("discourse_ai.ai_persona.uploads.uploaded");
+    this.ragUploads.pushObject(newUpload);
     this.debouncedSearch();
   }
 
@@ -79,26 +99,35 @@ export default class PersonaRagUploader extends Component.extend(
     discourseDebounce(this, this.search, 100);
   }
 
+  @action
+  removeUpload(upload) {
+    this.ragUploads.removeObject(upload);
+    this.onRemove(upload);
+
+    this.debouncedSearch();
+  }
+
   <template>
-    <div class="persona-rag-uploader">
+    <div class="persona-rag-uploader" {{willDestroy this.removeListener}}>
       <h3>{{I18n.t "discourse_ai.ai_persona.uploads.title"}}</h3>
       <p>{{I18n.t "discourse_ai.ai_persona.uploads.description"}}</p>
-      <p>{{I18n.t "discourse_ai.ai_persona.uploads.hint"}}</p>
 
-      <div class="persona-rag-uploader__search-input-container">
-        <div class="persona-rag-uploader__search-input">
-          {{icon
-            "search"
-            class="persona-rag-uploader__search-input__search-icon"
-          }}
-          <Input
-            class="persona-rag-uploader__search-input__input"
-            placeholder={{I18n.t "discourse_ai.ai_persona.uploads.filter"}}
-            @value={{this.term}}
-            {{on "keyup" this.debouncedSearch}}
-          />
+      {{#if this.ragUploads}}
+        <div class="persona-rag-uploader__search-input-container">
+          <div class="persona-rag-uploader__search-input">
+            {{icon
+              "search"
+              class="persona-rag-uploader__search-input__search-icon"
+            }}
+            <Input
+              class="persona-rag-uploader__search-input__input"
+              placeholder={{I18n.t "discourse_ai.ai_persona.uploads.filter"}}
+              @value={{this.term}}
+              {{on "keyup" this.debouncedSearch}}
+            />
+          </div>
         </div>
-      </div>
+      {{/if}}
 
       <table class="persona-rag-uploader__uploads-list">
         <tbody>
@@ -118,7 +147,7 @@ export default class PersonaRagUploader extends Component.extend(
                 <DButton
                   @icon="times"
                   @title="discourse_ai.ai_persona.uploads.remove"
-                  @action={{fn @onRemove upload}}
+                  @action={{fn this.removeUpload upload}}
                   @class="btn-flat"
                 />
               </td>
@@ -153,7 +182,7 @@ export default class PersonaRagUploader extends Component.extend(
         disabled={{this.uploading}}
         type="file"
         multiple="multiple"
-        accept=".txt"
+        accept=".txt,.md"
       />
       <DButton
         @label="discourse_ai.ai_persona.uploads.button"

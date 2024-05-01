@@ -132,6 +132,7 @@ zh_CN:
         command_options: "命令选项"
         uploads:
           title: "上传"
+          uploading: "正在上传…"
       related_topics:
         title: "相关话题"
         pill: "相关"
@@ -203,7 +204,8 @@ zh_CN:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
-          gemini-pro: "Gemini"
+          gemini-1:
+            5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
       sentiments:

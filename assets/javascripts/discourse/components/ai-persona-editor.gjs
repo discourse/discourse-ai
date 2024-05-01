@@ -38,6 +38,7 @@ export default class PersonaEditor extends Component {
   @tracked showDelete = false;
   @tracked maxPixelsValue = null;
   @tracked ragIndexingStatuses = null;
+  @tracked showIndexingOptions = false;
 
   @action
   updateModel() {
@@ -46,6 +47,13 @@ export default class PersonaEditor extends Component {
     this.maxPixelsValue = this.findClosestPixelValue(
       this.editingModel.vision_max_pixels
     );
+  }
+
+  @action
+  toggleIndexingOptions(event) {
+    this.showIndexingOptions = !this.showIndexingOptions;
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   findClosestPixelValue(pixels) {
@@ -67,6 +75,12 @@ export default class PersonaEditor extends Component {
       { id: "medium", name: l("medium"), pixels: 262144 },
       { id: "high", name: l("high"), pixels: 1048576 },
     ];
+  }
+
+  get indexingOptionsText() {
+    return this.showIndexingOptions
+      ? I18n.t("discourse_ai.ai_persona.hide_indexing_options")
+      : I18n.t("discourse_ai.ai_persona.show_indexing_options");
   }
 
   @action
@@ -117,6 +131,18 @@ export default class PersonaEditor extends Component {
 
   get adminUser() {
     return AdminUser.create(this.editingModel?.user);
+  }
+
+  get mappedQuestionConsolidatorLlm() {
+    return this.editingModel?.question_consolidator_llm || "blank";
+  }
+
+  set mappedQuestionConsolidatorLlm(value) {
+    if (value === "blank") {
+      this.editingModel.question_consolidator_llm = null;
+    } else {
+      this.editingModel.question_consolidator_llm = value;
+    }
   }
 
   get mappedDefaultLlm() {
@@ -193,17 +219,16 @@ export default class PersonaEditor extends Component {
   }
 
   @action
-  addUpload(upload) {
-    const newUpload = upload;
-    newUpload.status = "uploaded";
-    newUpload.statusText = I18n.t("discourse_ai.ai_persona.uploads.uploaded");
-    this.editingModel.rag_uploads.addObject(newUpload);
+  updateUploads(uploads) {
+    this.editingModel.rag_uploads = uploads;
   }
 
   @action
   removeUpload(upload) {
     this.editingModel.rag_uploads.removeObject(upload);
-    this.save();
+    if (!this.args.model.isNew) {
+      this.save();
+    }
   }
 
   async toggleField(field, sortPersonas) {
@@ -444,11 +469,89 @@ export default class PersonaEditor extends Component {
         <div class="control-group">
           <PersonaRagUploader
             @persona={{this.editingModel}}
-            @ragUploads={{this.editingModel.rag_uploads}}
-            @onAdd={{this.addUpload}}
+            @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}
           />
+          {{#if this.editingModel.rag_uploads}}
+            <a
+              href="#"
+              class="ai-persona-editor__indexing-options"
+              {{on "click" this.toggleIndexingOptions}}
+            >{{this.indexingOptionsText}}</a>
+          {{/if}}
         </div>
+        {{#if this.showIndexingOptions}}
+          <div class="control-group">
+            <label>{{I18n.t "discourse_ai.ai_persona.rag_chunk_tokens"}}</label>
+            <Input
+              @type="number"
+              step="any"
+              lang="en"
+              class="ai-persona-editor__rag_chunk_tokens"
+              @value={{this.editingModel.rag_chunk_tokens}}
+            />
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.rag_chunk_tokens_help"
+              }}
+            />
+          </div>
+          <div class="control-group">
+            <label>{{I18n.t
+                "discourse_ai.ai_persona.rag_chunk_overlap_tokens"
+              }}</label>
+            <Input
+              @type="number"
+              step="any"
+              lang="en"
+              class="ai-persona-editor__rag_chunk_overlap_tokens"
+              @value={{this.editingModel.rag_chunk_overlap_tokens}}
+            />
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.rag_chunk_overlap_tokens_help"
+              }}
+            />
+          </div>
+          <div class="control-group">
+            <label>{{I18n.t
+                "discourse_ai.ai_persona.rag_conversation_chunks"
+              }}</label>
+            <Input
+              @type="number"
+              step="any"
+              lang="en"
+              class="ai-persona-editor__rag_conversation_chunks"
+              @value={{this.editingModel.rag_conversation_chunks}}
+            />
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.rag_conversation_chunks_help"
+              }}
+            />
+          </div>
+
+          <div class="control-group">
+            <label>{{I18n.t
+                "discourse_ai.ai_persona.question_consolidator_llm"
+              }}</label>
+            <AiLlmSelector
+              class="ai-persona-editor__llms"
+              @value={{this.mappedQuestionConsolidatorLlm}}
+              @llms={{@personas.resultSetMeta.llms}}
+            />
+
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.question_consolidator_llm_help"
+              }}
+            />
+          </div>
+        {{/if}}
       {{/if}}
       <div class="control-group ai-persona-editor__action_panel">
         <DButton

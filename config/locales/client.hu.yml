@@ -40,6 +40,7 @@ hu:
         delete: Törlés
         uploads:
           title: "Feltöltések"
+          uploading: "Feltültés..."
       ai_helper:
         context_menu:
           back: "Vissza"

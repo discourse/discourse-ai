@@ -34,6 +34,23 @@ describe ::TopicsController do
       expect(json["suggested_topics"].length).to eq(0)
       expect(json["related_topics"].length).to eq(2)
     end
+
+    it "includes related topics in payload when configured" do
+      SiteSetting.lazy_load_categories_groups = "#{Group::AUTO_GROUPS[:everyone]}"
+      category = Fabricate(:category)
+      topic.update!(category: category)
+
+      get("#{topic.relative_url}.json")
+      expect(response.status).to eq(200)
+      json = response.parsed_body
+
+      expect(json["suggested_topics"].length).to eq(0)
+      expect(json["related_topics"].length).to eq(2)
+      expect(json["categories"].map { |c| c["id"] }).to contain_exactly(
+        SiteSetting.uncategorized_category_id,
+        category.id,
+      )
+    end
   end
 
   describe "crawler" do

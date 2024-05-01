@@ -12,6 +12,14 @@ module DiscourseAi
           tokenizer.encode(text)
         end
 
+        def encode(text)
+          tokenizer.encode(text)
+        end
+
+        def decode(token_ids)
+          tokenizer.decode(token_ids)
+        end
+
         def truncate(text, max_length)
           # fast track common case, /2 to handle unicode chars
           # than can take more than 1 token per char

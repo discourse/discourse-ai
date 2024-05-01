@@ -2,6 +2,7 @@
 
 RSpec.describe DiscourseAi::AiHelper::Assistant do
   fab!(:user)
+  fab!(:empty_locale_user) { Fabricate(:user, locale: "") }
   let(:prompt) { CompletionPrompt.find_by(id: mode) }
 
   before { SiteSetting.ai_helper_model = "fake:fake" }
@@ -72,6 +73,8 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
   end
 
   describe("#localize_prompt!") do
+    before { SiteSetting.allow_user_locale = true }
+
     it "is able to perform %LANGUAGE% replacements" do
       prompt =
         CompletionPrompt.new(messages: { insts: "This is a %LANGUAGE% test" }).messages_with_input(
@@ -79,6 +82,17 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
         )
 
       subject.localize_prompt!(prompt, user)
+
+      expect(prompt.messages[0][:content].strip).to eq("This is a English (US) test")
+    end
+
+    it "handles users with empty string locales" do
+      prompt =
+        CompletionPrompt.new(messages: { insts: "This is a %LANGUAGE% test" }).messages_with_input(
+          "test",
+        )
+
+      subject.localize_prompt!(prompt, empty_locale_user)
 
       expect(prompt.messages[0][:content].strip).to eq("This is a English (US) test")
     end

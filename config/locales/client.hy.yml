@@ -40,6 +40,7 @@ hy:
         delete: Ջնջել
         uploads:
           title: "Վերբեռնումներ"
+          uploading: "Վերբեռնում..."
       ai_helper:
         context_menu:
           back: "Ետ"

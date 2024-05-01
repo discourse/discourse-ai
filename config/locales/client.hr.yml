@@ -40,6 +40,7 @@ hr:
         delete: Pobriši
         uploads:
           title: "Prijenosi"
+          uploading: "Učitavanje..."
       ai_helper:
         context_menu:
           back: "Natrag"

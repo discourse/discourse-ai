@@ -18,8 +18,14 @@ de:
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
         gemini_pro: Gemini Pro
+        gemini_1_5_pro: Gemini 1.5 Pro
         claude_3_opus: Claude 3 Opus
         claude_3_sonnet: Claude 3 Sonett
+        claude_3_haiku: Claude 3 Haiku
+        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Anleitung V0.1
+        mistral_7b_instruct_v0_2: Mistral 7B Anleitung V0.2
+        command_r: Cohere Befehl R
+        command_r_plus: Cohere Befehl R+
       scriptables:
         llm_report:
           fields:
@@ -138,7 +144,11 @@ de:
         create_user_help: Du kannst dieser Persona optional einen Benutzer zuordnen. Wenn du das tust, wird die KI diesen Benutzer verwenden, um auf Anfragen zu antworten.
         default_llm: Standard-Sprachmodell
         default_llm_help: Das Standard-Sprachmodell, das für diese Persona verwendet werden soll. Erforderlich, wenn du die Persona in öffentlichen Beiträgen erwähnen möchtest.
+        question_consolidator_llm: Sprachmodell für Fragenkonsolidierer
+        question_consolidator_llm_help: Das Sprachmodell, das für den Fragenkonsolidierer verwendet werden soll. Du kannst ein weniger leistungsfähiges Modell wählen, um Kosten zu sparen.
         system_prompt: System-Eingabeaufforderung
+        show_indexing_options: "Upload-Optionen anzeigen"
+        hide_indexing_options: "Upload-Optionen ausblenden"
         save: Speichern
         saved: KI-Persona gespeichert
         enabled: "Aktiviert?"
@@ -156,6 +166,12 @@ de:
         priority: Priorität
         priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
         command_options: "Befehlsoptionen"
+        rag_chunk_tokens: "Chunk-Token hochladen"
+        rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu erhöhen, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads)"
+        rag_chunk_overlap_tokens: "Chunk-Überlappungs-Token hochladen"
+        rag_chunk_overlap_tokens_help: "Die Anzahl der Token, die sich zwischen den Chunks im RAG-Modell überlappen sollen. (eine Änderung führt zu einer Neuindizierung aller Uploads)"
+        rag_conversation_chunks: "Suche Unterhaltungs-Chunks"
+        rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu erhöhen, den die KI verwenden kann."
         what_are_personas: "Was sind KI-Personas?"
         no_persona_selected: |
           KI-Personas sind eine leistungsstarke Funktion, mit der Sie das Verhalten der KI-Engine in Ihrem Discourse-Forum anpassen können. Sie dienen als „Systembotschaft“, die die Reaktionen und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Nutzererlebnis zu schaffen.
@@ -169,11 +185,14 @@ de:
           Außerdem kannst du ihn so einrichten, dass bestimmte Benutzergruppen Zugriff auf bestimmte Personas haben. Das bedeutet, dass Sie für verschiedene Bereiche Ihres Forums unterschiedliche KI-Verhaltensweisen verwenden können, was die Vielfalt und den Reichtum der Interaktionen Ihrer Community weiter verbessert.
         uploads:
           title: "Uploads"
-          description: "Deine KI-Persona wird in der Lage sein, den Inhalt der enthaltenen Dateien zu durchsuchen und zu referenzieren. Hochgeladene Dateien müssen als Klartext (.txt) formatiert sein."
-          hint: "Um zu kontrollieren, wo der Inhalt der Datei in der System-Eingabeaufforderung platziert wird, füge den Platzhalter {uploads} in die obige System-Eingabeaufforderung ein."
+          description: "Deine KI-Persona wird in der Lage sein, den Inhalt der enthaltenen Dateien zu durchsuchen und zu referenzieren. Hochgeladene Dateien sollten als Plaintext (.txt) oder Markdown (.md) formatiert sein."
           button: "Dateien hinzufügen"
           filter: "Uploads filtern"
-          complete: "Vollständig"
+          indexed: "Indiziert"
+          indexing: "Indizierung"
+          uploaded: "Bereit zur Indizierung"
+          uploading: "Wird hochgeladen …"
+          remove: "Upload entfernen"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -239,6 +258,13 @@ de:
         shortcut_title: "Starte eine PN mit einem KI-Bot"
         share: "KI-Unterhaltung teilen"
         conversation_shared: "Unterhaltung kopiert"
+        debug_ai: "Rohdaten der KI-Anfrage und -Antwort anzeigen"
+        debug_ai_modal:
+          title: "KI-Interaktion ansehen"
+          copy_request: "Anfrage kopieren"
+          copy_response: "Antwort kopieren"
+          request_tokens: "Token anfordern:"
+          response_tokens: "Antwort-Token:"
         share_full_topic_modal:
           title: "Gespräch öffentlich teilen"
           share: "Link teilen und kopieren"
@@ -259,12 +285,14 @@ de:
           claude-3-opus: "Claude 3 Opus"
           claude-3-sonnet: "Claude 3 Sonett"
           claude-3-haiku: "Claude 3 Haiku"
+          cohere-command-r-plus: "Cohere Befehl R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
-          gemini-pro: "Gemini"
+          gemini-1:
+            5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
       sentiments:

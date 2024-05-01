@@ -121,6 +121,10 @@ module DiscourseAi
             :max_context_posts,
             :vision_enabled,
             :vision_max_pixels,
+            :rag_chunk_tokens,
+            :rag_chunk_overlap_tokens,
+            :rag_conversation_chunks,
+            :question_consolidator_llm,
             allowed_group_ids: [],
             rag_uploads: [:id],
           )
@@ -149,10 +153,13 @@ module DiscourseAi
 
       def validate_extension!(filename)
         extension = File.extname(filename)[1..-1] || ""
-        authorized_extension = "txt"
-        if extension != authorized_extension
+        authorized_extensions = %w[txt md]
+        if !authorized_extensions.include?(extension)
           raise Discourse::InvalidParameters.new(
-                  I18n.t("upload.unauthorized", authorized_extensions: authorized_extension),
+                  I18n.t(
+                    "upload.unauthorized",
+                    authorized_extensions: authorized_extensions.join(" "),
+                  ),
                 )
         end
       end

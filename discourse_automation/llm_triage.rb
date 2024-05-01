@@ -47,11 +47,6 @@ if defined?(DiscourseAutomation)
       search_for_text = fields["search_for_text"]["value"]
       model = fields["model"]["value"]
 
-      if !%w[gpt-4 gpt-3-5-turbo claude-2].include?(model)
-        Rails.logger.warn("llm_triage: model #{model} is not supported")
-        next
-      end
-
       category_id = fields.dig("category", "value")
       tags = fields.dig("tags", "value")
       hide_topic = fields.dig("hide_topic", "value")

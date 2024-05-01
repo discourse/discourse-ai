@@ -116,6 +116,7 @@ pt_BR:
         command_options: "Opções de comando"
         uploads:
           title: "Envios"
+          uploading: "Enviando..."
       related_topics:
         title: "Tópicos relacionados"
         pill: "Relacionado(a)"
@@ -187,7 +188,8 @@ pt_BR:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
-          gemini-pro: "Gemini"
+          gemini-1:
+            5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
       sentiments:

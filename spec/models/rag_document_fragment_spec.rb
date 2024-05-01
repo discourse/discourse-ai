@@ -93,6 +93,7 @@ RSpec.describe RagDocumentFragment do
     before do
       SiteSetting.ai_embeddings_enabled = true
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+      SiteSetting.ai_embeddings_model = "bge-large-en"
 
       WebMock.stub_request(
         :post,
@@ -100,6 +101,19 @@ RSpec.describe RagDocumentFragment do
       ).to_return(status: 200, body: JSON.dump(expected_embedding))
 
       vector_rep.generate_representation_from(rag_document_fragment_1)
+    end
+
+    it "regenerates all embeddings if ai_embeddings_model changes" do
+      old_id = rag_document_fragment_1.id
+
+      UploadReference.create!(upload_id: upload_1.id, target: persona)
+      UploadReference.create!(upload_id: upload_2.id, target: persona)
+
+      Sidekiq::Testing.fake! do
+        SiteSetting.ai_embeddings_model = "all-mpnet-base-v2"
+        expect(RagDocumentFragment.exists?(old_id)).to eq(false)
+        expect(Jobs::DigestRagUpload.jobs.size).to eq(2)
+      end
     end
 
     it "returns total, indexed and unindexed fragments for each upload" do

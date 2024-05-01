@@ -110,6 +110,9 @@ discourse_ai:
   ai_anthropic_api_key:
     default: ""
     secret: true
+  ai_cohere_api_key:
+    default: ""
+    secret: true
   ai_stability_api_key:
     default: ""
     secret: true
@@ -119,6 +122,8 @@ discourse_ai:
     default: "stable-diffusion-xl-1024-v1-0"
     type: enum
     choices:
+      - "sd3"
+      - "sd3-turbo"
       - "stable-diffusion-xl-1024-v1-0"
       - "stable-diffusion-768-v2-1"
       - "stable-diffusion-v1-5"
@@ -264,6 +269,7 @@ discourse_ai:
       - multilingual-e5-large
       - bge-large-en
       - gemini
+      - bge-m3
     validator: "DiscourseAi::Configuration::EmbeddingsModelValidator"
   ai_embeddings_per_post_enabled:
     default: false
@@ -309,6 +315,11 @@ discourse_ai:
   ai_bot_enable_chat_warning:
     default: false
     client: true
+  ai_bot_debugging_allowed_groups:
+    type: group_list
+    list_type: compact
+    default: ""
+    allow_any: false
   ai_bot_allowed_groups:
     type: group_list
     list_type: compact
@@ -330,11 +341,12 @@ discourse_ai:
       - gpt-4
       - gpt-4-turbo
       - claude-2
-      - gemini-pro
+      - gemini-1.5-pro
       - mixtral-8x7B-Instruct-V0.1
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - cohere-command-r-plus
   ai_bot_add_to_header:
     default: true
     client: true

@@ -19,12 +19,26 @@ class SharedAiConversation < ActiveRecord::Base
     conversation = find_by(user: user, target: target)
     conversation_data = build_conversation_data(target, max_posts: max_posts)
 
-    if conversation
-      conversation.update(**conversation_data)
-      conversation
-    else
-      create(user_id: user.id, target: target, **conversation_data)
-    end
+    conversation =
+      if conversation
+        conversation.update(**conversation_data)
+        conversation
+      else
+        create(user_id: user.id, target: target, **conversation_data)
+      end
+
+    ::Jobs.enqueue(:shared_conversation_adjust_upload_security, conversation_id: conversation.id)
+
+    conversation
+  end
+
+  def self.destroy_conversation(conversation)
+    conversation.destroy
+    ::Jobs.enqueue(
+      :shared_conversation_adjust_upload_security,
+      target_id: conversation.target_id,
+      target_type: conversation.target_type,
+    )
   end
 
   # Technically this may end up being a chat message

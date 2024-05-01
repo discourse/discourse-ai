@@ -24,7 +24,13 @@ module DiscourseAi
                   "The seed used to generate the image (optional) - can be used to retain image style on amended prompts",
                 type: "array",
                 item_type: "integer",
-                required: true,
+              },
+              {
+                name: "aspect_ratio",
+                description: "The aspect ratio of the image (optional defaults to 1:1)",
+                type: "string",
+                required: false,
+                enum: %w[16:9 1:1 21:9 2:3 3:2 4:5 5:4 9:16 9:21],
               },
             ],
           }
@@ -35,7 +41,11 @@ module DiscourseAi
         end
 
         def prompts
-          JSON.parse(parameters[:prompts].to_s)
+          parameters[:prompts]
+        end
+
+        def aspect_ratio
+          parameters[:aspect_ratio]
         end
 
         def seeds
@@ -75,6 +85,7 @@ module DiscourseAi
                   api_url: api_url,
                   image_count: 1,
                   seed: inner_seed,
+                  aspect_ratio: aspect_ratio,
                 )
               rescue => e
                 attempts += 1
@@ -116,7 +127,7 @@ module DiscourseAi
           #{
             uploads
               .map do |item|
-                "![#{item[:prompt].gsub(/\|\'\"/, "")}|512x512, 50%](#{item[:upload].short_url})"
+                "![#{item[:prompt].gsub(/\|\'\"/, "")}|50%](#{item[:upload].short_url})"
               end
               .join(" ")
           }

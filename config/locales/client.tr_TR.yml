@@ -20,6 +20,7 @@ tr_TR:
         gemini_pro: Gemini Pro
         claude_3_opus: Claude 3 Opus
         claude_3_sonnet: Claude 3 Sonnet
+        claude_3_haiku: Claude 3 Haiku
       scriptables:
         llm_report:
           fields:
@@ -169,11 +170,9 @@ tr_TR:
           Dahası, belirli kullanıcı gruplarının belirli kişiliklere erişime sahip olacak şekilde de belirleyebilirsiniz. Bu, forumunuzun farklı bölümleri için farklı YZ davranışlarına sahip olabileceğiniz anlamına gelir ve böylece topluluğunuzun etkileşimlerinin çeşitliliğini ve zenginliğini geliştirebilirsiniz.
         uploads:
           title: "Yüklemeler"
-          description: "Yapay zeka personanız, dahil edilen dosyaların içeriğini arayabilecek ve referans verebilecektir. Yüklenen dosyalar düz metin (.txt) olarak biçimlendirilmelidir"
-          hint: "Dosyanın içeriğinin sistem isteminde nereye yerleştirileceğini kontrol etmek için, yukarıdaki sistem istemine {uploads} yer tutucusunu ekleyin."
           button: "Dosya Ekle"
           filter: "Yüklemeleri filtrele"
-          complete: "Tamamlandı"
+          uploading: "Yükleniyor..."
       related_topics:
         title: "İlgili Konular"
         pill: "İlgili"
@@ -264,7 +263,8 @@ tr_TR:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
-          gemini-pro: "Gemini"
+          gemini-1:
+            5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
       sentiments:

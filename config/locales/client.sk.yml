@@ -38,6 +38,8 @@ sk:
         save: Uložiť
         enabled: "Povolené?"
         delete: Odstrániť
+        uploads:
+          uploading: "Načítavam..."
       ai_helper:
         context_menu:
           back: "Späť"

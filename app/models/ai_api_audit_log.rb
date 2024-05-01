@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 class AiApiAuditLog < ActiveRecord::Base
+  belongs_to :post
+  belongs_to :topic
+
   module Provider
     OpenAI = 1
     Anthropic = 2
     HuggingFaceTextGeneration = 3
     Gemini = 4
     Vllm = 5
+    Cohere = 6
   end
 end
 

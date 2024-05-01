@@ -40,6 +40,7 @@ ca:
         delete: Suprimeix
         uploads:
           title: "Càrregues"
+          uploading: "Carregant..."
       ai_helper:
         context_menu:
           back: "Enrere"

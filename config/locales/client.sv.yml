@@ -40,6 +40,7 @@ sv:
         delete: Radera
         uploads:
           title: "Uppladdningar"
+          uploading: "Laddar upp..."
       ai_helper:
         context_menu:
           back: "Tillbaka"

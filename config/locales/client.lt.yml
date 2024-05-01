@@ -85,6 +85,7 @@ lt:
         delete: Pašalinti
         uploads:
           title: "Įkėlimai"
+          uploading: "Įkeliama"
       ai_helper:
         context_menu:
           back: "Atgal"
