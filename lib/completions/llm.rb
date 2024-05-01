@@ -170,7 +170,7 @@ module DiscourseAi
         end
 
         if !prompt.is_a?(DiscourseAi::Completions::Prompt)
-          raise ArgumentError, "Prom)t must be either a string, array, of Prompt object"
+          raise ArgumentError, "Prompt must be either a string, array, of Prompt object"
         end
 
         model_params.keys.each { |key| model_params.delete(key) if model_params[key].nil? }
