@@ -17,7 +17,7 @@ export default DiscourseRoute.extend({
     this._super(controller, model);
     controller.set(
       "allPersonas",
-      this.modelFor("adminPlugins.show.ai-personas")
+      this.modelFor("adminPlugins.show.discourse-ai-personas")
     );
   },
 });
