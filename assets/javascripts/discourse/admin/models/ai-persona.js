@@ -26,6 +26,9 @@ const CREATE_ATTRIBUTES = [
   "rag_chunk_overlap_tokens",
   "rag_conversation_chunks",
   "question_consolidator_llm",
+  "role",
+  "role_category_ids",
+  "role_whispers",
 ];
 
 const SYSTEM_ATTRIBUTES = [

@@ -23,6 +23,7 @@ import DTooltip from "float-kit/components/d-tooltip";
 import AiCommandSelector from "./ai-command-selector";
 import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaCommandOptions from "./ai-persona-command-options";
+import RoleSelector from "./ai-persona-role-selector";
 import PersonaRagUploader from "./persona-rag-uploader";
 
 export default class PersonaEditor extends Component {
@@ -334,6 +335,14 @@ export default class PersonaEditor extends Component {
           class="ai-persona-editor__description"
           @value={{this.editingModel.description}}
           disabled={{this.editingModel.system}}
+        />
+      </div>
+      <div class="control-group ai-persona-editor__role">
+        <label>{{I18n.t "discourse_ai.ai_persona.role"}}</label>
+        <RoleSelector
+          class="ai-persona-editor__role_selctor"
+          @value={{this.editingModel.role}}
+          @disabled={{this.editingModel.system}}
         />
       </div>
       <div class="control-group">

@@ -125,6 +125,7 @@ module DiscourseAi
             :rag_chunk_overlap_tokens,
             :rag_conversation_chunks,
             :question_consolidator_llm,
+            :role,
             allowed_group_ids: [],
             rag_uploads: [:id],
           )

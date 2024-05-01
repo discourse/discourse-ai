@@ -23,7 +23,12 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :rag_chunk_tokens,
              :rag_chunk_overlap_tokens,
              :rag_conversation_chunks,
-             :question_consolidator_llm
+             :question_consolidator_llm,
+             :role,
+             :role_tags,
+             :role_category_ids,
+             :role_whispers,
+             :role_max_responses_per_hour
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object
