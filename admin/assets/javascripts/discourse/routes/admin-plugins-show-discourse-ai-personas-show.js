@@ -3,7 +3,7 @@ import DiscourseRoute from "discourse/routes/discourse";
 export default DiscourseRoute.extend({
   async model(params) {
     const allPersonas = this.modelFor(
-      "adminPlugins.show.discourse-ai.ai-personas"
+      "adminPlugins.show.discourse-ai-personas"
     );
     const id = parseInt(params.id, 10);
     return allPersonas.findBy("id", id);
@@ -13,7 +13,7 @@ export default DiscourseRoute.extend({
     this._super(controller, model);
     controller.set(
       "allPersonas",
-      this.modelFor("adminPlugins.show.discourse-ai.ai-personas")
+      this.modelFor("adminPlugins.show.discourse-ai-personas")
     );
   },
 });

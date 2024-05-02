@@ -50,7 +50,7 @@ export default class AiPersonaListEditor extends Component {
           <h3>{{i18n "discourse_ai.ai_persona.short_title"}}</h3>
           {{#unless @currentPersona.isNew}}
             <LinkTo
-              @route="adminPlugins.show.discourse-ai.ai-personas.new"
+              @route="adminPlugins.show.discourse-ai-personas.new"
               class="btn btn-small btn-primary"
             >
               {{icon "plus"}}
@@ -105,7 +105,7 @@ export default class AiPersonaListEditor extends Component {
                 </td>
                 <td>
                   <LinkTo
-                    @route="adminPlugins.show.discourse-ai.ai-personas.show"
+                    @route="adminPlugins.show.discourse-ai-personas.show"
                     @model={{persona}}
                     class="btn btn-text btn-small"
                   >{{i18n "discourse_ai.ai_persona.edit"}} </LinkTo>
