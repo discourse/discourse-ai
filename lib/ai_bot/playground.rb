@@ -207,7 +207,13 @@ module DiscourseAi
       end
 
       def chat_context(message, channel, persona_user)
-        return [{ type: :user, content: message.message }] if !message.thread_id
+        has_vision = bot.persona.class.vision_enabled
+
+        if !message.thread_id
+          hash = { type: :user, content: message.message }
+          hash[:upload_ids] = message.uploads.map(&:id) if has_vision && message.uploads.present?
+          return [hash]
+        end
 
         # I would like to use a guardian and ChatSDK::Thread.messages
         # however membership for persona_user is far in future and I need to
@@ -238,7 +244,14 @@ module DiscourseAi
           if available_bot_user_ids.include?(m.user_id)
             builder.push(type: :model, content: m.message)
           else
-            builder.push(type: :user, content: m.message, name: m.user.username)
+            upload_ids = nil
+            upload_ids = m.uploads.map(&:id) if has_vision && m.uploads.present?
+            builder.push(
+              type: :user,
+              content: m.message,
+              name: m.user.username,
+              upload_ids: upload_ids,
+            )
           end
         end
 
