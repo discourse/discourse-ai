@@ -255,13 +255,28 @@ module DiscourseAi
             participants: participants.join(", "),
             conversation_context: chat_context(message, channel, persona_user),
             user: message.user,
+            skip_tool_details: true,
           )
 
         reply = nil
         guardian = Guardian.new(persona_user)
 
-        _new_prompts =
+        # stream eats lonesome spaces
+        space_buffer = +""
+
+        new_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
+            # we don't blank, cause we want to stream spaces
+            next if partial.nil? || partial.empty?
+            if partial == " "
+              space_buffer << " "
+              next
+            end
+
+            # very hacky
+            partial = space_buffer + partial
+            space_buffer.clear
+
             if !reply
               reply =
                 ChatSDK::Message.create(
@@ -284,13 +299,17 @@ module DiscourseAi
             end
           end
 
+        if new_prompts.length > 1 && reply.id
+          MessageCustomPrompt.create!(message_id: reply.id, custom_prompt: new_prompts)
+        end
+
         ChatSDK::Message.stop_stream(message_id: reply.id, guardian: guardian) if reply
 
         reply
       end
 
-      def get_context(participants:, conversation_context:, user:)
-        {
+      def get_context(participants:, conversation_context:, user:, skip_tool_details: nil)
+        result = {
           site_url: Discourse.base_url,
           site_title: SiteSetting.title,
           site_description: SiteSetting.site_description,
@@ -299,6 +318,10 @@ module DiscourseAi
           conversation_context: conversation_context,
           user: user,
         }
+
+        result[:skip_tool_details] = true if skip_tool_details
+
+        result
       end
 
       def reply_to(post)

@@ -74,7 +74,7 @@ module DiscourseAi
                 tool_found = true
                 tools[0..MAX_TOOLS].each do |tool|
                   ongoing_chain &&= tool.chain_next_response?
-                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
+                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
                 end
               else
                 update_blk.call(partial, cancel, nil)
@@ -96,9 +96,9 @@ module DiscourseAi
 
       private
 
-      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
+      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
         tool_call_id = tool.tool_call_id
-        invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
+        invocation_result_json = invoke_tool(tool, llm, cancel, context, &update_blk).to_json
 
         tool_call_message = {
           type: :tool_call,
@@ -133,7 +133,7 @@ module DiscourseAi
         raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
       end
 
-      def invoke_tool(tool, llm, cancel, &update_blk)
+      def invoke_tool(tool, llm, cancel, context, &update_blk)
         update_blk.call("", cancel, build_placeholder(tool.summary, ""))
 
         result =
@@ -143,7 +143,7 @@ module DiscourseAi
           end
 
         tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
-        update_blk.call(tool_details, cancel, nil)
+        update_blk.call(tool_details, cancel, nil) if !context[:skip_tool_details]
 
         result
       end

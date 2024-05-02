@@ -134,12 +134,41 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     context "with chat" do
       fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, persona.user]) }
 
-      it "can reply to a chat message" do
+      before do
         SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
         Group.refresh_automatic_groups!
+      end
 
-        guardian = Guardian.new(user)
+      let(:guardian) { Guardian.new(user) }
 
+      it "can run tools" do
+        persona.update!(commands: ["TimeCommand"])
+
+        responses = [
+          "<function_calls><invoke><tool_name>time</tool_name><tool_id>time</tool_id><parameters><timezone>Buenos Aires</timezone></parameters></invoke></function_calls>",
+          "The time is 2023-12-14 17:24:00 -0300",
+        ]
+
+        message =
+          DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+            ChatSDK::Message.create(channel_id: dm_channel.id, raw: "Hello", guardian: guardian)
+          end
+
+        message.reload
+        expect(message.thread_id).to be_present
+        reply = ChatSDK::Thread.messages(thread_id: message.thread_id, guardian: guardian).last
+
+        expect(reply.message).to eq("The time is 2023-12-14 17:24:00 -0300")
+
+        # it also needs to have tool details now set on message
+        prompt = MessageCustomPrompt.find_by(message_id: reply.id)
+        expect(prompt.custom_prompt.length).to eq(3)
+
+        # TODO in chat I am mixed on including this in the context, but I guess maybe?
+        # thinking about this
+      end
+
+      it "can reply to a chat message" do
         message =
           DiscourseAi::Completions::Llm.with_prepared_responses(["World"]) do
             ChatSDK::Message.create(channel_id: dm_channel.id, raw: "Hello", guardian: guardian)
