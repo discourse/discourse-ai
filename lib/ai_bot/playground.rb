@@ -274,22 +274,8 @@ module DiscourseAi
         reply = nil
         guardian = Guardian.new(persona_user)
 
-        # stream eats lonesome spaces
-        space_buffer = +""
-
         new_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
-            # we don't blank, cause we want to stream spaces
-            next if partial.nil? || partial.empty?
-            if partial == " "
-              space_buffer << " "
-              next
-            end
-
-            # very hacky
-            partial = space_buffer + partial
-            space_buffer.clear
-
             if !reply
               reply =
                 ChatSDK::Message.create(
