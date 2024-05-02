@@ -30,8 +30,6 @@ module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
 end
 
-Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::DiscourseAi)
-
 require_relative "lib/engine"
 
 after_initialize do
