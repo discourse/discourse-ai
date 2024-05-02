@@ -140,13 +140,75 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         guardian = Guardian.new(user)
 
-        DiscourseAi::Completions::Llm.with_prepared_responses(["World"]) do
-          ChatSDK::Message.create(channel_id: dm_channel.id, raw: "Hello", guardian: guardian)
+        message =
+          DiscourseAi::Completions::Llm.with_prepared_responses(["World"]) do
+            ChatSDK::Message.create(channel_id: dm_channel.id, raw: "Hello", guardian: guardian)
+          end
+
+        message.reload
+        expect(message.thread_id).to be_present
+
+        thread_messages = ChatSDK::Thread.messages(thread_id: message.thread_id, guardian: guardian)
+        expect(thread_messages.length).to eq(2)
+        expect(thread_messages.last.message).to eq("World")
+
+        # it also needs to include history per config - first feed some history
+        persona.update!(enabled: false)
+
+        persona_guardian = Guardian.new(persona.user)
+
+        4.times do |i|
+          ChatSDK::Message.create(
+            channel_id: dm_channel.id,
+            thread_id: message.thread_id,
+            raw: "request #{i}",
+            guardian: guardian,
+          )
+
+          ChatSDK::Message.create(
+            channel_id: dm_channel.id,
+            thread_id: message.thread_id,
+            raw: "response #{i}",
+            guardian: persona_guardian,
+          )
         end
 
-        messages = ChatSDK::Channel.messages(channel_id: dm_channel.id, guardian: guardian)
+        persona.update!(max_context_posts: 4, enabled: true)
 
-        expect(messages.length).to eq(2)
+        prompts = nil
+        DiscourseAi::Completions::Llm.with_prepared_responses(
+          ["World 2"],
+        ) do |_response, _llm, _prompts|
+          ChatSDK::Message.create(
+            channel_id: dm_channel.id,
+            thread_id: message.thread_id,
+            raw: "Hello",
+            guardian: guardian,
+          )
+          prompts = _prompts
+        end
+
+        expect(prompts.length).to eq(1)
+
+        mapped =
+          prompts[0]
+            .messages
+            .map { |m| "#{m[:type]}: #{m[:content]}" if m[:type] != :system }
+            .compact
+            .join("\n")
+            .strip
+
+        # why?
+        # 1. we set context to 4
+        # 2. however PromptMessagesBuilder will enforce rules of starting with :user and ending with it
+        # so one of the model messages is dropped
+        expected = (<<~TEXT).strip
+          user: request 3
+          model: response 3
+          user: Hello
+        TEXT
+
+        expect(mapped).to eq(expected)
       end
     end
 
@@ -477,11 +539,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       context = playground.conversation_context(third_post)
 
+      # skips leading model reply which makes no sense cause first post was whisper
       expect(context).to contain_exactly(
-        *[
-          { type: :user, id: user.username, content: third_post.raw },
-          { type: :model, content: second_post.raw },
-        ],
+        *[{ type: :user, id: user.username, content: third_post.raw }],
       )
     end
 
@@ -489,16 +549,16 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       it "When post custom prompt is present, we use that instead of the post content" do
         custom_prompt = [
           [
-            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
-            "time",
-            "tool",
-          ],
-          [
             { name: "time", arguments: { name: "time", timezone: "Buenos Aires" } }.to_json,
             "time",
             "tool_call",
           ],
-          ["I replied this thanks to the time command", bot_user.username],
+          [
+            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
+            "time",
+            "tool",
+          ],
+          ["I replied to the time command", bot_user.username],
         ]
 
         PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
@@ -507,43 +567,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         expect(context).to contain_exactly(
           *[
-            { type: :user, id: user.username, content: third_post.raw },
-            { type: :model, content: custom_prompt.third.first },
-            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
-            { type: :tool, id: "time", content: custom_prompt.first.first },
             { type: :user, id: user.username, content: first_post.raw },
-          ],
-        )
-      end
-
-      it "include replies generated from tools" do
-        custom_prompt = [
-          [
-            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
-            "time",
-            "tool",
-          ],
-          [
-            { name: "time", arguments: { name: "time", timezone: "Buenos Aires" } }.to_json,
-            "time",
-            "tool_call",
-          ],
-          ["I replied", bot_user.username],
-        ]
-        PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
-        PostCustomPrompt.create!(post: first_post, custom_prompt: custom_prompt)
-
-        context = playground.conversation_context(third_post)
-
-        expect(context).to contain_exactly(
-          *[
-            { type: :user, id: user.username, content: third_post.raw },
+            { type: :tool_call, content: custom_prompt.first.first, id: "time" },
+            { type: :tool, id: "time", content: custom_prompt.second.first },
             { type: :model, content: custom_prompt.third.first },
-            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
-            { type: :tool, id: "time", content: custom_prompt.first.first },
-            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
-            { type: :tool, id: "time", content: custom_prompt.first.first },
-            { type: :model, content: "I replied" },
+            { type: :user, id: user.username, content: third_post.raw },
           ],
         )
       end

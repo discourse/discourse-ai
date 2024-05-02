@@ -150,7 +150,7 @@ module DiscourseAi
                ) as upload_ids",
             )
 
-        result = []
+        builder = DiscourseAi::Completions::PromptMessagesBuilder.new
 
         context.reverse_each do |raw, username, custom_prompt, upload_ids|
           custom_prompt_translation =
@@ -166,7 +166,7 @@ module DiscourseAi
                 custom_context[:id] = message[1] if custom_context[:type] != :model
                 custom_context[:name] = message[3] if message[3]
 
-                result << custom_context
+                builder.push(**custom_context)
               end
             end
 
@@ -184,11 +184,11 @@ module DiscourseAi
               context[:upload_ids] = upload_ids.compact
             end
 
-            result << context
+            builder.push(**context)
           end
         end
 
-        result
+        builder.to_a
       end
 
       def title_playground(post)
@@ -206,8 +206,43 @@ module DiscourseAi
           end
       end
 
-      def chat_context(message, channel)
-        [{ type: :user, content: message.message }]
+      def chat_context(message, channel, persona_user)
+        return [{ type: :user, content: message.message }] if !message.thread_id
+
+        # I would like to use a guardian and ChatSDK::Thread.messages
+        # however membership for persona_user is far in future and I need to
+        # unconditionally grab last N messages, current SDK does not support that
+
+        #guardian = Guardian.new(persona_user)
+        #thread_messages =
+        #  ChatSDK::Thread.messages(
+        #    channel_id: channel.id,
+        #    thread_id: message.thread_id,
+        #    guardian: guardian,
+        #  )
+
+        max_messages = 40
+        if bot.persona.class.respond_to?(:max_context_posts)
+          max_messages = bot.persona.class.max_context_posts || 40
+        end
+
+        thread_messages =
+          Chat::Message
+            .where(thread_id: message.thread_id)
+            .order("created_at DESC")
+            .limit(max_messages)
+
+        builder = DiscourseAi::Completions::PromptMessagesBuilder.new
+
+        thread_messages.reverse.each do |m|
+          if available_bot_user_ids.include?(m.user_id)
+            builder.push(type: :model, content: m.message)
+          else
+            builder.push(type: :user, content: m.message, name: m.user.username)
+          end
+        end
+
+        builder.to_a(limit: max_messages)
       end
 
       def reply_to_chat_message(message, channel)
@@ -218,7 +253,7 @@ module DiscourseAi
         context =
           get_context(
             participants: participants.join(", "),
-            conversation_context: chat_context(message, channel),
+            conversation_context: chat_context(message, channel, persona_user),
             user: message.user,
           )
 
@@ -361,7 +396,7 @@ module DiscourseAi
             )
         end
 
-        # not need to add a custom prompt for a single reply
+        # we do not need to add a custom prompt for a single reply
         if new_custom_prompts.length > 1
           reply_post.post_custom_prompt ||= reply_post.build_post_custom_prompt(custom_prompt: [])
           prompt = reply_post.post_custom_prompt.custom_prompt || []
@@ -386,6 +421,14 @@ module DiscourseAi
             .joins(:user)
             .pluck(:username)
             .concat(DiscourseAi::AiBot::EntryPoint::BOTS.map(&:second))
+      end
+
+      def available_bot_user_ids
+        @bot_ids ||=
+          AiPersona
+            .joins(:user)
+            .pluck("users.id")
+            .concat(DiscourseAi::AiBot::EntryPoint::BOTS.map(&:first))
       end
 
       private
