@@ -15,19 +15,19 @@ module DiscourseAi
         if channel.direct_message_channel?
           allowed_user_ids = channel.allowed_user_ids
 
-          return if AiPersona.mentionables.any? { |m| m[:user_id] == user.id }
+          return if AiPersona.allowed_chat.any? { |m| m[:user_id] == user.id }
 
-          mentionable =
-            AiPersona.mentionables.find do |m|
-              m[:user_id].in?(allowed_user_ids) && (user.group_ids & m[:allowed_group_ids])
+          persona =
+            AiPersona.allowed_chat.find do |p|
+              p[:user_id].in?(allowed_user_ids) && (user.group_ids & p[:allowed_group_ids])
             end
 
-          if mentionable
+          if persona
             ::Jobs.enqueue(
               :create_ai_chat_reply,
               channel_id: channel.id,
               message_id: message.id,
-              persona_id: mentionable[:id],
+              persona_id: persona[:id],
             )
           end
         end
@@ -277,6 +277,8 @@ module DiscourseAi
         new_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
             if !reply
+              # just eat all leading spaces we can not create the message
+              next if partial.blank?
               reply =
                 ChatSDK::Message.create(
                   raw: partial,
@@ -299,7 +301,7 @@ module DiscourseAi
           end
 
         if new_prompts.length > 1 && reply.id
-          MessageCustomPrompt.create!(message_id: reply.id, custom_prompt: new_prompts)
+          ChatMessageCustomPrompt.create!(message_id: reply.id, custom_prompt: new_prompts)
         end
 
         ChatSDK::Message.stop_stream(message_id: reply.id, guardian: guardian) if reply

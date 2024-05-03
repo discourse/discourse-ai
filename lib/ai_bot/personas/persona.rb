@@ -21,6 +21,10 @@ module DiscourseAi
             nil
           end
 
+          def allow_chat
+            false
+          end
+
           def system_personas
             @system_personas ||= {
               Personas::General => -1,

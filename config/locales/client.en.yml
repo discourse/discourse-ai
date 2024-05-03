@@ -134,8 +134,8 @@ en:
           low: Low Quality - cheapest (256x256)
           medium: Medium Quality (512x512)
           high: High Quality - slowest (1024x1024)
-        mentionable: Mentionable
-        mentionable_help: If enabled, users in allowed groups can mention this user in posts and messages, the AI will respond as this persona.
+        mentionable: Allow Mentions
+        mentionable_help: If enabled, users in allowed groups can mention this user in posts, the AI will respond as this persona.
         user: User
         create_user: Create User
         create_user_help: You can optionally attach a user to this persona. If you do, the AI will use this user to respond to requests.
@@ -146,6 +146,8 @@ en:
         system_prompt: System Prompt
         show_indexing_options: "Show Upload Options"
         hide_indexing_options: "Hide Upload Options"
+        allow_chat: "Allow Chat"
+        allow_chat_help: "If enabled, users in allowed groups can DM this persona"
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"

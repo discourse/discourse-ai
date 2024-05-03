@@ -137,6 +137,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       before do
         SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
         Group.refresh_automatic_groups!
+        persona.update!(allow_chat: true, mentionable: false)
       end
 
       let(:guardian) { Guardian.new(user) }
@@ -161,7 +162,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         expect(reply.message).to eq("The time is 2023-12-14 17:24:00 -0300")
 
         # it also needs to have tool details now set on message
-        prompt = MessageCustomPrompt.find_by(message_id: reply.id)
+        prompt = ChatMessageCustomPrompt.find_by(message_id: reply.id)
         expect(prompt.custom_prompt.length).to eq(3)
 
         # TODO in chat I am mixed on including this in the context, but I guess maybe?

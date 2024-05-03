@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MessageCustomPrompt < ActiveRecord::Base
+class ChatMessageCustomPrompt < ActiveRecord::Base
   # belongs_to chat message but going to avoid the cross dependency for now
 end
 

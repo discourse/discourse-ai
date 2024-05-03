@@ -52,9 +52,9 @@ class AiPersona < ActiveRecord::Base
         .where(enabled: true)
         .joins(:user)
         .pluck(
-          "ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm, mentionable",
+          "ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm, mentionable, allow_chat",
         )
-        .map do |id, user_id, username, allowed_group_ids, default_llm, mentionable|
+        .map do |id, user_id, username, allowed_group_ids, default_llm, mentionable, allow_chat|
           {
             id: id,
             user_id: user_id,
@@ -62,6 +62,7 @@ class AiPersona < ActiveRecord::Base
             allowed_group_ids: allowed_group_ids,
             default_llm: default_llm,
             mentionable: mentionable,
+            allow_chat: allow_chat,
           }
         end
 
@@ -72,23 +73,20 @@ class AiPersona < ActiveRecord::Base
     end
   end
 
+  def self.allowed_chat(user: nil)
+    personas = persona_cache[:allowed_chat] ||= persona_users.select { |u| u[:allow_chat] }
+    if user
+      personas.select { |u| user.in_any_groups?(u[:allowed_group_ids]) }
+    else
+      personas
+    end
+  end
+
   def self.mentionables(user: nil)
     all_mentionables =
-      persona_cache[:mentionable_usernames] ||= AiPersona
-        .where(mentionable: true)
-        .where(enabled: true)
-        .joins(:user)
-        .pluck("ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm")
-        .map do |id, user_id, username, allowed_group_ids, default_llm|
-          {
-            id: id,
-            user_id: user_id,
-            username: username,
-            allowed_group_ids: allowed_group_ids,
-            default_llm: default_llm,
-          }
-        end
-
+      persona_cache[:mentionables] ||= persona_users.select do |mentionable|
+        mentionable[:mentionable]
+      end
     if user
       all_mentionables.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
     else
@@ -114,6 +112,7 @@ class AiPersona < ActiveRecord::Base
     vision_max_pixels = self.vision_max_pixels
     rag_conversation_chunks = self.rag_conversation_chunks
     question_consolidator_llm = self.question_consolidator_llm
+    allow_chat = self.allow_chat
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
@@ -131,6 +130,10 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :user_id do
         user_id
+      end
+
+      persona_class.define_singleton_method :allow_chat do
+        allow_chat
       end
 
       persona_class.define_singleton_method :mentionable do
@@ -250,6 +253,10 @@ class AiPersona < ActiveRecord::Base
 
       define_singleton_method :question_consolidator_llm do
         question_consolidator_llm
+      end
+
+      define_singleton_method :allow_chat do
+        allow_chat
       end
 
       define_singleton_method :to_s do
@@ -386,7 +393,14 @@ end
 #  rag_chunk_tokens            :integer          default(374), not null
 #  rag_chunk_overlap_tokens    :integer          default(10), not null
 #  rag_conversation_chunks     :integer          default(10), not null
+#  role                        :enum             default("bot"), not null
+#  role_category_ids           :integer          default([]), not null, is an Array
+#  role_tags                   :string           default([]), not null, is an Array
+#  role_group_ids              :integer          default([]), not null, is an Array
+#  role_whispers               :boolean          default(FALSE), not null
+#  role_max_responses_per_hour :integer          default(50), not null
 #  question_consolidator_llm   :text
+#  allow_chat                  :boolean          default(FALSE), not null
 #
 # Indexes
 #
