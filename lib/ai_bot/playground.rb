@@ -215,28 +215,19 @@ module DiscourseAi
           return [hash]
         end
 
-        # I would like to use a guardian and ChatSDK::Thread.messages
-        # however membership for persona_user is far in future and I need to
-        # unconditionally grab last N messages, current SDK does not support that
-
-        #guardian = Guardian.new(persona_user)
-        #thread_messages =
-        #  ChatSDK::Thread.messages(
-        #    channel_id: channel.id,
-        #    thread_id: message.thread_id,
-        #    guardian: guardian,
-        #  )
-
         max_messages = 40
         if bot.persona.class.respond_to?(:max_context_posts)
           max_messages = bot.persona.class.max_context_posts || 40
         end
 
+        # I would like to use a guardian  however membership for
+        # persona_user is far in future
         thread_messages =
-          Chat::Message
-            .where(thread_id: message.thread_id)
-            .order("created_at DESC")
-            .limit(max_messages)
+          ChatSDK::Thread.last_messages(
+            thread_id: message.thread_id,
+            guardian: Discourse.system_user.guardian,
+            page_size: max_messages,
+          )
 
         builder = DiscourseAi::Completions::PromptMessagesBuilder.new
 
