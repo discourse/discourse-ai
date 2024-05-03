@@ -5,7 +5,6 @@ module ::Jobs
     sidekiq_options retry: false
 
     def execute(args)
-      # 2 calls cause we need channel later
       channel = ::Chat::Channel.find_by(id: args[:channel_id])
       return if channel.blank?
 
