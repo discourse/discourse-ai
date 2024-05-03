@@ -14,6 +14,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { sanitize } from "discourse/lib/text";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { bind } from "discourse-common/utils/decorators";
+import I18n from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperCustomPrompt from "../../components/ai-helper-custom-prompt";
 import AiHelperLoading from "../../components/ai-helper-loading";
@@ -332,7 +333,10 @@ export default class AIHelperOptionsMenu extends Component {
       try {
         const result = await ajax(`/posts/${this.args.outletArgs.post.id}`);
         const sanitizedSuggestion = this.sanitizeForFootnote(this.suggestion);
-        const withFootnote = `${this.selectedText} ^[${sanitizedSuggestion}]`;
+        const credits = I18n.t(
+          "discourse_ai.ai_helper.post_options_menu.footnote_credits"
+        );
+        const withFootnote = `${this.selectedText} ^[${sanitizedSuggestion} (${credits})]`;
         const newRaw = result.raw.replace(this.selectedText, withFootnote);
 
         await this.args.outletArgs.post.save({ raw: newRaw });
