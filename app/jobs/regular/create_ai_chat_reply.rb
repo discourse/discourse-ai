@@ -5,7 +5,11 @@ module ::Jobs
     sidekiq_options retry: false
 
     def execute(args)
-      message = ::Chat::Message.find_by(id: args[:message_id], chat_channel_id: args[:channel_id])
+      # 2 calls cause we need channel later
+      channel = ::Chat::Channel.find_by(id: args[:channel_id])
+      return if channel.blank?
+
+      message = ::Chat::Message.find_by(id: args[:message_id])
       return if message.blank?
 
       personaClass =
