@@ -10,7 +10,13 @@ module ::Jobs
       persona_id = args[:persona_id]
 
       begin
-        persona = DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id)
+        persona =
+          if args[:skip_persona_security_check]
+            persona = AiPersona.all_personas.find { |persona| persona.id == persona_id }
+          else
+            persona = DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id)
+          end
+
         raise DiscourseAi::AiBot::Bot::BOT_NOT_FOUND if persona.nil?
 
         bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.new)

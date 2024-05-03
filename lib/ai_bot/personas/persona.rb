@@ -5,6 +5,23 @@ module DiscourseAi
     module Personas
       class Persona
         class << self
+          def as_bot
+            if self.respond_to?(:user_id) && self.respond_to?(:default_llm)
+              if self.default_llm
+                user = User.find_by(id: user_id)
+                DiscourseAi::AiBot::Bot.new(user, self.new, self.default_llm) if user
+              end
+            end
+          end
+
+          def role
+            "bot"
+          end
+
+          def role_whispers
+            false
+          end
+
           def rag_conversation_chunks
             10
           end

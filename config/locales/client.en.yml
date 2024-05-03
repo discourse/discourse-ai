@@ -137,6 +137,10 @@ en:
         mentionable: Mentionable
         mentionable_help: If enabled, users in allowed groups can mention this user in posts and messages, the AI will respond as this persona.
         user: User
+        role: Role
+        role_options:
+          bot: Bot
+          message_responder: Message Responder
         create_user: Create User
         create_user_help: You can optionally attach a user to this persona. If you do, the AI will use this user to respond to requests.
         default_llm: Default Language Model

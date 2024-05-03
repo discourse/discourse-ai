@@ -19,7 +19,7 @@ module DiscourseAi
                 name: "post_number",
                 description: "the post number to read",
                 type: "integer",
-                required: true,
+                required: false,
               },
             ],
           }
@@ -74,7 +74,7 @@ module DiscourseAi
           # TODO: 16k or 100k models can handle a lot more tokens
           content = llm.tokenizer.truncate(content, 1500).squish
 
-          result = { topic_id: topic_id, content: content, complete: true }
+          result = { topic_id: topic_id, content: content }
           result[:post_number] = post_number if post_number
           result
         end

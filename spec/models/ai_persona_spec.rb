@@ -128,4 +128,40 @@ RSpec.describe AiPersona do
     RailsMultisite::ConnectionManagement.stubs(:current_db) { "abc" }
     expect(AiPersona.persona_cache[:value]).to eq(nil)
   end
+
+  it "does not allow role change for system personas" do
+    persona = AiPersona.find_by(name: "Forum Helper")
+    expect(persona.update(role: "message_responder")).to eq(false)
+  end
+
+  describe "#message_responder_for" do
+    fab!(:group)
+    fab!(:responder) do
+      AiPersona.create!(
+        name: "responder",
+        description: "responser",
+        system_prompt: "responder prompt",
+        role: "message_responder",
+        role_group_ids: [group.id],
+      )
+    end
+
+    it "properly sets role_whispers on the persona" do
+      responder.update!(role_whispers: true)
+
+      expect(responder.class_instance.role_whispers).to eq(true)
+    end
+
+    it "returns can respond to group pms with a custom persona" do
+      expect(AiPersona.message_responder_for(group_id: group.id)[:id]).to eq(responder.id)
+
+      responder.update!(enabled: false)
+
+      expect(AiPersona.message_responder_for(group_id: group.id)).to eq(nil)
+
+      responder.update!(enabled: true, role: "bot")
+
+      expect(AiPersona.message_responder_for(group_id: group.id)).to eq(nil)
+    end
+  end
 end
