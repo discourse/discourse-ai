@@ -224,6 +224,8 @@ en:
           copy: "Copy"
           copied: "Copied!"
           cancel: "Cancel"
+          insert_footnote: "Add footnote"
+          footnote_credits: "Explanation by AI"
         fast_edit:
           suggest_button: "Suggest Edit"
         thumbnail_suggestions:
