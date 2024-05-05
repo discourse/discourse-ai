@@ -15,9 +15,8 @@ module ::Jobs
         DiscourseAi::AiBot::Personas::Persona.find_by(id: args[:persona_id], user: message.user)
       return if personaClass.blank?
 
-      model_without_provider = personaClass.default_llm.split(":").last
-      bot_user_id = DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(model_without_provider)
-      bot = DiscourseAi::AiBot::Bot.as(User.find(bot_user_id), persona: personaClass.new)
+      user = User.find_by(id: personaClass.user_id)
+      bot = DiscourseAi::AiBot::Bot.as(user, persona: personaClass.new)
 
       DiscourseAi::AiBot::Playground.new(bot).reply_to_chat_message(message, channel)
     end

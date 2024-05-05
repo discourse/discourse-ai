@@ -170,6 +170,7 @@ en:
         conversation_deleted: "Conversation share deleted successfully"
     ai_bot:
       personas:
+        default_llm_required: "Default LLM model is required prior to enabling Chat"
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
         cannot_edit_system_persona: "System personas can only be renamed, you may not edit commands or system prompt, instead disable and make a copy"
         github_helper:

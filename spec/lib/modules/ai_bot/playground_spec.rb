@@ -137,7 +137,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       before do
         SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
         Group.refresh_automatic_groups!
-        persona.update!(allow_chat: true, mentionable: false)
+        persona.update!(
+          allow_chat: true,
+          mentionable: false,
+          default_llm: "anthropic:claude-3-opus",
+        )
       end
 
       let(:guardian) { Guardian.new(user) }

@@ -231,7 +231,7 @@ module DiscourseAi
 
         builder = DiscourseAi::Completions::PromptMessagesBuilder.new
 
-        thread_messages.reverse.each do |m|
+        thread_messages.each do |m|
           if available_bot_user_ids.include?(m.user_id)
             builder.push(type: :model, content: m.message)
           else

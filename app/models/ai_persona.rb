@@ -8,6 +8,7 @@ class AiPersona < ActiveRecord::Base
   validates :description, presence: true, length: { maximum: 2000 }
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
+  validate :chat_preconditions
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
   # leaves some room for growth but sets a maximum to avoid memory issues
   # we may want to revisit this in the future
@@ -348,6 +349,12 @@ class AiPersona < ActiveRecord::Base
   end
 
   private
+
+  def chat_preconditions
+    if allow_chat && !default_llm
+      errors.add(:default_llm, I18n.t("discourse_ai.ai_bot.personas.default_llm_required"))
+    end
+  end
 
   def system_persona_unchangeable
     if top_p_changed? || temperature_changed? || system_prompt_changed? || commands_changed? ||
