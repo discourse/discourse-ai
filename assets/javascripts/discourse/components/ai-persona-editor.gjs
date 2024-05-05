@@ -40,6 +40,10 @@ export default class PersonaEditor extends Component {
   @tracked ragIndexingStatuses = null;
   @tracked showIndexingOptions = false;
 
+  get chatPluginEnabled() {
+    return this.siteSettings.chat_enabled;
+  }
+
   @action
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
@@ -203,6 +207,11 @@ export default class PersonaEditor extends Component {
   }
 
   @action
+  async toggleAllowChat() {
+    await this.toggleField("allow_chat");
+  }
+
+  @action
   async toggleVisionEnabled() {
     await this.toggleField("vision_enabled");
   }
@@ -295,6 +304,20 @@ export default class PersonaEditor extends Component {
         />
       </div>
       {{#if this.editingModel.user}}
+        {{#if this.chatPluginEnabled}}
+          <div class="control-group ai-persona-editor__allow_chat">
+            <DToggleSwitch
+              class="ai-persona-editor__allow_chat_toggle"
+              @state={{@model.allow_chat}}
+              @label="discourse_ai.ai_persona.allow_chat"
+              {{on "click" this.toggleAllowChat}}
+            />
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t "discourse_ai.ai_persona.allow_chat_help"}}
+            />
+          </div>
+        {{/if}}
         <div class="control-group ai-persona-editor__mentionable">
           <DToggleSwitch
             class="ai-persona-editor__mentionable_toggle"

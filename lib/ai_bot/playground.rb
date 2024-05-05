@@ -11,6 +11,28 @@ module DiscourseAi
 
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
 
+      def self.schedule_chat_reply(message, channel, user, context)
+        if channel.direct_message_channel?
+          allowed_user_ids = channel.allowed_user_ids
+
+          return if AiPersona.allowed_chat.any? { |m| m[:user_id] == user.id }
+
+          persona =
+            AiPersona.allowed_chat.find do |p|
+              p[:user_id].in?(allowed_user_ids) && (user.group_ids & p[:allowed_group_ids])
+            end
+
+          if persona
+            ::Jobs.enqueue(
+              :create_ai_chat_reply,
+              channel_id: channel.id,
+              message_id: message.id,
+              persona_id: persona[:id],
+            )
+          end
+        end
+      end
+
       def self.is_bot_user_id?(user_id)
         # this will catch everything and avoid any feedback loops
         # we could get feedback loops between say discobot and ai-bot or third party plugins
@@ -128,7 +150,7 @@ module DiscourseAi
                ) as upload_ids",
             )
 
-        result = []
+        builder = DiscourseAi::Completions::PromptMessagesBuilder.new
 
         context.reverse_each do |raw, username, custom_prompt, upload_ids|
           custom_prompt_translation =
@@ -144,7 +166,7 @@ module DiscourseAi
                 custom_context[:id] = message[1] if custom_context[:type] != :model
                 custom_context[:name] = message[3] if message[3]
 
-                result << custom_context
+                builder.push(**custom_context)
               end
             end
 
@@ -162,11 +184,11 @@ module DiscourseAi
               context[:upload_ids] = upload_ids.compact
             end
 
-            result << context
+            builder.push(**context)
           end
         end
 
-        result
+        builder.to_a
       end
 
       def title_playground(post)
@@ -184,6 +206,116 @@ module DiscourseAi
           end
       end
 
+      def chat_context(message, channel, persona_user)
+        has_vision = bot.persona.class.vision_enabled
+
+        if !message.thread_id
+          hash = { type: :user, content: message.message }
+          hash[:upload_ids] = message.uploads.map(&:id) if has_vision && message.uploads.present?
+          return [hash]
+        end
+
+        max_messages = 40
+        if bot.persona.class.respond_to?(:max_context_posts)
+          max_messages = bot.persona.class.max_context_posts || 40
+        end
+
+        # I would like to use a guardian  however membership for
+        # persona_user is far in future
+        thread_messages =
+          ChatSDK::Thread.last_messages(
+            thread_id: message.thread_id,
+            guardian: Discourse.system_user.guardian,
+            page_size: max_messages,
+          )
+
+        builder = DiscourseAi::Completions::PromptMessagesBuilder.new
+
+        thread_messages.each do |m|
+          if available_bot_user_ids.include?(m.user_id)
+            builder.push(type: :model, content: m.message)
+          else
+            upload_ids = nil
+            upload_ids = m.uploads.map(&:id) if has_vision && m.uploads.present?
+            builder.push(
+              type: :user,
+              content: m.message,
+              name: m.user.username,
+              upload_ids: upload_ids,
+            )
+          end
+        end
+
+        builder.to_a(limit: max_messages)
+      end
+
+      def reply_to_chat_message(message, channel)
+        persona_user = User.find(bot.persona.class.user_id)
+
+        participants = channel.user_chat_channel_memberships.map { |m| m.user.username }
+
+        context =
+          get_context(
+            participants: participants.join(", "),
+            conversation_context: chat_context(message, channel, persona_user),
+            user: message.user,
+            skip_tool_details: true,
+          )
+
+        reply = nil
+        guardian = Guardian.new(persona_user)
+
+        new_prompts =
+          bot.reply(context) do |partial, cancel, placeholder|
+            if !reply
+              # just eat all leading spaces we can not create the message
+              next if partial.blank?
+              reply =
+                ChatSDK::Message.create(
+                  raw: partial,
+                  thread_id: message.thread_id,
+                  channel_id: channel.id,
+                  guardian: guardian,
+                  in_reply_to_id: message.id,
+                  force_thread: message.thread_id.nil?,
+                )
+              ChatSDK::Message.start_stream(message_id: reply.id, guardian: guardian)
+            else
+              streaming =
+                ChatSDK::Message.stream(message_id: reply.id, raw: partial, guardian: guardian)
+
+              if !streaming
+                cancel&.call
+                break
+              end
+            end
+          end
+
+        if new_prompts.length > 1 && reply.id
+          ChatMessageCustomPrompt.create!(message_id: reply.id, custom_prompt: new_prompts)
+        end
+
+        ChatSDK::Message.stop_stream(message_id: reply.id, guardian: guardian) if reply
+
+        reply
+      end
+
+      def get_context(participants:, conversation_context:, user:, skip_tool_details: nil)
+        result = {
+          site_url: Discourse.base_url,
+          site_title: SiteSetting.title,
+          site_description: SiteSetting.site_description,
+          time: Time.zone.now,
+          participants: participants,
+          conversation_context: conversation_context,
+          user: user,
+        }
+
+        result[:skip_tool_details] = true if skip_tool_details
+
+        result
+      end
+
       def reply_to(post)
         reply = +""
         start = Time.now
@@ -191,17 +323,14 @@ module DiscourseAi
         post_type =
           post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
 
-        context = {
-          site_url: Discourse.base_url,
-          site_title: SiteSetting.title,
-          site_description: SiteSetting.site_description,
-          time: Time.zone.now,
-          participants: post.topic.allowed_users.map(&:username).join(", "),
-          conversation_context: conversation_context(post),
-          user: post.user,
-          post_id: post.id,
-          topic_id: post.topic_id,
-        }
+        context =
+          get_context(
+            participants: post.topic.allowed_users.map(&:username).join(", "),
+            conversation_context: conversation_context(post),
+            user: post.user,
+          )
+        context[:post_id] = post.id
+        context[:topic_id] = post.topic_id
 
         reply_user = bot.bot_user
         if bot.persona.class.respond_to?(:user_id)
@@ -282,7 +411,7 @@ module DiscourseAi
             )
         end
 
-        # not need to add a custom prompt for a single reply
+        # we do not need to add a custom prompt for a single reply
         if new_custom_prompts.length > 1
           reply_post.post_custom_prompt ||= reply_post.build_post_custom_prompt(custom_prompt: [])
           prompt = reply_post.post_custom_prompt.custom_prompt || []
@@ -307,6 +436,14 @@ module DiscourseAi
             .joins(:user)
             .pluck(:username)
             .concat(DiscourseAi::AiBot::EntryPoint::BOTS.map(&:second))
+      end
+
+      def available_bot_user_ids
+        @bot_ids ||=
+          AiPersona
+            .joins(:user)
+            .pluck("users.id")
+            .concat(DiscourseAi::AiBot::EntryPoint::BOTS.map(&:first))
       end
 
       private

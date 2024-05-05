@@ -23,7 +23,8 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :rag_chunk_tokens,
              :rag_chunk_overlap_tokens,
              :rag_conversation_chunks,
-             :question_consolidator_llm
+             :question_consolidator_llm,
+             :allow_chat
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object
