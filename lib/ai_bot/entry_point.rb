@@ -101,8 +101,8 @@ module DiscourseAi
       def inject_into(plugin)
         plugin.register_modifier(:chat_allowed_bot_user_ids) do |user_ids, guardian|
           if guardian.user
-            mentionables = AiPersona.mentionables(user: guardian.user)
-            allowed_bot_ids = mentionables.map { |mentionable| mentionable[:user_id] }
+            allowed_chat = AiPersona.allowed_chat(user: guardian.user)
+            allowed_bot_ids = allowed_chat.map { |info| info[:user_id] }
             user_ids.concat(allowed_bot_ids)
           end
           user_ids

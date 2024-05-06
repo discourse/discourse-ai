@@ -3,7 +3,6 @@ import Component, { Input } from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
-import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
@@ -52,8 +51,13 @@ export default class PersonaRagUploader extends Component.extend(
     );
   }
 
-  removeListener() {
-    this.appEvents.off(`upload-mixin:${this.id}:all-uploads-complete`);
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.appEvents.off(
+      `upload-mixin:${this.id}:all-uploads-complete`,
+      this,
+      "_updatePersonaWithUploads"
+    );
   }
 
   _updatePersonaWithUploads() {
@@ -108,7 +112,7 @@ export default class PersonaRagUploader extends Component.extend(
   }
 
   <template>
-    <div class="persona-rag-uploader" {{willDestroy this.removeListener}}>
+    <div class="persona-rag-uploader">
       <h3>{{I18n.t "discourse_ai.ai_persona.uploads.title"}}</h3>
       <p>{{I18n.t "discourse_ai.ai_persona.uploads.description"}}</p>
 
