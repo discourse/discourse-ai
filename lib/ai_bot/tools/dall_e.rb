@@ -104,9 +104,7 @@ module DiscourseAi
             [grid]
             #{
             uploads
-              .map do |item|
-                "![#{item[:prompt].gsub(/\|\'\"/, "")}|512x512, 50%](#{item[:upload].short_url})"
-              end
+              .map { |item| "![#{item[:prompt].gsub(/\|\'\"/, "")}](#{item[:upload].short_url})" }
               .join(" ")
           }
             [/grid]

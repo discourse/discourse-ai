@@ -73,8 +73,8 @@ module DiscourseAi
               if (tools.present?)
                 tool_found = true
                 tools[0..MAX_TOOLS].each do |tool|
-                  ongoing_chain &&= tool.chain_next_response?
                   process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
+                  ongoing_chain &&= tool.chain_next_response?
                 end
               else
                 update_blk.call(partial, cancel, nil)

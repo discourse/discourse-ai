@@ -40,6 +40,11 @@ module DiscourseAi
           "image"
         end
 
+        def initialize(parameters, tool_call_id: "", persona_options: {})
+          super
+          @chain_next_response = false
+        end
+
         def prompts
           parameters[:prompts]
         end
@@ -53,7 +58,7 @@ module DiscourseAi
         end
 
         def chain_next_response?
-          false
+          @chain_next_response
         end
 
         def invoke
@@ -101,7 +106,15 @@ module DiscourseAi
           results = threads.map(&:value).compact
 
           if !results.present?
-            return { prompts: prompts, error: "Something went wrong, could not generate image" }
+            @chain_next_response = true
+            return(
+              {
+                prompts: prompts,
+                error:
+                  "Something went wrong inform user you could not generate image, check Discourse logs, give up don't try anymore",
+                give_up: true,
+              }
+            )
           end
 
           uploads = []
@@ -131,9 +144,7 @@ module DiscourseAi
           [grid]
           #{
             uploads
-              .map do |item|
-                "![#{item[:prompt].gsub(/\|\'\"/, "")}|50%](#{item[:upload].short_url})"
-              end
+              .map { |item| "![#{item[:prompt].gsub(/\|\'\"/, "")}](#{item[:upload].short_url})" }
               .join(" ")
           }
           [/grid]

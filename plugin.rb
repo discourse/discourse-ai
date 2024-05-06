@@ -66,6 +66,12 @@ after_initialize do
   reloadable_patch { |plugin| Guardian.prepend DiscourseAi::GuardianExtensions }
 
   register_modifier(:post_should_secure_uploads?) do |_, _, topic|
-    false if topic.private_message? && SharedAiConversation.exists?(target: topic)
+    if topic.private_message? && SharedAiConversation.exists?(target: topic)
+      false
+    else
+      # revert to default behavior
+      # even though this can be shortened this is the clearest way to express it
+      nil
+    end
   end
 end
