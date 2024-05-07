@@ -33,6 +33,8 @@ fa_IR:
               label: "برچسب‌ها"
             suppress_notifications:
               label: "توقف آگاه‌سازی‌ها"
+            debug_mode:
+              label: "حالت اشکال زدایی"
         llm_triage:
           fields:
             search_for_text:
@@ -81,6 +83,8 @@ fa_IR:
           copy: "کپی"
           copied: "کپی شد!"
           cancel: "انصراف"
+          insert_footnote: "افزودن پاورقی"
+          footnote_credits: "توضیح توسط هوش مصنوعی"
         fast_edit:
           suggest_button: "پیشنهاد ویرایش"
         thumbnail_suggestions:

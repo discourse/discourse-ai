@@ -158,6 +158,7 @@ he:
         conversation_deleted: "שיתוף השיחה נמחק בהצלחה"
     ai_bot:
       personas:
+        default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
         cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך פקודות או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
         github_helper:

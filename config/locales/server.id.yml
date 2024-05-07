@@ -43,6 +43,8 @@ id:
       yaxis: "Tanggal"
   discourse_ai:
     ai_bot:
+      personas:
+        default_llm_required: "Model LLM default diperlukan sebelum mengaktifkan Obrolan"
       command_summary:
         search: "Cari"
         time: "Waktu"
