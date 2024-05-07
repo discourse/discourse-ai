@@ -350,6 +350,7 @@ module DiscourseAi
           )
         context[:post_id] = post.id
         context[:topic_id] = post.topic_id
+        context[:private_message] = post.topic.private_message?
 
         reply_user = bot.bot_user
         if bot.persona.class.respond_to?(:user_id)

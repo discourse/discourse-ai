@@ -45,8 +45,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
       },
     )
 
-    search = described_class.new({ search_query: "test" })
-    results = search.invoke(bot_user, llm, &progress_blk)
+    search = described_class.new({ search_query: "test" }, bot_user: bot_user, llm: llm)
+    results = search.invoke(&progress_blk)
     expect(results[:rows].length).to eq(20)
 
     expect(results[:rows].first[results[:column_names].index("category")]).to eq(
@@ -71,8 +71,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
         .to_h
         .symbolize_keys
 
-    search = described_class.new(params)
-    results = search.invoke(bot_user, llm, &progress_blk)
+    search = described_class.new(params, bot_user: bot_user, llm: llm)
+    results = search.invoke(&progress_blk)
 
     expect(results[:args]).to eq(params)
   end

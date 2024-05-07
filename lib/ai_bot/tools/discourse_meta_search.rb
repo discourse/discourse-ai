@@ -78,7 +78,7 @@ module DiscourseAi
           parameters.slice(:category, :user, :order, :max_posts, :tags, :before, :after, :status)
         end
 
-        def invoke(bot_user, llm)
+        def invoke
           search_string =
             search_args.reduce(+parameters[:search_query].to_s) do |memo, (key, value)|
               return memo if value.blank?

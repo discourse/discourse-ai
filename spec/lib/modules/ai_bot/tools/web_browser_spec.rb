@@ -21,8 +21,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::WebBrowser do
           "<html><head><title>Test</title></head><body><p>This is a simplified version of the webpage content.</p></body></html>",
       )
 
-      tool = described_class.new({ url: url })
-      result = tool.invoke(bot_user, llm)
+      tool = described_class.new({ url: url }, bot_user: bot_user, llm: llm)
+      result = tool.invoke
 
       expect(result).to have_key(:text)
       expect(result[:text]).to eq(processed_text)
@@ -35,8 +35,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::WebBrowser do
       # Simulating a failed request
       stub_request(:get, url).to_return(status: [500, "Internal Server Error"])
 
-      tool = described_class.new({ url: url })
-      result = tool.invoke(bot_user, llm)
+      tool = described_class.new({ url: url }, bot_user: bot_user, llm: llm)
+      result = tool.invoke
 
       expect(result).to have_key(:error)
       expect(result[:error]).to include("Failed to retrieve the web page")
@@ -50,8 +50,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::WebBrowser do
       simple_html = "<html><body><p>Simple content.</p></body></html>"
       stub_request(:get, url).to_return(status: 200, body: simple_html)
 
-      tool = described_class.new({ url: url })
-      result = tool.invoke(bot_user, llm)
+      tool = described_class.new({ url: url }, bot_user: bot_user, llm: llm)
+      result = tool.invoke
 
       expect(result[:text]).to eq("Simple content.")
     end
@@ -61,8 +61,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::WebBrowser do
         "<html><head><script>console.log('Ignore me')</script></head><body><style>body { background-color: #000; }</style><p>Only relevant content here.</p></body></html>"
       stub_request(:get, url).to_return(status: 200, body: complex_html)
 
-      tool = described_class.new({ url: url })
-      result = tool.invoke(bot_user, llm)
+      tool = described_class.new({ url: url }, bot_user: bot_user, llm: llm)
+      result = tool.invoke
 
       expect(result[:text]).to eq("Only relevant content here.")
     end
@@ -72,8 +72,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::WebBrowser do
         "<html><body><div><section><p>Nested paragraph 1.</p></section><section><p>Nested paragraph 2.</p></section></div></body></html>"
       stub_request(:get, url).to_return(status: 200, body: nested_html)
 
-      tool = described_class.new({ url: url })
-      result = tool.invoke(bot_user, llm)
+      tool = described_class.new({ url: url }, bot_user: bot_user, llm: llm)
+      result = tool.invoke
 
       expect(result[:text]).to eq("Nested paragraph 1. Nested paragraph 2.")
     end
@@ -88,8 +88,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::WebBrowser do
       stub_request(:get, initial_url).to_return(status: 302, headers: { "Location" => final_url })
       stub_request(:get, final_url).to_return(status: 200, body: redirect_html)
 
-      tool = described_class.new({ url: initial_url })
-      result = tool.invoke(bot_user, llm)
+      tool = described_class.new({ url: initial_url }, bot_user: bot_user, llm: llm)
+      result = tool.invoke
 
       expect(result[:url]).to eq(final_url)
       expect(result[:text]).to eq("Redirected content.")

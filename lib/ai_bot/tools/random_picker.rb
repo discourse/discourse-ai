@@ -30,7 +30,7 @@ module DiscourseAi
           parameters[:options]
         end
 
-        def invoke(_bot_user, _llm)
+        def invoke
           result = nil
           # can be a naive list of strings
           if options.none? { |option| option.match?(/\A\d+-\d+\z/) || option.include?(",") }

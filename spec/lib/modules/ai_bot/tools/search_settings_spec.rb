@@ -7,18 +7,18 @@ RSpec.describe DiscourseAi::AiBot::Tools::SearchSettings do
   before { SiteSetting.ai_bot_enabled = true }
 
   def search_settings(query)
-    described_class.new({ query: query })
+    described_class.new({ query: query }, bot_user: bot_user, llm: llm)
   end
 
   describe "#process" do
     it "can handle no results" do
-      results = search_settings("this will not exist frogs").invoke(bot_user, llm)
+      results = search_settings("this will not exist frogs").invoke
       expect(results[:args]).to eq({ query: "this will not exist frogs" })
       expect(results[:rows]).to eq([])
     end
 
     it "can return more many settings with no descriptions if there are lots of hits" do
-      results = search_settings("a").invoke(bot_user, llm)
+      results = search_settings("a").invoke
 
       expect(results[:rows].length).to be > 30
       expect(results[:rows][0].length).to eq(1)
@@ -26,10 +26,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::SearchSettings do
 
     it "can return descriptions if there are few matches" do
       results =
-        search_settings("this will not be found!@,default_locale,ai_bot_enabled_chat_bots").invoke(
-          bot_user,
-          llm,
-        )
+        search_settings("this will not be found!@,default_locale,ai_bot_enabled_chat_bots").invoke
 
       expect(results[:rows].length).to eq(2)
 

@@ -1,18 +1,15 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::Google do
-  subject(:search) { described_class.new({ query: "some search term" }) }
-
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
+  let(:search) { described_class.new({ query: "some search term" }, bot_user: bot_user, llm: llm) }
 
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
     it "will not explode if there are no results" do
-      post = Fabricate(:post)
-
       SiteSetting.ai_google_custom_search_api_key = "abc"
       SiteSetting.ai_google_custom_search_cx = "cx"
 
@@ -23,15 +20,13 @@ RSpec.describe DiscourseAi::AiBot::Tools::Google do
         "https://www.googleapis.com/customsearch/v1?cx=cx&key=abc&num=10&q=some%20search%20term",
       ).to_return(status: 200, body: json_text, headers: {})
 
-      info = search.invoke(bot_user, llm, &progress_blk).to_json
+      info = search.invoke(&progress_blk).to_json
 
       expect(search.results_count).to eq(0)
       expect(info).to_not include("oops")
     end
 
     it "can generate correct info" do
-      post = Fabricate(:post)
-
       SiteSetting.ai_google_custom_search_api_key = "abc"
       SiteSetting.ai_google_custom_search_cx = "cx"
 
@@ -63,7 +58,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Google do
         "https://www.googleapis.com/customsearch/v1?cx=cx&key=abc&num=10&q=some%20search%20term",
       ).to_return(status: 200, body: json_text, headers: {})
 
-      info = search.invoke(bot_user, llm, &progress_blk).to_json
+      info = search.invoke(&progress_blk).to_json
 
       expect(search.results_count).to eq(2)
       expect(info).to include("title1")

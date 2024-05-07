@@ -31,14 +31,23 @@ module DiscourseAi
         end
 
         attr_accessor :custom_raw
+        attr_reader :tool_call_id, :persona_options, :bot_user, :llm, :context, :parameters
 
-        def initialize(parameters, tool_call_id: "", persona_options: {})
+        def initialize(
+          parameters,
+          tool_call_id: "",
+          persona_options: {},
+          bot_user:,
+          llm:,
+          context: {}
+        )
           @parameters = parameters
           @tool_call_id = tool_call_id
           @persona_options = persona_options
+          @bot_user = bot_user
+          @llm = llm
+          @context = context
         end
-
-        attr_reader :parameters, :tool_call_id
 
         def name
           self.class.name

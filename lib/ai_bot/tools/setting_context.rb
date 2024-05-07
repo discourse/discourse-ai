@@ -47,7 +47,7 @@ module DiscourseAi
           parameters[:setting_name]
         end
 
-        def invoke(_bot_user, llm)
+        def invoke
           if !self.class.rg_installed?
             return(
               {

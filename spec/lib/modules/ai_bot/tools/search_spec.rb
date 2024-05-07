@@ -39,24 +39,37 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
       _bot_post = Fabricate(:post)
 
-      search = described_class.new({ order: "latest" }, persona_options: persona_options)
+      search =
+        described_class.new(
+          { order: "latest" },
+          persona_options: persona_options,
+          bot_user: bot_user,
+          llm: llm,
+          context: {
+          },
+        )
 
-      results = search.invoke(bot_user, llm, &progress_blk)
+      results = search.invoke(&progress_blk)
       expect(results[:rows].length).to eq(1)
 
       search_post.topic.tags = []
       search_post.topic.save!
 
       # no longer has the tag funny
-      results = search.invoke(bot_user, llm, &progress_blk)
+      results = search.invoke(&progress_blk)
       expect(results[:rows].length).to eq(0)
     end
 
     it "can handle no results" do
       _post1 = Fabricate(:post, topic: topic_with_tags)
-      search = described_class.new({ search_query: "ABDDCDCEDGDG", order: "fake" })
+      search =
+        described_class.new(
+          { search_query: "ABDDCDCEDGDG", order: "fake" },
+          bot_user: bot_user,
+          llm: llm,
+        )
 
-      results = search.invoke(bot_user, llm, &progress_blk)
+      results = search.invoke(&progress_blk)
 
       expect(results[:args]).to eq({ search_query: "ABDDCDCEDGDG", order: "fake" })
       expect(results[:rows]).to eq([])
@@ -79,7 +92,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
         )
 
         post1 = Fabricate(:post, topic: topic_with_tags)
-        search = described_class.new({ search_query: "hello world, sam", status: "public" })
+        search =
+          described_class.new(
+            { search_query: "hello world, sam", status: "public" },
+            llm: llm,
+            bot_user: bot_user,
+          )
 
         DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
           .any_instance
@@ -88,7 +106,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
         results =
           DiscourseAi::Completions::Llm.with_prepared_responses(["<ai>#{query}</ai>"]) do
-            search.invoke(bot_user, llm, &progress_blk)
+            search.invoke(&progress_blk)
           end
 
         expect(results[:args]).to eq({ search_query: "hello world, sam", status: "public" })
@@ -101,9 +119,10 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
       post1 = Fabricate(:post, topic: topic_with_tags)
 
-      search = described_class.new({ limit: 1, user: post1.user.username })
+      search =
+        described_class.new({ limit: 1, user: post1.user.username }, bot_user: bot_user, llm: llm)
 
-      results = search.invoke(bot_user, llm, &progress_blk)
+      results = search.invoke(&progress_blk)
       expect(results[:rows].to_s).to include("/subfolder" + post1.url)
     end
 
@@ -120,18 +139,18 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
           .to_h
           .symbolize_keys
 
-      search = described_class.new(params)
-      results = search.invoke(bot_user, llm, &progress_blk)
+      search = described_class.new(params, bot_user: bot_user, llm: llm)
+      results = search.invoke(&progress_blk)
 
       expect(results[:args]).to eq(params)
     end
 
     it "returns rich topic information" do
       post1 = Fabricate(:post, like_count: 1, topic: topic_with_tags)
-      search = described_class.new({ user: post1.user.username })
+      search = described_class.new({ user: post1.user.username }, bot_user: bot_user, llm: llm)
       post1.topic.update!(views: 100, posts_count: 2, like_count: 10)
 
-      results = search.invoke(bot_user, llm, &progress_blk)
+      results = search.invoke(&progress_blk)
 
       row = results[:rows].first
       category = row[results[:column_names].index("category")]

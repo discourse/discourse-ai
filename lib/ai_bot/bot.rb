@@ -68,13 +68,13 @@ module DiscourseAi
 
           result =
             llm.generate(prompt, **llm_kwargs) do |partial, cancel|
-              tools = persona.find_tools(partial)
+              tools = persona.find_tools(partial, bot_user: user, llm: llm, context: context)
 
               if (tools.present?)
                 tool_found = true
                 tools[0..MAX_TOOLS].each do |tool|
-                  ongoing_chain &&= tool.chain_next_response?
                   process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
+                  ongoing_chain &&= tool.chain_next_response?
                 end
               else
                 update_blk.call(partial, cancel, nil)
@@ -137,7 +137,7 @@ module DiscourseAi
         update_blk.call("", cancel, build_placeholder(tool.summary, ""))
 
         result =
-          tool.invoke(bot_user, llm) do |progress|
+          tool.invoke do |progress|
             placeholder = build_placeholder(tool.summary, progress)
             update_blk.call("", cancel, placeholder)
           end

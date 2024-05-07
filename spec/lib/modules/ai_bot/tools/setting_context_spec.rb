@@ -15,12 +15,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::SettingContext, if: has_rg? do
   before { SiteSetting.ai_bot_enabled = true }
 
   def setting_context(setting_name)
-    described_class.new({ setting_name: setting_name })
+    described_class.new({ setting_name: setting_name }, bot_user: bot_user, llm: llm)
   end
 
   describe "#execute" do
     it "returns the context for core setting" do
-      result = setting_context("moderators_view_emails").invoke(bot_user, llm)
+      result = setting_context("moderators_view_emails").invoke
 
       expect(result[:setting_name]).to eq("moderators_view_emails")
 
@@ -29,7 +29,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::SettingContext, if: has_rg? do
     end
 
     it "returns the context for plugin setting" do
-      result = setting_context("ai_bot_enabled").invoke(bot_user, llm)
+      result = setting_context("ai_bot_enabled").invoke
 
       expect(result[:setting_name]).to eq("ai_bot_enabled")
       expect(result[:context]).to include("ai_bot_enabled:")
@@ -37,7 +37,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::SettingContext, if: has_rg? do
 
     context "when the setting does not exist" do
       it "returns an error message" do
-        result = setting_context("this_setting_does_not_exist").invoke(bot_user, llm)
+        result = setting_context("this_setting_does_not_exist").invoke
 
         expect(result[:context]).to eq("This setting does not exist")
       end

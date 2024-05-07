@@ -15,8 +15,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::Summarize do
 
       DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
         summarization =
-          described_class.new({ topic_id: post.topic_id, guidance: "why did it happen?" })
-        info = summarization.invoke(bot_user, llm, &progress_blk)
+          described_class.new(
+            { topic_id: post.topic_id, guidance: "why did it happen?" },
+            bot_user: bot_user,
+            llm: llm,
+          )
+        info = summarization.invoke(&progress_blk)
 
         expect(info).to include("Topic summarized")
         expect(summarization.custom_raw).to include(summary)
@@ -34,8 +38,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::Summarize do
 
       DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
         summarization =
-          described_class.new({ topic_id: post.topic_id, guidance: "why did it happen?" })
-        info = summarization.invoke(bot_user, llm, &progress_blk)
+          described_class.new(
+            { topic_id: post.topic_id, guidance: "why did it happen?" },
+            bot_user: bot_user,
+            llm: llm,
+          )
+        info = summarization.invoke(&progress_blk)
 
         expect(info).not_to include(post.raw)
 

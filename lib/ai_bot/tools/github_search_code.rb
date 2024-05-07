@@ -41,7 +41,7 @@ module DiscourseAi
           { repo: repo, query: query }
         end
 
-        def invoke(_bot_user, llm)
+        def invoke
           api_url = "https://api.github.com/search/code?q=#{query}+repo:#{repo}"
 
           response_code = "unknown error"

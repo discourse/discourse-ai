@@ -39,7 +39,7 @@ module DiscourseAi
           parameters[:post_number]
         end
 
-        def invoke(_bot_user, llm)
+        def invoke
           not_found = { topic_id: topic_id, description: "Topic not found" }
 
           @title = ""

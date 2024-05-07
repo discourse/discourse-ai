@@ -14,7 +14,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::ListTags do
       Fabricate(:tag, name: "america", public_topic_count: 100)
       Fabricate(:tag, name: "not_here", public_topic_count: 0)
 
-      info = described_class.new({}).invoke(bot_user, llm)
+      info = described_class.new({}, bot_user: bot_user, llm: llm).invoke
 
       expect(info.to_s).to include("america")
       expect(info.to_s).not_to include("not_here")

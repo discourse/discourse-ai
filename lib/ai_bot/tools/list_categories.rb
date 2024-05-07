@@ -16,7 +16,7 @@ module DiscourseAi
           "categories"
         end
 
-        def invoke(_bot_user, _llm)
+        def invoke
           columns = {
             name: "Name",
             slug: "Slug",
