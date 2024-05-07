@@ -106,11 +106,15 @@ id:
         name: Nama
         edit: Ubah
         description: Deskripsi
+        mentionable: Izinkan Penyebutan
+        mentionable_help: Jika diaktifkan, pengguna di grup yang diizinkan dapat menyebut pengguna ini di posting, AI akan merespons sebagai persona ini.
         user: Pengguna
         question_consolidator_llm: Model Bahasa untuk Konsolidator Pertanyaan
         question_consolidator_llm_help: Model bahasa yang digunakan untuk konsolidator pertanyaan, Anda dapat memilih model yang kurang kuat untuk menghemat biaya.
         show_indexing_options: "Tampilkan Opsi Unggah"
         hide_indexing_options: "Sembunyikan Opsi Unggah"
+        allow_chat: "Izinkan Obrolan"
+        allow_chat_help: "Jika diaktifkan, pengguna di grup yang diizinkan dapat mengirimkan DM ke persona ini"
         save: Simpan
         enabled: "Diaktifkan?"
         delete: Hapus
@@ -142,6 +146,8 @@ id:
           copy: "Menyalin"
           copied: "Disalin!"
           cancel: "Batal"
+          insert_footnote: "Tambahkan catatan kaki"
+          footnote_credits: "Penjelasan oleh AI"
         fast_edit:
           suggest_button: "Sarankan Edit"
         thumbnail_suggestions:

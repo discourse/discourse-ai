@@ -137,8 +137,8 @@ de:
           low: Niedrige Qualität - am günstigsten (256x256)
           medium: Mittlere Qualität (512x512)
           high: Hohe Qualität — am langsamsten (1024x1024)
-        mentionable: Erwähnenswert
-        mentionable_help: Wenn diese Funktion aktiviert ist, können Benutzer in erlaubten Gruppen diese Persona in Beiträgen und Nachrichten erwähnen und die KI wird als diese Persona antworten.
+        mentionable: Erwähnungen zulassen
+        mentionable_help: Wenn diese Funktion aktiviert ist, können Benutzer in erlaubten Gruppen diese Persona in Beiträgen erwähnen und die KI wird als diese Persona antworten.
         user: Benutzer
         create_user: Benutzer erstellen
         create_user_help: Du kannst dieser Persona optional einen Benutzer zuordnen. Wenn du das tust, wird die KI diesen Benutzer verwenden, um auf Anfragen zu antworten.
@@ -149,6 +149,8 @@ de:
         system_prompt: System-Eingabeaufforderung
         show_indexing_options: "Upload-Optionen anzeigen"
         hide_indexing_options: "Upload-Optionen ausblenden"
+        allow_chat: "Chat zulassen"
+        allow_chat_help: "Wenn diese Option aktiviert ist, können Benutzer in befugten Gruppen dieser Persona eine DM senden"
         save: Speichern
         saved: KI-Persona gespeichert
         enabled: "Aktiviert?"
@@ -225,6 +227,8 @@ de:
           copy: "Kopieren"
           copied: "Kopiert!"
           cancel: "Abbrechen"
+          insert_footnote: "Fußnote hinzufügen"
+          footnote_credits: "Erklärung durch KI"
         fast_edit:
           suggest_button: "Bearbeiten vorschlagen"
         thumbnail_suggestions:

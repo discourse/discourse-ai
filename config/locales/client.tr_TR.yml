@@ -132,8 +132,6 @@ tr_TR:
           low: Düşük Kalite - en ucuz (256x256)
           medium: Orta Kalite (512x512)
           high: Yüksek Kalite - en yavaş (1024x1024)
-        mentionable: Bahsedilebilir
-        mentionable_help: Etkinleştirilirse, izin verilen gruplardaki kullanıcılar gönderilerde ve mesajlarda bu kullanıcıdan bahsedebilir, yapay zeka bu kişi olarak yanıt verir.
         user: Kullanıcı
         create_user: Kullanıcı Oluştur
         create_user_help: İsteğe bağlı olarak bu personaya bir kullanıcı ekleyebilirsiniz. Bunu yaparsanız, AI isteklere yanıt vermek için bu kullanıcıyı kullanacaktır.

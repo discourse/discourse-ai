@@ -158,6 +158,7 @@ de:
         conversation_deleted: "Unterhaltsfreigabe erfolgreich gelöscht"
     ai_bot:
       personas:
+        default_llm_required: "Standard-LLM-Modell wird benötigt, um den Chat zu aktivieren"
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
         cannot_edit_system_persona: "System-Personas können nur umbenannt werden. Du kannst keine Befehle oder die System-Eingabeaufforderung bearbeiten. Deaktiviere sie stattdessen und erstelle eine Kopie"
         github_helper:
