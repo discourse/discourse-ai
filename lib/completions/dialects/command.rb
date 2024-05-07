@@ -19,57 +19,17 @@ module DiscourseAi
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
 
         def translate
-          messages = prompt.messages
+          messages = super
 
-          # ChatGPT doesn't use an assistant msg to improve long-context responses.
-          if messages.last[:type] == :model
-            messages = messages.dup
-            messages.pop
-          end
+          system_message = messages.shift[:message] if messages.first[:role] == "SYSTEM"
 
-          trimmed_messages = trim_messages(messages)
+          prompt = { preamble: +"#{system_message}" }
+          prompt[:chat_history] = messages if messages.present?
 
-          chat_history = []
-          system_message = nil
-
-          prompt = {}
-
-          trimmed_messages.each do |msg|
-            case msg[:type]
-            when :system
-              if system_message
-                chat_history << { role: "SYSTEM", message: msg[:content] }
-              else
-                system_message = msg[:content]
-              end
-            when :model
-              chat_history << { role: "CHATBOT", message: msg[:content] }
-            when :tool_call
-              chat_history << { role: "CHATBOT", message: tool_call_to_xml(msg) }
-            when :tool
-              chat_history << { role: "USER", message: tool_result_to_xml(msg) }
-            when :user
-              user_message = { role: "USER", message: msg[:content] }
-              user_message[:message] = "#{msg[:id]}: #{msg[:content]}" if msg[:id]
-              chat_history << user_message
-            end
-          end
-
-          tools_prompt = build_tools_prompt
-          prompt[:preamble] = +"#{system_message}"
-          if tools_prompt.present?
-            prompt[:preamble] << "\n#{tools_prompt}"
-            prompt[
-              :preamble
-            ] << "\nNEVER attempt to run tools using JSON, always use XML. Lives depend on it."
-          end
-
-          prompt[:chat_history] = chat_history if chat_history.present?
-
-          chat_history.reverse_each do |msg|
+          messages.reverse_each do |msg|
             if msg[:role] == "USER"
               prompt[:message] = msg[:message]
-              chat_history.delete(msg)
+              messages.delete(msg)
               break
             end
           end
@@ -100,6 +60,43 @@ module DiscourseAi
 
         def calculate_message_token(context)
           self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
+        end
+
+        def tools_dialect
+          @tools_dialect ||= DiscourseAi::Completions::Dialects::XmlTools.new(prompt.tools)
+        end
+
+        def system_msg(msg)
+          cmd_msg = { role: "SYSTEM", message: msg[:content] }
+
+          if tools_dialect.instructions.present?
+            cmd_msg[:message] = [
+              msg[:content],
+              tools_dialect.instructions,
+              "NEVER attempt to run tools using JSON, always use XML. Lives depend on it.",
+            ].join("\n")
+          end
+
+          cmd_msg
+        end
+
+        def model_msg(msg)
+          { role: "CHATBOT", message: msg[:content] }
+        end
+
+        def tool_call_msg(msg)
+          { role: "CHATBOT", message: tools_dialect.from_raw_tool_call(msg) }
+        end
+
+        def tool_msg(msg)
+          { role: "USER", message: tools_dialect.from_raw_tool(msg) }
+        end
+
+        def user_msg(msg)
+          user_message = { role: "USER", message: msg[:content] }
+          user_message[:message] = "#{msg[:id]}: #{msg[:content]}" if msg[:id]
+
+          user_message
         end
       end
     end

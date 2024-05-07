@@ -153,10 +153,6 @@ module DiscourseAi
             .compact
         end
 
-        def extract_prompt_for_tokenizer(prompt)
-          prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
-        end
-
         def has_tool?(_response_data)
           @has_function_call
         end

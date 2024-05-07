@@ -6,7 +6,7 @@ class VllmMock < EndpointMock
   def response(content)
     {
       id: "cmpl-6sZfAb30Rnv9Q7ufzFwvQsMpjZh8S",
-      object: "text_completion",
+      object: "chat.completion",
       created: 1_678_464_820,
       model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
       usage: {
@@ -14,14 +14,16 @@ class VllmMock < EndpointMock
         completion_tokens: 162,
         total_tokens: 499,
       },
-      choices: [{ text: content, finish_reason: "stop", index: 0 }],
+      choices: [
+        { message: { role: "assistant", content: content }, finish_reason: "stop", index: 0 },
+      ],
     }
   end
 
   def stub_response(prompt, response_text, tool_call: false)
     WebMock
-      .stub_request(:post, "#{SiteSetting.ai_vllm_endpoint}/v1/completions")
-      .with(body: model.default_options.merge(prompt: prompt).to_json)
+      .stub_request(:post, "#{SiteSetting.ai_vllm_endpoint}/v1/chat/completions")
+      .with(body: model.default_options.merge(messages: prompt).to_json)
       .to_return(status: 200, body: JSON.dump(response(response_text)))
   end
 
@@ -30,7 +32,7 @@ class VllmMock < EndpointMock
       id: "cmpl-#{SecureRandom.hex}",
       created: 1_681_283_881,
       model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-      choices: [{ text: delta, finish_reason: finish_reason, index: 0 }],
+      choices: [{ delta: { content: delta } }],
       index: 0,
     }.to_json
   end
@@ -48,8 +50,8 @@ class VllmMock < EndpointMock
     chunks = (chunks.join("\n\n") << "data: [DONE]").split("")
 
     WebMock
-      .stub_request(:post, "#{SiteSetting.ai_vllm_endpoint}/v1/completions")
-      .with(body: model.default_options.merge(prompt: prompt, stream: true).to_json)
+      .stub_request(:post, "#{SiteSetting.ai_vllm_endpoint}/v1/chat/completions")
+      .with(body: model.default_options.merge(messages: prompt, stream: true).to_json)
       .to_return(status: 200, body: chunks)
   end
 end
@@ -67,14 +69,14 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
   let(:anthropic_mock) { VllmMock.new(endpoint) }
 
   let(:compliance) do
-    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Mixtral, user)
+    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Mistral, user)
   end
 
-  let(:dialect) { DiscourseAi::Completions::Dialects::Mixtral.new(generic_prompt, model_name) }
+  let(:dialect) { DiscourseAi::Completions::Dialects::Mistral.new(generic_prompt, model_name) }
   let(:prompt) { dialect.translate }
 
-  let(:request_body) { model.default_options.merge(prompt: prompt).to_json }
-  let(:stream_request_body) { model.default_options.merge(prompt: prompt, stream: true).to_json }
+  let(:request_body) { model.default_options.merge(messages: prompt).to_json }
+  let(:stream_request_body) { model.default_options.merge(messages: prompt, stream: true).to_json }
 
   before { SiteSetting.ai_vllm_endpoint = "https://test.dev" }
 

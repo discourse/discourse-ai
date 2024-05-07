@@ -17,47 +17,6 @@ class TestDialect < DiscourseAi::Completions::Dialects::Dialect
 end
 
 RSpec.describe DiscourseAi::Completions::Dialects::Dialect do
-  describe "#build_tools_prompt" do
-    it "can exclude array instructions" do
-      prompt = DiscourseAi::Completions::Prompt.new("12345")
-      prompt.tools = [
-        {
-          name: "weather",
-          description: "lookup weather in a city",
-          parameters: [{ name: "city", type: "string", description: "city name", required: true }],
-        },
-      ]
-
-      dialect = TestDialect.new(prompt, "test")
-
-      expect(dialect.build_tools_prompt).not_to include("array")
-    end
-
-    it "can include array instructions" do
-      prompt = DiscourseAi::Completions::Prompt.new("12345")
-      prompt.tools = [
-        {
-          name: "weather",
-          description: "lookup weather in a city",
-          parameters: [{ name: "city", type: "array", description: "city names", required: true }],
-        },
-      ]
-
-      dialect = TestDialect.new(prompt, "test")
-
-      expect(dialect.build_tools_prompt).to include("array")
-    end
-
-    it "does not break if there are no params" do
-      prompt = DiscourseAi::Completions::Prompt.new("12345")
-      prompt.tools = [{ name: "categories", description: "lookup all categories" }]
-
-      dialect = TestDialect.new(prompt, "test")
-
-      expect(dialect.build_tools_prompt).not_to include("array")
-    end
-  end
-
   describe "#trim_messages" do
     it "should trim tool messages if tool_calls are trimmed" do
       prompt = DiscourseAi::Completions::Prompt.new("12345")

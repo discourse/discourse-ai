@@ -11,6 +11,7 @@ class AiApiAuditLog < ActiveRecord::Base
     Gemini = 4
     Vllm = 5
     Cohere = 6
+    Ollama = 7
   end
 end
 

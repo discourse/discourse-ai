@@ -14,59 +14,30 @@ module DiscourseAi
           end
         end
 
+        def native_tool_support?
+          true
+        end
+
         def translate
           # Gemini complains if we don't alternate model/user roles.
           noop_model_response = { role: "model", parts: { text: "Ok." } }
+          messages = super
 
-          messages = prompt.messages
+          interleving_messages = []
+          previous_message = nil
 
-          # Gemini doesn't use an assistant msg to improve long-context responses.
-          messages.pop if messages.last[:type] == :model
-
-          memo = []
-
-          trim_messages(messages).each do |msg|
-            if msg[:type] == :system
-              memo << { role: "user", parts: { text: msg[:content] } }
-              memo << noop_model_response.dup
-            elsif msg[:type] == :model
-              memo << { role: "model", parts: { text: msg[:content] } }
-            elsif msg[:type] == :tool_call
-              call_details = JSON.parse(msg[:content], symbolize_names: true)
-
-              memo << {
-                role: "model",
-                parts: {
-                  functionCall: {
-                    name: msg[:name] || call_details[:name],
-                    args: call_details[:arguments],
-                  },
-                },
-              }
-            elsif msg[:type] == :tool
-              memo << {
-                role: "function",
-                parts: {
-                  functionResponse: {
-                    name: msg[:name] || msg[:id],
-                    response: {
-                      content: msg[:content],
-                    },
-                  },
-                },
-              }
-            else
-              # Gemini quirk. Doesn't accept tool -> user or user -> user msgs.
-              previous_msg_role = memo.last&.dig(:role)
-              if previous_msg_role == "user" || previous_msg_role == "function"
-                memo << noop_model_response.dup
+          messages.each do |message|
+            if previous_message
+              if (previous_message[:role] == "user" || previous_message[:role] == "function") &&
+                   message[:role] == "user"
+                interleving_messages << noop_model_response.dup
               end
-
-              memo << { role: "user", parts: { text: msg[:content] } }
             end
+            interleving_messages << message
+            previous_message = message
           end
 
-          memo
+          interleving_messages
         end
 
         def tools
@@ -109,6 +80,46 @@ module DiscourseAi
 
         def calculate_message_token(context)
           self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
+        end
+
+        def system_msg(msg)
+          { role: "user", parts: { text: msg[:content] } }
+        end
+
+        def model_msg(msg)
+          { role: "model", parts: { text: msg[:content] } }
+        end
+
+        def user_msg(msg)
+          { role: "user", parts: { text: msg[:content] } }
+        end
+
+        def tool_call_msg(msg)
+          call_details = JSON.parse(msg[:content], symbolize_names: true)
+
+          {
+            role: "model",
+            parts: {
+              functionCall: {
+                name: msg[:name] || call_details[:name],
+                args: call_details[:arguments],
+              },
+            },
+          }
+        end
+
+        def tool_msg(msg)
+          {
+            role: "function",
+            parts: {
+              functionResponse: {
+                name: msg[:name] || msg[:id],
+                response: {
+                  content: msg[:content],
+                },
+              },
+            },
+          }
         end
       end
     end

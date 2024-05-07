@@ -10,14 +10,6 @@ module DiscourseAi
           Models::OpenAi.new("open_ai:gpt-4-turbo", max_tokens: 100_000),
           Models::OpenAi.new("open_ai:gpt-3.5-turbo", max_tokens: 4096),
           Models::OpenAi.new("open_ai:gpt-3.5-turbo-16k", max_tokens: 16_384),
-          Models::Llama2.new(
-            "hugging_face:Llama2-chat-hf",
-            max_tokens: SiteSetting.ai_hugging_face_token_limit,
-          ),
-          Models::Llama2FineTunedOrcaStyle.new(
-            "hugging_face:StableBeluga2",
-            max_tokens: SiteSetting.ai_hugging_face_token_limit,
-          ),
           Models::Gemini.new("google:gemini-pro", max_tokens: 32_768),
           Models::Gemini.new("google:gemini-1.5-pro", max_tokens: 800_000),
         ]

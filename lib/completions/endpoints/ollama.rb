@@ -3,25 +3,22 @@
 module DiscourseAi
   module Completions
     module Endpoints
-      class Vllm < Base
+      class Ollama < Base
         class << self
           def can_contact?(endpoint_name, model_name)
-            endpoint_name == "vllm" &&
-              %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(
-                model_name,
-              )
+            endpoint_name == "ollama" && %w[mistral].include?(model_name)
           end
 
           def dependant_setting_names
-            %w[ai_vllm_endpoint_srv ai_vllm_endpoint]
+            %w[ai_ollama_endpoint]
           end
 
           def correctly_configured?(_model_name)
-            SiteSetting.ai_vllm_endpoint_srv.present? || SiteSetting.ai_vllm_endpoint.present?
+            SiteSetting.ai_ollama_endpoint.present?
           end
 
           def endpoint_name(model_name)
-            "vLLM - #{model_name}"
+            "Ollama - #{model_name}"
           end
         end
 
@@ -41,19 +38,17 @@ module DiscourseAi
         end
 
         def provider_id
-          AiApiAuditLog::Provider::Vllm
+          AiApiAuditLog::Provider::Ollama
+        end
+
+        def use_ssl?
+          false
         end
 
         private
 
         def model_uri
-          service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_vllm_endpoint_srv)
-          if service.present?
-            api_endpoint = "https://#{service.target}:#{service.port}/v1/chat/completions"
-          else
-            api_endpoint = "#{SiteSetting.ai_vllm_endpoint}/v1/chat/completions"
-          end
-          @uri ||= URI(api_endpoint)
+          URI("#{SiteSetting.ai_ollama_endpoint}/v1/chat/completions")
         end
 
         def prepare_payload(prompt, model_params, _dialect)
@@ -64,9 +59,7 @@ module DiscourseAi
         end
 
         def prepare_request(payload)
-          headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
-
-          headers["X-API-KEY"] = SiteSetting.ai_vllm_api_key if SiteSetting.ai_vllm_api_key.present?
+          headers = { "Content-Type" => "application/json" }
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
