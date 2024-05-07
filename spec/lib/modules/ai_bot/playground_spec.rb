@@ -131,7 +131,54 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       persona
     end
 
-    context "with chat" do
+    context "with chat channels" do
+      fab!(:channel) { Fabricate(:chat_channel) }
+
+      fab!(:membership) do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel)
+      end
+
+      let(:guardian) { Guardian.new(user) }
+
+      before do
+        SiteSetting.ai_bot_enabled = true
+        SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+        Group.refresh_automatic_groups!
+        persona.update!(allow_chat: true, mentionable: true, default_llm: "anthropic:claude-3-opus")
+      end
+
+      it "should reply to a mention if properly enabled" do
+        prompts = nil
+
+        ChatSDK::Message.create(
+          channel_id: channel.id,
+          raw: "This is a story about stuff",
+          guardian: guardian,
+        )
+
+        DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do |_, _, _prompts|
+          ChatSDK::Message.create(
+            channel_id: channel.id,
+            raw: "Hello @#{persona.user.username}",
+            guardian: guardian,
+          )
+
+          prompts = _prompts
+        end
+
+        expect(prompts.length).to eq(1)
+        prompt = prompts[0]
+
+        expect(prompt.messages.length).to eq(2)
+        expect(prompt.messages[1][:content]).to include("story about stuff")
+        expect(prompt.messages[1][:content]).to include("Hello")
+
+        last_message = Chat::Message.where(chat_channel_id: channel.id).order("id desc").first
+        expect(last_message.message).to eq("world")
+      end
+    end
+
+    context "with chat dms" do
       fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, persona.user]) }
 
       before do
@@ -142,6 +189,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           mentionable: false,
           default_llm: "anthropic:claude-3-opus",
         )
+        SiteSetting.ai_bot_enabled = true
       end
 
       let(:guardian) { Guardian.new(user) }
