@@ -31,7 +31,7 @@ module DiscourseAi
           parameters[:query].to_s
         end
 
-        def invoke(_bot_user, _llm)
+        def invoke
           @last_num_results = 0
 
           terms = query.split(",").map(&:strip).map(&:downcase).reject(&:blank?)

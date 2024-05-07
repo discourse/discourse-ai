@@ -15,7 +15,7 @@ module DiscourseAi
           "tags"
         end
 
-        def invoke(_bot_user, _llm)
+        def invoke
           column_names = { name: "Name", public_topic_count: "Topic Count" }
 
           tags =

@@ -48,7 +48,7 @@ module DiscourseAi
           @last_summary || I18n.t("discourse_ai.ai_bot.topic_not_found")
         end
 
-        def invoke(bot_user, llm, &progress_blk)
+        def invoke(&progress_blk)
           topic = nil
           if topic_id > 0
             topic = Topic.find_by(id: topic_id)

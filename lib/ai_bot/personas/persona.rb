@@ -174,16 +174,21 @@ module DiscourseAi
           prompt
         end
 
-        def find_tools(partial)
+        def find_tools(partial, bot_user:, llm:, context:)
           return [] if !partial.include?("</invoke>")
 
           parsed_function = Nokogiri::HTML5.fragment(partial)
-          parsed_function.css("invoke").map { |fragment| find_tool(fragment) }.compact
+          parsed_function
+            .css("invoke")
+            .map do |fragment|
+              tool_instance(fragment, bot_user: bot_user, llm: llm, context: context)
+            end
+            .compact
         end
 
         protected
 
-        def find_tool(parsed_function)
+        def tool_instance(parsed_function, bot_user:, llm:, context:)
           function_id = parsed_function.at("tool_id")&.text
           function_name = parsed_function.at("tool_name")&.text
           return nil if function_name.nil?
@@ -212,6 +217,9 @@ module DiscourseAi
             arguments,
             tool_call_id: function_id || function_name,
             persona_options: options[tool_klass].to_h,
+            bot_user: bot_user,
+            llm: llm,
+            context: context,
           )
         end
 

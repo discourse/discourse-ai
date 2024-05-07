@@ -56,7 +56,7 @@ module DiscourseAi
           false
         end
 
-        def invoke(bot_user, _llm)
+        def invoke
           # max 4 prompts
           selected_prompts = prompts.take(4)
           seeds = seeds.take(4) if seeds
@@ -114,7 +114,12 @@ module DiscourseAi
                 file.rewind
                 uploads << {
                   prompt: prompts[index],
-                  upload: UploadCreator.new(file, "image.png").create_for(bot_user.id),
+                  upload:
+                    UploadCreator.new(
+                      file,
+                      "image.png",
+                      for_private_message: context[:private_message],
+                    ).create_for(bot_user.id),
                   seed: image[:seed],
                 }
               end

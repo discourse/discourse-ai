@@ -33,7 +33,7 @@ module DiscourseAi
           false
         end
 
-        def invoke(bot_user, _llm)
+        def invoke
           # max 4 prompts
           max_prompts = prompts.take(4)
           progress = prompts.first
@@ -88,7 +88,12 @@ module DiscourseAi
                 file.rewind
                 uploads << {
                   prompt: image[:revised_prompt],
-                  upload: UploadCreator.new(file, "image.png").create_for(bot_user.id),
+                  upload:
+                    UploadCreator.new(
+                      file,
+                      "image.png",
+                      for_private_message: context[:private_message],
+                    ).create_for(bot_user.id),
                 }
               end
             end

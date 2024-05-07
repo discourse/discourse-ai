@@ -32,7 +32,7 @@ module DiscourseAi
           @url
         end
 
-        def invoke(_bot_user, llm)
+        def invoke
           send_http_request(url, follow_redirects: true) do |response|
             if response.code == "200"
               html = read_response_body(response)

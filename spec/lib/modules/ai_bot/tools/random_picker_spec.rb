@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe DiscourseAi::AiBot::Tools::RandomPicker do
   describe "#invoke" do
-    subject { described_class.new({ options: options }).invoke(nil, nil) }
+    subject { described_class.new({ options: options }, bot_user: nil, llm: nil).invoke }
 
     context "with options as simple list of strings" do
       let(:options) { %w[apple banana cherry] }
