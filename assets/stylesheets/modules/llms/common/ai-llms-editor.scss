@@ -1,0 +1,32 @@
+.ai-llms-list-editor {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 1em 0;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  &__empty_list,
+  &__content_list {
+    min-width: 300px;
+  }
+
+  &__empty_list {
+    align-content: center;
+    text-align: center;
+    font-size: var(--font-up-1);
+  }
+}

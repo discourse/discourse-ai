@@ -194,6 +194,32 @@ en:
           uploading: "Uploading..."
           remove: "Remove upload"
 
+      llms:
+        short_title: "LLMs"
+        no_llms: "No LLMs yet"
+        new: "New Model"
+        display_name: "Name to display:"
+        name: "Model name:"
+        provider: "Service hosting the model:"
+        tokenizer: "Tokenizer:"
+        max_prompt_tokens: "Number of tokens for the prompt:"
+        save: "Save"
+        saved: "LLM Model Saved"
+
+        hints:
+          max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
+          name: "We include this in the API call to specify which model we'll use."
+
+        providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
+          google: "Google"
+          azure: "Azure"
+
       related_topics:
         title: "Related Topics"
         pill: "Related"

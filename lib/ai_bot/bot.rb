@@ -150,59 +150,73 @@ module DiscourseAi
 
       def self.guess_model(bot_user)
         # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
-        case bot_user.id
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-            "aws_bedrock:claude-2"
+        guess =
+          case bot_user.id
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
+              "aws_bedrock:claude-2"
+            else
+              "anthropic:claude-2"
+            end
+          when DiscourseAi::AiBot::EntryPoint::GPT4_ID
+            "open_ai:gpt-4"
+          when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
+            "open_ai:gpt-4-turbo"
+          when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
+            "open_ai:gpt-3.5-turbo-16k"
+          when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
+            mixtral_model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+            if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(mixtral_model)
+              "vllm:#{mixtral_model}"
+            elsif DiscourseAi::Completions::Endpoints::HuggingFace.correctly_configured?(
+                  mixtral_model,
+                )
+              "hugging_face:#{mixtral_model}"
+            else
+              "ollama:mistral"
+            end
+          when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
+            "google:gemini-pro"
+          when DiscourseAi::AiBot::EntryPoint::FAKE_ID
+            "fake:fake"
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
+                 "claude-3-opus",
+               )
+              "aws_bedrock:claude-3-opus"
+            else
+              "anthropic:claude-3-opus"
+            end
+          when DiscourseAi::AiBot::EntryPoint::COHERE_COMMAND_R_PLUS
+            "cohere:command-r-plus"
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
+                 "claude-3-sonnet",
+               )
+              "aws_bedrock:claude-3-sonnet"
+            else
+              "anthropic:claude-3-sonnet"
+            end
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_HAIKU_ID
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
+                 "claude-3-haiku",
+               )
+              "aws_bedrock:claude-3-haiku"
+            else
+              "anthropic:claude-3-haiku"
+            end
           else
-            "anthropic:claude-2"
+            nil
           end
-        when DiscourseAi::AiBot::EntryPoint::GPT4_ID
-          "open_ai:gpt-4"
-        when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
-          "open_ai:gpt-4-turbo"
-        when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
-          "open_ai:gpt-3.5-turbo-16k"
-        when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
-          mixtral_model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-          if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(mixtral_model)
-            "vllm:#{mixtral_model}"
-          elsif DiscourseAi::Completions::Endpoints::HuggingFace.correctly_configured?(
-                mixtral_model,
-              )
-            "hugging_face:#{mixtral_model}"
-          else
-            "ollama:mistral"
-          end
-        when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
-          "google:gemini-pro"
-        when DiscourseAi::AiBot::EntryPoint::FAKE_ID
-          "fake:fake"
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-opus")
-            "aws_bedrock:claude-3-opus"
-          else
-            "anthropic:claude-3-opus"
-          end
-        when DiscourseAi::AiBot::EntryPoint::COHERE_COMMAND_R_PLUS
-          "cohere:command-r-plus"
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
-               "claude-3-sonnet",
-             )
-            "aws_bedrock:claude-3-sonnet"
-          else
-            "anthropic:claude-3-sonnet"
-          end
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_HAIKU_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-haiku")
-            "aws_bedrock:claude-3-haiku"
-          else
-            "anthropic:claude-3-haiku"
-          end
-        else
-          nil
+
+        if guess
+          provider, model_name = guess.split(":")
+          llm_model = LlmModel.find_by(provider: provider, name: model_name)
+
+          return "custom:#{llm_model.id}" if llm_model
         end
+
+        guess
       end
 
       def build_placeholder(summary, details, custom_raw: nil)

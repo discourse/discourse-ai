@@ -81,7 +81,10 @@ end
 
 RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
   subject(:endpoint) do
-    described_class.new("Llama2-*-chat-hf", DiscourseAi::Tokenizer::Llama2Tokenizer)
+    described_class.new(
+      "mistralai/Mistral-7B-Instruct-v0.2",
+      DiscourseAi::Tokenizer::MixtralTokenizer,
+    )
   end
 
   before { SiteSetting.ai_hugging_face_api_url = "https://test.dev" }
