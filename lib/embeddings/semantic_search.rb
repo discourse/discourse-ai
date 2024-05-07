@@ -151,18 +151,6 @@ module DiscourseAi
         guardian.filter_allowed_categories(reranked_semantic_results)
       end
 
-      private
-
-      attr_reader :guardian
-
-      def build_hyde_key(digest, hyde_model)
-        "semantic-search-#{digest}-#{hyde_model}"
-      end
-
-      def build_embedding_key(digest, hyde_model, embedding_model)
-        "#{build_hyde_key(digest, hyde_model)}-#{embedding_model}"
-      end
-
       def hypothetical_post_from(search_term)
         prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
           You are a content creator for a forum. The forum description is as follows:
@@ -184,6 +172,18 @@ module DiscourseAi
           ).generate(prompt, user: @guardian.user)
 
         Nokogiri::HTML5.fragment(llm_response).at("ai")&.text&.presence || llm_response
+      end
+
+      private
+
+      attr_reader :guardian
+
+      def build_hyde_key(digest, hyde_model)
+        "semantic-search-#{digest}-#{hyde_model}"
+      end
+
+      def build_embedding_key(digest, hyde_model, embedding_model)
+        "#{build_hyde_key(digest, hyde_model)}-#{embedding_model}"
       end
     end
   end
