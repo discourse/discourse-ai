@@ -40,7 +40,7 @@ module DiscourseAi
           "image"
         end
 
-        def initialize(parameters, tool_call_id: "", persona_options: {})
+        def initialize(*args, **kwargs)
           super
           @chain_next_response = false
         end
