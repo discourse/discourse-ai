@@ -220,6 +220,13 @@ module DiscourseAi
 
       def chat_context(message, channel, persona_user)
         has_vision = bot.persona.class.vision_enabled
+        include_thread_titles = !channel.direct_message_channel? && !message.thread_id
+
+        current_id = message.id
+        if !channel.direct_message_channel?
+          # we are interacting via mentions ... strip mention
+          instruction_message = message.message.gsub(/@#{bot.bot_user.username}/i, "").strip
+        end
 
         messages = nil
 
@@ -233,7 +240,11 @@ module DiscourseAi
         elsif !channel.direct_message_channel? && !message.thread_id
           messages =
             Chat::Message
-              .where(chat_channel_id: channel.id, thread_id: nil)
+              .joins("left join chat_threads on chat_threads.id = chat_messages.thread_id")
+              .where(chat_channel_id: channel.id)
+              .where(
+                "chat_messages.thread_id IS NULL OR chat_threads.original_message_id = chat_messages.id",
+              )
               .order(id: :desc)
               .limit(max_messages)
               .to_a
@@ -250,21 +261,30 @@ module DiscourseAi
         builder = DiscourseAi::Completions::PromptMessagesBuilder.new
 
         messages.each do |m|
+          # restore stripped message
+          m.message = instruction_message if m.id == current_id
+
           if available_bot_user_ids.include?(m.user_id)
             builder.push(type: :model, content: m.message)
           else
             upload_ids = nil
             upload_ids = m.uploads.map(&:id) if has_vision && m.uploads.present?
+            mapped_message = m.message
+
+            thread_title = nil
+            thread_title = m.thread&.title if include_thread_titles && m.thread_id
+            mapped_message = "(#{thread_title})\n#{m.message}" if thread_title
+
             builder.push(
               type: :user,
-              content: m.message,
+              content: mapped_message,
               name: m.user.username,
               upload_ids: upload_ids,
             )
           end
         end
 
-        builder.to_a(limit: max_messages)
+        builder.to_a(limit: max_messages, style: channel.direct_message_channel? ? :default : :chat)
       end
 
       def reply_to_chat_message(message, channel)
@@ -283,6 +303,9 @@ module DiscourseAi
         reply = nil
         guardian = Guardian.new(persona_user)
 
+        force_thread = message.thread_id.nil? && channel.direct_message_channel?
+        in_reply_to_id = channel.direct_message_channel? ? message.id : nil
+
         new_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
             if !reply
@@ -294,8 +317,8 @@ module DiscourseAi
                   thread_id: message.thread_id,
                   channel_id: channel.id,
                   guardian: guardian,
-                  in_reply_to_id: message.id,
-                  force_thread: message.thread_id.nil? && channel.direct_message_channel?,
+                  in_reply_to_id: in_reply_to_id,
+                  force_thread: force_thread,
                   enforce_membership: !channel.direct_message_channel?,
                 )
               ChatSDK::Message.start_stream(message_id: reply.id, guardian: guardian)

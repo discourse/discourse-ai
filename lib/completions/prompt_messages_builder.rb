@@ -3,11 +3,14 @@
 module DiscourseAi
   module Completions
     class PromptMessagesBuilder
+      MAX_CHAT_UPLOADS = 5
+
       def initialize
         @raw_messages = []
       end
 
-      def to_a(limit: nil)
+      def to_a(limit: nil, style: nil)
+        return chat_array(limit: limit) if style == :chat
         result = []
 
         # this will create a "valid" messages array
@@ -67,6 +70,51 @@ module DiscourseAi
         message[:id] = id.to_s if id
 
         @raw_messages << message
+      end
+
+      private
+
+      def chat_array(limit:)
+        buffer = +""
+
+        if @raw_messages.length > 1
+          buffer << (<<~TEXT).strip
+            You are replying inside a Discourse chat. Here is a summary of the conversation so far:
+            {{{
+          TEXT
+
+          upload_ids = []
+
+          @raw_messages[0..-2].each do |message|
+            buffer << "\n"
+
+            upload_ids.concat(message[:upload_ids]) if message[:upload_ids].present?
+
+            if message[:type] == :user
+              buffer << "#{message[:name] || "User"}: "
+            else
+              buffer << "Bot: "
+            end
+
+            buffer << message[:content]
+          end
+
+          buffer << "\n}}}"
+          buffer << "\n\n"
+          buffer << "Your instructions:"
+          buffer << "\n"
+        end
+
+        last_message = @raw_messages[-1]
+        buffer << "#{last_message[:name] || "User"} said #{last_message[:content]} "
+
+        message = { type: :user, content: buffer }
+        upload_ids.concat(last_message[:upload_ids]) if last_message[:upload_ids].present?
+
+        message[:upload_ids] = upload_ids[-MAX_CHAT_UPLOADS..-1] ||
+          upload_ids if upload_ids.present?
+
+        [message]
       end
     end
   end
