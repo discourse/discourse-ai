@@ -262,7 +262,7 @@ module DiscourseAi
 
         messages.each do |m|
           # restore stripped message
-          m.message = instruction_message if m.id == current_id
+          m.message = instruction_message if m.id == current_id && instruction_message
 
           if available_bot_user_ids.include?(m.user_id)
             builder.push(type: :model, content: m.message)

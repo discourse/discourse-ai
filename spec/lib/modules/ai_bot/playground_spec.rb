@@ -206,13 +206,13 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         expected = (<<~TEXT).strip
           You are replying inside a Discourse chat. Here is a summary of the conversation so far:
           {{{
-          bruce1: (a magic thread)
+          #{user.username}: (a magic thread)
           thread 1 message 1
-          bruce1: thread 2 message 1
+          #{user.username}: thread 2 message 1
           }}}
 
           Your instructions:
-          bruce1 said Hello
+          #{user.username} said Hello
         TEXT
 
         expect(content.strip).to eq(expected)
