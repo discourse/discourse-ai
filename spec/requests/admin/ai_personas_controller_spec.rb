@@ -75,6 +75,12 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
             "description" =>
               I18n.t("discourse_ai.ai_bot.command_options.search.max_results.description"),
           },
+          "search_private" => {
+            "type" => "boolean",
+            "name" => I18n.t("discourse_ai.ai_bot.command_options.search.search_private.name"),
+            "description" =>
+              I18n.t("discourse_ai.ai_bot.command_options.search.search_private.description"),
+          },
         },
       )
 
