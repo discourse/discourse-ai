@@ -1,17 +1,44 @@
+import Component from "@glimmer/component";
 import { Input } from "@ember/component";
+import { on } from "@ember/modifier";
+import { action } from "@ember/object";
 
-const AiPersonaCommandOptionEditor = <template>
-  <div class="control-group ai-persona-command-option-editor">
-    <label>
-      {{@option.name}}
-    </label>
-    <div class="">
-      <Input @value={{@option.value.value}} />
-    </div>
-    <div class="ai-persona-command-option-editor__instructions">
-      {{@option.description}}
-    </div>
-  </div>
-</template>;
+export default class AiPersonaCommandOptionEditor extends Component {
+  get isBoolean() {
+    return this.args.option.type === "boolean";
+  }
 
-export default AiPersonaCommandOptionEditor;
+  get selectedValue() {
+    return this.args.option.value.value === "true";
+  }
+
+  @action
+  onCheckboxChange(event) {
+    this.args.option.value.value = event.target.checked ? "true" : "false";
+  }
+
+  <template>
+    <div class="control-group ai-persona-command-option-editor">
+      <label>
+        {{@option.name}}
+      </label>
+      <div class="">
+        {{#if this.isBoolean}}
+          <input
+            type="checkbox"
+            checked={{this.selectedValue}}
+            {{on "click" this.onCheckboxChange}}
+          />
+          {{@option.description}}
+        {{else}}
+          <Input @value={{@option.value.value}} />
+        {{/if}}
+      </div>
+      {{#unless this.isBoolean}}
+        <div class="ai-persona-command-option-editor__instructions">
+          {{@option.description}}
+        </div>
+      {{/unless}}
+    </div>
+  </template>
+}
