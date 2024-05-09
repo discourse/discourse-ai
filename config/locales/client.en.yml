@@ -271,6 +271,8 @@ en:
           copy_response: "Copy response"
           request_tokens: "Request tokens:"
           response_tokens: "Response tokens:"
+          request: "Request"
+          response: "Response"
 
         share_full_topic_modal:
           title: "Share Conversation Publicly"
