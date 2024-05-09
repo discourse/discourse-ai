@@ -161,3 +161,9 @@ span.onebox-ai-llm-title {
 .ai-debug-modal__tokens span {
   display: block;
 }
+
+.d-modal ul.ai-debug-modal__nav {
+  margin: 0 0 1em;
+  padding: 0;
+  border-bottom: none;
+}

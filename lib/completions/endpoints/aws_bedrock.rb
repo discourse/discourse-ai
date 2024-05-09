@@ -111,23 +111,30 @@ module DiscourseAi
         end
 
         def decode(chunk)
-          parsed =
-            Aws::EventStream::Decoder
-              .new
-              .decode_chunk(chunk)
-              .first
-              .payload
-              .string
-              .then { JSON.parse(_1) }
+          @decoder ||= Aws::EventStream::Decoder.new
 
-          bytes = parsed.dig("bytes")
+          decoded, _done = @decoder.decode_chunk(chunk)
 
-          if !bytes
-            Rails.logger.error("#{self.class.name}: #{parsed.to_s[0..500]}")
-            nil
-          else
-            Base64.decode64(parsed.dig("bytes"))
+          messages = []
+          return messages if !decoded
+
+          i = 0
+          while decoded
+            parsed = JSON.parse(decoded.payload.string)
+            messages << Base64.decode64(parsed["bytes"])
+
+            decoded, _done = @decoder.decode_chunk
+
+            i += 1
+            if i > 10_000
+              Rails.logger.error(
+                "DiscourseAI: Stream decoder looped too many times, logic error needs fixing",
+              )
+              break
+            end
           end
+
+          messages
         rescue JSON::ParserError,
                Aws::EventStream::Errors::MessageChecksumError,
                Aws::EventStream::Errors::PreludeChecksumError => e
@@ -161,8 +168,14 @@ module DiscourseAi
           result
         end
 
-        def partials_from(decoded_chunk)
-          [decoded_chunk]
+        def partials_from(decoded_chunks)
+          decoded_chunks
+        end
+
+        def chunk_to_string(chunk)
+          joined = +chunk.join("\n")
+          joined << "\n" if joined.length > 0
+          joined
         end
       end
     end

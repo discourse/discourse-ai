@@ -168,9 +168,15 @@ module DiscourseAi
                   if decoded_chunk.nil?
                     raise CompletionFailed, "#{self.class.name}: Failed to decode LLM completion"
                   end
-                  response_raw << decoded_chunk
+                  response_raw << chunk_to_string(decoded_chunk)
 
-                  redo_chunk = leftover + decoded_chunk
+                  if decoded_chunk.is_a?(String)
+                    redo_chunk = leftover + decoded_chunk
+                  else
+                    # custom implementation for endpoint
+                    # no implicit leftover support
+                    redo_chunk = decoded_chunk
+                  end
 
                   raw_partials = partials_from(redo_chunk)
 
@@ -345,6 +351,14 @@ module DiscourseAi
 
         def has_tool?(response)
           response.include?("<function_calls>")
+        end
+
+        def chunk_to_string(chunk)
+          if chunk.is_a?(String)
+            chunk
+          else
+            chunk.to_s
+          end
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)

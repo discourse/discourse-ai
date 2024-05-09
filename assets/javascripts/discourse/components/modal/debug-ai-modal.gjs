@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { next } from "@ember/runloop";
 import { htmlSafe } from "@ember/template";
@@ -14,6 +15,7 @@ import I18n from "discourse-i18n";
 export default class DebugAiModal extends Component {
   @tracked info = null;
   @tracked justCopiedText = "";
+  @tracked activeTab = "request";
 
   constructor() {
     super(...arguments);
@@ -30,12 +32,24 @@ export default class DebugAiModal extends Component {
     let parsed;
 
     try {
-      parsed = JSON.parse(this.info.raw_request_payload);
+      if (this.activeTab === "request") {
+        parsed = JSON.parse(this.info.raw_request_payload);
+      } else {
+        return this.formattedResponse(this.info.raw_response_payload);
+      }
     } catch (e) {
       return this.info.raw_request_payload;
     }
 
     return htmlSafe(this.jsonToHtml(parsed));
+  }
+
+  formattedResponse(response) {
+    // we need to replace the new lines with <br> to make it look good
+    const split = response.split("\n");
+    const safe = split.map((line) => escapeExpression(line)).join("<br>");
+
+    return htmlSafe(safe);
   }
 
   jsonToHtml(json) {
@@ -94,6 +108,26 @@ export default class DebugAiModal extends Component {
     });
   }
 
+  get requestActive() {
+    return this.activeTab === "request" ? "active" : "";
+  }
+
+  get responseActive() {
+    return this.activeTab === "response" ? "active" : "";
+  }
+
+  @action
+  requestClicked(e) {
+    this.activeTab = "request";
+    e.preventDefault();
+  }
+
+  @action
+  responseClicked(e) {
+    this.activeTab = "response";
+    e.preventDefault();
+  }
+
   <template>
     <DModal
       class="ai-debug-modal"
@@ -101,6 +135,18 @@ export default class DebugAiModal extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
+        <ul class="nav nav-pills ai-debug-modal__nav">
+          <li><a
+              href=""
+              class={{this.requestActive}}
+              {{on "click" this.requestClicked}}
+            >{{i18n "discourse_ai.ai_bot.debug_ai_modal.request"}}</a></li>
+          <li><a
+              href=""
+              class={{this.responseActive}}
+              {{on "click" this.responseClicked}}
+            >{{i18n "discourse_ai.ai_bot.debug_ai_modal.response"}}</a></li>
+        </ul>
         <div class="ai-debug-modal__tokens">
           <span>
             {{i18n "discourse_ai.ai_bot.debug_ai_modal.request_tokens"}}

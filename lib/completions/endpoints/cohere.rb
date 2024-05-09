@@ -26,9 +26,7 @@ module DiscourseAi
 
         def normalize_model_params(model_params)
           model_params = model_params.dup
-
           model_params[:p] = model_params.delete(:top_p) if model_params[:top_p]
-
           model_params
         end
 
