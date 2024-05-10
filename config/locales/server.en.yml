@@ -205,6 +205,9 @@ en:
       searching: "Searching for: '%{query}'"
       command_options:
         search:
+          search_private:
+            name: "Search Private"
+            description: "Include all topics user has access to in search results (by default only public topics are included)"
           max_results:
             name: "Maximum number of results"
             description: "Maximum number of results to include in the search - if empty default rules will be used and count will be scaled depending on model used. Highest value is 100."

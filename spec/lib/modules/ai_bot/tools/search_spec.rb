@@ -29,13 +29,29 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
     Fabricate(:topic, category: category, tags: [tag_funny, tag_sad, tag_hidden])
   end
 
+  fab!(:user)
+  fab!(:group)
+  fab!(:private_category) do
+    c = Fabricate(:category_with_definition)
+    c.set_permissions(group => :readonly)
+    c.save
+    c
+  end
+
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#invoke" do
     it "can retrieve options from persona correctly" do
-      persona_options = { "base_query" => "#funny" }
+      persona_options = {
+        "base_query" => "#funny",
+        "search_private" => "true",
+        "max_results" => "10",
+      }
 
       search_post = Fabricate(:post, topic: topic_with_tags)
+      private_search_post = Fabricate(:post, topic: Fabricate(:topic, category: private_category))
+      private_search_post.topic.tags = [tag_funny]
+      private_search_post.topic.save!
 
       _bot_post = Fabricate(:post)
 
@@ -46,18 +62,28 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
           bot_user: bot_user,
           llm: llm,
           context: {
+            user: user,
           },
         )
+
+      expect(search.options[:base_query]).to eq("#funny")
+      expect(search.options[:search_private]).to eq(true)
+      expect(search.options[:max_results]).to eq(10)
 
       results = search.invoke(&progress_blk)
       expect(results[:rows].length).to eq(1)
 
+      GroupUser.create!(group: group, user: user)
+
+      results = search.invoke(&progress_blk)
+      expect(results[:rows].length).to eq(2)
+
       search_post.topic.tags = []
       search_post.topic.save!
 
-      # no longer has the tag funny
+      # no longer has the tag funny, but secure one does
       results = search.invoke(&progress_blk)
-      expect(results[:rows].length).to eq(0)
+      expect(results[:rows].length).to eq(1)
     end
 
     it "can handle no results" do

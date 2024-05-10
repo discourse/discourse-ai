@@ -66,14 +66,20 @@ module DiscourseAi
         end
 
         def options
-          self
-            .class
-            .accepted_options
-            .reduce(HashWithIndifferentAccess.new) do |memo, option|
-              val = @persona_options[option.name]
-              memo[option.name] = val if val
-              memo
+          result = HashWithIndifferentAccess.new
+          self.class.accepted_options.each do |option|
+            val = @persona_options[option.name]
+            if val
+              case option.type
+              when :boolean
+                val = val == "true"
+              when :integer
+                val = val.to_i
+              end
+              result[option.name] = val
             end
+          end
+          result
         end
 
         def chain_next_response?
