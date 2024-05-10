@@ -198,7 +198,11 @@ export default class AIHelperOptionsMenu extends Component {
 
     if (option.name === "explain") {
       this.menuState = this.MENU_STATES.result;
-      this.menu.activeMenu.options.placement = "bottom";
+
+      const menu = this.menu.getByIdentifier("post-text-selection-toolbar");
+      if (menu) {
+        menu.options.placement = "bottom";
+      }
 
       const fetchUrl = `/discourse-ai/ai-helper/explain`;
       this._activeAIRequest = ajax(fetchUrl, {
