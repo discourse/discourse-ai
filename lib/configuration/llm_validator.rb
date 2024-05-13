@@ -14,15 +14,17 @@ module DiscourseAi
         end
 
         provider_and_model_name = val.split(":")
-
         provider_name = provider_and_model_name.first
         model_name_without_prov = provider_and_model_name[1..].join
+        is_custom_model = provider_name == "custom"
 
-        endpoint =
-          DiscourseAi::Completions::Endpoints::Base.endpoint_for(
-            provider_name,
-            model_name_without_prov,
-          )
+        if is_custom_model
+          llm_model = LlmModel.find(model_name_without_prov)
+          provider_name = llm_model.provider
+          model_name_without_prov = llm_model.name
+        end
+
+        endpoint = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider_name)
 
         return false if endpoint.nil?
 

@@ -5,8 +5,8 @@ module DiscourseAi
     module Endpoints
       class Ollama < Base
         class << self
-          def can_contact?(endpoint_name, model_name)
-            endpoint_name == "ollama" && %w[mistral].include?(model_name)
+          def can_contact?(endpoint_name)
+            endpoint_name == "ollama"
           end
 
           def dependant_setting_names

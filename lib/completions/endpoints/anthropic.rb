@@ -5,11 +5,8 @@ module DiscourseAi
     module Endpoints
       class Anthropic < Base
         class << self
-          def can_contact?(endpoint_name, model_name)
-            endpoint_name == "anthropic" &&
-              %w[claude-instant-1 claude-2 claude-3-haiku claude-3-opus claude-3-sonnet].include?(
-                model_name,
-              )
+          def can_contact?(endpoint_name)
+            endpoint_name == "anthropic"
           end
 
           def dependant_setting_names

@@ -8,7 +8,7 @@ module DiscourseAi
         TIMEOUT = 60
 
         class << self
-          def endpoint_for(provider_name, model_name)
+          def endpoint_for(provider_name)
             endpoints = [
               DiscourseAi::Completions::Endpoints::AwsBedrock,
               DiscourseAi::Completions::Endpoints::OpenAi,
@@ -26,7 +26,7 @@ module DiscourseAi
             end
 
             endpoints.detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |ek|
-              ek.can_contact?(provider_name, model_name)
+              ek.can_contact?(provider_name)
             end
           end
 
@@ -55,7 +55,7 @@ module DiscourseAi
             raise NotImplementedError
           end
 
-          def can_contact?(_endpoint_name, _model_name)
+          def can_contact?(_endpoint_name)
             raise NotImplementedError
           end
         end

@@ -19,7 +19,9 @@ module DiscourseAi
 
       class << self
         def provider_names
-          %w[aws_bedrock anthropic vllm hugging_face cohere open_ai google azure]
+          providers = %w[aws_bedrock anthropic vllm hugging_face cohere open_ai google azure]
+          providers << "ollama" if Rails.env.development?
+          providers
         end
 
         def tokenizer_names
@@ -120,11 +122,7 @@ module DiscourseAi
           opts = {}
           opts[:max_prompt_tokens] = llm_model.max_prompt_tokens if is_custom_model
 
-          gateway_klass =
-            DiscourseAi::Completions::Endpoints::Base.endpoint_for(
-              provider_name,
-              model_name_without_prov,
-            )
+          gateway_klass = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider_name)
 
           new(dialect_klass, gateway_klass, model_name_without_prov, opts: opts)
         end

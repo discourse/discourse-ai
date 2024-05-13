@@ -13,8 +13,7 @@ module DiscourseAi
         begin
           llm_models =
             DiscourseAi::Completions::Llm.models_by_provider.flat_map do |provider, models|
-              endpoint =
-                DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider.to_s, models.first)
+              endpoint = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider.to_s)
 
               models.map do |model_name|
                 { name: endpoint.display_name(model_name), value: "#{provider}:#{model_name}" }

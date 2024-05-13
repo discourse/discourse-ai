@@ -31,7 +31,8 @@ module DiscourseAi
       end
 
       def create
-        if llm_model = LlmModel.new(ai_llm_params).save
+        llm_model = LlmModel.new(ai_llm_params)
+        if llm_model.save
           render json: { ai_persona: llm_model }, status: :created
         else
           render_json_error llm_model
