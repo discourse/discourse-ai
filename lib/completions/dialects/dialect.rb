@@ -25,6 +25,8 @@ module DiscourseAi
           end
 
           def dialect_for(model_name)
+            dialects = []
+
             if Rails.env.test? || Rails.env.development?
               dialects = [DiscourseAi::Completions::Dialects::Fake]
             end
