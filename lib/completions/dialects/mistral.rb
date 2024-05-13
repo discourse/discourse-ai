@@ -23,6 +23,8 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
+          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+
           32_000
         end
 

@@ -9,14 +9,22 @@ module DiscourseAi
             raise NotImplemented
           end
 
-          def dialect_for(model_name)
-            dialects = [
+          def all_dialects
+            [
               DiscourseAi::Completions::Dialects::ChatGpt,
               DiscourseAi::Completions::Dialects::Gemini,
               DiscourseAi::Completions::Dialects::Mistral,
               DiscourseAi::Completions::Dialects::Claude,
               DiscourseAi::Completions::Dialects::Command,
             ]
+          end
+
+          def available_tokenizers
+            all_dialects.map(&:tokenizer)
+          end
+
+          def dialect_for(model_name)
+            dialects = all_dialects
 
             if Rails.env.test? || Rails.env.development?
               dialects << DiscourseAi::Completions::Dialects::Fake

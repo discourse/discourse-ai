@@ -30,6 +30,8 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
+          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+
           # provide a buffer of 120 tokens - our function counting is not
           # 100% accurate and getting numbers to align exactly is very hard
           buffer = (opts[:max_tokens] || 2500) + 50

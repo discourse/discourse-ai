@@ -16,6 +16,10 @@ export default {
           label: "discourse_ai.ai_persona.short_title",
           route: "adminPlugins.show.discourse-ai-personas",
         },
+        {
+          label: "discourse_ai.llms.short_title",
+          route: "adminPlugins.show.discourse-ai-llms",
+        },
       ]);
     });
   },

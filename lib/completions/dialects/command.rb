@@ -38,6 +38,8 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
+          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+
           case model_name
           when "command-light"
             4096
@@ -60,10 +62,6 @@ module DiscourseAi
 
         def calculate_message_token(context)
           self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
-        end
-
-        def tools_dialect
-          @tools_dialect ||= DiscourseAi::Completions::Dialects::XmlTools.new(prompt.tools)
         end
 
         def system_msg(msg)

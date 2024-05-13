@@ -50,6 +50,7 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
+          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
           # Longer term it will have over 1 million
           200_000 # Claude-3 has a 200k context window for now
         end

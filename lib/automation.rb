@@ -25,6 +25,9 @@ module DiscourseAi
     ]
 
     def self.translate_model(model)
+      llm_model = LlmModel.find_by(name: model)
+      return "custom:#{llm_model.id}" if llm_model
+
       return "google:#{model}" if model.start_with? "gemini"
       return "open_ai:#{model}" if model.start_with? "gpt"
       return "cohere:#{model}" if model.start_with? "command"

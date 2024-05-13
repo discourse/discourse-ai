@@ -68,6 +68,8 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
+          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+
           if model_name == "gemini-1.5-pro"
             # technically we support 1 million tokens, but we're being conservative
             800_000
