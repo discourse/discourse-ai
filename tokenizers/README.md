@@ -29,3 +29,7 @@ Licensed under Apache 2.0 License
 ## bge-m3
 
 Licensed under MIT License
+
+## Meta-Llama-3-70B-Instruct
+
+Licensed under META LLAMA 3 COMMUNITY LICENSE
