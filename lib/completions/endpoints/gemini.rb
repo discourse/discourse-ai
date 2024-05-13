@@ -5,9 +5,8 @@ module DiscourseAi
     module Endpoints
       class Gemini < Base
         class << self
-          def can_contact?(endpoint_name, model_name)
-            return false unless endpoint_name == "google"
-            %w[gemini-pro gemini-1.5-pro].include?(model_name)
+          def can_contact?(endpoint_name)
+            endpoint_name == "google"
           end
 
           def dependant_setting_names

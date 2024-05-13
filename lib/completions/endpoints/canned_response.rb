@@ -6,7 +6,7 @@ module DiscourseAi
       class CannedResponse
         CANNED_RESPONSE_ERROR = Class.new(StandardError)
 
-        def self.can_contact?(_, _)
+        def self.can_contact?(_)
           Rails.env.test?
         end
 

@@ -5,17 +5,8 @@ module DiscourseAi
     module Endpoints
       class OpenAi < Base
         class << self
-          def can_contact?(endpoint_name, model_name)
-            return false unless endpoint_name == "open_ai"
-
-            %w[
-              gpt-3.5-turbo
-              gpt-4
-              gpt-3.5-turbo-16k
-              gpt-4-32k
-              gpt-4-turbo
-              gpt-4-vision-preview
-            ].include?(model_name)
+          def can_contact?(endpoint_name)
+            endpoint_name == "open_ai"
           end
 
           def dependant_setting_names

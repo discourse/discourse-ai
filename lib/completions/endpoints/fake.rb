@@ -5,8 +5,8 @@ module DiscourseAi
     module Endpoints
       class Fake < Base
         class << self
-          def can_contact?(_endpoint_name, model_name)
-            model_name == "fake"
+          def can_contact?(endpoint_name)
+            endpoint_name == "fake"
           end
 
           def correctly_configured?(_model_name)

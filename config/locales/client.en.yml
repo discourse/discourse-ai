@@ -219,6 +219,7 @@ en:
           open_ai: "OpenAI"
           google: "Google"
           azure: "Azure"
+          ollama: "Ollama"
 
       related_topics:
         title: "Related Topics"

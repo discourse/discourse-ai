@@ -16,6 +16,7 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::Mistral,
               DiscourseAi::Completions::Dialects::Claude,
               DiscourseAi::Completions::Dialects::Command,
+              DiscourseAi::Completions::Dialects::OpenAiCompatible,
             ]
           end
 
@@ -24,14 +25,15 @@ module DiscourseAi
           end
 
           def dialect_for(model_name)
-            dialects = all_dialects
-
             if Rails.env.test? || Rails.env.development?
-              dialects << DiscourseAi::Completions::Dialects::Fake
+              dialects = [DiscourseAi::Completions::Dialects::Fake]
             end
+
+            dialects = dialects.concat(all_dialects)
 
             dialect = dialects.find { |d| d.can_translate?(model_name) }
             raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL if !dialect
+
             dialect
           end
 

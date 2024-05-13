@@ -50,8 +50,23 @@ module DiscourseAi
           max_tokens: 32_000,
         )
 
+        LlmModel.all.each do |model|
+          foldable_models << Models::CustomLlm.new(
+            "custom:#{model.id}",
+            max_tokens: model.max_prompt_tokens,
+          )
+        end
+
         foldable_models.each do |model|
           plugin.register_summarization_strategy(Strategies::FoldContent.new(model))
+        end
+
+        plugin.add_model_callback(LlmModel, :after_create) do
+          new_model = Models::CustomLlm.new("custom:#{self.id}", max_tokens: self.max_prompt_tokens)
+
+          if ::Summarization::Base.find_strategy("custom:#{self.id}").nil?
+            plugin.register_summarization_strategy(Strategies::FoldContent.new(new_model))
+          end
         end
       end
     end

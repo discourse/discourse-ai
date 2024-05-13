@@ -5,12 +5,8 @@ module DiscourseAi
     module Endpoints
       class HuggingFace < Base
         class << self
-          def can_contact?(endpoint_name, model_name)
-            return false unless endpoint_name == "hugging_face"
-
-            %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2].include?(
-              model_name,
-            )
+          def can_contact?(endpoint_name)
+            endpoint_name == "hugging_face"
           end
 
           def dependant_setting_names
