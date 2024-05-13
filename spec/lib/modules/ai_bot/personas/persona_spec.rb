@@ -70,6 +70,110 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     expect(tools.find { |t| t[:name] == "image" }).to be_nil
   end
 
+  it "can parse string that are wrapped in quotes" do
+    SiteSetting.ai_stability_api_key = "123"
+    xml = <<~XML
+      <function_calls>
+        <invoke>
+        <tool_name>image</tool_name>
+        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
+        <parameters>
+        <prompts>["cat oil painting", "big car"]</prompts>
+        <aspect_ratio>"16:9"</aspect_ratio>
+        </parameters>
+        </invoke>
+        <invoke>
+        <tool_name>image</tool_name>
+        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
+        <parameters>
+        <prompts>["cat oil painting", "big car"]</prompts>
+        <aspect_ratio>'16:9'</aspect_ratio>
+        </parameters>
+        </invoke>
+      </function_calls>
+    XML
+
+    image1, image2 =
+      tools =
+        DiscourseAi::AiBot::Personas::Artist.new.find_tools(
+          xml,
+          bot_user: nil,
+          llm: nil,
+          context: nil,
+        )
+    expect(image1.parameters[:prompts]).to eq(["cat oil painting", "big car"])
+    expect(image1.parameters[:aspect_ratio]).to eq("16:9")
+    expect(image2.parameters[:aspect_ratio]).to eq("16:9")
+
+    expect(tools.length).to eq(2)
+  end
+
+  it "enforces enums" do
+    xml = <<~XML
+      <function_calls>
+        <invoke>
+        <tool_name>search</tool_name>
+        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
+        <parameters>
+        <max_posts>"3.2"</max_posts>
+        <status>cow</status>
+        <foo>bar</foo>
+        </parameters>
+        </invoke>
+        <invoke>
+        <tool_name>search</tool_name>
+        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
+        <parameters>
+        <max_posts>"3.2"</max_posts>
+        <status>open</status>
+        <foo>bar</foo>
+        </parameters>
+        </invoke>
+      </function_calls>
+    XML
+
+    search1, search2 =
+      tools =
+        DiscourseAi::AiBot::Personas::General.new.find_tools(
+          xml,
+          bot_user: nil,
+          llm: nil,
+          context: nil,
+        )
+
+    expect(search1.parameters.key?(:status)).to eq(false)
+    expect(search2.parameters[:status]).to eq("open")
+  end
+
+  it "can coerce integers" do
+    xml = <<~XML
+      <function_calls>
+        <invoke>
+        <tool_name>search</tool_name>
+        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
+        <parameters>
+        <max_posts>"3.2"</max_posts>
+        <search_query>hello world</search_query>
+        <foo>bar</foo>
+        </parameters>
+        </invoke>
+      </function_calls>
+    XML
+
+    search, =
+      tools =
+        DiscourseAi::AiBot::Personas::General.new.find_tools(
+          xml,
+          bot_user: nil,
+          llm: nil,
+          context: nil,
+        )
+
+    expect(search.parameters[:max_posts]).to eq(3)
+    expect(search.parameters[:search_query]).to eq("hello world")
+    expect(search.parameters.key?(:foo)).to eq(false)
+  end
+
   it "can correctly parse arrays in tools" do
     SiteSetting.ai_openai_api_key = "123"
 

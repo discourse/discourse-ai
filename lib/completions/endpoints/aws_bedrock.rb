@@ -121,7 +121,8 @@ module DiscourseAi
           i = 0
           while decoded
             parsed = JSON.parse(decoded.payload.string)
-            messages << Base64.decode64(parsed["bytes"])
+            # perhaps some control message we can just ignore
+            messages << Base64.decode64(parsed["bytes"]) if parsed && parsed["bytes"]
 
             decoded, _done = @decoder.decode_chunk
 

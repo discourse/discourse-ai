@@ -208,6 +208,15 @@ module DiscourseAi
                 rescue JSON::ParserError
                   [value.to_s]
                 end
+            elsif param[:type] == "string" && value
+              value = strip_quotes(value).to_s
+            elsif param[:type] == "integer" && value
+              value = strip_quotes(value).to_i
+            end
+
+            if param[:enum] && value && !param[:enum].include?(value)
+              # invalid enum value
+              value = nil
             end
 
             arguments[name.to_sym] = value if value
@@ -221,6 +230,20 @@ module DiscourseAi
             llm: llm,
             context: context,
           )
+        end
+
+        def strip_quotes(value)
+          if value.is_a?(String)
+            if value.start_with?('"') && value.end_with?('"')
+              value = value[1..-2]
+            elsif value.start_with?("'") && value.end_with?("'")
+              value = value[1..-2]
+            else
+              value
+            end
+          else
+            value
+          end
         end
 
         def rag_fragments_prompt(conversation_context, llm:, user:)
