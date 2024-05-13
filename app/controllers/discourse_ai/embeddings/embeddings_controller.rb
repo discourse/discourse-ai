@@ -20,6 +20,7 @@ module DiscourseAi
             term: query,
             search_context: guardian,
             use_pg_headlines_for_excerpt: false,
+            can_lazy_load_categories: guardian.can_lazy_load_categories?,
           )
 
         semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(guardian)
