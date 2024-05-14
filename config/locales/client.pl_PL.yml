@@ -138,6 +138,10 @@ pl_PL:
         uploads:
           title: "Pliki"
           uploading: "Przesyłanie..."
+      llms:
+        save: "Zapisz"
+        providers:
+          google: "Google"
       related_topics:
         title: "Powiązane tematy"
         pill: "Powiązane"
@@ -198,6 +202,9 @@ pl_PL:
         shortcut_title: "Rozpocznij PW z botem AI"
         share: "Udostępnij rozmowę AI"
         conversation_shared: "Rozmowa skopiowana"
+        debug_ai_modal:
+          request: "Żądanie"
+          response: "Odpowiedź"
         share_full_topic_modal:
           title: "Udostępnij rozmowę publicznie"
           share: "Udostępnij i skopiuj link"
@@ -215,7 +222,6 @@ pl_PL:
         bot_names:
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
-          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"

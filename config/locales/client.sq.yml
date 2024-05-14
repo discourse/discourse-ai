@@ -40,6 +40,10 @@ sq:
         delete: Fshij
         uploads:
           uploading: "Duke ngarkuar..."
+      llms:
+        save: "Ruaj"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Kthehu mbrapa"

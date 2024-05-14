@@ -41,6 +41,10 @@ et:
         uploads:
           title: "Üleslaadimised"
           uploading: "Laen üles..."
+      llms:
+        save: "Salvesta"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Tagasi"
@@ -56,5 +60,8 @@ et:
         image_caption:
           save_caption: "Salvesta"
       ai_bot:
+        debug_ai_modal:
+          request: "Päring"
+          response: "Vastus"
         share_modal:
           copy: "Kopeeri"

@@ -116,6 +116,10 @@ fi:
         uploads:
           title: "Lataukset"
           uploading: "Ladataan..."
+      llms:
+        save: "Tallenna"
+        providers:
+          google: "Google"
       related_topics:
         title: "Liittyvät ketjut"
         pill: "Liittyy aiheeseen"
@@ -176,6 +180,9 @@ fi:
         shortcut_title: "Aloita yksityiskeskustelu tekoälybotin kanssa"
         share: "Jaa tekoälykeskustelu"
         conversation_shared: "Keskustelu kopioitu"
+        debug_ai_modal:
+          request: "Pyyntö"
+          response: "Vastaus"
         ai_label: "Tekoäly"
         ai_title: "Keskustelu tekoälyn kanssa"
         share_modal:

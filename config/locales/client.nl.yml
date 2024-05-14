@@ -116,6 +116,10 @@ nl:
         uploads:
           title: "Uploads"
           uploading: "Uploaden..."
+      llms:
+        save: "Opslaan"
+        providers:
+          google: "Google"
       related_topics:
         title: "Gerelateerde topics"
         pill: "Gerelateerd"
@@ -176,6 +180,9 @@ nl:
         shortcut_title: "Start een PB met een AI-bot"
         share: "AI-conversatie delen"
         conversation_shared: "Conversatie gekopieerd"
+        debug_ai_modal:
+          request: "Verzoek"
+          response: "Reactie"
         ai_label: "AI"
         ai_title: "Conversatie met AI"
         share_modal:

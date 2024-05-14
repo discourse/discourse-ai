@@ -116,6 +116,10 @@ ru:
         uploads:
           title: "Загрузки"
           uploading: "Загрузка…"
+      llms:
+        save: "Сохранить"
+        providers:
+          google: "Google"
       related_topics:
         title: "Связанные темы"
         pill: "Связанные"
@@ -176,6 +180,9 @@ ru:
         shortcut_title: "Начать личный чат с AI-ботом"
         share: "Поделиться разговором с AI"
         conversation_shared: "Разговор скопирован"
+        debug_ai_modal:
+          request: "Запрос"
+          response: "Ответ"
         ai_label: "AI"
         ai_title: "Разговор с AI"
         share_modal:

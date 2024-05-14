@@ -26,6 +26,7 @@ de:
         mistral_7b_instruct_v0_2: Mistral 7B Anleitung V0.2
         command_r: Cohere Befehl R
         command_r_plus: Cohere Befehl R+
+        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -195,6 +196,30 @@ de:
           uploaded: "Bereit zur Indizierung"
           uploading: "Wird hochgeladen …"
           remove: "Upload entfernen"
+      llms:
+        short_title: "LLMs"
+        no_llms: "Noch keine LLMs"
+        new: "Neues Modell"
+        display_name: "Name zum Anzeigen:"
+        name: "Modellname:"
+        provider: "Dienst, der das Modell hostet:"
+        tokenizer: "Tokenizer:"
+        max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung:"
+        save: "Speichern"
+        saved: "LLM-Modell gespeichert"
+        hints:
+          max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50% des Kontextfensters des Modells sein sollte."
+          name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden."
+        providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropisch"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
+          google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -269,6 +294,8 @@ de:
           copy_response: "Antwort kopieren"
           request_tokens: "Token anfordern:"
           response_tokens: "Antwort-Token:"
+          request: "Anfrage"
+          response: "Antwort"
         share_full_topic_modal:
           title: "Gespräch öffentlich teilen"
           share: "Link teilen und kopieren"
@@ -292,6 +319,7 @@ de:
           cohere-command-r-plus: "Cohere Befehl R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"

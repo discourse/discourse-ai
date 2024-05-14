@@ -41,6 +41,10 @@ vi:
         uploads:
           title: "Tải lên"
           uploading: "Đang đăng "
+      llms:
+        save: "Lưu lại"
+        providers:
+          google: "G"
       ai_helper:
         context_menu:
           back: "Quay lại"
@@ -59,5 +63,8 @@ vi:
         image_caption:
           save_caption: "Lưu lại"
       ai_bot:
+        debug_ai_modal:
+          request: "Yêu cầu"
+          response: "Đáp ứng"
         share_modal:
           copy: "Sao chép"
