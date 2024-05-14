@@ -41,6 +41,10 @@ ur:
         uploads:
           title: "اَپ لوڈز"
           uploading: "اَپ لوڈ کیا جا رہا ہے..."
+      llms:
+        save: "محفوظ کریں"
+        providers:
+          google: "گُوگَل"
       ai_helper:
         context_menu:
           back: "واپس"
@@ -57,5 +61,8 @@ ur:
         image_caption:
           save_caption: "محفوظ کریں"
       ai_bot:
+        debug_ai_modal:
+          request: "ریکویسٹ"
+          response: "جواب"
         share_modal:
           copy: "کاپی"

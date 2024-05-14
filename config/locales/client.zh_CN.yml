@@ -133,6 +133,10 @@ zh_CN:
         uploads:
           title: "上传"
           uploading: "正在上传…"
+      llms:
+        save: "保存"
+        providers:
+          google: "Google"
       related_topics:
         title: "相关话题"
         pill: "相关"
@@ -193,6 +197,9 @@ zh_CN:
         shortcut_title: "使用 AI 机器人启动私信"
         share: "分享 AI 对话"
         conversation_shared: "对话已复制"
+        debug_ai_modal:
+          request: "请求"
+          response: "回应"
         ai_label: "AI"
         ai_title: "与 AI 的对话"
         share_modal:

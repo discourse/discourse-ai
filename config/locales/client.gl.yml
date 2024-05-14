@@ -41,6 +41,10 @@ gl:
         uploads:
           title: "Cargas"
           uploading: "Cargando..."
+      llms:
+        save: "Gardar"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Volver"
@@ -57,5 +61,8 @@ gl:
         image_caption:
           save_caption: "Gardar"
       ai_bot:
+        debug_ai_modal:
+          request: "Petición"
+          response: "Resposta"
         share_modal:
           copy: "Copiar"

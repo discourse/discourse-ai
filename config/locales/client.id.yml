@@ -121,6 +121,10 @@ id:
         uploads:
           description: "Persona AI Anda akan dapat mencari dan mereferensikan konten file yang disertakan. File yang diunggah harus diformat sebagai teks biasa (.txt) atau markdown (.md)."
           uploading: "Mengunggah..."
+      llms:
+        save: "Simpan"
+        providers:
+          google: "Google"
       ai_helper:
         missing_content: "Silakan masukkan beberapa konten untuk menghasilkan saran."
         context_menu:
@@ -181,6 +185,8 @@ id:
         shortcut_title: "Mulai PM dengan bot AI"
         share: "Bagikan percakapan AI"
         conversation_shared: "Percakapan disalin"
+        debug_ai_modal:
+          request: "Pinta"
         share_full_topic_modal:
           title: "Bagikan Percakapan Secara Publik"
           share: "Bagikan dan Salin Tautan"

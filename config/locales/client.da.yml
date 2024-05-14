@@ -41,6 +41,10 @@ da:
         uploads:
           title: "Overførsler"
           uploading: "Overfører…"
+      llms:
+        save: "Gem"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Tilbage"
@@ -59,5 +63,8 @@ da:
         image_caption:
           save_caption: "Gem"
       ai_bot:
+        debug_ai_modal:
+          request: "Anmod om medlemskab"
+          response: "Svar"
         share_modal:
           copy: "Kopier"

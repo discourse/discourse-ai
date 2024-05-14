@@ -41,6 +41,10 @@ bs_BA:
         uploads:
           title: "Uploads"
           uploading: "Učitavanje..."
+      llms:
+        save: "Save"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Prethodno"
@@ -56,5 +60,8 @@ bs_BA:
         image_caption:
           save_caption: "Save"
       ai_bot:
+        debug_ai_modal:
+          request: "Zatraži"
+          response: "Odgovor"
         share_modal:
           copy: "Copy"

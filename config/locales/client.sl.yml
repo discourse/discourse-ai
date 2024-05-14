@@ -41,6 +41,10 @@ sl:
         uploads:
           title: "Prenosi"
           uploading: "Nalagam..."
+      llms:
+        save: "Shrani"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Nazaj"
@@ -57,5 +61,7 @@ sl:
         image_caption:
           save_caption: "Shrani"
       ai_bot:
+        debug_ai_modal:
+          request: "Zahteva"
         share_modal:
           copy: "Kopiraj"

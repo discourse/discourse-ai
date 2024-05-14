@@ -41,6 +41,10 @@ sv:
         uploads:
           title: "Uppladdningar"
           uploading: "Laddar upp..."
+      llms:
+        save: "Spara"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Tillbaka"
@@ -60,5 +64,8 @@ sv:
         image_caption:
           save_caption: "Spara"
       ai_bot:
+        debug_ai_modal:
+          request: "Förfrågning"
+          response: "Svar"
         share_modal:
           copy: "Kopiera"

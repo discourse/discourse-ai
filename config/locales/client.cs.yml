@@ -41,6 +41,10 @@ cs:
         uploads:
           title: "Nahrané soubory"
           uploading: "Nahrává se..."
+      llms:
+        save: "Uložit"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Zpět"
@@ -60,5 +64,8 @@ cs:
         image_caption:
           save_caption: "Uložit"
       ai_bot:
+        debug_ai_modal:
+          request: "Požadavek"
+          response: "Odpověď"
         share_modal:
           copy: "Kopírovat"

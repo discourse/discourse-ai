@@ -41,6 +41,10 @@ hu:
         uploads:
           title: "Feltöltések"
           uploading: "Feltültés..."
+      llms:
+        save: "Mentés"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Vissza"
@@ -57,5 +61,8 @@ hu:
         image_caption:
           save_caption: "Mentés"
       ai_bot:
+        debug_ai_modal:
+          request: "Kérés"
+          response: "Válasz"
         share_modal:
           copy: "Másolás"

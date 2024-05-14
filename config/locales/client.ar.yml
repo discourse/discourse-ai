@@ -116,6 +116,10 @@ ar:
         uploads:
           title: "التحميلات"
           uploading: "جارٍ التحميل..."
+      llms:
+        save: "حفظ"
+        providers:
+          google: "Google"
       related_topics:
         title: "الموضوعات ذات الصلة"
         pill: "موضوعات ذات صلة"
@@ -176,6 +180,9 @@ ar:
         shortcut_title: "بدء رسالة خاصة باستخدام روبوت ذكاء اصطناعي"
         share: "مشاركة محادثة الذكاء الاصطناعي"
         conversation_shared: "تم نسخ المحادثة"
+        debug_ai_modal:
+          request: "طلب"
+          response: "الاستجابة"
         ai_label: "الذكاء الاصطناعي"
         ai_title: "المحادثة مع الذكاء الاصطناعي"
         share_modal:

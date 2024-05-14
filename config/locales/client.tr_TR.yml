@@ -171,6 +171,10 @@ tr_TR:
           button: "Dosya Ekle"
           filter: "Yüklemeleri filtrele"
           uploading: "Yükleniyor..."
+      llms:
+        save: "Kaydet"
+        providers:
+          google: "Google"
       related_topics:
         title: "İlgili Konular"
         pill: "İlgili"
@@ -236,6 +240,9 @@ tr_TR:
         shortcut_title: "YZ botuyla kişisel mesaj başlatın"
         share: "YZ konuşmasını paylaş"
         conversation_shared: "Konuşma kopyalandı"
+        debug_ai_modal:
+          request: "Talep"
+          response: "Karşılık"
         share_full_topic_modal:
           title: "Konuşmayı Herkese Açık Olarak Paylaşın"
           share: "Paylaş ve Bağlantıyı Kopyala"

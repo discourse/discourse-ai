@@ -117,6 +117,10 @@ pt_BR:
         uploads:
           title: "Envios"
           uploading: "Enviando..."
+      llms:
+        save: "Salvar"
+        providers:
+          google: "Google"
       related_topics:
         title: "Tópicos relacionados"
         pill: "Relacionado(a)"
@@ -177,6 +181,9 @@ pt_BR:
         shortcut_title: "Iniciar uma MP com bot de IA"
         share: "Compartilhar conversação com IA"
         conversation_shared: "Conversação copiada"
+        debug_ai_modal:
+          request: "Pedir"
+          response: "Resposta"
         ai_label: "IA"
         ai_title: "Conversação com IA"
         share_modal:

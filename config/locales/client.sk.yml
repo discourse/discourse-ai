@@ -40,6 +40,10 @@ sk:
         delete: Odstrániť
         uploads:
           uploading: "Načítavam..."
+      llms:
+        save: "Uložiť"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Späť"
@@ -57,5 +61,7 @@ sk:
         image_caption:
           save_caption: "Uložiť"
       ai_bot:
+        debug_ai_modal:
+          request: "Požiadavka"
         share_modal:
           copy: "Kopírovať"

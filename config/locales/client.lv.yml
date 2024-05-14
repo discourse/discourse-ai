@@ -41,6 +41,10 @@ lv:
         uploads:
           title: "Augšupielādes"
           uploading: "Notiek ielāde..."
+      llms:
+        save: "Saglabāt"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Atpakaļ"
@@ -56,5 +60,8 @@ lv:
         image_caption:
           save_caption: "Saglabāt"
       ai_bot:
+        debug_ai_modal:
+          request: "Pieprasījums"
+          response: "Atbilde"
         share_modal:
           copy: "Kopēt"
