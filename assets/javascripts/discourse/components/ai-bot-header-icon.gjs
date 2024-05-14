@@ -4,9 +4,7 @@ import { service } from "@ember/service";
 import { gt } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import i18n from "discourse-common/helpers/i18n";
-import DMenu from "float-kit/components/d-menu";
 import { composeAiBotMessage } from "../lib/ai-bot-helper";
-import AiBotHeaderPanel from "./ai-bot-header-panel";
 
 export default class AiBotHeaderIcon extends Component {
   @service siteSettings;
@@ -26,24 +24,12 @@ export default class AiBotHeaderIcon extends Component {
   <template>
     {{#if (gt this.bots.length 0)}}
       <li>
-        {{#if (gt this.bots.length 1)}}
-          <DMenu
-            @icon="robot"
-            @title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
-            class="ai-bot-button icon btn-flat"
-          >
-            <:content as |args|>
-              <AiBotHeaderPanel @closePanel={{args.close}} />
-            </:content>
-          </DMenu>
-        {{else}}
-          <DButton
-            @icon="robot"
-            @title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
-            class="ai-bot-button icon btn-flat"
-            @action={{this.compose}}
-          />
-        {{/if}}
+        <DButton
+          @icon="robot"
+          @title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
+          class="ai-bot-button icon btn-flat"
+          @action={{this.compose}}
+        />
       </li>
     {{/if}}
   </template>
