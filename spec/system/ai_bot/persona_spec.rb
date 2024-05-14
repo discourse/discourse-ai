@@ -13,7 +13,8 @@ RSpec.describe "AI personas", type: :system, js: true do
   it "remembers the last selected persona" do
     visit "/"
     find(".d-header .ai-bot-button").click()
-    persona_selector = PageObjects::Components::SelectKit.new(".persona-selector__dropdown")
+    persona_selector =
+      PageObjects::Components::SelectKit.new(".persona-llm-selector__persona-dropdown")
 
     id = DiscourseAi::AiBot::Personas::Persona.all(user: admin).first.id
 
@@ -24,7 +25,8 @@ RSpec.describe "AI personas", type: :system, js: true do
 
     visit "/"
     find(".d-header .ai-bot-button").click()
-    persona_selector = PageObjects::Components::SelectKit.new(".persona-selector__dropdown")
+    persona_selector =
+      PageObjects::Components::SelectKit.new(".persona-llm-selector__persona-dropdown")
     persona_selector.expand
     expect(persona_selector).to have_selected_value(-2)
   end
