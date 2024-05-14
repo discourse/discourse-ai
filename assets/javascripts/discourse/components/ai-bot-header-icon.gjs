@@ -25,10 +25,10 @@ export default class AiBotHeaderIcon extends Component {
     {{#if (gt this.bots.length 0)}}
       <li>
         <DButton
-          @icon="robot"
-          @title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
-          class="ai-bot-button icon btn-flat"
           @action={{this.compose}}
+          @icon="robot"
+          title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
+          class="ai-bot-button icon btn-flat"
         />
       </li>
     {{/if}}
