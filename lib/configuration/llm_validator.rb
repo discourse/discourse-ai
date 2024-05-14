@@ -69,7 +69,7 @@ module DiscourseAi
       def can_talk_to_model?(model_name)
         DiscourseAi::Completions::Llm
           .proxy(model_name)
-          .generate("How much is 1 + 1?", user: nil)
+          .generate("How much is 1 + 1?", user: nil, feature_name: "llm_validator")
           .present?
       rescue StandardError
         false

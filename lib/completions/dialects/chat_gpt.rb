@@ -83,7 +83,8 @@ module DiscourseAi
         end
 
         def inline_images(content, message)
-          if model_name.include?("gpt-4-vision") || model_name == "gpt-4-turbo"
+          if model_name.include?("gpt-4-vision") || model_name == "gpt-4-turbo" ||
+               model_name == "gpt-4o"
             content = message[:content]
             encoded_uploads = prompt.encoded_uploads(message)
             if encoded_uploads.present?
@@ -124,6 +125,8 @@ module DiscourseAi
           when "gpt-4-32k"
             32_768
           when "gpt-4-turbo"
+            131_072
+          when "gpt-4o"
             131_072
           else
             8192

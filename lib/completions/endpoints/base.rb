@@ -73,7 +73,7 @@ module DiscourseAi
           true
         end
 
-        def perform_completion!(dialect, user, model_params = {}, &blk)
+        def perform_completion!(dialect, user, model_params = {}, feature_name: nil, &blk)
           allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
 
@@ -114,6 +114,7 @@ module DiscourseAi
                   request_tokens: prompt_size(prompt),
                   topic_id: dialect.prompt.topic_id,
                   post_id: dialect.prompt.post_id,
+                  feature_name: feature_name,
                 )
 
               if !@streaming_mode

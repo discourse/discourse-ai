@@ -17,7 +17,7 @@ module DiscourseAi
       end
 
       def consolidate_question
-        @llm.generate(revised_prompt, user: @user)
+        @llm.generate(revised_prompt, user: @user, feature_name: "question_consolidator")
       end
 
       def revised_prompt

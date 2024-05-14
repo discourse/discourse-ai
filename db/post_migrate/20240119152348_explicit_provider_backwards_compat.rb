@@ -52,7 +52,7 @@ class ExplicitProviderBackwardsCompat < ActiveRecord::Migration[7.0]
   end
 
   def append_provider(value)
-    open_ai_models = %w[gpt-3.5-turbo gpt-4 gpt-3.5-turbo-16k gpt-4-32k gpt-4-turbo]
+    open_ai_models = %w[gpt-3.5-turbo gpt-4 gpt-3.5-turbo-16k gpt-4-32k gpt-4-turbo gpt-4o]
     return "open_ai:#{value}" if open_ai_models.include?(value)
     return "google:#{value}" if value == "gemini-pro"
 

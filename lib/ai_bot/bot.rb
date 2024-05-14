@@ -43,7 +43,7 @@ module DiscourseAi
 
         DiscourseAi::Completions::Llm
           .proxy(model)
-          .generate(title_prompt, user: post.user)
+          .generate(title_prompt, user: post.user, feature_name: "bot_title")
           .strip
           .split("\n")
           .last
@@ -67,7 +67,7 @@ module DiscourseAi
           tool_found = false
 
           result =
-            llm.generate(prompt, **llm_kwargs) do |partial, cancel|
+            llm.generate(prompt, feature_name: "bot", **llm_kwargs) do |partial, cancel|
               tools = persona.find_tools(partial, bot_user: user, llm: llm, context: context)
 
               if (tools.present?)
@@ -162,6 +162,8 @@ module DiscourseAi
             "open_ai:gpt-4"
           when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
             "open_ai:gpt-4-turbo"
+          when DiscourseAi::AiBot::EntryPoint::GPT4O_ID
+            "open_ai:gpt-4o"
           when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
             "open_ai:gpt-3.5-turbo-16k"
           when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID

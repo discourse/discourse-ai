@@ -18,6 +18,7 @@ module DiscourseAi
       CLAUDE_3_SONNET_ID = -118
       CLAUDE_3_HAIKU_ID = -119
       COHERE_COMMAND_R_PLUS = -120
+      GPT4O_ID = -121
 
       BOTS = [
         [GPT4_ID, "gpt4_bot", "gpt-4"],
@@ -31,6 +32,7 @@ module DiscourseAi
         [CLAUDE_3_SONNET_ID, "claude_3_sonnet_bot", "claude-3-sonnet"],
         [CLAUDE_3_HAIKU_ID, "claude_3_haiku_bot", "claude-3-haiku"],
         [COHERE_COMMAND_R_PLUS, "cohere_command_bot", "cohere-command-r-plus"],
+        [GPT4O_ID, "gpt4o_bot", "gpt-4o"],
       ]
 
       BOT_USER_IDS = BOTS.map(&:first)
@@ -49,6 +51,8 @@ module DiscourseAi
 
       def self.map_bot_model_to_user_id(model_name)
         case model_name
+        in "gpt-4o"
+          GPT4O_ID
         in "gpt-4-turbo"
           GPT4_TURBO_ID
         in "gpt-3.5-turbo"
