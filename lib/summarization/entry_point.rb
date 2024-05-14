@@ -8,6 +8,7 @@ module DiscourseAi
           Models::OpenAi.new("open_ai:gpt-4", max_tokens: 8192),
           Models::OpenAi.new("open_ai:gpt-4-32k", max_tokens: 32_768),
           Models::OpenAi.new("open_ai:gpt-4-turbo", max_tokens: 100_000),
+          Models::OpenAi.new("open_ai:gpt-4o", max_tokens: 100_000),
           Models::OpenAi.new("open_ai:gpt-3.5-turbo", max_tokens: 4096),
           Models::OpenAi.new("open_ai:gpt-3.5-turbo-16k", max_tokens: 16_384),
           Models::Gemini.new("google:gemini-pro", max_tokens: 32_768),

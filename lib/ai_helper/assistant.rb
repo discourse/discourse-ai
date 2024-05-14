@@ -85,6 +85,7 @@ module DiscourseAi
           user: user,
           temperature: completion_prompt.temperature,
           stop_sequences: completion_prompt.stop_sequences,
+          feature_name: "ai_helper",
           &block
         )
       end
@@ -163,6 +164,7 @@ module DiscourseAi
             prompt,
             user: Discourse.system_user,
             max_tokens: 1024,
+            feature_name: "image_caption",
           )
         end
       end

@@ -20,6 +20,7 @@ en:
         mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
         command_r: Cohere Command R
         command_r_plus: Cohere Command R+
+        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -328,6 +329,7 @@ en:
           cohere-command-r-plus: "Cohere Command R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"

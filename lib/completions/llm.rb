@@ -54,6 +54,7 @@ module DiscourseAi
                 gpt-4-32k
                 gpt-4-turbo
                 gpt-4-vision-preview
+                gpt-4o
               ],
               google: %w[gemini-pro gemini-1.5-pro],
             }.tap do |h|
@@ -105,12 +106,6 @@ module DiscourseAi
 
           dialect_klass =
             DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name_without_prov)
-
-          if is_custom_model
-            tokenizer = llm_model.tokenizer_class
-          else
-            tokenizer = dialect_klass.tokenizer
-          end
 
           if @canned_response
             if @canned_llm && @canned_llm != model_name
@@ -164,6 +159,7 @@ module DiscourseAi
         max_tokens: nil,
         stop_sequences: nil,
         user:,
+        feature_name: nil,
         &partial_read_blk
       )
         self.class.record_prompt(prompt)
@@ -196,7 +192,13 @@ module DiscourseAi
             model_name,
             opts: model_params.merge(max_prompt_tokens: @max_prompt_tokens),
           )
-        gateway.perform_completion!(dialect, user, model_params, &partial_read_blk)
+        gateway.perform_completion!(
+          dialect,
+          user,
+          model_params,
+          feature_name: feature_name,
+          &partial_read_blk
+        )
       end
 
       def max_prompt_tokens

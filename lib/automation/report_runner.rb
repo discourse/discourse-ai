@@ -154,6 +154,7 @@ Follow the provided writing composition instructions carefully and precisely ste
           temperature: @temperature,
           top_p: @top_p,
           user: Discourse.system_user,
+          feature_name: "ai_report",
         ) do |response|
           print response if Rails.env.development? && @debug_mode
           result << response

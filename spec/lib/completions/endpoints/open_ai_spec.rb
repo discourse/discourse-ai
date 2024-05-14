@@ -135,7 +135,10 @@ class OpenAiMock < EndpointMock
       .default_options
       .merge(messages: prompt)
       .tap do |b|
-        b[:stream] = true if stream
+        if stream
+          b[:stream] = true
+          b[:stream_options] = { include_usage: true }
+        end
         b[:tools] = [tool_payload] if tool_call
       end
       .to_json
@@ -429,6 +432,36 @@ TEXT
           TEXT
 
           expect(content).to eq(expected)
+        end
+
+        it "uses proper token accounting" do
+          response = <<~TEXT.strip
+            data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[{"index":0,"delta":{"role":"assistant","content":""},"logprobs":null,"finish_reason":null}],"usage":null}|
+
+            data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[{"index":0,"delta":{"content":"Hello"},"logprobs":null,"finish_reason":null}],"usage":null}|
+
+            data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"stop"}],"usage":null}|
+
+            data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[],"usage":{"prompt_tokens":20,"completion_tokens":9,"total_tokens":29}}|
+
+            data: [DONE]
+          TEXT
+
+          chunks = response.split("|")
+          open_ai_mock.with_chunk_array_support do
+            open_ai_mock.stub_raw(chunks)
+            partials = []
+
+            dialect = compliance.dialect(prompt: compliance.generic_prompt)
+            endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
+
+            expect(partials).to eq(["Hello"])
+
+            log = AiApiAuditLog.order("id desc").first
+
+            expect(log.request_tokens).to eq(20)
+            expect(log.response_tokens).to eq(9)
+          end
         end
 
         it "properly handles spaces in tools payload" do

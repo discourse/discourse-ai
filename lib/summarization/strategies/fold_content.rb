@@ -99,14 +99,19 @@ module DiscourseAi
         def summarize_single(llm, text, user, opts, &on_partial_blk)
           prompt = summarization_prompt(text, opts)
 
-          llm.generate(prompt, user: user, &on_partial_blk)
+          llm.generate(prompt, user: user, feature_name: "summarize", &on_partial_blk)
         end
 
         def summarize_in_chunks(llm, chunks, user, opts)
           chunks.map do |chunk|
             prompt = summarization_prompt(chunk[:summary], opts)
 
-            chunk[:summary] = llm.generate(prompt, user: user, max_tokens: 300)
+            chunk[:summary] = llm.generate(
+              prompt,
+              user: user,
+              max_tokens: 300,
+              feature_name: "summarize",
+            )
             chunk
           end
         end

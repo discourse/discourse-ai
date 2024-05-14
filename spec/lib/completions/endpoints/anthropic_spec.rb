@@ -268,7 +268,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     ).to_return(status: 200, body: body)
 
     result = +""
-    llm.generate(prompt, user: Discourse.system_user) { |partial, cancel| result << partial }
+    llm.generate(prompt, user: Discourse.system_user, feature_name: "testing") do |partial, cancel|
+      result << partial
+    end
 
     expect(result).to eq("Hello!")
 
@@ -285,6 +287,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
     expect(log.request_tokens).to eq(25)
     expect(log.response_tokens).to eq(15)
+    expect(log.feature_name).to eq("testing")
   end
 
   it "can return multiple function calls" do

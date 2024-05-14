@@ -23,7 +23,7 @@ module DiscourseAi
 
         attr_reader :responses, :completions, :prompt
 
-        def perform_completion!(prompt, _user, _model_params)
+        def perform_completion!(prompt, _user, _model_params, feature_name: nil)
           @prompt = prompt
           response = responses[completions]
           if response.nil?
