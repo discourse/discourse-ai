@@ -23,9 +23,6 @@ RSpec.describe "AI chat channel summarization", type: :system, js: true do
     expect(page).to have_selector(".ai-bot-button")
     find(".ai-bot-button").click
 
-    expect(page).to have_selector(".ai-bot-available-bot-content")
-    find("button.ai-bot-available-bot-content:first-child").click
-
     # composer is open
     expect(page).to have_selector(".d-editor-container")
 
