@@ -44,6 +44,8 @@ module DiscourseAi
         private
 
         def model_uri
+          return URI(llm_model.url) if llm_model&.url
+
           service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_vllm_endpoint_srv)
           if service.present?
             api_endpoint = "https://#{service.target}:#{service.port}/v1/chat/completions"
@@ -63,7 +65,8 @@ module DiscourseAi
         def prepare_request(payload)
           headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
 
-          headers["X-API-KEY"] = SiteSetting.ai_vllm_api_key if SiteSetting.ai_vllm_api_key.present?
+          api_key = llm_model&.api_key || SiteSetting.ai_vllm_api_key
+          headers["X-API-KEY"] = api_key if api_key.present?
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end

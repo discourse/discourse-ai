@@ -8,13 +8,13 @@ module DiscourseAi
           def can_translate?(model_name)
             model_name.starts_with?("gpt-")
           end
-
-          def tokenizer
-            DiscourseAi::Tokenizer::OpenAiTokenizer
-          end
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
+
+        def tokenizer
+          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::OpenAiTokenizer
+        end
 
         def native_tool_support?
           true
@@ -30,7 +30,7 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
 
           # provide a buffer of 120 tokens - our function counting is not
           # 100% accurate and getting numbers to align exactly is very hard
@@ -38,7 +38,7 @@ module DiscourseAi
 
           if tools.present?
             # note this is about 100 tokens over, OpenAI have a more optimal representation
-            @function_size ||= self.class.tokenizer.size(tools.to_json.to_s)
+            @function_size ||= self.tokenizer.size(tools.to_json.to_s)
             buffer += @function_size
           end
 
@@ -113,7 +113,7 @@ module DiscourseAi
         end
 
         def calculate_message_token(context)
-          self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
+          self.tokenizer.size(context[:content].to_s + context[:name].to_s)
         end
 
         def model_max_tokens

@@ -48,7 +48,7 @@ module DiscourseAi
         private
 
         def model_uri
-          URI("#{SiteSetting.ai_ollama_endpoint}/v1/chat/completions")
+          URI(llm_model&.url || "#{SiteSetting.ai_ollama_endpoint}/v1/chat/completions")
         end
 
         def prepare_payload(prompt, model_params, _dialect)

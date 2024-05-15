@@ -20,10 +20,6 @@ module DiscourseAi
             ]
           end
 
-          def available_tokenizers
-            all_dialects.map(&:tokenizer)
-          end
-
           def dialect_for(model_name)
             dialects = []
 
@@ -38,19 +34,20 @@ module DiscourseAi
 
             dialect
           end
-
-          def tokenizer
-            raise NotImplemented
-          end
         end
 
-        def initialize(generic_prompt, model_name, opts: {})
+        def initialize(generic_prompt, model_name, opts: {}, llm_model: nil)
           @prompt = generic_prompt
           @model_name = model_name
           @opts = opts
+          @llm_model = llm_model
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
+
+        def tokenizer
+          raise NotImplemented
+        end
 
         def can_end_with_assistant_msg?
           false
@@ -88,7 +85,7 @@ module DiscourseAi
 
         private
 
-        attr_reader :model_name, :opts
+        attr_reader :model_name, :opts, :llm_model
 
         def trim_messages(messages)
           prompt_limit = max_prompt_tokens
@@ -147,7 +144,7 @@ module DiscourseAi
         end
 
         def calculate_message_token(msg)
-          self.class.tokenizer.size(msg[:content].to_s)
+          self.tokenizer.size(msg[:content].to_s)
         end
 
         def tools_dialect

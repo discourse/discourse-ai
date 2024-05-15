@@ -71,7 +71,8 @@ module DiscourseAi
             end
 
           api_url =
-            "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
+            llm_model&.url ||
+              "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
 
           api_url = @streaming_mode ? (api_url + "-with-response-stream") : api_url
 
@@ -91,7 +92,7 @@ module DiscourseAi
             Aws::Sigv4::Signer.new(
               access_key_id: SiteSetting.ai_bedrock_access_key_id,
               region: SiteSetting.ai_bedrock_region,
-              secret_access_key: SiteSetting.ai_bedrock_secret_access_key,
+              secret_access_key: llm_model&.api_key || SiteSetting.ai_bedrock_secret_access_key,
               service: "bedrock",
             )
 

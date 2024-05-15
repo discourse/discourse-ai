@@ -42,7 +42,9 @@ module DiscourseAi
         private
 
         def model_uri
-          URI("https://api.cohere.ai/v1/chat")
+          url = llm_model&.url || "https://api.cohere.ai/v1/chat"
+
+          URI(url)
         end
 
         def prepare_payload(prompt, model_params, dialect)
@@ -56,7 +58,7 @@ module DiscourseAi
         def prepare_request(payload)
           headers = {
             "Content-Type" => "application/json",
-            "Authorization" => "Bearer #{SiteSetting.ai_cohere_api_key}",
+            "Authorization" => "Bearer #{llm_model&.api_key || SiteSetting.ai_cohere_api_key}",
           }
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }

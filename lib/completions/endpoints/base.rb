@@ -60,9 +60,10 @@ module DiscourseAi
           end
         end
 
-        def initialize(model_name, tokenizer)
+        def initialize(model_name, tokenizer, llm_model: nil)
           @model = model_name
           @tokenizer = tokenizer
+          @llm_model = llm_model
         end
 
         def native_tool_support?
@@ -294,7 +295,7 @@ module DiscourseAi
           tokenizer.size(extract_prompt_for_tokenizer(prompt))
         end
 
-        attr_reader :tokenizer, :model
+        attr_reader :tokenizer, :model, :llm_model
 
         protected
 

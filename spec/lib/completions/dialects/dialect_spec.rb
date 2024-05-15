@@ -7,7 +7,7 @@ class TestDialect < DiscourseAi::Completions::Dialects::Dialect
     trim_messages(messages)
   end
 
-  def self.tokenizer
+  def tokenizer
     Class.new do
       def self.size(str)
         str.length

@@ -8,10 +8,10 @@ module DiscourseAi
           def can_translate?(_model_name)
             true
           end
+        end
 
-          def tokenizer
-            DiscourseAi::Tokenizer::Llama3Tokenizer
-          end
+        def tokenizer
+          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::Llama3Tokenizer
         end
 
         def tools
@@ -19,7 +19,7 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
 
           32_000
         end

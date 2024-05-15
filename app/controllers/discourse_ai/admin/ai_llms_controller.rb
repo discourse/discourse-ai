@@ -58,6 +58,8 @@ module DiscourseAi
           :provider,
           :tokenizer,
           :max_prompt_tokens,
+          :url,
+          :api_key,
         )
       end
     end

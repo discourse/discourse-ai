@@ -63,7 +63,9 @@ module DiscourseAi
         end
 
         def model_uri
-          @uri ||= URI("https://api.anthropic.com/v1/messages")
+          url = llm_model&.url || "https://api.anthropic.com/v1/messages"
+
+          URI(url)
         end
 
         def prepare_payload(prompt, model_params, dialect)
@@ -78,7 +80,7 @@ module DiscourseAi
         def prepare_request(payload)
           headers = {
             "anthropic-version" => "2023-06-01",
-            "x-api-key" => SiteSetting.ai_anthropic_api_key,
+            "x-api-key" => llm_model&.api_key || SiteSetting.ai_anthropic_api_key,
             "content-type" => "application/json",
           }
 

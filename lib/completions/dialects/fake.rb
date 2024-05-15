@@ -8,10 +8,10 @@ module DiscourseAi
           def can_translate?(model_name)
             model_name == "fake"
           end
+        end
 
-          def tokenizer
-            DiscourseAi::Tokenizer::OpenAiTokenizer
-          end
+        def tokenizer
+          DiscourseAi::Tokenizer::OpenAiTokenizer
         end
 
         def translate

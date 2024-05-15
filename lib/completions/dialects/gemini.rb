@@ -8,14 +8,14 @@ module DiscourseAi
           def can_translate?(model_name)
             %w[gemini-pro gemini-1.5-pro].include?(model_name)
           end
-
-          def tokenizer
-            DiscourseAi::Tokenizer::OpenAiTokenizer ## TODO Replace with GeminiTokenizer
-          end
         end
 
         def native_tool_support?
           true
+        end
+
+        def tokenizer
+          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::OpenAiTokenizer ## TODO Replace with GeminiTokenizer
         end
 
         def translate
@@ -68,7 +68,7 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
 
           if model_name == "gemini-1.5-pro"
             # technically we support 1 million tokens, but we're being conservative
@@ -81,7 +81,7 @@ module DiscourseAi
         protected
 
         def calculate_message_token(context)
-          self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
+          self.tokenizer.size(context[:content].to_s + context[:name].to_s)
         end
 
         def system_msg(msg)

@@ -44,7 +44,7 @@ module DiscourseAi
         private
 
         def model_uri
-          URI(SiteSetting.ai_hugging_face_api_url)
+          URI(llm_model&.url || SiteSetting.ai_hugging_face_api_url)
         end
 
         def prepare_payload(prompt, model_params, _dialect)
@@ -53,7 +53,8 @@ module DiscourseAi
             .merge(messages: prompt)
             .tap do |payload|
               if !payload[:max_tokens]
-                token_limit = SiteSetting.ai_hugging_face_token_limit || 4_000
+                token_limit =
+                  llm_model&.max_prompt_tokens || SiteSetting.ai_hugging_face_token_limit
 
                 payload[:max_tokens] = token_limit - prompt_size(prompt)
               end
@@ -63,11 +64,11 @@ module DiscourseAi
         end
 
         def prepare_request(payload)
+          api_key = llm_model&.api_key || SiteSetting.ai_hugging_face_api_key
+
           headers =
             { "Content-Type" => "application/json" }.tap do |h|
-              if SiteSetting.ai_hugging_face_api_key.present?
-                h["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_api_key}"
-              end
+              h["Authorization"] = "Bearer #{api_key}" if api_key.present?
             end
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }

@@ -12,10 +12,10 @@ module DiscourseAi
               mistral
             ].include?(model_name)
           end
+        end
 
-          def tokenizer
-            DiscourseAi::Tokenizer::MixtralTokenizer
-          end
+        def tokenizer
+          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::MixtralTokenizer
         end
 
         def tools
@@ -23,7 +23,7 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
 
           32_000
         end
