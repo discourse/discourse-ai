@@ -270,8 +270,6 @@ module DiscourseAi
         end
 
         messages.each do |m|
-          p m
-          p m.uploads
           # restore stripped message
           m.message = instruction_message if m.id == current_id && instruction_message
 

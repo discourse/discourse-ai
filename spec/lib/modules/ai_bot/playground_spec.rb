@@ -204,7 +204,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         content = prompt.messages[1][:content]
         # this is fragile by design, mainly so the example can be ultra clear
         expected = (<<~TEXT).strip
-          You are replying inside a Discourse chat. Here is a summary of the conversation so far:
+          You are replying inside a Discourse chat channel. Here is a summary of the conversation so far:
           {{{
           #{user.username}: (a magic thread)
           thread 1 message 1
@@ -264,6 +264,30 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       let(:guardian) { Guardian.new(user) }
+
+      it "can supply context" do
+        post = Fabricate(:post, raw: "this is post content")
+
+        prompts = nil
+        message =
+          DiscourseAi::Completions::Llm.with_prepared_responses(["World"]) do |_, _, _prompts|
+            prompts = _prompts
+
+            ::Chat::CreateMessage.call!(
+              chat_channel_id: dm_channel.id,
+              message: "Hello",
+              guardian: guardian,
+              context_post_ids: [post.id],
+            ).message_instance
+          end
+
+        expect(prompts[0].messages[1][:content]).to include("this is post content")
+
+        message.reload
+        reply = ChatSDK::Thread.messages(thread_id: message.thread_id, guardian: guardian).last
+        expect(reply.message).to eq("World")
+        expect(message.thread_id).to be_present
+      end
 
       it "can run tools" do
         persona.update!(commands: ["TimeCommand"])

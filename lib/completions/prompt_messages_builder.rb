@@ -120,7 +120,8 @@ module DiscourseAi
 
       def chat_array(limit:)
         if @raw_messages.length > 1
-          buffer << "You are replying inside a Discourse chat channel. Here is a summary of the conversation so far:\n{{{"
+          buffer =
+            +"You are replying inside a Discourse chat channel. Here is a summary of the conversation so far:\n{{{"
 
           upload_ids = []
 
