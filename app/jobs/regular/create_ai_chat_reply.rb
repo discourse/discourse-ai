@@ -21,7 +21,7 @@ module ::Jobs
       DiscourseAi::AiBot::Playground.new(bot).reply_to_chat_message(
         message,
         channel,
-        args[:context],
+        args[:context_post_ids],
       )
     end
   end

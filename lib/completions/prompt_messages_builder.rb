@@ -5,12 +5,13 @@ module DiscourseAi
     class PromptMessagesBuilder
       MAX_CHAT_UPLOADS = 5
       attr_reader :chat_context_posts
+      attr_reader :chat_context_post_upload_ids
 
       def initialize
         @raw_messages = []
       end
 
-      def set_chat_context_posts(post_ids, guardian)
+      def set_chat_context_posts(post_ids, guardian, include_uploads:)
         posts = []
         Post
           .where(id: post_ids)
@@ -29,6 +30,12 @@ module DiscourseAi
           end
           posts_context << "}}}"
           @chat_context_posts = posts_context
+          if include_uploads
+            uploads = []
+            posts.each { |post| uploads.concat(post.uploads.pluck(:id)) }
+            uploads.uniq!
+            @chat_context_post_upload_ids = uploads.take(MAX_CHAT_UPLOADS)
+          end
         end
       end
 
@@ -81,6 +88,11 @@ module DiscourseAi
           buffer << "\n"
           buffer << "Your instructions are:\n"
           result[0][:content] = "#{buffer}#{result[0][:content]}"
+          if @chat_context_post_upload_ids.present?
+            result[0][:upload_ids] = (result[0][:upload_ids] || []).concat(
+              @chat_context_post_upload_ids,
+            )
+          end
         end
 
         if limit

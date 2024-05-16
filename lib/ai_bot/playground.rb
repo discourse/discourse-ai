@@ -37,12 +37,15 @@ module DiscourseAi
         persona = find_chat_persona(message, channel, user)
         return if !persona
 
+        post_ids = nil
+        post_ids = context.dig(:context, :post_ids) if context.is_a?(Hash)
+
         ::Jobs.enqueue(
           :create_ai_chat_reply,
           channel_id: channel.id,
           message_id: message.id,
           persona_id: persona[:id],
-          context: context,
+          context_post_ids: post_ids,
         )
       end
 
@@ -262,9 +265,13 @@ module DiscourseAi
         builder = DiscourseAi::Completions::PromptMessagesBuilder.new
 
         guardian = Guardian.new(message.user)
-        builder.set_chat_context_posts(context_post_ids, guardian) if context_post_ids
+        if context_post_ids
+          builder.set_chat_context_posts(context_post_ids, guardian, include_uploads: has_vision)
+        end
 
         messages.each do |m|
+          p m
+          p m.uploads
           # restore stripped message
           m.message = instruction_message if m.id == current_id && instruction_message
 
@@ -294,15 +301,12 @@ module DiscourseAi
         )
       end
 
-      def reply_to_chat_message(message, channel, message_context)
+      def reply_to_chat_message(message, channel, context_post_ids)
         persona_user = User.find(bot.persona.class.user_id)
 
         participants = channel.user_chat_channel_memberships.map { |m| m.user.username }
 
-        context_post_ids = nil
-        context_post_ids = message_context.dig("context", "post_ids") if message_context.is_a?(
-          Hash,
-        ) && channel.direct_message_channel?
+        context_post_ids = nil if !channel.direct_message_channel?
 
         context =
           get_context(
