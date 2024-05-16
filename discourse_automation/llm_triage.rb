@@ -54,12 +54,14 @@ if defined?(DiscourseAutomation)
 
       begin
         RateLimiter.new(
+          Discourse.system_user,
           "llm_triage_#{post.id}",
           SiteSetting.ai_automation_max_triage_per_post_per_minute,
           1.minute,
         ).performed!
 
         RateLimiter.new(
+          Discourse.system_user,
           "llm_triage",
           SiteSetting.ai_automation_max_triage_per_minute,
           1.minute,
