@@ -53,6 +53,18 @@ if defined?(DiscourseAutomation)
       flag_post = fields.dig("flag_post", "value")
 
       begin
+        RateLimiter.new(
+          "llm_triage_#{post.id}",
+          SiteSetting.ai_automation_max_triage_per_post_per_minute,
+          1.minute,
+        ).performed!
+
+        RateLimiter.new(
+          "llm_triage",
+          SiteSetting.ai_automation_max_triage_per_minute,
+          1.minute,
+        ).performed!
+
         DiscourseAi::Automation::LlmTriage.handle(
           post: post,
           model: model,
@@ -66,7 +78,7 @@ if defined?(DiscourseAutomation)
           flag_post: flag_post,
         )
       rescue => e
-        Discourse.warn_exception(e, message: "llm_triage: failed to run inference")
+        Discourse.warn_exception(e, message: "llm_triage: skipped triage on post #{post.id}")
       end
     end
   end
