@@ -4,6 +4,7 @@ import { Input } from "@ember/component";
 import { action } from "@ember/object";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
@@ -59,6 +60,10 @@ export default class AiLlmEditor extends Component {
   }
 
   <template>
+    <BackButton
+      @route="adminPlugins.show.discourse-ai-llms"
+      @label="discourse_ai.llms.back"
+    />
     <form class="form-horizontal ai-llm-editor">
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.display_name"}}</label>

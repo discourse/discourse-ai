@@ -9,28 +9,17 @@
       margin: 0;
     }
   }
+}
 
-  &__container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    width: 100%;
-    align-items: stretch;
-  }
-
-  &__empty_list,
-  &__content_list {
-    min-width: 300px;
-  }
-
-  &__empty_list {
-    align-content: center;
-    text-align: center;
-    font-size: var(--font-up-1);
-  }
+.ai-llm-editor {
+  padding-left: 0.5em;
 
   .ai-llm-editor-input {
     width: 350px;
+  }
+
+  .fk-d-tooltip__icon {
+    padding-left: 0.25em;
+    color: var(--primary-medium);
   }
 }
