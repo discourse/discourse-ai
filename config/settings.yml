@@ -359,7 +359,7 @@ discourse_ai:
     default: ""
     secret: true
   ai_automation_max_triage_per_minute:
-    default: 40
+    default: 60
     hidden: true
   ai_automation_max_triage_per_post_per_minute:
     default: 2
