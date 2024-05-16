@@ -33,7 +33,9 @@ export default class AiLlmEditor extends Component {
     const isNew = this.args.model.isNew;
 
     try {
-      await this.args.model.save();
+      const result = await this.args.model.save();
+
+      this.args.model.setProperties(result.responseJson.ai_persona);
 
       if (isNew) {
         this.args.llms.addObject(this.args.model);
@@ -61,7 +63,7 @@ export default class AiLlmEditor extends Component {
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.display_name"}}</label>
         <Input
-          class="ai-llm-editor__display-name"
+          class="ai-llm-editor-input ai-llm-editor__display-name"
           @type="text"
           @value={{@model.display_name}}
         />
@@ -69,7 +71,7 @@ export default class AiLlmEditor extends Component {
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.name"}}</label>
         <Input
-          class="ai-llm-editor__name"
+          class="ai-llm-editor-input ai-llm-editor__name"
           @type="text"
           @value={{@model.name}}
         />
@@ -86,6 +88,22 @@ export default class AiLlmEditor extends Component {
         />
       </div>
       <div class="control-group">
+        <label>{{I18n.t "discourse_ai.llms.url"}}</label>
+        <Input
+          class="ai-llm-editor-input ai-llm-editor__url"
+          @type="text"
+          @value={{@model.url}}
+        />
+      </div>
+      <div class="control-group">
+        <label>{{I18n.t "discourse_ai.llms.api_key"}}</label>
+        <Input
+          class="ai-llm-editor-input ai-llm-editor__api-key"
+          @type="text"
+          @value={{@model.api_key}}
+        />
+      </div>
+      <div class="control-group">
         <label>{{I18n.t "discourse_ai.llms.tokenizer"}}</label>
         <ComboBox
           @value={{@model.tokenizer}}
@@ -96,7 +114,7 @@ export default class AiLlmEditor extends Component {
         <label>{{i18n "discourse_ai.llms.max_prompt_tokens"}}</label>
         <Input
           @type="number"
-          class="ai-llm-editor__max-prompt-tokens"
+          class="ai-llm-editor-input ai-llm-editor__max-prompt-tokens"
           step="any"
           min="0"
           lang="en"

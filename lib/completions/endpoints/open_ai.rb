@@ -78,6 +78,8 @@ module DiscourseAi
         private
 
         def model_uri
+          return URI(llm_model.url) if llm_model&.url
+
           url =
             if model.include?("gpt-4")
               if model.include?("32k")
@@ -115,10 +117,12 @@ module DiscourseAi
         def prepare_request(payload)
           headers = { "Content-Type" => "application/json" }
 
+          api_key = llm_model&.api_key || SiteSetting.ai_openai_api_key
+
           if model_uri.host.include?("azure")
-            headers["api-key"] = SiteSetting.ai_openai_api_key
+            headers["api-key"] = api_key
           else
-            headers["Authorization"] = "Bearer #{SiteSetting.ai_openai_api_key}"
+            headers["Authorization"] = "Bearer #{api_key}"
           end
 
           if SiteSetting.ai_openai_organization.present?

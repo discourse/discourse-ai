@@ -3,5 +3,5 @@
 class LlmModelSerializer < ApplicationSerializer
   root "llm"
 
-  attributes :id, :display_name, :name, :provider, :max_prompt_tokens, :tokenizer
+  attributes :id, :display_name, :name, :provider, :max_prompt_tokens, :tokenizer, :api_key, :url
 end

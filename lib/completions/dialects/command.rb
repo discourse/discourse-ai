@@ -10,13 +10,13 @@ module DiscourseAi
           def can_translate?(model_name)
             %w[command-light command command-r command-r-plus].include?(model_name)
           end
-
-          def tokenizer
-            DiscourseAi::Tokenizer::OpenAiTokenizer
-          end
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
+
+        def tokenizer
+          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::OpenAiTokenizer
+        end
 
         def translate
           messages = super
@@ -38,7 +38,7 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
 
           case model_name
           when "command-light"
@@ -61,7 +61,7 @@ module DiscourseAi
         end
 
         def calculate_message_token(context)
-          self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
+          self.tokenizer.size(context[:content].to_s + context[:name].to_s)
         end
 
         def system_msg(msg)

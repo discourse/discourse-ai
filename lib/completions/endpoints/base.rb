@@ -60,9 +60,10 @@ module DiscourseAi
           end
         end
 
-        def initialize(model_name, tokenizer)
+        def initialize(model_name, tokenizer, llm_model: nil)
           @model = model_name
           @tokenizer = tokenizer
+          @llm_model = llm_model
         end
 
         def native_tool_support?
@@ -70,7 +71,11 @@ module DiscourseAi
         end
 
         def use_ssl?
-          true
+          if model_uri&.scheme.present?
+            model_uri.scheme == "https"
+          else
+            true
+          end
         end
 
         def perform_completion!(dialect, user, model_params = {}, feature_name: nil, &blk)
@@ -294,7 +299,7 @@ module DiscourseAi
           tokenizer.size(extract_prompt_for_tokenizer(prompt))
         end
 
-        attr_reader :tokenizer, :model
+        attr_reader :tokenizer, :model, :llm_model
 
         protected
 

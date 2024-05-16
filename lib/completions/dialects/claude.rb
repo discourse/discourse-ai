@@ -10,10 +10,6 @@ module DiscourseAi
               model_name,
             )
           end
-
-          def tokenizer
-            DiscourseAi::Tokenizer::AnthropicTokenizer
-          end
         end
 
         class ClaudePrompt
@@ -24,6 +20,10 @@ module DiscourseAi
             @system_prompt = system_prompt
             @messages = messages
           end
+        end
+
+        def tokenizer
+          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::AnthropicTokenizer
         end
 
         def translate
@@ -50,7 +50,8 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return opts[:max_prompt_tokens] if opts.dig(:max_prompt_tokens).present?
+          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
+
           # Longer term it will have over 1 million
           200_000 # Claude-3 has a 200k context window for now
         end
