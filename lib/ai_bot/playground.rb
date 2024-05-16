@@ -42,6 +42,7 @@ module DiscourseAi
           channel_id: channel.id,
           message_id: message.id,
           persona_id: persona[:id],
+          context: context,
         )
       end
 
@@ -218,7 +219,7 @@ module DiscourseAi
           end
       end
 
-      def chat_context(message, channel, persona_user)
+      def chat_context(message, channel, persona_user, context_post_ids)
         has_vision = bot.persona.class.vision_enabled
         include_thread_titles = !channel.direct_message_channel? && !message.thread_id
 
@@ -260,6 +261,9 @@ module DiscourseAi
 
         builder = DiscourseAi::Completions::PromptMessagesBuilder.new
 
+        guardian = Guardian.new(message.user)
+        builder.set_chat_context_posts(context_post_ids, guardian) if context_post_ids
+
         messages.each do |m|
           # restore stripped message
           m.message = instruction_message if m.id == current_id && instruction_message
@@ -284,18 +288,26 @@ module DiscourseAi
           end
         end
 
-        builder.to_a(limit: max_messages, style: channel.direct_message_channel? ? :default : :chat)
+        builder.to_a(
+          limit: max_messages,
+          style: channel.direct_message_channel? ? :chat_with_context : :chat,
+        )
       end
 
-      def reply_to_chat_message(message, channel)
+      def reply_to_chat_message(message, channel, message_context)
         persona_user = User.find(bot.persona.class.user_id)
 
         participants = channel.user_chat_channel_memberships.map { |m| m.user.username }
 
+        context_post_ids = nil
+        context_post_ids = message_context.dig("context", "post_ids") if message_context.is_a?(
+          Hash,
+        ) && channel.direct_message_channel?
+
         context =
           get_context(
             participants: participants.join(", "),
-            conversation_context: chat_context(message, channel, persona_user),
+            conversation_context: chat_context(message, channel, persona_user, context_post_ids),
             user: message.user,
             skip_tool_details: true,
           )

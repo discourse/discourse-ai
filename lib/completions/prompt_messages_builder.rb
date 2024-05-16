@@ -4,9 +4,32 @@ module DiscourseAi
   module Completions
     class PromptMessagesBuilder
       MAX_CHAT_UPLOADS = 5
+      attr_reader :chat_context_posts
 
       def initialize
         @raw_messages = []
+      end
+
+      def set_chat_context_posts(post_ids, guardian)
+        posts = []
+        Post
+          .where(id: post_ids)
+          .order("id asc")
+          .each do |post|
+            next if !guardian.can_see?(post)
+            posts << post
+          end
+        if posts.present?
+          posts_context =
+            +"\nThis chat is in the context of the Discourse topic '#{posts[0].topic.title}':\n\n"
+          posts_context = +"{{{\n"
+          posts.each do |post|
+            posts_context << "url: #{post.url}\n"
+            posts_context << "#{post.username}: #{post.raw}\n\n"
+          end
+          posts_context << "}}}"
+          @chat_context_posts = posts_context
+        end
       end
 
       def to_a(limit: nil, style: nil)
@@ -51,6 +74,15 @@ module DiscourseAi
           last_type = message[:type]
         end
 
+        if style == :chat_with_context && @chat_context_posts
+          buffer = +"You are replying inside a Discourse chat."
+          buffer << "\n"
+          buffer << @chat_context_posts
+          buffer << "\n"
+          buffer << "Your instructions are:\n"
+          result[0][:content] = "#{buffer}#{result[0][:content]}"
+        end
+
         if limit
           result[0..limit]
         else
@@ -75,13 +107,8 @@ module DiscourseAi
       private
 
       def chat_array(limit:)
-        buffer = +""
-
         if @raw_messages.length > 1
-          buffer << (<<~TEXT).strip
-            You are replying inside a Discourse chat. Here is a summary of the conversation so far:
-            {{{
-          TEXT
+          buffer << "You are replying inside a Discourse chat channel. Here is a summary of the conversation so far:\n{{{"
 
           upload_ids = []
 

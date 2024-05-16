@@ -18,7 +18,11 @@ module ::Jobs
       user = User.find_by(id: personaClass.user_id)
       bot = DiscourseAi::AiBot::Bot.as(user, persona: personaClass.new)
 
-      DiscourseAi::AiBot::Playground.new(bot).reply_to_chat_message(message, channel)
+      DiscourseAi::AiBot::Playground.new(bot).reply_to_chat_message(
+        message,
+        channel,
+        args[:context],
+      )
     end
   end
 end
