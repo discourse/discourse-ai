@@ -358,3 +358,9 @@ discourse_ai:
   ai_bot_github_access_token:
     default: ""
     secret: true
+  ai_automation_max_triage_per_minute:
+    default: 60
+    hidden: true
+  ai_automation_max_triage_per_post_per_minute:
+    default: 2
+    hidden: true
