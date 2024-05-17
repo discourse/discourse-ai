@@ -88,6 +88,7 @@ module DiscourseAi
               Tools::GithubFileContent,
               Tools::GithubPullRequestDiff,
               Tools::WebBrowser,
+              Tools::JavascriptEvaluator,
             ]
 
             tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
