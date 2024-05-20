@@ -72,7 +72,6 @@ module DiscourseAi
 
           # only do special handling and truncating for long strings
           if result.to_s.length > 1000
-            result = result.to_s
             result = truncate(result.to_s, max_length: 10_000, percent_length: 0.3, llm: llm)
           end
 
