@@ -234,6 +234,7 @@ en:
         search_settings: "Searching site settings"
         dall_e: "Generate image"
         search_meta_discourse: "Search Meta Discourse"
+        javascript_evaluator: "Evaluate JavaScript"
       command_help:
         web_browser: "Browse web page using the AI Bot"
         github_search_code: "Search for code in a GitHub repository"
@@ -253,6 +254,7 @@ en:
         search_settings: "Search site settings"
         dall_e: "Generate image using DALL-E 3"
         search_meta_discourse: "Search Meta Discourse"
+        javascript_evaluator: "Evaluate JavaScript"
       command_description:
         web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_code: "Searched for '%{query}' in %{repo}"
