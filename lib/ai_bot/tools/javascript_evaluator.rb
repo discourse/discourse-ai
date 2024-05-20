@@ -58,7 +58,17 @@ module DiscourseAi
               marshal_stack_depth: MARSHAL_STACK_DEPTH,
             )
 
-          result = context.eval(script)
+          # works around llms like anthropic loving console.log
+          eval_script = <<~JS
+            let console = {};
+            console.log = function(val) {
+              return val;
+            };
+
+            #{script}
+          JS
+
+          result = context.eval(eval_script)
 
           # only do special handling and truncating for long strings
           if result.to_s.length > 1000
@@ -73,6 +83,17 @@ module DiscourseAi
           { error: "JavaScript execution exceeded memory limit: #{e.message}" }
         rescue MiniRacer::Error => e
           { error: "JavaScript execution error: #{e.message}" }
+        end
+
+        def details
+          <<~MD
+
+
+            ```
+            #{script}
+            ```
+
+          MD
         end
 
         private

@@ -266,7 +266,6 @@ en:
         summarize: "Summarized <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
         image: "%{prompt}"
-        javascript_evaluator: "Evaluating JavaScript: %{script}"
         categories:
           one: "Found %{count} category"
           other: "Found %{count} categories"
