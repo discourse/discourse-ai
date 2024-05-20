@@ -6,7 +6,7 @@ module DiscourseAi
       class Gemini < Dialect
         class << self
           def can_translate?(model_name)
-            %w[gemini-pro gemini-1.5-pro].include?(model_name)
+            %w[gemini-pro gemini-1.5-pro gemini-1.5-flash].include?(model_name)
           end
         end
 

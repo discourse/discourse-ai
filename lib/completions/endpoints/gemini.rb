@@ -54,13 +54,22 @@ module DiscourseAi
           if llm_model
             url = llm_model.url
           else
-            mapped_model = model == "gemini-1.5-pro" ? "gemini-1.5-pro-latest" : model
+            mapped_model = model
+            if model == "gemini-1.5-pro"
+              mapped_model = "gemini-1.5-pro-latest"
+            elsif model == "gemini-1.5-flash"
+              mapped_model = "gemini-1.5-flash-latest"
+            end
             url = "https://generativelanguage.googleapis.com/v1beta/models/#{mapped_model}"
           end
 
           key = llm_model&.api_key || SiteSetting.ai_gemini_api_key
 
-          url = "#{url}:#{@streaming_mode ? "streamGenerateContent" : "generateContent"}?key=#{key}"
+          if @streaming_mode
+            url = "#{url}:streamGenerateContent?key=#{key}&alt=sse"
+          else
+            url = "#{url}:generateContent?key=#{key}"
+          end
 
           URI(url)
         end
@@ -68,12 +77,10 @@ module DiscourseAi
         def prepare_payload(prompt, model_params, dialect)
           tools = dialect.tools
 
-          default_options
-            .merge(contents: prompt)
-            .tap do |payload|
-              payload[:tools] = tools if tools.present?
-              payload[:generationConfig].merge!(model_params) if model_params.present?
-            end
+          payload = default_options.merge(contents: prompt)
+          payload[:tools] = tools if tools.present?
+          payload[:generationConfig].merge!(model_params) if model_params.present?
+          payload
         end
 
         def prepare_request(payload)
@@ -101,6 +108,11 @@ module DiscourseAi
           rescue JSON::ParserError
             []
           end
+        end
+
+        def decode(chunk)
+          puts chunk
+          chunk
         end
 
         def extract_prompt_for_tokenizer(prompt)

@@ -178,7 +178,7 @@ module DiscourseAi
               "ollama:mistral"
             end
           when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
-            "google:gemini-pro"
+            "google:gemini-1.5-pro"
           when DiscourseAi::AiBot::EntryPoint::FAKE_ID
             "fake:fake"
           when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID

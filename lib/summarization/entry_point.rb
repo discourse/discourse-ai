@@ -13,6 +13,7 @@ module DiscourseAi
           Models::OpenAi.new("open_ai:gpt-3.5-turbo-16k", max_tokens: 16_384),
           Models::Gemini.new("google:gemini-pro", max_tokens: 32_768),
           Models::Gemini.new("google:gemini-1.5-pro", max_tokens: 800_000),
+          Models::Gemini.new("google:gemini-1.5-flash", max_tokens: 800_000),
         ]
 
         claude_prov = "anthropic"
