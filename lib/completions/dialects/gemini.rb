@@ -26,7 +26,13 @@ module DiscourseAi
           interleving_messages = []
           previous_message = nil
 
+          system_instruction = nil
+
           messages.each do |message|
+            if message[:role] == "system"
+              system_instruction = message[:content]
+              next
+            end
             if previous_message
               if (previous_message[:role] == "user" || previous_message[:role] == "function") &&
                    message[:role] == "user"
@@ -37,7 +43,7 @@ module DiscourseAi
             previous_message = message
           end
 
-          interleving_messages
+          { messages: interleving_messages, system_instruction: system_instruction }
         end
 
         def tools
@@ -70,7 +76,7 @@ module DiscourseAi
         def max_prompt_tokens
           return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
 
-          if model_name == "gemini-1.5-pro"
+          if model_name.start_with?("gemini-1.5")
             # technically we support 1 million tokens, but we're being conservative
             800_000
           else
@@ -85,7 +91,11 @@ module DiscourseAi
         end
 
         def system_msg(msg)
-          { role: "user", parts: { text: msg[:content] } }
+          if model_name.start_with?("gemini-1.5")
+            { role: "system", content: msg[:content] }
+          else
+            { role: "user", parts: { text: msg[:content] } }
+          end
         end
 
         def model_msg(msg)

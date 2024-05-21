@@ -59,6 +59,8 @@ module DiscourseAi
               mapped_model = "gemini-1.5-pro-latest"
             elsif model == "gemini-1.5-flash"
               mapped_model = "gemini-1.5-flash-latest"
+            elsif model == "gemini-1.0-pro"
+              mapped_model = "gemini-pro-latest"
             end
             url = "https://generativelanguage.googleapis.com/v1beta/models/#{mapped_model}"
           end
@@ -77,7 +79,11 @@ module DiscourseAi
         def prepare_payload(prompt, model_params, dialect)
           tools = dialect.tools
 
-          payload = default_options.merge(contents: prompt)
+          payload = default_options.merge(contents: prompt[:messages])
+          payload[:systemInstruction] = {
+            role: "system",
+            parts: [{ text: prompt[:system_instruction].to_s }],
+          } if prompt[:system_instruction].present?
           payload[:tools] = tools if tools.present?
           payload[:generationConfig].merge!(model_params) if model_params.present?
           payload
@@ -139,7 +145,12 @@ module DiscourseAi
                 end
                 .compact
 
-            @buffer = +(keep_last) if keep_last
+            if keep_last
+              @buffer = +(keep_last)
+            else
+              @buffer = +""
+            end
+
             decoded
           end
         end
