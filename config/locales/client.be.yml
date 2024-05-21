@@ -38,6 +38,12 @@ be:
         uploads:
           title: "Загрузкі"
           uploading: "Запампоўванне ..."
+      llms:
+        save: "Захаваць"
+        edit: "рэдагаваць"
+        back: "Назад"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Назад"
@@ -52,5 +58,7 @@ be:
         image_caption:
           save_caption: "захаваць"
       ai_bot:
+        debug_ai_modal:
+          request: "запыт"
         share_modal:
           copy: "капіяваць"

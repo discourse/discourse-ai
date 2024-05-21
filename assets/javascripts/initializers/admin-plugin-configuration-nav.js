@@ -13,12 +13,12 @@ export default {
     withPluginApi("1.1.0", (api) => {
       api.addAdminPluginConfigurationNav("discourse-ai", PLUGIN_NAV_MODE_TOP, [
         {
-          label: "admin.plugins.change_settings_short",
-          route: "adminPlugins.show.settings",
+          label: "discourse_ai.ai_persona.short_title",
+          route: "adminPlugins.show.discourse-ai-personas",
         },
         {
-          label: "discourse_ai.ai_persona.short_title",
-          route: "adminPlugins.show.discourse-ai.ai-personas",
+          label: "discourse_ai.llms.short_title",
+          route: "adminPlugins.show.discourse-ai-llms",
         },
       ]);
     });

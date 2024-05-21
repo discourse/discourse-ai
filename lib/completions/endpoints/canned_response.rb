@@ -6,7 +6,7 @@ module DiscourseAi
       class CannedResponse
         CANNED_RESPONSE_ERROR = Class.new(StandardError)
 
-        def self.can_contact?(_, _)
+        def self.can_contact?(_)
           Rails.env.test?
         end
 
@@ -23,7 +23,7 @@ module DiscourseAi
 
         attr_reader :responses, :completions, :prompt
 
-        def perform_completion!(prompt, _user, _model_params)
+        def perform_completion!(prompt, _user, _model_params, feature_name: nil)
           @prompt = prompt
           response = responses[completions]
           if response.nil?

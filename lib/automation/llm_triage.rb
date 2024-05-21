@@ -41,6 +41,7 @@ module DiscourseAi
             temperature: 0,
             max_tokens: llm.tokenizer.tokenize(search_for_text).length * 2 + 10,
             user: Discourse.system_user,
+            feature_name: "llm_triage",
           )
 
         if result.present? && result.strip.downcase.include?(search_for_text)

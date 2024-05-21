@@ -10,7 +10,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::ListCategories do
     it "list available categories" do
       Fabricate(:category, name: "america", posts_year: 999)
 
-      info = described_class.new({}).invoke(bot_user, llm).to_s
+      info = described_class.new({}, bot_user: bot_user, llm: llm).invoke.to_s
 
       expect(info).to include("america")
       expect(info).to include("999")

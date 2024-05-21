@@ -20,6 +20,7 @@ en:
         mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
         command_r: Cohere Command R
         command_r_plus: Cohere Command R+
+        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -112,7 +113,7 @@ en:
               description: "Puts the post into the review queue if triggered, for moderators to triage"
             model:
               label: "Model"
-              description: "Either gpt-4 or gpt-3-5-turbo or claude-2"
+              description: "Language model used for triage"
 
     discourse_ai:
       title: "AI"
@@ -134,16 +135,20 @@ en:
           low: Low Quality - cheapest (256x256)
           medium: Medium Quality (512x512)
           high: High Quality - slowest (1024x1024)
-        mentionable: Mentionable
-        mentionable_help: If enabled, users in allowed groups can mention this user in posts and messages, the AI will respond as this persona.
+        mentionable: Allow Mentions
+        mentionable_help: If enabled, users in allowed groups can mention this user in posts, the AI will respond as this persona.
         user: User
         create_user: Create User
         create_user_help: You can optionally attach a user to this persona. If you do, the AI will use this user to respond to requests.
         default_llm: Default Language Model
         default_llm_help: The default language model to use for this persona. Required if you wish to mention persona on public posts.
+        question_consolidator_llm: Language Model for Question Consolidator
+        question_consolidator_llm_help: The language model to use for the question consolidator, you may choose a less powerful model to save costs.
         system_prompt: System Prompt
-        show_indexing_options: "Show Indexing Options"
-        hide_indexing_options: "Hide Indexing Options"
+        show_indexing_options: "Show Upload Options"
+        hide_indexing_options: "Hide Upload Options"
+        allow_chat: "Allow Chat"
+        allow_chat_help: "If enabled, users in allowed groups can DM this persona"
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"
@@ -181,8 +186,7 @@ en:
 
         uploads:
           title: "Uploads"
-          description: "Your AI persona will be able to search and reference the content of included files. Uploaded files must be formatted as plaintext (.txt)"
-          hint: "To control where the file's content gets placed within the system prompt, include the {uploads} placeholder in the system prompt above."
+          description: "Your AI persona will be able to search and reference the content of included files. Uploaded files should be formatted as plaintext (.txt) or markdown (.md)."
           button: "Add Files"
           filter: "Filter uploads"
           indexed: "Indexed"
@@ -190,6 +194,42 @@ en:
           uploaded: "Ready to be indexed"
           uploading: "Uploading..."
           remove: "Remove upload"
+
+      llms:
+        short_title: "LLMs"
+        no_llms: "No LLMs yet"
+        new: "New Model"
+        display_name: "Name to display"
+        name: "Model name"
+        provider: "Service hosting the model"
+        tokenizer: "Tokenizer"
+        max_prompt_tokens: "Number of tokens for the prompt"
+        url: "URL of the service hosting the model"
+        api_key: "API Key of the service hosting the model"
+        save: "Save"
+        edit: "Edit"
+        saved: "LLM Model Saved"
+        back: "Back"
+        tests: 
+          title: "Run Test"
+          running: "Running test..."
+          success: "Success!"
+          failure: "Trying to contact the model returned this error: %{error}"
+
+        hints:
+          max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
+          name: "We include this in the API call to specify which model we'll use."
+
+        providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
+          google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
 
       related_topics:
         title: "Related Topics"
@@ -223,6 +263,8 @@ en:
           copy: "Copy"
           copied: "Copied!"
           cancel: "Cancel"
+          insert_footnote: "Add footnote"
+          footnote_credits: "Explanation by AI"
         fast_edit:
           suggest_button: "Suggest Edit"
         thumbnail_suggestions:
@@ -271,6 +313,8 @@ en:
           copy_response: "Copy response"
           request_tokens: "Request tokens:"
           response_tokens: "Response tokens:"
+          request: "Request"
+          response: "Response"
 
         share_full_topic_modal:
           title: "Share Conversation Publicly"
@@ -299,6 +343,7 @@ en:
           cohere-command-r-plus: "Cohere Command R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"

@@ -41,6 +41,12 @@ hr:
         uploads:
           title: "Prijenosi"
           uploading: "Učitavanje..."
+      llms:
+        save: "Spremi"
+        edit: "Uredi"
+        back: "Natrag"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Natrag"
@@ -57,5 +63,8 @@ hr:
         image_caption:
           save_caption: "Spremi"
       ai_bot:
+        debug_ai_modal:
+          request: "Zahtjev"
+          response: "Odgovor"
         share_modal:
           copy: "Kopija"

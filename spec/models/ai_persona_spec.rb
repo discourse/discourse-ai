@@ -113,6 +113,23 @@ RSpec.describe AiPersona do
     expect(klass.max_context_posts).to eq(3)
   end
 
+  it "does not allow setting allow_chat without a default_llm" do
+    persona =
+      AiPersona.create(
+        name: "test",
+        description: "test",
+        system_prompt: "test",
+        allowed_group_ids: [],
+        default_llm: nil,
+        allow_chat: true,
+      )
+
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:default_llm].first).to eq(
+      I18n.t("discourse_ai.ai_bot.personas.default_llm_required"),
+    )
+  end
+
   it "does not leak caches between sites" do
     AiPersona.create!(
       name: "pun_bot",

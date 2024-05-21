@@ -8,16 +8,9 @@ module DiscourseAi
           Models::OpenAi.new("open_ai:gpt-4", max_tokens: 8192),
           Models::OpenAi.new("open_ai:gpt-4-32k", max_tokens: 32_768),
           Models::OpenAi.new("open_ai:gpt-4-turbo", max_tokens: 100_000),
+          Models::OpenAi.new("open_ai:gpt-4o", max_tokens: 100_000),
           Models::OpenAi.new("open_ai:gpt-3.5-turbo", max_tokens: 4096),
           Models::OpenAi.new("open_ai:gpt-3.5-turbo-16k", max_tokens: 16_384),
-          Models::Llama2.new(
-            "hugging_face:Llama2-chat-hf",
-            max_tokens: SiteSetting.ai_hugging_face_token_limit,
-          ),
-          Models::Llama2FineTunedOrcaStyle.new(
-            "hugging_face:StableBeluga2",
-            max_tokens: SiteSetting.ai_hugging_face_token_limit,
-          ),
           Models::Gemini.new("google:gemini-pro", max_tokens: 32_768),
           Models::Gemini.new("google:gemini-1.5-pro", max_tokens: 800_000),
         ]
@@ -58,9 +51,31 @@ module DiscourseAi
           max_tokens: 32_000,
         )
 
+        # TODO: Roman, we need to de-register custom LLMs on destroy from summarization
+        # strategy and clear cache
+        # it may be better to pull all of this code into Discourse AI cause as it stands
+        # the coupling is making it really hard to reason about summarization
+        #
+        # Auto registration and de-registration needs to be tested
+
+        #LlmModel.all.each do |model|
+        #  foldable_models << Models::CustomLlm.new(
+        #    "custom:#{model.id}",
+        #    max_tokens: model.max_prompt_tokens,
+        #  )
+        #end
+
         foldable_models.each do |model|
           plugin.register_summarization_strategy(Strategies::FoldContent.new(model))
         end
+
+        #plugin.add_model_callback(LlmModel, :after_create) do
+        #  new_model = Models::CustomLlm.new("custom:#{self.id}", max_tokens: self.max_prompt_tokens)
+
+        #  if ::Summarization::Base.find_strategy("custom:#{self.id}").nil?
+        #    plugin.register_summarization_strategy(Strategies::FoldContent.new(new_model))
+        #  end
+        #end
       end
     end
   end

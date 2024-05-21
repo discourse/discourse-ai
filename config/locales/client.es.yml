@@ -90,7 +90,6 @@ es:
               description: "Hacer que el tema no sea visible para el público si se activa"
             model:
               label: "Modelo"
-              description: "Ya sea gpt-4 o gpt-3-5-turbo o claude-2"
     discourse_ai:
       title: "IA"
       modals:
@@ -116,6 +115,12 @@ es:
         uploads:
           title: "Subidos"
           uploading: "Subiendo..."
+      llms:
+        save: "Guardar"
+        edit: "Editar"
+        back: "Atrás"
+        providers:
+          google: "Google"
       related_topics:
         title: "Temas relacionados"
         pill: "Relacionados"
@@ -176,6 +181,9 @@ es:
         shortcut_title: "Iniciar un MP con un bot de IA"
         share: "Compartir conversación de IA"
         conversation_shared: "Conversación copiada"
+        debug_ai_modal:
+          request: "Solicitud"
+          response: "Respuesta"
         ai_label: "IA"
         ai_title: "Conversación con IA"
         share_modal:

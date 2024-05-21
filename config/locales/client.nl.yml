@@ -90,7 +90,6 @@ nl:
               description: "Maak het topic onzichtbaar voor het publiek als dit wordt geactiveerd"
             model:
               label: "Model"
-              description: "Gpt-4, gpt-3-5-turbo of claude-2"
     discourse_ai:
       title: "AI"
       modals:
@@ -116,6 +115,12 @@ nl:
         uploads:
           title: "Uploads"
           uploading: "Uploaden..."
+      llms:
+        save: "Opslaan"
+        edit: "Bewerken"
+        back: "Vorige"
+        providers:
+          google: "Google"
       related_topics:
         title: "Gerelateerde topics"
         pill: "Gerelateerd"
@@ -176,6 +181,9 @@ nl:
         shortcut_title: "Start een PB met een AI-bot"
         share: "AI-conversatie delen"
         conversation_shared: "Conversatie gekopieerd"
+        debug_ai_modal:
+          request: "Verzoek"
+          response: "Reactie"
         ai_label: "AI"
         ai_title: "Conversatie met AI"
         share_modal:

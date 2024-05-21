@@ -41,6 +41,12 @@ ro:
         uploads:
           title: "Urcări"
           uploading: "Se încarcă..."
+      llms:
+        save: "Salvează"
+        edit: "Modifică"
+        back: "Înapoi"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Înapoi"
@@ -56,5 +62,8 @@ ro:
         image_caption:
           save_caption: "Salvare"
       ai_bot:
+        debug_ai_modal:
+          request: "Cere"
+          response: "Răspuns"
         share_modal:
           copy: "Copiază"

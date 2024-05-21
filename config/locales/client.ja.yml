@@ -90,7 +90,6 @@ ja:
               description: "トリガーされると、トピックを一般公開しないようにします"
             model:
               label: "モデル"
-              description: "gpt-4 または gpt-3-5-turbo または claude-2 のいずれか"
     discourse_ai:
       title: "AI"
       modals:
@@ -116,6 +115,12 @@ ja:
         uploads:
           title: "アップロード"
           uploading: "アップロード中..."
+      llms:
+        save: "保存"
+        edit: "編集"
+        back: "戻る"
+        providers:
+          google: "Google"
       related_topics:
         title: "関連トピック"
         pill: "関連"
@@ -176,6 +181,9 @@ ja:
         shortcut_title: "AI ボットと PM を開始する"
         share: "AI の会話を共有"
         conversation_shared: "会話をコピーしました"
+        debug_ai_modal:
+          request: "リクエスト"
+          response: "応答"
         ai_label: "AI"
         ai_title: "AI との会話"
         share_modal:

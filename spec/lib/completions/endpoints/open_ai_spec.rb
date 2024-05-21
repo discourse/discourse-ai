@@ -135,7 +135,10 @@ class OpenAiMock < EndpointMock
       .default_options
       .merge(messages: prompt)
       .tap do |b|
-        b[:stream] = true if stream
+        if stream
+          b[:stream] = true
+          b[:stream_options] = { include_usage: true }
+        end
         b[:tools] = [tool_payload] if tool_call
       end
       .to_json
@@ -168,6 +171,89 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
   let(:upload100x100) do
     UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
+  end
+
+  describe "repeat calls" do
+    it "can properly reset context" do
+      llm = DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4-turbo")
+
+      tools = [
+        {
+          name: "echo",
+          description: "echo something",
+          parameters: [
+            { name: "text", type: "string", description: "text to echo", required: true },
+          ],
+        },
+      ]
+
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [type: :user, id: "user1", content: "echo hello"],
+          tools: tools,
+        )
+
+      response = {
+        id: "chatcmpl-9JxkAzzaeO4DSV3omWvok9TKhCjBH",
+        object: "chat.completion",
+        created: 1_714_544_914,
+        model: "gpt-4-turbo-2024-04-09",
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: "assistant",
+              content: nil,
+              tool_calls: [
+                {
+                  id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+                  type: "function",
+                  function: {
+                    name: "echo",
+                    arguments: "{\"text\":\"hello\"}",
+                  },
+                },
+              ],
+            },
+            logprobs: nil,
+            finish_reason: "tool_calls",
+          },
+        ],
+        usage: {
+          prompt_tokens: 55,
+          completion_tokens: 13,
+          total_tokens: 68,
+        },
+        system_fingerprint: "fp_ea6eb70039",
+      }.to_json
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(body: response)
+
+      result = llm.generate(prompt, user: user)
+
+      expected = (<<~TXT).strip
+        <function_calls>
+        <invoke>
+        <tool_name>echo</tool_name>
+        <parameters>
+        <text>hello</text>
+        </parameters>
+        <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
+        </invoke>
+        </function_calls>
+      TXT
+
+      expect(result.strip).to eq(expected)
+
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        body: { choices: [message: { content: "OK" }] }.to_json,
+      )
+
+      result = llm.generate(prompt, user: user)
+
+      expect(result).to eq("OK")
+    end
   end
 
   describe "image support" do
@@ -346,6 +432,36 @@ TEXT
           TEXT
 
           expect(content).to eq(expected)
+        end
+
+        it "uses proper token accounting" do
+          response = <<~TEXT.strip
+            data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[{"index":0,"delta":{"role":"assistant","content":""},"logprobs":null,"finish_reason":null}],"usage":null}|
+
+            data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[{"index":0,"delta":{"content":"Hello"},"logprobs":null,"finish_reason":null}],"usage":null}|
+
+            data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"stop"}],"usage":null}|
+
+            data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[],"usage":{"prompt_tokens":20,"completion_tokens":9,"total_tokens":29}}|
+
+            data: [DONE]
+          TEXT
+
+          chunks = response.split("|")
+          open_ai_mock.with_chunk_array_support do
+            open_ai_mock.stub_raw(chunks)
+            partials = []
+
+            dialect = compliance.dialect(prompt: compliance.generic_prompt)
+            endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
+
+            expect(partials).to eq(["Hello"])
+
+            log = AiApiAuditLog.order("id desc").first
+
+            expect(log.request_tokens).to eq(20)
+            expect(log.response_tokens).to eq(9)
+          end
         end
 
         it "properly handles spaces in tools payload" do

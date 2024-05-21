@@ -83,7 +83,11 @@ module DiscourseAi
           end
 
           def accepted_options
-            [option(:base_query, type: :string), option(:max_results, type: :integer)]
+            [
+              option(:base_query, type: :string),
+              option(:max_results, type: :integer),
+              option(:search_private, type: :boolean),
+            ]
           end
         end
 
@@ -91,7 +95,7 @@ module DiscourseAi
           parameters.slice(:category, :user, :order, :max_posts, :tags, :before, :after, :status)
         end
 
-        def invoke(bot_user, llm)
+        def invoke
           search_string =
             search_args.reduce(+parameters[:search_query].to_s) do |memo, (key, value)|
               return memo if value.blank?
@@ -106,12 +110,18 @@ module DiscourseAi
             search_string = "#{search_string} #{options[:base_query]}"
           end
 
+          safe_search_string = search_string.to_s
+          guardian = nil
+
+          if options[:search_private] && context[:user]
+            guardian = Guardian.new(context[:user])
+          else
+            guardian = Guardian.new
+            safe_search_string += " status:public"
+          end
+
           results =
-            ::Search.execute(
-              search_string.to_s + " status:public",
-              search_type: :full_page,
-              guardian: Guardian.new(),
-            )
+            ::Search.execute(safe_search_string, search_type: :full_page, guardian: guardian)
 
           # let's be frugal with tokens, 50 results is too much and stuff gets cut off
           max_results = calculate_max_results(llm)
@@ -129,10 +139,10 @@ module DiscourseAi
           posts = posts[0..results_limit.to_i - 1]
 
           if should_try_semantic_search
-            semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.new())
+            semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(guardian)
             topic_ids = Set.new(posts.map(&:topic_id))
 
-            search = ::Search.new(search_string, guardian: Guardian.new)
+            search = ::Search.new(search_string, guardian: guardian)
 
             results = nil
             begin

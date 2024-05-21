@@ -90,7 +90,6 @@ fi:
               description: "Tee ketjusta näkymätön yleisölle, jos tämä laukaistaan"
             model:
               label: "Malli"
-              description: "Joko gpt-4 tai gpt-3-5-turbo tai claude-2"
     discourse_ai:
       title: "Tekoäly"
       modals:
@@ -116,6 +115,12 @@ fi:
         uploads:
           title: "Lataukset"
           uploading: "Ladataan..."
+      llms:
+        save: "Tallenna"
+        edit: "Muokkaa"
+        back: "Takaisin"
+        providers:
+          google: "Google"
       related_topics:
         title: "Liittyvät ketjut"
         pill: "Liittyy aiheeseen"
@@ -176,6 +181,9 @@ fi:
         shortcut_title: "Aloita yksityiskeskustelu tekoälybotin kanssa"
         share: "Jaa tekoälykeskustelu"
         conversation_shared: "Keskustelu kopioitu"
+        debug_ai_modal:
+          request: "Pyyntö"
+          response: "Vastaus"
         ai_label: "Tekoäly"
         ai_title: "Keskustelu tekoälyn kanssa"
         share_modal:

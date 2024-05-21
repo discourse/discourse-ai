@@ -41,6 +41,12 @@ sw:
         uploads:
           title: "Upakiaji"
           uploading: "Inaongezwa"
+      llms:
+        save: "Hifadhi"
+        edit: "Hariri"
+        back: "Iliyopita"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Iliyopita"
@@ -55,5 +61,8 @@ sw:
         image_caption:
           save_caption: "Hifadhi"
       ai_bot:
+        debug_ai_modal:
+          request: "Ombi"
+          response: "Mwitikio"
         share_modal:
           copy: "Nakili"

@@ -8,7 +8,7 @@ module DiscourseAi
         TIMEOUT = 60
 
         class << self
-          def endpoint_for(provider_name, model_name)
+          def endpoint_for(provider_name)
             endpoints = [
               DiscourseAi::Completions::Endpoints::AwsBedrock,
               DiscourseAi::Completions::Endpoints::OpenAi,
@@ -19,12 +19,14 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::Cohere,
             ]
 
+            endpoints << DiscourseAi::Completions::Endpoints::Ollama if Rails.env.development?
+
             if Rails.env.test? || Rails.env.development?
               endpoints << DiscourseAi::Completions::Endpoints::Fake
             end
 
             endpoints.detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |ek|
-              ek.can_contact?(provider_name, model_name)
+              ek.can_contact?(provider_name)
             end
           end
 
@@ -53,21 +55,30 @@ module DiscourseAi
             raise NotImplementedError
           end
 
-          def can_contact?(_endpoint_name, _model_name)
+          def can_contact?(_endpoint_name)
             raise NotImplementedError
           end
         end
 
-        def initialize(model_name, tokenizer)
+        def initialize(model_name, tokenizer, llm_model: nil)
           @model = model_name
           @tokenizer = tokenizer
+          @llm_model = llm_model
         end
 
         def native_tool_support?
           false
         end
 
-        def perform_completion!(dialect, user, model_params = {}, &blk)
+        def use_ssl?
+          if model_uri&.scheme.present?
+            model_uri.scheme == "https"
+          else
+            true
+          end
+        end
+
+        def perform_completion!(dialect, user, model_params = {}, feature_name: nil, &blk)
           allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
 
@@ -78,7 +89,7 @@ module DiscourseAi
           FinalDestination::HTTP.start(
             model_uri.host,
             model_uri.port,
-            use_ssl: true,
+            use_ssl: use_ssl?,
             read_timeout: TIMEOUT,
             open_timeout: TIMEOUT,
             write_timeout: TIMEOUT,
@@ -97,7 +108,7 @@ module DiscourseAi
                 Rails.logger.error(
                   "#{self.class.name}: status: #{response.code.to_i} - body: #{response.body}",
                 )
-                raise CompletionFailed
+                raise CompletionFailed, response.body
               end
 
               log =
@@ -108,6 +119,7 @@ module DiscourseAi
                   request_tokens: prompt_size(prompt),
                   topic_id: dialect.prompt.topic_id,
                   post_id: dialect.prompt.post_id,
+                  feature_name: feature_name,
                 )
 
               if !@streaming_mode
@@ -162,9 +174,15 @@ module DiscourseAi
                   if decoded_chunk.nil?
                     raise CompletionFailed, "#{self.class.name}: Failed to decode LLM completion"
                   end
-                  response_raw << decoded_chunk
+                  response_raw << chunk_to_string(decoded_chunk)
 
-                  redo_chunk = leftover + decoded_chunk
+                  if decoded_chunk.is_a?(String)
+                    redo_chunk = leftover + decoded_chunk
+                  else
+                    # custom implementation for endpoint
+                    # no implicit leftover support
+                    redo_chunk = decoded_chunk
+                  end
 
                   raw_partials = partials_from(redo_chunk)
 
@@ -281,7 +299,7 @@ module DiscourseAi
           tokenizer.size(extract_prompt_for_tokenizer(prompt))
         end
 
-        attr_reader :tokenizer, :model
+        attr_reader :tokenizer, :model, :llm_model
 
         protected
 
@@ -315,7 +333,7 @@ module DiscourseAi
         end
 
         def extract_prompt_for_tokenizer(prompt)
-          prompt
+          prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
         end
 
         def build_buffer
@@ -339,6 +357,14 @@ module DiscourseAi
 
         def has_tool?(response)
           response.include?("<function_calls>")
+        end
+
+        def chunk_to_string(chunk)
+          if chunk.is_a?(String)
+            chunk
+          else
+            chunk.to_s
+          end
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)

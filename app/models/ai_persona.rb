@@ -8,6 +8,7 @@ class AiPersona < ActiveRecord::Base
   validates :description, presence: true, length: { maximum: 2000 }
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
+  validate :chat_preconditions
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
   # leaves some room for growth but sets a maximum to avoid memory issues
   # we may want to revisit this in the future
@@ -31,38 +32,8 @@ class AiPersona < ActiveRecord::Base
 
   before_update :regenerate_rag_fragments
 
-  class MultisiteHash
-    def initialize(id)
-      @hash = Hash.new { |h, k| h[k] = {} }
-      @id = id
-
-      MessageBus.subscribe(channel_name) { |message| @hash[message.data] = {} }
-    end
-
-    def channel_name
-      "/multisite-hash-#{@id}"
-    end
-
-    def current_db
-      RailsMultisite::ConnectionManagement.current_db
-    end
-
-    def [](key)
-      @hash.dig(current_db, key)
-    end
-
-    def []=(key, val)
-      @hash[current_db][key] = val
-    end
-
-    def flush!
-      @hash[current_db] = {}
-      MessageBus.publish(channel_name, current_db)
-    end
-  end
-
   def self.persona_cache
-    @persona_cache ||= MultisiteHash.new("persona_cache")
+    @persona_cache ||= ::DiscourseAi::MultisiteHash.new("persona_cache")
   end
 
   scope :ordered, -> { order("priority DESC, lower(name) ASC") }
@@ -82,9 +53,9 @@ class AiPersona < ActiveRecord::Base
         .where(enabled: true)
         .joins(:user)
         .pluck(
-          "ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm, mentionable",
+          "ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm, mentionable, allow_chat",
         )
-        .map do |id, user_id, username, allowed_group_ids, default_llm, mentionable|
+        .map do |id, user_id, username, allowed_group_ids, default_llm, mentionable, allow_chat|
           {
             id: id,
             user_id: user_id,
@@ -92,6 +63,7 @@ class AiPersona < ActiveRecord::Base
             allowed_group_ids: allowed_group_ids,
             default_llm: default_llm,
             mentionable: mentionable,
+            allow_chat: allow_chat,
           }
         end
 
@@ -102,23 +74,20 @@ class AiPersona < ActiveRecord::Base
     end
   end
 
+  def self.allowed_chat(user: nil)
+    personas = persona_cache[:allowed_chat] ||= persona_users.select { |u| u[:allow_chat] }
+    if user
+      personas.select { |u| user.in_any_groups?(u[:allowed_group_ids]) }
+    else
+      personas
+    end
+  end
+
   def self.mentionables(user: nil)
     all_mentionables =
-      persona_cache[:mentionable_usernames] ||= AiPersona
-        .where(mentionable: true)
-        .where(enabled: true)
-        .joins(:user)
-        .pluck("ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm")
-        .map do |id, user_id, username, allowed_group_ids, default_llm|
-          {
-            id: id,
-            user_id: user_id,
-            username: username,
-            allowed_group_ids: allowed_group_ids,
-            default_llm: default_llm,
-          }
-        end
-
+      persona_cache[:mentionables] ||= persona_users.select do |mentionable|
+        mentionable[:mentionable]
+      end
     if user
       all_mentionables.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
     else
@@ -143,6 +112,8 @@ class AiPersona < ActiveRecord::Base
     vision_enabled = self.vision_enabled
     vision_max_pixels = self.vision_max_pixels
     rag_conversation_chunks = self.rag_conversation_chunks
+    question_consolidator_llm = self.question_consolidator_llm
+    allow_chat = self.allow_chat
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
@@ -160,6 +131,10 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :user_id do
         user_id
+      end
+
+      persona_class.define_singleton_method :allow_chat do
+        allow_chat
       end
 
       persona_class.define_singleton_method :mentionable do
@@ -180,6 +155,10 @@ class AiPersona < ActiveRecord::Base
 
       persona_class.define_singleton_method :vision_max_pixels do
         vision_max_pixels
+      end
+
+      persona_class.define_singleton_method :question_consolidator_llm do
+        question_consolidator_llm
       end
 
       persona_class.define_singleton_method :rag_conversation_chunks do
@@ -273,6 +252,14 @@ class AiPersona < ActiveRecord::Base
         rag_conversation_chunks
       end
 
+      define_singleton_method :question_consolidator_llm do
+        question_consolidator_llm
+      end
+
+      define_singleton_method :allow_chat do
+        allow_chat
+      end
+
       define_singleton_method :to_s do
         "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
       end
@@ -363,6 +350,12 @@ class AiPersona < ActiveRecord::Base
 
   private
 
+  def chat_preconditions
+    if allow_chat && !default_llm
+      errors.add(:default_llm, I18n.t("discourse_ai.ai_bot.personas.default_llm_required"))
+    end
+  end
+
   def system_persona_unchangeable
     if top_p_changed? || temperature_changed? || system_prompt_changed? || commands_changed? ||
          name_changed? || description_changed?
@@ -382,31 +375,39 @@ end
 #
 # Table name: ai_personas
 #
-#  id                       :bigint           not null, primary key
-#  name                     :string(100)      not null
-#  description              :string(2000)     not null
-#  commands                 :json             not null
-#  system_prompt            :string(10000000) not null
-#  allowed_group_ids        :integer          default([]), not null, is an Array
-#  created_by_id            :integer
-#  enabled                  :boolean          default(TRUE), not null
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  system                   :boolean          default(FALSE), not null
-#  priority                 :boolean          default(FALSE), not null
-#  temperature              :float
-#  top_p                    :float
-#  user_id                  :integer
-#  mentionable              :boolean          default(FALSE), not null
-#  default_llm              :text
-#  max_context_posts        :integer
-#  max_post_context_tokens  :integer
-#  max_context_tokens       :integer
-#  vision_enabled           :boolean          default(FALSE), not null
-#  vision_max_pixels        :integer          default(1048576), not null
-#  rag_chunk_tokens         :integer          default(374), not null
-#  rag_chunk_overlap_tokens :integer          default(10), not null
-#  rag_conversation_chunks  :integer          default(10), not null
+#  id                          :bigint           not null, primary key
+#  name                        :string(100)      not null
+#  description                 :string(2000)     not null
+#  commands                    :json             not null
+#  system_prompt               :string(10000000) not null
+#  allowed_group_ids           :integer          default([]), not null, is an Array
+#  created_by_id               :integer
+#  enabled                     :boolean          default(TRUE), not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  system                      :boolean          default(FALSE), not null
+#  priority                    :boolean          default(FALSE), not null
+#  temperature                 :float
+#  top_p                       :float
+#  user_id                     :integer
+#  mentionable                 :boolean          default(FALSE), not null
+#  default_llm                 :text
+#  max_context_posts           :integer
+#  max_post_context_tokens     :integer
+#  max_context_tokens          :integer
+#  vision_enabled              :boolean          default(FALSE), not null
+#  vision_max_pixels           :integer          default(1048576), not null
+#  rag_chunk_tokens            :integer          default(374), not null
+#  rag_chunk_overlap_tokens    :integer          default(10), not null
+#  rag_conversation_chunks     :integer          default(10), not null
+#  role                        :enum             default("bot"), not null
+#  role_category_ids           :integer          default([]), not null, is an Array
+#  role_tags                   :string           default([]), not null, is an Array
+#  role_group_ids              :integer          default([]), not null, is an Array
+#  role_whispers               :boolean          default(FALSE), not null
+#  role_max_responses_per_hour :integer          default(50), not null
+#  question_consolidator_llm   :text
+#  allow_chat                  :boolean          default(FALSE), not null
 #
 # Indexes
 #

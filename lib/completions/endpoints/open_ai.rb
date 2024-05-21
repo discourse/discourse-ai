@@ -5,22 +5,14 @@ module DiscourseAi
     module Endpoints
       class OpenAi < Base
         class << self
-          def can_contact?(endpoint_name, model_name)
-            return false unless endpoint_name == "open_ai"
-
-            %w[
-              gpt-3.5-turbo
-              gpt-4
-              gpt-3.5-turbo-16k
-              gpt-4-32k
-              gpt-4-turbo
-              gpt-4-vision-preview
-            ].include?(model_name)
+          def can_contact?(endpoint_name)
+            endpoint_name == "open_ai"
           end
 
           def dependant_setting_names
             %w[
               ai_openai_api_key
+              ai_openai_gpt4o_url
               ai_openai_gpt4_32k_url
               ai_openai_gpt4_turbo_url
               ai_openai_gpt4_url
@@ -42,6 +34,8 @@ module DiscourseAi
                 else
                   if model.include?("1106") || model.include?("turbo")
                     SiteSetting.ai_openai_gpt4_turbo_url
+                  elsif model.include?("gpt-4o")
+                    SiteSetting.ai_openai_gpt4o_url
                   else
                     SiteSetting.ai_openai_gpt4_url
                   end
@@ -84,6 +78,8 @@ module DiscourseAi
         private
 
         def model_uri
+          return URI(llm_model.url) if llm_model&.url
+
           url =
             if model.include?("gpt-4")
               if model.include?("32k")
@@ -107,39 +103,52 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
-          default_options
-            .merge(model_params)
-            .merge(messages: prompt)
-            .tap do |payload|
-              payload[:stream] = true if @streaming_mode
-              payload[:tools] = dialect.tools if dialect.tools.present?
-            end
+          payload = default_options.merge(model_params).merge(messages: prompt)
+
+          if @streaming_mode
+            payload[:stream] = true
+            payload[:stream_options] = { include_usage: true }
+          end
+
+          payload[:tools] = dialect.tools if dialect.tools.present?
+          payload
         end
 
         def prepare_request(payload)
-          headers =
-            { "Content-Type" => "application/json" }.tap do |h|
-              if model_uri.host.include?("azure")
-                h["api-key"] = SiteSetting.ai_openai_api_key
-              else
-                h["Authorization"] = "Bearer #{SiteSetting.ai_openai_api_key}"
-              end
+          headers = { "Content-Type" => "application/json" }
 
-              if SiteSetting.ai_openai_organization.present?
-                h["OpenAI-Organization"] = SiteSetting.ai_openai_organization
-              end
-            end
+          api_key = llm_model&.api_key || SiteSetting.ai_openai_api_key
+
+          if model_uri.host.include?("azure")
+            headers["api-key"] = api_key
+          else
+            headers["Authorization"] = "Bearer #{api_key}"
+          end
+
+          if SiteSetting.ai_openai_organization.present?
+            headers["OpenAI-Organization"] = SiteSetting.ai_openai_organization
+          end
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
+        def final_log_update(log)
+          log.request_tokens = @prompt_tokens if @prompt_tokens
+          log.response_tokens = @completion_tokens if @completion_tokens
+        end
+
         def extract_completion_from(response_raw)
-          parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
-          # half a line sent here
+          json = JSON.parse(response_raw, symbolize_names: true)
+
+          if @streaming_mode
+            @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
+            @completion_tokens ||= json.dig(:usage, :completion_tokens)
+          end
+
+          parsed = json.dig(:choices, 0)
           return if !parsed
 
           response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
-
           @has_function_call ||= response_h.dig(:tool_calls).present?
           @has_function_call ? response_h.dig(:tool_calls, 0) : response_h.dig(:content)
         end
@@ -152,10 +161,6 @@ module DiscourseAi
               data == "[DONE]" ? nil : data
             end
             .compact
-        end
-
-        def extract_prompt_for_tokenizer(prompt)
-          prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
         end
 
         def has_tool?(_response_data)

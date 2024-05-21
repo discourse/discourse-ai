@@ -32,6 +32,7 @@ module DiscourseAi
           prompt,
           user: Discourse.system_user,
           stop_sequences: ["</input>"],
+          feature_name: "chat_thread_title",
         )
       end
 

@@ -52,7 +52,7 @@ module DiscourseAi
           { repo_name: repo_name, file_paths: file_paths.join(", "), branch: branch }
         end
 
-        def invoke(_bot_user, llm)
+        def invoke
           owner, repo = repo_name.split("/")
           file_contents = {}
           missing_files = []

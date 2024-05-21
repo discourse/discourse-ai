@@ -41,6 +41,12 @@ nb_NO:
         uploads:
           title: "Opplastinger"
           uploading: "Laster opp…"
+      llms:
+        save: "Lagre"
+        edit: "Endre"
+        back: "Forrige"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Forrige"
@@ -56,5 +62,8 @@ nb_NO:
         image_caption:
           save_caption: "Lagre"
       ai_bot:
+        debug_ai_modal:
+          request: "Forespørsel"
+          response: "Svar"
         share_modal:
           copy: "Kopier"

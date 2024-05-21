@@ -38,11 +38,38 @@ id:
     ai_nsfw_inference_service_api_key: "Kunci API untuk API NSFW"
     ai_nsfw_flag_automatically: "Secara otomatis menandai postingan NSFW yang berada di atas ambang batas yang dikonfigurasi."
     ai_nsfw_flag_threshold_general: "Ambang Batas Umum agar suatu gambar dianggap NSFW."
+    ai_nsfw_models: "Model yang digunakan untuk inferensi NSFW."
+    ai_openai_gpt35_url: "URL khusus yang digunakan untuk penyelesaian chat GPT 3.5. (untuk dukungan Azure)"
+    ai_openai_gpt35_16k_url: "URL khusus yang digunakan untuk penyelesaian chat GPT 3.5 16k. (untuk dukungan Azure)"
+    ai_openai_gpt4_url: "URL khusus yang digunakan untuk penyelesaian chat GPT 4. (untuk dukungan Azure)"
+    ai_openai_gpt4_32k_url: "URL khusus yang digunakan untuk penyelesaian chat GPT 4 32k. (untuk dukungan Azure)"
+    ai_openai_gpt4_turbo_url: "URL khusus yang digunakan untuk penyelesaian chat GPT 4 Turbo. (untuk dukungan Azure)"
+    ai_openai_dall_e_3_url: "URL khusus yang digunakan untuk pembuatan gambar DALL-E 3. (untuk dukungan Azure)"
+    ai_openai_organization: "(Opsional, biarkan kosong untuk dihilangkan) Id organisasi yang digunakan untuk API OpenAI. Dimasukkan menggunakan header OpenAI-Organization."
+    ai_openai_embeddings_url: "URL khusus yang digunakan untuk OpenAI embeddings API. (dalam kasus Azure bisa jadi: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
+    ai_openai_api_key: "Kunci API untuk API OpenAI"
+    ai_anthropic_api_key: "Kunci API untuk API Anthropic"
+    ai_cohere_api_key: "Kunci API untuk API Cohere"
+    ai_hugging_face_api_url: "URL khusus yang digunakan untuk inferensi LLM OpenSource. Kompatibel dengan https://github.com/huggingface/text-generation-inference"
+    ai_hugging_face_api_key: Kunci API untuk API Hugging Face
+    ai_gemini_api_key: Kunci API untuk API Google Gemini
+    ai_vllm_api_key: Kunci API untuk API vLLM
+    ai_llava_api_key: Kunci API untuk API llava
+    ai_embeddings_enabled: "Aktifkan modul embeddings."
+    ai_embeddings_discourse_service_api_key: "Kunci API untuk API embeddings"
+    ai_embeddings_pg_connection_string: "String koneksi PostgreSQL untuk modul embeddings. Perlu mengaktifkan ekstensi pgvector dan dibuat serangkaian tabel. Lihat dokumen untuk info lebih lanjut."
   reports:
     overall_sentiment:
       yaxis: "Tanggal"
   discourse_ai:
     ai_bot:
+      personas:
+        default_llm_required: "Model LLM default diperlukan sebelum mengaktifkan Obrolan"
+      command_options:
+        search:
+          search_private:
+            name: "Pencarian Pribadi"
+            description: "Sertakan semua topik yang dapat diakses pengguna dalam hasil pencarian (secara bawaan hanya topik publik yang disertakan)"
       command_summary:
         search: "Cari"
         time: "Waktu"

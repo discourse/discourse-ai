@@ -26,6 +26,7 @@ he:
         mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
         command_r: Cohere Command R
         command_r_plus: Cohere Command R+‎
+        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -117,7 +118,7 @@ he:
               description: "מציב את הפוסט בתור לסקירה אם מוזנק, לבדיקת המפקחים"
             model:
               label: "דגם"
-              description: "יכול להיות gpt-4 או gpt-3-5-turbo או claude-2"
+              description: "מודל שפה שמשמש למיון ראשוני"
     discourse_ai:
       title: "בינה מלאכותית"
       modals:
@@ -137,16 +138,20 @@ he:
           low: איכות נמוכה - הזול ביותר (256×256)
           medium: איכות בינונית (512×512)
           high: איכות גבוהה - האיטית ביותר (1024×1024)
-        mentionable: מותר לאזכר
-        mentionable_help: אם האפשרות פעילה, משתמשים בקבוצות מורשות יכולים לאזכר את המשתמש הזה בפוסטים ובהודעות, הבינה המלאכותית תגיב בתור הדמות הזאת.
+        mentionable: לאפשר אזכורים
+        mentionable_help: אם האפשרות פעולה, משתמשים בקבוצות המורדות יכולים לאזכר את המשתמש הזה בפוסטים, הבינה המלאכותית תגיב בתור הדמות הזאת.
         user: משתמש
         create_user: יצירת משתמש
         create_user_help: אפשר לצרף משתמש לדמות הזאת כרשות. אם האפשרות הזאת תסומן, הבינה המלאכותית תשתמש במשתמש הזה כדי להגיב לבקשות.
         default_llm: דגם שפה כברירת מחדל
         default_llm_help: דגם ברירת המחדל לשימוש לדמות הזאת. נחוץ כדי לאזכר דמות בפוסטים ציבוריים.
+        question_consolidator_llm: מודל שפה למגבש השאלות
+        question_consolidator_llm_help: מודל השפה לשימוש עבור מגבש השאלות, אפשר לבחור במודל פחות חזק כדי לחסוך בעלויות.
         system_prompt: בקשת מערכת
-        show_indexing_options: "הצגת אפשרויות סידור במפתח"
-        hide_indexing_options: "הסתרת אפשרויות סידור במפתח"
+        show_indexing_options: "הצגת אפשרויות העלאה"
+        hide_indexing_options: "הסתרת אפשרויות העלאה"
+        allow_chat: "לאפשר צ׳אט"
+        allow_chat_help: "אם האפשרות פעילה, משתמשים בקבוצות מורשות יכולים לשלוח לדמות הזאת הודעות פרטיות"
         save: שמירה
         saved: דמות בינה מלאכותית נשמרה
         enabled: "מאופשר?"
@@ -165,8 +170,11 @@ he:
         priority_help: דמויות בעדיפות גבוהה מוצגות למשתמשים בראש רשימת הדמויות. אם מספר דמויות הן בעדיפות הן תסודרנה לפי האלפבית.
         command_options: "אפשרויות פקודה"
         rag_chunk_tokens: "העלאת אסימוני חלקים"
+        rag_chunk_tokens_help: "מספר האסימונים לשימוש לכל נתח במודל ה־RAG. הגדלה תגדיל את כמות ההקשר בו יכולה להשתמש הבינה המלאכותית. (שינוי יסדר את כל ההעלאות במפתח מחדש)"
         rag_chunk_overlap_tokens: "העלאת אסימוני חפיפת חלקים"
+        rag_chunk_overlap_tokens_help: "מספר האסימון לחפיפה בין נתחים במודל ה־RAG. (שינוי יסדר את כל ההעלאות במפתח מחדש)"
         rag_conversation_chunks: "חיפוש בחלקי הדיון"
+        rag_conversation_chunks_help: "מספר הנתחים לשימוש לחיפושים עם מודל ה־RAG. הגדלה תגדיל את כמות ההקשר בו יכולה להשתמש הבינה המלאכותית."
         what_are_personas: "מה הן דמויות בינה מלאכותית?"
         no_persona_selected: |
           דמויות בינה מלאכותית הן יכולת שמאפשרת להתאים את התנהגות מנוע הבינה המלאכותית בפורום ה־Discourse שלך. הן מתנהגות כמו ‚הודעת מערכת’ שמנחה את תגובות ואת ההתנהלות מול הבינה המלאכותית כדי לסייע ליצור חוויית משתמש מותאמת אישית ומחוברת בעת ובעונה אחת.
@@ -180,6 +188,7 @@ he:
           יתרה מכך, אפשר להגדיר אותה כך שרק לקבוצות מסוימות תהיינה גישה לדמויות מסוימות. משמעות הדבר היא שאפשר לנהל התנהגויות שונות לבינה המלאכותית לאזורים שונים בפורום שלך, ובכך להרחיב את הגיוון ואת העושר של ההתנהלות בקהילה שלך.
         uploads:
           title: "העלאות"
+          description: "דמות הבינה המלאכותית שלך תוכל לחפש ולהפנות לתוכן של קבצים כלולים. קבצים שהועלו אמורים להיות בתסדירי טקסט פשוט (‎.txt) או markdown‏ (‎.md)."
           button: "הוספת קבצים"
           filter: "סינון העלאות"
           indexed: "סודר במפתח"
@@ -187,6 +196,34 @@ he:
           uploaded: "מוכן לסידור במפתח"
           uploading: "בהליכי העלאה…"
           remove: "הסרת העלאה"
+      llms:
+        short_title: "LLMים"
+        no_llms: "אין LLMים עדיין"
+        new: "מודל חדש"
+        display_name: "שם להצגה"
+        name: "שם המודל"
+        provider: "השירות שמארח את המודל"
+        tokenizer: "מפרק לאסימונים"
+        max_prompt_tokens: "מספר האסימונים לבקשה"
+        url: "כתובת השירות שמארח את המודל"
+        api_key: "מפתח ה־API של השירות שמארח את המודל"
+        save: "שמירה"
+        edit: "עריכה"
+        saved: "מודל ה־LLM נשמר"
+        back: "חזרה"
+        hints:
+          max_prompt_tokens: "מספר האסימונים המרבי לבקשה. ככלל אצבע, זה אמור להיות 50% מחלון ההקשר של המודל."
+          name: "אנו מצרפים את זה לקריאת ה־API כדי לציין באיזה מודל להשתמש."
+        providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
+          google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
@@ -219,6 +256,8 @@ he:
           copy: "העתקה"
           copied: "הועתק!"
           cancel: "ביטול"
+          insert_footnote: "הוספת הערת שוליים"
+          footnote_credits: "הסבר של בינה מלאכותית"
         fast_edit:
           suggest_button: "הצעת עריכה"
         thumbnail_suggestions:
@@ -259,6 +298,8 @@ he:
           copy_response: "העתקת תגובה"
           request_tokens: "אסימוני בקשה:"
           response_tokens: "אסימוני תגובה:"
+          request: "בקשה"
+          response: "תשובה"
         share_full_topic_modal:
           title: "שיתוף שיחה באופן ציבורי"
           share: "שיתוף והעתקת קישור"
@@ -282,6 +323,7 @@ he:
           cohere-command-r-plus: "Cohere Command R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT 4 טורבו"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"

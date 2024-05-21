@@ -40,6 +40,8 @@
 }
 
 .ai-persona-editor {
+  padding-left: 0.5em;
+
   .fk-d-tooltip__icon {
     padding-left: 0.25em;
     color: var(--primary-medium);
@@ -68,6 +70,11 @@
     align-items: center;
   }
   &__mentionable {
+    display: flex;
+    align-items: center;
+  }
+
+  &__allow_chat {
     display: flex;
     align-items: center;
   }

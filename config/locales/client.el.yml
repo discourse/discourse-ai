@@ -41,6 +41,12 @@ el:
         uploads:
           title: "Μεταφορτώσεις"
           uploading: "Επιφόρτωση..."
+      llms:
+        save: "Αποθήκευση"
+        edit: "Επεξεργασία"
+        back: "Πίσω"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Πίσω"
@@ -56,5 +62,8 @@ el:
         image_caption:
           save_caption: "Αποθήκευση"
       ai_bot:
+        debug_ai_modal:
+          request: "Αίτημα"
+          response: "Απάντηση"
         share_modal:
           copy: "Αντιγραφή"

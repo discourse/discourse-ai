@@ -98,6 +98,7 @@ discourse_ai:
 
   ai_openai_gpt35_url: "https://api.openai.com/v1/chat/completions"
   ai_openai_gpt35_16k_url: "https://api.openai.com/v1/chat/completions"
+  ai_openai_gpt4o_url: "https://api.openai.com/v1/chat/completions"
   ai_openai_gpt4_url: "https://api.openai.com/v1/chat/completions"
   ai_openai_gpt4_32k_url: "https://api.openai.com/v1/chat/completions"
   ai_openai_gpt4_turbo_url: "https://api.openai.com/v1/chat/completions"
@@ -185,6 +186,9 @@ discourse_ai:
   ai_strict_token_counting:
     default: false
     hidden: true
+  ai_ollama_endpoint:
+    hidden: true
+    default: ""
 
   composer_ai_helper_enabled:
     default: false
@@ -340,6 +344,7 @@ discourse_ai:
       - gpt-3.5-turbo
       - gpt-4
       - gpt-4-turbo
+      - gpt-4o
       - claude-2
       - gemini-1.5-pro
       - mixtral-8x7B-Instruct-V0.1
@@ -353,3 +358,9 @@ discourse_ai:
   ai_bot_github_access_token:
     default: ""
     secret: true
+  ai_automation_max_triage_per_minute:
+    default: 60
+    hidden: true
+  ai_automation_max_triage_per_post_per_minute:
+    default: 2
+    hidden: true

@@ -103,7 +103,6 @@ zh_CN:
               description: "如果触发，使话题对公众不可见"
             model:
               label: "模型"
-              description: "gpt-4、gpt-3-5-turbo 或 claude-2"
     discourse_ai:
       title: "AI"
       modals:
@@ -133,6 +132,12 @@ zh_CN:
         uploads:
           title: "上传"
           uploading: "正在上传…"
+      llms:
+        save: "保存"
+        edit: "编辑"
+        back: "返回"
+        providers:
+          google: "Google"
       related_topics:
         title: "相关话题"
         pill: "相关"
@@ -193,6 +198,9 @@ zh_CN:
         shortcut_title: "使用 AI 机器人启动私信"
         share: "分享 AI 对话"
         conversation_shared: "对话已复制"
+        debug_ai_modal:
+          request: "请求"
+          response: "回应"
         ai_label: "AI"
         ai_title: "与 AI 的对话"
         share_modal:

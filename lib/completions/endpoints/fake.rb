@@ -5,8 +5,8 @@ module DiscourseAi
     module Endpoints
       class Fake < Base
         class << self
-          def can_contact?(_endpoint_name, model_name)
-            model_name == "fake"
+          def can_contact?(endpoint_name)
+            endpoint_name == "fake"
           end
 
           def correctly_configured?(_model_name)
@@ -75,6 +75,13 @@ module DiscourseAi
       Congratulations, you've now seen a small sample of what Discourse's Markdown can do! For more intricate formatting, consider exploring the advanced styling options. Remember that the key to great formatting is not just the available tools, but also the **clarity** and **readability** it brings to your readers.
     TEXT
 
+        def self.with_fake_content(content)
+          @fake_content = content
+          yield
+        ensure
+          @fake_content = nil
+        end
+
         def self.fake_content
           @fake_content || STOCK_CONTENT
         end
@@ -103,7 +110,7 @@ module DiscourseAi
           @last_call = params
         end
 
-        def perform_completion!(dialect, user, model_params = {})
+        def perform_completion!(dialect, user, model_params = {}, feature_name: nil)
           self.class.last_call = { dialect: dialect, user: user, model_params: model_params }
 
           content = self.class.fake_content

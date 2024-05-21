@@ -1,10 +1,9 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::Read do
-  subject(:tool) { described_class.new({ topic_id: topic_with_tags.id }) }
-
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  let(:tool) { described_class.new({ topic_id: topic_with_tags.id }, bot_user: bot_user, llm: llm) }
 
   fab!(:parent_category) { Fabricate(:category, name: "animals") }
   fab!(:category) { Fabricate(:category, parent_category: parent_category, name: "amazing-cat") }
@@ -34,7 +33,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Read do
       Fabricate(:post, topic: topic_with_tags, raw: "hello there")
       Fabricate(:post, topic: topic_with_tags, raw: "mister sam")
 
-      results = tool.invoke(bot_user, llm)
+      results = tool.invoke
 
       expect(results[:topic_id]).to eq(topic_id)
       expect(results[:content]).to include("hello")

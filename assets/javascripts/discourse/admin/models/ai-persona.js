@@ -25,6 +25,8 @@ const CREATE_ATTRIBUTES = [
   "rag_chunk_tokens",
   "rag_chunk_overlap_tokens",
   "rag_conversation_chunks",
+  "question_consolidator_llm",
+  "allow_chat",
 ];
 
 const SYSTEM_ATTRIBUTES = [
@@ -44,6 +46,8 @@ const SYSTEM_ATTRIBUTES = [
   "rag_chunk_tokens",
   "rag_chunk_overlap_tokens",
   "rag_conversation_chunks",
+  "question_consolidator_llm",
+  "allow_chat",
 ];
 
 class CommandOption {

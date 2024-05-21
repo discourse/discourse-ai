@@ -39,6 +39,12 @@ zh_TW:
         uploads:
           title: "上傳檔案"
           uploading: "上傳中..."
+      llms:
+        save: "保存"
+        edit: "編輯"
+        back: "上一步"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "上一步"
@@ -57,5 +63,8 @@ zh_TW:
         image_caption:
           save_caption: "保存"
       ai_bot:
+        debug_ai_modal:
+          request: "請求"
+          response: "回應"
         share_modal:
           copy: "複製"

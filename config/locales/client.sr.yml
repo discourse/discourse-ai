@@ -36,6 +36,12 @@ sr:
         delete: Obriši
         uploads:
           uploading: "Uploading..."
+      llms:
+        save: "Sačuvaj"
+        edit: "Izmeni"
+        back: "Nazad"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Nazad"

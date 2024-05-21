@@ -9,139 +9,68 @@ module DiscourseAi
             raise NotImplemented
           end
 
-          def dialect_for(model_name)
-            dialects = [
-              DiscourseAi::Completions::Dialects::Llama2Classic,
+          def all_dialects
+            [
               DiscourseAi::Completions::Dialects::ChatGpt,
-              DiscourseAi::Completions::Dialects::OrcaStyle,
               DiscourseAi::Completions::Dialects::Gemini,
-              DiscourseAi::Completions::Dialects::Mixtral,
+              DiscourseAi::Completions::Dialects::Mistral,
               DiscourseAi::Completions::Dialects::Claude,
               DiscourseAi::Completions::Dialects::Command,
+              DiscourseAi::Completions::Dialects::OpenAiCompatible,
             ]
+          end
+
+          def dialect_for(model_name)
+            dialects = []
 
             if Rails.env.test? || Rails.env.development?
-              dialects << DiscourseAi::Completions::Dialects::Fake
+              dialects = [DiscourseAi::Completions::Dialects::Fake]
             end
+
+            dialects = dialects.concat(all_dialects)
 
             dialect = dialects.find { |d| d.can_translate?(model_name) }
             raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL if !dialect
+
             dialect
-          end
-
-          def tokenizer
-            raise NotImplemented
-          end
-
-          def tool_preamble(include_array_tip: true)
-            array_tip =
-              if include_array_tip
-                <<~TEXT
-                If a parameter type is an array, return an array of values. For example:
-                <$PARAMETER_NAME>["one","two","three"]</$PARAMETER_NAME>
-              TEXT
-              else
-                ""
-              end
-
-            <<~TEXT
-              In this environment you have access to a set of tools you can use to answer the user's question.
-              You may call them like this.
-
-              <function_calls>
-              <invoke>
-              <tool_name>$TOOL_NAME</tool_name>
-              <parameters>
-              <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
-              ...
-              </parameters>
-              </invoke>
-              </function_calls>
-              #{array_tip}
-              If you wish to call multiple function in one reply, wrap multiple <invoke>
-              block in a single <function_calls> block.
-
-              Always prefer to lead with tool calls, if you need to execute any.
-              Avoid all niceties prior to tool calls, Eg: "Let me look this up for you.." etc.
-              Here are the complete list of tools available:
-            TEXT
           end
         end
 
-        def initialize(generic_prompt, model_name, opts: {})
+        def initialize(generic_prompt, model_name, opts: {}, llm_model: nil)
           @prompt = generic_prompt
           @model_name = model_name
           @opts = opts
+          @llm_model = llm_model
         end
 
-        def translate
+        VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
+
+        def tokenizer
           raise NotImplemented
         end
 
-        def tool_result_to_xml(message)
-          (<<~TEXT).strip
-            <function_results>
-            <result>
-            <tool_name>#{message[:name] || message[:id]}</tool_name>
-            <json>
-            #{message[:content]}
-            </json>
-            </result>
-            </function_results>
-          TEXT
+        def can_end_with_assistant_msg?
+          false
         end
 
-        def tool_call_to_xml(message)
-          parsed = JSON.parse(message[:content], symbolize_names: true)
-          parameters = +""
-
-          if parsed[:arguments]
-            parameters << "<parameters>\n"
-            parsed[:arguments].each { |k, v| parameters << "<#{k}>#{v}</#{k}>\n" }
-            parameters << "</parameters>\n"
-          end
-
-          (<<~TEXT).strip
-            <function_calls>
-            <invoke>
-            <tool_name>#{message[:name] || parsed[:name]}</tool_name>
-            #{parameters}</invoke>
-            </function_calls>
-          TEXT
+        def native_tool_support?
+          false
         end
 
         def tools
-          tools = +""
+          @tools ||= tools_dialect.translated_tools
+        end
 
-          prompt.tools.each do |function|
-            parameters = +""
-            if function[:parameters].present?
-              function[:parameters].each do |parameter|
-                parameters << <<~PARAMETER
-                  <parameter>
-                  <name>#{parameter[:name]}</name>
-                  <type>#{parameter[:type]}</type>
-                  <description>#{parameter[:description]}</description>
-                  <required>#{parameter[:required]}</required>
-                PARAMETER
-                if parameter[:enum]
-                  parameters << "<options>#{parameter[:enum].join(",")}</options>\n"
-                end
-                parameters << "</parameter>\n"
-              end
-            end
+        def translate
+          messages = prompt.messages
 
-            tools << <<~TOOLS
-              <tool_description>
-              <tool_name>#{function[:name]}</tool_name>
-              <description>#{function[:description]}</description>
-              <parameters>
-              #{parameters}</parameters>
-              </tool_description>
-            TOOLS
+          # Some models use an assistant msg to improve long-context responses.
+          if messages.last[:type] == :model && can_end_with_assistant_msg?
+            messages = messages.dup
+            messages.pop
           end
 
-          tools
+          trim_messages(messages).map { |msg| send("#{msg[:type]}_msg", msg) }.compact
         end
 
         def conversation_context
@@ -154,22 +83,9 @@ module DiscourseAi
 
         attr_reader :prompt
 
-        def build_tools_prompt
-          return "" if prompt.tools.blank?
-
-          has_arrays =
-            prompt.tools.any? { |tool| tool[:parameters]&.any? { |p| p[:type] == "array" } }
-
-          (<<~TEXT).strip
-            #{self.class.tool_preamble(include_array_tip: has_arrays)}
-            <tools>
-            #{tools}</tools>
-          TEXT
-        end
-
         private
 
-        attr_reader :model_name, :opts
+        attr_reader :model_name, :opts, :llm_model
 
         def trim_messages(messages)
           prompt_limit = max_prompt_tokens
@@ -228,7 +144,31 @@ module DiscourseAi
         end
 
         def calculate_message_token(msg)
-          self.class.tokenizer.size(msg[:content].to_s)
+          self.tokenizer.size(msg[:content].to_s)
+        end
+
+        def tools_dialect
+          @tools_dialect ||= DiscourseAi::Completions::Dialects::XmlTools.new(prompt.tools)
+        end
+
+        def system_msg(msg)
+          raise NotImplemented
+        end
+
+        def assistant_msg(msg)
+          raise NotImplemented
+        end
+
+        def user_msg(msg)
+          raise NotImplemented
+        end
+
+        def tool_call_msg(msg)
+          { role: "assistant", content: tools_dialect.from_raw_tool_call(msg) }
+        end
+
+        def tool_msg(msg)
+          { role: "user", content: tools_dialect.from_raw_tool(msg) }
         end
       end
     end

@@ -33,6 +33,8 @@ fa_IR:
               label: "برچسب‌ها"
             suppress_notifications:
               label: "توقف آگاه‌سازی‌ها"
+            debug_mode:
+              label: "حالت اشکال زدایی"
         llm_triage:
           fields:
             search_for_text:
@@ -61,6 +63,16 @@ fa_IR:
         uploads:
           title: "بارگذاری‌ها"
           uploading: "در حال بار گذاری..."
+      llms:
+        new: "مدل جدید"
+        display_name: "نام برای نمایش"
+        name: "نام مدل"
+        provider: "سرویس میزبانی مدل"
+        save: "ذخیره"
+        edit: "ویرایش"
+        back: "بازگشت"
+        providers:
+          google: "گوگل"
       related_topics:
         title: "موضوعات مرتبط"
       ai_helper:
@@ -81,6 +93,8 @@ fa_IR:
           copy: "کپی"
           copied: "کپی شد!"
           cancel: "انصراف"
+          insert_footnote: "افزودن پاورقی"
+          footnote_credits: "توضیح توسط هوش مصنوعی"
         fast_edit:
           suggest_button: "پیشنهاد ویرایش"
         thumbnail_suggestions:
@@ -95,6 +109,9 @@ fa_IR:
       ai_bot:
         cancel_streaming: "توقف پاسخ"
         conversation_shared: "گفتگو کپی شد"
+        debug_ai_modal:
+          request: "درخواست"
+          response: "پاسخ"
         ai_label: "هوش مصنوعی"
         share_modal:
           copy: "کپی"

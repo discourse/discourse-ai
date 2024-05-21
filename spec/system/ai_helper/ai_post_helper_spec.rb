@@ -65,25 +65,59 @@ RSpec.describe "AI Post helper", type: :system, js: true do
       expect(post_ai_helper).to have_no_highlighted_text
     end
 
+    it "allows post control buttons to still be functional after clicking the AI button" do
+      select_post_text(post)
+      post_ai_helper.click_ai_button
+      topic_page.click_like_reaction_for(post)
+      wait_for { post.reload.like_count == 1 }
+      expect(post.like_count).to eq(1)
+    end
+
     context "when using explain mode" do
       let(:mode) { CompletionPrompt::EXPLAIN }
 
       let(:explain_response) { <<~STRING }
-        In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling.
+        In this context, pie refers to a baked dessert typically consisting of a pastry crust and filling.
         The person states they enjoy eating pie, considering it a good dessert. They note that some people wastefully
-        throw pie at others, but the person themselves chooses to eat the pie rather than throwing it. Overall, \"pie\"
+        throw pie at others, but the person themselves chooses to eat the pie rather than throwing it. Overall, pie
         is being used to refer the the baked dessert food item.
       STRING
 
-      skip "TODO: Fix explain option stuck in loading in test" do
+      skip "TODO: Streaming causing timing issue in test" do
         it "shows an explanation of the selected text" do
           select_post_text(post)
           post_ai_helper.click_ai_button
 
           DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
+            expected_value = explain_response.gsub(/"/, "").strip
+
             post_ai_helper.select_helper_model(mode)
-            wait_for { post_ai_helper.suggestion_value == explain_response }
-            expect(post_ai_helper.suggestion_value).to eq(explain_response)
+            Jobs.run_immediately!
+
+            wait_for(timeout: 10) do
+              post_ai_helper.suggestion_value.gsub(/"/, "").strip == expected_value
+            end
+
+            expect(post_ai_helper.suggestion_value.gsub(/"/, "").strip).to eq(expected_value)
+          end
+        end
+
+        it "adds explained text as footnote to post" do
+          select_post_text(post)
+          post_ai_helper.click_ai_button
+
+          DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
+            expected_value = explain_response.gsub(/"/, "").strip
+
+            post_ai_helper.select_helper_model(mode)
+            Jobs.run_immediately!
+
+            wait_for(timeout: 10) do
+              post_ai_helper.suggestion_value.gsub(/"/, "").strip == expected_value
+            end
+
+            post_ai_helper.click_add_footnote
+            expect(page.has_css?(".expand-footnote")).to eq(true)
           end
         end
       end

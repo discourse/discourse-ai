@@ -112,7 +112,6 @@ tr_TR:
               description: "Tetiklenirse, moderatörlerin önceliklendirmesi için gönderiyi inceleme kuyruğuna alır"
             model:
               label: "Model"
-              description: "Ya gpt-4 ya da gpt-3-5-turbo ya da claude-2"
     discourse_ai:
       title: "YZ"
       modals:
@@ -132,8 +131,6 @@ tr_TR:
           low: Düşük Kalite - en ucuz (256x256)
           medium: Orta Kalite (512x512)
           high: Yüksek Kalite - en yavaş (1024x1024)
-        mentionable: Bahsedilebilir
-        mentionable_help: Etkinleştirilirse, izin verilen gruplardaki kullanıcılar gönderilerde ve mesajlarda bu kullanıcıdan bahsedebilir, yapay zeka bu kişi olarak yanıt verir.
         user: Kullanıcı
         create_user: Kullanıcı Oluştur
         create_user_help: İsteğe bağlı olarak bu personaya bir kullanıcı ekleyebilirsiniz. Bunu yaparsanız, AI isteklere yanıt vermek için bu kullanıcıyı kullanacaktır.
@@ -170,11 +167,15 @@ tr_TR:
           Dahası, belirli kullanıcı gruplarının belirli kişiliklere erişime sahip olacak şekilde de belirleyebilirsiniz. Bu, forumunuzun farklı bölümleri için farklı YZ davranışlarına sahip olabileceğiniz anlamına gelir ve böylece topluluğunuzun etkileşimlerinin çeşitliliğini ve zenginliğini geliştirebilirsiniz.
         uploads:
           title: "Yüklemeler"
-          description: "Yapay zeka personanız, dahil edilen dosyaların içeriğini arayabilecek ve referans verebilecektir. Yüklenen dosyalar düz metin (.txt) olarak biçimlendirilmelidir"
-          hint: "Dosyanın içeriğinin sistem isteminde nereye yerleştirileceğini kontrol etmek için, yukarıdaki sistem istemine {uploads} yer tutucusunu ekleyin."
           button: "Dosya Ekle"
           filter: "Yüklemeleri filtrele"
           uploading: "Yükleniyor..."
+      llms:
+        save: "Kaydet"
+        edit: "Düzenle"
+        back: "Geri"
+        providers:
+          google: "Google"
       related_topics:
         title: "İlgili Konular"
         pill: "İlgili"
@@ -240,6 +241,9 @@ tr_TR:
         shortcut_title: "YZ botuyla kişisel mesaj başlatın"
         share: "YZ konuşmasını paylaş"
         conversation_shared: "Konuşma kopyalandı"
+        debug_ai_modal:
+          request: "Talep"
+          response: "Karşılık"
         share_full_topic_modal:
           title: "Konuşmayı Herkese Açık Olarak Paylaşın"
           share: "Paylaş ve Bağlantıyı Kopyala"

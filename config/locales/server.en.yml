@@ -43,6 +43,7 @@ en:
     ai_openai_gpt35_url: "Custom URL used for GPT 3.5 chat completions. (for Azure support)"
     ai_openai_gpt35_16k_url: "Custom URL used for GPT 3.5 16k chat completions. (for Azure support)"
     ai_openai_gpt4_url: "Custom URL used for GPT 4 chat completions. (for Azure support)"
+    ai_openai_gpt4o_url: "Custom URL used for GPT 4 Omni chat completions. (for Azure support)"
     ai_openai_gpt4_32k_url: "Custom URL used for GPT 4 32k chat completions. (for Azure support)"
     ai_openai_gpt4_turbo_url: "Custom URL used for GPT 4 Turbo chat completions. (for Azure support)"
     ai_openai_dall_e_3_url: "Custom URL used for DALL-E 3 image generation. (for Azure support)"
@@ -170,6 +171,7 @@ en:
         conversation_deleted: "Conversation share deleted successfully"
     ai_bot:
       personas:
+        default_llm_required: "Default LLM model is required prior to enabling Chat"
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
         cannot_edit_system_persona: "System personas can only be renamed, you may not edit commands or system prompt, instead disable and make a copy"
         github_helper:
@@ -204,6 +206,9 @@ en:
       searching: "Searching for: '%{query}'"
       command_options:
         search:
+          search_private:
+            name: "Search Private"
+            description: "Include all topics user has access to in search results (by default only public topics are included)"
           max_results:
             name: "Maximum number of results"
             description: "Maximum number of results to include in the search - if empty default rules will be used and count will be scaled depending on model used. Highest value is 100."
@@ -229,6 +234,7 @@ en:
         search_settings: "Searching site settings"
         dall_e: "Generate image"
         search_meta_discourse: "Search Meta Discourse"
+        javascript_evaluator: "Evaluate JavaScript"
       command_help:
         web_browser: "Browse web page using the AI Bot"
         github_search_code: "Search for code in a GitHub repository"
@@ -248,6 +254,7 @@ en:
         search_settings: "Search site settings"
         dall_e: "Generate image using DALL-E 3"
         search_meta_discourse: "Search Meta Discourse"
+        javascript_evaluator: "Evaluate JavaScript"
       command_description:
         web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_code: "Searched for '%{query}' in %{repo}"

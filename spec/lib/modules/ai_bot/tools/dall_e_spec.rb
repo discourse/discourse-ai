@@ -1,13 +1,15 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::DallE do
-  subject(:dall_e) { described_class.new({ prompts: prompts }) }
-
   let(:prompts) { ["a pink cow", "a red cow"] }
 
   let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
+
+  let(:dall_e) do
+    described_class.new({ prompts: prompts }, llm: llm, bot_user: bot_user, context: {})
+  end
 
   before { SiteSetting.ai_bot_enabled = true }
 
@@ -34,12 +36,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
         end
         .to_return(status: 200, body: { data: data }.to_json)
 
-      info = dall_e.invoke(bot_user, llm, &progress_blk).to_json
+      info = dall_e.invoke(&progress_blk).to_json
 
       expect(JSON.parse(info)).to eq("prompts" => ["a pink cow 1", "a pink cow 1"])
-      expect(subject.custom_raw).to include("upload://")
-      expect(subject.custom_raw).to include("[grid]")
-      expect(subject.custom_raw).to include("a pink cow 1")
+      expect(dall_e.custom_raw).to include("upload://")
+      expect(dall_e.custom_raw).to include("[grid]")
+      expect(dall_e.custom_raw).to include("a pink cow 1")
     end
 
     it "can generate correct info" do
@@ -59,12 +61,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
         end
         .to_return(status: 200, body: { data: data }.to_json)
 
-      info = dall_e.invoke(bot_user, llm, &progress_blk).to_json
+      info = dall_e.invoke(&progress_blk).to_json
 
       expect(JSON.parse(info)).to eq("prompts" => ["a pink cow 1", "a pink cow 1"])
-      expect(subject.custom_raw).to include("upload://")
-      expect(subject.custom_raw).to include("[grid]")
-      expect(subject.custom_raw).to include("a pink cow 1")
+      expect(dall_e.custom_raw).to include("upload://")
+      expect(dall_e.custom_raw).to include("[grid]")
+      expect(dall_e.custom_raw).to include("a pink cow 1")
     end
   end
 end

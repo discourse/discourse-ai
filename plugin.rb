@@ -26,6 +26,8 @@ register_asset "stylesheets/modules/sentiment/common/dashboard.scss"
 register_asset "stylesheets/modules/sentiment/desktop/dashboard.scss", :desktop
 register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
 
+register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
+
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
 end
@@ -66,6 +68,12 @@ after_initialize do
   reloadable_patch { |plugin| Guardian.prepend DiscourseAi::GuardianExtensions }
 
   register_modifier(:post_should_secure_uploads?) do |_, _, topic|
-    false if topic.private_message? && SharedAiConversation.exists?(target: topic)
+    if topic.private_message? && SharedAiConversation.exists?(target: topic)
+      false
+    else
+      # revert to default behavior
+      # even though this can be shortened this is the clearest way to express it
+      nil
+    end
   end
 end

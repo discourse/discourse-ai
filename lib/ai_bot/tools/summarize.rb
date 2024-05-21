@@ -48,7 +48,7 @@ module DiscourseAi
           @last_summary || I18n.t("discourse_ai.ai_bot.topic_not_found")
         end
 
-        def invoke(bot_user, llm, &progress_blk)
+        def invoke(&progress_blk)
           topic = nil
           if topic_id > 0
             topic = Topic.find_by(id: topic_id)
@@ -135,7 +135,14 @@ module DiscourseAi
 
             prompt = section_prompt(topic, section, guidance)
 
-            summary = llm.generate(prompt, temperature: 0.6, max_tokens: 400, user: bot_user)
+            summary =
+              llm.generate(
+                prompt,
+                temperature: 0.6,
+                max_tokens: 400,
+                user: bot_user,
+                feature_name: "summarize_tool",
+              )
 
             summaries << summary
           end
@@ -150,7 +157,13 @@ module DiscourseAi
                 "concatenated the disjoint summaries, creating a cohesive narrative:\n#{summaries.join("\n")}}",
             }
 
-            llm.generate(concatenation_prompt, temperature: 0.6, max_tokens: 500, user: bot_user)
+            llm.generate(
+              concatenation_prompt,
+              temperature: 0.6,
+              max_tokens: 500,
+              user: bot_user,
+              feature_name: "summarize_tool",
+            )
           else
             summaries.first
           end

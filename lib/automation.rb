@@ -3,6 +3,7 @@
 module DiscourseAi
   module Automation
     AVAILABLE_MODELS = [
+      { id: "gpt-4o", name: "discourse_automation.ai_models.gpt_4o" },
       { id: "gpt-4-turbo", name: "discourse_automation.ai_models.gpt_4_turbo" },
       { id: "gpt-4", name: "discourse_automation.ai_models.gpt_4" },
       { id: "gpt-3.5-turbo", name: "discourse_automation.ai_models.gpt_3_5_turbo" },
@@ -25,6 +26,9 @@ module DiscourseAi
     ]
 
     def self.translate_model(model)
+      llm_model = LlmModel.find_by(name: model)
+      return "custom:#{llm_model.id}" if llm_model
+
       return "google:#{model}" if model.start_with? "gemini"
       return "open_ai:#{model}" if model.start_with? "gpt"
       return "cohere:#{model}" if model.start_with? "command"
@@ -40,8 +44,10 @@ module DiscourseAi
       if model.start_with?("mistral")
         if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(model)
           return "vllm:#{model}"
+        elsif DiscourseAi::Completions::Endpoints::HuggingFace.correctly_configured?(model)
+          "hugging_face:#{model}"
         else
-          return "hugging_face:#{model}"
+          "ollama:mistral"
         end
       end
 

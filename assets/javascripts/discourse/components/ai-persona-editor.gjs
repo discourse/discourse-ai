@@ -40,6 +40,10 @@ export default class PersonaEditor extends Component {
   @tracked ragIndexingStatuses = null;
   @tracked showIndexingOptions = false;
 
+  get chatPluginEnabled() {
+    return this.siteSettings.chat_enabled;
+  }
+
   @action
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
@@ -102,7 +106,7 @@ export default class PersonaEditor extends Component {
       if (isNew && this.args.model.rag_uploads.length === 0) {
         this.args.personas.addObject(this.args.model);
         this.router.transitionTo(
-          "adminPlugins.show.discourse-ai.ai-personas.show",
+          "adminPlugins.show.discourse-ai-personas.show",
           this.args.model
         );
       } else {
@@ -131,6 +135,18 @@ export default class PersonaEditor extends Component {
 
   get adminUser() {
     return AdminUser.create(this.editingModel?.user);
+  }
+
+  get mappedQuestionConsolidatorLlm() {
+    return this.editingModel?.question_consolidator_llm || "blank";
+  }
+
+  set mappedQuestionConsolidatorLlm(value) {
+    if (value === "blank") {
+      this.editingModel.question_consolidator_llm = null;
+    } else {
+      this.editingModel.question_consolidator_llm = value;
+    }
   }
 
   get mappedDefaultLlm() {
@@ -163,7 +179,7 @@ export default class PersonaEditor extends Component {
         return this.args.model.destroyRecord().then(() => {
           this.args.personas.removeObject(this.args.model);
           this.router.transitionTo(
-            "adminPlugins.show.discourse-ai.ai-personas.index"
+            "adminPlugins.show.discourse-ai-personas.index"
           );
         });
       },
@@ -191,6 +207,11 @@ export default class PersonaEditor extends Component {
   }
 
   @action
+  async toggleAllowChat() {
+    await this.toggleField("allow_chat");
+  }
+
+  @action
   async toggleVisionEnabled() {
     await this.toggleField("vision_enabled");
   }
@@ -207,11 +228,8 @@ export default class PersonaEditor extends Component {
   }
 
   @action
-  addUpload(upload) {
-    const newUpload = upload;
-    newUpload.status = "uploaded";
-    newUpload.statusText = I18n.t("discourse_ai.ai_persona.uploads.uploaded");
-    this.editingModel.rag_uploads.addObject(newUpload);
+  updateUploads(uploads) {
+    this.editingModel.rag_uploads = uploads;
   }
 
   @action
@@ -256,7 +274,7 @@ export default class PersonaEditor extends Component {
 
   <template>
     <BackButton
-      @route="adminPlugins.show.discourse-ai.ai-personas"
+      @route="adminPlugins.show.discourse-ai-personas"
       @label="discourse_ai.ai_persona.back"
     />
     <form
@@ -286,6 +304,20 @@ export default class PersonaEditor extends Component {
         />
       </div>
       {{#if this.editingModel.user}}
+        {{#if this.chatPluginEnabled}}
+          <div class="control-group ai-persona-editor__allow_chat">
+            <DToggleSwitch
+              class="ai-persona-editor__allow_chat_toggle"
+              @state={{@model.allow_chat}}
+              @label="discourse_ai.ai_persona.allow_chat"
+              {{on "click" this.toggleAllowChat}}
+            />
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t "discourse_ai.ai_persona.allow_chat_help"}}
+            />
+          </div>
+        {{/if}}
         <div class="control-group ai-persona-editor__mentionable">
           <DToggleSwitch
             class="ai-persona-editor__mentionable_toggle"
@@ -460,15 +492,16 @@ export default class PersonaEditor extends Component {
         <div class="control-group">
           <PersonaRagUploader
             @persona={{this.editingModel}}
-            @ragUploads={{this.editingModel.rag_uploads}}
-            @onAdd={{this.addUpload}}
+            @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}
           />
-          <a
-            href="#"
-            class="ai-persona-editor__indexing-options"
-            {{on "click" this.toggleIndexingOptions}}
-          >{{this.indexingOptionsText}}</a>
+          {{#if this.editingModel.rag_uploads}}
+            <a
+              href="#"
+              class="ai-persona-editor__indexing-options"
+              {{on "click" this.toggleIndexingOptions}}
+            >{{this.indexingOptionsText}}</a>
+          {{/if}}
         </div>
         {{#if this.showIndexingOptions}}
           <div class="control-group">
@@ -520,6 +553,24 @@ export default class PersonaEditor extends Component {
               @icon="question-circle"
               @content={{I18n.t
                 "discourse_ai.ai_persona.rag_conversation_chunks_help"
+              }}
+            />
+          </div>
+
+          <div class="control-group">
+            <label>{{I18n.t
+                "discourse_ai.ai_persona.question_consolidator_llm"
+              }}</label>
+            <AiLlmSelector
+              class="ai-persona-editor__llms"
+              @value={{this.mappedQuestionConsolidatorLlm}}
+              @llms={{@personas.resultSetMeta.llms}}
+            />
+
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.question_consolidator_llm_help"
               }}
             />
           </div>

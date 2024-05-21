@@ -3,9 +3,10 @@
 RSpec.describe DiscourseAi::Completions::Llm do
   subject(:llm) do
     described_class.new(
-      DiscourseAi::Completions::Dialects::OrcaStyle,
+      DiscourseAi::Completions::Dialects::Mistral,
       canned_response,
       "hugging_face:Upstage-Llama-2-*-instruct-v2",
+      gateway: canned_response,
     )
   end
 

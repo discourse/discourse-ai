@@ -31,14 +31,23 @@ module DiscourseAi
         end
 
         attr_accessor :custom_raw
+        attr_reader :tool_call_id, :persona_options, :bot_user, :llm, :context, :parameters
 
-        def initialize(parameters, tool_call_id: "", persona_options: {})
+        def initialize(
+          parameters,
+          tool_call_id: "",
+          persona_options: {},
+          bot_user:,
+          llm:,
+          context: {}
+        )
           @parameters = parameters
           @tool_call_id = tool_call_id
           @persona_options = persona_options
+          @bot_user = bot_user
+          @llm = llm
+          @context = context
         end
-
-        attr_reader :parameters, :tool_call_id
 
         def name
           self.class.name
@@ -57,14 +66,20 @@ module DiscourseAi
         end
 
         def options
-          self
-            .class
-            .accepted_options
-            .reduce(HashWithIndifferentAccess.new) do |memo, option|
-              val = @persona_options[option.name]
-              memo[option.name] = val if val
-              memo
+          result = HashWithIndifferentAccess.new
+          self.class.accepted_options.each do |option|
+            val = @persona_options[option.name]
+            if val
+              case option.type
+              when :boolean
+                val = val == "true"
+              when :integer
+                val = val.to_i
+              end
+              result[option.name] = val
             end
+          end
+          result
         end
 
         def chain_next_response?

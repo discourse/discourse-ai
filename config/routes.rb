@@ -45,6 +45,13 @@ Discourse::Application.routes.draw do
     post "/ai-personas/files/upload", to: "discourse_ai/admin/ai_personas#upload_file"
     put "/ai-personas/:id/files/remove", to: "discourse_ai/admin/ai_personas#remove_file"
     get "/ai-personas/:id/files/status", to: "discourse_ai/admin/ai_personas#indexing_status_check"
+
+    resources :ai_llms,
+              only: %i[index create show update],
+              path: "ai-llms",
+              controller: "discourse_ai/admin/ai_llms" do
+      collection { get :test }
+    end
   end
 end
 

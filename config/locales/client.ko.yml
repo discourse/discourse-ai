@@ -43,6 +43,12 @@ ko:
         uploads:
           title: "업로드된 파일"
           uploading: "업로드 중..."
+      llms:
+        save: "저장"
+        edit: "편집"
+        back: "뒤로"
+        providers:
+          google: "구글"
       ai_helper:
         context_menu:
           back: "뒤로"
@@ -61,5 +67,8 @@ ko:
         image_caption:
           save_caption: "저장"
       ai_bot:
+        debug_ai_modal:
+          request: "요청"
+          response: "응답"
         share_modal:
           copy: "복사"

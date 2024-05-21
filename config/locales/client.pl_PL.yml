@@ -18,6 +18,7 @@ pl_PL:
         gpt_3_5_turbo: GPT 3.5 Turbo
         claude_2: Claude 2
         gemini_pro: Gemini Pro
+        gemini_1_5_pro: Gemini 1.5 Pro
       scriptables:
         llm_report:
           fields:
@@ -103,7 +104,6 @@ pl_PL:
               description: "Spraw, by temat nie był widoczny publicznie, jeśli zostanie uruchomiony."
             model:
               label: "Model"
-              description: "Albo gpt-4 lub gpt-3-5-turbo lub claude-2"
     discourse_ai:
       title: "AI"
       modals:
@@ -116,14 +116,15 @@ pl_PL:
         no_llm_selected: "Nie wybrano modelu językowego"
         max_context_posts: "Maksymalna liczba postów kontekstowych"
         max_context_posts_help: "Maksymalna liczba postów do wykorzystania jako kontekst dla sztucznej inteligencji podczas odpowiadania użytkownikowi. (domyślnie puste)"
-        mentionable: Wzmiankowalny
-        mentionable_help: Jeśli ta opcja jest włączona, użytkownicy w dozwolonych grupach mogą wspominać o tym użytkowniku w postach i wiadomościach, a sztuczna inteligencja będzie odpowiadać jako ta osoba.
+        vision_max_pixels: Obsługiwany rozmiar obrazu
+        mentionable: Zezwalaj na wzmianki
         user: Użytkownik
         create_user: Utwórz użytkownika
         create_user_help: Opcjonalnie możesz przypisać użytkownika do tej osoby. Jeśli to zrobisz, sztuczna inteligencja użyje tego użytkownika do odpowiedzi na żądania.
         default_llm: Domyślny model językowy
         default_llm_help: Domyślny model językowy używany dla tej persony. Wymagane, jeśli chcesz wspomnieć o osobie w postach publicznych.
         system_prompt: Monit systemowy
+        allow_chat: "Zezwalaj na czat"
         save: Zapisz
         saved: Zapisano AI Persona
         enabled: "Włączona?"
@@ -139,7 +140,14 @@ pl_PL:
         command_options: "Opcje poleceń"
         uploads:
           title: "Pliki"
+          button: "Dodaj pliki"
           uploading: "Przesyłanie..."
+      llms:
+        save: "Zapisz"
+        edit: "Edytuj"
+        back: "Poprzednia"
+        providers:
+          google: "Google"
       related_topics:
         title: "Powiązane tematy"
         pill: "Powiązane"
@@ -200,6 +208,9 @@ pl_PL:
         shortcut_title: "Rozpocznij PW z botem AI"
         share: "Udostępnij rozmowę AI"
         conversation_shared: "Rozmowa skopiowana"
+        debug_ai_modal:
+          request: "Żądanie"
+          response: "Odpowiedź"
         share_full_topic_modal:
           title: "Udostępnij rozmowę publicznie"
           share: "Udostępnij i skopiuj link"

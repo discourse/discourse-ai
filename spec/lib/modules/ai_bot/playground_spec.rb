@@ -131,6 +131,264 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       persona
     end
 
+    context "with chat channels" do
+      fab!(:channel) { Fabricate(:chat_channel) }
+
+      fab!(:membership) do
+        Fabricate(:user_chat_channel_membership, user: user, chat_channel: channel)
+      end
+
+      let(:guardian) { Guardian.new(user) }
+
+      before do
+        SiteSetting.ai_bot_enabled = true
+        SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+        Group.refresh_automatic_groups!
+        persona.update!(allow_chat: true, mentionable: true, default_llm: "anthropic:claude-3-opus")
+      end
+
+      it "should behave in a sane way when threading is enabled" do
+        channel.update!(threading_enabled: true)
+
+        message =
+          ChatSDK::Message.create(
+            channel_id: channel.id,
+            raw: "thread 1 message 1",
+            guardian: guardian,
+          )
+
+        message =
+          ChatSDK::Message.create(
+            channel_id: channel.id,
+            raw: "thread 1 message 2",
+            in_reply_to_id: message.id,
+            guardian: guardian,
+          )
+
+        thread = message.thread
+        thread.update!(title: "a magic thread")
+
+        message =
+          ChatSDK::Message.create(
+            channel_id: channel.id,
+            raw: "thread 2 message 1",
+            guardian: guardian,
+          )
+
+        message =
+          ChatSDK::Message.create(
+            channel_id: channel.id,
+            raw: "thread 2 message 2",
+            in_reply_to_id: message.id,
+            guardian: guardian,
+          )
+
+        prompts = nil
+        DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do |_, _, _prompts|
+          message =
+            ChatSDK::Message.create(
+              channel_id: channel.id,
+              raw: "Hello @#{persona.user.username}",
+              guardian: guardian,
+            )
+
+          prompts = _prompts
+        end
+
+        # don't start a thread cause it will get confusing
+        message.reload
+        expect(message.thread_id).to be_nil
+
+        prompt = prompts[0]
+
+        content = prompt.messages[1][:content]
+        # this is fragile by design, mainly so the example can be ultra clear
+        expected = (<<~TEXT).strip
+          You are replying inside a Discourse chat channel. Here is a summary of the conversation so far:
+          {{{
+          #{user.username}: (a magic thread)
+          thread 1 message 1
+          #{user.username}: thread 2 message 1
+          }}}
+
+          Your instructions:
+          #{user.username} said Hello
+        TEXT
+
+        expect(content.strip).to eq(expected)
+      end
+
+      it "should reply to a mention if properly enabled" do
+        prompts = nil
+
+        ChatSDK::Message.create(
+          channel_id: channel.id,
+          raw: "This is a story about stuff",
+          guardian: guardian,
+        )
+
+        DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do |_, _, _prompts|
+          ChatSDK::Message.create(
+            channel_id: channel.id,
+            raw: "Hello @#{persona.user.username}",
+            guardian: guardian,
+          )
+
+          prompts = _prompts
+        end
+
+        expect(prompts.length).to eq(1)
+        prompt = prompts[0]
+
+        expect(prompt.messages.length).to eq(2)
+        expect(prompt.messages[1][:content]).to include("story about stuff")
+        expect(prompt.messages[1][:content]).to include("Hello")
+
+        last_message = Chat::Message.where(chat_channel_id: channel.id).order("id desc").first
+        expect(last_message.message).to eq("world")
+      end
+    end
+
+    context "with chat dms" do
+      fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, persona.user]) }
+
+      before do
+        SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+        Group.refresh_automatic_groups!
+        persona.update!(
+          allow_chat: true,
+          mentionable: false,
+          default_llm: "anthropic:claude-3-opus",
+        )
+        SiteSetting.ai_bot_enabled = true
+      end
+
+      let(:guardian) { Guardian.new(user) }
+
+      it "can supply context" do
+        post = Fabricate(:post, raw: "this is post content")
+
+        prompts = nil
+        message =
+          DiscourseAi::Completions::Llm.with_prepared_responses(["World"]) do |_, _, _prompts|
+            prompts = _prompts
+
+            ::Chat::CreateMessage.call!(
+              chat_channel_id: dm_channel.id,
+              message: "Hello",
+              guardian: guardian,
+              context_post_ids: [post.id],
+            ).message_instance
+          end
+
+        expect(prompts[0].messages[1][:content]).to include("this is post content")
+
+        message.reload
+        reply = ChatSDK::Thread.messages(thread_id: message.thread_id, guardian: guardian).last
+        expect(reply.message).to eq("World")
+        expect(message.thread_id).to be_present
+      end
+
+      it "can run tools" do
+        persona.update!(commands: ["TimeCommand"])
+
+        responses = [
+          "<function_calls><invoke><tool_name>time</tool_name><tool_id>time</tool_id><parameters><timezone>Buenos Aires</timezone></parameters></invoke></function_calls>",
+          "The time is 2023-12-14 17:24:00 -0300",
+        ]
+
+        message =
+          DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+            ChatSDK::Message.create(channel_id: dm_channel.id, raw: "Hello", guardian: guardian)
+          end
+
+        message.reload
+        expect(message.thread_id).to be_present
+        reply = ChatSDK::Thread.messages(thread_id: message.thread_id, guardian: guardian).last
+
+        expect(reply.message).to eq("The time is 2023-12-14 17:24:00 -0300")
+
+        # it also needs to have tool details now set on message
+        prompt = ChatMessageCustomPrompt.find_by(message_id: reply.id)
+        expect(prompt.custom_prompt.length).to eq(3)
+
+        # TODO in chat I am mixed on including this in the context, but I guess maybe?
+        # thinking about this
+      end
+
+      it "can reply to a chat message" do
+        message =
+          DiscourseAi::Completions::Llm.with_prepared_responses(["World"]) do
+            ChatSDK::Message.create(channel_id: dm_channel.id, raw: "Hello", guardian: guardian)
+          end
+
+        message.reload
+        expect(message.thread_id).to be_present
+
+        thread_messages = ChatSDK::Thread.messages(thread_id: message.thread_id, guardian: guardian)
+        expect(thread_messages.length).to eq(2)
+        expect(thread_messages.last.message).to eq("World")
+
+        # it also needs to include history per config - first feed some history
+        persona.update!(enabled: false)
+
+        persona_guardian = Guardian.new(persona.user)
+
+        4.times do |i|
+          ChatSDK::Message.create(
+            channel_id: dm_channel.id,
+            thread_id: message.thread_id,
+            raw: "request #{i}",
+            guardian: guardian,
+          )
+
+          ChatSDK::Message.create(
+            channel_id: dm_channel.id,
+            thread_id: message.thread_id,
+            raw: "response #{i}",
+            guardian: persona_guardian,
+          )
+        end
+
+        persona.update!(max_context_posts: 4, enabled: true)
+
+        prompts = nil
+        DiscourseAi::Completions::Llm.with_prepared_responses(
+          ["World 2"],
+        ) do |_response, _llm, _prompts|
+          ChatSDK::Message.create(
+            channel_id: dm_channel.id,
+            thread_id: message.thread_id,
+            raw: "Hello",
+            guardian: guardian,
+          )
+          prompts = _prompts
+        end
+
+        expect(prompts.length).to eq(1)
+
+        mapped =
+          prompts[0]
+            .messages
+            .map { |m| "#{m[:type]}: #{m[:content]}" if m[:type] != :system }
+            .compact
+            .join("\n")
+            .strip
+
+        # why?
+        # 1. we set context to 4
+        # 2. however PromptMessagesBuilder will enforce rules of starting with :user and ending with it
+        # so one of the model messages is dropped
+        expected = (<<~TEXT).strip
+          user: request 3
+          model: response 3
+          user: Hello
+        TEXT
+
+        expect(mapped).to eq(expected)
+      end
+    end
+
     it "replies to whispers with a whisper" do
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
@@ -458,11 +716,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       context = playground.conversation_context(third_post)
 
+      # skips leading model reply which makes no sense cause first post was whisper
       expect(context).to contain_exactly(
-        *[
-          { type: :user, id: user.username, content: third_post.raw },
-          { type: :model, content: second_post.raw },
-        ],
+        *[{ type: :user, id: user.username, content: third_post.raw }],
       )
     end
 
@@ -470,16 +726,16 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       it "When post custom prompt is present, we use that instead of the post content" do
         custom_prompt = [
           [
-            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
-            "time",
-            "tool",
-          ],
-          [
             { name: "time", arguments: { name: "time", timezone: "Buenos Aires" } }.to_json,
             "time",
             "tool_call",
           ],
-          ["I replied this thanks to the time command", bot_user.username],
+          [
+            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
+            "time",
+            "tool",
+          ],
+          ["I replied to the time command", bot_user.username],
         ]
 
         PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
@@ -488,43 +744,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         expect(context).to contain_exactly(
           *[
-            { type: :user, id: user.username, content: third_post.raw },
-            { type: :model, content: custom_prompt.third.first },
-            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
-            { type: :tool, id: "time", content: custom_prompt.first.first },
             { type: :user, id: user.username, content: first_post.raw },
-          ],
-        )
-      end
-
-      it "include replies generated from tools" do
-        custom_prompt = [
-          [
-            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
-            "time",
-            "tool",
-          ],
-          [
-            { name: "time", arguments: { name: "time", timezone: "Buenos Aires" } }.to_json,
-            "time",
-            "tool_call",
-          ],
-          ["I replied", bot_user.username],
-        ]
-        PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
-        PostCustomPrompt.create!(post: first_post, custom_prompt: custom_prompt)
-
-        context = playground.conversation_context(third_post)
-
-        expect(context).to contain_exactly(
-          *[
-            { type: :user, id: user.username, content: third_post.raw },
+            { type: :tool_call, content: custom_prompt.first.first, id: "time" },
+            { type: :tool, id: "time", content: custom_prompt.second.first },
             { type: :model, content: custom_prompt.third.first },
-            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
-            { type: :tool, id: "time", content: custom_prompt.first.first },
-            { type: :tool_call, content: custom_prompt.second.first, id: "time" },
-            { type: :tool, id: "time", content: custom_prompt.first.first },
-            { type: :model, content: "I replied" },
+            { type: :user, id: user.username, content: third_post.raw },
           ],
         )
       end

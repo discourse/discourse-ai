@@ -14,21 +14,20 @@ module DiscourseAi
         end
 
         provider_and_model_name = val.split(":")
-
         provider_name = provider_and_model_name.first
         model_name_without_prov = provider_and_model_name[1..].join
+        is_custom_model = provider_name == "custom"
 
-        endpoint =
-          DiscourseAi::Completions::Endpoints::Base.endpoint_for(
-            provider_name,
-            model_name_without_prov,
-          )
+        # Bypass setting validations for custom models. They don't rely on site settings.
+        if !is_custom_model
+          endpoint = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider_name)
 
-        return false if endpoint.nil?
+          return false if endpoint.nil?
 
-        if !endpoint.correctly_configured?(model_name_without_prov)
-          @endpoint = endpoint
-          return false
+          if !endpoint.correctly_configured?(model_name_without_prov)
+            @endpoint = endpoint
+            return false
+          end
         end
 
         if !can_talk_to_model?(val)
@@ -67,7 +66,7 @@ module DiscourseAi
       def can_talk_to_model?(model_name)
         DiscourseAi::Completions::Llm
           .proxy(model_name)
-          .generate("How much is 1 + 1?", user: nil)
+          .generate("How much is 1 + 1?", user: nil, feature_name: "llm_validator")
           .present?
       rescue StandardError
         false

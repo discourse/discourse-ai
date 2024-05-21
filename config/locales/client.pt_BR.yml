@@ -91,7 +91,6 @@ pt_BR:
               description: "Ocultar visibilidade do tópico para o público se for ativado"
             model:
               label: "Modelo"
-              description: "Gpt-4, gpt-3-5-turbo ou claude-2"
     discourse_ai:
       title: "IA"
       modals:
@@ -117,6 +116,12 @@ pt_BR:
         uploads:
           title: "Envios"
           uploading: "Enviando..."
+      llms:
+        save: "Salvar"
+        edit: "Editar"
+        back: "Voltar"
+        providers:
+          google: "Google"
       related_topics:
         title: "Tópicos relacionados"
         pill: "Relacionado(a)"
@@ -177,6 +182,9 @@ pt_BR:
         shortcut_title: "Iniciar uma MP com bot de IA"
         share: "Compartilhar conversação com IA"
         conversation_shared: "Conversação copiada"
+        debug_ai_modal:
+          request: "Pedir"
+          response: "Resposta"
         ai_label: "IA"
         ai_title: "Conversação com IA"
         share_modal:

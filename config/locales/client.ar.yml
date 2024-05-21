@@ -90,7 +90,6 @@ ar:
               description: "جعل الموضوع غير مرئي للعامة إذا تم بدؤه"
             model:
               label: "النموذج"
-              description: "إما gpt-4 أو gpt-3-5-turbo أو claude-2"
     discourse_ai:
       title: "الذكاء الاصطناعي"
       modals:
@@ -116,6 +115,12 @@ ar:
         uploads:
           title: "التحميلات"
           uploading: "جارٍ التحميل..."
+      llms:
+        save: "حفظ"
+        edit: "تعديل"
+        back: "رجوع"
+        providers:
+          google: "Google"
       related_topics:
         title: "الموضوعات ذات الصلة"
         pill: "موضوعات ذات صلة"
@@ -176,6 +181,9 @@ ar:
         shortcut_title: "بدء رسالة خاصة باستخدام روبوت ذكاء اصطناعي"
         share: "مشاركة محادثة الذكاء الاصطناعي"
         conversation_shared: "تم نسخ المحادثة"
+        debug_ai_modal:
+          request: "طلب"
+          response: "الاستجابة"
         ai_label: "الذكاء الاصطناعي"
         ai_title: "المحادثة مع الذكاء الاصطناعي"
         share_modal:

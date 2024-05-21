@@ -43,6 +43,12 @@ uk:
         uploads:
           title: "Завантаження"
           uploading: "Надсилання…"
+      llms:
+        save: "Зберегти"
+        edit: "Редагувати"
+        back: "Назад"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
           back: "Назад"
@@ -62,5 +68,8 @@ uk:
         image_caption:
           save_caption: "Зберегти"
       ai_bot:
+        debug_ai_modal:
+          request: "Запит"
+          response: "відповідь"
         share_modal:
           copy: "Копіювати"

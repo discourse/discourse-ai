@@ -90,7 +90,6 @@ fr:
               description: "Rendez le sujet invisible au public si l'action est déclenchée"
             model:
               label: "Modèle"
-              description: "GPT-4, GPT-3-5-Turbo ou Claude-2"
     discourse_ai:
       title: "IA"
       modals:
@@ -116,6 +115,12 @@ fr:
         uploads:
           title: "Fichiers envoyés"
           uploading: "Envoi en cours…"
+      llms:
+        save: "Enregistrer"
+        edit: "Modifier"
+        back: "Retour"
+        providers:
+          google: "Google"
       related_topics:
         title: "Sujets connexes"
         pill: "Lié"
@@ -176,6 +181,9 @@ fr:
         shortcut_title: "Démarrer une conversation avec un robot IA"
         share: "Partager une conversation IA"
         conversation_shared: "Conversation copiée"
+        debug_ai_modal:
+          request: "Requête"
+          response: "Réponse"
         ai_label: "IA"
         ai_title: "Conversation avec l'IA"
         share_modal:

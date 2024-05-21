@@ -7,21 +7,18 @@ module DiscourseAi
     module Endpoints
       class AwsBedrock < Base
         class << self
-          def can_contact?(endpoint_name, model_name)
-            endpoint_name == "aws_bedrock" &&
-              %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus].include?(
-                model_name,
-              )
+          def can_contact?(endpoint_name)
+            endpoint_name == "aws_bedrock"
           end
 
           def dependant_setting_names
             %w[ai_bedrock_access_key_id ai_bedrock_secret_access_key ai_bedrock_region]
           end
 
-          def correctly_configured?(model)
+          def correctly_configured?(_model)
             SiteSetting.ai_bedrock_access_key_id.present? &&
               SiteSetting.ai_bedrock_secret_access_key.present? &&
-              SiteSetting.ai_bedrock_region.present? && can_contact?("aws_bedrock", model)
+              SiteSetting.ai_bedrock_region.present?
           end
 
           def endpoint_name(model_name)
@@ -51,7 +48,7 @@ module DiscourseAi
 
         def prompt_size(prompt)
           # approximation
-          super(prompt.system_prompt.to_s + " " + prompt.messages.to_s)
+          tokenizer.size(prompt.system_prompt.to_s + " " + prompt.messages.to_s)
         end
 
         def model_uri
@@ -74,7 +71,8 @@ module DiscourseAi
             end
 
           api_url =
-            "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
+            llm_model&.url ||
+              "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
 
           api_url = @streaming_mode ? (api_url + "-with-response-stream") : api_url
 
@@ -94,7 +92,7 @@ module DiscourseAi
             Aws::Sigv4::Signer.new(
               access_key_id: SiteSetting.ai_bedrock_access_key_id,
               region: SiteSetting.ai_bedrock_region,
-              secret_access_key: SiteSetting.ai_bedrock_secret_access_key,
+              secret_access_key: llm_model&.api_key || SiteSetting.ai_bedrock_secret_access_key,
               service: "bedrock",
             )
 
@@ -111,23 +109,31 @@ module DiscourseAi
         end
 
         def decode(chunk)
-          parsed =
-            Aws::EventStream::Decoder
-              .new
-              .decode_chunk(chunk)
-              .first
-              .payload
-              .string
-              .then { JSON.parse(_1) }
+          @decoder ||= Aws::EventStream::Decoder.new
 
-          bytes = parsed.dig("bytes")
+          decoded, _done = @decoder.decode_chunk(chunk)
 
-          if !bytes
-            Rails.logger.error("#{self.class.name}: #{parsed.to_s[0..500]}")
-            nil
-          else
-            Base64.decode64(parsed.dig("bytes"))
+          messages = []
+          return messages if !decoded
+
+          i = 0
+          while decoded
+            parsed = JSON.parse(decoded.payload.string)
+            # perhaps some control message we can just ignore
+            messages << Base64.decode64(parsed["bytes"]) if parsed && parsed["bytes"]
+
+            decoded, _done = @decoder.decode_chunk
+
+            i += 1
+            if i > 10_000
+              Rails.logger.error(
+                "DiscourseAI: Stream decoder looped too many times, logic error needs fixing",
+              )
+              break
+            end
           end
+
+          messages
         rescue JSON::ParserError,
                Aws::EventStream::Errors::MessageChecksumError,
                Aws::EventStream::Errors::PreludeChecksumError => e
@@ -161,8 +167,14 @@ module DiscourseAi
           result
         end
 
-        def partials_from(decoded_chunk)
-          [decoded_chunk]
+        def partials_from(decoded_chunks)
+          decoded_chunks
+        end
+
+        def chunk_to_string(chunk)
+          joined = +chunk.join("\n")
+          joined << "\n" if joined.length > 0
+          joined
         end
       end
     end

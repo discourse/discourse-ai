@@ -39,6 +39,12 @@ te:
         uploads:
           title: "అప్‌లోడ్‌లు"
           uploading: "ఎగుమతవుతోంది..."
+      llms:
+        save: "సేవ్ చేయండి"
+        edit: "సవరించండి"
+        back: "వెనుకకు"
+        providers:
+          google: "గూగుల్"
       ai_helper:
         context_menu:
           back: "వెనుకకు"
@@ -53,5 +59,8 @@ te:
         image_caption:
           save_caption: "భద్రపరుచు"
       ai_bot:
+        debug_ai_modal:
+          request: "అభ్యర్థన"
+          response: "ప్రతిస్పందన"
         share_modal:
           copy: "నకలు"

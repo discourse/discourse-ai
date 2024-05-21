@@ -7,7 +7,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::DbSchema do
   before { SiteSetting.ai_bot_enabled = true }
   describe "#process" do
     it "returns rich schema for tables" do
-      result = described_class.new({ tables: "posts,topics" }).invoke(bot_user, llm)
+      result = described_class.new({ tables: "posts,topics" }, bot_user: bot_user, llm: llm).invoke
 
       expect(result[:schema_info]).to include("raw text")
       expect(result[:schema_info]).to include("views integer")

@@ -26,6 +26,8 @@ module ::Jobs
         document = get_uploaded_file(upload)
         return if document.nil?
 
+        RagDocumentFragment.publish_status(upload, { total: 0, indexed: 0, left: 0 })
+
         fragment_ids = []
         idx = 0
 
@@ -53,11 +55,6 @@ module ::Jobs
           end
         end
       end
-
-      RagDocumentFragment.publish_status(
-        upload,
-        { total: fragment_ids.size, indexed: 0, left: fragment_ids.size },
-      )
 
       fragment_ids.each_slice(50) do |slice|
         Jobs.enqueue(:generate_rag_embeddings, fragment_ids: slice)

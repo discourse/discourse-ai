@@ -46,6 +46,7 @@ de:
     ai_openai_gpt35_url: "Benutzerdefinierte URL, die für GPT-3.5-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
     ai_openai_gpt35_16k_url: "Benutzerdefinierte URL, die für GPT-3.5-16k-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
     ai_openai_gpt4_url: "Benutzerdefinierte URL, die für GPT-4-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
+    ai_openai_gpt4o_url: "Benutzerdefinierte URL, die für GPT-4-Omni-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
     ai_openai_gpt4_32k_url: "Benutzerdefinierte URL, die für GPT-4-32k-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
     ai_openai_gpt4_turbo_url: "Benutzerdefinierte URL, die für GPT-4-Turbo-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
     ai_openai_dall_e_3_url: "Benutzerdefinierte URL, die für die DALL-E-3-Bilderzeugung verwendet wird (für Azure-Support)."
@@ -158,6 +159,7 @@ de:
         conversation_deleted: "Unterhaltsfreigabe erfolgreich gelöscht"
     ai_bot:
       personas:
+        default_llm_required: "Standard-LLM-Modell wird benötigt, um den Chat zu aktivieren"
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
         cannot_edit_system_persona: "System-Personas können nur umbenannt werden. Du kannst keine Befehle oder die System-Eingabeaufforderung bearbeiten. Deaktiviere sie stattdessen und erstelle eine Kopie"
         github_helper:
@@ -192,6 +194,9 @@ de:
       searching: "Suche nach: „%{query}“"
       command_options:
         search:
+          search_private:
+            name: "Suche Privat"
+            description: "Alle Themen, auf die der Benutzer Zugriff hat, in die Suchergebnisse einbeziehen (standardmäßig werden nur öffentliche Themen einbezogen)"
           max_results:
             name: "Maximale Anzahl von Ergebnissen"
             description: "Maximale Anzahl der Ergebnisse, die in die Suche einbezogen werden sollen – wenn leer, werden die Standardregeln verwendet und die Anzahl wird je nach verwendetem Modell skaliert. Der höchste Wert ist 100."
@@ -217,6 +222,7 @@ de:
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild generieren"
         search_meta_discourse: "Suche Meta Discourse"
+        javascript_evaluator: "JavaScript auswerten"
       command_help:
         web_browser: "Webseite mit dem KI Bot durchsuchen"
         github_search_code: "Suche nach Code in einem GitHub-Repository"
@@ -236,6 +242,7 @@ de:
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild mit DALL-E 3 generieren"
         search_meta_discourse: "Suche Meta Discourse"
+        javascript_evaluator: "JavaScript auswerten"
       command_description:
         web_browser: "Lesen <a href='%{url}'>%{url}</a>"
         github_search_code: "Gesucht wurde nach '%{query}' in %{repo}"

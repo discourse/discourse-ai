@@ -43,14 +43,15 @@ module DiscourseAi
 
         DiscourseAi::Completions::Llm
           .proxy(model)
-          .generate(title_prompt, user: post.user)
+          .generate(title_prompt, user: post.user, feature_name: "bot_title")
           .strip
           .split("\n")
           .last
       end
 
       def reply(context, &update_blk)
-        prompt = persona.craft_prompt(context)
+        llm = DiscourseAi::Completions::Llm.proxy(model)
+        prompt = persona.craft_prompt(context, llm: llm)
 
         total_completions = 0
         ongoing_chain = true
@@ -63,19 +64,17 @@ module DiscourseAi
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
 
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
-          current_model = model
-          llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
           result =
-            llm.generate(prompt, **llm_kwargs) do |partial, cancel|
-              tools = persona.find_tools(partial)
+            llm.generate(prompt, feature_name: "bot", **llm_kwargs) do |partial, cancel|
+              tools = persona.find_tools(partial, bot_user: user, llm: llm, context: context)
 
               if (tools.present?)
                 tool_found = true
                 tools[0..MAX_TOOLS].each do |tool|
+                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
                   ongoing_chain &&= tool.chain_next_response?
-                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
                 end
               else
                 update_blk.call(partial, cancel, nil)
@@ -97,9 +96,9 @@ module DiscourseAi
 
       private
 
-      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
+      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
         tool_call_id = tool.tool_call_id
-        invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
+        invocation_result_json = invoke_tool(tool, llm, cancel, context, &update_blk).to_json
 
         tool_call_message = {
           type: :tool_call,
@@ -134,73 +133,92 @@ module DiscourseAi
         raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
       end
 
-      def invoke_tool(tool, llm, cancel, &update_blk)
+      def invoke_tool(tool, llm, cancel, context, &update_blk)
         update_blk.call("", cancel, build_placeholder(tool.summary, ""))
 
         result =
-          tool.invoke(bot_user, llm) do |progress|
+          tool.invoke do |progress|
             placeholder = build_placeholder(tool.summary, progress)
             update_blk.call("", cancel, placeholder)
           end
 
         tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
-        update_blk.call(tool_details, cancel, nil)
+        update_blk.call(tool_details, cancel, nil) if !context[:skip_tool_details]
 
         result
       end
 
       def self.guess_model(bot_user)
         # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
-        case bot_user.id
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-            "aws_bedrock:claude-2"
+        guess =
+          case bot_user.id
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
+              "aws_bedrock:claude-2"
+            else
+              "anthropic:claude-2"
+            end
+          when DiscourseAi::AiBot::EntryPoint::GPT4_ID
+            "open_ai:gpt-4"
+          when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
+            "open_ai:gpt-4-turbo"
+          when DiscourseAi::AiBot::EntryPoint::GPT4O_ID
+            "open_ai:gpt-4o"
+          when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
+            "open_ai:gpt-3.5-turbo-16k"
+          when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
+            mixtral_model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+            if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(mixtral_model)
+              "vllm:#{mixtral_model}"
+            elsif DiscourseAi::Completions::Endpoints::HuggingFace.correctly_configured?(
+                  mixtral_model,
+                )
+              "hugging_face:#{mixtral_model}"
+            else
+              "ollama:mistral"
+            end
+          when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
+            "google:gemini-pro"
+          when DiscourseAi::AiBot::EntryPoint::FAKE_ID
+            "fake:fake"
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
+                 "claude-3-opus",
+               )
+              "aws_bedrock:claude-3-opus"
+            else
+              "anthropic:claude-3-opus"
+            end
+          when DiscourseAi::AiBot::EntryPoint::COHERE_COMMAND_R_PLUS
+            "cohere:command-r-plus"
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
+                 "claude-3-sonnet",
+               )
+              "aws_bedrock:claude-3-sonnet"
+            else
+              "anthropic:claude-3-sonnet"
+            end
+          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_HAIKU_ID
+            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
+                 "claude-3-haiku",
+               )
+              "aws_bedrock:claude-3-haiku"
+            else
+              "anthropic:claude-3-haiku"
+            end
           else
-            "anthropic:claude-2"
+            nil
           end
-        when DiscourseAi::AiBot::EntryPoint::GPT4_ID
-          "open_ai:gpt-4"
-        when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
-          "open_ai:gpt-4-turbo"
-        when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
-          "open_ai:gpt-3.5-turbo-16k"
-        when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
-          if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(
-               "mistralai/Mixtral-8x7B-Instruct-v0.1",
-             )
-            "vllm:mistralai/Mixtral-8x7B-Instruct-v0.1"
-          else
-            "hugging_face:mistralai/Mixtral-8x7B-Instruct-v0.1"
-          end
-        when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
-          "google:gemini-pro"
-        when DiscourseAi::AiBot::EntryPoint::FAKE_ID
-          "fake:fake"
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-opus")
-            "aws_bedrock:claude-3-opus"
-          else
-            "anthropic:claude-3-opus"
-          end
-        when DiscourseAi::AiBot::EntryPoint::COHERE_COMMAND_R_PLUS
-          "cohere:command-r-plus"
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
-               "claude-3-sonnet",
-             )
-            "aws_bedrock:claude-3-sonnet"
-          else
-            "anthropic:claude-3-sonnet"
-          end
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_HAIKU_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-haiku")
-            "aws_bedrock:claude-3-haiku"
-          else
-            "anthropic:claude-3-haiku"
-          end
-        else
-          nil
+
+        if guess
+          provider, model_name = guess.split(":")
+          llm_model = LlmModel.find_by(provider: provider, name: model_name)
+
+          return "custom:#{llm_model.id}" if llm_model
         end
+
+        guess
       end
 
       def build_placeholder(summary, details, custom_raw: nil)

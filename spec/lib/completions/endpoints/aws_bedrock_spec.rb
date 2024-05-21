@@ -86,6 +86,10 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
           Aws::EventStream::Encoder.new.encode(aws_message)
         end
 
+      # stream 1 letter at a time
+      # cause we need to handle this case
+      messages = messages.join("").split
+
       bedrock_mock.with_chunk_array_support do
         stub_request(
           :post,

@@ -90,7 +90,6 @@ ru:
               description: "Сделать тему недоступной для широкой аудитории, если срабатывают определенные условия"
             model:
               label: "Модель"
-              description: "Либо gpt-4, либо gpt-3-5-turbo, либо claude-2"
     discourse_ai:
       title: "AI"
       modals:
@@ -116,6 +115,12 @@ ru:
         uploads:
           title: "Загрузки"
           uploading: "Загрузка…"
+      llms:
+        save: "Сохранить"
+        edit: "Отредактировать"
+        back: "Назад"
+        providers:
+          google: "Google"
       related_topics:
         title: "Связанные темы"
         pill: "Связанные"
@@ -176,6 +181,9 @@ ru:
         shortcut_title: "Начать личный чат с AI-ботом"
         share: "Поделиться разговором с AI"
         conversation_shared: "Разговор скопирован"
+        debug_ai_modal:
+          request: "Запрос"
+          response: "Ответ"
         ai_label: "AI"
         ai_title: "Разговор с AI"
         share_modal:
