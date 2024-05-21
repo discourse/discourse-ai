@@ -43,6 +43,8 @@ ur:
           uploading: "اَپ لوڈ کیا جا رہا ہے..."
       llms:
         save: "محفوظ کریں"
+        edit: "ترمیم کریں"
+        back: "واپس"
         providers:
           google: "گُوگَل"
       ai_helper:

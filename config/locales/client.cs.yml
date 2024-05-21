@@ -43,6 +43,8 @@ cs:
           uploading: "Nahrává se..."
       llms:
         save: "Uložit"
+        edit: "Upravit"
+        back: "Zpět"
         providers:
           google: "Google"
       ai_helper:

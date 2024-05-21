@@ -45,6 +45,8 @@ ko:
           uploading: "업로드 중..."
       llms:
         save: "저장"
+        edit: "편집"
+        back: "뒤로"
         providers:
           google: "구글"
       ai_helper:

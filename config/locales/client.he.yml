@@ -26,6 +26,7 @@ he:
         mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
         command_r: Cohere Command R
         command_r_plus: Cohere Command R+‎
+        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -117,7 +118,7 @@ he:
               description: "מציב את הפוסט בתור לסקירה אם מוזנק, לבדיקת המפקחים"
             model:
               label: "דגם"
-              description: "יכול להיות gpt-4 או gpt-3-5-turbo או claude-2"
+              description: "מודל שפה שמשמש למיון ראשוני"
     discourse_ai:
       title: "בינה מלאכותית"
       modals:
@@ -196,9 +197,33 @@ he:
           uploading: "בהליכי העלאה…"
           remove: "הסרת העלאה"
       llms:
+        short_title: "LLMים"
+        no_llms: "אין LLMים עדיין"
+        new: "מודל חדש"
+        display_name: "שם להצגה"
+        name: "שם המודל"
+        provider: "השירות שמארח את המודל"
+        tokenizer: "מפרק לאסימונים"
+        max_prompt_tokens: "מספר האסימונים לבקשה"
+        url: "כתובת השירות שמארח את המודל"
+        api_key: "מפתח ה־API של השירות שמארח את המודל"
         save: "שמירה"
+        edit: "עריכה"
+        saved: "מודל ה־LLM נשמר"
+        back: "חזרה"
+        hints:
+          max_prompt_tokens: "מספר האסימונים המרבי לבקשה. ככלל אצבע, זה אמור להיות 50% מחלון ההקשר של המודל."
+          name: "אנו מצרפים את זה לקריאת ה־API כדי לציין באיזה מודל להשתמש."
         providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
           google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
@@ -298,6 +323,7 @@ he:
           cohere-command-r-plus: "Cohere Command R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT 4 טורבו"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"

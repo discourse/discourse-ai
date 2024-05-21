@@ -38,6 +38,8 @@ sr:
           uploading: "Uploading..."
       llms:
         save: "Sačuvaj"
+        edit: "Izmeni"
+        back: "Nazad"
         providers:
           google: "Google"
       ai_helper:

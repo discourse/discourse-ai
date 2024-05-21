@@ -43,6 +43,8 @@ el:
           uploading: "Επιφόρτωση..."
       llms:
         save: "Αποθήκευση"
+        edit: "Επεξεργασία"
+        back: "Πίσω"
         providers:
           google: "Google"
       ai_helper:

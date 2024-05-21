@@ -43,6 +43,8 @@ hu:
           uploading: "Feltültés..."
       llms:
         save: "Mentés"
+        edit: "Szerkesztés"
+        back: "Vissza"
         providers:
           google: "Google"
       ai_helper:

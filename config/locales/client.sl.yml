@@ -43,6 +43,8 @@ sl:
           uploading: "Nalagam..."
       llms:
         save: "Shrani"
+        edit: "Uredi"
+        back: "Nazaj"
         providers:
           google: "Google"
       ai_helper:

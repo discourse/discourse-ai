@@ -43,6 +43,8 @@ et:
           uploading: "Laen üles..."
       llms:
         save: "Salvesta"
+        edit: "Muuda"
+        back: "Tagasi"
         providers:
           google: "Google"
       ai_helper:

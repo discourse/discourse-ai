@@ -43,6 +43,8 @@ ro:
           uploading: "Se încarcă..."
       llms:
         save: "Salvează"
+        edit: "Modifică"
+        back: "Înapoi"
         providers:
           google: "Google"
       ai_helper:

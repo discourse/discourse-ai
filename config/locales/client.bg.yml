@@ -42,6 +42,8 @@ bg:
           uploading: "Качва се..."
       llms:
         save: "Запази "
+        edit: "Редактирай"
+        back: "Назад"
         providers:
           google: "Google"
       ai_helper:

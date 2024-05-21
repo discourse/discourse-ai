@@ -88,6 +88,8 @@ lt:
           uploading: "Įkeliama"
       llms:
         save: "Išsaugoti"
+        edit: "Redaguoti"
+        back: "Atgal"
         providers:
           google: "Google"
       ai_helper:

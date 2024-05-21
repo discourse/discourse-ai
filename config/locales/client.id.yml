@@ -123,6 +123,8 @@ id:
           uploading: "Mengunggah..."
       llms:
         save: "Simpan"
+        edit: "Ubah"
+        back: "Kembali"
         providers:
           google: "Google"
       ai_helper:

@@ -43,6 +43,8 @@ gl:
           uploading: "Cargando..."
       llms:
         save: "Gardar"
+        edit: "Editar"
+        back: "Volver"
         providers:
           google: "Google"
       ai_helper:

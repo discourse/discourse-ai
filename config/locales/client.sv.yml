@@ -43,6 +43,8 @@ sv:
           uploading: "Laddar upp..."
       llms:
         save: "Spara"
+        edit: "Redigera"
+        back: "Tillbaka"
         providers:
           google: "Google"
       ai_helper:

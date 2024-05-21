@@ -43,6 +43,8 @@ hr:
           uploading: "Učitavanje..."
       llms:
         save: "Spremi"
+        edit: "Uredi"
+        back: "Natrag"
         providers:
           google: "Google"
       ai_helper:

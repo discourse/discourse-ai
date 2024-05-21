@@ -43,6 +43,8 @@ bs_BA:
           uploading: "Učitavanje..."
       llms:
         save: "Save"
+        edit: "Edit"
+        back: "Prethodno"
         providers:
           google: "Google"
       ai_helper:

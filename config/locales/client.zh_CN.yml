@@ -103,7 +103,6 @@ zh_CN:
               description: "如果触发，使话题对公众不可见"
             model:
               label: "模型"
-              description: "gpt-4、gpt-3-5-turbo 或 claude-2"
     discourse_ai:
       title: "AI"
       modals:
@@ -135,6 +134,8 @@ zh_CN:
           uploading: "正在上传…"
       llms:
         save: "保存"
+        edit: "编辑"
+        back: "返回"
         providers:
           google: "Google"
       related_topics:

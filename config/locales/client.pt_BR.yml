@@ -91,7 +91,6 @@ pt_BR:
               description: "Ocultar visibilidade do tópico para o público se for ativado"
             model:
               label: "Modelo"
-              description: "Gpt-4, gpt-3-5-turbo ou claude-2"
     discourse_ai:
       title: "IA"
       modals:
@@ -119,6 +118,8 @@ pt_BR:
           uploading: "Enviando..."
       llms:
         save: "Salvar"
+        edit: "Editar"
+        back: "Voltar"
         providers:
           google: "Google"
       related_topics:

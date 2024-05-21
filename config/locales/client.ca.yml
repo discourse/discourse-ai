@@ -43,6 +43,8 @@ ca:
           uploading: "Carregant..."
       llms:
         save: "Desa"
+        edit: "Edita"
+        back: "Enrere"
         providers:
           google: "Google"
       ai_helper:

@@ -90,7 +90,6 @@ ru:
               description: "Сделать тему недоступной для широкой аудитории, если срабатывают определенные условия"
             model:
               label: "Модель"
-              description: "Либо gpt-4, либо gpt-3-5-turbo, либо claude-2"
     discourse_ai:
       title: "AI"
       modals:
@@ -118,6 +117,8 @@ ru:
           uploading: "Загрузка…"
       llms:
         save: "Сохранить"
+        edit: "Отредактировать"
+        back: "Назад"
         providers:
           google: "Google"
       related_topics:

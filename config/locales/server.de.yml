@@ -222,6 +222,7 @@ de:
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild generieren"
         search_meta_discourse: "Suche Meta Discourse"
+        javascript_evaluator: "JavaScript auswerten"
       command_help:
         web_browser: "Webseite mit dem KI Bot durchsuchen"
         github_search_code: "Suche nach Code in einem GitHub-Repository"
@@ -241,6 +242,7 @@ de:
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild mit DALL-E 3 generieren"
         search_meta_discourse: "Suche Meta Discourse"
+        javascript_evaluator: "JavaScript auswerten"
       command_description:
         web_browser: "Lesen <a href='%{url}'>%{url}</a>"
         github_search_code: "Gesucht wurde nach '%{query}' in %{repo}"

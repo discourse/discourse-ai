@@ -43,6 +43,8 @@ hy:
           uploading: "Վերբեռնում..."
       llms:
         save: "Պահպանել"
+        edit: "Խմբագրել"
+        back: "Ետ"
         providers:
           google: "Google"
       ai_helper:

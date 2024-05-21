@@ -43,6 +43,8 @@ lv:
           uploading: "Notiek ielāde..."
       llms:
         save: "Saglabāt"
+        edit: "Rediģēt"
+        back: "Atpakaļ"
         providers:
           google: "Google"
       ai_helper:
