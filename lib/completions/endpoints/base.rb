@@ -108,7 +108,7 @@ module DiscourseAi
                 Rails.logger.error(
                   "#{self.class.name}: status: #{response.code.to_i} - body: #{response.body}",
                 )
-                raise CompletionFailed
+                raise CompletionFailed, response.body
               end
 
               log =

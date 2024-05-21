@@ -23,7 +23,9 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
           display_name: "My cool LLM",
           name: "gpt-3.5",
           provider: "open_ai",
-          tokenizer: "DiscourseAi::Tokenizers::OpenAiTokenizer",
+          url: "https://test.test/v1/chat/completions",
+          api_key: "test",
+          tokenizer: "DiscourseAi::Tokenizer::OpenAiTokenizer",
           max_prompt_tokens: 16_000,
         }
       end
@@ -62,6 +64,51 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         put "/admin/plugins/discourse-ai/ai-llms/9999999.json"
 
         expect(response.status).to eq(404)
+      end
+    end
+  end
+
+  describe "GET #test" do
+    let(:test_attrs) do
+      {
+        name: "llama3",
+        provider: "hugging_face",
+        url: "https://test.test/v1/chat/completions",
+        api_key: "test",
+        tokenizer: "DiscourseAi::Tokenizer::Llama3Tokenizer",
+        max_prompt_tokens: 2_000,
+      }
+    end
+
+    context "when we can contact the model" do
+      it "returns a success true flag" do
+        DiscourseAi::Completions::Llm.with_prepared_responses(["a response"]) do
+          get "/admin/plugins/discourse-ai/ai-llms/test.json", params: { ai_llm: test_attrs }
+
+          expect(response).to be_successful
+          expect(response.parsed_body["success"]).to eq(true)
+        end
+      end
+    end
+
+    context "when we cannot contact the model" do
+      it "returns a success false flag and the error message" do
+        error_message = {
+          error:
+            "Input validation error: `inputs` tokens + `max_new_tokens` must be <= 1512. Given: 30 `inputs` tokens and 3984 `max_new_tokens`",
+          error_type: "validation",
+        }
+
+        WebMock.stub_request(:post, test_attrs[:url]).to_return(
+          status: 422,
+          body: error_message.to_json,
+        )
+
+        get "/admin/plugins/discourse-ai/ai-llms/test.json", params: { ai_llm: test_attrs }
+
+        expect(response).to be_successful
+        expect(response.parsed_body["success"]).to eq(false)
+        expect(response.parsed_body["error"]).to eq(error_message.to_json)
       end
     end
   end

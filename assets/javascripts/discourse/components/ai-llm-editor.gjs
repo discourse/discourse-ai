@@ -7,6 +7,7 @@ import { inject as service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
@@ -17,6 +18,10 @@ export default class AiLlmEditor extends Component {
   @service router;
 
   @tracked isSaving = false;
+
+  @tracked testRunning = false;
+  @tracked testResult = null;
+  @tracked testError = null;
 
   get selectedProviders() {
     const t = (provName) => {
@@ -57,6 +62,36 @@ export default class AiLlmEditor extends Component {
         this.isSaving = false;
       }, 1000);
     }
+  }
+
+  @action
+  async test() {
+    this.testRunning = true;
+
+    try {
+      const configTestResult = await this.args.model.testConfig();
+      this.testResult = configTestResult.success;
+
+      if (this.testResult) {
+        this.testError = null;
+      } else {
+        this.testError = configTestResult.error;
+      }
+    } catch (e) {
+      popupAjaxError(e);
+    } finally {
+      later(() => {
+        this.testRunning = false;
+      }, 1000);
+    }
+  }
+
+  get testErrorMessage() {
+    return I18n.t("discourse_ai.llms.tests.failure", { error: this.testError });
+  }
+
+  get displayTestResult() {
+    return this.testRunning || this.testResult !== null;
   }
 
   <template>
@@ -133,12 +168,41 @@ export default class AiLlmEditor extends Component {
 
       <div class="control-group ai-llm-editor__action_panel">
         <DButton
+          class="ai-llm-editor__test"
+          @action={{this.test}}
+          @disabled={{this.testRunning}}
+        >
+          {{I18n.t "discourse_ai.llms.tests.title"}}
+        </DButton>
+
+        <DButton
           class="btn-primary ai-llm-editor__save"
           @action={{this.save}}
           @disabled={{this.isSaving}}
         >
           {{I18n.t "discourse_ai.llms.save"}}
         </DButton>
+      </div>
+
+      <div class="control-group ai-llm-editor-tests">
+        {{#if this.displayTestResult}}
+          {{#if this.testRunning}}
+            <div class="spinner small"></div>
+            {{I18n.t "discourse_ai.llms.tests.running"}}
+          {{else}}
+            {{#if this.testResult}}
+              <div class="ai-llm-editor-tests__success">
+                {{icon "check"}}
+                {{I18n.t "discourse_ai.llms.tests.success"}}
+              </div>
+            {{else}}
+              <div class="ai-llm-editor-tests__failure">
+                {{icon "times"}}
+                {{this.testErrorMessage}}
+              </div>
+            {{/if}}
+          {{/if}}
+        {{/if}}
       </div>
     </form>
   </template>

@@ -210,6 +210,11 @@ en:
         edit: "Edit"
         saved: "LLM Model Saved"
         back: "Back"
+        tests: 
+          title: "Run Test"
+          running: "Running test..."
+          success: "Success!"
+          failure: "Trying to contact the model returned this error: %{error}"
 
         hints:
           max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
