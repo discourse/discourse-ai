@@ -22,4 +22,14 @@
     padding-left: 0.25em;
     color: var(--primary-medium);
   }
+
+  .ai-llm-editor-tests {
+    &__failure {
+      color: var(--danger);
+    }
+
+    &__success {
+      color: var(--success);
+    }
+  }
 }

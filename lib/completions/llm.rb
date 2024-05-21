@@ -124,6 +124,15 @@ module DiscourseAi
           model_name = llm_model.name
 
           dialect_klass = DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name)
+
+          if @canned_response
+            if @canned_llm && @canned_llm != model_name
+              raise "Invalid call LLM call, expected #{@canned_llm} but got #{model_name}"
+            end
+
+            return new(dialect_klass, nil, model_name, gateway: @canned_response)
+          end
+
           gateway_klass = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider_name)
 
           new(dialect_klass, gateway_klass, model_name, llm_model: llm_model)
