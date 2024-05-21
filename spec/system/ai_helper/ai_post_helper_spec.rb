@@ -65,6 +65,14 @@ RSpec.describe "AI Post helper", type: :system, js: true do
       expect(post_ai_helper).to have_no_highlighted_text
     end
 
+    it "allows post control buttons to still be functional after clicking the AI button" do
+      select_post_text(post)
+      post_ai_helper.click_ai_button
+      topic_page.click_like_reaction_for(post)
+      wait_for { post.reload.like_count == 1 }
+      expect(post.like_count).to eq(1)
+    end
+
     context "when using explain mode" do
       let(:mode) { CompletionPrompt::EXPLAIN }
 
