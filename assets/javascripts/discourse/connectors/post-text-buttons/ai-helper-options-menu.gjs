@@ -59,7 +59,7 @@ export default class AIHelperOptionsMenu extends Component {
   highlightSelectedText() {
     const postId = this.args.outletArgs.data.quoteState.postId;
     const postElement = document.querySelector(
-      `article[data-post-id='${postId}']`
+      `article[data-post-id='${postId}'] .cooked`
     );
 
     if (!postElement) {
@@ -135,7 +135,7 @@ export default class AIHelperOptionsMenu extends Component {
 
     const postId = this.args.outletArgs.data.quoteState.postId;
     const postElement = document.querySelector(
-      `article[data-post-id='${postId}']`
+      `article[data-post-id='${postId}'] .cooked`
     );
 
     if (!postElement) {
