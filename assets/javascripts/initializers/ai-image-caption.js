@@ -1,7 +1,7 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { apiInitializer } from "discourse/lib/api";
-import { isImage } from "discourse/lib/uploads";
+import { getUploadMarkdown, isImage } from "discourse/lib/uploads";
 import I18n from "discourse-i18n";
 import { IMAGE_MARKDOWN_REGEX } from "../discourse/lib/utilities";
 
@@ -87,16 +87,20 @@ export default apiInitializer("1.25.0", (api) => {
     return caption.length < 20 || caption.split(" ").length === 1;
   }
 
+  // Automatically caption uploaded images
   api.addComposerUploadMarkdownResolver(async (upload) => {
-    // ! TODO: ensure image is not 'small' (> 0.4 MP)
+    const autoCaptionEnabled = currentUser.get(
+      "user_option.auto_image_caption"
+    );
+
     if (
-      !currentUser.get("user_option.auto_image_caption") ||
-      !needsImprovedCaption(upload?.original_filename) ||
-      !isImage(upload?.url)
+      !autoCaptionEnabled ||
+      !isImage(upload.url) ||
+      !needsImprovedCaption(upload.original_filename)
     ) {
-      return;
+      return getUploadMarkdown(upload);
     }
-    // ! FIX: caption is returning before async function is resolved
+
     try {
       const { caption } = await ajax(`/discourse-ai/ai-helper/caption_image`, {
         method: "POST",
@@ -104,14 +108,14 @@ export default apiInitializer("1.25.0", (api) => {
           image_url: upload.url,
         },
       });
-      const newImageMarkdown = `![${caption}|${upload.thumbnail_width}x${upload.thumbnail_height}](${upload.short_url})`;
-      console.log(caption, newImageMarkdown);
-      return newImageMarkdown;
+
+      return `![${caption}|${upload.thumbnail_width}x${upload.thumbnail_height}](${upload.short_url})`;
     } catch (error) {
-      return;
+      popupAjaxError(error);
     }
   });
 
+  // Conditionally show dialog to auto image caption
   api.composerBeforeSave(() => {
     return new Promise((resolve, reject) => {
       const dialog = api.container.lookup("service:dialog");
@@ -121,6 +125,7 @@ export default apiInitializer("1.25.0", (api) => {
       const autoCaptionEnabled = currentUser.get(
         "user_option.auto_image_caption"
       );
+
       const imageUploads = composer.model.reply.match(IMAGE_MARKDOWN_REGEX);
       const hasImageUploads = imageUploads?.length > 0;
       const imagesToCaption = imageUploads.filter((image) => {
