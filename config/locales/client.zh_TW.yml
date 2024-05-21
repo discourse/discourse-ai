@@ -41,6 +41,8 @@ zh_TW:
           uploading: "上傳中..."
       llms:
         save: "保存"
+        edit: "編輯"
+        back: "上一步"
         providers:
           google: "Google"
       ai_helper:

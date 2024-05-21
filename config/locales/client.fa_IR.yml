@@ -65,10 +65,12 @@ fa_IR:
           uploading: "در حال بار گذاری..."
       llms:
         new: "مدل جدید"
-        display_name: "نام برای نمایش:"
-        name: "نام مدل:"
-        provider: "سرویس میزبانی مدل:"
+        display_name: "نام برای نمایش"
+        name: "نام مدل"
+        provider: "سرویس میزبانی مدل"
         save: "ذخیره"
+        edit: "ویرایش"
+        back: "بازگشت"
         providers:
           google: "گوگل"
       related_topics:

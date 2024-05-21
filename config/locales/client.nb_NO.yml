@@ -43,6 +43,8 @@ nb_NO:
           uploading: "Laster opp…"
       llms:
         save: "Lagre"
+        edit: "Endre"
+        back: "Forrige"
         providers:
           google: "Google"
       ai_helper:

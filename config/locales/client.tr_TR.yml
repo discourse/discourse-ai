@@ -112,7 +112,6 @@ tr_TR:
               description: "Tetiklenirse, moderatörlerin önceliklendirmesi için gönderiyi inceleme kuyruğuna alır"
             model:
               label: "Model"
-              description: "Ya gpt-4 ya da gpt-3-5-turbo ya da claude-2"
     discourse_ai:
       title: "YZ"
       modals:
@@ -173,6 +172,8 @@ tr_TR:
           uploading: "Yükleniyor..."
       llms:
         save: "Kaydet"
+        edit: "Düzenle"
+        back: "Geri"
         providers:
           google: "Google"
       related_topics:

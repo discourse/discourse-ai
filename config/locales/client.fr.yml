@@ -90,7 +90,6 @@ fr:
               description: "Rendez le sujet invisible au public si l'action est déclenchée"
             model:
               label: "Modèle"
-              description: "GPT-4, GPT-3-5-Turbo ou Claude-2"
     discourse_ai:
       title: "IA"
       modals:
@@ -118,6 +117,8 @@ fr:
           uploading: "Envoi en cours…"
       llms:
         save: "Enregistrer"
+        edit: "Modifier"
+        back: "Retour"
         providers:
           google: "Google"
       related_topics:

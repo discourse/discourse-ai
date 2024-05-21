@@ -43,6 +43,8 @@ th:
           uploading: "กำลังอัปโหลด..."
       llms:
         save: "บันทึก"
+        edit: "แก้ไข"
+        back: "กลับ"
         providers:
           google: "กูเกิล"
       ai_helper:

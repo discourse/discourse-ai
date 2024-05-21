@@ -90,7 +90,6 @@ ar:
               description: "جعل الموضوع غير مرئي للعامة إذا تم بدؤه"
             model:
               label: "النموذج"
-              description: "إما gpt-4 أو gpt-3-5-turbo أو claude-2"
     discourse_ai:
       title: "الذكاء الاصطناعي"
       modals:
@@ -118,6 +117,8 @@ ar:
           uploading: "جارٍ التحميل..."
       llms:
         save: "حفظ"
+        edit: "تعديل"
+        back: "رجوع"
         providers:
           google: "Google"
       related_topics:

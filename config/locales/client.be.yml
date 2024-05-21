@@ -40,6 +40,8 @@ be:
           uploading: "Запампоўванне ..."
       llms:
         save: "Захаваць"
+        edit: "рэдагаваць"
+        back: "Назад"
         providers:
           google: "Google"
       ai_helper:

@@ -43,6 +43,8 @@ vi:
           uploading: "Đang đăng "
       llms:
         save: "Lưu lại"
+        edit: "Sửa"
+        back: "Quay lại"
         providers:
           google: "G"
       ai_helper:

@@ -90,7 +90,6 @@ es:
               description: "Hacer que el tema no sea visible para el público si se activa"
             model:
               label: "Modelo"
-              description: "Ya sea gpt-4 o gpt-3-5-turbo o claude-2"
     discourse_ai:
       title: "IA"
       modals:
@@ -118,6 +117,8 @@ es:
           uploading: "Subiendo..."
       llms:
         save: "Guardar"
+        edit: "Editar"
+        back: "Atrás"
         providers:
           google: "Google"
       related_topics:

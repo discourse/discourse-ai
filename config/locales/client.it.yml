@@ -90,7 +90,6 @@ it:
               description: "Rendi l'argomento non visibile al pubblico se attivato"
             model:
               label: "Modello"
-              description: "O gpt-4 o gpt-3-5-turbo o claude-2"
     discourse_ai:
       title: "IA"
       modals:
@@ -118,6 +117,8 @@ it:
           uploading: "Caricamento..."
       llms:
         save: "Salva"
+        edit: "Modifica"
+        back: "Indietro"
         providers:
           google: "Google"
       related_topics:

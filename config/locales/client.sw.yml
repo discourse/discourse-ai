@@ -43,6 +43,8 @@ sw:
           uploading: "Inaongezwa"
       llms:
         save: "Hifadhi"
+        edit: "Hariri"
+        back: "Iliyopita"
         providers:
           google: "Google"
       ai_helper:

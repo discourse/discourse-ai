@@ -43,6 +43,8 @@ pt:
           uploading: "A enviar…"
       llms:
         save: "Guardar"
+        edit: "Editar"
+        back: "Retroceder"
         providers:
           google: "Google"
       ai_helper:

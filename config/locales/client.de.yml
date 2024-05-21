@@ -118,7 +118,7 @@ de:
               description: "Setzt den Beitrag in die Überprüfungswarteschlange, wenn er ausgelöst wurde, damit die Moderatoren ihn sichten können."
             model:
               label: "Modell"
-              description: "Entweder gpt-4 oder gpt-3-5-turbo oder claude-2"
+              description: "Für die Triage verwendetes Sprachmodell"
     discourse_ai:
       title: "KI"
       modals:
@@ -200,13 +200,17 @@ de:
         short_title: "LLMs"
         no_llms: "Noch keine LLMs"
         new: "Neues Modell"
-        display_name: "Name zum Anzeigen:"
-        name: "Modellname:"
-        provider: "Dienst, der das Modell hostet:"
-        tokenizer: "Tokenizer:"
-        max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung:"
+        display_name: "Name zum Anzeigen"
+        name: "Modellname"
+        provider: "Dienst, der das Modell hostet"
+        tokenizer: "Tokenizer"
+        max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung"
+        url: "URL des Dienstes, der das Modell hostet"
+        api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
         save: "Speichern"
+        edit: "Bearbeiten"
         saved: "LLM-Modell gespeichert"
+        back: "Zurück"
         hints:
           max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50% des Kontextfensters des Modells sein sollte."
           name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden."

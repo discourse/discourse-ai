@@ -90,7 +90,6 @@ fi:
               description: "Tee ketjusta näkymätön yleisölle, jos tämä laukaistaan"
             model:
               label: "Malli"
-              description: "Joko gpt-4 tai gpt-3-5-turbo tai claude-2"
     discourse_ai:
       title: "Tekoäly"
       modals:
@@ -118,6 +117,8 @@ fi:
           uploading: "Ladataan..."
       llms:
         save: "Tallenna"
+        edit: "Muokkaa"
+        back: "Takaisin"
         providers:
           google: "Google"
       related_topics:

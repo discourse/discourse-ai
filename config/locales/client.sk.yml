@@ -42,6 +42,8 @@ sk:
           uploading: "Načítavam..."
       llms:
         save: "Uložiť"
+        edit: "Upraviť"
+        back: "Späť"
         providers:
           google: "Google"
       ai_helper:

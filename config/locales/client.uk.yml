@@ -45,6 +45,8 @@ uk:
           uploading: "Надсилання…"
       llms:
         save: "Зберегти"
+        edit: "Редагувати"
+        back: "Назад"
         providers:
           google: "Google"
       ai_helper:

@@ -90,7 +90,6 @@ ja:
               description: "トリガーされると、トピックを一般公開しないようにします"
             model:
               label: "モデル"
-              description: "gpt-4 または gpt-3-5-turbo または claude-2 のいずれか"
     discourse_ai:
       title: "AI"
       modals:
@@ -118,6 +117,8 @@ ja:
           uploading: "アップロード中..."
       llms:
         save: "保存"
+        edit: "編集"
+        back: "戻る"
         providers:
           google: "Google"
       related_topics:
