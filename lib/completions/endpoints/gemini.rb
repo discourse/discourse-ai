@@ -103,16 +103,50 @@ module DiscourseAi
         end
 
         def partials_from(decoded_chunk)
-          begin
-            JSON.parse(decoded_chunk, symbolize_names: true)
-          rescue JSON::ParserError
-            []
+          decoded_chunk
+        end
+
+        def chunk_to_string(chunk)
+          chunk.to_s
+        end
+
+        class Decoder
+          def initialize
+            @buffer = +""
+          end
+
+          def decode(str)
+            @buffer << str
+
+            lines = @buffer.split(/\r?\n\r?\n/)
+
+            keep_last = false
+
+            decoded =
+              lines
+                .map do |line|
+                  if line.start_with?("data: {")
+                    begin
+                      JSON.parse(line[6..-1], symbolize_names: true)
+                    rescue JSON::ParserError
+                      keep_last = line
+                      nil
+                    end
+                  else
+                    keep_last = line
+                    nil
+                  end
+                end
+                .compact
+
+            @buffer = +(keep_last) if keep_last
+            decoded
           end
         end
 
         def decode(chunk)
-          puts chunk
-          chunk
+          @decoder ||= Decoder.new
+          @decoder.decode(chunk)
         end
 
         def extract_prompt_for_tokenizer(prompt)

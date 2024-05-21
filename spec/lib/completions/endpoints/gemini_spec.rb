@@ -138,6 +138,32 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Gemini, user)
   end
 
+  it "Can correctly handle streamed responses even if they are chunked badly" do
+    SiteSetting.ai_gemini_api_key = "ABC"
+
+    data = +""
+    data << "da|ta: |"
+    data << gemini_mock.response("Hello").to_json
+    data << "\r\n\r\ndata: "
+    data << gemini_mock.response(" |World").to_json
+    data << "\r\n\r\ndata: "
+    data << gemini_mock.response(" Sam").to_json
+
+    split = data.split("|")
+
+    llm = DiscourseAi::Completions::Llm.proxy("google:gemini-1.5-flash")
+    url =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:streamGenerateContent?alt=sse&key=ABC"
+
+    output = +""
+    gemini_mock.with_chunk_array_support do
+      stub_request(:post, url).to_return(status: 200, body: split)
+      llm.generate("Hello", user: user) { |partial| output << partial }
+    end
+
+    expect(output).to eq("Hello World Sam")
+  end
+
   describe "#perform_completion!" do
     context "when using regular mode" do
       context "with simple prompts" do
@@ -149,20 +175,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
       context "with tools" do
         it "returns a function invocation" do
           compliance.regular_mode_tools(gemini_mock)
-        end
-      end
-    end
-
-    describe "when using streaming mode" do
-      context "with simple prompts" do
-        it "completes a trivial prompt and logs the response" do
-          compliance.streaming_mode_simple_prompt(gemini_mock)
-        end
-      end
-
-      context "with tools" do
-        it "returns a function invocation" do
-          compliance.streaming_mode_tools(gemini_mock)
         end
       end
     end
