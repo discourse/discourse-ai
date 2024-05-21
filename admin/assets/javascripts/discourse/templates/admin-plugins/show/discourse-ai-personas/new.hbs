@@ -1,3 +1,9 @@
+<DBreadcrumbsItem as |linkClass|>
+  <LinkTo @route="adminPlugins.show.discourse-ai-personas" class={{linkClass}}>
+    {{@model.plugin.nameTitleized}}
+  </LinkTo>
+</DBreadcrumbsItem>
+
 <AiPersonaListEditor
   @personas={{this.allPersonas}}
   @currentPersona={{this.model}}
