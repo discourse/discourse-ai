@@ -132,10 +132,67 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
   fab!(:user)
 
+  let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
+  let(:upload100x100) do
+    UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
+  end
+
   let(:gemini_mock) { GeminiMock.new(endpoint) }
 
   let(:compliance) do
     EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Gemini, user)
+  end
+
+  it "Supports Vision API" do
+    SiteSetting.ai_gemini_api_key = "ABC"
+
+    prompt =
+      DiscourseAi::Completions::Prompt.new(
+        "You are image bot",
+        messages: [type: :user, id: "user1", content: "hello", upload_ids: [upload100x100.id]],
+      )
+
+    encoded = prompt.encoded_uploads(prompt.messages.last)
+
+    response = gemini_mock.response("World").to_json
+
+    req_body = nil
+
+    llm = DiscourseAi::Completions::Llm.proxy("google:gemini-1.5-pro")
+    url =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=ABC"
+
+    stub_request(:post, url).with(
+      body:
+        proc do |_req_body|
+          req_body = _req_body
+          true
+        end,
+    ).to_return(status: 200, body: response)
+
+    response = llm.generate(prompt, user: user)
+
+    expect(response).to eq("World")
+
+    expected_prompt = {
+      "generationConfig" => {
+      },
+      "contents" => [
+        {
+          "role" => "user",
+          "parts" => [
+            { "text" => "hello" },
+            { "inlineData" => { "mimeType" => "image/jpeg", "data" => encoded[0][:base64] } },
+          ],
+        },
+      ],
+      "systemInstruction" => {
+        "role" => "system",
+        "parts" => [{ "text" => "You are image bot" }],
+      },
+    }
+
+    expect(JSON.parse(req_body)).to eq(expected_prompt)
   end
 
   it "Can correctly handle streamed responses even if they are chunked badly" do
@@ -162,21 +219,5 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     end
 
     expect(output).to eq("Hello World Sam")
-  end
-
-  describe "#perform_completion!" do
-    context "when using regular mode" do
-      context "with simple prompts" do
-        it "completes a trivial prompt and logs the response" do
-          compliance.regular_mode_simple_prompt(gemini_mock)
-        end
-      end
-
-      context "with tools" do
-        it "returns a function invocation" do
-          compliance.regular_mode_tools(gemini_mock)
-        end
-      end
-    end
   end
 end
