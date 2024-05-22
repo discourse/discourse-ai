@@ -13,6 +13,7 @@ en:
         claude_2: Claude 2
         gemini_pro: Gemini Pro
         gemini_1_5_pro: Gemini 1.5 Pro
+        gemini_1_5_flash: Gemini 1.5 Flash
         claude_3_opus: Claude 3 Opus
         claude_3_sonnet: Claude 3 Sonnet
         claude_3_haiku: Claude 3 Haiku

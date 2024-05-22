@@ -54,13 +54,24 @@ module DiscourseAi
           if llm_model
             url = llm_model.url
           else
-            mapped_model = model == "gemini-1.5-pro" ? "gemini-1.5-pro-latest" : model
+            mapped_model = model
+            if model == "gemini-1.5-pro"
+              mapped_model = "gemini-1.5-pro-latest"
+            elsif model == "gemini-1.5-flash"
+              mapped_model = "gemini-1.5-flash-latest"
+            elsif model == "gemini-1.0-pro"
+              mapped_model = "gemini-pro-latest"
+            end
             url = "https://generativelanguage.googleapis.com/v1beta/models/#{mapped_model}"
           end
 
           key = llm_model&.api_key || SiteSetting.ai_gemini_api_key
 
-          url = "#{url}:#{@streaming_mode ? "streamGenerateContent" : "generateContent"}?key=#{key}"
+          if @streaming_mode
+            url = "#{url}:streamGenerateContent?key=#{key}&alt=sse"
+          else
+            url = "#{url}:generateContent?key=#{key}"
+          end
 
           URI(url)
         end
@@ -68,12 +79,14 @@ module DiscourseAi
         def prepare_payload(prompt, model_params, dialect)
           tools = dialect.tools
 
-          default_options
-            .merge(contents: prompt)
-            .tap do |payload|
-              payload[:tools] = tools if tools.present?
-              payload[:generationConfig].merge!(model_params) if model_params.present?
-            end
+          payload = default_options.merge(contents: prompt[:messages])
+          payload[:systemInstruction] = {
+            role: "system",
+            parts: [{ text: prompt[:system_instruction].to_s }],
+          } if prompt[:system_instruction].present?
+          payload[:tools] = tools if tools.present?
+          payload[:generationConfig].merge!(model_params) if model_params.present?
+          payload
         end
 
         def prepare_request(payload)
@@ -96,11 +109,55 @@ module DiscourseAi
         end
 
         def partials_from(decoded_chunk)
-          begin
-            JSON.parse(decoded_chunk, symbolize_names: true)
-          rescue JSON::ParserError
-            []
+          decoded_chunk
+        end
+
+        def chunk_to_string(chunk)
+          chunk.to_s
+        end
+
+        class Decoder
+          def initialize
+            @buffer = +""
           end
+
+          def decode(str)
+            @buffer << str
+
+            lines = @buffer.split(/\r?\n\r?\n/)
+
+            keep_last = false
+
+            decoded =
+              lines
+                .map do |line|
+                  if line.start_with?("data: {")
+                    begin
+                      JSON.parse(line[6..-1], symbolize_names: true)
+                    rescue JSON::ParserError
+                      keep_last = line
+                      nil
+                    end
+                  else
+                    keep_last = line
+                    nil
+                  end
+                end
+                .compact
+
+            if keep_last
+              @buffer = +(keep_last)
+            else
+              @buffer = +""
+            end
+
+            decoded
+          end
+        end
+
+        def decode(chunk)
+          @decoder ||= Decoder.new
+          @decoder.decode(chunk)
         end
 
         def extract_prompt_for_tokenizer(prompt)

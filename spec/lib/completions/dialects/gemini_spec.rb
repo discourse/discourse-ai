@@ -3,16 +3,15 @@
 require_relative "dialect_context"
 
 RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
-  let(:model_name) { "gemini-pro" }
+  let(:model_name) { "gemini-1.5-pro" }
   let(:context) { DialectContext.new(described_class, model_name) }
 
   describe "#translate" do
     it "translates a prompt written in our generic format to the Gemini format" do
-      gemini_version = [
-        { role: "user", parts: { text: context.system_insts } },
-        { role: "model", parts: { text: "Ok." } },
-        { role: "user", parts: { text: context.simple_user_input } },
-      ]
+      gemini_version = {
+        messages: [{ role: "user", parts: [{ text: context.simple_user_input }] }],
+        system_instruction: context.system_insts,
+      }
 
       translated = context.system_user_scenario
 
@@ -21,73 +20,77 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
 
     it "injects model after tool call" do
       expect(context.image_generation_scenario).to eq(
-        [
-          { role: "user", parts: { text: context.system_insts } },
-          { parts: { text: "Ok." }, role: "model" },
-          { parts: { text: "draw a cat" }, role: "user" },
-          { parts: { functionCall: { args: { picture: "Cat" }, name: "draw" } }, role: "model" },
-          {
-            parts: {
-              functionResponse: {
-                name: "tool_id",
-                response: {
-                  content: "\"I'm a tool result\"",
-                },
-              },
+        {
+          messages: [
+            { role: "user", parts: [{ text: "draw a cat" }] },
+            {
+              role: "model",
+              parts: [{ functionCall: { name: "draw", args: { picture: "Cat" } } }],
             },
-            role: "function",
-          },
-          { parts: { text: "Ok." }, role: "model" },
-          { parts: { text: "draw another cat" }, role: "user" },
-        ],
+            {
+              role: "function",
+              parts: [
+                {
+                  functionResponse: {
+                    name: "tool_id",
+                    response: {
+                      content: "\"I'm a tool result\"",
+                    },
+                  },
+                },
+              ],
+            },
+            { role: "model", parts: { text: "Ok." } },
+            { role: "user", parts: [{ text: "draw another cat" }] },
+          ],
+          system_instruction: context.system_insts,
+        },
       )
     end
 
     it "translates tool_call and tool messages" do
       expect(context.multi_turn_scenario).to eq(
-        [
-          { role: "user", parts: { text: context.system_insts } },
-          { role: "model", parts: { text: "Ok." } },
-          { role: "user", parts: { text: "This is a message by a user" } },
-          {
-            role: "model",
-            parts: {
-              text: "I'm a previous bot reply, that's why there's no user",
+        {
+          messages: [
+            { role: "user", parts: [{ text: "This is a message by a user" }] },
+            {
+              role: "model",
+              parts: [{ text: "I'm a previous bot reply, that's why there's no user" }],
             },
-          },
-          { role: "user", parts: { text: "This is a new message by a user" } },
-          {
-            role: "model",
-            parts: {
-              functionCall: {
-                name: "get_weather",
-                args: {
-                  location: "Sydney",
-                  unit: "c",
+            { role: "user", parts: [{ text: "This is a new message by a user" }] },
+            {
+              role: "model",
+              parts: [
+                { functionCall: { name: "get_weather", args: { location: "Sydney", unit: "c" } } },
+              ],
+            },
+            {
+              role: "function",
+              parts: [
+                {
+                  functionResponse: {
+                    name: "get_weather",
+                    response: {
+                      content: "\"I'm a tool result\"",
+                    },
+                  },
                 },
-              },
+              ],
             },
-          },
-          {
-            role: "function",
-            parts: {
-              functionResponse: {
-                name: "get_weather",
-                response: {
-                  content: "I'm a tool result".to_json,
-                },
-              },
-            },
-          },
-        ],
+          ],
+          system_instruction:
+            "I want you to act as a title generator for written pieces. I will provide you with a text,\nand you will generate five attention-grabbing titles. Please keep the title concise and under 20 words,\nand ensure that the meaning is maintained. Replies will utilize the language type of the topic.\n",
+        },
       )
     end
 
     it "trims content if it's getting too long" do
+      # testing truncation on 800k tokens is slow use model with less
+      context = DialectContext.new(described_class, "gemini-pro")
       translated = context.long_user_input_scenario(length: 5_000)
 
-      expect(translated.last[:role]).to eq("user")
-      expect(translated.last.dig(:parts, :text).length).to be <
+      expect(translated[:messages].last[:role]).to eq("user")
+      expect(translated[:messages].last.dig(:parts, :text).length).to be <
         context.long_message_text(length: 5_000).length
     end
   end

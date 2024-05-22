@@ -56,7 +56,7 @@ module DiscourseAi
                 gpt-4-vision-preview
                 gpt-4o
               ],
-              google: %w[gemini-pro gemini-1.5-pro],
+              google: %w[gemini-pro gemini-1.5-pro gemini-1.5-flash],
             }.tap do |h|
               h[:ollama] = ["mistral"] if Rails.env.development?
               h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development?
