@@ -9,7 +9,7 @@ RSpec.describe Jobs::SharedConversationAdjustUploadSecurity do
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "10"
     SiteSetting.ai_bot_public_sharing_allowed_groups = "10"
-    User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
+    DiscourseAi::AiBot::EntryPoint.find_user_from_model("claude-2")
   end
   fab!(:user)
   fab!(:topic) { Fabricate(:private_message_topic, user: user, recipient: bot_user) }

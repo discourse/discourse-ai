@@ -2,7 +2,7 @@
 
 RSpec.describe Jobs::UpdateAiBotPmTitle do
   let(:user) { Fabricate(:admin) }
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("claude-2") }
 
   before do
     SiteSetting.ai_bot_enabled_chat_bots = "claude-2"

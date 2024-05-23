@@ -15,10 +15,11 @@ RSpec.describe Jobs::CreateAiReply do
 
     it "adds a reply from the bot" do
       persona_id = AiPersona.find_by(name: "Forum Helper").id
+      bot_user = DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo")
       DiscourseAi::Completions::Llm.with_prepared_responses([expected_response]) do
         subject.execute(
           post_id: topic.first_post.id,
-          bot_user_id: DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID,
+          bot_user_id: bot_user.id,
           persona_id: persona_id,
         )
       end

@@ -354,18 +354,7 @@ discourse_ai:
     type: list
     default: "gpt-3.5-turbo"
     client: true
-    choices:
-      - gpt-3.5-turbo
-      - gpt-4
-      - gpt-4-turbo
-      - gpt-4o
-      - claude-2
-      - gemini-1.5-pro
-      - mixtral-8x7B-Instruct-V0.1
-      - claude-3-opus
-      - claude-3-sonnet
-      - claude-3-haiku
-      - cohere-command-r-plus
+    choices: "DiscourseAi::Configuration::LlmEnumerator.ai_bot_models"
   ai_bot_add_to_header:
     default: true
     client: true

@@ -19,7 +19,7 @@ RSpec.describe SharedAiConversation, type: :model do
     <p>This is some other text</p>
     HTML
 
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("claude-2") }
   let!(:topic) { Fabricate(:private_message_topic, recipient: bot_user) }
   let!(:post1) { Fabricate(:post, topic: topic, post_number: 1) }
   let!(:post2) { Fabricate(:post, topic: topic, post_number: 2, raw: raw_with_details) }

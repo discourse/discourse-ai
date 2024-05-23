@@ -6,82 +6,58 @@ module DiscourseAi
 
     class EntryPoint
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
-
-      GPT4_ID = -110
-      GPT3_5_TURBO_ID = -111
-      CLAUDE_V2_ID = -112
-      GPT4_TURBO_ID = -113
-      MIXTRAL_ID = -114
-      GEMINI_ID = -115
-      FAKE_ID = -116 # only used for dev and test
-      CLAUDE_3_OPUS_ID = -117
-      CLAUDE_3_SONNET_ID = -118
-      CLAUDE_3_HAIKU_ID = -119
-      COHERE_COMMAND_R_PLUS = -120
-      GPT4O_ID = -121
-
-      BOTS = [
-        [GPT4_ID, "gpt4_bot", "gpt-4"],
-        [GPT3_5_TURBO_ID, "gpt3.5_bot", "gpt-3.5-turbo"],
-        [CLAUDE_V2_ID, "claude_bot", "claude-2"],
-        [GPT4_TURBO_ID, "gpt4t_bot", "gpt-4-turbo"],
-        [MIXTRAL_ID, "mixtral_bot", "mixtral-8x7B-Instruct-V0.1"],
-        [GEMINI_ID, "gemini_bot", "gemini-1.5-pro"],
-        [FAKE_ID, "fake_bot", "fake"],
-        [CLAUDE_3_OPUS_ID, "claude_3_opus_bot", "claude-3-opus"],
-        [CLAUDE_3_SONNET_ID, "claude_3_sonnet_bot", "claude-3-sonnet"],
-        [CLAUDE_3_HAIKU_ID, "claude_3_haiku_bot", "claude-3-haiku"],
-        [COHERE_COMMAND_R_PLUS, "cohere_command_bot", "cohere-command-r-plus"],
-        [GPT4O_ID, "gpt4o_bot", "gpt-4o"],
-      ]
-
-      BOT_USER_IDS = BOTS.map(&:first)
-
+      BOT_MODEL_CUSTOM_FIELD = "bot_model_name"
       Bot = Struct.new(:id, :name, :llm)
 
       def self.all_bot_ids
-        BOT_USER_IDS.concat(AiPersona.mentionables.map { |mentionable| mentionable[:user_id] })
+        mentionable_persona_user_ids =
+          AiPersona.mentionables.map { |mentionable| mentionable[:user_id] }
+        mentionable_bot_users =
+          User
+            .joins(:_custom_fields)
+            .where(active: true, user_custom_fields: { name: BOT_MODEL_CUSTOM_FIELD })
+            .pluck(:user_id)
+
+        mentionable_bot_users + mentionable_persona_user_ids
       end
 
-      def self.find_bot_by_id(id)
-        found = DiscourseAi::AiBot::EntryPoint::BOTS.find { |bot| bot[0] == id }
-        return if !found
-        Bot.new(found[0], found[1], found[2])
+      def self.find_participant_in(participant_ids)
+        participant_data =
+          UserCustomField
+            .includes(:user)
+            .where(users: { active: true }, name: BOT_MODEL_CUSTOM_FIELD, user_id: participant_ids)
+            .last
+
+        return if participant_data.nil?
+
+        Bot.new(
+          participant_data.user.id,
+          participant_data.user.username_lower,
+          participant_data.value,
+        )
       end
 
-      def self.map_bot_model_to_user_id(model_name)
-        case model_name
-        in "gpt-4o"
-          GPT4O_ID
-        in "gpt-4-turbo"
-          GPT4_TURBO_ID
-        in "gpt-3.5-turbo"
-          GPT3_5_TURBO_ID
-        in "gpt-4"
-          GPT4_ID
-        in "claude-2"
-          CLAUDE_V2_ID
-        in "mixtral-8x7B-Instruct-V0.1"
-          MIXTRAL_ID
-        in "gemini-1.5-pro"
-          GEMINI_ID
-        in "fake"
-          FAKE_ID
-        in "claude-3-opus"
-          CLAUDE_3_OPUS_ID
-        in "claude-3-sonnet"
-          CLAUDE_3_SONNET_ID
-        in "claude-3-haiku"
-          CLAUDE_3_HAIKU_ID
-        in "cohere-command-r-plus"
-          COHERE_COMMAND_R_PLUS
-        else
-          nil
-        end
+      def self.find_user_from_model(model_name)
+        UserCustomField
+          .includes(:user)
+          .find_by(name: BOT_MODEL_CUSTOM_FIELD, value: model_name)
+          &.user
+      end
+
+      def self.enabled_user_ids_and_models_map
+        enabled_models = SiteSetting.ai_bot_enabled_chat_bots.split("|")
+
+        DB.query_hash(<<~SQL, model_names: enabled_models, cf_name: BOT_MODEL_CUSTOM_FIELD)
+          SELECT users.username AS username, users.id AS id, ucf.value AS model_name
+          FROM user_custom_fields ucf
+          INNER JOIN users ON ucf.user_id = users.id
+          WHERE ucf.name = :cf_name 
+          AND ucf.value IN (:model_names)
+        SQL
       end
 
       # Most errors are simply "not_allowed"
-      # we do not want to reveal information about this sytem
+      # we do not want to reveal information about this system
       # the 2 exceptions are "other_people_in_pm" and "other_content_in_pm"
       # in both cases you have access to the PM so we are not revealing anything
       def self.ai_share_error(topic, guardian)
@@ -170,25 +146,11 @@ module DiscourseAi
               scope.user.in_any_groups?(SiteSetting.ai_bot_allowed_groups_map)
           end,
         ) do
-          model_map = {}
-          SiteSetting
-            .ai_bot_enabled_chat_bots
-            .split("|")
-            .each do |bot_name|
-              model_map[
-                ::DiscourseAi::AiBot::EntryPoint.map_bot_model_to_user_id(bot_name)
-              ] = bot_name
-            end
+          bots_map = ::DiscourseAi::AiBot::EntryPoint.enabled_user_ids_and_models_map
 
-          # not 100% ideal, cause it is one extra query, but we need it
-          bots = DB.query_hash(<<~SQL, user_ids: model_map.keys)
-            SELECT username, id FROM users WHERE id IN (:user_ids)
-          SQL
-
-          bots.each { |hash| hash["model_name"] = model_map[hash["id"]] }
           persona_users = AiPersona.persona_users(user: scope.user)
           if persona_users.present?
-            bots.concat(
+            bots_map.concat(
               persona_users.map do |persona_user|
                 {
                   "id" => persona_user[:user_id],
@@ -198,7 +160,8 @@ module DiscourseAi
               end,
             )
           end
-          bots
+
+          bots_map
         end
 
         plugin.add_to_serializer(:current_user, :can_use_assistant) do

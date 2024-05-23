@@ -4,7 +4,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
   describe "#inject_into" do
     describe "subscribes to the post_created event" do
       fab!(:admin)
-      let(:gpt_bot) { User.find(described_class::GPT4_ID) }
+      let(:gpt_bot) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-4") }
       fab!(:bot_allowed_group) { Fabricate(:group) }
 
       let(:post_args) do
@@ -104,7 +104,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
       end
 
       it "includes the bot's user_id" do
-        claude_bot = User.find(described_class::CLAUDE_V2_ID)
+        claude_bot = DiscourseAi::AiBot::EntryPoint.find_user_from_model("claude-2")
         claude_post_attrs = post_args.merge(target_usernames: [claude_bot.username].join(","))
 
         expect { PostCreator.create!(admin, claude_post_attrs) }.to change(

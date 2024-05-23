@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 RSpec.describe "Share conversation", type: :system do
   fab!(:admin) { Fabricate(:admin, username: "ai_sharer") }
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-4") }
 
   let(:pm) do
     Fabricate(

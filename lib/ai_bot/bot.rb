@@ -163,76 +163,55 @@ module DiscourseAi
       end
 
       def self.guess_model(bot_user)
-        # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
-        guess =
-          case bot_user.id
-          when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
-            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-              "aws_bedrock:claude-2"
-            else
-              "anthropic:claude-2"
-            end
-          when DiscourseAi::AiBot::EntryPoint::GPT4_ID
-            "open_ai:gpt-4"
-          when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
-            "open_ai:gpt-4-turbo"
-          when DiscourseAi::AiBot::EntryPoint::GPT4O_ID
-            "open_ai:gpt-4o"
-          when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
-            "open_ai:gpt-3.5-turbo-16k"
-          when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
-            mixtral_model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-            if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(mixtral_model)
-              "vllm:#{mixtral_model}"
-            elsif DiscourseAi::Completions::Endpoints::HuggingFace.correctly_configured?(
-                  mixtral_model,
-                )
-              "hugging_face:#{mixtral_model}"
-            else
-              "ollama:mistral"
-            end
-          when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
-            "google:gemini-1.5-pro"
-          when DiscourseAi::AiBot::EntryPoint::FAKE_ID
-            "fake:fake"
-          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
-            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
-                 "claude-3-opus",
-               )
-              "aws_bedrock:claude-3-opus"
-            else
-              "anthropic:claude-3-opus"
-            end
-          when DiscourseAi::AiBot::EntryPoint::COHERE_COMMAND_R_PLUS
-            "cohere:command-r-plus"
-          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
-            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
-                 "claude-3-sonnet",
-               )
-              "aws_bedrock:claude-3-sonnet"
-            else
-              "anthropic:claude-3-sonnet"
-            end
-          when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_HAIKU_ID
-            if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
-                 "claude-3-haiku",
-               )
-              "aws_bedrock:claude-3-haiku"
-            else
-              "anthropic:claude-3-haiku"
-            end
-          else
-            nil
-          end
+        base_choice = guess_base_model(bot_user)
 
-        if guess
-          provider, model_name = guess.split(":")
+        if base_choice
+          provider, model_name = base_choice.split(":")
           llm_model = LlmModel.find_by(provider: provider, name: model_name)
 
           return "custom:#{llm_model.id}" if llm_model
         end
 
-        guess
+        base_choice
+      end
+
+      # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
+      def self.guess_base_model(bot_user)
+        associated_llm =
+          bot_user.custom_fields[DiscourseAi::AiBot::EntryPoint::BOT_MODEL_CUSTOM_FIELD]
+
+        return if associated_llm.nil? # Might be a persona user. Handled by constructor.
+
+        return "open_ai:gpt-3.5-turbo-16k" if associated_llm == "gpt-3.5-turbo"
+        return "open_ai:#{associated_llm}" if associated_llm.starts_with?("gpt-")
+
+        return "google:gemini-1.5-pro" if associated_llm == "gemini-1.5-pro"
+
+        return "fake:fake" if associated_llm == "fake"
+
+        return "cohere:command-r-plus" if associated_llm = "command-r-plus"
+
+        if %w[claude-3-opus claude-3-sonnet claude-3-haiku].include?(associated_llm)
+          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(associated_llm)
+            return "aws_bedrock:#{associated_llm}"
+          else
+            return "anthropic:#{associated_llm}"
+          end
+        end
+
+        if associated_llm == "mistralai/Mixtral-8x7B-Instruct-v0.1"
+          if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(associated_llm)
+            if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(mixtral_model)
+              return "vllm:#{associated_llm}"
+            elsif DiscourseAi::Completions::Endpoints::HuggingFace.correctly_configured?(
+                  associated_llm,
+                )
+              return "hugging_face:#{associated_llm}"
+            else
+              return "ollama:mistral"
+            end
+          end
+        end
       end
 
       def build_placeholder(summary, details, custom_raw: nil)

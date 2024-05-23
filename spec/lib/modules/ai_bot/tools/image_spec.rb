@@ -4,7 +4,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Image do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
 
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
 
   let(:prompts) { ["a pink cow", "a red cow"] }
 
