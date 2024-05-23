@@ -11,7 +11,6 @@ export default class PreferencesAiController extends Controller {
   @service siteSettings;
   @tracked saved = false;
 
-
   @action
   save() {
     this.saved = false;
