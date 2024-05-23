@@ -575,3 +575,11 @@
     max-width: 555px;
   }
 }
+
+.auto-image-caption-loader {
+  margin-left: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-high);
+}

@@ -124,14 +124,25 @@ module DiscourseAi
 
       def caption_image
         image_url = params[:image_url]
-        raise Discourse::InvalidParameters.new(:image_url) if !image_url
+        image_url_type = params[:image_url_type]
 
-        image = upload_from_full_url(image_url)
+        raise Discourse::InvalidParameters.new(:image_url) if !image_url
+        raise Discourse::InvalidParameters.new(:image_url) if !image_url_type
+
+        if image_url_type == "short_path"
+          image = Upload.find_by(sha1: Upload.sha1_from_short_path(image_url))
+        elsif image_url_type == "short_url"
+          image = Upload.find_by(sha1: Upload.sha1_from_short_url(image_url))
+        else
+          image = upload_from_full_url(image_url)
+        end
+
         raise Discourse::NotFound if image.blank?
         final_image_url = get_caption_url(image, image_url)
 
         hijack do
           if Rails.env.development?
+            sleep 2 # Simulate a delay of 2 seconds
             caption = random_caption
           else
             caption =

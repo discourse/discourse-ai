@@ -60,6 +60,7 @@ export default apiInitializer("1.25.0", (api) => {
             method: "POST",
             data: {
               image_url: imageSrc,
+              image_url_type: "long_url",
             },
           }
         );
@@ -83,8 +84,35 @@ export default apiInitializer("1.25.0", (api) => {
     }
   );
 
+  // Checks if image is small (≤ 0.4 MP)
+  function isSmallImage(width, height) {
+    const megapixels = (width * height) / 1000000;
+    return megapixels <= 0.4;
+  }
+
   function needsImprovedCaption(caption) {
     return caption.length < 20 || caption.split(" ").length === 1;
+  }
+
+  function getUploadUrlFromMarkdown(markdown) {
+    const regex = /\(upload:\/\/([^)]+)\)/;
+    const match = markdown.match(regex);
+    return match ? `upload://${match[1]}` : null;
+  }
+
+  async function fetchImageCaption(imageUrl, urlType) {
+    try {
+      const response = await ajax(`/discourse-ai/ai-helper/caption_image`, {
+        method: "POST",
+        data: {
+          image_url: imageUrl,
+          image_url_type: urlType,
+        },
+      });
+      return response.caption;
+    } catch (error) {
+      popupAjaxError(error);
+    }
   }
 
   // Automatically caption uploaded images
@@ -96,23 +124,14 @@ export default apiInitializer("1.25.0", (api) => {
     if (
       !autoCaptionEnabled ||
       !isImage(upload.url) ||
-      !needsImprovedCaption(upload.original_filename)
+      !needsImprovedCaption(upload.original_filename) ||
+      isSmallImage(upload.width, upload.height)
     ) {
       return getUploadMarkdown(upload);
     }
 
-    try {
-      const { caption } = await ajax(`/discourse-ai/ai-helper/caption_image`, {
-        method: "POST",
-        data: {
-          image_url: upload.url,
-        },
-      });
-
-      return `![${caption}|${upload.thumbnail_width}x${upload.thumbnail_height}](${upload.short_url})`;
-    } catch (error) {
-      popupAjaxError(error);
-    }
+    const caption = await fetchImageCaption(upload.url, "long_url");
+    return `![${caption}|${upload.thumbnail_width}x${upload.thumbnail_height}](${upload.short_url})`;
   });
 
   // Conditionally show dialog to auto image caption
@@ -132,16 +151,32 @@ export default apiInitializer("1.25.0", (api) => {
         const caption = image
           .substring(image.indexOf("[") + 1, image.indexOf("]"))
           .split("|")[0];
-        // TODO add check for if image is not small
+        // We don't check if the image is small to show the prompt here
+        // because the width/height are the thumbnail sizes so the mp count
+        // is incorrect. It doesn't matter because the auto caption won't
+        // happen anyways if its small because that uses the actual upload dimensions
         return needsImprovedCaption(caption);
       });
+
       const needsBetterCaptions = imagesToCaption?.length > 0;
 
-      // TODO: add logic to resolve() if user has:
-      // - [] seen this dialog before
-      if (autoCaptionEnabled || !hasImageUploads || !needsBetterCaptions) {
-        resolve();
+      const keyValueStore = api.container.lookup("service:key-value-store");
+      const imageCaptionPopup = api.container.lookup(
+        "service:imageCaptionPopup"
+      );
+      const autoCaptionPromptKey = "ai-auto-caption-seen";
+      const seenAutoCaptionPrompt = keyValueStore.getItem(autoCaptionPromptKey);
+
+      if (
+        autoCaptionEnabled ||
+        !hasImageUploads ||
+        !needsBetterCaptions ||
+        seenAutoCaptionPrompt
+      ) {
+        return resolve();
       }
+
+      keyValueStore.setItem(autoCaptionPromptKey, true);
 
       dialog.confirm({
         message: I18n.t(`${localePrefix}.prompt`),
@@ -154,8 +189,23 @@ export default apiInitializer("1.25.0", (api) => {
             currentUser.set("user_option.auto_image_caption", true);
             await currentUser.save(["auto_image_caption"]);
 
-            // TODO: generate caption for all images in composer before resolving
-            resolve();
+            imagesToCaption.forEach(async (imageMarkdown) => {
+              const uploadUrl = getUploadUrlFromMarkdown(imageMarkdown);
+              imageCaptionPopup.showAutoCaptionLoader = true;
+              const caption = await fetchImageCaption(uploadUrl, "short_url");
+
+              // Find and replace the caption in the reply
+              const regex = new RegExp(
+                `(!\\[)[^|]+(\\|[^\\]]+\\]\\(${uploadUrl}\\))`
+              );
+              const newReply = composer.model.reply.replace(
+                regex,
+                `$1${caption}$2`
+              );
+              composer.model.set("reply", newReply);
+              imageCaptionPopup.showAutoCaptionLoader = false;
+              resolve();
+            });
           } catch (error) {
             // Reject the promise if an error occurs
             // Show an error saying unable to generate captions
@@ -164,7 +214,6 @@ export default apiInitializer("1.25.0", (api) => {
         },
         didCancel: () => {
           // Don't enable auto captions and continue with the save
-          // TODO: add logic to stop showing this dialog
           resolve();
         },
       });
