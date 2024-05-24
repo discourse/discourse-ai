@@ -131,16 +131,54 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       end
 
       it "returns the suggested caption for the image" do
-        post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
+        post "/discourse-ai/ai-helper/caption_image",
+             params: {
+               image_url: image_url,
+               image_url_type: "long_url",
+             }
 
         expect(response.status).to eq(200)
         expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
       end
 
+      context "when the image_url is a short_url" do
+        let(:image_url) { upload.short_url }
+
+        it "returns the suggested caption for the image" do
+          post "/discourse-ai/ai-helper/caption_image",
+               params: {
+                 image_url: image_url,
+                 image_url_type: "short_url",
+               }
+
+          expect(response.status).to eq(200)
+          expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+        end
+      end
+
+      context "when the image_url is a short_path" do
+        let(:image_url) { "#{Discourse.base_url}#{upload.short_path}" }
+
+        it "returns the suggested caption for the image" do
+          post "/discourse-ai/ai-helper/caption_image",
+               params: {
+                 image_url: image_url,
+                 image_url_type: "short_path",
+               }
+
+          expect(response.status).to eq(200)
+          expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+        end
+      end
+
       it "returns a 502 error when the completion call fails" do
         stub_request(:post, "https://example.com/predictions").to_return(status: 502)
 
-        post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
+        post "/discourse-ai/ai-helper/caption_image",
+             params: {
+               image_url: image_url,
+               image_url_type: "long_url",
+             }
 
         expect(response.status).to eq(502)
       end
@@ -155,6 +193,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         post "/discourse-ai/ai-helper/caption_image",
              params: {
                image_url: "http://blah.com/img.jpeg",
+               image_url_type: "long_url",
              }
 
         expect(response.status).to eq(404)
@@ -172,13 +211,21 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         before { enable_secure_uploads }
 
         it "returns a 403 error if the user cannot access the secure upload" do
-          post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
+          post "/discourse-ai/ai-helper/caption_image",
+               params: {
+                 image_url: image_url,
+                 image_url_type: "long_url",
+               }
           expect(response.status).to eq(403)
         end
 
         it "returns a 200 message and caption if user can access the secure upload" do
           group.add(user)
-          post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
+          post "/discourse-ai/ai-helper/caption_image",
+               params: {
+                 image_url: image_url,
+                 image_url_type: "long_url",
+               }
           expect(response.status).to eq(200)
           expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
         end
@@ -188,7 +235,11 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
           it "creates a signed URL properly and makes the caption" do
             group.add(user)
-            post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
+            post "/discourse-ai/ai-helper/caption_image",
+                 params: {
+                   image_url: image_url,
+                   image_url_type: "long_url",
+                 }
             expect(response.status).to eq(200)
             expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
           end
