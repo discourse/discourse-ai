@@ -115,6 +115,20 @@ export default apiInitializer("1.25.0", (api) => {
     }
   }
 
+  const autoCaptionAllowedGroups =
+    settings?.ai_auto_image_caption_allowed_groups
+      .split("|")
+      .map((id) => parseInt(id, 10));
+  const currentUserGroups = currentUser.groups.map((g) => g.id);
+
+  if (
+    !currentUserGroups.some((groupId) =>
+      autoCaptionAllowedGroups.includes(groupId)
+    )
+  ) {
+    return;
+  }
+
   // Automatically caption uploaded images
   api.addComposerUploadMarkdownResolver(async (upload) => {
     const autoCaptionEnabled = currentUser.get(
