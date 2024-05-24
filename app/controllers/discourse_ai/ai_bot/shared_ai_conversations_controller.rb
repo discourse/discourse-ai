@@ -19,7 +19,8 @@ module DiscourseAi
         if shared_conversation.persisted?
           render json: success_json.merge(share_key: shared_conversation.share_key)
         else
-          render json: failed_json.merge(error: I18n.t("discourse_ai.share_ai.failed_to_share")),
+          render json:
+                   failed_json.merge(error: I18n.t("discourse_ai.share_ai.errors.failed_to_share")),
                  status: :unprocessable_entity
         end
       end
@@ -30,7 +31,9 @@ module DiscourseAi
         SharedAiConversation.destroy_conversation(@shared_conversation)
 
         render json:
-                 success_json.merge(message: I18n.t("discourse_ai.share_ai.conversation_deleted"))
+                 success_json.merge(
+                   message: I18n.t("discourse_ai.share_ai.errors.conversation_deleted"),
+                 )
       end
 
       def show
