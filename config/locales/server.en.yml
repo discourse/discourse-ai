@@ -245,7 +245,7 @@ en:
         search: "Search all public topics on the forum"
         tags: "List all tags on the forum"
         time: "Find time in various time zones"
-        summarize: "Summarize a topic"
+        summary: "Summarize a topic"
         image: "Generate image using Stable Diffusion"
         google: "Search Google for a query"
         read: "Read public topic on the forum"
