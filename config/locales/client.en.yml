@@ -212,7 +212,10 @@ en:
         edit: "Edit"
         saved: "LLM Model Saved"
         back: "Back"
-        tests:
+        confirm_delete: Are you sure you want to delete this model?
+        delete: Delete
+
+        tests: 
           title: "Run Test"
           running: "Running test..."
           success: "Success!"
