@@ -75,6 +75,7 @@ en:
     ai_helper_enabled_features: "Select the features to enable in the AI helper."
     post_ai_helper_allowed_groups: "User groups allowed to access AI Helper features in posts"
     ai_helper_image_caption_model: "Select the model to use for generating image captions"
+    ai_auto_image_caption_allowed_groups: "Users on these groups can toggle automatic image captioning."
 
     ai_embeddings_enabled: "Enable the embeddings module."
     ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"
