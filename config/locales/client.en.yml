@@ -119,11 +119,6 @@ en:
     discourse_ai:
       title: "AI"
 
-      user_preferences:
-        empty_state:
-          title: "No AI specific user preferences available."
-          body: "There are currently no user preferences related to AI that are available for you to toggle."
-
       modals:
         select_option: "Select an option..."
 
