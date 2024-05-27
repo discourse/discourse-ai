@@ -120,6 +120,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     # billing should be picked
     expect(audit.request_tokens).to eq(17)
     expect(audit.response_tokens).to eq(22)
+
+    expect(audit.language_model).to eq("Cohere - command-r-plus")
   end
 
   it "is able to perform streaming completions" do

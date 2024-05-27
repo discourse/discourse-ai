@@ -31,4 +31,5 @@ end
 #  topic_id             :integer
 #  post_id              :integer
 #  feature_name         :string(255)
+#  language_model       :string(255)
 #

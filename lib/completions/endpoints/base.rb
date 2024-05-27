@@ -120,6 +120,7 @@ module DiscourseAi
                   topic_id: dialect.prompt.topic_id,
                   post_id: dialect.prompt.post_id,
                   feature_name: feature_name,
+                  language_model: self.class.endpoint_name(@model),
                 )
 
               if !@streaming_mode
