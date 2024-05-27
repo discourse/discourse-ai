@@ -112,4 +112,25 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
       end
     end
   end
+
+  describe "DELETE #destroy" do
+    fab!(:llm_model)
+
+    it "destroys the requested ai_persona" do
+      expect {
+        delete "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json"
+
+        expect(response).to have_http_status(:no_content)
+      }.to change(LlmModel, :count).by(-1)
+    end
+
+    it "validates the model is not in use" do
+      SiteSetting.ai_helper_model = "custom:#{llm_model.id}"
+
+      delete "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json"
+
+      expect(response.status).to eq(409)
+      expect(llm_model.reload).to eq(llm_model)
+    end
+  end
 end

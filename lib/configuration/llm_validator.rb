@@ -28,11 +28,11 @@ module DiscourseAi
             @endpoint = endpoint
             return false
           end
-        end
 
-        if !can_talk_to_model?(val)
-          @unreachable = true
-          return false
+          if !can_talk_to_model?(val)
+            @unreachable = true
+            return false
+          end
         end
 
         true
