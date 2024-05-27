@@ -16,6 +16,7 @@ import DTooltip from "float-kit/components/d-tooltip";
 export default class AiLlmEditor extends Component {
   @service toasts;
   @service router;
+  @service dialog;
 
   @tracked isSaving = false;
 
@@ -45,10 +46,7 @@ export default class AiLlmEditor extends Component {
 
       if (isNew) {
         this.args.llms.addObject(this.args.model);
-        this.router.transitionTo(
-          "adminPlugins.show.discourse-ai-llms.show",
-          this.args.model
-        );
+        this.router.transitionTo("adminPlugins.show.discourse-ai-llms.index");
       } else {
         this.toasts.success({
           data: { message: I18n.t("discourse_ai.llms.saved") },
@@ -92,6 +90,24 @@ export default class AiLlmEditor extends Component {
 
   get displayTestResult() {
     return this.testRunning || this.testResult !== null;
+  }
+
+  @action
+  delete() {
+    return this.dialog.confirm({
+      message: I18n.t("discourse_ai.llms.confirm_delete"),
+      didConfirm: () => {
+        return this.args.model
+          .destroyRecord()
+          .then(() => {
+            this.args.llms.removeObject(this.args.model);
+            this.router.transitionTo(
+              "adminPlugins.show.discourse-ai-llms.index"
+            );
+          })
+          .catch(popupAjaxError);
+      },
+    });
   }
 
   <template>
@@ -182,6 +198,14 @@ export default class AiLlmEditor extends Component {
         >
           {{I18n.t "discourse_ai.llms.save"}}
         </DButton>
+        {{#unless @model.isNew}}
+          <DButton
+            @action={{this.delete}}
+            class="btn-danger ai-llm-editor__delete"
+          >
+            {{I18n.t "discourse_ai.llms.delete"}}
+          </DButton>
+        {{/unless}}
       </div>
 
       <div class="control-group ai-llm-editor-tests">

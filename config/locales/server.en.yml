@@ -318,6 +318,10 @@ en:
         configuration_hint:
           one: "Make sure the `%{settings}` setting was configured."
           other: "Make sure these settings were configured: %{settings}"
+      
+      delete_failed:
+        one: "We couldn't delete this model because %{settings} is using it. Update the setting and try again."
+        other: "We couldn't delete this model because %{settings} are using it. Update the settings and try again."
 
     embeddings:
       configuration:
