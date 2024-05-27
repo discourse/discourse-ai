@@ -161,6 +161,11 @@ export default apiInitializer("1.25.0", (api) => {
 
       const imageUploads = composer.model.reply.match(IMAGE_MARKDOWN_REGEX);
       const hasImageUploads = imageUploads?.length > 0;
+
+      if (!hasImageUploads) {
+        resolve();
+      }
+
       const imagesToCaption = imageUploads.filter((image) => {
         const caption = image
           .substring(image.indexOf("[") + 1, image.indexOf("]"))
@@ -181,12 +186,7 @@ export default apiInitializer("1.25.0", (api) => {
       const autoCaptionPromptKey = "ai-auto-caption-seen";
       const seenAutoCaptionPrompt = keyValueStore.getItem(autoCaptionPromptKey);
 
-      if (
-        autoCaptionEnabled ||
-        !hasImageUploads ||
-        !needsBetterCaptions ||
-        seenAutoCaptionPrompt
-      ) {
+      if (autoCaptionEnabled || !needsBetterCaptions || seenAutoCaptionPrompt) {
         return resolve();
       }
 
