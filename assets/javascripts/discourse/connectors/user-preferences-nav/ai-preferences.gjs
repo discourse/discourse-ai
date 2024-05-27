@@ -7,7 +7,7 @@ function showAiPreferences(user, siteSettings) {
   // Since we only have one AI related user setting we don't show
   // AI preferences if these conditions aren't met.
   // If we add more user settings in the future we can move this
-  // logic to the the specific settins and conditionally show it in the template.
+  // logic to the the specific settings and conditionally show it in the template.
   const userGroups = user.groups.map((g) => g.id);
   const captionGroups = siteSettings.ai_auto_image_caption_allowed_groups
     .split("|")
