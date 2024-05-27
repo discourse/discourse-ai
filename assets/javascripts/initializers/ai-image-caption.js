@@ -1,7 +1,9 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { apiInitializer } from "discourse/lib/api";
+import { getUploadMarkdown, isImage } from "discourse/lib/uploads";
 import I18n from "discourse-i18n";
+import { IMAGE_MARKDOWN_REGEX } from "../discourse/lib/utilities";
 
 export default apiInitializer("1.25.0", (api) => {
   const buttonAttrs = {
@@ -18,6 +20,8 @@ export default apiInitializer("1.25.0", (api) => {
   ) {
     return;
   }
+
+  api.addSaveableUserOptionField("auto_image_caption");
 
   api.addComposerImageWrapperButton(
     buttonAttrs.label,
@@ -56,6 +60,7 @@ export default apiInitializer("1.25.0", (api) => {
             method: "POST",
             data: {
               image_url: imageSrc,
+              image_url_type: "long_url",
             },
           }
         );
@@ -78,4 +83,154 @@ export default apiInitializer("1.25.0", (api) => {
       }
     }
   );
+
+  // Checks if image is small (≤ 0.4 MP)
+  function isSmallImage(width, height) {
+    const megapixels = (width * height) / 1000000;
+    return megapixels <= 0.4;
+  }
+
+  function needsImprovedCaption(caption) {
+    return caption.length < 20 || caption.split(" ").length === 1;
+  }
+
+  function getUploadUrlFromMarkdown(markdown) {
+    const regex = /\(upload:\/\/([^)]+)\)/;
+    const match = markdown.match(regex);
+    return match ? `upload://${match[1]}` : null;
+  }
+
+  async function fetchImageCaption(imageUrl, urlType) {
+    try {
+      const response = await ajax(`/discourse-ai/ai-helper/caption_image`, {
+        method: "POST",
+        data: {
+          image_url: imageUrl,
+          image_url_type: urlType,
+        },
+      });
+      return response.caption;
+    } catch (error) {
+      popupAjaxError(error);
+    }
+  }
+
+  const autoCaptionAllowedGroups =
+    settings?.ai_auto_image_caption_allowed_groups
+      .split("|")
+      .map((id) => parseInt(id, 10));
+  const currentUserGroups = currentUser.groups.map((g) => g.id);
+
+  if (
+    !currentUserGroups.some((groupId) =>
+      autoCaptionAllowedGroups.includes(groupId)
+    )
+  ) {
+    return;
+  }
+
+  // Automatically caption uploaded images
+  api.addComposerUploadMarkdownResolver(async (upload) => {
+    const autoCaptionEnabled = currentUser.get(
+      "user_option.auto_image_caption"
+    );
+
+    if (
+      !autoCaptionEnabled ||
+      !isImage(upload.url) ||
+      !needsImprovedCaption(upload.original_filename) ||
+      isSmallImage(upload.width, upload.height)
+    ) {
+      return getUploadMarkdown(upload);
+    }
+
+    const caption = await fetchImageCaption(upload.url, "long_url");
+    return `![${caption}|${upload.thumbnail_width}x${upload.thumbnail_height}](${upload.short_url})`;
+  });
+
+  // Conditionally show dialog to auto image caption
+  api.composerBeforeSave(() => {
+    return new Promise((resolve, reject) => {
+      const dialog = api.container.lookup("service:dialog");
+      const composer = api.container.lookup("service:composer");
+      const localePrefix =
+        "discourse_ai.ai_helper.image_caption.automatic_caption_dialog";
+      const autoCaptionEnabled = currentUser.get(
+        "user_option.auto_image_caption"
+      );
+
+      const imageUploads = composer.model.reply.match(IMAGE_MARKDOWN_REGEX);
+      const hasImageUploads = imageUploads?.length > 0;
+      const imagesToCaption = imageUploads.filter((image) => {
+        const caption = image
+          .substring(image.indexOf("[") + 1, image.indexOf("]"))
+          .split("|")[0];
+        // We don't check if the image is small to show the prompt here
+        // because the width/height are the thumbnail sizes so the mp count
+        // is incorrect. It doesn't matter because the auto caption won't
+        // happen anyways if its small because that uses the actual upload dimensions
+        return needsImprovedCaption(caption);
+      });
+
+      const needsBetterCaptions = imagesToCaption?.length > 0;
+
+      const keyValueStore = api.container.lookup("service:key-value-store");
+      const imageCaptionPopup = api.container.lookup(
+        "service:imageCaptionPopup"
+      );
+      const autoCaptionPromptKey = "ai-auto-caption-seen";
+      const seenAutoCaptionPrompt = keyValueStore.getItem(autoCaptionPromptKey);
+
+      if (
+        autoCaptionEnabled ||
+        !hasImageUploads ||
+        !needsBetterCaptions ||
+        seenAutoCaptionPrompt
+      ) {
+        return resolve();
+      }
+
+      keyValueStore.setItem(autoCaptionPromptKey, true);
+
+      dialog.confirm({
+        message: I18n.t(`${localePrefix}.prompt`),
+        confirmButtonLabel: `${localePrefix}.confirm`,
+        cancelButtonLabel: `${localePrefix}.cancel`,
+        class: "ai-image-caption-prompt-dialog",
+
+        didConfirm: async () => {
+          try {
+            currentUser.set("user_option.auto_image_caption", true);
+            await currentUser.save(["auto_image_caption"]);
+
+            imagesToCaption.forEach(async (imageMarkdown) => {
+              const uploadUrl = getUploadUrlFromMarkdown(imageMarkdown);
+              imageCaptionPopup.showAutoCaptionLoader = true;
+              const caption = await fetchImageCaption(uploadUrl, "short_url");
+
+              // Find and replace the caption in the reply
+              const regex = new RegExp(
+                `(!\\[)[^|]+(\\|[^\\]]+\\]\\(${uploadUrl}\\))`
+              );
+              const newReply = composer.model.reply.replace(
+                regex,
+                `$1${caption}$2`
+              );
+              composer.model.set("reply", newReply);
+              imageCaptionPopup.showAutoCaptionLoader = false;
+              resolve();
+            });
+          } catch (error) {
+            // Reject the promise if an error occurs
+            // Show an error saying unable to generate captions
+            reject(error);
+          }
+        },
+        didCancel: () => {
+          // Don't enable auto captions and continue with the save
+          resolve();
+        },
+      });
+    });
+  });
 });

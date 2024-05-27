@@ -249,6 +249,13 @@ discourse_ai:
     choices:
       - "llava"
       - "open_ai:gpt-4-vision-preview"
+  ai_auto_image_caption_allowed_groups:
+    client: true
+    type: group_list
+    list_type: compact
+    default: "10" # 10: @trust_level_0
+    allow_any: false
+    refresh: true
 
   ai_embeddings_enabled:
     default: false

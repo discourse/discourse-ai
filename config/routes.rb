@@ -54,3 +54,10 @@ Discourse::Application.routes.draw do
     end
   end
 end
+
+Discourse::Application.routes.append do
+  get "u/:username/preferences/ai" => "users#preferences",
+      :constraints => {
+        username: RouteFormat.username,
+      }
+end
