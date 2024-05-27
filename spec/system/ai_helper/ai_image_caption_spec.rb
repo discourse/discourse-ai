@@ -4,6 +4,9 @@ RSpec.describe "AI image caption", type: :system, js: true do
   fab!(:user) { Fabricate(:admin, refresh_auto_groups: true) }
   fab!(:non_member_group) { Fabricate(:group) }
   let(:user_preferences_ai_page) { PageObjects::Pages::UserPreferencesAi.new }
+  let(:topic_page) { PageObjects::Pages::Topic.new }
+  fab!(:topic)
+  fab!(:post) { Fabricate(:post, topic: topic) }
   let(:composer) { PageObjects::Components::Composer.new }
   let(:popup) { PageObjects::Components::AiCaptionPopup.new }
   let(:dialog) { PageObjects::Components::Dialog.new }
@@ -148,6 +151,34 @@ RSpec.describe "AI image caption", type: :system, js: true do
           wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
           expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
         end
+      end
+    end
+
+    context "when a post has no uploads" do
+      before { user.user_option.update!(auto_image_caption: true) }
+
+      it "should create the topic without triggering auto caption" do
+        title = "I love using Discourse! It is my favorite forum software"
+        visit("/latest")
+        page.find("#create-topic").click
+        composer.fill_title(title)
+        composer.fill_content(
+          "Culpa labore velit cupidatat commodo magna esse et minim consequat veniam dolore eiusmod. Labore eu elit in nulla ipsum elit consectetur sunt consectetur enim. Cillum ex ex velit eiusmod labore ullamco ut ad. Dolore dolor commodo nisi fugiat esse quis anim officia quis. Pariatur cillum pariatur irure cupidatat nostrud ullamco labore id aliqua ut nostrud. Eu adipisicing ut laboris.",
+        )
+        composer.create
+        expect(dialog).to be_closed
+        expect(topic_page).to have_topic_title(title)
+      end
+
+      it "should create a reply to a post without triggering auto caption" do
+        visit("/t/-/#{topic.id}")
+        topic_page.click_footer_reply
+        composer.fill_content(
+          "Culpa labore velit cupidatat commodo magna esse et minim consequat veniam dolore eiusmod. Labore eu elit in nulla ipsum elit consectetur sunt consectetur enim. Cillum ex ex velit eiusmod labore ullamco ut ad. Dolore dolor commodo nisi fugiat esse quis anim officia quis. Pariatur cillum pariatur irure cupidatat nostrud ullamco labore id aliqua ut nostrud. Eu adipisicing ut laboris.",
+        )
+        composer.create
+        expect(dialog).to be_closed
+        expect(topic_page).to have_post_number(post.post_number)
       end
     end
   end
