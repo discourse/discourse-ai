@@ -17,6 +17,13 @@ module DiscourseAi
                 item_type: "string",
                 required: true,
               },
+              {
+                name: "aspect_ratio",
+                description: "The aspect ratio (optional, square by default)",
+                type: "string",
+                required: false,
+                enum: %w[tall square wide],
+              },
             ],
           }
         end
@@ -27,6 +34,10 @@ module DiscourseAi
 
         def prompts
           parameters[:prompts]
+        end
+
+        def aspect_ratio
+          parameters[:aspect_ratio]
         end
 
         def chain_next_response?
@@ -47,6 +58,13 @@ module DiscourseAi
           api_key = SiteSetting.ai_openai_api_key
           api_url = SiteSetting.ai_openai_dall_e_3_url
 
+          size = "1024x1024"
+          if aspect_ratio == "tall"
+            size = "1024x1792"
+          elsif aspect_ratio == "wide"
+            size = "1792x1024"
+          end
+
           threads = []
           max_prompts.each_with_index do |prompt, index|
             threads << Thread.new(prompt) do |inner_prompt|
@@ -54,6 +72,7 @@ module DiscourseAi
               begin
                 DiscourseAi::Inference::OpenAiImageGenerator.perform!(
                   inner_prompt,
+                  size: size,
                   api_key: api_key,
                   api_url: api_url,
                 )
