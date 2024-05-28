@@ -3,7 +3,7 @@
 class MigrateEmbeddingsFromDedicatedDatabase < ActiveRecord::Migration[7.0]
   def up
     return unless SiteSetting.ai_embeddings_enabled
-    return unless SiteSetting.ai_embeddings_pg_connection_string.present?
+    return if SiteSetting.ai_embeddings_pg_connection_string.blank?
 
     truncation = DiscourseAi::Embeddings::Strategies::Truncation.new
 
