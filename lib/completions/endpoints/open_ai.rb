@@ -107,7 +107,10 @@ module DiscourseAi
 
           if @streaming_mode
             payload[:stream] = true
-            payload[:stream_options] = { include_usage: true }
+
+            # Usage is not available in Azure yet.
+            # We'll fallback to guess this using the tokenizer.
+            payload[:stream_options] = { include_usage: true } if model_uri.host.exclude?("azure")
           end
 
           payload[:tools] = dialect.tools if dialect.tools.present?
