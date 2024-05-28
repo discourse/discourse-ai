@@ -107,21 +107,6 @@ module DiscourseAi
                           status: 502
       end
 
-      def random_caption
-        captions = [
-          "A beautiful landscape",
-          "An adorable puppy",
-          "A delicious meal",
-          "A cozy fireplace",
-          "A stunning sunset",
-          "A charming cityscape",
-          "A peaceful garden",
-          "A majestic mountain range",
-          "A captivating work of art",
-        ]
-        captions.sample
-      end
-
       def caption_image
         image_url = params[:image_url]
         image_url_type = params[:image_url_type]
@@ -138,19 +123,12 @@ module DiscourseAi
         end
 
         raise Discourse::NotFound if image.blank?
-        final_image_url = get_caption_url(image, image_url)
+
+        check_secure_upload_permission(image) if image.secure?
+        user = current_user
 
         hijack do
-          if Rails.env.development?
-            sleep 2 # Simulate a delay of 2 seconds
-            caption = random_caption
-          else
-            caption =
-              DiscourseAi::AiHelper::Assistant.new.generate_image_caption(
-                final_image_url,
-                current_user,
-              )
-          end
+          caption = DiscourseAi::AiHelper::Assistant.new.generate_image_caption(image, user)
           render json: {
                    caption:
                      "#{caption} (#{I18n.t("discourse_ai.ai_helper.image_caption.attribution")})",
@@ -180,15 +158,6 @@ module DiscourseAi
         if !current_user.in_any_groups?(SiteSetting.ai_helper_allowed_groups_map)
           raise Discourse::InvalidAccess
         end
-      end
-
-      def get_caption_url(image_upload, image_url)
-        if image_upload.secure?
-          check_secure_upload_permission(image_upload)
-          return Discourse.store.url_for(image_upload)
-        end
-
-        UrlHelper.absolute(image_url)
       end
     end
   end
