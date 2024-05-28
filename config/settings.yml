@@ -246,9 +246,7 @@ discourse_ai:
   ai_helper_image_caption_model:
     default: "llava"
     type: enum
-    choices:
-      - "llava"
-      - "open_ai:gpt-4-vision-preview"
+    enum: "DiscourseAi::Configuration::LlmVisionEnumerator"
   ai_auto_image_caption_allowed_groups:
     client: true
     type: group_list

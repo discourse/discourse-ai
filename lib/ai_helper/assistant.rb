@@ -128,8 +128,10 @@ module DiscourseAi
         end
       end
 
-      def generate_image_caption(image_url, user)
+      def generate_image_caption(upload, user)
         if SiteSetting.ai_helper_image_caption_model == "llava"
+          image_url =
+            upload.secure? ? Discourse.store.url_for(upload) : UrlHelper.absolute(upload.url)
           parameters = {
             input: {
               image: image_url,
@@ -144,17 +146,13 @@ module DiscourseAi
         else
           prompt =
             DiscourseAi::Completions::Prompt.new(
+              "You are a bot specializing in image captioning.",
               messages: [
                 {
                   type: :user,
-                  content: [
-                    {
-                      type: "text",
-                      text:
-                        "Describe this image in a single sentence#{custom_locale_instructions(user)}",
-                    },
-                    { type: "image_url", image_url: image_url },
-                  ],
+                  content:
+                    "Describe this image in a single sentence#{custom_locale_instructions(user)}",
+                  upload_ids: [upload.id],
                 },
               ],
               skip_validations: true,
@@ -162,7 +160,7 @@ module DiscourseAi
 
           DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
             prompt,
-            user: Discourse.system_user,
+            user: user,
             max_tokens: 1024,
             feature_name: "image_caption",
           )
