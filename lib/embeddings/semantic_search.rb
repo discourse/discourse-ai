@@ -171,7 +171,7 @@ module DiscourseAi
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
           ).generate(prompt, user: @guardian.user, feature_name: "semantic_search_hyde")
 
-        Nokogiri::HTML5.fragment(llm_response).at("ai")&.text&.presence || llm_response
+        Nokogiri::HTML5.fragment(llm_response).at("ai")&.text.presence || llm_response
       end
 
       private

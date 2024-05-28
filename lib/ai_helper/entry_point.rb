@@ -13,8 +13,8 @@ module DiscourseAi
         plugin.on(:chat_message_created) do |message, channel, user, extra|
           next unless SiteSetting.composer_ai_helper_enabled
           next unless SiteSetting.ai_helper_automatic_chat_thread_title
-          next unless extra[:thread].present?
-          next unless extra[:thread].title.blank?
+          next if extra[:thread].blank?
+          next if extra[:thread].title.present?
 
           reply_count = extra[:thread].replies.count
 
