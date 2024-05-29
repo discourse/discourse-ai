@@ -123,14 +123,12 @@ module DiscourseAi
           results =
             ::Search.execute(safe_search_string, search_type: :full_page, guardian: guardian)
 
-          # let's be frugal with tokens, 50 results is too much and stuff gets cut off
           max_results = calculate_max_results(llm)
           results_limit = parameters[:limit] || max_results
           results_limit = max_results if parameters[:limit].to_i > max_results
 
           should_try_semantic_search =
-            SiteSetting.ai_embeddings_semantic_search_enabled && results_limit == max_results &&
-              parameters[:search_query].present?
+            SiteSetting.ai_embeddings_semantic_search_enabled && parameters[:search_query].present?
 
           max_semantic_results = max_results / 4
           results_limit = results_limit - max_semantic_results if should_try_semantic_search
