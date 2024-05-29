@@ -2,6 +2,8 @@
 
 module DiscourseAi
   module AiBot
+    MAX_POSTS = 100
+
     module Tools
       class Read < Tool
         def self.signature
@@ -16,10 +18,11 @@ module DiscourseAi
                 required: true,
               },
               {
-                name: "post_number",
-                description: "the post number to read",
-                type: "integer",
-                required: true,
+                name: "post_numbers",
+                description: "the post numbers to read (optional)",
+                type: "array",
+                item_type: "integer",
+                required: false,
               },
             ],
           }
@@ -35,8 +38,8 @@ module DiscourseAi
           parameters[:topic_id]
         end
 
-        def post_number
-          parameters[:post_number]
+        def post_numbers
+          parameters[:post_numbers]
         end
 
         def invoke
@@ -49,10 +52,19 @@ module DiscourseAi
 
           @title = topic.title
 
-          posts = Post.secured(Guardian.new).where(topic_id: topic_id).order(:post_number).limit(40)
+          posts =
+            Post
+              .secured(Guardian.new)
+              .where(topic_id: topic_id)
+              .order(:post_number)
+              .limit(MAX_POSTS)
+
+          post_number = 1
+          post_number = post_numbers.first if post_numbers.present?
+
           @url = topic.relative_url(post_number)
 
-          posts = posts.where("post_number = ?", post_number) if post_number
+          posts = posts.where("post_number in (?)", post_numbers) if post_numbers.present?
 
           content = +<<~TEXT.strip
           title: #{topic.title}
@@ -69,13 +81,15 @@ module DiscourseAi
             content << "\ntags: #{tags.map(&:name).join(", ")}\n\n" if tags.length > 0
           end
 
-          posts.each { |post| content << "\n\n#{post.username} said:\n\n#{post.raw}" }
+          posts.each do |post|
+            content << "\n\n#{post.user&.name}(#{post.username}) said:\n\n#{post.raw}"
+          end
 
-          # TODO: 16k or 100k models can handle a lot more tokens
-          content = llm.tokenizer.truncate(content, 1500).squish
+          truncated_content =
+            truncate(content, max_length: 20_000, percent_length: 0.3, llm: llm).squish
 
-          result = { topic_id: topic_id, content: content, complete: true }
-          result[:post_number] = post_number if post_number
+          result = { topic_id: topic_id, content: truncated_content }
+          result[:post_numbers] = post_numbers if post_numbers.present?
           result
         end
 

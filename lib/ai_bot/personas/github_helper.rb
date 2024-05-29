@@ -5,7 +5,12 @@ module DiscourseAi
     module Personas
       class GithubHelper < Persona
         def tools
-          [Tools::GithubFileContent, Tools::GithubPullRequestDiff, Tools::GithubSearchCode]
+          [
+            Tools::GithubFileContent,
+            Tools::GithubPullRequestDiff,
+            Tools::GithubSearchCode,
+            Tools::GithubSearchFiles,
+          ]
         end
 
         def system_prompt

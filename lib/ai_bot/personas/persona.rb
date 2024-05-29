@@ -87,6 +87,7 @@ module DiscourseAi
               Tools::DiscourseMetaSearch,
               Tools::GithubFileContent,
               Tools::GithubPullRequestDiff,
+              Tools::GithubSearchFiles,
               Tools::WebBrowser,
               Tools::JavascriptEvaluator,
             ]
