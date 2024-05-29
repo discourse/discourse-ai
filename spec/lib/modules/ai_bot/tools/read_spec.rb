@@ -24,15 +24,26 @@ RSpec.describe DiscourseAi::AiBot::Tools::Read do
     Fabricate(:topic, category: category, tags: [tag_funny, tag_sad, tag_hidden])
   end
 
+  fab!(:post1) { Fabricate(:post, topic: topic_with_tags, raw: "hello there") }
+  fab!(:post2) { Fabricate(:post, topic: topic_with_tags, raw: "mister sam") }
+
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
+    it "can read specific posts" do
+      tool =
+        described_class.new(
+          { topic_id: topic_with_tags.id, post_numbers: [post1.post_number] },
+          bot_user: bot_user,
+          llm: llm,
+        )
+      results = tool.invoke
+
+      expect(results[:content]).to include("hello there")
+      expect(results[:content]).not_to include("mister sam")
+    end
     it "can read a topic" do
       topic_id = topic_with_tags.id
-
-      Fabricate(:post, topic: topic_with_tags, raw: "hello there")
-      Fabricate(:post, topic: topic_with_tags, raw: "mister sam")
-
       results = tool.invoke
 
       expect(results[:topic_id]).to eq(topic_id)
