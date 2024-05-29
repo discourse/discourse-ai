@@ -252,6 +252,12 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
   end
 
   describe "GET show" do
+    it "redirects to home page if site require login" do
+      SiteSetting.login_required = true
+      get "#{path}/#{shared_conversation.share_key}"
+      expect(response).to redirect_to("/login")
+    end
+
     it "renders the shared conversation" do
       get "#{path}/#{shared_conversation.share_key}"
       expect(response).to have_http_status(:success)

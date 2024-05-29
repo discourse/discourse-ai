@@ -7,7 +7,7 @@ module DiscourseAi
       requires_login only: %i[create update destroy]
       before_action :require_site_settings!
 
-      skip_before_action :preload_json, :check_xhr, :redirect_to_login_if_required, only: %i[show]
+      skip_before_action :preload_json, :check_xhr, only: %i[show]
 
       def create
         ensure_allowed_create!
