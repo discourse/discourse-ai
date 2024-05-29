@@ -24,11 +24,14 @@ export default class SemanticSearch extends Component {
   @tracked searching = false;
   @tracked AIResults = [];
   @tracked showingAIResults = false;
-  @tracked preventAISearch = false;
   initialSearchTerm = this.args.outletArgs.search;
 
   get disableToggleSwitch() {
-    if (this.searching || this.AIResults.length === 0 || this.preventAISearch) {
+    if (
+      this.searching ||
+      this.AIResults.length === 0 ||
+      this.args.outletArgs.sortOrder !== 0
+    ) {
       return true;
     }
   }
@@ -51,11 +54,6 @@ export default class SemanticSearch extends Component {
           }
         );
       }
-    }
-
-    // Search disabled for sort order:
-    if (this.preventAISearch) {
-      return I18n.t("discourse_ai.embeddings.semantic_search_disabled_sort");
     }
 
     // Search loading:
@@ -88,7 +86,8 @@ export default class SemanticSearch extends Component {
   get searchEnabled() {
     return (
       this.args.outletArgs.type === SEARCH_TYPE_DEFAULT &&
-      isValidSearchTerm(this.searchTerm, this.siteSettings)
+      isValidSearchTerm(this.searchTerm, this.siteSettings) &&
+      this.args.outletArgs.sortOrder === 0
     );
   }
 
@@ -113,15 +112,6 @@ export default class SemanticSearch extends Component {
   handleSearch() {
     if (!this.searchEnabled) {
       return;
-    }
-    if (
-      this.searchPreferencesManager?.sortOrder !== undefined &&
-      this.searchPreferencesManager?.sortOrder !== 0
-    ) {
-      this.preventAISearch = true;
-      return;
-    } else {
-      this.preventAISearch = false;
     }
 
     if (this.initialSearchTerm && !this.searching) {
