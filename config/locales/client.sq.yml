@@ -44,6 +44,7 @@ sq:
         save: "Ruaj"
         edit: "Redakto"
         back: "Kthehu mbrapa"
+        delete: Fshij
         providers:
           google: "Google"
       ai_helper:
@@ -59,6 +60,8 @@ sq:
           cancel: "Anulo"
         image_caption:
           save_caption: "Ruaj"
+          automatic_caption_dialog:
+            confirm: "Aktivizo"
       ai_bot:
         share_modal:
           copy: "Kopjo"

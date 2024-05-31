@@ -45,6 +45,10 @@ el:
         save: "Αποθήκευση"
         edit: "Επεξεργασία"
         back: "Πίσω"
+        delete: Σβήσιμο
+        tests:
+          title: "Εκτέλεση δοκιμής"
+          success: "Επιτυχία!"
         providers:
           google: "Google"
       ai_helper:
@@ -61,6 +65,8 @@ el:
           cancel: "Ακύρωση"
         image_caption:
           save_caption: "Αποθήκευση"
+          automatic_caption_dialog:
+            confirm: "Ενεργοποίηση"
       ai_bot:
         debug_ai_modal:
           request: "Αίτημα"

@@ -120,6 +120,10 @@ pt_BR:
         save: "Salvar"
         edit: "Editar"
         back: "Voltar"
+        delete: Excluir
+        tests:
+          title: "Executar Teste"
+          success: "Sucesso!"
         providers:
           google: "Google"
       related_topics:
@@ -162,13 +166,14 @@ pt_BR:
           selected: "Selecionado(a)"
         image_caption:
           save_caption: "Salvar"
+          automatic_caption_dialog:
+            confirm: "Ativar"
       reviewables:
         model_used: "Modelo usado:"
         accuracy: "Precisão:"
       embeddings:
         semantic_search: "Tópicos (semântica)"
         semantic_search_loading: "Pesquisando mais resultados usando IA"
-        semantic_search_disabled_sort: "Pesquisa com IA desativada para esta ordem de classificação, classifique por Relevância para ativar."
         semantic_search_results:
           toggle: "Mostrando %{count} resultados encontrados usando IA"
           toggle_hidden: "Ocultando %{count} resultados encontrados usando IA"

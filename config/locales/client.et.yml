@@ -45,6 +45,9 @@ et:
         save: "Salvesta"
         edit: "Muuda"
         back: "Tagasi"
+        delete: Kustuta
+        tests:
+          success: "Korras!"
         providers:
           google: "Google"
       ai_helper:
@@ -61,6 +64,8 @@ et:
           cancel: "Tühista"
         image_caption:
           save_caption: "Salvesta"
+          automatic_caption_dialog:
+            confirm: "Lülita sisse"
       ai_bot:
         debug_ai_modal:
           request: "Päring"

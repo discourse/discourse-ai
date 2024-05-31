@@ -19,6 +19,7 @@ he:
         claude_2: Claude 2
         gemini_pro: Gemini Pro
         gemini_1_5_pro: Gemini 1.5 Pro
+        gemini_1_5_flash: Gemini 1.5 Flash
         claude_3_opus: Claude 3 Opus
         claude_3_sonnet: Claude 3 Sonnet
         claude_3_haiku: Claude 3 Haiku
@@ -211,6 +212,13 @@ he:
         edit: "עריכה"
         saved: "מודל ה־LLM נשמר"
         back: "חזרה"
+        confirm_delete: למחוק את המודל הזה?
+        delete: מחיקה
+        tests:
+          title: "הרצת בדיקה"
+          running: "הבדיקה רצה…"
+          success: "הצליח!"
+          failure: "הניסיון ליצור קשר עם המודל החזיר את השגיאה הבאה: %{error}"
         hints:
           max_prompt_tokens: "מספר האסימונים המרבי לבקשה. ככלל אצבע, זה אמור להיות 50% מחלון ההקשר של המודל."
           name: "אנו מצרפים את זה לקריאת ה־API כדי לציין באיזה מודל להשתמש."
@@ -269,13 +277,18 @@ he:
           generating: "הכותרת מתחוללת…"
           credits: "הכותרת נוספה ע״י בינה מלאכותית"
           save_caption: "שמירה"
+          automatic_caption_setting: "הפעלת כותרות תמונות אוטומטיות באמצעות בינה מלאכותית"
+          automatic_caption_loading: "נוספות כותרות לתמונות…"
+          automatic_caption_dialog:
+            prompt: "הפוסט הזה מכיל תמונות בלי כותרת. להפעיל כותרות בינה מלאכותית אוטומטיות עם העלאת תמונות? (אפשר לשנות את זה בהמשך דרך ההעדפות שלך)"
+            confirm: "הפעלה"
+            cancel: "לא לשאול שוב"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"
       embeddings:
         semantic_search: "נושאים (סמנטיקה)"
         semantic_search_loading: "מתבצע חיפוש אחר תוצאות נוספות עם בינה מלאכותית"
-        semantic_search_disabled_sort: "חיפוש בינה מלאכותית מושבת עבור סדר מיון זה, יש למיין לפי רלוונטיות כדי להפעיל."
         semantic_search_results:
           toggle: "מוצגות %{count} תוצאות שנמצאו באמצעות בינה מלאכותית"
           toggle_hidden: "מוסתרות %{count} תוצאות שנמצאו באמצעות בינה מלאכותית"

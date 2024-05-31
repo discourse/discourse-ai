@@ -177,7 +177,7 @@ fi:
         search: "Hae kaikista foorumin julkisista ketjuista"
         tags: "Listaa kaikki foorumin tunnisteet"
         time: "Etsi aika eri aikavyöhykkeillä"
-        summarize: "Laadi yhteenveto ketjusta"
+        summary: "Laadi yhteenveto ketjusta"
         image: "Luo kuva Stable Diffusionilla"
         google: "Hae Googlesta kyselyä"
         read: "Lue julkinen ketju foorumilla"

@@ -45,6 +45,9 @@ ro:
         save: "Salvează"
         edit: "Modifică"
         back: "Înapoi"
+        delete: Șterge
+        tests:
+          success: "Succes!"
         providers:
           google: "Google"
       ai_helper:
@@ -61,6 +64,8 @@ ro:
           cancel: "Anulare"
         image_caption:
           save_caption: "Salvare"
+          automatic_caption_dialog:
+            confirm: "Activează"
       ai_bot:
         debug_ai_modal:
           request: "Cere"

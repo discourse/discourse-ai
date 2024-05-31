@@ -45,6 +45,10 @@ da:
         save: "Gem"
         edit: "Rediger"
         back: "Tilbage"
+        delete: Slet
+        tests:
+          title: "Kør test"
+          success: "Succes!"
         providers:
           google: "Google"
       ai_helper:
@@ -64,6 +68,8 @@ da:
           select: "Vælg"
         image_caption:
           save_caption: "Gem"
+          automatic_caption_dialog:
+            confirm: "Aktiver"
       ai_bot:
         debug_ai_modal:
           request: "Anmod om medlemskab"

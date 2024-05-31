@@ -45,6 +45,10 @@ hr:
         save: "Spremi"
         edit: "Uredi"
         back: "Natrag"
+        delete: Pobriši
+        tests:
+          title: "Pokreni test"
+          success: "Uspjeh!"
         providers:
           google: "Google"
       ai_helper:
@@ -60,8 +64,12 @@ hr:
           copy: "Kopija"
           copied: "Kopirano!"
           cancel: "Odustani"
+        thumbnail_suggestions:
+          select: "Odaberite"
         image_caption:
           save_caption: "Spremi"
+          automatic_caption_dialog:
+            confirm: "Omogućiti"
       ai_bot:
         debug_ai_modal:
           request: "Zahtjev"

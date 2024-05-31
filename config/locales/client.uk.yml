@@ -47,6 +47,10 @@ uk:
         save: "Зберегти"
         edit: "Редагувати"
         back: "Назад"
+        delete: Видалити
+        tests:
+          title: "Виконати Тест"
+          success: "Успіх!"
         providers:
           google: "Google"
       ai_helper:
@@ -67,6 +71,8 @@ uk:
           selected: "Вибрано"
         image_caption:
           save_caption: "Зберегти"
+          automatic_caption_dialog:
+            confirm: "Увімкнути"
       ai_bot:
         debug_ai_modal:
           request: "Запит"

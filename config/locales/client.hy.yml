@@ -45,6 +45,10 @@ hy:
         save: "Պահպանել"
         edit: "Խմբագրել"
         back: "Ետ"
+        delete: Ջնջել
+        tests:
+          title: "Մեկնարկել Փորձարկումը"
+          success: "Հաջողություն!"
         providers:
           google: "Google"
       ai_helper:
@@ -60,6 +64,8 @@ hy:
           cancel: "Չեղարկել"
         image_caption:
           save_caption: "Պահպանել"
+          automatic_caption_dialog:
+            confirm: "Միացնել"
       ai_bot:
         debug_ai_modal:
           request: "Հարցում"

@@ -45,6 +45,10 @@ sv:
         save: "Spara"
         edit: "Redigera"
         back: "Tillbaka"
+        delete: Radera
+        tests:
+          title: "Kör test"
+          success: "Lyckades!"
         providers:
           google: "Google"
       ai_helper:
@@ -65,6 +69,8 @@ sv:
           selected: "Markerat"
         image_caption:
           save_caption: "Spara"
+          automatic_caption_dialog:
+            confirm: "Aktivera"
       ai_bot:
         debug_ai_modal:
           request: "Förfrågning"

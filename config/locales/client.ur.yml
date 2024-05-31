@@ -45,6 +45,10 @@ ur:
         save: "محفوظ کریں"
         edit: "ترمیم کریں"
         back: "واپس"
+        delete: مٹائیں
+        tests:
+          title: "ٹیسٹ چلائیں"
+          success: "کامیابی!"
         providers:
           google: "گُوگَل"
       ai_helper:
@@ -62,6 +66,8 @@ ur:
           cancel: "منسوخ"
         image_caption:
           save_caption: "محفوظ کریں"
+          automatic_caption_dialog:
+            confirm: "فعال کریں"
       ai_bot:
         debug_ai_modal:
           request: "ریکویسٹ"

@@ -43,6 +43,10 @@ zh_TW:
         save: "保存"
         edit: "編輯"
         back: "上一步"
+        delete: 刪除
+        tests:
+          title: "執行測試"
+          success: "成功!"
         providers:
           google: "Google"
       ai_helper:
@@ -62,6 +66,8 @@ zh_TW:
           selected: "已選"
         image_caption:
           save_caption: "保存"
+          automatic_caption_dialog:
+            confirm: "啟用"
       ai_bot:
         debug_ai_modal:
           request: "請求"

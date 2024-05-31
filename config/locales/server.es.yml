@@ -177,7 +177,7 @@ es:
         search: "Buscar todos los temas públicos en el foro."
         tags: "Listar todas las etiquetas en el foro"
         time: "Encontrar hora en varias zonas horarias"
-        summarize: "Resumir un tema"
+        summary: "Resumir un tema"
         image: "Generar imagen usando Stable Diffusion"
         google: "Buscar en Google una consulta"
         read: "Leer tema público en el foro."

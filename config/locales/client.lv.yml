@@ -45,6 +45,9 @@ lv:
         save: "Saglabāt"
         edit: "Rediģēt"
         back: "Atpakaļ"
+        delete: Dzēst
+        tests:
+          success: "Veiksmīgi!"
         providers:
           google: "Google"
       ai_helper:
@@ -61,6 +64,8 @@ lv:
           cancel: "Atcelt"
         image_caption:
           save_caption: "Saglabāt"
+          automatic_caption_dialog:
+            confirm: "Ieslēgt"
       ai_bot:
         debug_ai_modal:
           request: "Pieprasījums"

@@ -47,6 +47,10 @@ ko:
         save: "저장"
         edit: "편집"
         back: "뒤로"
+        delete: 삭제하기
+        tests:
+          title: "테스트 실행"
+          success: "성공!"
         providers:
           google: "구글"
       ai_helper:
@@ -66,6 +70,8 @@ ko:
           select: "선택"
         image_caption:
           save_caption: "저장"
+          automatic_caption_dialog:
+            confirm: "활성화"
       ai_bot:
         debug_ai_modal:
           request: "요청"

@@ -47,6 +47,8 @@ fa_IR:
               label: "پاسخ"
             canned_reply_user:
               label: "پاسخ کاربر"
+            model:
+              label: "مدل"
     discourse_ai:
       title: "هوش مصنوعی"
       modals:
@@ -71,6 +73,12 @@ fa_IR:
         save: "ذخیره"
         edit: "ویرایش"
         back: "بازگشت"
+        delete: حذف
+        tests:
+          title: "اجرای آزمایش"
+          running: "در حال اجرای آزمایش..."
+          success: "موفقیت!"
+          failure: "در حال ارتباط با مدل این خطا رخ داد: %{error}"
         providers:
           google: "گوگل"
       related_topics:
@@ -101,6 +109,8 @@ fa_IR:
           select: "انتخاب"
         image_caption:
           save_caption: "ذخیره"
+          automatic_caption_dialog:
+            confirm: "فعال کردن"
       reviewables:
         model_used: "مدل مورد استفاده:"
         accuracy: "دقت:"

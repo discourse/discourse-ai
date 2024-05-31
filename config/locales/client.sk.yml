@@ -10,6 +10,8 @@ sk:
       scriptables:
         llm_report:
           fields:
+            sender:
+              label: "Odosielateľ"
             topic_id:
               label: "ID témy"
             title:
@@ -39,11 +41,16 @@ sk:
         enabled: "Povolené?"
         delete: Odstrániť
         uploads:
+          title: "Nahrávanie"
           uploading: "Načítavam..."
       llms:
         save: "Uložiť"
         edit: "Upraviť"
         back: "Späť"
+        delete: Odstrániť
+        tests:
+          title: "Spustiť test"
+          success: "Úspech!"
         providers:
           google: "Google"
       ai_helper:
@@ -57,13 +64,18 @@ sk:
         post_options_menu:
           close: "Zavrieť"
           copy: "Kopírovať"
+          copied: "Skopírované!"
           cancel: "Zrušiť"
         thumbnail_suggestions:
           select: "Vyberte"
+          selected: "Vybrané"
         image_caption:
           save_caption: "Uložiť"
+          automatic_caption_dialog:
+            confirm: "Povoliť"
       ai_bot:
         debug_ai_modal:
           request: "Požiadavka"
+          response: "Odpoveď"
         share_modal:
           copy: "Kopírovať"

@@ -43,6 +43,9 @@ te:
         save: "సేవ్ చేయండి"
         edit: "సవరించండి"
         back: "వెనుకకు"
+        delete: తొలగించండి
+        tests:
+          title: "పరీక్షను అమలు చేయండి"
         providers:
           google: "గూగుల్"
       ai_helper:
@@ -51,13 +54,20 @@ te:
           undo: "రద్దు"
           cancel: "రద్దుచేయి"
           regen: "మళ్ళీ ప్రయత్నించండి"
+          confirm: "నిర్ధారించండి"
           revert: "తిద్దు"
         post_options_menu:
           close: "మూసివేయి"
           copy: "నకలు"
+          copied: "కాపీ చేయబడింది!"
           cancel: "రద్దుచేయి"
+        thumbnail_suggestions:
+          select: "ఎంచుకోండి"
+          selected: "ఎంపిక చేయబడినవి"
         image_caption:
           save_caption: "భద్రపరుచు"
+          automatic_caption_dialog:
+            confirm: "ప్రారంభించండి"
       ai_bot:
         debug_ai_modal:
           request: "అభ్యర్థన"

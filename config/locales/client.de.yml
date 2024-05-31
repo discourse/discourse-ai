@@ -19,6 +19,7 @@ de:
         claude_2: Claude 2
         gemini_pro: Gemini Pro
         gemini_1_5_pro: Gemini 1.5 Pro
+        gemini_1_5_flash: Gemini 1.5 Flash
         claude_3_opus: Claude 3 Opus
         claude_3_sonnet: Claude 3 Sonett
         claude_3_haiku: Claude 3 Haiku
@@ -211,6 +212,13 @@ de:
         edit: "Bearbeiten"
         saved: "LLM-Modell gespeichert"
         back: "Zurück"
+        confirm_delete: Bist du sicher, dass du dieses Modell löschen willst?
+        delete: Löschen
+        tests:
+          title: "Test ausführen"
+          running: "Test wird aufgeführt..."
+          success: "Erfolg!"
+          failure: "Beim Versuch, das Modell zu kontaktieren, wurde dieser Fehler zurückgegeben: %{error}"
         hints:
           max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50% des Kontextfensters des Modells sein sollte."
           name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden."
@@ -269,13 +277,18 @@ de:
           generating: "Beschriftung generieren..."
           credits: "Untertitelt von KI"
           save_caption: "Speichern"
+          automatic_caption_setting: "Aktiviere automatische KI-Bildunterschriften"
+          automatic_caption_loading: "Bilder mit Untertiteln versehen..."
+          automatic_caption_dialog:
+            prompt: "Dieser Beitrag enthält nicht beschriftete Bilder. Möchtest du automatische KI-Beschriftungen für hochgeladene Bilder aktivieren? (Das kannst du später in deinen Einstellungen ändern)"
+            confirm: "Aktivieren"
+            cancel: "Frag nicht noch einmal"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"
       embeddings:
         semantic_search: "Themen (semantisch)"
         semantic_search_loading: "Suche mehr Ergebnisse mithilfe der KI"
-        semantic_search_disabled_sort: "Die KI-Suche ist für diese Sortierreihenfolge deaktiviert. Sortiere nach Relevanz, um sie zu aktivieren."
         semantic_search_results:
           toggle: "%{count} Ergebnisse, die mit KI gefunden wurden, werden angezeigt"
           toggle_hidden: "%{count} mit KI gefundene Ergebnisse werden ausgeblendet"

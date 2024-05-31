@@ -58,10 +58,16 @@ id:
     ai_embeddings_enabled: "Aktifkan modul embeddings."
     ai_embeddings_discourse_service_api_key: "Kunci API untuk API embeddings"
     ai_embeddings_pg_connection_string: "String koneksi PostgreSQL untuk modul embeddings. Perlu mengaktifkan ekstensi pgvector dan dibuat serangkaian tabel. Lihat dokumen untuk info lebih lanjut."
+    ai_bot_public_sharing_allowed_groups: "Izinkan grup-grup ini untuk membagikan pesan pribadi AI kepada publik melalui tautan unik yang tersedia untuk umum. Catatan: jika situs Anda memerlukan login, berbagi juga akan memerlukan login."
   reports:
     overall_sentiment:
       yaxis: "Tanggal"
   discourse_ai:
+    ai_helper:
+      prompts:
+        custom_prompt: "Perintah Khusus"
+      image_caption:
+        attribution: "Keterangan oleh AI"
     ai_bot:
       personas:
         default_llm_required: "Model LLM default diperlukan sebelum mengaktifkan Obrolan"
@@ -71,6 +77,13 @@ id:
             name: "Pencarian Pribadi"
             description: "Sertakan semua topik yang dapat diakses pengguna dalam hasil pencarian (secara bawaan hanya topik publik yang disertakan)"
       command_summary:
+        github_search_files: "File pencarian GitHub"
         search: "Cari"
         time: "Waktu"
         summarize: "Meringkas"
+      command_help:
+        github_search_files: "Cari file di repositori GitHub"
+        summary: "Meringkas suatu topik"
+      command_description:
+        github_search_files: "Mencari '%{keywords}' di %{repo}/%{branch}"
+        github_search_code: "Mencari '%{query}' di %{repo}"

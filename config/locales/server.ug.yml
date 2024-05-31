@@ -4,16 +4,18 @@
 # To work with us on translations, join this project:
 # https://translate.discourse.org/
 
-te:
+ug:
   reports:
     overall_sentiment:
-      yaxis: "తేదీ"
+      yaxis: "چېسلا"
   discourse_ai:
     ai_bot:
       command_summary:
-        search: "వెతుకు"
-        time: "కాలం"
+        search: "ئىزدە"
+        tags: "بەلگە تىزىمىنى كۆرسىتىدۇ"
+        time: "ۋاقىت"
+        summarize: "خۇلاسە"
     sentiment:
       reports:
         post_emotion:
-          neutral: "తటస్థ"
+          neutral: "بىتەرەپ"

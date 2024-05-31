@@ -177,7 +177,7 @@ pt_BR:
         search: "Pesquisar todos os tópicos públicos no fórum"
         tags: "Listar todas as etiquetas no fórum"
         time: "Achar horário em vários fusos horários"
-        summarize: "Resumir um tópico"
+        summary: "Resumir um tópico"
         image: "Gerar imagem usando o Stable Diffusion"
         google: "Pesquisar uma consulta no Google"
         read: "Ler tópico público no fórum"
