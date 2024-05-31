@@ -77,6 +77,7 @@ de:
     ai_helper_enabled_features: "Wähle die Funktionen aus, die im KI-Helfer aktiviert werden sollen."
     post_ai_helper_allowed_groups: "Benutzergruppen, die auf KI Helper-Funktionen in Beiträgen zugreifen dürfen"
     ai_helper_image_caption_model: "Wähle das Modell aus, das für die Erstellung von Bildunterschriften verwendet werden soll"
+    ai_auto_image_caption_allowed_groups: "Benutzer dieser Gruppen können die automatische Bildbeschriftung ein- und ausschalten."
     ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
     ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
     ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
@@ -97,7 +98,7 @@ de:
     ai_bot_enable_chat_warning: "Zeigt eine Warnung an, wenn der PN-Chat initiiert wird. Kann durch Bearbeiten der Übersetzungszeichenfolge überschrieben werden: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
     ai_bot_debugging_allowed_groups: "Erlaube diesen Gruppen, einen Debug-Button in Beiträgen zu sehen, der die rohe KI-Anfrage und -Antwort anzeigt."
-    ai_bot_public_sharing_allowed_groups: "Erlaube diesen Gruppen, persönliche KI-Nachrichten über einen eindeutigen, öffentlich zugänglichen Link mit der Öffentlichkeit zu teilen"
+    ai_bot_public_sharing_allowed_groups: "Erlaube diesen Gruppen, persönliche KI-Nachrichten über einen eindeutigen, öffentlich zugänglichen Link mit der Öffentlichkeit zu teilen. Hinweis: Wenn für deine Website eine Anmeldung erforderlich ist, ist auch zum Ansehen des Geteilten eine Anmeldung erforderlich."
     ai_bot_enabled_chat_bots: "Verfügbare Modelle, die als KI-Bot agieren können"
     ai_bot_add_to_header: "Eine Schaltfläche in der Kopfzeile anzeigen, um eine PN mit einem KI-Bot zu starten"
     ai_bot_github_access_token: "GitHub-Zugangstoken für die Verwendung mit den GitHub-KI-Tools (erforderlich für die Suchunterstützung)"
@@ -205,6 +206,7 @@ de:
             description: "Basisanfrage, die bei der Suche verwendet wird. Beispiel: Bei „#dringend“ wird der Suchanfrage „#dringend“ vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort „dringend“ angezeigt."
       command_summary:
         web_browser: "Web durchsuchen"
+        github_search_files: "GitHub Datei-Suche"
         github_search_code: "GitHub Code-Suche"
         github_file_content: "Inhalt der GitHub-Datei"
         github_pull_request_diff: "GitHub Pull-Request Unterschied"
@@ -226,6 +228,7 @@ de:
       command_help:
         web_browser: "Webseite mit dem KI Bot durchsuchen"
         github_search_code: "Suche nach Code in einem GitHub-Repository"
+        github_search_files: "Suche nach Dateien in einem GitHub-Repository"
         github_file_content: "Inhalt von Dateien aus einem GitHub-Repository abrufen"
         github_pull_request_diff: "Abrufen eines GitHub Pull Request Unterschieds"
         random_picker: "Wähle eine Zufallszahl oder ein zufälliges Element aus einer Liste"
@@ -233,7 +236,7 @@ de:
         search: "Alle öffentlichen Themen im Forum durchsuchen"
         tags: "Alle Schlagwörter im Forum auflisten"
         time: "Zeit in verschiedenen Zeitzonen finden"
-        summarize: "Ein Thema zusammenfassen"
+        summary: "Ein Thema zusammenfassen"
         image: "Bild mit Stable Diffusion generieren"
         google: "Suche bei Google nach einer Anfrage"
         read: "Öffentliches Thema im Forum lesen"
@@ -245,6 +248,7 @@ de:
         javascript_evaluator: "JavaScript auswerten"
       command_description:
         web_browser: "Lesen <a href='%{url}'>%{url}</a>"
+        github_search_files: "Gesucht wurde nach '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Gesucht wurde nach '%{query}' in %{repo}"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
         github_file_content: "Abgerufener Inhalt von %{file_paths} von %{repo_name}@%{branch}"
@@ -303,6 +307,9 @@ de:
         configuration_hint:
           one: "Vergewissere dich, dass die Einstellung \"%{settings}\" konfiguriert wurde."
           other: "Vergewissere dich, dass diese Einstellungen konfiguriert wurden: %{settings}"
+      delete_failed:
+        one: "Wir konnten dieses Modell nicht löschen, weil es von %{settings} verwendet wird. Aktualisiere die Einstellung und versuche es erneut."
+        other: "Wir konnten dieses Modell nicht löschen, weil %{settings} es verwendet. Aktualisiere die Einstellungen und versuche es erneut."
     embeddings:
       configuration:
         disable_embeddings: "Du musst zuerst \"KI-Einbettungen aktiviert\" deaktivieren."

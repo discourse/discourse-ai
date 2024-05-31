@@ -178,7 +178,7 @@ pl_PL:
         search: "Przeszukaj wszystkie publiczne tematy na forum"
         tags: "Wymień wszystkie tagi na forum"
         time: "Znajdź czas w różnych strefach czasowych"
-        summarize: "Podsumuj temat"
+        summary: "Podsumuj temat"
         image: "Wygeneruj obraz przy użyciu Stable Diffusion"
         google: "Wyszukaj zapytanie w Google"
         read: "Przeczytaj temat publiczny na forum"

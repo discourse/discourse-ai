@@ -12,5 +12,10 @@ sk:
     ai_bot:
       command_summary:
         search: "Hľadať"
+        tags: "Zoznam značiek"
         time: "Čas"
         summarize: "Zhrnúť"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutrálna"

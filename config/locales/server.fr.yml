@@ -177,7 +177,7 @@ fr:
         search: "Rechercher dans tous les sujets publics sur le forum"
         tags: "Répertorier toutes les étiquettes du forum"
         time: "Trouver l'heure dans différents fuseaux horaires"
-        summarize: "Résumer un sujet"
+        summary: "Résumer un sujet"
         image: "Générer une image à l'aide de Stable Diffusion"
         google: "Rechercher une requête sur Google"
         read: "Lire le sujet public sur le forum"

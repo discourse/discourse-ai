@@ -146,6 +146,10 @@ pl_PL:
         save: "Zapisz"
         edit: "Edytuj"
         back: "Poprzednia"
+        delete: Usuń
+        tests:
+          title: "Przeprowadź test"
+          success: "Sukces!"
         providers:
           google: "Google"
       related_topics:
@@ -188,13 +192,14 @@ pl_PL:
           selected: "Wybrany"
         image_caption:
           save_caption: "Zapisz"
+          automatic_caption_dialog:
+            confirm: "Włącz"
       reviewables:
         model_used: "Zastosowany model:"
         accuracy: "Dokładność:"
       embeddings:
         semantic_search: "Tematy (semantyczne)"
         semantic_search_loading: "Wyszukiwanie większej liczby wyników przy użyciu AI"
-        semantic_search_disabled_sort: "Wyszukiwanie AI wyłączone dla tej kolejności sortowania, sortuj według trafności, aby włączyć."
         semantic_search_results:
           toggle: "Wyświetlanie %{count} wyników znalezionych przy użyciu AI"
           toggle_hidden: "Ukrywanie %{count} wyników znalezionych przy użyciu AI"

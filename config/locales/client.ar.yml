@@ -119,6 +119,10 @@ ar:
         save: "حفظ"
         edit: "تعديل"
         back: "رجوع"
+        delete: حذف
+        tests:
+          title: "تشغيل الاختبار"
+          success: "تم بنجاح!"
         providers:
           google: "Google"
       related_topics:
@@ -161,13 +165,14 @@ ar:
           selected: "محدَّدة"
         image_caption:
           save_caption: "حفظ"
+          automatic_caption_dialog:
+            confirm: "تفعيل"
       reviewables:
         model_used: "النموذج المستخدم:"
         accuracy: "الدقة:"
       embeddings:
         semantic_search: "الموضوعات (دلالية)"
         semantic_search_loading: "جارٍ البحث عن المزيد من النتائج باستخدام الذكاء الاصطناعي"
-        semantic_search_disabled_sort: "تم إيقاف البحث بالذكاء الاصطناعي لترتيب الفرز هذا، قم بالفرز حسب الصلة لتفعيله؟"
         semantic_search_results:
           toggle: "جارٍ عرض %{count} من النتائج التي تم العثور عليها باستخدام الذكاء الاصطناعي"
           toggle_hidden: "جارٍ إخفاء %{count} من النتائج التي تم العثور عليها باستخدام الذكاء الاصطناعي"

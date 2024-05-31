@@ -174,6 +174,10 @@ tr_TR:
         save: "Kaydet"
         edit: "Düzenle"
         back: "Geri"
+        delete: Sil
+        tests:
+          title: "Testi Çalıştır"
+          success: "Başarılı!"
         providers:
           google: "Google"
       related_topics:
@@ -219,13 +223,14 @@ tr_TR:
           generating: "Altyazı oluşturuluyor..."
           credits: "AI tarafından altyazılı"
           save_caption: "Kaydet"
+          automatic_caption_dialog:
+            confirm: "Etkin"
       reviewables:
         model_used: "Kullanılan model:"
         accuracy: "Doğruluk:"
       embeddings:
         semantic_search: "Konular (Semantik)"
         semantic_search_loading: "YZ kullanarak daha fazla sonuç arama"
-        semantic_search_disabled_sort: "YZ Arama bu sıralama düzeni için devre dışı, etkinleştirmek için İlgi seviyesine göre sıralayın."
         semantic_search_results:
           toggle: "YZ kullanılarak bulunan %{count} sonuçları gösteriliyor"
           toggle_hidden: "YZ kullanılarak bulunan %{count} sonuç gizleniyor"

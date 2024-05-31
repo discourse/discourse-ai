@@ -177,7 +177,7 @@ nl:
         search: "Doorzoek alle openbare topics op het forum"
         tags: "Geef een lijst weer van alle tags op het forum"
         time: "Zoek de tijd in verschillende tijdzones"
-        summarize: "Vat een topic samen"
+        summary: "Vat een topic samen"
         image: "Afbeelding genereren met Stable Diffusion"
         google: "Zoek op Google naar een query"
         read: "Lees een openbaar topic op het forum"

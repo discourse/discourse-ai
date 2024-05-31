@@ -44,6 +44,7 @@ bg:
         save: "Запази "
         edit: "Редактирай"
         back: "Назад"
+        delete: Изтрий
         providers:
           google: "Google"
       ai_helper:
@@ -60,6 +61,8 @@ bg:
           cancel: "Прекрати"
         image_caption:
           save_caption: "Запази "
+          automatic_caption_dialog:
+            confirm: "Позволи"
       ai_bot:
         debug_ai_modal:
           request: "Заявка"

@@ -45,6 +45,9 @@ sw:
         save: "Hifadhi"
         edit: "Hariri"
         back: "Iliyopita"
+        delete: Futa
+        tests:
+          success: "Mafanikio!"
         providers:
           google: "Google"
       ai_helper:
@@ -60,6 +63,8 @@ sw:
           cancel: "Ghairi"
         image_caption:
           save_caption: "Hifadhi"
+          automatic_caption_dialog:
+            confirm: "Wezesha"
       ai_bot:
         debug_ai_modal:
           request: "Ombi"

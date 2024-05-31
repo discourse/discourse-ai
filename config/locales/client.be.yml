@@ -42,6 +42,9 @@ be:
         save: "Захаваць"
         edit: "рэдагаваць"
         back: "Назад"
+        delete: выдаляць
+        tests:
+          success: "поспех!"
         providers:
           google: "Google"
       ai_helper:
@@ -57,6 +60,8 @@ be:
           cancel: "адмяніць"
         image_caption:
           save_caption: "захаваць"
+          automatic_caption_dialog:
+            confirm: "Уключыць"
       ai_bot:
         debug_ai_modal:
           request: "запыт"

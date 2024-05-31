@@ -136,6 +136,10 @@ zh_CN:
         save: "保存"
         edit: "编辑"
         back: "返回"
+        delete: 删除
+        tests:
+          title: "运行测试"
+          success: "成功!"
         providers:
           google: "Google"
       related_topics:
@@ -178,13 +182,14 @@ zh_CN:
           selected: "已选择"
         image_caption:
           save_caption: "保存"
+          automatic_caption_dialog:
+            confirm: "启用"
       reviewables:
         model_used: "使用的模型："
         accuracy: "准确性："
       embeddings:
         semantic_search: "话题（语义）"
         semantic_search_loading: "正在使用 AI 搜索更多结果"
-        semantic_search_disabled_sort: "已禁用此排序顺序的 AI 搜索，按“相关性”排序以启用。"
         semantic_search_results:
           toggle: "显示使用 AI 找到的 %{count} 个结果"
           toggle_hidden: "隐藏使用 AI 找到的 %{count} 个结果"

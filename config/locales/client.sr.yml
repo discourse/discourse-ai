@@ -40,6 +40,7 @@ sr:
         save: "Sačuvaj"
         edit: "Izmeni"
         back: "Nazad"
+        delete: Obriši
         providers:
           google: "Google"
       ai_helper:
@@ -56,6 +57,8 @@ sr:
           cancel: "Odustani"
         image_caption:
           save_caption: "Sačuvaj"
+          automatic_caption_dialog:
+            confirm: "Omogući"
       ai_bot:
         share_modal:
           copy: "Kopija"

@@ -45,6 +45,10 @@ cs:
         save: "Uložit"
         edit: "Upravit"
         back: "Zpět"
+        delete: Smazat
+        tests:
+          title: "Spustit test"
+          success: "Úspěch!"
         providers:
           google: "Google"
       ai_helper:
@@ -65,6 +69,8 @@ cs:
           selected: "Vybrané"
         image_caption:
           save_caption: "Uložit"
+          automatic_caption_dialog:
+            confirm: "Zapnout"
       ai_bot:
         debug_ai_modal:
           request: "Požadavek"

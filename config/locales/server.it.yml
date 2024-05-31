@@ -177,7 +177,7 @@ it:
         search: "Cerca tutti gli argomenti pubblici sul forum"
         tags: "Elenca tutte le etichette sul forum"
         time: "Trova l'ora in diversi fusi orari"
-        summarize: "Riassumi un argomento"
+        summary: "Riassumi un argomento"
         image: "Genera un'immagine utilizzando la diffusione stabile"
         google: "Cerca una query su Google"
         read: "Leggi l'argomento pubblico sul forum"

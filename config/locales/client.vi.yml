@@ -45,6 +45,10 @@ vi:
         save: "Lưu lại"
         edit: "Sửa"
         back: "Quay lại"
+        delete: Xóa
+        tests:
+          title: "Chạy thử nghiệm"
+          success: "Thành công!"
         providers:
           google: "G"
       ai_helper:
@@ -64,6 +68,8 @@ vi:
           select: "Chọn"
         image_caption:
           save_caption: "Lưu lại"
+          automatic_caption_dialog:
+            confirm: "Bật"
       ai_bot:
         debug_ai_modal:
           request: "Yêu cầu"

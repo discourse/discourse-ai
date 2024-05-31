@@ -45,6 +45,10 @@ nb_NO:
         save: "Lagre"
         edit: "Endre"
         back: "Forrige"
+        delete: Slett
+        tests:
+          title: "Kjør test"
+          success: "Suksess!"
         providers:
           google: "Google"
       ai_helper:
@@ -61,6 +65,8 @@ nb_NO:
           cancel: "Avbryt"
         image_caption:
           save_caption: "Lagre"
+          automatic_caption_dialog:
+            confirm: "Aktiver"
       ai_bot:
         debug_ai_modal:
           request: "Forespørsel"

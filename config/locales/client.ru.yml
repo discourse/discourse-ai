@@ -119,6 +119,10 @@ ru:
         save: "Сохранить"
         edit: "Отредактировать"
         back: "Назад"
+        delete: Удалить
+        tests:
+          title: "Выполнить тест"
+          success: "Слово добавлено!"
         providers:
           google: "Google"
       related_topics:
@@ -161,13 +165,14 @@ ru:
           selected: "Выбрано"
         image_caption:
           save_caption: "Сохранить"
+          automatic_caption_dialog:
+            confirm: "Включить"
       reviewables:
         model_used: "Использованная модель:"
         accuracy: "Точность:"
       embeddings:
         semantic_search: "Темы (семантика)"
         semantic_search_loading: "Поиск дополнительных результатов с помощью AI"
-        semantic_search_disabled_sort: "AI-поиск отключен для этого порядка сортировки, включите сортировку по релевантности."
         semantic_search_results:
           toggle: "Показать результаты (%{count}), найденные с помощью AI"
           toggle_hidden: "Скрыть результаты (%{count}), найденные с помощью AI"

@@ -119,6 +119,10 @@ fi:
         save: "Tallenna"
         edit: "Muokkaa"
         back: "Takaisin"
+        delete: Poista
+        tests:
+          title: "Suorita testi"
+          success: "Onnistui!"
         providers:
           google: "Google"
       related_topics:
@@ -161,13 +165,14 @@ fi:
           selected: "Valittu"
         image_caption:
           save_caption: "Tallenna"
+          automatic_caption_dialog:
+            confirm: "Ota käyttöön"
       reviewables:
         model_used: "Käytetty malli:"
         accuracy: "Tarkkuus:"
       embeddings:
         semantic_search: "Ketjut (semanttinen)"
         semantic_search_loading: "Haetaan lisää tuloksia tekoälyllä"
-        semantic_search_disabled_sort: "Tekoälyhaku ei ole käytössä tässä lajittelujärjestyksessä, lajittele tulokset olennaisuuden mukaan, jotta voit ottaa sen käyttöön."
         semantic_search_results:
           toggle: "Näytetään %{count} tulosta, jotka löydettiin tekoälyllä"
           toggle_hidden: "Piilotetaan %{count} tulosta, jotka löydettiin tekoälyllä"

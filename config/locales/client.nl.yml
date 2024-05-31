@@ -119,6 +119,10 @@ nl:
         save: "Opslaan"
         edit: "Bewerken"
         back: "Vorige"
+        delete: Verwijderen
+        tests:
+          title: "Test uitvoeren"
+          success: "Succes!"
         providers:
           google: "Google"
       related_topics:
@@ -161,13 +165,14 @@ nl:
           selected: "Geselecteerd"
         image_caption:
           save_caption: "Opslaan"
+          automatic_caption_dialog:
+            confirm: "Inschakelen"
       reviewables:
         model_used: "Gebruikt model:"
         accuracy: "Nauwkeurigheid:"
       embeddings:
         semantic_search: "Topics (semantisch)"
         semantic_search_loading: "Zoeken naar meer resultaten met behulp van AI"
-        semantic_search_disabled_sort: "AI zoeken uitgeschakeld voor deze sorteervolgorde, sorteer op Relevantie om in te schakelen."
         semantic_search_results:
           toggle: "%{count} resultaten gevonden met AI worden weergegeven"
           toggle_hidden: "%{count} resultaten gevonden met AI zijn verborgen"
