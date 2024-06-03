@@ -101,10 +101,15 @@ module DiscourseAi
             partials_raw = +""
             request_body = prepare_payload(prompt, model_params, dialect).to_json
 
+            p request_body
+
             request = prepare_request(request_body)
 
             http.request(request) do |response|
+              puts response.code
+
               if response.code.to_i != 200
+                puts response.body
                 Rails.logger.error(
                   "#{self.class.name}: status: #{response.code.to_i} - body: #{response.body}",
                 )
@@ -248,6 +253,7 @@ module DiscourseAi
                 raise if !cancelled
               end
 
+              has_tool ||= has_tool?(partials_raw)
               # Once we have the full response, try to return the tool as a XML doc.
               if has_tool && native_tool_support?
                 function_buffer = add_to_function_buffer(function_buffer, payload: partials_raw)
@@ -345,7 +351,7 @@ module DiscourseAi
           TEXT
         end
 
-        def noop_function_call_text
+        def self.noop_function_call_text
           (<<~TEXT).strip
             <invoke>
             <tool_name></tool_name>
@@ -354,6 +360,10 @@ module DiscourseAi
             <tool_id></tool_id>
             </invoke>
           TEXT
+        end
+
+        def noop_function_call_text
+          self.class.noop_function_call_text
         end
 
         def has_tool?(response)

@@ -45,10 +45,7 @@ module DiscourseAi
               raise "Unsupported model: #{model}"
             end
 
-          options = { model: mapped_model, max_tokens: 3_000 }
-
-          options[:stop_sequences] = ["</function_calls>"] if dialect.prompt.has_tools?
-          options
+          { model: mapped_model, max_tokens: 3_000 }
         end
 
         def provider_id
@@ -73,6 +70,7 @@ module DiscourseAi
 
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
           payload[:stream] = true if @streaming_mode
+          payload[:tools] = prompt.tools if prompt.tools.present?
 
           payload
         end
@@ -87,30 +85,30 @@ module DiscourseAi
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
-        def final_log_update(log)
-          log.request_tokens = @input_tokens if @input_tokens
-          log.response_tokens = @output_tokens if @output_tokens
+        def processor
+          @processor ||=
+            DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
+        end
+
+        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
+          processor.to_xml_tool_calls(function_buffer)
         end
 
         def extract_completion_from(response_raw)
-          result = ""
-          parsed = JSON.parse(response_raw, symbolize_names: true)
+          puts response_raw
+          processor.process_message(response_raw)
+        end
 
-          if @streaming_mode
-            if parsed[:type] == "content_block_start" || parsed[:type] == "content_block_delta"
-              result = parsed.dig(:delta, :text).to_s
-            elsif parsed[:type] == "message_start"
-              @input_tokens = parsed.dig(:message, :usage, :input_tokens)
-            elsif parsed[:type] == "message_delta"
-              @output_tokens = parsed.dig(:delta, :usage, :output_tokens)
-            end
-          else
-            result = parsed.dig(:content, 0, :text).to_s
-            @input_tokens = parsed.dig(:usage, :input_tokens)
-            @output_tokens = parsed.dig(:usage, :output_tokens)
-          end
+        def has_tool?(_response_data)
+          processor.tool_calls.present?
+        end
 
-          result
+        def partials_from(decoded_chunks)
+          decoded_chunks
+        end
+
+        def native_tool_support?
+          true
         end
 
         def partials_from(decoded_chunk)
