@@ -117,7 +117,7 @@ module DiscourseAi
                   )
               end
 
-              current_function.at("tool_name").content = name
+              current_function.at("tool_name").content = name == "search_local" ? "search" : name
               current_function.at("parameters").children =
                 Nokogiri::HTML5::DocumentFragment.parse(xml_params)
             end

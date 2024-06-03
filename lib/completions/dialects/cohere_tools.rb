@@ -28,7 +28,7 @@ module DiscourseAi
             params = JSON.parse(call[:content])["arguments"]
             {
               call: {
-                name: call[:name],
+                name: call[:name] == "search" ? "search_local" : call[:name],
                 parameters: params,
                 generation_id: call[:id],
               },
@@ -56,7 +56,7 @@ module DiscourseAi
               end
 
             {
-              name: tool[:name],
+              name: tool[:name] == "search" ? "search_local" : tool[:name],
               description: tool[:description],
               parameter_definitions: tool[:parameter_definitions],
             }
