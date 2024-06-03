@@ -24,13 +24,43 @@ module DiscourseAi
           system_message = messages.shift[:message] if messages.first[:role] == "SYSTEM"
 
           prompt = { preamble: +"#{system_message}" }
-          prompt[:chat_history] = messages if messages.present?
 
-          messages.reverse_each do |msg|
-            if msg[:role] == "USER"
-              prompt[:message] = msg[:message]
-              messages.delete(msg)
-              break
+          if messages.present?
+            with_mapped_tools = []
+
+            current_pair = nil
+            messages.each do |msg|
+              if current_pair == nil && msg[:type] == :tool_call
+                current_pair = [msg]
+              elsif current_pair && msg[:type] == :tool
+                current_pair << msg
+                tool_results = tools_dialect.tool_results(current_pair)
+                with_mapped_tools << { role: "TOOL", message: "", tool_results: tool_results }
+                current_pair = nil
+              else
+                with_mapped_tools << msg
+                current_pair = nil
+              end
+            end
+
+            messages = with_mapped_tools
+            prompt[:chat_history] = messages
+          end
+
+          tools = tools_dialect.translated_tools
+          prompt[:tools] = tools if tools.present?
+
+          tool_results =
+            messages.last && messages.last[:role] == "TOOL" && messages.last[:tool_results]
+          prompt[:tool_results] = tool_results if tool_results.present?
+
+          if tool_results.blank?
+            messages.reverse_each do |msg|
+              if msg[:role] == "USER"
+                prompt[:message] = msg[:message]
+                messages.delete(msg)
+                break
+              end
             end
           end
 
@@ -54,7 +84,15 @@ module DiscourseAi
           end
         end
 
+        def native_tool_support?
+          true
+        end
+
         private
+
+        def tools_dialect
+          @tools_dialect ||= DiscourseAi::Completions::Dialects::CohereTools.new(prompt.tools)
+        end
 
         def per_message_overhead
           0
@@ -83,11 +121,11 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          { role: "CHATBOT", message: tools_dialect.from_raw_tool_call(msg) }
+          msg
         end
 
         def tool_msg(msg)
-          { role: "USER", message: tools_dialect.from_raw_tool(msg) }
+          msg
         end
 
         def user_msg(msg)

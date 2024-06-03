@@ -59,6 +59,83 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
 
   before { SiteSetting.ai_cohere_api_key = "ABC" }
 
+  it "is able to trigger a tool" do
+    body = (<<~TEXT).strip
+      {"is_finished":false,"event_type":"stream-start","generation_id":"1648206e-1fe4-4bb6-90cf-360dd55f575b"}
+{"is_finished":false,"event_type":"tool-calls-generation","text":"I will search for 'who is sam saffron' and relay the information to the user.","tool_calls":[{"name":"google","parameters":{"query":"who is sam saffron"}}]}
+{"is_finished":true,"event_type":"stream-end","response":{"response_id":"71d8c9e1-1138-4d70-80d1-10ddec41c989","text":"I will search for 'who is sam saffron' and relay the information to the user.","generation_id":"1648206e-1fe4-4bb6-90cf-360dd55f575b","chat_history":[{"role":"USER","message":"sam: who is sam saffron?"},{"role":"CHATBOT","message":"I will search for 'who is sam saffron' and relay the information to the user.","tool_calls":[{"name":"google","parameters":{"query":"who is sam saffron"}}]}],"finish_reason":"COMPLETE","meta":{"api_version":{"version":"1"},"billed_units":{"input_tokens":460,"output_tokens":27},"tokens":{"input_tokens":1227,"output_tokens":27}},"tool_calls":[{"name":"google","parameters":{"query":"who is sam saffron"}}]},"finish_reason":"COMPLETE"}
+    TEXT
+
+    parsed_body = nil
+    result = +""
+
+    sig = {
+      name: "google",
+      description: "Will search using Google",
+      parameters: [
+        { name: "query", description: "The search query", type: "string", required: true },
+      ],
+    }
+
+    prompt.tools = [sig]
+
+    EndpointMock.with_chunk_array_support do
+      stub_request(:post, "https://api.cohere.ai/v1/chat").with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+        headers: {
+          "Content-Type" => "application/json",
+          "Authorization" => "Bearer ABC",
+        },
+      ).to_return(status: 200, body: body.split("|"))
+
+      result = llm.generate(prompt, user: user) { |partial, cancel| result << partial }
+    end
+
+    expected = <<~TEXT
+      <function_calls>
+      <invoke>
+      <tool_name>google</tool_name>
+      <parameters><query>who is sam saffron</query>
+      </parameters>
+      <tool_id>tool_0</tool_id>
+      </invoke>
+      </function_calls>
+    TEXT
+
+    expect(result.strip).to eq(expected.strip)
+
+    expected = {
+      model: "command-r-plus",
+      preamble: "You are hello bot",
+      chat_history: [
+        { role: "USER", message: "user1: hello" },
+        { role: "CHATBOT", message: "hi user" },
+      ],
+      message: "user1: thanks",
+      tools: [
+        {
+          name: "google",
+          description: "Will search using Google",
+          parameter_definitions: {
+            query: {
+              description: "The search query",
+              type: "str",
+              required: true,
+            },
+          },
+        },
+      ],
+      force_single_step: false,
+      stream: true,
+    }
+
+    expect(parsed_body).to eq(expected)
+  end
+
   it "is able to run tools" do
     body = {
       response_id: "0a90275b-273d-4690-abce-8018edcec7d0",
@@ -99,20 +176,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     result = llm.generate(prompt_with_tool_results, user: user)
 
     expect(parsed_body[:preamble]).to include("You are weather bot")
-    expect(parsed_body[:preamble]).to include("<tools>")
-
-    expected_message = <<~MESSAGE
-      <function_results>
-      <result>
-      <tool_name>weather</tool_name>
-      <json>
-      {"weather":"22c"}
-      </json>
-      </result>
-      </function_results>
-    MESSAGE
-
-    expect(parsed_body[:message].strip).to eq(expected_message.strip)
 
     expect(result).to eq("Sydney is 22c")
     audit = AiApiAuditLog.order("id desc").first
