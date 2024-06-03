@@ -26,27 +26,43 @@ module DiscourseAi
           prompt = { preamble: +"#{system_message}" }
 
           if messages.present?
-            prompt[:chat_history] = messages
+            with_mapped_tools = []
 
-            tool_messages = []
-            messages.delete_if do |msg|
-              if %i[tool_call tool].include?(msg[:type])
-                tool_messages << msg
-                true
+            current_pair = nil
+            messages.each do |msg|
+              if current_pair == nil && msg[:type] == :tool_call
+                current_pair = [msg]
+              elsif current_pair && msg[:type] == :tool
+                current_pair << msg
+                tool_results = tools_dialect.tool_results(current_pair)
+                with_mapped_tools << { role: "TOOL", message: "", tool_results: tool_results }
+                current_pair = nil
+              else
+                with_mapped_tools << msg
+                current_pair = nil
+              end
+            end
+
+            messages = with_mapped_tools
+            prompt[:chat_history] = messages
+          end
+
+          tools = tools_dialect.translated_tools
+          prompt[:tools] = tools if tools.present?
+
+          tool_results =
+            messages.last && messages.last[:role] == "TOOL" && messages.last[:tool_results]
+          prompt[:tool_results] = tool_results if tool_results.present?
+
+          if tool_results.blank?
+            messages.reverse_each do |msg|
+              if msg[:role] == "USER"
+                prompt[:message] = msg[:message]
+                messages.delete(msg)
+                break
               end
             end
           end
-
-          messages.reverse_each do |msg|
-            if msg[:role] == "USER"
-              prompt[:message] = msg[:message]
-              messages.delete(msg)
-              break
-            end
-          end
-
-          prompt[:tools] = tools_dialect.translated_tools
-          prompt[:tool_results] = tools_dialect.tool_results(tool_messages)
 
           prompt
         end

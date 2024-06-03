@@ -25,14 +25,14 @@ module DiscourseAi
           end
 
           pairs.map do |call, result|
-            params = JSON.parse(call[:content])[:arguments]
+            params = JSON.parse(call[:content])["arguments"]
             {
               call: {
                 name: call[:name],
                 parameters: params,
                 generation_id: call[:id],
               },
-              outputs: result[:content],
+              outputs: [JSON.parse(result[:content])],
             }
           end
         end

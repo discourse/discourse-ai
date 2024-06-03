@@ -176,20 +176,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     result = llm.generate(prompt_with_tool_results, user: user)
 
     expect(parsed_body[:preamble]).to include("You are weather bot")
-    expect(parsed_body[:preamble]).to include("<tools>")
-
-    expected_message = <<~MESSAGE
-      <function_results>
-      <result>
-      <tool_name>weather</tool_name>
-      <json>
-      {"weather":"22c"}
-      </json>
-      </result>
-      </function_results>
-    MESSAGE
-
-    expect(parsed_body[:message].strip).to eq(expected_message.strip)
 
     expect(result).to eq("Sydney is 22c")
     audit = AiApiAuditLog.order("id desc").first
