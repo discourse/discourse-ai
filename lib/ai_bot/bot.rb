@@ -63,6 +63,8 @@ module DiscourseAi
         llm_kwargs[:temperature] = persona.temperature if persona.temperature
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
 
+        needs_newlines = false
+
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
           tool_found = false
 
@@ -72,11 +74,18 @@ module DiscourseAi
 
               if (tools.present?)
                 tool_found = true
+                # a bit hacky, but extra newlines do no harm
+                if needs_newlines
+                  update_blk.call("\n\n", cancel, nil)
+                  needs_newlines = false
+                end
+
                 tools[0..MAX_TOOLS].each do |tool|
                   process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
                   ongoing_chain &&= tool.chain_next_response?
                 end
               else
+                needs_newlines = true
                 update_blk.call(partial, cancel, nil)
               end
             end

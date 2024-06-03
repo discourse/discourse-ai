@@ -72,8 +72,13 @@ module DiscourseAi
             if parsed[:event_type] == "text-generation"
               parsed[:text]
             elsif parsed[:event_type] == "tool-calls-generation"
-              @has_tool = true
-              parsed.dig(:tool_calls).to_json
+              # could just be random thinking...
+              if parsed.dig(:tool_calls).present?
+                @has_tool = true
+                parsed.dig(:tool_calls).to_json
+              else
+                ""
+              end
             else
               if parsed[:event_type] == "stream-end"
                 @input_tokens = parsed.dig(:response, :meta, :billed_units, :input_tokens)
