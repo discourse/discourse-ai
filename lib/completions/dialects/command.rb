@@ -24,7 +24,18 @@ module DiscourseAi
           system_message = messages.shift[:message] if messages.first[:role] == "SYSTEM"
 
           prompt = { preamble: +"#{system_message}" }
-          prompt[:chat_history] = messages if messages.present?
+
+          if messages.present?
+            prompt[:chat_history] = messages
+
+            tool_messages = []
+            messages.delete_if do |msg|
+              if %i[tool_call tool].include?(msg[:type])
+                tool_messages << msg
+                true
+              end
+            end
+          end
 
           messages.reverse_each do |msg|
             if msg[:role] == "USER"
@@ -33,6 +44,9 @@ module DiscourseAi
               break
             end
           end
+
+          prompt[:tools] = tools_dialect.translated_tools
+          prompt[:tool_results] = tools_dialect.tool_results(tool_messages)
 
           prompt
         end
@@ -54,7 +68,15 @@ module DiscourseAi
           end
         end
 
+        def native_tool_support?
+          true
+        end
+
         private
+
+        def tools_dialect
+          @tools_dialect ||= DiscourseAi::Completions::Dialects::CohereTools.new(prompt.tools)
+        end
 
         def per_message_overhead
           0
@@ -83,11 +105,11 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          { role: "CHATBOT", message: tools_dialect.from_raw_tool_call(msg) }
+          msg
         end
 
         def tool_msg(msg)
-          { role: "USER", message: tools_dialect.from_raw_tool(msg) }
+          msg
         end
 
         def user_msg(msg)
