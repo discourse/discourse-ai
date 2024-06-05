@@ -26,7 +26,8 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
     return function_buffer if @tool_calls.blank?
 
     function_buffer = Nokogiri::HTML5.fragment(<<~TEXT)
-      <function_calls></function_calls>
+      <function_calls>
+      </function_calls>
     TEXT
 
     @tool_calls.each do |tool_call|
@@ -37,7 +38,6 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
           ),
         )
 
-      p tool_call.raw_json
       params = JSON.parse(tool_call.raw_json, symbolize_names: true)
       xml = params.map { |name, value| "<#{name}>#{value}</#{name}>" }.join("\n")
 
@@ -60,7 +60,8 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
         @tool_calls << AnthropicToolCall.new(tool_name, tool_id) if tool_name
       elsif parsed[:type] == "content_block_start" || parsed[:type] == "content_block_delta"
         if @tool_calls.present?
-          @tool_calls.last.append(parsed.dig(:delta, :partial_json).to_s)
+          result = parsed.dig(:delta, :partial_json).to_s
+          @tool_calls.last.append(result)
         else
           result = parsed.dig(:delta, :text).to_s
         end

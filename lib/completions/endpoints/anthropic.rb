@@ -91,11 +91,10 @@ module DiscourseAi
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          processor.to_xml_tool_calls(function_buffer)
+          processor.to_xml_tool_calls(function_buffer) if !partial
         end
 
         def extract_completion_from(response_raw)
-          puts response_raw
           processor.process_message(response_raw)
         end
 
@@ -103,8 +102,9 @@ module DiscourseAi
           processor.tool_calls.present?
         end
 
-        def partials_from(decoded_chunks)
-          decoded_chunks
+        def final_log_update(log)
+          log.request_tokens = processor.input_tokens if processor.input_tokens
+          log.response_tokens = processor.output_tokens if processor.output_tokens
         end
 
         def native_tool_support?

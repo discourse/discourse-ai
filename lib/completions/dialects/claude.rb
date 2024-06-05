@@ -69,15 +69,11 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          x = tools_dialect.from_raw_tool_call(msg)
-          p x
-          x
+          tools_dialect.from_raw_tool_call(msg)
         end
 
         def tool_msg(msg)
-          x = tools_dialect.from_raw_tool(msg)
-          p x
-          x
+          tools_dialect.from_raw_tool(msg)
         end
 
         def model_msg(msg)

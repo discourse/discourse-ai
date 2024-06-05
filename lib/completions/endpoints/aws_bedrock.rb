@@ -16,7 +16,6 @@ module DiscourseAi
           end
 
           def correctly_configured?(_model)
-            return false
             SiteSetting.ai_bedrock_access_key_id.present? &&
               SiteSetting.ai_bedrock_secret_access_key.present? &&
               SiteSetting.ai_bedrock_region.present?
@@ -154,15 +153,10 @@ module DiscourseAi
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          x = processor.to_xml_tool_calls(function_buffer)
-          p x.to_s
-          x
+          processor.to_xml_tool_calls(function_buffer) if !partial
         end
 
         def extract_completion_from(response_raw)
-          p "HERE1"
-          puts response_raw
-          p "HERE2"
           processor.process_message(response_raw)
         end
 

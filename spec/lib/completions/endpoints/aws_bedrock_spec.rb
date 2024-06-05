@@ -152,7 +152,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         expect(request.headers["X-Amz-Content-Sha256"]).to be_present
 
         expected_response = (<<~RESPONSE).strip
-        <function_calls><invoke>
+        <function_calls>
+        <invoke>
         <tool_name>google</tool_name>
         <parameters><query>sydney weather today</query></parameters>
         <tool_id>toolu_bdrk_014CMjxtGmKUtGoEFPgc7PF7</tool_id>

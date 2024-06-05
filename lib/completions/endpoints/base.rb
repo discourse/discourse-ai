@@ -101,15 +101,10 @@ module DiscourseAi
             partials_raw = +""
             request_body = prepare_payload(prompt, model_params, dialect).to_json
 
-            p request_body
-
             request = prepare_request(request_body)
 
             http.request(request) do |response|
-              puts response.code
-
               if response.code.to_i != 200
-                puts response.body
                 Rails.logger.error(
                   "#{self.class.name}: status: #{response.code.to_i} - body: #{response.body}",
                 )
@@ -247,6 +242,7 @@ module DiscourseAi
                   else
                     leftover = ""
                   end
+
                   prev_processed_partials = 0 if leftover.blank?
                 end
               rescue IOError, StandardError
