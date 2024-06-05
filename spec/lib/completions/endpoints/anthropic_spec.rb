@@ -49,152 +49,59 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
   it "does not eat spaces with tool calls" do
     body = <<~STRING
-      event: message_start
-      data: {"type":"message_start","message":{"id":"msg_019kmW9Q3GqfWmuFJbePJTBR","type":"message","role":"assistant","content":[],"model":"claude-3-opus-20240229","stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":347,"output_tokens":1}}}
+    event: message_start
+    data: {"type":"message_start","message":{"id":"msg_01Ju4j2MiGQb9KV9EEQ522Y3","type":"message","role":"assistant","model":"claude-3-haiku-20240307","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":1293,"output_tokens":1}}   }
 
-      event: content_block_start
-      data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}
+    event: content_block_start
+    data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_01DjrShFRRHp9SnHYRFRc53F","name":"search","input":{}}      }
 
-      event: ping
-      data: {"type": "ping"}
+    event: ping
+    data: {"type": "ping"}
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"<function"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}            }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"_"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\\"searc"}              }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"calls"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"h_qu"}        }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"er"} }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\\n"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"y\\": \\"s"}      }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"<invoke"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"am"}          }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":" "}          }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\\n"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"sam\\""}          }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"<tool"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":", \\"cate"}         }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"_"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"gory"}   }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"name"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\\": \\"gene"}               }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
+    event: content_block_delta
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ral\\"}"}           }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"google"}}
+    event: content_block_stop
+    data: {"type":"content_block_stop","index":0     }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"</tool"}}
+    event: message_delta
+    data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"output_tokens":70}       }
 
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"_"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"name"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\\n"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"<parameters"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\\n"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"<query"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"top"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" "}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"10"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" "}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"things"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" to"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" do"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" in"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" japan"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" for"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" tourists"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"</query"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\\n"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"</parameters"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\\n"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"</invoke"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":">"}}
-
-      event: content_block_delta
-      data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\\n"}}
-
-      event: content_block_stop
-      data: {"type":"content_block_stop","index":0}
-
-      event: message_delta
-      data: {"type":"message_delta","delta":{"stop_reason":"stop_sequence","stop_sequence":"</function_calls>"},"usage":{"output_tokens":57}}
-
-      event: message_stop
-      data: {"type":"message_stop"}
+    event: message_stop
+    data: {"type":"message_stop"}
     STRING
 
     result = +""
@@ -213,11 +120,10 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expected = (<<~TEXT).strip
       <function_calls>
       <invoke>
-      <tool_name>google</tool_name>
-      <parameters>
-      <query>top 10 things to do in japan for tourists</query>
-      </parameters>
-      <tool_id>tool_0</tool_id>
+      <tool_name>search</tool_name>
+      <parameters><search_query>sam sam</search_query>
+      <category>general</category></parameters>
+      <tool_id>toolu_01DjrShFRRHp9SnHYRFRc53F</tool_id>
       </invoke>
       </function_calls>
     TEXT
@@ -285,71 +191,71 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     log = AiApiAuditLog.order(:id).last
     expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
-    expect(log.request_tokens).to eq(25)
-    expect(log.response_tokens).to eq(15)
     expect(log.feature_name).to eq("testing")
+    expect(log.response_tokens).to eq(15)
+    expect(log.request_tokens).to eq(25)
   end
 
-  it "can return multiple function calls" do
-    functions = <<~FUNCTIONS
+  it "supports non streaming tool calls" do
+    tool = {
+      name: "calculate",
+      description: "calculate something",
+      parameters: [
+        {
+          name: "expression",
+          type: "string",
+          description: "expression to calculate",
+          required: true,
+        },
+      ],
+    }
+
+    prompt =
+      DiscourseAi::Completions::Prompt.new(
+        "You a calculator",
+        messages: [{ type: :user, id: "user1", content: "calculate 2758975 + 21.11" }],
+        tools: [tool],
+      )
+
+    proxy = DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-haiku")
+
+    body = {
+      id: "msg_01RdJkxCbsEj9VFyFYAkfy2S",
+      type: "message",
+      role: "assistant",
+      model: "claude-3-haiku-20240307",
+      content: [
+        { type: "text", text: "Here is the calculation:" },
+        {
+          type: "tool_use",
+          id: "toolu_012kBdhG4eHaV68W56p4N94h",
+          name: "calculate",
+          input: {
+            expression: "2758975 + 21.11",
+          },
+        },
+      ],
+      stop_reason: "tool_use",
+      stop_sequence: nil,
+      usage: {
+        input_tokens: 345,
+        output_tokens: 65,
+      },
+    }.to_json
+
+    stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(body: body)
+
+    result = proxy.generate(prompt, user: Discourse.system_user)
+
+    expected = <<~TEXT.strip
       <function_calls>
       <invoke>
-      <tool_name>echo</tool_name>
-      <parameters>
-      <text>something</text>
-      </parameters>
-      </invoke>
-      <invoke>
-      <tool_name>echo</tool_name>
-      <parameters>
-      <text>something else</text>
-      </parameters>
-      </invoke>
-    FUNCTIONS
-
-    body = <<~STRING
-      {
-        "content": [
-          {
-            "text": "Hello!\n\n#{functions}\njunk",
-            "type": "text"
-          }
-        ],
-        "id": "msg_013Zva2CMHLNnXjNJJKqJ2EF",
-        "model": "claude-3-opus-20240229",
-        "role": "assistant",
-        "stop_reason": "end_turn",
-        "stop_sequence": null,
-        "type": "message",
-        "usage": {
-          "input_tokens": 10,
-          "output_tokens": 25
-        }
-      }
-    STRING
-
-    stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(status: 200, body: body)
-
-    result = llm.generate(prompt_with_echo_tool, user: Discourse.system_user)
-
-    expected = (<<~EXPECTED).strip
-      <function_calls>
-      <invoke>
-      <tool_name>echo</tool_name>
-      <parameters>
-      <text>something</text>
-      </parameters>
-      <tool_id>tool_0</tool_id>
-      </invoke>
-      <invoke>
-      <tool_name>echo</tool_name>
-      <parameters>
-      <text>something else</text>
-      </parameters>
-      <tool_id>tool_1</tool_id>
+      <tool_name>calculate</tool_name>
+      <parameters><expression>2758975 + 21.11</expression></parameters>
+      <tool_id>toolu_012kBdhG4eHaV68W56p4N94h</tool_id>
       </invoke>
       </function_calls>
-    EXPECTED
+    TEXT
 
     expect(result.strip).to eq(expected)
   end

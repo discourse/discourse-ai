@@ -242,12 +242,14 @@ module DiscourseAi
                   else
                     leftover = ""
                   end
+
                   prev_processed_partials = 0 if leftover.blank?
                 end
               rescue IOError, StandardError
                 raise if !cancelled
               end
 
+              has_tool ||= has_tool?(partials_raw)
               # Once we have the full response, try to return the tool as a XML doc.
               if has_tool && native_tool_support?
                 function_buffer = add_to_function_buffer(function_buffer, payload: partials_raw)
@@ -345,7 +347,7 @@ module DiscourseAi
           TEXT
         end
 
-        def noop_function_call_text
+        def self.noop_function_call_text
           (<<~TEXT).strip
             <invoke>
             <tool_name></tool_name>
@@ -354,6 +356,10 @@ module DiscourseAi
             <tool_id></tool_id>
             </invoke>
           TEXT
+        end
+
+        def noop_function_call_text
+          self.class.noop_function_call_text
         end
 
         def has_tool?(response)

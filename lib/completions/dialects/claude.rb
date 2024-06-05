@@ -15,10 +15,12 @@ module DiscourseAi
         class ClaudePrompt
           attr_reader :system_prompt
           attr_reader :messages
+          attr_reader :tools
 
-          def initialize(system_prompt, messages)
+          def initialize(system_prompt, messages, tools)
             @system_prompt = system_prompt
             @messages = messages
+            @tools = tools
           end
         end
 
@@ -46,7 +48,11 @@ module DiscourseAi
             previous_message = message
           end
 
-          ClaudePrompt.new(system_prompt.presence, interleving_messages)
+          ClaudePrompt.new(
+            system_prompt.presence,
+            interleving_messages,
+            tools_dialect.translated_tools,
+          )
         end
 
         def max_prompt_tokens
@@ -57,6 +63,18 @@ module DiscourseAi
         end
 
         private
+
+        def tools_dialect
+          @tools_dialect ||= DiscourseAi::Completions::Dialects::ClaudeTools.new(prompt.tools)
+        end
+
+        def tool_call_msg(msg)
+          tools_dialect.from_raw_tool_call(msg)
+        end
+
+        def tool_msg(msg)
+          tools_dialect.from_raw_tool(msg)
+        end
 
         def model_msg(msg)
           { role: "assistant", content: msg[:content] }
