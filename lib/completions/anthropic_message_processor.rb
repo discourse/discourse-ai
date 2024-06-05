@@ -78,7 +78,17 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
         end
       end
     else
-      result = parsed.dig(:content, 0, :text).to_s
+      content = parsed.dig(:content)
+      if content.is_a?(Array)
+        tool_call = content.find { |c| c[:type] == "tool_use" }
+        if tool_call
+          @tool_calls << AnthropicToolCall.new(tool_call[:name], tool_call[:id])
+          @tool_calls.last.append(tool_call[:input].to_json)
+        else
+          result = parsed.dig(:content, 0, :text).to_s
+        end
+      end
+
       @input_tokens = parsed.dig(:usage, :input_tokens)
       @output_tokens = parsed.dig(:usage, :output_tokens)
     end

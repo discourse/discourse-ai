@@ -196,6 +196,70 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expect(log.request_tokens).to eq(25)
   end
 
+  it "supports non streaming tool calls" do
+    tool = {
+      name: "calculate",
+      description: "calculate something",
+      parameters: [
+        {
+          name: "expression",
+          type: "string",
+          description: "expression to calculate",
+          required: true,
+        },
+      ],
+    }
+
+    prompt =
+      DiscourseAi::Completions::Prompt.new(
+        "You a calculator",
+        messages: [{ type: :user, id: "user1", content: "calculate 2758975 + 21.11" }],
+        tools: [tool],
+      )
+
+    proxy = DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-haiku")
+
+    body = {
+      id: "msg_01RdJkxCbsEj9VFyFYAkfy2S",
+      type: "message",
+      role: "assistant",
+      model: "claude-3-haiku-20240307",
+      content: [
+        { type: "text", text: "Here is the calculation:" },
+        {
+          type: "tool_use",
+          id: "toolu_012kBdhG4eHaV68W56p4N94h",
+          name: "calculate",
+          input: {
+            expression: "2758975 + 21.11",
+          },
+        },
+      ],
+      stop_reason: "tool_use",
+      stop_sequence: nil,
+      usage: {
+        input_tokens: 345,
+        output_tokens: 65,
+      },
+    }.to_json
+
+    stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(body: body)
+
+    result = proxy.generate(prompt, user: Discourse.system_user)
+
+    expected = <<~TEXT.strip
+      <function_calls>
+      <invoke>
+      <tool_name>calculate</tool_name>
+      <parameters><expression>2758975 + 21.11</expression></parameters>
+      <tool_id>toolu_012kBdhG4eHaV68W56p4N94h</tool_id>
+      </invoke>
+      </function_calls>
+    TEXT
+
+    expect(result.strip).to eq(expected)
+  end
+
   it "can send images via a completion prompt" do
     prompt =
       DiscourseAi::Completions::Prompt.new(
