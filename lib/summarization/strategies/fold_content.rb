@@ -3,7 +3,7 @@
 module DiscourseAi
   module Summarization
     module Strategies
-      class FoldContent < ::Summarization::Base
+      class FoldContent < DiscourseAi::Summarization::Models::Base
         def initialize(completion_model)
           @completion_model = completion_model
         end

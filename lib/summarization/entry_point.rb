@@ -4,6 +4,20 @@ module DiscourseAi
   module Summarization
     class EntryPoint
       def inject_into(plugin)
+        DiscoursePluginRegistry.define_filtered_register :summarization_strategies
+
+        plugin.add_to_serializer(:current_user, :can_summarize) do
+          scope.user.in_any_groups?(SiteSetting.ai_custom_summarization_allowed_groups_map)
+        end
+
+        plugin.add_to_serializer(:topic_view, :summarizable) do
+          DiscourseAi::Summarization::Models::Base.can_see_summary?(object.topic, scope.user)
+        end
+
+        plugin.add_to_serializer(:web_hook_topic_view, :summarizable) do
+          DiscourseAi::Summarization::Models::Base.can_see_summary?(object.topic, scope.user)
+        end
+
         foldable_models = [
           Models::OpenAi.new("open_ai:gpt-4", max_tokens: 8192),
           Models::OpenAi.new("open_ai:gpt-4-32k", max_tokens: 32_768),
