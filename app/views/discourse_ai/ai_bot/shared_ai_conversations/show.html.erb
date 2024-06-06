@@ -10,7 +10,7 @@
     <meta name="twitter:title" content="<%= I18n.t("discourse_ai.share_ai.title", title: @shared_conversation.title, site_name: SiteSetting.title) %>">
     <meta name="twitter:description" content="<%= @shared_conversation.formatted_excerpt %>">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="<%= ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/share.css") %>">
+    <link rel="stylesheet" href="<%= ::UrlHelper.absolute("/plugins/discourse-ai/ai-share/share.css") %>">
   </head>
   <body>
     <header class="site-header">
