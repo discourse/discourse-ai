@@ -4,7 +4,6 @@ import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
-import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import concatClass from "discourse/helpers/concat-class";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -43,15 +42,6 @@ export default class AiPersonaListEditor extends Component {
   }
 
   <template>
-    <DBreadcrumbsItem as |linkClass|>
-      <LinkTo
-        @route="adminPlugins.show.discourse-ai-personas"
-        class={{linkClass}}
-      >
-        {{i18n "discourse_ai.ai_persona.short_title"}}
-      </LinkTo>
-    </DBreadcrumbsItem>
-
     <section class="ai-persona-list-editor__current admin-detail pull-left">
       {{#if @currentPersona}}
         <AiPersonaEditor @model={{@currentPersona}} @personas={{@personas}} />
