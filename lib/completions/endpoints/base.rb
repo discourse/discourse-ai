@@ -78,11 +78,27 @@ module DiscourseAi
           end
         end
 
+        def xml_tags_to_strip(dialect)
+          []
+        end
+
         def perform_completion!(dialect, user, model_params = {}, feature_name: nil, &blk)
           allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
+          orig_blk = blk
 
           @streaming_mode = block_given?
+          to_strip = xml_tags_to_strip(dialect)
+          @xml_stripper =
+            DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
+
+          if @streaming_mode && @xml_stripper
+            blk =
+              lambda do |partial, cancel|
+                partial = @xml_stripper << partial
+                orig_blk.call(partial, cancel) if partial
+              end
+          end
 
           prompt = dialect.translate
 
@@ -268,6 +284,11 @@ module DiscourseAi
               if !native_tool_support? && function_calls = normalizer.function_calls
                 response_data << function_calls
                 blk.call(function_calls, cancel)
+              end
+
+              if @xml_stripper
+                leftover = @xml_stripper.finish
+                orig_blk.call(leftover, cancel) if leftover.present?
               end
 
               return response_data

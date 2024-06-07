@@ -41,13 +41,17 @@ module DiscourseAi
         def instructions
           return "" if raw_tools.blank?
 
-          has_arrays = raw_tools.any? { |tool| tool[:parameters]&.any? { |p| p[:type] == "array" } }
+          @instructions ||=
+            begin
+              has_arrays =
+                raw_tools.any? { |tool| tool[:parameters]&.any? { |p| p[:type] == "array" } }
 
-          (<<~TEXT).strip
-            #{tool_preamble(include_array_tip: has_arrays)}
-            <tools>
-            #{translated_tools}</tools>
-          TEXT
+              (<<~TEXT).strip
+              #{tool_preamble(include_array_tip: has_arrays)}
+              <tools>
+              #{translated_tools}</tools>
+            TEXT
+            end
         end
 
         def from_raw_tool(raw_message)

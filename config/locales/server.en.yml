@@ -51,6 +51,7 @@ en:
     ai_openai_embeddings_url: "Custom URL used for the OpenAI embeddings API. (in the case of Azure it can be: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API key for OpenAI API"
     ai_anthropic_api_key: "API key for Anthropic API"
+    ai_anthropic_native_tool_call_models: "List of models that will use native tool calls vs legacy XML based tools."
     ai_cohere_api_key: "API key for Cohere API"
     ai_hugging_face_api_url: "Custom URL used for OpenSource LLM inference. Compatible with https://github.com/huggingface/text-generation-inference"
     ai_hugging_face_api_key: API key for Hugging Face API
