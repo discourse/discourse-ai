@@ -111,6 +111,15 @@ discourse_ai:
   ai_anthropic_api_key:
     default: ""
     secret: true
+  ai_anthropic_native_tool_call_models:
+    type: list
+    list_type: compact
+    default: "claude-3-sonnet|claude-3-haiku"
+    allow_any: false
+    choices:
+      - claude-3-opus
+      - claude-3-sonnet
+      - claude-3-haiku
   ai_cohere_api_key:
     default: ""
     secret: true

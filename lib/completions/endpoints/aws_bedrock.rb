@@ -36,11 +36,22 @@ module DiscourseAi
 
         def default_options(dialect)
           options = { max_tokens: 3_000, anthropic_version: "bedrock-2023-05-31" }
+
+          options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
+            dialect.prompt.has_tools?
           options
         end
 
         def provider_id
           AiApiAuditLog::Provider::Anthropic
+        end
+
+        def xml_tags_to_strip(dialect)
+          if dialect.prompt.has_tools?
+            %w[thinking search_quality_reflection search_quality_score]
+          else
+            []
+          end
         end
 
         private
@@ -79,9 +90,11 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
+          @native_tool_support = dialect.native_tool_support?
+
           payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
-          payload[:tools] = prompt.tools if prompt.tools.present?
+          payload[:tools] = prompt.tools if prompt.has_tools?
 
           payload
         end
@@ -169,7 +182,7 @@ module DiscourseAi
         end
 
         def native_tool_support?
-          true
+          @native_tool_support
         end
 
         def chunk_to_string(chunk)

@@ -45,7 +45,12 @@ module DiscourseAi
               raise "Unsupported model: #{model}"
             end
 
-          { model: mapped_model, max_tokens: 3_000 }
+          options = { model: mapped_model, max_tokens: 3_000 }
+
+          options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
+            dialect.prompt.has_tools?
+
+          options
         end
 
         def provider_id
@@ -53,6 +58,14 @@ module DiscourseAi
         end
 
         private
+
+        def xml_tags_to_strip(dialect)
+          if dialect.prompt.has_tools?
+            %w[thinking search_quality_reflection search_quality_score]
+          else
+            []
+          end
+        end
 
         # this is an approximation, we will update it later if request goes through
         def prompt_size(prompt)
@@ -66,11 +79,13 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
+          @native_tool_support = dialect.native_tool_support?
+
           payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
 
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
           payload[:stream] = true if @streaming_mode
-          payload[:tools] = prompt.tools if prompt.tools.present?
+          payload[:tools] = prompt.tools if prompt.has_tools?
 
           payload
         end
@@ -108,7 +123,7 @@ module DiscourseAi
         end
 
         def native_tool_support?
-          true
+          @native_tool_support
         end
 
         def partials_from(decoded_chunk)
