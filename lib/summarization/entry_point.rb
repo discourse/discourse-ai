@@ -81,7 +81,7 @@ module DiscourseAi
         #end
 
         foldable_models.each do |model|
-          plugin.register_summarization_strategy(Strategies::FoldContent.new(model))
+          DiscoursePluginRegistry.register_summarization_strategy(Strategies::FoldContent.new(model), Plugin::Instance.new)
         end
 
         #plugin.add_model_callback(LlmModel, :after_create) do
