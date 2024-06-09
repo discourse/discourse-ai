@@ -102,96 +102,49 @@ class AiPersona < ActiveRecord::Base
   end
 
   def class_instance
-    allowed_group_ids = self.allowed_group_ids
-    id = self.id
-    system = self.system
-    user_id = self.user_id
-    mentionable = self.mentionable
-    default_llm = self.default_llm
-    max_context_posts = self.max_context_posts
-    vision_enabled = self.vision_enabled
-    vision_max_pixels = self.vision_max_pixels
-    rag_conversation_chunks = self.rag_conversation_chunks
-    question_consolidator_llm = self.question_consolidator_llm
-    allow_chat = self.allow_chat
+    attributes = %i[
+      id
+      user_id
+      system
+      mentionable
+      default_llm
+      max_context_posts
+      vision_enabled
+      vision_max_pixels
+      rag_conversation_chunks
+      question_consolidator_llm
+      allow_chat
+      name
+      description
+      allowed_group_ids
+    ]
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
+
+    instance_attributes = {}
+    attributes.each do |attr|
+      value = self.read_attribute(attr)
+      instance_attributes[attr] = value
+    end
+
     if persona_class
-      persona_class.define_singleton_method :allowed_group_ids do
-        allowed_group_ids
+      instance_attributes.each do |key, value|
+        # description/name are localized
+        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
       end
-
-      persona_class.define_singleton_method :id do
-        id
-      end
-
-      persona_class.define_singleton_method :system do
-        system
-      end
-
-      persona_class.define_singleton_method :user_id do
-        user_id
-      end
-
-      persona_class.define_singleton_method :allow_chat do
-        allow_chat
-      end
-
-      persona_class.define_singleton_method :mentionable do
-        mentionable
-      end
-
-      persona_class.define_singleton_method :default_llm do
-        default_llm
-      end
-
-      persona_class.define_singleton_method :max_context_posts do
-        max_context_posts
-      end
-
-      persona_class.define_singleton_method :vision_enabled do
-        vision_enabled
-      end
-
-      persona_class.define_singleton_method :vision_max_pixels do
-        vision_max_pixels
-      end
-
-      persona_class.define_singleton_method :question_consolidator_llm do
-        question_consolidator_llm
-      end
-
-      persona_class.define_singleton_method :rag_conversation_chunks do
-        rag_conversation_chunks
-      end
-
       return persona_class
     end
 
-    name = self.name
-    description = self.description
-    ai_persona_id = self.id
-
     options = {}
-
     tools = self.respond_to?(:commands) ? self.commands : self.tools
-
     tools =
       tools.filter_map do |element|
-        inner_name = element
-        current_options = nil
-
-        if element.is_a?(Array)
-          inner_name = element[0]
-          current_options = element[1]
-        end
-
-        # Won't migrate data yet. Let's rewrite to the tool name.
+        inner_name, current_options = element.is_a?(Array) ? element : [element, nil]
         inner_name = inner_name.gsub("Command", "")
         inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
 
         begin
-          klass = ("DiscourseAi::AiBot::Tools::#{inner_name}").constantize
+          klass = "DiscourseAi::AiBot::Tools::#{inner_name}".constantize
           options[klass] = current_options if current_options
           klass
         rescue StandardError
@@ -199,107 +152,28 @@ class AiPersona < ActiveRecord::Base
         end
       end
 
+    ai_persona_id = self.id
+
     Class.new(DiscourseAi::AiBot::Personas::Persona) do
-      define_singleton_method :id do
-        id
+      instance_attributes.each { |key, value| define_singleton_method(key) { value } }
+
+      define_singleton_method(:to_s) do
+        "#<#{self.class.name} @name=#{name} @allowed_group_ids=#{allowed_group_ids.join(",")}>"
       end
 
-      define_singleton_method :name do
-        name
-      end
+      define_singleton_method(:inspect) { to_s }
 
-      define_singleton_method :user_id do
-        user_id
-      end
-
-      define_singleton_method :description do
-        description
-      end
-
-      define_singleton_method :system do
-        system
-      end
-
-      define_singleton_method :allowed_group_ids do
-        allowed_group_ids
-      end
-
-      define_singleton_method :user_id do
-        user_id
-      end
-
-      define_singleton_method :mentionable do
-        mentionable
-      end
-
-      define_singleton_method :default_llm do
-        default_llm
-      end
-
-      define_singleton_method :max_context_posts do
-        max_context_posts
-      end
-
-      define_singleton_method :vision_enabled do
-        vision_enabled
-      end
-
-      define_singleton_method :vision_max_pixels do
-        vision_max_pixels
-      end
-
-      define_singleton_method :rag_conversation_chunks do
-        rag_conversation_chunks
-      end
-
-      define_singleton_method :question_consolidator_llm do
-        question_consolidator_llm
-      end
-
-      define_singleton_method :allow_chat do
-        allow_chat
-      end
-
-      define_singleton_method :to_s do
-        "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
-      end
-
-      define_singleton_method :inspect do
-        "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
-      end
-
-      define_method :initialize do |*args, **kwargs|
+      define_method(:initialize) do |*args, **kwargs|
         @ai_persona = AiPersona.find_by(id: ai_persona_id)
         super(*args, **kwargs)
       end
 
-      define_method :persona_id do
-        @ai_persona&.id
-      end
-
-      define_method :tools do
-        tools
-      end
-
-      define_method :options do
-        options
-      end
-
-      define_method :temperature do
-        @ai_persona&.temperature
-      end
-
-      define_method :top_p do
-        @ai_persona&.top_p
-      end
-
-      define_method :system_prompt do
-        @ai_persona&.system_prompt || "You are a helpful bot."
-      end
-
-      define_method :uploads do
-        @ai_persona&.uploads
-      end
+      define_method(:tools) { tools }
+      define_method(:options) { options }
+      define_method(:temperature) { @ai_persona&.temperature }
+      define_method(:top_p) { @ai_persona&.top_p }
+      define_method(:system_prompt) { @ai_persona&.system_prompt || "You are a helpful bot." }
+      define_method(:uploads) { @ai_persona&.uploads }
     end
   end
 
