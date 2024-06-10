@@ -6,7 +6,7 @@ class TopicSummarization
   end
 
   def summarize(topic, user, opts = {}, &on_partial_blk)
-    existing_summary = AiSummary.find_by(target: topic, meta_section_id: nil)
+    existing_summary = AiSummary.find_by(target: topic)
 
     # Existing summary shouldn't be nil in this scenario because the controller checks its existence.
     return if !user && !existing_summary
@@ -116,7 +116,6 @@ class TopicSummarization
         content_range: chunk[:ids].min..chunk[:ids].max,
         summarized_text: chunk[:summary],
         original_content_sha: build_sha(chunk[:ids]),
-        meta_section_id: main_summary.id,
       )
     end
 

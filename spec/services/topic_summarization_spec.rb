@@ -54,26 +54,12 @@ describe TopicSummarization do
     let(:strategy) { DummyCustomSummarization.new(summary) }
 
     def assert_summary_is_cached(topic, summary_response)
-      cached_summary = AiSummary.find_by(target: topic, meta_section_id: nil)
+      cached_summary = AiSummary.find_by(target: topic)
 
       expect(cached_summary.content_range).to cover(*topic.posts.map(&:post_number))
       expect(cached_summary.summarized_text).to eq(summary_response[:summary])
       expect(cached_summary.original_content_sha).to be_present
       expect(cached_summary.algorithm).to eq(strategy.model)
-    end
-
-    def assert_chunk_is_cached(topic, chunk_response)
-      cached_chunk =
-        AiSummary
-          .where.not(meta_section_id: nil)
-          .find_by(
-            target: topic,
-            content_range: (chunk_response[:ids].min..chunk_response[:ids].max),
-          )
-
-      expect(cached_chunk.summarized_text).to eq(chunk_response[:summary])
-      expect(cached_chunk.original_content_sha).to be_present
-      expect(cached_chunk.algorithm).to eq(strategy.model)
     end
 
     context "when the content was summarized in a single chunk" do
@@ -92,7 +78,7 @@ describe TopicSummarization do
 
         cached_summary_text = "This is a cached summary"
         cached_summary =
-          AiSummary.find_by(target: topic, meta_section_id: nil).update!(
+          AiSummary.find_by(target: topic).update!(
             summarized_text: cached_summary_text,
             updated_at: 24.hours.ago,
           )
@@ -120,28 +106,6 @@ describe TopicSummarization do
       end
     end
 
-    context "when the content was summarized in multiple chunks" do
-      let(:summary) do
-        {
-          summary: "This is the final summary",
-          chunks: [
-            { ids: [topic.first_post.post_number], summary: "this is the first chunk" },
-            { ids: [post_1.post_number, post_2.post_number], summary: "this is the second chunk" },
-          ],
-        }
-      end
-
-      it "caches the summary and each chunk" do
-        section = summarization.summarize(topic, user)
-
-        expect(section.summarized_text).to eq(summary[:summary])
-
-        assert_summary_is_cached(topic, summary)
-
-        summary[:chunks].each { |c| assert_chunk_is_cached(topic, c) }
-      end
-    end
-
     describe "invalidating cached summaries" do
       let(:cached_text) { "This is a cached summary" }
       let(:summarized_text) { "This is the final summary" }
@@ -156,7 +120,7 @@ describe TopicSummarization do
       end
 
       def cached_summary
-        AiSummary.find_by(target: topic, meta_section_id: nil)
+        AiSummary.find_by(target: topic)
       end
 
       before do

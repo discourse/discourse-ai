@@ -28,7 +28,7 @@ module DiscourseAi
             return false if SiteSetting.ai_summarization_strategy.blank?
             return false if target.class == Topic && target.private_message?
 
-            has_cached_summary = AiSummary.exists?(target: target, meta_section_id: nil)
+            has_cached_summary = AiSummary.exists?(target: target)
             return has_cached_summary if user.nil?
 
             has_cached_summary || can_request_summary_for?(user)
