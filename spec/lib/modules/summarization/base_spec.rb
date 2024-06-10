@@ -33,7 +33,6 @@ describe DiscourseAi::Summarization::Models::Base do
           summarized_text: "test",
           original_content_sha: "123",
           algorithm: "test",
-          meta_section_id: nil,
         )
 
         expect(described_class.can_see_summary?(topic, user)).to eq(true)
@@ -59,7 +58,6 @@ describe DiscourseAi::Summarization::Models::Base do
           summarized_text: "test",
           original_content_sha: "123",
           algorithm: "test",
-          meta_section_id: nil,
         )
 
         expect(described_class.can_see_summary?(topic, nil)).to eq(true)
