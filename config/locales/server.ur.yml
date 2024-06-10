@@ -10,7 +10,7 @@ ur:
       yaxis: "تاریخ"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "تلاش کریں"
         time: "وقت"
         summarize: "خلاصہ"

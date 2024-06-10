@@ -9,7 +9,7 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :enabled,
              :system,
              :priority,
-             :commands,
+             :tools,
              :system_prompt,
              :allowed_group_ids,
              :temperature,
@@ -24,7 +24,8 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :rag_chunk_overlap_tokens,
              :rag_conversation_chunks,
              :question_consolidator_llm,
-             :allow_chat
+             :allow_chat,
+             :tool_details
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object

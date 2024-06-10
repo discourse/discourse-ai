@@ -131,12 +131,14 @@ en:
         max_context_posts: "Max Context Posts"
         max_context_posts_help: "The maximum number of posts to use as context for the AI when responding to a user. (empty for default)"
         vision_enabled: Vision Enabled
-        vision_enabled_help: If enabled, the AI will attempt to understand images users post in the topic, depends on the model being used supporting vision. Anthropic Claude 3 models support vision.
+        vision_enabled_help: If enabled, the AI will attempt to understand images users post in the topic, depends on the model being used supporting vision. Supported by latest models from Anthropic / Google and OpenAI.
         vision_max_pixels: Supported image size
         vision_max_pixel_sizes:
           low: Low Quality - cheapest (256x256)
           medium: Medium Quality (512x512)
           high: High Quality - slowest (1024x1024)
+        tool_details: Show Tool Details
+        tool_details_help: Will show end users details on tools the Language model has triggered.
         mentionable: Allow Mentions
         mentionable_help: If enabled, users in allowed groups can mention this user in posts, the AI will respond as this persona.
         user: User
@@ -154,7 +156,7 @@ en:
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"
-        commands: Enabled Commands
+        tools: Enabled Tools
         allowed_groups: Allowed Groups
         confirm_delete: Are you sure you want to delete this persona?
         new: "New Persona"
@@ -167,7 +169,7 @@ en:
         top_p_help: Top P to use for the LLM, increase to increase randomness (leave empty to use model default, generally a value from 0.0 to 1.0)
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
-        command_options: "Command Options"
+        tool_options: "Command Options"
         rag_chunk_tokens: "Upload Chunk Tokens"
         rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
         rag_chunk_overlap_tokens: "Upload Chunk Overlap Tokens"

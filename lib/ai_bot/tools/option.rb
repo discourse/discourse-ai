@@ -13,11 +13,11 @@ module DiscourseAi
         end
 
         def localized_name
-          I18n.t("discourse_ai.ai_bot.command_options.#{tool.signature[:name]}.#{name}.name")
+          I18n.t("discourse_ai.ai_bot.tool_options.#{tool.signature[:name]}.#{name}.name")
         end
 
         def localized_description
-          I18n.t("discourse_ai.ai_bot.command_options.#{tool.signature[:name]}.#{name}.description")
+          I18n.t("discourse_ai.ai_bot.tool_options.#{tool.signature[:name]}.#{name}.description")
         end
       end
     end

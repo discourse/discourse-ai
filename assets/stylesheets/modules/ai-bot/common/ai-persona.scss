@@ -23,7 +23,7 @@
   }
 }
 
-.ai-persona-command-option-editor {
+.ai-persona-tool-option-editor {
   &__instructions {
     color: var(--primary-medium);
     font-size: var(--font-down-1);
@@ -49,12 +49,12 @@
   label {
     display: block;
   }
-  &__command-options {
+  &__tool-options {
     padding: 5px 10px 5px;
     border: 1px solid var(--primary-low-mid);
     width: 480px;
   }
-  &__command-options-name {
+  &__tool-options-name {
     margin-bottom: 10px;
     font-size: var(--font-down-1);
   }
@@ -65,21 +65,12 @@
     width: 500px;
     height: 400px;
   }
-  &__priority {
-    display: flex;
-    align-items: center;
-  }
+
+  &__tool-details,
+  &__vision_enabled,
+  &__allow_chat,
+  &__priority,
   &__mentionable {
-    display: flex;
-    align-items: center;
-  }
-
-  &__allow_chat {
-    display: flex;
-    align-items: center;
-  }
-
-  &__vision_enabled {
     display: flex;
     align-items: center;
   }

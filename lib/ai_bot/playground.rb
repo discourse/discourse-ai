@@ -420,11 +420,13 @@ module DiscourseAi
           Discourse.redis.setex(redis_stream_key, 60, 1)
         end
 
+        context[:skip_tool_details] &&= !bot.persona.class.tool_details
+
         new_custom_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
             reply << partial
             raw = reply.dup
-            raw << "\n\n" << placeholder if placeholder.present?
+            raw << "\n\n" << placeholder if placeholder.present? && !context[:skip_tool_details]
 
             if stream_reply && !Discourse.redis.get(redis_stream_key)
               cancel&.call

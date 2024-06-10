@@ -17,7 +17,7 @@ lt:
       image_caption:
         attribution: "Antraštė teikiama AI"
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Paieška"
         time: "Laikas"
         summarize: "Apibendrinti"

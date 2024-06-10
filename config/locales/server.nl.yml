@@ -151,7 +151,7 @@ nl:
       topic_not_found: "Samenvatting niet beschikbaar, topic niet gevonden!"
       summarizing: "Topic samenvatten"
       searching: "Zoeken naar: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Maximaal aantal resultaten"
@@ -159,7 +159,7 @@ nl:
           base_query:
             name: "Basiszoekopdracht"
             description: "Basisquery om te gebruiken bij het zoeken. Voorbeeld: '#urgent' voegt '#urgent' toe aan de zoekquery en neemt alleen topics mee met de categorie of tag 'urgent'."
-      command_summary:
+      tool_summary:
         categories: "Categorieën weergeven"
         search: "Zoeken"
         tags: "Tags weergeven"
@@ -172,7 +172,7 @@ nl:
         schema: "Databaseschema opzoeken"
         search_settings: "Zoeken in site-instellingen"
         dall_e: "Afbeelding genereren"
-      command_help:
+      tool_help:
         categories: "Geef een lijst weer van alle openbaar zichtbare categorieën op het forum"
         search: "Doorzoek alle openbare topics op het forum"
         tags: "Geef een lijst weer van alle tags op het forum"
@@ -185,7 +185,7 @@ nl:
         schema: "Zoek een databaseschema op"
         search_settings: "Zoek site-instellingen"
         dall_e: "Genereer een afbeelding met DALL-E 3"
-      command_description:
+      tool_description:
         read: "Lezen: <a href='%{url}'>%{title}</a>"
         time: "De tijd in %{timezone} is %{time}"
         summarize: "<a href='%{url}'>%{title}</a> samengevat"

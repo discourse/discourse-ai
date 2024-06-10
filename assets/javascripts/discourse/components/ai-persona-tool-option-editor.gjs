@@ -3,7 +3,7 @@ import { Input } from "@ember/component";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 
-export default class AiPersonaCommandOptionEditor extends Component {
+export default class AiPersonaToolOptionEditor extends Component {
   get isBoolean() {
     return this.args.option.type === "boolean";
   }
@@ -18,7 +18,7 @@ export default class AiPersonaCommandOptionEditor extends Component {
   }
 
   <template>
-    <div class="control-group ai-persona-command-option-editor">
+    <div class="control-group ai-persona-tool-option-editor">
       <label>
         {{@option.name}}
       </label>
@@ -35,7 +35,7 @@ export default class AiPersonaCommandOptionEditor extends Component {
         {{/if}}
       </div>
       {{#unless this.isBoolean}}
-        <div class="ai-persona-command-option-editor__instructions">
+        <div class="ai-persona-tool-option-editor__instructions">
           {{@option.description}}
         </div>
       {{/unless}}

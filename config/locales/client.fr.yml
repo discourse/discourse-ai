@@ -111,7 +111,7 @@ fr:
         delete: Supprimer
         priority: Priorité
         priority_help: Les personnages prioritaires sont affichés aux utilisateurs en haut de la liste des personnages. Si plusieurs personnages sont prioritaires, ils seront triés par ordre alphabétique.
-        command_options: "Options de commande"
+        tool_options: "Options de commande"
         uploads:
           title: "Fichiers envoyés"
           uploading: "Envoi en cours…"

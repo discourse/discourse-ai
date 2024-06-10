@@ -153,7 +153,7 @@ tr_TR:
         top_p_help: LLM için kullanılacak en yüksek P, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için boş bırakın, genellikle 0.0 ila 1.0 arasında bir değer)
         priority: Öncelik
         priority_help: Öncelikli kişilikler kullanıcılara kişilik listesinin en üstünde gösterilir. Birden fazla kişiliğin önceliği varsa bunlar alfabetik olarak sıralanır.
-        command_options: "Komut Seçenekleri"
+        tool_options: "Komut Seçenekleri"
         what_are_personas: "Yapay Zeka Personaları nedir?"
         no_persona_selected: |
           YZ Kişilikleri, Discourse forumunuzda YZ motorunun davranışını özelleştirebilmenizi sağlayan güçlü bir özelliktir. YZ'nin yanıt ve etkileşimlerine rehberlik eden bir "sistem mesajı" görevi görerek daha kişiselleştirilmiş ve etkileşimli bir kullanıcı deneyimi oluşturmaya yardımcı olurlar.

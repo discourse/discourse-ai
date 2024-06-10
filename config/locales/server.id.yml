@@ -71,19 +71,19 @@ id:
     ai_bot:
       personas:
         default_llm_required: "Model LLM default diperlukan sebelum mengaktifkan Obrolan"
-      command_options:
+      tool_options:
         search:
           search_private:
             name: "Pencarian Pribadi"
             description: "Sertakan semua topik yang dapat diakses pengguna dalam hasil pencarian (secara bawaan hanya topik publik yang disertakan)"
-      command_summary:
+      tool_summary:
         github_search_files: "File pencarian GitHub"
         search: "Cari"
         time: "Waktu"
         summarize: "Meringkas"
-      command_help:
+      tool_help:
         github_search_files: "Cari file di repositori GitHub"
         summary: "Meringkas suatu topik"
-      command_description:
+      tool_description:
         github_search_files: "Mencari '%{keywords}' di %{repo}/%{branch}"
         github_search_code: "Mencari '%{query}' di %{repo}"

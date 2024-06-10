@@ -22,7 +22,7 @@ module DiscourseAi
           end
 
           def help
-            I18n.t("discourse_ai.ai_bot.command_help.#{signature[:name]}")
+            I18n.t("discourse_ai.ai_bot.tool_help.#{signature[:name]}")
           end
 
           def custom_system_message
@@ -54,15 +54,15 @@ module DiscourseAi
         end
 
         def summary
-          I18n.t("discourse_ai.ai_bot.command_summary.#{name}")
+          I18n.t("discourse_ai.ai_bot.tool_summary.#{name}")
         end
 
         def details
-          I18n.t("discourse_ai.ai_bot.command_description.#{name}", description_args)
+          I18n.t("discourse_ai.ai_bot.tool_description.#{name}", description_args)
         end
 
         def help
-          I18n.t("discourse_ai.ai_bot.command_help.#{name}")
+          I18n.t("discourse_ai.ai_bot.tool_help.#{name}")
         end
 
         def options

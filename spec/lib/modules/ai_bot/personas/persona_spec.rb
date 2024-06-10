@@ -226,7 +226,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           name: "zzzpun_bot",
           description: "you write puns",
           system_prompt: "you are pun bot",
-          commands: ["ImageCommand"],
+          tools: ["ImageCommand"],
           allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
         )
 

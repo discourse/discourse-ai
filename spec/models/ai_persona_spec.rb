@@ -7,7 +7,7 @@ RSpec.describe AiPersona do
         name: "test",
         description: "test",
         system_prompt: "test",
-        commands: [],
+        tools: [],
         allowed_group_ids: [],
       )
 
@@ -30,7 +30,7 @@ RSpec.describe AiPersona do
         name: "test",
         description: "test",
         system_prompt: "test",
-        commands: [],
+        tools: [],
         allowed_group_ids: [],
       )
 
@@ -47,7 +47,7 @@ RSpec.describe AiPersona do
         name: "test",
         description: "test",
         system_prompt: "test",
-        commands: [],
+        tools: [],
         allowed_group_ids: [],
         rag_chunk_tokens: 10,
         rag_chunk_overlap_tokens: 5,
@@ -94,7 +94,7 @@ RSpec.describe AiPersona do
         name: "test",
         description: "test",
         system_prompt: "test",
-        commands: [],
+        tools: [],
         allowed_group_ids: [],
         default_llm: "anthropic:claude-2",
         max_context_posts: 3,
@@ -135,7 +135,7 @@ RSpec.describe AiPersona do
       name: "pun_bot",
       description: "you write puns",
       system_prompt: "you are pun bot",
-      commands: ["ImageCommand"],
+      tools: ["ImageCommand"],
       allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
     )
 

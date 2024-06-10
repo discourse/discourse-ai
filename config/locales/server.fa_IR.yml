@@ -19,7 +19,7 @@ fa_IR:
       personas:
         dall_e3:
           name: "DALL-E 3"
-      command_summary:
+      tool_summary:
         categories: "فهرست دسته‌بندی‌ها"
         search: "جستجو"
         tags: "فهرست برچسب‌ها"
@@ -28,7 +28,7 @@ fa_IR:
         image: "تولید تصویر"
         google: "جستجو در گوگل"
         dall_e: "تولید تصویر"
-      command_description:
+      tool_description:
         summarize: "خلاصه شده <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
         image: "%{prompt}"

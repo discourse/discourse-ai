@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class AiPersona < ActiveRecord::Base
+  # TODO remove this line 01-11-2024
+  self.ignored_columns = [:commands]
+
   # places a hard limit, so per site we cache a maximum of 500 classes
   MAX_PERSONAS_PER_SITE = 500
 
@@ -117,6 +120,7 @@ class AiPersona < ActiveRecord::Base
       name
       description
       allowed_group_ids
+      tool_details
     ]
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
@@ -136,11 +140,10 @@ class AiPersona < ActiveRecord::Base
     end
 
     options = {}
-    tools = self.respond_to?(:commands) ? self.commands : self.tools
     tools =
-      tools.filter_map do |element|
+      self.tools.filter_map do |element|
         inner_name, current_options = element.is_a?(Array) ? element : [element, nil]
-        inner_name = inner_name.gsub("Command", "")
+        inner_name = inner_name.gsub("Tool", "")
         inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
 
         begin
@@ -231,7 +234,7 @@ class AiPersona < ActiveRecord::Base
   end
 
   def system_persona_unchangeable
-    if top_p_changed? || temperature_changed? || system_prompt_changed? || commands_changed? ||
+    if top_p_changed? || temperature_changed? || system_prompt_changed? || tools_changed? ||
          name_changed? || description_changed?
       errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
     end
@@ -252,7 +255,7 @@ end
 #  id                          :bigint           not null, primary key
 #  name                        :string(100)      not null
 #  description                 :string(2000)     not null
-#  commands                    :json             not null
+#  tools                       :json             not null
 #  system_prompt               :string(10000000) not null
 #  allowed_group_ids           :integer          default([]), not null, is an Array
 #  created_by_id               :integer
@@ -282,6 +285,7 @@ end
 #  role_max_responses_per_hour :integer          default(50), not null
 #  question_consolidator_llm   :text
 #  allow_chat                  :boolean          default(FALSE), not null
+#  tool_details                :boolean          default(TRUE), not null
 #
 # Indexes
 #

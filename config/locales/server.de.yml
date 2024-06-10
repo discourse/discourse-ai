@@ -193,7 +193,7 @@ de:
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
-      command_options:
+      tool_options:
         search:
           search_private:
             name: "Suche Privat"
@@ -204,7 +204,7 @@ de:
           base_query:
             name: "Basissuchanfrage"
             description: "Basisanfrage, die bei der Suche verwendet wird. Beispiel: Bei „#dringend“ wird der Suchanfrage „#dringend“ vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort „dringend“ angezeigt."
-      command_summary:
+      tool_summary:
         web_browser: "Web durchsuchen"
         github_search_files: "GitHub Datei-Suche"
         github_search_code: "GitHub Code-Suche"
@@ -225,7 +225,7 @@ de:
         dall_e: "Bild generieren"
         search_meta_discourse: "Suche Meta Discourse"
         javascript_evaluator: "JavaScript auswerten"
-      command_help:
+      tool_help:
         web_browser: "Webseite mit dem KI Bot durchsuchen"
         github_search_code: "Suche nach Code in einem GitHub-Repository"
         github_search_files: "Suche nach Dateien in einem GitHub-Repository"
@@ -246,7 +246,7 @@ de:
         dall_e: "Bild mit DALL-E 3 generieren"
         search_meta_discourse: "Suche Meta Discourse"
         javascript_evaluator: "JavaScript auswerten"
-      command_description:
+      tool_description:
         web_browser: "Lesen <a href='%{url}'>%{url}</a>"
         github_search_files: "Gesucht wurde nach '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Gesucht wurde nach '%{query}' in %{repo}"

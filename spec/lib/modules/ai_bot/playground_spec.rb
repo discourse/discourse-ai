@@ -290,7 +290,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       it "can run tools" do
-        persona.update!(commands: ["TimeCommand"])
+        persona.update!(tools: ["TimeCommand"])
 
         responses = [
           "<function_calls><invoke><tool_name>time</tool_name><tool_id>time</tool_id><parameters><timezone>Buenos Aires</timezone></parameters></invoke></function_calls>",
