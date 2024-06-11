@@ -11,6 +11,6 @@ ro:
   discourse_ai:
     ai_bot:
       tool_summary:
-        search: "Caută"
+        search: "Căutare"
         time: "Oră"
         summarize: "Rezumat"

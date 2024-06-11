@@ -128,7 +128,6 @@ pl_PL:
         save: Zapisz
         saved: Zapisano AI Persona
         enabled: "Włączona?"
-        commands: Włączone polecenia
         allowed_groups: Dozwolone grupy
         confirm_delete: Czy na pewno chcesz usunąć tę personę?
         title: "AI Personas"
@@ -137,7 +136,6 @@ pl_PL:
         temperature_help: Temperatura do zastosowania w LLM, zwiększ, aby zwiększyć kreatywność (pozostaw puste, aby użyć domyślnego modelu, zazwyczaj wartość od 0,0 do 2,0)
         priority: Priorytet
         priority_help: Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie.
-        tool_options: "Opcje poleceń"
         uploads:
           title: "Pliki"
           button: "Dodaj pliki"

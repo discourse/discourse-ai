@@ -126,7 +126,6 @@ ar:
     ai_bot:
       personas:
         cannot_delete_system_persona: "لا يمكن حذف شخصيات النظام، يُرجى إيقافها بدلًا من ذلك"
-        cannot_edit_system_persona: "يمكن إعادة تسمية شخصيات النظام فقط، ولا يجوز لك تعديل الأوامر أو رسائل مطالبة النظام. قم بإيقافها وعمل نسخة منها بدلًا من ذلك."
         general:
           name: مساعد المنتدى
           description: "روبوت ذكاء اصطناعي للأغراض العامة قادر على أداء مهام مختلفة"
@@ -192,26 +191,26 @@ ar:
         dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
-          zero: "تم العثور على %{count} فئة"
+          zero: "تم العثور على %{count} فئات"
           one: "تم العثور على فئة واحدة (%{count})"
           two: "تم العثور على فئتين (%{count})"
           few: "تم العثور على %{count} فئات"
-          many: "تم العثور على %{count} فئة"
-          other: "تم العثور على %{count} فئة"
+          many: "تم العثور على %{count} فئات"
+          other: "تم العثور على %{count} فئات"
         tags:
-          zero: "تم العثور على %{count} وسم"
+          zero: "تم العثور على %{count} وسمًا"
           one: "تم العثور على وسم واحد (%{count})"
           two: "تم العثور على وسمين (%{count})"
           few: "تم العثور على %{count} وسوم"
           many: "تم العثور على %{count} وسمًا"
-          other: "تم العثور على %{count} وسم"
+          other: "تم العثور على %{count} وسمًا"
         search:
-          zero: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
-          one: "تم العثور على <a href='%{url}'>نتيجة واحدة (%{count})</a> لاستعلام البحث '%{query}'"
+          zero: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
+          one: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
           two: "تم العثور على <a href='%{url}'>نتيجتين (%{count})</a> لاستعلام البحث '%{query}'"
           few: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
-          many: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
-          other: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          many: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
+          other: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
         search_meta_discourse:
           zero: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
           one: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
@@ -220,21 +219,21 @@ ar:
           many: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
           other: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
         google:
-          zero: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          zero: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
           one: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
           two: "تم العثور على <a href='%{url}'>نتيجتين (%{count})</a> لاستعلام البحث '%{query}'"
           few: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
-          many: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
-          other: "تم العثور على %{count} <a href='%{url}'>نتيجة</a> لاستعلام البحث '%{query}'"
+          many: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
+          other: "تم العثور على %{count} <a href='%{url}'>نتائج</a> لاستعلام البحث '%{query}'"
         setting_context: "سياق القراءة لـ: %{setting_name}"
         schema: "%{tables}"
         search_settings:
-          zero: "تم العثور على %{count} نتيجة لـ '%{query}'"
+          zero: "تم العثور على %{count} نتائج لـ '%{query}'"
           one: "تم العثور على نتيجة واحدة (%{count}) لـ '%{query}'"
           two: "تم العثور على نتيجتين (%{count}) لـ '%{query}'"
           few: "تم العثور على %{count} نتائج لـ '%{query}'"
-          many: "تم العثور على %{count} نتيجة لـ '%{query}'"
-          other: "تم العثور على %{count} نتيجة لـ '%{query}'"
+          many: "تم العثور على %{count} نتائج لـ '%{query}'"
+          other: "تم العثور على %{count} نتائج لـ '%{query}'"
     summarization:
       configuration_hint:
         zero: "قم بتكوين هذه الإعدادات أولًا: %{settings}"

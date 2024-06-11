@@ -125,7 +125,6 @@ pl_PL:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Person systemowych nie można usunąć, zamiast tego wyłącz je."
-        cannot_edit_system_persona: "Personom systemowym można zmieniać tylko nazwy, nie możesz edytować poleceń ani monitu systemowego, zamiast tego wyłącz je i utwórz kopię."
         general:
           name: Pomocnik forumowy
           description: "Bot AI ogólnego przeznaczenia zdolny do wykonywania różnych zadań"
@@ -182,7 +181,7 @@ pl_PL:
         image: "Wygeneruj obraz przy użyciu Stable Diffusion"
         google: "Wyszukaj zapytanie w Google"
         read: "Przeczytaj temat publiczny na forum"
-        setting_context: "Sprawdź kontekst ustawień witryny"
+        setting_context: "Wyszukaj kontekst ustawienia witryny"
         schema: "Wyszukaj schemat bazy danych"
         search_settings: "Wyszukaj ustawienia witryny"
         dall_e: "Wygeneruj obraz za pomocą DALL-E 3"
@@ -204,7 +203,7 @@ pl_PL:
           many: "Znaleziono %{count} tagów"
           other: "Znaleziono %{count} tagów"
         search:
-          one: "Znaleziono %{count} <a href='%{url}'>wynik</a> dla '%{query}'"
+          one: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           few: "Znaleziono %{count} <a href='%{url}'>wyniki</a> dla '%{query}'"
           many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
@@ -214,7 +213,7 @@ pl_PL:
           many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
         google:
-          one: "Znaleziono %{count} <a href='%{url}'>wynik</a> dla '%{query}'"
+          one: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           few: "Znaleziono %{count} <a href='%{url}'>wyniki</a> dla '%{query}'"
           many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"

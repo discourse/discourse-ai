@@ -126,7 +126,6 @@ es:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Las personas del sistema no se pueden eliminar, desactívalas en su lugar"
-        cannot_edit_system_persona: "Las personas del sistema solo se pueden renombrar, no puedes editar los comandos ni el aviso del sistema, en su lugar deshabilita y haz una copia"
         general:
           name: Ayudante del foro
           description: "Bot de IA de propósito general capaz de realizar diversas tareas"
@@ -181,7 +180,7 @@ es:
         image: "Generar imagen usando Stable Diffusion"
         google: "Buscar en Google una consulta"
         read: "Leer tema público en el foro."
-        setting_context: "Buscar contexto de ajustes del sitio"
+        setting_context: "Buscar contexto de ajuste del sitio"
         schema: "Buscar esquema de base de datos"
         search_settings: "Buscar ajustes del sitio"
         dall_e: "Generar imagen usando DALL-E 3"

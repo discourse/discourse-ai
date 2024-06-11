@@ -54,6 +54,7 @@ he:
     ai_openai_embeddings_url: "כתובת מותאמת אישית ל־API ההטמעות של OpenAI. (במקרה של Azure זה יכול להיות: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "מפתח API ל־API של OpenAI"
     ai_anthropic_api_key: "מפתח API ל־API של Anthropic"
+    ai_anthropic_native_tool_call_models: "רשימת דגמים שישתמשו בקריאות כלי טבעיות לעומת כלים מיושנים מבוססי XML."
     ai_cohere_api_key: "מפתח API ל־API של Cohere"
     ai_hugging_face_api_url: "כתובת משלך להסקה על בסיס OpenSource LLM. עם תאימות ל־https://github.com/huggingface/text-generation-inference"
     ai_hugging_face_api_key: מפתח API ל־API של Hugging Face
@@ -161,7 +162,6 @@ he:
       personas:
         default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
-        cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך פקודות או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
         github_helper:
           name: "מסייע GitHub"
           description: "בוט בינה מלאכותית שמסייע במשימות ובשאלות שקשורות ב־GitHub"
@@ -257,38 +257,8 @@ he:
         summarize: "<a href='%{url}'>%{title}</a> סוכם"
         dall_e: "%{prompt}"
         image: "%{prompt}"
-        categories:
-          one: "נמצאה קטגוריה אחת"
-          two: "נמצאו %{count} קטגוריות"
-          many: "נמצאו %{count} קטגוריות"
-          other: "נמצאו %{count} קטגוריות"
-        tags:
-          one: "נמצאה תגית אחת"
-          two: "נמצאו %{count} תגיות"
-          many: "נמצאו %{count} תגיות"
-          other: "נמצאו %{count} תגיות"
-        search:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
-          many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
-          other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
-        search_meta_discourse:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
-          many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
-          other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
-        google:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
-          many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
-          other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         setting_context: "נקרא הקשר עבור: %{setting_name}"
         schema: "%{tables}"
-        search_settings:
-          one: "נמצאה תוצאה לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
-          many: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
-          other: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
     summarization:
       configuration_hint:
         one: "יש להגדיר את ההגדרה `%{setting}` תחילה."

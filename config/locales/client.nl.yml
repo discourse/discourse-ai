@@ -104,14 +104,12 @@ nl:
         save: Opslaan
         saved: AI-persona opgeslagen
         enabled: "Ingeschakeld?"
-        commands: Ingeschakelde opdrachten
         allowed_groups: Toegestane groepen
         confirm_delete: Weet je zeker dat je deze persona wilt verwijderen?
         title: "AI-persona's"
         delete: Verwijderen
         priority: Prioriteit
         priority_help: Prioritaire persona's worden bovenaan de personalijst weergegeven voor gebruikers. Als meerdere persona's prioriteit hebben, worden deze alfabetisch gesorteerd.
-        tool_options: "Opdrachtopties"
         uploads:
           title: "Uploads"
           uploading: "Uploaden..."

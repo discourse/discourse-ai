@@ -126,7 +126,6 @@ pt_BR:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Personas de sistema não podem ser excluídas, desative"
-        cannot_edit_system_persona: "Personas de sistema só podem ser renomeadas, você não pode editar comandos ou prompt de sistema. Desative e faça uma cópia"
         general:
           name: Ajudante do fórum
           description: "Bot de IA de propósito geral capaz de realizar várias tarefas"

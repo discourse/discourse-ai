@@ -126,7 +126,6 @@ ja:
     ai_bot:
       personas:
         cannot_delete_system_persona: "システムペルソナは削除できません。代わりに無効にしてください"
-        cannot_edit_system_persona: "システムペルソナは名前変更のみ可能です。コマンドまたはシステムプロンプトは編集できません。代わりに無効にするかコピーを作成してください"
         general:
           name: フォーラムヘルパー
           description: "さまざまなタスクを実行できる汎用 AI ボット"
@@ -168,8 +167,8 @@ ja:
         image: "画像を生成"
         google: "Google で検索"
         read: "トピックを読む"
-        setting_context: "サイト設定のコンテキストを検索"
-        schema: "データベーススキーマを検索"
+        setting_context: "サイト設定のコンテキストを検索します"
+        schema: "データベーススキーマを検索します"
         search_settings: "サイト設定を検索中"
         dall_e: "画像を生成"
       tool_help:
@@ -196,7 +195,7 @@ ja:
         tags:
           other: "%{count} 個のタグが見つかりました"
         search:
-          other: "「%{query}」の<a href='%{url}'>結果</a> が %{count} 件見つかりました"
+          other: "「%{query}」の<a href='%{url}'>結果</a>が %{count} 件見つかりました"
         search_meta_discourse:
           other: "「%{query}」の<a href='%{url}'>結果</a>が %{count} 件見つかりました"
         google:

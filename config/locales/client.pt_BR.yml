@@ -105,14 +105,12 @@ pt_BR:
         save: Salvar
         saved: Persona de IA salva
         enabled: "Ativado(a)?"
-        commands: Comandos ativados
         allowed_groups: Grupos permitidos
         confirm_delete: Você tem certeza de que deseja excluir esta persona?
         title: "Personas de IA"
         delete: Excluir
         priority: Prioridade
         priority_help: Personas de prioridade são exibidas aos(às) usuários(as) no topo da lista de personas. Se várias personas tiverem prioridade, serão escolhidas em ordem alfabética.
-        tool_options: "Opções de comando"
         uploads:
           title: "Envios"
           uploading: "Enviando..."

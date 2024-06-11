@@ -104,14 +104,12 @@ ja:
         save: 保存
         saved: AI ペルソナが保存されました
         enabled: "有効化？"
-        commands: 有効なコマンド
         allowed_groups: 許可されたグループ
         confirm_delete: このペルソナを削除してもよろしいですか？
         title: "AI ペルソナ"
         delete: 削除
         priority: 優先度
         priority_help: 優先ペルソナはペルソナリストの先頭に表示されます。複数のペルソナが優先されている場合は、アルファベット順に並べ替えられます。
-        tool_options: "コマンドオプション"
         uploads:
           title: "アップロード"
           uploading: "アップロード中..."
