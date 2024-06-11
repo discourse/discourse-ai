@@ -138,7 +138,7 @@ en:
           medium: Medium Quality (512x512)
           high: High Quality - slowest (1024x1024)
         tool_details: Show Tool Details
-        tool_details_help: Will show end users details on tools the Language model has triggered.
+        tool_details_help: Will show end users details on which tools the language model has triggered.
         mentionable: Allow Mentions
         mentionable_help: If enabled, users in allowed groups can mention this user in posts, the AI will respond as this persona.
         user: User
