@@ -591,15 +591,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     it "supports disabling tool details" do
-      persona =
-        AiPersona.find(
-          DiscourseAi::AiBot::Personas::Persona.system_personas[
-            DiscourseAi::AiBot::Personas::General
-          ],
-        )
-
-      persona.update!(tool_details: false)
-      playground.bot.persona = persona.class_instance.new
+      persona = Fabricate(:ai_persona, tool_details: false, tools: ["Search"])
+      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new)
+      playground = described_class.new(bot)
 
       response1 = (<<~TXT).strip
           <function_calls>
