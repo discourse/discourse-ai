@@ -5,6 +5,6 @@ class DropCommandsFromAiPersonas < ActiveRecord::Migration[7.0]
   end
 
   def up
-    Migration::ColumnDropper.execute_drop(:ai_personas, :commands)
+    Migration::ColumnDropper.execute_drop(:ai_personas, [:commands])
   end
 end
