@@ -126,7 +126,6 @@ ru:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Системные персоны нельзя удалить, вместо этого отключите их"
-        cannot_edit_system_persona: "Системные персоны можно только переименовать, вы не можете редактировать команды или системную подсказку, вместо этого отключите их и создайте копию"
         general:
           name: Помощник по форуму
           description: "AI-бот общего назначения, способный выполнять различные задачи."
@@ -181,7 +180,7 @@ ru:
         image: "Генерировать изображение с помощью Stable Diffusion"
         google: "Поиск в Google по запросу"
         read: "Читать общедоступную тему на форуме"
-        setting_context: "Найти контекст настроек сайта"
+        setting_context: "Поиск контекста настроек сайта"
         schema: "Найти схему базы данных"
         search_settings: "Настройки поиска по сайту"
         dall_e: "Создать изображение с помощью DALL-E 3"
@@ -195,7 +194,7 @@ ru:
           one: "Найдена %{count} категория"
           few: "Найдены %{count} категории"
           many: "Найдено %{count} категорий"
-          other: "Найдены %{count} категории"
+          other: "Найдено %{count} категорий"
         tags:
           one: "Найден %{count} тег"
           few: "Найдено %{count} тега"
@@ -205,7 +204,7 @@ ru:
           one: "Найден %{count} <a href='%{url}'>результат</a> по запросу «%{query}»"
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
           many: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
-          other: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
+          other: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
         search_meta_discourse:
           one: "Найден %{count} <a href='%{url}'>результат</a> по запросу «%{query}»"
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
@@ -215,14 +214,14 @@ ru:
           one: "Найден %{count} <a href='%{url}'>результат</a> по запросу «%{query}»"
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
           many: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
-          other: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
+          other: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
         setting_context: "Чтение контекста для: %{setting_name}"
         schema: "%{tables}"
         search_settings:
           one: "Найден %{count} результат по запросу «%{query}»"
           few: "Найдено %{count} результата по запросу «%{query}»"
           many: "Найдено %{count} результатов по запросу «%{query}»"
-          other: "Найдено %{count} результата по запросу «%{query}»"
+          other: "Найдено %{count} результатов по запросу «%{query}»"
     summarization:
       configuration_hint:
         one: "Сначала настройте следующие параметры: %{settings}"

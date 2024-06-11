@@ -126,7 +126,6 @@ nl:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Systeempersona's kunnen niet worden verwijderd. Schakel deze in plaats daarvan uit"
-        cannot_edit_system_persona: "Systeempersona's kunnen alleen worden hernoemd. Je kunt opdrachten of systeemprompts niet bewerken. Je kunt ze wel uitschakelen en een kopie maken"
         general:
           name: Forumhelper
           description: "AI-bot voor algemeen gebruik die verschillende taken kan uitvoeren"
@@ -169,7 +168,7 @@ nl:
         google: "Zoeken op Google"
         read: "Topic lezen"
         setting_context: "Site-instellingscontext opzoeken"
-        schema: "Databaseschema opzoeken"
+        schema: "Zoek een databaseschema op"
         search_settings: "Zoeken in site-instellingen"
         dall_e: "Afbeelding genereren"
       tool_help:
@@ -181,7 +180,7 @@ nl:
         image: "Afbeelding genereren met Stable Diffusion"
         google: "Zoek op Google naar een query"
         read: "Lees een openbaar topic op het forum"
-        setting_context: "Zoek de context van site-instellingen op"
+        setting_context: "Site-instellingscontext opzoeken"
         schema: "Zoek een databaseschema op"
         search_settings: "Zoek site-instellingen"
         dall_e: "Genereer een afbeelding met DALL-E 3"

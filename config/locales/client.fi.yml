@@ -104,14 +104,12 @@ fi:
         save: Tallenna
         saved: Tekoälypersoona tallennettu
         enabled: "Otettu käyttöön?"
-        commands: Käytössä olevat komennot
         allowed_groups: Sallitut ryhmät
         confirm_delete: Oletko varma, että haluat poistaa tämän persoonan?
         title: "Tekoälypersoonat"
         delete: Poista
         priority: Prioriteetti
         priority_help: Prioriteettipersoonat näytetään käyttäjille ensimmäisinä persoonaluettelossa. Jos useilla persoonilla on prioriteetti, ne järjestetään aakkosjärjestyksessä.
-        tool_options: "Komentoasetukset"
         uploads:
           title: "Lataukset"
           uploading: "Ladataan..."

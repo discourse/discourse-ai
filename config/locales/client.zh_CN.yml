@@ -117,7 +117,6 @@ zh_CN:
         save: 保存
         saved: AI 角色已保存
         enabled: "已启用？"
-        commands: 启用的命令
         allowed_groups: 允许的群组
         confirm_delete: 确定要删除此角色吗？
         title: "AI 角色"
@@ -128,7 +127,6 @@ zh_CN:
         top_p_help: 用于 LLM 的 Top P，增大它可提升创造力（留空以使用模型默认值，通常为 0.0 到 1.0 之间的值）
         priority: 优先
         priority_help: 优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。
-        tool_options: "命令选项"
         uploads:
           title: "上传"
           uploading: "正在上传…"

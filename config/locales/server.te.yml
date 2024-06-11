@@ -11,7 +11,7 @@ te:
   discourse_ai:
     ai_bot:
       tool_summary:
-        search: "వెతుకు"
+        search: "శోధించండి"
         time: "కాలం"
     sentiment:
       reports:

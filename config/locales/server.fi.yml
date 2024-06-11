@@ -126,7 +126,6 @@ fi:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Järjestelmäpersoonia ei voi poistaa, poista se sen sijaan käytöstä"
-        cannot_edit_system_persona: "Järjestelmäpersoonia voi vain nimetä uudelleen, et saa muokata komentoja tai järjestelmäkehotetta, sen sijaan voit poistaa ne käytöstä ja tehdä kopion"
         general:
           name: Foorumin apulainen
           description: "Yleiskäyttöinen tekoälybotti, joka pystyy suorittamaan erilaisia tehtäviä"

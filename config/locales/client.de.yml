@@ -133,12 +133,14 @@ de:
         max_context_posts: "Max. Kontext-Beiträge"
         max_context_posts_help: "Die maximale Anzahl von Beiträgen, die die KI als Kontext für die Antwort auf einen Nutzer verwenden soll. (leer für Standard)"
         vision_enabled: Vision Aktiviert
-        vision_enabled_help: Wenn diese Funktion aktiviert ist, versucht die KI, die Bilder zu verstehen, die die Benutzer in dem Thema posten, je nachdem, welches Modell das Sehen unterstützt. Anthropic Claude 3 Modelle unterstützen das Sehen.
+        vision_enabled_help: Wenn diese Funktion aktiviert ist, versucht die KI, die Bilder zu verstehen, die Nutzer im Thema posten. Unterstützt von den neuesten Modellen von Anthropic, Google und OpenAI.
         vision_max_pixels: Unterstützte Bildgröße
         vision_max_pixel_sizes:
           low: Niedrige Qualität - am günstigsten (256x256)
           medium: Mittlere Qualität (512x512)
           high: Hohe Qualität — am langsamsten (1024x1024)
+        tool_details: Werkzeugdetails anzeigen
+        tool_details_help: Zeigt den Endnutzern Details darüber, welche Tools das Sprachmodell ausgelöst hat.
         mentionable: Erwähnungen zulassen
         mentionable_help: Wenn diese Funktion aktiviert ist, können Benutzer in erlaubten Gruppen diese Persona in Beiträgen erwähnen und die KI wird als diese Persona antworten.
         user: Benutzer
@@ -156,7 +158,7 @@ de:
         save: Speichern
         saved: KI-Persona gespeichert
         enabled: "Aktiviert?"
-        commands: Aktivierte Befehle
+        tools: Aktivierte Werkzeuge
         allowed_groups: Erlaubte Gruppen
         confirm_delete: Bist du sicher, dass du diese Persona löschen willst?
         new: "Neue Persona"
@@ -169,7 +171,7 @@ de:
         top_p_help: Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (leer lassen, um die Modellvorgabe zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)
         priority: Priorität
         priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
-        tool_options: "Befehlsoptionen"
+        tool_options: "Werkzeugoptionen"
         rag_chunk_tokens: "Chunk-Token hochladen"
         rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu erhöhen, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads)"
         rag_chunk_overlap_tokens: "Chunk-Überlappungs-Token hochladen"

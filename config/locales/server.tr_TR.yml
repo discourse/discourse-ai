@@ -156,7 +156,6 @@ tr_TR:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
-        cannot_edit_system_persona: "Sistem kişileri yalnızca yeniden adlandırılabilir, komutları veya sistem istemini düzenleyemezsiniz, bunun yerine devre dışı bırakıp bir kopyasını oluşturabilirsiniz"
         github_helper:
           name: "GitHub Yardımcısı"
           description: "GitHub ile ilgili görevlere ve sorulara yardımcı olma konusunda uzmanlaşmış yapay zeka botu"

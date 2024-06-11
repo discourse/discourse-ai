@@ -54,6 +54,7 @@ de:
     ai_openai_embeddings_url: "Benutzerdefinierte URL, die für die OpenAI-Embeddings-API verwendet wird (im Falle von Azure gegebenenfalls: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
     ai_openai_api_key: "API-Schlüssel für OpenAI-API"
     ai_anthropic_api_key: "API-Schlüssel für Anthropic-API"
+    ai_anthropic_native_tool_call_models: "Liste der Modelle, die native Werkzeug-Aufrufe im Vergleich zu den alten XML-basierten Werkzeugen verwenden werden."
     ai_cohere_api_key: "API-Schlüssel für die Cohere API"
     ai_hugging_face_api_url: "Benutzerdefinierte URL, die für OpenSource-LLM-Inferenz verwendet wird. Kompatibel mit https://github.com/huggingface/text-generation-inference"
     ai_hugging_face_api_key: API-Schlüssel für Hugging Face API
@@ -162,7 +163,7 @@ de:
       personas:
         default_llm_required: "Standard-LLM-Modell wird benötigt, um den Chat zu aktivieren"
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
-        cannot_edit_system_persona: "System-Personas können nur umbenannt werden. Du kannst keine Befehle oder die System-Eingabeaufforderung bearbeiten. Deaktiviere sie stattdessen und erstelle eine Kopie"
+        cannot_edit_system_persona: "System-Personas können nur umbenannt werden, du darfst keine Werkzeuge oder die System-Eingabeaufforderung bearbeiten, sondern musst sie deaktivieren und eine Kopie erstellen"
         github_helper:
           name: "GitHub-Helfer"
           description: "KI-Bot, der auf die Unterstützung bei GitHub-bezogenen Aufgaben und Fragen spezialisiert ist"

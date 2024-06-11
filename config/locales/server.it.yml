@@ -126,7 +126,6 @@ it:
     ai_bot:
       personas:
         cannot_delete_system_persona: "I personaggi di sistema non possono essere eliminati, vanno invece disattivati"
-        cannot_edit_system_persona: "I personaggi di sistema possono solo essere rinominati, non è possibile modificare comandi di sistema, piuttosto disabilitali e crearne una copia"
         general:
           name: Assistente del forum
           description: "Bot IA per scopi generici in grado di eseguire vari compiti"

@@ -104,14 +104,12 @@ it:
         save: Salva
         saved: Personaggio IA salvato
         enabled: "Abilitato?"
-        commands: Comandi abilitati
         allowed_groups: Gruppi ammessi
         confirm_delete: Vuoi davvero eliminare questo personaggio?
         title: "Personaggi IA"
         delete: Elimina
         priority: Priorità
         priority_help: I personaggi prioritari vengono visualizzati agli utenti nella parte superiore dell'elenco dei personaggi. Se più personaggi hanno la priorità, verranno ordinati in ordine alfabetico.
-        tool_options: "Opzioni di comando"
         uploads:
           title: "Caricamenti"
           uploading: "Caricamento..."

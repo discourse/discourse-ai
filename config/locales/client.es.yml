@@ -104,14 +104,12 @@ es:
         save: Guardar
         saved: Persona de IA guardada
         enabled: "¿Activado?"
-        commands: Comandos habilitados
         allowed_groups: Grupos permitidos
         confirm_delete: '¿Seguro que quieres eliminar esta persona?'
         title: "Personas de IA"
         delete: Eliminar
         priority: Prioridad
         priority_help: Las personas prioritarias se muestran a los usuarios en la parte superior de la lista de personas. Si varias personas tienen prioridad, se ordenarán alfabéticamente.
-        tool_options: "Opciones de comando"
         uploads:
           title: "Subidos"
           uploading: "Subiendo..."

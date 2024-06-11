@@ -80,7 +80,6 @@ lt:
         system_prompt: Sistemos pranešimas
         save: Išsaugoti
         enabled: "Galimas?"
-        commands: Įgalintos komandos
         allowed_groups: Leidžiamos grupės
         delete: Pašalinti
         uploads:

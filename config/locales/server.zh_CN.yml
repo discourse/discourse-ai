@@ -129,7 +129,6 @@ zh_CN:
     ai_bot:
       personas:
         cannot_delete_system_persona: "无法删除系统角色，请改为将其禁用"
-        cannot_edit_system_persona: "系统角色只能重命名，您不能编辑命令或系统提示，但可以禁用和复制"
         general:
           name: 论坛助手
           description: "能够执行各种任务的通用 AI 机器人"
