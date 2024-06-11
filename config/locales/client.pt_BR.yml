@@ -112,7 +112,7 @@ pt_BR:
         delete: Excluir
         priority: Prioridade
         priority_help: Personas de prioridade são exibidas aos(às) usuários(as) no topo da lista de personas. Se várias personas tiverem prioridade, serão escolhidas em ordem alfabética.
-        command_options: "Opções de comando"
+        tool_options: "Opções de comando"
         uploads:
           title: "Envios"
           uploading: "Enviando..."

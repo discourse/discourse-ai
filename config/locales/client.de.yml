@@ -169,7 +169,7 @@ de:
         top_p_help: Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (leer lassen, um die Modellvorgabe zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)
         priority: Priorität
         priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
-        command_options: "Befehlsoptionen"
+        tool_options: "Befehlsoptionen"
         rag_chunk_tokens: "Chunk-Token hochladen"
         rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu erhöhen, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads)"
         rag_chunk_overlap_tokens: "Chunk-Überlappungs-Token hochladen"

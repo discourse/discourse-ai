@@ -151,7 +151,7 @@ ru:
       topic_not_found: "Сводка недоступна: тема не найдена!"
       summarizing: "Аналитик темы"
       searching: "Поиск: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Максимальное количество результатов"
@@ -159,7 +159,7 @@ ru:
           base_query:
             name: "Базовый поисковый запрос"
             description: "Базовый запрос, используемый при поиске. Пример: '#urgent' добавит '#urgent' к поисковому запросу и будет включать только темы со срочной категорией или тегом."
-      command_summary:
+      tool_summary:
         categories: "Вывод списка категорий"
         search: "Поиск"
         tags: "Вывод списка тегов"
@@ -172,7 +172,7 @@ ru:
         schema: "Найти схему базы данных"
         search_settings: "Поиск настроек сайта"
         dall_e: "Сгенерировать изображение"
-      command_help:
+      tool_help:
         categories: "Вывод всех общедоступных категорий на форуме"
         search: "Поиск по всем общедоступным темам на форуме"
         tags: "Вывод всех тегов на форуме"
@@ -185,7 +185,7 @@ ru:
         schema: "Найти схему базы данных"
         search_settings: "Настройки поиска по сайту"
         dall_e: "Создать изображение с помощью DALL-E 3"
-      command_description:
+      tool_description:
         read: "Чтение: <a href='%{url}'>%{title}</a>"
         time: "Время по часовому поясу %{timezone} — %{time}"
         summarize: "Получена сводка: <a href='%{url}'>%{title}</a>"

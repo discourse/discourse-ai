@@ -151,7 +151,7 @@ it:
       topic_not_found: "Riepilogo non disponibile, argomento non trovato!"
       summarizing: "Riepilogo argomento"
       searching: "Ricerca di: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Numero massimo di risultati"
@@ -159,7 +159,7 @@ it:
           base_query:
             name: "Query di ricerca di base"
             description: "Query di base da utilizzare durante la ricerca. Esempio: \"#urgente\" anteporrà \"#urgente\" alla query di ricerca e includerà solo gli argomenti con la categoria o l'etichetta urgente."
-      command_summary:
+      tool_summary:
         categories: "Elenca le categorie"
         search: "Cerca"
         tags: "Elenca le etichette"
@@ -172,7 +172,7 @@ it:
         schema: "Cerca lo schema del database"
         search_settings: "Ricerca nelle impostazioni del sito"
         dall_e: "Genera immagine"
-      command_help:
+      tool_help:
         categories: "Elenca tutte le categorie visibili pubblicamente sul forum"
         search: "Cerca tutti gli argomenti pubblici sul forum"
         tags: "Elenca tutte le etichette sul forum"
@@ -185,7 +185,7 @@ it:
         schema: "Cerca lo schema del database"
         search_settings: "Cerca le impostazioni del sito"
         dall_e: "Genera immagine utilizzando DALL-E 3"
-      command_description:
+      tool_description:
         read: "Lettura: <a href='%{url}'>%{title}</a>"
         time: "L'orario in %{timezone} è %{time}"
         summarize: "Riassunto di <a href='%{url}'>%{title}</a>"

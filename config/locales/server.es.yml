@@ -151,7 +151,7 @@ es:
       topic_not_found: "¡Resumen no disponible, tema no encontrado!"
       summarizing: "Resumiendo tema"
       searching: "Buscando: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Número máximo de resultados"
@@ -159,7 +159,7 @@ es:
           base_query:
             name: "Consulta de búsqueda básica"
             description: "Consulta base a utilizar en la búsqueda. Ejemplo: «#urgente» antepondrá «#urgente» a la consulta de búsqueda y solo incluirá temas con la categoría o etiqueta urgente."
-      command_summary:
+      tool_summary:
         categories: "Lista de categorías"
         search: "Buscar"
         tags: "Listar etiquetas"
@@ -172,7 +172,7 @@ es:
         schema: "Buscar esquema de base de datos"
         search_settings: "Buscando los ajustes del sitio"
         dall_e: "Generar imagen"
-      command_help:
+      tool_help:
         categories: "Listar todas las categorías visibles públicamente en el foro"
         search: "Buscar todos los temas públicos en el foro."
         tags: "Listar todas las etiquetas en el foro"
@@ -185,7 +185,7 @@ es:
         schema: "Buscar esquema de base de datos"
         search_settings: "Buscar ajustes del sitio"
         dall_e: "Generar imagen usando DALL-E 3"
-      command_description:
+      tool_description:
         read: "Leyendo: <a href='%{url}'>%{title}</a>"
         time: "La hora en %{timezone} es %{time}"
         summarize: "Resumido <a href='%{url}'>%{title}</a>"

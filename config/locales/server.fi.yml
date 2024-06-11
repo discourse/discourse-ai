@@ -151,7 +151,7 @@ fi:
       topic_not_found: "Yhteenveto ei ole saatavilla, ketjua ei löydy!"
       summarizing: "Laaditaan yhteenvetoa ketjusta"
       searching: "Haetaan: \"%{query}\""
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Tulosten enimmäismäärä"
@@ -159,7 +159,7 @@ fi:
           base_query:
             name: "Perushakukysely"
             description: "Peruskysely, jota käytetään haussa. Esimerkki: \"#kiireellinen\" lisää hakukyselyn alkuun \"#kiireellinen\" ja sisältää vain ketjut, joissa on kiireellinen alue tai tunniste."
-      command_summary:
+      tool_summary:
         categories: "Listaa alueet"
         search: "Haku"
         tags: "Listaa tunnisteet"
@@ -172,7 +172,7 @@ fi:
         schema: "Etsi tietokantaskeema"
         search_settings: "Haetaan sivustoasetuksia"
         dall_e: "Luo kuva"
-      command_help:
+      tool_help:
         categories: "Listaa kaikki foorumin julkisesti näkyvät alueet"
         search: "Hae kaikista foorumin julkisista ketjuista"
         tags: "Listaa kaikki foorumin tunnisteet"
@@ -185,7 +185,7 @@ fi:
         schema: "Etsi tietokantaskeema"
         search_settings: "Hae sivustoasetuksia"
         dall_e: "Luo kuva DALL-E 3:lla"
-      command_description:
+      tool_description:
         read: "Luetaan: <a href='%{url}'>%{title}</a>"
         time: "Aika aikavyöhykkeellä %{timezone} on %{time}"
         summarize: "Yhteenveto: <a href='%{url}'>%{title}</a>"

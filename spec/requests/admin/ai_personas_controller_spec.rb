@@ -17,7 +17,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(response).to be_successful
 
       expect(response.parsed_body["ai_personas"].length).to eq(AiPersona.count)
-      expect(response.parsed_body["meta"]["commands"].length).to eq(
+      expect(response.parsed_body["meta"]["tools"].length).to eq(
         DiscourseAi::AiBot::Personas::Persona.all_available_tools.length,
       )
     end
@@ -33,13 +33,13 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       )
     end
 
-    it "returns commands options with each command" do
-      persona1 = Fabricate(:ai_persona, name: "search1", commands: ["SearchCommand"])
+    it "returns tool options with each tool" do
+      persona1 = Fabricate(:ai_persona, name: "search1", tools: ["SearchCommand"])
       persona2 =
         Fabricate(
           :ai_persona,
           name: "search2",
-          commands: [["SearchCommand", { base_query: "test" }]],
+          tools: [["SearchCommand", { base_query: "test" }]],
           mentionable: true,
           default_llm: "anthropic:claude-2",
         )
@@ -56,36 +56,36 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(serializer_persona2["user_id"]).to eq(persona2.user_id)
       expect(serializer_persona2["user"]["id"]).to eq(persona2.user_id)
 
-      commands = response.parsed_body["meta"]["commands"]
-      search_command = commands.find { |c| c["id"] == "Search" }
+      tools = response.parsed_body["meta"]["tools"]
+      search_tool = tools.find { |c| c["id"] == "Search" }
 
-      expect(search_command["help"]).to eq(I18n.t("discourse_ai.ai_bot.command_help.search"))
+      expect(search_tool["help"]).to eq(I18n.t("discourse_ai.ai_bot.tool_help.search"))
 
-      expect(search_command["options"]).to eq(
+      expect(search_tool["options"]).to eq(
         {
           "base_query" => {
             "type" => "string",
-            "name" => I18n.t("discourse_ai.ai_bot.command_options.search.base_query.name"),
+            "name" => I18n.t("discourse_ai.ai_bot.tool_options.search.base_query.name"),
             "description" =>
-              I18n.t("discourse_ai.ai_bot.command_options.search.base_query.description"),
+              I18n.t("discourse_ai.ai_bot.tool_options.search.base_query.description"),
           },
           "max_results" => {
             "type" => "integer",
-            "name" => I18n.t("discourse_ai.ai_bot.command_options.search.max_results.name"),
+            "name" => I18n.t("discourse_ai.ai_bot.tool_options.search.max_results.name"),
             "description" =>
-              I18n.t("discourse_ai.ai_bot.command_options.search.max_results.description"),
+              I18n.t("discourse_ai.ai_bot.tool_options.search.max_results.description"),
           },
           "search_private" => {
             "type" => "boolean",
-            "name" => I18n.t("discourse_ai.ai_bot.command_options.search.search_private.name"),
+            "name" => I18n.t("discourse_ai.ai_bot.tool_options.search.search_private.name"),
             "description" =>
-              I18n.t("discourse_ai.ai_bot.command_options.search.search_private.description"),
+              I18n.t("discourse_ai.ai_bot.tool_options.search.search_private.description"),
           },
         },
       )
 
-      expect(serializer_persona1["commands"]).to eq(["SearchCommand"])
-      expect(serializer_persona2["commands"]).to eq([["SearchCommand", { "base_query" => "test" }]])
+      expect(serializer_persona1["tools"]).to eq(["SearchCommand"])
+      expect(serializer_persona2["tools"]).to eq([["SearchCommand", { "base_query" => "test" }]])
     end
 
     context "with translations" do
@@ -160,7 +160,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           name: "superbot",
           description: "Assists with tasks",
           system_prompt: "you are a helpful bot",
-          commands: [["search", { "base_query" => "test" }]],
+          tools: [["search", { "base_query" => "test" }]],
           top_p: 0.1,
           temperature: 0.5,
           mentionable: true,
@@ -186,7 +186,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
           persona = AiPersona.find(persona_json["id"])
 
-          expect(persona.commands).to eq([["search", { "base_query" => "test" }]])
+          expect(persona.tools).to eq([["search", { "base_query" => "test" }]])
           expect(persona.top_p).to eq(0.1)
           expect(persona.temperature).to eq(0.5)
         }.to change(AiPersona, :count).by(1)
@@ -286,7 +286,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
               ai_persona: {
                 name: "SuperBot",
                 enabled: false,
-                commands: ["search"],
+                tools: ["search"],
               },
             }
 
@@ -296,7 +296,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         ai_persona.reload
         expect(ai_persona.name).to eq("SuperBot")
         expect(ai_persona.enabled).to eq(false)
-        expect(ai_persona.commands).to eq(["search"])
+        expect(ai_persona.tools).to eq(["search"])
       end
     end
 
@@ -314,11 +314,11 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         expect(response.parsed_body["errors"].join).not_to include("en.discourse")
       end
 
-      it "does not allow editing of commands" do
+      it "does not allow editing of tools" do
         put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
-                commands: %w[SearchCommand ImageCommand],
+                tools: %w[SearchCommand ImageCommand],
               },
             }
 

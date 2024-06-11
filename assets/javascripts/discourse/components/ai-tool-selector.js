@@ -7,7 +7,7 @@ export default MultiSelectComponent.extend({
   }),
 
   content: computed(function () {
-    return this.commands;
+    return this.tools;
   }),
 
   value: "",

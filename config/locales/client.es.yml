@@ -111,7 +111,7 @@ es:
         delete: Eliminar
         priority: Prioridad
         priority_help: Las personas prioritarias se muestran a los usuarios en la parte superior de la lista de personas. Si varias personas tienen prioridad, se ordenarán alfabéticamente.
-        command_options: "Opciones de comando"
+        tool_options: "Opciones de comando"
         uploads:
           title: "Subidos"
           uploading: "Subiendo..."

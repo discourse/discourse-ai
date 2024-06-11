@@ -290,7 +290,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       it "can run tools" do
-        persona.update!(commands: ["TimeCommand"])
+        persona.update!(tools: ["Time"])
 
         responses = [
           "<function_calls><invoke><tool_name>time</tool_name><tool_id>time</tool_id><parameters><timezone>Buenos Aires</timezone></parameters></invoke></function_calls>",
@@ -588,6 +588,34 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(last_post.raw).to include("testing various things")
       expect(last_post.raw).to include("another search")
       expect(last_post.raw).to include("I found stuff")
+    end
+
+    it "supports disabling tool details" do
+      persona = Fabricate(:ai_persona, tool_details: false, tools: ["Search"])
+      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new)
+      playground = described_class.new(bot)
+
+      response1 = (<<~TXT).strip
+          <function_calls>
+          <invoke>
+          <tool_name>search</tool_name>
+          <tool_id>search</tool_id>
+          <parameters>
+          <search_query>testing various things</search_query>
+          </parameters>
+          </invoke>
+          </function_calls>
+       TXT
+
+      response2 = "I found stuff"
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([response1, response2]) do
+        playground.reply_to(third_post)
+      end
+
+      last_post = third_post.topic.reload.posts.order(:post_number).last
+
+      expect(last_post.raw).to eq("I found stuff")
     end
 
     it "does not include placeholders in conversation context but includes all completions" do

@@ -23,7 +23,7 @@ module DiscourseAi
           DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
             { id: hash[:value], name: hash[:name] }
           end
-        render json: { ai_personas: ai_personas, meta: { commands: tools, llms: llms } }
+        render json: { ai_personas: ai_personas, meta: { tools: tools, llms: llms } }
       end
 
       def show
@@ -126,28 +126,29 @@ module DiscourseAi
             :rag_conversation_chunks,
             :question_consolidator_llm,
             :allow_chat,
+            :tool_details,
             allowed_group_ids: [],
             rag_uploads: [:id],
           )
 
-        if commands = params.dig(:ai_persona, :commands)
-          permitted[:commands] = permit_commands(commands)
+        if tools = params.dig(:ai_persona, :tools)
+          permitted[:tools] = permit_tools(tools)
         end
 
         permitted
       end
 
-      def permit_commands(commands)
-        return [] if !commands.is_a?(Array)
+      def permit_tools(tools)
+        return [] if !tools.is_a?(Array)
 
-        commands.filter_map do |command, options|
-          break nil if !command.is_a?(String)
+        tools.filter_map do |tool, options|
+          break nil if !tool.is_a?(String)
           options&.permit! if options && options.is_a?(ActionController::Parameters)
 
           if options
-            [command, options]
+            [tool, options]
           else
-            command
+            tool
           end
         end
       end

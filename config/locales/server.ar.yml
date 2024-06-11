@@ -151,7 +151,7 @@ ar:
       topic_not_found: "الملخص غير متوفر، الموضوع غير موجود!"
       summarizing: "جارٍ تلخيص الموضوع"
       searching: "جارٍ البحث عن: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "الحد الأقصى لعدد النتائج"
@@ -159,7 +159,7 @@ ar:
           base_query:
             name: "استعلام البحث الأساسي"
             description: "استعلام البحث الأساسي الذي سيتم استخدامه عند البحث. على سبيل المثال: سيسبق \"#urgent\" \"#urgent\" في استعلام البحث وسيتضمن الموضوعات ذات الفئة أو الوسم العاجل فقط."
-      command_summary:
+      tool_summary:
         categories: "إدراج الفئات"
         search: "البحث"
         tags: "إدراج الوسوم"
@@ -172,7 +172,7 @@ ar:
         schema: "البحث عن مخطط قاعدة البيانات"
         search_settings: "جارٍ البحث في إعدادات الموقع"
         dall_e: "إنشاء صورة"
-      command_help:
+      tool_help:
         categories: "إدراج جميع الفئات المرئية بشكلٍ عام في المنتدى"
         search: "البحث في جميع الموضوعات العامة في المنتدى"
         tags: "إدراج جميع الوسوم في المنتدى"
@@ -185,7 +185,7 @@ ar:
         schema: "البحث عن مخطط قاعدة البيانات"
         search_settings: "البحث في إعدادات الموقع"
         dall_e: "إنشاء صورة باستخدام DALL-E 3"
-      command_description:
+      tool_description:
         read: "القراءة: <a href='%{url}'>%{title}</a>"
         time: "الوقت في المنطقة الزمنية %{timezone} هو %{time}"
         summarize: "تم تلخيص <a href='%{url}'>%{title}</a>"

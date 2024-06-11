@@ -111,7 +111,7 @@ nl:
         delete: Verwijderen
         priority: Prioriteit
         priority_help: Prioritaire persona's worden bovenaan de personalijst weergegeven voor gebruikers. Als meerdere persona's prioriteit hebben, worden deze alfabetisch gesorteerd.
-        command_options: "Opdrachtopties"
+        tool_options: "Opdrachtopties"
         uploads:
           title: "Uploads"
           uploading: "Uploaden..."

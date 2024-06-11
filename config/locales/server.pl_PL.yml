@@ -150,7 +150,7 @@ pl_PL:
       topic_not_found: "Podsumowanie niedostępne, nie znaleziono tematu!"
       summarizing: "Podsumowanie tematu"
       searching: "Wyszukiwanie: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Maksymalna liczba wyników"
@@ -158,7 +158,7 @@ pl_PL:
           base_query:
             name: "Podstawowe zapytanie wyszukiwania"
             description: "Podstawowe zapytanie używane podczas wyszukiwania. Przykład: '#pilne' spowoduje dodanie '#pilne' do zapytania wyszukiwania i uwzględnienie tylko tematów z kategorią lub tagiem pilne."
-      command_summary:
+      tool_summary:
         random_picker: "Losowy selektor"
         categories: "Wymień kategorie"
         search: "Szukaj"
@@ -172,7 +172,7 @@ pl_PL:
         schema: "Wyszukaj schemat bazy danych"
         search_settings: "Wyszukiwanie ustawień witryny"
         dall_e: "Wygeneruj obraz"
-      command_help:
+      tool_help:
         random_picker: "Wybierz losową liczbę lub losowy element listy"
         categories: "Wyświetl wszystkie publicznie widoczne kategorie na forum"
         search: "Przeszukaj wszystkie publiczne tematy na forum"
@@ -186,7 +186,7 @@ pl_PL:
         schema: "Wyszukaj schemat bazy danych"
         search_settings: "Wyszukaj ustawienia witryny"
         dall_e: "Wygeneruj obraz za pomocą DALL-E 3"
-      command_description:
+      tool_description:
         random_picker: "Wybieranie z %{options}, wybrane: %{result}"
         read: "Czytanie: <a href='%{url}'>%{title}</a>"
         time: "Czas w %{timezone} wynosi %{time}"

@@ -111,7 +111,7 @@ ja:
         delete: 削除
         priority: 優先度
         priority_help: 優先ペルソナはペルソナリストの先頭に表示されます。複数のペルソナが優先されている場合は、アルファベット順に並べ替えられます。
-        command_options: "コマンドオプション"
+        tool_options: "コマンドオプション"
         uploads:
           title: "アップロード"
           uploading: "アップロード中..."

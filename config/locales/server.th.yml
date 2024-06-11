@@ -10,6 +10,6 @@ th:
       yaxis: "วันที่"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "ค้นหา"
         time: "เวลา"
