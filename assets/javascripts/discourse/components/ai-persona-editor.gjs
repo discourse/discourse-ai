@@ -413,7 +413,7 @@ export default class PersonaEditor extends Component {
           {{I18n.t "discourse_ai.ai_persona.tool_details"}}</label>
         <DTooltip
           @icon="question-circle"
-          @content={{I18n.t "discourse_ai.ai_persona.tool_details"}}
+          @content={{I18n.t "discourse_ai.ai_persona.tool_details_help"}}
         />
       </div>
       <div class="control-group ai-persona-editor__vision_enabled">
