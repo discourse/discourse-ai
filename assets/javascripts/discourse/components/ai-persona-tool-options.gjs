@@ -39,7 +39,7 @@ export default class AiPersonaToolOptions extends Component {
 
     const options = [];
     this.toolNames.forEach((toolId) => {
-      const tool = allTools.find((c) => c.id === toolId);
+      const tool = allTools.findBy("id", toolId);
 
       const toolName = tool?.name;
       const toolOptions = tool?.options;
