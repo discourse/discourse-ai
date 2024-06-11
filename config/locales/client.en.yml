@@ -169,7 +169,7 @@ en:
         top_p_help: Top P to use for the LLM, increase to increase randomness (leave empty to use model default, generally a value from 0.0 to 1.0)
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
-        tool_options: "Command Options"
+        tool_options: "Tool Options"
         rag_chunk_tokens: "Upload Chunk Tokens"
         rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
         rag_chunk_overlap_tokens: "Upload Chunk Overlap Tokens"
