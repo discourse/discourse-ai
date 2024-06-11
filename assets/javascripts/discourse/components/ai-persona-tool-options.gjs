@@ -9,9 +9,7 @@ export default class AiPersonaToolOptions extends Component {
       return false;
     }
 
-    return this.toolNames.any(
-      (tool) => allTools.findBy("id", tool)?.options
-    );
+    return this.toolNames.any((tool) => allTools.findBy("id", tool)?.options);
   }
 
   get toolNames() {
