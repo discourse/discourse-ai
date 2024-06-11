@@ -590,6 +590,40 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(last_post.raw).to include("I found stuff")
     end
 
+    it "supports disabling tool details" do
+      persona =
+        AiPersona.find(
+          DiscourseAi::AiBot::Personas::Persona.system_personas[
+            DiscourseAi::AiBot::Personas::General
+          ],
+        )
+
+      persona.update!(tool_details: false)
+      playground.bot.persona = persona.class_instance.new
+
+      response1 = (<<~TXT).strip
+          <function_calls>
+          <invoke>
+          <tool_name>search</tool_name>
+          <tool_id>search</tool_id>
+          <parameters>
+          <search_query>testing various things</search_query>
+          </parameters>
+          </invoke>
+          </function_calls>
+       TXT
+
+      response2 = "I found stuff"
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([response1, response2]) do
+        playground.reply_to(third_post)
+      end
+
+      last_post = third_post.topic.reload.posts.order(:post_number).last
+
+      expect(last_post.raw).to eq("I found stuff")
+    end
+
     it "does not include placeholders in conversation context but includes all completions" do
       response1 = (<<~TXT).strip
           <function_calls>

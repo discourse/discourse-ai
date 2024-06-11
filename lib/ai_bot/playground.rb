@@ -420,7 +420,7 @@ module DiscourseAi
           Discourse.redis.setex(redis_stream_key, 60, 1)
         end
 
-        context[:skip_tool_details] &&= !bot.persona.class.tool_details
+        context[:skip_tool_details] ||= !bot.persona.class.tool_details
 
         new_custom_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
