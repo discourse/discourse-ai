@@ -451,8 +451,8 @@ export default class PersonaEditor extends Component {
           @content={{I18n.t "discourse_ai.ai_persona.max_context_posts_help"}}
         />
       </div>
-      <div class="control-group">
-        {{#if this.showTemperature}}
+      {{#if this.showTemperature}}
+        <div class="control-group">
           <label>{{I18n.t "discourse_ai.ai_persona.temperature"}}</label>
           <Input
             @type="number"
@@ -466,8 +466,10 @@ export default class PersonaEditor extends Component {
             @icon="question-circle"
             @content={{I18n.t "discourse_ai.ai_persona.temperature_help"}}
           />
-        {{/if}}
-        {{#if this.showTopP}}
+        </div>
+      {{/if}}
+      {{#if this.showTopP}}
+        <div class="control-group">
           <label>{{I18n.t "discourse_ai.ai_persona.top_p"}}</label>
           <Input
             @type="number"
@@ -481,8 +483,8 @@ export default class PersonaEditor extends Component {
             @icon="question-circle"
             @content={{I18n.t "discourse_ai.ai_persona.top_p_help"}}
           />
-        {{/if}}
-      </div>
+        </div>
+      {{/if}}
       {{#if this.siteSettings.ai_embeddings_enabled}}
         <div class="control-group">
           <PersonaRagUploader
