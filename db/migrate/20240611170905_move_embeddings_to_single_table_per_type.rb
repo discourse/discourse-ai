@@ -12,7 +12,9 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.column :embeddings, "halfvec", null: false
       t.timestamps
 
-      t.index %i[model_id strategy_id topic_id], unique: true
+      t.index %i[model_id strategy_id topic_id],
+              unique: true,
+              name: "index_ai_topic_embeddings_on_model_strategy_topic"
     end
 
     create_table :ai_post_embeddings, id: false do |t|
@@ -25,7 +27,9 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.column :embeddings, "halfvec", null: false
       t.timestamps
 
-      t.index %i[model_id strategy_id post_id], unique: true
+      t.index %i[model_id strategy_id post_id],
+              unique: true,
+              name: "index_ai_post_embeddings_on_model_strategy_post"
     end
 
     create_table :ai_document_fragment_embeddings, id: false do |t|
@@ -38,7 +42,9 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       t.column :embeddings, "halfvec", null: false
       t.timestamps
 
-      t.index %i[model_id strategy_id rag_document_fragment_id], unique: true
+      t.index %i[model_id strategy_id rag_document_fragment_id],
+              unique: true,
+              name: "index_ai_fragment_embeddings_on_model_strategy_fragment"
     end
 
     # Copy data from old tables to new tables
@@ -139,30 +145,5 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
       SELECT rag_document_fragment_id, 8, model_version, 1, strategy_version, digest, embeddings, created_at, updated_at
       FROM ai_document_fragment_embeddings_8_1;
     SQL
-
-    drop_table :ai_topic_embeddings_1_1
-    drop_table :ai_topic_embeddings_2_1
-    drop_table :ai_topic_embeddings_3_1
-    drop_table :ai_topic_embeddings_4_1
-    drop_table :ai_topic_embeddings_5_1
-    drop_table :ai_topic_embeddings_6_1
-    drop_table :ai_topic_embeddings_7_1
-    drop_table :ai_topic_embeddings_8_1
-    drop_table :ai_post_embeddings_1_1
-    drop_table :ai_post_embeddings_2_1
-    drop_table :ai_post_embeddings_3_1
-    drop_table :ai_post_embeddings_4_1
-    drop_table :ai_post_embeddings_5_1
-    drop_table :ai_post_embeddings_6_1
-    drop_table :ai_post_embeddings_7_1
-    drop_table :ai_post_embeddings_8_1
-    drop_table :ai_document_fragment_embeddings_1_1
-    drop_table :ai_document_fragment_embeddings_2_1
-    drop_table :ai_document_fragment_embeddings_3_1
-    drop_table :ai_document_fragment_embeddings_4_1
-    drop_table :ai_document_fragment_embeddings_5_1
-    drop_table :ai_document_fragment_embeddings_6_1
-    drop_table :ai_document_fragment_embeddings_7_1
-    drop_table :ai_document_fragment_embeddings_8_1
   end
 end
