@@ -647,23 +647,25 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     context "with Dall E bot" do
-      let(:bot) do
-        persona =
-          AiPersona
-            .find(
-              DiscourseAi::AiBot::Personas::Persona.system_personas[
-                DiscourseAi::AiBot::Personas::DallE3
-              ],
-            )
-            .class_instance
-            .new
-        DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+      before { SiteSetting.ai_openai_api_key = "123" }
+
+      let(:persona) do
+        AiPersona.find(
+          DiscourseAi::AiBot::Personas::Persona.system_personas[
+            DiscourseAi::AiBot::Personas::DallE3
+          ],
+        )
       end
 
-      it "does not include placeholders in conversation context (simulate DALL-E)" do
-        SiteSetting.ai_openai_api_key = "123"
+      let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new) }
+      let(:data) do
+        image =
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
 
-        response = (<<~TXT).strip
+        [{ b64_json: image, revised_prompt: "a pink cow 1" }]
+      end
+
+      let(:response) { (<<~TXT).strip }
           <function_calls>
           <invoke>
           <tool_name>dall_e</tool_name>
@@ -675,11 +677,24 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           </function_calls>
        TXT
 
-        image =
-          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+      it "properly returns an image when skipping tool details" do
+        persona.update!(tool_details: false)
 
-        data = [{ b64_json: image, revised_prompt: "a pink cow 1" }]
+        WebMock.stub_request(:post, SiteSetting.ai_openai_dall_e_3_url).to_return(
+          status: 200,
+          body: { data: data }.to_json,
+        )
 
+        DiscourseAi::Completions::Llm.with_prepared_responses([response]) do
+          playground.reply_to(third_post)
+        end
+
+        last_post = third_post.topic.reload.posts.order(:post_number).last
+
+        expect(last_post.raw).to include("a pink cow")
+      end
+
+      it "does not include placeholders in conversation context (simulate DALL-E)" do
         WebMock.stub_request(:post, SiteSetting.ai_openai_dall_e_3_url).to_return(
           status: 200,
           body: { data: data }.to_json,
