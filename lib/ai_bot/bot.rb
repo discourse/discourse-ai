@@ -152,7 +152,12 @@ module DiscourseAi
           end
 
         tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
-        update_blk.call(tool_details, cancel, nil) if !context[:skip_tool_details]
+
+        if context[:skip_tool_details] && tool.custom_raw.present?
+          update_blk.call(tool.custom_raw, cancel, nil)
+        elsif !context[:skip_tool_details]
+          update_blk.call(tool_details, cancel, nil)
+        end
 
         result
       end
