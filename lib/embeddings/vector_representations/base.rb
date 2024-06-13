@@ -131,7 +131,7 @@ module DiscourseAi
               ON
                 #{table_name}
               USING
-                ivfflat (embeddings #{pg_index_type})
+                ivfflat ((embeddings::halfvec(#{dimensions})) #{pg_index_type})
               WITH
                 (lists = #{lists})
               WHERE
@@ -202,7 +202,7 @@ module DiscourseAi
               model_id = #{id} AND
               strategy_id = #{@strategy.id}
             ORDER BY
-              embeddings #{pg_function} '[:query_embedding]'
+              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
             LIMIT 1
           SQL
         end
@@ -217,7 +217,7 @@ module DiscourseAi
               model_id = #{id} AND
               strategy_id = #{@strategy.id}
             ORDER BY
-              embeddings #{pg_function} '[:query_embedding]'
+              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
             LIMIT 1
           SQL
         end
@@ -227,13 +227,13 @@ module DiscourseAi
             #{probes_sql(topic_table_name)}
             SELECT
               topic_id,
-              embeddings #{pg_function} '[:query_embedding]' AS distance
+              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
             FROM
               #{topic_table_name}
             WHERE
               model_id = #{id} AND strategy_id = #{@strategy.id}
             ORDER BY
-              embeddings #{pg_function} '[:query_embedding]'
+              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
             LIMIT :limit
             OFFSET :offset
           SQL
@@ -253,7 +253,7 @@ module DiscourseAi
             #{probes_sql(post_table_name)}
             SELECT
               post_id,
-              embeddings #{pg_function} '[:query_embedding]' AS distance
+              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
             FROM
               #{post_table_name}
             INNER JOIN
@@ -263,7 +263,7 @@ module DiscourseAi
             WHERE
               model_id = #{id} AND strategy_id = #{@strategy.id}
             ORDER BY
-              embeddings #{pg_function} '[:query_embedding]'
+              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
             LIMIT :limit
             OFFSET :offset
           SQL
@@ -291,7 +291,7 @@ module DiscourseAi
             #{probes_sql(post_table_name)}
             SELECT
               rag_document_fragment_id,
-              embeddings #{pg_function} '[:query_embedding]' AS distance
+              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
             FROM
               #{rag_fragments_table_name}
             INNER JOIN
@@ -301,7 +301,7 @@ module DiscourseAi
               strategy_id = #{@strategy.id} AND
               rdf.ai_persona_id = :persona_id
             ORDER BY
-              embeddings #{pg_function} '[:query_embedding]'
+              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
             LIMIT :limit
             OFFSET :offset
           SQL
@@ -332,7 +332,7 @@ module DiscourseAi
               model_id = #{id} AND
               strategy_id = #{@strategy.id}
             ORDER BY
-              embeddings #{pg_function} (
+              embeddings::halfvec(#{dimensions}) #{pg_function} (
                 SELECT
                   embeddings
                 FROM
@@ -342,7 +342,7 @@ module DiscourseAi
                   strategy_id = #{@strategy.id} AND
                   topic_id = :topic_id
                 LIMIT 1
-              )
+              )::halfvec(#{dimensions})
             LIMIT 100
           SQL
         rescue PG::Error => e
