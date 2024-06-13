@@ -106,6 +106,7 @@ module DiscourseAi
           :max_prompt_tokens,
           :url,
           :api_key,
+          :bot_username,
         )
       end
     end

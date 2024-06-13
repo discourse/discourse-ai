@@ -181,6 +181,18 @@ export default class AiLlmEditor extends Component {
           @content={{I18n.t "discourse_ai.llms.hints.max_prompt_tokens"}}
         />
       </div>
+      <div class="control-group">
+        <label>{{i18n "discourse_ai.llms.companion_bot_username"}}</label>
+        <Input
+          @type="text"
+          class="ai-llm-editor-input ai-llm-editor__companion-bot-user"
+          @value={{@model.bot_username}}
+        />
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t "discourse_ai.llms.hints.companion_bot_username"}}
+        />
+      </div>
 
       <div class="control-group ai-llm-editor__action_panel">
         <DButton

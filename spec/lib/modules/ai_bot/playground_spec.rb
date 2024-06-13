@@ -3,10 +3,12 @@
 RSpec.describe DiscourseAi::AiBot::Playground do
   subject(:playground) { described_class.new(bot) }
 
+  fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
+
   fab!(:bot_user) do
-    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
+    SiteSetting.ai_bot_enabled_chat_bots = claude_2.name
     SiteSetting.ai_bot_enabled = true
-    DiscourseAi::AiBot::EntryPoint.find_user_from_model("claude-2")
+    claude_2.reload.user
   end
 
   fab!(:bot) do
@@ -456,12 +458,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     it "picks the correct llm for persona in PMs" do
+      gpt_35_turbo = Fabricate(:llm_model, name: "gpt-3.5-turbo")
+      gpt_35_turbo_16k = Fabricate(:llm_model, name: "gpt-3.5-turbo-16k")
+
       # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
       SiteSetting.ai_bot_enabled = true
-      SiteSetting.ai_bot_enabled_chat_bots = "gpt-3.5-turbo|claude-2"
+      SiteSetting.ai_bot_enabled_chat_bots = [gpt_35_turbo.name, claude_2.name].join("|")
 
       post = nil
-      gpt3_5_bot_user = DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo")
+      gpt3_5_bot_user = gpt_35_turbo.reload.user
 
       # title is queued first, ensures it uses the llm targeted via target_usernames not claude
       DiscourseAi::Completions::Llm.with_prepared_responses(

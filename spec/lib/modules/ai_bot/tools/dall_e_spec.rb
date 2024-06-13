@@ -3,6 +3,14 @@
 RSpec.describe DiscourseAi::AiBot::Tools::DallE do
   let(:prompts) { ["a pink cow", "a red cow"] }
 
+  fab!(:gpt_35_turbo) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
+
+  before do
+    SiteSetting.ai_bot_enabled = true
+    SiteSetting.ai_bot_enabled_chat_bots = gpt_35_turbo.name
+    SiteSetting.ai_openai_api_key = "abc"
+  end
+
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
@@ -13,11 +21,6 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
 
   let(:base64_image) do
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
-  end
-
-  before do
-    SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_openai_api_key = "abc"
   end
 
   describe "#process" do

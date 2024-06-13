@@ -76,12 +76,15 @@ RSpec.describe DiscourseAi::AiBot::BotController do
 
   describe "#show_bot_username" do
     it "returns the username_lower of the selected bot" do
+      gpt_35_bot = Fabricate(:llm_model, name: "gpt-3.5-turbo")
+
       SiteSetting.ai_bot_enabled = true
-      gpt_3_5_bot = "gpt-3.5-turbo"
+      SiteSetting.ai_bot_enabled_chat_bots = gpt_35_bot.name
+
       expected_username =
         DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo").username_lower
 
-      get "/discourse-ai/ai-bot/bot-username", params: { username: gpt_3_5_bot }
+      get "/discourse-ai/ai-bot/bot-username", params: { username: gpt_35_bot.name }
 
       expect(response.status).to eq(200)
       expect(response.parsed_body["bot_username"]).to eq(expected_username)

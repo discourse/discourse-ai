@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 RSpec.describe "Share conversation", type: :system do
   fab!(:admin) { Fabricate(:admin, username: "ai_sharer") }
+  fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-4") }
 
   let(:pm) do
@@ -31,7 +32,7 @@ RSpec.describe "Share conversation", type: :system do
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+    SiteSetting.ai_bot_enabled_chat_bots = gpt_4.name
     sign_in(admin)
 
     bot_user.update!(username: "gpt-4")

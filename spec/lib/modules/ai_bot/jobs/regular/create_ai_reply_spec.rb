@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe Jobs::CreateAiReply do
-  before { SiteSetting.ai_bot_enabled = true }
+  fab!(:gpt_35_bot) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
+  before do
+    SiteSetting.ai_bot_enabled = true
+    SiteSetting.ai_bot_enabled_chat_bots = gpt_35_bot.name
+  end
 
   describe "#execute" do
     fab!(:topic)
@@ -15,6 +19,7 @@ RSpec.describe Jobs::CreateAiReply do
 
     it "adds a reply from the bot" do
       persona_id = AiPersona.find_by(name: "Forum Helper").id
+
       bot_user = DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo")
       DiscourseAi::Completions::Llm.with_prepared_responses([expected_response]) do
         subject.execute(

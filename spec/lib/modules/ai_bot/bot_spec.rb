@@ -4,9 +4,11 @@ RSpec.describe DiscourseAi::AiBot::Bot do
   subject(:bot) { described_class.as(bot_user) }
 
   fab!(:admin)
+  fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
+  fab!(:fake) { Fabricate(:llm_model, name: "fake", provider: "fake") }
 
   before do
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+    SiteSetting.ai_bot_enabled_chat_bots = gpt_4.name
     SiteSetting.ai_bot_enabled = true
   end
 
@@ -33,7 +35,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       DiscourseAi::Completions::Endpoints::Fake.delays = []
       DiscourseAi::Completions::Endpoints::Fake.last_call = nil
 
-      SiteSetting.ai_bot_enabled_chat_bots = "fake"
+      SiteSetting.ai_bot_enabled_chat_bots = fake.name
       SiteSetting.ai_bot_enabled = true
       Group.refresh_automatic_groups!
 

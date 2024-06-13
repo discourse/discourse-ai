@@ -3,9 +3,12 @@ RSpec.describe "AI chat channel summarization", type: :system, js: true do
   fab!(:user)
   fab!(:group) { Fabricate(:group, visibility_level: Group.visibility_levels[:staff]) }
 
+  fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
+  fab!(:gpt_3_5_turbo) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
+
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4|gpt-3.5-turbo"
+    SiteSetting.ai_bot_enabled_chat_bots = [gpt_4.name, gpt_3_5_turbo.name].join("|")
     SiteSetting.ai_bot_allowed_groups = group.id.to_s
     sign_in(user)
   end

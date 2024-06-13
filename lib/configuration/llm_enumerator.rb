@@ -28,8 +28,8 @@ module DiscourseAi
         end
       end
 
-      def self.ai_bot_models
-        default_models = %w[
+      def self.available_ai_bots
+        %w[
           gpt-3.5-turbo
           gpt-4
           gpt-4-turbo
@@ -42,10 +42,6 @@ module DiscourseAi
           claude-3-haiku
           cohere-command-r-plus
         ]
-
-        custom_models = LlmModel.where.not(name: default_models).pluck(:name)
-
-        default_models + custom_models
       end
     end
   end

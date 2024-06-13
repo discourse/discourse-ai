@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class LlmModel < ActiveRecord::Base
+  belongs_to :user
+
   def tokenizer_class
     tokenizer.constantize
   end

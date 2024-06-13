@@ -210,6 +210,7 @@ en:
         max_prompt_tokens: "Number of tokens for the prompt"
         url: "URL of the service hosting the model"
         api_key: "API Key of the service hosting the model"
+        companion_bot_username: "Companion user's username"
         save: "Save"
         edit: "Edit"
         saved: "LLM Model Saved"
@@ -226,6 +227,7 @@ en:
         hints:
           max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
           name: "We include this in the API call to specify which model we'll use."
+          companion_bot_username: "Features like the AI Bot create an user with this username for users to interact with."
 
         providers:
           aws_bedrock: "AWS Bedrock"

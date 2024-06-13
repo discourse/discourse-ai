@@ -163,55 +163,17 @@ module DiscourseAi
       end
 
       def self.guess_model(bot_user)
-        base_choice = guess_base_model(bot_user)
-
-        if base_choice
-          provider, model_name = base_choice.split(":")
-          llm_model = LlmModel.find_by(provider: provider, name: model_name)
-
-          return "custom:#{llm_model.id}" if llm_model
-        end
-
-        base_choice
-      end
-
-      # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
-      def self.guess_base_model(bot_user)
-        associated_llm =
-          bot_user.custom_fields[DiscourseAi::AiBot::EntryPoint::BOT_MODEL_CUSTOM_FIELD]
+        associated_llm = LlmModel.find_by(user_id: bot_user.id)
 
         return if associated_llm.nil? # Might be a persona user. Handled by constructor.
 
-        return "open_ai:gpt-3.5-turbo-16k" if associated_llm == "gpt-3.5-turbo"
-        return "open_ai:#{associated_llm}" if associated_llm.starts_with?("gpt-")
-
-        return "google:gemini-1.5-pro" if associated_llm == "gemini-1.5-pro"
-
-        return "fake:fake" if associated_llm == "fake"
-
-        return "cohere:command-r-plus" if associated_llm = "command-r-plus"
-
-        if %w[claude-3-opus claude-3-sonnet claude-3-haiku].include?(associated_llm)
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(associated_llm)
-            return "aws_bedrock:#{associated_llm}"
-          else
-            return "anthropic:#{associated_llm}"
-          end
+        # TODO(roman): Dynamically listing bot users in the settings will let us remove this replacements.
+        if associated_llm.name == "gpt-3.5-turbo"
+          gpt_16k_version = LlmModel.find_by(name: "gpt-3.5-turbo-16k")
+          associated_llm = gpt_16k_version if gpt_16k_version
         end
 
-        if associated_llm == "mistralai/Mixtral-8x7B-Instruct-v0.1"
-          if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(associated_llm)
-            if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(mixtral_model)
-              return "vllm:#{associated_llm}"
-            elsif DiscourseAi::Completions::Endpoints::HuggingFace.correctly_configured?(
-                  associated_llm,
-                )
-              return "hugging_face:#{associated_llm}"
-            else
-              return "ollama:mistral"
-            end
-          end
-        end
+        "custom:#{associated_llm.id}"
       end
 
       def build_placeholder(summary, details, custom_raw: nil)

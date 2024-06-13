@@ -59,10 +59,7 @@ module DiscourseAi
       def self.schedule_reply(post)
         return if is_bot_user_id?(post.user_id)
 
-        bot_ids =
-          UserCustomField.where(name: DiscourseAi::AiBot::EntryPoint::BOT_MODEL_CUSTOM_FIELD).pluck(
-            :user_id,
-          )
+        bot_ids = LlmModel.joins(:user).pluck("users.id")
         mentionables = AiPersona.mentionables(user: post.user)
 
         bot_user = nil
@@ -505,11 +502,7 @@ module DiscourseAi
 
       def available_bot_users
         @available_bots ||=
-          User.joins(:_custom_fields).where(
-            user_custom_fields: {
-              name: DiscourseAi::AiBot::EntryPoint::BOT_MODEL_CUSTOM_FIELD,
-            },
-          )
+          User.joins("INNER JOIN llm_models llm ON llm.user_id = users.id").where(active: true)
       end
 
       def publish_final_update(reply_post)

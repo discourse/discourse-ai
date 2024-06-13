@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 RSpec.describe "AI personas", type: :system, js: true do
   fab!(:admin)
+  fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+    SiteSetting.ai_bot_enabled_chat_bots = gpt_4.name
     sign_in(admin)
 
     Group.refresh_automatic_groups!

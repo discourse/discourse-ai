@@ -6,53 +6,42 @@ module DiscourseAi
 
     class EntryPoint
       REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
-      BOT_MODEL_CUSTOM_FIELD = "bot_model_name"
       Bot = Struct.new(:id, :name, :llm)
 
       def self.all_bot_ids
         mentionable_persona_user_ids =
           AiPersona.mentionables.map { |mentionable| mentionable[:user_id] }
-        mentionable_bot_users =
-          User
-            .joins(:_custom_fields)
-            .where(active: true, user_custom_fields: { name: BOT_MODEL_CUSTOM_FIELD })
-            .pluck(:user_id)
+        mentionable_bot_users = LlmModel.joins(:user).pluck("users.id")
 
         mentionable_bot_users + mentionable_persona_user_ids
       end
 
       def self.find_participant_in(participant_ids)
-        participant_data =
-          UserCustomField
-            .includes(:user)
-            .where(users: { active: true }, name: BOT_MODEL_CUSTOM_FIELD, user_id: participant_ids)
-            .last
+        model = LlmModel.includes(:user).where(user_id: participant_ids).last
+        return if model.nil?
 
-        return if participant_data.nil?
+        bot_user = model.user
 
-        Bot.new(
-          participant_data.user.id,
-          participant_data.user.username_lower,
-          participant_data.value,
-        )
+        Bot.new(bot_user.id, bot_user.username_lower, model.name)
       end
 
       def self.find_user_from_model(model_name)
-        UserCustomField
-          .includes(:user)
-          .find_by(name: BOT_MODEL_CUSTOM_FIELD, value: model_name)
-          &.user
+        # Hack(Roman): Added this because Command R Plus had a different in the bot settings.
+        # Will eventually ammend it with a data migration.
+        name = model_name
+        name = "command-r-plus" if name == "cohere-command-r-plus"
+
+        LlmModel.joins(:user).where(name: name).last&.user
       end
 
       def self.enabled_user_ids_and_models_map
-        enabled_models = SiteSetting.ai_bot_enabled_chat_bots.split("|")
+        enabled_model_names = SiteSetting.ai_bot_enabled_chat_bots.split("|")
 
-        DB.query_hash(<<~SQL, model_names: enabled_models, cf_name: BOT_MODEL_CUSTOM_FIELD)
-          SELECT users.username AS username, users.id AS id, ucf.value AS model_name
-          FROM user_custom_fields ucf
-          INNER JOIN users ON ucf.user_id = users.id
-          WHERE ucf.name = :cf_name 
-          AND ucf.value IN (:model_names)
+        DB.query_hash(<<~SQL, model_names: enabled_model_names)
+          SELECT users.username AS username, users.id AS id, llms.name AS model_name
+          FROM llm_models llms
+          INNER JOIN users ON llms.user_id = users.id
+          WHERE llms.name IN (:model_names)
         SQL
       end
 

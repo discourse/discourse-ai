@@ -4,8 +4,12 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
   describe "#inject_into" do
     describe "subscribes to the post_created event" do
       fab!(:admin)
-      let(:gpt_bot) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-4") }
       fab!(:bot_allowed_group) { Fabricate(:group) }
+
+      fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
+      let(:gpt_bot) { gpt_4.reload.user }
+
+      fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
 
       let(:post_args) do
         {
@@ -17,7 +21,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
       end
 
       before do
-        SiteSetting.ai_bot_enabled_chat_bots = "gpt-4|claude-2"
+        SiteSetting.ai_bot_enabled_chat_bots = [gpt_4.name, claude_2.name].join("|")
         SiteSetting.ai_bot_enabled = true
         SiteSetting.ai_bot_allowed_groups = bot_allowed_group.id
         bot_allowed_group.add(admin)

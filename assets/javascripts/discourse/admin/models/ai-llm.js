@@ -11,7 +11,8 @@ export default class AiLlm extends RestModel {
       "tokenizer",
       "max_prompt_tokens",
       "url",
-      "api_key"
+      "api_key",
+      "bot_username"
     );
   }
 

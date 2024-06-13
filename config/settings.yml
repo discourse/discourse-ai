@@ -342,7 +342,6 @@ discourse_ai:
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
-  # Adding a new bot? Make sure to create a user for it on the seed file and update translations.
   ai_bot_public_sharing_allowed_groups:
     client: false
     type: group_list
@@ -350,11 +349,12 @@ discourse_ai:
     default: "1|2" # 1: admins, 2: moderators
     allow_any: false
     refresh: true
-  ai_bot_enabled_chat_bots:
+  ai_bot_enabled_chat_bots: # TODO(roman): Make this dynamic
     type: list
-    default: "gpt-3.5-turbo"
+    default: ""
     client: true
-    choices: "DiscourseAi::Configuration::LlmEnumerator.ai_bot_models"
+    validator: "DiscourseAi::Configuration::LlmModelValidator"
+    choices: "DiscourseAi::Configuration::LlmEnumerator.available_ai_bots"
   ai_bot_add_to_header:
     default: true
     client: true
