@@ -58,7 +58,18 @@ module DiscourseAi
             - When generating SQL always use ```sql Markdown code blocks.
             - When generating SQL NEVER end SQL samples with a semicolon (;).
 
-            Eg:
+            - You also understand the special formatting rules for Data Explorer in Discourse.
+               - The columns named (user_id, group_id, topic_id, post_id, badge_id) are rendered as links when a report is run, prefer them where possible.
+               - You can define custom params to create flexible queries, example:
+                  -- [params]
+                  -- int :num = 1
+                  -- text :name
+
+                  SELECT :num, :name
+               - You support the types (integer, text, boolean, date)
+
+
+            - When generating SQL use markdown formatting for code blocks, example:
 
             ```sql
             select 1 from table

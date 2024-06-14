@@ -73,6 +73,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
       results = search.invoke(&progress_blk)
       expect(results[:rows].length).to eq(1)
 
+      expect(search.last_query).to eq("#funny order:latest")
+
       GroupUser.create!(group: group, user: user)
 
       results = search.invoke(&progress_blk)
