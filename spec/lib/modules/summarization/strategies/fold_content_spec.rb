@@ -32,37 +32,5 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
         expect(result[:summary]).to eq(single_summary)
       end
     end
-
-    context "when the content to summarize doesn't fit in a single call" do
-      it "summarizes each chunk and then concatenates them" do
-        content[:contents] << { poster: "asd2", id: 2, text: summarize_text }
-
-        result =
-          DiscourseAi::Completions::Llm.with_prepared_responses(
-            [single_summary, single_summary, concatenated_summary],
-          ) { |spy| strategy.summarize(content, user).tap { expect(spy.completions).to eq(3) } }
-
-        expect(result[:summary]).to eq(concatenated_summary)
-      end
-
-      it "keeps splitting into chunks until the content fits into a single call to create a cohesive narrative" do
-        content[:contents] << { poster: "asd2", id: 2, text: summarize_text }
-        max_length_response = "(1 asd said: This is a text "
-        chunk_of_chunks = "I'm smol"
-
-        result =
-          DiscourseAi::Completions::Llm.with_prepared_responses(
-            [
-              max_length_response,
-              max_length_response,
-              chunk_of_chunks,
-              chunk_of_chunks,
-              concatenated_summary,
-            ],
-          ) { |spy| strategy.summarize(content, user).tap { expect(spy.completions).to eq(5) } }
-
-        expect(result[:summary]).to eq(concatenated_summary)
-      end
-    end
   end
 end

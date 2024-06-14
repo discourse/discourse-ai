@@ -21,22 +21,13 @@ module DiscourseAi
 
           llm = DiscourseAi::Completions::Llm.proxy(completion_model.model_name)
 
-          initial_chunks =
-            rebalance_chunks(
-              llm.tokenizer,
-              content[:contents].map { |c| { ids: [c[:id]], summary: format_content_item(c) } },
-            )
+          summary_content =
+            content[:contents].map { |c| { ids: [c[:id]], summary: format_content_item(c) } }
 
-          # Special case where we can do all the summarization in one pass.
-          if initial_chunks.length == 1
-            {
-              summary:
-                summarize_single(llm, initial_chunks.first[:summary], user, opts, &on_partial_blk),
-              chunks: [],
-            }
-          else
-            summarize_chunks(llm, initial_chunks, user, opts, &on_partial_blk)
-          end
+          {
+            summary:
+              summarize_single(llm, summary_content.first[:summary], user, opts, &on_partial_blk),
+          }
         end
 
         private

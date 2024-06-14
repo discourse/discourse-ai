@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class CopyCustomSummarizationAllowedGroupsToAiCustomSummarizationAllowedGroups < ActiveRecord::Migration[7.0]
+class CopyCustomSummarizationAllowedGroupsToAiCustomSummarizationAllowedGroups < ActiveRecord::Migration[
+  7.0
+]
   def up
     execute <<-SQL
       UPDATE site_settings

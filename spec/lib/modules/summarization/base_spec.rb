@@ -10,7 +10,7 @@ describe DiscourseAi::Summarization::Models::Base do
   before do
     group.add(user)
 
-    strategy = DummyCustomSummarization.new({ summary: "dummy", chunks: [] })
+    strategy = DummyCustomSummarization.new({ summary: "dummy" })
     plugin.register_summarization_strategy(strategy)
     SiteSetting.ai_summarization_strategy = strategy.model
   end

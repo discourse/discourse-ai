@@ -85,13 +85,9 @@ module DiscourseAi
         #
         # @param current_user { User } - User requesting the summary.
         #
-        # @returns { Hash } - The summarized content, plus chunks if the content couldn't be summarized in one pass. Example:
+        # @returns { Hash } - The summarized content. Example:
         #   {
         #     summary: "This is the final summary",
-        #     chunks: [
-        #       { ids: [topic.first_post.post_number], summary: "this is the first chunk" },
-        #       { ids: [post_1.post_number, post_2.post_number], summary: "this is the second chunk" },
-        #     ],
         #   }
         def summarize(content, current_user)
           raise NotImplemented

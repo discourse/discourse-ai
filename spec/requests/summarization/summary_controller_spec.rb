@@ -6,7 +6,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
     fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
     fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
     let(:plugin) { Plugin::Instance.new }
-    let(:strategy) { DummyCustomSummarization.new({ summary: "dummy", chunks: [] }) }
+    let(:strategy) { DummyCustomSummarization.new({ summary: "dummy" }) }
 
     before do
       plugin.register_summarization_strategy(strategy)

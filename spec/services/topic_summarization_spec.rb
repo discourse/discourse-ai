@@ -63,7 +63,7 @@ describe TopicSummarization do
     end
 
     context "when the content was summarized in a single chunk" do
-      let(:summary) { { summary: "This is the final summary", chunks: [] } }
+      let(:summary) { { summary: "This is the final summary" } }
 
       it "caches the summary" do
         section = summarization.summarize(topic, user)
@@ -109,15 +109,7 @@ describe TopicSummarization do
     describe "invalidating cached summaries" do
       let(:cached_text) { "This is a cached summary" }
       let(:summarized_text) { "This is the final summary" }
-      let(:summary) do
-        {
-          summary: summarized_text,
-          chunks: [
-            { ids: [topic.first_post.post_number], summary: "this is the first chunk" },
-            { ids: [post_1.post_number, post_2.post_number], summary: "this is the second chunk" },
-          ],
-        }
-      end
+      let(:summary) { { summary: summarized_text } }
 
       def cached_summary
         AiSummary.find_by(target: topic)
@@ -170,7 +162,7 @@ describe TopicSummarization do
     end
 
     describe "stream partial updates" do
-      let(:summary) { { summary: "This is the final summary", chunks: [] } }
+      let(:summary) { { summary: "This is the final summary" } }
 
       it "receives a blk that is passed to the underlying strategy and called with partial summaries" do
         partial_result = nil
