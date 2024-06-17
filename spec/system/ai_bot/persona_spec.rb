@@ -5,7 +5,7 @@ RSpec.describe "AI personas", type: :system, js: true do
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = gpt_4.name
+    toggle_enabled_bots(bots: [gpt_4])
     sign_in(admin)
 
     Group.refresh_automatic_groups!

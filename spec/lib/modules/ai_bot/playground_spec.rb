@@ -6,7 +6,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
 
   fab!(:bot_user) do
-    SiteSetting.ai_bot_enabled_chat_bots = claude_2.name
+    toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
     claude_2.reload.user
   end
@@ -411,7 +411,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "allows mentioning a persona" do
       # we still should be able to mention with no bots
-      SiteSetting.ai_bot_enabled_chat_bots = ""
+      toggle_enabled_bots(bots: [])
 
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
@@ -430,7 +430,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "allows PMing a persona even when no particular bots are enabled" do
       SiteSetting.ai_bot_enabled = true
-      SiteSetting.ai_bot_enabled_chat_bots = ""
+      toggle_enabled_bots(bots: [])
       post = nil
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
@@ -463,7 +463,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
       SiteSetting.ai_bot_enabled = true
-      SiteSetting.ai_bot_enabled_chat_bots = [gpt_35_turbo.name, claude_2.name].join("|")
+      toggle_enabled_bots(bots: [gpt_35_turbo, claude_2])
 
       post = nil
       gpt3_5_bot_user = gpt_35_turbo.reload.user

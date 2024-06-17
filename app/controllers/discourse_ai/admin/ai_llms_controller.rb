@@ -107,6 +107,7 @@ module DiscourseAi
           :url,
           :api_key,
           :bot_username,
+          :enabled_chat_bot,
         )
       end
     end

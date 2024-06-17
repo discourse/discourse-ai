@@ -21,7 +21,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
       end
 
       before do
-        SiteSetting.ai_bot_enabled_chat_bots = [gpt_4.name, claude_2.name].join("|")
+        toggle_enabled_bots(bots: [gpt_4, claude_2])
         SiteSetting.ai_bot_enabled = true
         SiteSetting.ai_bot_allowed_groups = bot_allowed_group.id
         bot_allowed_group.add(admin)

@@ -7,7 +7,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = gpt_35_turbo.name
+    toggle_enabled_bots(bots: [gpt_35_turbo])
     SiteSetting.ai_openai_api_key = "abc"
   end
 

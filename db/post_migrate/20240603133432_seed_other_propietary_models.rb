@@ -5,6 +5,7 @@ class SeedOtherPropietaryModels < ActiveRecord::Migration[7.0]
     models = []
 
     gemini_key = fetch_setting("ai_gemini_api_key")
+    enabled_models = fetch_setting("ai_bot_enabled_chat_bots").to_a.split("|")
 
     if gemini_key.present?
       gemini_models = %w[gemini-pro gemini-1.5-pro gemini-1.5-flash]
@@ -18,7 +19,8 @@ class SeedOtherPropietaryModels < ActiveRecord::Migration[7.0]
         bot_user_id = "NULL"
         bot_user_id = -115 if cm == "gemini-1.5-pro" && has_companion_user?(-115)
 
-        models << "(#{gm.titleize}, #{gm}, google, OpenAiTokenizer, #{gemini_tokens(gm)}, #{url}, #{gemini_key}, #{bot_username}, #{bot_user_id}, NOW(), NOW())"
+        enabled = enabled_models.include?(gm)
+        models << "(#{gm.titleize}, #{gm}, google, OpenAiTokenizer, #{gemini_tokens(gm)}, #{url}, #{gemini_key}, #{bot_username}, #{bot_user_id}, #{enabled}, NOW(), NOW())"
       end
     end
 
@@ -34,7 +36,8 @@ class SeedOtherPropietaryModels < ActiveRecord::Migration[7.0]
         bot_user_id = "NULL"
         bot_user_id = -120 if cm == "command-r-plus" && has_companion_user?(-120)
 
-        models << "(#{cm.titleize}, #{cm}, cohere, OpenAiTokenizer, #{cohere_tokens(cm)}, https://api.cohere.ai/v1/chat, #{cohere_key}, #{bot_username}, #{bot_user_id}, NOW(), NOW())"
+        enabled = enabled_models.include?(cm)
+        models << "(#{cm.titleize}, #{cm}, cohere, OpenAiTokenizer, #{cohere_tokens(cm)}, https://api.cohere.ai/v1/chat, #{cohere_key}, #{bot_username}, #{bot_user_id}, #{enabled}, NOW(), NOW())"
       end
     end
 
@@ -42,7 +45,7 @@ class SeedOtherPropietaryModels < ActiveRecord::Migration[7.0]
       rows = models.compact.join(",")
 
       DB.exec(<<~SQL, rows: rows) if rows.present?
-      INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, created_at, updated_at)
+      INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, enabled_chat_bot, created_at, updated_at)
         VALUES :rows;
       SQL
     end

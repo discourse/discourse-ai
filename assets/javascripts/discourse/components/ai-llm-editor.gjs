@@ -1,11 +1,13 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
+import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
@@ -110,6 +112,21 @@ export default class AiLlmEditor extends Component {
     });
   }
 
+  @action
+  async toggleEnabledChatBot() {
+    this.args.model.set("enabled_chat_bot", !this.args.model.enabled_chat_bot);
+    if (!this.args.model.isNew) {
+      try {
+        await this.args.model.update({
+          enabled_chat_bot: this.args.model.enabled_chat_bot,
+        });
+      } catch (e) {
+        popupAjaxError(e);
+      }
+    }
+    await this.toggleField("enabled_chat_bot", true);
+  }
+
   <template>
     <BackButton
       @route="adminPlugins.show.discourse-ai-llms"
@@ -193,7 +210,14 @@ export default class AiLlmEditor extends Component {
           @content={{I18n.t "discourse_ai.llms.hints.companion_bot_username"}}
         />
       </div>
-
+      <div class="control-group">
+        <DToggleSwitch
+          class="ai-llm-editor__enabled-chat-bot"
+          @state={{@model.enabled_chat_bot}}
+          @label="discourse_ai.llms.enabled_chat_bot"
+          {{on "click" this.toggleEnabledChatBot}}
+        />
+      </div>
       <div class="control-group ai-llm-editor__action_panel">
         <DButton
           class="ai-llm-editor__test"

@@ -6,7 +6,7 @@ RSpec.describe "Share conversation via link", type: :system do
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = gpt_4.name
+    toggle_enabled_bots(bots: [gpt_4])
     SiteSetting.ai_bot_public_sharing_allowed_groups = "1" # admin
     Group.refresh_automatic_groups!
     sign_in(admin)

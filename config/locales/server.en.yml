@@ -318,9 +318,6 @@ en:
         disable_module_first: "You have to disable %{setting} first."
         set_llm_first: "Set %{setting} first."
         model_unreachable: "We couldn't get a response from this model. Check your settings first."
-        configure_llm: 
-          one: "We couldn't find an LLM with the name %{models}. Go to the plugin's LLMs section to set it up."
-          other: "We couldn't find configured LLMs with these names: %{models}. Go to the plugin's LLMs section to set them up."
       endpoints:
         not_configured: "%{display_name} (not configured)"
         configuration_hint:

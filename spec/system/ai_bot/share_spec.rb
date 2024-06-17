@@ -32,7 +32,7 @@ RSpec.describe "Share conversation", type: :system do
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = gpt_4.name
+    toggle_enabled_bots(bots: [gpt_4])
     sign_in(admin)
 
     bot_user.update!(username: "gpt-4")

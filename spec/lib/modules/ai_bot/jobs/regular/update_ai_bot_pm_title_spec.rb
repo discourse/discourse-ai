@@ -7,7 +7,7 @@ RSpec.describe Jobs::UpdateAiBotPmTitle do
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("claude-2") }
 
   before do
-    SiteSetting.ai_bot_enabled_chat_bots = claude_2.name
+    toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
   end
 

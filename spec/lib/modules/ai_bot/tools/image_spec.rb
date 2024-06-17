@@ -14,13 +14,13 @@ RSpec.describe DiscourseAi::AiBot::Tools::Image do
     )
   end
 
-  fab!(:gpt_35_bot) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
+  fab!(:gpt_35_turbo) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = gpt_35_bot.name
+    toggle_enabled_bots(bots: [gpt_35_turbo])
   end
 
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{gpt_35_bot.id}") }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{gpt_35_turbo.id}") }
 
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
 

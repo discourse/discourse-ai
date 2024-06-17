@@ -35,13 +35,11 @@ module DiscourseAi
       end
 
       def self.enabled_user_ids_and_models_map
-        enabled_model_names = SiteSetting.ai_bot_enabled_chat_bots.split("|")
-
-        DB.query_hash(<<~SQL, model_names: enabled_model_names)
-          SELECT users.username AS username, users.id AS id, llms.name AS model_name
+        DB.query_hash(<<~SQL)
+          SELECT users.username AS username, users.id AS id, llms.name AS model_name, llms.display_name AS display_name
           FROM llm_models llms
           INNER JOIN users ON llms.user_id = users.id
-          WHERE llms.name IN (:model_names)
+          WHERE llms.enabled_chat_bot
         SQL
       end
 
@@ -78,8 +76,7 @@ module DiscourseAi
         end
 
         plugin.on(:site_setting_changed) do |name, _old_value, _new_value|
-          if name == :ai_bot_enabled_chat_bots || name == :ai_bot_enabled ||
-               name == :discourse_ai_enabled
+          if name == :ai_bot_enabled || name == :discourse_ai_enabled
             DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
           end
         end
@@ -145,6 +142,7 @@ module DiscourseAi
                   "id" => persona_user[:user_id],
                   "username" => persona_user[:username],
                   "mentionable" => persona_user[:mentionable],
+                  "is_persona" => true,
                 }
               end,
             )

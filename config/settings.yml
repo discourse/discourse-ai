@@ -349,11 +349,10 @@ discourse_ai:
     default: "1|2" # 1: admins, 2: moderators
     allow_any: false
     refresh: true
-  ai_bot_enabled_chat_bots: # TODO(roman): Make this dynamic
+  ai_bot_enabled_chat_bots: # TODO(roman): Remove setting. Deprecated
     type: list
-    default: ""
-    client: true
-    validator: "DiscourseAi::Configuration::LlmModelValidator"
+    default: "gpt-3.5-turbo"
+    hidden: true
     choices: "DiscourseAi::Configuration::LlmEnumerator.available_ai_bots"
   ai_bot_add_to_header:
     default: true

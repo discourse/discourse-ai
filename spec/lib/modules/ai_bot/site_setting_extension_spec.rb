@@ -9,27 +9,42 @@ describe DiscourseAi::AiBot::SiteSettingsExtension do
     DiscourseAi::AiBot::EntryPoint.find_user_from_model(model).present?
   end
 
+  before { SiteSetting.discourse_ai_enabled = true }
+
   it "correctly creates/deletes bot accounts as needed" do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = gpt_4.name
+    gpt_4.update!(enabled_chat_bot: true)
+    claude_2.update!(enabled_chat_bot: false)
+    gpt_35_turbo.update!(enabled_chat_bot: false)
+
+    DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
 
     expect(user_exists?("gpt-4")).to eq(true)
     expect(user_exists?("gpt-3.5-turbo")).to eq(false)
     expect(user_exists?("claude-2")).to eq(false)
 
-    SiteSetting.ai_bot_enabled_chat_bots = gpt_35_turbo.name
+    gpt_4.update!(enabled_chat_bot: false)
+    claude_2.update!(enabled_chat_bot: false)
+    gpt_35_turbo.update!(enabled_chat_bot: true)
+
+    DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
 
     expect(user_exists?("gpt-4")).to eq(false)
     expect(user_exists?("gpt-3.5-turbo")).to eq(true)
     expect(user_exists?("claude-2")).to eq(false)
 
-    SiteSetting.ai_bot_enabled_chat_bots = [gpt_35_turbo.name, claude_2.name].join("|")
+    gpt_4.update!(enabled_chat_bot: false)
+    claude_2.update!(enabled_chat_bot: true)
+    gpt_35_turbo.update!(enabled_chat_bot: true)
+
+    DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
 
     expect(user_exists?("gpt-4")).to eq(false)
     expect(user_exists?("gpt-3.5-turbo")).to eq(true)
     expect(user_exists?("claude-2")).to eq(true)
 
     SiteSetting.ai_bot_enabled = false
+    DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
 
     expect(user_exists?("gpt-4")).to eq(false)
     expect(user_exists?("gpt-3.5-turbo")).to eq(false)
@@ -38,7 +53,8 @@ describe DiscourseAi::AiBot::SiteSettingsExtension do
 
   it "leaves accounts around if they have any posts" do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = gpt_4.name
+    gpt_4.update!(enabled_chat_bot: true)
+    DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
 
     user = DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-4")
 

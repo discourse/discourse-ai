@@ -79,7 +79,7 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       gpt_35_bot = Fabricate(:llm_model, name: "gpt-3.5-turbo")
 
       SiteSetting.ai_bot_enabled = true
-      SiteSetting.ai_bot_enabled_chat_bots = gpt_35_bot.name
+      toggle_enabled_bots(bots: [gpt_35_bot])
 
       expected_username =
         DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo").username_lower

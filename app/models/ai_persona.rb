@@ -252,40 +252,32 @@ end
 #
 # Table name: ai_personas
 #
-#  id                          :bigint           not null, primary key
-#  name                        :string(100)      not null
-#  description                 :string(2000)     not null
-#  tools                       :json             not null
-#  system_prompt               :string(10000000) not null
-#  allowed_group_ids           :integer          default([]), not null, is an Array
-#  created_by_id               :integer
-#  enabled                     :boolean          default(TRUE), not null
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
-#  system                      :boolean          default(FALSE), not null
-#  priority                    :boolean          default(FALSE), not null
-#  temperature                 :float
-#  top_p                       :float
-#  user_id                     :integer
-#  mentionable                 :boolean          default(FALSE), not null
-#  default_llm                 :text
-#  max_context_posts           :integer
-#  max_post_context_tokens     :integer
-#  max_context_tokens          :integer
-#  vision_enabled              :boolean          default(FALSE), not null
-#  vision_max_pixels           :integer          default(1048576), not null
-#  rag_chunk_tokens            :integer          default(374), not null
-#  rag_chunk_overlap_tokens    :integer          default(10), not null
-#  rag_conversation_chunks     :integer          default(10), not null
-#  role                        :enum             default("bot"), not null
-#  role_category_ids           :integer          default([]), not null, is an Array
-#  role_tags                   :string           default([]), not null, is an Array
-#  role_group_ids              :integer          default([]), not null, is an Array
-#  role_whispers               :boolean          default(FALSE), not null
-#  role_max_responses_per_hour :integer          default(50), not null
-#  question_consolidator_llm   :text
-#  allow_chat                  :boolean          default(FALSE), not null
-#  tool_details                :boolean          default(TRUE), not null
+#  id                        :bigint           not null, primary key
+#  name                      :string(100)      not null
+#  description               :string(2000)     not null
+#  system_prompt             :string(10000000) not null
+#  allowed_group_ids         :integer          default([]), not null, is an Array
+#  created_by_id             :integer
+#  enabled                   :boolean          default(TRUE), not null
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  system                    :boolean          default(FALSE), not null
+#  priority                  :boolean          default(FALSE), not null
+#  temperature               :float
+#  top_p                     :float
+#  user_id                   :integer
+#  mentionable               :boolean          default(FALSE), not null
+#  default_llm               :text
+#  max_context_posts         :integer
+#  vision_enabled            :boolean          default(FALSE), not null
+#  vision_max_pixels         :integer          default(1048576), not null
+#  rag_chunk_tokens          :integer          default(374), not null
+#  rag_chunk_overlap_tokens  :integer          default(10), not null
+#  rag_conversation_chunks   :integer          default(10), not null
+#  question_consolidator_llm :text
+#  allow_chat                :boolean          default(FALSE), not null
+#  tool_details              :boolean          default(TRUE), not null
+#  tools                     :json             not null
 #
 # Indexes
 #

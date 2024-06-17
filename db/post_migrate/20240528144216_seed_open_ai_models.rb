@@ -5,6 +5,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
     models = []
 
     open_ai_api_key = fetch_setting("ai_openai_api_key")
+    enabled_models = fetch_setting("ai_bot_enabled_chat_bots").to_a.split("|")
 
     if open_ai_api_key.present?
       models << mirror_open_ai(
@@ -15,6 +16,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
         open_ai_api_key,
         "gpt3.5_bot",
         -111,
+        enabled_models,
       )
       models << mirror_open_ai(
         "GPT-3.5 Turbo 16K",
@@ -24,6 +26,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
         open_ai_api_key,
         "gpt3.5_bot",
         -111,
+        enabled_models,
       )
       models << mirror_open_ai(
         "GPT-4",
@@ -33,6 +36,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
         open_ai_api_key,
         "gpt4_bot",
         -110,
+        enabled_models,
       )
       models << mirror_open_ai(
         "GPT-4 32K",
@@ -42,6 +46,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
         open_ai_api_key,
         "gpt4_bot",
         -110,
+        enabled_models,
       )
       models << mirror_open_ai(
         "GPT-4 Turbo",
@@ -51,6 +56,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
         open_ai_api_key,
         "gpt4t_bot",
         -113,
+        enabled_models,
       )
       models << mirror_open_ai(
         "GPT-4o",
@@ -60,6 +66,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
         open_ai_api_key,
         "gpt4o_bot",
         -121,
+        enabled_models,
       )
     end
 
@@ -67,7 +74,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
       rows = models.compact.join(",")
 
       DB.exec(<<~SQL, rows: rows) if rows.present?
-        INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, created_at, updated_at)
+        INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, enabled_chat_bot, created_at, updated_at)
         VALUES :rows;
       SQL
     end
@@ -84,13 +91,23 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
     ).first
   end
 
-  def mirror_open_ai(display_name, name, max_prompt_tokens, setting_name, key, bot_username, bot_id)
+  def mirror_open_ai(
+    display_name,
+    name,
+    max_prompt_tokens,
+    setting_name,
+    key,
+    bot_username,
+    bot_id,
+    enabled_models
+  )
     url = fetch_setting(setting_name)
 
     user_id = has_companion_user?(bot_id) ? bot_id : "NULL"
 
     if url
-      "(#{name.titleize}, #{name}, open_ai, OpenAiTokenizer, #{max_prompt_tokens}, #{url}, #{key}, #{bot_username}, #{user_id}, NOW(), NOW())"
+      enabled = enabled_models.include?(name)
+      "(#{name.titleize}, #{name}, open_ai, OpenAiTokenizer, #{max_prompt_tokens}, #{url}, #{key}, #{bot_username}, #{user_id}, #{enabled}, NOW(), NOW())"
     end
   end
 

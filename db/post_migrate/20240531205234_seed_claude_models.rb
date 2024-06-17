@@ -7,6 +7,7 @@ class SeedClaudeModels < ActiveRecord::Migration[7.0]
     models = []
 
     bedrock_secret_access_key = fetch_setting("ai_bedrock_secret_access_key")
+    enabled_models = fetch_setting("ai_bot_enabled_chat_bots").to_a.split("|")
 
     if bedrock_secret_access_key.present?
       bedrock_region = fetch_setting("ai_bedrock_region")
@@ -18,7 +19,8 @@ class SeedClaudeModels < ActiveRecord::Migration[7.0]
         bot_id = claude_bot_id(cm)
         user_id = has_companion_user?(bot_id) ? bot_id : "NULL"
 
-        models << "(#{display_name(cm)}, #{cm}, aws_bedrock, AnthropicTokenizer, 200000, #{url}, #{bedrock_secret_access_key}, #{claude_bot_username(cm)}, #{user_id}, NOW(), NOW())"
+        enabled = enabled_models.include?(cm)
+        models << "(#{display_name(cm)}, #{cm}, aws_bedrock, AnthropicTokenizer, 200000, #{url}, #{bedrock_secret_access_key}, #{claude_bot_username(cm)}, #{user_id}, #{enabled}, NOW(), NOW())"
       end
     end
 
@@ -30,7 +32,8 @@ class SeedClaudeModels < ActiveRecord::Migration[7.0]
         bot_id = claude_bot_id(cm)
         user_id = has_companion_user?(bot_id) ? bot_id : "NULL"
 
-        models << "(#{display_name(cm)}, #{cm}, anthropic, AnthropicTokenizer, 200000, #{url}, #{anthropic_ai_api_key}, #{claude_bot_username(cm)}, #{user_id}, NOW(), NOW())"
+        enabled = enabled_models.include?(cm)
+        models << "(#{display_name(cm)}, #{cm}, anthropic, AnthropicTokenizer, 200000, #{url}, #{anthropic_ai_api_key}, #{claude_bot_username(cm)}, #{user_id}, #{enabled}, NOW(), NOW())"
       end
     end
 
@@ -38,7 +41,7 @@ class SeedClaudeModels < ActiveRecord::Migration[7.0]
       rows = models.compact.join(",")
 
       DB.exec(<<~SQL, rows: rows) if rows.present?
-        INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, created_at, updated_at)
+        INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, enabled_chat_bot, created_at, updated_at)
         VALUES :rows;
       SQL
     end

@@ -7,7 +7,7 @@ RSpec.describe Jobs::SharedConversationAdjustUploadSecurity do
 
   fab!(:bot_user) do
     SiteSetting.discourse_ai_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = claude_2.name
+    toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "10"
     SiteSetting.ai_bot_public_sharing_allowed_groups = "10"

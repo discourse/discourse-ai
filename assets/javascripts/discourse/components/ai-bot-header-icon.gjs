@@ -7,13 +7,15 @@ import i18n from "discourse-common/helpers/i18n";
 import { composeAiBotMessage } from "../lib/ai-bot-helper";
 
 export default class AiBotHeaderIcon extends Component {
-  @service siteSettings;
+  @service currentUser;
   @service composer;
 
   get bots() {
-    return this.siteSettings.ai_bot_add_to_header
-      ? this.siteSettings.ai_bot_enabled_chat_bots.split("|").filter(Boolean)
-      : [];
+    const availableBots = this.currentUser.ai_enabled_chat_bots
+      .filter((bot) => !bot.is_persosna)
+      .filter(Boolean);
+
+    return availableBots ? availableBots.map((bot) => bot.model_name) : [];
   }
 
   @action

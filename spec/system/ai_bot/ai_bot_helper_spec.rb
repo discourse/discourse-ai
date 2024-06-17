@@ -8,7 +8,7 @@ RSpec.describe "AI chat channel summarization", type: :system, js: true do
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = [gpt_4.name, gpt_3_5_turbo.name].join("|")
+    toggle_enabled_bots(bots: [gpt_4, gpt_3_5_turbo])
     SiteSetting.ai_bot_allowed_groups = group.id.to_s
     sign_in(user)
   end

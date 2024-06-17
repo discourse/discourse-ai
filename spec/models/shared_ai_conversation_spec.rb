@@ -8,7 +8,7 @@ RSpec.describe SharedAiConversation, type: :model do
   before do
     SiteSetting.discourse_ai_enabled = true
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = claude_2.name
+    toggle_enabled_bots(bots: [claude_2])
   end
 
   fab!(:user)
