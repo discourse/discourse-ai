@@ -482,37 +482,49 @@
 }
 
 // AI Image Caption Feature:
-.image-wrapper .button-wrapper {
-  .generate-caption {
-    background: var(--tertiary-low);
-    color: var(--tertiary);
-    box-shadow: var(--shadow-dropdown);
-    position: absolute;
-    white-space: nowrap;
-    top: -3.15rem;
-    left: 0.75rem;
-    padding: 0.5em 0.75em;
-    transition: all 0.25s ease;
+.image-wrapper {
+  .button-wrapper {
+    .generate-caption {
+      background: var(--tertiary-low);
+      color: var(--tertiary);
+      box-shadow: var(--shadow-dropdown);
+      position: absolute;
+      white-space: nowrap;
+      top: -2rem;
+      left: 0.35rem;
+      padding: 0.33em 0.75em;
+      transition: all 0.25s ease;
+      .discourse-no-touch & {
+        display: none;
+      }
 
-    .d-icon {
-      margin-right: 0.25rem;
+      .d-icon {
+        margin-right: 0.25rem;
+      }
+
+      &:active {
+        box-shadow: none;
+      }
+
+      &:hover,
+      &:focus {
+        background: var(--tertiary-400);
+        color: var(--tertiary-hover);
+        cursor: pointer;
+      }
+
+      &.disabled {
+        pointer-events: none;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
     }
-
-    &:active {
-      box-shadow: none;
-    }
-
-    &:hover,
-    &:focus {
-      background: var(--tertiary-400);
-      color: var(--tertiary-hover);
-      cursor: pointer;
-    }
-
-    &.disabled {
-      pointer-events: none;
-      cursor: not-allowed;
-      opacity: 0.7;
+  }
+  .discourse-no-touch & {
+    &:hover {
+      .button-wrapper .generate-caption {
+        display: block;
+      }
     }
   }
 }
