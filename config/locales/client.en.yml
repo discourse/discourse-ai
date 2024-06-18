@@ -218,6 +218,8 @@ en:
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
 
+        srv_warning: This LLM points to an SRV record, and its URL is not editable. You have to update the hidden "ai_vllm_endpoint_srv" setting instead.
+
         tests:
           title: "Run Test"
           running: "Running test..."

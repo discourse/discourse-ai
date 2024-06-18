@@ -131,6 +131,12 @@ export default class AiLlmEditor extends Component {
       @route="adminPlugins.show.discourse-ai-llms"
       @label="discourse_ai.llms.back"
     />
+    {{#unless @model.url_editable}}
+      <div class="alert alert-info">
+        {{icon "exclamation-circle"}}
+        {{I18n.t "discourse_ai.llms.srv_warning"}}
+      </div>
+    {{/unless}}
     <form class="form-horizontal ai-llm-editor">
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.display_name"}}</label>
@@ -159,14 +165,16 @@ export default class AiLlmEditor extends Component {
           @content={{this.selectedProviders}}
         />
       </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.llms.url"}}</label>
-        <Input
-          class="ai-llm-editor-input ai-llm-editor__url"
-          @type="text"
-          @value={{@model.url}}
-        />
-      </div>
+      {{#if @model.url_editable}}
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.llms.url"}}</label>
+          <Input
+            class="ai-llm-editor-input ai-llm-editor__url"
+            @type="text"
+            @value={{@model.url}}
+          />
+        </div>
+      {{/if}}
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.llms.api_key"}}</label>
         <Input

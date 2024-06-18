@@ -5,7 +5,7 @@ class SeedOtherPropietaryModels < ActiveRecord::Migration[7.0]
     models = []
 
     gemini_key = fetch_setting("ai_gemini_api_key")
-    enabled_models = fetch_setting("ai_bot_enabled_chat_bots").to_a.split("|")
+    enabled_models = fetch_setting("ai_bot_enabled_chat_bots")&.split("|").to_a
 
     if gemini_key.present?
       gemini_models = %w[gemini-pro gemini-1.5-pro gemini-1.5-flash]

@@ -7,10 +7,10 @@ class SeedClaudeModels < ActiveRecord::Migration[7.0]
     models = []
 
     bedrock_secret_access_key = fetch_setting("ai_bedrock_secret_access_key")
-    enabled_models = fetch_setting("ai_bot_enabled_chat_bots").to_a.split("|")
+    enabled_models = fetch_setting("ai_bot_enabled_chat_bots")&.split("|").to_a
 
     if bedrock_secret_access_key.present?
-      bedrock_region = fetch_setting("ai_bedrock_region")
+      bedrock_region = fetch_setting("ai_bedrock_region") || "us-east-1"
 
       claude_models.each do |cm|
         url =

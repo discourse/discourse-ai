@@ -2,8 +2,32 @@
 
 class LlmModel < ActiveRecord::Base
   FIRST_BOT_USER_ID = -1200
+  RESERVED_VLLM_SRV_URL = "https://vllm.shadowed-by-srv.invalid"
 
   belongs_to :user
+
+  validates :url, exclusion: { in: [RESERVED_VLLM_SRV_URL] }
+
+  def self.enable_or_disable_srv_llm!
+    srv_model = find_by(url: RESERVED_VLLM_SRV_URL)
+    if SiteSetting.ai_vllm_endpoint_srv.present? && srv_model.blank?
+      record =
+        new(
+          display_name: "vLLM SRV LLM",
+          name: "mistralai/Mixtral",
+          provider: "vllm",
+          tokenizer: "DiscourseAi::Tokenizer::MixtralTokenizer",
+          url: RESERVED_VLLM_SRV_URL,
+          vllm_key: "",
+          user_id: nil,
+          enabled_chat_bot: false,
+        )
+
+      record.save(validate: false) # Ignore reserved URL validation
+    elsif srv_model.present?
+      srv_model.destroy!
+    end
+  end
 
   def toggle_companion_user
     return if name == "fake" && Rails.env.production?

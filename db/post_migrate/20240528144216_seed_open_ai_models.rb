@@ -5,7 +5,7 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
     models = []
 
     open_ai_api_key = fetch_setting("ai_openai_api_key")
-    enabled_models = fetch_setting("ai_bot_enabled_chat_bots").to_a.split("|")
+    enabled_models = fetch_setting("ai_bot_enabled_chat_bots")&.split("|").to_a
     enabled_models = ["gpt-3.5-turbo"] if enabled_models.empty?
 
     if open_ai_api_key.present?
