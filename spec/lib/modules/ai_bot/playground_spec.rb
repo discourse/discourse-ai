@@ -471,7 +471,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       # title is queued first, ensures it uses the llm targeted via target_usernames not claude
       DiscourseAi::Completions::Llm.with_prepared_responses(
         ["Magic title", "Yes I can"],
-        llm: "open_ai:gpt-3.5-turbo-16k",
+        llm: "open_ai:gpt-3.5-turbo",
       ) do
         post =
           create_post(
@@ -503,7 +503,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       # replies as correct persona if replying direct to persona
       DiscourseAi::Completions::Llm.with_prepared_responses(
         ["Another reply"],
-        llm: "open_ai:gpt-3.5-turbo-16k",
+        llm: "open_ai:gpt-3.5-turbo",
       ) do
         create_post(
           raw: "Please ignore this bot, I am replying to a user",

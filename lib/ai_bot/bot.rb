@@ -167,12 +167,6 @@ module DiscourseAi
 
         return if associated_llm.nil? # Might be a persona user. Handled by constructor.
 
-        # TODO(roman): Dynamically listing bot users in the settings will let us remove this replacements.
-        if associated_llm.name == "gpt-3.5-turbo"
-          gpt_16k_version = LlmModel.find_by(name: "gpt-3.5-turbo-16k")
-          associated_llm = gpt_16k_version if gpt_16k_version
-        end
-
         "custom:#{associated_llm.id}"
       end
 
