@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { concat } from "@ember/helper";
 import { LinkTo } from "@ember/routing";
+import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
@@ -12,7 +13,12 @@ export default class AiLlmsListEditor extends Component {
   }
 
   <template>
+    <DBreadcrumbsItem
+      @route="adminPlugins.show.discourse-ai-llms"
+      @label={{i18n "discourse_ai.llms.short_title"}}
+    />
     <section class="ai-llms-list-editor admin-detail pull-left">
+
       {{#if @currentLlm}}
         <AiLlmEditor @model={{@currentLlm}} @llms={{@llms}} />
       {{else}}
