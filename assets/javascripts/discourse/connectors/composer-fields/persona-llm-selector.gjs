@@ -4,7 +4,6 @@ import { hash } from "@ember/helper";
 import { next } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import KeyValueStore from "discourse/lib/key-value-store";
-import I18n from "I18n";
 import DropdownSelectBox from "select-kit/components/dropdown-select-box";
 
 function isBotMessage(composer, currentUser) {
@@ -110,15 +109,16 @@ export default class BotSelector extends Component {
   }
 
   get llmOptions() {
-    return this.siteSettings.ai_bot_enabled_chat_bots
-      .split("|")
-      .filter(Boolean)
-      .map((bot) => {
-        return {
-          id: bot,
-          name: I18n.t(`discourse_ai.ai_bot.bot_names.${bot}`),
-        };
-      });
+    const availableBots = this.currentUser.ai_enabled_chat_bots
+      .filter((bot) => !bot.is_persosna)
+      .filter(Boolean);
+
+    return availableBots.map((bot) => {
+      return {
+        id: bot.model_name,
+        name: bot.display_name,
+      };
+    });
   }
 
   <template>

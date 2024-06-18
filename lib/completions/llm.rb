@@ -135,7 +135,7 @@ module DiscourseAi
           dialect_klass = DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name)
 
           if @canned_response
-            if @canned_llm && @canned_llm != model_name
+            if @canned_llm && @canned_llm != [provider_name, model_name].join(":")
               raise "Invalid call LLM call, expected #{@canned_llm} but got #{model_name}"
             end
 

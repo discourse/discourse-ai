@@ -6,7 +6,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
   before { SiteSetting.ai_openai_api_key = "asd" }
 
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
 

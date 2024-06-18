@@ -210,12 +210,15 @@ en:
         max_prompt_tokens: "Number of tokens for the prompt"
         url: "URL of the service hosting the model"
         api_key: "API Key of the service hosting the model"
+        enabled_chat_bot: "Allow Companion user to act as an AI Bot"
         save: "Save"
         edit: "Edit"
         saved: "LLM Model Saved"
         back: "Back"
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
+
+        srv_warning: This LLM points to an SRV record, and its URL is not editable. You have to update the hidden "ai_vllm_endpoint_srv" setting instead.
 
         tests:
           title: "Run Test"

@@ -43,6 +43,7 @@ module DiscourseAi
         llm_model = LlmModel.find(params[:id])
 
         if llm_model.update(ai_llm_params)
+          llm_model.toggle_companion_user
           render json: llm_model
         else
           render_json_error llm_model
@@ -106,6 +107,7 @@ module DiscourseAi
           :max_prompt_tokens,
           :url,
           :api_key,
+          :enabled_chat_bot,
         )
       end
     end
