@@ -20,7 +20,7 @@ class SeedClaudeModels < ActiveRecord::Migration[7.0]
         user_id = has_companion_user?(bot_id) ? bot_id : "NULL"
 
         enabled = enabled_models.include?(cm)
-        models << "(#{display_name(cm)}, #{cm}, aws_bedrock, AnthropicTokenizer, 200000, #{url}, #{bedrock_secret_access_key}, #{claude_bot_username(cm)}, #{user_id}, #{enabled}, NOW(), NOW())"
+        models << "('#{display_name(cm)}', '#{cm}', 'aws_bedrock', 'DiscourseAi::Tokenizer::AnthropicTokenizer', 200000, '#{url}', '#{bedrock_secret_access_key}', #{user_id}, #{enabled}, NOW(), NOW())"
       end
     end
 
@@ -33,16 +33,16 @@ class SeedClaudeModels < ActiveRecord::Migration[7.0]
         user_id = has_companion_user?(bot_id) ? bot_id : "NULL"
 
         enabled = enabled_models.include?(cm)
-        models << "(#{display_name(cm)}, #{cm}, anthropic, AnthropicTokenizer, 200000, #{url}, #{anthropic_ai_api_key}, #{claude_bot_username(cm)}, #{user_id}, #{enabled}, NOW(), NOW())"
+        models << "('#{display_name(cm)}', '#{cm}', 'anthropic', 'DiscourseAi::Tokenizer::AnthropicTokenizer', 200000, '#{url}', '#{anthropic_ai_api_key}', #{user_id}, #{enabled}, NOW(), NOW())"
       end
     end
 
     if models.present?
-      rows = models.compact.join(",")
+      rows = models.compact.join(", ")
 
       DB.exec(<<~SQL, rows: rows) if rows.present?
-        INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, enabled_chat_bot, created_at, updated_at)
-        VALUES :rows;
+        INSERT INTO llm_models(display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, user_id, enabled_chat_bot, created_at, updated_at)
+        VALUES #{rows};
       SQL
     end
   end
@@ -56,23 +56,6 @@ class SeedClaudeModels < ActiveRecord::Migration[7.0]
       "SELECT value FROM site_settings WHERE name = :setting_name",
       setting_name: name,
     ).first
-  end
-
-  def claude_bot_username(model)
-    case model
-    when "claude-2"
-      "claude_bot"
-    when "claude-3-haiku"
-      "claude_3_haiku_bot"
-    when "claude-3-sonnet"
-      "claude_3_sonnet_bot"
-    when "claude-instant-1"
-      "anthropic.claude-instant-v1"
-    when "claude-3-opus"
-      "claude_3_opus_bot"
-    else
-      "claude_instant_bot"
-    end
   end
 
   def claude_bot_id(model)

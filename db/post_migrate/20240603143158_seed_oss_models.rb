@@ -16,7 +16,7 @@ class SeedOssModels < ActiveRecord::Migration[7.0]
       name = hf_display_name || "mistralai/Mixtral"
       token_limit = hf_token_limit || 32_000
 
-      models << "(#{name}, #{name}, hugging_face, MixtralTokenizer, #{token_limit}, #{hf_url}, #{hf_key}, mixtral_bot, #{user_id}, NOW(), NOW())"
+      models << "('#{name}', '#{name}', 'hugging_face', 'DiscourseAi::Tokenizer::MixtralTokenizer', #{token_limit}, '#{hf_url}', '#{hf_key}', #{user_id}, NOW(), NOW())"
     end
 
     vllm_key = fetch_setting("ai_vllm_api_key")
@@ -26,7 +26,7 @@ class SeedOssModels < ActiveRecord::Migration[7.0]
       url = "#{vllm_url}/v1/chat/completions"
       name = "mistralai/Mixtral"
 
-      models << "(#{name}, #{name}, vllm, MixtralTokenizer, 32000, #{url}, #{vllm_key}, mixtral_bot, #{user_id}, NOW(), NOW())"
+      models << "('#{name}', '#{name}', 'vllm', 'DiscourseAi::Tokenizer::MixtralTokenizer', 32000, '#{url}', '#{vllm_key}', #{user_id}, NOW(), NOW())"
     end
 
     vllm_srv = fetch_setting("ai_vllm_endpoint_srv")
@@ -35,15 +35,15 @@ class SeedOssModels < ActiveRecord::Migration[7.0]
       url = "https://shadowed-by-srv.invalid"
       name = "mistralai/Mixtral"
 
-      models << "(#{name}, #{name}, vllm, MixtralTokenizer, 32000, #{url}, #{vllm_key}, mixtral_bot, #{user_id}, NOW(), NOW())"
+      models << "('#{name}', '#{name}', 'vllm', 'DiscourseAi::Tokenizer::MixtralTokenizer', 32000, '#{url}', '#{vllm_key}', #{user_id}, NOW(), NOW())"
     end
 
     if models.present?
-      rows = models.compact.join(",")
+      rows = models.compact.join(", ")
 
       DB.exec(<<~SQL, rows: rows) if rows.present?
-        INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, created_at, updated_at)
-        VALUES :rows;
+        INSERT INTO llm_models(display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, user_id, created_at, updated_at)
+        VALUES #{rows};
       SQL
     end
   end

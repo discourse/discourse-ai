@@ -2,7 +2,6 @@
 
 class AddCompanionUserToLlmModel < ActiveRecord::Migration[7.0]
   def change
-    add_column :llm_models, :bot_username, :string
     add_column :llm_models, :user_id, :integer
     add_column :llm_models, :enabled_chat_bot, :boolean, null: false, default: false
   end

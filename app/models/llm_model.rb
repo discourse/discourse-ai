@@ -6,7 +6,7 @@ class LlmModel < ActiveRecord::Base
   belongs_to :user
 
   def toggle_companion_user
-    return if bot_username == "fake" && Rails.env.production?
+    return if name == "fake" && Rails.env.production?
 
     enable_check = SiteSetting.ai_bot_enabled && enabled_chat_bot
 
@@ -19,9 +19,9 @@ class LlmModel < ActiveRecord::Base
         new_user =
           User.new(
             id: [FIRST_BOT_USER_ID, next_id].min,
-            email: "no_email_#{bot_username}",
-            name: bot_username.titleize,
-            username: UserNameSuggester.suggest(bot_username),
+            email: "no_email_#{name.underscore}",
+            name: name.titleize,
+            username: UserNameSuggester.suggest(name),
             active: true,
             approved: true,
             admin: true,
@@ -65,7 +65,6 @@ end
 #  updated_at        :datetime         not null
 #  url               :string
 #  api_key           :string
-#  bot_username      :string
 #  user_id           :integer
 #  enabled_chat_bot  :boolean          default(FALSE), not null
 #

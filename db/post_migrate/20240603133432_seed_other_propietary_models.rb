@@ -13,14 +13,11 @@ class SeedOtherPropietaryModels < ActiveRecord::Migration[7.0]
       gemini_models.each do |gm|
         url = "https://generativelanguage.googleapis.com/v1beta/models/#{gemini_mapped_model(gm)}"
 
-        bot_username = "#{gm.underscore}_bot"
-        bot_username = "gemini_bot" if cm == "gemini-1.5-pro"
-
         bot_user_id = "NULL"
-        bot_user_id = -115 if cm == "gemini-1.5-pro" && has_companion_user?(-115)
+        bot_user_id = -115 if gm == "gemini-1.5-pro" && has_companion_user?(-115)
 
         enabled = enabled_models.include?(gm)
-        models << "(#{gm.titleize}, #{gm}, google, OpenAiTokenizer, #{gemini_tokens(gm)}, #{url}, #{gemini_key}, #{bot_username}, #{bot_user_id}, #{enabled}, NOW(), NOW())"
+        models << "('#{gm.titleize}', '#{gm}', 'google', 'DiscourseAi::Tokenizer::OpenAiTokenizer', '#{gemini_tokens(gm)}', '#{url}', '#{gemini_key}', #{bot_user_id}, #{enabled}, NOW(), NOW())"
       end
     end
 
@@ -30,23 +27,20 @@ class SeedOtherPropietaryModels < ActiveRecord::Migration[7.0]
       cohere_models = %w[command-light command command-r command-r-plus]
 
       cohere_models.each do |cm|
-        bot_username = "#{cm.underscore}_bot"
-        bot_username = "cohere_command_bot" if cm == "command-r-plus"
-
         bot_user_id = "NULL"
         bot_user_id = -120 if cm == "command-r-plus" && has_companion_user?(-120)
 
         enabled = enabled_models.include?(cm)
-        models << "(#{cm.titleize}, #{cm}, cohere, OpenAiTokenizer, #{cohere_tokens(cm)}, https://api.cohere.ai/v1/chat, #{cohere_key}, #{bot_username}, #{bot_user_id}, #{enabled}, NOW(), NOW())"
+        models << "('#{cm.titleize}', '#{cm}', 'cohere', 'DiscourseAi::Tokenizer::OpenAiTokenizer', #{cohere_tokens(cm)}, 'https://api.cohere.ai/v1/chat', '#{cohere_key}', #{bot_user_id}, #{enabled}, NOW(), NOW())"
       end
     end
 
     if models.present?
-      rows = models.compact.join(",")
+      rows = models.compact.join(", ")
 
       DB.exec(<<~SQL, rows: rows) if rows.present?
-      INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, enabled_chat_bot, created_at, updated_at)
-        VALUES :rows;
+      INSERT INTO llm_models(display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, user_id, enabled_chat_bot, created_at, updated_at)
+        VALUES #{rows};
       SQL
     end
   end

@@ -6,25 +6,24 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
 
     open_ai_api_key = fetch_setting("ai_openai_api_key")
     enabled_models = fetch_setting("ai_bot_enabled_chat_bots").to_a.split("|")
+    enabled_models = ["gpt-3.5-turbo"] if enabled_models.empty?
 
     if open_ai_api_key.present?
       models << mirror_open_ai(
-        "GPT-3.5 Turbo",
+        "GPT-3.5-Turbo",
         "gpt-3.5-turbo",
         8192,
         "ai_openai_gpt35_url",
         open_ai_api_key,
-        "gpt3.5_bot",
         -111,
         enabled_models,
       )
       models << mirror_open_ai(
-        "GPT-3.5 Turbo 16K",
+        "GPT-3.5-Turbo-16K",
         "gpt-3.5-turbo-16k",
         16_384,
         "ai_openai_gpt35_16k_url",
         open_ai_api_key,
-        "gpt3.5_bot",
         -111,
         enabled_models,
       )
@@ -34,27 +33,24 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
         8192,
         "ai_openai_gpt4_url",
         open_ai_api_key,
-        "gpt4_bot",
         -110,
         enabled_models,
       )
       models << mirror_open_ai(
-        "GPT-4 32K",
+        "GPT-4-32K",
         "gpt-4-32k",
         32_768,
         "ai_openai_gpt4_32k_url",
         open_ai_api_key,
-        "gpt4_bot",
         -110,
         enabled_models,
       )
       models << mirror_open_ai(
-        "GPT-4 Turbo",
+        "GPT-4-Turbo",
         "gpt-4-turbo",
         131_072,
         "ai_openai_gpt4_turbo_url",
         open_ai_api_key,
-        "gpt4t_bot",
         -113,
         enabled_models,
       )
@@ -64,18 +60,17 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
         131_072,
         "ai_openai_gpt4o_url",
         open_ai_api_key,
-        "gpt4o_bot",
         -121,
         enabled_models,
       )
     end
 
     if models.present?
-      rows = models.compact.join(",")
+      rows = models.compact.join(", ")
 
-      DB.exec(<<~SQL, rows: rows) if rows.present?
-        INSERT INTO llm_models (display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, bot_username, user_id, enabled_chat_bot, created_at, updated_at)
-        VALUES :rows;
+      DB.exec(<<~SQL) if rows.present?
+        INSERT INTO llm_models(display_name, name, provider, tokenizer, max_prompt_tokens, url, api_key, user_id, enabled_chat_bot, created_at, updated_at)
+        VALUES #{rows};
       SQL
     end
   end
@@ -97,18 +92,14 @@ class SeedOpenAiModels < ActiveRecord::Migration[7.0]
     max_prompt_tokens,
     setting_name,
     key,
-    bot_username,
     bot_id,
     enabled_models
   )
-    url = fetch_setting(setting_name)
-
+    url = fetch_setting(setting_name) || "https://api.openai.com/v1/chat/completions"
     user_id = has_companion_user?(bot_id) ? bot_id : "NULL"
+    enabled = enabled_models.include?(name)
 
-    if url
-      enabled = enabled_models.include?(name)
-      "(#{name.titleize}, #{name}, open_ai, OpenAiTokenizer, #{max_prompt_tokens}, #{url}, #{key}, #{bot_username}, #{user_id}, #{enabled}, NOW(), NOW())"
-    end
+    "('#{display_name}', '#{name}', 'open_ai', 'DiscourseAi::Tokenizer::OpenAiTokenizer', #{max_prompt_tokens}, '#{url}', '#{key}', #{user_id}, #{enabled}, NOW(), NOW())"
   end
 
   def down

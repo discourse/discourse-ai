@@ -1,13 +1,13 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { gt } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import i18n from "discourse-common/helpers/i18n";
 import { composeAiBotMessage } from "../lib/ai-bot-helper";
 
 export default class AiBotHeaderIcon extends Component {
   @service currentUser;
+  @service siteSettings;
   @service composer;
 
   get bots() {
@@ -18,13 +18,17 @@ export default class AiBotHeaderIcon extends Component {
     return availableBots ? availableBots.map((bot) => bot.model_name) : [];
   }
 
+  get showHeaderButton() {
+    return this.bots.length > 0 && this.siteSettings.ai_bot_add_to_header;
+  }
+
   @action
   compose() {
     composeAiBotMessage(this.bots[0], this.composer);
   }
 
   <template>
-    {{#if (gt this.bots.length 0)}}
+    {{#if this.showHeaderButton}}
       <li>
         <DButton
           @action={{this.compose}}

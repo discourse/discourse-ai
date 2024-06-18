@@ -6,5 +6,4 @@ Fabricator(:llm_model) do
   provider "open_ai"
   tokenizer "DiscourseAi::Tokenizers::OpenAi"
   max_prompt_tokens 32_000
-  bot_username { sequence(:bot_username) { |n| "bot_username_#{n}" } }
 end

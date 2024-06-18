@@ -12,7 +12,6 @@ export default class AiLlm extends RestModel {
       "max_prompt_tokens",
       "url",
       "api_key",
-      "bot_username",
       "enabled_chat_bot"
     );
   }

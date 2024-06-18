@@ -27,7 +27,6 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
           api_key: "test",
           tokenizer: "DiscourseAi::Tokenizer::OpenAiTokenizer",
           max_prompt_tokens: 16_000,
-          bot_username: "Cool GPT-3.5 bot",
         }
       end
 
