@@ -20,7 +20,11 @@ module DiscourseAi
       class << self
         def provider_names
           providers = %w[aws_bedrock anthropic vllm hugging_face cohere open_ai google azure]
-          providers << "ollama" if Rails.env.development?
+          if !Rails.env.production?
+            providers << "fake"
+            providers << "ollama"
+          end
+
           providers
         end
 

@@ -7,7 +7,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   let(:query) { "test_query" }
   let(:subject) { described_class.new(Guardian.new(user)) }
 
-  before { SiteSetting.ai_embeddings_semantic_search_hyde_model = "fake:fake" }
+  before { assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model) }
 
   describe "#search_for_topics" do
     let(:hypothetical_post) { "This is an hypothetical post generated from the keyword test_query" }

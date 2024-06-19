@@ -10,22 +10,14 @@ module DiscourseAi
       end
 
       def self.values
-        begin
-          llm_models =
-            DiscourseAi::Completions::Llm.models_by_provider.flat_map do |provider, models|
-              endpoint = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider.to_s)
+        values = DB.query_hash(<<~SQL)
+          SELECT display_name AS name, id AS value
+          FROM llm_models
+        SQL
 
-              models.map do |model_name|
-                { name: endpoint.display_name(model_name), value: "#{provider}:#{model_name}" }
-              end
-            end
+        values.each { |value_h| value_h["value"] = "custom:#{value_h["value"]}" }
 
-          LlmModel.all.each do |model|
-            llm_models << { name: model.display_name, value: "custom:#{model.id}" }
-          end
-
-          llm_models
-        end
+        values
       end
 
       def self.available_ai_bots

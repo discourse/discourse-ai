@@ -28,7 +28,7 @@ describe Plugin::Instance do
     fab!(:user)
 
     before do
-      SiteSetting.ai_helper_model = "fake:fake"
+      assign_fake_provider_to(:ai_helper_model)
       SiteSetting.composer_ai_helper_enabled = true
       SiteSetting.ai_helper_illustrate_post_model = "disabled"
       Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
