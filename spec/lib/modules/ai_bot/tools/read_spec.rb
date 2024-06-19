@@ -30,6 +30,52 @@ RSpec.describe DiscourseAi::AiBot::Tools::Read do
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
+    it "can read private topics if allowed to" do
+      category = topic_with_tags.category
+      category.set_permissions(Group::AUTO_GROUPS[:staff] => :full)
+      category.save!
+
+      tool =
+        described_class.new(
+          { topic_id: topic_with_tags.id, post_numbers: [post1.post_number] },
+          bot_user: bot_user,
+          llm: llm,
+        )
+      results = tool.invoke
+
+      expect(results[:description]).to eq("Topic not found")
+
+      admin = Fabricate(:admin)
+
+      tool =
+        described_class.new(
+          { topic_id: topic_with_tags.id, post_numbers: [post1.post_number] },
+          bot_user: bot_user,
+          llm: llm,
+          persona_options: {
+            "read_private" => true,
+          },
+          context: {
+            user: admin,
+          },
+        )
+      results = tool.invoke
+      expect(results[:content]).to include("hello there")
+
+      tool =
+        described_class.new(
+          { topic_id: topic_with_tags.id, post_numbers: [post1.post_number] },
+          bot_user: bot_user,
+          llm: llm,
+          context: {
+            user: admin,
+          },
+        )
+
+      results = tool.invoke
+      expect(results[:description]).to eq("Topic not found")
+    end
+
     it "can read specific posts" do
       tool =
         described_class.new(

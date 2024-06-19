@@ -18,9 +18,7 @@ class LlmModel < ActiveRecord::Base
           provider: "vllm",
           tokenizer: "DiscourseAi::Tokenizer::MixtralTokenizer",
           url: RESERVED_VLLM_SRV_URL,
-          vllm_key: "",
-          user_id: nil,
-          enabled_chat_bot: false,
+          max_prompt_tokens: 8000,
         )
 
       record.save(validate: false) # Ignore reserved URL validation
@@ -55,7 +53,8 @@ class LlmModel < ActiveRecord::Base
         new_user.save!(validate: false)
         self.update!(user: new_user)
       else
-        user.update!(active: true)
+        user.active = true
+        user.save!(validate: false)
       end
     elsif user
       # will include deleted
