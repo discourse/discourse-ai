@@ -6,6 +6,12 @@ module DiscourseAi::ChatBotHelper
     bots.each { |b| b.update!(enabled_chat_bot: true) }
     DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
   end
+
+  def assign_fake_provider_to(setting_name)
+    Fabricate(:llm_model, provider: "fake", name: "fake").tap do |fake_llm|
+      SiteSetting.public_send("#{setting_name}=", "custom:#{fake_llm.id}")
+    end
+  end
 end
 
 RSpec.configure { |c| c.include DiscourseAi::ChatBotHelper }

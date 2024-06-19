@@ -5,7 +5,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
   fab!(:empty_locale_user) { Fabricate(:user, locale: "") }
   let(:prompt) { CompletionPrompt.find_by(id: mode) }
 
-  before { SiteSetting.ai_helper_model = "fake:fake" }
+  before { assign_fake_provider_to(:ai_helper_model) }
 
   let(:english_text) { <<~STRING }
     To perfect his horror, Caesar, surrounded at the base of the statue by the impatient daggers of his friends,

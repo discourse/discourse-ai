@@ -9,33 +9,33 @@ module DiscourseAi
 
       def valid_value?(val)
         if val == ""
+          parent_module_name = modules_and_choose_llm_settings.invert[@opts[:name]]
+
           @parent_enabled = SiteSetting.public_send(parent_module_name)
           return !@parent_enabled
         end
 
-        provider_and_model_name = val.split(":")
-        provider_name = provider_and_model_name.first
-        model_name_without_prov = provider_and_model_name[1..].join
-        is_custom_model = provider_name == "custom"
+        llm_model_id = val.split(":")&.last
+        llm_model = LlmModel.find_by(id: llm_model_id)
+        return false if llm_model.nil?
 
-        # Bypass setting validations for custom models. They don't rely on site settings.
-        if !is_custom_model
-          endpoint = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider_name)
+        run_test(llm_model).tap { |result| @unreachable = result }
+      rescue StandardError
+        @unreachable = true
+        false
+      end
 
-          return false if endpoint.nil?
+      def run_test(llm_model)
+        DiscourseAi::Completions::Llm
+          .proxy_from_obj(llm_model)
+          .generate("How much is 1 + 1?", user: nil, feature_name: "llm_validator")
+          .present?
+      end
 
-          if !endpoint.correctly_configured?(model_name_without_prov)
-            @endpoint = endpoint
-            return false
-          end
+      def modules_using(llm_model)
+        choose_llm_settings = modules_and_choose_llm_settings.values
 
-          if !can_talk_to_model?(val)
-            @unreachable = true
-            return false
-          end
-        end
-
-        true
+        choose_llm_settings.select { |s| SiteSetting.public_send(s) == "custom:#{llm_model.id}" }
       end
 
       def error_message
@@ -48,28 +48,20 @@ module DiscourseAi
           )
         end
 
-        return(I18n.t("discourse_ai.llm.configuration.model_unreachable")) if @unreachable
+        return unless @unreachable
 
-        @endpoint&.configuration_hint
+        I18n.t("discourse_ai.llm.configuration.model_unreachable")
       end
 
-      def parent_module_name
-        if @opts[:name] == :ai_embeddings_semantic_search_hyde_model
-          :ai_embeddings_semantic_search_enabled
-        else
-          :composer_ai_helper_enabled
-        end
+      def choose_llm_setting_for(module_enabler_setting)
+        modules_and_choose_llm_settings[module_enabler_setting]
       end
 
-      private
-
-      def can_talk_to_model?(model_name)
-        DiscourseAi::Completions::Llm
-          .proxy(model_name)
-          .generate("How much is 1 + 1?", user: nil, feature_name: "llm_validator")
-          .present?
-      rescue StandardError
-        false
+      def modules_and_choose_llm_settings
+        {
+          ai_embeddings_semantic_search_enabled: :ai_embeddings_semantic_search_hyde_model,
+          composer_ai_helper_enabled: :ai_helper_model,
+        }
       end
     end
   end

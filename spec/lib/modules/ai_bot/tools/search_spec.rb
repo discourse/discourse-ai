@@ -108,7 +108,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
       after { DiscourseAi::Embeddings::SemanticSearch.clear_cache_for(query) }
 
       it "supports semantic search when enabled" do
-        SiteSetting.ai_embeddings_semantic_search_hyde_model = "fake:fake"
+        assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model)
         SiteSetting.ai_embeddings_semantic_search_enabled = true
         SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
 

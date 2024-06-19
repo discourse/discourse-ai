@@ -125,12 +125,12 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
     end
 
     it "validates the model is not in use" do
-      SiteSetting.ai_helper_model = "custom:#{llm_model.id}"
+      fake_llm = assign_fake_provider_to(:ai_helper_model)
 
-      delete "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json"
+      delete "/admin/plugins/discourse-ai/ai-llms/#{fake_llm.id}.json"
 
       expect(response.status).to eq(409)
-      expect(llm_model.reload).to eq(llm_model)
+      expect(fake_llm.reload).to eq(fake_llm)
     end
   end
 end

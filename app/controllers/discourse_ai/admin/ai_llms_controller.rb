@@ -53,12 +53,7 @@ module DiscourseAi
       def destroy
         llm_model = LlmModel.find(params[:id])
 
-        dependant_settings = %i[ai_helper_model ai_embeddings_semantic_search_hyde_model]
-
-        in_use_by = []
-        dependant_settings.each do |s_name|
-          in_use_by << s_name if SiteSetting.public_send(s_name) == "custom:#{llm_model.id}"
-        end
+        in_use_by = DiscourseAi::Configuration::LlmValidator.new.modules_using(llm_model)
 
         if !in_use_by.empty?
           return(
@@ -85,11 +80,7 @@ module DiscourseAi
 
         llm_model = LlmModel.new(ai_llm_params)
 
-        DiscourseAi::Completions::Llm.proxy_from_obj(llm_model).generate(
-          "How much is 1 + 1?",
-          user: current_user,
-          feature_name: "llm_validator",
-        )
+        DiscourseAi::Configuration::LlmValidator.new.run_test(llm_model)
 
         render json: { success: true }
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
