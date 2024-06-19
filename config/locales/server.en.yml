@@ -207,6 +207,10 @@ en:
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
       tool_options:
+        read:
+          read_private:
+            name: "Read Private"
+            description: "Allow access to all topics user has access to (by default only public topics are included)"
         search:
           search_private:
             name: "Search Private"

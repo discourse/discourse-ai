@@ -72,7 +72,7 @@ module DiscourseAi
             if val
               case option.type
               when :boolean
-                val = val == "true"
+                val = (val.to_s == "true")
               when :integer
                 val = val.to_i
               end

@@ -40,7 +40,7 @@ class SeedOssModels < ActiveRecord::Migration[7.0]
         reserved: srv_reserved_url,
       ).first
 
-    if vllm_srv.present? && srv.record.nil?
+    if vllm_srv.present? && srv_record.nil?
       url = "https://vllm.shadowed-by-srv.invalid"
       name = "mistralai/Mixtral"
 
