@@ -3,15 +3,18 @@ import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
+import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
+import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import DTooltip from "float-kit/components/d-tooltip";
 
@@ -25,6 +28,7 @@ export default class AiLlmEditor extends Component {
   @tracked testRunning = false;
   @tracked testResult = null;
   @tracked testError = null;
+  @tracked apiKeySecret = true;
 
   get selectedProviders() {
     const t = (provName) => {
@@ -34,6 +38,10 @@ export default class AiLlmEditor extends Component {
     return this.args.llms.resultSetMeta.providers.map((prov) => {
       return { id: prov, name: t(prov) };
     });
+  }
+
+  get adminUser() {
+    return AdminUser.create(this.args.model?.user);
   }
 
   @action
@@ -92,6 +100,16 @@ export default class AiLlmEditor extends Component {
 
   get displayTestResult() {
     return this.testRunning || this.testResult !== null;
+  }
+
+  @action
+  makeApiKeySecret() {
+    this.apiKeySecret = true;
+  }
+
+  @action
+  toggleApiKeySecret() {
+    this.apiKeySecret = !this.apiKeySecret;
   }
 
   @action
@@ -177,11 +195,19 @@ export default class AiLlmEditor extends Component {
       {{/if}}
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.llms.api_key"}}</label>
-        <Input
-          class="ai-llm-editor-input ai-llm-editor__api-key"
-          @type="text"
-          @value={{@model.api_key}}
-        />
+        <div class="ai-llm-editor__secret-api-key-group">
+          <Input
+            @value={{@model.api_key}}
+            class="ai-llm-editor-input ai-llm-editor__api-key"
+            @type={{if this.apiKeySecret "password" "text"}}
+            {{on "focusout" this.makeApiKeySecret}}
+          />
+          <DButton
+            @action={{this.toggleApiKeySecret}}
+            @icon="far-eye-slash"
+            {{on "focusout" this.makeApiKeySecret}}
+          />
+        </div>
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.llms.tokenizer"}}</label>
@@ -213,6 +239,21 @@ export default class AiLlmEditor extends Component {
           {{on "click" this.toggleEnabledChatBot}}
         />
       </div>
+      {{#if @model.user}}
+        <div class="control-group">
+          <label>{{i18n "discourse_ai.llms.ai_bot_user"}}</label>
+          <a
+            class="avatar"
+            href={{@model.user.path}}
+            data-user-card={{@model.user.username}}
+          >
+            {{Avatar @model.user.avatar_template "small"}}
+          </a>
+          <LinkTo @route="adminUser" @model={{this.adminUser}}>
+            {{@model.user.username}}
+          </LinkTo>
+        </div>
+      {{/if}}
       <div class="control-group ai-llm-editor__action_panel">
         <DButton
           class="ai-llm-editor__test"

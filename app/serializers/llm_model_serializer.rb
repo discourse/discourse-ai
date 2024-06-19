@@ -14,6 +14,8 @@ class LlmModelSerializer < ApplicationSerializer
              :enabled_chat_bot,
              :url_editable
 
+  has_one :user, serializer: BasicUserSerializer, embed: :object
+
   def url_editable
     object.url != LlmModel::RESERVED_VLLM_SRV_URL
   end
