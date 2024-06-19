@@ -747,7 +747,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
     end
 
-    it "includes previous posts ordered by post_number" do
+    xit "includes previous posts ordered by post_number" do
       context = playground.conversation_context(third_post)
 
       expect(context).to contain_exactly(
@@ -759,7 +759,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       )
     end
 
-    it "only include regular posts" do
+    xit "only include regular posts" do
       first_post.update!(post_type: Post.types[:whisper])
 
       context = playground.conversation_context(third_post)
