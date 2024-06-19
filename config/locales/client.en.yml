@@ -6,22 +6,6 @@ en:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_pro: Gemini 1.5 Pro
-        gemini_1_5_flash: Gemini 1.5 Flash
-        claude_3_opus: Claude 3 Opus
-        claude_3_sonnet: Claude 3 Sonnet
-        claude_3_haiku: Claude 3 Haiku
-        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Instruct V0.1
-        mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
-        command_r: Cohere Command R
-        command_r_plus: Cohere Command R+
-        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:

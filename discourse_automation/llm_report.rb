@@ -25,7 +25,7 @@ if defined?(DiscourseAutomation)
           component: :choices,
           required: true,
           extra: {
-            content: DiscourseAi::Automation::AVAILABLE_MODELS,
+            content: DiscourseAi::Automation.available_models,
           }
 
     field :priority_group, component: :group
