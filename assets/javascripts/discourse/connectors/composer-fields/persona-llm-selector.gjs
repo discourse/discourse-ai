@@ -14,9 +14,9 @@ function isBotMessage(composer, currentUser) {
   ) {
     const reciepients = composer.targetRecipients.split(",");
 
-    return currentUser.ai_enabled_chat_bots.any((bot) =>
-      reciepients.any((username) => username === bot.username)
-    );
+    return currentUser.ai_enabled_chat_bots
+      .filter((bot) => !bot.is_persona)
+      .any((bot) => reciepients.any((username) => username === bot.username));
   }
   return false;
 }
@@ -110,7 +110,7 @@ export default class BotSelector extends Component {
 
   get llmOptions() {
     const availableBots = this.currentUser.ai_enabled_chat_bots
-      .filter((bot) => !bot.is_persosna)
+      .filter((bot) => !bot.is_persona)
       .filter(Boolean);
 
     return availableBots.map((bot) => {
