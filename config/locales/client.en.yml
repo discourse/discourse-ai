@@ -211,6 +211,7 @@ en:
         url: "URL of the service hosting the model"
         api_key: "API Key of the service hosting the model"
         enabled_chat_bot: "Allow AI Bot"
+        ai_bot_user: "AI Bot User"
         save: "Save"
         edit: "Edit"
         saved: "LLM Model Saved"
