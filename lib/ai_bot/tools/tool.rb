@@ -124,7 +124,28 @@ module DiscourseAi
           response_code == "200" ? repo_data["default_branch"] : "main"
         end
 
-        def send_http_request(url, headers: {}, authenticate_github: false, follow_redirects: false)
+        def send_http_request(
+          url,
+          headers: {},
+          authenticate_github: false,
+          follow_redirects: false,
+          &blk
+        )
+          self.class.send_http_request(
+            url,
+            headers: headers,
+            authenticate_github: authenticate_github,
+            follow_redirects: follow_redirects,
+            &blk
+          )
+        end
+
+        def self.send_http_request(
+          url,
+          headers: {},
+          authenticate_github: false,
+          follow_redirects: false
+        )
           raise "Expecting caller to use a block" if !block_given?
 
           uri = nil
