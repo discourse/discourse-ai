@@ -78,6 +78,8 @@ module DiscourseAi
               "anthropic.claude-instant-v1"
             when "claude-3-opus"
               "anthropic.claude-3-opus-20240229-v1:0"
+            else
+              model
             end
 
           api_url =
