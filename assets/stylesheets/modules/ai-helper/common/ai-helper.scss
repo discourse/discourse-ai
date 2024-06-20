@@ -225,15 +225,6 @@
 }
 
 // Suggest Titles Related
-.suggest-titles-button {
-  display: block;
-  align-self: baseline;
-  background: var(--secondary);
-  border: 1px solid var(--primary-400);
-  border-left: none;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
 
 .showing-ai-suggestions {
   .title-input {
@@ -263,9 +254,9 @@
   }
 }
 
+.suggest-titles-button,
 .suggest-tags-button,
 .suggest-category-button {
-  display: block;
   align-self: baseline;
   border: 1px solid var(--primary-400);
   border-left: none;
@@ -299,13 +290,28 @@
 #reply-control {
   .with-category .showing-ai-suggestions .category-input {
     flex-wrap: nowrap;
-    .select-kit {
-      max-width: calc(100% - 2.25em);
+    max-width: calc(50% - 0.2em);
+    .category-chooser {
+      min-width: 0;
+      flex: 1 1 auto;
     }
   }
 
-  .with-tags .showing-ai-suggestions .mini-tag-chooser.select-kit {
-    max-width: calc(100% - 2.25em);
+  .with-category:not(.with-tags) {
+    // when tagging is disabled
+    .showing-ai-suggestions .category-input {
+      max-width: 40%;
+    }
+  }
+
+  .with-tags {
+    .showing-ai-suggestions .tags-input {
+      display: flex;
+      max-width: calc(50% - 0.2em);
+      .mini-tag-chooser {
+        min-width: 0;
+      }
+    }
   }
 }
 
