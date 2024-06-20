@@ -6,7 +6,7 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import { notEq, or } from "truth-helpers";
+import { or } from "truth-helpers";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
