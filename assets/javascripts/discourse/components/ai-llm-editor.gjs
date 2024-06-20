@@ -6,6 +6,7 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import { notEq, or } from "truth-helpers";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
@@ -149,7 +150,7 @@ export default class AiLlmEditor extends Component {
       @route="adminPlugins.show.discourse-ai-llms"
       @label="discourse_ai.llms.back"
     />
-    {{#unless @model.url_editable}}
+    {{#unless (or @model.url_editable @model.isNew)}}
       <div class="alert alert-info">
         {{icon "exclamation-circle"}}
         {{I18n.t "discourse_ai.llms.srv_warning"}}
@@ -183,7 +184,7 @@ export default class AiLlmEditor extends Component {
           @content={{this.selectedProviders}}
         />
       </div>
-      {{#if @model.url_editable}}
+      {{#if (or @model.url_editable @model.isNew)}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.llms.url"}}</label>
           <Input
