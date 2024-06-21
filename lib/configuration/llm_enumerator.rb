@@ -10,12 +10,12 @@ module DiscourseAi
       end
 
       def self.values
-        values = DB.query_hash(<<~SQL)
+        values = DB.query_hash(<<~SQL).map(&:symbolize_keys)
           SELECT display_name AS name, id AS value
           FROM llm_models
         SQL
 
-        values.each { |value_h| value_h["value"] = "custom:#{value_h["value"]}" }
+        values.each { |value_h| value_h[:value] = "custom:#{value_h[:value]}" }
 
         values
       end
