@@ -49,7 +49,7 @@ export default class AiLlmEditor extends Component {
     let info = this.args.llms.resultSetMeta.presets.find(
       (_info) => _info.id === id
     );
-    let modelInfo = info.models.find((m) => m.name === model);
+    const modelInfo = info.models.findBy("name", model);
 
     this.args.model.setProperties({
       max_prompt_tokens: modelInfo.tokens,
