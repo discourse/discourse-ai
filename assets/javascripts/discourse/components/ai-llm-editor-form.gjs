@@ -18,7 +18,7 @@ import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import DTooltip from "float-kit/components/d-tooltip";
 
-export default class AiLlmEditor extends Component {
+export default class AiLlmEditorForm extends Component {
   @service toasts;
   @service router;
   @service dialog;
