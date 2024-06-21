@@ -46,7 +46,7 @@ export default class AiLlmEditor extends Component {
       return;
     }
 
-    let info = this.args.llms.resultSetMeta.presets.find(
+    const info = this.args.llms.resultSetMeta.presets.findBy("id", id);
       (_info) => _info.id === id
     );
     const modelInfo = info.models.findBy("name", model);
