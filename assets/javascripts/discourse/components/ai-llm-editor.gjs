@@ -8,11 +8,13 @@ import ComboBox from "select-kit/components/combo-box";
 import AiLlmEditorForm from "./ai-llm-editor-form";
 
 export default class AiLlmEditor extends Component {
-  @tracked ranWizard = false;
-  preConfiguredLlm = "none";
+  @tracked presetConfigured = false;
+  presetId = "none";
 
-  get showWizard() {
-    return this.args.model.isNew && !this.ranWizard && !this.args.model.url;
+  get showPresets() {
+    return (
+      this.args.model.isNew && !this.presetConfigured && !this.args.model.url
+    );
   }
 
   get preConfiguredLlms() {
@@ -38,17 +40,15 @@ export default class AiLlmEditor extends Component {
   }
 
   @action
-  next() {
-    this.ranWizard = true;
+  configurePreset() {
+    this.presetConfigured = true;
 
-    let [id, model] = this.preConfiguredLlm.split(/-(.*)/);
+    let [id, model] = this.presetId.split(/-(.*)/);
     if (id === "none") {
       return;
     }
 
     const info = this.args.llms.resultSetMeta.presets.findBy("id", id);
-      (_info) => _info.id === id
-    );
     const modelInfo = info.models.findBy("name", model);
 
     this.args.model.setProperties({
@@ -66,18 +66,19 @@ export default class AiLlmEditor extends Component {
       @route="adminPlugins.show.discourse-ai-llms"
       @label="discourse_ai.llms.back"
     />
-    {{#if this.showWizard}}
+    {{#if this.showPresets}}
       <form class="form-horizontal ai-llm-editor">
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.llms.preconfigured_llms"}}</label>
           <ComboBox
-            @value={{this.preConfiguredLlm}}
+            @value={{this.presetId}}
             @content={{this.preConfiguredLlms}}
+            class="ai-llm-editor__presets"
           />
         </div>
 
         <div class="control-group ai-llm-editor__action_panel">
-          <DButton class="ai-llm-editor__next" @action={{this.next}}>
+          <DButton class="ai-llm-editor__next" @action={{this.configurePreset}}>
             {{I18n.t "discourse_ai.llms.next.title"}}
           </DButton>
         </div>
