@@ -40,7 +40,7 @@ export default class AiLlmsListEditor extends Component {
           {{#unless @currentLlm.isNew}}
             <LinkTo
               @route="adminPlugins.show.discourse-ai-llms.new"
-              class="btn btn-small btn-primary"
+              class="btn btn-small btn-primary ai-llms-list-editor__new"
             >
               {{icon "plus"}}
               <span>{{I18n.t "discourse_ai.llms.new"}}</span>

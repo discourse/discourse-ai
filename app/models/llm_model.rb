@@ -41,7 +41,7 @@ class LlmModel < ActiveRecord::Base
         new_user =
           User.new(
             id: [FIRST_BOT_USER_ID, next_id].min,
-            email: "no_email_#{name.underscore}",
+            email: "no_email_#{SecureRandom.hex}",
             name: name.titleize,
             username: UserNameSuggester.suggest(name),
             active: true,

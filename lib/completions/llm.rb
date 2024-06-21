@@ -18,6 +18,63 @@ module DiscourseAi
       UNKNOWN_MODEL = Class.new(StandardError)
 
       class << self
+        def presets
+          # Sam: I am not sure if it makes sense to translate model names at all
+          @presets ||=
+            begin
+              [
+                {
+                  id: "anthropic",
+                  models: [
+                    {
+                      name: "claude-3-5-sonnet",
+                      tokens: 200_000,
+                      display_name: "Claude 3.5 Sonnet",
+                    },
+                    { name: "claude-3-opus", tokens: 200_000, display_name: "Claude 3 Opus" },
+                    { name: "claude-3-sonnet", tokens: 200_000, display_name: "Claude 3 Sonnet" },
+                    { name: "claude-3-haiku", tokens: 200_000, display_name: "Claude 3 Haiku" },
+                  ],
+                  tokenizer: DiscourseAi::Tokenizer::AnthropicTokenizer,
+                  endpoint: "https://api.anthropic.com/v1/messages",
+                  provider: "anthropic",
+                },
+                {
+                  id: "google",
+                  models: [
+                    {
+                      name: "gemini-1.5-pro",
+                      tokens: 800_000,
+                      endpoint:
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest",
+                      display_name: "Gemini 1.5 Pro",
+                    },
+                    {
+                      name: "gemini-1.5-flash",
+                      tokens: 800_000,
+                      endpoint:
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest",
+                      display_name: "Gemini 1.5 Flash",
+                    },
+                  ],
+                  tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
+                  provider: "google",
+                },
+                {
+                  id: "open_ai",
+                  models: [
+                    { name: "gpt-4o", tokens: 131_072, display_name: "GPT-4 Omni" },
+                    { name: "gpt-4-turbo", tokens: 131_072, display_name: "GPT-4 Turbo" },
+                    { name: "gpt-3.5-turbo", tokens: 16_385, display_name: "GPT-3.5 Turbo" },
+                  ],
+                  tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
+                  endpoint: "https://api.openai.com/v1/chat/completions",
+                  provider: "open_ai",
+                },
+              ]
+            end
+        end
+
         def provider_names
           providers = %w[aws_bedrock anthropic vllm hugging_face cohere open_ai google azure]
           if !Rails.env.production?

@@ -204,6 +204,11 @@ en:
         delete: Delete
 
         srv_warning: This LLM points to an SRV record, and its URL is not editable. You have to update the hidden "ai_vllm_endpoint_srv" setting instead.
+        preconfigured_llms: "Select your LLM"
+        preconfigured:
+          none: "Configure manually..."
+        next:
+          title: "Next"
 
         tests:
           title: "Run Test"

@@ -16,6 +16,7 @@ module DiscourseAi
                      root: false,
                    ).as_json,
                  meta: {
+                   presets: DiscourseAi::Completions::Llm.presets,
                    providers: DiscourseAi::Completions::Llm.provider_names,
                    tokenizers:
                      DiscourseAi::Completions::Llm.tokenizer_names.map { |tn|
