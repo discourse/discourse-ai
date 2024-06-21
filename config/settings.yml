@@ -120,6 +120,7 @@ discourse_ai:
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - claude-3-5-sonnet
   ai_cohere_api_key:
     default: ""
     secret: true
