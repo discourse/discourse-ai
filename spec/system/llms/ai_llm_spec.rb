@@ -4,6 +4,8 @@ RSpec.describe "Admin dashboard", type: :system do
   fab!(:admin)
 
   it "correctly sets defaults" do
+    SiteSetting.ai_bot_enabled = true
+
     sign_in(admin)
 
     visit "/admin/plugins/discourse-ai/ai-llms"
@@ -17,6 +19,8 @@ RSpec.describe "Admin dashboard", type: :system do
 
     find(".ai-llm-editor__next").click()
     find("input.ai-llm-editor__api-key").fill_in(with: "abcd")
+
+    PageObjects::Components::DToggleSwitch.new(".ai-llm-editor__enabled-chat-bot").toggle
 
     find(".ai-llm-editor__save").click()
 
@@ -35,5 +39,6 @@ RSpec.describe "Admin dashboard", type: :system do
     expect(llm.max_prompt_tokens.to_i).to eq(model_preset[:tokens])
     expect(llm.provider).to eq("anthropic")
     expect(llm.display_name).to eq(model_preset[:display_name])
+    expect(llm.user_id).not_to be_nil
   end
 end
