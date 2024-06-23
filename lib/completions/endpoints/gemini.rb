@@ -23,7 +23,15 @@ module DiscourseAi
         end
 
         def default_options
-          { generationConfig: {} }
+          # the default setting is a problem, it blocks too much
+          categories = %w[HARASSMENT SEXUALLY_EXPLICIT HATE_SPEECH DANGEROUS_CONTENT]
+
+          safety_settings =
+            categories.map do |category|
+              { category: "HARM_CATEGORY_#{category}", threshold: "BLOCK_NONE" }
+            end
+
+          { generationConfig: {}, safetySettings: safety_settings }
         end
 
         def normalize_model_params(model_params)

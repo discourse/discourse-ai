@@ -7,6 +7,7 @@ class LlmModel < ActiveRecord::Base
   belongs_to :user
 
   validates :url, exclusion: { in: [RESERVED_VLLM_SRV_URL] }
+  before_save :toggle_companion_user_before_save
 
   def self.enable_or_disable_srv_llm!
     srv_model = find_by(url: RESERVED_VLLM_SRV_URL)
@@ -25,6 +26,10 @@ class LlmModel < ActiveRecord::Base
     elsif srv_model.present?
       srv_model.destroy!
     end
+  end
+
+  def toggle_companion_user_before_save
+    toggle_companion_user if enabled_chat_bot_changed? || new_record?
   end
 
   def toggle_companion_user
