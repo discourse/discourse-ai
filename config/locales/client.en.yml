@@ -183,6 +183,20 @@ en:
           uploading: "Uploading..."
           remove: "Remove upload"
 
+      tools:
+        short_title: "Tools"
+        new: "New Tool"
+        name: "Name"
+        description: "Description"
+        script: "Script"
+        parameters: "Parameters"
+        save: "Save"
+        add_parameter: "Add Parameter"
+        parameter_required: "Required"
+        parameter_enum: "Is Enum"
+        parameter_name: "Parameter Name"
+        parameter_description: "Parameter Description"
+
       llms:
         short_title: "LLMs"
         no_llms: "No LLMs yet"
