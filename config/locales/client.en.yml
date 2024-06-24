@@ -230,6 +230,11 @@ en:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+      
+        provider_fields:
+          access_key_id: "AWS Bedrock Access key ID"
+          region: "AWS Bedrock Region"
+          organization: "Optional OpenAI Organization ID"
 
       related_topics:
         title: "Related Topics"

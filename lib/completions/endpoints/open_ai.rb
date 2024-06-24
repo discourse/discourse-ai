@@ -128,9 +128,9 @@ module DiscourseAi
             headers["Authorization"] = "Bearer #{api_key}"
           end
 
-          if SiteSetting.ai_openai_organization.present?
-            headers["OpenAI-Organization"] = SiteSetting.ai_openai_organization
-          end
+          org_id =
+            llm_model&.lookup_custom_param("organization") || SiteSetting.ai_openai_organization
+          headers["OpenAI-Organization"] = org_id if org_id.present?
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end

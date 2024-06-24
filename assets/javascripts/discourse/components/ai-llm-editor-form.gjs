@@ -1,12 +1,12 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
+import { concat, get } from "@ember/helper";
 import { on } from "@ember/modifier";
-import { action } from "@ember/object";
+import { action, computed } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
-import { or } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import Avatar from "discourse/helpers/bound-avatar-template";
@@ -30,6 +30,14 @@ export default class AiLlmEditorForm extends Component {
   @tracked testError = null;
   @tracked apiKeySecret = true;
 
+  didReceiveAttrs() {
+    super.didReceiveAttrs(...arguments);
+
+    if (!this.args.model.provider_params) {
+      this.populateProviderParams(this.args.model.provider);
+    }
+  }
+
   get selectedProviders() {
     const t = (provName) => {
       return I18n.t(`discourse_ai.llms.providers.${provName}`);
@@ -42,6 +50,35 @@ export default class AiLlmEditorForm extends Component {
 
   get adminUser() {
     return AdminUser.create(this.args.model?.user);
+  }
+
+  get testErrorMessage() {
+    return I18n.t("discourse_ai.llms.tests.failure", { error: this.testError });
+  }
+
+  get displayTestResult() {
+    return this.testRunning || this.testResult !== null;
+  }
+
+  get displaySRVWarning() {
+    return this.args.model.shadowed_by_srv && !this.args.model.isNew;
+  }
+
+  get canEditURL() {
+    // Explicitly false.
+    if (this.metaProviderParams.url_editable === false) {
+      return false;
+    }
+
+    return !this.args.model.shadowed_by_srv || this.args.model.isNew;
+  }
+
+  @computed("args.model.provider")
+  get metaProviderParams() {
+    return (
+      this.args.llms.resultSetMeta.provider_params[this.args.model.provider] ||
+      {}
+    );
   }
 
   @action
@@ -94,14 +131,6 @@ export default class AiLlmEditorForm extends Component {
     }
   }
 
-  get testErrorMessage() {
-    return I18n.t("discourse_ai.llms.tests.failure", { error: this.testError });
-  }
-
-  get displayTestResult() {
-    return this.testRunning || this.testResult !== null;
-  }
-
   @action
   makeApiKeySecret() {
     this.apiKeySecret = true;
@@ -145,12 +174,12 @@ export default class AiLlmEditorForm extends Component {
   }
 
   <template>
-    {{#unless (or @model.url_editable @model.isNew)}}
+    {{#if this.displaySRVWarning}}
       <div class="alert alert-info">
         {{icon "exclamation-circle"}}
         {{I18n.t "discourse_ai.llms.srv_warning"}}
       </div>
-    {{/unless}}
+    {{/if}}
     <form class="form-horizontal ai-llm-editor">
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.display_name"}}</label>
@@ -179,13 +208,14 @@ export default class AiLlmEditorForm extends Component {
           @content={{this.selectedProviders}}
         />
       </div>
-      {{#if (or @model.url_editable @model.isNew)}}
+      {{#if this.canEditURL}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.llms.url"}}</label>
           <Input
             class="ai-llm-editor-input ai-llm-editor__url"
             @type="text"
             @value={{@model.url}}
+            required="true"
           />
         </div>
       {{/if}}
@@ -196,11 +226,24 @@ export default class AiLlmEditorForm extends Component {
             @value={{@model.api_key}}
             class="ai-llm-editor-input ai-llm-editor__api-key"
             @type={{if this.apiKeySecret "password" "text"}}
+            required="true"
             {{on "focusout" this.makeApiKeySecret}}
           />
           <DButton @action={{this.toggleApiKeySecret}} @icon="far-eye-slash" />
         </div>
       </div>
+      {{#each this.metaProviderParams.fields as |field|}}
+        <div class="control-group">
+          <label>{{I18n.t
+              (concat "discourse_ai.llms.provider_fields." field)
+            }}</label>
+          <Input
+            @type="text"
+            @value={{mut (get @model.provider_params field)}}
+            class="ai-llm-editor-input ai-llm-editor__{{field}}"
+          />
+        </div>
+      {{/each}}
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.llms.tokenizer"}}</label>
         <ComboBox
@@ -217,6 +260,7 @@ export default class AiLlmEditorForm extends Component {
           min="0"
           lang="en"
           @value={{@model.max_prompt_tokens}}
+          required="true"
         />
         <DTooltip
           @icon="question-circle"
