@@ -11,6 +11,7 @@ import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "discourse-i18n";
+import AceEditor from "admin/components/ace-editor";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 
 export default class AiToolEditor extends Component {
@@ -21,6 +22,9 @@ export default class AiToolEditor extends Component {
   @tracked isSaving = false;
   @tracked editingModel = null;
   @tracked showDelete = false;
+
+  aceEditorMode = "javascript";
+  aceEditorTheme = "chrome";
 
   @action
   updateModel() {
@@ -73,6 +77,11 @@ export default class AiToolEditor extends Component {
     this.editingModel.parameters = parameters;
   }
 
+  @action
+  updateScript(script) {
+    this.editingModel.script = script;
+  }
+
   <template>
     <BackButton
       @route="adminPlugins.show.discourse-ai-tools"
@@ -108,9 +117,12 @@ export default class AiToolEditor extends Component {
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.tools.script"}}</label>
-        <Textarea
-          @value={{this.editingModel.script}}
-          class="ai-tool-editor__script"
+        <AceEditor
+          @content={{this.editingModel.script}}
+          @mode={{this.aceEditorMode}}
+          @theme={{this.aceEditorTheme}}
+          @onChange={{this.updateScript}}
+          @editorId="ai-tool-script-editor"
         />
       </div>
       <div class="control-group ai-tool-editor__action_panel">
