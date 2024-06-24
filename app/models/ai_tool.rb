@@ -119,6 +119,7 @@ class AiTool < ActiveRecord::Base
   validates :parameters, presence: true
   validates :script, presence: true, length: { maximum: 100_000 }
   validates :created_by_id, presence: true
+  belongs_to :created_by, class_name: "User"
 
   def signature
     { name: name, description: description, parameters: parameters.map(&:symbolize_keys) }
@@ -126,6 +127,12 @@ class AiTool < ActiveRecord::Base
 
   def runner(parameters, llm:, bot_user:, context: {})
     Runner.new(parameters, llm: llm, bot_user: bot_user, context: context, tool: self)
+  end
+
+  after_commit :bump_persona_cache
+
+  def bump_persona_cache
+    AiPersona.persona_cache.flush!
   end
 end
 

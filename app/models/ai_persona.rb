@@ -148,7 +148,15 @@ class AiPersona < ActiveRecord::Base
 
         begin
           klass = "DiscourseAi::AiBot::Tools::#{inner_name}".constantize
-          options[klass] = current_options if current_options
+          if klass == DiscourseAi::AiBot::Tools::Custom
+            if AiTool.exists?(id: current_options["tool_id"], enabled: true)
+              klass = klass.class_instance(current_options["tool_id"])
+            else
+              klass = nil
+            end
+          else
+            options[klass] = current_options if current_options
+          end
           klass
         rescue StandardError
           nil

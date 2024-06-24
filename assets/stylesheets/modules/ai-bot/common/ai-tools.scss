@@ -1,21 +1,23 @@
 .ai-tool-parameter {
-  margin-bottom: 1em;
-  padding: 1em;
-  border: 1px solid #e9e9e9;
+  margin-bottom: 2em;
+  padding: 1.5em;
+  border: 1px solid var(--primary-low);
   border-radius: 3px;
+  background-color: var(--secondary-very-low);
 
   .parameter-row {
     display: flex;
     align-items: center;
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
 
     input[type="text"] {
       flex-grow: 1;
-      margin-right: 0.5em;
+      margin-right: 1em;
     }
 
     label {
       margin-right: 1em;
+      white-space: nowrap;
     }
   }
 
@@ -36,10 +38,13 @@
 }
 
 .ai-tool-editor {
+  &__description {
+    width: 100%;
+  }
   max-width: 80%;
   position: relative;
   .ace-wrapper {
-    border: 1px solid var(--primary-200);
+    border: 1px solid var(--primary-low);
     max-width: 100%;
     position: relative;
     width: 100%;

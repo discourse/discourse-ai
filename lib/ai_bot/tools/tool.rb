@@ -19,6 +19,10 @@ module DiscourseAi
             raise NotImplemented
           end
 
+          def custom?
+            false
+          end
+
           def accepted_options
             []
           end

@@ -193,9 +193,10 @@ en:
         save: "Save"
         add_parameter: "Add Parameter"
         parameter_required: "Required"
-        parameter_enum: "Is Enum"
+        parameter_enum: "Enum"
         parameter_name: "Parameter Name"
         parameter_description: "Parameter Description"
+        edit: "Edit"
 
       llms:
         short_title: "LLMs"
