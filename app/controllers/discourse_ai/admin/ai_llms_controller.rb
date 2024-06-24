@@ -16,6 +16,7 @@ module DiscourseAi
                      root: false,
                    ).as_json,
                  meta: {
+                   provider_params: LlmModel.provider_params,
                    presets: DiscourseAi::Completions::Llm.presets,
                    providers: DiscourseAi::Completions::Llm.provider_names,
                    tokenizers:
@@ -43,7 +44,7 @@ module DiscourseAi
       def update
         llm_model = LlmModel.find(params[:id])
 
-        if llm_model.update(ai_llm_params)
+        if llm_model.update(ai_llm_params(updating: llm_model))
           llm_model.toggle_companion_user
           render json: llm_model
         else
@@ -90,17 +91,32 @@ module DiscourseAi
 
       private
 
-      def ai_llm_params
-        params.require(:ai_llm).permit(
-          :display_name,
-          :name,
-          :provider,
-          :tokenizer,
-          :max_prompt_tokens,
-          :url,
-          :api_key,
-          :enabled_chat_bot,
-        )
+      def ai_llm_params(updating: nil)
+        permitted =
+          params.require(:ai_llm).permit(
+            :display_name,
+            :name,
+            :provider,
+            :tokenizer,
+            :max_prompt_tokens,
+            :api_key,
+            :enabled_chat_bot,
+          )
+
+        provider = updating ? updating.provider : permitted[:provider]
+        permit_url =
+          (updating && updating.url != LlmModel::RESERVED_VLLM_SRV_URL) ||
+            provider != LlmModel::BEDROCK_PROVIDER_NAME
+
+        permitted[:url] = params.dig(:ai_llm, :url) if permit_url
+
+        extra_field_names = LlmModel.provider_params.dig(provider&.to_sym, :fields).to_a
+        received_prov_params = params.dig(:ai_llm, :provider_params)
+        permitted[:provider_params] = received_prov_params.slice(
+          *extra_field_names,
+        ).permit! if !extra_field_names.empty? && received_prov_params.present?
+
+        permitted
       end
     end
   end

@@ -41,6 +41,34 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         expect(created_model.tokenizer).to eq(valid_attrs[:tokenizer])
         expect(created_model.max_prompt_tokens).to eq(valid_attrs[:max_prompt_tokens])
       end
+
+      it "stores provider-specific config params" do
+        provider_params = { organization: "Discourse" }
+
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm: valid_attrs.merge(provider_params: provider_params),
+             }
+
+        created_model = LlmModel.last
+
+        expect(created_model.lookup_custom_param("organization")).to eq(
+          provider_params[:organization],
+        )
+      end
+
+      it "ignores parameters not associated with that provider" do
+        provider_params = { access_key_id: "random_key" }
+
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm: valid_attrs.merge(provider_params: provider_params),
+             }
+
+        created_model = LlmModel.last
+
+        expect(created_model.lookup_custom_param("access_key_id")).to be_nil
+      end
     end
   end
 
@@ -64,6 +92,36 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         put "/admin/plugins/discourse-ai/ai-llms/9999999.json"
 
         expect(response.status).to eq(404)
+      end
+    end
+
+    context "with provider-specific params" do
+      it "updates provider-specific config params" do
+        provider_params = { organization: "Discourse" }
+
+        put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",
+            params: {
+              ai_llm: {
+                provider_params: provider_params,
+              },
+            }
+
+        expect(llm_model.reload.lookup_custom_param("organization")).to eq(
+          provider_params[:organization],
+        )
+      end
+
+      it "ignores parameters not associated with that provider" do
+        provider_params = { access_key_id: "random_key" }
+
+        put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",
+            params: {
+              ai_llm: {
+                provider_params: provider_params,
+              },
+            }
+
+        expect(llm_model.reload.lookup_custom_param("access_key_id")).to be_nil
       end
     end
   end
