@@ -45,6 +45,8 @@ bg:
         edit: "Редактирай"
         back: "Назад"
         delete: Изтрий
+        next:
+          title: "Напред"
         providers:
           google: "Google"
       ai_helper:

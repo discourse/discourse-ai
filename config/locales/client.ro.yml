@@ -46,6 +46,8 @@ ro:
         edit: "Modifică"
         back: "Înapoi"
         delete: Șterge
+        next:
+          title: "Următorul"
         tests:
           success: "Succes!"
         providers:

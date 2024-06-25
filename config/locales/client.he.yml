@@ -12,22 +12,6 @@ he:
           discourse_ai: "בינה מלאכותית ב־Discourse"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 טורבו
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 טורבו
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_pro: Gemini 1.5 Pro
-        gemini_1_5_flash: Gemini 1.5 Flash
-        claude_3_opus: Claude 3 Opus
-        claude_3_sonnet: Claude 3 Sonnet
-        claude_3_haiku: Claude 3 Haiku
-        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Instruct V0.1
-        mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
-        command_r: Cohere Command R
-        command_r_plus: Cohere Command R+‎
-        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -210,12 +194,20 @@ he:
         max_prompt_tokens: "מספר האסימונים לבקשה"
         url: "כתובת השירות שמארח את המודל"
         api_key: "מפתח ה־API של השירות שמארח את המודל"
+        enabled_chat_bot: "לאפשר בוט בינה מלאכותית"
+        ai_bot_user: "משתמש בוט בינה מלאכותית"
         save: "שמירה"
         edit: "עריכה"
         saved: "מודל ה־LLM נשמר"
         back: "חזרה"
         confirm_delete: למחוק את המודל הזה?
         delete: מחיקה
+        srv_warning: ה־LLM (מודל שפה גדול) מצביע לרשומת SRV והכתובת שלו נעולה לעריכה. צריך לעדכן את ההגדרה הנסתרת „ai_vllm_endpoint_srv” במקום.
+        preconfigured_llms: "בחירת ה־LLM שלך"
+        preconfigured:
+          none: "הגדרה ידנית…"
+        next:
+          title: "הבא"
         tests:
           title: "הרצת בדיקה"
           running: "הבדיקה רצה…"
@@ -234,6 +226,10 @@ he:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+        provider_fields:
+          access_key_id: "מזהה מפתח גישה ל־AWS Bedrock"
+          region: "אזור של AWS Bedrock"
+          organization: "מזהה ארגון OpenAI כרשות"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"

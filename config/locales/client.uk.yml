@@ -48,6 +48,8 @@ uk:
         edit: "Редагувати"
         back: "Назад"
         delete: Видалити
+        next:
+          title: "Далі"
         tests:
           title: "Виконати Тест"
           success: "Успіх!"

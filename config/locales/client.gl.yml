@@ -46,6 +46,8 @@ gl:
         edit: "Editar"
         back: "Volver"
         delete: Eliminar
+        next:
+          title: "Seguinte"
         tests:
           title: "Executar proba"
           success: "Feito!"

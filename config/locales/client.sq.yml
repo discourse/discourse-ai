@@ -45,6 +45,8 @@ sq:
         edit: "Redakto"
         back: "Kthehu mbrapa"
         delete: Fshij
+        next:
+          title: "Vazhdo përpara"
         providers:
           google: "Google"
       ai_helper:

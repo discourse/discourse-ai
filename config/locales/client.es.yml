@@ -12,12 +12,6 @@ es:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -118,6 +112,8 @@ es:
         edit: "Editar"
         back: "Atrás"
         delete: Eliminar
+        next:
+          title: "Siguiente"
         tests:
           title: "Realizar prueba"
           success: "Éxito!"

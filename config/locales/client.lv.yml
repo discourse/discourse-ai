@@ -46,6 +46,8 @@ lv:
         edit: "Rediģēt"
         back: "Atpakaļ"
         delete: Dzēst
+        next:
+          title: "Nākamais"
         tests:
           success: "Veiksmīgi!"
         providers:

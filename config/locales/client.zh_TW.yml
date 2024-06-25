@@ -44,6 +44,8 @@ zh_TW:
         edit: "編輯"
         back: "上一步"
         delete: 刪除
+        next:
+          title: "下一步"
         tests:
           title: "執行測試"
           success: "成功!"

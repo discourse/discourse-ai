@@ -46,6 +46,8 @@ et:
         edit: "Muuda"
         back: "Tagasi"
         delete: Kustuta
+        next:
+          title: "Järgmine"
         tests:
           success: "Korras!"
         providers:
