@@ -31,8 +31,11 @@ module DiscourseAi
         end
 
         def invoke
-          runner = ai_tool.runner(parameters, llm: llm, bot_user: bot_user, context: context)
           runner.invoke
+        end
+
+        def runner
+          @runner ||= ai_tool.runner(parameters, llm: llm, bot_user: bot_user, context: context)
         end
 
         def ai_tool
@@ -44,7 +47,7 @@ module DiscourseAi
         end
 
         def details
-          ai_tool.details
+          runner.details
         end
 
         def help

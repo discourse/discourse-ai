@@ -28,12 +28,6 @@ export default class AiToolListEditor extends Component {
         </div>
 
         <table class="content-list ai-tool-list-editor">
-          <thead>
-            <tr>
-              <th>{{i18n "discourse_ai.ai_tool.name"}}</th>
-              <th></th>
-            </tr>
-          </thead>
           <tbody>
             {{#each @tools as |tool|}}
               <tr data-tool-id={{tool.id}} class="ai-tool-list__row">
@@ -54,7 +48,7 @@ export default class AiToolListEditor extends Component {
                     @route="adminPlugins.show.discourse-ai-tools.show"
                     @model={{tool}}
                     class="btn btn-text btn-small"
-                  >{{i18n "discourse_ai.ai_tool.edit"}} </LinkTo>
+                  >{{i18n "discourse_ai.tools.edit"}} </LinkTo>
                 </td>
               </tr>
             {{/each}}

@@ -9,15 +9,19 @@ import { inject as service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";
+import DTooltip from "discourse/components/d-tooltip";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "discourse-i18n";
 import AceEditor from "admin/components/ace-editor";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
+import AiToolTestModal from "./modal/ai-tool-test-modal";
 
 export default class AiToolEditor extends Component {
   @service router;
   @service store;
   @service dialog;
+  @service modal;
+  @service toasts;
 
   @tracked isSaving = false;
   @tracked editingModel = null;
@@ -42,10 +46,19 @@ export default class AiToolEditor extends Component {
           "name",
           "description",
           "parameters",
-          "script"
+          "script",
+          "summary"
         )
       );
-      this.args.tools.pushObject(this.args.model);
+
+      this.toasts.success({
+        data: { message: I18n.t("discourse_ai.tools.saved") },
+        duration: 2000,
+      });
+      if (!this.args.tools.any((tool) => tool.id === this.args.model.id)) {
+        this.args.tools.pushObject(this.args.model);
+      }
+
       this.router.transitionTo(
         "adminPlugins.show.discourse-ai-tools.show",
         this.args.model
@@ -73,13 +86,17 @@ export default class AiToolEditor extends Component {
   }
 
   @action
-  updateParameters(parameters) {
-    this.editingModel.parameters = parameters;
+  updateScript(script) {
+    this.editingModel.script = script;
   }
 
   @action
-  updateScript(script) {
-    this.editingModel.script = script;
+  openTestModal() {
+    this.modal.show(AiToolTestModal, {
+      model: {
+        tool: this.editingModel,
+      },
+    });
   }
 
   <template>
@@ -100,20 +117,34 @@ export default class AiToolEditor extends Component {
           @value={{this.editingModel.name}}
           class="ai-tool-editor__name"
         />
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t "discourse_ai.tools.name_help"}}
+        />
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.tools.description"}}</label>
         <Textarea
           @value={{this.editingModel.description}}
           class="ai-tool-editor__description"
+          placeholder={{I18n.t "discourse_ai.tools.description_help"}}
+        />
+      </div>
+      <div class="control-group">
+        <label>{{I18n.t "discourse_ai.tools.summary"}}</label>
+        <Input
+          @type="text"
+          @value={{this.editingModel.summary}}
+          class="ai-tool-editor__summary"
+        />
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t "discourse_ai.tools.summary_help"}}
         />
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.tools.parameters"}}</label>
-        <AiToolParameterEditor
-          @parameters={{this.editingModel.parameters}}
-          @onChange={{this.updateParameters}}
-        />
+        <AiToolParameterEditor @parameters={{this.editingModel.parameters}} />
       </div>
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.tools.script"}}</label>
@@ -126,6 +157,9 @@ export default class AiToolEditor extends Component {
         />
       </div>
       <div class="control-group ai-tool-editor__action_panel">
+        <DButton @action={{this.openTestModal}} class="btn-default">{{I18n.t
+            "discourse_ai.tools.test"
+          }}</DButton>
         <DButton
           class="btn-primary ai-tool-editor__save"
           @action={{this.save}}
@@ -136,7 +170,7 @@ export default class AiToolEditor extends Component {
             @action={{this.delete}}
             class="btn-danger ai-tool-editor__delete"
           >
-            {{I18n.t "discourse_ai.ai_tool.delete"}}
+            {{I18n.t "discourse_ai.tools.delete"}}
           </DButton>
         {{/if}}
       </div>

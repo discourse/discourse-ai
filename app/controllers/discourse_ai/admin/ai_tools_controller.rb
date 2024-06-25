@@ -78,7 +78,6 @@ module DiscourseAi
           :description,
           :script,
           :summary,
-          :details,
           parameters: %i[name type description],
         )
       end

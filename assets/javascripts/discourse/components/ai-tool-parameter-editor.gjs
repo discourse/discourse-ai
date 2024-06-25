@@ -8,19 +8,19 @@ import DButton from "discourse/components/d-button";
 import I18n from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
 
-const PARAMETER_TYPES = ["string", "number", "boolean", "array"];
+const PARAMETER_TYPES = [
+  { name: "string", id: "string" },
+  { name: "integer", id: "integer" },
+  { name: "boolean", id: "boolean" },
+  { name: "array", id: "array" },
+];
 
 export default class AiToolParameterEditor extends Component {
   @tracked parameters = [];
 
-  constructor() {
-    super(...arguments);
-    this.parameters = this.args.parameters || [];
-  }
-
   @action
   addParameter() {
-    this.parameters.pushObject({
+    this.args.parameters.pushObject({
       name: "",
       description: "",
       type: "string",
@@ -32,13 +32,12 @@ export default class AiToolParameterEditor extends Component {
 
   @action
   removeParameter(parameter) {
-    this.parameters.removeObject(parameter);
+    this.args.parameters.removeObject(parameter);
   }
 
   @action
   updateParameter(parameter, field, value) {
     parameter[field] = value;
-    this.args.onChange(this.parameters);
   }
 
   @action
@@ -53,38 +52,23 @@ export default class AiToolParameterEditor extends Component {
   @action
   addEnumValue(parameter) {
     parameter.enumValues.pushObject("");
-    this.args.onChange(this.parameters);
   }
 
   @action
   removeEnumValue(parameter, index) {
     parameter.enumValues.removeAt(index);
-    this.args.onChange(this.parameters);
   }
 
   <template>
-    {{#each this.parameters as |parameter|}}
+    {{#each @parameters as |parameter|}}
       <div class="ai-tool-parameter">
         <div class="parameter-row">
           <Input
             @type="text"
             @value={{parameter.name}}
             placeholder={{I18n.t "discourse_ai.tools.parameter_name"}}
-            {{on
-              "input"
-              (fn this.updateParameter parameter "name" value="target.value")
-            }}
           />
-          <ComboBox
-            @value={{parameter.type}}
-            @content={{PARAMETER_TYPES}}
-            @onChange={{fn this.updateParameter parameter "type"}}
-          />
-          <DButton
-            @icon="trash-alt"
-            @action={{fn this.removeParameter parameter}}
-            class="btn-danger"
-          />
+          <ComboBox @value={{parameter.type}} @content={{PARAMETER_TYPES}} />
         </div>
         <div class="parameter-row">
           <Input
@@ -127,6 +111,11 @@ export default class AiToolParameterEditor extends Component {
             />
             {{I18n.t "discourse_ai.tools.parameter_enum"}}
           </label>
+          <DButton
+            @icon="trash-alt"
+            @action={{fn this.removeParameter parameter}}
+            class="btn-danger"
+          />
         </div>
         {{#if parameter.enum}}
           <div class="parameter-enum-values">

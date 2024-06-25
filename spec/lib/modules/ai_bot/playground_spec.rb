@@ -68,10 +68,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       AiTool.create!(
         name: "search",
         summary: "searching for things",
-        details: "Performing a deep search for a lot of stuff",
         description: "A test custom tool",
         parameters: [{ name: "query", type: "string", description: "Input for the custom tool" }],
-        script: "function invoke(params) { return 'Custom tool result: ' + params.query; }",
+        script:
+          "function invoke(params) { return 'Custom tool result: ' + params.query; }; function details() { return 'did stuff'; }",
         created_by: user,
       )
     end
@@ -109,7 +109,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expected = <<~TXT.strip
         <details>
           <summary>searching for things</summary>
-          <p>Performing a deep search for a lot of stuff</p>
+          <p>did stuff</p>
         </details>
         <span></span>
 

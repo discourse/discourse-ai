@@ -7,7 +7,6 @@ class CreateAiTools < ActiveRecord::Migration[7.0]
       t.string :description, null: false, max_length: 1000
 
       t.string :summary, null: false, max_length: 255
-      t.text :details, null: false, max_length: 1000
 
       t.jsonb :parameters, null: false, default: {}
       t.text :script, null: false, max_length: 100_000

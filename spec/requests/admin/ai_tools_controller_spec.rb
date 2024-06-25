@@ -9,7 +9,6 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       script: "function invoke(params) { return params; }",
       parameters: [{ name: "query", type: "string", description: "perform a search" }],
       summary: "Test tool summary",
-      details: "Test tool details",
       created_by_id: -1,
     )
   end
@@ -43,7 +42,6 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
         parameters: [{ name: "query", type: "string", description: "perform a search" }],
         script: "function invoke(params) { return params; }",
         summary: "Test tool summary",
-        details: "Test tool details",
       }
     end
 

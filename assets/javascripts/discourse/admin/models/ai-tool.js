@@ -1,6 +1,14 @@
 import RestModel from "discourse/models/rest";
 
-const CREATE_ATTRIBUTES = ["id", "name", "description", "parameters", "script"];
+const CREATE_ATTRIBUTES = [
+  "id",
+  "name",
+  "description",
+  "parameters",
+  "script",
+  "summary",
+  "enabled",
+];
 
 export default class AiTool extends RestModel {
   createProperties() {
