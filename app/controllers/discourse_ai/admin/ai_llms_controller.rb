@@ -35,6 +35,7 @@ module DiscourseAi
       def create
         llm_model = LlmModel.new(ai_llm_params)
         if llm_model.save
+          llm_model.toggle_companion_user
           render json: { ai_persona: llm_model }, status: :created
         else
           render_json_error llm_model
@@ -69,6 +70,10 @@ module DiscourseAi
             )
           )
         end
+
+        # Clean up companion users
+        llm_model.enabled_chat_bot = false
+        llm_model.toggle_companion_user
 
         if llm_model.destroy
           head :no_content

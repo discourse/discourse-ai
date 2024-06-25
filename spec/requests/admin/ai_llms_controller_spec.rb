@@ -3,7 +3,10 @@
 RSpec.describe DiscourseAi::Admin::AiLlmsController do
   fab!(:admin)
 
-  before { sign_in(admin) }
+  before do
+    sign_in(admin)
+    SiteSetting.ai_bot_enabled = true
+  end
 
   describe "GET #index" do
     it "includes all available providers metadata" do
@@ -40,6 +43,17 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         expect(created_model.provider).to eq(valid_attrs[:provider])
         expect(created_model.tokenizer).to eq(valid_attrs[:tokenizer])
         expect(created_model.max_prompt_tokens).to eq(valid_attrs[:max_prompt_tokens])
+      end
+
+      it "creates a companion user" do
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm: valid_attrs.merge(enabled_chat_bot: true),
+             }
+
+        created_model = LlmModel.last
+
+        expect(created_model.user_id).to be_present
       end
 
       it "stores provider-specific config params" do
@@ -92,6 +106,27 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         put "/admin/plugins/discourse-ai/ai-llms/9999999.json"
 
         expect(response.status).to eq(404)
+      end
+
+      it "creates a companion user" do
+        put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",
+            params: {
+              ai_llm: update_attrs.merge(enabled_chat_bot: true),
+            }
+
+        expect(llm_model.reload.user_id).to be_present
+      end
+
+      it "removes the companion user when desabling the chat bot option" do
+        llm_model.update!(enabled_chat_bot: true)
+        llm_model.toggle_companion_user
+
+        put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",
+            params: {
+              ai_llm: update_attrs.merge(enabled_chat_bot: false),
+            }
+
+        expect(llm_model.reload.user_id).to be_nil
       end
     end
 
@@ -189,6 +224,16 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
 
       expect(response.status).to eq(409)
       expect(fake_llm.reload).to eq(fake_llm)
+    end
+
+    it "cleans up companion users before deleting the model" do
+      llm_model.update!(enabled_chat_bot: true)
+      llm_model.toggle_companion_user
+      companion_user = llm_model.user
+
+      delete "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json"
+
+      expect { companion_user.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
