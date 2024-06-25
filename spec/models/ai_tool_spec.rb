@@ -11,6 +11,8 @@ RSpec.describe AiTool do
       parameters: parameters || [{ name: "query", type: "string", desciption: "perform a search" }],
       script: script || "function invoke(params) { return params; }",
       created_by_id: 1,
+      details: "Test tool details",
+      summary: "Test tool summary",
     )
   end
 

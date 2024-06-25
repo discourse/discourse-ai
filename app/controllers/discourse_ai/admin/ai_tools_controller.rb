@@ -43,6 +43,29 @@ module DiscourseAi
         end
       end
 
+      def test
+        if params[:id].present?
+          ai_tool = AiTool.find(params[:id])
+        else
+          ai_tool = AiTool.new(ai_tool_params)
+        end
+
+        parameters = params[:parameters].to_unsafe_h
+
+        runner = ai_tool.runner(parameters, llm: nil, bot_user: current_user, context: {})
+        result = runner.invoke
+
+        if result.is_a?(Hash) && result[:error]
+          render_json_error result[:error]
+        else
+          render json: { output: result }
+        end
+      rescue ActiveRecord::RecordNotFound => e
+        render_json_error e.message, status: 400
+      rescue => e
+        render_json_error "Error executing the tool: #{e.message}", status: 400
+      end
+
       private
 
       def find_ai_tool
@@ -54,6 +77,8 @@ module DiscourseAi
           :name,
           :description,
           :script,
+          :summary,
+          :details,
           parameters: %i[name type description],
         )
       end

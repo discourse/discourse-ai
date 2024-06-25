@@ -8,6 +8,8 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       description: "A test tool",
       script: "function invoke(params) { return params; }",
       parameters: [{ name: "query", type: "string", description: "perform a search" }],
+      summary: "Test tool summary",
+      details: "Test tool details",
       created_by_id: -1,
     )
   end
@@ -40,6 +42,8 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
         description: "A test tool",
         parameters: [{ name: "query", type: "string", description: "perform a search" }],
         script: "function invoke(params) { return params; }",
+        summary: "Test tool summary",
+        details: "Test tool details",
       }
     end
 
@@ -79,6 +83,69 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       ).by(-1)
 
       expect(response).to have_http_status(:no_content)
+    end
+  end
+
+  describe "#test" do
+    it "runs an existing tool and returns the result" do
+      post "/admin/plugins/discourse-ai/ai-tools/test.json",
+           params: {
+             id: ai_tool.id,
+             parameters: {
+               input: "Hello, World!",
+             },
+           }
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["output"]).to eq("input" => "Hello, World!")
+    end
+
+    it "runs a new unsaved tool and returns the result" do
+      post "/admin/plugins/discourse-ai/ai-tools/test.json",
+           params: {
+             ai_tool: {
+               name: "New Tool",
+               description: "A new test tool",
+               script: "function invoke(params) { return 'New test result: ' + params.input; }",
+               parameters: [
+                 { name: "input", type: "string", description: "Input for the new test tool" },
+               ],
+             },
+             parameters: {
+               input: "Test input",
+             },
+           }
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["output"]).to eq("New test result: Test input")
+    end
+
+    it "returns an error for invalid tool_id" do
+      post "/admin/plugins/discourse-ai/ai-tools/test.json",
+           params: {
+             id: -1,
+             parameters: {
+               input: "Hello, World!",
+             },
+           }
+
+      expect(response.status).to eq(400)
+      expect(response.parsed_body["errors"]).to include("Couldn't find AiTool with 'id'=-1")
+    end
+
+    it "handles exceptions during tool execution" do
+      ai_tool.update!(script: "function invoke(params) { throw new Error('Test error'); }")
+
+      post "/admin/plugins/discourse-ai/ai-tools/test.json",
+           params: {
+             id: ai_tool.id,
+             parameters: {
+               input: "Hello, World!",
+             },
+           }
+
+      expect(response.status).to eq(400)
+      expect(response.parsed_body["errors"].to_s).to include("Error executing the tool")
     end
   end
 end
