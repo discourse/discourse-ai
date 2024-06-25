@@ -46,6 +46,8 @@ el:
         edit: "Επεξεργασία"
         back: "Πίσω"
         delete: Σβήσιμο
+        next:
+          title: "Επόμενο"
         tests:
           title: "Εκτέλεση δοκιμής"
           success: "Επιτυχία!"

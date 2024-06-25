@@ -46,6 +46,8 @@ hr:
         edit: "Uredi"
         back: "Natrag"
         delete: Pobriši
+        next:
+          title: "Sljedeći"
         tests:
           title: "Pokreni test"
           success: "Uspjeh!"

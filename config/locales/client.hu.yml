@@ -46,6 +46,8 @@ hu:
         edit: "Szerkesztés"
         back: "Vissza"
         delete: Törlés
+        next:
+          title: "Tovább"
         tests:
           title: "Teszt futtatása"
           success: "Siker!"

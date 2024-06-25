@@ -12,12 +12,6 @@ zh_CN:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -66,6 +60,9 @@ zh_CN:
             allow_secure_categories:
               label: "允许安全类别"
               description: "允许为安全类别中的话题生成报告"
+            suppress_notifications:
+              label: "禁止通知"
+              description: "通过转换为内容来禁止报告可能生成的通知。这将重新映射提及和内部链接。"
             debug_mode:
               label: "调试模式"
               description: "启用调试模式以查看 LLM 的原始输入和输出"
@@ -101,8 +98,12 @@ zh_CN:
             hide_topic:
               label: "隐藏话题"
               description: "如果触发，使话题对公众不可见"
+            flag_post:
+              label: "发送审查"
+              description: "如果触发，则将帖子放入审核队列，以供版主进行分类"
             model:
               label: "模型"
+              description: "用于分类的语言模型"
     discourse_ai:
       title: "AI"
       modals:
@@ -112,14 +113,41 @@ zh_CN:
         name: 名称
         edit: 编辑
         description: 描述
+        no_llm_selected: "未选择语言模型"
+        max_context_posts: "最大上下文帖子数"
+        max_context_posts_help: "人工智能在回复用户时用作上下文的最大帖子数。(默认为空)"
+        vision_enabled: 已启用视觉（Vision）
+        vision_enabled_help: 如果启用，人工智能将尝试理解用户在主题中发布的图片，这取决于支持视觉（Vision）的模型。Anthropic、Google 和 OpenAI 的最新模型支持该功能。
+        vision_max_pixels: 支持的图像尺寸
+        vision_max_pixel_sizes:
+          low: 低质量 - 最便宜 (256x256)
+          medium: 中等质量 (512x512)
+          high: 高品质 - 最慢 (1024x1024)
+        tool_details: 显示工具详细信息
+        tool_details_help: 将向终端用户显示语言模型触发了哪些工具的详细信息。
+        mentionable: 允许提及
+        mentionable_help: 如果启用，允许群组中的用户可以在帖子中提及该用户，人工智能将以该角色的身份做出回应。
         user: 用户
+        create_user: 创建用户
+        create_user_help: 您可以选择为该角色附加一个用户。如果这样做，人工智能就会使用该用户来回复请求。
+        default_llm: 默认语言模型
+        default_llm_help: 此角色使用的默认语言模型。如果你希望在公开帖子中提及该角色，则必填。
+        question_consolidator_llm: 问题整合器的语言模型
+        question_consolidator_llm_help: 用于问题整合器的语言模型，你可以选择功能较弱的模型来节省成本。
         system_prompt: 系统提示
+        show_indexing_options: "显示上传选项"
+        hide_indexing_options: "隐藏上传选项"
+        allow_chat: "允许聊天"
+        allow_chat_help: "如果启用，允许群组中的用户可以向此角色发送私信"
         save: 保存
         saved: AI 角色已保存
         enabled: "已启用？"
+        tools: 启用工具
         allowed_groups: 允许的群组
         confirm_delete: 确定要删除此角色吗？
+        new: "新角色"
         title: "AI 角色"
+        short_title: "角色"
         delete: 删除
         temperature: 温度
         temperature_help: 用于 LLM 的温度，增大它可提升创造力（留空以使用模型默认值，通常为 0.0 到 2.0 之间的值）
@@ -127,6 +155,7 @@ zh_CN:
         top_p_help: 用于 LLM 的 Top P，增大它可提升创造力（留空以使用模型默认值，通常为 0.0 到 1.0 之间的值）
         priority: 优先
         priority_help: 优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。
+        tool_options: "工具选项"
         uploads:
           title: "上传"
           uploading: "正在上传…"
@@ -135,6 +164,8 @@ zh_CN:
         edit: "编辑"
         back: "返回"
         delete: 删除
+        next:
+          title: "下一步"
         tests:
           title: "运行测试"
           success: "成功!"

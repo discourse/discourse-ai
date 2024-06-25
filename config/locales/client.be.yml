@@ -43,6 +43,8 @@ be:
         edit: "рэдагаваць"
         back: "Назад"
         delete: выдаляць
+        next:
+          title: "Далей"
         tests:
           success: "поспех!"
         providers:

@@ -12,8 +12,6 @@ fa_IR:
           discourse_ai: "هوش مصنوعی دیسکورس"
   js:
     discourse_automation:
-      ai_models:
-        claude_2: Claude 2
       scriptables:
         llm_report:
           fields:
@@ -74,6 +72,8 @@ fa_IR:
         edit: "ویرایش"
         back: "بازگشت"
         delete: حذف
+        next:
+          title: "بعدی"
         tests:
           title: "اجرای آزمایش"
           running: "در حال اجرای آزمایش..."

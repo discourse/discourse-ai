@@ -195,6 +195,10 @@ de:
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
       tool_options:
+        read:
+          read_private:
+            name: "Privat lesen"
+            description: "Erlaube den Zugriff auf alle Themen, auf die der Benutzer Zugriff hat (standardmäßig sind nur öffentliche Themen enthalten)"
         search:
           search_private:
             name: "Suche Privat"

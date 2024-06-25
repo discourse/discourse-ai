@@ -46,6 +46,8 @@ sw:
         edit: "Hariri"
         back: "Iliyopita"
         delete: Futa
+        next:
+          title: "Ijayo"
         tests:
           success: "Mafanikio!"
         providers:

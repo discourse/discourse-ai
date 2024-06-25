@@ -46,6 +46,8 @@ vi:
         edit: "Sửa"
         back: "Quay lại"
         delete: Xóa
+        next:
+          title: "Kế tiếp"
         tests:
           title: "Chạy thử nghiệm"
           success: "Thành công!"

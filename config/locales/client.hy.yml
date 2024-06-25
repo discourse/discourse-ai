@@ -46,6 +46,8 @@ hy:
         edit: "Խմբագրել"
         back: "Ետ"
         delete: Ջնջել
+        next:
+          title: "Հաջորդը"
         tests:
           title: "Մեկնարկել Փորձարկումը"
           success: "Հաջողություն!"

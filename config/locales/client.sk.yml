@@ -48,6 +48,8 @@ sk:
         edit: "Upraviť"
         back: "Späť"
         delete: Odstrániť
+        next:
+          title: "Ďalej"
         tests:
           title: "Spustiť test"
           success: "Úspech!"
