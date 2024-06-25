@@ -44,7 +44,9 @@ module DiscourseAi
         private
 
         def model_uri
-          return URI(llm_model.url) if llm_model&.url
+          if llm_model&.url && !llm_model&.url == LlmModel::RESERVED_VLLM_SRV_URL
+            return URI(llm_model.url)
+          end
 
           service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_vllm_endpoint_srv)
           if service.present?

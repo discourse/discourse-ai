@@ -7,6 +7,6 @@
 sr:
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Pretraži"
         time: "Vreme"

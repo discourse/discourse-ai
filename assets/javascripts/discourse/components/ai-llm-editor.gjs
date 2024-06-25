@@ -1,112 +1,63 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { Input } from "@ember/component";
 import { action } from "@ember/object";
-import { later } from "@ember/runloop";
-import { inject as service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import icon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
-import DTooltip from "float-kit/components/d-tooltip";
+import AiLlmEditorForm from "./ai-llm-editor-form";
 
 export default class AiLlmEditor extends Component {
-  @service toasts;
-  @service router;
-  @service dialog;
+  @tracked presetConfigured = false;
+  presetId = "none";
 
-  @tracked isSaving = false;
-
-  @tracked testRunning = false;
-  @tracked testResult = null;
-  @tracked testError = null;
-
-  get selectedProviders() {
-    const t = (provName) => {
-      return I18n.t(`discourse_ai.llms.providers.${provName}`);
-    };
-
-    return this.args.llms.resultSetMeta.providers.map((prov) => {
-      return { id: prov, name: t(prov) };
-    });
+  get showPresets() {
+    return (
+      this.args.model.isNew && !this.presetConfigured && !this.args.model.url
+    );
   }
 
-  @action
-  async save() {
-    this.isSaving = true;
-    const isNew = this.args.model.isNew;
+  get preConfiguredLlms() {
+    let options = [
+      {
+        id: "none",
+        name: I18n.t(`discourse_ai.llms.preconfigured.none`),
+      },
+    ];
 
-    try {
-      const result = await this.args.model.save();
-
-      this.args.model.setProperties(result.responseJson.ai_persona);
-
-      if (isNew) {
-        this.args.llms.addObject(this.args.model);
-        this.router.transitionTo("adminPlugins.show.discourse-ai-llms.index");
-      } else {
-        this.toasts.success({
-          data: { message: I18n.t("discourse_ai.llms.saved") },
-          duration: 2000,
+    this.args.llms.resultSetMeta.presets.forEach((llm) => {
+      if (llm.models) {
+        llm.models.forEach((model) => {
+          options.push({
+            id: `${llm.id}-${model.name}`,
+            name: model.display_name,
+          });
         });
       }
-    } catch (e) {
-      popupAjaxError(e);
-    } finally {
-      later(() => {
-        this.isSaving = false;
-      }, 1000);
-    }
+    });
+
+    return options;
   }
 
   @action
-  async test() {
-    this.testRunning = true;
+  configurePreset() {
+    this.presetConfigured = true;
 
-    try {
-      const configTestResult = await this.args.model.testConfig();
-      this.testResult = configTestResult.success;
-
-      if (this.testResult) {
-        this.testError = null;
-      } else {
-        this.testError = configTestResult.error;
-      }
-    } catch (e) {
-      popupAjaxError(e);
-    } finally {
-      later(() => {
-        this.testRunning = false;
-      }, 1000);
+    let [id, model] = this.presetId.split(/-(.*)/);
+    if (id === "none") {
+      return;
     }
-  }
 
-  get testErrorMessage() {
-    return I18n.t("discourse_ai.llms.tests.failure", { error: this.testError });
-  }
+    const info = this.args.llms.resultSetMeta.presets.findBy("id", id);
+    const modelInfo = info.models.findBy("name", model);
 
-  get displayTestResult() {
-    return this.testRunning || this.testResult !== null;
-  }
-
-  @action
-  delete() {
-    return this.dialog.confirm({
-      message: I18n.t("discourse_ai.llms.confirm_delete"),
-      didConfirm: () => {
-        return this.args.model
-          .destroyRecord()
-          .then(() => {
-            this.args.llms.removeObject(this.args.model);
-            this.router.transitionTo(
-              "adminPlugins.show.discourse-ai-llms.index"
-            );
-          })
-          .catch(popupAjaxError);
-      },
+    this.args.model.setProperties({
+      max_prompt_tokens: modelInfo.tokens,
+      tokenizer: info.tokenizer,
+      url: modelInfo.endpoint || info.endpoint,
+      display_name: modelInfo.display_name,
+      name: modelInfo.name,
+      provider: info.provider,
     });
   }
 
@@ -115,119 +66,25 @@ export default class AiLlmEditor extends Component {
       @route="adminPlugins.show.discourse-ai-llms"
       @label="discourse_ai.llms.back"
     />
-    <form class="form-horizontal ai-llm-editor">
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.llms.display_name"}}</label>
-        <Input
-          class="ai-llm-editor-input ai-llm-editor__display-name"
-          @type="text"
-          @value={{@model.display_name}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.llms.name"}}</label>
-        <Input
-          class="ai-llm-editor-input ai-llm-editor__name"
-          @type="text"
-          @value={{@model.name}}
-        />
-        <DTooltip
-          @icon="question-circle"
-          @content={{I18n.t "discourse_ai.llms.hints.name"}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.llms.provider"}}</label>
-        <ComboBox
-          @value={{@model.provider}}
-          @content={{this.selectedProviders}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.llms.url"}}</label>
-        <Input
-          class="ai-llm-editor-input ai-llm-editor__url"
-          @type="text"
-          @value={{@model.url}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.llms.api_key"}}</label>
-        <Input
-          class="ai-llm-editor-input ai-llm-editor__api-key"
-          @type="text"
-          @value={{@model.api_key}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.llms.tokenizer"}}</label>
-        <ComboBox
-          @value={{@model.tokenizer}}
-          @content={{@llms.resultSetMeta.tokenizers}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.llms.max_prompt_tokens"}}</label>
-        <Input
-          @type="number"
-          class="ai-llm-editor-input ai-llm-editor__max-prompt-tokens"
-          step="any"
-          min="0"
-          lang="en"
-          @value={{@model.max_prompt_tokens}}
-        />
-        <DTooltip
-          @icon="question-circle"
-          @content={{I18n.t "discourse_ai.llms.hints.max_prompt_tokens"}}
-        />
-      </div>
+    {{#if this.showPresets}}
+      <form class="form-horizontal ai-llm-editor">
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.llms.preconfigured_llms"}}</label>
+          <ComboBox
+            @value={{this.presetId}}
+            @content={{this.preConfiguredLlms}}
+            class="ai-llm-editor__presets"
+          />
+        </div>
 
-      <div class="control-group ai-llm-editor__action_panel">
-        <DButton
-          class="ai-llm-editor__test"
-          @action={{this.test}}
-          @disabled={{this.testRunning}}
-        >
-          {{I18n.t "discourse_ai.llms.tests.title"}}
-        </DButton>
-
-        <DButton
-          class="btn-primary ai-llm-editor__save"
-          @action={{this.save}}
-          @disabled={{this.isSaving}}
-        >
-          {{I18n.t "discourse_ai.llms.save"}}
-        </DButton>
-        {{#unless @model.isNew}}
-          <DButton
-            @action={{this.delete}}
-            class="btn-danger ai-llm-editor__delete"
-          >
-            {{I18n.t "discourse_ai.llms.delete"}}
+        <div class="control-group ai-llm-editor__action_panel">
+          <DButton class="ai-llm-editor__next" @action={{this.configurePreset}}>
+            {{I18n.t "discourse_ai.llms.next.title"}}
           </DButton>
-        {{/unless}}
-      </div>
-
-      <div class="control-group ai-llm-editor-tests">
-        {{#if this.displayTestResult}}
-          {{#if this.testRunning}}
-            <div class="spinner small"></div>
-            {{I18n.t "discourse_ai.llms.tests.running"}}
-          {{else}}
-            {{#if this.testResult}}
-              <div class="ai-llm-editor-tests__success">
-                {{icon "check"}}
-                {{I18n.t "discourse_ai.llms.tests.success"}}
-              </div>
-            {{else}}
-              <div class="ai-llm-editor-tests__failure">
-                {{icon "times"}}
-                {{this.testErrorMessage}}
-              </div>
-            {{/if}}
-          {{/if}}
-        {{/if}}
-      </div>
-    </form>
+        </div>
+      </form>
+    {{else}}
+      <AiLlmEditorForm @model={{@model}} @llms={{@llms}} />
+    {{/if}}
   </template>
 }

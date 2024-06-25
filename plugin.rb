@@ -45,6 +45,8 @@ after_initialize do
 
   add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
 
+  LlmModel.enable_or_disable_srv_llm!
+
   [
     DiscourseAi::Embeddings::EntryPoint.new,
     DiscourseAi::Nsfw::EntryPoint.new,

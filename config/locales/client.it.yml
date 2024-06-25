@@ -12,12 +12,6 @@ it:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -104,14 +98,12 @@ it:
         save: Salva
         saved: Personaggio IA salvato
         enabled: "Abilitato?"
-        commands: Comandi abilitati
         allowed_groups: Gruppi ammessi
         confirm_delete: Vuoi davvero eliminare questo personaggio?
         title: "Personaggi IA"
         delete: Elimina
         priority: Priorità
         priority_help: I personaggi prioritari vengono visualizzati agli utenti nella parte superiore dell'elenco dei personaggi. Se più personaggi hanno la priorità, verranno ordinati in ordine alfabetico.
-        command_options: "Opzioni di comando"
         uploads:
           title: "Caricamenti"
           uploading: "Caricamento..."
@@ -120,6 +112,8 @@ it:
         edit: "Modifica"
         back: "Indietro"
         delete: Elimina
+        next:
+          title: "Avanti"
         tests:
           title: "Esegui test"
           success: "Riuscito!"

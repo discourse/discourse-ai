@@ -156,7 +156,6 @@ tr_TR:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
-        cannot_edit_system_persona: "Sistem kişileri yalnızca yeniden adlandırılabilir, komutları veya sistem istemini düzenleyemezsiniz, bunun yerine devre dışı bırakıp bir kopyasını oluşturabilirsiniz"
         github_helper:
           name: "GitHub Yardımcısı"
           description: "GitHub ile ilgili görevlere ve sorulara yardımcı olma konusunda uzmanlaşmış yapay zeka botu"
@@ -187,7 +186,7 @@ tr_TR:
       topic_not_found: "Özet mevcut değil, konu bulunamadı!"
       summarizing: "Konu özetleniyor"
       searching: "Aranıyor: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Maksimum sonuç sayısı"
@@ -195,7 +194,7 @@ tr_TR:
           base_query:
             name: "Temel Arama Sorgusu"
             description: "Arama yaparken kullanılacak temel sorgu. Örnek: '#urgent', arama sorgusuna '#urgent' ekler ve yalnızca acil kategorisine veya etiketine sahip konuları içerir."
-      command_summary:
+      tool_summary:
         web_browser: "Web'e Gözat"
         github_search_code: "GitHub kodu arama"
         github_file_content: "GitHub dosya içeriği"
@@ -214,7 +213,7 @@ tr_TR:
         search_settings: "Site ayarları aranıyor"
         dall_e: "Görüntü oluştur"
         search_meta_discourse: "Discourse Metada arama yapın"
-      command_help:
+      tool_help:
         web_browser: "Yapay Zeka Botunu kullanarak web sayfasına göz atın"
         github_search_code: "GitHub deposunda kod arama"
         github_file_content: "Bir GitHub deposundan dosyaların içeriğini alma"
@@ -233,7 +232,7 @@ tr_TR:
         search_settings: "Site ayarlarını ara"
         dall_e: "DALL-E 3 kullanarak görüntü oluştur"
         search_meta_discourse: "Discourse Metada arama yapın"
-      command_description:
+      tool_description:
         web_browser: "Okunuyor <a href='%{url}'>%{url}</a>"
         github_search_code: "%{repo} içinde '%{query}' araması yapıldı"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"

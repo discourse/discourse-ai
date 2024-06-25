@@ -54,6 +54,7 @@ he:
     ai_openai_embeddings_url: "כתובת מותאמת אישית ל־API ההטמעות של OpenAI. (במקרה של Azure זה יכול להיות: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "מפתח API ל־API של OpenAI"
     ai_anthropic_api_key: "מפתח API ל־API של Anthropic"
+    ai_anthropic_native_tool_call_models: "רשימת דגמים שישתמשו בקריאות כלי טבעיות לעומת כלים מיושנים מבוססי XML."
     ai_cohere_api_key: "מפתח API ל־API של Cohere"
     ai_hugging_face_api_url: "כתובת משלך להסקה על בסיס OpenSource LLM. עם תאימות ל־https://github.com/huggingface/text-generation-inference"
     ai_hugging_face_api_key: מפתח API ל־API של Hugging Face
@@ -98,6 +99,7 @@ he:
     ai_bot_enable_chat_warning: "הצגת אזהרה עם פתיחת שיח הודעות פרטיות. אפשר לדרוס את זה על ידי עריכת מחרוזת התרגום: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "כאשר לבוט של GPT יש גישה להודעות הפרטיות, הוא יגיב לחברים בקבוצות האלה."
     ai_bot_debugging_allowed_groups: "לאפשר לקבוצות האלו לצפות בכפתור ניפוי שיאות שמציג את בקשת ותגובה הבינה המלאכותית באופן גולמי"
+    ai_bot_public_sharing_allowed_groups: "לאפשר לקבוצות האלה לשתף הודעות אישיות של בינה למאכותית עם הציבור באמצעות קישור ייחודי גלוי לציבור. הערה: אם האתר שלך דורש כניסה, גם שיתופים ידרשו כניסה."
     ai_bot_enabled_chat_bots: "מודלים זמינים שיכהנו כבוט בינה מלאכותית"
     ai_bot_add_to_header: "הצגת כפתור בכותרת כדי לפתוח הודעה פרטית עם בוט בינה מלאכותית"
     ai_bot_github_access_token: "אסימון גישה ל־GitHub לשימוש עם כלי הבינה המלאכותית של GitHub (נחוץ לתמיכה בחיפוש)"
@@ -161,7 +163,7 @@ he:
       personas:
         default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
-        cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך פקודות או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
+        cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך כלים או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
         github_helper:
           name: "מסייע GitHub"
           description: "בוט בינה מלאכותית שמסייע במשימות ובשאלות שקשורות ב־GitHub"
@@ -192,7 +194,11 @@ he:
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
-      command_options:
+      tool_options:
+        read:
+          read_private:
+            name: "קריאה פרטית"
+            description: "לאפשר גישה לכל הנושאים שיש למשתמש גישה אליהם (כברירת מחדל רק נושאים ציבוריים כלולים)"
         search:
           search_private:
             name: "חיפוש פרטי"
@@ -203,7 +209,7 @@ he:
           base_query:
             name: "שאילתת חיפוש בסיסית"
             description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‚‎#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
-      command_summary:
+      tool_summary:
         web_browser: "גלישה באינטרנט"
         github_search_files: "חיפוש קבצים ב־GitHub"
         github_search_code: "חיפוש קוד ב־GitHub"
@@ -224,7 +230,7 @@ he:
         dall_e: "יצירת תמונה"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
-      command_help:
+      tool_help:
         web_browser: "גלישה באינטרנט באמצעות בוט בינה מלאכותית"
         github_search_code: "חיפוש אחר קוד במאגר GitHub"
         github_search_files: "חיפוש אחר קבצים במאגר GitHub"
@@ -245,7 +251,7 @@ he:
         dall_e: "יצירת תמונה באמצעות DALL-E 3"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
-      command_description:
+      tool_description:
         web_browser: "קורא את <a href='%{url}'>%{url}</a>"
         github_search_files: "בוצע חיפוש אחר ‚%{keywords}’ בתוך %{repo}/%{branch}"
         github_search_code: "בוצע חיפוש אחר ‚%{query}’ בתוך %{repo}"
@@ -258,35 +264,35 @@ he:
         dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
-          one: "נמצאה קטגוריה אחת"
-          two: "נמצאו %{count} קטגוריות"
+          one: "נמצאה קטגוריה"
+          two: "נמצאו שתי קטגוריות"
           many: "נמצאו %{count} קטגוריות"
           other: "נמצאו %{count} קטגוריות"
         tags:
-          one: "נמצאה תגית אחת"
-          two: "נמצאו %{count} תגיות"
+          one: "נמצאה תגית"
+          two: "נמצאו שתי תגיות"
           many: "נמצאו %{count} תגיות"
           other: "נמצאו %{count} תגיות"
         search:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         search_meta_discourse:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         google:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         setting_context: "נקרא הקשר עבור: %{setting_name}"
         schema: "%{tables}"
         search_settings:
           one: "נמצאה תוצאה לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי תוצאות לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
           other: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
     summarization:
@@ -322,6 +328,11 @@ he:
           two: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           many: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           other: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
+      delete_failed:
+        one: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמש בו. נא לעדכן את ההגדרות לנסות שוב."
+        two: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
+        many: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
+        other: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
     embeddings:
       configuration:
         disable_embeddings: "יש להשבית קודם את ‚הטמעת בינה מלאכותית פעילה’."

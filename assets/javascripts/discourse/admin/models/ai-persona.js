@@ -6,7 +6,7 @@ const CREATE_ATTRIBUTES = [
   "id",
   "name",
   "description",
-  "commands",
+  "tools",
   "system_prompt",
   "allowed_group_ids",
   "enabled",
@@ -27,6 +27,7 @@ const CREATE_ATTRIBUTES = [
   "rag_conversation_chunks",
   "question_consolidator_llm",
   "allow_chat",
+  "tool_details",
 ];
 
 const SYSTEM_ATTRIBUTES = [
@@ -48,37 +49,37 @@ const SYSTEM_ATTRIBUTES = [
   "rag_conversation_chunks",
   "question_consolidator_llm",
   "allow_chat",
+  "tool_details",
 ];
 
-class CommandOption {
+class ToolOption {
   @tracked value = null;
 }
 
 export default class AiPersona extends RestModel {
   // this code is here to convert the wire schema to easier to work with object
-  // on the wire we pass in/out commands as an Array.
-  // [[CommandName, {option1: value, option2: value}], CommandName2, CommandName3]
-  // So we rework this into a "commands" property and nested commandOptions
+  // on the wire we pass in/out tools as an Array.
+  // [[ToolName, {option1: value, option2: value}], ToolName2, ToolName3]
+  // So we rework this into a "tools" property and nested toolOptions
   init(properties) {
-    if (properties.commands) {
-      properties.commands = properties.commands.map((command) => {
-        if (typeof command === "string") {
-          return command;
+    if (properties.tools) {
+      properties.tools = properties.tools.map((tool) => {
+        if (typeof tool === "string") {
+          return tool;
         } else {
-          let [commandId, options] = command;
+          let [toolId, options] = tool;
           for (let optionId in options) {
             if (!options.hasOwnProperty(optionId)) {
               continue;
             }
-            this.getCommandOption(commandId, optionId).value =
-              options[optionId];
+            this.getToolOption(toolId, optionId).value = options[optionId];
           }
-          return commandId;
+          return toolId;
         }
       });
     }
     super.init(properties);
-    this.commands = properties.commands;
+    this.tools = properties.tools;
   }
 
   async createUser() {
@@ -93,23 +94,23 @@ export default class AiPersona extends RestModel {
     return this.user;
   }
 
-  getCommandOption(commandId, optionId) {
-    this.commandOptions ||= {};
-    this.commandOptions[commandId] ||= {};
-    return (this.commandOptions[commandId][optionId] ||= new CommandOption());
+  getToolOption(toolId, optionId) {
+    this.toolOptions ||= {};
+    this.toolOptions[toolId] ||= {};
+    return (this.toolOptions[toolId][optionId] ||= new ToolOption());
   }
 
-  populateCommandOptions(attrs) {
-    if (!attrs.commands) {
+  populateToolOptions(attrs) {
+    if (!attrs.tools) {
       return;
     }
-    let commandsWithOptions = [];
-    attrs.commands.forEach((commandId) => {
-      if (typeof commandId !== "string") {
-        commandId = commandId[0];
+    let toolsWithOptions = [];
+    attrs.tools.forEach((toolId) => {
+      if (typeof toolId !== "string") {
+        toolId = toolId[0];
       }
-      if (this.commandOptions && this.commandOptions[commandId]) {
-        let options = this.commandOptions[commandId];
+      if (this.toolOptions && this.toolOptions[toolId]) {
+        let options = this.toolOptions[toolId];
         let optionsWithValues = {};
         for (let optionId in options) {
           if (!options.hasOwnProperty(optionId)) {
@@ -118,12 +119,12 @@ export default class AiPersona extends RestModel {
           let option = options[optionId];
           optionsWithValues[optionId] = option.value;
         }
-        commandsWithOptions.push([commandId, optionsWithValues]);
+        toolsWithOptions.push([toolId, optionsWithValues]);
       } else {
-        commandsWithOptions.push(commandId);
+        toolsWithOptions.push(toolId);
       }
     });
-    attrs.commands = commandsWithOptions;
+    attrs.tools = toolsWithOptions;
   }
 
   updateProperties() {
@@ -131,20 +132,20 @@ export default class AiPersona extends RestModel {
       ? this.getProperties(SYSTEM_ATTRIBUTES)
       : this.getProperties(CREATE_ATTRIBUTES);
     attrs.id = this.id;
-    this.populateCommandOptions(attrs);
+    this.populateToolOptions(attrs);
 
     return attrs;
   }
 
   createProperties() {
     let attrs = this.getProperties(CREATE_ATTRIBUTES);
-    this.populateCommandOptions(attrs);
+    this.populateToolOptions(attrs);
     return attrs;
   }
 
   workingCopy() {
     let attrs = this.getProperties(CREATE_ATTRIBUTES);
-    this.populateCommandOptions(attrs);
+    this.populateToolOptions(attrs);
     return AiPersona.create(attrs);
   }
 }

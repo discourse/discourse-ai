@@ -46,6 +46,8 @@ bs_BA:
         edit: "Edit"
         back: "Prethodno"
         delete: Delete
+        next:
+          title: "Iduće"
         tests:
           title: "Pokreni test"
           success: "Uspjeh!"

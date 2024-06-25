@@ -46,6 +46,8 @@ ur:
         edit: "ترمیم کریں"
         back: "واپس"
         delete: مٹائیں
+        next:
+          title: "اگلا"
         tests:
           title: "ٹیسٹ چلائیں"
           success: "کامیابی!"

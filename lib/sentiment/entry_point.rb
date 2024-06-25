@@ -56,7 +56,7 @@ module DiscourseAi
             data_points.map do |point|
               {
                 req: "sentiment_#{point}",
-                color: point == "positive" ? report.colors[1] : report.colors[3],
+                color: point == "positive" ? report.colors[:lime] : report.colors[:purple],
                 label: I18n.t("discourse_ai.sentiment.reports.overall_sentiment.#{point}"),
                 data:
                   grouped_sentiments.map do |gs|
@@ -105,18 +105,19 @@ module DiscourseAi
               threshold: threshold,
             )
 
+          return report if grouped_emotions.empty?
+
           emotions = %w[sadness disgust fear anger joy surprise]
           level_groups = [[0, 1], [2, 3, 4]]
 
-          return report if grouped_emotions.empty?
-
           report.data =
             level_groups.each_with_index.map do |lg, idx|
+              color = idx == 0 ? :turquoise : :lime
               tl_emotion_avgs = grouped_emotions.select { |ge| lg.include?(ge.trust_level) }
 
               {
                 req: "emotion_tl_#{lg.join}",
-                color: report.colors[idx],
+                color: report.colors[color],
                 label: I18n.t("discourse_ai.sentiment.reports.post_emotion.tl_#{lg.join}"),
                 data:
                   emotions.map do |e|

@@ -126,7 +126,6 @@ fr:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Les personnages système ne peuvent pas être supprimés, veuillez plutôt les désactiver"
-        cannot_edit_system_persona: "Les personnages du système peuvent uniquement être renommés, vous ne pouvez pas modifier les commandes ou l'invite du système, mais seulement les désactiver et en faire une copie"
         general:
           name: Assistant du forum
           description: "Bot IA à usage général capable d'effectuer diverses tâches"
@@ -151,7 +150,7 @@ fr:
       topic_not_found: "Résumé indisponible, sujet introuvable !"
       summarizing: "Synthèse du sujet"
       searching: "Recherche de : '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Nombre maximal de résultats"
@@ -159,7 +158,7 @@ fr:
           base_query:
             name: "Requête de recherche de base"
             description: "Requête de base à utiliser lors de la recherche. Exemple : « #urgent » ajoutera « #urgent » à la requête de recherche et inclura uniquement les sujets avec la catégorie ou l'étiquette correspondante."
-      command_summary:
+      tool_summary:
         categories: "Lister les catégories"
         search: "Rechercher"
         tags: "Répertorier les étiquettes"
@@ -172,7 +171,7 @@ fr:
         schema: "Rechercher le schéma de la base de données"
         search_settings: "Recherche des paramètres du site"
         dall_e: "Générer une image"
-      command_help:
+      tool_help:
         categories: "Répertoriez toutes les catégories visibles publiquement sur le forum"
         search: "Rechercher dans tous les sujets publics sur le forum"
         tags: "Répertorier toutes les étiquettes du forum"
@@ -185,7 +184,7 @@ fr:
         schema: "Rechercher le schéma de la base de données"
         search_settings: "Paramètres du site de recherche"
         dall_e: "Générer une image à l'aide de DALL-E 3"
-      command_description:
+      tool_description:
         read: "Lecture : <a href='%{url}'>%{title}</a>"
         time: "L'heure (%{timezone}) est %{time}"
         summarize: "Résumé de <a href='%{url}'>%{title}</a>"

@@ -126,7 +126,6 @@ ja:
     ai_bot:
       personas:
         cannot_delete_system_persona: "システムペルソナは削除できません。代わりに無効にしてください"
-        cannot_edit_system_persona: "システムペルソナは名前変更のみ可能です。コマンドまたはシステムプロンプトは編集できません。代わりに無効にするかコピーを作成してください"
         general:
           name: フォーラムヘルパー
           description: "さまざまなタスクを実行できる汎用 AI ボット"
@@ -151,7 +150,7 @@ ja:
       topic_not_found: "要約がありません。トピックが見つかりません！"
       summarizing: "トピックの要約を生成中"
       searching: "検索中: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "結果の最大件数"
@@ -159,7 +158,7 @@ ja:
           base_query:
             name: "ベース検索クエリ"
             description: "検索時に使用するベースクエリ。例: '#urgent' は検索クエリの先頭に '#urgent' を追加し、緊急のカテゴリまたはタグを持つトピックのみが含まれます。"
-      command_summary:
+      tool_summary:
         categories: "カテゴリをリスト表示"
         search: "検索"
         tags: "タグをリスト"
@@ -168,11 +167,11 @@ ja:
         image: "画像を生成"
         google: "Google で検索"
         read: "トピックを読む"
-        setting_context: "サイト設定のコンテキストを検索"
-        schema: "データベーススキーマを検索"
+        setting_context: "サイト設定のコンテキストを検索します"
+        schema: "データベーススキーマを検索します"
         search_settings: "サイト設定を検索中"
         dall_e: "画像を生成"
-      command_help:
+      tool_help:
         categories: "フォーラムのすべての公開カテゴリをリストします"
         search: "フォーラムのすべての公開トピックを検索します"
         tags: "フォーラムのすべてのタグをリストします"
@@ -185,7 +184,7 @@ ja:
         schema: "データベーススキーマを検索します"
         search_settings: "サイト設定を検索します"
         dall_e: "DALL-E 3 を使って画像を生成します"
-      command_description:
+      tool_description:
         read: "読み取り中: <a href='%{url}'>%{title}</a>"
         time: "%{timezone} の時刻は %{time} です"
         summarize: "<a href='%{url}'>%{title}</a> の要約"
@@ -196,7 +195,7 @@ ja:
         tags:
           other: "%{count} 個のタグが見つかりました"
         search:
-          other: "「%{query}」の<a href='%{url}'>結果</a> が %{count} 件見つかりました"
+          other: "「%{query}」の<a href='%{url}'>結果</a>が %{count} 件見つかりました"
         search_meta_discourse:
           other: "「%{query}」の<a href='%{url}'>結果</a>が %{count} 件見つかりました"
         google:

@@ -46,6 +46,8 @@ ca:
         edit: "Edita"
         back: "Enrere"
         delete: Suprimeix
+        next:
+          title: "Següent"
         tests:
           title: "Executa el test"
           success: "Èxit!"

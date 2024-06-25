@@ -12,22 +12,6 @@ de:
           discourse_ai: "Discourse-KI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_pro: Gemini 1.5 Pro
-        gemini_1_5_flash: Gemini 1.5 Flash
-        claude_3_opus: Claude 3 Opus
-        claude_3_sonnet: Claude 3 Sonett
-        claude_3_haiku: Claude 3 Haiku
-        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Anleitung V0.1
-        mistral_7b_instruct_v0_2: Mistral 7B Anleitung V0.2
-        command_r: Cohere Befehl R
-        command_r_plus: Cohere Befehl R+
-        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -133,12 +117,14 @@ de:
         max_context_posts: "Max. Kontext-Beiträge"
         max_context_posts_help: "Die maximale Anzahl von Beiträgen, die die KI als Kontext für die Antwort auf einen Nutzer verwenden soll. (leer für Standard)"
         vision_enabled: Vision Aktiviert
-        vision_enabled_help: Wenn diese Funktion aktiviert ist, versucht die KI, die Bilder zu verstehen, die die Benutzer in dem Thema posten, je nachdem, welches Modell das Sehen unterstützt. Anthropic Claude 3 Modelle unterstützen das Sehen.
+        vision_enabled_help: Wenn diese Funktion aktiviert ist, versucht die KI, die Bilder zu verstehen, die Nutzer im Thema posten. Unterstützt von den neuesten Modellen von Anthropic, Google und OpenAI.
         vision_max_pixels: Unterstützte Bildgröße
         vision_max_pixel_sizes:
           low: Niedrige Qualität - am günstigsten (256x256)
           medium: Mittlere Qualität (512x512)
           high: Hohe Qualität — am langsamsten (1024x1024)
+        tool_details: Werkzeugdetails anzeigen
+        tool_details_help: Zeigt den Endnutzern Details darüber, welche Tools das Sprachmodell ausgelöst hat.
         mentionable: Erwähnungen zulassen
         mentionable_help: Wenn diese Funktion aktiviert ist, können Benutzer in erlaubten Gruppen diese Persona in Beiträgen erwähnen und die KI wird als diese Persona antworten.
         user: Benutzer
@@ -156,7 +142,7 @@ de:
         save: Speichern
         saved: KI-Persona gespeichert
         enabled: "Aktiviert?"
-        commands: Aktivierte Befehle
+        tools: Aktivierte Werkzeuge
         allowed_groups: Erlaubte Gruppen
         confirm_delete: Bist du sicher, dass du diese Persona löschen willst?
         new: "Neue Persona"
@@ -169,7 +155,7 @@ de:
         top_p_help: Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (leer lassen, um die Modellvorgabe zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)
         priority: Priorität
         priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
-        command_options: "Befehlsoptionen"
+        tool_options: "Werkzeugoptionen"
         rag_chunk_tokens: "Chunk-Token hochladen"
         rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu erhöhen, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads)"
         rag_chunk_overlap_tokens: "Chunk-Überlappungs-Token hochladen"
@@ -208,12 +194,20 @@ de:
         max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung"
         url: "URL des Dienstes, der das Modell hostet"
         api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
+        enabled_chat_bot: "KI-Bot zulassen"
+        ai_bot_user: "KI Bot Benutzer"
         save: "Speichern"
         edit: "Bearbeiten"
         saved: "LLM-Modell gespeichert"
         back: "Zurück"
         confirm_delete: Bist du sicher, dass du dieses Modell löschen willst?
         delete: Löschen
+        srv_warning: Dieses LLM verweist auf einen SRV-Eintrag und seine URL ist nicht editierbar. Du musst stattdessen die versteckte Einstellung "ai_vllm_endpoint_srv" aktualisieren.
+        preconfigured_llms: "Wähle deinen LLM"
+        preconfigured:
+          none: "Manuell konfigurieren..."
+        next:
+          title: "Nächstes"
         tests:
           title: "Test ausführen"
           running: "Test wird aufgeführt..."
@@ -232,6 +226,10 @@ de:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+        provider_fields:
+          access_key_id: "AWS Bedrock Zugangsschlüssel-ID"
+          region: "AWS Bedrock Region"
+          organization: "Optionale OpenAI-Organisations-ID"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"

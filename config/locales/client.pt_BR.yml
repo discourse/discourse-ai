@@ -12,12 +12,6 @@ pt_BR:
           discourse_ai: "Discourse IA"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -105,14 +99,12 @@ pt_BR:
         save: Salvar
         saved: Persona de IA salva
         enabled: "Ativado(a)?"
-        commands: Comandos ativados
         allowed_groups: Grupos permitidos
         confirm_delete: Você tem certeza de que deseja excluir esta persona?
         title: "Personas de IA"
         delete: Excluir
         priority: Prioridade
         priority_help: Personas de prioridade são exibidas aos(às) usuários(as) no topo da lista de personas. Se várias personas tiverem prioridade, serão escolhidas em ordem alfabética.
-        command_options: "Opções de comando"
         uploads:
           title: "Envios"
           uploading: "Enviando..."
@@ -121,6 +113,8 @@ pt_BR:
         edit: "Editar"
         back: "Voltar"
         delete: Excluir
+        next:
+          title: "Próximo"
         tests:
           title: "Executar Teste"
           success: "Sucesso!"

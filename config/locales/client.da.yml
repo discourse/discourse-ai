@@ -46,6 +46,8 @@ da:
         edit: "Rediger"
         back: "Tilbage"
         delete: Slet
+        next:
+          title: "Næste"
         tests:
           title: "Kør test"
           success: "Succes!"

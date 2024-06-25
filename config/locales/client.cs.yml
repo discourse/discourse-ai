@@ -46,6 +46,8 @@ cs:
         edit: "Upravit"
         back: "Zpět"
         delete: Smazat
+        next:
+          title: "Další"
         tests:
           title: "Spustit test"
           success: "Úspěch!"

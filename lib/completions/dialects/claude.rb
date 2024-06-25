@@ -6,9 +6,7 @@ module DiscourseAi
       class Claude < Dialect
         class << self
           def can_translate?(model_name)
-            %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus].include?(
-              model_name,
-            )
+            model_name.start_with?("claude") || model_name.start_with?("anthropic")
           end
         end
 
@@ -22,6 +20,10 @@ module DiscourseAi
             @messages = messages
             @tools = tools
           end
+
+          def has_tools?
+            tools.present?
+          end
         end
 
         def tokenizer
@@ -32,6 +34,10 @@ module DiscourseAi
           messages = super
 
           system_prompt = messages.shift[:content] if messages.first[:role] == "system"
+
+          if !system_prompt && !native_tool_support?
+            system_prompt = tools_dialect.instructions.presence
+          end
 
           interleving_messages = []
           previous_message = nil
@@ -48,11 +54,10 @@ module DiscourseAi
             previous_message = message
           end
 
-          ClaudePrompt.new(
-            system_prompt.presence,
-            interleving_messages,
-            tools_dialect.translated_tools,
-          )
+          tools = nil
+          tools = tools_dialect.translated_tools if native_tool_support?
+
+          ClaudePrompt.new(system_prompt.presence, interleving_messages, tools)
         end
 
         def max_prompt_tokens
@@ -62,18 +67,28 @@ module DiscourseAi
           200_000 # Claude-3 has a 200k context window for now
         end
 
+        def native_tool_support?
+          SiteSetting.ai_anthropic_native_tool_call_models_map.include?(model_name)
+        end
+
         private
 
         def tools_dialect
-          @tools_dialect ||= DiscourseAi::Completions::Dialects::ClaudeTools.new(prompt.tools)
+          if native_tool_support?
+            @tools_dialect ||= DiscourseAi::Completions::Dialects::ClaudeTools.new(prompt.tools)
+          else
+            super
+          end
         end
 
         def tool_call_msg(msg)
-          tools_dialect.from_raw_tool_call(msg)
+          translated = tools_dialect.from_raw_tool_call(msg)
+          { role: "assistant", content: translated }
         end
 
         def tool_msg(msg)
-          tools_dialect.from_raw_tool(msg)
+          translated = tools_dialect.from_raw_tool(msg)
+          { role: "user", content: translated }
         end
 
         def model_msg(msg)

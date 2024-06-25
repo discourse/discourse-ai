@@ -6,7 +6,7 @@ end
 
 # == Schema Information
 #
-# Table name: message_custom_prompts
+# Table name: chat_message_custom_prompts
 #
 #  id            :bigint           not null, primary key
 #  message_id    :bigint           not null
@@ -16,5 +16,5 @@ end
 #
 # Indexes
 #
-#  index_message_custom_prompts_on_message_id  (message_id) UNIQUE
+#  index_chat_message_custom_prompts_on_message_id  (message_id) UNIQUE
 #

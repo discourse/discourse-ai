@@ -133,12 +133,10 @@ class SharedAiConversation < ActiveRecord::Base
   end
 
   def self.build_conversation_data(topic, max_posts: DEFAULT_MAX_POSTS, include_usernames: false)
-    llm_name = nil
-    topic.topic_allowed_users.each do |tu|
-      if DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS.include?(tu.user_id)
-        llm_name = DiscourseAi::AiBot::EntryPoint.find_bot_by_id(tu.user_id)&.llm
-      end
-    end
+    allowed_user_ids = topic.topic_allowed_users.pluck(:user_id)
+    ai_bot_participant = DiscourseAi::AiBot::EntryPoint.find_participant_in(allowed_user_ids)
+
+    llm_name = ai_bot_participant&.llm
 
     llm_name = ActiveSupport::Inflector.humanize(llm_name) if llm_name
     llm_name ||= I18n.t("discourse_ai.unknown_model")
@@ -170,9 +168,7 @@ class SharedAiConversation < ActiveRecord::Base
             cooked: post.cooked,
           }
 
-          mapped[:persona] = persona if ::DiscourseAi::AiBot::EntryPoint::BOT_USER_IDS.include?(
-            post.user_id,
-          )
+          mapped[:persona] = persona if ai_bot_participant&.id == post.user_id
           mapped[:username] = post.user&.username if include_usernames
           mapped
         end,

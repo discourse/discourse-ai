@@ -48,6 +48,8 @@ ko:
         edit: "편집"
         back: "뒤로"
         delete: 삭제하기
+        next:
+          title: "다음"
         tests:
           title: "테스트 실행"
           success: "성공!"

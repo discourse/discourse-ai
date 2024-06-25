@@ -10,7 +10,7 @@ zh_TW:
       yaxis: "日期"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "搜尋"
         time: "時間"
         summarize: "總結"

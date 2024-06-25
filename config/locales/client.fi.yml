@@ -12,12 +12,6 @@ fi:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -104,14 +98,12 @@ fi:
         save: Tallenna
         saved: Tekoälypersoona tallennettu
         enabled: "Otettu käyttöön?"
-        commands: Käytössä olevat komennot
         allowed_groups: Sallitut ryhmät
         confirm_delete: Oletko varma, että haluat poistaa tämän persoonan?
         title: "Tekoälypersoonat"
         delete: Poista
         priority: Prioriteetti
         priority_help: Prioriteettipersoonat näytetään käyttäjille ensimmäisinä persoonaluettelossa. Jos useilla persoonilla on prioriteetti, ne järjestetään aakkosjärjestyksessä.
-        command_options: "Komentoasetukset"
         uploads:
           title: "Lataukset"
           uploading: "Ladataan..."
@@ -120,6 +112,8 @@ fi:
         edit: "Muokkaa"
         back: "Takaisin"
         delete: Poista
+        next:
+          title: "Seuraava"
         tests:
           title: "Suorita testi"
           success: "Onnistui!"

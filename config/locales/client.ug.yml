@@ -48,6 +48,8 @@ ug:
         edit: "تەھرىر"
         back: "كەينى"
         delete: ئۆچۈر
+        next:
+          title: "كېيىنكى"
         tests:
           title: "سىناقنى ئىجرا قىل"
           success: "مۇۋەپپەقىيەتلىك!"

@@ -46,6 +46,8 @@ sl:
         edit: "Uredi"
         back: "Nazaj"
         delete: Izbriši
+        next:
+          title: "Naprej"
         tests:
           success: "Uspeh!"
         providers:

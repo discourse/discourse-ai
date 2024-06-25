@@ -32,4 +32,13 @@
       color: var(--success);
     }
   }
+
+  &__api-key {
+    margin-right: 0.5em;
+  }
+
+  &__secret-api-key-group {
+    display: flex;
+    align-items: center;
+  }
 }

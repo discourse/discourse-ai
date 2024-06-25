@@ -46,6 +46,8 @@ pt:
         edit: "Editar"
         back: "Retroceder"
         delete: Eliminar
+        next:
+          title: "Próximo"
         providers:
           google: "Google"
       ai_helper:

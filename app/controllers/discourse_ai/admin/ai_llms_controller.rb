@@ -6,7 +6,7 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
       def index
-        llms = LlmModel.all
+        llms = LlmModel.all.order(:display_name)
 
         render json: {
                  ai_llms:
@@ -16,6 +16,8 @@ module DiscourseAi
                      root: false,
                    ).as_json,
                  meta: {
+                   provider_params: LlmModel.provider_params,
+                   presets: DiscourseAi::Completions::Llm.presets,
                    providers: DiscourseAi::Completions::Llm.provider_names,
                    tokenizers:
                      DiscourseAi::Completions::Llm.tokenizer_names.map { |tn|
@@ -33,6 +35,7 @@ module DiscourseAi
       def create
         llm_model = LlmModel.new(ai_llm_params)
         if llm_model.save
+          llm_model.toggle_companion_user
           render json: { ai_persona: llm_model }, status: :created
         else
           render_json_error llm_model
@@ -42,7 +45,8 @@ module DiscourseAi
       def update
         llm_model = LlmModel.find(params[:id])
 
-        if llm_model.update(ai_llm_params)
+        if llm_model.update(ai_llm_params(updating: llm_model))
+          llm_model.toggle_companion_user
           render json: llm_model
         else
           render_json_error llm_model
@@ -52,12 +56,7 @@ module DiscourseAi
       def destroy
         llm_model = LlmModel.find(params[:id])
 
-        dependant_settings = %i[ai_helper_model ai_embeddings_semantic_search_hyde_model]
-
-        in_use_by = []
-        dependant_settings.each do |s_name|
-          in_use_by << s_name if SiteSetting.public_send(s_name) == "custom:#{llm_model.id}"
-        end
+        in_use_by = DiscourseAi::Configuration::LlmValidator.new.modules_using(llm_model)
 
         if !in_use_by.empty?
           return(
@@ -72,6 +71,10 @@ module DiscourseAi
           )
         end
 
+        # Clean up companion users
+        llm_model.enabled_chat_bot = false
+        llm_model.toggle_companion_user
+
         if llm_model.destroy
           head :no_content
         else
@@ -84,11 +87,7 @@ module DiscourseAi
 
         llm_model = LlmModel.new(ai_llm_params)
 
-        DiscourseAi::Completions::Llm.proxy_from_obj(llm_model).generate(
-          "How much is 1 + 1?",
-          user: current_user,
-          feature_name: "llm_validator",
-        )
+        DiscourseAi::Configuration::LlmValidator.new.run_test(llm_model)
 
         render json: { success: true }
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed => e
@@ -97,16 +96,32 @@ module DiscourseAi
 
       private
 
-      def ai_llm_params
-        params.require(:ai_llm).permit(
-          :display_name,
-          :name,
-          :provider,
-          :tokenizer,
-          :max_prompt_tokens,
-          :url,
-          :api_key,
-        )
+      def ai_llm_params(updating: nil)
+        permitted =
+          params.require(:ai_llm).permit(
+            :display_name,
+            :name,
+            :provider,
+            :tokenizer,
+            :max_prompt_tokens,
+            :api_key,
+            :enabled_chat_bot,
+          )
+
+        provider = updating ? updating.provider : permitted[:provider]
+        permit_url =
+          (updating && updating.url != LlmModel::RESERVED_VLLM_SRV_URL) ||
+            provider != LlmModel::BEDROCK_PROVIDER_NAME
+
+        permitted[:url] = params.dig(:ai_llm, :url) if permit_url
+
+        extra_field_names = LlmModel.provider_params.dig(provider&.to_sym, :fields).to_a
+        received_prov_params = params.dig(:ai_llm, :provider_params)
+        permitted[:provider_params] = received_prov_params.slice(
+          *extra_field_names,
+        ).permit! if !extra_field_names.empty? && received_prov_params.present?
+
+        permitted
       end
     end
   end

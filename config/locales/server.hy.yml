@@ -10,7 +10,7 @@ hy:
       yaxis: "Ամսաթիվ"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Որոնում"
         time: "Ժամ"
     sentiment:

@@ -12,12 +12,6 @@ nl:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT-4 Turbo
-        gpt_4: GPT-4
-        gpt_3_5_turbo: GPT-3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -104,14 +98,12 @@ nl:
         save: Opslaan
         saved: AI-persona opgeslagen
         enabled: "Ingeschakeld?"
-        commands: Ingeschakelde opdrachten
         allowed_groups: Toegestane groepen
         confirm_delete: Weet je zeker dat je deze persona wilt verwijderen?
         title: "AI-persona's"
         delete: Verwijderen
         priority: Prioriteit
         priority_help: Prioritaire persona's worden bovenaan de personalijst weergegeven voor gebruikers. Als meerdere persona's prioriteit hebben, worden deze alfabetisch gesorteerd.
-        command_options: "Opdrachtopties"
         uploads:
           title: "Uploads"
           uploading: "Uploaden..."
@@ -120,6 +112,8 @@ nl:
         edit: "Bewerken"
         back: "Vorige"
         delete: Verwijderen
+        next:
+          title: "Volgende"
         tests:
           title: "Test uitvoeren"
           success: "Succes!"

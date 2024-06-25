@@ -3,10 +3,12 @@
 require "rails_helper"
 
 RSpec.describe SharedAiConversation, type: :model do
+  fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
+
   before do
     SiteSetting.discourse_ai_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
     SiteSetting.ai_bot_enabled = true
+    toggle_enabled_bots(bots: [claude_2])
   end
 
   fab!(:user)
@@ -19,7 +21,7 @@ RSpec.describe SharedAiConversation, type: :model do
     <p>This is some other text</p>
     HTML
 
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID) }
+  let(:bot_user) { claude_2.reload.user }
   let!(:topic) { Fabricate(:private_message_topic, recipient: bot_user) }
   let!(:post1) { Fabricate(:post, topic: topic, post_number: 1) }
   let!(:post2) { Fabricate(:post, topic: topic, post_number: 2, raw: raw_with_details) }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
-  before { SiteSetting.ai_helper_model = "fake:fake" }
+  before { assign_fake_provider_to(:ai_helper_model) }
 
   describe "#suggest" do
     let(:text_to_proofread) { "The rain in spain stays mainly in the plane." }

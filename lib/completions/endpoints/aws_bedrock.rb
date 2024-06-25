@@ -36,11 +36,22 @@ module DiscourseAi
 
         def default_options(dialect)
           options = { max_tokens: 3_000, anthropic_version: "bedrock-2023-05-31" }
+
+          options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
+            dialect.prompt.has_tools?
           options
         end
 
         def provider_id
           AiApiAuditLog::Provider::Anthropic
+        end
+
+        def xml_tags_to_strip(dialect)
+          if dialect.prompt.has_tools?
+            %w[thinking search_quality_reflection search_quality_score]
+          else
+            []
+          end
         end
 
         private
@@ -51,27 +62,37 @@ module DiscourseAi
         end
 
         def model_uri
-          # See: https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
-          #
-          # FYI there is a 2.0 version of Claude, very little need to support it given
-          # haiku/sonnet are better fits anyway, we map to claude-2.1
-          bedrock_model_id =
-            case model
-            when "claude-2"
-              "anthropic.claude-v2:1"
-            when "claude-3-haiku"
-              "anthropic.claude-3-haiku-20240307-v1:0"
-            when "claude-3-sonnet"
-              "anthropic.claude-3-sonnet-20240229-v1:0"
-            when "claude-instant-1"
-              "anthropic.claude-instant-v1"
-            when "claude-3-opus"
-              "anthropic.claude-3-opus-20240229-v1:0"
-            end
+          if llm_model
+            region = llm_model.lookup_custom_param("region")
 
-          api_url =
-            llm_model&.url ||
+            api_url =
+              "https://bedrock-runtime.#{region}.amazonaws.com/model/#{llm_model.name}/invoke"
+          else
+            # See: https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
+            #
+            # FYI there is a 2.0 version of Claude, very little need to support it given
+            # haiku/sonnet are better fits anyway, we map to claude-2.1
+            bedrock_model_id =
+              case model
+              when "claude-2"
+                "anthropic.claude-v2:1"
+              when "claude-3-haiku"
+                "anthropic.claude-3-haiku-20240307-v1:0"
+              when "claude-3-sonnet"
+                "anthropic.claude-3-sonnet-20240229-v1:0"
+              when "claude-instant-1"
+                "anthropic.claude-instant-v1"
+              when "claude-3-opus"
+                "anthropic.claude-3-opus-20240229-v1:0"
+              when "claude-3-5-sonnet"
+                "anthropic.claude-3-5-sonnet-20240620-v1:0"
+              else
+                model
+              end
+
+            api_url =
               "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
+          end
 
           api_url = @streaming_mode ? (api_url + "-with-response-stream") : api_url
 
@@ -79,9 +100,11 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
+          @native_tool_support = dialect.native_tool_support?
+
           payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
-          payload[:tools] = prompt.tools if prompt.tools.present?
+          payload[:tools] = prompt.tools if prompt.has_tools?
 
           payload
         end
@@ -91,8 +114,10 @@ module DiscourseAi
 
           signer =
             Aws::Sigv4::Signer.new(
-              access_key_id: SiteSetting.ai_bedrock_access_key_id,
-              region: SiteSetting.ai_bedrock_region,
+              access_key_id:
+                llm_model&.lookup_custom_param("access_key_id") ||
+                  SiteSetting.ai_bedrock_access_key_id,
+              region: llm_model&.lookup_custom_param("region") || SiteSetting.ai_bedrock_region,
               secret_access_key: llm_model&.api_key || SiteSetting.ai_bedrock_secret_access_key,
               service: "bedrock",
             )
@@ -169,7 +194,7 @@ module DiscourseAi
         end
 
         def native_tool_support?
-          true
+          @native_tool_support
         end
 
         def chunk_to_string(chunk)

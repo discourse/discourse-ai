@@ -4,26 +4,22 @@ import AiPersona from "discourse/plugins/discourse-ai/discourse/admin/models/ai-
 module("Discourse AI | Unit | Model | ai-persona", function () {
   test("init properties", function (assert) {
     const properties = {
-      commands: [
-        ["CommandName", { option1: "value1", option2: "value2" }],
-        "CommandName2",
-        "CommandName3",
+      tools: [
+        ["ToolName", { option1: "value1", option2: "value2" }],
+        "ToolName2",
+        "ToolName3",
       ],
     };
 
     const aiPersona = AiPersona.create(properties);
 
-    assert.deepEqual(aiPersona.commands, [
-      "CommandName",
-      "CommandName2",
-      "CommandName3",
-    ]);
+    assert.deepEqual(aiPersona.tools, ["ToolName", "ToolName2", "ToolName3"]);
     assert.equal(
-      aiPersona.getCommandOption("CommandName", "option1").value,
+      aiPersona.getToolOption("ToolName", "option1").value,
       "value1"
     );
     assert.equal(
-      aiPersona.getCommandOption("CommandName", "option2").value,
+      aiPersona.getToolOption("ToolName", "option2").value,
       "value2"
     );
   });
@@ -32,7 +28,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
     const properties = {
       id: 1,
       name: "Test",
-      commands: ["CommandName"],
+      tools: ["ToolName"],
       allowed_group_ids: [12],
       system: false,
       enabled: true,
@@ -54,16 +50,17 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       rag_conversation_chunks: 10,
       question_consolidator_llm: "Question Consolidator LLM",
       allow_chat: false,
+      tool_details: true,
     };
 
     const aiPersona = AiPersona.create({ ...properties });
 
-    aiPersona.getCommandOption("CommandName", "option1").value = "value1";
+    aiPersona.getToolOption("ToolName", "option1").value = "value1";
 
     const updatedProperties = aiPersona.updateProperties();
 
     // perform remapping for save
-    properties.commands = [["CommandName", { option1: "value1" }]];
+    properties.tools = [["ToolName", { option1: "value1" }]];
 
     assert.deepEqual(updatedProperties, properties);
   });
@@ -72,7 +69,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
     const properties = {
       id: 1,
       name: "Test",
-      commands: ["CommandName"],
+      tools: ["ToolName"],
       allowed_group_ids: [12],
       system: false,
       enabled: true,
@@ -94,15 +91,16 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       rag_conversation_chunks: 10,
       question_consolidator_llm: "Question Consolidator LLM",
       allow_chat: false,
+      tool_details: true,
     };
 
     const aiPersona = AiPersona.create({ ...properties });
 
-    aiPersona.getCommandOption("CommandName", "option1").value = "value1";
+    aiPersona.getToolOption("ToolName", "option1").value = "value1";
 
     const createdProperties = aiPersona.createProperties();
 
-    properties.commands = [["CommandName", { option1: "value1" }]];
+    properties.tools = [["ToolName", { option1: "value1" }]];
 
     assert.deepEqual(createdProperties, properties);
   });
@@ -110,18 +108,18 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
   test("working copy", function (assert) {
     const aiPersona = AiPersona.create({
       name: "Test",
-      commands: ["CommandName"],
+      tools: ["ToolName"],
     });
 
-    aiPersona.getCommandOption("CommandName", "option1").value = "value1";
+    aiPersona.getToolOption("ToolName", "option1").value = "value1";
 
     const workingCopy = aiPersona.workingCopy();
 
     assert.equal(workingCopy.name, "Test");
     assert.equal(
-      workingCopy.getCommandOption("CommandName", "option1").value,
+      workingCopy.getToolOption("ToolName", "option1").value,
       "value1"
     );
-    assert.deepEqual(workingCopy.commands, ["CommandName"]);
+    assert.deepEqual(workingCopy.tools, ["ToolName"]);
   });
 });

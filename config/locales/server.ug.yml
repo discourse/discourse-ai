@@ -10,7 +10,7 @@ ug:
       yaxis: "چېسلا"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "ئىزدە"
         tags: "بەلگە تىزىمىنى كۆرسىتىدۇ"
         time: "ۋاقىت"

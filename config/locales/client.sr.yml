@@ -41,6 +41,8 @@ sr:
         edit: "Izmeni"
         back: "Nazad"
         delete: Obriši
+        next:
+          title: "Dalje"
         providers:
           google: "Google"
       ai_helper:

@@ -12,12 +12,6 @@ ar:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -104,14 +98,12 @@ ar:
         save: حفظ
         saved: تم حفظ شخصية الذكاء الاصطناعي
         enabled: "مفعَّلة؟"
-        commands: الأوامر المفعَّلة
         allowed_groups: المجموعات المسموح بها
         confirm_delete: هل تريد بالتأكيد حذف هذه الشخصية؟
         title: "شخصيات الذكاء الاصطناعي"
         delete: حذف
         priority: الأولوية
         priority_help: يتم عرض الشخصيات ذات الأولوية للمستخدمين في أعلى قائمة الشخصيات. إذا كانت الأولوية لعدة أشخاص، فسيتم فرزهم أبجديًا.
-        command_options: "خيارات الأوامر"
         uploads:
           title: "التحميلات"
           uploading: "جارٍ التحميل..."
@@ -120,6 +112,8 @@ ar:
         edit: "تعديل"
         back: "رجوع"
         delete: حذف
+        next:
+          title: "التالي"
         tests:
           title: "تشغيل الاختبار"
           success: "تم بنجاح!"

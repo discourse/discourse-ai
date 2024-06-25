@@ -44,6 +44,8 @@ te:
         edit: "సవరించండి"
         back: "వెనుకకు"
         delete: తొలగించండి
+        next:
+          title: "తదుపరి"
         tests:
           title: "పరీక్షను అమలు చేయండి"
         providers:

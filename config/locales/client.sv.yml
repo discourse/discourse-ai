@@ -46,6 +46,8 @@ sv:
         edit: "Redigera"
         back: "Tillbaka"
         delete: Radera
+        next:
+          title: "Nästa"
         tests:
           title: "Kör test"
           success: "Lyckades!"

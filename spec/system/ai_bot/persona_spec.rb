@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 RSpec.describe "AI personas", type: :system, js: true do
   fab!(:admin)
+  fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+    toggle_enabled_bots(bots: [gpt_4])
     sign_in(admin)
 
     Group.refresh_automatic_groups!
@@ -38,9 +39,9 @@ RSpec.describe "AI personas", type: :system, js: true do
     find(".ai-persona-editor__description").fill_in(with: "I am a test persona")
     find(".ai-persona-editor__system_prompt").fill_in(with: "You are a helpful bot")
 
-    command_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__commands")
-    command_selector.expand
-    command_selector.select_row_by_value("Read")
+    tool_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__tools")
+    tool_selector.expand
+    tool_selector.select_row_by_value("Read")
 
     find(".ai-persona-editor__save").click()
 
@@ -52,7 +53,7 @@ RSpec.describe "AI personas", type: :system, js: true do
     expect(persona.name).to eq("Test Persona")
     expect(persona.description).to eq("I am a test persona")
     expect(persona.system_prompt).to eq("You are a helpful bot")
-    expect(persona.commands).to eq(["Read"])
+    expect(persona.tools).to eq([["Read", { "read_private" => nil }]])
   end
 
   it "will not allow deletion or editing of system personas" do

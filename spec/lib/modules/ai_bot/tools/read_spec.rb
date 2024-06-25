@@ -1,7 +1,7 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::Read do
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:tool) { described_class.new({ topic_id: topic_with_tags.id }, bot_user: bot_user, llm: llm) }
 
@@ -30,6 +30,52 @@ RSpec.describe DiscourseAi::AiBot::Tools::Read do
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
+    it "can read private topics if allowed to" do
+      category = topic_with_tags.category
+      category.set_permissions(Group::AUTO_GROUPS[:staff] => :full)
+      category.save!
+
+      tool =
+        described_class.new(
+          { topic_id: topic_with_tags.id, post_numbers: [post1.post_number] },
+          bot_user: bot_user,
+          llm: llm,
+        )
+      results = tool.invoke
+
+      expect(results[:description]).to eq("Topic not found")
+
+      admin = Fabricate(:admin)
+
+      tool =
+        described_class.new(
+          { topic_id: topic_with_tags.id, post_numbers: [post1.post_number] },
+          bot_user: bot_user,
+          llm: llm,
+          persona_options: {
+            "read_private" => true,
+          },
+          context: {
+            user: admin,
+          },
+        )
+      results = tool.invoke
+      expect(results[:content]).to include("hello there")
+
+      tool =
+        described_class.new(
+          { topic_id: topic_with_tags.id, post_numbers: [post1.post_number] },
+          bot_user: bot_user,
+          llm: llm,
+          context: {
+            user: admin,
+          },
+        )
+
+      results = tool.invoke
+      expect(results[:description]).to eq("Topic not found")
+    end
+
     it "can read specific posts" do
       tool =
         described_class.new(

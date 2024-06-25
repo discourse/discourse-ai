@@ -51,6 +51,7 @@ en:
     ai_openai_embeddings_url: "Custom URL used for the OpenAI embeddings API. (in the case of Azure it can be: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API key for OpenAI API"
     ai_anthropic_api_key: "API key for Anthropic API"
+    ai_anthropic_native_tool_call_models: "List of models that will use native tool calls vs legacy XML based tools."
     ai_cohere_api_key: "API key for Cohere API"
     ai_hugging_face_api_url: "Custom URL used for OpenSource LLM inference. Compatible with https://github.com/huggingface/text-generation-inference"
     ai_hugging_face_api_key: API key for Hugging Face API
@@ -176,7 +177,7 @@ en:
       personas:
         default_llm_required: "Default LLM model is required prior to enabling Chat"
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
-        cannot_edit_system_persona: "System personas can only be renamed, you may not edit commands or system prompt, instead disable and make a copy"
+        cannot_edit_system_persona: "System personas can only be renamed, you may not edit tools or system prompt, instead disable and make a copy"
         github_helper:
           name: "GitHub Helper"
           description: "AI Bot specialized in assisting with GitHub-related tasks and questions"
@@ -207,7 +208,11 @@ en:
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
-      command_options:
+      tool_options:
+        read:
+          read_private:
+            name: "Read Private"
+            description: "Allow access to all topics user has access to (by default only public topics are included)"
         search:
           search_private:
             name: "Search Private"
@@ -218,7 +223,7 @@ en:
           base_query:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
-      command_summary:
+      tool_summary:
         web_browser: "Browse Web"
         github_search_files: "GitHub search files"
         github_search_code: "GitHub code search"
@@ -239,7 +244,7 @@ en:
         dall_e: "Generate image"
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
-      command_help:
+      tool_help:
         web_browser: "Browse web page using the AI Bot"
         github_search_code: "Search for code in a GitHub repository"
         github_search_files: "Search for files in a GitHub repository"
@@ -260,7 +265,7 @@ en:
         dall_e: "Generate image using DALL-E 3"
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
-      command_description:
+      tool_description:
         web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_files: "Searched for '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Searched for '%{query}' in %{repo}"

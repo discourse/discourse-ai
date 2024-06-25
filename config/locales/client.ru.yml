@@ -12,12 +12,6 @@ ru:
           discourse_ai: "AI для Discourse"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -104,14 +98,12 @@ ru:
         save: Сохранить
         saved: AI-персона сохранена
         enabled: "Включён?"
-        commands: Включенные команды
         allowed_groups: Разрешённые группы
         confirm_delete: Точно удалить эту персону?
         title: "AI-персоны"
         delete: Удалить
         priority: Приоритет
         priority_help: Приоритетные персоны показываются пользователям вверху списка персон. Если приоритет имеют несколько персон, они будут отсортированы в алфавитном порядке.
-        command_options: "Параметры команды"
         uploads:
           title: "Загрузки"
           uploading: "Загрузка…"
@@ -120,6 +112,8 @@ ru:
         edit: "Отредактировать"
         back: "Назад"
         delete: Удалить
+        next:
+          title: "Далее"
         tests:
           title: "Выполнить тест"
           success: "Слово добавлено!"

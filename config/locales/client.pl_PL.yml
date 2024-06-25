@@ -12,13 +12,6 @@ pl_PL:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_pro: Gemini 1.5 Pro
       scriptables:
         llm_report:
           fields:
@@ -128,7 +121,6 @@ pl_PL:
         save: Zapisz
         saved: Zapisano AI Persona
         enabled: "Włączona?"
-        commands: Włączone polecenia
         allowed_groups: Dozwolone grupy
         confirm_delete: Czy na pewno chcesz usunąć tę personę?
         title: "AI Personas"
@@ -137,7 +129,6 @@ pl_PL:
         temperature_help: Temperatura do zastosowania w LLM, zwiększ, aby zwiększyć kreatywność (pozostaw puste, aby użyć domyślnego modelu, zazwyczaj wartość od 0,0 do 2,0)
         priority: Priorytet
         priority_help: Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie.
-        command_options: "Opcje poleceń"
         uploads:
           title: "Pliki"
           button: "Dodaj pliki"
@@ -147,6 +138,8 @@ pl_PL:
         edit: "Edytuj"
         back: "Poprzednia"
         delete: Usuń
+        next:
+          title: "Następna"
         tests:
           title: "Przeprowadź test"
           success: "Sukces!"
