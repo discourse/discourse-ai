@@ -62,6 +62,29 @@ RSpec.describe AiTool do
     expect(result).to eq("Success")
   end
 
+  it "can perform GET HTTP requests, with 1 param" do
+    script = <<~JS
+      function invoke(params) {
+        result = http.get("https://example.com/" + params.query);
+        return result.body;
+      }
+    JS
+
+    tool = create_tool(script: script)
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+
+    stub_request(:get, "https://example.com/test").with(
+      headers: {
+        "Accept" => "*/*",
+        "User-Agent" => "Discourse AI Bot 1.0 (https://www.discourse.org)",
+      },
+    ).to_return(status: 200, body: "Hello World", headers: {})
+
+    result = runner.invoke
+
+    expect(result).to eq("Hello World")
+  end
+
   it "can perform GET HTTP requests" do
     script = <<~JS
       function invoke(params) {

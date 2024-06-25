@@ -43,8 +43,8 @@ module DiscourseAi
       def framework_script
         <<~JS
         const http = {
-          get: _http_get,
-          post: _http_post,
+          get: function(url, options) { return _http_get(url, options) },
+          post: function(url, options) { return _http_post(url, options) },
         };
 
         const llm = {
