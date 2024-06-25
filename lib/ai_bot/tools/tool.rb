@@ -133,6 +133,8 @@ module DiscourseAi
           headers: {},
           authenticate_github: false,
           follow_redirects: false,
+          method: :get,
+          body: nil,
           &blk
         )
           self.class.send_http_request(
@@ -140,6 +142,8 @@ module DiscourseAi
             headers: headers,
             authenticate_github: authenticate_github,
             follow_redirects: follow_redirects,
+            method: method,
+            body: body,
             &blk
           )
         end
@@ -148,7 +152,9 @@ module DiscourseAi
           url,
           headers: {},
           authenticate_github: false,
-          follow_redirects: false
+          follow_redirects: false,
+          method: :get,
+          body: nil
         )
           raise "Expecting caller to use a block" if !block_given?
 
@@ -177,7 +183,17 @@ module DiscourseAi
 
           return if uri.blank?
 
-          request = FinalDestination::HTTP::Get.new(uri)
+          request = nil
+          if method == :get
+            request = FinalDestination::HTTP::Get.new(uri)
+          elsif method == :post
+            request = FinalDestination::HTTP::Post.new(uri)
+          end
+
+          raise ArgumentError, "Invalid method: #{method}" if !request
+
+          request.body = body if body
+
           request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
           headers.each { |k, v| request[k] = v }
           if authenticate_github && SiteSetting.ai_bot_github_access_token.present?

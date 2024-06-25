@@ -33,6 +33,7 @@ class AiTool < ActiveRecord::Base
       <<~JS
         const http = {
           get: _http_get,
+          post: _http_post,
         };
 
         const llm = {
@@ -89,6 +90,32 @@ class AiTool < ActiveRecord::Base
 
             result = {}
             DiscourseAi::AiBot::Tools::Tool.send_http_request(url, headers: headers) do |response|
+              result[:body] = response.body
+              result[:status] = response.code
+            end
+
+            result
+          ensure
+            self.running_attached_function = false
+          end
+        end,
+      )
+
+      mini_racer_context.attach(
+        "_http_post",
+        ->(url, options) do
+          begin
+            self.running_attached_function = true
+            headers = (options && options["headers"]) || {}
+            body = options && options["body"]
+
+            result = {}
+            DiscourseAi::AiBot::Tools::Tool.send_http_request(
+              url,
+              method: :post,
+              headers: headers,
+              body: body,
+            ) do |response|
               result[:body] = response.body
               result[:status] = response.code
             end
