@@ -35,7 +35,10 @@ module DiscourseAi
         if ai_persona.save
           RagDocumentFragment.link_persona_and_uploads(ai_persona, attached_upload_ids)
 
-          render json: { ai_persona: ai_persona }, status: :created
+          render json: {
+                   ai_persona: LocalizedAiPersonaSerializer.new(ai_persona, root: false),
+                 },
+                 status: :created
         else
           render_json_error ai_persona
         end
@@ -50,9 +53,9 @@ module DiscourseAi
         if @ai_persona.update(ai_persona_params.except(:rag_uploads))
           RagDocumentFragment.update_persona_uploads(@ai_persona, attached_upload_ids)
 
-          render json: @ai_persona
+          render json: LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
         else
-          render_json_error @ai_persona
+          render_json_error LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
         end
       end
 
@@ -60,7 +63,7 @@ module DiscourseAi
         if @ai_persona.destroy
           head :no_content
         else
-          render_json_error @ai_persona
+          render_json_error LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
         end
       end
 
