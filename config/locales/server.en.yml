@@ -142,6 +142,8 @@ en:
   discourse_ai:
     unknown_model: "Unknown AI model"
 
+    tools:
+      custom_name: "%{name} (custom)"
     ai_helper:
       errors:
         completion_request_failed: "Something went wrong while trying to provide suggestions. Please, try again."

@@ -76,9 +76,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       )
     end
 
-    let!(:ai_persona) do
-      Fabricate(:ai_persona, tools: [["CustomTool", { tool_id: custom_tool.id }]])
-    end
+    let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
 
     it "uses custom tool in conversation" do
       persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }

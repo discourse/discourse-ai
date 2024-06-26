@@ -19,6 +19,14 @@ module DiscourseAi
           DiscourseAi::AiBot::Personas::Persona.all_available_tools.map do |tool|
             AiToolSerializer.new(tool, root: false)
           end
+        AiTool
+          .where(enabled: true)
+          .each do |tool|
+            tools << {
+              id: "custom-#{tool.id}",
+              name: I18n.t("discourse_ai.tools.custom_name", name: tool.name.capitalize),
+            }
+          end
         llms =
           DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
             { id: hash[:value], name: hash[:name] }
