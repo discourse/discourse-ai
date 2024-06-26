@@ -204,6 +204,9 @@ en:
         test: "Run Test"
         delete: "Delete"
         saved: "Tool saved"
+        presets: "Select a preset..."
+        next:
+          title: "Next"
         test_modal:
           title: "Test AI Tool"
           run: "Run Test"

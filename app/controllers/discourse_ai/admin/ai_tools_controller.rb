@@ -9,7 +9,7 @@ module DiscourseAi
 
       def index
         ai_tools = AiTool.all.map { |tool| AiCustomToolSerializer.new(tool, root: false) }
-        render json: { ai_tools: ai_tools }
+        render json: { ai_tools: ai_tools, meta: { presets: AiTool.presets } }
       end
 
       def show

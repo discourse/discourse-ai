@@ -26,6 +26,32 @@ class AiTool < ActiveRecord::Base
   def bump_persona_cache
     AiPersona.persona_cache.flush!
   end
+
+  def self.presets
+    [
+      {
+        preset_id: "browse_web_jina",
+        preset_name: "Browse web using jina.ai",
+        name: "browse_web",
+        description: "Browse the web as a markdown document",
+        parameters: [
+          { name: "url", type: "string", required: true, description: "The URL to browse" },
+        ],
+        script: <<~SCRIPT,
+          let url;
+          function invoke(p) {
+              url = p.url;
+              result = http.get(`https://r.jina.ai/${url}`);
+              // truncates to 15000 tokens
+              return llm.truncate(result.body, 15000);
+          }
+          function details() {
+            "Read: " + url
+          }
+        SCRIPT
+      },
+    ]
+  end
 end
 
 # == Schema Information

@@ -8,9 +8,9 @@ export default DiscourseRoute.extend({
 
   setupController(controller, model) {
     this._super(controller, model);
-    controller.set(
-      "allTools",
-      this.modelFor("adminPlugins.show.discourse-ai-tools")
-    );
+    const toolsModel = this.modelFor("adminPlugins.show.discourse-ai-tools");
+
+    controller.set("allTools", toolsModel);
+    controller.set("presets", toolsModel.resultSetMeta.presets);
   },
 });

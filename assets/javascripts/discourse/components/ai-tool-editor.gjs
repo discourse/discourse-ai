@@ -13,6 +13,7 @@ import DTooltip from "discourse/components/d-tooltip";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "discourse-i18n";
 import AceEditor from "admin/components/ace-editor";
+import ComboBox from "select-kit/components/combo-box";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
 
@@ -27,6 +28,8 @@ export default class AiToolEditor extends Component {
   @tracked editingModel = null;
   @tracked showDelete = false;
 
+  @tracked selectedPreset = null;
+
   aceEditorMode = "javascript";
   aceEditorTheme = "chrome";
 
@@ -34,6 +37,30 @@ export default class AiToolEditor extends Component {
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
     this.showDelete = !this.args.model.isNew;
+  }
+
+  get presets() {
+    return this.args.presets.map((preset) => {
+      return {
+        name: preset.preset_name,
+        id: preset.preset_id,
+      };
+    });
+  }
+
+  get showPresets() {
+    return !this.selectedPreset && this.args.model.isNew;
+  }
+
+  @action
+  configurePreset() {
+    this.selectedPreset = this.args.presets.find(
+      (preset) => preset.preset_id === this.presetId
+    );
+
+    this.editingModel = this.args.model.workingCopy();
+    this.editingModel.setProperties(this.selectedPreset);
+    this.showDelete = false;
   }
 
   @action
@@ -103,77 +130,97 @@ export default class AiToolEditor extends Component {
     <BackButton
       @route="adminPlugins.show.discourse-ai-tools"
       @label="discourse_ai.ai_tool.back"
-    />
-    <form
-      class="form-horizontal ai-tool-editor"
-      {{on "submit" this.save}}
       {{didUpdate this.updateModel @model.id}}
       {{didInsert this.updateModel @model.id}}
-    >
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.tools.name"}}</label>
-        <Input
-          @type="text"
-          @value={{this.editingModel.name}}
-          class="ai-tool-editor__name"
-        />
-        <DTooltip
-          @icon="question-circle"
-          @content={{I18n.t "discourse_ai.tools.name_help"}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.tools.description"}}</label>
-        <Textarea
-          @value={{this.editingModel.description}}
-          class="ai-tool-editor__description"
-          placeholder={{I18n.t "discourse_ai.tools.description_help"}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.tools.summary"}}</label>
-        <Input
-          @type="text"
-          @value={{this.editingModel.summary}}
-          class="ai-tool-editor__summary"
-        />
-        <DTooltip
-          @icon="question-circle"
-          @content={{I18n.t "discourse_ai.tools.summary_help"}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.tools.parameters"}}</label>
-        <AiToolParameterEditor @parameters={{this.editingModel.parameters}} />
-      </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.tools.script"}}</label>
-        <AceEditor
-          @content={{this.editingModel.script}}
-          @mode={{this.aceEditorMode}}
-          @theme={{this.aceEditorTheme}}
-          @onChange={{this.updateScript}}
-          @editorId="ai-tool-script-editor"
-        />
-      </div>
-      <div class="control-group ai-tool-editor__action_panel">
-        <DButton @action={{this.openTestModal}} class="btn-default">{{I18n.t
-            "discourse_ai.tools.test"
-          }}</DButton>
-        <DButton
-          class="btn-primary ai-tool-editor__save"
-          @action={{this.save}}
-          @disabled={{this.isSaving}}
-        >{{I18n.t "discourse_ai.tools.save"}}</DButton>
-        {{#if this.showDelete}}
+    />
+
+    {{#if this.showPresets}}
+      <form class="form-horizontal ai-tool-editor">
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.tools.presets"}}</label>
+          <ComboBox
+            @value={{this.presetId}}
+            @content={{this.presets}}
+            class="ai-tool-editor__presets"
+          />
+        </div>
+
+        <div class="control-group ai-llm-editor__action_panel">
           <DButton
-            @action={{this.delete}}
-            class="btn-danger ai-tool-editor__delete"
+            class="ai-tool-editor__next"
+            @action={{this.configurePreset}}
           >
-            {{I18n.t "discourse_ai.tools.delete"}}
+            {{I18n.t "discourse_ai.tools.next.title"}}
           </DButton>
-        {{/if}}
-      </div>
-    </form>
+        </div>
+      </form>
+    {{else}}
+      <form class="form-horizontal ai-tool-editor" {{on "submit" this.save}}>
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.tools.name"}}</label>
+          <Input
+            @type="text"
+            @value={{this.editingModel.name}}
+            class="ai-tool-editor__name"
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.tools.name_help"}}
+          />
+        </div>
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.tools.description"}}</label>
+          <Textarea
+            @value={{this.editingModel.description}}
+            class="ai-tool-editor__description"
+            placeholder={{I18n.t "discourse_ai.tools.description_help"}}
+          />
+        </div>
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.tools.summary"}}</label>
+          <Input
+            @type="text"
+            @value={{this.editingModel.summary}}
+            class="ai-tool-editor__summary"
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.tools.summary_help"}}
+          />
+        </div>
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.tools.parameters"}}</label>
+          <AiToolParameterEditor @parameters={{this.editingModel.parameters}} />
+        </div>
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.tools.script"}}</label>
+          <AceEditor
+            @content={{this.editingModel.script}}
+            @mode={{this.aceEditorMode}}
+            @theme={{this.aceEditorTheme}}
+            @onChange={{this.updateScript}}
+            @editorId="ai-tool-script-editor"
+          />
+        </div>
+        <div class="control-group ai-tool-editor__action_panel">
+          <DButton @action={{this.openTestModal}} class="btn-default">{{I18n.t
+              "discourse_ai.tools.test"
+            }}</DButton>
+          <DButton
+            class="btn-primary ai-tool-editor__save"
+            @action={{this.save}}
+            @disabled={{this.isSaving}}
+          >{{I18n.t "discourse_ai.tools.save"}}</DButton>
+          {{#if this.showDelete}}
+            <DButton
+              @action={{this.delete}}
+              class="btn-danger ai-tool-editor__delete"
+            >
+              {{I18n.t "discourse_ai.tools.delete"}}
+            </DButton>
+          {{/if}}
+        </div>
+      </form>
+    {{/if}}
   </template>
 }
