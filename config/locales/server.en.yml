@@ -302,6 +302,8 @@ en:
       configuration_hint:
         one: "Configure the `%{setting}` setting first."
         other: "Configure these settings first: %{settings}"
+      chat:
+        no_targets: "There were no messages during the selected period."
 
     sentiment:
       reports:

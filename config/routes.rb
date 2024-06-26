@@ -30,6 +30,7 @@ DiscourseAi::Engine.routes.draw do
 
   scope module: :summarization, path: "/summarization" do
     get "/t/:topic_id" => "summary#show", :constraints => { topic_id: /\d+/ }, :format => :json
+    get "/channels/:channel_id" => "chat_summary#show"
   end
 end
 

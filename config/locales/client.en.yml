@@ -230,7 +230,7 @@ en:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
-      
+
         provider_fields:
           access_key_id: "AWS Bedrock Access key ID"
           region: "AWS Bedrock Region"
@@ -359,6 +359,15 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+
+      summarization:
+        chat:
+          title: "Summarize messages"
+          description: "Select an option below to summarize the conversation sent during the desired timeframe."
+          summarize: "Summarize"
+          since:
+            one: "Last hour"
+            other: "Last %{count} hours"
     review:
       types:
         reviewable_ai_post:
