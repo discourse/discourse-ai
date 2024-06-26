@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class AddProviderSpecificParamsToLlmModels < ActiveRecord::Migration[7.1]
+class AddProviderSpecificParamsToLlmModels < ActiveRecord::Migration[7.0]
   def up
     open_ai_organization = fetch_setting("ai_openai_organization")
 
@@ -14,7 +14,7 @@ class AddProviderSpecificParamsToLlmModels < ActiveRecord::Migration[7.1]
 
     DB.exec(<<~SQL, key_id: bedrock_access_key_id, region: bedrock_region) if bedrock_access_key_id
       UPDATE llm_models
-      SET 
+      SET
         provider_params = jsonb_build_object('access_key_id', :key_id, 'region', :region),
         name = CASE name WHEN 'claude-2' THEN 'anthropic.claude-v2:1'
                          WHEN 'claude-3-haiku' THEN 'anthropic.claude-3-haiku-20240307-v1:0'
