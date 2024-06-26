@@ -10,7 +10,7 @@ import ComboBox from "select-kit/components/combo-box";
 
 const PARAMETER_TYPES = [
   { name: "string", id: "string" },
-  { name: "integer", id: "integer" },
+  { name: "number", id: "number" },
   { name: "boolean", id: "boolean" },
   { name: "array", id: "array" },
 ];

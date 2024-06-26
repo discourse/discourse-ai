@@ -8,6 +8,7 @@ import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "discourse-i18n";
+import { jsonToHtml } from "../../lib/utilities";
 
 export default class AiToolTestModal extends Component {
   @tracked testResult = null;
@@ -36,7 +37,7 @@ export default class AiToolTestModal extends Component {
           contentType: "application/json",
         }
       );
-      this.testResult = JSON.stringify(response.output);
+      this.testResult = jsonToHtml(response.output);
     } catch (error) {
       popupAjaxError(error);
     } finally {
@@ -60,9 +61,9 @@ export default class AiToolTestModal extends Component {
           </div>
         {{/each}}
         {{#if this.testResult}}
-          <div class="test-result">
+          <div class="ai-tool-test-modal__test-result">
             <h3>{{I18n.t "discourse_ai.tools.test_modal.result"}}</h3>
-            <pre>{{this.testResult}}</pre>
+            <div>{{this.testResult}}</div>
           </div>
         {{/if}}
       </:body>
