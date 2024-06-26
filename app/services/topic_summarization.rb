@@ -100,13 +100,16 @@ class TopicSummarization
   end
 
   def cache_summary(result, post_numbers, topic)
-    AiSummary.create!(
-      target: topic,
-      algorithm: strategy.display_name,
-      content_range: (post_numbers.first..post_numbers.last),
-      summarized_text: result[:summary],
-      original_content_sha: build_sha(post_numbers),
-    )
+    cached_summary =
+      AiSummary.create!(
+        target: topic,
+        algorithm: strategy.display_name,
+        content_range: (post_numbers.first..post_numbers.last),
+        summarized_text: result[:summary],
+        original_content_sha: build_sha(post_numbers),
+      )
+
+    cached_summary
   end
 
   def build_sha(ids)
