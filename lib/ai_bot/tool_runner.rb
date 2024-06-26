@@ -6,9 +6,12 @@ module DiscourseAi
       attr_reader :tool, :parameters, :llm
       attr_accessor :running_attached_function
 
+      TooManyRequestsError = Class.new(StandardError)
+
       TIMEOUT = 2000
       MAX_MEMORY = 10_000_000
       MARSHAL_STACK_DEPTH = 20
+      MAX_HTTP_REQUESTS = 20
 
       def initialize(parameters, llm:, bot_user:, context: {}, tool:, timeout: nil)
         @parameters = parameters
@@ -18,6 +21,8 @@ module DiscourseAi
         @tool = tool
         @timeout = timeout || TIMEOUT
         @running_attached_function = false
+
+        @http_requests_made = 0
       end
 
       # mainly for testing
@@ -117,6 +122,11 @@ module DiscourseAi
           "_http_get",
           ->(url, options) do
             begin
+              @http_requests_made += 1
+              if @http_requests_made > MAX_HTTP_REQUESTS
+                raise TooManyRequestsError.new("Tool made too many HTTP requests")
+              end
+
               self.running_attached_function = true
               headers = (options && options["headers"]) || {}
 
@@ -137,6 +147,11 @@ module DiscourseAi
           "_http_post",
           ->(url, options) do
             begin
+              @http_requests_made += 1
+              if @http_requests_made > MAX_HTTP_REQUESTS
+                raise TooManyRequestsError.new("Tool made too many HTTP requests")
+              end
+
               self.running_attached_function = true
               headers = (options && options["headers"]) || {}
               body = options && options["body"]

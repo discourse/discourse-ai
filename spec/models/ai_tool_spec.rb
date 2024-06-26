@@ -85,6 +85,31 @@ RSpec.describe AiTool do
     expect(result).to eq("Hello World")
   end
 
+  it "is limited to MAX http requests" do
+    script = <<~JS
+      function invoke(params) {
+        let i = 0;
+        while (i < 21) {
+          http.get("https://example.com/");
+          i += 1;
+        }
+        return "will not happen";
+      }
+      JS
+
+    tool = create_tool(script: script)
+    runner = tool.runner({}, llm: nil, bot_user: nil, context: {})
+
+    stub_request(:get, "https://example.com/").to_return(
+      status: 200,
+      body: "Hello World",
+      headers: {
+      },
+    )
+
+    expect { runner.invoke }.to raise_error(DiscourseAi::AiBot::ToolRunner::TooManyRequestsError)
+  end
+
   it "can perform GET HTTP requests" do
     script = <<~JS
       function invoke(params) {
