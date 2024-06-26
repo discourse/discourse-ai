@@ -21,6 +21,7 @@ export default class AiTool extends RestModel {
 
   workingCopy() {
     let attrs = this.getProperties(CREATE_ATTRIBUTES);
+    attrs.parameters = attrs.parameters || [];
     return AiTool.create(attrs);
   }
 }

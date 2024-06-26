@@ -52,7 +52,9 @@ module DiscourseAi
 
         parameters = params[:parameters].to_unsafe_h
 
-        runner = ai_tool.runner(parameters, llm: nil, bot_user: current_user, context: {})
+        # we need an llm so we have a tokenizer
+        llm = LlmModel.first.to_llm
+        runner = ai_tool.runner(parameters, llm: llm, bot_user: current_user, context: {})
         result = runner.invoke
 
         if result.is_a?(Hash) && result[:error]
