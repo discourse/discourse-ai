@@ -50,6 +50,111 @@ class AiTool < ActiveRecord::Base
           }
         SCRIPT
       },
+      {
+        preset_id: "exchange_rate",
+        preset_name: "Exchange Rate",
+        name: "exchange_rate",
+        description: "Get current exchange rates for various currencies",
+        parameters: [
+          {
+            name: "base_currency",
+            type: "string",
+            required: true,
+            description: "The base currency code (e.g., USD, EUR)",
+          },
+          {
+            name: "target_currency",
+            type: "string",
+            required: true,
+            description: "The target currency code (e.g., EUR, JPY)",
+          },
+          { name: "amount", type: "number", description: "Amount to convert eg: 123.45" },
+        ],
+        script: <<~SCRIPT,
+        // note: this script uses the open.er-api.com service, it is only updated
+        // once every 24 hours, for more up to date rates see: https://www.exchangerate-api.com
+        function invoke(params) {
+          const url = `https://open.er-api.com/v6/latest/${params.base_currency}`;
+          const result = http.get(url);
+          if (result.status !== 200) {
+            return { error: "Failed to fetch exchange rates" };
+          }
+          const data = JSON.parse(result.body);
+          const rate = data.rates[params.target_currency];
+          if (!rate) {
+            return { error: "Target currency not found" };
+          }
+
+          let rval = {
+            base_currency: params.base_currency,
+            target_currency: params.target_currency,
+            exchange_rate: rate,
+            last_updated: data.time_last_update_utc
+          };
+
+          if (params.amount) {
+            rval.original_amount = params.amount;
+            rval.converted_amount = params.amount * rate;
+          }
+
+          return rval;
+        }
+
+        function details() {
+          return "<a href='https://www.exchangerate-api.com'>Rates By Exchange Rate API</a>";
+        }
+      SCRIPT
+        summary: "Get current exchange rates between two currencies",
+      },
+      {
+        preset_id: "stock_quote_alphavantage",
+        preset_name: "Stock Quote (AlphaVantage)",
+        name: "stock_quote",
+        description: "Get real-time stock quote information using AlphaVantage API",
+        parameters: [
+          {
+            name: "symbol",
+            type: "string",
+            required: true,
+            description: "The stock symbol (e.g., AAPL, GOOGL)",
+          },
+        ],
+        script: <<~SCRIPT,
+        function invoke(params) {
+          const apiKey = 'YOUR_ALPHAVANTAGE_API_KEY'; // Replace with your actual API key
+          const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${params.symbol}&apikey=${apiKey}`;
+
+          const result = http.get(url);
+          if (result.status !== 200) {
+            return { error: "Failed to fetch stock quote" };
+          }
+
+          const data = JSON.parse(result.body);
+          if (data['Error Message']) {
+            return { error: data['Error Message'] };
+          }
+
+          const quote = data['Global Quote'];
+          if (!quote || Object.keys(quote).length === 0) {
+            return { error: "No data found for the given symbol" };
+          }
+
+          return {
+            symbol: quote['01. symbol'],
+            price: parseFloat(quote['05. price']),
+            change: parseFloat(quote['09. change']),
+            change_percent: quote['10. change percent'],
+            volume: parseInt(quote['06. volume']),
+            latest_trading_day: quote['07. latest trading day']
+          };
+        }
+
+        function details() {
+          return "<a href='https://www.alphavantage.co'>Stock data provided by AlphaVantage</a>";
+        }
+      SCRIPT
+        summary: "Get real-time stock quotes using AlphaVantage API",
+      },
     ]
   end
 end

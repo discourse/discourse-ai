@@ -1,7 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
-import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
@@ -130,12 +129,14 @@ export default class AiToolEditor extends Component {
     <BackButton
       @route="adminPlugins.show.discourse-ai-tools"
       @label="discourse_ai.ai_tool.back"
-      {{didUpdate this.updateModel @model.id}}
-      {{didInsert this.updateModel @model.id}}
     />
 
-    {{#if this.showPresets}}
-      <form class="form-horizontal ai-tool-editor">
+    <form
+      class="form-horizontal ai-tool-editor"
+      {{didUpdate this.updateModel @model.id}}
+      {{didInsert this.updateModel @model.id}}
+    >
+      {{#if this.showPresets}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.presets"}}</label>
           <ComboBox
@@ -153,9 +154,7 @@ export default class AiToolEditor extends Component {
             {{I18n.t "discourse_ai.tools.next.title"}}
           </DButton>
         </div>
-      </form>
-    {{else}}
-      <form class="form-horizontal ai-tool-editor" {{on "submit" this.save}}>
+      {{else}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.name"}}</label>
           <Input
@@ -220,7 +219,7 @@ export default class AiToolEditor extends Component {
             </DButton>
           {{/if}}
         </div>
-      </form>
-    {{/if}}
+      {{/if}}
+    </form>
   </template>
 }

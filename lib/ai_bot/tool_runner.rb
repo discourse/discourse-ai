@@ -123,7 +123,7 @@ module DiscourseAi
               result = {}
               DiscourseAi::AiBot::Tools::Tool.send_http_request(url, headers: headers) do |response|
                 result[:body] = response.body
-                result[:status] = response.code
+                result[:status] = response.code.to_i
               end
 
               result
@@ -149,7 +149,7 @@ module DiscourseAi
                 body: body,
               ) do |response|
                 result[:body] = response.body
-                result[:status] = response.code
+                result[:status] = response.code.to_i
               end
 
               result
