@@ -168,7 +168,7 @@ export default class AiToolEditor extends Component {
           <label>{{I18n.t "discourse_ai.tools.description"}}</label>
           <Textarea
             @value={{this.editingModel.description}}
-            class="ai-tool-editor__description"
+            class="ai-tool-editor__description input-xxlarge"
             placeholder={{I18n.t "discourse_ai.tools.description_help"}}
           />
         </div>
@@ -177,7 +177,7 @@ export default class AiToolEditor extends Component {
           <Input
             @type="text"
             @value={{this.editingModel.summary}}
-            class="ai-tool-editor__summary"
+            class="ai-tool-editor__summary input-xxlarge"
           />
           <DTooltip
             @icon="question-circle"
