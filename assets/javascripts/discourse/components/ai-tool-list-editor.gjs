@@ -1,7 +1,6 @@
 // assets/javascripts/discourse/components/ai-tool-list-editor.gjs
 import Component from "@glimmer/component";
 import { LinkTo } from "@ember/routing";
-//import DButton from "discourse/components/d-button";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
