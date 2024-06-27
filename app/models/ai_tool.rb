@@ -31,7 +31,6 @@ class AiTool < ActiveRecord::Base
     [
       {
         preset_id: "browse_web_jina",
-        preset_name: "Browse web using jina.ai",
         name: "browse_web",
         description: "Browse the web as a markdown document",
         parameters: [
@@ -52,7 +51,6 @@ class AiTool < ActiveRecord::Base
       },
       {
         preset_id: "exchange_rate",
-        preset_name: "Exchange Rate",
         name: "exchange_rate",
         description: "Get current exchange rates for various currencies",
         parameters: [
@@ -107,8 +105,7 @@ class AiTool < ActiveRecord::Base
         summary: "Get current exchange rates between two currencies",
       },
       {
-        preset_id: "stock_quote_alphavantage",
-        preset_name: "Stock Quote (AlphaVantage)",
+        preset_id: "stock_quote",
         name: "stock_quote",
         description: "Get real-time stock quote information using AlphaVantage API",
         parameters: [
@@ -155,7 +152,19 @@ class AiTool < ActiveRecord::Base
       SCRIPT
         summary: "Get real-time stock quotes using AlphaVantage API",
       },
-    ]
+      { preset_id: "empty_tool", script: <<~SCRIPT },
+          function invoke(params) {
+            // logic here
+            return params;
+          }
+          function details() {
+            return "Details about this tool";
+          }
+        SCRIPT
+    ].map do |preset|
+      preset[:preset_name] = I18n.t("discourse_ai.tools.presets.#{preset[:preset_id]}.name")
+      preset
+    end
   end
 end
 
