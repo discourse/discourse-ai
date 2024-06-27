@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe "AI Tool Management", type: :system do
-  fab!(:admin) { Fabricate(:admin) }
+  fab!(:admin)
 
   before do
     SiteSetting.ai_embeddings_enabled = true
