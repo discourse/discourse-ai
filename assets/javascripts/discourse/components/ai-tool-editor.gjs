@@ -96,7 +96,7 @@ export default class AiToolEditor extends Component {
   @action
   delete() {
     return this.dialog.confirm({
-      message: I18n.t("discourse_ai.ai_tool.confirm_delete"),
+      message: I18n.t("discourse_ai.tools.confirm_delete"),
       didConfirm: () => {
         return this.args.model.destroyRecord().then(() => {
           this.args.tools.removeObject(this.args.model);
