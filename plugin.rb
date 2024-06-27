@@ -28,6 +28,8 @@ register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
 
 register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
 
+register_asset "stylesheets/modules/ai-bot/common/ai-tools.scss"
+
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
 end

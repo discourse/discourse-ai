@@ -142,6 +142,18 @@ en:
   discourse_ai:
     unknown_model: "Unknown AI model"
 
+    tools:
+      custom_name: "%{name} (custom)"
+      presets:
+        browse_web_jina:
+          name: "Browse web using jina.ai"
+        exchange_rate:
+          name: "Exchange rate"
+        stock_quote:
+          name: "Stock quote (AlphaVantage)"
+        empty_tool:
+          name: "Start from blank..."
+
     ai_helper:
       errors:
         completion_request_failed: "Something went wrong while trying to provide suggestions. Please, try again."

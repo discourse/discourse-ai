@@ -183,6 +183,36 @@ en:
           uploading: "Uploading..."
           remove: "Remove upload"
 
+      tools:
+        short_title: "Tools"
+        new: "New Tool"
+        name: "Name"
+        name_help: "The unique name of the tool as used by the language model"
+        description: "Description"
+        description_help: "A clear description of the tool's purpose for the language model"
+        summary: "Summary"
+        summary_help: "Summary of tools purpose to be displayed to end users"
+        script: "Script"
+        parameters: "Parameters"
+        save: "Save"
+        add_parameter: "Add Parameter"
+        parameter_required: "Required"
+        parameter_enum: "Enum"
+        parameter_name: "Parameter Name"
+        parameter_description: "Parameter Description"
+        edit: "Edit"
+        test: "Run Test"
+        delete: "Delete"
+        saved: "Tool saved"
+        presets: "Select a preset..."
+        confirm_delete: Are you sure you want to delete this tool?
+        next:
+          title: "Next"
+        test_modal:
+          title: "Test AI Tool"
+          run: "Run Test"
+          result: "Test Result"
+
       llms:
         short_title: "LLMs"
         no_llms: "No LLMs yet"
@@ -230,7 +260,7 @@ en:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
-      
+
         provider_fields:
           access_key_id: "AWS Bedrock Access key ID"
           region: "AWS Bedrock Region"

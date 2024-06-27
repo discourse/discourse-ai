@@ -142,16 +142,25 @@ class AiPersona < ActiveRecord::Base
     options = {}
     tools =
       self.tools.filter_map do |element|
-        inner_name, current_options = element.is_a?(Array) ? element : [element, nil]
-        inner_name = inner_name.gsub("Tool", "")
-        inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
+        klass = nil
 
-        begin
-          klass = "DiscourseAi::AiBot::Tools::#{inner_name}".constantize
-          options[klass] = current_options if current_options
+        if element.is_a?(String) && element.start_with?("custom-")
+          custom_tool_id = element.split("-", 2).last.to_i
+          if AiTool.exists?(id: custom_tool_id, enabled: true)
+            klass = DiscourseAi::AiBot::Tools::Custom.class_instance(custom_tool_id)
+          end
+        else
+          inner_name, current_options = element.is_a?(Array) ? element : [element, nil]
+          inner_name = inner_name.gsub("Tool", "")
+          inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
+
+          begin
+            klass = "DiscourseAi::AiBot::Tools::#{inner_name}".constantize
+            options[klass] = current_options if current_options
+          rescue StandardError
+          end
+
           klass
-        rescue StandardError
-          nil
         end
       end
 
