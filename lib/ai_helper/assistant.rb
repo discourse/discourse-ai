@@ -130,7 +130,13 @@ module DiscourseAi
 
       def generate_image_caption(upload, user)
         if SiteSetting.ai_helper_image_caption_model == "llava"
-          image_base64 = DiscourseAi::Completions::UploadEncoder.encode(upload_ids: [upload.id], max_pixels: 1_048_576).first[:base64]
+          image_base64 =
+            DiscourseAi::Completions::UploadEncoder.encode(
+              upload_ids: [upload.id],
+              max_pixels: 1_048_576,
+            ).first[
+              :base64
+            ]
           parameters = {
             input: {
               image: "data:image/#{upload.extension};base64, #{image_base64}",
