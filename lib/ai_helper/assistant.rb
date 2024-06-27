@@ -130,11 +130,16 @@ module DiscourseAi
 
       def generate_image_caption(upload, user)
         if SiteSetting.ai_helper_image_caption_model == "llava"
-          image_url =
-            upload.secure? ? Discourse.store.url_for(upload) : UrlHelper.absolute(upload.url)
+          image_base64 =
+            DiscourseAi::Completions::UploadEncoder.encode(
+              upload_ids: [upload.id],
+              max_pixels: 1_048_576,
+            ).first[
+              :base64
+            ]
           parameters = {
             input: {
-              image: image_url,
+              image: "data:image/#{upload.extension};base64, #{image_base64}",
               top_p: 1,
               max_tokens: 1024,
               temperature: 0.2,
