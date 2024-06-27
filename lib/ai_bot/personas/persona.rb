@@ -134,7 +134,7 @@ module DiscourseAi
             .class
             .all_available_tools
             .filter { |tool| tools.include?(tool) }
-            .concat(tools.filter { |tool| tool.custom? })
+            .concat(tools.filter(&:custom?))
         end
 
         def craft_prompt(context, llm: nil)
