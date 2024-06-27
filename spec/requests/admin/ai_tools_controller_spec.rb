@@ -23,6 +23,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       get "/admin/plugins/discourse-ai/ai-tools.json"
       expect(response).to be_successful
       expect(response.parsed_body["ai_tools"].length).to eq(AiTool.count)
+      expect(response.parsed_body["meta"]["presets"].length).to be > 0
     end
   end
 

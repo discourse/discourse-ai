@@ -8,8 +8,8 @@ module DiscourseAi
       before_action :find_ai_tool, only: %i[show update destroy]
 
       def index
-        ai_tools = AiTool.all.map { |tool| AiCustomToolSerializer.new(tool, root: false) }
-        render json: { ai_tools: ai_tools, meta: { presets: AiTool.presets } }
+        ai_tools = AiTool.all
+        render_serialized({ ai_tools: ai_tools }, AiCustomToolListSerializer, root: false)
       end
 
       def show
@@ -21,7 +21,7 @@ module DiscourseAi
         ai_tool.created_by_id = current_user.id
 
         if ai_tool.save
-          render json: AiCustomToolSerializer.new(ai_tool), status: :created
+          render_serialized(ai_tool, AiCustomToolSerializer, status: :created)
         else
           render_json_error ai_tool
         end
@@ -29,7 +29,7 @@ module DiscourseAi
 
       def update
         if @ai_tool.update(ai_tool_params)
-          render json: AiCustomToolSerializer.new(@ai_tool)
+          render_serialized(@ai_tool, AiCustomToolSerializer)
         else
           render_json_error @ai_tool
         end
