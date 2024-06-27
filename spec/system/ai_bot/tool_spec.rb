@@ -26,26 +26,24 @@ describe "AI Tool Management", type: :system do
 
     expect(page).not_to have_button(".ai-tool-editor__delete")
 
-    within(".ai-tool-test-modal") do
-      fill_in "base_currency", with: "USD"
-      fill_in "target_currency", with: "EUR"
-      fill_in "amount", with: "100"
+    modal = PageObjects::Modals::AiToolTest.new
+    modal.base_currency = "USD"
+    modal.target_currency = "EUR"
+    modal.amount = "100"
 
-      stub_request(:get, %r{https://open\.er-api\.com/v6/latest/USD}).to_return(
-        status: 200,
-        body: '{"rates": {"EUR": 0.85}}',
-        headers: {
-          "Content-Type" => "application/json",
-        },
-      )
+    stub_request(:get, %r{https://open\.er-api\.com/v6/latest/USD}).to_return(
+      status: 200,
+      body: '{"rates": {"EUR": 0.85}}',
+      headers: {
+        "Content-Type" => "application/json",
+      },
+    )
+    modal.run_test
 
-      find(".ai-tool-test-modal__run-button").click
+    expect(modal).to have_content("exchange_rate")
+    expect(modal).to have_content("0.85")
 
-      expect(page).to have_content("exchange_rate")
-      expect(page).to have_content("0.85")
-
-      find(".modal-close").click
-    end
+    modal.close
 
     find(".ai-tool-editor__save").click
 
