@@ -1,12 +1,11 @@
 import { LinkTo } from "@ember/routing";
 import icon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 
 <template>
   <section class="ai-tool-list-editor__current admin-detail pull-left">
     <div class="ai-tool-list-editor__header">
-      <h3>{{i18n "discourse_ai.tools.short_title"}}</h3>
+      <h3>{{I18n.t "discourse_ai.tools.short_title"}}</h3>
       <LinkTo
         @route="adminPlugins.show.discourse-ai-tools.new"
         class="btn btn-small btn-primary ai-tool-list-editor__new-button"
@@ -37,7 +36,7 @@ import I18n from "discourse-i18n";
                 @route="adminPlugins.show.discourse-ai-tools.show"
                 @model={{tool}}
                 class="btn btn-text btn-small"
-              >{{i18n "discourse_ai.tools.edit"}} </LinkTo>
+              >{{I18n.t "discourse_ai.tools.edit"}}</LinkTo>
             </td>
           </tr>
         {{/each}}

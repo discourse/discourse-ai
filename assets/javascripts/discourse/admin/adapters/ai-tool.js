@@ -1,6 +1,6 @@
 import RestAdapter from "discourse/adapters/rest";
 
-export default class Adapter extends RestAdapter {
+export default class AiToolAdapter extends RestAdapter {
   jsonMode = true;
 
   basePath() {
