@@ -46,7 +46,7 @@ class AiTool < ActiveRecord::Base
               return llm.truncate(result.body, 15000);
           }
           function details() {
-            "Read: " + url
+            return "Read: " + url
           }
         SCRIPT
       },
