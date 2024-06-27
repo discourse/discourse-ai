@@ -158,14 +158,22 @@ module DiscourseAi
           end
         end
 
-        def read_response_body(response, max_length: 4.megabyte)
+        def self.read_response_body(response, max_length: 20.megabyte)
           body = +""
           response.read_body do |chunk|
             body << chunk
             break if body.bytesize > max_length
           end
 
-          body[0..max_length]
+          if body.bytesize > max_length
+            body[0...max_length].scrub
+          else
+            body.scrub
+          end
+        end
+
+        def read_response_body(response, max_length: 20.megabyte)
+          self.class.read_response_body(response, max_length: max_length)
         end
 
         def truncate(text, llm:, percent_length: nil, max_length: nil)
