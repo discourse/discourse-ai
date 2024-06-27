@@ -24,10 +24,10 @@ export default class AiToolTestModal extends Component {
   async runTest() {
     this.isLoading = true;
     try {
-      const data = JSON.stringify({
+      const data = {
         ai_tool: this.args.model.tool,
         parameters: this.parameterValues,
-      });
+      };
 
       const response = await ajax(
         "/admin/plugins/discourse-ai/ai-tools/test.json",
