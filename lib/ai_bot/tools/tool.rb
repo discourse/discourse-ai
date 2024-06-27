@@ -4,6 +4,12 @@ module DiscourseAi
   module AiBot
     module Tools
       class Tool
+        # Why 30 mega bytes?
+        # This general limit is mainly a security feature to avoid tools
+        # forcing infinite downloads or causing memory exhaustion.
+        # The limit is somewhat arbitrary and can be increased in future if needed.
+        MAX_RESPONSE_BODY_LENGTH = 30.megabyte
+
         class << self
           def signature
             raise NotImplemented
@@ -158,14 +164,24 @@ module DiscourseAi
           end
         end
 
-        def read_response_body(response, max_length: 4.megabyte)
+        def self.read_response_body(response, max_length: nil)
+          max_length ||= MAX_RESPONSE_BODY_LENGTH
+
           body = +""
           response.read_body do |chunk|
             body << chunk
             break if body.bytesize > max_length
           end
 
-          body[0..max_length]
+          if body.bytesize > max_length
+            body[0...max_length].scrub
+          else
+            body.scrub
+          end
+        end
+
+        def read_response_body(response, max_length: nil)
+          self.class.read_response_body(response, max_length: max_length)
         end
 
         def truncate(text, llm:, percent_length: nil, max_length: nil)
