@@ -4,30 +4,25 @@ module DiscourseAi
   module AiBot
     class ToolRunner
       attr_reader :tool, :parameters, :llm
-      attr_accessor :running_attached_function
+      attr_accessor :running_attached_function, :timeout
 
       TooManyRequestsError = Class.new(StandardError)
 
-      TIMEOUT = 2000
+      DEFAULT_TIMEOUT = 2000
       MAX_MEMORY = 10_000_000
       MARSHAL_STACK_DEPTH = 20
       MAX_HTTP_REQUESTS = 20
 
-      def initialize(parameters, llm:, bot_user:, context: {}, tool:, timeout: nil)
+      def initialize(parameters:, llm:, bot_user:, context: {}, tool:, timeout: nil)
         @parameters = parameters
         @llm = llm
         @bot_user = bot_user
         @context = context
         @tool = tool
-        @timeout = timeout || TIMEOUT
+        @timeout = timeout || DEFAULT_TIMEOUT
         @running_attached_function = false
 
         @http_requests_made = 0
-      end
-
-      # mainly for testing
-      def timeout=(value)
-        @timeout = value
       end
 
       def mini_racer_context
