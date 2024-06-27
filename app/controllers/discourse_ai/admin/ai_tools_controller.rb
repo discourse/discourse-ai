@@ -53,7 +53,8 @@ module DiscourseAi
         parameters = params[:parameters].to_unsafe_h
 
         # we need an llm so we have a tokenizer
-        llm = LlmModel.first.to_llm
+        # but will do without if none is available
+        llm = LlmModel.first&.to_llm
         runner = ai_tool.runner(parameters, llm: llm, bot_user: current_user, context: {})
         result = runner.invoke
 

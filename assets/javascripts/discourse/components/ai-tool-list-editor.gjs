@@ -19,7 +19,7 @@ export default class AiToolListEditor extends Component {
           {{#unless @currentTool.isNew}}
             <LinkTo
               @route="adminPlugins.show.discourse-ai-tools.new"
-              class="btn btn-small btn-primary"
+              class="btn btn-small btn-primary ai-tool-list-editor__new-button"
             >
               {{icon "plus"}}
               <span>{{I18n.t "discourse_ai.tools.new"}}</span>

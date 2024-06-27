@@ -202,9 +202,10 @@ export default class AiToolEditor extends Component {
           />
         </div>
         <div class="control-group ai-tool-editor__action_panel">
-          <DButton @action={{this.openTestModal}} class="btn-default">{{I18n.t
-              "discourse_ai.tools.test"
-            }}</DButton>
+          <DButton
+            @action={{this.openTestModal}}
+            class="btn-default ai-tool-editor__test-button"
+          >{{I18n.t "discourse_ai.tools.test"}}</DButton>
           <DButton
             class="btn-primary ai-tool-editor__save"
             @action={{this.save}}

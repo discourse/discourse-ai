@@ -49,6 +49,7 @@ export default class AiToolTestModal extends Component {
     <DModal
       @title={{I18n.t "discourse_ai.tools.test_modal.title"}}
       @closeModal={{@closeModal}}
+      class="ai-tool-test-modal"
     >
       <:body>
         {{#each @model.tool.parameters as |param|}}
@@ -56,6 +57,7 @@ export default class AiToolTestModal extends Component {
             <label>{{param.name}}</label>
             <input
               type="text"
+              name={{param.name}}
               {{on "input" (fn this.updateParameter param.name)}}
             />
           </div>
@@ -72,7 +74,7 @@ export default class AiToolTestModal extends Component {
           @action={{this.runTest}}
           @label="discourse_ai.tools.test_modal.run"
           @disabled={{this.isLoading}}
-          class="btn-primary"
+          class="btn-primary ai-tool-test-modal__run-button"
         />
       </:footer>
     </DModal>
