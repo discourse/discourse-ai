@@ -541,7 +541,6 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "picks the correct llm for persona in PMs" do
       gpt_35_turbo = Fabricate(:llm_model, name: "gpt-3.5-turbo")
-      _gpt_35_turbo_16k = Fabricate(:llm_model, name: "gpt-3.5-turbo-16k")
 
       # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
       SiteSetting.ai_bot_enabled = true
