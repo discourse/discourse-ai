@@ -13,7 +13,7 @@ module DiscourseAi
       end
 
       def show
-        render json: AiCustomToolSerializer.new(@ai_tool)
+        render_serialized(@ai_tool, AiCustomToolSerializer)
       end
 
       def create
