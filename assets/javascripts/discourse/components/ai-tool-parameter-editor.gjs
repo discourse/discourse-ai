@@ -1,10 +1,10 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
-import { Input } from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { TrackedArray, TrackedObject } from "@ember-compat/tracked-built-ins";
 import DButton from "discourse/components/d-button";
+import withEventValue from "discourse/helpers/with-event-value";
 import I18n from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
 
@@ -16,145 +16,135 @@ const PARAMETER_TYPES = [
 ];
 
 export default class AiToolParameterEditor extends Component {
-  @tracked parameters = [];
-
   @action
   addParameter() {
-    this.args.parameters.pushObject({
-      name: "",
-      description: "",
-      type: "string",
-      required: false,
-      enum: false,
-      enumValues: [],
-    });
+    this.args.parameters.push(
+      new TrackedObject({
+        name: "",
+        description: "",
+        type: "string",
+        required: false,
+        enum: false,
+        enumValues: null,
+      })
+    );
   }
 
   @action
   removeParameter(parameter) {
-    this.args.parameters.removeObject(parameter);
+    const index = this.args.parameters.indexOf(parameter);
+    this.args.parameters.splice(index, 1);
   }
 
   @action
-  updateParameter(parameter, field, value) {
-    parameter[field] = value;
+  toggleRequired(parameter, event) {
+    parameter.required = event.target.checked;
   }
 
   @action
   toggleEnum(parameter) {
     parameter.enum = !parameter.enum;
     if (!parameter.enum) {
-      parameter.enumValues = [];
+      parameter.enumValues = null;
     }
-    this.args.onChange(this.parameters);
   }
 
   @action
   addEnumValue(parameter) {
-    parameter.enumValues.pushObject("");
+    parameter.enumValues ||= new TrackedArray();
+    parameter.enumValues.push("");
   }
 
   @action
   removeEnumValue(parameter, index) {
-    parameter.enumValues.removeAt(index);
+    parameter.enumValues.splice(index, 1);
+  }
+
+  @action
+  updateEnumValue(parameter, index, event) {
+    parameter.enumValues[index] = event.target.value;
   }
 
   <template>
     {{#each @parameters as |parameter|}}
       <div class="ai-tool-parameter">
         <div class="parameter-row">
-          <Input
-            @type="text"
-            @value={{parameter.name}}
+          <input
+            {{on "input" (withEventValue (fn (mut parameter.name)))}}
+            value={{parameter.name}}
+            type="text"
             placeholder={{I18n.t "discourse_ai.tools.parameter_name"}}
           />
           <ComboBox @value={{parameter.type}} @content={{PARAMETER_TYPES}} />
         </div>
+
         <div class="parameter-row">
-          <Input
-            @type="text"
-            @value={{parameter.description}}
+          <input
+            {{on "input" (withEventValue (fn (mut parameter.description)))}}
+            value={{parameter.description}}
+            type="text"
             placeholder={{I18n.t "discourse_ai.tools.parameter_description"}}
-            {{on
-              "input"
-              (fn
-                this.updateParameter
-                parameter
-                "description"
-                value="target.value"
-              )
-            }}
           />
         </div>
+
         <div class="parameter-row">
           <label>
-            <Input
-              @type="checkbox"
-              @checked={{parameter.required}}
-              {{on
-                "change"
-                (fn
-                  this.updateParameter
-                  parameter
-                  "required"
-                  value="target.checked"
-                )
-              }}
+            <input
+              {{on "input" (fn this.toggleRequired parameter)}}
+              checked={{parameter.required}}
+              type="checkbox"
             />
             {{I18n.t "discourse_ai.tools.parameter_required"}}
           </label>
+
           <label>
-            <Input
-              @type="checkbox"
-              @checked={{parameter.enum}}
-              {{on "change" (fn this.toggleEnum parameter)}}
+            <input
+              {{on "input" (fn this.toggleEnum parameter)}}
+              checked={{parameter.enum}}
+              type="checkbox"
             />
             {{I18n.t "discourse_ai.tools.parameter_enum"}}
           </label>
+
           <DButton
-            @icon="trash-alt"
             @action={{fn this.removeParameter parameter}}
+            @icon="trash-alt"
             class="btn-danger"
           />
         </div>
+
         {{#if parameter.enum}}
           <div class="parameter-enum-values">
             {{#each parameter.enumValues as |enumValue enumIndex|}}
               <div class="enum-value-row">
-                <Input
-                  @type="text"
-                  @value={{enumValue}}
+                <input
+                  {{on "change" (fn this.updateEnumValue parameter enumIndex)}}
+                  value={{enumValue}}
+                  type="text"
                   placeholder={{I18n.t "discourse_ai.tools.enum_value"}}
-                  {{on
-                    "input"
-                    (fn
-                      this.updateParameter
-                      parameter.enumValues
-                      enumIndex
-                      value="target.value"
-                    )
-                  }}
                 />
                 <DButton
-                  @icon="trash-alt"
                   @action={{fn this.removeEnumValue parameter enumIndex}}
+                  @icon="trash-alt"
                   class="btn-danger"
                 />
               </div>
             {{/each}}
+
             <DButton
-              @icon="plus"
               @action={{fn this.addEnumValue parameter}}
               @label="discourse_ai.tools.add_enum_value"
+              @icon="plus"
             />
           </div>
         {{/if}}
       </div>
     {{/each}}
+
     <DButton
-      @icon="plus"
       @action={{this.addParameter}}
       @label="discourse_ai.tools.add_parameter"
+      @icon="plus"
     />
   </template>
 }

@@ -8,30 +8,27 @@ export function jsonToHtml(json) {
   if (typeof json !== "object") {
     return escapeExpression(json);
   }
+
   let html = "<ul>";
-  for (let key in json) {
-    if (!json.hasOwnProperty(key)) {
-      continue;
-    }
+
+  for (let [key, value] of Object.entries(json)) {
     html += "<li>";
-    if (typeof json[key] === "object" && Array.isArray(json[key])) {
-      html += `<strong>${escapeExpression(key)}:</strong> ${jsonToHtml(
-        json[key]
-      )}`;
-    } else if (typeof json[key] === "object") {
-      html += `<strong>${escapeExpression(key)}:</strong> <ul><li>${jsonToHtml(
-        json[key]
-      )}</li></ul>`;
+    key = escapeExpression(key);
+
+    if (typeof value === "object" && Array.isArray(value)) {
+      html += `<strong>${key}:</strong> ${jsonToHtml(value)}`;
+    } else if (typeof value === "object") {
+      html += `<strong>${key}:</strong> <ul><li>${jsonToHtml(value)}</li></ul>`;
     } else {
-      let value = json[key];
       if (typeof value === "string") {
-        value = escapeExpression(value);
-        value = value.replace(/\n/g, "<br>");
+        value = escapeExpression(value).replace(/\n/g, "<br>");
       }
-      html += `<strong>${escapeExpression(key)}:</strong> ${value}`;
+      html += `<strong>${key}:</strong> ${value}`;
     }
+
     html += "</li>";
   }
+
   html += "</ul>";
   return htmlSafe(html);
 }

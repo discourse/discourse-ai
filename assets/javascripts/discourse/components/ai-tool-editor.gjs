@@ -1,14 +1,15 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { Input } from "@ember/component";
+import { fn } from "@ember/helper";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
-import Textarea from "discourse/components/d-textarea";
 import DTooltip from "discourse/components/d-tooltip";
+import withEventValue from "discourse/helpers/with-event-value";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "discourse-i18n";
 import AceEditor from "admin/components/ace-editor";
@@ -16,9 +17,11 @@ import ComboBox from "select-kit/components/combo-box";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
 
+const ACE_EDITOR_MODE = "javascript";
+const ACE_EDITOR_THEME = "chrome";
+
 export default class AiToolEditor extends Component {
   @service router;
-  @service store;
   @service dialog;
   @service modal;
   @service toasts;
@@ -26,17 +29,7 @@ export default class AiToolEditor extends Component {
   @tracked isSaving = false;
   @tracked editingModel = null;
   @tracked showDelete = false;
-
   @tracked selectedPreset = null;
-
-  aceEditorMode = "javascript";
-  aceEditorTheme = "chrome";
-
-  @action
-  updateModel() {
-    this.editingModel = this.args.model.workingCopy();
-    this.showDelete = !this.args.model.isNew;
-  }
 
   get presets() {
     return this.args.presets.map((preset) => {
@@ -52,6 +45,12 @@ export default class AiToolEditor extends Component {
   }
 
   @action
+  updateModel() {
+    this.editingModel = this.args.model.workingCopy();
+    this.showDelete = !this.args.model.isNew;
+  }
+
+  @action
   configurePreset() {
     this.selectedPreset = this.args.presets.findBy("preset_id", this.presetId);
     this.editingModel = this.args.model.workingCopy();
@@ -64,15 +63,22 @@ export default class AiToolEditor extends Component {
     this.isSaving = true;
 
     try {
-      await this.args.model.save(
-        this.editingModel.getProperties(
-          "name",
-          "description",
-          "parameters",
-          "script",
-          "summary"
-        )
+      const data = this.editingModel.getProperties(
+        "name",
+        "description",
+        "parameters",
+        "script",
+        "summary"
       );
+
+      for (const p of data.parameters) {
+        if (p.enumValues) {
+          p.enum_values = p.enumValues;
+          delete p.enumValues;
+        }
+      }
+
+      await this.args.model.save(data);
 
       this.toasts.success({
         data: { message: I18n.t("discourse_ai.tools.saved") },
@@ -97,20 +103,13 @@ export default class AiToolEditor extends Component {
   delete() {
     return this.dialog.confirm({
       message: I18n.t("discourse_ai.tools.confirm_delete"),
-      didConfirm: () => {
-        return this.args.model.destroyRecord().then(() => {
-          this.args.tools.removeObject(this.args.model);
-          this.router.transitionTo(
-            "adminPlugins.show.discourse-ai-tools.index"
-          );
-        });
+      didConfirm: async () => {
+        await this.args.model.destroyRecord();
+
+        this.args.tools.removeObject(this.args.model);
+        this.router.transitionTo("adminPlugins.show.discourse-ai-tools.index");
       },
     });
-  }
-
-  @action
-  updateScript(script) {
-    this.editingModel.script = script;
   }
 
   @action
@@ -129,9 +128,9 @@ export default class AiToolEditor extends Component {
     />
 
     <form
-      class="form-horizontal ai-tool-editor"
-      {{didUpdate this.updateModel @model.id}}
       {{didInsert this.updateModel @model.id}}
+      {{didUpdate this.updateModel @model.id}}
+      class="form-horizontal ai-tool-editor"
     >
       {{#if this.showPresets}}
         <div class="control-group">
@@ -145,18 +144,18 @@ export default class AiToolEditor extends Component {
 
         <div class="control-group ai-llm-editor__action_panel">
           <DButton
-            class="ai-tool-editor__next"
             @action={{this.configurePreset}}
-          >
-            {{I18n.t "discourse_ai.tools.next.title"}}
-          </DButton>
+            @label="discourse_ai.tools.next.title"
+            class="ai-tool-editor__next"
+          />
         </div>
       {{else}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.name"}}</label>
-          <Input
-            @type="text"
-            @value={{this.editingModel.name}}
+          <input
+            {{on "input" (withEventValue (fn (mut this.editingModel.name)))}}
+            value={{this.editingModel.name}}
+            type="text"
             class="ai-tool-editor__name"
           />
           <DTooltip
@@ -164,19 +163,25 @@ export default class AiToolEditor extends Component {
             @content={{I18n.t "discourse_ai.tools.name_help"}}
           />
         </div>
+
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.description"}}</label>
-          <Textarea
-            @value={{this.editingModel.description}}
-            class="ai-tool-editor__description input-xxlarge"
+          <textarea
+            {{on
+              "input"
+              (withEventValue (fn (mut this.editingModel.description)))
+            }}
             placeholder={{I18n.t "discourse_ai.tools.description_help"}}
-          />
+            class="ai-tool-editor__description input-xxlarge"
+          >{{this.editingModel.description}}</textarea>
         </div>
+
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.summary"}}</label>
-          <Input
-            @type="text"
-            @value={{this.editingModel.summary}}
+          <input
+            {{on "input" (withEventValue (fn (mut this.editingModel.summary)))}}
+            value={{this.editingModel.summary}}
+            type="text"
             class="ai-tool-editor__summary input-xxlarge"
           />
           <DTooltip
@@ -184,37 +189,43 @@ export default class AiToolEditor extends Component {
             @content={{I18n.t "discourse_ai.tools.summary_help"}}
           />
         </div>
+
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.parameters"}}</label>
           <AiToolParameterEditor @parameters={{this.editingModel.parameters}} />
         </div>
+
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.script"}}</label>
           <AceEditor
             @content={{this.editingModel.script}}
-            @mode={{this.aceEditorMode}}
-            @theme={{this.aceEditorTheme}}
-            @onChange={{this.updateScript}}
+            @onChange={{withEventValue (fn (mut this.editingModel.script))}}
+            @mode={{ACE_EDITOR_MODE}}
+            @theme={{ACE_EDITOR_THEME}}
             @editorId="ai-tool-script-editor"
           />
         </div>
+
         <div class="control-group ai-tool-editor__action_panel">
           <DButton
             @action={{this.openTestModal}}
-            class="btn-default ai-tool-editor__test-button"
-          >{{I18n.t "discourse_ai.tools.test"}}</DButton>
+            @label="discourse_ai.tools.test"
+            class="ai-tool-editor__test-button"
+          />
+
           <DButton
-            class="btn-primary ai-tool-editor__save"
             @action={{this.save}}
+            @label="discourse_ai.tools.save"
             @disabled={{this.isSaving}}
-          >{{I18n.t "discourse_ai.tools.save"}}</DButton>
+            class="btn-primary ai-tool-editor__save"
+          />
+
           {{#if this.showDelete}}
             <DButton
               @action={{this.delete}}
+              @label="discourse_ai.tools.delete"
               class="btn-danger ai-tool-editor__delete"
-            >
-              {{I18n.t "discourse_ai.tools.delete"}}
-            </DButton>
+            />
           {{/if}}
         </div>
       {{/if}}

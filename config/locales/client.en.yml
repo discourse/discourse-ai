@@ -200,6 +200,8 @@ en:
         parameter_enum: "Enum"
         parameter_name: "Parameter Name"
         parameter_description: "Parameter Description"
+        enum_value: "Enum value"
+        add_enum_value: "Add enum value"
         edit: "Edit"
         test: "Run Test"
         delete: "Delete"

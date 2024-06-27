@@ -81,7 +81,7 @@ module DiscourseAi
           :description,
           :script,
           :summary,
-          parameters: %i[name type description],
+          parameters: [:name, :type, :description, :required, :enum, enum_values: []],
         )
       end
     end
