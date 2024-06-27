@@ -85,7 +85,7 @@ class AiTool < ActiveRecord::Base
             return { error: "Target currency not found" };
           }
 
-          let rval = {
+          const rval = {
             base_currency: params.base_currency,
             target_currency: params.target_currency,
             exchange_rate: rate,
