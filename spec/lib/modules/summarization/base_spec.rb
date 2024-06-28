@@ -20,10 +20,10 @@ describe DiscourseAi::Summarization::Models::Base do
 
   describe "#can_see_summary?" do
     context "when the user cannot generate a summary" do
-      before { SiteSetting.custom_summarization_allowed_groups = "" }
+      before { SiteSetting.ai_custom_summarization_allowed_groups = "" }
 
       it "returns false" do
-        SiteSetting.custom_summarization_allowed_groups = ""
+        SiteSetting.ai_custom_summarization_allowed_groups = ""
 
         expect(described_class.can_see_summary?(topic, user)).to eq(false)
       end
@@ -41,9 +41,9 @@ describe DiscourseAi::Summarization::Models::Base do
     end
 
     context "when the user can generate a summary" do
-      before { SiteSetting.custom_summarization_allowed_groups = group.id }
+      before { SiteSetting.ai_custom_summarization_allowed_groups = group.id }
 
-      it "returns true if the user group is present in the custom_summarization_allowed_groups_map setting" do
+      it "returns true if the user group is present in the ai_custom_summarization_allowed_groups_map setting" do
         expect(described_class.can_see_summary?(topic, user)).to eq(true)
       end
     end
@@ -66,7 +66,7 @@ describe DiscourseAi::Summarization::Models::Base do
     end
 
     context "when the topic is a PM" do
-      before { SiteSetting.custom_summarization_allowed_groups = group.id }
+      before { SiteSetting.ai_custom_summarization_allowed_groups = group.id }
       let(:pm) { Fabricate(:private_message_topic) }
 
       it "returns false" do
