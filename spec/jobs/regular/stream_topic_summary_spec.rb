@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../support/dummy_custom_summarization"
+
 RSpec.describe Jobs::StreamTopicSummary do
   subject(:job) { described_class.new }
 
@@ -13,10 +15,7 @@ RSpec.describe Jobs::StreamTopicSummary do
 
     before { Group.find(Group::AUTO_GROUPS[:trust_level_3]).add(user) }
 
-    before do
-      plugin.register_summarization_strategy(strategy)
-      SiteSetting.ai_summarization_strategy = strategy.model
-    end
+    before { SiteSetting.ai_summarization_strategy = strategy.model }
 
     after { DiscoursePluginRegistry.reset_register!(:summarization_strategies) }
 

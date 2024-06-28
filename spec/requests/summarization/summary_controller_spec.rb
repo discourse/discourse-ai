@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../support/dummy_custom_summarization"
+
 RSpec.describe DiscourseAi::Summarization::SummaryController do
   describe "#summary" do
     fab!(:topic) { Fabricate(:topic, highest_post_number: 2) }
@@ -8,10 +10,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
     let(:plugin) { Plugin::Instance.new }
     let(:strategy) { DummyCustomSummarization.new({ summary: "dummy" }) }
 
-    before do
-      plugin.register_summarization_strategy(strategy)
-      SiteSetting.ai_summarization_strategy = strategy.model
-    end
+    before { SiteSetting.ai_summarization_strategy = strategy.model }
 
     after { DiscoursePluginRegistry.reset_register!(:summarization_strategies) }
 

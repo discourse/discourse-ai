@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../support/dummy_custom_summarization"
+
 RSpec.describe "Summarize a channel since your last visit", type: :system do
   fab!(:current_user) { Fabricate(:user) }
   fab!(:group)
@@ -13,7 +15,6 @@ RSpec.describe "Summarize a channel since your last visit", type: :system do
     group.add(current_user)
 
     strategy = DummyCustomSummarization.new(summarization_result)
-    plugin.register_summarization_strategy(strategy)
     SiteSetting.ai_summarization_strategy = strategy.model
     SiteSetting.ai_custom_summarization_allowed_groups = group.id.to_s
 

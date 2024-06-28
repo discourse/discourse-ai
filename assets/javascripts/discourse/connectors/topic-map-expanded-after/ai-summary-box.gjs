@@ -5,7 +5,6 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
-import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
 import { shortDateNoYear } from "discourse/lib/formatter";

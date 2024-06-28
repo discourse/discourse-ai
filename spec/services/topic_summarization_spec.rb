@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../support/dummy_custom_summarization"
+
 describe TopicSummarization do
   fab!(:user) { Fabricate(:admin) }
   fab!(:topic) { Fabricate(:topic, highest_post_number: 2) }

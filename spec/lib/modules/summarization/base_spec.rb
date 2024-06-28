@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../../support/dummy_custom_summarization"
+
 describe DiscourseAi::Summarization::Models::Base do
   fab!(:user)
   fab!(:group)
@@ -11,7 +13,6 @@ describe DiscourseAi::Summarization::Models::Base do
     group.add(user)
 
     strategy = DummyCustomSummarization.new({ summary: "dummy" })
-    plugin.register_summarization_strategy(strategy)
     SiteSetting.ai_summarization_strategy = strategy.model
   end
 
