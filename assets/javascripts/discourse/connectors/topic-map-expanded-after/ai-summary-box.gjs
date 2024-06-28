@@ -20,8 +20,6 @@ import not from "truth-helpers/helpers/not";
 import or from "truth-helpers/helpers/or";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
 
-const MIN_POST_READ_TIME = 4;
-
 export default class AiSummaryBox extends Component {
   @service siteSettings;
   @service messageBus;
@@ -66,53 +64,6 @@ export default class AiSummaryBox extends Component {
 
   get topRepliesSummaryEnabled() {
     return this.args.outletArgs.postStream.summary;
-  }
-
-  get topRepliesSummaryInfo() {
-    if (this.topRepliesSummaryEnabled) {
-      return I18n.t("summary.enabled_description");
-    }
-
-    const wordCount = this.args.outletArgs.topic.word_count;
-    if (wordCount && this.siteSettings.read_time_word_count > 0) {
-      const readingTime = Math.ceil(
-        Math.max(
-          wordCount / this.siteSettings.read_time_word_count,
-          (this.args.outletArgs.topic.posts_count * MIN_POST_READ_TIME) / 60
-        )
-      );
-      return I18n.messageFormat("summary.description_time_MF", {
-        replyCount: this.args.outletArgs.topic.replyCount,
-        readingTime,
-      });
-    }
-    return I18n.t("summary.description", {
-      count: this.args.outletArgs.topic.replyCount,
-    });
-  }
-
-  get topRepliesTitle() {
-    if (this.topRepliesSummaryEnabled) {
-      return;
-    }
-
-    return I18n.t("summary.short_title");
-  }
-
-  get topRepliesLabel() {
-    const label = this.topRepliesSummaryEnabled
-      ? "summary.disable"
-      : "summary.enable";
-
-    return I18n.t(label);
-  }
-
-  get topRepliesIcon() {
-    if (this.topRepliesSummaryEnabled) {
-      return;
-    }
-
-    return "layer-group";
   }
 
   @action
@@ -186,85 +137,69 @@ export default class AiSummaryBox extends Component {
 
   <template>
     {{#if (or @outletArgs.topic.has_summary @outletArgs.topic.summarizable)}}
-      <section class="information toggle-summary">
-        <div class="summary-box__container">
-          {{#if @outletArgs.topic.has_summary}}
-            <p>{{htmlSafe this.topRepliesSummaryInfo}}</p>
-          {{/if}}
-          <div class="summarization-buttons">
-            {{#if @outletArgs.topic.summarizable}}
-              {{#if this.showSummaryBox}}
-                <DButton
-                  @action={{this.collapse}}
-                  @title="summary.buttons.hide"
-                  @label="summary.buttons.hide"
-                  @icon="chevron-up"
-                  class="btn-primary topic-strategy-summarization"
-                />
-              {{else}}
-                <DButton
-                  @action={{this.generateSummary}}
-                  @translatedLabel={{this.generateSummaryTitle}}
-                  @translatedTitle={{this.generateSummaryTitle}}
-                  @icon={{this.generateSummaryIcon}}
-                  @disabled={{this.loading}}
-                  class="btn-primary topic-strategy-summarization"
-                />
-              {{/if}}
-            {{/if}}
-            {{#if @outletArgs.topic.has_summary}}
-              <DButton
-                @action={{if
-                  this.summary
-                  @outletArgs.cancelFilter
-                  @outletArgs.showTopReplies
-                }}
-                @translatedTitle={{this.topRepliesTitle}}
-                @translatedLabel={{this.topRepliesLabel}}
-                @icon={{this.topRepliesIcon}}
-                class="top-replies"
-              />
-            {{/if}}
-          </div>
-
+      <div class="summarization-buttons">
+        {{#if @outletArgs.topic.summarizable}}
           {{#if this.showSummaryBox}}
-            <article
-              class="summary-box"
-              {{didInsert this.subscribe}}
-              {{willDestroy this.unsubscribe}}
-            >
-              {{#if (and this.loading (not this.text))}}
-                <AiSummarySkeleton />
-              {{else}}
-                <div class="generated-summary">{{this.text}}</div>
-
-                {{#if this.summarizedOn}}
-                  <div class="summarized-on">
-                    <p>
-                      {{i18n "summary.summarized_on" date=this.summarizedOn}}
-
-                      <DTooltip @placements={{array "top-end"}}>
-                        <:trigger>
-                          {{dIcon "info-circle"}}
-                        </:trigger>
-                        <:content>
-                          {{i18n "summary.model_used" model=this.summarizedBy}}
-                        </:content>
-                      </DTooltip>
-                    </p>
-
-                    {{#if this.outdated}}
-                      <p class="outdated-summary">
-                        {{this.outdatedSummaryWarningText}}
-                      </p>
-                    {{/if}}
-                  </div>
-                {{/if}}
-              {{/if}}
-            </article>
+            <DButton
+              @action={{this.collapse}}
+              @title="summary.buttons.hide"
+              @label="summary.buttons.hide"
+              @icon="chevron-up"
+              class="btn-primary topic-strategy-summarization"
+            />
+          {{else}}
+            <DButton
+              @action={{this.generateSummary}}
+              @translatedLabel={{this.generateSummaryTitle}}
+              @translatedTitle={{this.generateSummaryTitle}}
+              @icon={{this.generateSummaryIcon}}
+              @disabled={{this.loading}}
+              class="btn-primary topic-strategy-summarization"
+            />
           {{/if}}
-        </div>
-      </section>
+        {{/if}}
+
+        {{yield}}
+      </div>
+
+      <div class="summary-box__container">
+        {{#if this.showSummaryBox}}
+          <article
+            class="summary-box"
+            {{didInsert this.subscribe}}
+            {{willDestroy this.unsubscribe}}
+          >
+            {{#if (and this.loading (not this.text))}}
+              <AiSummarySkeleton />
+            {{else}}
+              <div class="generated-summary">{{this.text}}</div>
+
+              {{#if this.summarizedOn}}
+                <div class="summarized-on">
+                  <p>
+                    {{i18n "summary.summarized_on" date=this.summarizedOn}}
+
+                    <DTooltip @placements={{array "top-end"}}>
+                      <:trigger>
+                        {{dIcon "info-circle"}}
+                      </:trigger>
+                      <:content>
+                        {{i18n "summary.model_used" model=this.summarizedBy}}
+                      </:content>
+                    </DTooltip>
+                  </p>
+
+                  {{#if this.outdated}}
+                    <p class="outdated-summary">
+                      {{this.outdatedSummaryWarningText}}
+                    </p>
+                  {{/if}}
+                </div>
+              {{/if}}
+            {{/if}}
+          </article>
+        {{/if}}
+      </div>
     {{/if}}
   </template>
 }
