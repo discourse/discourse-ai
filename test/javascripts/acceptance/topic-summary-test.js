@@ -92,7 +92,7 @@ acceptance("Topic - Summary - Anon", function (needs) {
     });
   });
 
-  test("displays cached summary inmediately", async function (assert) {
+  test("displays cached summary immediately", async function (assert) {
     await visit("/t/-/1");
 
     await click(".topic-strategy-summarization");
