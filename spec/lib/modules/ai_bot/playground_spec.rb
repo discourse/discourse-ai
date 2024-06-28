@@ -63,6 +63,88 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
   end
 
+  describe "custom tool integration" do
+    let!(:custom_tool) do
+      AiTool.create!(
+        name: "search",
+        summary: "searching for things",
+        description: "A test custom tool",
+        parameters: [{ name: "query", type: "string", description: "Input for the custom tool" }],
+        script:
+          "function invoke(params) { return 'Custom tool result: ' + params.query; }; function details() { return 'did stuff'; }",
+        created_by: user,
+      )
+    end
+
+    let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
+
+    it "uses custom tool in conversation" do
+      persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
+      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
+      playground = DiscourseAi::AiBot::Playground.new(bot)
+
+      function_call = (<<~XML).strip
+        <function_calls>
+          <invoke>
+            <tool_name>search</tool_name>
+            <tool_id>666</tool_id>
+            <parameters>
+              <query>Can you use the custom tool</query>
+            </parameters>
+          </invoke>
+        </function_calls>",
+      XML
+
+      responses = [function_call, "custom tool did stuff (maybe)"]
+
+      reply_post = nil
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompt|
+        new_post = Fabricate(:post, raw: "Can you use the custom tool?")
+        reply_post = playground.reply_to(new_post)
+      end
+
+      expected = <<~TXT.strip
+        <details>
+          <summary>searching for things</summary>
+          <p>did stuff</p>
+        </details>
+        <span></span>
+
+        custom tool did stuff (maybe)
+      TXT
+      expect(reply_post.raw).to eq(expected)
+
+      custom_prompt = PostCustomPrompt.find_by(post_id: reply_post.id).custom_prompt
+      expected_prompt = [
+        [
+          "{\"arguments\":{\"query\":\"Can you use the custom tool\"}}",
+          "666",
+          "tool_call",
+          "search",
+        ],
+        ["\"Custom tool result: Can you use the custom tool\"", "666", "tool", "search"],
+        ["custom tool did stuff (maybe)", "claude-2"],
+      ]
+
+      expect(custom_prompt).to eq(expected_prompt)
+
+      custom_tool.update!(enabled: false)
+      # so we pick up new cache
+      persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
+      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
+      playground = DiscourseAi::AiBot::Playground.new(bot)
+
+      # lets ensure tool does not run...
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompt|
+        new_post = Fabricate(:post, raw: "Can you use the custom tool?")
+        reply_post = playground.reply_to(new_post)
+      end
+
+      expect(reply_post.raw.strip).to eq(function_call)
+    end
+  end
+
   describe "image support" do
     before do
       Jobs.run_immediately!
@@ -459,7 +541,6 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "picks the correct llm for persona in PMs" do
       gpt_35_turbo = Fabricate(:llm_model, name: "gpt-3.5-turbo")
-      gpt_35_turbo_16k = Fabricate(:llm_model, name: "gpt-3.5-turbo-16k")
 
       # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
       SiteSetting.ai_bot_enabled = true

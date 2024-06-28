@@ -18,7 +18,7 @@ module DiscourseAi
 
         debug_info = AiApiAuditLog.where(post: posts).order(created_at: :desc).first
 
-        render json: debug_info, status: 200
+        render json: AiApiAuditLogSerializer.new(debug_info, root: false), status: 200
       end
 
       def stop_streaming_response

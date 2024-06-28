@@ -11,6 +11,7 @@ import { clipboardCopy, escapeExpression } from "discourse/lib/utilities";
 import i18n from "discourse-common/helpers/i18n";
 import discourseLater from "discourse-common/lib/later";
 import I18n from "discourse-i18n";
+import { jsonToHtml } from "../../lib/utilities";
 
 export default class DebugAiModal extends Component {
   @tracked info = null;
@@ -41,7 +42,7 @@ export default class DebugAiModal extends Component {
       return this.info.raw_request_payload;
     }
 
-    return htmlSafe(this.jsonToHtml(parsed));
+    return jsonToHtml(parsed);
   }
 
   formattedResponse(response) {
@@ -50,35 +51,6 @@ export default class DebugAiModal extends Component {
     const safe = split.map((line) => escapeExpression(line)).join("<br>");
 
     return htmlSafe(safe);
-  }
-
-  jsonToHtml(json) {
-    let html = "<ul>";
-    for (let key in json) {
-      if (!json.hasOwnProperty(key)) {
-        continue;
-      }
-      html += "<li>";
-      if (typeof json[key] === "object" && Array.isArray(json[key])) {
-        html += `<strong>${escapeExpression(key)}:</strong> ${this.jsonToHtml(
-          json[key]
-        )}`;
-      } else if (typeof json[key] === "object") {
-        html += `<strong>${escapeExpression(
-          key
-        )}:</strong> <ul><li>${this.jsonToHtml(json[key])}</li></ul>`;
-      } else {
-        let value = json[key];
-        if (typeof value === "string") {
-          value = escapeExpression(value);
-          value = value.replace(/\n/g, "<br>");
-        }
-        html += `<strong>${escapeExpression(key)}:</strong> ${value}`;
-      }
-      html += "</li>";
-    }
-    html += "</ul>";
-    return html;
   }
 
   @action

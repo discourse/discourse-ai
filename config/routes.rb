@@ -46,6 +46,13 @@ Discourse::Application.routes.draw do
               path: "ai-personas",
               controller: "discourse_ai/admin/ai_personas"
 
+    resources(
+      :ai_tools,
+      only: %i[index create show update destroy],
+      path: "ai-tools",
+      controller: "discourse_ai/admin/ai_tools",
+    ) { post :test, on: :collection }
+
     post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
     post "/ai-personas/files/upload", to: "discourse_ai/admin/ai_personas#upload_file"
     put "/ai-personas/:id/files/remove", to: "discourse_ai/admin/ai_personas#remove_file"

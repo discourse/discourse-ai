@@ -41,6 +41,10 @@ class LlmModel < ActiveRecord::Base
     }
   end
 
+  def to_llm
+    DiscourseAi::Completions::Llm.proxy_from_obj(self)
+  end
+
   def toggle_companion_user
     return if name == "fake" && Rails.env.production?
 
