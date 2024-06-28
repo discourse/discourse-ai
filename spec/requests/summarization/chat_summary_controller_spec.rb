@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../support/dummy_custom_summarization"
+require_relative "../../support/dummy_summarization_model"
 
 RSpec.describe DiscourseAi::Summarization::ChatSummaryController do
   fab!(:current_user) { Fabricate(:user) }
@@ -10,7 +10,7 @@ RSpec.describe DiscourseAi::Summarization::ChatSummaryController do
   before do
     group.add(current_user)
 
-    strategy = DummyCustomSummarization.new({ summary: "dummy", chunks: [] })
+    strategy = DummySummarizationModel.new({ summary: "dummy" })
     SiteSetting.ai_summarization_strategy = strategy.model
     SiteSetting.ai_custom_summarization_allowed_groups = group.id
 

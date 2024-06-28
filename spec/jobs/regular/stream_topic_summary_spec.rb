@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../support/dummy_custom_summarization"
+require_relative "../../support/dummy_summarization_model"
 
 RSpec.describe Jobs::StreamTopicSummary do
   subject(:job) { described_class.new }
@@ -10,7 +10,7 @@ RSpec.describe Jobs::StreamTopicSummary do
     fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
     fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
     let(:plugin) { Plugin::Instance.new }
-    let(:strategy) { DummyCustomSummarization.new({ summary: "dummy", chunks: [] }) }
+    let(:strategy) { DummySummarizationModel.new({ summary: "dummy", chunks: [] }) }
     fab!(:user) { Fabricate(:leader) }
 
     before { Group.find(Group::AUTO_GROUPS[:trust_level_3]).add(user) }

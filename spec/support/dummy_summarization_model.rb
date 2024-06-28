@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DummyCustomSummarization < DiscourseAi::Summarization::Models::Base
+class DummySummarizationModel < DiscourseAi::Summarization::Models::Base
   def initialize(summarization_result)
     @summarization_result = summarization_result
   end

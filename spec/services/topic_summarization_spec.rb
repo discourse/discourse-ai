@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../support/dummy_custom_summarization"
+require_relative "../support/dummy_summarization_model"
 
 describe TopicSummarization do
   fab!(:user) { Fabricate(:admin) }
@@ -9,7 +9,7 @@ describe TopicSummarization do
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
 
   shared_examples "includes only public-visible topics" do
-    subject { described_class.new(DummyCustomSummarization.new({})) }
+    subject { described_class.new(DummySummarizationModel.new({})) }
 
     it "only includes visible posts" do
       topic.first_post.update!(hidden: true)
@@ -53,7 +53,7 @@ describe TopicSummarization do
   describe "#summarize" do
     subject(:summarization) { described_class.new(strategy) }
 
-    let(:strategy) { DummyCustomSummarization.new(summary) }
+    let(:strategy) { DummySummarizationModel.new(summary) }
 
     def assert_summary_is_cached(topic, summary_response)
       cached_summary = AiSummary.find_by(target: topic)

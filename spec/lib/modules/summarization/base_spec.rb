@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../../support/dummy_custom_summarization"
+require_relative "../../../support/dummy_summarization_model"
 
 describe DiscourseAi::Summarization::Models::Base do
   fab!(:user)
@@ -12,7 +12,7 @@ describe DiscourseAi::Summarization::Models::Base do
   before do
     group.add(user)
 
-    strategy = DummyCustomSummarization.new({ summary: "dummy" })
+    strategy = DummySummarizationModel.new({ summary: "dummy" })
     SiteSetting.ai_summarization_strategy = strategy.model
   end
 

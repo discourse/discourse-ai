@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../support/dummy_custom_summarization"
+require_relative "../../support/dummy_summarization_model"
 
 RSpec.describe DiscourseAi::Summarization::SummaryController do
   describe "#summary" do
@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
     fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
     fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
     let(:plugin) { Plugin::Instance.new }
-    let(:strategy) { DummyCustomSummarization.new({ summary: "dummy" }) }
+    let(:strategy) { DummySummarizationModel.new({ summary: "dummy" }) }
 
     before { SiteSetting.ai_summarization_strategy = strategy.model }
 
