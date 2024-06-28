@@ -59,7 +59,7 @@ module DiscourseAi
               max_tokens: 32_000,
             )
 
-            folded_models = foldable_models.each { |model| Strategies::FoldContent.new(model) }
+            folded_models = foldable_models.map { |model| Strategies::FoldContent.new(model) }
 
             folded_models
           end
