@@ -109,7 +109,10 @@ export default class AiSummaryBox extends Component {
 
   @bind
   unsubscribe() {
-    this.messageBus.unsubscribe("/summaries/topic/*", this._updateSummary);
+    this.messageBus.unsubscribe(
+      "/discourse-ai/summaries/topic/*",
+      this._updateSummary
+    );
   }
 
   @bind
@@ -144,7 +147,7 @@ export default class AiSummaryBox extends Component {
               @title="summary.buttons.hide"
               @label="summary.buttons.hide"
               @icon="chevron-up"
-              class="btn-primary topic-strategy-summarization"
+              class="btn-primary ai-topic-summarization"
             />
           {{else}}
             <DButton
@@ -153,7 +156,7 @@ export default class AiSummaryBox extends Component {
               @translatedTitle={{this.generateSummaryTitle}}
               @icon={{this.generateSummaryIcon}}
               @disabled={{this.loading}}
-              class="btn-primary topic-strategy-summarization"
+              class="btn-primary ai-topic-summarization"
             />
           {{/if}}
         {{/if}}
@@ -161,13 +164,13 @@ export default class AiSummaryBox extends Component {
         {{yield}}
       </div>
 
-      <div class="summary-box__container">
+      <div
+        class="summary-box__container"
+        {{didInsert this.subscribe}}
+        {{willDestroy this.unsubscribe}}
+      >
         {{#if this.showSummaryBox}}
-          <article
-            class="summary-box"
-            {{didInsert this.subscribe}}
-            {{willDestroy this.unsubscribe}}
-          >
+          <article class="ai-summary-box">
             {{#if (and this.loading (not this.text))}}
               <AiSummarySkeleton />
             {{else}}

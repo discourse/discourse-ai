@@ -39,10 +39,10 @@ acceptance("Topic - Summary", function (needs) {
       ai_topic_summary: { summarized_text: partialSummary },
     });
 
-    await click(".topic-strategy-summarization");
+    await click(".ai-topic-summarization");
 
     assert
-      .dom(".summary-box .generated-summary p")
+      .dom(".ai-summary-box .generated-summary p")
       .hasText(partialSummary, "Updates the summary with a partial result");
 
     const finalSummary = "This is a completed summary";
@@ -59,10 +59,12 @@ acceptance("Topic - Summary", function (needs) {
     });
 
     assert
-      .dom(".summary-box .generated-summary p")
+      .dom(".ai-summary-box .generated-summary p")
       .hasText(finalSummary, "Updates the summary with a final result");
 
-    assert.dom(".summary-box .summarized-on").exists("summary metadata exists");
+    assert
+      .dom(".ai-summary-box .summarized-on")
+      .exists("summary metadata exists");
   });
 });
 
@@ -95,12 +97,14 @@ acceptance("Topic - Summary - Anon", function (needs) {
   test("displays cached summary immediately", async function (assert) {
     await visit("/t/-/1");
 
-    await click(".topic-strategy-summarization");
+    await click(".ai-topic-summarization");
 
     assert
-      .dom(".summary-box .generated-summary p")
+      .dom(".ai-summary-box .generated-summary p")
       .hasText(finalSummary, "Updates the summary with the result");
 
-    assert.dom(".summary-box .summarized-on").exists("summary metadata exists");
+    assert
+      .dom(".ai-summary-box .summarized-on")
+      .exists("summary metadata exists");
   });
 });
