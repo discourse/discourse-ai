@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jobs
-  class StreamTopicSummary < ::Jobs::Base
+  class StreamTopicAiSummary < ::Jobs::Base
     sidekiq_options retry: false
 
     def execute(args)
@@ -22,7 +22,7 @@ module Jobs
       start = Time.now
 
       summary =
-        TopicSummarization
+        DiscourseAi::TopicSummarization
           .new(strategy)
           .summarize(topic, user, opts) do |partial_summary|
             streamed_summary << partial_summary
@@ -30,6 +30,7 @@ module Jobs
             # Throttle updates.
             if (Time.now - start > 0.5) || Rails.env.test?
               payload = { done: false, ai_topic_summary: { summarized_text: streamed_summary } }
+
               publish_update(topic, user, payload)
               start = Time.now
             end

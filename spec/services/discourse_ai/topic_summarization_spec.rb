@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe TopicSummarization do
+describe DiscourseAi::TopicSummarization do
   fab!(:user) { Fabricate(:admin) }
   fab!(:topic) { Fabricate(:topic, highest_post_number: 2) }
   fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }

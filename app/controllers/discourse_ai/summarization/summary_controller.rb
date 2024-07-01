@@ -21,7 +21,7 @@ module DiscourseAi
 
         if params[:stream] && current_user
           Jobs.enqueue(
-            :stream_topic_summary,
+            :stream_topic_ai_summary,
             topic_id: topic.id,
             user_id: current_user.id,
             opts: opts.as_json,
@@ -30,7 +30,8 @@ module DiscourseAi
           render json: success_json
         else
           hijack do
-            summary = TopicSummarization.new(strategy).summarize(topic, current_user, opts)
+            summary =
+              DiscourseAi::TopicSummarization.new(strategy).summarize(topic, current_user, opts)
 
             render_serialized(summary, AiTopicSummarySerializer)
           end

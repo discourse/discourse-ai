@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Jobs::StreamTopicSummary do
+RSpec.describe Jobs::StreamTopicAiSummary do
   subject(:job) { described_class.new }
 
   describe "#execute" do
@@ -20,7 +20,7 @@ RSpec.describe Jobs::StreamTopicSummary do
     describe "validates params" do
       it "does nothing if there is no topic" do
         messages =
-          MessageBus.track_publish("/summaries/topic/#{topic.id}") do
+          MessageBus.track_publish("/discourse-ai/summaries/topic/#{topic.id}") do
             job.execute(topic_id: nil, user_id: user.id)
           end
 
