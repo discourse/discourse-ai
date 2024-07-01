@@ -1,18 +1,12 @@
 # frozen_string_literal: true
 
-require_relative "../../support/dummy_summarization_model"
-
 RSpec.describe DiscourseAi::Summarization::SummaryController do
   describe "#summary" do
     fab!(:topic) { Fabricate(:topic, highest_post_number: 2) }
     fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
     fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
-    let(:plugin) { Plugin::Instance.new }
-    let(:strategy) { DummySummarizationModel.new({ summary: "dummy" }) }
 
-    before { SiteSetting.ai_summarization_strategy = strategy.model }
-
-    after { DiscoursePluginRegistry.reset_register!(:summarization_strategies) }
+    before { SiteSetting.ai_summarization_strategy = "fake" }
 
     context "for anons" do
       it "returns a 404 if there is no cached summary" do
@@ -23,7 +17,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
 
       it "returns a cached summary" do
         section =
-          SummarySection.create!(
+          AiSummary.create!(
             target: topic,
             summarized_text: "test",
             algorithm: "test",
@@ -64,17 +58,21 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
       end
 
       it "returns a summary" do
-        get "/discourse-ai/summarization/t/#{topic.id}.json"
+        summary_text = "This is a summary"
+        DiscourseAi::Completions::Llm.with_prepared_responses([summary_text]) do
+          get "/discourse-ai/summarization/t/#{topic.id}.json"
 
-        expect(response.status).to eq(200)
-        summary = response.parsed_body["ai_topic_summary"]
-        section = SummarySection.last
+          expect(response.status).to eq(200)
+          summary = response.parsed_body["ai_topic_summary"]
+          section = AiSummary.last
 
-        expect(summary["summarized_text"]).to eq(section.summarized_text)
-        expect(summary["algorithm"]).to eq(strategy.model)
-        expect(summary["outdated"]).to eq(false)
-        expect(summary["can_regenerate"]).to eq(true)
-        expect(summary["new_posts_since_summary"]).to be_zero
+          expect(section.summarized_text).to eq(summary_text)
+          expect(summary["summarized_text"]).to eq(section.summarized_text)
+          expect(summary["algorithm"]).to eq("fake")
+          expect(summary["outdated"]).to eq(false)
+          expect(summary["can_regenerate"]).to eq(true)
+          expect(summary["new_posts_since_summary"]).to be_zero
+        end
       end
 
       it "signals the summary is outdated" do
@@ -105,7 +103,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
 
       it "returns a cached summary" do
         section =
-          SummarySection.create!(
+          AiSummary.create!(
             target: topic,
             summarized_text: "test",
             algorithm: "test",

@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
-require_relative "../support/dummy_summarization_model"
-
 describe TopicSummarization do
   fab!(:user) { Fabricate(:admin) }
   fab!(:topic) { Fabricate(:topic, highest_post_number: 2) }
   fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
 
+  let(:model) do
+    DiscourseAi::Summarization::Strategies::FoldContent.new(
+      DiscourseAi::Summarization::Models::Fake.new("fake:fake", max_tokens: 8192),
+    )
+  end
+
   shared_examples "includes only public-visible topics" do
-    subject { described_class.new(DummySummarizationModel.new({})) }
+    subject { described_class.new(model) }
 
     it "only includes visible posts" do
       topic.first_post.update!(hidden: true)
@@ -51,28 +55,28 @@ describe TopicSummarization do
   end
 
   describe "#summarize" do
-    subject(:summarization) { described_class.new(strategy) }
-
-    let(:strategy) { DummySummarizationModel.new(summary) }
+    subject(:summarization) { described_class.new(model) }
 
     def assert_summary_is_cached(topic, summary_response)
       cached_summary = AiSummary.find_by(target: topic)
 
       expect(cached_summary.content_range).to cover(*topic.posts.map(&:post_number))
-      expect(cached_summary.summarized_text).to eq(summary_response[:summary])
+      expect(cached_summary.summarized_text).to eq(summary)
       expect(cached_summary.original_content_sha).to be_present
-      expect(cached_summary.algorithm).to eq(strategy.model)
+      expect(cached_summary.algorithm).to eq("fake")
     end
 
     context "when the content was summarized in a single chunk" do
-      let(:summary) { { summary: "This is the final summary" } }
+      let(:summary) { "This is the final summary" }
 
       it "caches the summary" do
-        section = summarization.summarize(topic, user)
+        DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
+          section = summarization.summarize(topic, user)
 
-        expect(section.summarized_text).to eq(summary[:summary])
+          expect(section.summarized_text).to eq(summary)
 
-        assert_summary_is_cached(topic, summary)
+          assert_summary_is_cached(topic, summary)
+        end
       end
 
       it "returns the cached version in subsequent calls" do
@@ -98,27 +102,36 @@ describe TopicSummarization do
               embed_content_cache: "<p>hello world new post :D</p>",
             )
 
-          summarization.summarize(topic, user)
+          DiscourseAi::Completions::Llm.with_prepared_responses(["A summary"]) do |spy|
+            summarization.summarize(topic, user)
 
-          first_post_data =
-            strategy.content[:contents].detect { |c| c[:id] == topic.first_post.post_number }
+            prompt_raw =
+              spy
+                .prompt_messages
+                .reduce(+"") do |memo, m|
+                  memo << m[:content] << "\n"
 
-          expect(first_post_data[:text]).to eq(topic_embed.embed_content_cache)
+                  memo
+                end
+
+            expect(prompt_raw).to include(topic_embed.embed_content_cache)
+          end
         end
       end
     end
 
     describe "invalidating cached summaries" do
       let(:cached_text) { "This is a cached summary" }
-      let(:summarized_text) { "This is the final summary" }
-      let(:summary) { { summary: summarized_text } }
+      let(:updated_summary) { "This is the final summary" }
 
       def cached_summary
         AiSummary.find_by(target: topic)
       end
 
       before do
-        summarization.summarize(topic, user)
+        DiscourseAi::Completions::Llm.with_prepared_responses([cached_text]) do
+          summarization.summarize(topic, user)
+        end
 
         cached_summary.update!(summarized_text: cached_text, created_at: 24.hours.ago)
       end
@@ -136,9 +149,11 @@ describe TopicSummarization do
           before { cached_summary.update!(original_content_sha: "outdated_sha") }
 
           it "returns a new summary" do
-            section = summarization.summarize(topic, user)
+            DiscourseAi::Completions::Llm.with_prepared_responses([updated_summary]) do
+              section = summarization.summarize(topic, user)
 
-            expect(section.summarized_text).to eq(summarized_text)
+              expect(section.summarized_text).to eq(updated_summary)
+            end
           end
 
           context "when the cached summary is less than one hour old" do
@@ -154,9 +169,11 @@ describe TopicSummarization do
             end
 
             it "returns a new summary if the skip_age_check flag is passed" do
-              section = summarization.summarize(topic, user, skip_age_check: true)
+              DiscourseAi::Completions::Llm.with_prepared_responses([updated_summary]) do
+                section = summarization.summarize(topic, user, skip_age_check: true)
 
-              expect(section.summarized_text).to eq(summarized_text)
+                expect(section.summarized_text).to eq(updated_summary)
+              end
             end
           end
         end
@@ -164,14 +181,18 @@ describe TopicSummarization do
     end
 
     describe "stream partial updates" do
-      let(:summary) { { summary: "This is the final summary" } }
+      let(:summary) { "This is the final summary" }
 
       it "receives a blk that is passed to the underlying strategy and called with partial summaries" do
-        partial_result = nil
+        partial_result = +""
 
-        summarization.summarize(topic, user) { |partial_summary| partial_result = partial_summary }
+        DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
+          summarization.summarize(topic, user) do |partial_summary|
+            partial_result << partial_summary
+          end
+        end
 
-        expect(partial_result).to eq(summary[:summary])
+        expect(partial_result).to eq(summary)
       end
     end
   end

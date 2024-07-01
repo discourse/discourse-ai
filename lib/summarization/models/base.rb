@@ -59,6 +59,10 @@ module DiscourseAi
               max_tokens: 32_000,
             )
 
+            unless Rails.env.production?
+              foldable_models << Models::Fake.new("fake:fake", max_tokens: 8192)
+            end
+
             folded_models = foldable_models.map { |model| Strategies::FoldContent.new(model) }
 
             folded_models

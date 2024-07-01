@@ -28,8 +28,8 @@ DiscourseAi::Engine.routes.draw do
     get "/preview/:topic_id" => "shared_ai_conversations#preview"
   end
 
-  scope module: :summarization, path: "/summarization" do
-    get "/t/:topic_id" => "summary#show", :constraints => { topic_id: /\d+/ }, :format => :json
+  scope module: :summarization, path: "/summarization", defaults: { format: :json } do
+    get "/t/:topic_id" => "summary#show", :constraints => { topic_id: /\d+/ }
     get "/channels/:channel_id" => "chat_summary#show"
   end
 end

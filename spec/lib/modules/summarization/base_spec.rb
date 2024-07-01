@@ -1,22 +1,15 @@
 # frozen_string_literal: true
 
-require_relative "../../../support/dummy_summarization_model"
-
 describe DiscourseAi::Summarization::Models::Base do
   fab!(:user)
   fab!(:group)
   fab!(:topic)
 
-  let(:plugin) { Plugin::Instance.new }
-
   before do
     group.add(user)
 
-    strategy = DummySummarizationModel.new({ summary: "dummy" })
-    SiteSetting.ai_summarization_strategy = strategy.model
+    SiteSetting.ai_summarization_strategy = "fake"
   end
-
-  after { DiscoursePluginRegistry.reset_register!(:summarization_strategies) }
 
   describe "#can_see_summary?" do
     context "when the user cannot generate a summary" do

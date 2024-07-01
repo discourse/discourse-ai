@@ -2,7 +2,7 @@
 
 module DiscourseAi
   module Summarization
-    class ChatSummaryController < ::ApplicationController
+    class ChatSummaryController < ::Chat::ApiController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_plugin ::Chat::PLUGIN_NAME
 

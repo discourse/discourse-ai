@@ -1,21 +1,17 @@
 # frozen_string_literal: true
 
-require_relative "../../support/dummy_summarization_model"
-
 RSpec.describe "Summarize a channel since your last visit", type: :system do
   fab!(:current_user) { Fabricate(:user) }
   fab!(:group)
   fab!(:channel) { Fabricate(:chat_channel) }
   fab!(:message_1) { Fabricate(:chat_message, chat_channel: channel) }
   let(:chat) { PageObjects::Pages::Chat.new }
-  let(:plugin) { Plugin::Instance.new }
-  let(:summarization_result) { { summary: "This is a summary", chunks: [] } }
+  let(:summarization_result) { "This is a summary" }
 
   before do
     group.add(current_user)
 
-    strategy = DummySummarizationModel.new(summarization_result)
-    SiteSetting.ai_summarization_strategy = strategy.model
+    SiteSetting.ai_summarization_strategy = "fake"
     SiteSetting.ai_custom_summarization_allowed_groups = group.id.to_s
 
     SiteSetting.chat_enabled = true
@@ -25,16 +21,18 @@ RSpec.describe "Summarize a channel since your last visit", type: :system do
   end
 
   it "displays a summary of the messages since the selected timeframe" do
-    chat.visit_channel(channel)
+    DiscourseAi::Completions::Llm.with_prepared_responses([summarization_result]) do
+      chat.visit_channel(channel)
 
-    find(".chat-composer-dropdown__trigger-btn").click
-    find(".chat-composer-dropdown__action-btn.channel-summary").click
+      find(".chat-composer-dropdown__trigger-btn").click
+      find(".chat-composer-dropdown__action-btn.channel-summary").click
 
-    expect(page.has_css?(".chat-modal-channel-summary")).to eq(true)
+      expect(page.has_css?(".chat-modal-channel-summary")).to eq(true)
 
-    find(".summarization-since").click
-    find(".select-kit-row[data-value=\"3\"]").click
+      find(".summarization-since").click
+      find(".select-kit-row[data-value=\"3\"]").click
 
-    expect(find(".summary-area").text).to eq(summarization_result[:summary])
+      expect(find(".summary-area").text).to eq(summarization_result)
+    end
   end
 end

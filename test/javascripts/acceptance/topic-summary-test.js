@@ -34,7 +34,7 @@ acceptance("Topic - Summary", function (needs) {
     await visit("/t/-/1");
 
     const partialSummary = "This a";
-    await publishToMessageBus("/summaries/topic/1", {
+    await publishToMessageBus("/discourse-ai/summaries/topic/1", {
       done: false,
       ai_topic_summary: { summarized_text: partialSummary },
     });
@@ -46,7 +46,7 @@ acceptance("Topic - Summary", function (needs) {
       .hasText(partialSummary, "Updates the summary with a partial result");
 
     const finalSummary = "This is a completed summary";
-    await publishToMessageBus("/summaries/topic/1", {
+    await publishToMessageBus("/discourse-ai/summaries/topic/1", {
       done: true,
       ai_topic_summary: {
         summarized_text: finalSummary,

@@ -103,7 +103,7 @@ export default class AiSummaryBox extends Component {
 
   @bind
   subscribe() {
-    const channel = `/summaries/topic/${this.args.outletArgs.topic.id}`;
+    const channel = `/discourse-ai/summaries/topic/${this.args.outletArgs.topic.id}`;
     this.messageBus.subscribe(channel, this._updateSummary);
   }
 

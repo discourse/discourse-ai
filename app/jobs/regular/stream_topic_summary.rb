@@ -45,7 +45,7 @@ module Jobs
     private
 
     def publish_update(topic, user, payload)
-      MessageBus.publish("/summaries/topic/#{topic.id}", payload, user_ids: [user.id])
+      MessageBus.publish("/discourse-ai/summaries/topic/#{topic.id}", payload, user_ids: [user.id])
     end
   end
 end
