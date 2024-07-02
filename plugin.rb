@@ -10,6 +10,8 @@
 
 gem "tokenizers", "0.4.4"
 gem "tiktoken_ruby", "0.0.7"
+gem "parallel", "1.24.0"
+gem "ruby-progressbar", "1.13.0"
 
 enabled_site_setting :discourse_ai_enabled
 
