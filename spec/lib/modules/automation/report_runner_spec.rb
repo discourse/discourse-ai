@@ -20,7 +20,16 @@ module DiscourseAi
       end
 
       fab!(:tag)
-      fab!(:topic_with_tag) { Fabricate(:topic, tags: [tag]) }
+      fab!(:hidden_tag) { Fabricate(:tag, name: "hidden-tag") }
+      fab!(:tag_group) do
+        tag_group = TagGroup.new(name: "test tag group")
+        tag_group.tag_group_permissions.build(group_id: Group::AUTO_GROUPS[:trust_level_1])
+
+        tag_group.save!
+        TagGroupMembership.create!(tag_group_id: tag_group.id, tag_id: hidden_tag.id)
+        tag_group
+      end
+      fab!(:topic_with_tag) { Fabricate(:topic, tags: [tag, hidden_tag]) }
       fab!(:post_with_tag) { Fabricate(:post, raw: "I am in a tag", topic: topic_with_tag) }
 
       describe "#run!" do
@@ -90,6 +99,9 @@ module DiscourseAi
           expect(debugging).not_to include(post_in_category.raw)
           expect(debugging).not_to include(post_in_subcategory.raw)
           expect(debugging).to include(post2.raw)
+          expect(debugging).to include(post_with_tag.raw)
+          expect(debugging).to include(tag.name)
+          expect(debugging).not_to include(hidden_tag.name)
         end
 
         it "can suppress notifications by remapping content" do
