@@ -27,10 +27,7 @@ module DiscourseAi
 
             prompts =
               prompts.map do |prompt|
-                puts "prompt: #{prompt.inspect}"
-
                 if prompt.name == "translate"
-                  puts "translate prompt stuff #{user.effective_locale}"
                   locale = user.effective_locale
                   locale_hash = LocaleSiteSetting.language_names[locale]
                   translation =
@@ -95,7 +92,7 @@ module DiscourseAi
         end
       end
 
-      def generate_prompt(completion_prompt, input, user, force_default_locale, &block)
+      def generate_prompt(completion_prompt, input, user, force_default_locale = false, &block)
         llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
         prompt = completion_prompt.messages_with_input(input)
         localize_prompt!(prompt, user, force_default_locale)
