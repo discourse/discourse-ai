@@ -11,7 +11,11 @@ export default apiInitializer("1.34.0", (api) => {
     currentUser &&
     currentUser.can_summarize;
 
-  if (!chatService.userCanChat || !siteSettings.chat_enabled || !canSummarize) {
+  if (
+    !siteSettings.chat_enabled ||
+    !chatService?.userCanChat ||
+    !canSummarize
+  ) {
     return;
   }
 
