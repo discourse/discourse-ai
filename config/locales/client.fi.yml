@@ -107,6 +107,19 @@ fi:
         uploads:
           title: "Lataukset"
           uploading: "Ladataan..."
+      tools:
+        name: "Nimi"
+        description: "Kuvaus"
+        summary: "Yhteenveto"
+        save: "Tallenna"
+        parameter_required: "Pakolliset"
+        edit: "Muokkaa"
+        test: "Suorita testi"
+        delete: "Poista"
+        next:
+          title: "Seuraava"
+        test_modal:
+          run: "Suorita testi"
       llms:
         save: "Tallenna"
         edit: "Muokkaa"

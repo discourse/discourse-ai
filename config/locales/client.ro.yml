@@ -41,6 +41,16 @@ ro:
         uploads:
           title: "Urcări"
           uploading: "Se încarcă..."
+      tools:
+        name: "Nume"
+        description: "Descriere"
+        summary: "Rezumat"
+        save: "Salvează"
+        parameter_required: "Necesare"
+        edit: "Modifică"
+        delete: "Șterge"
+        next:
+          title: "Următorul"
       llms:
         save: "Salvează"
         edit: "Modifică"

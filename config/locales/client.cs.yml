@@ -41,6 +41,19 @@ cs:
         uploads:
           title: "Nahrané soubory"
           uploading: "Nahrává se..."
+      tools:
+        name: "Jméno"
+        description: "Popis"
+        summary: "Souhrn"
+        save: "Uložit"
+        parameter_required: "Nezbytnosti"
+        edit: "Upravit"
+        test: "Spustit test"
+        delete: "Smazat"
+        next:
+          title: "Další"
+        test_modal:
+          run: "Spustit test"
       llms:
         save: "Uložit"
         edit: "Upravit"

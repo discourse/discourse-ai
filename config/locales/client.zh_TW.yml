@@ -39,6 +39,19 @@ zh_TW:
         uploads:
           title: "上傳檔案"
           uploading: "上傳中..."
+      tools:
+        name: "名字"
+        description: "簡述"
+        summary: "摘要"
+        save: "保存"
+        parameter_required: "必要設定"
+        edit: "編輯"
+        test: "執行測試"
+        delete: "刪除"
+        next:
+          title: "下一步"
+        test_modal:
+          run: "執行測試"
       llms:
         save: "保存"
         edit: "編輯"

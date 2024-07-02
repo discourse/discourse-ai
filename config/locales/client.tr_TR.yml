@@ -158,6 +158,19 @@ tr_TR:
           button: "Dosya Ekle"
           filter: "Yüklemeleri filtrele"
           uploading: "Yükleniyor..."
+      tools:
+        name: "Ad"
+        description: "Açıklama"
+        summary: "Özet"
+        save: "Kaydet"
+        parameter_required: "Gerekli"
+        edit: "Düzenle"
+        test: "Testi Çalıştır"
+        delete: "Sil"
+        next:
+          title: "İleri"
+        test_modal:
+          run: "Testi Çalıştır"
       llms:
         save: "Kaydet"
         edit: "Düzenle"

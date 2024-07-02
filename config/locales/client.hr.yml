@@ -41,6 +41,19 @@ hr:
         uploads:
           title: "Prijenosi"
           uploading: "Učitavanje..."
+      tools:
+        name: "Ime"
+        description: "Opis"
+        summary: "Sažetak"
+        save: "Spremi"
+        parameter_required: "Potrebno"
+        edit: "Uredi"
+        test: "Pokreni test"
+        delete: "Pobriši"
+        next:
+          title: "Sljedeći"
+        test_modal:
+          run: "Pokreni test"
       llms:
         save: "Spremi"
         edit: "Uredi"

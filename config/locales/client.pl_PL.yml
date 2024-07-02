@@ -133,6 +133,19 @@ pl_PL:
           title: "Pliki"
           button: "Dodaj pliki"
           uploading: "Przesyłanie..."
+      tools:
+        name: "Nazwa"
+        description: "Opis"
+        summary: "Podsumowanie"
+        save: "Zapisz"
+        parameter_required: "Wymagane"
+        edit: "Edytuj"
+        test: "Przeprowadź test"
+        delete: "Usuń"
+        next:
+          title: "Następna"
+        test_modal:
+          run: "Przeprowadź test"
       llms:
         save: "Zapisz"
         edit: "Edytuj"

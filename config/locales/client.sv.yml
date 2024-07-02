@@ -41,6 +41,19 @@ sv:
         uploads:
           title: "Uppladdningar"
           uploading: "Laddar upp..."
+      tools:
+        name: "Namn"
+        description: "Beskrivning"
+        summary: "Sammanfattning"
+        save: "Spara"
+        parameter_required: "Krävs"
+        edit: "Redigera"
+        test: "Kör test"
+        delete: "Ta bort"
+        next:
+          title: "Nästa"
+        test_modal:
+          run: "Kör test"
       llms:
         save: "Spara"
         edit: "Redigera"

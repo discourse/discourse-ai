@@ -159,6 +159,19 @@ zh_CN:
         uploads:
           title: "上传"
           uploading: "正在上传…"
+      tools:
+        name: "名称"
+        description: "描述"
+        summary: "总结"
+        save: "保存"
+        parameter_required: "必选"
+        edit: "编辑"
+        test: "运行测试"
+        delete: "删除"
+        next:
+          title: "下一步"
+        test_modal:
+          run: "运行测试"
       llms:
         save: "保存"
         edit: "编辑"

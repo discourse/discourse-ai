@@ -107,6 +107,19 @@ it:
         uploads:
           title: "Caricamenti"
           uploading: "Caricamento..."
+      tools:
+        name: "Nome"
+        description: "Descrizione"
+        summary: "Riepilogo"
+        save: "Salva"
+        parameter_required: "Obbligatorie"
+        edit: "Modifica"
+        test: "Esegui test"
+        delete: "Elimina"
+        next:
+          title: "Avanti"
+        test_modal:
+          run: "Esegui test"
       llms:
         save: "Salva"
         edit: "Modifica"

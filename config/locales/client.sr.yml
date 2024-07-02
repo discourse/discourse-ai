@@ -36,6 +36,16 @@ sr:
         delete: Obriši
         uploads:
           uploading: "Uploading..."
+      tools:
+        name: "Ime foruma"
+        description: "Opis"
+        summary: "Rezime"
+        save: "Sačuvaj"
+        parameter_required: "Potrebno"
+        edit: "Izmeni"
+        delete: "Obriši"
+        next:
+          title: "Dalje"
       llms:
         save: "Sačuvaj"
         edit: "Izmeni"

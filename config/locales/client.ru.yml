@@ -107,6 +107,19 @@ ru:
         uploads:
           title: "Загрузки"
           uploading: "Загрузка…"
+      tools:
+        name: "Название"
+        description: "Описание"
+        summary: "Спойлер"
+        save: "Сохранить"
+        parameter_required: "Обязательное"
+        edit: "Изменить"
+        test: "Выполнить тест"
+        delete: "Удалить"
+        next:
+          title: "Далее"
+        test_modal:
+          run: "Выполнить тест"
       llms:
         save: "Сохранить"
         edit: "Отредактировать"

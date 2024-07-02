@@ -107,6 +107,19 @@ es:
         uploads:
           title: "Subidos"
           uploading: "Subiendo..."
+      tools:
+        name: "Nombre"
+        description: "Descripción"
+        summary: "Resumen"
+        save: "Guardar"
+        parameter_required: "Obligatorio"
+        edit: "Editar"
+        test: "Realizar prueba"
+        delete: "Eliminar"
+        next:
+          title: "Siguiente"
+        test_modal:
+          run: "Realizar prueba"
       llms:
         save: "Guardar"
         edit: "Editar"

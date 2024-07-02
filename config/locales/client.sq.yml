@@ -40,6 +40,16 @@ sq:
         delete: Fshij
         uploads:
           uploading: "Duke ngarkuar..."
+      tools:
+        name: "Emri"
+        description: "Përshkrimi"
+        summary: "Përmbledhja"
+        save: "Ruaj"
+        parameter_required: "E nevojshme"
+        edit: "Redakto"
+        delete: "Fshij"
+        next:
+          title: "Vazhdo përpara"
       llms:
         save: "Ruaj"
         edit: "Redakto"

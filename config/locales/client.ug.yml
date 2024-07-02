@@ -43,6 +43,20 @@ ug:
         uploads:
           title: "يۈكلەنمە"
           uploading: "يۈكلەۋاتىدۇ..."
+      tools:
+        name: "ئىسمى"
+        description: "چۈشەندۈرۈش"
+        summary: "خۇلاسە"
+        script: "قوليازما"
+        save: "ساقلا"
+        parameter_required: "زۆرۈر"
+        edit: "تەھرىر"
+        test: "سىناقنى ئىجرا قىل"
+        delete: "ئۆچۈر"
+        next:
+          title: "كېيىنكى"
+        test_modal:
+          run: "سىناقنى ئىجرا قىل"
       llms:
         save: "ساقلا"
         edit: "تەھرىر"

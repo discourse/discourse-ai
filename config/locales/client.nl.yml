@@ -107,6 +107,19 @@ nl:
         uploads:
           title: "Uploads"
           uploading: "Uploaden..."
+      tools:
+        name: "Naam"
+        description: "Beschrijving"
+        summary: "Samenvatting"
+        save: "Opslaan"
+        parameter_required: "Vereist"
+        edit: "Bewerken"
+        test: "Test uitvoeren"
+        delete: "Verwijderen"
+        next:
+          title: "Volgende"
+        test_modal:
+          run: "Test uitvoeren"
       llms:
         save: "Opslaan"
         edit: "Bewerken"

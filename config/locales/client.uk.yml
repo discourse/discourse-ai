@@ -43,6 +43,20 @@ uk:
         uploads:
           title: "Завантаження"
           uploading: "Надсилання…"
+      tools:
+        name: "Імʼя"
+        description: "Опис"
+        summary: "Підсумок"
+        script: "Скрипт"
+        save: "Зберегти"
+        parameter_required: "Обов'язкові"
+        edit: "Редагувати"
+        test: "Виконати Тест"
+        delete: "Видалити"
+        next:
+          title: "Далі"
+        test_modal:
+          run: "Виконати Тест"
       llms:
         save: "Зберегти"
         edit: "Редагувати"

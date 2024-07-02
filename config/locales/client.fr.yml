@@ -107,6 +107,19 @@ fr:
         uploads:
           title: "Fichiers envoyés"
           uploading: "Envoi en cours…"
+      tools:
+        name: "Nom"
+        description: "Description"
+        summary: "Résumé"
+        save: "Enregistrer"
+        parameter_required: "Requis"
+        edit: "Modifier"
+        test: "Lancer le test"
+        delete: "Supprimer"
+        next:
+          title: "Suivant"
+        test_modal:
+          run: "Lancer le test"
       llms:
         save: "Enregistrer"
         edit: "Modifier"

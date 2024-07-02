@@ -131,6 +131,17 @@ he:
       description: "מספר הפוסטים שסווגו עם אחד הרגשות הבאים, מקובצים לפי דרגות אמון המפרסמים."
   discourse_ai:
     unknown_model: "דגם בינה מלאכותית לא ידוע"
+    tools:
+      custom_name: "%{name} (מותאם אישית)"
+      presets:
+        browse_web_jina:
+          name: "גלישה באינטרנט דרך jina.ai"
+        exchange_rate:
+          name: "שער חליפין"
+        stock_quote:
+          name: "מחיר המניה (AlphaVantage)"
+        empty_tool:
+          name: "התחלה מאפס…"
     ai_helper:
       errors:
         completion_request_failed: "משהו השתבש במהלך הניסיון לספק הצעות. נא לנסות שוב."
