@@ -41,6 +41,16 @@ th:
         uploads:
           title: "อัปโหลด"
           uploading: "กำลังอัปโหลด..."
+      tools:
+        name: "ชื่อ"
+        description: "รายละเอียด"
+        summary: "สรุป"
+        save: "บันทึก"
+        parameter_required: "ต้องการ"
+        edit: "แก้ไข"
+        delete: "ลบ"
+        next:
+          title: "ต่อไป"
       llms:
         save: "บันทึก"
         edit: "แก้ไข"

@@ -41,6 +41,19 @@ da:
         uploads:
           title: "Overførsler"
           uploading: "Overfører…"
+      tools:
+        name: "Navn"
+        description: "Beskrivelse"
+        summary: "Statistik"
+        save: "Gem"
+        parameter_required: "Obligatoriske"
+        edit: "Rediger"
+        test: "Kør test"
+        delete: "Slet"
+        next:
+          title: "Næste"
+        test_modal:
+          run: "Kør test"
       llms:
         save: "Gem"
         edit: "Rediger"

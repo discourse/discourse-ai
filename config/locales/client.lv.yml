@@ -41,6 +41,16 @@ lv:
         uploads:
           title: "Augšupielādes"
           uploading: "Notiek ielāde..."
+      tools:
+        name: "Vārds"
+        description: "Apraksts"
+        summary: "Kopsavilkums"
+        save: "Saglabāt"
+        parameter_required: "Nepieciešams"
+        edit: "Rediģēt"
+        delete: "Dzēst"
+        next:
+          title: "Nākamais"
       llms:
         save: "Saglabāt"
         edit: "Rediģēt"

@@ -108,6 +108,19 @@ pt_BR:
         uploads:
           title: "Envios"
           uploading: "Enviando..."
+      tools:
+        name: "Nome"
+        description: "Descrição"
+        summary: "Resumo"
+        save: "Salvar"
+        parameter_required: "Necessário(a)"
+        edit: "Editar"
+        test: "Executar Teste"
+        delete: "Excluir"
+        next:
+          title: "Próximo"
+        test_modal:
+          run: "Executar Teste"
       llms:
         save: "Salvar"
         edit: "Editar"

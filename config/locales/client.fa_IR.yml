@@ -63,6 +63,19 @@ fa_IR:
         uploads:
           title: "بارگذاری‌ها"
           uploading: "در حال بار گذاری..."
+      tools:
+        name: "نام"
+        description: "توضیح"
+        summary: "خلاصه"
+        save: "ذخیره"
+        parameter_required: "مورد نیاز"
+        edit: "ویرایش"
+        test: "اجرای آزمایش"
+        delete: "حذف"
+        next:
+          title: "بعدی"
+        test_modal:
+          run: "اجرای آزمایش"
       llms:
         new: "مدل جدید"
         display_name: "نام برای نمایش"

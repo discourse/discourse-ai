@@ -107,6 +107,19 @@ ja:
         uploads:
           title: "アップロード"
           uploading: "アップロード中..."
+      tools:
+        name: "名前"
+        description: "説明"
+        summary: "要約"
+        save: "保存"
+        parameter_required: "必須"
+        edit: "編集"
+        test: "テストを実行"
+        delete: "削除"
+        next:
+          title: "次へ"
+        test_modal:
+          run: "テストを実行"
       llms:
         save: "保存"
         edit: "編集"

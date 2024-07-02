@@ -41,6 +41,19 @@ hu:
         uploads:
           title: "Feltöltések"
           uploading: "Feltültés..."
+      tools:
+        name: "Név"
+        description: "Leírás"
+        summary: "Összefoglaló"
+        save: "Mentés"
+        parameter_required: "Kötelező"
+        edit: "Szerkesztés"
+        test: "Teszt futtatása"
+        delete: "Törlés"
+        next:
+          title: "Tovább"
+        test_modal:
+          run: "Teszt futtatása"
       llms:
         save: "Mentés"
         edit: "Szerkesztés"

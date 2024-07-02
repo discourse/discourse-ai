@@ -107,6 +107,19 @@ ar:
         uploads:
           title: "التحميلات"
           uploading: "جارٍ التحميل..."
+      tools:
+        name: "الاسم"
+        description: "الوصف"
+        summary: "الملخص"
+        save: "حفظ"
+        parameter_required: "مطلوب"
+        edit: "تعديل"
+        test: "تشغيل الاختبار"
+        delete: "حذف"
+        next:
+          title: "التالي"
+        test_modal:
+          run: "تشغيل الاختبار"
       llms:
         save: "حفظ"
         edit: "تعديل"

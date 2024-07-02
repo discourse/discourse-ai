@@ -40,6 +40,16 @@ bg:
         delete: Изтрий
         uploads:
           uploading: "Качва се..."
+      tools:
+        name: "Име"
+        description: "Описание"
+        summary: "Сумарно"
+        save: "Запази "
+        parameter_required: "Задъжителни"
+        edit: "Редактирай"
+        delete: "Изтрий"
+        next:
+          title: "Напред"
       llms:
         save: "Запази "
         edit: "Редактирай"
