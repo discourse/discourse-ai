@@ -327,6 +327,15 @@ discourse_ai:
   ai_summarization_discourse_service_api_key:
     default: ""
     secret: true
+  ai_summarization_strategy:
+    client: true
+    default: ""
+    enum: "DiscourseAi::Configuration::SummarizationEnumerator"
+    validator: "DiscourseAi::Configuration::SummarizationValidator"
+  ai_custom_summarization_allowed_groups:
+    type: group_list
+    list_type: compact
+    default: "3|13" # 3: @staff, 13: @trust_level_3
 
   ai_bot_enabled:
     default: false

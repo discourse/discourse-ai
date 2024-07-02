@@ -13,7 +13,7 @@ module DiscourseAi
         def initialize(responses)
           @responses = responses
           @completions = 0
-          @prompt = nil
+          @dialect = nil
         end
 
         def normalize_model_params(model_params)
@@ -21,10 +21,14 @@ module DiscourseAi
           model_params
         end
 
-        attr_reader :responses, :completions, :prompt
+        attr_reader :responses, :completions, :dialect
 
-        def perform_completion!(prompt, _user, _model_params, feature_name: nil)
-          @prompt = prompt
+        def prompt_messages
+          dialect.prompt.messages
+        end
+
+        def perform_completion!(dialect, _user, _model_params, feature_name: nil)
+          @dialect = dialect
           response = responses[completions]
           if response.nil?
             raise CANNED_RESPONSE_ERROR,

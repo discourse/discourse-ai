@@ -95,6 +95,8 @@ en:
 
     ai_summarization_discourse_service_api_endpoint: "URL where the Discourse summarization API is running."
     ai_summarization_discourse_service_api_key: "API key for the Discourse summarization API."
+    ai_summarization_strategy: "Additional ways to summarize content registered by plugins"
+    ai_custom_summarization_allowed_groups: "Groups allowed to summarize contents using the `summarization_strategy`."
 
     ai_bot_enabled: "Enable the AI Bot module."
     ai_bot_enable_chat_warning: "Display a warning when PM chat is initiated. Can be overriden by editing the translation string: discourse_ai.ai_bot.pm_warning"
@@ -312,6 +314,8 @@ en:
       configuration_hint:
         one: "Configure the `%{setting}` setting first."
         other: "Configure these settings first: %{settings}"
+      chat:
+        no_targets: "There were no messages during the selected period."
 
     sentiment:
       reports:
