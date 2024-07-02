@@ -38,7 +38,7 @@ module DiscourseAi
           end,
         ) do
           ActiveModel::ArraySerializer.new(
-            DiscourseAi::AiHelper::Assistant.new.available_prompts,
+            DiscourseAi::AiHelper::Assistant.new.available_prompts(scope.user),
             root: false,
           )
         end
