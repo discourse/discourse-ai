@@ -17,11 +17,11 @@ module DiscourseAi
         end
 
         plugin.add_to_serializer(:topic_view, :summarizable) do
-          guardian.can_see_summary?(object.topic)
+          scope.can_see_summary?(object.topic)
         end
 
         plugin.add_to_serializer(:web_hook_topic_view, :summarizable) do
-          guardian.can_see_summary?(object.topic)
+          scope.can_see_summary?(object.topic)
         end
       end
     end
