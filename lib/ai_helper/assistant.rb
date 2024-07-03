@@ -56,10 +56,7 @@ module DiscourseAi
 
       def custom_locale_instructions(user = nil, force_default_locale)
         locale = SiteSetting.default_locale
-        if !force_default_locale
-          locale = user.locale || SiteSetting.default_locale if SiteSetting.allow_user_locale &&
-            user
-        end
+        locale = user.effective_locale if !force_default_locale
         locale_hash = LocaleSiteSetting.language_names[locale]
 
         if locale != "en" && locale_hash
