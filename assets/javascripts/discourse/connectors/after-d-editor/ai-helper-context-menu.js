@@ -82,18 +82,17 @@ export default class AiHelperContextMenu extends Component {
         // AI helper by default returns interface locale on translations
         // Since we want site default translations (and we are using: force_default_locale)
         // we need to replace the translated_name with the site default locale name
-        const siteLocale = this.siteSettings?.default_locale;
+        const siteLocale = this.siteSettings.default_locale;
         const availableLocales = JSON.parse(
           this.siteSettings.available_locales
         );
         const locale = availableLocales.find((l) => l.value === siteLocale);
-        const translatePromptName = I18n.t(
+        const translatedName = I18n.t(
           "discourse_ai.ai_helper.context_menu.translate_prompt",
           {
-            language: locale?.name,
+            language: locale.name,
           }
         );
-        const translatedName = locale ? translatePromptName : "Translate";
 
         if (p.name === "translate") {
           return { ...p, translated_name: translatedName };
