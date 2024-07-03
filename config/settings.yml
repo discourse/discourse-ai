@@ -319,19 +319,15 @@ discourse_ai:
     default: false
     client: true
     hidden: true
-
-  ai_summarization_discourse_service_api_endpoint: ""
-  ai_summarization_discourse_service_api_endpoint_srv:
+  ai_summarization_enabled:
+    default: false
+    validator: "DiscourseAi::Configuration::LlmDependencyValidator"
+  ai_summarization_model:
     default: ""
-    hidden: true
-  ai_summarization_discourse_service_api_key:
-    default: ""
-    secret: true
-  ai_summarization_strategy:
-    client: true
-    default: ""
-    enum: "DiscourseAi::Configuration::SummarizationEnumerator"
-    validator: "DiscourseAi::Configuration::SummarizationValidator"
+    allow_any: false
+    type: enum
+    enum: "DiscourseAi::Configuration::LlmEnumerator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
   ai_custom_summarization_allowed_groups:
     type: group_list
     list_type: compact

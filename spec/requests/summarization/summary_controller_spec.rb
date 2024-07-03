@@ -6,7 +6,10 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
     fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
     fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
 
-    before { SiteSetting.ai_summarization_strategy = "fake" }
+    before do
+      assign_fake_provider_to(:ai_summarization_model)
+      SiteSetting.ai_summarization_enabled = true
+    end
 
     context "for anons" do
       it "returns a 404 if there is no cached summary" do

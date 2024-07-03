@@ -9,9 +9,11 @@ RSpec.describe Jobs::StreamTopicAiSummary do
     fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
     fab!(:user) { Fabricate(:leader) }
 
-    before { Group.find(Group::AUTO_GROUPS[:trust_level_3]).add(user) }
-
-    before { SiteSetting.ai_summarization_strategy = "fake" }
+    before do
+      Group.find(Group::AUTO_GROUPS[:trust_level_3]).add(user)
+      assign_fake_provider_to(:ai_summarization_model)
+      SiteSetting.ai_summarization_enabled = true
+    end
 
     def with_responses(responses)
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) { yield }

@@ -6,14 +6,17 @@ describe DiscourseAi::TopicSummarization do
   fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
 
-  let(:model) do
-    DiscourseAi::Summarization::Strategies::FoldContent.new(
-      DiscourseAi::Summarization::Models::Fake.new("fake:fake", max_tokens: 8192),
-    )
+  before do
+    assign_fake_provider_to(:ai_summarization_model)
+    SiteSetting.ai_summarization_enabled = true
   end
 
+  let (:strategy) {
+    DiscourseAi::Summarization.default_strategy
+  }
+
   shared_examples "includes only public-visible topics" do
-    subject { described_class.new(model) }
+    subject { DiscourseAi::TopicSummarization.new(strategy) }
 
     it "only includes visible posts" do
       topic.first_post.update!(hidden: true)
@@ -55,7 +58,7 @@ describe DiscourseAi::TopicSummarization do
   end
 
   describe "#summarize" do
-    subject(:summarization) { described_class.new(model) }
+    subject(:summarization) { described_class.new(strategy) }
 
     def assert_summary_is_cached(topic, summary_response)
       cached_summary = AiSummary.find_by(target: topic)
@@ -72,9 +75,7 @@ describe DiscourseAi::TopicSummarization do
       it "caches the summary" do
         DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
           section = summarization.summarize(topic, user)
-
           expect(section.summarized_text).to eq(summary)
-
           assert_summary_is_cached(topic, summary)
         end
       end
@@ -83,11 +84,10 @@ describe DiscourseAi::TopicSummarization do
         summarization.summarize(topic, user)
 
         cached_summary_text = "This is a cached summary"
-        cached_summary =
-          AiSummary.find_by(target: topic).update!(
-            summarized_text: cached_summary_text,
-            updated_at: 24.hours.ago,
-          )
+        AiSummary.find_by(target: topic).update!(
+          summarized_text: cached_summary_text,
+          updated_at: 24.hours.ago,
+        )
 
         section = summarization.summarize(topic, user)
         expect(section.summarized_text).to eq(cached_summary_text)
@@ -129,8 +129,13 @@ describe DiscourseAi::TopicSummarization do
       end
 
       before do
+        # a bit tricky, but fold_content now caches an instance of LLM
+        # once it is cached with_prepared_responses will not work as expected
+        # since it is glued to the old llm instance
+        # so we create the cached summary totally independantly
         DiscourseAi::Completions::Llm.with_prepared_responses([cached_text]) do
-          summarization.summarize(topic, user)
+          strategy = DiscourseAi::Summarization.default_strategy
+          described_class.new(strategy).summarize(topic, user)
         end
 
         cached_summary.update!(summarized_text: cached_text, created_at: 24.hours.ago)

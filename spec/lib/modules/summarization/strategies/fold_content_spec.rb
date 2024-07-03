@@ -2,7 +2,12 @@
 
 RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
   describe "#summarize" do
-    subject(:strategy) { described_class.new(model) }
+    before do
+      assign_fake_provider_to(:ai_summarization_model)
+      SiteSetting.ai_summarization_enabled = true
+    end
+
+    subject(:strategy) { DiscourseAi::Summarization.default_strategy }
 
     let(:summarize_text) { "This is a text" }
     let(:model_tokens) do
