@@ -11,9 +11,7 @@ describe DiscourseAi::TopicSummarization do
     SiteSetting.ai_summarization_enabled = true
   end
 
-  let (:strategy) {
-    DiscourseAi::Summarization.default_strategy
-  }
+  let(:strategy) { DiscourseAi::Summarization.default_strategy }
 
   shared_examples "includes only public-visible topics" do
     subject { DiscourseAi::TopicSummarization.new(strategy) }
