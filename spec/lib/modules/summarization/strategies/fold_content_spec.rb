@@ -7,8 +7,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
       SiteSetting.ai_summarization_enabled = true
     end
 
-    subject(:strategy) { DiscourseAi::Summarization.default_strategy }
-
+    let(:strategy) { DiscourseAi::Summarization.default_strategy }
     let(:summarize_text) { "This is a text" }
     let(:model_tokens) do
       # Make sure each content fits in a single chunk.
