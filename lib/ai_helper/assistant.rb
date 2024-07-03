@@ -76,9 +76,7 @@ module DiscourseAi
         if prompt.messages[0][:content].include?("%LANGUAGE%")
           locale = SiteSetting.default_locale
 
-          if !force_default_locale
-            locale = user.locale if SiteSetting.allow_user_locale && user&.locale.present?
-          end
+          locale = user.effective_locale if user && !force_default_locale
 
           locale_hash = LocaleSiteSetting.language_names[locale]
 
