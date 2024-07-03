@@ -80,7 +80,7 @@ export default class AiHelperContextMenu extends Component {
       .filter((p) => p.name !== "generate_titles")
       .map((p) => {
         // AI helper by default returns interface locale on translations
-        // Since we want site default trnaslations (and we are using: force_default_locale)
+        // Since we want site default translations (and we are using: force_default_locale)
         // we need to replace the translated_name with the site default locale name
         const siteLocale = this.siteSettings?.default_locale;
         const availableLocales = JSON.parse(
