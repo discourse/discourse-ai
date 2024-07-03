@@ -15,7 +15,6 @@ module DiscourseAi
 
           initial_chunks =
             rebalance_chunks(
-              llm.tokenizer,
               content[:contents].map { |c| { ids: [c[:id]], summary: format_content_item(c) } },
             )
 
@@ -32,7 +31,7 @@ module DiscourseAi
         end
 
         def display_name
-          llm_model&.display_name || "unknown model"
+          llm_model&.name || "unknown model"
         end
 
         private
@@ -47,7 +46,7 @@ module DiscourseAi
           total_summaries_size =
             llm_model.tokenizer_class.size(summarized_chunks.map { |s| s[:summary].to_s }.join)
 
-          if total_summaries_size < llm_model.max_prompt_tokens
+          if total_summaries_size < available_tokens
             # Chunks are small enough, we can concatenate them.
             {
               summary:
@@ -78,7 +77,7 @@ module DiscourseAi
               if llm_model.tokenizer_class.can_expand_tokens?(
                    section[:summary],
                    chunk[:summary],
-                   llm_model.max_prompt_tokens,
+                   available_tokens,
                  )
                 section[:summary] += chunk[:summary]
                 section[:ids] = section[:ids].concat(chunk[:ids])
@@ -183,6 +182,14 @@ module DiscourseAi
           TEXT
 
           prompt
+        end
+
+        def available_tokens
+          # Reserve tokens for the response and the base prompt
+          # ~500 words
+          reserved_tokens = 700
+
+          llm_model.max_prompt_tokens - reserved_tokens
         end
       end
     end
