@@ -32,7 +32,7 @@ module DiscourseAi
                   locale_hash = LocaleSiteSetting.language_names[locale]
                   translation =
                     I18n.t(
-                      "discourse_ai.ai_helper.prompts.#{prompt.name}",
+                      "discourse_ai.ai_helper.prompts.translate",
                       language: locale_hash["nativeName"],
                     ) || prompt.translated_name || prompt.name
                 else
