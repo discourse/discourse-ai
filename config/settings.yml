@@ -332,6 +332,11 @@ discourse_ai:
     type: group_list
     list_type: compact
     default: "3|13" # 3: @staff, 13: @trust_level_3
+  ai_summarization_strategy: # TODO(roman): Deprecated. Remove by Sept 2024
+    type: enum
+    default: ""
+    hidden: true
+    choices: "DiscourseAi::Configuration::LlmEnumerator.old_summarization_options + ['']"
 
   ai_bot_enabled:
     default: false
@@ -355,7 +360,7 @@ discourse_ai:
     default: "1|2" # 1: admins, 2: moderators
     allow_any: false
     refresh: true
-  ai_bot_enabled_chat_bots: # TODO(roman): Remove setting. Deprecated
+  ai_bot_enabled_chat_bots: # TODO(roman): Deprecated. Remove by Sept 2024
     type: list
     default: "gpt-3.5-turbo"
     hidden: true
