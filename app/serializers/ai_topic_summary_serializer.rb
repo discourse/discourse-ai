@@ -4,7 +4,7 @@ class AiTopicSummarySerializer < ApplicationSerializer
   attributes :summarized_text, :algorithm, :outdated, :can_regenerate, :new_posts_since_summary
 
   def can_regenerate
-    DiscourseAi::Summarization::Models::Base.can_request_summary_for?(scope.current_user)
+    scope.can_request_summary?
   end
 
   def new_posts_since_summary

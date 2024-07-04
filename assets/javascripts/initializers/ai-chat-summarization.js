@@ -6,10 +6,7 @@ export default apiInitializer("1.34.0", (api) => {
   const currentUser = api.getCurrentUser();
   const chatService = api.container.lookup("service:chat");
   const modal = api.container.lookup("service:modal");
-  const canSummarize =
-    siteSettings.ai_summarization_strategy &&
-    currentUser &&
-    currentUser.can_summarize;
+  const canSummarize = currentUser && currentUser.can_summarize;
 
   if (
     !siteSettings.chat_enabled ||

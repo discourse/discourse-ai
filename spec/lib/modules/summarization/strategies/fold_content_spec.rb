@@ -2,19 +2,21 @@
 
 RSpec.describe DiscourseAi::Summarization::Strategies::FoldContent do
   describe "#summarize" do
-    subject(:strategy) { described_class.new(model) }
+    let!(:llm_model) { assign_fake_provider_to(:ai_summarization_model) }
 
-    let(:summarize_text) { "This is a text" }
-    let(:model_tokens) do
+    before do
+      SiteSetting.ai_summarization_enabled = true
+
       # Make sure each content fits in a single chunk.
       # 700 is the number of tokens reserved for the prompt.
-      700 + DiscourseAi::Tokenizer::OpenAiTokenizer.size("(1 asd said: This is a text ") + 3
+      model_tokens =
+        700 + DiscourseAi::Tokenizer::OpenAiTokenizer.size("(1 asd said: This is a text ") + 3
+
+      llm_model.update!(max_prompt_tokens: model_tokens)
     end
 
-    let(:model) do
-      DiscourseAi::Summarization::Models::OpenAi.new("fake:fake", max_tokens: model_tokens)
-    end
-
+    let(:strategy) { DiscourseAi::Summarization.default_strategy }
+    let(:summarize_text) { "This is a text" }
     let(:content) { { contents: [{ poster: "asd", id: 1, text: summarize_text }] } }
 
     let(:single_summary) { "this is a single summary" }

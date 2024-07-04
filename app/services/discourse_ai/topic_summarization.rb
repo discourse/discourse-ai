@@ -2,6 +2,10 @@
 
 module DiscourseAi
   class TopicSummarization
+    def self.summarize(topic, user, opts = {}, &on_partial_blk)
+      new(DiscourseAi::Summarization.default_strategy).summarize(topic, user, opts, &on_partial_blk)
+    end
+
     def initialize(strategy)
       @strategy = strategy
     end
@@ -15,7 +19,7 @@ module DiscourseAi
       targets_data = summary_targets(topic).pluck(:post_number, :raw, :username)
 
       current_topic_sha = build_sha(targets_data.map(&:first))
-      can_summarize = DiscourseAi::Summarization::Models::Base.can_request_summary_for?(user)
+      can_summarize = Guardian.new(user).can_request_summary?
 
       if use_cached?(existing_summary, can_summarize, current_topic_sha, !!opts[:skip_age_check])
         # It's important that we signal a cached summary is outdated

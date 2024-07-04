@@ -61,6 +61,7 @@ module DiscourseAi
         {
           ai_embeddings_semantic_search_enabled: :ai_embeddings_semantic_search_hyde_model,
           composer_ai_helper_enabled: :ai_helper_model,
+          ai_summarization_enabled: :ai_summarization_model,
         }
       end
     end

@@ -1,24 +1,26 @@
 # frozen_string_literal: true
 
-describe DiscourseAi::Summarization::Models::Base do
+describe DiscourseAi::GuardianExtensions do
   fab!(:user)
   fab!(:group)
   fab!(:topic)
 
   before do
     group.add(user)
-
-    SiteSetting.ai_summarization_strategy = "fake"
+    assign_fake_provider_to(:ai_summarization_model)
+    SiteSetting.ai_summarization_enabled = true
   end
 
   describe "#can_see_summary?" do
+    let(:guardian) { Guardian.new(user) }
+
     context "when the user cannot generate a summary" do
       before { SiteSetting.ai_custom_summarization_allowed_groups = "" }
 
       it "returns false" do
         SiteSetting.ai_custom_summarization_allowed_groups = ""
 
-        expect(described_class.can_see_summary?(topic, user)).to eq(false)
+        expect(guardian.can_see_summary?(topic)).to eq(false)
       end
 
       it "returns true if there is a cached summary" do
@@ -29,7 +31,7 @@ describe DiscourseAi::Summarization::Models::Base do
           algorithm: "test",
         )
 
-        expect(described_class.can_see_summary?(topic, user)).to eq(true)
+        expect(guardian.can_see_summary?(topic)).to eq(true)
       end
     end
 
@@ -37,13 +39,24 @@ describe DiscourseAi::Summarization::Models::Base do
       before { SiteSetting.ai_custom_summarization_allowed_groups = group.id }
 
       it "returns true if the user group is present in the ai_custom_summarization_allowed_groups_map setting" do
-        expect(described_class.can_see_summary?(topic, user)).to eq(true)
+        expect(guardian.can_see_summary?(topic)).to eq(true)
+      end
+    end
+
+    context "when the topic is a PM" do
+      before { SiteSetting.ai_custom_summarization_allowed_groups = group.id }
+      let(:pm) { Fabricate(:private_message_topic) }
+
+      it "returns false" do
+        expect(guardian.can_see_summary?(pm)).to eq(false)
       end
     end
 
     context "when there is no user" do
+      let(:guardian) { Guardian.new }
+
       it "returns false for anons" do
-        expect(described_class.can_see_summary?(topic, nil)).to eq(false)
+        expect(guardian.can_see_summary?(topic)).to eq(false)
       end
 
       it "returns true for anons when there is a cached summary" do
@@ -54,16 +67,7 @@ describe DiscourseAi::Summarization::Models::Base do
           algorithm: "test",
         )
 
-        expect(described_class.can_see_summary?(topic, nil)).to eq(true)
-      end
-    end
-
-    context "when the topic is a PM" do
-      before { SiteSetting.ai_custom_summarization_allowed_groups = group.id }
-      let(:pm) { Fabricate(:private_message_topic) }
-
-      it "returns false" do
-        expect(described_class.can_see_summary?(pm, user)).to eq(false)
+        expect(guardian.can_see_summary?(topic)).to eq(true)
       end
     end
   end

@@ -200,7 +200,9 @@ module DiscourseAi
               raise "Invalid call LLM call, expected #{@canned_llm} but got #{model_name}"
             end
 
-            return new(dialect_klass, nil, model_name, gateway: @canned_response)
+            return(
+              new(dialect_klass, nil, model_name, gateway: @canned_response, llm_model: llm_model)
+            )
           end
 
           gateway_klass = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider_name)
@@ -293,11 +295,11 @@ module DiscourseAi
           dialect_klass.new(DiscourseAi::Completions::Prompt.new(""), model_name).tokenizer
       end
 
-      attr_reader :model_name
+      attr_reader :model_name, :llm_model
 
       private
 
-      attr_reader :dialect_klass, :gateway_klass, :llm_model
+      attr_reader :dialect_klass, :gateway_klass
     end
   end
 end

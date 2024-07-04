@@ -319,23 +319,24 @@ discourse_ai:
     default: false
     client: true
     hidden: true
-
-  ai_summarization_discourse_service_api_endpoint: ""
-  ai_summarization_discourse_service_api_endpoint_srv:
+  ai_summarization_enabled:
+    default: false
+    validator: "DiscourseAi::Configuration::LlmDependencyValidator"
+  ai_summarization_model:
     default: ""
-    hidden: true
-  ai_summarization_discourse_service_api_key:
-    default: ""
-    secret: true
-  ai_summarization_strategy:
-    client: true
-    default: ""
-    enum: "DiscourseAi::Configuration::SummarizationEnumerator"
-    validator: "DiscourseAi::Configuration::SummarizationValidator"
+    allow_any: false
+    type: enum
+    enum: "DiscourseAi::Configuration::LlmEnumerator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
   ai_custom_summarization_allowed_groups:
     type: group_list
     list_type: compact
     default: "3|13" # 3: @staff, 13: @trust_level_3
+  ai_summarization_strategy: # TODO(roman): Deprecated. Remove by Sept 2024
+    type: enum
+    default: ""
+    hidden: true
+    choices: "DiscourseAi::Configuration::LlmEnumerator.old_summarization_options + ['']"
 
   ai_bot_enabled:
     default: false
@@ -359,7 +360,7 @@ discourse_ai:
     default: "1|2" # 1: admins, 2: moderators
     allow_any: false
     refresh: true
-  ai_bot_enabled_chat_bots: # TODO(roman): Remove setting. Deprecated
+  ai_bot_enabled_chat_bots: # TODO(roman): Deprecated. Remove by Sept 2024
     type: list
     default: "gpt-3.5-turbo"
     hidden: true
