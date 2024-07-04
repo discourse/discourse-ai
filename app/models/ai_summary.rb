@@ -26,3 +26,7 @@ end
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
 #
+# Indexes
+#
+#  index_ai_summaries_on_target_type_and_target_id  (target_type,target_id)
+#
