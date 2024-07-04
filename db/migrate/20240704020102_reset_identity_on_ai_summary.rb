@@ -4,7 +4,6 @@ class ResetIdentityOnAiSummary < ActiveRecord::Migration[7.0]
     add_index :ai_summaries, %i[target_type target_id]
 
     # we need to reset identity since we moved this from the old summary_sections table
-    # so ids may be way too low on the table
     execute <<-SQL
       DO $$
       DECLARE
