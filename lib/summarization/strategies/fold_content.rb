@@ -6,6 +6,7 @@ module DiscourseAi
       class FoldContent
         def initialize(completion_model)
           @llm = DiscourseAi::Completions::Llm.proxy(completion_model)
+          raise "Invalid model provided for summarization strategy" if @llm.llm_model.nil?
         end
 
         attr_reader :llm

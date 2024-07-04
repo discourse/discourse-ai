@@ -3,9 +3,7 @@
 module DiscourseAi
   class TopicSummarization
     def self.summarize(topic, user, opts = {}, &on_partial_blk)
-      strategy =
-        DiscourseAi::Summarization::Strategies::FoldContent.new(SiteSetting.ai_summarization_model)
-      new(strategy).summarize(topic, user, opts, &on_partial_blk)
+      new(DiscourseAi::Summarization.default_strategy).summarize(topic, user, opts, &on_partial_blk)
     end
 
     def initialize(strategy)
