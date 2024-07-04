@@ -69,10 +69,17 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
   let(:anthropic_mock) { VllmMock.new(endpoint) }
 
   let(:compliance) do
-    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Mistral, user)
+    EndpointsCompliance.new(
+      self,
+      endpoint,
+      DiscourseAi::Completions::Dialects::OpenAiCompatible,
+      user,
+    )
   end
 
-  let(:dialect) { DiscourseAi::Completions::Dialects::Mistral.new(generic_prompt, model_name) }
+  let(:dialect) do
+    DiscourseAi::Completions::Dialects::OpenAiCompatible.new(generic_prompt, model_name)
+  end
   let(:prompt) { dialect.translate }
 
   let(:request_body) { model.default_options.merge(messages: prompt).to_json }
