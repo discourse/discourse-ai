@@ -6,7 +6,6 @@ import DButton from "discourse/components/d-button";
 import virtualElementFromTextRange from "discourse/lib/virtual-element-from-text-range";
 import eq from "truth-helpers/helpers/eq";
 import AiPostHelperMenu from "../../components/ai-post-helper-menu";
-import element from "discourse/helpers/element";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
 
 export default class AIHelperOptionsMenu extends Component {
