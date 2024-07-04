@@ -13,7 +13,6 @@ module DiscourseAi
             [
               DiscourseAi::Completions::Dialects::ChatGpt,
               DiscourseAi::Completions::Dialects::Gemini,
-              DiscourseAi::Completions::Dialects::Mistral,
               DiscourseAi::Completions::Dialects::Claude,
               DiscourseAi::Completions::Dialects::Command,
               DiscourseAi::Completions::Dialects::OpenAiCompatible,

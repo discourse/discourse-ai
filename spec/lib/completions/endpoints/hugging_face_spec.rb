@@ -94,7 +94,12 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
   let(:hf_mock) { HuggingFaceMock.new(endpoint) }
 
   let(:compliance) do
-    EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Mistral, user)
+    EndpointsCompliance.new(
+      self,
+      endpoint,
+      DiscourseAi::Completions::Dialects::OpenAiCompatible,
+      user,
+    )
   end
 
   describe "#perform_completion!" do
