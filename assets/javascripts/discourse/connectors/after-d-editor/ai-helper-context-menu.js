@@ -8,6 +8,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { caretPosition, getCaretPosition } from "discourse/lib/utilities";
 import { INPUT_DELAY } from "discourse-common/config/environment";
 import { afterRender, bind, debounce } from "discourse-common/utils/decorators";
+import I18n from "discourse-i18n";
 import { showComposerAIHelper } from "../../lib/show-ai-helper";
 
 export default class AiHelperContextMenu extends Component {
@@ -76,7 +77,28 @@ export default class AiHelperContextMenu extends Component {
 
     prompts = prompts
       .filter((p) => p.location.includes("composer"))
-      .filter((p) => p.name !== "generate_titles");
+      .filter((p) => p.name !== "generate_titles")
+      .map((p) => {
+        // AI helper by default returns interface locale on translations
+        // Since we want site default translations (and we are using: force_default_locale)
+        // we need to replace the translated_name with the site default locale name
+        const siteLocale = this.siteSettings.default_locale;
+        const availableLocales = JSON.parse(
+          this.siteSettings.available_locales
+        );
+        const locale = availableLocales.find((l) => l.value === siteLocale);
+        const translatedName = I18n.t(
+          "discourse_ai.ai_helper.context_menu.translate_prompt",
+          {
+            language: locale.name,
+          }
+        );
+
+        if (p.name === "translate") {
+          return { ...p, translated_name: translatedName };
+        }
+        return p;
+      });
 
     // Find the custom_prompt object and move it to the beginning of the array
     const customPromptIndex = prompts.findIndex(
@@ -367,6 +389,7 @@ export default class AiHelperContextMenu extends Component {
         mode: option.id,
         text: this.selectedText,
         custom_prompt: this.customPromptValue,
+        force_default_locale: true,
       },
     });
 

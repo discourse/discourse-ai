@@ -292,6 +292,7 @@ en:
             title: "Custom Prompt"
             placeholder: "Enter a custom prompt..."
             submit: "Send Prompt"
+          translate_prompt: "Translate to %{language}"
         post_options_menu:
           trigger: "Ask AI"
           title: "Ask AI"

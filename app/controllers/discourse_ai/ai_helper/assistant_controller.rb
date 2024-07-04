@@ -12,6 +12,7 @@ module DiscourseAi
 
       def suggest
         input = get_text_param!
+        force_default_locale = params[:force_default_locale] || false
 
         prompt = CompletionPrompt.find_by(id: params[:mode])
 
@@ -31,6 +32,7 @@ module DiscourseAi
                      prompt,
                      input,
                      current_user,
+                     force_default_locale,
                    ),
                  status: 200
         end

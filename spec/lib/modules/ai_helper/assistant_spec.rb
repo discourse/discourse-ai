@@ -16,15 +16,25 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
   describe("#custom_locale_instructions") do
     it "Properly generates the per locale system instruction" do
       SiteSetting.default_locale = "ko"
-      expect(subject.custom_locale_instructions).to eq(
+      expect(subject.custom_locale_instructions(user, false)).to eq(
         "It is imperative that you write your answer in Korean (한국어), you are interacting with a Korean (한국어) speaking user. Leave tag names in English.",
       )
 
       SiteSetting.allow_user_locale = true
       user.update!(locale: "he")
 
-      expect(subject.custom_locale_instructions(user)).to eq(
+      expect(subject.custom_locale_instructions(user, false)).to eq(
         "It is imperative that you write your answer in Hebrew (עברית), you are interacting with a Hebrew (עברית) speaking user. Leave tag names in English.",
+      )
+    end
+
+    it "returns sytstem instructions using Site locale if force_default_locale is true" do
+      SiteSetting.default_locale = "ko"
+      SiteSetting.allow_user_locale = true
+      user.update!(locale: "he")
+
+      expect(subject.custom_locale_instructions(user, true)).to eq(
+        "It is imperative that you write your answer in Korean (한국어), you are interacting with a Korean (한국어) speaking user. Leave tag names in English.",
       )
     end
   end
@@ -36,7 +46,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     end
 
     it "returns all available prompts" do
-      prompts = subject.available_prompts
+      prompts = subject.available_prompts(user)
 
       expect(prompts.length).to eq(6)
       expect(prompts.map { |p| p[:name] }).to contain_exactly(
@@ -56,7 +66,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       end
 
       it "returns the illustrate_post prompt in the list of all prompts" do
-        prompts = subject.available_prompts
+        prompts = subject.available_prompts(user)
 
         expect(prompts.length).to eq(7)
         expect(prompts.map { |p| p[:name] }).to contain_exactly(

@@ -158,7 +158,7 @@ en:
       errors:
         completion_request_failed: "Something went wrong while trying to provide suggestions. Please, try again."
       prompts:
-        translate: Translate to English
+        translate: Translate to %{language}
         generate_titles: Suggest topic titles
         proofread: Proofread text
         markdown_table: Generate Markdown table
