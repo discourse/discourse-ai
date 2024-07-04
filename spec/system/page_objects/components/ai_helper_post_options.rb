@@ -9,6 +9,7 @@ module PageObjects
       SHARE_SELECTOR = ".quote-sharing"
 
       AI_HELPER_SELECTOR = ".ai-post-helper"
+      AI_HELPER_MOBILE_SELECTOR = ".ai-post-helper-menu-content"
       TRIGGER_SELECTOR = "#{AI_HELPER_SELECTOR}__trigger"
       OPTIONS_SELECTOR = "#{AI_HELPER_SELECTOR}__options"
       LOADING_SELECTOR = ".ai-helper-context-menu__loading"
@@ -37,6 +38,14 @@ module PageObjects
 
       def has_no_highlighted_text?
         page.has_no_css?(HIGHLIGHT_SELECTOR)
+      end
+
+      def has_mobile_post_ai_helper?
+        page.has_css?(AI_HELPER_MOBILE_SELECTOR)
+      end
+
+      def has_no_mobile_post_ai_helper?
+        page.has_no_css?(AI_HELPER_MOBILE_SELECTOR)
       end
 
       def has_post_ai_helper?

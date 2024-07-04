@@ -32,14 +32,11 @@ export default class AiPostHelperMenu extends Component {
   @tracked menuState = this.MENU_STATES.options;
   @tracked loading = false;
   @tracked suggestion = "";
-  @tracked showMainButtons = true;
   @tracked customPromptValue = "";
   @tracked copyButtonIcon = "copy";
   @tracked copyButtonLabel = "discourse_ai.ai_helper.post_options_menu.copy";
   @tracked showFastEdit = false;
   @tracked showAiButtons = true;
-  @tracked originalPostHTML = null;
-  @tracked postHighlighted = false;
   @tracked streaming = false;
   @tracked lastSelectedOption = null;
   @tracked isSavingFootnote = false;
