@@ -341,6 +341,7 @@
     }
 
     .ai-custom-prompt {
+      width: 95%;
       padding: 0.5rem;
       margin-bottom: 0;
     }
@@ -600,4 +601,32 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--primary-high);
+}
+
+.ai-post-helper-menu__selected-text {
+  padding: 0.75rem 1rem;
+  margin: 0.5rem;
+  border: 1px solid var(--primary-low-mid);
+  border-radius: var(--d-border-radius);
+
+  h2 {
+    font-size: var(--font-0);
+  }
+
+  p {
+    @include ellipsis;
+    font-size: var(--font-down-2);
+    margin: 0;
+  }
+}
+
+// Mobile Bottom Modal
+.ai-post-helper-menu-content {
+  .ai-helper-context-menu__loading {
+    justify-content: center;
+  }
+
+  .ai-post-helper__options-button {
+    padding: 1rem;
+  }
 }
