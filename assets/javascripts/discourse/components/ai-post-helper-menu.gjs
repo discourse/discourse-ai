@@ -1,6 +1,5 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { fn } from "@ember/helper";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
@@ -18,7 +17,6 @@ import i18n from "discourse-common/helpers/i18n";
 import { bind } from "discourse-common/utils/decorators";
 import I18n from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
-import AiHelperCustomPrompt from "../components/ai-helper-custom-prompt";
 import AiHelperLoading from "../components/ai-helper-loading";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
 
