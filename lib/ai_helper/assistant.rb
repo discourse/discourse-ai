@@ -29,7 +29,9 @@ module DiscourseAi
               prompts.map do |prompt|
                 if prompt.name == "translate"
                   locale = user.effective_locale
-                  locale_hash = LocaleSiteSetting.language_names[locale]
+                  locale_hash =
+                    LocaleSiteSetting.language_names[locale] ||
+                      LocaleSiteSetting.language_names[locale.split("_")[0]]
                   translation =
                     I18n.t(
                       "discourse_ai.ai_helper.prompts.translate",
