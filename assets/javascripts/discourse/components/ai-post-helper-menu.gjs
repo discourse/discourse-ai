@@ -49,6 +49,72 @@ export default class AiPostHelperMenu extends Component {
 
   @tracked _activeAIRequest = null;
 
+  get helperOptions() {
+    let prompts = this.currentUser?.ai_helper_prompts;
+
+    prompts = prompts.filter((item) => item.location.includes("post"));
+
+    // Find the custom_prompt object and move it to the beginning of the array
+    const customPromptIndex = prompts.findIndex(
+      (p) => p.name === "custom_prompt"
+    );
+
+    if (customPromptIndex !== -1) {
+      const customPrompt = prompts.splice(customPromptIndex, 1)[0];
+      prompts.unshift(customPrompt);
+    }
+
+    if (!this._showUserCustomPrompts()) {
+      prompts = prompts.filter((p) => p.name !== "custom_prompt");
+    }
+
+    if (!this.args.data.canEditPost) {
+      prompts = prompts.filter((p) => p.name !== "proofread");
+    }
+
+    return prompts;
+  }
+
+  get highlightedTextToggleIcon() {
+    if (this.showHighlightedText) {
+      return "angle-double-left";
+    } else {
+      return "angle-double-right";
+    }
+  }
+
+  get allowInsertFootnote() {
+    const siteSettings = this.siteSettings;
+    const canEditPost = this.args.data.canEditPost;
+
+    if (
+      !siteSettings?.enable_markdown_footnotes ||
+      !siteSettings?.display_footnotes_inline ||
+      !canEditPost
+    ) {
+      return false;
+    }
+
+    return this.lastSelectedOption?.name === "explain";
+  }
+
+  _showUserCustomPrompts() {
+    return this.currentUser?.can_use_custom_prompts;
+  }
+
+  _sanitizeForFootnote(text) {
+    // Remove line breaks (line-breaks breaks the inline footnote display)
+    text = text.replace(/[\r\n]+/g, " ");
+
+    // Remove headings (headings don't work in inline footnotes)
+    text = text.replace(/^(#+)\s+/gm, "");
+
+    // Trim excess space
+    text = text.trim();
+
+    return sanitize(text);
+  }
+
   @bind
   subscribe() {
     const channel = `/discourse-ai/ai-helper/explain/${this.args.data.quoteState.postId}`;
@@ -67,14 +133,6 @@ export default class AiPostHelperMenu extends Component {
   _updateResult(result) {
     this.streaming = !result.done;
     this.suggestion = result.result;
-  }
-
-  get highlightedTextToggleIcon() {
-    if (this.showHighlightedText) {
-      return "angle-double-left";
-    } else {
-      return "angle-double-right";
-    }
   }
 
   @action
@@ -171,36 +229,6 @@ export default class AiPostHelperMenu extends Component {
     }
   }
 
-  get helperOptions() {
-    let prompts = this.currentUser?.ai_helper_prompts;
-
-    prompts = prompts.filter((item) => item.location.includes("post"));
-
-    // Find the custom_prompt object and move it to the beginning of the array
-    const customPromptIndex = prompts.findIndex(
-      (p) => p.name === "custom_prompt"
-    );
-
-    if (customPromptIndex !== -1) {
-      const customPrompt = prompts.splice(customPromptIndex, 1)[0];
-      prompts.unshift(customPrompt);
-    }
-
-    if (!this._showUserCustomPrompts()) {
-      prompts = prompts.filter((p) => p.name !== "custom_prompt");
-    }
-
-    if (!this.args.data.canEditPost) {
-      prompts = prompts.filter((p) => p.name !== "proofread");
-    }
-
-    return prompts;
-  }
-
-  _showUserCustomPrompts() {
-    return this.currentUser?.can_use_custom_prompts;
-  }
-
   @action
   closeMenu() {
     if (this.site.mobileView) {
@@ -217,19 +245,6 @@ export default class AiPostHelperMenu extends Component {
     await this.args.data.hideToolbar();
   }
 
-  sanitizeForFootnote(text) {
-    // Remove line breaks (line-breaks breaks the inline footnote display)
-    text = text.replace(/[\r\n]+/g, " ");
-
-    // Remove headings (headings don't work in inline footnotes)
-    text = text.replace(/^(#+)\s+/gm, "");
-
-    // Trim excess space
-    text = text.trim();
-
-    return sanitize(text);
-  }
-
   @action
   async insertFootnote() {
     this.isSavingFootnote = true;
@@ -237,7 +252,7 @@ export default class AiPostHelperMenu extends Component {
     if (this.allowInsertFootnote) {
       try {
         const result = await ajax(`/posts/${this.args.data.post.id}`);
-        const sanitizedSuggestion = this.sanitizeForFootnote(this.suggestion);
+        const sanitizedSuggestion = this._sanitizeForFootnote(this.suggestion);
         const credits = I18n.t(
           "discourse_ai.ai_helper.post_options_menu.footnote_credits"
         );
@@ -255,21 +270,6 @@ export default class AiPostHelperMenu extends Component {
         await this.closeMenu();
       }
     }
-  }
-
-  get allowInsertFootnote() {
-    const siteSettings = this.siteSettings;
-    const canEditPost = this.args.data.canEditPost;
-
-    if (
-      !siteSettings?.enable_markdown_footnotes ||
-      !siteSettings?.display_footnotes_inline ||
-      !canEditPost
-    ) {
-      return false;
-    }
-
-    return this.lastSelectedOption?.name === "explain";
   }
 
   <template>
