@@ -8,7 +8,7 @@ import eq from "truth-helpers/helpers/eq";
 import AiPostHelperMenu from "../../components/ai-post-helper-menu";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
 
-export default class AIHelperOptionsMenu extends Component {
+export default class AiPostHelperTrigger extends Component {
   static shouldRender(outletArgs, helper) {
     return showPostAIHelper(outletArgs, helper);
   }
@@ -126,7 +126,7 @@ export default class AIHelperOptionsMenu extends Component {
   }
 
   @action
-  async showAiHelperOptions() {
+  async showAiPostHelperMenu() {
     this.highlightSelectedText();
     if (this.site.mobileView) {
       this.currentMenu.close();
@@ -177,7 +177,7 @@ export default class AIHelperOptionsMenu extends Component {
             @icon="discourse-sparkles"
             @title="discourse_ai.ai_helper.post_options_menu.title"
             @label="discourse_ai.ai_helper.post_options_menu.trigger"
-            @action={{this.showAiHelperOptions}}
+            @action={{this.showAiPostHelperMenu}}
             class="btn-flat ai-post-helper__trigger"
           />
 

@@ -2,7 +2,7 @@
 
 module PageObjects
   module Components
-    class AIHelperPostOptions < PageObjects::Components::Base
+    class AiPostHelperMenu < PageObjects::Components::Base
       POST_SELECTION_TOOLBAR_SELECTOR = ".quote-button"
       QUOTE_SELECTOR = ".insert-quote"
       EDIT_SELECTOR = ".quote-edit-label"

@@ -23,7 +23,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     )
   end
   let(:topic_page) { PageObjects::Pages::Topic.new }
-  let(:post_ai_helper) { PageObjects::Components::AIHelperPostOptions.new }
+  let(:post_ai_helper) { PageObjects::Components::AiPostHelperMenu.new }
   let(:fast_editor) { PageObjects::Components::FastEditor.new }
 
   before do
