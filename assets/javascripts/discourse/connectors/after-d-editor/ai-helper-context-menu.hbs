@@ -14,27 +14,11 @@
         </ul>
 
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.options)}}
-        <ul class="ai-helper-context-menu__options">
-          {{#each this.helperOptions as |option|}}
-            {{#if (eq option.name "custom_prompt")}}
-              <AiHelperCustomPrompt
-                @value={{this.customPromptValue}}
-                @promptArgs={{option}}
-                @submit={{this.updateSelected}}
-              />
-            {{else}}
-              <li data-name={{option.translated_name}} data-value={{option.id}}>
-                <DButton
-                  @icon={{option.icon}}
-                  @translatedLabel={{option.translated_name}}
-                  @action={{fn this.updateSelected option}}
-                  class="btn-flat"
-                />
-              </li>
-            {{/if}}
-          {{/each}}
-        </ul>
-
+        <AiHelperOptionsList
+          @options={{this.helperOptions}}
+          @customPromptValue={{this.customPromptValue}}
+          @performAction={{this.updateSelected}}
+        />
       {{else if (eq this.menuState this.CONTEXT_MENU_STATES.loading)}}
         <AiHelperLoading @cancel={{this.cancelAIAction}} />
 

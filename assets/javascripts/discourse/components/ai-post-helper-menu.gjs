@@ -20,6 +20,7 @@ import I18n from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperCustomPrompt from "../components/ai-helper-custom-prompt";
 import AiHelperLoading from "../components/ai-helper-loading";
+import AiHelperOptionsList from "../components/ai-helper-options-list";
 
 export default class AiPostHelperMenu extends Component {
   @service messageBus;
@@ -47,7 +48,7 @@ export default class AiPostHelperMenu extends Component {
     result: "RESULT",
   };
 
-  @tracked _activeAIRequest = null;
+  @tracked _activeAiRequest = null;
 
   get helperOptions() {
     let prompts = this.currentUser?.ai_helper_prompts;
@@ -141,29 +142,14 @@ export default class AiPostHelperMenu extends Component {
   }
 
   @action
-  async performAISuggestion(option) {
+  async performAiSuggestion(option) {
     this.menuState = this.MENU_STATES.loading;
     this.lastSelectedOption = option;
 
     if (option.name === "explain") {
-      this.menuState = this.MENU_STATES.result;
-
-      const menu = this.menu.getByIdentifier("post-text-selection-toolbar");
-      if (menu) {
-        menu.options.placement = "bottom";
-      }
-
-      const fetchUrl = `/discourse-ai/ai-helper/explain`;
-      this._activeAIRequest = ajax(fetchUrl, {
-        method: "POST",
-        data: {
-          mode: option.value,
-          text: this.args.data.selectedText,
-          post_id: this.args.data.quoteState.postId,
-        },
-      });
+      return this._handleExplainOption(option);
     } else {
-      this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
+      this._activeAiRequest = ajax("/discourse-ai/ai-helper/suggest", {
         method: "POST",
         data: {
           mode: option.id,
@@ -173,44 +159,66 @@ export default class AiPostHelperMenu extends Component {
       });
     }
 
-    if (option.name !== "explain") {
-      this._activeAIRequest
-        .then(({ suggestions }) => {
-          this.suggestion = suggestions[0].trim();
+    this._activeAiRequest
+      .then(({ suggestions }) => {
+        this.suggestion = suggestions[0].trim();
 
-          if (option.name === "proofread") {
-            this.showAiButtons = false;
+        if (option.name === "proofread") {
+          return this._handleProofreadOption();
+        }
+      })
+      .catch(popupAjaxError)
+      .finally(() => {
+        this.loading = false;
+        this.menuState = this.MENU_STATES.result;
+      });
 
-            if (this.site.desktopView) {
-              this.showFastEdit = true;
-              return;
-            } else {
-              return this.modal.show(FastEditModal, {
-                model: {
-                  initialValue: this.args.data.quoteState.buffer,
-                  newValue: this.suggestion,
-                  post: this.args.data.post,
-                  close: this.closeFastEdit,
-                },
-              });
-            }
-          }
-        })
-        .catch(popupAjaxError)
-        .finally(() => {
-          this.loading = false;
-          this.menuState = this.MENU_STATES.result;
-        });
+    return this._activeAiRequest;
+  }
+
+  _handleExplainOption(option) {
+    this.menuState = this.MENU_STATES.result;
+    const menu = this.menu.getByIdentifier("post-text-selection-toolbar");
+    if (menu) {
+      menu.options.placement = "bottom";
     }
+    const fetchUrl = `/discourse-ai/ai-helper/explain`;
 
-    return this._activeAIRequest;
+    this._activeAiRequest = ajax(fetchUrl, {
+      method: "POST",
+      data: {
+        mode: option.value,
+        text: this.args.data.selectedText,
+        post_id: this.args.data.quoteState.postId,
+      },
+    });
+
+    return this._activeAiRequest;
+  }
+
+  _handleProofreadOption() {
+    this.showAiButtons = false;
+
+    if (this.site.desktopView) {
+      this.showFastEdit = true;
+      return;
+    } else {
+      return this.modal.show(FastEditModal, {
+        model: {
+          initialValue: this.args.data.quoteState.buffer,
+          newValue: this.suggestion,
+          post: this.args.data.post,
+          close: this.closeFastEdit,
+        },
+      });
+    }
   }
 
   @action
-  cancelAIAction() {
-    if (this._activeAIRequest) {
-      this._activeAIRequest.abort();
-      this._activeAIRequest = null;
+  cancelAiAction() {
+    if (this._activeAiRequest) {
+      this._activeAiRequest.abort();
+      this._activeAiRequest = null;
       this.loading = false;
       this.menuState = this.MENU_STATES.options;
     }
@@ -287,29 +295,13 @@ export default class AiPostHelperMenu extends Component {
     {{#if this.showAiButtons}}
       <div class="ai-post-helper">
         {{#if (eq this.menuState this.MENU_STATES.options)}}
-          <div class="ai-post-helper__options">
-            {{#each this.helperOptions as |option|}}
-              {{#if (eq option.name "custom_prompt")}}
-                <AiHelperCustomPrompt
-                  @value={{this.customPromptValue}}
-                  @promptArgs={{option}}
-                  @submit={{this.performAISuggestion}}
-                />
-              {{else}}
-                <DButton
-                  @icon={{option.icon}}
-                  @translatedLabel={{option.translated_name}}
-                  @action={{fn this.performAISuggestion option}}
-                  data-name={{option.name}}
-                  data-value={{option.id}}
-                  class="btn-flat ai-post-helper__options-button"
-                />
-              {{/if}}
-            {{/each}}
-          </div>
-
+          <AiHelperOptionsList
+            @options={{this.helperOptions}}
+            @customPromptValue={{this.customPromptValue}}
+            @performAction={{this.performAiSuggestion}}
+          />
         {{else if (eq this.menuState this.MENU_STATES.loading)}}
-          <AiHelperLoading @cancel={{this.cancelAIAction}} />
+          <AiHelperLoading @cancel={{this.cancelAiAction}} />
         {{else if (eq this.menuState this.MENU_STATES.result)}}
           <div
             class="ai-post-helper__suggestion"
@@ -324,7 +316,7 @@ export default class AiPostHelperMenu extends Component {
                 <DButton
                   @icon="times"
                   @label="discourse_ai.ai_helper.post_options_menu.cancel"
-                  @action={{this.cancelAIAction}}
+                  @action={{this.cancelAiAction}}
                   class="btn-flat ai-post-helper__suggestion__cancel"
                 />
                 <DButton
@@ -346,7 +338,7 @@ export default class AiPostHelperMenu extends Component {
                 {{/if}}
               </div>
             {{else}}
-              <AiHelperLoading @cancel={{this.cancelAIAction}} />
+              <AiHelperLoading @cancel={{this.cancelAiAction}} />
             {{/if}}
           </div>
         {{/if}}
