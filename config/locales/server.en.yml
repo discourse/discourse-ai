@@ -157,6 +157,7 @@ en:
     ai_helper:
       errors:
         completion_request_failed: "Something went wrong while trying to provide suggestions. Please, try again."
+        unauthorized_access: "Something went wrong, try again later, or contact site admin."
       prompts:
         translate: Translate to %{language}
         generate_titles: Suggest topic titles

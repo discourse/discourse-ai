@@ -137,6 +137,13 @@ module DiscourseAi
                  },
                  status: 200
         end
+      rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed, Net::HTTPBadResponse => e
+        if e.is_a?(Net::HTTPUnauthorized)
+          render_json_error I18n.t("discourse_ai.ai_helper.errors.unauthorized_access"), status: 401
+        else
+          render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
+                            status: 502
+        end
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed, Net::HTTPBadResponse
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
