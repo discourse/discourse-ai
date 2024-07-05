@@ -59,6 +59,11 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       )
     end
 
+    it "does not raise an error when effective_locale does not exactly match keys in LocaleSiteSetting" do
+      SiteSetting.default_locale = "zh_CN"
+      expect { subject.available_prompts(user) }.not_to raise_error
+    end
+
     context "when illustrate post model is enabled" do
       before do
         SiteSetting.ai_helper_illustrate_post_model = "stable_diffusion_xl"
