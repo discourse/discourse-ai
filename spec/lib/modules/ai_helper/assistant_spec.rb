@@ -59,9 +59,14 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       )
     end
 
-    it "does not raise an error when effective_locale does not exactly match keys in LocaleSiteSetting" do
-      SiteSetting.default_locale = "zh_CN"
-      expect { subject.available_prompts(user) }.not_to raise_error
+    it "handles all possible locales" do
+      LocaleSiteSetting
+        .values
+        .pluck(:value)
+        .each do |locale|
+          SiteSetting.default_locale = locale
+          expect { subject.available_prompts(user) }.not_to raise_error
+        end
     end
 
     context "when illustrate post model is enabled" do
@@ -110,6 +115,22 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       subject.localize_prompt!(prompt, empty_locale_user)
 
       expect(prompt.messages[0][:content].strip).to eq("This is a English (US) test")
+    end
+
+    it "handles all possible locales" do
+      LocaleSiteSetting
+        .values
+        .pluck(:value)
+        .each do |locale|
+          prompt =
+            CompletionPrompt.new(
+              messages: {
+                insts: "This is a %LANGUAGE% test",
+              },
+            ).messages_with_input("test")
+          SiteSetting.default_locale = locale
+          expect { subject.localize_prompt!(prompt, user) }.not_to raise_error
+        end
     end
   end
 

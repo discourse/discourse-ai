@@ -59,7 +59,9 @@ module DiscourseAi
       def custom_locale_instructions(user = nil, force_default_locale)
         locale = SiteSetting.default_locale
         locale = user.effective_locale if !force_default_locale
-        locale_hash = LocaleSiteSetting.language_names[locale]
+        locale_hash =
+          LocaleSiteSetting.language_names[locale] ||
+            LocaleSiteSetting.language_names[locale.split("_")[0]]
 
         if locale != "en" && locale_hash
           locale_description = "#{locale_hash["name"]} (#{locale_hash["nativeName"]})"
@@ -80,7 +82,9 @@ module DiscourseAi
 
           locale = user.effective_locale if user && !force_default_locale
 
-          locale_hash = LocaleSiteSetting.language_names[locale]
+          locale_hash =
+            LocaleSiteSetting.language_names[locale] ||
+              LocaleSiteSetting.language_names[locale.split("_")[0]]
 
           prompt.messages[0][:content] = prompt.messages[0][:content].gsub(
             "%LANGUAGE%",
