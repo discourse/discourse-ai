@@ -6,7 +6,7 @@ module PageObjects
       COMPOSER_EDITOR_SELECTOR = ".d-editor-input"
       CONTEXT_MENU_SELECTOR = ".ai-helper-context-menu"
       TRIGGER_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__trigger"
-      OPTIONS_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__options"
+      OPTIONS_STATE_SELECTOR = ".ai-helper-options"
       LOADING_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__loading"
       RESETS_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__resets"
       REVIEW_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__review"
@@ -19,7 +19,9 @@ module PageObjects
       end
 
       def select_helper_model(mode)
-        find("#{OPTIONS_STATE_SELECTOR} li[data-value=\"#{mode}\"] .btn").click
+        find(
+          "#{OPTIONS_STATE_SELECTOR} li[data-value=\"#{mode}\"] .ai-helper-options__button",
+        ).click
       end
 
       def click_undo_button
