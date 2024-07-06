@@ -11,7 +11,7 @@ module PageObjects
       AI_HELPER_SELECTOR = ".ai-post-helper"
       AI_HELPER_MOBILE_SELECTOR = ".ai-post-helper-menu-content"
       TRIGGER_SELECTOR = "#{AI_HELPER_SELECTOR}__trigger"
-      OPTIONS_SELECTOR = "#{AI_HELPER_SELECTOR}__options"
+      OPTIONS_SELECTOR = ".ai-helper-options"
       LOADING_SELECTOR = ".ai-helper-context-menu__loading"
       SUGGESTION_SELECTOR = "#{AI_HELPER_SELECTOR}__suggestion"
       HIGHLIGHT_SELECTOR = ".ai-helper-highlighted-selection"
