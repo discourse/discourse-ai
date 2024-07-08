@@ -7,24 +7,36 @@ class LlmModel < ActiveRecord::Base
 
   belongs_to :user
 
-  validates :url, exclusion: { in: [RESERVED_VLLM_SRV_URL] }
+  validates :url, exclusion: { in: [RESERVED_VLLM_SRV_URL] }, if: :url_changed?
 
-  def self.enable_or_disable_srv_llm!
+  def self.seed_srv_backed_model
+    srv = SiteSetting.ai_vllm_endpoint_srv
     srv_model = find_by(url: RESERVED_VLLM_SRV_URL)
-    if SiteSetting.ai_vllm_endpoint_srv.present? && srv_model.blank?
-      record =
-        new(
-          display_name: "vLLM SRV LLM",
-          name: "mistralai/Mixtral",
-          provider: "vllm",
-          tokenizer: "DiscourseAi::Tokenizer::MixtralTokenizer",
-          url: RESERVED_VLLM_SRV_URL,
-          max_prompt_tokens: 8000,
-        )
 
-      record.save(validate: false) # Ignore reserved URL validation
-    elsif srv_model.present?
-      srv_model.destroy!
+    if srv.present?
+      if srv_model.present?
+        current_key = SiteSetting.ai_vllm_api_key
+        srv_model.update!(api_key: current_key) if current_key != srv_model.api_key
+      else
+        record =
+          new(
+            display_name: "vLLM SRV LLM",
+            name: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+            provider: "vllm",
+            tokenizer: "DiscourseAi::Tokenizer::MixtralTokenizer",
+            url: RESERVED_VLLM_SRV_URL,
+            max_prompt_tokens: 8000,
+            api_key: SiteSetting.ai_vllm_api_key,
+          )
+
+        record.save(validate: false) # Ignore reserved URL validation
+      end
+    else
+      # Clean up companion users
+      srv_model&.enabled_chat_bot = false
+      srv_model&.toggle_companion_user
+
+      srv_model&.destroy!
     end
   end
 

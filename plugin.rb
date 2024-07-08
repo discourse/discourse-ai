@@ -47,8 +47,6 @@ after_initialize do
 
   add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
 
-  LlmModel.enable_or_disable_srv_llm!
-
   [
     DiscourseAi::Embeddings::EntryPoint.new,
     DiscourseAi::Nsfw::EntryPoint.new,
@@ -81,5 +79,9 @@ after_initialize do
       # even though this can be shortened this is the clearest way to express it
       nil
     end
+  end
+
+  on(:site_setting_changed) do |name, _old_value, _new_value|
+    LlmModel.seed_srv_backed_model if name == :ai_vllm_endpoint_srv || name == :ai_vllm_api_key
   end
 end
