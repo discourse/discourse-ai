@@ -4,6 +4,7 @@ import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
+import { inject as service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import concatClass from "discourse/helpers/concat-class";
@@ -15,6 +16,7 @@ import I18n from "discourse-i18n";
 import AiPersonaEditor from "./ai-persona-editor";
 
 export default class AiPersonaListEditor extends Component {
+  @service adminPluginNavManager;
   @tracked _noPersonaText = null;
 
   get noPersonaText() {
@@ -44,7 +46,7 @@ export default class AiPersonaListEditor extends Component {
 
   <template>
     <DBreadcrumbsItem
-      @route="adminPlugins.show.discourse-ai-personas"
+      @path="/admin/plugins/{{this.adminPluginNavManager.currentPlugin.name}}/ai-personas"
       @label={{i18n "discourse_ai.ai_persona.short_title"}}
     />
     <section class="ai-persona-list-editor__current admin-detail pull-left">
