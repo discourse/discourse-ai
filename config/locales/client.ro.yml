@@ -84,3 +84,8 @@ ro:
           response: "Răspuns"
         share_modal:
           copy: "Copiază"
+      summarization:
+        chat:
+          title: "Rezumați mesajele"
+          description: "Selectați o opțiune de mai jos pentru a rezuma conversația trimisă în intervalul de timp dorit."
+          summarize: "Rezumat"

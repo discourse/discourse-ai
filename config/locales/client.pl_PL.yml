@@ -245,6 +245,16 @@ pl_PL:
       sentiments:
         dashboard:
           title: "Sentiment"
+      summarization:
+        chat:
+          title: "Podsumuj wiadomości"
+          description: "Wybierz opcję poniżej, aby podsumować rozmowę wysłaną w żądanym przedziale czasowym."
+          summarize: "Podsumuj"
+          since:
+            one: "Ostatnia godzina"
+            few: "Ostatnie %{count} godziny"
+            many: "Ostatnie %{count} godzin"
+            other: "Ostatnie %{count} godzin"
     review:
       types:
         reviewable_ai_post:

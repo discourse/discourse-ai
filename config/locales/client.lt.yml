@@ -136,3 +136,6 @@ lt:
           copy: "Kopijuoti"
         bot_names:
           claude-2: "Claude 2"
+      summarization:
+        chat:
+          summarize: "Apibendrinti"

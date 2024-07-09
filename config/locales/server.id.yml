@@ -87,3 +87,6 @@ id:
       tool_description:
         github_search_files: "Mencari '%{keywords}' di %{repo}/%{branch}"
         github_search_code: "Mencari '%{query}' di %{repo}"
+    summarization:
+      chat:
+        no_targets: "Tidak ada pesan selama periode yang dipilih."

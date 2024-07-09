@@ -117,7 +117,7 @@ zh_CN:
         max_context_posts: "最大上下文帖子数"
         max_context_posts_help: "人工智能在回复用户时用作上下文的最大帖子数。(默认为空)"
         vision_enabled: 已启用视觉（Vision）
-        vision_enabled_help: 如果启用，人工智能将尝试理解用户在主题中发布的图片，这取决于支持视觉（Vision）的模型。Anthropic、Google 和 OpenAI 的最新模型支持该功能。
+        vision_enabled_help: 如果启用，AI 将尝试理解用户在主题中发布的图片，这取决于使用的模型是否支持视觉。Anthropic、Google 和 OpenAI 的最新模型支持该功能。
         vision_max_pixels: 支持的图像尺寸
         vision_max_pixel_sizes:
           low: 低质量 - 最便宜 (256x256)
@@ -158,32 +158,86 @@ zh_CN:
         tool_options: "工具选项"
         uploads:
           title: "上传"
+          description: "您的 AI 角色将能够搜索和引用所包含文件的内容。上传的文件应格式化为纯文本 (.txt) 或 markdown (.md)。"
+          button: "添加文件"
+          filter: "过滤上传"
           uploading: "正在上传…"
+          remove: "移除上传"
       tools:
+        short_title: "工具"
+        new: "新建工具"
         name: "名称"
+        name_help: "被语言模型使用的工具的唯一名称"
         description: "描述"
+        description_help: "向语言模型介绍该工具用途的清晰描述"
         summary: "总结"
+        summary_help: "显示给最终用户的工具用途摘要"
+        script: "脚本"
+        parameters: "参数"
         save: "保存"
+        add_parameter: "添加参数"
         parameter_required: "必选"
+        parameter_enum: "枚举"
+        parameter_name: "参数名"
+        parameter_description: "参数描述"
+        enum_value: "枚举值"
+        add_enum_value: "添加枚举值"
         edit: "编辑"
         test: "运行测试"
         delete: "删除"
+        saved: "工具已保存"
+        presets: "选择一个预设..."
+        confirm_delete: 确定要删除此工具吗？
         next:
           title: "下一步"
         test_modal:
+          title: "测试 AI 工具"
           run: "运行测试"
+          result: "测试结果"
       llms:
+        short_title: "LLM"
+        no_llms: "没有 LLM"
+        new: "新建模型"
+        display_name: "用于显示的名称"
+        name: "模型名"
+        provider: "托管模型的服务"
+        url: "托管模型的服务的 URL"
+        api_key: "托管模型的服务的 API 密钥"
+        enabled_chat_bot: "允许 AI 机器人"
+        ai_bot_user: "AI 机器人用户"
         save: "保存"
         edit: "编辑"
+        saved: "LLM 模型已保存"
         back: "返回"
+        confirm_delete: 确定要删除此模型吗？
         delete: 删除
+        srv_warning: 此 LLM 指向一个 SRV 记录，其 URL 不可编辑。您必须更新隐藏的 "ai_vllm_endpoint_srv "设置。
+        preconfigured_llms: "选择您的 LLM"
+        preconfigured:
+          none: "手动配置..."
         next:
           title: "下一步"
         tests:
           title: "运行测试"
+          running: "正在运行测试..."
           success: "成功!"
+          failure: "尝试联系模型时返回此错误： %{error}"
+        hints:
+          name: "我们将其包含在 API 调用中以指定我们将使用哪个模型。"
         providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
           google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
+        provider_fields:
+          access_key_id: "AWS Bedrock 访问秘钥 ID"
+          region: "AWS Bedrock 区域"
+          organization: "可选 OpenAI 组织 ID"
       related_topics:
         title: "相关话题"
         pill: "相关"
@@ -208,6 +262,7 @@ zh_CN:
             title: "自定义提示"
             placeholder: "输入自定义提示…"
             submit: "发送提示"
+          translate_prompt: "翻译为 %{language}"
         post_options_menu:
           trigger: "询问 AI"
           title: "询问 AI"
@@ -216,6 +271,8 @@ zh_CN:
           copy: "复制"
           copied: "已复制！"
           cancel: "取消"
+          insert_footnote: "添加脚注"
+          footnote_credits: "AI 的解释"
         fast_edit:
           suggest_button: "建议编辑"
         thumbnail_suggestions:
@@ -223,9 +280,16 @@ zh_CN:
           select: "选择"
           selected: "已选择"
         image_caption:
+          button_label: "使用 AI 生成标题"
+          generating: "正在生成标题..."
+          credits: "由 AI 生成标题"
           save_caption: "保存"
+          automatic_caption_setting: "启用自动 AI 图片标题"
+          automatic_caption_loading: "正在为图片生成标题..."
           automatic_caption_dialog:
+            prompt: "此帖子包含无标题的图片。您想在图片上传时启用自动 AI 标题吗？（稍后可以在您的偏好设置中更改）"
             confirm: "启用"
+            cancel: "不再询问"
       reviewables:
         model_used: "使用的模型："
         accuracy: "准确性："
@@ -245,17 +309,37 @@ zh_CN:
         shortcut_title: "使用 AI 机器人启动私信"
         share: "分享 AI 对话"
         conversation_shared: "对话已复制"
+        debug_ai: "查看原始 AI 请求和响应"
         debug_ai_modal:
+          title: "查看与 AI 的交互"
+          copy_request: "复制请求"
+          copy_response: "复制响应"
           request: "请求"
           response: "回应"
+        share_full_topic_modal:
+          title: "公开分享此对话"
+          share: "分享并复制链接"
+          update: "更新并复制链接"
+          delete: "删除分享"
+        share_ai_conversation:
+          name: "分享 AI 对话"
+          title: "公开分享此 AI 对话"
         ai_label: "AI"
         ai_title: "与 AI 的对话"
         share_modal:
+          title: "复制 AI 对话"
           copy: "复制"
           context: "要分享的互动："
+          share_tip: 或者，您可以分享整个对话。
         bot_names:
+          fake: "假测试机器人"
+          claude-3-opus: "Claude 3 Opus"
+          claude-3-sonnet: "Claude 3 Sonnet"
+          claude-3-haiku: "Claude 3 Haiku"
+          cohere-command-r-plus: "Cohere Command R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
@@ -266,6 +350,13 @@ zh_CN:
       sentiments:
         dashboard:
           title: "情绪"
+      summarization:
+        chat:
+          title: "总结消息"
+          description: "选择以下选项，以总结在所需时间范围内发送的对话。"
+          summarize: "总结"
+          since:
+            other: "过去 %{count} 小时"
     review:
       types:
         reviewable_ai_post:

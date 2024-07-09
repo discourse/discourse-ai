@@ -285,6 +285,7 @@ de:
             title: "Benutzerdefinierte Eingabeaufforderung"
             placeholder: "Benutzerdefinierte Eingabeaufforderung …"
             submit: "Aufforderung senden"
+          translate_prompt: "Übersetzen in %{language}"
         post_options_menu:
           trigger: "KI fragen"
           title: "KI fragen"
@@ -376,6 +377,14 @@ de:
       sentiments:
         dashboard:
           title: "Stimmung"
+      summarization:
+        chat:
+          title: "Nachrichten zusammenfassen"
+          description: "Wähle unten eine Option aus, um die im gewünschten Zeitraum gesendete Konversation zusammenzufassen."
+          summarize: "Zusammenfassen"
+          since:
+            one: "Letzte Stunde"
+            other: "Letzte %{count} Stunden"
     review:
       types:
         reviewable_ai_post:

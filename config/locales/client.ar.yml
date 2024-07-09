@@ -214,6 +214,18 @@ ar:
       sentiments:
         dashboard:
           title: "المشاعر"
+      summarization:
+        chat:
+          title: "تلخيص الرسائل"
+          description: "حدِّد خيارًا أدناه لتلخيص المحادثة المُرسَلة خلال الإطار الزمني المطلوب."
+          summarize: "تلخيص"
+          since:
+            zero: "آخر %{count} ساعة"
+            one: "آخر ساعة"
+            two: "آخر ساعتين (%{count})"
+            few: "آخر %{count} ساعات"
+            many: "آخر %{count} ساعة"
+            other: "آخر %{count} ساعة"
     review:
       types:
         reviewable_ai_post:

@@ -214,6 +214,14 @@ nl:
       sentiments:
         dashboard:
           title: "Sentiment"
+      summarization:
+        chat:
+          title: "Berichten samenvatten"
+          description: "Selecteer hieronder een optie om het gesprek samen te vatten dat tijdens de gewenste periode is gevoerd."
+          summarize: "Samenvatten"
+          since:
+            one: "Afgelopen uur"
+            other: "Afgelopen %{count} uur"
     review:
       types:
         reviewable_ai_post:

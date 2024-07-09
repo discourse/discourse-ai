@@ -15,6 +15,9 @@ sk:
         tags: "Zoznam značiek"
         time: "Čas"
         summarize: "Zhrnúť"
+    summarization:
+      chat:
+        no_targets: "Počas vybraného obdobia neboli zaznamenané žiadne správy."
     sentiment:
       reports:
         post_emotion:

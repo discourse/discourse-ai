@@ -285,6 +285,7 @@ he:
             title: "בקשה מותאמת אישית"
             placeholder: "נא למלא בקשה מותאמת…"
             submit: "שליחת בקשה"
+          translate_prompt: "תרגום ל%{language}"
         post_options_menu:
           trigger: "לשאול בינה מלאכותית"
           title: "לשאול בינה מלאכותית"
@@ -376,6 +377,16 @@ he:
       sentiments:
         dashboard:
           title: "רגש"
+      summarization:
+        chat:
+          title: "סיכום הודעות"
+          description: "נא לבחור אפשרות להלן כדי לסכם את הדיון שנשלח בפרק הזמן המבוקש."
+          summarize: "סיכום"
+          since:
+            one: "שעה אחרונה"
+            two: "שעתיים אחרונות"
+            many: "%{count} השעות האחרונות"
+            other: "%{count} השעות האחרונות"
     review:
       types:
         reviewable_ai_post:

@@ -89,3 +89,6 @@ ur:
           response: "جواب"
         share_modal:
           copy: "کاپی"
+      summarization:
+        chat:
+          summarize: "خلاصہ"

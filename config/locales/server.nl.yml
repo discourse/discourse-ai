@@ -74,8 +74,6 @@ nl:
     ai_embeddings_semantic_search_enabled: "Schakel semantisch zoeken op volledige pagina's in."
     ai_embeddings_semantic_related_include_closed_topics: "Neem gesloten topics op in semantische zoekresultaten"
     ai_embeddings_semantic_search_hyde_model: "Gebruikt model voor het uitbreiden van trefwoorden om betere resultaten te krijgen bij semantisch zoeken"
-    ai_summarization_discourse_service_api_endpoint: "URL waar de Discourse-samenvattings-API wordt uitgevoerd."
-    ai_summarization_discourse_service_api_key: "API-sleutel voor de Discourse-samenvattings-API."
     ai_bot_enabled: "Schakel de AI-botmodule in."
     ai_bot_enable_chat_warning: "Geef een waarschuwing weer wanneer een privéchat wordt gestart. Kan worden genegeerd door de vertaling te bewerken: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wanneer de GPT-bot toegang heeft tot het privébericht, zal deze reageren op leden van deze groepen."
@@ -112,7 +110,6 @@ nl:
       errors:
         completion_request_failed: "Er is iets misgegaan bij het geven van suggesties. Probeer het opnieuw."
       prompts:
-        translate: Vertalen naar het Engels
         generate_titles: Topictitels voorstellen
         proofread: Tekst proeflezen
         markdown_table: Markdowntabel genereren
@@ -214,6 +211,8 @@ nl:
       configuration_hint:
         one: "Configureer eerst de instelling '%{setting}'."
         other: "Configureer eerst deze instellingen: '%{settings}'."
+      chat:
+        no_targets: "Er waren geen berichten tijdens de geselecteerde periode."
     sentiment:
       reports:
         overall_sentiment:

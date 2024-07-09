@@ -80,3 +80,6 @@ bg:
           request: "Заявка"
         share_modal:
           copy: "Копирай"
+      summarization:
+        chat:
+          summarize: "Обобщаване"

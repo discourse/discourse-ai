@@ -89,3 +89,9 @@ zh_TW:
           response: "回應"
         share_modal:
           copy: "複製"
+      summarization:
+        chat:
+          title: "摘要訊息"
+          summarize: "總結"
+          since:
+            other: "前 %{count} 小時"

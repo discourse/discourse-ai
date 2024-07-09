@@ -215,6 +215,14 @@ pt_BR:
       sentiments:
         dashboard:
           title: "Sentimento"
+      summarization:
+        chat:
+          title: "Resumir mensagens"
+          description: "Selecione uma opção abaixo para resumir a conversa enviada durante o período desejado."
+          summarize: "Resumir"
+          since:
+            one: "Última hora"
+            other: "Últimas %{count} horas"
     review:
       types:
         reviewable_ai_post:

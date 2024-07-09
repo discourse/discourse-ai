@@ -15,6 +15,9 @@ ug:
         tags: "بەلگە تىزىمىنى كۆرسىتىدۇ"
         time: "ۋاقىت"
         summarize: "خۇلاسە"
+    summarization:
+      chat:
+        no_targets: "تاللىغان مەزگىلدىكى ئۇچۇر يوق."
     sentiment:
       reports:
         post_emotion:
