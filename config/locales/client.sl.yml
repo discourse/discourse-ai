@@ -41,11 +41,23 @@ sl:
         uploads:
           title: "Prenosi"
           uploading: "Nalagam..."
+      tools:
+        name: "Ime"
+        description: "Opis"
+        summary: "Povzetek"
+        save: "Shrani"
+        parameter_required: "Zahtevano"
+        edit: "Uredi"
+        delete: "Izbriši"
+        next:
+          title: "Naprej"
       llms:
         save: "Shrani"
         edit: "Uredi"
         back: "Nazaj"
         delete: Izbriši
+        next:
+          title: "Naprej"
         tests:
           success: "Uspeh!"
         providers:

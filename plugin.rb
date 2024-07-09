@@ -15,6 +15,8 @@ enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 
+register_asset "stylesheets/modules/summarization/common/ai-summary.scss"
+
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
 register_asset "stylesheets/modules/ai-bot/mobile/ai-persona.scss", :mobile
@@ -27,6 +29,8 @@ register_asset "stylesheets/modules/sentiment/desktop/dashboard.scss", :desktop
 register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
 
 register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
+
+register_asset "stylesheets/modules/ai-bot/common/ai-tools.scss"
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
@@ -75,5 +79,9 @@ after_initialize do
       # even though this can be shortened this is the clearest way to express it
       nil
     end
+  end
+
+  on(:site_setting_changed) do |name, _old_value, _new_value|
+    LlmModel.seed_srv_backed_model if name == :ai_vllm_endpoint_srv || name == :ai_vllm_api_key
   end
 end

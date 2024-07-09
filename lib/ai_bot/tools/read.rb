@@ -28,6 +28,10 @@ module DiscourseAi
           }
         end
 
+        def self.accepted_options
+          [option(:read_private, type: :boolean)]
+        end
+
         def self.name
           "read"
         end
@@ -44,20 +48,18 @@ module DiscourseAi
 
         def invoke
           not_found = { topic_id: topic_id, description: "Topic not found" }
+          guardian = Guardian.new(context[:user]) if options[:read_private] && context[:user]
+          guardian ||= Guardian.new
 
           @title = ""
 
           topic = Topic.find_by(id: topic_id.to_i)
-          return not_found if !topic || !Guardian.new.can_see?(topic)
+          return not_found if !topic || !guardian.can_see?(topic)
 
           @title = topic.title
 
           posts =
-            Post
-              .secured(Guardian.new)
-              .where(topic_id: topic_id)
-              .order(:post_number)
-              .limit(MAX_POSTS)
+            Post.secured(guardian).where(topic_id: topic_id).order(:post_number).limit(MAX_POSTS)
 
           post_number = 1
           post_number = post_numbers.first if post_numbers.present?

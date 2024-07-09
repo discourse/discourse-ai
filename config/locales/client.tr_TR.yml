@@ -12,15 +12,6 @@ tr_TR:
           discourse_ai: "Discourse YZ"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        claude_3_opus: Claude 3 Opus
-        claude_3_sonnet: Claude 3 Sonnet
-        claude_3_haiku: Claude 3 Haiku
       scriptables:
         llm_report:
           fields:
@@ -167,11 +158,26 @@ tr_TR:
           button: "Dosya Ekle"
           filter: "Yüklemeleri filtrele"
           uploading: "Yükleniyor..."
+      tools:
+        name: "Ad"
+        description: "Açıklama"
+        summary: "Özet"
+        save: "Kaydet"
+        parameter_required: "Gerekli"
+        edit: "Düzenle"
+        test: "Testi Çalıştır"
+        delete: "Sil"
+        next:
+          title: "İleri"
+        test_modal:
+          run: "Testi Çalıştır"
       llms:
         save: "Kaydet"
         edit: "Düzenle"
         back: "Geri"
         delete: Sil
+        next:
+          title: "İleri"
         tests:
           title: "Testi Çalıştır"
           success: "Başarılı!"

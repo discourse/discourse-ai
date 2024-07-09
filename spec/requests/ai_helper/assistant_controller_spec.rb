@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
-  before { SiteSetting.ai_helper_model = "fake:fake" }
+  before { assign_fake_provider_to(:ai_helper_model) }
 
   describe "#suggest" do
     let(:text_to_proofread) { "The rain in spain stays mainly in the plane." }
@@ -104,7 +104,8 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
   end
 
   describe "#caption_image" do
-    fab!(:upload)
+    let(:image) { plugin_file_from_fixtures("100x100.jpg") }
+    let(:upload) { UploadCreator.new(image, "image.jpg").create_for(Discourse.system_user.id) }
     let(:image_url) { "#{Discourse.base_url}#{upload.url}" }
     let(:caption) { "A picture of a cat sitting on a table" }
     let(:caption_with_attrs) do
@@ -197,15 +198,40 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       context "for secure uploads" do
         fab!(:group)
         fab!(:private_category) { Fabricate(:private_category, group: group) }
-        fab!(:post_in_secure_context) do
-          Fabricate(:post, topic: Fabricate(:topic, category: private_category))
-        end
-        fab!(:upload) { Fabricate(:secure_upload, access_control_post: post_in_secure_context) }
+        let(:image) { plugin_file_from_fixtures("100x100.jpg") }
+        let(:upload) { UploadCreator.new(image, "image.jpg").create_for(Discourse.system_user.id) }
         let(:image_url) { "#{Discourse.base_url}/secure-uploads/#{upload.url}" }
 
-        before { enable_secure_uploads }
+        before do
+          Jobs.run_immediately!
+
+          # this is done so the after_save callbacks for site settings to make
+          # UploadReference records works
+          @original_provider = SiteSetting.provider
+          SiteSetting.provider = SiteSettings::DbProvider.new(SiteSetting)
+          setup_s3
+          stub_s3_store
+          SiteSetting.secure_uploads = true
+          SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
+          SiteSetting.ai_llava_endpoint = "https://example.com"
+          Group.find(SiteSetting.ai_helper_allowed_groups_map.first).add(user)
+          user.reload
+
+          stub_request(
+            :get,
+            "http://s3-upload-bucket.s3.dualstack.us-west-1.amazonaws.com/original/1X/#{upload.sha1}.#{upload.extension}",
+          ).to_return(status: 200, body: "", headers: {})
+        end
+        after { SiteSetting.provider = @original_provider }
 
         it "returns a 403 error if the user cannot access the secure upload" do
+          create_post(
+            title: "Secure upload post",
+            raw: "This is a new post <img src=\"#{upload.url}\" />",
+            category: private_category,
+            user: Discourse.system_user,
+          )
+
           post "/discourse-ai/ai-helper/caption_image",
                params: {
                  image_url: image_url,
@@ -221,6 +247,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
                  image_url: image_url,
                  image_url_type: "long_url",
                }
+
           expect(response.status).to eq(200)
           expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
         end

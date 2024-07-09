@@ -41,11 +41,23 @@ et:
         uploads:
           title: "Üleslaadimised"
           uploading: "Laen üles..."
+      tools:
+        name: "Nimi"
+        description: "Kirjeldus"
+        summary: "Kokkuvõte"
+        save: "Salvesta"
+        parameter_required: "Nõutud"
+        edit: "Muuda"
+        delete: "Kustuta"
+        next:
+          title: "Järgmine"
       llms:
         save: "Salvesta"
         edit: "Muuda"
         back: "Tagasi"
         delete: Kustuta
+        next:
+          title: "Järgmine"
         tests:
           success: "Korras!"
         providers:

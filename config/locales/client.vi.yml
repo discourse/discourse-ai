@@ -41,11 +41,26 @@ vi:
         uploads:
           title: "Tải lên"
           uploading: "Đang đăng "
+      tools:
+        name: "Tên"
+        description: "Mô tả"
+        summary: "Tóm tắt"
+        save: "Lưu lại"
+        parameter_required: "Bắt buộc"
+        edit: "Sửa"
+        test: "Chạy thử nghiệm"
+        delete: "Xóa"
+        next:
+          title: "Kế tiếp"
+        test_modal:
+          run: "Chạy thử nghiệm"
       llms:
         save: "Lưu lại"
         edit: "Sửa"
         back: "Quay lại"
         delete: Xóa
+        next:
+          title: "Kế tiếp"
         tests:
           title: "Chạy thử nghiệm"
           success: "Thành công!"

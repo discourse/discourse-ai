@@ -38,11 +38,23 @@ be:
         uploads:
           title: "Загрузкі"
           uploading: "Запампоўванне ..."
+      tools:
+        name: "імя"
+        description: "Апісанне"
+        summary: "вынік"
+        save: "Захаваць"
+        parameter_required: "абавязковыя"
+        edit: "Рэдагаваць"
+        delete: "Выдаліць"
+        next:
+          title: "Далей"
       llms:
         save: "Захаваць"
         edit: "рэдагаваць"
         back: "Назад"
         delete: выдаляць
+        next:
+          title: "Далей"
         tests:
           success: "поспех!"
         providers:

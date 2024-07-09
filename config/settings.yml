@@ -120,6 +120,7 @@ discourse_ai:
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - claude-3-5-sonnet
   ai_cohere_api_key:
     default: ""
     secret: true
@@ -318,14 +319,24 @@ discourse_ai:
     default: false
     client: true
     hidden: true
-
-  ai_summarization_discourse_service_api_endpoint: ""
-  ai_summarization_discourse_service_api_endpoint_srv:
+  ai_summarization_enabled:
+    default: false
+    validator: "DiscourseAi::Configuration::LlmDependencyValidator"
+  ai_summarization_model:
+    default: ""
+    allow_any: false
+    type: enum
+    enum: "DiscourseAi::Configuration::LlmEnumerator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
+  ai_custom_summarization_allowed_groups:
+    type: group_list
+    list_type: compact
+    default: "3|13" # 3: @staff, 13: @trust_level_3
+  ai_summarization_strategy: # TODO(roman): Deprecated. Remove by Sept 2024
+    type: enum
     default: ""
     hidden: true
-  ai_summarization_discourse_service_api_key:
-    default: ""
-    secret: true
+    choices: "DiscourseAi::Configuration::LlmEnumerator.old_summarization_options + ['']"
 
   ai_bot_enabled:
     default: false
@@ -342,7 +353,6 @@ discourse_ai:
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
-  # Adding a new bot? Make sure to create a user for it on the seed file and update translations.
   ai_bot_public_sharing_allowed_groups:
     client: false
     type: group_list
@@ -350,22 +360,11 @@ discourse_ai:
     default: "1|2" # 1: admins, 2: moderators
     allow_any: false
     refresh: true
-  ai_bot_enabled_chat_bots:
+  ai_bot_enabled_chat_bots: # TODO(roman): Deprecated. Remove by Sept 2024
     type: list
     default: "gpt-3.5-turbo"
-    client: true
-    choices:
-      - gpt-3.5-turbo
-      - gpt-4
-      - gpt-4-turbo
-      - gpt-4o
-      - claude-2
-      - gemini-1.5-pro
-      - mixtral-8x7B-Instruct-V0.1
-      - claude-3-opus
-      - claude-3-sonnet
-      - claude-3-haiku
-      - cohere-command-r-plus
+    hidden: true
+    choices: "DiscourseAi::Configuration::LlmEnumerator.available_ai_bots"
   ai_bot_add_to_header:
     default: true
     client: true

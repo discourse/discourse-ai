@@ -41,11 +41,26 @@ nb_NO:
         uploads:
           title: "Opplastinger"
           uploading: "Laster opp…"
+      tools:
+        name: "Navn"
+        description: "Beskrivelse"
+        summary: "Sammendrag"
+        save: "Lagre"
+        parameter_required: "Påkrevd"
+        edit: "Endre"
+        test: "Kjør test"
+        delete: "Slett"
+        next:
+          title: "Neste"
+        test_modal:
+          run: "Kjør test"
       llms:
         save: "Lagre"
         edit: "Endre"
         back: "Forrige"
         delete: Slett
+        next:
+          title: "Neste"
         tests:
           title: "Kjør test"
           success: "Suksess!"

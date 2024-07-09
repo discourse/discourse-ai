@@ -29,6 +29,32 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
     expect(result).to eq("\nhello\n")
   end
 
+  it "does not crash when we send a <" do
+    result = +""
+    result << (tag_stripper << "based:\n")
+    result << (tag_stripper << "<").to_s
+    result << (tag_stripper << " href")
+    result << (tag_stripper << ">")
+    result << (tag_stripper << "test ")
+
+    expect(result).to eq("based:\n< href>test ")
+  end
+
+  it "strips thinking correctly in a stream" do
+    result = +""
+    result << (tag_stripper << "hello")
+    result << (tag_stripper << "<").to_s
+    result << (tag_stripper << "thinking").to_s
+    result << (tag_stripper << ">").to_s
+    result << (tag_stripper << "test").to_s
+    result << (tag_stripper << "<").to_s
+    result << (tag_stripper << "/").to_s
+    result << (tag_stripper << "thinking").to_s
+    result << (tag_stripper << "> world")
+
+    expect(result).to eq("hello world")
+  end
+
   it "works when nesting unrelated tags it strips correctly" do
     text = <<~TEXT
       <thinking>

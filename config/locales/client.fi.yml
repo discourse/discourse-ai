@@ -12,12 +12,6 @@ fi:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -113,11 +107,26 @@ fi:
         uploads:
           title: "Lataukset"
           uploading: "Ladataan..."
+      tools:
+        name: "Nimi"
+        description: "Kuvaus"
+        summary: "Yhteenveto"
+        save: "Tallenna"
+        parameter_required: "Pakolliset"
+        edit: "Muokkaa"
+        test: "Suorita testi"
+        delete: "Poista"
+        next:
+          title: "Seuraava"
+        test_modal:
+          run: "Suorita testi"
       llms:
         save: "Tallenna"
         edit: "Muokkaa"
         back: "Takaisin"
         delete: Poista
+        next:
+          title: "Seuraava"
         tests:
           title: "Suorita testi"
           success: "Onnistui!"

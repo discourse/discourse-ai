@@ -41,11 +41,26 @@ el:
         uploads:
           title: "Μεταφορτώσεις"
           uploading: "Επιφόρτωση..."
+      tools:
+        name: "Όνομα"
+        description: "Περιγραφή"
+        summary: "Περίληψη"
+        save: "Αποθήκευση"
+        parameter_required: "Απαιτείται"
+        edit: "Επεξεργασία"
+        test: "Εκτέλεση δοκιμής"
+        delete: "Σβήσιμο"
+        next:
+          title: "Επόμενο"
+        test_modal:
+          run: "Εκτέλεση δοκιμής"
       llms:
         save: "Αποθήκευση"
         edit: "Επεξεργασία"
         back: "Πίσω"
         delete: Σβήσιμο
+        next:
+          title: "Επόμενο"
         tests:
           title: "Εκτέλεση δοκιμής"
           success: "Επιτυχία!"

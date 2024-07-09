@@ -43,11 +43,26 @@ ko:
         uploads:
           title: "업로드된 파일"
           uploading: "업로드 중..."
+      tools:
+        name: "그룹명"
+        description: "내용"
+        summary: "요약"
+        save: "저장"
+        parameter_required: "필수"
+        edit: "편집"
+        test: "테스트 실행"
+        delete: "삭제하기"
+        next:
+          title: "다음"
+        test_modal:
+          run: "테스트 실행"
       llms:
         save: "저장"
         edit: "편집"
         back: "뒤로"
         delete: 삭제하기
+        next:
+          title: "다음"
         tests:
           title: "테스트 실행"
           success: "성공!"

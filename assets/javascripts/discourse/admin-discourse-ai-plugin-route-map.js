@@ -13,5 +13,10 @@ export default {
       this.route("new");
       this.route("show", { path: "/:id" });
     });
+
+    this.route("discourse-ai-tools", { path: "ai-tools" }, function () {
+      this.route("new");
+      this.route("show", { path: "/:id" });
+    });
   },
 };

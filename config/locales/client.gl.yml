@@ -41,11 +41,26 @@ gl:
         uploads:
           title: "Cargas"
           uploading: "Cargando..."
+      tools:
+        name: "Nome"
+        description: "Descrición"
+        summary: "Resumo"
+        save: "Gardar"
+        parameter_required: "Obrigatorio"
+        edit: "Editar"
+        test: "Executar proba"
+        delete: "Eliminar"
+        next:
+          title: "Seguinte"
+        test_modal:
+          run: "Executar proba"
       llms:
         save: "Gardar"
         edit: "Editar"
         back: "Volver"
         delete: Eliminar
+        next:
+          title: "Seguinte"
         tests:
           title: "Executar proba"
           success: "Feito!"

@@ -41,11 +41,23 @@ sw:
         uploads:
           title: "Upakiaji"
           uploading: "Inaongezwa"
+      tools:
+        name: "Jina"
+        description: "Elezo"
+        summary: "Muhtasari"
+        save: "Hifadhi"
+        parameter_required: "Muhimu na Inahitajika"
+        edit: "Hariri"
+        delete: "Futa"
+        next:
+          title: "Ijayo"
       llms:
         save: "Hifadhi"
         edit: "Hariri"
         back: "Iliyopita"
         delete: Futa
+        next:
+          title: "Ijayo"
         tests:
           success: "Mafanikio!"
         providers:

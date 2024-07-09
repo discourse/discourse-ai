@@ -12,12 +12,6 @@ ja:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -113,11 +107,26 @@ ja:
         uploads:
           title: "アップロード"
           uploading: "アップロード中..."
+      tools:
+        name: "名前"
+        description: "説明"
+        summary: "要約"
+        save: "保存"
+        parameter_required: "必須"
+        edit: "編集"
+        test: "テストを実行"
+        delete: "削除"
+        next:
+          title: "次へ"
+        test_modal:
+          run: "テストを実行"
       llms:
         save: "保存"
         edit: "編集"
         back: "戻る"
         delete: 削除
+        next:
+          title: "次へ"
         tests:
           title: "テストを実行"
           success: "成功!"

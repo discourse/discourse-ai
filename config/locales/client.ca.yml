@@ -41,11 +41,26 @@ ca:
         uploads:
           title: "Càrregues"
           uploading: "Carregant..."
+      tools:
+        name: "Nom"
+        description: "Descripció"
+        summary: "Resum"
+        save: "Desa"
+        parameter_required: "Necessari"
+        edit: "Edita"
+        test: "Executa el test"
+        delete: "Suprimeix"
+        next:
+          title: "Següent"
+        test_modal:
+          run: "Executa el test"
       llms:
         save: "Desa"
         edit: "Edita"
         back: "Enrere"
         delete: Suprimeix
+        next:
+          title: "Següent"
         tests:
           title: "Executa el test"
           success: "Èxit!"

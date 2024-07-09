@@ -1,10 +1,14 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::SearchSettings do
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
+  fab!(:gpt_35_bot) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    SiteSetting.ai_bot_enabled = true
+    toggle_enabled_bots(bots: [gpt_35_bot])
+  end
 
   def search_settings(query)
     described_class.new({ query: query }, bot_user: bot_user, llm: llm)
@@ -25,8 +29,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::SearchSettings do
     end
 
     it "can return descriptions if there are few matches" do
-      results =
-        search_settings("this will not be found!@,default_locale,ai_bot_enabled_chat_bots").invoke
+      results = search_settings("this will not be found!@,default_locale,ai_bot_enabled").invoke
 
       expect(results[:rows].length).to eq(2)
 

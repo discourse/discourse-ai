@@ -3,27 +3,19 @@
 module DiscourseAi
   module Summarization
     module Strategies
-      class FoldContent < ::Summarization::Base
+      class FoldContent
         def initialize(completion_model)
-          @completion_model = completion_model
+          @llm = DiscourseAi::Completions::Llm.proxy(completion_model)
+          raise "Invalid model provided for summarization strategy" if @llm.llm_model.nil?
         end
 
-        attr_reader :completion_model
-
-        delegate :correctly_configured?,
-                 :display_name,
-                 :configuration_hint,
-                 :model,
-                 to: :completion_model
+        attr_reader :llm
 
         def summarize(content, user, &on_partial_blk)
           opts = content.except(:contents)
 
-          llm = DiscourseAi::Completions::Llm.proxy(completion_model.model_name)
-
           initial_chunks =
             rebalance_chunks(
-              llm.tokenizer,
               content[:contents].map { |c| { ids: [c[:id]], summary: format_content_item(c) } },
             )
 
@@ -31,28 +23,35 @@ module DiscourseAi
           if initial_chunks.length == 1
             {
               summary:
-                summarize_single(llm, initial_chunks.first[:summary], user, opts, &on_partial_blk),
+                summarize_single(initial_chunks.first[:summary], user, opts, &on_partial_blk),
               chunks: [],
             }
           else
-            summarize_chunks(llm, initial_chunks, user, opts, &on_partial_blk)
+            summarize_chunks(initial_chunks, user, opts, &on_partial_blk)
           end
+        end
+
+        def display_name
+          llm_model&.name || "unknown model"
         end
 
         private
 
-        def summarize_chunks(llm, chunks, user, opts, &on_partial_blk)
-          # Safely assume we always have more than one chunk.
-          summarized_chunks = summarize_in_chunks(llm, chunks, user, opts)
-          total_summaries_size =
-            llm.tokenizer.size(summarized_chunks.map { |s| s[:summary].to_s }.join)
+        def llm_model
+          llm.llm_model
+        end
 
-          if total_summaries_size < completion_model.available_tokens
+        def summarize_chunks(chunks, user, opts, &on_partial_blk)
+          # Safely assume we always have more than one chunk.
+          summarized_chunks = summarize_in_chunks(chunks, user, opts)
+          total_summaries_size =
+            llm_model.tokenizer_class.size(summarized_chunks.map { |s| s[:summary].to_s }.join)
+
+          if total_summaries_size < available_tokens
             # Chunks are small enough, we can concatenate them.
             {
               summary:
                 concatenate_summaries(
-                  llm,
                   summarized_chunks.map { |s| s[:summary] },
                   user,
                   &on_partial_blk
@@ -61,9 +60,9 @@ module DiscourseAi
             }
           else
             # We have summarized chunks but we can't concatenate them yet. Split them into smaller summaries and summarize again.
-            rebalanced_chunks = rebalance_chunks(llm.tokenizer, summarized_chunks)
+            rebalanced_chunks = rebalance_chunks(summarized_chunks)
 
-            summarize_chunks(llm, rebalanced_chunks, user, opts, &on_partial_blk)
+            summarize_chunks(rebalanced_chunks, user, opts, &on_partial_blk)
           end
         end
 
@@ -71,15 +70,15 @@ module DiscourseAi
           "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
         end
 
-        def rebalance_chunks(tokenizer, chunks)
+        def rebalance_chunks(chunks)
           section = { ids: [], summary: "" }
 
           chunks =
             chunks.reduce([]) do |sections, chunk|
-              if tokenizer.can_expand_tokens?(
+              if llm_model.tokenizer_class.can_expand_tokens?(
                    section[:summary],
                    chunk[:summary],
-                   completion_model.available_tokens,
+                   available_tokens,
                  )
                 section[:summary] += chunk[:summary]
                 section[:ids] = section[:ids].concat(chunk[:ids])
@@ -96,13 +95,13 @@ module DiscourseAi
           chunks
         end
 
-        def summarize_single(llm, text, user, opts, &on_partial_blk)
+        def summarize_single(text, user, opts, &on_partial_blk)
           prompt = summarization_prompt(text, opts)
 
           llm.generate(prompt, user: user, feature_name: "summarize", &on_partial_blk)
         end
 
-        def summarize_in_chunks(llm, chunks, user, opts)
+        def summarize_in_chunks(chunks, user, opts)
           chunks.map do |chunk|
             prompt = summarization_prompt(chunk[:summary], opts)
 
@@ -116,7 +115,7 @@ module DiscourseAi
           end
         end
 
-        def concatenate_summaries(llm, summaries, user, &on_partial_blk)
+        def concatenate_summaries(summaries, user, &on_partial_blk)
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
             You are a summarization bot that effectively concatenates disjoint summaries, creating a cohesive narrative.
             The narrative you create is in the form of one or multiple paragraphs.
@@ -184,6 +183,14 @@ module DiscourseAi
           TEXT
 
           prompt
+        end
+
+        def available_tokens
+          # Reserve tokens for the response and the base prompt
+          # ~500 words
+          reserved_tokens = 700
+
+          llm_model.max_prompt_tokens - reserved_tokens
         end
       end
     end

@@ -5,7 +5,7 @@ describe DiscourseAi::AiHelper::EntryPoint do
   fab!(:french_user) { Fabricate(:user, locale: "fr") }
 
   it "will correctly localize available prompts" do
-    SiteSetting.ai_helper_model = "fake:fake"
+    assign_fake_provider_to(:ai_helper_model)
     SiteSetting.default_locale = "en"
     SiteSetting.allow_user_locale = true
     SiteSetting.composer_ai_helper_enabled = true
@@ -21,7 +21,7 @@ describe DiscourseAi::AiHelper::EntryPoint do
       parsed["current_user"]["ai_helper_prompts"].find { |prompt| prompt["name"] == "translate" }
 
     expect(translate_prompt["translated_name"]).to eq(
-      I18n.t("discourse_ai.ai_helper.prompts.translate"),
+      I18n.t("discourse_ai.ai_helper.prompts.translate", language: "English (US)"),
     )
 
     I18n.with_locale("fr") do
@@ -32,7 +32,7 @@ describe DiscourseAi::AiHelper::EntryPoint do
         parsed["current_user"]["ai_helper_prompts"].find { |prompt| prompt["name"] == "translate" }
 
       expect(translate_prompt["translated_name"]).to eq(
-        I18n.t("discourse_ai.ai_helper.prompts.translate", locale: "fr"),
+        I18n.t("discourse_ai.ai_helper.prompts.translate", locale: "fr", language: "Français"),
       )
     end
   end

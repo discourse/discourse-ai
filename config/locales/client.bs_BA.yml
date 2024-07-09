@@ -41,11 +41,26 @@ bs_BA:
         uploads:
           title: "Uploads"
           uploading: "Učitavanje..."
+      tools:
+        name: "Ime"
+        description: "Opis"
+        summary: "Sažetak"
+        save: "Save"
+        parameter_required: "Required"
+        edit: "Edit"
+        test: "Pokreni test"
+        delete: "Delete"
+        next:
+          title: "Iduće"
+        test_modal:
+          run: "Pokreni test"
       llms:
         save: "Save"
         edit: "Edit"
         back: "Prethodno"
         delete: Delete
+        next:
+          title: "Iduće"
         tests:
           title: "Pokreni test"
           success: "Uspjeh!"

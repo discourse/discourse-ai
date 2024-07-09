@@ -131,6 +131,17 @@ de:
       description: "Anzahl der Beiträge, die mit einer der folgenden Emotionen klassifiziert wurden, gruppiert nach der Vertrauensstufe des Autors."
   discourse_ai:
     unknown_model: "Unbekanntes KI-Modell"
+    tools:
+      custom_name: "%{name} (custom)"
+      presets:
+        browse_web_jina:
+          name: "Mit jina.ai das Web durchsuchen"
+        exchange_rate:
+          name: "Wechselkurs"
+        stock_quote:
+          name: "Aktienkurs (AlphaVantage)"
+        empty_tool:
+          name: "Beginne bei Null..."
     ai_helper:
       errors:
         completion_request_failed: "Beim Versuch, Vorschläge zu machen, ist etwas schiefgelaufen. Bitte versuche es noch einmal."
@@ -195,6 +206,10 @@ de:
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
       tool_options:
+        read:
+          read_private:
+            name: "Privat lesen"
+            description: "Erlaube den Zugriff auf alle Themen, auf die der Benutzer Zugriff hat (standardmäßig sind nur öffentliche Themen enthalten)"
         search:
           search_private:
             name: "Suche Privat"

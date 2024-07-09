@@ -4,6 +4,12 @@ module DiscourseAi
   module AiBot
     module Tools
       class Tool
+        # Why 30 mega bytes?
+        # This general limit is mainly a security feature to avoid tools
+        # forcing infinite downloads or causing memory exhaustion.
+        # The limit is somewhat arbitrary and can be increased in future if needed.
+        MAX_RESPONSE_BODY_LENGTH = 30.megabyte
+
         class << self
           def signature
             raise NotImplemented
@@ -11,6 +17,10 @@ module DiscourseAi
 
           def name
             raise NotImplemented
+          end
+
+          def custom?
+            false
           end
 
           def accepted_options
@@ -72,7 +82,7 @@ module DiscourseAi
             if val
               case option.type
               when :boolean
-                val = val == "true"
+                val = (val.to_s == "true")
               when :integer
                 val = val.to_i
               end
@@ -118,7 +128,34 @@ module DiscourseAi
           response_code == "200" ? repo_data["default_branch"] : "main"
         end
 
-        def send_http_request(url, headers: {}, authenticate_github: false, follow_redirects: false)
+        def send_http_request(
+          url,
+          headers: {},
+          authenticate_github: false,
+          follow_redirects: false,
+          method: :get,
+          body: nil,
+          &blk
+        )
+          self.class.send_http_request(
+            url,
+            headers: headers,
+            authenticate_github: authenticate_github,
+            follow_redirects: follow_redirects,
+            method: method,
+            body: body,
+            &blk
+          )
+        end
+
+        def self.send_http_request(
+          url,
+          headers: {},
+          authenticate_github: false,
+          follow_redirects: false,
+          method: :get,
+          body: nil
+        )
           raise "Expecting caller to use a block" if !block_given?
 
           uri = nil
@@ -146,7 +183,17 @@ module DiscourseAi
 
           return if uri.blank?
 
-          request = FinalDestination::HTTP::Get.new(uri)
+          request = nil
+          if method == :get
+            request = FinalDestination::HTTP::Get.new(uri)
+          elsif method == :post
+            request = FinalDestination::HTTP::Post.new(uri)
+          end
+
+          raise ArgumentError, "Invalid method: #{method}" if !request
+
+          request.body = body if body
+
           request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
           headers.each { |k, v| request[k] = v }
           if authenticate_github && SiteSetting.ai_bot_github_access_token.present?
@@ -158,14 +205,24 @@ module DiscourseAi
           end
         end
 
-        def read_response_body(response, max_length: 4.megabyte)
+        def self.read_response_body(response, max_length: nil)
+          max_length ||= MAX_RESPONSE_BODY_LENGTH
+
           body = +""
           response.read_body do |chunk|
             body << chunk
             break if body.bytesize > max_length
           end
 
-          body[0..max_length]
+          if body.bytesize > max_length
+            body[0...max_length].scrub
+          else
+            body.scrub
+          end
+        end
+
+        def read_response_body(response, max_length: nil)
+          self.class.read_response_body(response, max_length: max_length)
         end
 
         def truncate(text, llm:, percent_length: nil, max_length: nil)

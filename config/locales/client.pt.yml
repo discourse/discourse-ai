@@ -41,11 +41,23 @@ pt:
         uploads:
           title: "Uploads"
           uploading: "A enviar…"
+      tools:
+        name: "Nome"
+        description: "Descrição"
+        summary: "Resumo"
+        save: "Guardar"
+        parameter_required: "Necessário"
+        edit: "Editar"
+        delete: "Eliminar"
+        next:
+          title: "Próximo"
       llms:
         save: "Guardar"
         edit: "Editar"
         back: "Retroceder"
         delete: Eliminar
+        next:
+          title: "Próximo"
         providers:
           google: "Google"
       ai_helper:

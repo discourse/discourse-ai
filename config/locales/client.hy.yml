@@ -41,11 +41,26 @@ hy:
         uploads:
           title: "Վերբեռնումներ"
           uploading: "Վերբեռնում..."
+      tools:
+        name: "Անուն"
+        description: "Նկարագրությունը"
+        summary: "Ամփոփումը"
+        save: "Պահպանել"
+        parameter_required: "Պարտադիր"
+        edit: "Խմբագրել"
+        test: "Մեկնարկել Փորձարկումը"
+        delete: "Ջնջել"
+        next:
+          title: "Հաջորդը"
+        test_modal:
+          run: "Մեկնարկել Փորձարկումը"
       llms:
         save: "Պահպանել"
         edit: "Խմբագրել"
         back: "Ետ"
         delete: Ջնջել
+        next:
+          title: "Հաջորդը"
         tests:
           title: "Մեկնարկել Փորձարկումը"
           success: "Հաջողություն!"

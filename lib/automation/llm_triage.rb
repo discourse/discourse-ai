@@ -32,8 +32,7 @@ module DiscourseAi
 
         result = nil
 
-        translated_model = DiscourseAi::Automation.translate_model(model)
-        llm = DiscourseAi::Completions::Llm.proxy(translated_model)
+        llm = DiscourseAi::Completions::Llm.proxy(model)
 
         result =
           llm.generate(

@@ -142,16 +142,25 @@ class AiPersona < ActiveRecord::Base
     options = {}
     tools =
       self.tools.filter_map do |element|
-        inner_name, current_options = element.is_a?(Array) ? element : [element, nil]
-        inner_name = inner_name.gsub("Tool", "")
-        inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
+        klass = nil
 
-        begin
-          klass = "DiscourseAi::AiBot::Tools::#{inner_name}".constantize
-          options[klass] = current_options if current_options
+        if element.is_a?(String) && element.start_with?("custom-")
+          custom_tool_id = element.split("-", 2).last.to_i
+          if AiTool.exists?(id: custom_tool_id, enabled: true)
+            klass = DiscourseAi::AiBot::Tools::Custom.class_instance(custom_tool_id)
+          end
+        else
+          inner_name, current_options = element.is_a?(Array) ? element : [element, nil]
+          inner_name = inner_name.gsub("Tool", "")
+          inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
+
+          begin
+            klass = "DiscourseAi::AiBot::Tools::#{inner_name}".constantize
+            options[klass] = current_options if current_options
+          rescue StandardError
+          end
+
           klass
-        rescue StandardError
-          nil
         end
       end
 
@@ -252,40 +261,32 @@ end
 #
 # Table name: ai_personas
 #
-#  id                          :bigint           not null, primary key
-#  name                        :string(100)      not null
-#  description                 :string(2000)     not null
-#  tools                       :json             not null
-#  system_prompt               :string(10000000) not null
-#  allowed_group_ids           :integer          default([]), not null, is an Array
-#  created_by_id               :integer
-#  enabled                     :boolean          default(TRUE), not null
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
-#  system                      :boolean          default(FALSE), not null
-#  priority                    :boolean          default(FALSE), not null
-#  temperature                 :float
-#  top_p                       :float
-#  user_id                     :integer
-#  mentionable                 :boolean          default(FALSE), not null
-#  default_llm                 :text
-#  max_context_posts           :integer
-#  max_post_context_tokens     :integer
-#  max_context_tokens          :integer
-#  vision_enabled              :boolean          default(FALSE), not null
-#  vision_max_pixels           :integer          default(1048576), not null
-#  rag_chunk_tokens            :integer          default(374), not null
-#  rag_chunk_overlap_tokens    :integer          default(10), not null
-#  rag_conversation_chunks     :integer          default(10), not null
-#  role                        :enum             default("bot"), not null
-#  role_category_ids           :integer          default([]), not null, is an Array
-#  role_tags                   :string           default([]), not null, is an Array
-#  role_group_ids              :integer          default([]), not null, is an Array
-#  role_whispers               :boolean          default(FALSE), not null
-#  role_max_responses_per_hour :integer          default(50), not null
-#  question_consolidator_llm   :text
-#  allow_chat                  :boolean          default(FALSE), not null
-#  tool_details                :boolean          default(TRUE), not null
+#  id                        :bigint           not null, primary key
+#  name                      :string(100)      not null
+#  description               :string(2000)     not null
+#  system_prompt             :string(10000000) not null
+#  allowed_group_ids         :integer          default([]), not null, is an Array
+#  created_by_id             :integer
+#  enabled                   :boolean          default(TRUE), not null
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  system                    :boolean          default(FALSE), not null
+#  priority                  :boolean          default(FALSE), not null
+#  temperature               :float
+#  top_p                     :float
+#  user_id                   :integer
+#  mentionable               :boolean          default(FALSE), not null
+#  default_llm               :text
+#  max_context_posts         :integer
+#  vision_enabled            :boolean          default(FALSE), not null
+#  vision_max_pixels         :integer          default(1048576), not null
+#  rag_chunk_tokens          :integer          default(374), not null
+#  rag_chunk_overlap_tokens  :integer          default(10), not null
+#  rag_conversation_chunks   :integer          default(10), not null
+#  question_consolidator_llm :text
+#  allow_chat                :boolean          default(FALSE), not null
+#  tool_details              :boolean          default(TRUE), not null
+#  tools                     :json             not null
 #
 # Indexes
 #

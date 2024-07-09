@@ -6,22 +6,6 @@ en:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_pro: Gemini 1.5 Pro
-        gemini_1_5_flash: Gemini 1.5 Flash
-        claude_3_opus: Claude 3 Opus
-        claude_3_sonnet: Claude 3 Sonnet
-        claude_3_haiku: Claude 3 Haiku
-        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Instruct V0.1
-        mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
-        command_r: Cohere Command R
-        command_r_plus: Cohere Command R+
-        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -199,6 +183,38 @@ en:
           uploading: "Uploading..."
           remove: "Remove upload"
 
+      tools:
+        short_title: "Tools"
+        new: "New Tool"
+        name: "Name"
+        name_help: "The unique name of the tool as used by the language model"
+        description: "Description"
+        description_help: "A clear description of the tool's purpose for the language model"
+        summary: "Summary"
+        summary_help: "Summary of tools purpose to be displayed to end users"
+        script: "Script"
+        parameters: "Parameters"
+        save: "Save"
+        add_parameter: "Add Parameter"
+        parameter_required: "Required"
+        parameter_enum: "Enum"
+        parameter_name: "Parameter Name"
+        parameter_description: "Parameter Description"
+        enum_value: "Enum value"
+        add_enum_value: "Add enum value"
+        edit: "Edit"
+        test: "Run Test"
+        delete: "Delete"
+        saved: "Tool saved"
+        presets: "Select a preset..."
+        confirm_delete: Are you sure you want to delete this tool?
+        next:
+          title: "Next"
+        test_modal:
+          title: "Test AI Tool"
+          run: "Run Test"
+          result: "Test Result"
+
       llms:
         short_title: "LLMs"
         no_llms: "No LLMs yet"
@@ -210,12 +226,21 @@ en:
         max_prompt_tokens: "Number of tokens for the prompt"
         url: "URL of the service hosting the model"
         api_key: "API Key of the service hosting the model"
+        enabled_chat_bot: "Allow AI Bot"
+        ai_bot_user: "AI Bot User"
         save: "Save"
         edit: "Edit"
         saved: "LLM Model Saved"
         back: "Back"
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
+
+        srv_warning: This LLM points to an SRV record, and its URL is not editable. You have to update the hidden "ai_vllm_endpoint_srv" setting instead.
+        preconfigured_llms: "Select your LLM"
+        preconfigured:
+          none: "Configure manually..."
+        next:
+          title: "Next"
 
         tests:
           title: "Run Test"
@@ -237,6 +262,11 @@ en:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+
+        provider_fields:
+          access_key_id: "AWS Bedrock Access key ID"
+          region: "AWS Bedrock Region"
+          organization: "Optional OpenAI Organization ID"
 
       related_topics:
         title: "Related Topics"
@@ -262,6 +292,7 @@ en:
             title: "Custom Prompt"
             placeholder: "Enter a custom prompt..."
             submit: "Send Prompt"
+          translate_prompt: "Translate to %{language}"
         post_options_menu:
           trigger: "Ask AI"
           title: "Ask AI"
@@ -361,6 +392,15 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+
+      summarization:
+        chat:
+          title: "Summarize messages"
+          description: "Select an option below to summarize the conversation sent during the desired timeframe."
+          summarize: "Summarize"
+          since:
+            one: "Last hour"
+            other: "Last %{count} hours"
     review:
       types:
         reviewable_ai_post:

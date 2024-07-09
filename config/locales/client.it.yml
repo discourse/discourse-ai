@@ -12,12 +12,6 @@ it:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -113,11 +107,26 @@ it:
         uploads:
           title: "Caricamenti"
           uploading: "Caricamento..."
+      tools:
+        name: "Nome"
+        description: "Descrizione"
+        summary: "Riepilogo"
+        save: "Salva"
+        parameter_required: "Obbligatorie"
+        edit: "Modifica"
+        test: "Esegui test"
+        delete: "Elimina"
+        next:
+          title: "Avanti"
+        test_modal:
+          run: "Esegui test"
       llms:
         save: "Salva"
         edit: "Modifica"
         back: "Indietro"
         delete: Elimina
+        next:
+          title: "Avanti"
         tests:
           title: "Esegui test"
           success: "Riuscito!"

@@ -12,12 +12,6 @@ lt:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: '“Gemini Pro”'
       scriptables:
         llm_report:
           fields:
@@ -85,11 +79,26 @@ lt:
         uploads:
           title: "Įkėlimai"
           uploading: "Įkeliama"
+      tools:
+        name: "Vardas"
+        description: "Aprašymas"
+        summary: "Santrauka"
+        save: "Išsaugoti"
+        parameter_required: "Privalomi"
+        edit: "Redaguoti"
+        test: "Vykdyti testą"
+        delete: "Pašalinti"
+        next:
+          title: "Kitas"
+        test_modal:
+          run: "Vykdyti testą"
       llms:
         save: "Išsaugoti"
         edit: "Redaguoti"
         back: "Atgal"
         delete: Pašalinti
+        next:
+          title: "Kitas"
         tests:
           title: "Vykdyti testą"
           success: "Sėkmingai!"

@@ -99,6 +99,7 @@ he:
     ai_bot_enable_chat_warning: "הצגת אזהרה עם פתיחת שיח הודעות פרטיות. אפשר לדרוס את זה על ידי עריכת מחרוזת התרגום: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "כאשר לבוט של GPT יש גישה להודעות הפרטיות, הוא יגיב לחברים בקבוצות האלה."
     ai_bot_debugging_allowed_groups: "לאפשר לקבוצות האלו לצפות בכפתור ניפוי שיאות שמציג את בקשת ותגובה הבינה המלאכותית באופן גולמי"
+    ai_bot_public_sharing_allowed_groups: "לאפשר לקבוצות האלה לשתף הודעות אישיות של בינה למאכותית עם הציבור באמצעות קישור ייחודי גלוי לציבור. הערה: אם האתר שלך דורש כניסה, גם שיתופים ידרשו כניסה."
     ai_bot_enabled_chat_bots: "מודלים זמינים שיכהנו כבוט בינה מלאכותית"
     ai_bot_add_to_header: "הצגת כפתור בכותרת כדי לפתוח הודעה פרטית עם בוט בינה מלאכותית"
     ai_bot_github_access_token: "אסימון גישה ל־GitHub לשימוש עם כלי הבינה המלאכותית של GitHub (נחוץ לתמיכה בחיפוש)"
@@ -130,6 +131,17 @@ he:
       description: "מספר הפוסטים שסווגו עם אחד הרגשות הבאים, מקובצים לפי דרגות אמון המפרסמים."
   discourse_ai:
     unknown_model: "דגם בינה מלאכותית לא ידוע"
+    tools:
+      custom_name: "%{name} (מותאם אישית)"
+      presets:
+        browse_web_jina:
+          name: "גלישה באינטרנט דרך jina.ai"
+        exchange_rate:
+          name: "שער חליפין"
+        stock_quote:
+          name: "מחיר המניה (AlphaVantage)"
+        empty_tool:
+          name: "התחלה מאפס…"
     ai_helper:
       errors:
         completion_request_failed: "משהו השתבש במהלך הניסיון לספק הצעות. נא לנסות שוב."
@@ -162,6 +174,7 @@ he:
       personas:
         default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
+        cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך כלים או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
         github_helper:
           name: "מסייע GitHub"
           description: "בוט בינה מלאכותית שמסייע במשימות ובשאלות שקשורות ב־GitHub"
@@ -193,6 +206,10 @@ he:
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
       tool_options:
+        read:
+          read_private:
+            name: "קריאה פרטית"
+            description: "לאפשר גישה לכל הנושאים שיש למשתמש גישה אליהם (כברירת מחדל רק נושאים ציבוריים כלולים)"
         search:
           search_private:
             name: "חיפוש פרטי"
@@ -257,8 +274,38 @@ he:
         summarize: "<a href='%{url}'>%{title}</a> סוכם"
         dall_e: "%{prompt}"
         image: "%{prompt}"
+        categories:
+          one: "נמצאה קטגוריה"
+          two: "נמצאו שתי קטגוריות"
+          many: "נמצאו %{count} קטגוריות"
+          other: "נמצאו %{count} קטגוריות"
+        tags:
+          one: "נמצאה תגית"
+          two: "נמצאו שתי תגיות"
+          many: "נמצאו %{count} תגיות"
+          other: "נמצאו %{count} תגיות"
+        search:
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+        search_meta_discourse:
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+        google:
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         setting_context: "נקרא הקשר עבור: %{setting_name}"
         schema: "%{tables}"
+        search_settings:
+          one: "נמצאה תוצאה לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי תוצאות לחיפוש אחר ‚%{query}’"
+          many: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
+          other: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
     summarization:
       configuration_hint:
         one: "יש להגדיר את ההגדרה `%{setting}` תחילה."
@@ -292,6 +339,11 @@ he:
           two: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           many: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           other: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
+      delete_failed:
+        one: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמש בו. נא לעדכן את ההגדרות לנסות שוב."
+        two: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
+        many: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
+        other: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
     embeddings:
       configuration:
         disable_embeddings: "יש להשבית קודם את ‚הטמעת בינה מלאכותית פעילה’."

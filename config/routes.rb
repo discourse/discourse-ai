@@ -27,6 +27,11 @@ DiscourseAi::Engine.routes.draw do
     get "/:share_key" => "shared_ai_conversations#show"
     get "/preview/:topic_id" => "shared_ai_conversations#preview"
   end
+
+  scope module: :summarization, path: "/summarization", defaults: { format: :json } do
+    get "/t/:topic_id" => "summary#show", :constraints => { topic_id: /\d+/ }
+    get "/channels/:channel_id" => "chat_summary#show"
+  end
 end
 
 Discourse::Application.routes.draw do
@@ -40,6 +45,13 @@ Discourse::Application.routes.draw do
               only: %i[index create show update destroy],
               path: "ai-personas",
               controller: "discourse_ai/admin/ai_personas"
+
+    resources(
+      :ai_tools,
+      only: %i[index create show update destroy],
+      path: "ai-tools",
+      controller: "discourse_ai/admin/ai_tools",
+    ) { post :test, on: :collection }
 
     post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
     post "/ai-personas/files/upload", to: "discourse_ai/admin/ai_personas#upload_file"

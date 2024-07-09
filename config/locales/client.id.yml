@@ -12,16 +12,6 @@ id:
           discourse_ai: "Discourse"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_flash: Gemini 1.5 Flash
-        claude_3_opus: Karya Claude 3
-        claude_3_sonnet: Claude 3 Soneta
-        claude_3_haiku: Claude 3 Haiku
       scriptables:
         llm_report:
           fields:
@@ -129,6 +119,16 @@ id:
         uploads:
           description: "Persona AI Anda akan dapat mencari dan mereferensikan konten file yang disertakan. File yang diunggah harus diformat sebagai teks biasa (.txt) atau markdown (.md)."
           uploading: "Mengunggah..."
+      tools:
+        name: "Nama"
+        description: "Deskripsi"
+        summary: "Ringkasan"
+        save: "Simpan"
+        edit: "Ubah"
+        test: "Operasikan Tes"
+        delete: "Hapus"
+        test_modal:
+          run: "Operasikan Tes"
       llms:
         save: "Simpan"
         edit: "Ubah"

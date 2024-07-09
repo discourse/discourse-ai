@@ -1,11 +1,7 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::Image do
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
-
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-
   let(:prompts) { ["a pink cow", "a red cow"] }
 
   let(:tool) do
@@ -18,7 +14,15 @@ RSpec.describe DiscourseAi::AiBot::Tools::Image do
     )
   end
 
-  before { SiteSetting.ai_bot_enabled = true }
+  fab!(:gpt_35_turbo) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
+  before do
+    SiteSetting.ai_bot_enabled = true
+    toggle_enabled_bots(bots: [gpt_35_turbo])
+  end
+
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{gpt_35_turbo.id}") }
+
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
 
   describe "#process" do
     it "can generate correct info" do

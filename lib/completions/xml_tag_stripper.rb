@@ -17,6 +17,7 @@ module DiscourseAi
           end
         end
         @parsed.concat(parse_tags(text))
+
         @parsed, result = process_parsed(@parsed)
         result
       end
@@ -69,9 +70,14 @@ module DiscourseAi
         while true
           before, after = text.split("<", 2)
 
-          parsed << { type: :text, content: before }
+          parsed << { type: :text, content: before } if before && !before.empty?
 
           break if after.nil?
+
+          if before.empty? && after.empty?
+            parsed << { type: :maybe_tag, content: "<" }
+            break
+          end
 
           tag, after = after.split(">", 2)
 

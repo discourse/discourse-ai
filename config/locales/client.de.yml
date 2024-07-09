@@ -12,22 +12,6 @@ de:
           discourse_ai: "Discourse-KI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_pro: Gemini 1.5 Pro
-        gemini_1_5_flash: Gemini 1.5 Flash
-        claude_3_opus: Claude 3 Opus
-        claude_3_sonnet: Claude 3 Sonett
-        claude_3_haiku: Claude 3 Haiku
-        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Anleitung V0.1
-        mistral_7b_instruct_v0_2: Mistral 7B Anleitung V0.2
-        command_r: Cohere Befehl R
-        command_r_plus: Cohere Befehl R+
-        gpt_4o: GPT 4 Omni
       scriptables:
         llm_report:
           fields:
@@ -199,6 +183,37 @@ de:
           uploaded: "Bereit zur Indizierung"
           uploading: "Wird hochgeladen …"
           remove: "Upload entfernen"
+      tools:
+        short_title: "Werkzeuge"
+        new: "Neues Werkzeug"
+        name: "Name"
+        name_help: "Der eindeutige Name des Werkzeugs, wie er vom Sprachmodell verwendet wird"
+        description: "Beschreibung"
+        description_help: "Eine klare Beschreibung des Zwecks des Werkzeugs für das Sprachmodell"
+        summary: "Zusammenfassung"
+        summary_help: "Zusammenfassung des Zwecks der Werkzeuge, die den Endnutzern angezeigt werden soll"
+        script: "Skript"
+        parameters: "Parameter"
+        save: "Speichern"
+        add_parameter: "Parameter hinzufügen"
+        parameter_required: "Erforderlich"
+        parameter_enum: "Aufzählung"
+        parameter_name: "Parameter Name"
+        parameter_description: "Parameter Beschreibung"
+        enum_value: "Enum-Wert"
+        add_enum_value: "Enum-Wert hinzufügen"
+        edit: "Bearbeiten"
+        test: "Test ausführen"
+        delete: "Löschen"
+        saved: "Werkzeug gespeichert"
+        presets: "Wähle eine Voreinstellung..."
+        confirm_delete: Bist du sicher, dass du dieses Werkzeug löschen willst?
+        next:
+          title: "Nächstes"
+        test_modal:
+          title: "KI-Werkzeug testen"
+          run: "Test ausführen"
+          result: "Testergebnis"
       llms:
         short_title: "LLMs"
         no_llms: "Noch keine LLMs"
@@ -210,12 +225,20 @@ de:
         max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung"
         url: "URL des Dienstes, der das Modell hostet"
         api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
+        enabled_chat_bot: "KI-Bot zulassen"
+        ai_bot_user: "KI Bot Benutzer"
         save: "Speichern"
         edit: "Bearbeiten"
         saved: "LLM-Modell gespeichert"
         back: "Zurück"
         confirm_delete: Bist du sicher, dass du dieses Modell löschen willst?
         delete: Löschen
+        srv_warning: Dieses LLM verweist auf einen SRV-Eintrag und seine URL ist nicht editierbar. Du musst stattdessen die versteckte Einstellung "ai_vllm_endpoint_srv" aktualisieren.
+        preconfigured_llms: "Wähle dein LLM"
+        preconfigured:
+          none: "Manuell konfigurieren..."
+        next:
+          title: "Nächstes"
         tests:
           title: "Test ausführen"
           running: "Test wird aufgeführt..."
@@ -234,6 +257,10 @@ de:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+        provider_fields:
+          access_key_id: "AWS Bedrock Zugangsschlüssel-ID"
+          region: "AWS Bedrock Region"
+          organization: "Optionale OpenAI-Organisations-ID"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"

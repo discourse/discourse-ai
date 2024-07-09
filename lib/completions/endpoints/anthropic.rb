@@ -28,7 +28,6 @@ module DiscourseAi
         end
 
         def default_options(dialect)
-          # skipping 2.0 support for now, since other models are better
           mapped_model =
             case model
             when "claude-2"
@@ -41,8 +40,10 @@ module DiscourseAi
               "claude-3-sonnet-20240229"
             when "claude-3-opus"
               "claude-3-opus-20240229"
+            when "claude-3-5-sonnet"
+              "claude-3-5-sonnet-20240620"
             else
-              raise "Unsupported model: #{model}"
+              model
             end
 
           options = { model: mapped_model, max_tokens: 3_000 }

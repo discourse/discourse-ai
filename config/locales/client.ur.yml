@@ -41,11 +41,26 @@ ur:
         uploads:
           title: "اَپ لوڈز"
           uploading: "اَپ لوڈ کیا جا رہا ہے..."
+      tools:
+        name: "نام"
+        description: "تفصیل"
+        summary: "Summary"
+        save: "محفوظ کریں"
+        parameter_required: "درکار"
+        edit: "ترمیم کریں"
+        test: "ٹیسٹ چلائیں"
+        delete: "مٹائیں"
+        next:
+          title: "اگلا"
+        test_modal:
+          run: "ٹیسٹ چلائیں"
       llms:
         save: "محفوظ کریں"
         edit: "ترمیم کریں"
         back: "واپس"
         delete: مٹائیں
+        next:
+          title: "اگلا"
         tests:
           title: "ٹیسٹ چلائیں"
           success: "کامیابی!"

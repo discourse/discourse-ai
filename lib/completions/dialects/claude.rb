@@ -6,9 +6,7 @@ module DiscourseAi
       class Claude < Dialect
         class << self
           def can_translate?(model_name)
-            %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus].include?(
-              model_name,
-            )
+            model_name.start_with?("claude") || model_name.start_with?("anthropic")
           end
         end
 

@@ -4,6 +4,8 @@ module DiscourseAi
   module AiBot
     module Tools
       class Search < Tool
+        attr_reader :last_query
+
         MIN_SEMANTIC_RESULTS = 5
 
         class << self
@@ -95,40 +97,38 @@ module DiscourseAi
           parameters.slice(:category, :user, :order, :max_posts, :tags, :before, :after, :status)
         end
 
+        def search_query
+          parameters[:search_query]
+        end
+
         def invoke
-          search_string =
-            search_args.reduce(+parameters[:search_query].to_s) do |memo, (key, value)|
-              return memo if value.blank?
-              memo << " " << "#{key}:#{value}"
-            end
+          search_terms = []
 
-          @last_query = search_string
+          search_terms << options[:base_query] if options[:base_query].present?
+          search_terms << search_query.strip if search_query.present?
+          search_args.each { |key, value| search_terms << "#{key}:#{value}" if value.present? }
 
-          yield(I18n.t("discourse_ai.ai_bot.searching", query: search_string))
-
-          if options[:base_query].present?
-            search_string = "#{search_string} #{options[:base_query]}"
-          end
-
-          safe_search_string = search_string.to_s
           guardian = nil
-
           if options[:search_private] && context[:user]
             guardian = Guardian.new(context[:user])
           else
             guardian = Guardian.new
-            safe_search_string += " status:public"
+            search_terms << "status:public"
           end
 
-          results =
-            ::Search.execute(safe_search_string, search_type: :full_page, guardian: guardian)
+          search_string = search_terms.join(" ").to_s
+          @last_query = search_string
+
+          yield(I18n.t("discourse_ai.ai_bot.searching", query: search_string))
+
+          results = ::Search.execute(search_string, search_type: :full_page, guardian: guardian)
 
           max_results = calculate_max_results(llm)
           results_limit = parameters[:limit] || max_results
           results_limit = max_results if parameters[:limit].to_i > max_results
 
           should_try_semantic_search =
-            SiteSetting.ai_embeddings_semantic_search_enabled && parameters[:search_query].present?
+            SiteSetting.ai_embeddings_semantic_search_enabled && search_query.present?
 
           max_semantic_results = max_results / 4
           results_limit = results_limit - max_semantic_results if should_try_semantic_search
