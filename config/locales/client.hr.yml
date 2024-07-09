@@ -91,3 +91,12 @@ hr:
           response: "Odgovor"
         share_modal:
           copy: "Kopija"
+      summarization:
+        chat:
+          title: "Sažmi poruke"
+          description: "Odaberite opciju u nastavku da biste saželi razgovor poslan tijekom željenog vremenskog okvira."
+          summarize: "Rezimirati"
+          since:
+            one: "Posljednji sat"
+            few: "Posljednja %{count} sata"
+            other: "Posljednjih %{count} sati"

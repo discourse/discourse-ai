@@ -284,6 +284,14 @@ tr_TR:
       sentiments:
         dashboard:
           title: "Duyarlılık"
+      summarization:
+        chat:
+          title: "Mesajları özetle"
+          description: "İstediğiniz zaman diliminde gönderilen görüşmeyi özetlemek için aşağıdaki seçeneklerden birini belirleyin."
+          summarize: "Özetle"
+          since:
+            one: "Son bir saat"
+            other: "Son %{count} saat"
     review:
       types:
         reviewable_ai_post:

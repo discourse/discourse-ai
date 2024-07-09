@@ -92,3 +92,6 @@ cs:
           response: "Odpověď"
         share_modal:
           copy: "Kopírovat"
+      summarization:
+        chat:
+          title: "Shrnout zprávy"

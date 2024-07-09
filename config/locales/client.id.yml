@@ -225,3 +225,10 @@ id:
           claude-3-sonnet: "Claude 3 Soneta"
           claude-3-haiku: "Claude 3 Haiku"
           claude-2: "Claude 2"
+      summarization:
+        chat:
+          title: "Meringkas pesan"
+          description: "Pilih opsi di bawah untuk meringkas percakapan yang dikirim selama jangka waktu yang diinginkan."
+          summarize: "Meringkas"
+          since:
+            other: "%{count} jam terakhir"

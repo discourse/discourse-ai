@@ -84,3 +84,6 @@ pt:
           response: "Resposta"
         share_modal:
           copy: "Copiar"
+      summarization:
+        chat:
+          summarize: "Resumir"

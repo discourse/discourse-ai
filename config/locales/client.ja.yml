@@ -214,6 +214,13 @@ ja:
       sentiments:
         dashboard:
           title: "センチメント"
+      summarization:
+        chat:
+          title: "メッセージを要約する"
+          description: "以下から、希望する期間に送信される会話を要約するオプションを選択してください。"
+          summarize: "要約"
+          since:
+            other: "過去 %{count} 時間"
     review:
       types:
         reviewable_ai_post:

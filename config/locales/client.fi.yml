@@ -214,6 +214,14 @@ fi:
       sentiments:
         dashboard:
           title: "Tunne"
+      summarization:
+        chat:
+          title: "Tee yhteenveto viesteistä"
+          description: "Valitse vaihtoehto alla yhteenvedon tekemiseksi haluttuna ajanjaksona lähetetystä keskustelusta."
+          summarize: "Tee yhteenveto"
+          since:
+            one: "Viimeinen tunti"
+            other: "Viimeiset %{count} tuntia"
     review:
       types:
         reviewable_ai_post:
