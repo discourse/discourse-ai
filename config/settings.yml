@@ -377,3 +377,6 @@ discourse_ai:
   ai_automation_max_triage_per_post_per_minute:
     default: 2
     hidden: true
+  ai_blah_blah:
+    default: 2
+    client: true
