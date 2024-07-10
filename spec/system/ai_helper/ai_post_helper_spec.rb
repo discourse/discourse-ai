@@ -23,7 +23,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     )
   end
   let(:topic_page) { PageObjects::Pages::Topic.new }
-  let(:post_ai_helper) { PageObjects::Components::AIHelperPostOptions.new }
+  let(:post_ai_helper) { PageObjects::Components::AiPostHelperMenu.new }
   let(:fast_editor) { PageObjects::Components::FastEditor.new }
 
   before do
@@ -55,6 +55,12 @@ RSpec.describe "AI Post helper", type: :system, js: true do
       post_ai_helper.click_ai_button
       expect(post_ai_helper).to have_no_post_selection_primary_buttons
       expect(post_ai_helper).to have_post_ai_helper_options
+    end
+
+    it "should not have the mobile post AI helper" do
+      select_post_text(post)
+      post_ai_helper.click_ai_button
+      expect(post_ai_helper).to have_no_mobile_post_ai_helper
     end
 
     it "highlights the selected text after clicking the AI button and removes after closing" do
@@ -198,6 +204,14 @@ RSpec.describe "AI Post helper", type: :system, js: true do
         wait_for { fast_editor.has_content?(proofread_response) }
         expect(fast_editor).to have_content(proofread_response)
       end
+    end
+  end
+
+  context "when triggering post AI helper on mobile", mobile: true do
+    it "should use the bottom modal instead of the popup menu" do
+      select_post_text(post)
+      post_ai_helper.click_ai_button
+      expect(post_ai_helper).to have_mobile_post_ai_helper
     end
   end
 end
