@@ -3,6 +3,8 @@ import { concat, fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
+import { inject as service } from "@ember/service";
+import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
@@ -11,6 +13,8 @@ import I18n from "discourse-i18n";
 import AiLlmEditor from "./ai-llm-editor";
 
 export default class AiLlmsListEditor extends Component {
+  @service adminPluginNavManager;
+
   get hasLLMElements() {
     return this.args.llms.length !== 0;
   }
@@ -31,7 +35,12 @@ export default class AiLlmsListEditor extends Component {
   }
 
   <template>
+    <DBreadcrumbsItem
+      @path="/admin/plugins/{{this.adminPluginNavManager.currentPlugin.name}}/ai-llms"
+      @label={{i18n "discourse_ai.llms.short_title"}}
+    />
     <section class="ai-llms-list-editor admin-detail pull-left">
+
       {{#if @currentLlm}}
         <AiLlmEditor @model={{@currentLlm}} @llms={{@llms}} />
       {{else}}
