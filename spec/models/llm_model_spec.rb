@@ -14,7 +14,7 @@ RSpec.describe LlmModel do
         llm_model = described_class.find_by(url: described_class::RESERVED_VLLM_SRV_URL)
 
         expect(llm_model).to be_present
-        expect(llm_model.name).to eq("mistralai/Mixtral-8x7B-Instruct-v0.1")
+        expect(llm_model.name).to eq("Qwen/Qwen2-72B-Instruct-GPTQ-Int8")
         expect(llm_model.api_key).to eq(SiteSetting.ai_vllm_api_key)
       end
     end

@@ -21,7 +21,7 @@ class LlmModel < ActiveRecord::Base
         record =
           new(
             display_name: "vLLM SRV LLM",
-            name: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+            name: "Qwen/Qwen2-72B-Instruct-GPTQ-Int8",
             provider: "vllm",
             tokenizer: "DiscourseAi::Tokenizer::MixtralTokenizer",
             url: RESERVED_VLLM_SRV_URL,

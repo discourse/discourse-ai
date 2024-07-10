@@ -7,7 +7,7 @@ class FixVllmModelName < ActiveRecord::Migration[7.1]
 
     DB.exec(<<~SQL, target_id: vllm_mixtral_model_id) if vllm_mixtral_model_id
       UPDATE llm_models
-      SET name = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
+      SET name = 'Qwen/Qwen2-72B-Instruct-GPTQ-Int8'
       WHERE id = :target_id
     SQL
   end
