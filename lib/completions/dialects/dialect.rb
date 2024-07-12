@@ -95,7 +95,17 @@ module DiscourseAi
 
           range = (0..-1)
           if messages.dig(0, :type) == :system
+            max_system_tokens = prompt_limit * 0.6
             system_message = messages[0]
+            system_size = calculate_message_token(system_message)
+
+            if system_size > max_system_tokens
+              system_message[:content] = tokenizer.truncate(
+                system_message[:content],
+                max_system_tokens,
+              )
+            end
+
             trimmed_messages << system_message
             current_token_count += calculate_message_token(system_message)
             range = (1..-1)
