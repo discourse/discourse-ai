@@ -31,7 +31,7 @@
   margin: 4.5em 0 1em;
 }
 
-.ai-helper-context-menu {
+.ai-composer-helper-menu {
   background: var(--secondary);
   box-shadow: var(--shadow-card);
   padding: 0.25rem;
@@ -40,27 +40,16 @@
   list-style: none;
   z-index: 999;
 
-  &.out-of-bounds {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
   ul {
     margin: 0;
     list-style: none;
   }
+}
 
-  &__resets {
-    display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-  }
-
-  &__review {
-    display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-  }
+.ai-helper-button-group {
+  display: flex;
+  align-items: center;
+  flex-flow: row wrap;
 }
 
 .ai-custom-prompt {
@@ -605,4 +594,8 @@
       }
     }
   }
+}
+
+.fk-d-menu[data-identifier="ai-composer-helper-menu"] {
+  z-index: z("composer", "dropdown");
 }
