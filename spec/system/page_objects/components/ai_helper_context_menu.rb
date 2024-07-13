@@ -4,10 +4,10 @@ module PageObjects
   module Components
     class AIHelperContextMenu < PageObjects::Components::Base
       COMPOSER_EDITOR_SELECTOR = ".d-editor-input"
-      CONTEXT_MENU_SELECTOR = ".ai-helper-context-menu"
-      TRIGGER_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__trigger"
+      CONTEXT_MENU_SELECTOR = ".ai-composer-helper-menu"
+      TRIGGER_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__triggers"
       OPTIONS_STATE_SELECTOR = ".ai-helper-options"
-      LOADING_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__loading"
+      LOADING_STATE_SELECTOR = ".ai-helper-loading"
       RESETS_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__resets"
       REVIEW_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__review"
       CUSTOM_PROMPT_SELECTOR = "#{CONTEXT_MENU_SELECTOR} .ai-custom-prompt"

@@ -322,7 +322,7 @@ export default class AiComposerHelperMenu extends Component {
       {{else if (eq this.aiComposerHelper.menuState this.MENU_STATES.resets)}}
         <AiHelperButtonGroup
           @buttons={{this.resetButtons}}
-          class="ai-composer-helper-menu__reset"
+          class="ai-composer-helper-menu__resets"
         />
       {{/if}}
     </div>
