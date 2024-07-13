@@ -14,7 +14,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:input) { "The rain in spain stays mainly in the Plane." }
 
   let(:composer) { PageObjects::Components::Composer.new }
-  let(:ai_helper_context_menu) { PageObjects::Components::AIHelperContextMenu.new }
+  let(:ai_helper_context_menu) { PageObjects::Components::AiComposerHelperMenu.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
   let(:ai_suggestion_dropdown) { PageObjects::Components::AISuggestionDropdown.new }
   fab!(:category)

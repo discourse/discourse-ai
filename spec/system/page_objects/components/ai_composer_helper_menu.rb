@@ -2,7 +2,7 @@
 
 module PageObjects
   module Components
-    class AIHelperContextMenu < PageObjects::Components::Base
+    class AiComposerHelperMenu < PageObjects::Components::Base
       COMPOSER_EDITOR_SELECTOR = ".d-editor-input"
       CONTEXT_MENU_SELECTOR = ".ai-composer-helper-menu"
       TRIGGER_STATE_SELECTOR = "#{CONTEXT_MENU_SELECTOR}__triggers"
