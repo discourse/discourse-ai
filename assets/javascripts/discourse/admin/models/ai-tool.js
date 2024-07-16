@@ -27,9 +27,13 @@ export default class AiTool extends RestModel {
       attrs.parameters?.map((p) => {
         const parameter = new TrackedObject(p);
 
+        //Backwards-compatibility code.
+        // TODO(roman): Remove aug 2024. Leave only else clause.
         if (parameter.enum_values) {
-          parameter.enumValues = new TrackedArray(parameter.enum_values);
+          parameter.enum = new TrackedArray(parameter.enum_values);
           delete parameter.enum_values;
+        } else {
+          parameter.enum = new TrackedArray(parameter.enum);
         }
 
         return parameter;

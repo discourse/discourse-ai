@@ -18,7 +18,10 @@ module DiscourseAi
                 name = p[:name]
                 memo[:required] << name if p[:required]
 
-                memo[:properties][name] = p.except(:name, :required, :item_type)
+                except = %i[name required item_type]
+                except << :enum if p[:enum].blank?
+
+                memo[:properties][name] = p.except(*except)
 
                 memo[:properties][name][:items] = { type: p[:item_type] } if p[:item_type]
                 memo

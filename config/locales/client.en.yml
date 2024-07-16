@@ -184,6 +184,7 @@ en:
           remove: "Remove upload"
 
       tools:
+        back: "Back"
         short_title: "Tools"
         new: "New Tool"
         name: "Name"

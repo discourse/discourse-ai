@@ -71,13 +71,6 @@ export default class AiToolEditor extends Component {
         "summary"
       );
 
-      for (const p of data.parameters) {
-        if (p.enumValues) {
-          p.enum_values = p.enumValues;
-          delete p.enumValues;
-        }
-      }
-
       await this.args.model.save(data);
 
       this.toasts.success({
@@ -124,7 +117,7 @@ export default class AiToolEditor extends Component {
   <template>
     <BackButton
       @route="adminPlugins.show.discourse-ai-tools"
-      @label="discourse_ai.ai_tool.back"
+      @label="discourse_ai.tools.back"
     />
 
     <form
