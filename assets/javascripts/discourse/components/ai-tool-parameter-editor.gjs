@@ -7,6 +7,7 @@ import DButton from "discourse/components/d-button";
 import withEventValue from "discourse/helpers/with-event-value";
 import I18n from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
+import and from "truth-helpers/helpers/and";
 
 const PARAMETER_TYPES = [
   { name: "string", id: "string" },
@@ -24,8 +25,7 @@ export default class AiToolParameterEditor extends Component {
         description: "",
         type: "string",
         required: false,
-        enum: false,
-        enumValues: null,
+        enum: null,
       })
     );
   }
@@ -43,26 +43,27 @@ export default class AiToolParameterEditor extends Component {
 
   @action
   toggleEnum(parameter) {
-    parameter.enum = !parameter.enum;
-    if (!parameter.enum) {
-      parameter.enumValues = null;
+    if (parameter.enum) {
+      parameter.enum = null;
+    } else {
+      this.addEnumValue(parameter);
     }
   }
 
   @action
   addEnumValue(parameter) {
-    parameter.enumValues ||= new TrackedArray();
-    parameter.enumValues.push("");
+    parameter.enum ||= new TrackedArray();
+    parameter.enum.push("");
   }
 
   @action
   removeEnumValue(parameter, index) {
-    parameter.enumValues.splice(index, 1);
+    parameter.enum.splice(index, 1);
   }
 
   @action
   updateEnumValue(parameter, index, event) {
-    parameter.enumValues[index] = event.target.value;
+    parameter.enum[index] = event.target.value;
   }
 
   <template>
@@ -100,7 +101,7 @@ export default class AiToolParameterEditor extends Component {
           <label>
             <input
               {{on "input" (fn this.toggleEnum parameter)}}
-              checked={{parameter.enum}}
+              checked={{and parameter.enum parameter.enum.length}}
               type="checkbox"
             />
             {{I18n.t "discourse_ai.tools.parameter_enum"}}
@@ -113,9 +114,9 @@ export default class AiToolParameterEditor extends Component {
           />
         </div>
 
-        {{#if parameter.enum}}
+        {{#if (and parameter.enum parameter.enum.length)}}
           <div class="parameter-enum-values">
-            {{#each parameter.enumValues as |enumValue enumIndex|}}
+            {{#each parameter.enum as |enumValue enumIndex|}}
               <div class="enum-value-row">
                 <input
                   {{on "change" (fn this.updateEnumValue parameter enumIndex)}}
