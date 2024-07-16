@@ -296,6 +296,7 @@ de:
           cancel: "Abbrechen"
           insert_footnote: "Fußnote hinzufügen"
           footnote_credits: "Erklärung durch KI"
+          selected_text: "Ausgewählter Text"
         fast_edit:
           suggest_button: "Bearbeiten vorschlagen"
         thumbnail_suggestions:

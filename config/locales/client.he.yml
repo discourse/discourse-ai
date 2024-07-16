@@ -296,6 +296,7 @@ he:
           cancel: "ביטול"
           insert_footnote: "הוספת הערת שוליים"
           footnote_credits: "הסבר של בינה מלאכותית"
+          selected_text: "טקסט נבחר"
         fast_edit:
           suggest_button: "הצעת עריכה"
         thumbnail_suggestions:
