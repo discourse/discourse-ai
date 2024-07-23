@@ -42,6 +42,7 @@ gl:
           title: "Cargas"
           uploading: "Cargando..."
       tools:
+        back: "Volver"
         name: "Nome"
         description: "Descrición"
         summary: "Resumo"

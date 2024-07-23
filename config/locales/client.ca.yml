@@ -42,6 +42,7 @@ ca:
           title: "Càrregues"
           uploading: "Carregant..."
       tools:
+        back: "Enrere"
         name: "Nom"
         description: "Descripció"
         summary: "Resum"

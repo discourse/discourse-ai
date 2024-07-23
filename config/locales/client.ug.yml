@@ -44,6 +44,7 @@ ug:
           title: "يۈكلەنمە"
           uploading: "يۈكلەۋاتىدۇ..."
       tools:
+        back: "كەينى"
         name: "ئىسمى"
         description: "چۈشەندۈرۈش"
         summary: "خۇلاسە"

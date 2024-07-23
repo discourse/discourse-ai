@@ -159,6 +159,7 @@ tr_TR:
           filter: "Yüklemeleri filtrele"
           uploading: "Yükleniyor..."
       tools:
+        back: "Geri"
         name: "Ad"
         description: "Açıklama"
         summary: "Özet"

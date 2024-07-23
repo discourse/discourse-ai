@@ -109,6 +109,7 @@ pt_BR:
           title: "Envios"
           uploading: "Enviando..."
       tools:
+        back: "Voltar"
         name: "Nome"
         description: "Descrição"
         summary: "Resumo"

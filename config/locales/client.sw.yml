@@ -42,6 +42,7 @@ sw:
           title: "Upakiaji"
           uploading: "Inaongezwa"
       tools:
+        back: "Iliyopita"
         name: "Jina"
         description: "Elezo"
         summary: "Muhtasari"

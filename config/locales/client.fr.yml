@@ -108,6 +108,7 @@ fr:
           title: "Fichiers envoyés"
           uploading: "Envoi en cours…"
       tools:
+        back: "Retour"
         name: "Nom"
         description: "Description"
         summary: "Résumé"

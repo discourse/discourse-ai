@@ -40,6 +40,7 @@ zh_TW:
           title: "上傳檔案"
           uploading: "上傳中..."
       tools:
+        back: "上一步"
         name: "名字"
         description: "簡述"
         summary: "摘要"

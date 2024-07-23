@@ -42,6 +42,7 @@ hr:
           title: "Prijenosi"
           uploading: "Učitavanje..."
       tools:
+        back: "Natrag"
         name: "Ime"
         description: "Opis"
         summary: "Sažetak"

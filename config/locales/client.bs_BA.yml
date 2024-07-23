@@ -42,6 +42,7 @@ bs_BA:
           title: "Uploads"
           uploading: "Učitavanje..."
       tools:
+        back: "Prethodno"
         name: "Ime"
         description: "Opis"
         summary: "Sažetak"

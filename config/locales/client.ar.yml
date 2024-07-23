@@ -108,6 +108,7 @@ ar:
           title: "التحميلات"
           uploading: "جارٍ التحميل..."
       tools:
+        back: "رجوع"
         name: "الاسم"
         description: "الوصف"
         summary: "الملخص"

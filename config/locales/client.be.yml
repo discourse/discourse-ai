@@ -39,6 +39,7 @@ be:
           title: "Загрузкі"
           uploading: "Запампоўванне ..."
       tools:
+        back: "Назад"
         name: "імя"
         description: "Апісанне"
         summary: "вынік"

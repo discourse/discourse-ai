@@ -164,6 +164,7 @@ zh_CN:
           uploading: "正在上传…"
           remove: "移除上传"
       tools:
+        back: "返回"
         short_title: "工具"
         new: "新建工具"
         name: "名称"

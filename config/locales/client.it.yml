@@ -108,6 +108,7 @@ it:
           title: "Caricamenti"
           uploading: "Caricamento..."
       tools:
+        back: "Indietro"
         name: "Nome"
         description: "Descrizione"
         summary: "Riepilogo"

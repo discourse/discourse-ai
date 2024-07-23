@@ -184,6 +184,7 @@ de:
           uploading: "Wird hochgeladen …"
           remove: "Upload entfernen"
       tools:
+        back: "Zurück"
         short_title: "Werkzeuge"
         new: "Neues Werkzeug"
         name: "Name"

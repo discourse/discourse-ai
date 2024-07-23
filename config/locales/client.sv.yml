@@ -42,6 +42,7 @@ sv:
           title: "Uppladdningar"
           uploading: "Laddar upp..."
       tools:
+        back: "Tillbaka"
         name: "Namn"
         description: "Beskrivning"
         summary: "Sammanfattning"

@@ -42,6 +42,7 @@ th:
           title: "อัปโหลด"
           uploading: "กำลังอัปโหลด..."
       tools:
+        back: "กลับ"
         name: "ชื่อ"
         description: "รายละเอียด"
         summary: "สรุป"

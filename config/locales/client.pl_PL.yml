@@ -134,6 +134,7 @@ pl_PL:
           button: "Dodaj pliki"
           uploading: "Przesyłanie..."
       tools:
+        back: "Poprzednia"
         name: "Nazwa"
         description: "Opis"
         summary: "Podsumowanie"

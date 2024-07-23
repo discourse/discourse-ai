@@ -108,6 +108,7 @@ nl:
           title: "Uploads"
           uploading: "Uploaden..."
       tools:
+        back: "Vorige"
         name: "Naam"
         description: "Beschrijving"
         summary: "Samenvatting"
