@@ -42,6 +42,7 @@ vi:
           title: "Tải lên"
           uploading: "Đang đăng "
       tools:
+        back: "Quay lại"
         name: "Tên"
         description: "Mô tả"
         summary: "Tóm tắt"

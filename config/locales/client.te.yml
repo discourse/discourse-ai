@@ -40,6 +40,7 @@ te:
           title: "అప్‌లోడ్‌లు"
           uploading: "ఎగుమతవుతోంది..."
       tools:
+        back: "వెనుకకు"
         name: "పేరు"
         description: "వివరణ"
         summary: "సారాంశం"

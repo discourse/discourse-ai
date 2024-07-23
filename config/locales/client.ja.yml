@@ -108,6 +108,7 @@ ja:
           title: "アップロード"
           uploading: "アップロード中..."
       tools:
+        back: "戻る"
         name: "名前"
         description: "説明"
         summary: "要約"

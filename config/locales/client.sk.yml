@@ -44,6 +44,7 @@ sk:
           title: "Nahrávanie"
           uploading: "Načítavam..."
       tools:
+        back: "Späť"
         name: "Meno"
         description: "Popis"
         summary: "Zhrnutie"

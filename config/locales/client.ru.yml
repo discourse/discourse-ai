@@ -108,6 +108,7 @@ ru:
           title: "Загрузки"
           uploading: "Загрузка…"
       tools:
+        back: "Назад"
         name: "Название"
         description: "Описание"
         summary: "Спойлер"

@@ -80,6 +80,7 @@ lt:
           title: "Įkėlimai"
           uploading: "Įkeliama"
       tools:
+        back: "Atgal"
         name: "Vardas"
         description: "Aprašymas"
         summary: "Santrauka"

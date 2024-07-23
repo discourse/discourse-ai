@@ -108,6 +108,7 @@ es:
           title: "Subidos"
           uploading: "Subiendo..."
       tools:
+        back: "Atrás"
         name: "Nombre"
         description: "Descripción"
         summary: "Resumen"

@@ -42,6 +42,7 @@ el:
           title: "Μεταφορτώσεις"
           uploading: "Επιφόρτωση..."
       tools:
+        back: "Πίσω"
         name: "Όνομα"
         description: "Περιγραφή"
         summary: "Περίληψη"

@@ -37,6 +37,7 @@ sr:
         uploads:
           uploading: "Uploading..."
       tools:
+        back: "Nazad"
         name: "Ime foruma"
         description: "Opis"
         summary: "Rezime"

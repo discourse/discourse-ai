@@ -42,6 +42,7 @@ ur:
           title: "اَپ لوڈز"
           uploading: "اَپ لوڈ کیا جا رہا ہے..."
       tools:
+        back: "واپس"
         name: "نام"
         description: "تفصیل"
         summary: "Summary"

@@ -42,6 +42,7 @@ hu:
           title: "Feltöltések"
           uploading: "Feltültés..."
       tools:
+        back: "Vissza"
         name: "Név"
         description: "Leírás"
         summary: "Összefoglaló"

@@ -42,6 +42,7 @@ lv:
           title: "Augšupielādes"
           uploading: "Notiek ielāde..."
       tools:
+        back: "Atpakaļ"
         name: "Vārds"
         description: "Apraksts"
         summary: "Kopsavilkums"

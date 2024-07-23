@@ -108,6 +108,7 @@ fi:
           title: "Lataukset"
           uploading: "Ladataan..."
       tools:
+        back: "Takaisin"
         name: "Nimi"
         description: "Kuvaus"
         summary: "Yhteenveto"

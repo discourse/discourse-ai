@@ -184,6 +184,7 @@ he:
           uploading: "בהליכי העלאה…"
           remove: "הסרת העלאה"
       tools:
+        back: "חזרה"
         short_title: "כלים"
         new: "כלי חדש"
         name: "שם"

@@ -42,6 +42,7 @@ cs:
           title: "Nahrané soubory"
           uploading: "Nahrává se..."
       tools:
+        back: "Zpět"
         name: "Jméno"
         description: "Popis"
         summary: "Souhrn"

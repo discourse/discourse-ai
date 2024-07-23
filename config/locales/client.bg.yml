@@ -41,6 +41,7 @@ bg:
         uploads:
           uploading: "Качва се..."
       tools:
+        back: "Назад"
         name: "Име"
         description: "Описание"
         summary: "Сумарно"

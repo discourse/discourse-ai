@@ -44,6 +44,7 @@ uk:
           title: "Завантаження"
           uploading: "Надсилання…"
       tools:
+        back: "Назад"
         name: "Імʼя"
         description: "Опис"
         summary: "Підсумок"

@@ -44,6 +44,7 @@ ko:
           title: "업로드된 파일"
           uploading: "업로드 중..."
       tools:
+        back: "뒤로"
         name: "그룹명"
         description: "내용"
         summary: "요약"

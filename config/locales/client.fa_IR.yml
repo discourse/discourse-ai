@@ -64,6 +64,7 @@ fa_IR:
           title: "بارگذاری‌ها"
           uploading: "در حال بار گذاری..."
       tools:
+        back: "بازگشت"
         name: "نام"
         description: "توضیح"
         summary: "خلاصه"
