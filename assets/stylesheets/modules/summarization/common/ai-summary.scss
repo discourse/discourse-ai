@@ -1,11 +1,39 @@
-.topic-map .topic-map__additional-contents {
-  .ai-summarization-button {
-    padding-block: 0.5em;
-    display: flex;
-    gap: 0.5em;
+.topic-map {
+  // Hide the Top Replies label
+  .top-replies {
+    .d-icon {
+      margin: 0;
+      height: 1.2em;
+    }
+    .d-button-label {
+      display: none;
+    }
+  }
 
-    button span {
-      white-space: nowrap;
+  // Hide the Summarize label when there are many stats unless is mobile
+  &:has(.--many-stats):has(.top-replies) .topic-map__additional-contents {
+    @media screen and (min-width: 476px) {
+      button {
+        .d-icon {
+          margin: 0;
+          height: 1.2em;
+        }
+        .d-button-label {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .topic-map__additional-contents {
+    .ai-summarization-button {
+      padding-block: 0.5em;
+      display: flex;
+      gap: 0.5em;
+
+      button span {
+        white-space: nowrap;
+      }
     }
   }
 }
