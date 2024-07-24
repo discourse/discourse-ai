@@ -258,7 +258,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   describe "image support" do
     it "can handle images" do
-      llm = DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4-turbo")
+      model = Fabricate(:llm_model, provider: "open_ai", vision_enabled: true)
+      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
       prompt =
         DiscourseAi::Completions::Prompt.new(
           "You are image bot",

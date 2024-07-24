@@ -45,10 +45,6 @@ module DiscourseAi
           model_max_tokens - buffer
         end
 
-        def vision_support?
-          super || %w[gpt-4-vision gpt-4-turbo gpt-4o].any? { |vm| model_name.include?(vm) }
-        end
-
         private
 
         def tools_dialect

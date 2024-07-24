@@ -71,10 +71,6 @@ module DiscourseAi
           SiteSetting.ai_anthropic_native_tool_call_models_map.include?(model_name)
         end
 
-        def vision_support?
-          super || model_name.include?("claude-3")
-        end
-
         private
 
         def tools_dialect

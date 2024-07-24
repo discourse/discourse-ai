@@ -84,10 +84,6 @@ module DiscourseAi
           end
         end
 
-        def vision_support?
-          super || beta_api?
-        end
-
         protected
 
         def calculate_message_token(context)
