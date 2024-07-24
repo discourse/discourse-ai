@@ -35,6 +35,8 @@ module DiscourseAi
                   "The number of completions you requested exceed the number of canned responses"
           end
 
+          raise response if response.is_a?(StandardError)
+
           @completions += 1
           if block_given?
             cancelled = false

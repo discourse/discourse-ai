@@ -114,6 +114,8 @@ module DiscourseAi
           if beta_api?
             # support new format with multiple parts
             result = { role: "user", parts: [{ text: msg[:content] }] }
+            return result unless vision_support?
+
             upload_parts = uploaded_parts(msg)
             result[:parts].concat(upload_parts) if upload_parts.present?
             result

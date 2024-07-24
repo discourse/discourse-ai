@@ -267,6 +267,14 @@ export default class AiLlmEditorForm extends Component {
           @content={{I18n.t "discourse_ai.llms.hints.max_prompt_tokens"}}
         />
       </div>
+      <div class="control-group ai-llm-editor__vision-enabled">
+        <Input @type="checkbox" @checked={{@model.vision_enabled}} />
+        <label>{{I18n.t "discourse_ai.llms.vision_enabled"}}</label>
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t "discourse_ai.llms.hints.vision_enabled"}}
+        />
+      </div>
       <div class="control-group">
         <DToggleSwitch
           class="ai-llm-editor__enabled-chat-bot"

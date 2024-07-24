@@ -112,43 +112,40 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       "A picture of a cat sitting on a table (#{I18n.t("discourse_ai.ai_helper.image_caption.attribution")})"
     end
 
+    before { assign_fake_provider_to(:ai_helper_image_caption_model) }
+
+    def request_caption(params)
+      DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
+        post "/discourse-ai/ai-helper/caption_image", params: params
+
+        yield(response)
+      end
+    end
+
     context "when logged in as an allowed user" do
       fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
 
       before do
         sign_in(user)
-        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
-        SiteSetting.ai_llava_endpoint = "https://example.com"
 
-        stub_request(:post, "https://example.com/predictions").to_return(
-          status: 200,
-          body: { output: caption.gsub(" ", " |").split("|") }.to_json,
-        )
+        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
       end
 
       it "returns the suggested caption for the image" do
-        post "/discourse-ai/ai-helper/caption_image",
-             params: {
-               image_url: image_url,
-               image_url_type: "long_url",
-             }
-
-        expect(response.status).to eq(200)
-        expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+        request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+          expect(r.status).to eq(200)
+          expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+        end
       end
 
       context "when the image_url is a short_url" do
         let(:image_url) { upload.short_url }
 
         it "returns the suggested caption for the image" do
-          post "/discourse-ai/ai-helper/caption_image",
-               params: {
-                 image_url: image_url,
-                 image_url_type: "short_url",
-               }
-
-          expect(response.status).to eq(200)
-          expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+          request_caption({ image_url: image_url, image_url_type: "short_url" }) do |r|
+            expect(r.status).to eq(200)
+            expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+          end
         end
       end
 
@@ -156,27 +153,25 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         let(:image_url) { "#{Discourse.base_url}#{upload.short_path}" }
 
         it "returns the suggested caption for the image" do
-          post "/discourse-ai/ai-helper/caption_image",
-               params: {
-                 image_url: image_url,
-                 image_url_type: "short_path",
-               }
-
-          expect(response.status).to eq(200)
-          expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+          request_caption({ image_url: image_url, image_url_type: "short_path" }) do |r|
+            expect(r.status).to eq(200)
+            expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+          end
         end
       end
 
       it "returns a 502 error when the completion call fails" do
-        stub_request(:post, "https://example.com/predictions").to_return(status: 502)
+        DiscourseAi::Completions::Llm.with_prepared_responses(
+          [DiscourseAi::Completions::Endpoints::Base::CompletionFailed.new],
+        ) do
+          post "/discourse-ai/ai-helper/caption_image",
+               params: {
+                 image_url: image_url,
+                 image_url_type: "long_url",
+               }
 
-        post "/discourse-ai/ai-helper/caption_image",
-             params: {
-               image_url: image_url,
-               image_url_type: "long_url",
-             }
-
-        expect(response.status).to eq(502)
+          expect(response.status).to eq(502)
+        end
       end
 
       it "returns a 400 error when the image_url is blank" do
@@ -211,9 +206,10 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           SiteSetting.provider = SiteSettings::DbProvider.new(SiteSetting)
           setup_s3
           stub_s3_store
+          assign_fake_provider_to(:ai_helper_image_caption_model)
           SiteSetting.secure_uploads = true
           SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
-          SiteSetting.ai_llava_endpoint = "https://example.com"
+
           Group.find(SiteSetting.ai_helper_allowed_groups_map.first).add(user)
           user.reload
 
@@ -242,14 +238,11 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
         it "returns a 200 message and caption if user can access the secure upload" do
           group.add(user)
-          post "/discourse-ai/ai-helper/caption_image",
-               params: {
-                 image_url: image_url,
-                 image_url_type: "long_url",
-               }
 
-          expect(response.status).to eq(200)
-          expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+          request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+            expect(r.status).to eq(200)
+            expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+          end
         end
 
         context "if the input URL is for a secure upload but not on the secure-uploads path" do
@@ -257,13 +250,11 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
           it "creates a signed URL properly and makes the caption" do
             group.add(user)
-            post "/discourse-ai/ai-helper/caption_image",
-                 params: {
-                   image_url: image_url,
-                   image_url_type: "long_url",
-                 }
-            expect(response.status).to eq(200)
-            expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+
+            request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+              expect(r.status).to eq(200)
+              expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+            end
           end
         end
       end
