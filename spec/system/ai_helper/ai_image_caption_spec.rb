@@ -21,14 +21,9 @@ RSpec.describe "AI image caption", type: :system, js: true do
   before do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
     assign_fake_provider_to(:ai_helper_model)
-    SiteSetting.ai_llava_endpoint = "https://example.com"
+    assign_fake_provider_to(:ai_helper_image_caption_model)
     SiteSetting.ai_helper_enabled_features = "image_caption"
     sign_in(user)
-
-    stub_request(:post, "https://example.com/predictions").to_return(
-      status: 200,
-      body: { output: caption.gsub(" ", " |").split("|") }.to_json,
-    )
   end
 
   shared_examples "shows no image caption button" do
@@ -53,35 +48,41 @@ RSpec.describe "AI image caption", type: :system, js: true do
 
   context "when triggering caption with AI on desktop" do
     it "should show an image caption in an input field" do
-      visit("/latest")
-      page.find("#create-topic").click
-      attach_file([file_path]) { composer.click_toolbar_button("upload") }
-      popup.click_generate_caption
-      expect(popup.has_caption_popup_value?(caption_with_attrs)).to eq(true)
-      popup.save_caption
-      wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
-      expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
+      DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
+        visit("/latest")
+        page.find("#create-topic").click
+        attach_file([file_path]) { composer.click_toolbar_button("upload") }
+        popup.click_generate_caption
+        expect(popup.has_caption_popup_value?(caption_with_attrs)).to eq(true)
+        popup.save_caption
+        wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
+        expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
+      end
     end
 
     it "should allow you to cancel a caption request" do
-      visit("/latest")
-      page.find("#create-topic").click
-      attach_file([file_path]) { composer.click_toolbar_button("upload") }
-      popup.click_generate_caption
-      popup.cancel_caption
-      expect(popup).to have_no_disabled_generate_button
+      DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
+        visit("/latest")
+        page.find("#create-topic").click
+        attach_file([file_path]) { composer.click_toolbar_button("upload") }
+        popup.click_generate_caption
+        popup.cancel_caption
+        expect(popup).to have_no_disabled_generate_button
+      end
     end
   end
 
   context "when triggering caption with AI on mobile", mobile: true do
     it "should show update the image alt text with the caption" do
-      visit("/latest")
-      page.find("#create-topic").click
-      attach_file([file_path]) { page.find(".mobile-file-upload").click }
-      page.find(".mobile-preview").click
-      popup.click_generate_caption
-      wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
-      expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
+      DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
+        visit("/latest")
+        page.find("#create-topic").click
+        attach_file([file_path]) { page.find(".mobile-file-upload").click }
+        page.find(".mobile-preview").click
+        popup.click_generate_caption
+        wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
+        expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
+      end
     end
   end
 
@@ -125,15 +126,17 @@ RSpec.describe "AI image caption", type: :system, js: true do
       end
 
       it "should auto caption the existing images and update the preference when dialog is accepted" do
-        visit("/latest")
-        page.find("#create-topic").click
-        attach_file([file_path]) { composer.click_toolbar_button("upload") }
-        wait_for { composer.has_no_in_progress_uploads? }
-        composer.fill_title("I love using Discourse! It is my favorite forum software")
-        composer.create
-        dialog.click_yes
-        wait_for(timeout: 100) { page.find("#post_1 .cooked img")["alt"] == caption_with_attrs }
-        expect(page.find("#post_1 .cooked img")["alt"]).to eq(caption_with_attrs)
+        DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
+          visit("/latest")
+          page.find("#create-topic").click
+          attach_file([file_path]) { composer.click_toolbar_button("upload") }
+          wait_for { composer.has_no_in_progress_uploads? }
+          composer.fill_title("I love using Discourse! It is my favorite forum software")
+          composer.create
+          dialog.click_yes
+          wait_for(timeout: 100) { page.find("#post_1 .cooked img")["alt"] == caption_with_attrs }
+          expect(page.find("#post_1 .cooked img")["alt"]).to eq(caption_with_attrs)
+        end
       end
     end
 
@@ -142,14 +145,16 @@ RSpec.describe "AI image caption", type: :system, js: true do
 
       skip "TODO: Fix auto_image_caption user option not present in testing environment?" do
         it "should auto caption the image after uploading" do
-          visit("/latest")
-          page.find("#create-topic").click
-          attach_file([Rails.root.join("spec/fixtures/images/logo.jpg")]) do
-            composer.click_toolbar_button("upload")
+          DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
+            visit("/latest")
+            page.find("#create-topic").click
+            attach_file([Rails.root.join("spec/fixtures/images/logo.jpg")]) do
+              composer.click_toolbar_button("upload")
+            end
+            wait_for { composer.has_no_in_progress_uploads? }
+            wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
+            expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
           end
-          wait_for { composer.has_no_in_progress_uploads? }
-          wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
-          expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
         end
       end
     end

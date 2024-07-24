@@ -56,6 +56,10 @@ module DiscourseAi
           false
         end
 
+        def vision_support?
+          llm_model&.vision_enabled?
+        end
+
         def tools
           @tools ||= tools_dialect.translated_tools
         end

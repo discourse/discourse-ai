@@ -89,15 +89,6 @@ module DiscourseAi
           DiscourseAi::Tokenizer::BasicTokenizer.available_llm_tokenizers.map(&:name)
         end
 
-        def vision_models_by_provider
-          @vision_models_by_provider ||= {
-            aws_bedrock: %w[claude-3-sonnet claude-3-opus claude-3-haiku],
-            anthropic: %w[claude-3-sonnet claude-3-opus claude-3-haiku],
-            open_ai: %w[gpt-4-vision-preview gpt-4-turbo gpt-4o],
-            google: %w[gemini-1.5-pro gemini-1.5-flash],
-          }
-        end
-
         def models_by_provider
           # ChatGPT models are listed under open_ai but they are actually available through OpenAI and Azure.
           # However, since they use the same URL/key settings, there's no reason to duplicate them.

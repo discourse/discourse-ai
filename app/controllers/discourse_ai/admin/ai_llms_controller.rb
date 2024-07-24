@@ -106,6 +106,7 @@ module DiscourseAi
             :max_prompt_tokens,
             :api_key,
             :enabled_chat_bot,
+            :vision_enabled,
           )
 
         provider = updating ? updating.provider : permitted[:provider]

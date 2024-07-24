@@ -47,7 +47,28 @@ module DiscourseAi
           content << "#{msg[:id]}: " if msg[:id]
           content << msg[:content]
 
-          { role: "user", content: content }
+          message = { role: "user", content: content }
+
+          message[:content] = inline_images(message[:content], msg) if vision_support?
+
+          message
+        end
+
+        def inline_images(content, message)
+          encoded_uploads = prompt.encoded_uploads(message)
+          return content if encoded_uploads.blank?
+
+          content_w_imgs =
+            encoded_uploads.reduce([]) do |memo, details|
+              memo << {
+                type: "image_url",
+                image_url: {
+                  url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
+                },
+              }
+            end
+
+          content_w_imgs << { type: "text", text: message[:content] }
         end
       end
     end

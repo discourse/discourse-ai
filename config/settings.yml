@@ -189,10 +189,13 @@ discourse_ai:
   ai_vllm_api_key: ""
   ai_llava_endpoint:
     default: ""
+    hidden: true
   ai_llava_endpoint_srv:
     default: ""
     hidden: true
-  ai_llava_api_key: ""
+  ai_llava_api_key: 
+    default: ""
+    hidden: true
   ai_strict_token_counting:
     default: false
     hidden: true
@@ -254,7 +257,7 @@ discourse_ai:
       - "context_menu"
       - "image_caption"
   ai_helper_image_caption_model:
-    default: "llava"
+    default: ""
     type: enum
     enum: "DiscourseAi::Configuration::LlmVisionEnumerator"
   ai_auto_image_caption_allowed_groups:

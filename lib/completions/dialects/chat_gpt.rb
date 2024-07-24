@@ -45,6 +45,10 @@ module DiscourseAi
           model_max_tokens - buffer
         end
 
+        def vision_support?
+          super || %w[gpt-4-vision gpt-4-turbo gpt-4o].any? { |vm| model_name.include?(vm) }
+        end
+
         private
 
         def tools_dialect
@@ -78,33 +82,25 @@ module DiscourseAi
             end
           end
 
-          user_message[:content] = inline_images(user_message[:content], msg)
+          user_message[:content] = inline_images(user_message[:content], msg) if vision_support?
           user_message
         end
 
         def inline_images(content, message)
-          if model_name.include?("gpt-4-vision") || model_name == "gpt-4-turbo" ||
-               model_name == "gpt-4o"
-            content = message[:content]
-            encoded_uploads = prompt.encoded_uploads(message)
-            if encoded_uploads.present?
-              new_content = []
-              new_content.concat(
-                encoded_uploads.map do |details|
-                  {
-                    type: "image_url",
-                    image_url: {
-                      url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
-                    },
-                  }
-                end,
-              )
-              new_content << { type: "text", text: content }
-              content = new_content
-            end
-          end
+          encoded_uploads = prompt.encoded_uploads(message)
+          return content if encoded_uploads.blank?
 
-          content
+          content_w_imgs =
+            encoded_uploads.reduce([]) do |memo, details|
+              memo << {
+                type: "image_url",
+                image_url: {
+                  url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
+                },
+              }
+            end
+
+          content_w_imgs << { type: "text", text: message[:content] }
         end
 
         def per_message_overhead

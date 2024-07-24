@@ -124,4 +124,6 @@ end
 #  api_key           :string
 #  user_id           :integer
 #  enabled_chat_bot  :boolean          default(FALSE), not null
+#  provider_params   :jsonb
+#  vision_enabled    :boolean          default(FALSE), not null
 #

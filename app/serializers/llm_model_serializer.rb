@@ -13,7 +13,8 @@ class LlmModelSerializer < ApplicationSerializer
              :url,
              :enabled_chat_bot,
              :shadowed_by_srv,
-             :provider_params
+             :provider_params,
+             :vision_enabled
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
 

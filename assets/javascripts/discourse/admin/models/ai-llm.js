@@ -13,7 +13,8 @@ export default class AiLlm extends RestModel {
       "url",
       "api_key",
       "enabled_chat_bot",
-      "provider_params"
+      "provider_params",
+      "vision_enabled"
     );
   }
 

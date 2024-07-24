@@ -71,6 +71,10 @@ module DiscourseAi
           SiteSetting.ai_anthropic_native_tool_call_models_map.include?(model_name)
         end
 
+        def vision_support?
+          super || model_name.include?("claude-3")
+        end
+
         private
 
         def tools_dialect
@@ -109,34 +113,28 @@ module DiscourseAi
           content = +""
           content << "#{msg[:id]}: " if msg[:id]
           content << msg[:content]
-          content = inline_images(content, msg)
+          content = inline_images(content, msg) if vision_support?
 
           { role: "user", content: content }
         end
 
         def inline_images(content, message)
-          if model_name.include?("claude-3")
-            encoded_uploads = prompt.encoded_uploads(message)
-            if encoded_uploads.present?
-              new_content = []
-              new_content.concat(
-                encoded_uploads.map do |details|
-                  {
-                    source: {
-                      type: "base64",
-                      data: details[:base64],
-                      media_type: details[:mime_type],
-                    },
-                    type: "image",
-                  }
-                end,
-              )
-              new_content << { type: "text", text: content }
-              content = new_content
-            end
-          end
+          encoded_uploads = prompt.encoded_uploads(message)
+          return content if encoded_uploads.blank?
 
-          content
+          content_w_imgs =
+            encoded_uploads.reduce([]) do |memo, details|
+              memo << {
+                source: {
+                  type: "base64",
+                  data: details[:base64],
+                  media_type: details[:mime_type],
+                },
+                type: "image",
+              }
+            end
+
+          content_w_imgs << { type: "text", text: content }
         end
       end
     end
