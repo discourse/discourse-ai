@@ -12,17 +12,15 @@
     }
   }
 
-  // Hide the Summarize label when there are many stats unless is mobile
+  // Hide the Summarize label when there are many stats
   &:has(.--many-stats):has(.top-replies) .topic-map__additional-contents {
-    @media screen and (min-width: 476px) {
-      button {
-        .d-icon {
-          margin: 0;
-          height: 1.2em;
-        }
-        .d-button-label {
-          display: none;
-        }
+    button {
+      .d-icon {
+        margin: 0;
+        height: 1.2em;
+      }
+      .d-button-label {
+        display: none;
       }
     }
   }
