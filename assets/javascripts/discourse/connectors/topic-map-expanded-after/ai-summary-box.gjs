@@ -13,40 +13,22 @@ import dIcon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import { bind } from "discourse-common/utils/decorators";
 import I18n from "discourse-i18n";
+import DMenu from "float-kit/components/d-menu";
 import DTooltip from "float-kit/components/d-tooltip";
-import and from "truth-helpers/helpers/and";
-import not from "truth-helpers/helpers/not";
-import or from "truth-helpers/helpers/or";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
 
 export default class AiSummaryBox extends Component {
   @service siteSettings;
   @service messageBus;
   @service currentUser;
-  @tracked summary = "";
+
   @tracked text = "";
   @tracked summarizedOn = null;
   @tracked summarizedBy = null;
   @tracked newPostsSinceSummary = null;
   @tracked outdated = false;
   @tracked canRegenerate = false;
-  @tracked regenerated = false;
-
-  @tracked showSummaryBox = false;
-  @tracked canCollapseSummary = false;
   @tracked loading = false;
-
-  get generateSummaryTitle() {
-    const title = this.canRegenerate
-      ? "summary.buttons.regenerate"
-      : "summary.buttons.generate";
-
-    return I18n.t(title);
-  }
-
-  get generateSummaryIcon() {
-    return this.canRegenerate ? "sync" : "discourse-sparkles";
-  }
 
   get outdatedSummaryWarningText() {
     let outdatedText = I18n.t("summary.outdated");
@@ -65,40 +47,12 @@ export default class AiSummaryBox extends Component {
     return this.args.outletArgs.postStream.summary;
   }
 
-  @action
-  collapse() {
-    this.showSummaryBox = false;
-    this.canCollapseSummary = false;
+  get topicId() {
+    return this.args.outletArgs.topic.id;
   }
 
-  @action
-  generateSummary() {
-    const topicId = this.args.outletArgs.topic.id;
-    this.showSummaryBox = true;
-
-    if (this.text && !this.canRegenerate) {
-      this.canCollapseSummary = false;
-      return;
-    }
-
-    let fetchURL = `/discourse-ai/summarization/t/${topicId}?`;
-
-    if (this.currentUser) {
-      fetchURL += `stream=true`;
-
-      if (this.canRegenerate) {
-        fetchURL += "&skip_age_check=true";
-      }
-    }
-
-    this.loading = true;
-
-    return ajax(fetchURL).then((data) => {
-      if (!this.currentUser) {
-        data.done = true;
-        this._updateSummary(data);
-      }
-    });
+  get baseSummarizationURL() {
+    return `/discourse-ai/summarization/t/${this.topicId}`;
   }
 
   @bind
@@ -113,6 +67,49 @@ export default class AiSummaryBox extends Component {
       "/discourse-ai/summaries/topic/*",
       this._updateSummary
     );
+  }
+
+  @action
+  generateSummary() {
+    let fetchURL = this.baseSummarizationURL;
+
+    if (this.currentUser) {
+      fetchURL += `?stream=true`;
+    }
+
+    return this._requestSummary(fetchURL);
+  }
+
+  @action
+  regenerateSummary() {
+    let fetchURL = this.baseSummarizationURL;
+
+    if (this.currentUser) {
+      fetchURL += `?stream=true`;
+
+      if (this.canRegenerate) {
+        fetchURL += "&skip_age_check=true";
+      }
+    }
+
+    return this._requestSummary(fetchURL);
+  }
+
+  @action
+  _requestSummary(url) {
+    if (this.loading || (this.text && !this.canRegenerate)) {
+      return;
+    }
+
+    this.loading = true;
+    this.summarizedOn = null;
+
+    return ajax(url).then((data) => {
+      if (!this.currentUser) {
+        data.done = true;
+        this._updateSummary(data);
+      }
+    });
   }
 
   @bind
@@ -138,69 +135,71 @@ export default class AiSummaryBox extends Component {
   }
 
   <template>
-    {{#if (or @outletArgs.topic.has_summary @outletArgs.topic.summarizable)}}
-      <div class="summarization-buttons">
-        {{#if @outletArgs.topic.summarizable}}
-          {{#if this.showSummaryBox}}
-            <DButton
-              @action={{this.collapse}}
-              @title="summary.buttons.hide"
-              @label="summary.buttons.hide"
-              @icon="chevron-up"
-              class="btn-primary ai-topic-summarization"
-            />
-          {{else}}
-            <DButton
-              @action={{this.generateSummary}}
-              @translatedLabel={{this.generateSummaryTitle}}
-              @translatedTitle={{this.generateSummaryTitle}}
-              @icon={{this.generateSummaryIcon}}
-              @disabled={{this.loading}}
-              class="btn-primary ai-topic-summarization"
-            />
-          {{/if}}
-        {{/if}}
-
-        {{yield}}
-      </div>
-
+    {{#if @outletArgs.topic.summarizable}}
       <div
-        class="summary-box__container"
+        class="ai-summarization-button"
         {{didInsert this.subscribe}}
         {{willDestroy this.unsubscribe}}
       >
-        {{#if this.showSummaryBox}}
-          <article class="ai-summary-box">
-            {{#if (and this.loading (not this.text))}}
-              <AiSummarySkeleton />
-            {{else}}
-              <div class="generated-summary">{{this.text}}</div>
-
-              {{#if this.summarizedOn}}
-                <div class="summarized-on">
-                  <p>
-                    {{i18n "summary.summarized_on" date=this.summarizedOn}}
-
-                    <DTooltip @placements={{array "top-end"}}>
-                      <:trigger>
-                        {{dIcon "info-circle"}}
-                      </:trigger>
-                      <:content>
-                        {{i18n "summary.model_used" model=this.summarizedBy}}
-                      </:content>
-                    </DTooltip>
-                  </p>
-
-                  {{#if this.outdated}}
-                    <p class="outdated-summary">
-                      {{this.outdatedSummaryWarningText}}
-                    </p>
+        <DMenu
+          @onShow={{this.generateSummary}}
+          @arrow={{true}}
+          @identifier="topic-map__ai-summary"
+          @interactive={{true}}
+          @triggers="click"
+          @placement="left"
+          @modalForMobile={{true}}
+          @groupIdentifier="topic-map"
+          @inline={{true}}
+          @label={{i18n "summary.buttons.generate"}}
+          @title={{i18n "summary.buttons.generate"}}
+          @icon="discourse-sparkles"
+          @triggerClass="ai-topic-summarization"
+        >
+          <:content>
+            <div class="ai-summary-container">
+              <h3>Topic Summary</h3>
+              <article class="ai-summary-box">
+                {{#if this.loading}}
+                  <AiSummarySkeleton />
+                {{else}}
+                  <div class="generated-summary">{{this.text}}</div>
+                  {{#if this.summarizedOn}}
+                    <div class="summarized-on">
+                      <p>
+                        {{i18n "summary.summarized_on" date=this.summarizedOn}}
+                        <DTooltip @placements={{array "top-end"}}>
+                          <:trigger>
+                            {{dIcon "info-circle"}}
+                          </:trigger>
+                          <:content>
+                            {{i18n
+                              "summary.model_used"
+                              model=this.summarizedBy
+                            }}
+                          </:content>
+                        </DTooltip>
+                      </p>
+                      <div class="outdated-summary">
+                        {{#if this.outdated}}
+                          <p>{{this.outdatedSummaryWarningText}}</p>
+                        {{/if}}
+                        {{#if this.canRegenerate}}
+                          <DButton
+                            @label="summary.buttons.regenerate"
+                            @title="summary.buttons.regenerate"
+                            @action={{this.regenerateSummary}}
+                            @icon="sync"
+                          />
+                        {{/if}}
+                      </div>
+                    </div>
                   {{/if}}
-                </div>
-              {{/if}}
-            {{/if}}
-          </article>
-        {{/if}}
+                {{/if}}
+              </article>
+            </div>
+          </:content>
+        </DMenu>
       </div>
     {{/if}}
   </template>
