@@ -17,7 +17,7 @@ class FixAiSummariesSequence < ActiveRecord::Migration[7.0]
                 ),
                 (
                   SELECT
-                    max(id)
+                    MAX(id)
                   FROM
                     ai_summaries
                 )
