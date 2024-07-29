@@ -1,13 +1,13 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::SearchSettings do
-  fab!(:gpt_35_bot) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
-  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  fab!(:llm_model)
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
   before do
     SiteSetting.ai_bot_enabled = true
-    toggle_enabled_bots(bots: [gpt_35_bot])
+    toggle_enabled_bots(bots: [llm_model])
   end
 
   def search_settings(query)

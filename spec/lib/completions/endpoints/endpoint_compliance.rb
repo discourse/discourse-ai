@@ -158,7 +158,7 @@ class EndpointsCompliance
   end
 
   def dialect(prompt: generic_prompt)
-    dialect_klass.new(prompt, endpoint.model)
+    dialect_klass.new(prompt, endpoint.llm_model)
   end
 
   def regular_mode_simple_prompt(mock)
@@ -176,7 +176,7 @@ class EndpointsCompliance
     expect(log.raw_request_payload).to be_present
     expect(log.raw_response_payload).to eq(mock.response(completion_response).to_json)
     expect(log.request_tokens).to eq(endpoint.prompt_size(dialect.translate))
-    expect(log.response_tokens).to eq(endpoint.tokenizer.size(completion_response))
+    expect(log.response_tokens).to eq(endpoint.llm_model.tokenizer_class.size(completion_response))
   end
 
   def regular_mode_tools(mock)
@@ -206,7 +206,7 @@ class EndpointsCompliance
       expect(log.raw_response_payload).to be_present
       expect(log.request_tokens).to eq(endpoint.prompt_size(dialect.translate))
       expect(log.response_tokens).to eq(
-        endpoint.tokenizer.size(mock.streamed_simple_deltas[0...-1].join),
+        endpoint.llm_model.tokenizer_class.size(mock.streamed_simple_deltas[0...-1].join),
       )
     end
   end

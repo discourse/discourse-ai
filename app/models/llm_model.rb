@@ -54,7 +54,7 @@ class LlmModel < ActiveRecord::Base
   end
 
   def to_llm
-    DiscourseAi::Completions::Llm.proxy_from_obj(self)
+    DiscourseAi::Completions::Llm.proxy("custom:#{id}")
   end
 
   def toggle_companion_user

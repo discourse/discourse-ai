@@ -4,56 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class OpenAi < Base
-        class << self
-          def can_contact?(endpoint_name)
-            endpoint_name == "open_ai"
-          end
-
-          def dependant_setting_names
-            %w[
-              ai_openai_api_key
-              ai_openai_gpt4o_url
-              ai_openai_gpt4_32k_url
-              ai_openai_gpt4_turbo_url
-              ai_openai_gpt4_url
-              ai_openai_gpt4_url
-              ai_openai_gpt35_16k_url
-              ai_openai_gpt35_url
-            ]
-          end
-
-          def correctly_configured?(model_name)
-            SiteSetting.ai_openai_api_key.present? && has_url?(model_name)
-          end
-
-          def has_url?(model)
-            url =
-              if model.include?("gpt-4")
-                if model.include?("32k")
-                  SiteSetting.ai_openai_gpt4_32k_url
-                else
-                  if model.include?("1106") || model.include?("turbo")
-                    SiteSetting.ai_openai_gpt4_turbo_url
-                  elsif model.include?("gpt-4o")
-                    SiteSetting.ai_openai_gpt4o_url
-                  else
-                    SiteSetting.ai_openai_gpt4_url
-                  end
-                end
-              else
-                if model.include?("16k")
-                  SiteSetting.ai_openai_gpt35_16k_url
-                else
-                  SiteSetting.ai_openai_gpt35_url
-                end
-              end
-
-            url.present?
-          end
-
-          def endpoint_name(model_name)
-            "OpenAI - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          %w[open_ai azure].include?(model_provider)
         end
 
         def normalize_model_params(model_params)
@@ -68,7 +20,7 @@ module DiscourseAi
         end
 
         def default_options
-          { model: model }
+          { model: llm_model.name }
         end
 
         def provider_id
@@ -78,28 +30,7 @@ module DiscourseAi
         private
 
         def model_uri
-          return URI(llm_model.url) if llm_model&.url
-
-          url =
-            if model.include?("gpt-4")
-              if model.include?("32k")
-                SiteSetting.ai_openai_gpt4_32k_url
-              else
-                if model.include?("1106") || model.include?("turbo")
-                  SiteSetting.ai_openai_gpt4_turbo_url
-                else
-                  SiteSetting.ai_openai_gpt4_url
-                end
-              end
-            else
-              if model.include?("16k")
-                SiteSetting.ai_openai_gpt35_16k_url
-              else
-                SiteSetting.ai_openai_gpt35_url
-              end
-            end
-
-          URI(url)
+          URI(llm_model.url)
         end
 
         def prepare_payload(prompt, model_params, dialect)
@@ -110,7 +41,7 @@ module DiscourseAi
 
             # Usage is not available in Azure yet.
             # We'll fallback to guess this using the tokenizer.
-            payload[:stream_options] = { include_usage: true } if model_uri.host.exclude?("azure")
+            payload[:stream_options] = { include_usage: true } if llm_model.provider == "open_ai"
           end
 
           payload[:tools] = dialect.tools if dialect.tools.present?
@@ -119,18 +50,15 @@ module DiscourseAi
 
         def prepare_request(payload)
           headers = { "Content-Type" => "application/json" }
+          api_key = llm_model.api_key
 
-          api_key = llm_model&.api_key || SiteSetting.ai_openai_api_key
-
-          if model_uri.host.include?("azure")
+          if llm_model.provider == "azure"
             headers["api-key"] = api_key
           else
             headers["Authorization"] = "Bearer #{api_key}"
+            org_id = llm_model.lookup_custom_param("organization")
+            headers["OpenAI-Organization"] = org_id if org_id.present?
           end
-
-          org_id =
-            llm_model&.lookup_custom_param("organization") || SiteSetting.ai_openai_organization
-          headers["OpenAI-Organization"] = org_id if org_id.present?
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end

@@ -13,6 +13,8 @@ class TestDialect < DiscourseAi::Completions::Dialects::Dialect
 end
 
 RSpec.describe DiscourseAi::Completions::Dialects::Dialect do
+  fab!(:llm_model)
+
   describe "#trim_messages" do
     let(:five_token_msg) { "This represents five tokens." }
 
@@ -23,7 +25,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Dialect do
       prompt.push(type: :tool, content: five_token_msg, id: 1)
       prompt.push(type: :user, content: five_token_msg)
 
-      dialect = TestDialect.new(prompt, "test")
+      dialect = TestDialect.new(prompt, llm_model)
       dialect.max_prompt_tokens = 15 # fits the user messages and the tool_call message
 
       trimmed = dialect.trim(prompt.messages)
@@ -37,7 +39,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Dialect do
       prompt = DiscourseAi::Completions::Prompt.new("I'm a system message consisting of 10 tokens")
       prompt.push(type: :user, content: five_token_msg)
 
-      dialect = TestDialect.new(prompt, "test")
+      dialect = TestDialect.new(prompt, llm_model)
       dialect.max_prompt_tokens = 15
 
       trimmed = dialect.trim(prompt.messages)

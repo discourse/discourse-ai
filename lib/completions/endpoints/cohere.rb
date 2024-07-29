@@ -4,22 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Cohere < Base
-        class << self
-          def can_contact?(endpoint_name)
-            endpoint_name == "cohere"
-          end
-
-          def dependant_setting_names
-            %w[ai_cohere_api_key]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_cohere_api_key.present?
-          end
-
-          def endpoint_name(model_name)
-            "Cohere - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "cohere"
         end
 
         def normalize_model_params(model_params)
@@ -39,9 +25,7 @@ module DiscourseAi
         private
 
         def model_uri
-          url = llm_model&.url || "https://api.cohere.ai/v1/chat"
-
-          URI(url)
+          URI(llm_model.url)
         end
 
         def prepare_payload(prompt, model_params, dialect)
@@ -59,7 +43,7 @@ module DiscourseAi
         def prepare_request(payload)
           headers = {
             "Content-Type" => "application/json",
-            "Authorization" => "Bearer #{llm_model&.api_key || SiteSetting.ai_cohere_api_key}",
+            "Authorization" => "Bearer #{llm_model.api_key}",
           }
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }

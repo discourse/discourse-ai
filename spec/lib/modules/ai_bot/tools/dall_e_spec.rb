@@ -11,8 +11,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
     SiteSetting.ai_openai_api_key = "abc"
   end
 
-  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(gpt_35_turbo.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{gpt_35_turbo.id}") }
   let(:progress_blk) { Proc.new {} }
 
   let(:dall_e) do

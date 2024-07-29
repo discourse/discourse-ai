@@ -30,39 +30,12 @@ module DiscourseAi
             end
           end
 
-          def configuration_hint
-            settings = dependant_setting_names
-            I18n.t(
-              "discourse_ai.llm.endpoints.configuration_hint",
-              settings: settings.join(", "),
-              count: settings.length,
-            )
-          end
-
-          def display_name(model_name)
-            to_display = endpoint_name(model_name)
-
-            return to_display if correctly_configured?(model_name)
-
-            I18n.t("discourse_ai.llm.endpoints.not_configured", display_name: to_display)
-          end
-
-          def dependant_setting_names
-            raise NotImplementedError
-          end
-
-          def endpoint_name(_model_name)
-            raise NotImplementedError
-          end
-
-          def can_contact?(_endpoint_name)
+          def can_contact?(_model_provider)
             raise NotImplementedError
           end
         end
 
-        def initialize(model_name, tokenizer, llm_model: nil)
-          @model = model_name
-          @tokenizer = tokenizer
+        def initialize(llm_model)
           @llm_model = llm_model
         end
 
@@ -136,7 +109,7 @@ module DiscourseAi
                   topic_id: dialect.prompt.topic_id,
                   post_id: dialect.prompt.post_id,
                   feature_name: feature_name,
-                  language_model: self.class.endpoint_name(@model),
+                  language_model: llm_model.name,
                 )
 
               if !@streaming_mode
@@ -323,9 +296,13 @@ module DiscourseAi
           tokenizer.size(extract_prompt_for_tokenizer(prompt))
         end
 
-        attr_reader :tokenizer, :model, :llm_model
+        attr_reader :llm_model
 
         protected
+
+        def tokenizer
+          llm_model.tokenizer_class
+        end
 
         # should normalize temperature, max_tokens, stop_words to endpoint specific values
         def normalize_model_params(model_params)

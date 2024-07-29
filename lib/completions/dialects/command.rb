@@ -6,17 +6,11 @@ module DiscourseAi
   module Completions
     module Dialects
       class Command < Dialect
-        class << self
-          def can_translate?(model_name)
-            %w[command-light command command-r command-r-plus].include?(model_name)
-          end
+        def self.can_translate?(model_provider)
+          model_provider == "cohere"
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
-
-        def tokenizer
-          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::OpenAiTokenizer
-        end
 
         def translate
           messages = super
@@ -68,20 +62,7 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
-
-          case model_name
-          when "command-light"
-            4096
-          when "command"
-            8192
-          when "command-r"
-            131_072
-          when "command-r-plus"
-            131_072
-          else
-            8192
-          end
+          llm_model.max_prompt_tokens
         end
 
         def native_tool_support?
@@ -99,7 +80,7 @@ module DiscourseAi
         end
 
         def calculate_message_token(context)
-          self.tokenizer.size(context[:content].to_s + context[:name].to_s)
+          llm_model.tokenizer_class.size(context[:content].to_s + context[:name].to_s)
         end
 
         def system_msg(msg)

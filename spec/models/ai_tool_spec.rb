@@ -2,7 +2,7 @@
 
 RSpec.describe AiTool do
   fab!(:llm_model) { Fabricate(:llm_model, name: "claude-2") }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy_from_obj(llm_model) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
   def create_tool(parameters: nil, script: nil)
     AiTool.create!(

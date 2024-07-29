@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
-  before do
-    SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_openai_api_key = "asd"
-  end
+  before { SiteSetting.ai_bot_enabled = true }
 
-  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  fab!(:llm_model) { Fabricate(:llm_model, max_prompt_tokens: 8192) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   let(:progress_blk) { Proc.new {} }
 
   let(:mock_search_json) { plugin_file_from_fixtures("search.json", "search_meta").read }

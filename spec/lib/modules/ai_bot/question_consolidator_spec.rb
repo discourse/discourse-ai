@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::QuestionConsolidator do
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("fake:fake") }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{Fabricate(:fake_model).id}") }
   let(:fake_endpoint) { DiscourseAi::Completions::Endpoints::Fake }
 
   fab!(:user)

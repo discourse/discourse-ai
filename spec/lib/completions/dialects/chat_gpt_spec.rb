@@ -3,8 +3,8 @@
 require_relative "dialect_context"
 
 RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
-  let(:model_name) { "gpt-4" }
-  let(:context) { DialectContext.new(described_class, model_name) }
+  fab!(:llm_model) { Fabricate(:llm_model, max_prompt_tokens: 8192) }
+  let(:context) { DialectContext.new(described_class, llm_model) }
 
   describe "#translate" do
     it "translates a prompt written in our generic format to the ChatGPT format" do

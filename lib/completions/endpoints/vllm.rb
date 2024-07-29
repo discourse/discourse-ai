@@ -4,22 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Vllm < Base
-        class << self
-          def can_contact?(endpoint_name)
-            endpoint_name == "vllm"
-          end
-
-          def dependant_setting_names
-            %w[ai_vllm_endpoint_srv ai_vllm_endpoint]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_vllm_endpoint_srv.present? || SiteSetting.ai_vllm_endpoint.present?
-          end
-
-          def endpoint_name(model_name)
-            "vLLM - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "vllm"
         end
 
         def normalize_model_params(model_params)
@@ -34,7 +20,7 @@ module DiscourseAi
         end
 
         def default_options
-          { max_tokens: 2000, model: model }
+          { max_tokens: 2000, model: llm_model.name }
         end
 
         def provider_id
@@ -44,16 +30,13 @@ module DiscourseAi
         private
 
         def model_uri
-          if llm_model&.url && !llm_model&.url == LlmModel::RESERVED_VLLM_SRV_URL
-            return URI(llm_model.url)
-          end
-
-          service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_vllm_endpoint_srv)
-          if service.present?
+          if llm_model.url == LlmModel::RESERVED_VLLM_SRV_URL
+            service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_vllm_endpoint_srv)
             api_endpoint = "https://#{service.target}:#{service.port}/v1/chat/completions"
           else
-            api_endpoint = "#{SiteSetting.ai_vllm_endpoint}/v1/chat/completions"
+            api_endpoint = llm_model.url
           end
+
           @uri ||= URI(api_endpoint)
         end
 

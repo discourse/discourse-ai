@@ -128,18 +128,9 @@ class GeminiMock < EndpointMock
 end
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
-  subject(:endpoint) { described_class.new("gemini-pro", DiscourseAi::Tokenizer::OpenAiTokenizer) }
+  subject(:endpoint) { described_class.new(model) }
 
-  fab!(:model) do
-    Fabricate(
-      :llm_model,
-      url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest",
-      name: "gemini-1.5-pro",
-      provider: "google",
-      api_key: "ABC",
-      vision_enabled: true,
-    )
-  end
+  fab!(:model) { Fabricate(:gemini_model, vision_enabled: true) }
 
   fab!(:user)
 
@@ -168,7 +159,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     req_body = nil
 
     llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
-    url = "#{model.url}:generateContent?key=ABC"
+    url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
       body:
@@ -221,7 +212,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     split = data.split("|")
 
     llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
-    url = "#{model.url}:streamGenerateContent?alt=sse&key=ABC"
+    url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
 
     output = +""
     gemini_mock.with_chunk_array_support do

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 describe DiscourseAi::Automation::LlmTriage do
   fab!(:post)
+  fab!(:llm_model)
 
   def triage(**args)
     DiscourseAi::Automation::LlmTriage.handle(**args)
@@ -10,7 +11,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["good"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -24,7 +25,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -40,7 +41,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         category_id: category.id,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
@@ -55,7 +56,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         canned_reply: "test canned reply 123",
@@ -73,7 +74,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         flag_post: true,
@@ -89,7 +90,7 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["Bad.\n\nYo"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         flag_post: true,

@@ -12,7 +12,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
     SiteSetting.ai_bot_enabled = true
   end
 
-  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-4") }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(gpt_4.name) }
 
   let!(:user) { Fabricate(:user) }
 
@@ -38,7 +38,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       toggle_enabled_bots(bots: [fake])
       Group.refresh_automatic_groups!
 
-      bot_user = DiscourseAi::AiBot::EntryPoint.find_user_from_model("fake")
+      bot_user = DiscourseAi::AiBot::EntryPoint.find_user_from_model(fake.name)
       AiPersona.create!(
         name: "TestPersona",
         top_p: 0.5,

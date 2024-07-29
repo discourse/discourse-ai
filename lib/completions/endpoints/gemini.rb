@@ -4,22 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Gemini < Base
-        class << self
-          def can_contact?(endpoint_name)
-            endpoint_name == "google"
-          end
-
-          def dependant_setting_names
-            %w[ai_gemini_api_key]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_gemini_api_key.present?
-          end
-
-          def endpoint_name(model_name)
-            "Google - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "google"
         end
 
         def default_options
@@ -59,21 +45,8 @@ module DiscourseAi
         private
 
         def model_uri
-          if llm_model
-            url = llm_model.url
-          else
-            mapped_model = model
-            if model == "gemini-1.5-pro"
-              mapped_model = "gemini-1.5-pro-latest"
-            elsif model == "gemini-1.5-flash"
-              mapped_model = "gemini-1.5-flash-latest"
-            elsif model == "gemini-1.0-pro"
-              mapped_model = "gemini-pro-latest"
-            end
-            url = "https://generativelanguage.googleapis.com/v1beta/models/#{mapped_model}"
-          end
-
-          key = llm_model&.api_key || SiteSetting.ai_gemini_api_key
+          url = llm_model.url
+          key = llm_model.api_key
 
           if @streaming_mode
             url = "#{url}:streamGenerateContent?key=#{key}&alt=sse"
