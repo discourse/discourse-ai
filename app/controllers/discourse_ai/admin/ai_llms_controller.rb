@@ -110,9 +110,7 @@ module DiscourseAi
           )
 
         provider = updating ? updating.provider : permitted[:provider]
-        permit_url =
-          (updating && updating.url != LlmModel::RESERVED_VLLM_SRV_URL) ||
-            provider != LlmModel::BEDROCK_PROVIDER_NAME
+        permit_url = provider != LlmModel::BEDROCK_PROVIDER_NAME
 
         permitted[:url] = params.dig(:ai_llm, :url) if permit_url
 
