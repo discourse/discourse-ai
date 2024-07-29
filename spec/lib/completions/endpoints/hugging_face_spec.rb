@@ -81,7 +81,7 @@ end
 RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
   subject(:endpoint) { described_class.new(hf_model) }
 
-  fab!(:hf_model) { Fabricate(:hf_model) }
+  fab!(:hf_model)
   fab!(:user)
 
   let(:hf_mock) { HuggingFaceMock.new(endpoint) }

@@ -96,21 +96,35 @@ discourse_ai:
       - opennsfw2
       - nsfw_detector
 
-  ai_openai_gpt35_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt35_16k_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt4o_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt4_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt4_32k_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt4_turbo_url: "https://api.openai.com/v1/chat/completions"
+  ai_openai_gpt35_url: 
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt35_16k_url: 
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt4o_url:
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt4_url:
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt4_32k_url: 
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt4_turbo_url: 
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
   ai_openai_dall_e_3_url: "https://api.openai.com/v1/images/generations"
   ai_openai_embeddings_url: "https://api.openai.com/v1/embeddings"
-  ai_openai_organization: ""
+  ai_openai_organization: 
+    default: ""
+    hidden: true
   ai_openai_api_key:
     default: ""
     secret: true
   ai_anthropic_api_key:
     default: ""
-    secret: true
+    hidden: true
   ai_anthropic_native_tool_call_models:
     type: list
     list_type: compact
@@ -123,7 +137,7 @@ discourse_ai:
       - claude-3-5-sonnet
   ai_cohere_api_key:
     default: ""
-    secret: true
+    hidden: true
   ai_stability_api_key:
     default: ""
     secret: true
@@ -140,13 +154,16 @@ discourse_ai:
       - "stable-diffusion-v1-5"
   ai_hugging_face_api_url:
     default: ""
+    hidden: true
   ai_hugging_face_api_key:
     default: ""
-    secret: true
+    hidden: true
   ai_hugging_face_token_limit:
     default: 4096
+    hidden: true
   ai_hugging_face_model_display_name:
     default: ""
+    hidden: true
   ai_hugging_face_tei_endpoint:
     default: ""
   ai_hugging_face_tei_endpoint_srv:
@@ -167,11 +184,13 @@ discourse_ai:
   ai_bedrock_access_key_id:
     default: ""
     secret: true
+    hidden: true
   ai_bedrock_secret_access_key:
     default: ""
-    secret: true
+    hidden: true
   ai_bedrock_region:
     default: "us-east-1"
+    hidden: true
   ai_cloudflare_workers_account_id:
     default: ""
     secret: true
@@ -180,13 +199,16 @@ discourse_ai:
     secret: true
   ai_gemini_api_key:
     default: ""
-    secret: true
+    hidden: true
   ai_vllm_endpoint:
     default: ""
+    hidden: true
   ai_vllm_endpoint_srv:
     default: ""
     hidden: true
-  ai_vllm_api_key: ""
+  ai_vllm_api_key: 
+    default: ""
+    hidden: true
   ai_llava_endpoint:
     default: ""
     hidden: true

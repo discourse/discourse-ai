@@ -58,7 +58,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
   end
 
   describe "#generate with fake model" do
-    fab!(:fake_model) { Fabricate(:fake_model) }
+    fab!(:fake_model)
 
     before do
       DiscourseAi::Completions::Endpoints::Fake.delays = []

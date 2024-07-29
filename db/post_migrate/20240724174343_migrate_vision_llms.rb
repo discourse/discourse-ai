@@ -25,8 +25,9 @@ class MigrateVisionLlms < ActiveRecord::Migration[7.1]
       ).first
 
     if current_value && current_value != "llava"
+      model_name = current_value.split(":").last
       llm_model =
-        DB.query_single("SELECT id FROM llm_models WHERE name = :model", model: current_value).first
+        DB.query_single("SELECT id FROM llm_models WHERE name = :model", model: model_name).first
 
       if llm_model
         DB.exec(<<~SQL, new: "custom:#{llm_model}") if llm_model
