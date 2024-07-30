@@ -19,6 +19,6 @@ class LlmModelSerializer < ApplicationSerializer
   has_one :user, serializer: BasicUserSerializer, embed: :object
 
   def shadowed_by_srv
-    object.url == LlmModel::RESERVED_VLLM_SRV_URL
+    object.url.to_s.starts_with?("srv://")
   end
 end

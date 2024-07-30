@@ -4,22 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class HuggingFace < Base
-        class << self
-          def can_contact?(endpoint_name)
-            endpoint_name == "hugging_face"
-          end
-
-          def dependant_setting_names
-            %w[ai_hugging_face_api_url]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_hugging_face_api_url.present?
-          end
-
-          def endpoint_name(model_name)
-            "Hugging Face - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "hugging_face"
         end
 
         def normalize_model_params(model_params)
@@ -34,7 +20,7 @@ module DiscourseAi
         end
 
         def default_options
-          { model: model, temperature: 0.7 }
+          { model: llm_model.name, temperature: 0.7 }
         end
 
         def provider_id
@@ -44,7 +30,7 @@ module DiscourseAi
         private
 
         def model_uri
-          URI(llm_model&.url || SiteSetting.ai_hugging_face_api_url)
+          URI(llm_model.url)
         end
 
         def prepare_payload(prompt, model_params, _dialect)
@@ -53,8 +39,7 @@ module DiscourseAi
             .merge(messages: prompt)
             .tap do |payload|
               if !payload[:max_tokens]
-                token_limit =
-                  llm_model&.max_prompt_tokens || SiteSetting.ai_hugging_face_token_limit
+                token_limit = llm_model.max_prompt_tokens
 
                 payload[:max_tokens] = token_limit - prompt_size(prompt)
               end
@@ -64,7 +49,7 @@ module DiscourseAi
         end
 
         def prepare_request(payload)
-          api_key = llm_model&.api_key || SiteSetting.ai_hugging_face_api_key
+          api_key = llm_model.api_key
 
           headers =
             { "Content-Type" => "application/json" }.tap do |h|

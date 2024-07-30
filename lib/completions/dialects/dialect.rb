@@ -5,7 +5,7 @@ module DiscourseAi
     module Dialects
       class Dialect
         class << self
-          def can_translate?(_model_name)
+          def can_translate?(model_provider)
             raise NotImplemented
           end
 
@@ -19,7 +19,7 @@ module DiscourseAi
             ]
           end
 
-          def dialect_for(model_name)
+          def dialect_for(model_provider)
             dialects = []
 
             if Rails.env.test? || Rails.env.development?
@@ -28,25 +28,20 @@ module DiscourseAi
 
             dialects = dialects.concat(all_dialects)
 
-            dialect = dialects.find { |d| d.can_translate?(model_name) }
+            dialect = dialects.find { |d| d.can_translate?(model_provider) }
             raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL if !dialect
 
             dialect
           end
         end
 
-        def initialize(generic_prompt, model_name, opts: {}, llm_model: nil)
+        def initialize(generic_prompt, llm_model, opts: {})
           @prompt = generic_prompt
-          @model_name = model_name
           @opts = opts
           @llm_model = llm_model
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
-
-        def tokenizer
-          raise NotImplemented
-        end
 
         def can_end_with_assistant_msg?
           false
@@ -57,7 +52,7 @@ module DiscourseAi
         end
 
         def vision_support?
-          llm_model&.vision_enabled?
+          llm_model.vision_enabled?
         end
 
         def tools
@@ -88,12 +83,12 @@ module DiscourseAi
 
         private
 
-        attr_reader :model_name, :opts, :llm_model
+        attr_reader :opts, :llm_model
 
         def trim_messages(messages)
           prompt_limit = max_prompt_tokens
           current_token_count = 0
-          message_step_size = (max_prompt_tokens / 25).to_i * -1
+          message_step_size = (prompt_limit / 25).to_i * -1
 
           trimmed_messages = []
 
@@ -157,7 +152,7 @@ module DiscourseAi
         end
 
         def calculate_message_token(msg)
-          self.tokenizer.size(msg[:content].to_s)
+          llm_model.tokenizer_class.size(msg[:content].to_s)
         end
 
         def tools_dialect

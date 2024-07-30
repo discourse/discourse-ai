@@ -336,6 +336,8 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     context "when RAG is running with a question consolidator" do
       let(:consolidated_question) { "what is the time in france?" }
 
+      fab!(:llm_model) { Fabricate(:fake_model) }
+
       it "will run the question consolidator" do
         context_embedding = [0.049382, 0.9999]
         EmbeddingsGenerationStubs.discourse_service(
@@ -350,7 +352,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
             name: "custom",
             rag_conversation_chunks: 3,
             allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
-            question_consolidator_llm: "fake:fake",
+            question_consolidator_llm: "custom:#{llm_model.id}",
           )
 
         UploadReference.ensure_exist!(target: custom_ai_persona, upload_ids: [upload.id])

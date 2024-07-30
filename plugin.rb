@@ -80,8 +80,4 @@ after_initialize do
       nil
     end
   end
-
-  on(:site_setting_changed) do |name, _old_value, _new_value|
-    LlmModel.seed_srv_backed_model if name == :ai_vllm_endpoint_srv || name == :ai_vllm_api_key
-  end
 end

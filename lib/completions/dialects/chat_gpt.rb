@@ -5,19 +5,15 @@ module DiscourseAi
     module Dialects
       class ChatGpt < Dialect
         class << self
-          def can_translate?(model_name)
-            model_name.starts_with?("gpt-")
+          def can_translate?(model_provider)
+            model_provider == "open_ai" || model_provider == "azure"
           end
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
 
-        def tokenizer
-          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::OpenAiTokenizer
-        end
-
         def native_tool_support?
-          true
+          llm_model.provider == "open_ai" || llm_model.provider == "azure"
         end
 
         def translate
@@ -30,19 +26,17 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
-
           # provide a buffer of 120 tokens - our function counting is not
           # 100% accurate and getting numbers to align exactly is very hard
           buffer = (opts[:max_tokens] || 2500) + 50
 
           if tools.present?
             # note this is about 100 tokens over, OpenAI have a more optimal representation
-            @function_size ||= self.tokenizer.size(tools.to_json.to_s)
+            @function_size ||= llm_model.tokenizer_class.size(tools.to_json.to_s)
             buffer += @function_size
           end
 
-          model_max_tokens - buffer
+          llm_model.max_prompt_tokens - buffer
         end
 
         private
@@ -105,24 +99,7 @@ module DiscourseAi
         end
 
         def calculate_message_token(context)
-          self.tokenizer.size(context[:content].to_s + context[:name].to_s)
-        end
-
-        def model_max_tokens
-          case model_name
-          when "gpt-3.5-turbo-16k"
-            16_384
-          when "gpt-4"
-            8192
-          when "gpt-4-32k"
-            32_768
-          when "gpt-4-turbo"
-            131_072
-          when "gpt-4o"
-            131_072
-          else
-            8192
-          end
+          llm_model.tokenizer_class.size(context[:content].to_s + context[:name].to_s)
         end
       end
     end

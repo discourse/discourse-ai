@@ -60,17 +60,9 @@ export default class AiLlmEditorForm extends Component {
     return this.testRunning || this.testResult !== null;
   }
 
-  get displaySRVWarning() {
-    return this.args.model.shadowed_by_srv && !this.args.model.isNew;
-  }
-
   get canEditURL() {
     // Explicitly false.
-    if (this.metaProviderParams.url_editable === false) {
-      return false;
-    }
-
-    return !this.args.model.shadowed_by_srv || this.args.model.isNew;
+    return this.metaProviderParams.url_editable !== false;
   }
 
   @computed("args.model.provider")
@@ -174,12 +166,6 @@ export default class AiLlmEditorForm extends Component {
   }
 
   <template>
-    {{#if this.displaySRVWarning}}
-      <div class="alert alert-info">
-        {{icon "exclamation-circle"}}
-        {{I18n.t "discourse_ai.llms.srv_warning"}}
-      </div>
-    {{/if}}
     <form class="form-horizontal ai-llm-editor">
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.display_name"}}</label>

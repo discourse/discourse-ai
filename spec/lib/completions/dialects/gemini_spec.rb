@@ -3,8 +3,8 @@
 require_relative "dialect_context"
 
 RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
-  let(:model_name) { "gemini-1.5-pro" }
-  let(:context) { DialectContext.new(described_class, model_name) }
+  fab!(:model) { Fabricate(:gemini_model) }
+  let(:context) { DialectContext.new(described_class, model) }
 
   describe "#translate" do
     it "translates a prompt written in our generic format to the Gemini format" do
@@ -86,11 +86,12 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
 
     it "trims content if it's getting too long" do
       # testing truncation on 800k tokens is slow use model with less
-      context = DialectContext.new(described_class, "gemini-pro")
+      model.max_prompt_tokens = 16_384
+      context = DialectContext.new(described_class, model)
       translated = context.long_user_input_scenario(length: 5_000)
 
       expect(translated[:messages].last[:role]).to eq("user")
-      expect(translated[:messages].last.dig(:parts, :text).length).to be <
+      expect(translated[:messages].last.dig(:parts, 0, :text).length).to be <
         context.long_message_text(length: 5_000).length
     end
   end

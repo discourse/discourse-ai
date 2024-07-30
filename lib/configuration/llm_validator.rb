@@ -15,19 +15,16 @@ module DiscourseAi
           return !@parent_enabled
         end
 
-        llm_model_id = val.split(":")&.last
-        llm_model = LlmModel.find_by(id: llm_model_id)
-        return false if llm_model.nil?
-
-        run_test(llm_model).tap { |result| @unreachable = result }
-      rescue StandardError
+        run_test(val).tap { |result| @unreachable = result }
+      rescue StandardError => e
+        raise e if Rails.env.test?
         @unreachable = true
         false
       end
 
-      def run_test(llm_model)
+      def run_test(val)
         DiscourseAi::Completions::Llm
-          .proxy_from_obj(llm_model)
+          .proxy(val)
           .generate("How much is 1 + 1?", user: nil, feature_name: "llm_validator")
           .present?
       end

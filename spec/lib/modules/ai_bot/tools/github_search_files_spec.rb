@@ -3,7 +3,8 @@
 require "rails_helper"
 
 RSpec.describe DiscourseAi::AiBot::Tools::GithubSearchFiles do
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4") }
+  fab!(:llm_model)
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
   let(:tool) do
     described_class.new(

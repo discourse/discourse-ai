@@ -4,6 +4,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   subject(:playground) { described_class.new(bot) }
 
   fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
+  fab!(:opus_model) { Fabricate(:anthropic_model) }
 
   fab!(:bot_user) do
     toggle_enabled_bots(bots: [claude_2])
@@ -160,7 +161,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         system_prompt: "You are a helpful bot",
         vision_enabled: true,
         vision_max_pixels: 1_000,
-        default_llm: "anthropic:claude-3-opus",
+        default_llm: "custom:#{opus_model.id}",
         mentionable: true,
       )
     end
@@ -211,7 +212,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         )
 
       persona.create_user!
-      persona.update!(default_llm: "anthropic:claude-2", mentionable: true)
+      persona.update!(default_llm: "custom:#{claude_2.id}", mentionable: true)
       persona
     end
 
@@ -228,7 +229,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         SiteSetting.ai_bot_enabled = true
         SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
         Group.refresh_automatic_groups!
-        persona.update!(allow_chat: true, mentionable: true, default_llm: "anthropic:claude-3-opus")
+        persona.update!(allow_chat: true, mentionable: true, default_llm: "custom:#{opus_model.id}")
       end
 
       it "should behave in a sane way when threading is enabled" do
@@ -342,7 +343,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         persona.update!(
           allow_chat: true,
           mentionable: false,
-          default_llm: "anthropic:claude-3-opus",
+          default_llm: "custom:#{opus_model.id}",
         )
         SiteSetting.ai_bot_enabled = true
       end
@@ -517,7 +518,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
         ["Magic title", "Yes I can"],
-        llm: "anthropic:claude-2",
+        llm: "custom:#{claude_2.id}",
       ) do
         post =
           create_post(
@@ -552,7 +553,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       # title is queued first, ensures it uses the llm targeted via target_usernames not claude
       DiscourseAi::Completions::Llm.with_prepared_responses(
         ["Magic title", "Yes I can"],
-        llm: "open_ai:gpt-3.5-turbo",
+        llm: "custom:#{gpt_35_turbo.id}",
       ) do
         post =
           create_post(
@@ -584,7 +585,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       # replies as correct persona if replying direct to persona
       DiscourseAi::Completions::Llm.with_prepared_responses(
         ["Another reply"],
-        llm: "open_ai:gpt-3.5-turbo",
+        llm: "custom:#{gpt_35_turbo.id}",
       ) do
         create_post(
           raw: "Please ignore this bot, I am replying to a user",

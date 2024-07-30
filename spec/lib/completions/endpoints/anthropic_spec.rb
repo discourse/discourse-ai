@@ -3,16 +3,7 @@ require_relative "endpoint_compliance"
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   let(:url) { "https://api.anthropic.com/v1/messages" }
-  fab!(:model) do
-    Fabricate(
-      :llm_model,
-      url: "https://api.anthropic.com/v1/messages",
-      name: "claude-3-opus",
-      provider: "anthropic",
-      api_key: "123",
-      vision_enabled: true,
-    )
-  end
+  fab!(:model) { Fabricate(:anthropic_model, name: "claude-3-opus", vision_enabled: true) }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{model.id}") }
   let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
   let(:upload100x100) do
@@ -204,6 +195,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   end
 
   it "supports non streaming tool calls" do
+    SiteSetting.ai_anthropic_native_tool_call_models = "claude-3-opus"
+
     tool = {
       name: "calculate",
       description: "calculate something",
@@ -223,8 +216,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
         messages: [{ type: :user, id: "user1", content: "calculate 2758975 + 21.11" }],
         tools: [tool],
       )
-
-    proxy = DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-haiku")
 
     body = {
       id: "msg_01RdJkxCbsEj9VFyFYAkfy2S",
@@ -252,7 +243,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     stub_request(:post, url).to_return(body: body)
 
-    result = proxy.generate(prompt, user: Discourse.system_user)
+    result = llm.generate(prompt, user: Discourse.system_user)
 
     expected = <<~TEXT.strip
       <function_calls>
@@ -370,7 +361,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       },
     ).to_return(status: 200, body: body)
 
-    result = llm.generate(prompt, user: Discourse.system_user)
+    proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    result = proxy.generate(prompt, user: Discourse.system_user)
     expect(result).to eq("Hello!")
 
     expected_body = {

@@ -22,7 +22,7 @@ class VllmMock < EndpointMock
 
   def stub_response(prompt, response_text, tool_call: false)
     WebMock
-      .stub_request(:post, "#{SiteSetting.ai_vllm_endpoint}/v1/chat/completions")
+      .stub_request(:post, "https://test.dev/v1/chat/completions")
       .with(body: model.default_options.merge(messages: prompt).to_json)
       .to_return(status: 200, body: JSON.dump(response(response_text)))
   end
@@ -50,19 +50,16 @@ class VllmMock < EndpointMock
     chunks = (chunks.join("\n\n") << "data: [DONE]").split("")
 
     WebMock
-      .stub_request(:post, "#{SiteSetting.ai_vllm_endpoint}/v1/chat/completions")
+      .stub_request(:post, "https://test.dev/v1/chat/completions")
       .with(body: model.default_options.merge(messages: prompt, stream: true).to_json)
       .to_return(status: 200, body: chunks)
   end
 end
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
-  subject(:endpoint) do
-    described_class.new(
-      "mistralai/Mixtral-8x7B-Instruct-v0.1",
-      DiscourseAi::Tokenizer::MixtralTokenizer,
-    )
-  end
+  subject(:endpoint) { described_class.new(llm_model) }
+
+  fab!(:llm_model) { Fabricate(:vllm_model) }
 
   fab!(:user)
 
@@ -78,14 +75,12 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
   end
 
   let(:dialect) do
-    DiscourseAi::Completions::Dialects::OpenAiCompatible.new(generic_prompt, model_name)
+    DiscourseAi::Completions::Dialects::OpenAiCompatible.new(generic_prompt, llm_model)
   end
   let(:prompt) { dialect.translate }
 
   let(:request_body) { model.default_options.merge(messages: prompt).to_json }
   let(:stream_request_body) { model.default_options.merge(messages: prompt, stream: true).to_json }
-
-  before { SiteSetting.ai_vllm_endpoint = "https://test.dev" }
 
   describe "#perform_completion!" do
     context "when using regular mode" do

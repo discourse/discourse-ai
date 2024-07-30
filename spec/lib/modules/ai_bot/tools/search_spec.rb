@@ -4,10 +4,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
   before { SearchIndexer.enable }
   after { SearchIndexer.disable }
 
-  before { SiteSetting.ai_openai_api_key = "asd" }
-
-  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  fab!(:llm_model)
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   let(:progress_blk) { Proc.new {} }
 
   fab!(:admin)

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class DialectContext
-  def initialize(dialect_klass, model_name)
+  def initialize(dialect_klass, llm_model)
     @dialect_klass = dialect_klass
-    @model_name = model_name
+    @llm_model = llm_model
   end
 
   def dialect(prompt)
-    @dialect_klass.new(prompt, @model_name)
+    @dialect_klass.new(prompt, @llm_model)
   end
 
   def prompt
