@@ -123,7 +123,7 @@ export default class AiSummaryBox extends Component {
       })
       .then(() => {
         if (update.done) {
-          this.summarizedOn = shortDateNoYear(topicSummary.summarized_on);
+          this.summarizedOn = shortDateNoYear(topicSummary.updated_at);
           this.summarizedBy = topicSummary.algorithm;
           this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
           this.outdated = topicSummary.outdated;
