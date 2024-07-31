@@ -38,7 +38,7 @@ module DiscourseAi
           llm_model.toggle_companion_user
           render json: { ai_persona: LlmModelSerializer.new(llm_model) }, status: :created
         else
-          render_json_error LlmModelSerializer.new(llm_model)
+          render_json_error llm_model
         end
       end
 
@@ -49,7 +49,7 @@ module DiscourseAi
           llm_model.toggle_companion_user
           render json: LlmModelSerializer.new(llm_model)
         else
-          render_json_error LlmModelSerializer.new(llm_model)
+          render_json_error llm_model
         end
       end
 

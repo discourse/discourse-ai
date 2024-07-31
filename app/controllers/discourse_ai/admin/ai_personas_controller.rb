@@ -63,7 +63,7 @@ module DiscourseAi
 
           render json: LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
         else
-          render_json_error LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
+          render_json_error @ai_persona
         end
       end
 
@@ -71,7 +71,7 @@ module DiscourseAi
         if @ai_persona.destroy
           head :no_content
         else
-          render_json_error LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
+          render_json_error @ai_persona
         end
       end
 
