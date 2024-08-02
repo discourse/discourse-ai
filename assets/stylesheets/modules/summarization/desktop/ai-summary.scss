@@ -1,0 +1,16 @@
+.topic-map {
+  .ai-summarization-button {
+    .fk-d-menu {
+      position: fixed;
+      top: calc(var(--header-offset) + 1rem) !important;
+      left: unset !important;
+      right: 1rem !important;
+      max-width: 470px !important; //overruling JS
+      max-height: calc(100vh - var(--header-offset) - 3rem);
+
+      &__inner-content {
+        max-height: unset;
+      }
+    }
+  }
+}

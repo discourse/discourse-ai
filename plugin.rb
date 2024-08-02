@@ -16,6 +16,7 @@ enabled_site_setting :discourse_ai_enabled
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 
 register_asset "stylesheets/modules/summarization/common/ai-summary.scss"
+register_asset "stylesheets/modules/summarization/desktop/ai-summary.scss", :desktop
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
