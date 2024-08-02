@@ -118,7 +118,9 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
 
         data_point.each do |point|
           emotion = strip_emoji_and_downcase(point[:label])
-          expected = emotion_1[emotion.to_sym] > threshold ? 1 : 0
+          expected =
+            (emotion_1[emotion.to_sym] > threshold ? 1 : 0) +
+              (emotion_2[emotion.to_sym] > threshold ? 1 : 0)
           expect(point[:data][0][:y]).to eq(expected)
         end
       end
