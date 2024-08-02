@@ -1,8 +1,4 @@
 .dashboard.dashboard-sentiment {
-  .navigation-item.sentiment {
-    border-bottom: 0.4em solid var(--tertiary);
-  }
-
   .charts {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
