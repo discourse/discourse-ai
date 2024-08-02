@@ -321,15 +321,13 @@ en:
           positive: "Positive"
           negative: "Negative"
         post_emotion:
-          tl_01: "Trust levels 0-1"
-          tl_234: "Trust levels 2+"
-          sadness: "Sadness"
-          surprise: "Surprise"
-          neutral: "Neutral"
-          fear: "Fear"
-          anger: "Anger"
-          joy: "Joy"
-          disgust: "Disgust"
+          sadness: "Sadness 😢"
+          surprise: "Surprise 😱"
+          neutral: "Neutral 😐"
+          fear: "Fear 😨"
+          anger: "Anger 😡"
+          joy: "Joy 😀"
+          disgust: "Disgust 🤢"
 
     llm:
       configuration:
