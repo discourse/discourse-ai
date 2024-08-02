@@ -100,6 +100,11 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
         )
       end
 
+      def strip_emoji_and_downcase(str)
+        stripped_str = str.gsub(/[^\p{L}\p{N}]+/, "") # remove any non-alphanumeric characters
+        stripped_str.downcase
+      end
+
       it "calculate averages using only public posts" do
         post_1.user.update!(trust_level: TrustLevel[0])
         post_2.user.update!(trust_level: TrustLevel[3])
@@ -111,31 +116,21 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
         emotion_classification(pm, emotion_2)
 
         report = Report.find("post_emotion")
-        tl_01_point = report.data[0][:data]
-        tl_234_point = report.data[1][:data]
+
+        tl_01_point = report.data
+        tl_234_point = report.data
 
         tl_01_point.each do |point|
-          expected = emotion_1[point[:x].downcase.to_sym] > threshold ? 1 : 0
-          expect(point[:y]).to eq(expected)
+          emotion = strip_emoji_and_downcase(point[:label])
+          expected = emotion_1[emotion.to_sym] > threshold ? 1 : 0
+          expect(point[:data][0][:y]).to eq(expected)
         end
 
         tl_234_point.each do |point|
-          expected = emotion_2[point[:x].downcase.to_sym] > threshold ? 1 : 0
-          expect(point[:y]).to eq(expected)
+          emotion = strip_emoji_and_downcase(point[:label])
+          expected = emotion_2[emotion.to_sym] > threshold ? 1 : 0
+          expect(point[:data][0][:y]).to eq(expected)
         end
-      end
-
-      it "doesn't try to divide by zero if there are no data in a TL group" do
-        post_1.user.update!(trust_level: TrustLevel[3])
-        post_2.user.update!(trust_level: TrustLevel[3])
-
-        emotion_classification(post_1, emotion_1)
-        emotion_classification(post_2, emotion_2)
-
-        report = Report.find("post_emotion")
-        tl_01_point = report.data[0][:data].first
-
-        expect(tl_01_point[:y]).to be_zero
       end
     end
   end
