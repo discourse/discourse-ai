@@ -21,6 +21,7 @@ export default class AiSummaryBox extends Component {
   @service siteSettings;
   @service messageBus;
   @service currentUser;
+  @service site;
 
   @tracked text = "";
   @tracked summarizedOn = null;
@@ -160,12 +161,14 @@ export default class AiSummaryBox extends Component {
             <div class="ai-summary-container">
               <header class="ai-summary__header">
                 <h3>{{i18n "discourse_ai.summarization.topic.title"}}</h3>
-                <DButton
-                  @title="discourse_ai.summarization.topic.close"
-                  @action={{this.unsubscribe}}
-                  @icon="times"
-                  @class="btn-transparent ai-summary__close"
-                />
+                {{#if this.site.desktopView}}
+                  <DButton
+                    @title="discourse_ai.summarization.topic.close"
+                    @action={{this.unsubscribe}}
+                    @icon="times"
+                    @class="btn-transparent ai-summary__close"
+                  />
+                {{/if}}
               </header>
 
               <article class="ai-summary-box">

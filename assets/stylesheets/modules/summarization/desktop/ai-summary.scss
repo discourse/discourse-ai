@@ -5,6 +5,7 @@
       top: calc(var(--header-offset) + 1rem) !important;
       left: unset !important;
       right: 1rem !important;
+      width: 470px;
       max-width: 470px !important; //overruling JS
       max-height: calc(100vh - var(--header-offset) - 3rem);
 
