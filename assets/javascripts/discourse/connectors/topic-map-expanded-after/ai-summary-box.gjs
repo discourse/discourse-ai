@@ -158,7 +158,16 @@ export default class AiSummaryBox extends Component {
         >
           <:content>
             <div class="ai-summary-container">
-              <h3>Topic Summary</h3>
+              <header class="ai-summary__header">
+                <h3>{{i18n "discourse_ai.summarization.topic.title"}}</h3>
+                <DButton
+                  @title="discourse_ai.summarization.topic.close"
+                  @action={{this.unsubscribe}}
+                  @icon="times"
+                  @class="btn-transparent ai-summary__close"
+                />
+              </header>
+
               <article class="ai-summary-box">
                 {{#if this.loading}}
                   <AiSummarySkeleton />
