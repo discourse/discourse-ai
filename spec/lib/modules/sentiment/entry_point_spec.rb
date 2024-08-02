@@ -106,9 +106,6 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
       end
 
       it "calculate averages using only public posts" do
-        post_1.user.update!(trust_level: TrustLevel[0])
-        post_2.user.update!(trust_level: TrustLevel[3])
-        pm.user.update!(trust_level: TrustLevel[0])
         threshold = 30
 
         emotion_classification(post_1, emotion_1)
@@ -117,16 +114,16 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
 
         report = Report.find("post_emotion")
 
-        tl_01_point = report.data
-        tl_234_point = report.data
+        data_point = report.data
+        data_point_2 = report.data
 
-        tl_01_point.each do |point|
+        data_point.each do |point|
           emotion = strip_emoji_and_downcase(point[:label])
           expected = emotion_1[emotion.to_sym] > threshold ? 1 : 0
           expect(point[:data][0][:y]).to eq(expected)
         end
 
-        tl_234_point.each do |point|
+        data_point_2.each do |point|
           emotion = strip_emoji_and_downcase(point[:label])
           expected = emotion_2[emotion.to_sym] > threshold ? 1 : 0
           expect(point[:data][0][:y]).to eq(expected)
