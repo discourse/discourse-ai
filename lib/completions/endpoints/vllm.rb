@@ -31,7 +31,7 @@ module DiscourseAi
 
         def model_uri
           if llm_model.url.to_s.starts_with?("srv://")
-            record = service = DiscourseAi::Utils::DnsSrv.lookup(llm_model.url.sub("srv://", ""))
+            service = DiscourseAi::Utils::DnsSrv.lookup(llm_model.url.sub("srv://", ""))
             api_endpoint = "https://#{service.target}:#{service.port}/v1/chat/completions"
           else
             api_endpoint = llm_model.url
@@ -40,11 +40,11 @@ module DiscourseAi
           @uri ||= URI(api_endpoint)
         end
 
-        def prepare_payload(prompt, model_params, _dialect)
-          default_options
-            .merge(model_params)
-            .merge(messages: prompt)
-            .tap { |payload| payload[:stream] = true if @streaming_mode }
+        def prepare_payload(prompt, model_params, dialect)
+          payload = default_options.merge(model_params).merge(messages: prompt)
+          payload[:stream] = true if @streaming_mode
+
+          payload
         end
 
         def prepare_request(payload)

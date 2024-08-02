@@ -27,7 +27,13 @@ module DiscourseAi
         private
 
         def system_msg(msg)
-          { role: "system", content: msg[:content] }
+          msg = { role: "system", content: msg[:content] }
+
+          if tools_dialect.instructions.present?
+            msg[:content] = msg[:content].dup << "\n\n#{tools_dialect.instructions}"
+          end
+
+          msg
         end
 
         def model_msg(msg)
@@ -35,11 +41,13 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          tools_dialect.from_raw_tool_call(msg)
+          translated = tools_dialect.from_raw_tool_call(msg)
+          { role: "assistant", content: translated }
         end
 
         def tool_msg(msg)
-          tools_dialect.from_raw_tool(msg)
+          translated = tools_dialect.from_raw_tool(msg)
+          { role: "user", content: translated }
         end
 
         def user_msg(msg)

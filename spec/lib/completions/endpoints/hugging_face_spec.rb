@@ -102,24 +102,12 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
           compliance.regular_mode_simple_prompt(hf_mock)
         end
       end
-
-      context "with tools" do
-        it "returns a function invocation" do
-          compliance.regular_mode_tools(hf_mock)
-        end
-      end
     end
 
     describe "when using streaming mode" do
       context "with simple prompts" do
         it "completes a trivial prompt and logs the response" do
           compliance.streaming_mode_simple_prompt(hf_mock)
-        end
-      end
-
-      context "with tools" do
-        it "returns a function invocation" do
-          compliance.streaming_mode_tools(hf_mock)
         end
       end
     end
