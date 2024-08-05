@@ -141,7 +141,7 @@ export default class AiSummaryBox extends Component {
   }
 
   @action
-  async onClose(buttonAction) {
+  async onClose() {
     await this.dMenu.close();
     this.unsubscribe();
   }
