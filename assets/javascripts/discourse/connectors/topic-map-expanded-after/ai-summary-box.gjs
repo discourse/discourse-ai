@@ -135,6 +135,17 @@ export default class AiSummaryBox extends Component {
       });
   }
 
+  @action
+  onRegisterApi(api) {
+    this.dMenu = api;
+  }
+
+  @action
+  async onClose(buttonAction) {
+    await this.dMenu.close();
+    this.unsubscribe();
+  }
+
   <template>
     {{#if @outletArgs.topic.summarizable}}
       <div
@@ -146,6 +157,7 @@ export default class AiSummaryBox extends Component {
           @onShow={{this.generateSummary}}
           @arrow={{true}}
           @identifier="topic-map__ai-summary"
+          @onRegisterApi={{this.onRegisterApi}}
           @interactive={{true}}
           @triggers="click"
           @placement="left"
@@ -164,7 +176,7 @@ export default class AiSummaryBox extends Component {
                 {{#if this.site.desktopView}}
                   <DButton
                     @title="discourse_ai.summarization.topic.close"
-                    @action={{this.unsubscribe}}
+                    @action={{this.onClose}}
                     @icon="times"
                     @class="btn-transparent ai-summary__close"
                   />
