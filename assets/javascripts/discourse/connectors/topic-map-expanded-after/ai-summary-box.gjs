@@ -21,6 +21,7 @@ export default class AiSummaryBox extends Component {
   @service siteSettings;
   @service messageBus;
   @service currentUser;
+  @service site;
 
   @tracked text = "";
   @tracked summarizedOn = null;
@@ -123,7 +124,9 @@ export default class AiSummaryBox extends Component {
       })
       .then(() => {
         if (update.done) {
-          this.summarizedOn = shortDateNoYear(topicSummary.updated_at);
+          this.summarizedOn = shortDateNoYear(
+            moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
+          );
           this.summarizedBy = topicSummary.algorithm;
           this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
           this.outdated = topicSummary.outdated;
@@ -132,6 +135,17 @@ export default class AiSummaryBox extends Component {
             topicSummary.outdated && topicSummary.can_regenerate;
         }
       });
+  }
+
+  @action
+  onRegisterApi(api) {
+    this.dMenu = api;
+  }
+
+  @action
+  async onClose() {
+    await this.dMenu.close();
+    this.unsubscribe();
   }
 
   <template>
@@ -145,6 +159,7 @@ export default class AiSummaryBox extends Component {
           @onShow={{this.generateSummary}}
           @arrow={{true}}
           @identifier="topic-map__ai-summary"
+          @onRegisterApi={{this.onRegisterApi}}
           @interactive={{true}}
           @triggers="click"
           @placement="left"
@@ -158,7 +173,18 @@ export default class AiSummaryBox extends Component {
         >
           <:content>
             <div class="ai-summary-container">
-              <h3>Topic Summary</h3>
+              <header class="ai-summary__header">
+                <h3>{{i18n "discourse_ai.summarization.topic.title"}}</h3>
+                {{#if this.site.desktopView}}
+                  <DButton
+                    @title="discourse_ai.summarization.topic.close"
+                    @action={{this.onClose}}
+                    @icon="times"
+                    @class="btn-transparent ai-summary__close"
+                  />
+                {{/if}}
+              </header>
+
               <article class="ai-summary-box">
                 {{#if this.loading}}
                   <AiSummarySkeleton />

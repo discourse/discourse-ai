@@ -404,6 +404,9 @@ en:
           since:
             one: "Last hour"
             other: "Last %{count} hours"
+        topic:
+          title: "Topic summary"
+          close: "Close summary panel"
     review:
       types:
         reviewable_ai_post:
