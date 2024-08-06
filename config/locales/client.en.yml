@@ -184,6 +184,7 @@ en:
           remove: "Remove upload"
 
       tools:
+        back: "Back"
         short_title: "Tools"
         new: "New Tool"
         name: "Name"
@@ -227,6 +228,7 @@ en:
         url: "URL of the service hosting the model"
         api_key: "API Key of the service hosting the model"
         enabled_chat_bot: "Allow AI Bot"
+        vision_enabled: "Vision enabled"
         ai_bot_user: "AI Bot User"
         save: "Save"
         edit: "Edit"
@@ -235,7 +237,6 @@ en:
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
 
-        srv_warning: This LLM points to an SRV record, and its URL is not editable. You have to update the hidden "ai_vllm_endpoint_srv" setting instead.
         preconfigured_llms: "Select your LLM"
         preconfigured:
           none: "Configure manually..."
@@ -251,6 +252,7 @@ en:
         hints:
           max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
           name: "We include this in the API call to specify which model we'll use."
+          vision_enabled: "If enabled, the AI will attempt to understand images. It depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI."
 
         providers:
           aws_bedrock: "AWS Bedrock"
@@ -402,6 +404,9 @@ en:
           since:
             one: "Last hour"
             other: "Last %{count} hours"
+        topic:
+          title: "Topic summary"
+          close: "Close summary panel"
     review:
       types:
         reviewable_ai_post:

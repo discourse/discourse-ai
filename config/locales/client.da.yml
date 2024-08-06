@@ -42,6 +42,7 @@ da:
           title: "Overførsler"
           uploading: "Overfører…"
       tools:
+        back: "Tilbage"
         name: "Navn"
         description: "Beskrivelse"
         summary: "Statistik"

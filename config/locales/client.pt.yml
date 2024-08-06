@@ -42,6 +42,7 @@ pt:
           title: "Uploads"
           uploading: "A enviar…"
       tools:
+        back: "Retroceder"
         name: "Nome"
         description: "Descrição"
         summary: "Resumo"
@@ -84,3 +85,6 @@ pt:
           response: "Resposta"
         share_modal:
           copy: "Copiar"
+      summarization:
+        chat:
+          summarize: "Resumir"

@@ -4,22 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Ollama < Base
-        class << self
-          def can_contact?(endpoint_name)
-            endpoint_name == "ollama"
-          end
-
-          def dependant_setting_names
-            %w[ai_ollama_endpoint]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_ollama_endpoint.present?
-          end
-
-          def endpoint_name(model_name)
-            "Ollama - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "ollama"
         end
 
         def normalize_model_params(model_params)
@@ -34,7 +20,7 @@ module DiscourseAi
         end
 
         def default_options
-          { max_tokens: 2000, model: model }
+          { max_tokens: 2000, model: llm_model.name }
         end
 
         def provider_id
@@ -48,7 +34,7 @@ module DiscourseAi
         private
 
         def model_uri
-          URI(llm_model&.url || "#{SiteSetting.ai_ollama_endpoint}/v1/chat/completions")
+          URI(llm_model.url)
         end
 
         def prepare_payload(prompt, model_params, _dialect)

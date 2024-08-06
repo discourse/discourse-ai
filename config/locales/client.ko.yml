@@ -44,6 +44,7 @@ ko:
           title: "업로드된 파일"
           uploading: "업로드 중..."
       tools:
+        back: "뒤로"
         name: "그룹명"
         description: "내용"
         summary: "요약"
@@ -93,3 +94,10 @@ ko:
           response: "응답"
         share_modal:
           copy: "복사"
+      summarization:
+        chat:
+          title: "메시지 요약"
+          description: "선택된 시간 동안 전송된 대화 내역을 요약하기 위한 옵션을 선택하십시오."
+          summarize: "요약하기"
+          since:
+            other: "약 %{count}시간"

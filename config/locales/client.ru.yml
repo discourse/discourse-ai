@@ -108,6 +108,7 @@ ru:
           title: "Загрузки"
           uploading: "Загрузка…"
       tools:
+        back: "Назад"
         name: "Название"
         description: "Описание"
         summary: "Спойлер"
@@ -214,6 +215,16 @@ ru:
       sentiments:
         dashboard:
           title: "Настроение"
+      summarization:
+        chat:
+          title: "Делать сводку сообщений"
+          description: "Выберите ниже вариант сводки беседы для отправки в указанный период."
+          summarize: "Сводка"
+          since:
+            one: "Последний %{count} час"
+            few: "Последние %{count} часа"
+            many: "Последние %{count} часов"
+            other: "Последние %{count} часов"
     review:
       types:
         reviewable_ai_post:

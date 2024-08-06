@@ -89,8 +89,6 @@ tr_TR:
     ai_embeddings_semantic_related_include_closed_topics: "Kapalı konuları semantik arama sonuçlarına dâhil edin"
     ai_embeddings_semantic_search_hyde_model: "Anlamsal arama sırasında daha iyi sonuçlar elde etmek için anahtar kelimeleri genişletmek üzere kullanılan model"
     ai_embeddings_per_post_enabled: Her gönderi için yerleştirmeler oluşturma
-    ai_summarization_discourse_service_api_endpoint: "Discourse özetleme API'sinin çalıştığı URL."
-    ai_summarization_discourse_service_api_key: "Discourse özetleme API'si için API anahtarı."
     ai_bot_enabled: "YZ Botu modülünü etkinleştirin."
     ai_bot_enable_chat_warning: "Kişisel mesaj sohbeti başlatıldığında bir uyarı görüntüleyin. Çeviri dizesi düzenlenerek geçersiz kılınabilir: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "GPT Botunun Kişisel Mesaja erişimi olduğunda, bu grupların üyelerine yanıt verir."
@@ -129,7 +127,6 @@ tr_TR:
       errors:
         completion_request_failed: "Öneriler sunulmaya çalışılırken bir şeyler ters gitti. Lütfen tekrar deneyin."
       prompts:
-        translate: İngilizceye çevir
         generate_titles: Konu başlıkları öner
         proofread: Yazım hataları düzeltilmiş metin
         markdown_table: Markdown tablosu oluştur
@@ -267,6 +264,8 @@ tr_TR:
       configuration_hint:
         one: "Önce `%{setting}` ayarını yapılandırın"
         other: "Önce şu ayarları yapılandırın: %{settings}"
+      chat:
+        no_targets: "Seçilen dönemde mesaj yok."
     sentiment:
       reports:
         overall_sentiment:

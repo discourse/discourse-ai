@@ -2,8 +2,10 @@
 
 RSpec.describe DiscourseAi::Completions::Dialects::Claude do
   let :opus_dialect_klass do
-    DiscourseAi::Completions::Dialects::Dialect.dialect_for("claude-3-opus")
+    DiscourseAi::Completions::Dialects::Dialect.dialect_for("anthropic")
   end
+
+  fab!(:llm_model) { Fabricate(:anthropic_model, name: "claude-3-opus") }
 
   describe "#translate" do
     it "can insert OKs to make stuff interleve properly" do
@@ -17,7 +19,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
 
       prompt = DiscourseAi::Completions::Prompt.new("You are a helpful bot", messages: messages)
 
-      dialect = opus_dialect_klass.new(prompt, "claude-3-opus")
+      dialect = opus_dialect_klass.new(prompt, llm_model)
       translated = dialect.translate
 
       expected_messages = [
@@ -62,7 +64,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
           tools: tools,
         )
 
-      dialect = opus_dialect_klass.new(prompt, "claude-3-opus")
+      dialect = opus_dialect_klass.new(prompt, llm_model)
       translated = dialect.translate
 
       expect(translated.system_prompt).to start_with("You are a helpful bot")
@@ -114,7 +116,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
           messages: messages,
           tools: tools,
         )
-      dialect = opus_dialect_klass.new(prompt, "claude-3-opus")
+      dialect = opus_dialect_klass.new(prompt, llm_model)
       translated = dialect.translate
 
       expect(translated.system_prompt).to start_with("You are a helpful bot")

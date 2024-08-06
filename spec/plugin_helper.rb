@@ -8,7 +8,7 @@ module DiscourseAi::ChatBotHelper
   end
 
   def assign_fake_provider_to(setting_name)
-    Fabricate(:llm_model, provider: "fake", name: "fake").tap do |fake_llm|
+    Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("#{setting_name}=", "custom:#{fake_llm.id}")
     end
   end

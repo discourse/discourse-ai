@@ -1,0 +1,45 @@
+.topic-map {
+  .ai-summarization-button {
+    .fk-d-menu {
+      position: fixed;
+      top: calc(var(--header-offset) + 1rem) !important;
+      left: unset !important;
+      right: 1rem !important;
+      width: 470px;
+      max-width: 470px !important; //overruling JS
+      max-height: calc(100vh - var(--header-offset) - 3rem);
+
+      &__inner-content {
+        max-height: unset;
+        padding: 0;
+      }
+
+      .ai-summary__header,
+      .ai-summary-box {
+        padding-inline: 1.5rem;
+        box-sizing: border-box;
+      }
+
+      .ai-summary {
+        &__header {
+          position: sticky;
+          top: 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-block: 0.5rem;
+          padding-right: 0.5rem;
+          background: var(--secondary);
+          border-bottom: 1px solid var(--primary-low);
+
+          h3 {
+            margin: 0;
+          }
+        }
+        &-box {
+          padding-bottom: 1rem;
+        }
+      }
+    }
+  }
+}

@@ -8,9 +8,10 @@ class BedrockMock < EndpointMock
 end
 
 RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
-  subject(:endpoint) { described_class.new("claude-2", DiscourseAi::Tokenizer::AnthropicTokenizer) }
+  subject(:endpoint) { described_class.new(model) }
 
   fab!(:user)
+  fab!(:model) { Fabricate(:bedrock_model) }
 
   let(:bedrock_mock) { BedrockMock.new(endpoint) }
 
@@ -25,16 +26,10 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     Aws::EventStream::Encoder.new.encode(aws_message)
   end
 
-  before do
-    SiteSetting.ai_bedrock_access_key_id = "123456"
-    SiteSetting.ai_bedrock_secret_access_key = "asd-asd-asd"
-    SiteSetting.ai_bedrock_region = "us-east-1"
-  end
-
   describe "function calling" do
     it "supports old school xml function calls" do
       SiteSetting.ai_anthropic_native_tool_call_models = ""
-      proxy = DiscourseAi::Completions::Llm.proxy("aws_bedrock:claude-3-sonnet")
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
 
       incomplete_tool_call = <<~XML.strip
         <thinking>I should be ignored</thinking>
@@ -112,7 +107,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     end
 
     it "supports streaming function calls" do
-      proxy = DiscourseAi::Completions::Llm.proxy("aws_bedrock:claude-3-sonnet")
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
 
       request = nil
 
@@ -124,7 +119,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
               id: "msg_bdrk_01WYxeNMk6EKn9s98r6XXrAB",
               type: "message",
               role: "assistant",
-              model: "claude-3-haiku-20240307",
+              model: "claude-3-sonnet-20240307",
               stop_sequence: nil,
               usage: {
                 input_tokens: 840,
@@ -281,9 +276,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     end
   end
 
-  describe "Claude 3 Sonnet support" do
-    it "supports the sonnet model" do
-      proxy = DiscourseAi::Completions::Llm.proxy("aws_bedrock:claude-3-sonnet")
+  describe "Claude 3 support" do
+    it "supports regular completions" do
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
 
       request = nil
 
@@ -325,8 +320,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       expect(log.response_tokens).to eq(20)
     end
 
-    it "supports claude 3 sonnet streaming" do
-      proxy = DiscourseAi::Completions::Llm.proxy("aws_bedrock:claude-3-sonnet")
+    it "supports claude 3 streaming" do
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
 
       request = nil
 

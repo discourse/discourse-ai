@@ -9,13 +9,14 @@
 # required_version: 2.7.0
 
 gem "tokenizers", "0.4.4"
-gem "tiktoken_ruby", "0.0.7"
+gem "tiktoken_ruby", "0.0.9"
 
 enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 
 register_asset "stylesheets/modules/summarization/common/ai-summary.scss"
+register_asset "stylesheets/modules/summarization/desktop/ai-summary.scss", :desktop
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
@@ -46,8 +47,6 @@ after_initialize do
   require_relative "discourse_automation/llm_report"
 
   add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
-
-  LlmModel.enable_or_disable_srv_llm!
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,

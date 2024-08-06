@@ -6,10 +6,6 @@ module DiscourseAi
       class CannedResponse
         CANNED_RESPONSE_ERROR = Class.new(StandardError)
 
-        def self.can_contact?(_)
-          Rails.env.test?
-        end
-
         def initialize(responses)
           @responses = responses
           @completions = 0
@@ -34,6 +30,8 @@ module DiscourseAi
             raise CANNED_RESPONSE_ERROR,
                   "The number of completions you requested exceed the number of canned responses"
           end
+
+          raise response if response.is_a?(StandardError)
 
           @completions += 1
           if block_given?

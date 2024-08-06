@@ -27,7 +27,13 @@ module DiscourseAi
         private
 
         def system_msg(msg)
-          { role: "system", content: msg[:content] }
+          msg = { role: "system", content: msg[:content] }
+
+          if tools_dialect.instructions.present?
+            msg[:content] = msg[:content].dup << "\n\n#{tools_dialect.instructions}"
+          end
+
+          msg
         end
 
         def model_msg(msg)
@@ -35,11 +41,13 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          tools_dialect.from_raw_tool_call(msg)
+          translated = tools_dialect.from_raw_tool_call(msg)
+          { role: "assistant", content: translated }
         end
 
         def tool_msg(msg)
-          tools_dialect.from_raw_tool(msg)
+          translated = tools_dialect.from_raw_tool(msg)
+          { role: "user", content: translated }
         end
 
         def user_msg(msg)
@@ -47,7 +55,28 @@ module DiscourseAi
           content << "#{msg[:id]}: " if msg[:id]
           content << msg[:content]
 
-          { role: "user", content: content }
+          message = { role: "user", content: content }
+
+          message[:content] = inline_images(message[:content], msg) if vision_support?
+
+          message
+        end
+
+        def inline_images(content, message)
+          encoded_uploads = prompt.encoded_uploads(message)
+          return content if encoded_uploads.blank?
+
+          content_w_imgs =
+            encoded_uploads.reduce([]) do |memo, details|
+              memo << {
+                type: "image_url",
+                image_url: {
+                  url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
+                },
+              }
+            end
+
+          content_w_imgs << { type: "text", text: message[:content] }
         end
       end
     end

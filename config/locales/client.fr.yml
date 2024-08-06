@@ -108,6 +108,7 @@ fr:
           title: "Fichiers envoyés"
           uploading: "Envoi en cours…"
       tools:
+        back: "Retour"
         name: "Nom"
         description: "Description"
         summary: "Résumé"
@@ -214,6 +215,14 @@ fr:
       sentiments:
         dashboard:
           title: "Sentiment"
+      summarization:
+        chat:
+          title: "Résumer les messages"
+          description: "Sélectionnez une option ci-dessous pour résumer la conversation envoyée pendant la période souhaitée."
+          summarize: "Résumer"
+          since:
+            one: "Dernière heure"
+            other: "%{count} dernières heures"
     review:
       types:
         reviewable_ai_post:

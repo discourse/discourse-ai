@@ -50,6 +50,17 @@
   display: flex;
   align-items: center;
   flex-flow: row wrap;
+  &__resets {
+    display: flex;
+    align-items: center;
+    flex-flow: row wrap;
+  }
+
+  &__review {
+    display: flex;
+    align-items: center;
+    flex-flow: row wrap;
+  }
 }
 
 .ai-custom-prompt {

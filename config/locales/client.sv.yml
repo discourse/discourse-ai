@@ -42,6 +42,7 @@ sv:
           title: "Uppladdningar"
           uploading: "Laddar upp..."
       tools:
+        back: "Tillbaka"
         name: "Namn"
         description: "Beskrivning"
         summary: "Sammanfattning"
@@ -92,3 +93,11 @@ sv:
           response: "Svar"
         share_modal:
           copy: "Kopiera"
+      summarization:
+        chat:
+          title: "Sammanfatta meddelanden"
+          description: "Välj ett alternativ nedan för att sammanfatta samtalet som skickades under den önskade tidsramen."
+          summarize: "Sammanfatta"
+          since:
+            one: "Senaste timmen"
+            other: "Senaste %{count} timmarna"

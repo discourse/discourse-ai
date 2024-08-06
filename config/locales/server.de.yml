@@ -93,8 +93,9 @@ de:
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"
     ai_embeddings_semantic_search_hyde_model: "Modell zur Erweiterung von Schlüsselwörtern, um bessere Ergebnisse bei der semantischen Suche zu erzielen"
     ai_embeddings_per_post_enabled: Erstelle Einbettungen für jeden Beitrag
-    ai_summarization_discourse_service_api_endpoint: "URL, unter der die Discourse-Zusammenfassungs-API läuft."
-    ai_summarization_discourse_service_api_key: "API-Schlüssel für die Discourse-Zusammenfassungs-API."
+    ai_summarization_enabled: "Aktiviere das Modul für die Themenzusammenfassung."
+    ai_summarization_model: "Modell, das für die Zusammenfassung verwendet werden soll."
+    ai_custom_summarization_allowed_groups: "Gruppen, die neue Zusammenfassungen erstellen dürfen."
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
     ai_bot_enable_chat_warning: "Zeigt eine Warnung an, wenn der PN-Chat initiiert wird. Kann durch Bearbeiten der Übersetzungszeichenfolge überschrieben werden: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
@@ -146,7 +147,7 @@ de:
       errors:
         completion_request_failed: "Beim Versuch, Vorschläge zu machen, ist etwas schiefgelaufen. Bitte versuche es noch einmal."
       prompts:
-        translate: Übersetzen ins Englische
+        translate: Übersetzen in %{language}
         generate_titles: Thementitel vorschlagen
         proofread: Text korrekturlesen
         markdown_table: Markdown-Tabelle generieren
@@ -298,6 +299,8 @@ de:
       configuration_hint:
         one: "Konfiguriere zunächst die Einstellung `%{setting}`."
         other: "Konfiguriere zunächst diese Einstellungen: %{settings}"
+      chat:
+        no_targets: "Im ausgewählten Zeitraum gab es keine Nachrichten."
     sentiment:
       reports:
         overall_sentiment:

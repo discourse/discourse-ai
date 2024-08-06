@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::WebBrowser do
-  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo") }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4-turbo") }
+  fab!(:llm_model)
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
-  before do
-    SiteSetting.ai_openai_api_key = "asd"
-    SiteSetting.ai_bot_enabled = true
-  end
+  before { SiteSetting.ai_bot_enabled = true }
 
   describe "#invoke" do
     it "can retrieve the content of a webpage and returns the processed text" do

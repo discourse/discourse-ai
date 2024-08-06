@@ -40,30 +40,11 @@ en:
     ai_nsfw_flag_threshold_sexy: "Threshold for an image classified as sexy to be considered NSFW."
     ai_nsfw_models: "Models to use for NSFW inference."
 
-    ai_openai_gpt35_url: "Custom URL used for GPT 3.5 chat completions. (for Azure support)"
-    ai_openai_gpt35_16k_url: "Custom URL used for GPT 3.5 16k chat completions. (for Azure support)"
-    ai_openai_gpt4_url: "Custom URL used for GPT 4 chat completions. (for Azure support)"
-    ai_openai_gpt4o_url: "Custom URL used for GPT 4 Omni chat completions. (for Azure support)"
-    ai_openai_gpt4_32k_url: "Custom URL used for GPT 4 32k chat completions. (for Azure support)"
-    ai_openai_gpt4_turbo_url: "Custom URL used for GPT 4 Turbo chat completions. (for Azure support)"
-    ai_openai_dall_e_3_url: "Custom URL used for DALL-E 3 image generation. (for Azure support)"
-    ai_openai_organization: "(Optional, leave empty to omit) Organization id used for the OpenAI API. Passed in using the OpenAI-Organization header."
     ai_openai_embeddings_url: "Custom URL used for the OpenAI embeddings API. (in the case of Azure it can be: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "API key for OpenAI API"
-    ai_anthropic_api_key: "API key for Anthropic API"
+    ai_openai_api_key: "API key for OpenAI API. ONLY used for embeddings and Dall-E. For GPT use the LLM config tab"
     ai_anthropic_native_tool_call_models: "List of models that will use native tool calls vs legacy XML based tools."
-    ai_cohere_api_key: "API key for Cohere API"
-    ai_hugging_face_api_url: "Custom URL used for OpenSource LLM inference. Compatible with https://github.com/huggingface/text-generation-inference"
-    ai_hugging_face_api_key: API key for Hugging Face API
-    ai_hugging_face_token_limit: Max tokens Hugging Face API can use per request
-    ai_hugging_face_model_display_name: Name displayed for the Hugging Face AI model
     ai_hugging_face_tei_endpoint: URL where the API is running for the Hugging Face text embeddings inference
     ai_hugging_face_tei_api_key: API key for Hugging Face text embeddings inference
-    ai_gemini_api_key: API key for Google Gemini API
-    ai_vllm_endpoint: URL where the API is running for vLLM
-    ai_vllm_api_key: API key for vLLM API
-    ai_llava_endpoint: URL where the API is running for llava
-    ai_llava_api_key: API key for llava API
 
     composer_ai_helper_enabled: "Enable the Composer's AI helper."
     ai_helper_allowed_groups: "Users on these groups will see the AI helper button in the composer."
@@ -101,7 +82,6 @@ en:
     ai_bot_allowed_groups: "When the GPT Bot has access to the PM, it will reply to members of these groups."
     ai_bot_debugging_allowed_groups: "Allow these groups to see a debug button on posts which displays the raw AI request and response"
     ai_bot_public_sharing_allowed_groups: "Allow these groups to share AI personal messages with the public via a unique publicly available link. Note: if your site requires login, shares will also require login."
-    ai_bot_enabled_chat_bots: "Available models to act as an AI Bot"
     ai_bot_add_to_header: "Display a button in the header to start a PM with a AI Bot"
     ai_bot_github_access_token: "GitHub access token for use with GitHub AI tools (required for search support)"
 
@@ -111,12 +91,6 @@ en:
 
     ai_google_custom_search_api_key: "API key for the Google Custom Search API see: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX for Google Custom Search API"
-
-    ai_bedrock_access_key_id: "Access key ID for the Bedrock API"
-    ai_bedrock_secret_access_key: "Secret access key for the Bedrock API"
-    ai_bedrock_region: "AWS region for the Bedrock API"
-    ai_cloudflare_workers_account_id: "Cloudflare account ID for the Cloudflare Workers AI API"
-    ai_cloudflare_workers_api_token: "API token for the Cloudflare Workers AI API"
 
   reviewables:
     reasons:
@@ -321,15 +295,13 @@ en:
           positive: "Positive"
           negative: "Negative"
         post_emotion:
-          tl_01: "Trust levels 0-1"
-          tl_234: "Trust levels 2+"
-          sadness: "Sadness"
-          surprise: "Surprise"
-          neutral: "Neutral"
-          fear: "Fear"
-          anger: "Anger"
-          joy: "Joy"
-          disgust: "Disgust"
+          sadness: "Sadness 😢"
+          surprise: "Surprise 😱"
+          neutral: "Neutral 😐"
+          fear: "Fear 😨"
+          anger: "Anger 😡"
+          joy: "Joy 😀"
+          disgust: "Disgust 🤢"
 
     llm:
       configuration:

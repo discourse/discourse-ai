@@ -74,8 +74,6 @@ fi:
     ai_embeddings_semantic_search_enabled: "Ota koko sivun semanttinen haku käyttöön."
     ai_embeddings_semantic_related_include_closed_topics: "Sisällytä suljetut ketjut semanttisiin hakutuloksiin"
     ai_embeddings_semantic_search_hyde_model: "Malli, jota käytetään avainsanojen laajentamiseen parempien tulosten saamiseksi semanttisen haun aikana"
-    ai_summarization_discourse_service_api_endpoint: "URL-osoite, jossa Discoursen yhteenveto-API on käynnissä."
-    ai_summarization_discourse_service_api_key: "Discoursen yhteenveto-APIn API-avain."
     ai_bot_enabled: "Ota tekoälybottimoduuli käyttöön."
     ai_bot_enable_chat_warning: "Näytä varoitus, kun yksityisviesti-chat aloitetaan. Voidaan ohittaa muokkaamalla käännösmerkkijonoa: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Kun GPT-botilla on yksityisviestin käyttöoikeus, se vastaa näiden ryhmien jäsenille."
@@ -112,7 +110,6 @@ fi:
       errors:
         completion_request_failed: "Jokin meni vikaan yritettäessä antaa ehdotuksia. Yritä uudelleen."
       prompts:
-        translate: Käännä englanniksi
         generate_titles: Ehdota ketjujen otsikoita
         proofread: Oikolue teksti
         markdown_table: Luo markdown-taulukko
@@ -214,6 +211,8 @@ fi:
       configuration_hint:
         one: "Määritä ensin %{setting}-asetus."
         other: "Määritä ensin nämä asetukset: %{settings}"
+      chat:
+        no_targets: "Valitun ajanjakson aikana ei ollut viestejä."
     sentiment:
       reports:
         overall_sentiment:

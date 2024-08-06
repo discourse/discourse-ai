@@ -41,6 +41,7 @@ bg:
         uploads:
           uploading: "Качва се..."
       tools:
+        back: "Назад"
         name: "Име"
         description: "Описание"
         summary: "Сумарно"
@@ -80,3 +81,6 @@ bg:
           request: "Заявка"
         share_modal:
           copy: "Копирай"
+      summarization:
+        chat:
+          summarize: "Обобщаване"

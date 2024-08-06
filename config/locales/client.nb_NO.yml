@@ -42,6 +42,7 @@ nb_NO:
           title: "Opplastinger"
           uploading: "Laster opp…"
       tools:
+        back: "Forrige"
         name: "Navn"
         description: "Beskrivelse"
         summary: "Sammendrag"

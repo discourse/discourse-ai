@@ -174,10 +174,14 @@ CompletionPrompt.seed do |cp|
   cp.messages = {
     insts: <<~TEXT,
       I want you to act as a title generator for written pieces. I will provide you with a text,
-      and you will generate five attention-grabbing titles. Please keep the title concise and under 20 words,
+      and you will generate five titles. Please keep the title concise and under 20 words,
       and ensure that the meaning is maintained. Replies will utilize the language type of the topic.
       I want you to only reply the list of options and nothing else, do not write explanations.
-      Each title you generate must be separated by *.
+      Never ever use colons in the title. Always use sentence case, using a capital letter at
+      the start of the title, never start the title with a lower case letter. Proper nouns in the title
+      can have a capital letter, and acronyms like LLM can use capital letters. Format some titles
+      as questions, some as statements. Make sure to use question marks if the title is a question.
+      Each title you generate must be separated by *
       You will find the text between <input></input> XML tags.
     TEXT
     examples: [

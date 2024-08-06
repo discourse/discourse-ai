@@ -74,8 +74,6 @@ es:
     ai_embeddings_semantic_search_enabled: "Activar la búsqueda semántica a página completa."
     ai_embeddings_semantic_related_include_closed_topics: "Incluir temas cerrados en los resultados de la búsqueda semántica"
     ai_embeddings_semantic_search_hyde_model: "Modelo utilizado para expandir palabras clave para obtener mejores resultados durante una búsqueda semántica"
-    ai_summarization_discourse_service_api_endpoint: "URL donde se ejecuta la API de resumen de Discourse."
-    ai_summarization_discourse_service_api_key: "Clave API para la API de resumen de Discourse."
     ai_bot_enabled: "Activar el módulo AI Bot."
     ai_bot_enable_chat_warning: "Muestra una advertencia cuando se inicia el chat de MP. Se puede anular editando la cadena de traducción: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Cuando el Bot GPT tenga acceso al MP, responderá a los miembros de estos grupos."
@@ -112,7 +110,6 @@ es:
       errors:
         completion_request_failed: "Algo ha ido mal al intentar proporcionar sugerencias. Inténtalo de nuevo."
       prompts:
-        translate: Traducir al inglés
         generate_titles: Sugerir títulos de temas
         proofread: Corregir el texto
         markdown_table: Generar tabla Markdown
@@ -214,6 +211,8 @@ es:
       configuration_hint:
         one: "Configura primero el ajuste `%{setting}`."
         other: "Configura primero estos ajustes: %{settings}"
+      chat:
+        no_targets: "No hubo mensajes durante el periodo seleccionado."
     sentiment:
       reports:
         overall_sentiment:

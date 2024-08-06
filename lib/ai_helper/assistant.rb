@@ -29,7 +29,9 @@ module DiscourseAi
               prompts.map do |prompt|
                 if prompt.name == "translate"
                   locale = user.effective_locale
-                  locale_hash = LocaleSiteSetting.language_names[locale]
+                  locale_hash =
+                    LocaleSiteSetting.language_names[locale] ||
+                      LocaleSiteSetting.language_names[locale.split("_")[0]]
                   translation =
                     I18n.t(
                       "discourse_ai.ai_helper.prompts.translate",
@@ -141,47 +143,26 @@ module DiscourseAi
       end
 
       def generate_image_caption(upload, user)
-        if SiteSetting.ai_helper_image_caption_model == "llava"
-          image_base64 =
-            DiscourseAi::Completions::UploadEncoder.encode(
-              upload_ids: [upload.id],
-              max_pixels: 1_048_576,
-            ).first[
-              :base64
-            ]
-          parameters = {
-            input: {
-              image: "data:image/#{upload.extension};base64, #{image_base64}",
-              top_p: 1,
-              max_tokens: 1024,
-              temperature: 0.2,
-              prompt: "Please describe this image in a single sentence",
-            },
-          }
-
-          ::DiscourseAi::Inference::Llava.perform!(parameters).dig(:output).join
-        else
-          prompt =
-            DiscourseAi::Completions::Prompt.new(
-              "You are a bot specializing in image captioning.",
-              messages: [
-                {
-                  type: :user,
-                  content:
-                    "Describe this image in a single sentence#{custom_locale_instructions(user)}",
-                  upload_ids: [upload.id],
-                },
-              ],
-              skip_validations: true,
-            )
-
-          DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
-            prompt,
-            user: user,
-            max_tokens: 1024,
-            feature_name: "image_caption",
+        prompt =
+          DiscourseAi::Completions::Prompt.new(
+            "You are a bot specializing in image captioning.",
+            messages: [
+              {
+                type: :user,
+                content:
+                  "Describe this image in a single sentence#{custom_locale_instructions(user)}",
+                upload_ids: [upload.id],
+              },
+            ],
+            skip_validations: true,
           )
-        end
+
+        DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
+          prompt,
+          user: user,
+          max_tokens: 1024,
+          feature_name: "image_caption",
+        )
       end
 
       private

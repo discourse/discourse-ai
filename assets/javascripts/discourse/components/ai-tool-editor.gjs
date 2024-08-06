@@ -6,13 +6,13 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { service } from "@ember/service";
+import AceEditor from "discourse/components/ace-editor";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import DTooltip from "discourse/components/d-tooltip";
 import withEventValue from "discourse/helpers/with-event-value";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "discourse-i18n";
-import AceEditor from "admin/components/ace-editor";
 import ComboBox from "select-kit/components/combo-box";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
@@ -71,13 +71,6 @@ export default class AiToolEditor extends Component {
         "summary"
       );
 
-      for (const p of data.parameters) {
-        if (p.enumValues) {
-          p.enum_values = p.enumValues;
-          delete p.enumValues;
-        }
-      }
-
       await this.args.model.save(data);
 
       this.toasts.success({
@@ -124,7 +117,7 @@ export default class AiToolEditor extends Component {
   <template>
     <BackButton
       @route="adminPlugins.show.discourse-ai-tools"
-      @label="discourse_ai.ai_tool.back"
+      @label="discourse_ai.tools.back"
     />
 
     <form

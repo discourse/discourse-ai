@@ -42,6 +42,7 @@ vi:
           title: "Tải lên"
           uploading: "Đang đăng "
       tools:
+        back: "Quay lại"
         name: "Tên"
         description: "Mô tả"
         summary: "Tóm tắt"
@@ -91,3 +92,6 @@ vi:
           response: "Đáp ứng"
         share_modal:
           copy: "Sao chép"
+      summarization:
+        chat:
+          summarize: "Tóm tắt"

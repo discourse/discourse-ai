@@ -64,8 +64,8 @@ module DiscourseAi
                   id: "open_ai",
                   models: [
                     { name: "gpt-4o", tokens: 131_072, display_name: "GPT-4 Omni" },
+                    { name: "gpt-4o-mini", tokens: 131_072, display_name: "GPT-4 Omni Mini" },
                     { name: "gpt-4-turbo", tokens: 131_072, display_name: "GPT-4 Turbo" },
-                    { name: "gpt-3.5-turbo", tokens: 16_385, display_name: "GPT-3.5 Turbo" },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
                   endpoint: "https://api.openai.com/v1/chat/completions",
@@ -87,50 +87,6 @@ module DiscourseAi
 
         def tokenizer_names
           DiscourseAi::Tokenizer::BasicTokenizer.available_llm_tokenizers.map(&:name)
-        end
-
-        def vision_models_by_provider
-          @vision_models_by_provider ||= {
-            aws_bedrock: %w[claude-3-sonnet claude-3-opus claude-3-haiku],
-            anthropic: %w[claude-3-sonnet claude-3-opus claude-3-haiku],
-            open_ai: %w[gpt-4-vision-preview gpt-4-turbo gpt-4o],
-            google: %w[gemini-1.5-pro gemini-1.5-flash],
-          }
-        end
-
-        def models_by_provider
-          # ChatGPT models are listed under open_ai but they are actually available through OpenAI and Azure.
-          # However, since they use the same URL/key settings, there's no reason to duplicate them.
-          @models_by_provider ||=
-            {
-              aws_bedrock: %w[
-                claude-instant-1
-                claude-2
-                claude-3-haiku
-                claude-3-sonnet
-                claude-3-opus
-              ],
-              anthropic: %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus],
-              vllm: %w[mistralai/Mixtral-8x7B-Instruct-v0.1 mistralai/Mistral-7B-Instruct-v0.2],
-              hugging_face: %w[
-                mistralai/Mixtral-8x7B-Instruct-v0.1
-                mistralai/Mistral-7B-Instruct-v0.2
-              ],
-              cohere: %w[command-light command command-r command-r-plus],
-              open_ai: %w[
-                gpt-3.5-turbo
-                gpt-4
-                gpt-3.5-turbo-16k
-                gpt-4-32k
-                gpt-4-turbo
-                gpt-4-vision-preview
-                gpt-4o
-              ],
-              google: %w[gemini-pro gemini-1.5-pro gemini-1.5-flash],
-            }.tap do |h|
-              h[:ollama] = ["mistral"] if Rails.env.development?
-              h[:fake] = ["fake"] if Rails.env.test? || Rails.env.development?
-            end
         end
 
         def valid_provider_models
@@ -160,61 +116,38 @@ module DiscourseAi
           @prompts << prompt if @prompts
         end
 
-        def proxy(model_name)
-          provider_and_model_name = model_name.split(":")
-          provider_name = provider_and_model_name.first
-          model_name_without_prov = provider_and_model_name[1..].join
+        def proxy(model)
+          llm_model =
+            if model.is_a?(LlmModel)
+              model
+            else
+              model_name_without_prov = model.split(":").last.to_i
 
-          # We are in the process of transitioning to always use objects here.
-          # We'll live with this hack for a while.
-          if provider_name == "custom"
-            llm_model = LlmModel.find(model_name_without_prov)
-            raise UNKNOWN_MODEL if !llm_model
-            return proxy_from_obj(llm_model)
-          end
-
-          dialect_klass =
-            DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name_without_prov)
-
-          if @canned_response
-            if @canned_llm && @canned_llm != model_name
-              raise "Invalid call LLM call, expected #{@canned_llm} but got #{model_name}"
+              LlmModel.find_by(id: model_name_without_prov)
             end
 
-            return new(dialect_klass, nil, model_name, gateway: @canned_response)
-          end
+          raise UNKNOWN_MODEL if llm_model.nil?
 
-          gateway_klass = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider_name)
-
-          new(dialect_klass, gateway_klass, model_name_without_prov)
-        end
-
-        def proxy_from_obj(llm_model)
-          provider_name = llm_model.provider
-          model_name = llm_model.name
-
-          dialect_klass = DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_name)
+          model_provider = llm_model.provider
+          dialect_klass = DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_provider)
 
           if @canned_response
-            if @canned_llm && @canned_llm != [provider_name, model_name].join(":")
-              raise "Invalid call LLM call, expected #{@canned_llm} but got #{model_name}"
+            if @canned_llm && @canned_llm != model
+              raise "Invalid call LLM call, expected #{@canned_llm} but got #{model}"
             end
 
-            return(
-              new(dialect_klass, nil, model_name, gateway: @canned_response, llm_model: llm_model)
-            )
+            return new(dialect_klass, nil, llm_model, gateway: @canned_response)
           end
 
-          gateway_klass = DiscourseAi::Completions::Endpoints::Base.endpoint_for(provider_name)
+          gateway_klass = DiscourseAi::Completions::Endpoints::Base.endpoint_for(model_provider)
 
-          new(dialect_klass, gateway_klass, model_name, llm_model: llm_model)
+          new(dialect_klass, gateway_klass, llm_model)
         end
       end
 
-      def initialize(dialect_klass, gateway_klass, model_name, gateway: nil, llm_model: nil)
+      def initialize(dialect_klass, gateway_klass, llm_model, gateway: nil)
         @dialect_klass = dialect_klass
         @gateway_klass = gateway_klass
-        @model_name = model_name
         @gateway = gateway
         @llm_model = llm_model
       end
@@ -273,9 +206,9 @@ module DiscourseAi
 
         model_params.keys.each { |key| model_params.delete(key) if model_params[key].nil? }
 
-        dialect = dialect_klass.new(prompt, model_name, opts: model_params, llm_model: llm_model)
+        dialect = dialect_klass.new(prompt, llm_model, opts: model_params)
 
-        gateway = @gateway || gateway_klass.new(model_name, dialect.tokenizer, llm_model: llm_model)
+        gateway = @gateway || gateway_klass.new(llm_model)
         gateway.perform_completion!(
           dialect,
           user,
@@ -286,16 +219,14 @@ module DiscourseAi
       end
 
       def max_prompt_tokens
-        llm_model&.max_prompt_tokens ||
-          dialect_klass.new(DiscourseAi::Completions::Prompt.new(""), model_name).max_prompt_tokens
+        llm_model.max_prompt_tokens
       end
 
       def tokenizer
-        llm_model&.tokenizer_class ||
-          dialect_klass.new(DiscourseAi::Completions::Prompt.new(""), model_name).tokenizer
+        llm_model.tokenizer_class
       end
 
-      attr_reader :model_name, :llm_model
+      attr_reader :llm_model
 
       private
 

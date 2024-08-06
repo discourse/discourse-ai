@@ -184,6 +184,7 @@ de:
           uploading: "Wird hochgeladen …"
           remove: "Upload entfernen"
       tools:
+        back: "Zurück"
         short_title: "Werkzeuge"
         new: "Neues Werkzeug"
         name: "Name"
@@ -226,6 +227,7 @@ de:
         url: "URL des Dienstes, der das Modell hostet"
         api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
         enabled_chat_bot: "KI-Bot zulassen"
+        vision_enabled: "Vision aktiviert"
         ai_bot_user: "KI Bot Benutzer"
         save: "Speichern"
         edit: "Bearbeiten"
@@ -247,6 +249,7 @@ de:
         hints:
           max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50% des Kontextfensters des Modells sein sollte."
           name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden."
+          vision_enabled: "Wenn diese Funktion aktiviert ist, versucht die KI, Bilder zu verstehen. Dafür wird ein Modell benötigt, das Vision unterstützt. Verfügbar in den neuesten Modellen von Anthropic, Google und OpenAI."
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropisch"
@@ -285,6 +288,7 @@ de:
             title: "Benutzerdefinierte Eingabeaufforderung"
             placeholder: "Benutzerdefinierte Eingabeaufforderung …"
             submit: "Aufforderung senden"
+          translate_prompt: "Übersetzen in %{language}"
         post_options_menu:
           trigger: "KI fragen"
           title: "KI fragen"
@@ -295,6 +299,7 @@ de:
           cancel: "Abbrechen"
           insert_footnote: "Fußnote hinzufügen"
           footnote_credits: "Erklärung durch KI"
+          selected_text: "Ausgewählter Text"
         fast_edit:
           suggest_button: "Bearbeiten vorschlagen"
         thumbnail_suggestions:
@@ -376,6 +381,14 @@ de:
       sentiments:
         dashboard:
           title: "Stimmung"
+      summarization:
+        chat:
+          title: "Nachrichten zusammenfassen"
+          description: "Wähle unten eine Option aus, um die im gewünschten Zeitraum gesendete Konversation zusammenzufassen."
+          summarize: "Zusammenfassen"
+          since:
+            one: "Letzte Stunde"
+            other: "Letzte %{count} Stunden"
     review:
       types:
         reviewable_ai_post:

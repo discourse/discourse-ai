@@ -146,11 +146,10 @@ class OpenAiMock < EndpointMock
 end
 
 RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
-  subject(:endpoint) do
-    described_class.new("gpt-3.5-turbo", DiscourseAi::Tokenizer::OpenAiTokenizer)
-  end
+  subject(:endpoint) { described_class.new(model) }
 
   fab!(:user)
+  fab!(:model) { Fabricate(:llm_model) }
 
   let(:echo_tool) do
     {
@@ -175,7 +174,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   describe "repeat calls" do
     it "can properly reset context" do
-      llm = DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4-turbo")
+      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
 
       tools = [
         {
@@ -258,7 +257,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   describe "image support" do
     it "can handle images" do
-      llm = DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4-turbo")
+      model = Fabricate(:llm_model, vision_enabled: true)
+      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
       prompt =
         DiscourseAi::Completions::Prompt.new(
           "You are image bot",

@@ -42,6 +42,7 @@ hy:
           title: "Վերբեռնումներ"
           uploading: "Վերբեռնում..."
       tools:
+        back: "Ետ"
         name: "Անուն"
         description: "Նկարագրությունը"
         summary: "Ամփոփումը"

@@ -2,7 +2,8 @@
 require_relative "endpoint_compliance"
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("cohere:command-r-plus") }
+  fab!(:cohere_model)
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{cohere_model.id}") }
   fab!(:user)
 
   let(:prompt) do
@@ -56,8 +57,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     prompt.tools = [weather_tool]
     prompt
   end
-
-  before { SiteSetting.ai_cohere_api_key = "ABC" }
 
   it "is able to trigger a tool" do
     body = (<<~TEXT).strip
@@ -184,7 +183,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     expect(audit.request_tokens).to eq(17)
     expect(audit.response_tokens).to eq(22)
 
-    expect(audit.language_model).to eq("Cohere - command-r-plus")
+    expect(audit.language_model).to eq("command-r-plus")
   end
 
   it "is able to perform streaming completions" do

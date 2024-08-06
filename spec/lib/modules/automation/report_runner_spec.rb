@@ -32,6 +32,8 @@ module DiscourseAi
       fab!(:topic_with_tag) { Fabricate(:topic, tags: [tag, hidden_tag]) }
       fab!(:post_with_tag) { Fabricate(:post, raw: "I am in a tag", topic: topic_with_tag) }
 
+      fab!(:llm_model)
+
       describe "#run!" do
         it "is able to generate email reports" do
           freeze_time
@@ -41,7 +43,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: ["fake@discourse.com"],
               title: "test report %DATE%",
-              model: "gpt-4",
+              model: "custom:#{llm_model.id}",
               category_ids: nil,
               tags: nil,
               allow_secure_categories: false,
@@ -78,7 +80,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [receiver.username],
               title: "test report",
-              model: "gpt-4",
+              model: "custom:#{llm_model.id}",
               category_ids: nil,
               tags: nil,
               allow_secure_categories: false,
@@ -123,7 +125,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [receiver.username],
               title: "test report",
-              model: "gpt-4",
+              model: "custom:#{llm_model.id}",
               category_ids: nil,
               tags: nil,
               allow_secure_categories: false,
@@ -166,7 +168,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [receiver.username],
               title: "test report",
-              model: "gpt-4",
+              model: "custom:#{llm_model.id}",
               category_ids: nil,
               tags: nil,
               allow_secure_categories: false,
@@ -194,7 +196,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [receiver.username],
               title: "test report",
-              model: "gpt-4",
+              model: "custom:#{llm_model.id}",
               category_ids: nil,
               tags: nil,
               allow_secure_categories: false,

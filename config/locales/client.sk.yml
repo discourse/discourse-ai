@@ -44,6 +44,7 @@ sk:
           title: "Nahrávanie"
           uploading: "Načítavam..."
       tools:
+        back: "Späť"
         name: "Meno"
         description: "Popis"
         summary: "Zhrnutie"
@@ -95,3 +96,13 @@ sk:
           response: "Odpoveď"
         share_modal:
           copy: "Kopírovať"
+      summarization:
+        chat:
+          title: "Zhrnutie správ"
+          description: "Ak chcete zhrnúť konverzáciu odoslanú počas požadovaného časového obdobia, vyberte nižšie uvedenú možnosť."
+          summarize: "Zhrnúť"
+          since:
+            one: "Posledná hodina"
+            few: "Posledných %{count} hodín"
+            many: "Posledných %{count} hodín"
+            other: "Posledných %{count} hodín"

@@ -42,6 +42,7 @@ sl:
           title: "Prenosi"
           uploading: "Nalagam..."
       tools:
+        back: "Nazaj"
         name: "Ime"
         description: "Opis"
         summary: "Povzetek"

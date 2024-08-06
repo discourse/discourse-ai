@@ -80,6 +80,7 @@ lt:
           title: "Įkėlimai"
           uploading: "Įkeliama"
       tools:
+        back: "Atgal"
         name: "Vardas"
         description: "Aprašymas"
         summary: "Santrauka"
@@ -136,3 +137,6 @@ lt:
           copy: "Kopijuoti"
         bot_names:
           claude-2: "Claude 2"
+      summarization:
+        chat:
+          summarize: "Apibendrinti"

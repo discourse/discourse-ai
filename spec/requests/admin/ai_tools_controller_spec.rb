@@ -7,7 +7,15 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       name: "Test Tool",
       description: "A test tool",
       script: "function invoke(params) { return params; }",
-      parameters: [{ name: "query", type: "string", description: "perform a search" }],
+      parameters: [
+        {
+          name: "unit",
+          type: "string",
+          description: "the unit of measurement celcius c or fahrenheit f",
+          enum: %w[c f],
+          required: true,
+        },
+      ],
       summary: "Test tool summary",
       created_by_id: -1,
     )
@@ -58,6 +66,27 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       expect(response).to have_http_status(:created)
       expect(response.parsed_body["ai_tool"]["name"]).to eq("Test Tool")
     end
+
+    context "when the parameter is a enum" do
+      it "creates the tool with the correct parameters" do
+        attrs = valid_attributes
+        attrs[:parameters] = [attrs[:parameters].first.merge(enum: %w[c f])]
+
+        expect {
+          post "/admin/plugins/discourse-ai/ai-tools.json",
+               params: { ai_tool: valid_attributes }.to_json,
+               headers: {
+                 "CONTENT_TYPE" => "application/json",
+               }
+        }.to change(AiTool, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        expect(response.parsed_body.dig("ai_tool", "parameters", 0, "enum")).to contain_exactly(
+          "c",
+          "f",
+        )
+      end
+    end
   end
 
   describe "PUT #update" do
@@ -71,6 +100,27 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
 
       expect(response).to be_successful
       expect(ai_tool.reload.name).to eq("Updated Tool")
+    end
+
+    context "when updating an enum parameters" do
+      it "updates the enum fixed values" do
+        put "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json",
+            params: {
+              ai_tool: {
+                parameters: [
+                  {
+                    name: "unit",
+                    type: "string",
+                    description: "the unit of measurement celcius c or fahrenheit f",
+                    enum: %w[g d],
+                  },
+                ],
+              },
+            }
+
+        expect(response).to be_successful
+        expect(ai_tool.reload.parameters.dig(0, "enum")).to contain_exactly("g", "d")
+      end
     end
   end
 

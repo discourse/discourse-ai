@@ -67,39 +67,39 @@ module DiscourseAi
         end
 
         plugin.add_report("post_emotion") do |report|
-          report.modes = [:radar]
+          report.modes = [:stacked_line_chart]
           threshold = 30
 
           emotion_count_clause = Proc.new { |emotion| <<~SQL }
-            COUNT(
-              CASE WHEN (cr.classification::jsonb->'#{emotion}')::integer > :threshold THEN 1 ELSE NULL END
-            ) AS #{emotion}_count
-          SQL
+    COUNT(
+      CASE WHEN (cr.classification::jsonb->'#{emotion}')::integer > :threshold THEN 1 ELSE NULL END
+    ) AS #{emotion}_count
+  SQL
 
           grouped_emotions =
             DB.query(
               <<~SQL,
-            SELECT
-              u.trust_level AS trust_level,
-              #{emotion_count_clause.call("sadness")},
-              #{emotion_count_clause.call("surprise")},
-              #{emotion_count_clause.call("fear")},
-              #{emotion_count_clause.call("anger")},
-              #{emotion_count_clause.call("joy")},
-              #{emotion_count_clause.call("disgust")}
-            FROM
-              classification_results AS cr
-            INNER JOIN posts p ON p.id = cr.target_id AND cr.target_type = 'Post'
-            INNER JOIN users u ON p.user_id = u.id
-            INNER JOIN topics t ON t.id = p.topic_id
-            INNER JOIN categories c ON c.id = t.category_id
-            WHERE
-              t.archetype = 'regular' AND
-              p.user_id > 0 AND
-              cr.model_used = 'emotion' AND
-              (p.created_at > :report_start AND p.created_at < :report_end)
-            GROUP BY u.trust_level
-          SQL
+      SELECT
+        DATE_TRUNC('day', p.created_at)::DATE AS posted_at,
+        #{emotion_count_clause.call("sadness")},
+        #{emotion_count_clause.call("surprise")},
+        #{emotion_count_clause.call("fear")},
+        #{emotion_count_clause.call("anger")},
+        #{emotion_count_clause.call("joy")},
+        #{emotion_count_clause.call("disgust")}
+      FROM
+        classification_results AS cr
+      INNER JOIN posts p ON p.id = cr.target_id AND cr.target_type = 'Post'
+      INNER JOIN users u ON p.user_id = u.id
+      INNER JOIN topics t ON t.id = p.topic_id
+      INNER JOIN categories c ON c.id = t.category_id
+      WHERE
+        t.archetype = 'regular' AND
+        p.user_id > 0 AND
+        cr.model_used = 'emotion' AND
+        (p.created_at > :report_start AND p.created_at < :report_end)
+      GROUP BY DATE_TRUNC('day', p.created_at)
+      SQL
               report_start: report.start_date,
               report_end: report.end_date,
               threshold: threshold,
@@ -107,27 +107,24 @@ module DiscourseAi
 
           return report if grouped_emotions.empty?
 
-          emotions = %w[sadness disgust fear anger joy surprise]
-          level_groups = [[0, 1], [2, 3, 4]]
+          emotions = [
+            { name: "sadness", color: report.colors[:turquoise] },
+            { name: "disgust", color: report.colors[:lime] },
+            { name: "fear", color: report.colors[:purple] },
+            { name: "anger", color: report.colors[:magenta] },
+            { name: "joy", color: report.colors[:yellow] },
+            { name: "surprise", color: report.colors[:brown] },
+          ]
 
           report.data =
-            level_groups.each_with_index.map do |lg, idx|
-              color = idx == 0 ? :turquoise : :lime
-              tl_emotion_avgs = grouped_emotions.select { |ge| lg.include?(ge.trust_level) }
-
+            emotions.map do |emotion|
               {
-                req: "emotion_tl_#{lg.join}",
-                color: report.colors[color],
-                label: I18n.t("discourse_ai.sentiment.reports.post_emotion.tl_#{lg.join}"),
+                req: "emotion_#{emotion[:name]}",
+                color: emotion[:color],
+                label: I18n.t("discourse_ai.sentiment.reports.post_emotion.#{emotion[:name]}"),
                 data:
-                  emotions.map do |e|
-                    {
-                      x: I18n.t("discourse_ai.sentiment.reports.post_emotion.#{e}"),
-                      y:
-                        tl_emotion_avgs.sum do |tl_emotion_avg|
-                          tl_emotion_avg.public_send("#{e}_count").to_i
-                        end,
-                    }
+                  grouped_emotions.map do |ge|
+                    { x: ge.posted_at, y: ge.public_send("#{emotion[:name]}_count") }
                   end,
               }
             end

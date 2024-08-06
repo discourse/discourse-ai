@@ -128,7 +128,9 @@ class GeminiMock < EndpointMock
 end
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
-  subject(:endpoint) { described_class.new("gemini-pro", DiscourseAi::Tokenizer::OpenAiTokenizer) }
+  subject(:endpoint) { described_class.new(model) }
+
+  fab!(:model) { Fabricate(:gemini_model, vision_enabled: true) }
 
   fab!(:user)
 
@@ -144,8 +146,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
   end
 
   it "Supports Vision API" do
-    SiteSetting.ai_gemini_api_key = "ABC"
-
     prompt =
       DiscourseAi::Completions::Prompt.new(
         "You are image bot",
@@ -158,9 +158,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("google:gemini-1.5-pro")
-    url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=ABC"
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
       body:
@@ -202,8 +201,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
   end
 
   it "Can correctly handle streamed responses even if they are chunked badly" do
-    SiteSetting.ai_gemini_api_key = "ABC"
-
     data = +""
     data << "da|ta: |"
     data << gemini_mock.response("Hello").to_json
@@ -214,9 +211,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     split = data.split("|")
 
-    llm = DiscourseAi::Completions::Llm.proxy("google:gemini-1.5-flash")
-    url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:streamGenerateContent?alt=sse&key=ABC"
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
 
     output = +""
     gemini_mock.with_chunk_array_support do

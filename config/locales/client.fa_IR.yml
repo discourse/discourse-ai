@@ -64,6 +64,7 @@ fa_IR:
           title: "بارگذاری‌ها"
           uploading: "در حال بار گذاری..."
       tools:
+        back: "بازگشت"
         name: "نام"
         description: "توضیح"
         summary: "خلاصه"
@@ -143,3 +144,6 @@ fa_IR:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+      summarization:
+        chat:
+          summarize: "خلاصه کنید"

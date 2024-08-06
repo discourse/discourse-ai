@@ -120,6 +120,7 @@ id:
           description: "Persona AI Anda akan dapat mencari dan mereferensikan konten file yang disertakan. File yang diunggah harus diformat sebagai teks biasa (.txt) atau markdown (.md)."
           uploading: "Mengunggah..."
       tools:
+        back: "Kembali"
         name: "Nama"
         description: "Deskripsi"
         summary: "Ringkasan"
@@ -225,3 +226,10 @@ id:
           claude-3-sonnet: "Claude 3 Soneta"
           claude-3-haiku: "Claude 3 Haiku"
           claude-2: "Claude 2"
+      summarization:
+        chat:
+          title: "Meringkas pesan"
+          description: "Pilih opsi di bawah untuk meringkas percakapan yang dikirim selama jangka waktu yang diinginkan."
+          summarize: "Meringkas"
+          since:
+            other: "%{count} jam terakhir"

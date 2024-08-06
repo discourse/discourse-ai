@@ -41,6 +41,7 @@ sq:
         uploads:
           uploading: "Duke ngarkuar..."
       tools:
+        back: "Kthehu mbrapa"
         name: "Emri"
         description: "Përshkrimi"
         summary: "Përmbledhja"

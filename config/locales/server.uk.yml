@@ -15,6 +15,9 @@ uk:
         tags: "Список тегів"
         time: "Час"
         summarize: "Підсумок"
+    summarization:
+      chat:
+        no_targets: "За вибраний період повідомлень не було."
     sentiment:
       reports:
         post_emotion:

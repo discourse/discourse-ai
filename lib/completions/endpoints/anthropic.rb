@@ -4,22 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Anthropic < Base
-        class << self
-          def can_contact?(endpoint_name)
-            endpoint_name == "anthropic"
-          end
-
-          def dependant_setting_names
-            %w[ai_anthropic_api_key]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_anthropic_api_key.present?
-          end
-
-          def endpoint_name(model_name)
-            "Anthropic - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "anthropic"
         end
 
         def normalize_model_params(model_params)
@@ -29,7 +15,7 @@ module DiscourseAi
 
         def default_options(dialect)
           mapped_model =
-            case model
+            case llm_model.name
             when "claude-2"
               "claude-2.1"
             when "claude-instant-1"
@@ -43,7 +29,7 @@ module DiscourseAi
             when "claude-3-5-sonnet"
               "claude-3-5-sonnet-20240620"
             else
-              model
+              llm_model.name
             end
 
           options = { model: mapped_model, max_tokens: 3_000 }
@@ -74,9 +60,7 @@ module DiscourseAi
         end
 
         def model_uri
-          url = llm_model&.url || "https://api.anthropic.com/v1/messages"
-
-          URI(url)
+          URI(llm_model.url)
         end
 
         def prepare_payload(prompt, model_params, dialect)
@@ -94,7 +78,7 @@ module DiscourseAi
         def prepare_request(payload)
           headers = {
             "anthropic-version" => "2023-06-01",
-            "x-api-key" => llm_model&.api_key || SiteSetting.ai_anthropic_api_key,
+            "x-api-key" => llm_model.api_key,
             "content-type" => "application/json",
           }
 

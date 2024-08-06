@@ -19,7 +19,17 @@ module ::DiscourseAi
 
         raise Net::HTTPBadResponse if ![200].include?(response.status)
 
-        JSON.parse(response.body, symbolize_names: true)
+        case response.status
+        when 200
+          JSON.parse(response.body, symbolize_names: true)
+        when 429
+          # TODO add a AdminDashboard Problem?
+        else
+          Rails.logger.warn(
+            "Cloudflare Workers AI Embeddings failed with status: #{response.status} body: #{response.body}",
+          )
+          raise Net::HTTPBadResponse
+        end
       end
     end
   end

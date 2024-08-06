@@ -2,31 +2,9 @@
 
 class LlmModel < ActiveRecord::Base
   FIRST_BOT_USER_ID = -1200
-  RESERVED_VLLM_SRV_URL = "https://vllm.shadowed-by-srv.invalid"
   BEDROCK_PROVIDER_NAME = "aws_bedrock"
 
   belongs_to :user
-
-  validates :url, exclusion: { in: [RESERVED_VLLM_SRV_URL] }
-
-  def self.enable_or_disable_srv_llm!
-    srv_model = find_by(url: RESERVED_VLLM_SRV_URL)
-    if SiteSetting.ai_vllm_endpoint_srv.present? && srv_model.blank?
-      record =
-        new(
-          display_name: "vLLM SRV LLM",
-          name: "mistralai/Mixtral",
-          provider: "vllm",
-          tokenizer: "DiscourseAi::Tokenizer::MixtralTokenizer",
-          url: RESERVED_VLLM_SRV_URL,
-          max_prompt_tokens: 8000,
-        )
-
-      record.save(validate: false) # Ignore reserved URL validation
-    elsif srv_model.present?
-      srv_model.destroy!
-    end
-  end
 
   def self.provider_params
     {
@@ -42,7 +20,7 @@ class LlmModel < ActiveRecord::Base
   end
 
   def to_llm
-    DiscourseAi::Completions::Llm.proxy_from_obj(self)
+    DiscourseAi::Completions::Llm.proxy("custom:#{id}")
   end
 
   def toggle_companion_user
@@ -112,4 +90,6 @@ end
 #  api_key           :string
 #  user_id           :integer
 #  enabled_chat_bot  :boolean          default(FALSE), not null
+#  provider_params   :jsonb
+#  vision_enabled    :boolean          default(FALSE), not null
 #

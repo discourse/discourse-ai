@@ -109,6 +109,16 @@ describe DiscourseAi::Tokenizer::OpenAiTokenizer do
   end
 end
 
+describe DiscourseAi::Tokenizer::OpenAiGpt4oTokenizer do
+  describe "#size" do
+    describe "returns a token count" do
+      it "for a sentence with punctuation and capitalization and numbers" do
+        expect(described_class.size("Hello, World! 123")).to eq(6)
+      end
+    end
+  end
+end
+
 describe DiscourseAi::Tokenizer::AllMpnetBaseV2Tokenizer do
   describe "#size" do
     describe "returns a token count" do

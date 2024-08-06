@@ -184,6 +184,7 @@ he:
           uploading: "בהליכי העלאה…"
           remove: "הסרת העלאה"
       tools:
+        back: "חזרה"
         short_title: "כלים"
         new: "כלי חדש"
         name: "שם"
@@ -285,6 +286,7 @@ he:
             title: "בקשה מותאמת אישית"
             placeholder: "נא למלא בקשה מותאמת…"
             submit: "שליחת בקשה"
+          translate_prompt: "תרגום ל%{language}"
         post_options_menu:
           trigger: "לשאול בינה מלאכותית"
           title: "לשאול בינה מלאכותית"
@@ -295,6 +297,7 @@ he:
           cancel: "ביטול"
           insert_footnote: "הוספת הערת שוליים"
           footnote_credits: "הסבר של בינה מלאכותית"
+          selected_text: "טקסט נבחר"
         fast_edit:
           suggest_button: "הצעת עריכה"
         thumbnail_suggestions:
@@ -376,6 +379,16 @@ he:
       sentiments:
         dashboard:
           title: "רגש"
+      summarization:
+        chat:
+          title: "סיכום הודעות"
+          description: "נא לבחור אפשרות להלן כדי לסכם את הדיון שנשלח בפרק הזמן המבוקש."
+          summarize: "סיכום"
+          since:
+            one: "שעה אחרונה"
+            two: "שעתיים אחרונות"
+            many: "%{count} השעות האחרונות"
+            other: "%{count} השעות האחרונות"
     review:
       types:
         reviewable_ai_post:

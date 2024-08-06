@@ -44,6 +44,7 @@ ug:
           title: "يۈكلەنمە"
           uploading: "يۈكلەۋاتىدۇ..."
       tools:
+        back: "كەينى"
         name: "ئىسمى"
         description: "چۈشەندۈرۈش"
         summary: "خۇلاسە"
@@ -95,3 +96,11 @@ ug:
           response: "ئىنكاس"
         share_modal:
           copy: "كۆچۈر"
+      summarization:
+        chat:
+          title: "ئۇچۇرنى خۇلاسىلە"
+          description: "تۆۋەندىكى تاللانما تاللانسا لازىملىق ۋاقىت دائىرىسىدە يوللانغان سۆھبەتنى خۇلاسىلەيدۇ."
+          summarize: "خۇلاسە"
+          since:
+            one: "ئاخىرقى %{count} سائەت"
+            other: "ئاخىرقى %{count} سائەت"

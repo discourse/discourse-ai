@@ -67,6 +67,12 @@ class StreamUpdater {
 }
 
 class PostUpdater extends StreamUpdater {
+  morphingOptions = {
+    beforeAttributeUpdated: (element, attributeName) => {
+      return !(element.tagName === "DETAILS" && attributeName === "open");
+    },
+  };
+
   constructor(postStream, postId) {
     super();
     this.postStream = postStream;
@@ -116,13 +122,11 @@ class PostUpdater extends StreamUpdater {
   async setCooked(value) {
     this.post.set("cooked", value);
 
-    const oldElement = this.postElement.querySelector(".cooked");
-
-    // TODO: use `morphInner` once version morphlex 0.0.16 is out
-    const newElement = oldElement.cloneNode(false);
-    newElement.innerHTML = value;
-
-    (await loadMorphlex()).morph(oldElement, newElement);
+    (await loadMorphlex()).morphInner(
+      this.postElement.querySelector(".cooked"),
+      `<div>${value}</div>`,
+      this.morphingOptions
+    );
   }
 
   get raw() {

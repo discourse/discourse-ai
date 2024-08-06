@@ -2,7 +2,9 @@
 require_relative "endpoint_compliance"
 
 RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-opus") }
+  let(:url) { "https://api.anthropic.com/v1/messages" }
+  fab!(:model) { Fabricate(:anthropic_model, name: "claude-3-opus", vision_enabled: true) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{model.id}") }
   let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
   let(:upload100x100) do
     UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
@@ -44,8 +46,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     prompt.tools = [echo_tool]
     prompt_with_tools
   end
-
-  before { SiteSetting.ai_anthropic_api_key = "123" }
 
   it "does not eat spaces with tool calls" do
     SiteSetting.ai_anthropic_native_tool_call_models = "claude-3-opus"
@@ -108,10 +108,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     result = +""
     body = body.scan(/.*\n/)
     EndpointMock.with_chunk_array_support do
-      stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(
-        status: 200,
-        body: body,
-      )
+      stub_request(:post, url).to_return(status: 200, body: body)
 
       llm.generate(prompt_with_google_tool, user: Discourse.system_user) do |partial|
         result << partial
@@ -161,7 +158,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     parsed_body = nil
 
-    stub_request(:post, "https://api.anthropic.com/v1/messages").with(
+    stub_request(:post, url).with(
       body:
         proc do |req_body|
           parsed_body = JSON.parse(req_body, symbolize_names: true)
@@ -198,6 +195,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   end
 
   it "supports non streaming tool calls" do
+    SiteSetting.ai_anthropic_native_tool_call_models = "claude-3-opus"
+
     tool = {
       name: "calculate",
       description: "calculate something",
@@ -217,8 +216,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
         messages: [{ type: :user, id: "user1", content: "calculate 2758975 + 21.11" }],
         tools: [tool],
       )
-
-    proxy = DiscourseAi::Completions::Llm.proxy("anthropic:claude-3-haiku")
 
     body = {
       id: "msg_01RdJkxCbsEj9VFyFYAkfy2S",
@@ -244,9 +241,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       },
     }.to_json
 
-    stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(body: body)
+    stub_request(:post, url).to_return(body: body)
 
-    result = proxy.generate(prompt, user: Discourse.system_user)
+    result = llm.generate(prompt, user: Discourse.system_user)
 
     expected = <<~TEXT.strip
       <function_calls>
@@ -314,7 +311,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     STRING
 
     requested_body = nil
-    stub_request(:post, "https://api.anthropic.com/v1/messages").with(
+    stub_request(:post, url).with(
       body:
         proc do |req_body|
           requested_body = JSON.parse(req_body, symbolize_names: true)
@@ -351,7 +348,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     STRING
 
     parsed_body = nil
-    stub_request(:post, "https://api.anthropic.com/v1/messages").with(
+    stub_request(:post, url).with(
       body:
         proc do |req_body|
           parsed_body = JSON.parse(req_body, symbolize_names: true)
@@ -364,7 +361,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       },
     ).to_return(status: 200, body: body)
 
-    result = llm.generate(prompt, user: Discourse.system_user)
+    proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    result = proxy.generate(prompt, user: Discourse.system_user)
     expect(result).to eq("Hello!")
 
     expected_body = {

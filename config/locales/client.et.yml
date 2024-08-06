@@ -42,6 +42,7 @@ et:
           title: "Üleslaadimised"
           uploading: "Laen üles..."
       tools:
+        back: "Tagasi"
         name: "Nimi"
         description: "Kirjeldus"
         summary: "Kokkuvõte"

@@ -74,8 +74,6 @@ ar:
     ai_embeddings_semantic_search_enabled: "تفعيل البحث الدلالي في الصفحة كاملةً."
     ai_embeddings_semantic_related_include_closed_topics: "تضمين الموضوعات المغلقة في نتائج البحث الدلالي"
     ai_embeddings_semantic_search_hyde_model: "النموذج المُستخدَم لتوسيع الكلمات الرئيسية للحصول على نتائج أفضل في أثناء البحث الدلالي"
-    ai_summarization_discourse_service_api_endpoint: "عنوان URL حيث تعمل واجهة API للتلخيص على Discourse."
-    ai_summarization_discourse_service_api_key: "مفتاح API لواجهة API للتلخيص على Discourse."
     ai_bot_enabled: "تفعيل وحدة روبوت الذكاء الاصطناعي"
     ai_bot_enable_chat_warning: "عرض تحذير عند بدء الدردشة في رسالة خاصة. يمكن تجاوزه عن طريق تعديل سلسلة الترجمة: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "عندما يتمكن GPT Bot من الوصول إلى الرسالة الخاصة، فإنه سيرد على أعضاء هذه المجموعات."
@@ -112,7 +110,6 @@ ar:
       errors:
         completion_request_failed: "حدث خطأ في أثناء محاولة تقديم اقتراحات. يُرجى إعادة المحاولة."
       prompts:
-        translate: الترجمة إلى الإنجليزية
         generate_titles: اقتراح عناوين للموضوعات
         proofread: تدقيق النص لغويًا
         markdown_table: إنشاء جدول Markdown
@@ -242,6 +239,8 @@ ar:
         few: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
         many: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
         other: "قم بتكوين هذه الإعدادات أولًا: %{settings}"
+      chat:
+        no_targets: "لم تكن هناك رسائل خلال الفترة المحدَّدة."
     sentiment:
       reports:
         overall_sentiment:

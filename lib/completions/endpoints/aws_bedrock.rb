@@ -6,24 +6,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class AwsBedrock < Base
-        class << self
-          def can_contact?(endpoint_name)
-            endpoint_name == "aws_bedrock"
-          end
-
-          def dependant_setting_names
-            %w[ai_bedrock_access_key_id ai_bedrock_secret_access_key ai_bedrock_region]
-          end
-
-          def correctly_configured?(_model)
-            SiteSetting.ai_bedrock_access_key_id.present? &&
-              SiteSetting.ai_bedrock_secret_access_key.present? &&
-              SiteSetting.ai_bedrock_region.present?
-          end
-
-          def endpoint_name(model_name)
-            "AWS Bedrock - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "aws_bedrock"
         end
 
         def normalize_model_params(model_params)
@@ -62,37 +46,28 @@ module DiscourseAi
         end
 
         def model_uri
-          if llm_model
-            region = llm_model.lookup_custom_param("region")
+          region = llm_model.lookup_custom_param("region")
 
-            api_url =
-              "https://bedrock-runtime.#{region}.amazonaws.com/model/#{llm_model.name}/invoke"
-          else
-            # See: https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
-            #
-            # FYI there is a 2.0 version of Claude, very little need to support it given
-            # haiku/sonnet are better fits anyway, we map to claude-2.1
-            bedrock_model_id =
-              case model
-              when "claude-2"
-                "anthropic.claude-v2:1"
-              when "claude-3-haiku"
-                "anthropic.claude-3-haiku-20240307-v1:0"
-              when "claude-3-sonnet"
-                "anthropic.claude-3-sonnet-20240229-v1:0"
-              when "claude-instant-1"
-                "anthropic.claude-instant-v1"
-              when "claude-3-opus"
-                "anthropic.claude-3-opus-20240229-v1:0"
-              when "claude-3-5-sonnet"
-                "anthropic.claude-3-5-sonnet-20240620-v1:0"
-              else
-                model
-              end
+          bedrock_model_id =
+            case llm_model.name
+            when "claude-2"
+              "anthropic.claude-v2:1"
+            when "claude-3-haiku"
+              "anthropic.claude-3-haiku-20240307-v1:0"
+            when "claude-3-sonnet"
+              "anthropic.claude-3-sonnet-20240229-v1:0"
+            when "claude-instant-1"
+              "anthropic.claude-instant-v1"
+            when "claude-3-opus"
+              "anthropic.claude-3-opus-20240229-v1:0"
+            when "claude-3-5-sonnet"
+              "anthropic.claude-3-5-sonnet-20240620-v1:0"
+            else
+              llm_model.name
+            end
 
-            api_url =
-              "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
-          end
+          api_url =
+            "https://bedrock-runtime.#{region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
 
           api_url = @streaming_mode ? (api_url + "-with-response-stream") : api_url
 
@@ -114,11 +89,9 @@ module DiscourseAi
 
           signer =
             Aws::Sigv4::Signer.new(
-              access_key_id:
-                llm_model&.lookup_custom_param("access_key_id") ||
-                  SiteSetting.ai_bedrock_access_key_id,
-              region: llm_model&.lookup_custom_param("region") || SiteSetting.ai_bedrock_region,
-              secret_access_key: llm_model&.api_key || SiteSetting.ai_bedrock_secret_access_key,
+              access_key_id: llm_model.lookup_custom_param("access_key_id"),
+              region: llm_model.lookup_custom_param("region"),
+              secret_access_key: llm_model.api_key,
               service: "bedrock",
             )
 

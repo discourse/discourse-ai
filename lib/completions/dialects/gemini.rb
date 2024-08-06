@@ -5,17 +5,13 @@ module DiscourseAi
     module Dialects
       class Gemini < Dialect
         class << self
-          def can_translate?(model_name)
-            %w[gemini-pro gemini-1.5-pro gemini-1.5-flash].include?(model_name)
+          def can_translate?(model_provider)
+            model_provider == "google"
           end
         end
 
         def native_tool_support?
           true
-        end
-
-        def tokenizer
-          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::OpenAiTokenizer ## TODO Replace with GeminiTokenizer
         end
 
         def translate
@@ -74,24 +70,17 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          return llm_model.max_prompt_tokens if llm_model&.max_prompt_tokens
-
-          if model_name.start_with?("gemini-1.5")
-            # technically we support 1 million tokens, but we're being conservative
-            800_000
-          else
-            16_384 # 50% of model tokens
-          end
+          llm_model.max_prompt_tokens
         end
 
         protected
 
         def calculate_message_token(context)
-          self.tokenizer.size(context[:content].to_s + context[:name].to_s)
+          llm_model.tokenizer_class.size(context[:content].to_s + context[:name].to_s)
         end
 
         def beta_api?
-          @beta_api ||= model_name.start_with?("gemini-1.5")
+          @beta_api ||= llm_model.name.start_with?("gemini-1.5")
         end
 
         def system_msg(msg)
@@ -114,6 +103,8 @@ module DiscourseAi
           if beta_api?
             # support new format with multiple parts
             result = { role: "user", parts: [{ text: msg[:content] }] }
+            return result unless vision_support?
+
             upload_parts = uploaded_parts(msg)
             result[:parts].concat(upload_parts) if upload_parts.present?
             result

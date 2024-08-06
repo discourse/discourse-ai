@@ -42,6 +42,7 @@ hu:
           title: "Feltöltések"
           uploading: "Feltültés..."
       tools:
+        back: "Vissza"
         name: "Név"
         description: "Leírás"
         summary: "Összefoglaló"
@@ -91,3 +92,6 @@ hu:
           response: "Válasz"
         share_modal:
           copy: "Másolás"
+      summarization:
+        chat:
+          summarize: "Összefoglalás"

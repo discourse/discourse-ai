@@ -38,7 +38,7 @@ module DiscourseAi
           llm_model.toggle_companion_user
           render json: { ai_persona: LlmModelSerializer.new(llm_model) }, status: :created
         else
-          render_json_error LlmModelSerializer.new(llm_model)
+          render_json_error llm_model
         end
       end
 
@@ -49,7 +49,7 @@ module DiscourseAi
           llm_model.toggle_companion_user
           render json: LlmModelSerializer.new(llm_model)
         else
-          render_json_error LlmModelSerializer.new(llm_model)
+          render_json_error llm_model
         end
       end
 
@@ -106,12 +106,11 @@ module DiscourseAi
             :max_prompt_tokens,
             :api_key,
             :enabled_chat_bot,
+            :vision_enabled,
           )
 
         provider = updating ? updating.provider : permitted[:provider]
-        permit_url =
-          (updating && updating.url != LlmModel::RESERVED_VLLM_SRV_URL) ||
-            provider != LlmModel::BEDROCK_PROVIDER_NAME
+        permit_url = provider != LlmModel::BEDROCK_PROVIDER_NAME
 
         permitted[:url] = params.dig(:ai_llm, :url) if permit_url
 
