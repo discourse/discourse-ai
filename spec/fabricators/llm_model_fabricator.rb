@@ -43,6 +43,8 @@ Fabricator(:fake_model, from: :llm_model) do
   provider "fake"
   tokenizer "DiscourseAi::Tokenizer::OpenAiTokenizer"
   max_prompt_tokens 32_000
+  api_key "fake"
+  url "https://fake.test/"
 end
 
 Fabricator(:gemini_model, from: :llm_model) do

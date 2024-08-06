@@ -65,6 +65,17 @@ export default class AiLlmEditorForm extends Component {
     return this.metaProviderParams.url_editable !== false;
   }
 
+  get modulesUsingModel() {
+    return this.args.model.used_by?.join(", ");
+  }
+
+  get inUseWarning() {
+    return I18n.t("discourse_ai.llms.in_use_warning", {
+      settings: this.modulesUsingModel,
+      count: this.args.model.used_by.length,
+    });
+  }
+
   @computed("args.model.provider")
   get metaProviderParams() {
     return (
@@ -166,6 +177,12 @@ export default class AiLlmEditorForm extends Component {
   }
 
   <template>
+    {{#if this.modulesUsingModel}}
+      <div class="alert alert-info">
+        {{icon "exclamation-circle"}}
+        {{this.inUseWarning}}
+      </div>
+    {{/if}}
     <form class="form-horizontal ai-llm-editor">
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.display_name"}}</label>

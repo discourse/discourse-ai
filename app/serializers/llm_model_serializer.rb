@@ -12,13 +12,13 @@ class LlmModelSerializer < ApplicationSerializer
              :api_key,
              :url,
              :enabled_chat_bot,
-             :shadowed_by_srv,
              :provider_params,
-             :vision_enabled
+             :vision_enabled,
+             :used_by
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
 
-  def shadowed_by_srv
-    object.url.to_s.starts_with?("srv://")
+  def used_by
+    DiscourseAi::Configuration::LlmValidator.new.modules_using(object)
   end
 end
