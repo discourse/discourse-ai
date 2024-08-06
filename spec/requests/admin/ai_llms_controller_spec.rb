@@ -20,19 +20,19 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
   end
 
   describe "POST #create" do
-    context "with valid attributes" do
-      let(:valid_attrs) do
-        {
-          display_name: "My cool LLM",
-          name: "gpt-3.5",
-          provider: "open_ai",
-          url: "https://test.test/v1/chat/completions",
-          api_key: "test",
-          tokenizer: "DiscourseAi::Tokenizer::OpenAiTokenizer",
-          max_prompt_tokens: 16_000,
-        }
-      end
+    let(:valid_attrs) do
+      {
+        display_name: "My cool LLM",
+        name: "gpt-3.5",
+        provider: "open_ai",
+        url: "https://test.test/v1/chat/completions",
+        api_key: "test",
+        tokenizer: "DiscourseAi::Tokenizer::OpenAiTokenizer",
+        max_prompt_tokens: 16_000,
+      }
+    end
 
+    context "with valid attributes" do
       it "creates a new LLM model" do
         post "/admin/plugins/discourse-ai/ai-llms.json", params: { ai_llm: valid_attrs }
 
@@ -84,6 +84,19 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         expect(created_model.lookup_custom_param("access_key_id")).to be_nil
       end
     end
+
+    context "with invalid attributes" do
+      it "doesn't create a model" do
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm: valid_attrs.except(:url),
+             }
+
+        created_model = LlmModel.last
+
+        expect(created_model).to be_nil
+      end
+    end
   end
 
   describe "PUT #update" do
@@ -127,6 +140,19 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
             }
 
         expect(llm_model.reload.user_id).to be_nil
+      end
+    end
+
+    context "with invalid update params" do
+      it "doesn't update the model" do
+        put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",
+            params: {
+              ai_llm: {
+                url: "",
+              },
+            }
+
+        expect(response.status).to eq(422)
       end
     end
 

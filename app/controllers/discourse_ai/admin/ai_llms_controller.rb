@@ -97,6 +97,8 @@ module DiscourseAi
       private
 
       def ai_llm_params(updating: nil)
+        return {} if params[:ai_llm].blank?
+
         permitted =
           params.require(:ai_llm).permit(
             :display_name,
@@ -112,7 +114,8 @@ module DiscourseAi
         provider = updating ? updating.provider : permitted[:provider]
         permit_url = provider != LlmModel::BEDROCK_PROVIDER_NAME
 
-        permitted[:url] = params.dig(:ai_llm, :url) if permit_url
+        new_url = params.dig(:ai_llm, :url)
+        permitted[:url] = new_url if permit_url && new_url
 
         extra_field_names = LlmModel.provider_params.dig(provider&.to_sym, :fields).to_a
         received_prov_params = params.dig(:ai_llm, :provider_params)

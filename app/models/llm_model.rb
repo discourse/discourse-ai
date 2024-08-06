@@ -6,6 +6,13 @@ class LlmModel < ActiveRecord::Base
 
   belongs_to :user
 
+  validates :display_name, presence: true, length: { maximum: 100 }
+  validates :tokenizer, presence: true, inclusion: DiscourseAi::Completions::Llm.tokenizer_names
+  validates :provider, presence: true, inclusion: DiscourseAi::Completions::Llm.provider_names
+  validates :url, presence: true, unless: -> { provider == BEDROCK_PROVIDER_NAME }
+  validates_presence_of :name, :api_key
+  validates :max_prompt_tokens, numericality: { greater_than: 0 }
+
   def self.provider_params
     {
       aws_bedrock: {
