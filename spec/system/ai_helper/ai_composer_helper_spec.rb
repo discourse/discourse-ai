@@ -239,21 +239,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
             input.gsub(/[[:space:]]+/, " ").gsub(/[‘’]/, "'").gsub(/[“”]/, '"').strip,
           )
           diff_modal.confirm_changes
-          expect(ai_helper_context_menu).to be_showing_resets
-        end
-      end
-
-      it "should not close the context menu when in review state" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
-
-        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
-          wait_for { composer.composer_input.value == input }
-
-          find(".d-editor-preview").click
-          expect(ai_helper_context_menu).to have_context_menu
+          expect(ai_helper_context_menu).to have_no_context_menu
         end
       end
     end

@@ -41,7 +41,7 @@ module PageObjects
       end
 
       def press_undo_keys
-        find(COMPOSER_EDITOR_SELECTOR).send_keys([:control, "z"])
+        find(COMPOSER_EDITOR_SELECTOR).send_keys([PLATFORM_KEY_MODIFIER, "z"])
       end
 
       def press_escape_key

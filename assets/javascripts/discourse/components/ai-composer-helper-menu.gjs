@@ -124,13 +124,13 @@ export default class AiComposerHelperMenu extends Component {
         icon: "undo",
         label: "discourse_ai.ai_helper.context_menu.undo",
         action: this.undoAiAction,
-        class: "undo",
+        classes: "undo",
       },
       {
         icon: "discourse-sparkles",
         label: "discourse_ai.ai_helper.context_menu.regen",
         action: () => this.updateSelected(this.lastUsedOption),
-        class: "regenerate",
+        classes: "regenerate",
       },
     ];
   }
