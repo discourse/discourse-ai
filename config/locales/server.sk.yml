@@ -21,4 +21,4 @@ sk:
     sentiment:
       reports:
         post_emotion:
-          neutral: "Neutrálna"
+          neutral: "Neutrálna \U0001F610"

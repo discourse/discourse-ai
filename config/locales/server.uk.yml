@@ -21,4 +21,4 @@ uk:
     sentiment:
       reports:
         post_emotion:
-          neutral: "Нейтральна"
+          neutral: "Нейтральна \U0001F610"

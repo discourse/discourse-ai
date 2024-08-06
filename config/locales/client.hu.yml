@@ -67,6 +67,9 @@ hu:
           success: "Siker!"
         providers:
           google: "Google"
+      related_topics:
+        title: "Kapcsolódó témák"
+        pill: "Kapcsolódó"
       ai_helper:
         context_menu:
           back: "Vissza"

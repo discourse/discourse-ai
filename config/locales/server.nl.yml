@@ -43,17 +43,11 @@ nl:
     ai_nsfw_flag_threshold_porn: "Drempelwaarde voor een als porno geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_flag_threshold_sexy: "Drempelwaarde voor een als sexy geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_models: "Te gebruiken modellen voor NVWW-inferentie."
-    ai_openai_gpt35_url: "Aangepaste URL voor voltooiingen van GPT 3.5-chats. (voor Azure-ondersteuning)"
-    ai_openai_gpt35_16k_url: "Aangepaste URL voor het voltooien van GPT-3.5 16k-chats. (voor Azure-ondersteuning)"
-    ai_openai_gpt4_url: "Aangepaste URL voor voltooiingen van GPT 4-chats. (voor Azure-ondersteuning)"
-    ai_openai_gpt4_32k_url: "Aangepaste URL voor het voltooien van GPT-4 32k-chats. (voor Azure-ondersteuning)"
-    ai_openai_gpt4_turbo_url: "Aangepaste URL voor het voltooien van GPT-4 Turbo-chats. (voor Azure-ondersteuning)"
-    ai_openai_dall_e_3_url: "Aangepaste URL voor het genereren van DALL-E 3-afbeeldingen (voor Azure-ondersteuning)"
-    ai_openai_organization: "(Optioneel, leeg laten om het weg te laten) Organisatie-ID voor OpenAI API. Ingevoegd met behulp van de header OpenAI-Organization."
     ai_openai_embeddings_url: "Aangepaste URL voor de OpenAI-insluitings-API. (in het geval van Azure kan dit zijn: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "API-sleutel voor de OpenAI-API"
-    ai_anthropic_api_key: "API-sleutel voor de Anthropic-API"
-    ai_hugging_face_api_url: "Aangepaste URL voor OpenSource LLM-inferentie. Compatibel met https://github.com/huggingface/text-generation-inference"
+    ai_openai_api_key: "API-sleutel voor OpenAI-API. ALLEEN gebruikt voor insluitingen en Dall-E. Gebruik voor GPT het tabblad LLM-configuratie"
+    ai_anthropic_native_tool_call_models: "Lijst van modellen die gebruik maken van native toolaanroepen versus oudere, op XML gebaseerde tools."
+    ai_hugging_face_tei_endpoint: URL waar de API wordt uitgevoerd voor inferentie van Hugging Face-tekstinsluitingen
+    ai_hugging_face_tei_api_key: API-sleutel voor inferentie van Hugging Face-tekstinsluitingen
     composer_ai_helper_enabled: "Schakel de AI-hulp van de editor in."
     ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
     ai_helper_allowed_in_pm: "Schakel de AI-hulp van de editor in in PB's."
@@ -62,6 +56,10 @@ nl:
     ai_helper_automatic_chat_thread_title_delay: "Vertraging in minuten voordat de AI-helper automatisch de titel van de chatthread instelt."
     ai_helper_automatic_chat_thread_title: "Stel automatisch de titel van chatthreads in op basis van de threadinhoud."
     ai_helper_illustrate_post_model: "Te gebruiken model voor de berichtillustratiefunctie van de opstellings-AI-helper"
+    ai_helper_enabled_features: "Selecteer de functies die je wilt inschakelen in de AI-helper."
+    post_ai_helper_allowed_groups: "Gebruikersgroepen die toegang hebben tot AI-helperfuncties in berichten"
+    ai_helper_image_caption_model: "Selecteer het te gebruiken model voor het genereren van afbeeldingsbijschriften"
+    ai_auto_image_caption_allowed_groups: "Gebruikers in deze groepen kunnen automatische afbeeldingsbijschriften in- en uitschakelen."
     ai_embeddings_enabled: "Schakel de insluitingsmodule in."
     ai_embeddings_discourse_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de insluitingsmodule"
     ai_embeddings_discourse_service_api_key: "API-sleutel voor de insluitings-API"
@@ -72,23 +70,25 @@ nl:
     ai_embeddings_backfill_batch_size: "Aantal insluitingen dat elke 15 minuten moet worden aangevuld."
     ai_embeddings_pg_connection_string: "PostgreSQL-verbindingsreeks voor de insluitingsmodule. Vereist dat de pgvector-extensie is ingeschakeld en dat een reeks tabellen is gemaakt. Zie de documentatie voor meer informatie."
     ai_embeddings_semantic_search_enabled: "Schakel semantisch zoeken op volledige pagina's in."
+    ai_embeddings_semantic_quick_search_enabled: "Schakel de semantische zoekoptie in de zoekmenupop-up in."
     ai_embeddings_semantic_related_include_closed_topics: "Neem gesloten topics op in semantische zoekresultaten"
     ai_embeddings_semantic_search_hyde_model: "Gebruikt model voor het uitbreiden van trefwoorden om betere resultaten te krijgen bij semantisch zoeken"
+    ai_embeddings_per_post_enabled: Insluitingen genereren voor elk bericht
+    ai_summarization_enabled: "Schakel de module voor het samenvatten van topics in."
+    ai_summarization_model: "Te gebruiken model voor samenvattingen."
+    ai_custom_summarization_allowed_groups: "Groepen die nieuwe samenvattingen mogen maken."
     ai_bot_enabled: "Schakel de AI-botmodule in."
     ai_bot_enable_chat_warning: "Geef een waarschuwing weer wanneer een privéchat wordt gestart. Kan worden genegeerd door de vertaling te bewerken: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wanneer de GPT-bot toegang heeft tot het privébericht, zal deze reageren op leden van deze groepen."
-    ai_bot_enabled_chat_bots: "Beschikbare modellen om op te treden als AI-bot"
+    ai_bot_debugging_allowed_groups: "Geef deze groepen een debugknop bij berichten die het ruwe AI-verzoek en -antwoord weergeeft"
+    ai_bot_public_sharing_allowed_groups: "Sta deze groepen toe persoonlijke AI-berichten met het publiek delen via een unieke, openbaar beschikbare link. Let op: als aanmelden vereist is op je site, is dat ook vereist voor delen."
     ai_bot_add_to_header: "Geef een knop weer in de kop om een privéchat te starten met een AI-bot"
+    ai_bot_github_access_token: "GitHub-toegangstoken voor gebruik met GitHub AI-tools (vereist voor zoekondersteuning)"
     ai_stability_api_key: "API-sleutel voor de stability.ai-API"
     ai_stability_engine: "Te gebruiken engine voor het genereren van afbeeldingen voor de stability.ai-API"
     ai_stability_api_url: "URL voor de stability.ai-API"
     ai_google_custom_search_api_key: "API-sleutel voor de Google Custom Search-API zie: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX voor Google Custom Search-API"
-    ai_bedrock_access_key_id: "Toegangssleutel-ID voor de Bedrock-API"
-    ai_bedrock_secret_access_key: "Geheime toegangssleutel voor de Bedrock-API"
-    ai_bedrock_region: "AWS-regio voor de Bedrock-API"
-    ai_cloudflare_workers_account_id: "Cloudflare-account-ID voor de Cloudflare Workers AI-API"
-    ai_cloudflare_workers_api_token: "API-token voor de Cloudflare Workers AI-API"
   reviewables:
     reasons:
       flagged_by_toxicity: De AI-plug-in heeft dit gemarkeerd nadat het als toxisch was geclassificeerd.
@@ -106,10 +106,23 @@ nl:
       title: "Berichtemotie"
       description: "Aantal berichten geclassificeerd met een van de volgende emoties, gegroepeerd op vertrouwensniveau van de plaatser."
   discourse_ai:
+    unknown_model: "Onbekend AI-model"
+    tools:
+      custom_name: "%{name} (aangepast)"
+      presets:
+        browse_web_jina:
+          name: "Web surfen met jina.ai"
+        exchange_rate:
+          name: "Wisselkoers"
+        stock_quote:
+          name: "Aandelenkoers (AlphaVantage)"
+        empty_tool:
+          name: "Vanaf blanco beginnen..."
     ai_helper:
       errors:
         completion_request_failed: "Er is iets misgegaan bij het geven van suggesties. Probeer het opnieuw."
       prompts:
+        translate: Vertalen naar %{language}
         generate_titles: Topictitels voorstellen
         proofread: Tekst proeflezen
         markdown_table: Markdowntabel genereren
@@ -120,9 +133,27 @@ nl:
         attribution:
           stable_diffusion_xl: "Afbeelding door Stable Diffusion XL"
           dall_e_3: "Afbeelding door DALL-E 3"
+      image_caption:
+        attribution: "Bijschrift door AI"
+    share_ai:
+      read_more: "Volledig transcript lezen"
+      onebox_title: "AI-conversatie met %{llm_name}"
+      formatted_excerpt: "AI-conversatie met %{llm_name}:\n%{excerpt}"
+      title: "%{title} - AI-conversatie - %{site_name}"
+      errors:
+        not_allowed: "Je mag dit topic niet delen"
+        other_people_in_pm: "Persoonlijke berichten met andere mensen kunnen niet openbaar worden gedeeld"
+        other_content_in_pm: "Persoonlijke berichten met berichten van andere mensen kunnen niet openbaar worden gedeeld"
+        failed_to_share: "Delen van de conversatie mislukt"
+        conversation_deleted: "Conversatiedeling verwijderd"
     ai_bot:
       personas:
+        default_llm_required: "Standaard LLM-model is vereist voordat Chat wordt ingeschakeld"
         cannot_delete_system_persona: "Systeempersona's kunnen niet worden verwijderd. Schakel deze in plaats daarvan uit"
+        cannot_edit_system_persona: "Systeempersona's kunnen alleen worden hernoemd. Je kunt tools of systeemprompts niet bewerken. Je kunt ze wel uitschakelen en een kopie maken"
+        github_helper:
+          name: "GitHub Helper"
+          description: "AI-bot gespecialiseerd in het assisteren bij GitHub-gerelateerde taken en vragen"
         general:
           name: Forumhelper
           description: "AI-bot voor algemeen gebruik die verschillende taken kan uitvoeren"
@@ -144,18 +175,34 @@ nl:
         dall_e3:
           name: "DALL-E 3"
           description: "AI-bot gespecialiseerd in het genereren van afbeeldingen met DALL-E 3"
+        discourse_helper:
+          name: "Discourse Helper"
+          description: "AI-bot gespecialiseerd in het helpen bij Discourse-gerelateerde taken"
       topic_not_found: "Samenvatting niet beschikbaar, topic niet gevonden!"
       summarizing: "Topic samenvatten"
       searching: "Zoeken naar: '%{query}'"
       tool_options:
+        read:
+          read_private:
+            name: "Privé lezen"
+            description: "Sta toegang toe tot alle topics waartoe de gebruiker toegang heeft (standaard worden alleen openbare topics opgenomen)"
         search:
+          search_private:
+            name: "Privé zoeken"
+            description: "Neem alle topics waartoe de gebruiker toegang heeft op in de zoekresultaten (standaard worden alleen openbare topics opgenomen)"
           max_results:
             name: "Maximaal aantal resultaten"
             description: "Maximaal aantal resultaten dat in de zoekopdracht moet worden opgenomen. Indien leeg worden er lege standaardregels gebruikt en wordt het aantal geschaald, afhankelijk van het gebruikte model. De hoogste waarde is 100."
           base_query:
-            name: "Basiszoekopdracht"
+            name: "Basiszoekquery"
             description: "Basisquery om te gebruiken bij het zoeken. Voorbeeld: '#urgent' voegt '#urgent' toe aan de zoekquery en neemt alleen topics mee met de categorie of tag 'urgent'."
       tool_summary:
+        web_browser: "Web surfen"
+        github_search_files: "GitHub-zoekbestanden"
+        github_search_code: "GitHub-code zoeken"
+        github_file_content: "GitHub-bestandsinhoud"
+        github_pull_request_diff: "GitHub pullverzoek-diff"
+        random_picker: "Willekeurige kiezer"
         categories: "Categorieën weergeven"
         search: "Zoeken"
         tags: "Tags weergeven"
@@ -165,26 +212,42 @@ nl:
         google: "Zoeken op Google"
         read: "Topic lezen"
         setting_context: "Site-instellingscontext opzoeken"
-        schema: "Zoek een databaseschema op"
+        schema: "Databaseschema opzoeken"
         search_settings: "Zoeken in site-instellingen"
         dall_e: "Afbeelding genereren"
+        search_meta_discourse: "Zoeken in Meta Discourse"
+        javascript_evaluator: "JavaScript evalueren"
       tool_help:
+        web_browser: "Webpagina bekijken met behulp van de AI-bot"
+        github_search_code: "Zoek code in een GitHub-repository"
+        github_search_files: "Zoek bestanden in een GitHub-repository"
+        github_file_content: "Haal de inhoud van bestanden op uit een GitHub-repository"
+        github_pull_request_diff: "Haal een GitHub pullverzoek-diff op"
+        random_picker: "Kies een willekeurig getal of een willekeurig element uit een lijst"
         categories: "Geef een lijst weer van alle openbaar zichtbare categorieën op het forum"
         search: "Doorzoek alle openbare topics op het forum"
         tags: "Geef een lijst weer van alle tags op het forum"
         time: "Zoek de tijd in verschillende tijdzones"
         summary: "Vat een topic samen"
         image: "Afbeelding genereren met Stable Diffusion"
-        google: "Zoek op Google naar een query"
-        read: "Lees een openbaar topic op het forum"
+        google: "Query zoeken op Google"
+        read: "Openbaar topic op forum lezen"
         setting_context: "Site-instellingscontext opzoeken"
-        schema: "Zoek een databaseschema op"
-        search_settings: "Zoek site-instellingen"
-        dall_e: "Genereer een afbeelding met DALL-E 3"
+        schema: "Databaseschema opzoeken"
+        search_settings: "Site-instellingen zoeken"
+        dall_e: "Afbeelding genereren met DALL-E 3"
+        search_meta_discourse: "Zoeken in Meta Discourse"
+        javascript_evaluator: "JavaScript evalueren"
       tool_description:
+        web_browser: "Lezen: <a href='%{url}'>%{url}</a>"
+        github_search_files: "Gezocht naar '%{keywords}' in %{repo}/%{branch}"
+        github_search_code: "Gezocht naar '%{query}' in %{repo}"
+        github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
+        github_file_content: "Inhoud van %{file_paths} opgehaald uit %{repo_name}@%{branch}"
+        random_picker: "Kiezen uit %{options}, gekozen: %{result}"
         read: "Lezen: <a href='%{url}'>%{title}</a>"
         time: "De tijd in %{timezone} is %{time}"
-        summarize: "<a href='%{url}'>%{title}</a> samengevat"
+        summarize: "Samengevat: <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
@@ -219,12 +282,31 @@ nl:
           positive: "Positief"
           negative: "Negatief"
         post_emotion:
-          tl_01: "Vertrouwensniveau 0-1"
-          tl_234: "Vertrouwensniveau 2+"
-          sadness: "Droefheid"
-          surprise: "Verrassing"
-          neutral: "Neutraal"
-          fear: "Angst"
-          anger: "Boosheid"
-          joy: "Vreugde"
-          disgust: "Afschuw"
+          sadness: "Droefheid \U0001F622"
+          surprise: "Verrassing \U0001F631"
+          neutral: "Neutraal \U0001F610"
+          fear: "Angst \U0001F628"
+          anger: "Boosheid \U0001F621"
+          joy: "Vreugde \U0001F600"
+          disgust: "Afschuw \U0001F922"
+    llm:
+      configuration:
+        disable_module_first: "Je moet eerst %{setting} uitschakelen."
+        set_llm_first: "Stel eerst %{setting} in."
+        model_unreachable: "We konden geen antwoord krijgen van dit model. Controleer eerst je instellingen."
+      endpoints:
+        not_configured: "%{display_name} (niet geconfigureerd)"
+        configuration_hint:
+          one: "Zorg dat de instelling `%{settings}` is geconfigureerd."
+          other: "Zorg dat deze instellingen zijn geconfigureerd: %{settings}"
+      delete_failed:
+        one: "We kunnen dit model niet verwijderen omdat %{settings} het gebruikt. Werk de instelling bij en probeer het opnieuw."
+        other: "We kunnen dit model niet verwijderen omdat %{settings} het gebruiken. Werk de instellingen bij en probeer het opnieuw."
+    embeddings:
+      configuration:
+        disable_embeddings: "Je moet 'ai embeddings enabled' eerst uitschakelen."
+        choose_model: "Stel eerst 'ai embeddings model' in."
+        model_unreachable: "We konden geen testinsluiting genereren met dit model. Controleer of je instellingen juist zijn."
+        hint:
+          one: "Zorg dat de instelling `%{settings}` is geconfigureerd."
+          other: "Zorg dat de instellingen van de gewenste provider zijn geconfigureerd. Opties zijn: %{settings}"

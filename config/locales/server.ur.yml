@@ -17,4 +17,4 @@ ur:
     sentiment:
       reports:
         post_emotion:
-          neutral: "نیوٹرل"
+          neutral: "نیوٹرل \U0001F610"

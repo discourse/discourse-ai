@@ -43,27 +43,11 @@ tr_TR:
     ai_nsfw_flag_threshold_porn: "Porno olarak sınıflandırılan bir görüntünün NSFW olarak değerlendirilmesi için eşik."
     ai_nsfw_flag_threshold_sexy: "Seksi olarak sınıflandırılan bir görüntünün NSFW olarak değerlendirilmesi için eşik."
     ai_nsfw_models: "NSFW çıkarımı için kullanılacak modeller."
-    ai_openai_gpt35_url: "GPT 3.5 sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
-    ai_openai_gpt35_16k_url: "GPT 3.5 16k sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
-    ai_openai_gpt4_url: "GPT 4 sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
-    ai_openai_gpt4_32k_url: "GPT 4 32k sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
-    ai_openai_gpt4_turbo_url: "GPT 4 Turbo sohbet tamamlamaları için kullanılan özel URL. (Azure desteği için)"
-    ai_openai_dall_e_3_url: "DALL-E 3 görüntü oluşturma için kullanılan özel URL. (Azure desteği için)"
-    ai_openai_organization: "(İsteğe bağlı, atlamak için boş bırakın) OpenAI API için kullanılan kuruluş kimliği. OpenAI-Organization başlığı kullanılarak aktarılır."
     ai_openai_embeddings_url: "OpenAI gömme API'si için kullanılan özel URL. (Azure söz konusu olduğunda şu olabilir: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "OpenAI API'si için API anahtarı"
-    ai_anthropic_api_key: "Antropik API'si için API anahtarı"
-    ai_hugging_face_api_url: "OpenSource LLM çıkarımı için kullanılan özel URL. https://github.com/huggingface/text-generation-inference ile uyumlu"
-    ai_hugging_face_api_key: Hugging Face API'si için API anahtarı
-    ai_hugging_face_token_limit: Hugging Face API'nin istek başına kullanabileceği maksimum jeton sayısı
-    ai_hugging_face_model_display_name: Hugging Face AI modeli için görüntülenen ad
+    ai_openai_api_key: "OpenAI API'si için API anahtarı. SADECE gömmeler ve Dall-E için kullanılır. GPT için LLM yapılandırma sekmesini kullanın"
+    ai_anthropic_native_tool_call_models: "Eski XML tabanlı araçlara karşı yerel araç çağrılarını kullanacak modellerin listesi."
     ai_hugging_face_tei_endpoint: Hugging Face metni yerleştirme çıkarımı için API'nin çalıştığı URL
     ai_hugging_face_tei_api_key: Hugging Face metni yerleştirme çıkarımı için API anahtarı
-    ai_gemini_api_key: Google Gemini API'sı için API anahtarı
-    ai_vllm_endpoint: vLLM için API'nin çalıştığı URL
-    ai_vllm_api_key: vLLM API'si için API anahtarı
-    ai_llava_endpoint: llava için API'nin çalıştığı URL
-    ai_llava_api_key: llava API'si için API anahtarı
     composer_ai_helper_enabled: "Bestecinin YZ yardımcısını etkinleştirin."
     ai_helper_allowed_groups: "Bu gruplardaki kullanıcılar, bestecide YZ yardımcı düğmesini görür."
     ai_helper_allowed_in_pm: "Kişisel mesajlarda bestecinin YZ yardımcıyı etkinleştirin."
@@ -72,9 +56,10 @@ tr_TR:
     ai_helper_automatic_chat_thread_title_delay: "AI yardımcısının sohbet dizisi başlığını otomatik olarak ayarlamasından önceki dakika cinsinden gecikme."
     ai_helper_automatic_chat_thread_title: "Sohbet konu başlıklarını konu içeriklerine göre otomatik olarak ayarlayın."
     ai_helper_illustrate_post_model: "Besteci AI yardımcısının gönderiyi çizme özelliği için kullanılacak model"
-    ai_helper_enabled_features: "Yapay zeka yardımcısında etkinleştirilecek özellikleri seçin."
-    post_ai_helper_allowed_groups: "Gönderilerde AI Yardımcısı özelliklerine erişmesine izin verilen kullanıcı grupları"
-    ai_helper_image_caption_model: "Resim altyazıları oluşturmak için kullanılacak modeli seçin"
+    ai_helper_enabled_features: "YZ yardımcısında etkinleştirilecek özellikleri seçin."
+    post_ai_helper_allowed_groups: "Gönderilerde YZ Yardımcısı özelliklerine erişmesine izin verilen kullanıcı grupları"
+    ai_helper_image_caption_model: "Görüntü alt yazıları oluşturmak için kullanılacak modeli seçin"
+    ai_auto_image_caption_allowed_groups: "Bu gruplardaki kullanıcılar otomatik görüntü alt yazısı eklemeyi değiştirebilir."
     ai_embeddings_enabled: "Gömme modülünü etkinleştirin."
     ai_embeddings_discourse_service_api_endpoint: "Gömme modülü için API'nin çalıştığı URL"
     ai_embeddings_discourse_service_api_key: "Gömme API'si için API anahtarı"
@@ -88,23 +73,22 @@ tr_TR:
     ai_embeddings_semantic_quick_search_enabled: "Arama menüsü açılır penceresinde semantik arama seçeneğini etkinleştirin."
     ai_embeddings_semantic_related_include_closed_topics: "Kapalı konuları semantik arama sonuçlarına dâhil edin"
     ai_embeddings_semantic_search_hyde_model: "Anlamsal arama sırasında daha iyi sonuçlar elde etmek için anahtar kelimeleri genişletmek üzere kullanılan model"
-    ai_embeddings_per_post_enabled: Her gönderi için yerleştirmeler oluşturma
+    ai_embeddings_per_post_enabled: Her gönderi için yerleştirmeler oluşturun
+    ai_summarization_enabled: "Konu özetleme modülünü etkinleştirin."
+    ai_summarization_model: "Özetleme için kullanılacak model."
+    ai_custom_summarization_allowed_groups: "Grupların yeni özetler oluşturmasına izin verilir."
     ai_bot_enabled: "YZ Botu modülünü etkinleştirin."
     ai_bot_enable_chat_warning: "Kişisel mesaj sohbeti başlatıldığında bir uyarı görüntüleyin. Çeviri dizesi düzenlenerek geçersiz kılınabilir: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "GPT Botunun Kişisel Mesaja erişimi olduğunda, bu grupların üyelerine yanıt verir."
-    ai_bot_enabled_chat_bots: "YZ Botu görevi görecek mevcut modeller"
+    ai_bot_debugging_allowed_groups: "Bu grupların gönderilerde ham YZ isteğini ve yanıtını görüntüleyen bir hata ayıklama düğmesi görmesine izin verin"
+    ai_bot_public_sharing_allowed_groups: "Bu grupların, herkese açık benzersiz bir bağlantı aracılığıyla YZ kişisel mesajlarını herkese açık şekilde paylaşmasına izin verin. Not: Siteniz giriş yapılmasını gerektiriyorsa paylaşımlar da giriş yapılmasını gerektirir."
     ai_bot_add_to_header: "Bir YZ Botu ile bir kişisel mesaj başlatmak için başlıkta bir düğme gösterin"
-    ai_bot_github_access_token: "GitHub AI araçlarıyla kullanım için GitHub erişim tokeni (arama desteği için gereklidir)"
+    ai_bot_github_access_token: "GitHub AI araçlarıyla kullanım için GitHub erişim token'ı (arama desteği için gereklidir)"
     ai_stability_api_key: "stability.ai API'si için API anahtarı"
     ai_stability_engine: "stability.ai API'si için kullanılacak görüntü oluşturma motoru"
     ai_stability_api_url: "stability.ai API'si için URL"
     ai_google_custom_search_api_key: "Google Özel Arama API'sı için API anahtarı bkz.: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "Google Özel Arama API'sı için CX"
-    ai_bedrock_access_key_id: "Bedrock API'sine yönelik erişim anahtarı kimliği"
-    ai_bedrock_secret_access_key: "Bedrock API'si için gizli erişim anahtarı"
-    ai_bedrock_region: "Bedrock API için AWS bölgesi"
-    ai_cloudflare_workers_account_id: "Cloudflare Workers AI API için Cloudflare hesap kimliği"
-    ai_cloudflare_workers_api_token: "Cloudflare Workers AI API için API token'ı"
   reviewables:
     reasons:
       flagged_by_toxicity: YZ eklentisi, toksik olarak sınıflandırdıktan sonra buna bayrak ekledi.
@@ -122,11 +106,23 @@ tr_TR:
       title: "Duygu gönder"
       description: "Aşağıdaki duygulardan biriyle sınıflandırılan ve gönderi sahibinin güven seviyesine göre gruplandırılan gönderilerin sayısı."
   discourse_ai:
-    unknown_model: "Bilinmeyen yapay zeka modeli"
+    unknown_model: "Bilinmeyen YZ modeli"
+    tools:
+      custom_name: "%{name} (özel)"
+      presets:
+        browse_web_jina:
+          name: "jina.ai kullanarak web'de gezinin"
+        exchange_rate:
+          name: "Döviz kuru"
+        stock_quote:
+          name: "Hisse senedi fiyat teklifi (AlphaVantage)"
+        empty_tool:
+          name: "Boştan başla..."
     ai_helper:
       errors:
         completion_request_failed: "Öneriler sunulmaya çalışılırken bir şeyler ters gitti. Lütfen tekrar deneyin."
       prompts:
+        translate: '%{language} diline çevir'
         generate_titles: Konu başlıkları öner
         proofread: Yazım hataları düzeltilmiş metin
         markdown_table: Markdown tablosu oluştur
@@ -141,21 +137,23 @@ tr_TR:
         attribution: "AI tarafından altyazılı"
     share_ai:
       read_more: "Tam metni okuyun"
-      onebox_title: "%{llm_name} ile Yapay Zeka Konuşması"
-      formatted_excerpt: "%{llm_name} ile Yapay Zeka Sohbeti:\n %{excerpt}"
-      title: "%{title} - Yapay Zeka Konuşması - %{site_name}"
+      onebox_title: "%{llm_name} ile YZ Konuşması"
+      formatted_excerpt: "%{llm_name} ile YZ Konuşması:\n %{excerpt}"
+      title: "%{title} - YZ Konuşması - %{site_name}"
       errors:
         not_allowed: "Bu konuyu paylaşmanıza izin verilmiyor"
         other_people_in_pm: "Diğer insanlarla olan kişisel mesajlar herkese açık olarak paylaşılamaz"
         other_content_in_pm: "Başkalarına ait gönderileri içeren kişisel mesajlar herkese açık olarak paylaşılamaz"
-        failed_to_share: "Görüşme paylaşılamadı"
-        conversation_deleted: "Görüşme paylaşımı başarıyla silindi"
+        failed_to_share: "Konuşma paylaşılamadı"
+        conversation_deleted: "Konuşma paylaşımı başarıyla silindi"
     ai_bot:
       personas:
+        default_llm_required: "Sohbeti etkinleştirmeden önce varsayılan LLM modeli gereklidir"
         cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
+        cannot_edit_system_persona: "Sistem kişileri yalnızca yeniden adlandırılabilir, araçları veya sistem istemini düzenleyemezsiniz, bunun yerine devre dışı bırakıp bir kopyasını oluşturabilirsiniz"
         github_helper:
           name: "GitHub Yardımcısı"
-          description: "GitHub ile ilgili görevlere ve sorulara yardımcı olma konusunda uzmanlaşmış yapay zeka botu"
+          description: "GitHub ile ilgili görevlere ve sorulara yardımcı olma konusunda uzmanlaşmış YZ Botu"
         general:
           name: Forum Yardımcısı
           description: "Çeşitli görevleri yerine getirebilen genel amaçlı AI Botu"
@@ -179,20 +177,28 @@ tr_TR:
           description: "DALL-E 3 kullanarak görüntü üretme konusunda uzmanlaşmış AI Bot"
         discourse_helper:
           name: "Discourse Yardımcısı"
-          description: "Discourse ile ilgili görevlere yardımcı olma konusunda uzmanlaşmış yapay zeka botu"
+          description: "Discourse ile ilgili görevlere yardımcı olma konusunda uzmanlaşmış YZ Botu"
       topic_not_found: "Özet mevcut değil, konu bulunamadı!"
       summarizing: "Konu özetleniyor"
       searching: "Aranıyor: '%{query}'"
       tool_options:
+        read:
+          read_private:
+            name: "Özel oku"
+            description: "Kullanıcının erişebildiği tüm konulara erişim izni ver (varsayılan olarak yalnızca herkese açık konular dâhil edilir)"
         search:
+          search_private:
+            name: "Özel ara"
+            description: "Kullanıcının erişebildiği tüm konuları arama sonuçlarına dâhil et (varsayılan olarak yalnızca herkese açık konular dâhil edilir)"
           max_results:
             name: "Maksimum sonuç sayısı"
             description: "Aramaya dahil edilecek maksimum sonuç sayısı; boşsa varsayılan kurallar kullanılır ve kullanılan modele bağlı olarak sayım ölçeklendirilir. En yüksek değer 100'dür."
           base_query:
             name: "Temel Arama Sorgusu"
-            description: "Arama yaparken kullanılacak temel sorgu. Örnek: '#urgent', arama sorgusuna '#urgent' ekler ve yalnızca acil kategorisine veya etiketine sahip konuları içerir."
+            description: "Arama yaparken kullanılacak temel sorgu. Örnek: \"#acil\" arama sorgusuna \"#acil\" iadesini ekler ve yalnızca acil kategorisine veya etiketine sahip konuları içerir."
       tool_summary:
-        web_browser: "Web'e Gözat"
+        web_browser: "Web'de gezinin"
+        github_search_files: "GitHub arama dosyaları"
         github_search_code: "GitHub kodu arama"
         github_file_content: "GitHub dosya içeriği"
         github_pull_request_diff: "GitHub çekme isteği farkı"
@@ -203,40 +209,44 @@ tr_TR:
         time: "Saat"
         summarize: "Özetle"
         image: "Görüntü oluştur"
-        google: "Google'da Ara"
+        google: "Google'da ara"
         read: "Konuyu oku"
         setting_context: "Site ayarı bağlamına bak"
         schema: "Veri tabanı şemasına bak"
         search_settings: "Site ayarları aranıyor"
         dall_e: "Görüntü oluştur"
-        search_meta_discourse: "Discourse Metada arama yapın"
+        search_meta_discourse: "Meta Discourse'ta arama yapın"
+        javascript_evaluator: "JavaScript'i değerlendirin"
       tool_help:
-        web_browser: "Yapay Zeka Botunu kullanarak web sayfasına göz atın"
-        github_search_code: "GitHub deposunda kod arama"
-        github_file_content: "Bir GitHub deposundan dosyaların içeriğini alma"
-        github_pull_request_diff: "GitHub çekme isteği farkını alma"
-        random_picker: "Rastgele bir sayı veya listenin rastgele bir öğesini seçme"
+        web_browser: "YZ Botunu kullanarak web sayfasına göz atın"
+        github_search_code: "GitHub deposunda kod arayın"
+        github_search_files: "GitHub deposunda dosya arayın"
+        github_file_content: "Bir GitHub deposundan dosyaların içeriğini alın"
+        github_pull_request_diff: "GitHub çekme isteği farkını alın"
+        random_picker: "Rastgele bir sayı veya listenin rastgele bir ögesini seçin"
         categories: "Forumdaki herkese açık tüm kategorileri listeleyin"
-        search: "Forumdaki tüm herkese açık konuları ara"
-        tags: "Forumdaki tüm etiketleri listele"
-        time: "Çeşitli saat dilimlerinde zamanı bul"
-        summary: "Bir konuyu özetle"
-        image: "Stable Diffusion kullanarak görüntü oluştur"
-        google: "Bir sorgu için Google'da arama yap"
-        read: "Forumdaki herkese açık konuyu oku"
-        setting_context: "Site ayarı bağlamına bak"
-        schema: "Veri tabanı şemasına bak"
-        search_settings: "Site ayarlarını ara"
-        dall_e: "DALL-E 3 kullanarak görüntü oluştur"
-        search_meta_discourse: "Discourse Metada arama yapın"
+        search: "Forumdaki tüm herkese açık konuları arayın"
+        tags: "Forumdaki tüm etiketleri listeleyin"
+        time: "Çeşitli saat dilimlerinde zamanı bulun"
+        summary: "Bir konuyu özetleyin"
+        image: "Stable Diffusion kullanarak görüntü oluşturun"
+        google: "Bir sorgu için Google'da arama yapın"
+        read: "Forumdaki herkese açık konuyu okuyun"
+        setting_context: "Site ayarı bağlamına bakın"
+        schema: "Veri tabanı şemasına bakın"
+        search_settings: "Site ayarlarında arama yapın"
+        dall_e: "DALL-E 3 kullanarak görüntü oluşturun"
+        search_meta_discourse: "Meta Discourse'ta arama yapın"
+        javascript_evaluator: "JavaScript'i değerlendirin"
       tool_description:
-        web_browser: "Okunuyor <a href='%{url}'>%{url}</a>"
-        github_search_code: "%{repo} içinde '%{query}' araması yapıldı"
+        web_browser: "Okunuyor: <a href='%{url}'>%{url}</a>"
+        github_search_files: "%{repo}/%{branch} içinde \"%{keywords}\" arandı"
+        github_search_code: "%{repo} içinde \"%{query}\" arandı"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
         github_file_content: "%{file_paths} içeriği %{repo_name}@%{branch} kaynağından alındı"
-        random_picker: "%{options} adresinden seçildi, seçilen %{result}"
+        random_picker: "%{options} adresinden seçiliyor, seçilen: %{result}"
         read: "Okunuyor: <a href='%{url}'>%{title}</a>"
-        time: "%{timezone} konumunda saat %{time}"
+        time: "%{timezone} saat diliminde saat %{time}"
         summarize: "<a href='%{url}'>%{title}</a> özetlendi"
         dall_e: "%{prompt}"
         image: "%{prompt}"
@@ -272,30 +282,31 @@ tr_TR:
           positive: "Pozitif"
           negative: "Negatif"
         post_emotion:
-          tl_01: "Güven seviyeleri 0-1"
-          tl_234: "Güven seviyeleri 2+"
-          sadness: "Üzüntü"
-          surprise: "Sürpriz"
-          neutral: "Nötr"
-          fear: "Korku"
-          anger: "Öfke"
-          joy: "Neşe"
-          disgust: "İğrenme"
+          sadness: "Üzüntü \U0001F622"
+          surprise: "Sürpriz \U0001F631"
+          neutral: "Nötr \U0001F610"
+          fear: "Korku \U0001F628"
+          anger: "Öfke \U0001F621"
+          joy: "Neşe \U0001F600"
+          disgust: "İğrenme \U0001F922"
     llm:
       configuration:
-        disable_module_first: "Önce %{setting} 'i devre dışı bırakmanız gerekir."
-        set_llm_first: "Önce %{setting} 'i ayarlayın."
+        disable_module_first: "Önce %{setting} devre dışı bırakılmalı."
+        set_llm_first: "Önce %{setting} ayarlanmalı."
         model_unreachable: "Bu modelden yanıt alamadık. Önce ayarlarınızı kontrol edin."
       endpoints:
         not_configured: "%{display_name} (yapılandırılmadı)"
         configuration_hint:
-          one: "%{settings}` ayarının yapılandırıldığından emin olun."
-          other: "Bu ayarların yapılandırıldığından emin olun: %{settings}"
+          one: "`%{settings}` ayarının yapılandırıldığından emin olun."
+          other: "Şu ayarların yapılandırıldığından emin olun: %{settings}"
+      delete_failed:
+        one: "%{settings} kullandığı için bu modeli silemedik. Ayarı güncelleyin ve tekrar deneyin."
+        other: "%{settings} kullandığı için bu modeli silemedik. Ayarları güncelleyip tekrar deneyin."
     embeddings:
       configuration:
-        disable_embeddings: "Önce 'ai yerleştirmeleri etkin' seçeneğini devre dışı bırakmanız gerekir."
-        choose_model: "Önce 'ai yerleştirme modelini' ayarlayın."
-        model_unreachable: "Bu modelle bir test yerleştirmesi oluşturamadık. Ayarlarınızın doğru olup olmadığını kontrol edin."
+        disable_embeddings: "Önce \"yz yerleştirmeleri etkin\" seçeneğini devre dışı bırakmanız gerekiyor."
+        choose_model: "Önce \"yz yerleştirme modelini\" ayarlayın."
+        model_unreachable: "Bu modelle test yerleştirmesi oluşturamadık. Ayarlarınızın doğru olup olmadığını kontrol edin."
         hint:
-          one: "%{settings}` ayarının yapılandırıldığından emin olun."
+          one: "`%{settings}` ayarının yapılandırıldığından emin olun."
           other: "İstediğiniz sağlayıcının ayarlarının yapılandırıldığından emin olun. Seçenekler şunlardır: %{settings}"

@@ -16,4 +16,4 @@ gl:
     sentiment:
       reports:
         post_emotion:
-          neutral: "Neutro"
+          neutral: "Neutro \U0001F610"

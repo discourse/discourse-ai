@@ -43,17 +43,11 @@ it:
     ai_nsfw_flag_threshold_porn: "Soglia per un'immagine classificata come pornografica per essere considerata NSFW."
     ai_nsfw_flag_threshold_sexy: "Soglia per un'immagine classificata come sexy per essere considerata NSFW."
     ai_nsfw_models: "Modelli da utilizzare per l'inferenza NSFW."
-    ai_openai_gpt35_url: "URL personalizzato utilizzato per i completamenti della chat GPT 3.5. (per il supporto di Azure)"
-    ai_openai_gpt35_16k_url: "URL personalizzato utilizzato per i completamenti della chat GPT 3.5 16k. (per il supporto di Azure)"
-    ai_openai_gpt4_url: "URL personalizzato utilizzato per i completamenti della chat GPT 4. (per il supporto di Azure)"
-    ai_openai_gpt4_32k_url: "URL personalizzato utilizzato per i completamenti della chat GPT 4 32k. (per il supporto di Azure)"
-    ai_openai_gpt4_turbo_url: "URL personalizzato utilizzato per i completamenti della chat GPT 4 Turbo. (per il supporto di Azure)"
-    ai_openai_dall_e_3_url: "URL personalizzato utilizzato per la generazione di immagini DALL-E 3. (per il supporto di Azure)"
-    ai_openai_organization: "(Facoltativo, lascia vuoto per omettere) ID organizzazione utilizzato per l'API OpenAI. Passato utilizzando l'intestazione OpenAI-Organization."
     ai_openai_embeddings_url: "URL personalizzato utilizzato per l'API di integrazione OpenAI. (nel caso di Azure può essere: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "Chiave API per l'API OpenAI"
-    ai_anthropic_api_key: "Chiave API per Anthropic API"
-    ai_hugging_face_api_url: "URL personalizzato utilizzato per l'inferenza OpenSource LLM. Compatibile con https://github.com/huggingface/text-generation-inference"
+    ai_openai_api_key: "Chiave API per l'API OpenAI. Utilizzato SOLO per integrazioni e Dall-E. Per GPT utilizzare la scheda di configurazione LLM"
+    ai_anthropic_native_tool_call_models: "Elenco di modelli che utilizzeranno chiamate di strumenti nativi rispetto a strumenti legacy basati su XML."
+    ai_hugging_face_tei_endpoint: URL in cui è in esecuzione l'API per l'inferenza delle integrazioni testuali di Hugging Face
+    ai_hugging_face_tei_api_key: Chiave API per l'inferenza delle integrazioni testuali di Hugging Face
     composer_ai_helper_enabled: "Abilita l'assistente IA nella sezione di scrittura."
     ai_helper_allowed_groups: "Gli utenti di questi gruppi vedranno il pulsante dell'assistente IA nella sezione di scrittura."
     ai_helper_allowed_in_pm: "Abilita l'assistente IA nei MP."
@@ -62,6 +56,10 @@ it:
     ai_helper_automatic_chat_thread_title_delay: "Ritardo in minuti prima che l'assistente IA imposti automaticamente il titolo del thread della chat."
     ai_helper_automatic_chat_thread_title: "Imposta automaticamente i titoli dei thread della chat in base ai contenuti del thread."
     ai_helper_illustrate_post_model: "Modello da utilizzare per la funzionalità di messaggio illustrato dell'assistente IA compositore"
+    ai_helper_enabled_features: "Seleziona le funzionalità da abilitare nell'assistente IA."
+    post_ai_helper_allowed_groups: "Gruppi di utenti autorizzati ad accedere alle funzionalità dell'assistente IA nei post"
+    ai_helper_image_caption_model: "Seleziona il modello da utilizzare per generare le didascalie delle immagini"
+    ai_auto_image_caption_allowed_groups: "Gli utenti di questi gruppi possono attivare/disattivare i sottotitoli automatici delle immagini."
     ai_embeddings_enabled: "Abilita il modulo di integrazioni."
     ai_embeddings_discourse_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo di integrazioni"
     ai_embeddings_discourse_service_api_key: "Chiave API per l'API di integrazioni"
@@ -72,23 +70,25 @@ it:
     ai_embeddings_backfill_batch_size: "Numero di incorporamenti da riempire ogni 15 minuti."
     ai_embeddings_pg_connection_string: "Stringa di connessione PostgreSQL per il modulo di integrazioni. Richiede l'estensione pgvector abilitata e la creazione di una serie di tabelle. Consulta i documenti per maggiori informazioni."
     ai_embeddings_semantic_search_enabled: "Abilita la ricerca semantica a pagina intera."
+    ai_embeddings_semantic_quick_search_enabled: "Abilita l'opzione di ricerca semantica nel popup del menu di ricerca."
     ai_embeddings_semantic_related_include_closed_topics: "Includi argomenti chiusi nei risultati della ricerca semantica"
     ai_embeddings_semantic_search_hyde_model: "Modello utilizzato per espandere le parole chiave per ottenere risultati migliori durante una ricerca semantica"
+    ai_embeddings_per_post_enabled: Genera integrazioni per ogni post
+    ai_summarization_enabled: "Abilita il modulo di riepilogo degli argomenti."
+    ai_summarization_model: "Modello da utilizzare per il riepilogo."
+    ai_custom_summarization_allowed_groups: "I gruppi autorizzati a utilizzare la creazione di nuovi riepiloghi."
     ai_bot_enabled: "Abilita il modulo Bot IA."
     ai_bot_enable_chat_warning: "Visualizza un avviso quando viene avviata la chat MP. Può essere sovrascritto modificando la stringa di traduzione: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Quando il bot GPT ha accesso a un MP, risponderà ai membri di questi gruppi."
-    ai_bot_enabled_chat_bots: "Modelli disponibili per agire come robot IA"
+    ai_bot_debugging_allowed_groups: "Consenti a questi gruppi di vedere un pulsante di debug sui post che mostra la richiesta e la risposta IA non elaborate"
+    ai_bot_public_sharing_allowed_groups: "Consenti a questi gruppi di condividere messaggi personali dell'IA con il pubblico tramite un link univoco disponibile al pubblico. Nota: se il tuo sito richiede l'accesso, anche le condivisioni richiederanno l'accesso."
     ai_bot_add_to_header: "Mostra un pulsante nell'intestazione per avviare un MP con un Bot IA"
+    ai_bot_github_access_token: "Token di accesso GitHub da utilizzare con gli strumenti GitHub IA (richiesto per il supporto della ricerca)"
     ai_stability_api_key: "Chiave API per l'API stability.ai"
     ai_stability_engine: "Sistema di generazione di immagini da utilizzare per l'API stability.ai"
     ai_stability_api_url: "URL per l'API stability.ai"
     ai_google_custom_search_api_key: "Chiave API per l'API della ricerca personalizzata di Google: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX per l'API di ricerca personalizzata di Google"
-    ai_bedrock_access_key_id: "ID chiave di accesso per l'API Bedrock"
-    ai_bedrock_secret_access_key: "Chiave di accesso segreta per l'API Bedrock"
-    ai_bedrock_region: "Area geografica AWS per l'API Bedrock"
-    ai_cloudflare_workers_account_id: "ID account Cloudflare per l'API Cloudflare Workers AI"
-    ai_cloudflare_workers_api_token: "Token API per l'API Cloudflare Workers AI"
   reviewables:
     reasons:
       flagged_by_toxicity: Il plugin IA lo ha segnalato dopo averlo classificato come tossico.
@@ -106,10 +106,23 @@ it:
       title: "Emozione del messaggio"
       description: "Numero di messaggi classificati con una delle seguenti emozioni, raggruppati in base al livello di attendibilità dell'utente che ha pubblicato."
   discourse_ai:
+    unknown_model: "Modello IA sconosciuto"
+    tools:
+      custom_name: "%{name} (personalizzato)"
+      presets:
+        browse_web_jina:
+          name: "Naviga sul web utilizzando jina.ai"
+        exchange_rate:
+          name: "Tasso di cambio"
+        stock_quote:
+          name: "Quotazione azionaria (AlphaVantage)"
+        empty_tool:
+          name: "Inizia da zero..."
     ai_helper:
       errors:
         completion_request_failed: "Qualcosa è andato storto durante il tentativo di fornire suggerimenti. Riprova."
       prompts:
+        translate: Traduci in %{language}
         generate_titles: Suggerisci i titoli degli argomenti
         proofread: Testo corretto
         markdown_table: Genera tabella di markdown
@@ -120,9 +133,27 @@ it:
         attribution:
           stable_diffusion_xl: "Immagine di Stable Diffusion XL"
           dall_e_3: "Immagine di DALL-E 3"
+      image_caption:
+        attribution: "Didascalia da IA"
+    share_ai:
+      read_more: "Leggi la trascrizione completa"
+      onebox_title: "Conversazione IA con %{llm_name}"
+      formatted_excerpt: "Conversazione IA con %{llm_name}:\n %{excerpt}"
+      title: "%{title} - Conversazione IA - %{site_name}"
+      errors:
+        not_allowed: "Non hai l'autorizzazione a condividere questo argomento"
+        other_people_in_pm: "I messaggi personali con altri esseri umani non possono essere condivisi pubblicamente"
+        other_content_in_pm: "I messaggi personali contenenti post di altre persone non possono essere condivisi pubblicamente"
+        failed_to_share: "Condivisione della conversazione non riuscita"
+        conversation_deleted: "Condivisione di conversazione eliminata correttamente"
     ai_bot:
       personas:
+        default_llm_required: "Il modello LLM predefinito è obbligatorio prima di abilitare la chat"
         cannot_delete_system_persona: "I personaggi di sistema non possono essere eliminati, vanno invece disattivati"
+        cannot_edit_system_persona: "I personaggi di sistema possono solo essere rinominati, non è possibile modificare strumenti di sistema, piuttosto disabilitali e crearne una copia"
+        github_helper:
+          name: "Assistente GitHub"
+          description: "Bot IA specializzato nell'assistenza con attività e domande relative a GitHub"
         general:
           name: Assistente del forum
           description: "Bot IA per scopi generici in grado di eseguire vari compiti"
@@ -144,11 +175,21 @@ it:
         dall_e3:
           name: "DALL-E 3"
           description: "Bot IA specializzato nella generazione di immagini tramite DALL-E 3"
+        discourse_helper:
+          name: "Assistente di Discourse"
+          description: "Bot IA specializzato nell'aiutare con attività relative a Discourse"
       topic_not_found: "Riepilogo non disponibile, argomento non trovato!"
       summarizing: "Riepilogo argomento"
       searching: "Ricerca di: '%{query}'"
       tool_options:
+        read:
+          read_private:
+            name: "Leggi privato"
+            description: "Consenti l'accesso a tutti gli argomenti a cui l'utente ha accesso (per impostazione predefinita sono inclusi solo gli argomenti pubblici)"
         search:
+          search_private:
+            name: "Cerca privato"
+            description: "Includi tutti gli argomenti a cui l'utente ha accesso nei risultati di ricerca (per impostazione predefinita sono inclusi solo gli argomenti pubblici)"
           max_results:
             name: "Numero massimo di risultati"
             description: "Numero massimo di risultati da includere nella ricerca: se vuoto verranno utilizzate le regole predefinite e il conteggio verrà scalato in base al modello utilizzato. Il valore più alto è 100."
@@ -156,6 +197,12 @@ it:
             name: "Query di ricerca di base"
             description: "Query di base da utilizzare durante la ricerca. Esempio: \"#urgente\" anteporrà \"#urgente\" alla query di ricerca e includerà solo gli argomenti con la categoria o l'etichetta urgente."
       tool_summary:
+        web_browser: "Naviga sul web"
+        github_search_files: "File di ricerca GitHub"
+        github_search_code: "Ricerca codice GitHub"
+        github_file_content: "Contenuto del file GitHub"
+        github_pull_request_diff: "Diff richiesta pull GitHub"
+        random_picker: "Selettore casuale"
         categories: "Elenca le categorie"
         search: "Cerca"
         tags: "Elenca le etichette"
@@ -168,7 +215,15 @@ it:
         schema: "Cerca lo schema del database"
         search_settings: "Ricerca nelle impostazioni del sito"
         dall_e: "Genera immagine"
+        search_meta_discourse: "Cerca Meta Discourse"
+        javascript_evaluator: "Valuta JavaScript"
       tool_help:
+        web_browser: "Sfoglia la pagina web utilizzando il Bot IA"
+        github_search_code: "Cerca il codice in un repository GitHub"
+        github_search_files: "Cerca file in un repository GitHub"
+        github_file_content: "Recupera il contenuto dei file da un repository GitHub"
+        github_pull_request_diff: "Recupera un diff della richiesta pull GitHub"
+        random_picker: "Scegli un numero casuale o un elemento casuale di una lista"
         categories: "Elenca tutte le categorie visibili pubblicamente sul forum"
         search: "Cerca tutti gli argomenti pubblici sul forum"
         tags: "Elenca tutte le etichette sul forum"
@@ -181,7 +236,15 @@ it:
         schema: "Cerca lo schema del database"
         search_settings: "Cerca le impostazioni del sito"
         dall_e: "Genera immagine utilizzando DALL-E 3"
+        search_meta_discourse: "Cerca Meta Discourse"
+        javascript_evaluator: "Valuta JavaScript"
       tool_description:
+        web_browser: "Lettura <a href='%{url}'>%{url}</a>"
+        github_search_files: "Hai cercato \"%{keywords}\" in %{repo}/%{branch}"
+        github_search_code: "Hai cercato \"%{query}\" in %{repo}"
+        github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
+        github_file_content: "Contenuto recuperato di %{file_paths} da %{repo_name}@%{branch}"
+        random_picker: "Scelta da %{options}, scelto: %{result}"
         read: "Lettura: <a href='%{url}'>%{title}</a>"
         time: "L'orario in %{timezone} è %{time}"
         summarize: "Riassunto di <a href='%{url}'>%{title}</a>"
@@ -219,12 +282,31 @@ it:
           positive: "Positiva"
           negative: "Negativa"
         post_emotion:
-          tl_01: "Livelli di attendibilità 0-1"
-          tl_234: "Livelli di attendibilità 2+"
-          sadness: "Tristezza"
-          surprise: "Sorpresa"
-          neutral: "Neutro"
-          fear: "Paura"
-          anger: "Rabbia"
-          joy: "Gioia"
-          disgust: "Disgusto"
+          sadness: "Tristezza \U0001F622"
+          surprise: "Sorpresa \U0001F631"
+          neutral: "Neutro \U0001F610"
+          fear: "Paura \U0001F628"
+          anger: "Rabbia \U0001F621"
+          joy: "Gioia \U0001F600"
+          disgust: "Disgusto \U0001F922"
+    llm:
+      configuration:
+        disable_module_first: "Devi prima disabilitare %{setting}."
+        set_llm_first: "Imposta prima %{setting}."
+        model_unreachable: "Non è stato possibile ottenere una risposta da questo modello. Controlla prima le tue impostazioni."
+      endpoints:
+        not_configured: "%{display_name} (non configurato)"
+        configuration_hint:
+          one: "Assicurati che l'impostazione `%{settings}` sia stata configurata."
+          other: "Assicurati che queste impostazioni siano state configurate: %{settings}"
+      delete_failed:
+        one: "Non è stato possibile eliminare questo modello perché è utilizzato da %{settings}. Aggiorna l'impostazione e riprova."
+        other: "Non è stato possibile eliminare questo modello perché lo stanno utilizzando %{settings}. Aggiorna le impostazioni e riprova."
+    embeddings:
+      configuration:
+        disable_embeddings: "Devi prima disabilitare \"integrazioni ia abilitate\"."
+        choose_model: "Imposta prima il \"modello integrazioni ia\"."
+        model_unreachable: "Non siamo riusciti a generare un test di integrazione con questo modello. Controlla che le tue impostazioni siano corrette."
+        hint:
+          one: "Assicurati che l'impostazione `%{settings}` sia stata configurata."
+          other: "Assicurati che le impostazioni del fornitore che desideri siano state configurate. Le opzioni sono: %{settings}"

@@ -51,15 +51,30 @@ pt_BR:
             tags:
               label: "Etiquetas"
               description: "Filtrar tópicos apenas para estas etiquetas"
+            exclude_tags:
+              label: "Excluir etiquetas"
+              description: "Excluir tópicos com estas etiquetas"
+            exclude_categories:
+              label: "Excluir categorias"
+              description: "Excluir tópicos com estas categorias"
             allow_secure_categories:
               label: "Permitir categorias seguras"
               description: "Permitir que o relatório seja gerado para tópicos em categorias seguras"
+            suppress_notifications:
+              label: "Suprimir notificações"
+              description: "Suprima notificações que podem ser geradas pelo relatório ao transformar em conteúdo. As menções e links internos serão remapeados."
             debug_mode:
               label: "Modo de depuração"
               description: "Ativar o modo de depuração para ver as entradas e saídas não processadas do LLM"
             priority_group:
               label: "Grupo de prioridade"
               description: "Priorizar o conteúdo deste grupo no relatório"
+            temperature:
+              label: "Temperatura"
+              description: "Temperatura para usar para o LLM, aumente para incrementar o fator aleatório (0 para usar o padrão do modelo)"
+            top_p:
+              label: "Maior P"
+              description: "P Máximo para usar no LLM, aumente para incrementar o fator aleatório (0 para usar o padrão do modelo)"
         llm_triage:
           fields:
             system_prompt:
@@ -83,8 +98,12 @@ pt_BR:
             hide_topic:
               label: "Ocultar tópico"
               description: "Ocultar visibilidade do tópico para o público se for ativado"
+            flag_post:
+              label: "Enviar para revisar"
+              description: "Coloca a postagem na fila de revisão em caso de acionamento, para triagem dos moderadores(as)"
             model:
               label: "Modelo"
+              description: "Modelo de linguagem usado para triagem"
     discourse_ai:
       title: "IA"
       modals:
@@ -94,46 +113,156 @@ pt_BR:
         name: Nome
         edit: Editar
         description: Descrição
+        no_llm_selected: "Nenhum modelo de linguagem selecionado"
+        max_context_posts: "Máximo de postagens de contexto"
+        max_context_posts_help: "A quantidade máxima de postagens para usar como contexto para a IA ao responder ao(à) usuário(a). (deixar vazio para padrão)"
+        vision_enabled: Visão ativada
+        vision_enabled_help: Ative para a IA tentar entender as imagens postadas pelos(as) usuários(as) no tópico conforme o modelo usado na visão compatível. É compatível com os modelos mais recentes do Anthropic, Google e OpenAI.
+        vision_max_pixels: Tamanho de imagem compatível
+        vision_max_pixel_sizes:
+          low: Baixa qualidade - menor custo (256x256)
+          medium: Média qualidade (512x512)
+          high: Alta qualidade - mais lento (1024x1024)
+        tool_details: Exibir detalhes da ferramenta
+        tool_details_help: Serão exibidos aos(às) usuários(as) finais as ferramentas nas quais o modelo de linguagem foi acionado.
+        mentionable: Permitir menções
+        mentionable_help: Ative para que os(as) usuários(as) nos grupos permitidos possam mencionar este(a) usuário(a) nas postagens. A IA responderá como esta persona.
         user: Usuário(a)
+        create_user: Criar usuário(a)
+        create_user_help: Como alternativa, você poderá anexar um(a) usuário(a) a esta persona. Se fizer isso, a IA usará este(a) usuário(a) para responder aos pedidos.
+        default_llm: Modelo de linguagem padrão
+        default_llm_help: O modelo de linguagem padrão a ser usado para esta persona. É obrigatório se você quiser mencionar a persona em postagens públicas.
+        question_consolidator_llm: Modelo de linguagem para consolidador de pergunta
+        question_consolidator_llm_help: O modelo de linguagem a ser usado para o consolidador de pergunta. Para economizar, você pode escolher um modelo menos robusto.
         system_prompt: Prompt do sistema
+        show_indexing_options: "Exibir opções de envio"
+        hide_indexing_options: "Ocultar opções de envio"
+        allow_chat: "Permitir chat"
+        allow_chat_help: "Ative para que os(às) usuários(as) nos grupos permitidos possam enviar mensagens diretas a esta persona"
         save: Salvar
         saved: Persona de IA salva
         enabled: "Ativado(a)?"
+        tools: Ferramentas ativadas
         allowed_groups: Grupos permitidos
         confirm_delete: Você tem certeza de que deseja excluir esta persona?
+        new: "Nova persona"
         title: "Personas de IA"
+        short_title: "Personas"
         delete: Excluir
+        temperature: Temperatura
+        temperature_help: A Temperatura a ser usada para o LLM, aumente para incrementar a criatividade (deixe vazio para usar o padrão do modelo, que geralmente é um valor que varia entre 0.0 e 2.0)
+        top_p: P Máximo
+        top_p_help: O P Máximo a ser usado para o LLM, aumente para incrementar o fator aleatório (deixe vazio para usar o padrão do modelo, que geralmente é um valor que varia entre 0.0 e 1.0)
         priority: Prioridade
         priority_help: Personas de prioridade são exibidas aos(às) usuários(as) no topo da lista de personas. Se várias personas tiverem prioridade, serão escolhidas em ordem alfabética.
+        tool_options: "Opções de ferramenta"
+        rag_chunk_tokens: "Enviar Tokens de Parte"
+        rag_chunk_tokens_help: "O número de tokens a ser usado para cada pedaço no modelo RAG. Aumente para incrementar a quantidade de contexto que a IA pode usar. (Altere para indexar novamente todos os envios)"
+        rag_chunk_overlap_tokens: "Enviar Tokens de Sobreposição de Parte"
+        rag_chunk_overlap_tokens_help: "A quantidade de tokens a serem sobrepostos entre as partes no modelo RAG. (Altere para indexar novamente todos os envios)"
+        rag_conversation_chunks: "Pesquisar Pedaços de Conversa"
+        rag_conversation_chunks_help: "O número de pedaços a serem usados para pesquisas de modelo RAG. Aumente para incrementar a quantidade de contexto que a IA pode usar."
+        what_are_personas: "O que são personas de IA?"
+        no_persona_selected: |
+          Personas de IA são um recurso poderoso que permite personalizar o comportamento do mecanismo de IA no seu fórum do Discourse. Funcionam como uma "mensagem de sistema" que orienta as respostas e interações da IA, ajudando a criar uma experiência mais personalizada e envolvente para o(a) usuário(a).
+
+          #### Por que usar personas de IA?
+
+          Com as personas de IA, você pode personalizar o comportamento da IA para se adequar melhor ao contexto e tom do seu fórum. Uma IA mais formal para um cenário profissional, uma mais casual para um fórum de comunidade ou até mesmo um personagem específico para um jogo de interpretação, não importa: as personas de IA proporcionam flexibilidade para fazer tudo isso.
+
+          #### Acesso específico de grupo a personas de IA
+
+          Além disso, você pode configurar para que determinados grupos de usuários(as) tenham acesso a personas específicas. Ou seja, você pode ter diferentes comportamentos de IA para seções distintas do seu fórum, melhorando ainda mais a diversidade e riqueza das interações da sua comunidade.
         uploads:
           title: "Envios"
+          description: "Sua persona de AI poderá pesquisar e referenciar o conteúdo dos arquivos inclusos. Os arquivos enviados devem ser formatados como texto não criptografado (.txt) ou Markdown (.md)."
+          button: "Adicionar arquivos"
+          filter: "Filtrar envios"
+          indexed: "Indexado(a)"
+          indexing: "Indexação"
+          uploaded: "Pronto(a) para indexação"
           uploading: "Enviando..."
+          remove: "Remover envio"
       tools:
         back: "Voltar"
+        short_title: "Ferramentas"
+        new: "Nova ferramenta"
         name: "Nome"
+        name_help: "O nome exclusivo da ferramenta conforme usado pelo modelo de linguagem"
         description: "Descrição"
+        description_help: "Descrição clara da finalidade da ferramenta para o modelo de linguagem"
         summary: "Resumo"
+        summary_help: "Resumo das finalidades das ferramentas a ser exibido para usuários(as) finais"
+        script: "Script"
+        parameters: "Parâmetros"
         save: "Salvar"
+        add_parameter: "Adicionar parâmero"
         parameter_required: "Necessário(a)"
+        parameter_enum: "Enumeração"
+        parameter_name: "Nome do parâmetro"
+        parameter_description: "Descrição do parâmetro"
+        enum_value: "Valor da enumeração"
+        add_enum_value: "Adicionar valor da enumeração"
         edit: "Editar"
         test: "Executar Teste"
         delete: "Excluir"
+        saved: "Ferramenta salva"
+        presets: "Selecione uma predefinição..."
+        confirm_delete: Tem certeza de que deseja excluir esta ferramenta?
         next:
           title: "Próximo"
         test_modal:
+          title: "Ferramenta de IA de teste"
           run: "Executar Teste"
+          result: "Resultado do teste"
       llms:
+        short_title: "LLMs"
+        no_llms: "Nenhum LLM ainda"
+        new: "Novo modelo"
+        display_name: "Nome a ser exibido"
+        name: "Nome do modelo"
+        provider: "Servido da hospedagem do modelo"
+        tokenizer: "Tokenizador"
+        max_prompt_tokens: "Quantidade de tokens para o prompt"
+        url: "URL do serviço da hospedagem do modelo"
+        api_key: "Chave de API do serviço da hospedagem do modelo"
+        enabled_chat_bot: "Permitir bot de IA"
+        vision_enabled: "Visão ativada"
+        ai_bot_user: "Usuário(a) de bot de IA"
         save: "Salvar"
         edit: "Editar"
+        saved: "Modelo de LLM salvo"
         back: "Voltar"
+        confirm_delete: Tem certeza de que deseja excluir este modelo?
         delete: Excluir
+        preconfigured_llms: "Selecione sua LLM"
+        preconfigured:
+          none: "Configure manualmente..."
         next:
           title: "Próximo"
         tests:
           title: "Executar Teste"
+          running: "Executando teste..."
           success: "Sucesso!"
+          failure: "Erro retornado ao tentar entrar em contato com o modelo: %{error}"
+        hints:
+          max_prompt_tokens: "Quantidade máxima de tokens para o prompt. Como a regra do polegar, deve ser 50% da janela de contexto do modelo."
+          name: "Incluímos na chamada da API para especificar qual modelo será usado."
+          vision_enabled: "Ative para a IA tentar entender as imagens. Depende do modelo usado na visão compatível. É compatível com os modelos mais recentes do Anthropic, Google e OpenAI."
         providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
           google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
+        provider_fields:
+          access_key_id: "ID de chave de acesso do AWS Bedrock"
+          region: "Região do AWS Bedrock"
+          organization: "ID da organização opcional da OpenAI"
       related_topics:
         title: "Tópicos relacionados"
         pill: "Relacionado(a)"
@@ -158,6 +287,7 @@ pt_BR:
             title: "Prompt personalizado"
             placeholder: "Insira um prompt personalizado..."
             submit: "Enviar prompt"
+          translate_prompt: "Traduzir para %{language}"
         post_options_menu:
           trigger: "Perguntar à IA"
           title: "Perguntar à IA"
@@ -166,6 +296,9 @@ pt_BR:
           copy: "Copiar"
           copied: "Copiou!"
           cancel: "Cancelar"
+          insert_footnote: "Adicionar nota de rodapé"
+          footnote_credits: "Explicação da IA"
+          selected_text: "Texto selecionado"
         fast_edit:
           suggest_button: "Sugerir edição"
         thumbnail_suggestions:
@@ -173,9 +306,16 @@ pt_BR:
           select: "Selecionar"
           selected: "Selecionado(a)"
         image_caption:
+          button_label: "Legenda com IA"
+          generating: "Gerando legenda..."
+          credits: "Legendado por IA"
           save_caption: "Salvar"
+          automatic_caption_setting: "Ativar legendas automáticas de imagem com IA"
+          automatic_caption_loading: "Legendando imagens..."
           automatic_caption_dialog:
+            prompt: "Esta postagem contém imagens sem legendas. Gostaria de ativar legendas automáticas com IA em envios de imagem? (Altere nas preferências mais tarde)"
             confirm: "Ativar"
+            cancel: "Não perguntar novamente"
       reviewables:
         model_used: "Modelo usado:"
         accuracy: "Precisão:"
@@ -188,6 +328,8 @@ pt_BR:
           none: "Desculpe, nossa Pesquisa com IA não achou tópicos correspondentes."
           new: "Aperte \"Pesquisar\"' para começar a procurar resultados novos com a IA"
         ai_generated_result: "Resultado de pesquisa encontrado usando IA"
+        quick_search:
+          suffix: "em todos os tópicos e postagens com IA"
       ai_bot:
         pm_warning: "Todas as mensagens do chatbot de IA são monitoradas regularmente por moderadores(as)."
         cancel_streaming: "Parar resposta"
@@ -195,17 +337,39 @@ pt_BR:
         shortcut_title: "Iniciar uma MP com bot de IA"
         share: "Compartilhar conversação com IA"
         conversation_shared: "Conversação copiada"
+        debug_ai: "Visualizar resposta e pedido de IA não processado"
         debug_ai_modal:
+          title: "Visualizar interação com IA"
+          copy_request: "Copiar solicitação"
+          copy_response: "Copiar resposta"
+          request_tokens: "Tokens de pedido:"
+          response_tokens: "Tokens de resposta:"
           request: "Pedir"
           response: "Resposta"
+        share_full_topic_modal:
+          title: "Compartilhar conversas publicamente"
+          share: "Compartilhar e copiar link"
+          update: "Enviar e copiar link"
+          delete: "Excluir compartilhamento"
+        share_ai_conversation:
+          name: "Compartilhar conversa com IA"
+          title: "Compartilhar esta conversa com IA publicamente"
         ai_label: "IA"
         ai_title: "Conversação com IA"
         share_modal:
+          title: "Copiar conversa com IA"
           copy: "Copiar"
           context: "Interações para compartilhar:"
+          share_tip: Como alternativa, você pode compartilhar toda esta conversa.
         bot_names:
+          fake: "Bot de teste simulado"
+          claude-3-opus: "Opus Claude 3"
+          claude-3-sonnet: "Sonnet Claude 3"
+          claude-3-haiku: "Haiku Claude 3"
+          cohere-command-r-plus: "Command R Plus Cohere"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"

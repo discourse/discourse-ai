@@ -12,4 +12,4 @@ be:
     sentiment:
       reports:
         post_emotion:
-          neutral: "нейтральны"
+          neutral: "нейтральны \U0001F610"

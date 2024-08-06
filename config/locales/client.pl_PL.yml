@@ -256,6 +256,8 @@ pl_PL:
             few: "Ostatnie %{count} godziny"
             many: "Ostatnie %{count} godzin"
             other: "Ostatnie %{count} godzin"
+        topic:
+          title: "Podsumowanie tematu"
     review:
       types:
         reviewable_ai_post:
