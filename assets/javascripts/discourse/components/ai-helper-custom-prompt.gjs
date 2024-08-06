@@ -29,9 +29,9 @@ export default class AiHelperCustomPrompt extends Component {
         }}
         class="ai-custom-prompt__input"
         type="text"
-        {{!-- Using {{autoFocus}} helper instead of built in autofocus="autofocus" 
+        {{!-- Using {{autoFocus}} helper instead of built in autofocus="autofocus"
             because built in autofocus doesn't work consistently when component is
-            invoked twice separetly without a page refresh. 
+            invoked twice separetly without a page refresh.
             (i.e. trigger in post AI helper followed by trigger in composer AI helper)
       --}}
         {{autoFocus}}
