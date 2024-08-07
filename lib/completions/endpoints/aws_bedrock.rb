@@ -66,6 +66,10 @@ module DiscourseAi
               llm_model.name
             end
 
+          if region.blank? || bedrock_model_id.blank?
+            raise CompletionFailed.new(I18n.t("discourse_ai.llm_models.bedrock_invalid_url"))
+          end
+
           api_url =
             "https://bedrock-runtime.#{region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
 

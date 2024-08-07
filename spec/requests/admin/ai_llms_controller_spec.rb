@@ -97,6 +97,46 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         expect(created_model).to be_nil
       end
     end
+
+    context "with provider-specific params" do
+      it "doesn't create a model if a Bedrock param is missing" do
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm:
+                 valid_attrs.merge(
+                   provider: "aws_bedrock",
+                   provider_params: {
+                     region: "us-east-1",
+                   },
+                 ),
+             }
+
+        created_model = LlmModel.last
+
+        expect(response.status).to eq(422)
+        expect(created_model).to be_nil
+      end
+
+      it "creates the model if all required provider params are present" do
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm:
+                 valid_attrs.merge(
+                   provider: "aws_bedrock",
+                   provider_params: {
+                     region: "us-east-1",
+                     access_key_id: "test",
+                   },
+                 ),
+             }
+
+        created_model = LlmModel.last
+
+        expect(response.status).to eq(201)
+        expect(created_model.lookup_custom_param("region")).to eq("us-east-1")
+        expect(created_model.lookup_custom_param("access_key_id")).to eq("test")
+      end
+    end
   end
 
   describe "PUT #update" do

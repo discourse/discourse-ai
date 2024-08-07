@@ -12,6 +12,7 @@ class LlmModel < ActiveRecord::Base
   validates :url, presence: true, unless: -> { provider == BEDROCK_PROVIDER_NAME }
   validates_presence_of :name, :api_key
   validates :max_prompt_tokens, numericality: { greater_than: 0 }
+  validate :required_provider_params
 
   def self.provider_params
     {
@@ -78,6 +79,18 @@ class LlmModel < ActiveRecord::Base
 
   def lookup_custom_param(key)
     provider_params&.dig(key)
+  end
+
+  private
+
+  def required_provider_params
+    return if provider != BEDROCK_PROVIDER_NAME
+
+    %w[access_key_id region].each do |field|
+      if lookup_custom_param(field).blank?
+        errors.add(:base, I18n.t("discourse_ai.llm_models.missing_provider_param", param: field))
+      end
+    end
   end
 end
 
