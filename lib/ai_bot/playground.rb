@@ -80,7 +80,7 @@ module DiscourseAi
           mentions = post.mentions.map(&:downcase)
 
           # in case we are replying to a post by a bot
-          if post.reply_to_post_number && post.reply_to_post.user
+          if post.reply_to_post_number && post.reply_to_post&.user
             mentions << post.reply_to_post.user.username_lower
           end
 
