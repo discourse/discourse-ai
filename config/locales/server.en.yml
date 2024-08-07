@@ -326,3 +326,7 @@ en:
         hint:
           one: "Make sure the `%{settings}` setting was configured."
           other: "Make sure the settings of the provider you want were configured. Options are: %{settings}"
+
+    llm_models:
+      missing_provider_param: "%{param} can't be blank"
+      bedrock_invalid_url: "Please complete all the fields to contact this model."

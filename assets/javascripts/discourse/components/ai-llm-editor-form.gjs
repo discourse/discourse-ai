@@ -30,14 +30,6 @@ export default class AiLlmEditorForm extends Component {
   @tracked testError = null;
   @tracked apiKeySecret = true;
 
-  didReceiveAttrs() {
-    super.didReceiveAttrs(...arguments);
-
-    if (!this.args.model.provider_params) {
-      this.populateProviderParams(this.args.model.provider);
-    }
-  }
-
   get selectedProviders() {
     const t = (provName) => {
       return I18n.t(`discourse_ai.llms.providers.${provName}`);
