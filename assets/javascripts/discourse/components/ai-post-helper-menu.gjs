@@ -116,14 +116,14 @@ export default class AiPostHelperMenu extends Component {
 
   @bind
   subscribe() {
-    const channel = `/discourse-ai/ai-helper/explain/${this.args.data.quoteState.postId}`;
+    const channel = `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
     this.messageBus.subscribe(channel, this._updateResult);
   }
 
   @bind
   unsubscribe() {
     this.messageBus.unsubscribe(
-      "/discourse-ai/ai-helper/explain/*",
+      "/discourse-ai/ai-helper/stream_suggestion/*",
       this._updateResult
     );
   }
@@ -143,9 +143,10 @@ export default class AiPostHelperMenu extends Component {
   async performAiSuggestion(option) {
     this.menuState = this.MENU_STATES.loading;
     this.lastSelectedOption = option;
+    const streamableOptions = ["explain", "translate", "custom_prompt"];
 
-    if (option.name === "explain") {
-      return this._handleExplainOption(option);
+    if (streamableOptions.includes(option.name)) {
+      return this._handleStreamedResult(option);
     } else {
       this._activeAiRequest = ajax("/discourse-ai/ai-helper/suggest", {
         method: "POST",
@@ -174,20 +175,21 @@ export default class AiPostHelperMenu extends Component {
     return this._activeAiRequest;
   }
 
-  _handleExplainOption(option) {
+  _handleStreamedResult(option) {
     this.menuState = this.MENU_STATES.result;
     const menu = this.menu.getByIdentifier("post-text-selection-toolbar");
     if (menu) {
       menu.options.placement = "bottom";
     }
-    const fetchUrl = `/discourse-ai/ai-helper/explain`;
+    const fetchUrl = `/discourse-ai/ai-helper/stream_suggestion`;
 
     this._activeAiRequest = ajax(fetchUrl, {
       method: "POST",
       data: {
-        mode: option.value,
+        mode: option.id,
         text: this.args.data.selectedText,
         post_id: this.args.data.quoteState.postId,
+        custom_prompt: this.customPromptValue,
       },
     });
 

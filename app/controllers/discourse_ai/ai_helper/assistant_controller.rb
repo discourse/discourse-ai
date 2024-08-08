@@ -89,18 +89,28 @@ module DiscourseAi
         end
       end
 
-      def explain
+      def stream_suggestion
         post_id = get_post_param!
-        term_to_explain = get_text_param!
+        text = get_text_param!
         post = Post.includes(:topic).find_by(id: post_id)
+        prompt = CompletionPrompt.find_by(id: params[:mode])
 
+        raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
         raise Discourse::InvalidParameters.new(:post_id) unless post
+
+        if prompt.id == CompletionPrompt::CUSTOM_PROMPT
+          raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
+
+          prompt.custom_instruction = params[:custom_prompt]
+        end
 
         Jobs.enqueue(
           :stream_post_helper,
           post_id: post.id,
           user_id: current_user.id,
-          term_to_explain: term_to_explain,
+          text: text,
+          prompt: prompt.name,
+          custom_prompt: params[:custom_prompt],
         )
 
         render json: { success: true }, status: 200
