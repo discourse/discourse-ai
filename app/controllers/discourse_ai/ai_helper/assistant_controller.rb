@@ -100,8 +100,6 @@ module DiscourseAi
 
         if prompt.id == CompletionPrompt::CUSTOM_PROMPT
           raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
-
-          prompt.custom_instruction = params[:custom_prompt]
         end
 
         Jobs.enqueue(
