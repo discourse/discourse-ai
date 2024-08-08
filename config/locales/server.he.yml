@@ -43,30 +43,11 @@ he:
     ai_nsfw_flag_threshold_porn: "סף לתמונה שמוגדרת כארוטית כדי שתיחשב פוגענית."
     ai_nsfw_flag_threshold_sexy: "סף לתמונה שמוגדרת כמינית כדי שתיחשב פוגענית."
     ai_nsfw_models: "מודלים לשימוש להסקת פוגענות."
-    ai_openai_gpt35_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 3.5.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt35_16k_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 3.5 16k.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt4_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt4o_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4 Omni.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt4_32k_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4 32k.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt4_turbo_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4 טורבו.‏ (לתמיכה ב־Azure)"
-    ai_openai_dall_e_3_url: "כתובת מותאמת אישית שמשמשת ליצירת תמונות עם DALL-E 3. (לתמיכה ב־Azure)"
-    ai_openai_organization: "(רשות, אפשר להשאיר ריק כדי להשמיט) מזהה הארגון שמשמש ל־API של OpenAI. מועבר דרך הכותרת OpenAI-Organization."
     ai_openai_embeddings_url: "כתובת מותאמת אישית ל־API ההטמעות של OpenAI. (במקרה של Azure זה יכול להיות: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "מפתח API ל־API של OpenAI"
-    ai_anthropic_api_key: "מפתח API ל־API של Anthropic"
+    ai_openai_api_key: "מפתח API ל־API של OpenAI. משמש רק להטבעות ול־Dall-E. ל־GPT יש להשתמש בלשונית הגדרות LLM (מודלי שפה גדולים)"
     ai_anthropic_native_tool_call_models: "רשימת דגמים שישתמשו בקריאות כלי טבעיות לעומת כלים מיושנים מבוססי XML."
-    ai_cohere_api_key: "מפתח API ל־API של Cohere"
-    ai_hugging_face_api_url: "כתובת משלך להסקה על בסיס OpenSource LLM. עם תאימות ל־https://github.com/huggingface/text-generation-inference"
-    ai_hugging_face_api_key: מפתח API ל־API של Hugging Face
-    ai_hugging_face_token_limit: כמות אסימונים מרבית שה־API של Hugging Face יכול להשתמש בה לכל בקשה
-    ai_hugging_face_model_display_name: השם שיוצג לדגם הבינה המלאכותית של Hugging Face
     ai_hugging_face_tei_endpoint: כתובת בה פועל ה־API להסקת הטמעת הטקסט ב־Hugging Face
     ai_hugging_face_tei_api_key: מפתח API להסרת הטמעת טקסט ב־Hugging Face
-    ai_gemini_api_key: מפתח API ל־API של Google Gemini
-    ai_vllm_endpoint: הכתובת בה פועל ה־API של vLLM
-    ai_vllm_api_key: מפתח API ל־API של vLLM
-    ai_llava_endpoint: כתובת בה פועל ה־API עבור llava
-    ai_llava_api_key: מפתח API ל־API של llava
     composer_ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית של כותב ההודעות."
     ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
     ai_helper_allowed_in_pm: "הפעלת מסייע הבינה המלאכותית בכותב ההודעות בהודעות הפרטיות."
@@ -101,7 +82,6 @@ he:
     ai_bot_allowed_groups: "כאשר לבוט של GPT יש גישה להודעות הפרטיות, הוא יגיב לחברים בקבוצות האלה."
     ai_bot_debugging_allowed_groups: "לאפשר לקבוצות האלו לצפות בכפתור ניפוי שיאות שמציג את בקשת ותגובה הבינה המלאכותית באופן גולמי"
     ai_bot_public_sharing_allowed_groups: "לאפשר לקבוצות האלה לשתף הודעות אישיות של בינה למאכותית עם הציבור באמצעות קישור ייחודי גלוי לציבור. הערה: אם האתר שלך דורש כניסה, גם שיתופים ידרשו כניסה."
-    ai_bot_enabled_chat_bots: "מודלים זמינים שיכהנו כבוט בינה מלאכותית"
     ai_bot_add_to_header: "הצגת כפתור בכותרת כדי לפתוח הודעה פרטית עם בוט בינה מלאכותית"
     ai_bot_github_access_token: "אסימון גישה ל־GitHub לשימוש עם כלי הבינה המלאכותית של GitHub (נחוץ לתמיכה בחיפוש)"
     ai_stability_api_key: "מפתח API ל־API של stability.ai"
@@ -109,11 +89,6 @@ he:
     ai_stability_api_url: "כתובת ל־API של stability.ai"
     ai_google_custom_search_api_key: "מפתח API ל־API החיפוש המותאם אישית של Google, ר׳: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX ל־API החיפוש המותאם אישית של Google"
-    ai_bedrock_access_key_id: "מזהה מפתח גישה ל־API של Bedrock"
-    ai_bedrock_secret_access_key: "מפתח גישה סודי ל־API של Bedrock"
-    ai_bedrock_region: "אזור של AWS ל־API של Bedrock"
-    ai_cloudflare_workers_account_id: "מזהה חשבון Cloudflare ל־API של פועלי הבינה המלאכותית של Cloudflare"
-    ai_cloudflare_workers_api_token: "אסימון API ל־API של פועלי הבינה המלאכותית של Cloudflare"
   reviewables:
     reasons:
       flagged_by_toxicity: תוסף הבינה המלאכותית סימן את זה לאחר סיווג כרעיל.
@@ -321,15 +296,13 @@ he:
           positive: "חיובי"
           negative: "שלילי"
         post_emotion:
-          tl_01: "דרגות אמון 0‏-1"
-          tl_234: "דרגות אמון 2‎+‎"
-          sadness: "עצב"
-          surprise: "הפתעה"
-          neutral: "נייטרלי"
-          fear: "פחד"
-          anger: "כעס"
-          joy: "הנאה"
-          disgust: "גועל"
+          sadness: "עצב \U0001F622"
+          surprise: "הפתעה \U0001F631"
+          neutral: "נייטרלי \U0001F610"
+          fear: "פחד \U0001F628"
+          anger: "כעס \U0001F621"
+          joy: "הנאה \U0001F600"
+          disgust: "גועל \U0001F922"
     llm:
       configuration:
         disable_module_first: "קודם צריך להשבית את %{setting}."

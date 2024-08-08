@@ -233,3 +233,5 @@ id:
           summarize: "Meringkas"
           since:
             other: "%{count} jam terakhir"
+        topic:
+          title: "Ringkasan topik"

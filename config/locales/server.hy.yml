@@ -16,4 +16,4 @@ hy:
     sentiment:
       reports:
         post_emotion:
-          neutral: "Նեյտրալ"
+          neutral: "Նեյտրալ \U0001F610"

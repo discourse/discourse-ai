@@ -43,17 +43,11 @@ ar:
     ai_nsfw_flag_threshold_porn: "الحد الأدنى للصورة المصنَّفة كمحتوى إباحي ليتم اعتبارها غير آمنة لبيئة العمل."
     ai_nsfw_flag_threshold_sexy: "الحد الأدنى للصورة المصنَّفة كمحتوى جنسي ليتم اعتبارها غير آمنة لبيئة العمل."
     ai_nsfw_models: "نماذج المراد استخدامها في الاستدلال على المحتوى غير الآمن لبيئة العمل."
-    ai_openai_gpt35_url: "عنوان URL المخصَّص المُستخدَم لإكمال دردشة GPT 3.5. (لدعم Azure)"
-    ai_openai_gpt35_16k_url: "عنوان URL المخصَّص المُستخدَم لإكمال 16 ألف رسالة دردشة باستخدام GPT 3.5. (لدعم Azure)"
-    ai_openai_gpt4_url: "عنوان URL المخصَّص المُستخدَم لإكمال دردشة GPT 4. (لدعم Azure)"
-    ai_openai_gpt4_32k_url: "عنوان URL المخصَّص المُستخدَم لإكمال 32 ألف رسالة دردشة باستخدام GPT 4. (لدعم Azure)"
-    ai_openai_gpt4_turbo_url: "عنوان URL المخصَّص المُستخدَم لإكمال رسائل الدردشة باستخدام GPT 4 Turbo. (لدعم Azure)"
-    ai_openai_dall_e_3_url: "عنوان URL المخصَّص المُستخدَم لإنشاء صور DALL-E 3. (لدعم Azure)"
-    ai_openai_organization: "(اختياري، اتركه فارغًا للحذف) معرِّف المؤسسة المُستخدَم لواجهة برمجة تطبيقات OpenAI. تم تمريره باستخدام رأس OpenAI-Organization."
     ai_openai_embeddings_url: "عنوان URL المخصَّص المُستخدَم لواجهة API لتضمينات OpenAI. (في حالة Azure، يمكن أن يكون: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "مفتاح API لواجهة API الخاصة بخدمات OpenAI"
-    ai_anthropic_api_key: "مفتاح API لواجهة API الخاصة بخدمات Anthropic"
-    ai_hugging_face_api_url: "عنوان URL المخصَّص المُستخدَم للاستدلال على النماذج اللغوية الكبيرة (LLM) في OpenSource. إنه متوافق مع https://github.com/huggingface/text-generation-inference"
+    ai_openai_api_key: "مفتاح API لواجهة OpenAI API. لا يُستخدَم إلا للتضمينات وDall-E. بالنسبة إلى GPT، استخدم علامة التبويب تكوين نموذج اللغة الكبير"
+    ai_anthropic_native_tool_call_models: "قائمة النماذج التي ستستخدم استدعاءات الأدوات الأصلية مقابل الأدوات القديمة المستندة إلى XML."
+    ai_hugging_face_tei_endpoint: عنوان URL حيث يتم تشغيل واجهة برمجة التطبيقات (API) لاستنتاج تضمينات نصوص Hugging Face
+    ai_hugging_face_tei_api_key: مفتاح API لاستنتاج تضمينات نصوص Hugging Face
     composer_ai_helper_enabled: "تفعيل مساعد الذكاء الاصطناعي لأداة الإنشاء."
     ai_helper_allowed_groups: "سيرى المستخدمون في هذه المجموعات زر مساعد الذكاء الاصطناعي في أداة الإنشاء."
     ai_helper_allowed_in_pm: "تفعيل مساعد الذكاء الاصطناعي في الرسائل الخاصة."
@@ -62,6 +56,10 @@ ar:
     ai_helper_automatic_chat_thread_title_delay: "التأخير بالدقائق قبل أن يقوم مساعد الذكاء الاصطناعي بتعيين عنوان سلسلة الدردشة تلقائيًا."
     ai_helper_automatic_chat_thread_title: "تعيين عناوين سلسلة الدردشة تلقائيًا بناءً على محتويات السلسلة."
     ai_helper_illustrate_post_model: "النموذج المراد استخدامه لميزة تزويد المنشور بالصور من مساعد الذكاء الاصطناعي في أداة الإنشاء"
+    ai_helper_enabled_features: "حدِّد الميزات التي تريد تفعيلها في مساعد الذكاء الاصطناعي."
+    post_ai_helper_allowed_groups: "مجموعات المستخدمين المسموح لها بالوصول إلى ميزات مساعد الذكاء الاصطناعي في المنشورات"
+    ai_helper_image_caption_model: "حدِّد النموذج الذي سيتم استخدامه لإنشاء التسميات التوضيحية للصور"
+    ai_auto_image_caption_allowed_groups: "يمكن للمستخدمين في هذه المجموعات تشغيل التسميات التوضيحية التلقائية للصور."
     ai_embeddings_enabled: "تفعيل وحدة التضمينات."
     ai_embeddings_discourse_service_api_endpoint: "عنوان URL حيث تعمل واجهة API لوحدة التضمينات"
     ai_embeddings_discourse_service_api_key: "مفتاح API لواجهة API الخاصة بالتضمينات"
@@ -72,23 +70,25 @@ ar:
     ai_embeddings_backfill_batch_size: "عدد التضمينات المراد إعادة ملئها كل 15 دقيقة."
     ai_embeddings_pg_connection_string: "سلسلة اتصال PostgreSQL لوحدة التضمينات. يلزم تفعيل امتداد pgvector وإنشاء سلسلة من الجداول. انظر المستندات للمزيد من المعلومات."
     ai_embeddings_semantic_search_enabled: "تفعيل البحث الدلالي في الصفحة كاملةً."
+    ai_embeddings_semantic_quick_search_enabled: "تفعيل خيار البحث الدلالي في قائمة البحث المنبثقة."
     ai_embeddings_semantic_related_include_closed_topics: "تضمين الموضوعات المغلقة في نتائج البحث الدلالي"
     ai_embeddings_semantic_search_hyde_model: "النموذج المُستخدَم لتوسيع الكلمات الرئيسية للحصول على نتائج أفضل في أثناء البحث الدلالي"
+    ai_embeddings_per_post_enabled: إنشاء التضمينات لكل منشور
+    ai_summarization_enabled: "تفعيل وحدة تلخيص الموضوعات"
+    ai_summarization_model: "النموذج الذي سيتم استخدامه في التلخيص."
+    ai_custom_summarization_allowed_groups: "المجموعات المسموح لها بإنشاء ملخصات جديدة."
     ai_bot_enabled: "تفعيل وحدة روبوت الذكاء الاصطناعي"
     ai_bot_enable_chat_warning: "عرض تحذير عند بدء الدردشة في رسالة خاصة. يمكن تجاوزه عن طريق تعديل سلسلة الترجمة: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "عندما يتمكن GPT Bot من الوصول إلى الرسالة الخاصة، فإنه سيرد على أعضاء هذه المجموعات."
-    ai_bot_enabled_chat_bots: "النماذج المتاحة للقيام بدور روبوت الذكاء الاصطناعي"
+    ai_bot_debugging_allowed_groups: "السماح لهذه المجموعات برؤية زر تصحيح الأخطاء في المنشورات التي تعرض طلب الذكاء الاصطناعي الأولي والرد"
+    ai_bot_public_sharing_allowed_groups: "السماح لهذه المجموعات بمشاركة رسائل الذكاء الاصطناعي الشخصية مع العامة عبر رابط فريد متاح بشكلٍ علني. ملاحظة: إذا كان موقعك يتطلَّب تسجيل الدخول، فستتطلب المشاركة تسجيل الدخول أيضًا."
     ai_bot_add_to_header: "عرض زر في الرأس لبدء رسالة خاصة مع روبوت ذكاء اصطناعي"
+    ai_bot_github_access_token: "رمز وصول GitHub للاستخدام مع أدوات الذكاء الاصطناعي من GitHub (مطلوب لدعم البحث)"
     ai_stability_api_key: "مفتاح API لواجهة API المسماة stability.ai"
     ai_stability_engine: "محرك إنشاء الصور المراد استخدامه لواجهة برمجة التطبيقات المسماة stability.ai"
     ai_stability_api_url: "عنوان URL لواجهة API المسماة stability.ai"
     ai_google_custom_search_api_key: "مفتاح API لواجهة API الخاصة ببحث Google المخصَّص، راجع: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "تجربة العملاء لواجهة بحث Google المخصَّصة"
-    ai_bedrock_access_key_id: "معرِّف مفتاح الوصول لواجهة برمجة تطبيقات Bedrock"
-    ai_bedrock_secret_access_key: "مفتاح الوصول السري لواجهة برمجة تطبيقات Bedrock"
-    ai_bedrock_region: "منطقة AWS لواجهة برمجة تطبيقات Bedrock"
-    ai_cloudflare_workers_account_id: "معرِّف حساب Cloudflare لواجهة برمجة تطبيقات Workers AI من Cloudflare"
-    ai_cloudflare_workers_api_token: "رمز واجهة برمجة التطبيقات لواجهة برمجة تطبيقات Workers AI من Cloudflare"
   reviewables:
     reasons:
       flagged_by_toxicity: أبلغ المكوِّن الإضافي الذي يعمل بالذكاء الاصطناعي عن هذا بعد تصنيفه كسلبي.
@@ -106,10 +106,23 @@ ar:
       title: "مشاعر المنشور"
       description: "عدد المنشورات المصنَّفة بأحد المشاعر التالية، مجمَّعة حسب مستوى ثقة الناشر."
   discourse_ai:
+    unknown_model: "نموذج ذكاء اصطناعي غير معروف"
+    tools:
+      custom_name: "%{name} (custom)"
+      presets:
+        browse_web_jina:
+          name: "تصفح الويب باستخدام jina.ai"
+        exchange_rate:
+          name: "سعر الصرف"
+        stock_quote:
+          name: "أسعار الأسهم (AlphaVantage)"
+        empty_tool:
+          name: "ابدأ من لا شيء..."
     ai_helper:
       errors:
         completion_request_failed: "حدث خطأ في أثناء محاولة تقديم اقتراحات. يُرجى إعادة المحاولة."
       prompts:
+        translate: الترجمة إلى %{language}
         generate_titles: اقتراح عناوين للموضوعات
         proofread: تدقيق النص لغويًا
         markdown_table: إنشاء جدول Markdown
@@ -120,9 +133,27 @@ ar:
         attribution:
           stable_diffusion_xl: "الصورة بواسطة Stable Diffusion XL"
           dall_e_3: "الصورة بواسطة DALL-E 3"
+      image_caption:
+        attribution: "تم إنشاء التسمية التوضيحية بالذكاء الاصطناعي"
+    share_ai:
+      read_more: "قراءة النص الكامل"
+      onebox_title: "محادثة الذكاء الاصطناعي مع %{llm_name}"
+      formatted_excerpt: "محادثة الذكاء الاصطناعي مع %{llm_name}:\n %{excerpt}"
+      title: "%{title} - محادثة الذكاء الاصطناعي - %{site_name}"
+      errors:
+        not_allowed: "غير مسموح لك بمشاركة هذا الموضوع"
+        other_people_in_pm: "لا يمكن مشاركة الرسائل الشخصية مع البشر الآخرين بشكلٍ علني"
+        other_content_in_pm: "لا يمكن مشاركة الرسائل الشخصية التي تحتوي على منشورات من أشخاص آخرين بشكلٍ علني"
+        failed_to_share: "فشلت مشاركة المحادثة"
+        conversation_deleted: "تم حذف مشاركة المحادثة بنجاح"
     ai_bot:
       personas:
+        default_llm_required: "نموذج اللغة الكبير الافتراضي مطلوب قبل تفعيل الدردشة"
         cannot_delete_system_persona: "لا يمكن حذف شخصيات النظام، يُرجى إيقافها بدلًا من ذلك"
+        cannot_edit_system_persona: "يمكن إعادة تسمية شخصيات النظام فقط، ولا يجوز لك تعديل الأدوات أو رسائل مطالبة النظام. قم بإيقافها وعمل نسخة منها بدلًا من ذلك."
+        github_helper:
+          name: "مساعد GitHub"
+          description: "روبوت ذكاء اصطناعي متخصص في المساعدة في المهام والأسئلة المتعلقة بمنصة GitHub"
         general:
           name: مساعد المنتدى
           description: "روبوت ذكاء اصطناعي للأغراض العامة قادر على أداء مهام مختلفة"
@@ -144,11 +175,21 @@ ar:
         dall_e3:
           name: "DALL-E 3"
           description: "روبوت ذكاء اصطناعي متخصص في إنشاء الصور باستخدام DALL-E 3"
+        discourse_helper:
+          name: "مساعد Discourse"
+          description: "روبوت ذكاء اصطناعي متخصص في المساعدة في المهام المتعلقة بمنصة Discourse"
       topic_not_found: "الملخص غير متوفر، الموضوع غير موجود!"
       summarizing: "جارٍ تلخيص الموضوع"
       searching: "جارٍ البحث عن: '%{query}'"
       tool_options:
+        read:
+          read_private:
+            name: "قراءة خاصة"
+            description: "السماح بالوصول إلى جميع الموضوعات التي يمكن للمستخدم الوصول إليها (يتم تضمين الموضوعات العامة فقط بشكلٍ افتراضي)"
         search:
+          search_private:
+            name: "بحث خاص"
+            description: "تضمين جميع الموضوعات التي يمكن للمستخدم الوصول إليها في نتائج البحث (يتم تضمين الموضوعات العامة فقط بشكلٍ افتراضي)"
           max_results:
             name: "الحد الأقصى لعدد النتائج"
             description: "الحد الأقصى لعدد النتائج المطلوب تضمينها في البحث - في حال ترك الحقل فارغًا، سيتم استخدام القواعد الافتراضية وستتم زيادة العدد وفقًا للنموذج المُستخدَم. أعلى قيمة هي 100."
@@ -156,6 +197,12 @@ ar:
             name: "استعلام البحث الأساسي"
             description: "استعلام البحث الأساسي الذي سيتم استخدامه عند البحث. على سبيل المثال: سيسبق \"#urgent\" \"#urgent\" في استعلام البحث وسيتضمن الموضوعات ذات الفئة أو الوسم العاجل فقط."
       tool_summary:
+        web_browser: "تصفح الويب"
+        github_search_files: "ملفات بحث GitHub"
+        github_search_code: "البحث عن رمز برمجي على GitHub"
+        github_file_content: "محتوى ملف GitHub"
+        github_pull_request_diff: "الفروقات في طلب السحب على GitHub"
+        random_picker: "منتقي عشوائي"
         categories: "إدراج الفئات"
         search: "البحث"
         tags: "إدراج الوسوم"
@@ -168,7 +215,15 @@ ar:
         schema: "البحث عن مخطط قاعدة البيانات"
         search_settings: "جارٍ البحث في إعدادات الموقع"
         dall_e: "إنشاء صورة"
+        search_meta_discourse: "البحث في Meta Discourse"
+        javascript_evaluator: "تقييم JavaScript"
       tool_help:
+        web_browser: "تصفح صفحة الويب باستخدام روبوت ذكاء اصطناعي"
+        github_search_code: "البحث عن رمز برمجي في مستودع GitHub"
+        github_search_files: "البحث عن ملفات في مستودع GitHub"
+        github_file_content: "استعادة محتوى ملفات من مستودع GitHub"
+        github_pull_request_diff: "استعادة الفروقات في طلب السحب على GitHub"
+        random_picker: "اختر رقمًا عشوائيًا أو عنصرًا عشوائيًا من القائمة"
         categories: "إدراج جميع الفئات المرئية بشكلٍ عام في المنتدى"
         search: "البحث في جميع الموضوعات العامة في المنتدى"
         tags: "إدراج جميع الوسوم في المنتدى"
@@ -181,7 +236,15 @@ ar:
         schema: "البحث عن مخطط قاعدة البيانات"
         search_settings: "البحث في إعدادات الموقع"
         dall_e: "إنشاء صورة باستخدام DALL-E 3"
+        search_meta_discourse: "البحث في Meta Discourse"
+        javascript_evaluator: "تقييم JavaScript"
       tool_description:
+        web_browser: "قراءة <a href='%{url}'>%{url}</a>"
+        github_search_files: "تم البحث عن '%{keywords}' في %{repo}/%{branch}"
+        github_search_code: "تم البحث عن '%{query}' في %{repo}"
+        github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
+        github_file_content: "تم استعادة محتوى %{file_paths} من %{repo_name}@%{branch}"
+        random_picker: "الاختيار من %{options}، تم اختيار: %{result}"
         read: "القراءة: <a href='%{url}'>%{title}</a>"
         time: "الوقت في المنطقة الزمنية %{timezone} هو %{time}"
         summarize: "تم تلخيص <a href='%{url}'>%{title}</a>"
@@ -247,12 +310,43 @@ ar:
           positive: "إيجابية"
           negative: "سلبية"
         post_emotion:
-          tl_01: "مستويات الثقة 0-1"
-          tl_234: "مستويات الثقة 2+"
-          sadness: "الحزن"
-          surprise: "المفاجأة"
-          neutral: "محايدة"
-          fear: "الخوف"
-          anger: "الغضب"
-          joy: "المرح"
-          disgust: "الاشمئزاز"
+          sadness: "الحزن \U0001F622"
+          surprise: "المفاجأة \U0001F631"
+          neutral: "محايدة \U0001F610"
+          fear: "الخوف \U0001F628"
+          anger: "الغضب \U0001F621"
+          joy: "المرح \U0001F600"
+          disgust: "الاشمئزاز \U0001F922"
+    llm:
+      configuration:
+        disable_module_first: "يجب عليك إيقاف %{setting} أولًا."
+        set_llm_first: "اضبط %{setting} أولًا."
+        model_unreachable: "لم نتمكن من الحصول على رد من هذا النموذج. تحقَّق من إعداداتك أولًا."
+      endpoints:
+        not_configured: "%{display_name} (not configured)"
+        configuration_hint:
+          zero: "تأكَّد من تكوين الإعداد `%{settings}`."
+          one: "تأكَّد من تكوين الإعداد `%{settings}`."
+          two: "تأكَّد من تكوين الإعدادَين `%{settings}`."
+          few: "تأكَّد من تكوين الإعدادات `%{settings}`."
+          many: "تأكَّد من تكوين الإعدادات `%{settings}`."
+          other: "تأكَّد من تكوين الإعدادات `%{settings}`."
+      delete_failed:
+        zero: "لم نتمكن من حذف هذا النموذج لأن %{settings} يستخدمه. قم بتحديث الإعداد وحاول مرة أخرى."
+        one: "لم نتمكن من حذف هذا النموذج لأن %{settings} يستخدمه. قم بتحديث الإعداد وحاول مرة أخرى."
+        two: "لم نتمكن من حذف هذا النموذج لأن %{settings} يستخدمانه. قم بتحديث الإعدادَين وحاول مرة أخرى."
+        few: "لم نتمكن من حذف هذا النموذج لأن %{settings} تستخدمه. قم بتحديث الإعدادات وحاول مرة أخرى."
+        many: "لم نتمكن من حذف هذا النموذج لأن %{settings} تستخدمه. قم بتحديث الإعدادات وحاول مرة أخرى."
+        other: "لم نتمكن من حذف هذا النموذج لأن %{settings} تستخدمه. قم بتحديث الإعدادات وحاول مرة أخرى."
+    embeddings:
+      configuration:
+        disable_embeddings: "يجب عليك إيقاف 'ai embeddings enabled' أولًا."
+        choose_model: "قم بتعيين 'ai embeddings model' أولًا."
+        model_unreachable: "لقد فشلنا في إنشاء اختبار تضمين باستخدام هذا النموذج. تأكَّد من صحة إعداداتك."
+        hint:
+          zero: "تأكد من تكوين الإعداد `%{settings}`."
+          one: "تأكد من تكوين الإعداد `%{settings}`."
+          two: "تأكد من تكوين الإعدادَين `%{settings}`."
+          few: "تأكد من تكوين الإعدادات `%{settings}`."
+          many: "تأكد من تكوين الإعدادات `%{settings}`."
+          other: "تأكد من تكوين الإعدادات `%{settings}`."

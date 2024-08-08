@@ -101,3 +101,5 @@ sv:
           since:
             one: "Senaste timmen"
             other: "Senaste %{count} timmarna"
+        topic:
+          title: "Sammanfattning av ämne"

@@ -227,6 +227,7 @@ he:
         url: "כתובת השירות שמארח את המודל"
         api_key: "מפתח ה־API של השירות שמארח את המודל"
         enabled_chat_bot: "לאפשר בוט בינה מלאכותית"
+        vision_enabled: "ראייה מופעלת"
         ai_bot_user: "משתמש בוט בינה מלאכותית"
         save: "שמירה"
         edit: "עריכה"
@@ -234,7 +235,6 @@ he:
         back: "חזרה"
         confirm_delete: למחוק את המודל הזה?
         delete: מחיקה
-        srv_warning: ה־LLM (מודל שפה גדול) מצביע לרשומת SRV והכתובת שלו נעולה לעריכה. צריך לעדכן את ההגדרה הנסתרת „ai_vllm_endpoint_srv” במקום.
         preconfigured_llms: "בחירת ה־LLM שלך"
         preconfigured:
           none: "הגדרה ידנית…"
@@ -248,6 +248,7 @@ he:
         hints:
           max_prompt_tokens: "מספר האסימונים המרבי לבקשה. ככלל אצבע, זה אמור להיות 50% מחלון ההקשר של המודל."
           name: "אנו מצרפים את זה לקריאת ה־API כדי לציין באיזה מודל להשתמש."
+          vision_enabled: "אם האפשרות פעילה, הבינה מלאכותית תנסה להבין תמונות. כתלות בתמיכה של המודל בעיבוד תמונות. נתמך על ידי המודלים העדכניים ביותר מבית Anthropic,‏ Google ו־OpenAI."
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
@@ -389,6 +390,9 @@ he:
             two: "שעתיים אחרונות"
             many: "%{count} השעות האחרונות"
             other: "%{count} השעות האחרונות"
+        topic:
+          title: "תקציר הנושא"
+          close: "סגירת חלונית תקציר"
     review:
       types:
         reviewable_ai_post:

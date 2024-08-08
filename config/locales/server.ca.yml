@@ -16,4 +16,4 @@ ca:
     sentiment:
       reports:
         post_emotion:
-          neutral: "Neutre"
+          neutral: "Neutre \U0001F610"
