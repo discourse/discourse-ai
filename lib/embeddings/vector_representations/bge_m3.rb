@@ -44,7 +44,7 @@ module DiscourseAi
         end
 
         def pg_index_type
-          "vector_ip_ops"
+          "halfvec_ip_ops"
         end
 
         def tokenizer
