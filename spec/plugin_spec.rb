@@ -29,7 +29,7 @@ describe Plugin::Instance do
 
     before do
       assign_fake_provider_to(:ai_helper_model)
-      SiteSetting.composer_ai_helper_enabled = true
+      SiteSetting.ai_helper_enabled = true
       SiteSetting.ai_helper_illustrate_post_model = "disabled"
       Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
 
