@@ -20,7 +20,5 @@ export function showPostAIHelper(outletArgs, helper) {
 }
 
 function _helperEnabled(siteSettings) {
-  return (
-    siteSettings.discourse_ai_enabled && siteSettings.composer_ai_helper_enabled
-  );
+  return siteSettings.discourse_ai_enabled && siteSettings.ai_helper_enabled;
 }

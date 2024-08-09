@@ -19,7 +19,7 @@ RSpec.describe Jobs::StreamPostHelper do
 
     before do
       Group.find(Group::AUTO_GROUPS[:trust_level_3]).add(user)
-      SiteSetting.composer_ai_helper_enabled = true
+      SiteSetting.ai_helper_enabled = true
     end
 
     describe "validates params" do
