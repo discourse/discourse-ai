@@ -612,5 +612,5 @@
 }
 
 .mobile-view .fk-d-menu[data-identifier="ai-composer-helper-menu"] {
-  z-index: 1100;
+  z-index: z("mobile-composer");
 }
