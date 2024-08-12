@@ -608,7 +608,7 @@
 }
 
 .fk-d-menu[data-identifier="ai-composer-helper-menu"] {
-  z-index: z("composer", "content");
+  z-index: z("composer", "dropdown");
 }
 
 .mobile-view .fk-d-menu[data-identifier="ai-composer-helper-menu"] {
