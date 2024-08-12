@@ -165,9 +165,13 @@ module DiscourseAi
       end
 
       def ensure_can_request_suggestions
-        if !current_user.in_any_groups?(SiteSetting.ai_helper_allowed_groups_map)
-          raise Discourse::InvalidAccess
-        end
+        allowed_groups =
+          (
+            SiteSetting.composer_ai_helper_allowed_groups_map |
+              SiteSetting.post_ai_helper_allowed_groups_map
+          )
+
+        raise Discourse::InvalidAccess if !current_user.in_any_groups?(allowed_groups)
       end
     end
   end

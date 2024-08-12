@@ -37,7 +37,7 @@ RSpec.describe "AI image caption", type: :system, js: true do
   end
 
   context "when not a member of ai helper group" do
-    before { SiteSetting.ai_helper_allowed_groups = non_member_group.id.to_s }
+    before { SiteSetting.composer_ai_helper_allowed_groups = non_member_group.id.to_s }
     include_examples "shows no image caption button"
   end
 

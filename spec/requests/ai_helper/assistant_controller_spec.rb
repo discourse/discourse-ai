@@ -21,7 +21,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
       before do
         sign_in(user)
-        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:staff]
+        SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:staff]
       end
 
       it "returns a 403 response" do
@@ -37,7 +37,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       before do
         sign_in(user)
         user.group_ids = [Group::AUTO_GROUPS[:trust_level_1]]
-        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
+        SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
       end
 
       it "returns a 400 if the helper mode is invalid" do
@@ -128,7 +128,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       before do
         sign_in(user)
 
-        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
+        SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
       end
 
       it "returns the suggested caption for the image" do
@@ -208,9 +208,9 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           stub_s3_store
           assign_fake_provider_to(:ai_helper_image_caption_model)
           SiteSetting.secure_uploads = true
-          SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
+          SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
 
-          Group.find(SiteSetting.ai_helper_allowed_groups_map.first).add(user)
+          Group.find(SiteSetting.composer_ai_helper_allowed_groups_map.first).add(user)
           user.reload
 
           stub_request(

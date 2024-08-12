@@ -29,7 +29,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
   before do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
     assign_fake_provider_to(:ai_helper_model)
-    SiteSetting.composer_ai_helper_enabled = true
+    SiteSetting.ai_helper_enabled = true
     sign_in(user)
   end
 
@@ -170,7 +170,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
   end
 
   context "when AI helper is disabled" do
-    before { SiteSetting.composer_ai_helper_enabled = false }
+    before { SiteSetting.ai_helper_enabled = false }
 
     it "does not show the Ask AI button in the post selection toolbar" do
       select_post_text(post)
@@ -181,7 +181,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
 
   context "when user is not a member of the post AI helper allowed group" do
     before do
-      SiteSetting.composer_ai_helper_enabled = true
+      SiteSetting.ai_helper_enabled = true
       SiteSetting.post_ai_helper_allowed_groups = non_member_group.id.to_s
     end
 
