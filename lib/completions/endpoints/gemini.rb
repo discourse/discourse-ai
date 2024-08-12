@@ -65,7 +65,10 @@ module DiscourseAi
             role: "system",
             parts: [{ text: prompt[:system_instruction].to_s }],
           } if prompt[:system_instruction].present?
-          payload[:tools] = tools if tools.present?
+          if tools.present?
+            payload[:tools] = tools
+            payload[:tool_config] = { function_calling_config: { mode: "AUTO" } }
+          end
           payload[:generationConfig].merge!(model_params) if model_params.present?
           payload
         end
