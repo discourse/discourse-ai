@@ -78,6 +78,7 @@ if defined?(DiscourseAutomation)
           canned_reply_user: canned_reply_user,
           hide_topic: hide_topic,
           flag_post: flag_post,
+          automation: self.automation,
         )
       rescue => e
         Discourse.warn_exception(e, message: "llm_triage: skipped triage on post #{post.id}")

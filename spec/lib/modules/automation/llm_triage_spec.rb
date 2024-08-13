@@ -15,6 +15,7 @@ describe DiscourseAi::Automation::LlmTriage do
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
+        automation: nil,
       )
     end
 
@@ -29,6 +30,7 @@ describe DiscourseAi::Automation::LlmTriage do
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
+        automation: nil,
       )
     end
 
@@ -45,6 +47,7 @@ describe DiscourseAi::Automation::LlmTriage do
         category_id: category.id,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
+        automation: nil,
       )
     end
 
@@ -61,6 +64,7 @@ describe DiscourseAi::Automation::LlmTriage do
         search_for_text: "bad",
         canned_reply: "test canned reply 123",
         canned_reply_user: user.username,
+        automation: nil,
       )
     end
 
@@ -78,12 +82,14 @@ describe DiscourseAi::Automation::LlmTriage do
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         flag_post: true,
+        automation: nil,
       )
     end
 
     reviewable = ReviewablePost.last
 
     expect(reviewable.target).to eq(post)
+    expect(reviewable.reviewable_scores.first.reason).to include("bad")
   end
 
   it "can handle garbled output from LLM" do
@@ -94,6 +100,7 @@ describe DiscourseAi::Automation::LlmTriage do
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         flag_post: true,
+        automation: nil,
       )
     end
 
