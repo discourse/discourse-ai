@@ -48,8 +48,7 @@ zh_CN:
     ai_anthropic_native_tool_call_models: "将使用原生工具调用的模型与使用传统的基于 XML 工具的模型对照列表。"
     ai_hugging_face_tei_endpoint: 运行 Hugging Face 文本嵌入向量推断 API 的 URL
     ai_hugging_face_tei_api_key: Hugging Face 文本嵌入向量推断的 API 密钥
-    composer_ai_helper_enabled: "启用编辑器的 AI 助手。"
-    ai_helper_allowed_groups: "这些群组中的用户将在编辑器中看到 AI 助手按钮。"
+    composer_ai_helper_allowed_groups: "这些群组中的用户将在编辑器中看到 AI 助手按钮。"
     ai_helper_allowed_in_pm: "在私信中启用编辑器的 AI 助手。"
     ai_helper_model: "用于 AI 助手的模型。"
     ai_helper_custom_prompts_allowed_groups: "这些群组中的用户将在 AI 助手中看到自定义提示选项。"

@@ -48,8 +48,7 @@ fi:
     ai_anthropic_native_tool_call_models: "Luettelo malleista, jotka käyttävät alkuperäisiä työkalukutsuja verrattuna vanhoihin XML-pohjaisiin työkaluihin."
     ai_hugging_face_tei_endpoint: URL-osoite, jossa API toimii Hugging Facen tekstiupotuskäyttöliittymää varten
     ai_hugging_face_tei_api_key: Hugging Facen tekstiupotuskäyttöliittymän API-avain
-    composer_ai_helper_enabled: "Ota kirjoitustoiminnon tekoälyavustaja käyttöön"
-    ai_helper_allowed_groups: "Näiden ryhmien käyttäjät näkevät tekoälyavustajan painikkeen kirjoitustoiminnossa."
+    composer_ai_helper_allowed_groups: "Näiden ryhmien käyttäjät näkevät tekoälyavustajan painikkeen kirjoitustoiminnossa."
     ai_helper_allowed_in_pm: "Ota kirjoitustoiminnon tekoälyavustaja käyttöön yksityisviesteissä."
     ai_helper_model: "Tekoälyavustajassa käytettävä malli."
     ai_helper_custom_prompts_allowed_groups: "Näiden ryhmien käyttäjät näkevät mukautetun kehotteen vaihtoehdon tekoälyapuohjelmassa."

@@ -48,8 +48,8 @@ he:
     ai_anthropic_native_tool_call_models: "רשימת דגמים שישתמשו בקריאות כלי טבעיות לעומת כלים מיושנים מבוססי XML."
     ai_hugging_face_tei_endpoint: כתובת בה פועל ה־API להסקת הטמעת הטקסט ב־Hugging Face
     ai_hugging_face_tei_api_key: מפתח API להסרת הטמעת טקסט ב־Hugging Face
-    composer_ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית של כותב ההודעות."
-    ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
+    ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית."
+    composer_ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
     ai_helper_allowed_in_pm: "הפעלת מסייע הבינה המלאכותית בכותב ההודעות בהודעות הפרטיות."
     ai_helper_model: "דגם לשימוש למסייע הבינה המלאכותית."
     ai_helper_custom_prompts_allowed_groups: "משתמשים בקבוצות אלה יראו את אפשרות הבקשה המותאמת אישית במסייע הבינה המלאכותית."
@@ -330,3 +330,6 @@ he:
           two: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
           many: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
           other: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
+    llm_models:
+      missing_provider_param: "%{param} לא יכול להישאר ריק"
+      bedrock_invalid_url: "נא למלא את כל השדות די ליצור קשר עם המודל הזה."

@@ -48,8 +48,7 @@ ja:
     ai_anthropic_native_tool_call_models: "ネイティブツール呼び出しと従来の XML ベースのツールを使用するモデルのリスト。"
     ai_hugging_face_tei_endpoint: Hugging Face テキスト埋め込み推論の API が実行している URL
     ai_hugging_face_tei_api_key: Hugging Face テキスト埋め込み推論の API キー
-    composer_ai_helper_enabled: "作成ツールの AI ヘルパーを有効にします。"
-    ai_helper_allowed_groups: "これらのグループのユーザーの作成ツールには、AI ヘルパーボタンが表示されます。"
+    composer_ai_helper_allowed_groups: "これらのグループのユーザーの作成ツールには、AI ヘルパーボタンが表示されます。"
     ai_helper_allowed_in_pm: "PM で作成ツールの AI ヘルパーを有効にします。"
     ai_helper_model: "AI ヘルパーに使用するモデル。"
     ai_helper_custom_prompts_allowed_groups: "これらのグループのユーザーには、AI ヘルパーにカスタムプロンプトオプションが表示されます。"

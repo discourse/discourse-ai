@@ -235,6 +235,9 @@ de:
         back: "Zurück"
         confirm_delete: Bist du sicher, dass du dieses Modell löschen willst?
         delete: Löschen
+        in_use_warning:
+          one: "Dieses Modell wird derzeit von der Einstellung %{settings} verwendet. Wenn die Funktion falsch konfiguriert ist, funktioniert sie nicht wie erwartet."
+          other: "Dieses Modell wird derzeit von den folgenden Einstellungen verwendet: %{settings}. Bei einer falschen Konfiguration funktionieren die Funktionen nicht wie erwartet. "
         preconfigured_llms: "Wähle dein LLM"
         preconfigured:
           none: "Manuell konfigurieren …"

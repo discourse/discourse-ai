@@ -48,8 +48,7 @@ ar:
     ai_anthropic_native_tool_call_models: "قائمة النماذج التي ستستخدم استدعاءات الأدوات الأصلية مقابل الأدوات القديمة المستندة إلى XML."
     ai_hugging_face_tei_endpoint: عنوان URL حيث يتم تشغيل واجهة برمجة التطبيقات (API) لاستنتاج تضمينات نصوص Hugging Face
     ai_hugging_face_tei_api_key: مفتاح API لاستنتاج تضمينات نصوص Hugging Face
-    composer_ai_helper_enabled: "تفعيل مساعد الذكاء الاصطناعي لأداة الإنشاء."
-    ai_helper_allowed_groups: "سيرى المستخدمون في هذه المجموعات زر مساعد الذكاء الاصطناعي في أداة الإنشاء."
+    composer_ai_helper_allowed_groups: "سيرى المستخدمون في هذه المجموعات زر مساعد الذكاء الاصطناعي في أداة الإنشاء."
     ai_helper_allowed_in_pm: "تفعيل مساعد الذكاء الاصطناعي في الرسائل الخاصة."
     ai_helper_model: "النموذج المراد استخدامه لمساعد الذكاء الاصطناعي."
     ai_helper_custom_prompts_allowed_groups: "سيرى المستخدمون في هذه المجموعات خيار رسالة المطالبة المخصَّصة في مساعد الذكاء الاصطناعي."
