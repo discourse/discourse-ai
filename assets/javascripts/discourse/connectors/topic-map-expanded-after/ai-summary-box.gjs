@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { array } from "@ember/helper";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
@@ -44,6 +45,17 @@ export default class AiSummaryBox extends Component {
     return outdatedText;
   }
 
+  resetSummary() {
+    this.text = "";
+    this.summarizedOn = null;
+    this.summarizedBy = null;
+    this.newPostsSinceSummary = null;
+    this.outdated = false;
+    this.canRegenerate = false;
+    this.loading = false;
+    this._channel = null;
+  }
+
   get topRepliesSummaryEnabled() {
     return this.args.outletArgs.postStream.summary;
   }
@@ -57,8 +69,12 @@ export default class AiSummaryBox extends Component {
   }
 
   @bind
-  subscribe() {
+  subscribe(unsubscribe) {
+    if (unsubscribe && this._channel) {
+      this.unsubscribe();
+    }
     const channel = `/discourse-ai/summaries/topic/${this.args.outletArgs.topic.id}`;
+    this._channel = channel;
     this.messageBus.subscribe(channel, this._updateSummary);
   }
 
@@ -68,6 +84,7 @@ export default class AiSummaryBox extends Component {
       "/discourse-ai/summaries/topic/*",
       this._updateSummary
     );
+    this.resetSummary();
   }
 
   @action
@@ -106,7 +123,7 @@ export default class AiSummaryBox extends Component {
     this.summarizedOn = null;
 
     return ajax(url).then((data) => {
-      if (!this.currentUser) {
+      if (data?.ai_topic_summary?.summarized_text) {
         data.done = true;
         this._updateSummary(data);
       }
@@ -153,6 +170,7 @@ export default class AiSummaryBox extends Component {
       <div
         class="ai-summarization-button"
         {{didInsert this.subscribe}}
+        {{didUpdate this.subscribe @outletArgs.topic.id}}
         {{willDestroy this.unsubscribe}}
       >
         <DMenu

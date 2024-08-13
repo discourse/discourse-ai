@@ -14,15 +14,15 @@ module Jobs
       guardian = Guardian.new(user)
       return unless guardian.can_see?(topic)
 
-      opts = args[:opts] || {}
+      skip_age_check = !!args[:skip_age_check]
 
       streamed_summary = +""
       start = Time.now
 
       summary =
         DiscourseAi::TopicSummarization
-          .new(strategy)
-          .summarize(topic, user, opts) do |partial_summary|
+          .new(strategy, topic, user)
+          .summarize(skip_age_check: skip_age_check) do |partial_summary|
             streamed_summary << partial_summary
 
             # Throttle updates.

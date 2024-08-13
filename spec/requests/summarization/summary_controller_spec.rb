@@ -11,6 +11,28 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
       SiteSetting.ai_summarization_enabled = true
     end
 
+    context "when streaming" do
+      it "return a cached summary with json payload and does not trigger job if it exists" do
+        section =
+          AiSummary.create!(
+            target: topic,
+            summarized_text: "test",
+            algorithm: "test",
+            original_content_sha: "test",
+          )
+
+        sign_in(Fabricate(:admin))
+
+        get "/discourse-ai/summarization/t/#{topic.id}.json?stream=true"
+
+        expect(response.status).to eq(200)
+        expect(Jobs::StreamTopicAiSummary.jobs.size).to eq(0)
+
+        summary = response.parsed_body
+        expect(summary.dig("ai_topic_summary", "summarized_text")).to eq(section.summarized_text)
+      end
+    end
+
     context "for anons" do
       it "returns a 404 if there is no cached summary" do
         get "/discourse-ai/summarization/t/#{topic.id}.json"
