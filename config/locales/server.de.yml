@@ -48,8 +48,8 @@ de:
     ai_anthropic_native_tool_call_models: "Liste der Modelle, die native Tool-Aufrufe im Vergleich zu den alten XML-basierten Tools verwenden werden."
     ai_hugging_face_tei_endpoint: URL, auf der die API für die Inferenz der Texteinbettungen von Hugging Face ausgeführt wird
     ai_hugging_face_tei_api_key: API-Schlüssel für die Inferenz von Texteinbettungen von Hugging Face
-    composer_ai_helper_enabled: "Aktiviere den Composer-KI-Helfer."
-    ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
+    ai_helper_enabled: "Aktiviere den KI-Helfer."
+    composer_ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
     ai_helper_allowed_in_pm: "Aktiviere den Composer-KI-Helfer in PN."
     ai_helper_model: "Modell, das für den KI-Helfer verwendet werden soll."
     ai_helper_custom_prompts_allowed_groups: "Die Benutzer dieser Gruppen sehen die Option „Benutzerdefinierte Eingabeaufforderung“ im KI-Helfer."
@@ -310,3 +310,6 @@ de:
         hint:
           one: "Vergewissere dich, dass die Einstellung `%{settings}` konfiguriert wurde."
           other: "Vergewissere dich, dass die Einstellungen des gewünschten Anbieters konfiguriert wurden. Die Optionen sind: %{settings}"
+    llm_models:
+      missing_provider_param: "%{param} darf nicht leer sein"
+      bedrock_invalid_url: "Bitte fülle alle Felder aus, um dieses Model zu kontaktieren."

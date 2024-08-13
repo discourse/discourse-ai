@@ -48,8 +48,7 @@ tr_TR:
     ai_anthropic_native_tool_call_models: "Eski XML tabanlı araçlara karşı yerel araç çağrılarını kullanacak modellerin listesi."
     ai_hugging_face_tei_endpoint: Hugging Face metni yerleştirme çıkarımı için API'nin çalıştığı URL
     ai_hugging_face_tei_api_key: Hugging Face metni yerleştirme çıkarımı için API anahtarı
-    composer_ai_helper_enabled: "Bestecinin YZ yardımcısını etkinleştirin."
-    ai_helper_allowed_groups: "Bu gruplardaki kullanıcılar, bestecide YZ yardımcı düğmesini görür."
+    composer_ai_helper_allowed_groups: "Bu gruplardaki kullanıcılar, bestecide YZ yardımcı düğmesini görür."
     ai_helper_allowed_in_pm: "Kişisel mesajlarda bestecinin YZ yardımcıyı etkinleştirin."
     ai_helper_model: "YZ yardımcı için kullanılacak model."
     ai_helper_custom_prompts_allowed_groups: "Bu gruplardaki kullanıcılar AI yardımcısında özel istem seçeneğini görürler."

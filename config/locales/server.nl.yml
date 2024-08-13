@@ -48,8 +48,7 @@ nl:
     ai_anthropic_native_tool_call_models: "Lijst van modellen die gebruik maken van native toolaanroepen versus oudere, op XML gebaseerde tools."
     ai_hugging_face_tei_endpoint: URL waar de API wordt uitgevoerd voor inferentie van Hugging Face-tekstinsluitingen
     ai_hugging_face_tei_api_key: API-sleutel voor inferentie van Hugging Face-tekstinsluitingen
-    composer_ai_helper_enabled: "Schakel de AI-hulp van de editor in."
-    ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
+    composer_ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
     ai_helper_allowed_in_pm: "Schakel de AI-hulp van de editor in in PB's."
     ai_helper_model: "Te gebruiken model voor de AI-hulp."
     ai_helper_custom_prompts_allowed_groups: "Gebruikers in deze groepen zien de optie voor een aangepaste prompt in de AI-helper."

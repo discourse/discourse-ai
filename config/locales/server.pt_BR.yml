@@ -48,8 +48,7 @@ pt_BR:
     ai_anthropic_native_tool_call_models: "Lista de modelos que usarão chamadas de ferramentas nativas em relação a ferramentas baseadas XML herdadas."
     ai_hugging_face_tei_endpoint: URL em que a API está em execução para as inferências das incorporações de texto do Hugging Face
     ai_hugging_face_tei_api_key: Chave de API para inferência de incorporações de texto do Hugging Face
-    composer_ai_helper_enabled: "Ative o ajudante de IA do Compositor."
-    ai_helper_allowed_groups: "Os(as) usuários(as) destes grupos verão o botão do ajudante de IA no compositor."
+    composer_ai_helper_allowed_groups: "Os(as) usuários(as) destes grupos verão o botão do ajudante de IA no compositor."
     ai_helper_allowed_in_pm: "Ative o ajudante de IA do compositor em MPs."
     ai_helper_model: "Modelo usado para o ajudante de IA."
     ai_helper_custom_prompts_allowed_groups: "Os(as) usuários(as) que estiverem nestes grupos verão um prompt personalizado no ajudante da IA."
