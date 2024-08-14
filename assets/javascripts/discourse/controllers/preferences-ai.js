@@ -11,6 +11,17 @@ export default class PreferencesAiController extends Controller {
   @service siteSettings;
   @tracked saved = false;
 
+  get showAutoImageCaptionSetting() {
+    const aiHelperEnabledFeatures =
+      this.siteSettings.ai_helper_enabled_features.split("|");
+
+    return (
+      this.model?.user_allowed_ai_auto_image_captions &&
+      aiHelperEnabledFeatures.includes("image_caption") &&
+      this.siteSettings.ai_helper_enabled
+    );
+  }
+
   @action
   save() {
     this.saved = false;
