@@ -13,7 +13,8 @@ module DiscourseAi
         canned_reply: nil,
         canned_reply_user: nil,
         hide_topic: nil,
-        flag_post: nil
+        flag_post: nil,
+        automation: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
              flag_post.blank?
@@ -38,12 +39,12 @@ module DiscourseAi
           llm.generate(
             filled_system_prompt,
             temperature: 0,
-            max_tokens: llm.tokenizer.tokenize(search_for_text).length * 2 + 10,
+            max_tokens: 700, # ~500 words
             user: Discourse.system_user,
             feature_name: "llm_triage",
-          )
+          )&.strip
 
-        if result.present? && result.strip.downcase.include?(search_for_text)
+        if result.present? && result.downcase.include?(search_for_text)
           user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
           user = user || Discourse.system_user
           if canned_reply.present?
@@ -69,7 +70,24 @@ module DiscourseAi
 
           post.topic.update!(visible: false) if hide_topic
 
-          ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user) if flag_post
+          if flag_post
+            reviewable =
+              ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user)
+
+            score_reason =
+              I18n
+                .t("discourse_automation.scriptables.llm_triage.flagged_post")
+                .sub("%%LLM_RESPONSE%%", result)
+                .sub("%%AUTOMATION_ID%%", automation&.id.to_s)
+                .sub("%%AUTOMATION_NAME%%", automation&.name.to_s)
+
+            reviewable.add_score(
+              Discourse.system_user,
+              ReviewableScore.types[:needs_approval],
+              reason: score_reason,
+              force_review: true,
+            )
+          end
         end
       end
     end
