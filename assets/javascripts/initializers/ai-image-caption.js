@@ -84,10 +84,10 @@ export default apiInitializer("1.25.0", (api) => {
     }
   );
 
-  // Checks if image is small (≤ 0.4 MP)
+  // Checks if image is small (≤ 0.1 MP)
   function isSmallImage(width, height) {
     const megapixels = (width * height) / 1000000;
-    return megapixels <= 0.4;
+    return megapixels <= 0.1;
   }
 
   function needsImprovedCaption(caption) {
