@@ -12,6 +12,14 @@ module PageObjects
         page.find(".#{preference} input").checked?
       end
 
+      def has_ai_preference?(preference)
+        page.has_css?(".#{preference} input")
+      end
+
+      def has_no_ai_preference?(preference)
+        page.has_no_css?(".#{preference} input")
+      end
+
       def toggle_setting(preference)
         page.find(".#{preference} input").click
       end

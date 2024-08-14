@@ -22,6 +22,7 @@ RSpec.describe "AI image caption", type: :system, js: true do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
     assign_fake_provider_to(:ai_helper_model)
     assign_fake_provider_to(:ai_helper_image_caption_model)
+    SiteSetting.ai_helper_enabled = true
     SiteSetting.ai_helper_enabled_features = "image_caption"
     sign_in(user)
   end
@@ -87,6 +88,15 @@ RSpec.describe "AI image caption", type: :system, js: true do
   end
 
   describe "automatic image captioning" do
+    context "when ai helper is disabled" do
+      before { SiteSetting.ai_helper_enabled = false }
+
+      it "should not have the setting present in the user preferences page" do
+        user_preferences_ai_page.visit(user)
+        expect(user_preferences_ai_page).to have_no_ai_preference("pref-auto-image-caption")
+      end
+    end
+
     context "when toggling the setting from the user preferences page" do
       before { user.user_option.update!(auto_image_caption: false) }
 
