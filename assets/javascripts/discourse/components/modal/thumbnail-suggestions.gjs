@@ -53,7 +53,7 @@ export default class ThumbnailSuggestions extends Component {
     >
       <:body>
         <div class="ai-thumbnail-suggestions">
-          {{#each @thumbnails as |thumbnail|}}
+          {{#each @model.thumbnails as |thumbnail|}}
             <ThumbnailSuggestionItem
               @thumbnail={{thumbnail}}
               @addSelection={{this.addSelection}}

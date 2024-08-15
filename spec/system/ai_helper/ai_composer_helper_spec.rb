@@ -242,6 +242,23 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
           expect(ai_helper_context_menu).to have_no_context_menu
         end
       end
+
+      it "reverts the changes when revert button is pressed in the modal" do
+        trigger_context_menu(spanish_input)
+        ai_helper_context_menu.click_ai_button
+
+        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
+          ai_helper_context_menu.select_helper_model(mode)
+
+          wait_for { composer.composer_input.value == input }
+
+          ai_helper_context_menu.click_view_changes_button
+          expect(diff_modal).to be_visible
+          diff_modal.revert_changes
+          expect(ai_helper_context_menu).to have_no_context_menu
+          expect(composer.composer_input.value).to eq(spanish_input)
+        end
+      end
     end
 
     context "when using the proofreading mode" do

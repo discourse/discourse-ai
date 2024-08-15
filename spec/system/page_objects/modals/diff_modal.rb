@@ -11,6 +11,10 @@ module PageObjects
         find(".d-modal__footer button.confirm", wait: 5).click
       end
 
+      def revert_changes
+        find(".d-modal__footer button.revert", wait: 5).click
+      end
+
       def old_value
         find(".composer-ai-helper-modal__old-value").text
       end

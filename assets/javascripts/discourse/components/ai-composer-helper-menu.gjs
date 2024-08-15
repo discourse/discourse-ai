@@ -17,6 +17,7 @@ import ModalDiffModal from "../components/modal/diff-modal";
 import ThumbnailSuggestion from "../components/modal/thumbnail-suggestions";
 
 export default class AiComposerHelperMenu extends Component {
+  @service modal;
   @service siteSettings;
   @service aiComposerHelper;
   @service currentUser;
@@ -29,7 +30,6 @@ export default class AiComposerHelperMenu extends Component {
   @tracked lastUsedOption = null;
   @tracked thumbnailSuggestions = null;
   @tracked showThumbnailModal = false;
-  @tracked showDiffModal = false;
   @tracked lastSelectionRange = null;
   MENU_STATES = this.aiComposerHelper.MENU_STATES;
   prompts = [];
@@ -100,7 +100,16 @@ export default class AiComposerHelperMenu extends Component {
       {
         icon: "exchange-alt",
         label: "discourse_ai.ai_helper.context_menu.view_changes",
-        action: () => (this.showDiffModal = true),
+        action: () =>
+          this.modal.show(ModalDiffModal, {
+            model: {
+              diff: this.diff,
+              oldValue: this.initialValue,
+              newValue: this.newSelectedText,
+              revert: this.undoAiAction,
+              confirm: () => this.updateMenuState(this.MENU_STATES.resets),
+            },
+          }),
         classes: "view-changes",
       },
       {
@@ -202,8 +211,12 @@ export default class AiComposerHelperMenu extends Component {
       if (option.name === "illustrate_post") {
         this._toggleLoadingState(false);
         this.closeMenu();
-        this.showThumbnailModal = true;
         this.thumbnailSuggestions = data.thumbnails;
+        this.modal.show(ThumbnailSuggestion, {
+          model: {
+            thumbnails: this.thumbnailSuggestions,
+          },
+        });
       } else {
         this._updateSuggestedByAi(data);
       }
@@ -326,26 +339,5 @@ export default class AiComposerHelperMenu extends Component {
         />
       {{/if}}
     </div>
-
-    {{#if this.showDiffModal}}
-      <ModalDiffModal
-        @confirm={{fn
-          (mut this.aiComposerHelper.menuState)
-          this.MENU_STATES.resets
-        }}
-        @diff={{this.diff}}
-        @oldValue={{this.initialValue}}
-        @newValue={{this.newSelectedText}}
-        @revert={{this.undoAiAction}}
-        @closeModal={{fn (mut this.showDiffModal) false}}
-      />
-    {{/if}}
-
-    {{#if this.showThumbnailModal}}
-      <ThumbnailSuggestion
-        @thumbnails={{this.thumbnailSuggestions}}
-        @closeModal={{fn (mut this.showThumbnailModal) false}}
-      />
-    {{/if}}
   </template>
 }
