@@ -42,6 +42,12 @@
     }
   }
 
+  &.seeded {
+    .control-group:nth-child(n+4) {
+      display: none;
+    }
+  }
+
   &__api-key {
     margin-right: 0.5em;
   }

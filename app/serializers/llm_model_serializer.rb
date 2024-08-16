@@ -21,4 +21,16 @@ class LlmModelSerializer < ApplicationSerializer
   def used_by
     DiscourseAi::Configuration::LlmValidator.new.modules_using(object)
   end
+
+  def api_key
+    object.seeded? ? "********" : object.api_key
+  end
+
+  def url
+    object.seeded? ? "********" : object.url
+  end
+
+  def provider
+    object.seeded? ? "CDCK" : object.provider
+  end
 end

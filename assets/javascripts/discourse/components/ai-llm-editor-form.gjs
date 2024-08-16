@@ -62,6 +62,10 @@ export default class AiLlmEditorForm extends Component {
     return this.args.model.used_by?.join(", ");
   }
 
+  get seeded() {
+    return this.args.model.id < 0;
+  }
+
   get inUseWarning() {
     return I18n.t("discourse_ai.llms.in_use_warning", {
       settings: this.modulesUsingModel,
@@ -170,13 +174,19 @@ export default class AiLlmEditorForm extends Component {
   }
 
   <template>
+    {{#if this.seeded}}
+      <div class="alert alert-info">
+        {{icon "exclamation-circle"}}
+        {{i18n "discourse_ai.llms.seeded_warning"}}
+      </div>
+    {{/if}}
     {{#if this.modulesUsingModel}}
       <div class="alert alert-info">
         {{icon "exclamation-circle"}}
         {{this.inUseWarning}}
       </div>
     {{/if}}
-    <form class="form-horizontal ai-llm-editor">
+    <form class="form-horizontal ai-llm-editor {{if this.seeded "seeded"}}">
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.display_name"}}</label>
         <Input

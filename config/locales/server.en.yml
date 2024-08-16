@@ -321,6 +321,7 @@ en:
       delete_failed:
         one: "We couldn't delete this model because %{settings} is using it. Update the setting and try again."
         other: "We couldn't delete this model because %{settings} are using it. Update the settings and try again."
+      cannot_edit_builtin: "You can't edit a built-in model."
 
     embeddings:
       configuration:
