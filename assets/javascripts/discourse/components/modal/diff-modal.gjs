@@ -9,13 +9,13 @@ export default class ModalDiffModal extends Component {
   @action
   triggerConfirmChanges() {
     this.args.closeModal();
-    this.args.confirm();
+    this.args.model.confirm();
   }
 
   @action
   triggerRevertChanges() {
+    this.args.model.revert();
     this.args.closeModal();
-    this.args.revert();
   }
 
   <template>
@@ -25,15 +25,15 @@ export default class ModalDiffModal extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
-        {{#if @diff}}
-          {{htmlSafe @diff}}
+        {{#if @model.diff}}
+          {{htmlSafe @model.diff}}
         {{else}}
           <div class="composer-ai-helper-modal__old-value">
-            {{@oldValue}}
+            {{@model.oldValue}}
           </div>
 
           <div class="composer-ai-helper-modal__new-value">
-            {{@newValue}}
+            {{@model.newValue}}
           </div>
         {{/if}}
       </:body>
@@ -45,7 +45,7 @@ export default class ModalDiffModal extends Component {
           @label="discourse_ai.ai_helper.context_menu.confirm"
         />
         <DButton
-          class="btn-flat"
+          class="btn-flat revert"
           @action={{this.triggerRevertChanges}}
           @label="discourse_ai.ai_helper.context_menu.revert"
         />
