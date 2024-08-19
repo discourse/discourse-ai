@@ -9,17 +9,7 @@ if defined?(DiscourseAutomation)
 
     triggerables %i[post_created_edited]
 
-    field :system_prompt,
-          component: :message,
-          required: true,
-          validator: ->(input) do
-            if !input.include?("%%POST%%")
-              I18n.t(
-                "discourse_automation.scriptables.llm_triage.system_prompt_missing_post_placeholder",
-              )
-            end
-          end,
-          accepts_placeholders: true
+    field :system_prompt, component: :message, required: false
     field :search_for_text, component: :text, required: true
     field :model,
           component: :choices,

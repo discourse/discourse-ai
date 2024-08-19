@@ -7,6 +7,7 @@ import { action, computed } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
+import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import Avatar from "discourse/helpers/bound-avatar-template";
@@ -52,9 +53,9 @@ export default class AiLlmEditorForm extends Component {
     return this.testRunning || this.testResult !== null;
   }
 
+  @computed("args.model.provider")
   get canEditURL() {
-    // Explicitly false.
-    return this.metaProviderParams.url_editable !== false;
+    return this.args.model.provider === "aws_bedrock";
   }
 
   get modulesUsingModel() {
@@ -227,18 +228,24 @@ export default class AiLlmEditorForm extends Component {
           <DButton @action={{this.toggleApiKeySecret}} @icon="far-eye-slash" />
         </div>
       </div>
-      {{#each this.metaProviderParams.fields as |field|}}
-        <div class="control-group">
+      {{#each-in this.metaProviderParams as |field type|}}
+        <div class="control-group ai-llm-editor-provider-param__{{type}}">
           <label>{{I18n.t
               (concat "discourse_ai.llms.provider_fields." field)
             }}</label>
-          <Input
-            @type="text"
-            @value={{mut (get @model.provider_params field)}}
-            class="ai-llm-editor-input ai-llm-editor__{{field}}"
-          />
+          {{#if (eq type "checkbox")}}
+            <Input
+              @type={{type}}
+              @checked={{mut (get @model.provider_params field)}}
+            />
+          {{else}}
+            <Input
+              @type={{type}}
+              @value={{mut (get @model.provider_params field)}}
+            />
+          {{/if}}
         </div>
-      {{/each}}
+      {{/each-in}}
       <div class="control-group">
         <label>{{I18n.t "discourse_ai.llms.tokenizer"}}</label>
         <ComboBox

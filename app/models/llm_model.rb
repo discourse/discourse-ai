@@ -17,12 +17,17 @@ class LlmModel < ActiveRecord::Base
   def self.provider_params
     {
       aws_bedrock: {
-        url_editable: false,
-        fields: %i[access_key_id region],
+        access_key_id: :text,
+        region: :text,
       },
       open_ai: {
-        url_editable: true,
-        fields: %i[organization],
+        organization: :text,
+      },
+      hugging_face: {
+        disable_system_prompt: :checkbox,
+      },
+      vllm: {
+        disable_system_prompt: :checkbox,
       },
     }
   end

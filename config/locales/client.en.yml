@@ -273,6 +273,7 @@ en:
           access_key_id: "AWS Bedrock Access key ID"
           region: "AWS Bedrock Region"
           organization: "Optional OpenAI Organization ID"
+          disable_system_prompt: "Disable system message in prompts"
 
       related_topics:
         title: "Related Topics"
