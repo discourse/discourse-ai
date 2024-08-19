@@ -162,6 +162,14 @@ export default class AiComposerHelperMenu extends Component {
     return true;
   }
 
+  get isExpanded() {
+    if (this.aiComposerHelper.menuState === this.MENU_STATES.triggers) {
+      return "";
+    }
+
+    return "expanded";
+  }
+
   @bind
   onKeyDown(event) {
     if (event.key === "Escape") {
@@ -306,7 +314,10 @@ export default class AiComposerHelperMenu extends Component {
   }
 
   <template>
-    <div class="ai-composer-helper-menu" {{this.documentListeners}}>
+    <div
+      class="ai-composer-helper-menu {{this.isExpanded}}"
+      {{this.documentListeners}}
+    >
       {{#if (eq this.aiComposerHelper.menuState this.MENU_STATES.triggers)}}
         <ul class="ai-composer-helper-menu__triggers">
           <li>
