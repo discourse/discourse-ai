@@ -1,0 +1,68 @@
+.ai-helper-context-menu {
+  position: fixed !important;
+  list-style: none;
+  inset: auto !important;
+  transform: none !important;
+  max-width: unset;
+  z-index: z("fullscreen");
+  bottom: 0 !important;
+  right: 0 !important;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+  margin: 0px;
+  width: 100vw;
+  text-align: right;
+  background: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+
+  &.out-of-bounds {
+    visibility: visible;
+    pointer-events: initial;
+  }
+
+  &__trigger {
+  }
+  button {
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 100%;
+    box-shadow: var(--shadow-card);
+    width: 3.5em;
+    height: 3.5em;
+    animation-duration: 0.15s;
+    animation-timing-function: cubic-bezier(0.1, 0.7, 0.9, 1.2);
+    animation-fill-mode: backwards;
+    animation-name: slide-in;
+
+    &:hover {
+      .discourse-no-touch & {
+        background: var(--secondary);
+      }
+    }
+  }
+}
+
+// @keyframes animate-pop {
+//   0% {
+//     opacity: 0;
+//     transform: scale(0.5, 0.5);
+//   }
+//   100% {
+//     opacity: 1;
+//     transform: scale(1, 1);
+//   }
+// }
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(100% + 1rem));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
