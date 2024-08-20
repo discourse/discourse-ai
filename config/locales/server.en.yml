@@ -80,6 +80,7 @@ en:
     ai_summarization_enabled: "Enable the topic summarization module."
     ai_summarization_model: "Model to use for summarization."
     ai_custom_summarization_allowed_groups: "Groups allowed to use create new summaries."
+    ai_pm_summarization_allowed_groups: "Groups allowed to create and view summaries in PMs."
 
     ai_bot_enabled: "Enable the AI Bot module."
     ai_bot_enable_chat_warning: "Display a warning when PM chat is initiated. Can be overriden by editing the translation string: discourse_ai.ai_bot.pm_warning"

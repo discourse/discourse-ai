@@ -50,6 +50,11 @@ describe DiscourseAi::GuardianExtensions do
       it "returns false" do
         expect(guardian.can_see_summary?(pm)).to eq(false)
       end
+
+      it "returns true if user is in a group that is allowed summaries" do
+        SiteSetting.ai_pm_summarization_allowed_groups = group.id
+        expect(guardian.can_see_summary?(pm)).to eq(true)
+      end
     end
 
     context "when there is no user" do

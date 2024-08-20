@@ -353,6 +353,10 @@ discourse_ai:
     type: enum
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
+  ai_pm_summarization_allowed_groups:
+    type: group_list
+    list_type: compact
+    default: ""
   ai_custom_summarization_allowed_groups:
     type: group_list
     list_type: compact
