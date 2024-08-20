@@ -11,6 +11,10 @@ de:
         title: Beiträge mithilfe von KI sortieren
         description: "Beiträge mithilfe eines großen Sprachmodells sortieren"
         system_prompt_missing_post_placeholder: "System-Eingabeaufforderung muss einen Platzhalter für den Beitrag enthalten: %%POST%%"
+        flagged_post: |
+          <div>Antwort des Modells:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Ausgelöst durch die <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> Regel.</b>
       llm_report:
         title: Regelmäßiger Bericht mit KI
         description: "Regelmäßiger Bericht auf der Grundlage eines großen Sprachmodells"
