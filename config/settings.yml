@@ -289,6 +289,16 @@ discourse_ai:
     default: "10" # 10: @trust_level_0
     allow_any: false
     refresh: true
+  ai_helper_model_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact
+  ai_helper_image_caption_model_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact
 
   ai_embeddings_enabled:
     default: false
@@ -340,6 +350,11 @@ discourse_ai:
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
+  ai_embeddings_semantic_search_hyde_model_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact
   ai_embeddings_semantic_quick_search_enabled:
     default: false
     client: true
@@ -366,6 +381,11 @@ discourse_ai:
     default: ""
     hidden: true
     choices: "DiscourseAi::Configuration::LlmEnumerator.old_summarization_options + ['']"
+  ai_summarization_model_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact
 
   ai_bot_enabled:
     default: false
@@ -406,3 +426,8 @@ discourse_ai:
   ai_automation_max_triage_per_post_per_minute:
     default: 2
     hidden: true
+  ai_automation_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact
