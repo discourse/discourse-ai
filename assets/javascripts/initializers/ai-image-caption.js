@@ -145,6 +145,9 @@ export default apiInitializer("1.25.0", (api) => {
     }
 
     const caption = await fetchImageCaption(upload.url, "long_url");
+    if (!caption) {
+      return getUploadMarkdown(upload);
+    }
     return `![${caption}|${upload.thumbnail_width}x${upload.thumbnail_height}](${upload.short_url})`;
   });
 
