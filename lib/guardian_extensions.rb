@@ -5,8 +5,14 @@ module DiscourseAi
     def can_see_summary?(target)
       return false if !SiteSetting.ai_summarization_enabled
 
-      # TODO we want a switch to allow summaries for all topics
-      return false if target.class == Topic && target.private_message?
+      if target.class == Topic && target.private_message?
+        allowed =
+          SiteSetting.ai_pm_summarization_allowed_groups_map.any? do |group_id|
+            user.group_ids.include?(group_id)
+          end
+
+        return false if !allowed
+      end
 
       has_cached_summary = AiSummary.exists?(target: target)
       return has_cached_summary if user.nil?
