@@ -167,7 +167,7 @@ export default class AiComposerHelperMenu extends Component {
       return "";
     }
 
-    return "expanded";
+    return "is-expanded";
   }
 
   @bind

@@ -1,4 +1,4 @@
-.ai-helper-context-menu {
+.ai-composer-helper-menu:not(.is-expanded) {
   position: fixed !important;
   list-style: none;
   inset: auto !important;
@@ -23,8 +23,6 @@
     pointer-events: initial;
   }
 
-  &__trigger {
-  }
   button {
     background: var(--secondary);
     border: 1px solid var(--primary-low);
@@ -33,7 +31,7 @@
     width: 3.5em;
     height: 3.5em;
     animation-duration: 0.15s;
-    animation-timing-function: cubic-bezier(0.1, 0.7, 0.9, 1.2);
+    animation-timing-function: cubic-bezier(0, 0.7, 0.9, 1.2);
     animation-fill-mode: backwards;
     animation-name: slide-in;
 
