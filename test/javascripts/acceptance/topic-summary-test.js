@@ -66,6 +66,37 @@ acceptance("Topic - Summary", function (needs) {
       .dom(".ai-summary-box .summarized-on")
       .exists("summary metadata exists");
   });
+
+  test("clicking summary links", async function (assert) {
+    await visit("/t/-/1");
+
+    const partialSummary = "In this post,";
+    await publishToMessageBus("/discourse-ai/summaries/topic/1", {
+      done: false,
+      ai_topic_summary: { summarized_text: partialSummary },
+    });
+
+    await click(".ai-topic-summarization");
+    const finalSummaryCooked =
+      "In this post,  <a href='/t/-/1/1'>bianca</a> said some stuff.";
+    const finalSummaryResult = "In this post, bianca said some stuff.";
+    await publishToMessageBus("/discourse-ai/summaries/topic/1", {
+      done: true,
+      ai_topic_summary: {
+        summarized_text: finalSummaryCooked,
+        summarized_on: "2023-01-01T04:00:00.000Z",
+        algorithm: "OpenAI GPT-4",
+        outdated: false,
+        new_posts_since_summary: false,
+        can_regenerate: true,
+      },
+    });
+
+    await click(".generated-summary a");
+    assert
+      .dom(".ai-summary-box .generated-summary p")
+      .hasText(finalSummaryResult, "Retains final summary after clicking link");
+  });
 });
 
 acceptance("Topic - Summary - Anon", function (needs) {

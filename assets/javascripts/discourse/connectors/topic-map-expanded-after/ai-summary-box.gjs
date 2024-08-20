@@ -69,8 +69,10 @@ export default class AiSummaryBox extends Component {
   }
 
   @bind
-  subscribe(unsubscribe) {
-    if (unsubscribe && this._channel) {
+  subscribe(unsubscribe, [topicId]) {
+    const sameTopicId = this.args.outletArgs.topic.id === topicId;
+
+    if (unsubscribe && this._channel && !sameTopicId) {
       this.unsubscribe();
     }
     const channel = `/discourse-ai/summaries/topic/${this.args.outletArgs.topic.id}`;
