@@ -11,6 +11,10 @@ he:
         title: מיון ראשוני של פוסטים באמצעות בינה מלאכותית
         description: "מיון ראשוני של פוסטים באמצעות דגם שפה גדול"
         system_prompt_missing_post_placeholder: "בקשת המערכת חייבת להכיל ממלא מקום לפוסט: %%POST%%"
+        flagged_post: |
+          <div>תגובה מהמודל:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>הוזנקה על ידי הכלל <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: דוח תקופתי בעזרת בינה מלאכותית
         description: "דוח תקופתי שמבוסס על דגם שפה גדול"
