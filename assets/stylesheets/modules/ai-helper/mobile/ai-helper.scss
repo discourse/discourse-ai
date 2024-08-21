@@ -1,0 +1,75 @@
+:root {
+  // Overridden in ai-composer-helper.gjs to adjust for virtual keyboard
+  --mobile-virtual-screen-height: 100svh;
+}
+
+.ai-composer-helper-menu:not(.is-expanded) {
+  --composer-helper-menu-padding: 1rem;
+  --composer-helper-menu-trigger-size: 3em;
+  --composer-helper-menu-height: calc(1rem + 3em);
+
+  position: fixed;
+  list-style: none;
+  inset: auto;
+  transform: none;
+  max-width: unset;
+  z-index: z("fullscreen");
+  top: calc(
+    var(--mobile-virtual-screen-height) - var(--composer-helper-menu-height)
+  );
+  right: 0;
+  padding-right: 1rem;
+  padding-bottom: var(--composer-helper-menu-padding);
+  margin: 0px;
+  width: 100vw;
+  text-align: right;
+  border: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  box-shadow: none;
+
+  &.out-of-bounds {
+    visibility: visible;
+    pointer-events: initial;
+  }
+
+  button {
+    background: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 100%;
+    box-shadow: var(--shadow-card);
+    width: var(--composer-helper-menu-trigger-size);
+    height: var(--composer-helper-menu-trigger-size);
+    animation-duration: 0.15s;
+    animation-timing-function: cubic-bezier(0, 0.7, 0.9, 1.2);
+    animation-fill-mode: backwards;
+    animation-name: slide-in;
+
+    &:hover {
+      .discourse-no-touch & {
+        background: var(--secondary);
+      }
+    }
+
+    .d-button-label {
+      display: none;
+    }
+    .d-icon {
+      margin: 0;
+    }
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(100% + 1rem));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
