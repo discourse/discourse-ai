@@ -29,6 +29,9 @@ class LlmModel < ActiveRecord::Base
       vllm: {
         disable_system_prompt: :checkbox,
       },
+      ollama: {
+        disable_system_prompt: :checkbox,
+      },
     }
   end
 
