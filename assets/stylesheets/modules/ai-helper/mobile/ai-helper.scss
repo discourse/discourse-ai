@@ -40,7 +40,11 @@
     background: var(--secondary);
     border: 1px solid var(--primary-low);
     border-radius: 100%;
-    box-shadow: var(--shadow-card);
+    box-shadow: 0 0 10px 2px
+      dark-light-choose(
+        rgba(var(--primary-rgb), 0.1),
+        rgba(var(--secondary-rgb), 0.1)
+      );
     width: var(--composer-helper-menu-trigger-size);
     height: var(--composer-helper-menu-trigger-size);
     animation-duration: 0.15s;
@@ -59,6 +63,7 @@
     }
     .d-icon {
       margin: 0;
+      color: var(--tertiary-high);
     }
   }
 }
