@@ -15,7 +15,8 @@
   max-width: unset;
   z-index: z("fullscreen");
   top: calc(
-    var(--mobile-virtual-screen-height) - var(--composer-helper-menu-height)
+    var(--mobile-virtual-screen-height) - var(--composer-helper-menu-height) -
+      env(keyboard-inset-height)
   );
   right: 0;
   padding-right: 1rem;
@@ -61,6 +62,12 @@
       margin: 0;
     }
   }
+}
+
+.ios-safari-composer-hacks .ai-composer-helper-menu:not(.is-expanded) {
+  top: calc(
+    var(--mobile-virtual-screen-height) - var(--composer-helper-menu-height)
+  );
 }
 
 @keyframes slide-in {
