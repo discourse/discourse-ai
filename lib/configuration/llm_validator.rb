@@ -75,7 +75,7 @@ module DiscourseAi
         setting = @opts[:name]
         allowed_list = SiteSetting.public_send("#{setting}_allowed_seeded_models")
 
-        unless allowed_list.split("|").include?(id)
+        if allowed_list.split("|").exclude?(id)
           @invalid_seeded_model = true
           raise Discourse::InvalidParameters.new
         end
