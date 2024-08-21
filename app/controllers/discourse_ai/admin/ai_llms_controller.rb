@@ -117,11 +117,21 @@ module DiscourseAi
         new_url = params.dig(:ai_llm, :url)
         permitted[:url] = new_url if permit_url && new_url
 
-        extra_field_names = LlmModel.provider_params.dig(provider&.to_sym, :fields).to_a
-        received_prov_params = params.dig(:ai_llm, :provider_params)
-        permitted[:provider_params] = received_prov_params.slice(
-          *extra_field_names,
-        ).permit! if !extra_field_names.empty? && received_prov_params.present?
+        extra_field_names = LlmModel.provider_params.dig(provider&.to_sym)
+        if extra_field_names.present?
+          received_prov_params =
+            params.dig(:ai_llm, :provider_params)&.slice(*extra_field_names.keys)
+
+          if received_prov_params.present?
+            received_prov_params.each do |pname, value|
+              if extra_field_names[pname.to_sym] == :checkbox
+                received_prov_params[pname] = ActiveModel::Type::Boolean.new.cast(value)
+              end
+            end
+
+            permitted[:provider_params] = received_prov_params.permit!
+          end
+        end
 
         permitted
       end

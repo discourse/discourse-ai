@@ -18,6 +18,15 @@
     width: 350px;
   }
 
+  .ai-llm-editor-provider-param {
+    &__checkbox {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: row-reverse;
+      justify-content: left;
+    }
+  }
+
   .fk-d-tooltip__icon {
     padding-left: 0.25em;
     color: var(--primary-medium);

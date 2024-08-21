@@ -4,7 +4,6 @@ en:
       llm_triage:
         title: Triage posts using AI
         description: "Triage posts using a large language model"
-        system_prompt_missing_post_placeholder: "System prompt must contain a placeholder for the post: %%POST%%"
         flagged_post: |
           <div>Response from the model:</div>
           <p>%%LLM_RESPONSE%%</p>

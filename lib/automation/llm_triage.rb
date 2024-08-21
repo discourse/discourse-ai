@@ -21,15 +21,9 @@ module DiscourseAi
           raise ArgumentError, "llm_triage: no action specified!"
         end
 
-        post_template = +""
-        post_template << "title: #{post.topic.title}\n"
-        post_template << "#{post.raw}"
-
-        filled_system_prompt = system_prompt.sub("%%POST%%", post_template)
-
-        if filled_system_prompt == system_prompt
-          raise ArgumentError, "llm_triage: system_prompt does not contain %%POST%% placeholder"
-        end
+        s_prompt = system_prompt.to_s.sub("%%POST%%", "") # Backwards-compat. We no longer sub this.
+        prompt = DiscourseAi::Completions::Prompt.new(s_prompt)
+        prompt.push(type: :user, content: "title: #{post.topic.title}\n#{post.raw}")
 
         result = nil
 
@@ -37,7 +31,7 @@ module DiscourseAi
 
         result =
           llm.generate(
-            filled_system_prompt,
+            prompt,
             temperature: 0,
             max_tokens: 700, # ~500 words
             user: Discourse.system_user,

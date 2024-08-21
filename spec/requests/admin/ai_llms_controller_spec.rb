@@ -136,6 +136,24 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         expect(created_model.lookup_custom_param("region")).to eq("us-east-1")
         expect(created_model.lookup_custom_param("access_key_id")).to eq("test")
       end
+
+      it "supports boolean values" do
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm:
+                 valid_attrs.merge(
+                   provider: "vllm",
+                   provider_params: {
+                     disable_system_prompt: true,
+                   },
+                 ),
+             }
+
+        created_model = LlmModel.last
+
+        expect(response.status).to eq(201)
+        expect(created_model.lookup_custom_param("disable_system_prompt")).to eq(true)
+      end
     end
   end
 

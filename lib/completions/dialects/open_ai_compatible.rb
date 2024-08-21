@@ -24,6 +24,18 @@ module DiscourseAi
           32_000
         end
 
+        def translate
+          translated = super
+
+          return translated unless llm_model.lookup_custom_param("disable_system_prompt")
+
+          system_and_user_msgs = translated.shift(2)
+          user_msg = system_and_user_msgs.last
+          user_msg[:content] = [system_and_user_msgs.first[:content], user_msg[:content]].join("\n")
+
+          translated.unshift(user_msg)
+        end
+
         private
 
         def system_msg(msg)
