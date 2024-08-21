@@ -28,8 +28,8 @@
     border: 1px solid var(--primary-low);
     border-radius: 100%;
     box-shadow: var(--shadow-card);
-    width: 3.5em;
-    height: 3.5em;
+    width: 3em;
+    height: 3em;
     animation-duration: 0.15s;
     animation-timing-function: cubic-bezier(0, 0.7, 0.9, 1.2);
     animation-fill-mode: backwards;
@@ -39,6 +39,13 @@
       .discourse-no-touch & {
         background: var(--secondary);
       }
+    }
+
+    .d-button-label {
+      display: none;
+    }
+    .d-icon {
+      margin: 0;
     }
   }
 }
