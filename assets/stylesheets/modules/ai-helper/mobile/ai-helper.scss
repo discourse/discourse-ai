@@ -1,20 +1,32 @@
+:root {
+  // Overridden in ai-composer-helper.gjs to adjust for virtual keyboard
+  --mobile-virtual-screen-height: 100svh;
+}
+
 .ai-composer-helper-menu:not(.is-expanded) {
-  position: fixed !important;
+  --composer-helper-menu-padding: 1rem;
+  --composer-helper-menu-trigger-size: 3em;
+  --composer-helper-menu-height: calc(1rem + 3em);
+
+  position: fixed;
   list-style: none;
-  inset: auto !important;
-  transform: none !important;
+  inset: auto;
+  transform: none;
   max-width: unset;
   z-index: z("fullscreen");
-  bottom: 0 !important;
-  right: 0 !important;
+  top: calc(
+    var(--mobile-virtual-screen-height) - var(--composer-helper-menu-height)
+  );
+  right: 0;
   padding-right: 1rem;
-  padding-bottom: 1rem;
+  padding-bottom: var(--composer-helper-menu-padding);
   margin: 0px;
   width: 100vw;
   text-align: right;
+  border: none;
   background: linear-gradient(
     to bottom,
-    transparent 0,
+    rgba(0, 0, 0, 0.035) 0,
     rgba(0, 0, 0, 0.3) 100%
   );
 
@@ -28,8 +40,8 @@
     border: 1px solid var(--primary-low);
     border-radius: 100%;
     box-shadow: var(--shadow-card);
-    width: 3em;
-    height: 3em;
+    width: var(--composer-helper-menu-trigger-size);
+    height: var(--composer-helper-menu-trigger-size);
     animation-duration: 0.15s;
     animation-timing-function: cubic-bezier(0, 0.7, 0.9, 1.2);
     animation-fill-mode: backwards;
@@ -49,17 +61,6 @@
     }
   }
 }
-
-// @keyframes animate-pop {
-//   0% {
-//     opacity: 0;
-//     transform: scale(0.5, 0.5);
-//   }
-//   100% {
-//     opacity: 1;
-//     transform: scale(1, 1);
-//   }
-// }
 
 @keyframes slide-in {
   0% {

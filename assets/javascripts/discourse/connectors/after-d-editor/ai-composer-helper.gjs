@@ -14,6 +14,7 @@ export default class AiComposerHelper extends Component {
     return showComposerAIHelper(outletArgs, helper, "context_menu");
   }
 
+  @service site;
   @service menu;
   @service aiComposerHelper;
   @tracked caretCoords;
@@ -31,6 +32,9 @@ export default class AiComposerHelper extends Component {
     document.addEventListener("mousedown", this.onMouseDown, { passive: true });
     document.addEventListener("mouseup", this.onMouseUp, { passive: true });
     document.addEventListener("selectionchange", this.onSelectionChanged);
+    window.visualViewport.addEventListener("resize", this.onResize, {
+      passive: true,
+    });
 
     this.dEditorInput = document.querySelector(".d-editor-input");
 
@@ -42,6 +46,7 @@ export default class AiComposerHelper extends Component {
       document.removeEventListener("mousedown", this.onMouseDown);
       document.removeEventListener("mouseup", this.onMouseUp);
       document.removeEventListener("selectionchange", this.onSelectionChanged);
+      window.visualViewport.removeEventListener("resize", this.onResize);
 
       if (this.dEditorInput) {
         this.dEditorInput.removeEventListener("scroll", this.updatePosition);
@@ -52,6 +57,18 @@ export default class AiComposerHelper extends Component {
   willDestroy() {
     super.willDestroy(...arguments);
     this.menuInstance?.close();
+  }
+
+  @bind
+  onResize() {
+    if (!this.site.mobileView) {
+      return;
+    }
+
+    document.documentElement.style.setProperty(
+      "--mobile-virtual-screen-height",
+      `${window.visualViewport.height}px`
+    );
   }
 
   @bind
