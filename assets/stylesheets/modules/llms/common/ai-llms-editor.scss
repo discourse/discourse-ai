@@ -43,7 +43,7 @@
   }
 
   &.seeded {
-    .control-group:nth-child(n+4) {
+    .control-group:nth-child(n + 4) {
       display: none;
     }
   }

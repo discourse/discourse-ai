@@ -186,7 +186,7 @@ export default class AiLlmEditorForm extends Component {
         {{this.inUseWarning}}
       </div>
     {{/if}}
-    <form class="form-horizontal ai-llm-editor {{if this.seeded "seeded"}}">
+    <form class="form-horizontal ai-llm-editor {{if this.seeded 'seeded'}}">
       <div class="control-group">
         <label>{{i18n "discourse_ai.llms.display_name"}}</label>
         <Input

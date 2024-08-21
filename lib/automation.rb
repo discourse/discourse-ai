@@ -8,9 +8,16 @@ module DiscourseAi
         FROM llm_models
       SQL
 
-      values = values
-        .filter { |value_h| value_h["id"] > 0 || SiteSetting.ai_automation_allowed_seeded_models.split("|").includes?(value_h["id"].to_s) }
-        .each { |value_h| value_h["id"] = "custom:#{value_h["id"]}" }
+      values =
+        values
+          .filter do |value_h|
+            value_h["id"] > 0 ||
+              SiteSetting
+                .ai_automation_allowed_seeded_models
+                .split("|")
+                .includes?(value_h["id"].to_s)
+          end
+          .each { |value_h| value_h["id"] = "custom:#{value_h["id"]}" }
 
       values
     end
