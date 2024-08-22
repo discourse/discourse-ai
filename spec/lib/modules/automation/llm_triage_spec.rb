@@ -108,4 +108,21 @@ describe DiscourseAi::Automation::LlmTriage do
 
     expect(reviewable&.target).to eq(post)
   end
+
+  it "treats search_for_text as case-insensitive" do
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "BAD",
+        flag_post: true,
+        automation: nil,
+      )
+    end
+
+    reviewable = ReviewablePost.last
+
+    expect(reviewable.target).to eq(post)
+  end
 end

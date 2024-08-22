@@ -38,7 +38,7 @@ module DiscourseAi
             feature_name: "llm_triage",
           )&.strip
 
-        if result.present? && result.downcase.include?(search_for_text)
+        if result.present? && result.downcase.include?(search_for_text.downcase)
           user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
           user = user || Discourse.system_user
           if canned_reply.present?
