@@ -192,7 +192,6 @@ export default class AiToolEditor extends Component {
           <label>{{I18n.t "discourse_ai.tools.script"}}</label>
           <AceEditor
             @content={{this.editingModel.script}}
-            @onChange={{withEventValue (fn (mut this.editingModel.script))}}
             @mode={{ACE_EDITOR_MODE}}
             @theme={{ACE_EDITOR_THEME}}
             @editorId="ai-tool-script-editor"
