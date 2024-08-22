@@ -55,7 +55,7 @@ export default class AiLlmEditorForm extends Component {
 
   @computed("args.model.provider")
   get canEditURL() {
-    return this.args.model.provider === "aws_bedrock";
+    return this.args.model.provider !== "aws_bedrock";
   }
 
   get modulesUsingModel() {
@@ -202,6 +202,7 @@ export default class AiLlmEditorForm extends Component {
         <ComboBox
           @value={{@model.provider}}
           @content={{this.selectedProviders}}
+          @class="ai-llm-editor__provider"
         />
       </div>
       {{#if this.canEditURL}}
@@ -251,6 +252,7 @@ export default class AiLlmEditorForm extends Component {
         <ComboBox
           @value={{@model.tokenizer}}
           @content={{@llms.resultSetMeta.tokenizers}}
+          @class="ai-llm-editor__tokenizer"
         />
       </div>
       <div class="control-group">
