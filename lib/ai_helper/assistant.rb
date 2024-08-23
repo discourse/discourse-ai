@@ -154,7 +154,6 @@ module DiscourseAi
                 upload_ids: [upload.id],
               },
             ],
-            skip_validations: true,
           )
 
         DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
