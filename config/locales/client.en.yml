@@ -236,7 +236,7 @@ en:
         back: "Back"
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
-        in_use_warning: 
+        in_use_warning:
           one: "This model is currently used by the %{settings} setting. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following settings: %{settings}. If misconfigured, features won't work as expected. "
 
@@ -299,6 +299,7 @@ en:
             placeholder: "Enter a custom prompt..."
             submit: "Send Prompt"
           translate_prompt: "Translate to %{language}"
+          proofread_prompt: "Proofread Text"
         post_options_menu:
           trigger: "Ask AI"
           title: "Ask AI"
