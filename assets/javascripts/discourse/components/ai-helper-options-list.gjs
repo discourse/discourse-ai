@@ -20,7 +20,7 @@ const AiHelperOptionsList = <template>
             @action={{fn @performAction option}}
             data-name={{option.name}}
             data-value={{option.id}}
-            class="btn-flat ai-helper-options__button"
+            class="ai-helper-options__button"
           />
         </li>
       {{/if}}
