@@ -66,19 +66,7 @@ export default class ModalDiffModal extends Component {
     }
 
     if (this.args.model.toolbarEvent && this.suggestion) {
-      // TODO, extend toolbarEvent to support this.
-      const dEditorInput = document.querySelector(".d-editor-input");
-      const selected = this.args.model.selected;
-      dEditorInput.focus();
-      if (selected.value === "") {
-        dEditorInput.setSelectionRange(0, dEditorInput.value.length);
-      } else {
-        dEditorInput.setSelectionRange(
-          selected.pre.length,
-          selected.pre.length + selected.value.length
-        );
-      }
-      document.execCommand("insertText", false, this.suggestion);
+      this.args.model.toolbarEvent.replaceText(this.selectedText, this.suggestion);
     }
   }
 
