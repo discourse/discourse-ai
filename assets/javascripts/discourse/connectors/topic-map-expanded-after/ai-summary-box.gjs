@@ -177,7 +177,7 @@ export default class AiSummaryBox extends Component {
       >
         <DMenu
           @onShow={{this.generateSummary}}
-          @arrow={{true}}
+          @arrow={{false}}
           @identifier="topic-map__ai-summary"
           @onRegisterApi={{this.onRegisterApi}}
           @interactive={{true}}
