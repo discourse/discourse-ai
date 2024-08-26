@@ -61,9 +61,7 @@ export default class ModalDiffModal extends Component {
   @action
   triggerConfirmChanges() {
     this.args.closeModal();
-    if (this.args.model.confirm) {
-      this.args.model.confirm();
-    }
+    this.args.model?.confirm();
 
     if (this.args.model.toolbarEvent && this.suggestion) {
       this.args.model.toolbarEvent.replaceText(
