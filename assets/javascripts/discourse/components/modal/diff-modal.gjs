@@ -66,7 +66,10 @@ export default class ModalDiffModal extends Component {
     }
 
     if (this.args.model.toolbarEvent && this.suggestion) {
-      this.args.model.toolbarEvent.replaceText(this.selectedText, this.suggestion);
+      this.args.model.toolbarEvent.replaceText(
+        this.selectedText,
+        this.suggestion
+      );
     }
   }
 
