@@ -8,6 +8,7 @@ import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 
 export default class ModalDiffModal extends Component {
@@ -32,18 +33,23 @@ export default class ModalDiffModal extends Component {
   async loadDiff() {
     this.loading = true;
 
-    const suggestion = await ajax("/discourse-ai/ai-helper/suggest", {
-      method: "POST",
-      data: {
-        mode: this.PROOFREAD_ID,
-        text: this.selectedText,
-        force_default_locale: true,
-      },
-    });
+    try {
+      const suggestion = await ajax("/discourse-ai/ai-helper/suggest", {
+        method: "POST",
+        data: {
+          mode: this.PROOFREAD_ID,
+          text: this.selectedText,
+          force_default_locale: true,
+        },
+      });
 
-    this.diff = suggestion.diff;
-    this.suggestion = suggestion.suggestions[0];
-    this.loading = false;
+      this.diff = suggestion.diff;
+      this.suggestion = suggestion.suggestions[0];
+    } catch (e) {
+      popupAjaxError(e);
+    } finally {
+      this.loading = false;
+    }
   }
 
   get selectedText() {
