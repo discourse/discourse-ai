@@ -48,14 +48,12 @@ export default class ModalDiffModal extends Component {
 
   get selectedText() {
     const selected = this.args.model.selected;
-    let selection;
+    
     if (selected.value === "") {
-      selection = selected.pre + selected.post;
-    } else {
-      selection = selected.value;
+      return selected.pre + selected.post;
     }
-
-    return selection;
+    
+    return selected.value;
   }
 
   @action
