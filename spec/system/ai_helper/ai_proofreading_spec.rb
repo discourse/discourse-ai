@@ -15,7 +15,7 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
     visit "/new-topic"
     composer.fill_content("hello worldd !")
 
-    composer.select_range(6,12)
+    composer.select_range(6, 12)
 
     DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do
       ai_toolbar = PageObjects::Components::SelectKit.new(".toolbar-popup-menu-options")
