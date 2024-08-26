@@ -35,7 +35,6 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
 
     # Simulate AI response
     DiscourseAi::Completions::Llm.with_prepared_responses(["hello world"]) do
-
       ai_toolbar = PageObjects::Components::SelectKit.new(".toolbar-popup-menu-options")
       ai_toolbar.expand
       ai_toolbar.select_row_by_name("Proofread Text")
