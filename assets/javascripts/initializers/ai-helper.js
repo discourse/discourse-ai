@@ -8,7 +8,6 @@ function initializeProofread(api) {
 
       modal.show(ModalDiffModal, {
         model: {
-          selected: toolbarEvent.selected,
           toolbarEvent,
         },
       });

@@ -293,7 +293,7 @@ en:
           view_changes: "View Changes"
           confirm: "Confirm"
           revert: "Revert"
-          changes: "Changes"
+          changes: "Suggested Edits"
           custom_prompt:
             title: "Custom Prompt"
             placeholder: "Enter a custom prompt..."

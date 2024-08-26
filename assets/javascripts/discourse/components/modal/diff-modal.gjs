@@ -23,7 +23,7 @@ export default class ModalDiffModal extends Component {
     this.diff = this.args.model.diff;
 
     next(() => {
-      if (this.args.model.selected && this.args.model.toolbarEvent) {
+      if (this.args.model.toolbarEvent) {
         this.loadDiff();
       }
     });
@@ -47,19 +47,21 @@ export default class ModalDiffModal extends Component {
   }
 
   get selectedText() {
-    const selected = this.args.model.selected;
-    
+    const selected = this.args.model.toolbarEvent.selected;
+
     if (selected.value === "") {
       return selected.pre + selected.post;
     }
-    
+
     return selected.value;
   }
 
   @action
   triggerConfirmChanges() {
     this.args.closeModal();
-    this.args.model?.confirm();
+    if (this.args.model.confirm) {
+      this.args.model.confirm();
+    }
 
     if (this.args.model.toolbarEvent && this.suggestion) {
       this.args.model.toolbarEvent.replaceText(
