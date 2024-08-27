@@ -4,15 +4,19 @@ describe DiscourseAi::Automation::LlmTriage do
   fab!(:llm_model)
 
   def triage(**args)
-    rule_args = { model: "custom:#{llm_model.id}", automation: nil, system_prompt: "test" }.merge(
-      args,
-    )
-    DiscourseAi::Automation::LlmTriage.handle(**rule_args)
+    DiscourseAi::Automation::LlmTriage.handle(**args)
   end
 
   it "does nothing if it does not pass triage" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["good"]) do
-      triage(post: post, hide_topic: true, search_for_text: "bad")
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        hide_topic: true,
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        automation: nil,
+      )
     end
 
     expect(post.topic.reload.visible).to eq(true)
@@ -20,7 +24,14 @@ describe DiscourseAi::Automation::LlmTriage do
 
   it "can hide topics on triage" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-      triage(post: post, hide_topic: true, search_for_text: "bad")
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        hide_topic: true,
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        automation: nil,
+      )
     end
 
     expect(post.topic.reload.visible).to eq(false)
@@ -30,7 +41,14 @@ describe DiscourseAi::Automation::LlmTriage do
     category = Fabricate(:category)
 
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-      triage(post: post, category_id: category.id, search_for_text: "bad")
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        category_id: category.id,
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        automation: nil,
+      )
     end
 
     expect(post.topic.reload.category_id).to eq(category.id)
@@ -41,9 +59,12 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
         search_for_text: "bad",
         canned_reply: "test canned reply 123",
         canned_reply_user: user.username,
+        automation: nil,
       )
     end
 
@@ -55,7 +76,14 @@ describe DiscourseAi::Automation::LlmTriage do
 
   it "can add posts to the review queue" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-      triage(post: post, search_for_text: "bad", flag_post: true)
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        automation: nil,
+      )
     end
 
     reviewable = ReviewablePost.last
@@ -66,7 +94,14 @@ describe DiscourseAi::Automation::LlmTriage do
 
   it "can handle garbled output from LLM" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["Bad.\n\nYo"]) do
-      triage(post: post, search_for_text: "bad", flag_post: true)
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        automation: nil,
+      )
     end
 
     reviewable = ReviewablePost.last
@@ -76,7 +111,14 @@ describe DiscourseAi::Automation::LlmTriage do
 
   it "treats search_for_text as case-insensitive" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-      triage(post: post, search_for_text: "BAD", flag_post: true)
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "BAD",
+        flag_post: true,
+        automation: nil,
+      )
     end
 
     reviewable = ReviewablePost.last

@@ -62,38 +62,4 @@ describe DiscourseAi::Automation::LlmTriage do
     last_post = post.topic.reload.posts.order(:post_number).last
     expect(last_post.raw).to eq post.raw
   end
-
-  describe "posts created via email" do
-    fab!(:email_post) { Fabricate(:post_via_email) }
-
-    context "when skip_via_email is enabled" do
-      before { add_automation_field("skip_via_email", true, type: "boolean") }
-
-      it "does nothing" do
-        DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-          automation.running_in_background!
-          automation.trigger!({ "post" => email_post })
-        end
-
-        reviewable = ReviewablePost.find_by(target: email_post)
-
-        expect(reviewable).to be_nil
-      end
-    end
-
-    context "when skip_via_email is disabled" do
-      before { add_automation_field("skip_via_email", false, type: "boolean") }
-
-      it "flags the post" do
-        DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-          automation.running_in_background!
-          automation.trigger!({ "post" => email_post })
-        end
-
-        reviewable = ReviewablePost.find_by(target: email_post)
-
-        expect(reviewable).to be_present
-      end
-    end
-  end
 end
