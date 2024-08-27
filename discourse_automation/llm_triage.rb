@@ -19,6 +19,7 @@ if defined?(DiscourseAutomation)
           }
     field :category, component: :category
     field :tags, component: :tags
+    field :skip_via_email, component: :boolean
     field :hide_topic, component: :boolean
     field :flag_post, component: :boolean
     field :canned_reply, component: :message
@@ -41,6 +42,9 @@ if defined?(DiscourseAutomation)
       tags = fields.dig("tags", "value")
       hide_topic = fields.dig("hide_topic", "value")
       flag_post = fields.dig("flag_post", "value")
+
+      skip_via_email = fields.dig("skip_via_email", "value")
+      next if skip_via_email && post.via_email?
 
       begin
         RateLimiter.new(
