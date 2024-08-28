@@ -18,7 +18,6 @@ import I18n from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import DTooltip from "float-kit/components/d-tooltip";
-import not from "truth-helpers/helpers/not";
 
 export default class AiLlmEditorForm extends Component {
   @service toasts;
@@ -216,7 +215,7 @@ export default class AiLlmEditorForm extends Component {
           @class="ai-llm-editor__provider"
         />
       </div>
-      {{#if (not this.seeded)}}
+      {{#unless this.seeded)}}
         {{#if this.canEditURL}}
           <div class="control-group">
             <label>{{I18n.t "discourse_ai.llms.url"}}</label>
@@ -342,7 +341,7 @@ export default class AiLlmEditorForm extends Component {
             </DButton>
           {{/unless}}
         </div>
-      {{/if}}
+      {{/unless}}
 
       <div class="control-group ai-llm-editor-tests">
         {{#if this.displayTestResult}}
