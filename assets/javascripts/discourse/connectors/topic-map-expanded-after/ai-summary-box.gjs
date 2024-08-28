@@ -5,6 +5,7 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
+import { later } from "@ember/runloop";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
@@ -17,6 +18,13 @@ import I18n from "discourse-i18n";
 import DMenu from "float-kit/components/d-menu";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
+import {
+  addProgressDot,
+  applyProgress,
+  ensureSummaryProgress,
+  streamSummaryText,
+  SummaryUpdater,
+} from "../../lib/ai-streamer";
 
 export default class AiSummaryBox extends Component {
   @service siteSettings;
@@ -134,26 +142,63 @@ export default class AiSummaryBox extends Component {
 
   @bind
   _updateSummary(update) {
-    const topicSummary = update.ai_topic_summary;
+    const topicSummary = {
+      done: update.done,
+      raw: update.ai_topic_summary.summarized_text,
+      ...update.ai_topic_summary,
+    };
+    this.loading = false;
+    this.streaming = true;
 
-    return cook(topicSummary.summarized_text)
-      .then((cooked) => {
-        this.text = cooked;
-        this.loading = false;
-      })
-      .then(() => {
-        if (update.done) {
-          this.summarizedOn = shortDateNoYear(
-            moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
-          );
-          this.summarizedBy = topicSummary.algorithm;
-          this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
-          this.outdated = topicSummary.outdated;
-          this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
-          this.canRegenerate =
-            topicSummary.outdated && topicSummary.can_regenerate;
-        }
-      });
+    streamSummaryText(topicSummary);
+
+    if (update.done) {
+      this.streaming = false;
+
+      this.summarizedOn = shortDateNoYear(
+        moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
+      );
+      this.summarizedBy = topicSummary.algorithm;
+      this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
+      this.outdated = topicSummary.outdated;
+      this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
+      this.canRegenerate = topicSummary.outdated && topicSummary.can_regenerate;
+    }
+    // return cook(topicSummary.summarized_text)
+    // .then((cooked) => {
+    //   this.streaming = true;
+    //   this.summaryBoxElement = document.querySelector(".ai-summary-box");
+    //   console.log(this.summaryBoxElement);
+
+    //   // const summaryUpdater = new SummaryUpdater(summaryBox);
+    //   // reset animation
+    //   // void summaryBox.offsetWidth;
+
+    //   const cookedElement = document.createElement("div");
+    //   cookedElement.innerHTML = cooked;
+    //   addProgressDot(cookedElement);
+
+    //   // if (!update.done) {
+    //   //   addProgressDot()
+    //   // }
+    //   this.text = cookedElement;
+    //   this.loading = false;
+    // })
+    // .then(() => {
+    //   if (update.done) {
+    //     this.streaming = false;
+
+    //     this.summarizedOn = shortDateNoYear(
+    //       moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
+    //     );
+    //     this.summarizedBy = topicSummary.algorithm;
+    //     this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
+    //     this.outdated = topicSummary.outdated;
+    //     this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
+    //     this.canRegenerate =
+    //       topicSummary.outdated && topicSummary.can_regenerate;
+    //   }
+    // });
   }
 
   @action
@@ -209,7 +254,7 @@ export default class AiSummaryBox extends Component {
                 {{#if this.loading}}
                   <AiSummarySkeleton />
                 {{else}}
-                  <div class="generated-summary">{{this.text}}</div>
+                  <div class="generated-summary cooked">{{this.text}}</div>
                   {{#if this.summarizedOn}}
                     <div class="summarized-on">
                       <p>

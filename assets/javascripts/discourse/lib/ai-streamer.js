@@ -134,6 +134,60 @@ class PostUpdater extends StreamUpdater {
   }
 }
 
+export class SummaryUpdater extends StreamUpdater {
+  constructor(topicSummary) {
+    super();
+    this.topicSummary = topicSummary;
+
+    if (this.topicSummary) {
+      this.summaryBox = document.querySelector("article.ai-summary-box");
+    }
+  }
+
+  get element() {
+    return this.summaryBox;
+  }
+
+  set streaming(value) {
+    if (this.element) {
+      if (value) {
+        this.element.classList.add("streaming");
+      } else {
+        this.element.classList.remove("streaming");
+      }
+    }
+  }
+
+  async setRaw(value, done) {
+    console.log("setRaw called", value, done);
+    this.topicSummary.raw = value;
+    const cooked = await cook(value);
+
+    // resets animation
+    this.element.classList.remove("streaming");
+    void this.element.offsetWidth;
+    this.element.classList.add("streaming");
+
+    const cookedElement = document.createElement("div");
+    cookedElement.innerHTML = cooked;
+
+    if (!done) {
+      addProgressDot(cookedElement);
+    }
+
+    await this.setCooked(cookedElement.innerHTML);
+  }
+
+  async setCooked(value) {
+    const cookedContainer = this.element.querySelector(".generated-summary");
+    cookedContainer.innerHTML = value;
+  }
+
+  get raw() {
+    return this.topicSummary.raw || "";
+  }
+}
+
 export async function applyProgress(status, updater) {
   status.startTime = status.startTime || Date.now();
 
@@ -148,7 +202,7 @@ export async function applyProgress(status, updater) {
   }
 
   const oldRaw = updater.raw;
-
+  // TODO: figure out `status.raw` === `oldRaw` shouldn't be ===
   if (status.raw === oldRaw && !status.done) {
     const hasProgressDot = updater.element.querySelector(".progress-dot");
     if (hasProgressDot) {
@@ -156,15 +210,20 @@ export async function applyProgress(status, updater) {
     }
   }
 
+  console.log("status.raw", status.raw);
   if (status.raw !== undefined) {
     let newRaw = status.raw;
+    console.log("rawdiff", newRaw === oldRaw, newRaw.length, oldRaw.length);
 
+    console.log("!status.done", !status.done);
     if (!status.done) {
       // rush update if we have a </details> tag (function call)
       if (oldRaw.length === 0 && newRaw.indexOf("</details>") !== -1) {
+        console.log("details called");
         newRaw = status.raw;
       } else {
         const diff = newRaw.length - oldRaw.length;
+        console.log("diff", diff);
 
         // progress interval is 40ms
         // by default we add 6 letters per interval
@@ -213,6 +272,23 @@ async function handleProgress(postStream) {
   return keepPolling;
 }
 
+async function ensureSummaryProgress(topicSummary) {
+  const summaryUpdater = new SummaryUpdater(topicSummary);
+  if (!progressTimer) {
+    progressTimer = later(async () => {
+      const keepPolling = await applyProgress(topicSummary, summaryUpdater);
+
+      console.log("ensureSummaryProgress keep polling", keepPolling);
+      progressTimer = null;
+
+      if (!topicSummary.done) {
+        console.log("keepPolling called");
+        await applyProgress(topicSummary, summaryUpdater);
+      }
+    }, PROGRESS_INTERVAL);
+  }
+}
+
 function ensureProgress(postStream) {
   if (!progressTimer) {
     progressTimer = later(async () => {
@@ -225,6 +301,15 @@ function ensureProgress(postStream) {
       }
     }, PROGRESS_INTERVAL);
   }
+}
+
+export function streamSummaryText(topicSummary) {
+  if (topicSummary.done) {
+    console.log("stream summary text already done");
+    return;
+  }
+
+  ensureSummaryProgress(topicSummary);
 }
 
 export default function streamText(postStream, data) {
