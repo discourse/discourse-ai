@@ -11,6 +11,7 @@ module DiscourseAi
 
         Discourse.cache.delete(hyde_key)
         Discourse.cache.delete("#{hyde_key}-#{SiteSetting.ai_embeddings_model}")
+        Discourse.cache.delete("-#{SiteSetting.ai_embeddings_model}")
       end
 
       def initialize(guardian)
@@ -29,7 +30,7 @@ module DiscourseAi
         Discourse.cache.read(embedding_key).present?
       end
 
-      def search_for_topics(query, page = 1)
+      def search_for_topics(query, page = 1, hyde: true)
         max_results_per_page = 100
         limit = [Search.per_filter, max_results_per_page].min + 1
         offset = (page - 1) * limit
@@ -43,28 +44,42 @@ module DiscourseAi
           DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
 
         digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
-        hyde_key = build_hyde_key(digest, SiteSetting.ai_embeddings_semantic_search_hyde_model)
 
-        embedding_key =
-          build_embedding_key(
-            digest,
-            SiteSetting.ai_embeddings_semantic_search_hyde_model,
-            SiteSetting.ai_embeddings_model,
-          )
+        search_embedding = nil
 
-        hypothetical_post =
-          Discourse
-            .cache
-            .fetch(hyde_key, expires_in: 1.week) { hypothetical_post_from(search_term) }
+        if hyde
+          hyde_key = build_hyde_key(digest, SiteSetting.ai_embeddings_semantic_search_hyde_model)
 
-        hypothetical_post_embedding =
-          Discourse
-            .cache
-            .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(hypothetical_post) }
+          embedding_key =
+            build_embedding_key(
+              digest,
+              SiteSetting.ai_embeddings_semantic_search_hyde_model,
+              SiteSetting.ai_embeddings_model,
+            )
+
+          hypothetical_post =
+            Discourse
+              .cache
+              .fetch(hyde_key, expires_in: 1.week) { hypothetical_post_from(search_term) }
+
+          search_embedding =
+            Discourse
+              .cache
+              .fetch(embedding_key, expires_in: 1.week) do
+                vector_rep.vector_from(hypothetical_post)
+              end
+        else
+          embedding_key = build_embedding_key(digest, "", SiteSetting.ai_embeddings_model)
+
+          search_embedding =
+            Discourse
+              .cache
+              .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(search_term) }
+        end
 
         candidate_topic_ids =
           vector_rep.asymmetric_topics_similarity_search(
-            hypothetical_post_embedding,
+            search_embedding,
             limit: limit,
             offset: offset,
           )

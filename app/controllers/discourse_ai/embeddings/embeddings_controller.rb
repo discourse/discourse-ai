@@ -9,6 +9,7 @@ module DiscourseAi
 
       def search
         query = params[:q].to_s
+        skip_hyde = params[:hyde].downcase.to_s == "false" || params[:hyde].to_s == "0"
 
         if query.length < SiteSetting.min_search_term_length
           raise Discourse::InvalidParameters.new(:q)
@@ -31,7 +32,7 @@ module DiscourseAi
 
         hijack do
           semantic_search
-            .search_for_topics(query)
+            .search_for_topics(query, _page = 1, hyde: !skip_hyde)
             .each { |topic_post| grouped_results.add(topic_post) }
 
           render_serialized(grouped_results, GroupedSearchResultSerializer, result: grouped_results)
@@ -39,6 +40,9 @@ module DiscourseAi
       end
 
       def quick_search
+        # this search function searches posts (vs: topics)
+        # it requires post embeddings and a reranker
+        # it will not perform a hyde expantion
         query = params[:q].to_s
 
         if query.length < SiteSetting.min_search_term_length
