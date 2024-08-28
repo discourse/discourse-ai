@@ -249,17 +249,17 @@ export default class AiLlmEditorForm extends Component {
                 (concat "discourse_ai.llms.provider_fields." field)
               }}</label>
             {{#if (eq type "checkbox")}}
-            <Input
-              @type={{type}}
-              @checked={{mut (get @model.provider_params field)}}
-            />
-          {{else}}
-            <Input
+              <Input
+                @type={{type}}
+                @checked={{mut (get @model.provider_params field)}}
+              />
+            {{else}}
+              <Input
                 @type={{type}}
                 @value={{mut (get @model.provider_params field)}}
-                />
+              />
             {{/if}}
-        </div>
+          </div>
         {{/each-in}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.llms.tokenizer"}}</label>
@@ -267,7 +267,7 @@ export default class AiLlmEditorForm extends Component {
             @value={{@model.tokenizer}}
             @content={{@llms.resultSetMeta.tokenizers}}
             @class="ai-llm-editor__tokenizer"
-        />
+          />
         </div>
         <div class="control-group">
           <label>{{i18n "discourse_ai.llms.max_prompt_tokens"}}</label>
