@@ -215,7 +215,7 @@ export default class AiLlmEditorForm extends Component {
           @class="ai-llm-editor__provider"
         />
       </div>
-      {{#unless this.seeded)}}
+      {{#unless this.seeded}}
         {{#if this.canEditURL}}
           <div class="control-group">
             <label>{{I18n.t "discourse_ai.llms.url"}}</label>
