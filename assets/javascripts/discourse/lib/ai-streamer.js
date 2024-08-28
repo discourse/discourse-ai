@@ -135,9 +135,10 @@ class PostUpdater extends StreamUpdater {
 }
 
 export class SummaryUpdater extends StreamUpdater {
-  constructor(topicSummary) {
+  constructor(topicSummary, componentContext) {
     super();
     this.topicSummary = topicSummary;
+    this.componentContext = componentContext;
 
     if (this.topicSummary) {
       this.summaryBox = document.querySelector("article.ai-summary-box");
@@ -159,8 +160,7 @@ export class SummaryUpdater extends StreamUpdater {
   }
 
   async setRaw(value, done) {
-    console.log("setRaw called", value, done);
-    this.topicSummary.raw = value;
+    this.componentContext.oldRaw = value;
     const cooked = await cook(value);
 
     // resets animation
@@ -174,7 +174,6 @@ export class SummaryUpdater extends StreamUpdater {
     if (!done) {
       addProgressDot(cookedElement);
     }
-
     await this.setCooked(cookedElement.innerHTML);
   }
 
@@ -184,7 +183,7 @@ export class SummaryUpdater extends StreamUpdater {
   }
 
   get raw() {
-    return this.topicSummary.raw || "";
+    return this.componentContext.oldRaw || "";
   }
 }
 
@@ -202,7 +201,6 @@ export async function applyProgress(status, updater) {
   }
 
   const oldRaw = updater.raw;
-  // TODO: figure out `status.raw` === `oldRaw` shouldn't be ===
   if (status.raw === oldRaw && !status.done) {
     const hasProgressDot = updater.element.querySelector(".progress-dot");
     if (hasProgressDot) {
@@ -210,20 +208,15 @@ export async function applyProgress(status, updater) {
     }
   }
 
-  console.log("status.raw", status.raw);
   if (status.raw !== undefined) {
     let newRaw = status.raw;
-    console.log("rawdiff", newRaw === oldRaw, newRaw.length, oldRaw.length);
 
-    console.log("!status.done", !status.done);
     if (!status.done) {
       // rush update if we have a </details> tag (function call)
       if (oldRaw.length === 0 && newRaw.indexOf("</details>") !== -1) {
-        console.log("details called");
         newRaw = status.raw;
       } else {
         const diff = newRaw.length - oldRaw.length;
-        console.log("diff", diff);
 
         // progress interval is 40ms
         // by default we add 6 letters per interval
@@ -272,17 +265,16 @@ async function handleProgress(postStream) {
   return keepPolling;
 }
 
-async function ensureSummaryProgress(topicSummary) {
-  const summaryUpdater = new SummaryUpdater(topicSummary);
+function ensureSummaryProgress(topicSummary, context) {
+  const summaryUpdater = new SummaryUpdater(topicSummary, context);
+
   if (!progressTimer) {
     progressTimer = later(async () => {
-      const keepPolling = await applyProgress(topicSummary, summaryUpdater);
+      await applyProgress(topicSummary, summaryUpdater);
 
-      console.log("ensureSummaryProgress keep polling", keepPolling);
       progressTimer = null;
 
       if (!topicSummary.done) {
-        console.log("keepPolling called");
         await applyProgress(topicSummary, summaryUpdater);
       }
     }, PROGRESS_INTERVAL);
@@ -303,13 +295,12 @@ function ensureProgress(postStream) {
   }
 }
 
-export function streamSummaryText(topicSummary) {
-  if (topicSummary.done) {
-    console.log("stream summary text already done");
+export function streamSummaryText(topicSummary, context) {
+  if (topicSummary.noop) {
     return;
   }
 
-  ensureSummaryProgress(topicSummary);
+  ensureSummaryProgress(topicSummary, context);
 }
 
 export default function streamText(postStream, data) {

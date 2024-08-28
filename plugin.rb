@@ -13,6 +13,8 @@ gem "tiktoken_ruby", "0.0.9"
 
 enabled_site_setting :discourse_ai_enabled
 
+register_asset "stylesheets/common/streaming.scss"
+
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 register_asset "stylesheets/modules/ai-helper/mobile/ai-helper.scss", :mobile
 
