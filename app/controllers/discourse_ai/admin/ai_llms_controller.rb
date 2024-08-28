@@ -45,6 +45,10 @@ module DiscourseAi
       def update
         llm_model = LlmModel.find(params[:id])
 
+        if llm_model.seeded?
+          return render_json_error(I18n.t("discourse_ai.llm.cannot_edit_builtin"), status: 403)
+        end
+
         if llm_model.update(ai_llm_params(updating: llm_model))
           llm_model.toggle_companion_user
           render json: LlmModelSerializer.new(llm_model)
@@ -55,6 +59,10 @@ module DiscourseAi
 
       def destroy
         llm_model = LlmModel.find(params[:id])
+
+        if llm_model.seeded?
+          return render_json_error(I18n.t("discourse_ai.llm.cannot_delete_builtin"), status: 403)
+        end
 
         in_use_by = DiscourseAi::Configuration::LlmValidator.new.modules_using(llm_model)
 
