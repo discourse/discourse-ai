@@ -10,6 +10,7 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
   end
 
   let(:composer) { PageObjects::Components::Composer.new }
+  let(:toasts) { PageObjects::Components::Toasts.new }
 
   it "proofreads selected text using the composer toolbar" do
     visit "/new-topic"
@@ -39,6 +40,18 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
 
       find(".composer-ai-helper-modal .btn-primary.confirm").click
       expect(composer.composer_input.value).to eq("hello world")
+    end
+  end
+
+  it "does not trigger proofread modal if composer is empty" do
+    visit "/new-topic"
+
+    # Simulate AI response
+    DiscourseAi::Completions::Llm.with_prepared_responses(["hello world"]) do
+      ai_toolbar = PageObjects::Components::SelectKit.new(".toolbar-popup-menu-options")
+      ai_toolbar.expand
+      ai_toolbar.select_row_by_name("Proofread Text")
+      expect(toasts).to have_error(I18n.t("js.discourse_ai.ai_helper.proofread.no_content_error"))
     end
   end
 end

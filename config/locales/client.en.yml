@@ -241,7 +241,6 @@ en:
           one: "This model is currently used by the %{settings} setting. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following settings: %{settings}. If misconfigured, features won't work as expected. "
 
-
         preconfigured_llms: "Select your LLM"
         preconfigured:
           none: "Configure manually..."
@@ -331,6 +330,8 @@ en:
             prompt: "This post contains non-captioned images. Would you like to enable automatic AI captions on image uploads? (This can be changed in your preferences later)"
             confirm: "Enable"
             cancel: "Don't ask again"
+        proofread:
+          no_content_error: "Unable to proofread text, please add some content to proofread."
 
       reviewables:
         model_used: "Model used:"
