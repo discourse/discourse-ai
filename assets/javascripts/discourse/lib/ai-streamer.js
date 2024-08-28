@@ -175,6 +175,10 @@ export class SummaryUpdater extends StreamUpdater {
       addProgressDot(cookedElement);
     }
     await this.setCooked(cookedElement.innerHTML);
+
+    if (done) {
+      this.componentContext.finalSummary = cooked;
+    }
   }
 
   async setCooked(value) {
@@ -265,7 +269,7 @@ async function handleProgress(postStream) {
   return keepPolling;
 }
 
-function ensureSummaryProgress(topicSummary, context) {
+export function streamSummaryText(topicSummary, context) {
   const summaryUpdater = new SummaryUpdater(topicSummary, context);
 
   if (!progressTimer) {
@@ -293,14 +297,6 @@ function ensureProgress(postStream) {
       }
     }, PROGRESS_INTERVAL);
   }
-}
-
-export function streamSummaryText(topicSummary, context) {
-  if (topicSummary.noop) {
-    return;
-  }
-
-  ensureSummaryProgress(topicSummary, context);
 }
 
 export default function streamText(postStream, data) {

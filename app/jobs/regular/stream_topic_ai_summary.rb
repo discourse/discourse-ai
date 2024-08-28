@@ -39,7 +39,6 @@ module Jobs
         user,
         AiTopicSummarySerializer.new(summary, { scope: guardian }).as_json.merge(done: true),
       )
-      publish_update(topic, user, { noop: true })
     end
 
     private

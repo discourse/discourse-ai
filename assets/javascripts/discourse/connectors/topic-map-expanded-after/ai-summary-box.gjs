@@ -32,6 +32,7 @@ export default class AiSummaryBox extends Component {
   @tracked canRegenerate = false;
   @tracked loading = false;
   oldRaw = null; // used for comparison in SummaryUpdater in lib/ai-streamer
+  finalSummary = null;
 
   get outdatedSummaryWarningText() {
     let outdatedText = I18n.t("summary.outdated");
@@ -146,7 +147,7 @@ export default class AiSummaryBox extends Component {
     streamSummaryText(topicSummary, this);
 
     if (update.done) {
-      this.text = topicSummary.summarized_text;
+      this.text = this.finalSummary;
       this.summarizedOn = shortDateNoYear(
         moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
       );
