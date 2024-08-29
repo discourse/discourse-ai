@@ -39,4 +39,27 @@ RSpec.describe Jobs::UpdateAiBotPmTitle do
       expect(post.reload.topic.title).to eq("My amazing title")
     end
   end
+
+  it "will post an update with the new title to the message bus channel" do
+    SiteSetting.ai_bot_allowed_groups = Group::AUTO_GROUPS[:staff]
+    post =
+      create_post(
+        user: user,
+        raw: "Hello there",
+        title: "does not matter should be updated",
+        archetype: Archetype.private_message,
+        target_usernames: bot_user.username,
+      )
+    title_result = "A great title would be:\n\nMy amazing title\n\n"
+
+    DiscourseAi::Completions::Llm.with_prepared_responses([title_result]) do
+      messages =
+        MessageBus.track_publish("/discourse-ai/ai-bot/topic/#{post.topic.id}") do
+          subject.execute(bot_user_id: bot_user.id, post_id: post.id)
+        end
+
+      final_update = messages.last.data
+      expect(final_update[:title]).to eq("My amazing title")
+    end
+  end
 end
