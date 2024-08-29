@@ -13,10 +13,10 @@ module ::Jobs
 
       DiscourseAi::AiBot::Playground.new(bot).title_playground(post)
 
-      publish_update(post.topic, bot_user, { title: post.topic.title })
+      publish_update(post.topic, { title: post.topic.title })
     end
 
-    def publish_update(topic, user, payload)
+    def publish_update(topic, payload)
       allowed_users = topic.topic_allowed_users.pluck(:user_id)
       MessageBus.publish("/discourse-ai/ai-bot/topic/#{topic.id}", payload, user_ids: allowed_users)
     end
