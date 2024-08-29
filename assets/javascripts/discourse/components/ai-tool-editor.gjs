@@ -25,6 +25,7 @@ export default class AiToolEditor extends Component {
   @service dialog;
   @service modal;
   @service toasts;
+  @service store;
 
   @tracked isSaving = false;
   @tracked editingModel = null;
@@ -53,8 +54,9 @@ export default class AiToolEditor extends Component {
   @action
   configurePreset() {
     this.selectedPreset = this.args.presets.findBy("preset_id", this.presetId);
-    this.editingModel = this.args.model.workingCopy();
-    this.editingModel.setProperties(this.selectedPreset);
+    this.editingModel = this.store
+      .createRecord("ai-tool", this.selectedPreset)
+      .workingCopy();
     this.showDelete = false;
   }
 
