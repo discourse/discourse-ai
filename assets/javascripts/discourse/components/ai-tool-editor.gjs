@@ -54,7 +54,9 @@ export default class AiToolEditor extends Component {
   @action
   configurePreset() {
     this.selectedPreset = this.args.presets.findBy("preset_id", this.presetId);
-    this.editingModel = this.store.createRecord("ai-tool", this.selectedPreset).workingCopy();
+    this.editingModel = this.store
+      .createRecord("ai-tool", this.selectedPreset)
+      .workingCopy();
     this.showDelete = false;
   }
 
