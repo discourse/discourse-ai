@@ -1,5 +1,5 @@
 import { click, visit } from "@ember/test-helpers";
-import { skip } from "qunit";
+import { test } from "qunit";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import {
   acceptance,
@@ -30,7 +30,7 @@ acceptance("Topic - Summary", function (needs) {
     updateCurrentUser({ id: currentUserId });
   });
 
-  skip("displays streamed summary", async function (assert) {
+  test("displays streamed summary", async function (assert) {
     await visit("/t/-/1");
 
     const partialSummary = "This a";
@@ -67,7 +67,7 @@ acceptance("Topic - Summary", function (needs) {
       .exists("summary metadata exists");
   });
 
-  skip("clicking summary links", async function (assert) {
+  test("clicking summary links", async function (assert) {
     await visit("/t/-/1");
 
     const partialSummary = "In this post,";
@@ -125,7 +125,7 @@ acceptance("Topic - Summary - Anon", function (needs) {
     });
   });
 
-  skip("displays cached summary immediately", async function (assert) {
+  test("displays cached summary immediately", async function (assert) {
     await visit("/t/-/1");
 
     await click(".ai-topic-summarization");

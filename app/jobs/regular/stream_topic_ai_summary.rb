@@ -26,7 +26,7 @@ module Jobs
             streamed_summary << partial_summary
 
             # Throttle updates.
-            if (Time.now - start > 0.3) || Rails.env.test?
+            if (Time.now - start > 0.5) || Rails.env.test?
               payload = { done: false, ai_topic_summary: { summarized_text: streamed_summary } }
 
               publish_update(topic, user, payload)
