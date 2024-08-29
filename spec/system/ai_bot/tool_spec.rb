@@ -22,6 +22,10 @@ describe "AI Tool Management", type: :system do
     select_kit.select_row_by_value("exchange_rate")
 
     find(".ai-tool-editor__next").click
+
+    expect(page.first(".parameter-row__required-toggle").checked?).to eq(true)
+    expect(page.first(".parameter-row__enum-toggle").checked?).to eq(false)
+
     find(".ai-tool-editor__test-button").click
 
     expect(page).not_to have_button(".ai-tool-editor__delete")
@@ -48,6 +52,12 @@ describe "AI Tool Management", type: :system do
     find(".ai-tool-editor__save").click
 
     expect(page).to have_content("Tool saved")
+
+    last_tool = AiTool.order("id desc").limit(1).first
+    visit "/admin/plugins/discourse-ai/ai-tools/#{last_tool.id}"
+
+    expect(page.first(".parameter-row__required-toggle").checked?).to eq(true)
+    expect(page.first(".parameter-row__enum-toggle").checked?).to eq(false)
 
     visit "/admin/plugins/discourse-ai/ai-personas/new"
 

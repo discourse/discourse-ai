@@ -20,26 +20,25 @@ export default class AiTool extends RestModel {
     return this.getProperties(CREATE_ATTRIBUTES);
   }
 
-  workingCopy() {
-    const attrs = this.getProperties(CREATE_ATTRIBUTES);
-
-    attrs.parameters = new TrackedArray(
-      attrs.parameters?.map((p) => {
+  trackParameters(parameters) {
+    return new TrackedArray(
+      parameters?.map((p) => {
         const parameter = new TrackedObject(p);
 
-        //Backwards-compatibility code.
-        // TODO(roman): Remove aug 2024. Leave only else clause.
-        if (parameter.enum_values) {
-          parameter.enum = new TrackedArray(parameter.enum_values);
-          delete parameter.enum_values;
-        } else {
+        if (parameter.enum && parameter.enum.length) {
           parameter.enum = new TrackedArray(parameter.enum);
+        } else {
+          parameter.enum = null;
         }
 
         return parameter;
       })
     );
+  }
 
+  workingCopy() {
+    const attrs = this.getProperties(CREATE_ATTRIBUTES);
+    attrs.parameters = this.trackParameters(attrs.parameters);
     return this.store.createRecord("ai-tool", attrs);
   }
 }
