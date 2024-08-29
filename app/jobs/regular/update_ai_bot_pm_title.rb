@@ -12,6 +12,13 @@ module ::Jobs
       return unless post.topic.custom_fields[DiscourseAi::AiBot::EntryPoint::REQUIRE_TITLE_UPDATE]
 
       DiscourseAi::AiBot::Playground.new(bot).title_playground(post)
+
+      publish_update(post.topic, { title: post.topic.title })
+    end
+
+    def publish_update(topic, payload)
+      allowed_users = topic.topic_allowed_users.pluck(:user_id)
+      MessageBus.publish("/discourse-ai/ai-bot/topic/#{topic.id}", payload, user_ids: allowed_users)
     end
   end
 end
