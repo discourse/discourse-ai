@@ -36,6 +36,30 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
       EmbeddingsGenerationStubs.openai_service(SiteSetting.ai_embeddings_model, query, embedding)
     end
 
+    def create_api_key(user)
+      key = ApiKey.create!(user: user)
+      ApiKeyScope.create!(resource: "discourse_ai", action: "search", api_key_id: key.id)
+      key
+    end
+
+    it "is able to make API requests using a scoped API key" do
+      index(topic)
+      query = "test"
+      stub_embedding(query)
+      user = topic.user
+
+      api_key = create_api_key(user)
+
+      get "/discourse-ai/embeddings/semantic-search.json?q=#{query}&hyde=false",
+          headers: {
+            "Api-Key" => api_key.key,
+            "Api-Username" => user.username,
+          }
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["topics"].map { |t| t["id"] }).to contain_exactly(topic.id)
+    end
+
     it "returns results correctly when performing a non Hyde search" do
       index(topic)
       index(topic_in_subcategory)

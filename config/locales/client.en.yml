@@ -1,6 +1,12 @@
 en:
   admin_js:
     admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "Allows semantic search via the /discourse-ai/embeddings/semantic-search endpoint."
+
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
