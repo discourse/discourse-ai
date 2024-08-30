@@ -9,9 +9,9 @@ module DiscourseAi
 
       def valid_value?(val)
         if val == ""
-          parent_module_name = modules_and_choose_llm_settings.invert[@opts[:name]]
+          @parent_module_name = modules_and_choose_llm_settings.invert[@opts[:name]]
 
-          @parent_enabled = SiteSetting.public_send(parent_module_name)
+          @parent_enabled = SiteSetting.public_send(@parent_module_name)
           return !@parent_enabled
         end
 
@@ -42,7 +42,7 @@ module DiscourseAi
           return(
             I18n.t(
               "discourse_ai.llm.configuration.disable_module_first",
-              setting: parent_module_name,
+              setting: @parent_module_name,
             )
           )
         end
