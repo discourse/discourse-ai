@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::Configuration::LlmValidator do
         SiteSetting.ai_summarization_enabled = true
       end
 
-      it "returns false and display an error message" do
+      it "returns false and displays an error message" do
         validator = described_class.new(name: :ai_summarization_model)
 
         value = validator.valid_value?("")
