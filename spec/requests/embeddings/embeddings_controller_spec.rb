@@ -88,5 +88,21 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
       expect(response.status).to eq(200)
       expect(response.parsed_body["topics"].map { |t| t["id"] }).to eq([topic_in_subcategory.id])
     end
+
+    it "doesn't skip HyDE if the hyde param is missing" do
+      assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model)
+      index(topic)
+      index(topic_in_subcategory)
+
+      query = "test category:#{category.slug}"
+      stub_embedding("test")
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Hyde #{query}"]) do
+        get "/discourse-ai/embeddings/semantic-search.json?q=#{query}"
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["topics"].map { |t| t["id"] }).to eq([topic_in_subcategory.id])
+      end
+    end
   end
 end
