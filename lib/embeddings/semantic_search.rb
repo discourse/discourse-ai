@@ -67,6 +67,11 @@ module DiscourseAi
           .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(search_term) }
       end
 
+      # this ensures the candidate topics are over selected
+      # that way we have a much better chance of finding topics
+      # if the user filtered the results or index is a bit out of date
+      OVER_SELECTION_FACTOR = 4
+
       def search_for_topics(query, page = 1, hyde: true)
         max_results_per_page = 100
         limit = [Search.per_filter, max_results_per_page].min + 1
@@ -78,10 +83,12 @@ module DiscourseAi
 
         search_embedding = hyde ? hyde_embedding(search_term) : embedding(search_term)
 
+        over_selection_limit = limit * OVER_SELECTION_FACTOR
+
         candidate_topic_ids =
           vector_rep.asymmetric_topics_similarity_search(
             search_embedding,
-            limit: limit,
+            limit: over_selection_limit,
             offset: offset,
           )
 
@@ -92,6 +99,7 @@ module DiscourseAi
             .where("topics.visible")
             .where(topic_id: candidate_topic_ids, post_number: 1)
             .order("array_position(ARRAY#{candidate_topic_ids}, posts.topic_id)")
+            .limit(limit)
 
         query_filter_results = search.apply_filters(semantic_results)
 
