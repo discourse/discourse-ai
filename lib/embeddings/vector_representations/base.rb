@@ -425,14 +425,14 @@ module DiscourseAi
             DB.exec(
               <<~SQL,
               INSERT INTO #{topic_table_name} (topic_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:topic_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              VALUES (:topic_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', :now, :now)
               ON CONFLICT (strategy_id, model_id, topic_id)
               DO UPDATE SET
                 model_version = :model_version,
                 strategy_version = :strategy_version,
                 digest = :digest,
                 embeddings = '[:embeddings]',
-                updated_at = CURRENT_TIMESTAMP
+                updated_at = :now
               SQL
               topic_id: target.id,
               model_id: id,
@@ -441,19 +441,20 @@ module DiscourseAi
               strategy_version: @strategy.version,
               digest: digest,
               embeddings: vector,
+              now: Time.zone.now,
             )
           elsif target.is_a?(Post)
             DB.exec(
               <<~SQL,
               INSERT INTO #{post_table_name} (post_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:post_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              VALUES (:post_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', :now, :now)
               ON CONFLICT (model_id, strategy_id, post_id)
               DO UPDATE SET
                 model_version = :model_version,
                 strategy_version = :strategy_version,
                 digest = :digest,
                 embeddings = '[:embeddings]',
-                updated_at = CURRENT_TIMESTAMP
+                updated_at = :now
               SQL
               post_id: target.id,
               model_id: id,
@@ -462,19 +463,20 @@ module DiscourseAi
               strategy_version: @strategy.version,
               digest: digest,
               embeddings: vector,
+              now: Time.zone.now,
             )
           elsif target.is_a?(RagDocumentFragment)
             DB.exec(
               <<~SQL,
               INSERT INTO #{rag_fragments_table_name} (rag_document_fragment_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:fragment_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+              VALUES (:fragment_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', :now, :now)
               ON CONFLICT (model_id, strategy_id, rag_document_fragment_id)
               DO UPDATE SET
                 model_version = :model_version,
                 strategy_version = :strategy_version,
                 digest = :digest,
                 embeddings = '[:embeddings]',
-                updated_at = CURRENT_TIMESTAMP
+                updated_at = :now
               SQL
               fragment_id: target.id,
               model_id: id,
@@ -483,6 +485,7 @@ module DiscourseAi
               strategy_version: @strategy.version,
               digest: digest,
               embeddings: vector,
+              now: Time.zone.now,
             )
           else
             raise ArgumentError, "Invalid target type"
