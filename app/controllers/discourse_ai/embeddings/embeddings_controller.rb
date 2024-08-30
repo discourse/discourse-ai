@@ -9,7 +9,7 @@ module DiscourseAi
 
       def search
         query = params[:q].to_s
-        skip_hyde = params[:hyde].downcase.to_s == "false" || params[:hyde].to_s == "0"
+        skip_hyde = params[:hyde].to_s.downcase == "false" || params[:hyde].to_s == "0"
 
         if query.length < SiteSetting.min_search_term_length
           raise Discourse::InvalidParameters.new(:q)
