@@ -10,7 +10,6 @@ fi:
       llm_triage:
         title: Luokittele viestit tekoälyllä
         description: "Luokittele viestit suurella kielimallilla"
-        system_prompt_missing_post_placeholder: "Järjestelmäkehotteen täytyy sisältää viestin paikkamerkki: %%POST%%"
       llm_report:
         title: Säännöllinen raportti tekoälyllä
         description: "Säännöllinen raportti laajan kielimallin perusteella"

@@ -287,7 +287,6 @@ ru:
           view_changes: "Просмотреть изменения"
           confirm: "Подтвердить"
           revert: "Вернуть"
-          changes: "Изменения"
           custom_prompt:
             title: "Пользовательский запрос"
             placeholder: "Введите пользовательский запрос..."

@@ -282,7 +282,6 @@ zh_CN:
           view_changes: "查看更改"
           confirm: "确认"
           revert: "还原"
-          changes: "更改"
           custom_prompt:
             title: "自定义提示"
             placeholder: "输入自定义提示…"

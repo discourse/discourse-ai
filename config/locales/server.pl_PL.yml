@@ -10,7 +10,6 @@ pl_PL:
       llm_triage:
         title: Oceniaj posty za pomocą sztucznej inteligencji
         description: "Oceniaj posty przy użyciu dużego modelu językowego"
-        system_prompt_missing_post_placeholder: "Monit systemowy musi zawierać symbol zastępczy dla postu: %%POST%%"
       llm_report:
         title: Raport okresowy z wykorzystaniem AI
         description: "Okresowy raport oparty na dużym modelu językowym"

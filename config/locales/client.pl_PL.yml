@@ -178,7 +178,6 @@ pl_PL:
           view_changes: "Zobacz zmiany"
           confirm: "Potwierdź"
           revert: "Przywróć"
-          changes: "Zmiany"
           custom_prompt:
             title: "Niestandardowy monit"
             placeholder: "Wprowadź niestandardowy monit..."

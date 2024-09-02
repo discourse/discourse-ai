@@ -10,7 +10,6 @@ it:
       llm_triage:
         title: Triage dei messaggi con IA
         description: "Triage dei messaggi con LLM"
-        system_prompt_missing_post_placeholder: "Il comando di sistema deve contenere un segnaposto per il messaggio: %%POST%%"
       llm_report:
         title: Report periodico con IA
         description: "Report periodico basato su LLM"
