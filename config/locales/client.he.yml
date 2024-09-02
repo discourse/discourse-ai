@@ -235,6 +235,7 @@ he:
         back: "חזרה"
         confirm_delete: למחוק את המודל הזה?
         delete: מחיקה
+        seeded_warning: "המודל הזה מוגדר מראש באתר שלך ואי אפשר לערוך אותו."
         in_use_warning:
           one: "ההגדרה %{settings} משתמשת כרגע במודל הזה. אם ההגדרה שגויה היכולת לא תעבוד כמצופה."
           two: "ההגדרות הבאות משתמשות במודל הזה: %{settings}. אם ההגדרות שגויות היכולת לא תעבוד כמצופה. "
@@ -264,10 +265,12 @@ he:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          CDCK: "CDCK"
         provider_fields:
           access_key_id: "מזהה מפתח גישה ל־AWS Bedrock"
           region: "אזור של AWS Bedrock"
           organization: "מזהה ארגון OpenAI כרשות"
+          disable_system_prompt: "השבתת הודעת מערכת בבקשות"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
@@ -287,12 +290,13 @@ he:
           view_changes: "הצגת שינויים"
           confirm: "אישור"
           revert: "החזרה"
-          changes: "שינויים"
+          changes: "עריכות מוצעות"
           custom_prompt:
             title: "בקשה מותאמת אישית"
             placeholder: "נא למלא בקשה מותאמת…"
             submit: "שליחת בקשה"
           translate_prompt: "תרגום ל%{language}"
+          proofread_prompt: "הגהת טקסט"
         post_options_menu:
           trigger: "לשאול בינה מלאכותית"
           title: "לשאול בינה מלאכותית"
@@ -321,6 +325,8 @@ he:
             prompt: "הפוסט הזה מכיל תמונות בלי כותרת. להפעיל כותרות בינה מלאכותית אוטומטיות עם העלאת תמונות? (אפשר לשנות את זה בהמשך דרך ההעדפות שלך)"
             confirm: "הפעלה"
             cancel: "לא לשאול שוב"
+        proofread:
+          no_content_error: "לא ניתן לבדוק הגהת טקסט, נא להוסיף הקשר להגהה."
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"

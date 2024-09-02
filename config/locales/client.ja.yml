@@ -282,7 +282,6 @@ ja:
           view_changes: "変更を表示"
           confirm: "確認"
           revert: "戻す"
-          changes: "変更"
           custom_prompt:
             title: "カスタムプロンプト"
             placeholder: "カスタムプロンプトを入力してください..."

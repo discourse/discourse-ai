@@ -282,7 +282,6 @@ fr:
           view_changes: "Afficher les modifications"
           confirm: "Confirmer"
           revert: "Rétablir"
-          changes: "Modifications"
           custom_prompt:
             title: "Invite personnalisée"
             placeholder: "Saisissez une invite personnalisée..."

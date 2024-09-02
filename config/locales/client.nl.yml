@@ -282,7 +282,6 @@ nl:
           view_changes: "Wijzigingen weergeven"
           confirm: "Bevestigen"
           revert: "Herstellen"
-          changes: "Wijzigingen"
           custom_prompt:
             title: "Aangepaste prompt"
             placeholder: "Voer een aangepaste prompt in..."

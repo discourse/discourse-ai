@@ -10,7 +10,6 @@ tr_TR:
       llm_triage:
         title: AI kullanarak gönderileri triyajla
         description: "Büyük bir dil modeli kullanarak gönderileri triyajla"
-        system_prompt_missing_post_placeholder: "Sistem istemi gönderi için bir yer tutucu içermelidir: %%POST%%"
       llm_report:
         title: AI kullanarak periyodik raporla
         description: "Geniş bir dil modeline dayalı periyodik raporla"

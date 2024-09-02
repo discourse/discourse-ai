@@ -282,7 +282,6 @@ pt_BR:
           view_changes: "Visualizar alterações"
           confirm: "Confirmar"
           revert: "Reverter"
-          changes: "Alterações"
           custom_prompt:
             title: "Prompt personalizado"
             placeholder: "Insira um prompt personalizado..."
@@ -388,6 +387,9 @@ pt_BR:
           since:
             one: "Última hora"
             other: "Últimas %{count} horas"
+        topic:
+          title: "Resumo do tópico"
+          close: "Fechar painel de resumo"
     review:
       types:
         reviewable_ai_post:

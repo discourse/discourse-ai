@@ -10,7 +10,6 @@ de:
       llm_triage:
         title: Beiträge mithilfe von KI sortieren
         description: "Beiträge mithilfe eines großen Sprachmodells sortieren"
-        system_prompt_missing_post_placeholder: "System-Eingabeaufforderung muss einen Platzhalter für den Beitrag enthalten: %%POST%%"
         flagged_post: |
           <div>Antwort des Modells:</div>
           <p>%%LLM_RESPONSE%%</p>
@@ -81,6 +80,7 @@ de:
     ai_summarization_enabled: "Aktiviere das Modul für die Themenzusammenfassung."
     ai_summarization_model: "Modell, das für die Zusammenfassung verwendet werden soll."
     ai_custom_summarization_allowed_groups: "Gruppen, die neue Zusammenfassungen erstellen dürfen."
+    ai_pm_summarization_allowed_groups: "Gruppen können Zusammenfassungen in PMs erstellen und ansehen."
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
     ai_bot_enable_chat_warning: "Zeigt eine Warnung an, wenn der PN-Chat initiiert wird. Kann durch Bearbeiten der Übersetzungszeichenfolge überschrieben werden: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
@@ -298,6 +298,7 @@ de:
         disable_module_first: "Du musst zuerst %{setting} deaktivieren."
         set_llm_first: "Stelle zuerst %{setting} ein."
         model_unreachable: "Wir konnten keine Antwort von diesem Modell abrufen. Überprüfe zuerst deine Einstellungen."
+        invalid_seeded_model: "Du kannst dieses Modell nicht mit dieser Funktion verwenden."
       endpoints:
         not_configured: "%{display_name} (nicht konfiguriert)"
         configuration_hint:
@@ -306,6 +307,7 @@ de:
       delete_failed:
         one: "Wir konnten dieses Modell nicht löschen, weil es von %{settings} verwendet wird. Aktualisiere die Einstellung und versuche es erneut."
         other: "Wir konnten dieses Modell nicht löschen, weil %{settings} es verwenden. Aktualisiere die Einstellungen und versuche es erneut."
+      cannot_edit_builtin: "Du kannst ein eingebautes Modell nicht bearbeiten."
     embeddings:
       configuration:
         disable_embeddings: "Du musst zuerst „KI-Einbettungen aktiviert“ deaktivieren."
