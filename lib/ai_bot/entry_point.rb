@@ -5,7 +5,6 @@ module DiscourseAi
     USER_AGENT = "Discourse AI Bot 1.0 (https://www.discourse.org)"
 
     class EntryPoint
-      REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
       Bot = Struct.new(:id, :name, :llm)
 
       def self.all_bot_ids
