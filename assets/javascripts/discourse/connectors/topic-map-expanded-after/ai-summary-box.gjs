@@ -5,6 +5,7 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
+import { next } from "@ember/runloop";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
@@ -130,7 +131,9 @@ export default class AiSummaryBox extends Component {
     return ajax(url).then((data) => {
       if (data?.ai_topic_summary?.summarized_text) {
         data.done = true;
-        this._updateSummary(data);
+        // Our streamer won't display the summary unless the summary box is in the DOM.
+        // Wait for the next runloop or cached summaries won't appear.
+        next(() => this._updateSummary(data));
       }
     });
   }
