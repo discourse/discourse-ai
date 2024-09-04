@@ -60,6 +60,19 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
       expect(response.parsed_body["topics"].map { |t| t["id"] }).to contain_exactly(topic.id)
     end
 
+    context "when rate limiting is enabled" do
+      before { RateLimiter.enable }
+
+      it "will not rate limit API for hyde search" do
+        10.times do |i|
+          query = "test #{SecureRandom.hex}"
+          stub_embedding(query)
+          get "/discourse-ai/embeddings/semantic-search.json?q=#{query}&hyde=false"
+          expect(response.status).to eq(200)
+        end
+      end
+    end
+
     it "returns results correctly when performing a non Hyde search" do
       index(topic)
       index(topic_in_subcategory)
