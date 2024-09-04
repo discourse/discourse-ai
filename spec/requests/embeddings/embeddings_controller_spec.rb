@@ -63,12 +63,26 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
     context "when rate limiting is enabled" do
       before { RateLimiter.enable }
 
-      it "will not rate limit API for hyde search" do
-        10.times do |i|
-          query = "test #{SecureRandom.hex}"
-          stub_embedding(query)
-          get "/discourse-ai/embeddings/semantic-search.json?q=#{query}&hyde=false"
-          expect(response.status).to eq(200)
+      use_redis_snapshotting
+
+      it "will rate limit correctly" do
+        stub_const(subject.class, :MAX_HYDE_SEARCHES_PER_MINUTE, 1) do
+          stub_const(subject.class, :MAX_SEARCHES_PER_MINUTE, 2) do
+            query = "test #{SecureRandom.hex}"
+            stub_embedding(query)
+            get "/discourse-ai/embeddings/semantic-search.json?q=#{query}&hyde=false"
+            expect(response.status).to eq(200)
+
+            query = "test #{SecureRandom.hex}"
+            stub_embedding(query)
+            get "/discourse-ai/embeddings/semantic-search.json?q=#{query}&hyde=false"
+            expect(response.status).to eq(200)
+
+            query = "test #{SecureRandom.hex}"
+            stub_embedding(query)
+            get "/discourse-ai/embeddings/semantic-search.json?q=#{query}&hyde=false"
+            expect(response.status).to eq(429)
+          end
         end
       end
     end
