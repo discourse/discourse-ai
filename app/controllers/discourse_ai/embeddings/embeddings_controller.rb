@@ -7,6 +7,9 @@ module DiscourseAi
 
       SEMANTIC_SEARCH_TYPE = "semantic_search"
 
+      MAX_HYDE_SEARCHES_PER_MINUTE = 4
+      MAX_SEARCHES_PER_MINUTE = 100
+
       def search
         query = params[:q].to_s
         skip_hyde = params[:hyde].to_s.downcase == "false" || params[:hyde].to_s == "0"
@@ -26,8 +29,20 @@ module DiscourseAi
 
         semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(guardian)
 
-        if !semantic_search.cached_query?(query)
-          RateLimiter.new(current_user, "semantic-search", 4, 1.minutes).performed!
+        if !skip_hyde && !semantic_search.cached_query?(query)
+          RateLimiter.new(
+            current_user,
+            "semantic-search",
+            MAX_HYDE_SEARCHES_PER_MINUTE,
+            1.minutes,
+          ).performed!
+        else
+          RateLimiter.new(
+            current_user,
+            "semantic-search-non-hyde",
+            MAX_SEARCHES_PER_MINUTE,
+            1.minutes,
+          ).performed!
         end
 
         hijack do
