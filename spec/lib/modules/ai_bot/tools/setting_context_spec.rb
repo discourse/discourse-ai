@@ -30,6 +30,15 @@ RSpec.describe DiscourseAi::AiBot::Tools::SettingContext, if: has_rg? do
       expect(result[:context]).to include("moderators_view_emails")
     end
 
+    it "supports spaces and case insensitive setting name" do
+      result = setting_context("moderaTors View Emails").invoke
+
+      expect(result[:setting_name]).to eq("moderators_view_emails")
+
+      expect(result[:context]).to include("site_settings.yml")
+      expect(result[:context]).to include("moderators_view_emails")
+    end
+
     it "returns the context for plugin setting" do
       result = setting_context("ai_bot_enabled").invoke
 
