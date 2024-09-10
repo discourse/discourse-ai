@@ -44,7 +44,7 @@ module DiscourseAi
         end
 
         def setting_name
-          parameters[:setting_name]
+          @setting_name ||= parameters[:setting_name].to_s.downcase.gsub(" ", "_")
         end
 
         def invoke
