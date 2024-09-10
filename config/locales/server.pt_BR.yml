@@ -10,7 +10,10 @@ pt_BR:
       llm_triage:
         title: Postagens de triagem usando IA
         description: "Postagens de triagem usando um modelo de linguagem grande"
-        system_prompt_missing_post_placeholder: "O prompt do sistema deve conter um espaço resevado para a postagem: %%POST%%"
+        flagged_post: |
+          <div>Resposta do modelo:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Acionada pela regra <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> .</b>
       llm_report:
         title: Relatório periódico usando IA
         description: "Relatório periódico baseado em um modelo de linguagem grande"
@@ -48,7 +51,8 @@ pt_BR:
     ai_anthropic_native_tool_call_models: "Lista de modelos que usarão chamadas de ferramentas nativas em relação a ferramentas baseadas XML herdadas."
     ai_hugging_face_tei_endpoint: URL em que a API está em execução para as inferências das incorporações de texto do Hugging Face
     ai_hugging_face_tei_api_key: Chave de API para inferência de incorporações de texto do Hugging Face
-    composer_ai_helper_allowed_groups: "Os(as) usuários(as) destes grupos verão o botão do ajudante de IA no compositor."
+    ai_helper_enabled: "Habilite o assistente de IA."
+    composer_ai_helper_allowed_groups: "Os usuários desses grupos visualizarão o botão de assistência por IA no compositor."
     ai_helper_allowed_in_pm: "Ative o ajudante de IA do compositor em MPs."
     ai_helper_model: "Modelo usado para o ajudante de IA."
     ai_helper_custom_prompts_allowed_groups: "Os(as) usuários(as) que estiverem nestes grupos verão um prompt personalizado no ajudante da IA."
@@ -76,6 +80,7 @@ pt_BR:
     ai_summarization_enabled: "Ative o módulo de geração de resumos de tópicos."
     ai_summarization_model: "Modelo a ser usado para geração de resumos."
     ai_custom_summarization_allowed_groups: "Grupos com permissão para a criação de resumos novos."
+    ai_pm_summarization_allowed_groups: "Grupos autorizados a criar e visualizar resumos em PMs."
     ai_bot_enabled: "Ative o módulo de Bot com IA."
     ai_bot_enable_chat_warning: "Exiba um aviso quando o chat por MP for iniciado. Pode ser substituído ao editar a string de tradução: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Quando o Bot com GPT tiver acesso às MPs, ele responderá aos membros destes grupos."
@@ -309,3 +314,6 @@ pt_BR:
         hint:
           one: "Verifique se a configuração \"%{settings}\" foi definida."
           other: "Verifique se as configurações do provedor que você queria foram definidas. Confira as opções: %{settings}"
+    llm_models:
+      missing_provider_param: "%{param} Não pode ficar em branco"
+      bedrock_invalid_url: "Preencha todos os campos para entrar em contato com este modelo."

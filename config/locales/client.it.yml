@@ -282,7 +282,6 @@ it:
           view_changes: "Visualizza modifiche"
           confirm: "Conferma"
           revert: "Ripristina"
-          changes: "Modifiche"
           custom_prompt:
             title: "Comando personalizzato"
             placeholder: "Inserisci un comando personalizzato..."

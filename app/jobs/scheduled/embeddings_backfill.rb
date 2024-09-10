@@ -54,9 +54,12 @@ module Jobs
       # Finally, we'll try to backfill embeddings for topics that have outdated
       # embeddings due to edits or new replies. Here we only do 10% of the limit
       relation =
-        topics.where("#{table_name}.updated_at < ?", 7.days.ago).limit((limit - rebaked) / 10)
+        topics
+          .where("#{table_name}.updated_at < ?", 6.hours.ago)
+          .where("#{table_name}.updated_at < topics.updated_at")
+          .limit((limit - rebaked) / 10)
 
-      populate_topic_embeddings(vector_rep, relation)
+      populate_topic_embeddings(vector_rep, relation, force: true)
 
       return if rebaked >= limit
 
@@ -115,9 +118,12 @@ module Jobs
 
     private
 
-    def populate_topic_embeddings(vector_rep, topics)
+    def populate_topic_embeddings(vector_rep, topics, force: false)
       done = 0
-      ids = topics.where("#{vector_rep.topic_table_name}.topic_id IS NULL").pluck("topics.id")
+
+      topics = topics.where("#{vector_rep.topic_table_name}.topic_id IS NULL") if !force
+
+      ids = topics.pluck("topics.id")
 
       ids.each do |id|
         topic = Topic.find_by(id: id)

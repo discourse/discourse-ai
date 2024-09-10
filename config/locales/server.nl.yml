@@ -10,7 +10,6 @@ nl:
       llm_triage:
         title: Berichten triageren met AI
         description: "Triageer berichten met behulp van een groot taalmodel"
-        system_prompt_missing_post_placeholder: "De systeemprompt moet een tijdelijke aanduiding bevatten voor het bericht: %%POST%%"
       llm_report:
         title: Periodiek rapport met AI
         description: "Periodiek rapport op basis van een groot taalmodel"

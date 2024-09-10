@@ -282,7 +282,6 @@ tr_TR:
           view_changes: "Değişiklikleri görüntüle"
           confirm: "Onayla"
           revert: "Eski Haline Getir"
-          changes: "Değişiklikler"
           custom_prompt:
             title: "Özel İstem"
             placeholder: "Özel bir istem girin..."

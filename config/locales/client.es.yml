@@ -282,7 +282,6 @@ es:
           view_changes: "Ver cambios"
           confirm: "Confirmar"
           revert: "Revertir"
-          changes: "Cambios"
           custom_prompt:
             title: "Aviso personalizado"
             placeholder: "Introduzca un aviso personalizado..."

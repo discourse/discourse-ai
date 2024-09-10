@@ -9,11 +9,13 @@ module DiscourseAi
 
       def valid_value?(val)
         if val == ""
-          parent_module_name = modules_and_choose_llm_settings.invert[@opts[:name]]
+          @parent_module_name = modules_and_choose_llm_settings.invert[@opts[:name]]
 
-          @parent_enabled = SiteSetting.public_send(parent_module_name)
+          @parent_enabled = SiteSetting.public_send(@parent_module_name)
           return !@parent_enabled
         end
+
+        allowed_seeded_model?(val)
 
         run_test(val).tap { |result| @unreachable = result }
       rescue StandardError => e
@@ -40,9 +42,13 @@ module DiscourseAi
           return(
             I18n.t(
               "discourse_ai.llm.configuration.disable_module_first",
-              setting: parent_module_name,
+              setting: @parent_module_name,
             )
           )
+        end
+
+        if @invalid_seeded_model
+          return I18n.t("discourse_ai.llm.configuration.invalid_seeded_model")
         end
 
         return unless @unreachable
@@ -60,6 +66,19 @@ module DiscourseAi
           ai_helper_enabled: :ai_helper_model,
           ai_summarization_enabled: :ai_summarization_model,
         }
+      end
+
+      def allowed_seeded_model?(val)
+        id = val.split(":").last
+        return true if id.to_i > 0
+
+        setting = @opts[:name]
+        allowed_list = SiteSetting.public_send("#{setting}_allowed_seeded_models")
+
+        if allowed_list.split("|").exclude?(id)
+          @invalid_seeded_model = true
+          raise Discourse::InvalidParameters.new
+        end
       end
     end
   end

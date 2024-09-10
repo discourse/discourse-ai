@@ -177,7 +177,7 @@ function initializeShareButton(api) {
 
     return {
       action: shareAiResponse,
-      icon: "share",
+      icon: "share-alt",
       className: "post-action-menu__share",
       title: "discourse_ai.ai_bot.share",
       position: "first",

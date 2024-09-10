@@ -282,7 +282,6 @@ fi:
           view_changes: "Näytä muutokset"
           confirm: "Vahvista"
           revert: "Palauta"
-          changes: "Muutokset"
           custom_prompt:
             title: "Mukautettu kehote"
             placeholder: "Anna mukautettu kehote..."

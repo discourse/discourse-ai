@@ -109,7 +109,6 @@ fa_IR:
           regen: "تلاش دوباره"
           confirm: "تایید"
           revert: "برگشت"
-          changes: "تغییرات"
         post_options_menu:
           close: "بستن"
           copy: "کپی"

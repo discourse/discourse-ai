@@ -10,7 +10,6 @@ es:
       llm_triage:
         title: Triaje de publicaciones mediante IA
         description: "Triaje de publicaciones utilizando un gran modelo lingüístico"
-        system_prompt_missing_post_placeholder: "El aviso del sistema debe contener un marcador de posición para la publicación: %%POST%%"
       llm_report:
         title: Informe periódico mediante IA
         description: "Informe periódico basado en un modelo lingüístico de gran tamaño"

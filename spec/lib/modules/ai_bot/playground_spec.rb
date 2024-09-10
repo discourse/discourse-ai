@@ -517,7 +517,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       post = nil
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
-        ["Magic title", "Yes I can"],
+        ["Yes I can", "Magic Title"],
         llm: "custom:#{claude_2.id}",
       ) do
         post =
@@ -549,22 +549,29 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       post = nil
       gpt3_5_bot_user = gpt_35_turbo.reload.user
+      messages = nil
 
-      # title is queued first, ensures it uses the llm targeted via target_usernames not claude
       DiscourseAi::Completions::Llm.with_prepared_responses(
-        ["Magic title", "Yes I can"],
+        ["Yes I can", "Magic Title"],
         llm: "custom:#{gpt_35_turbo.id}",
       ) do
-        post =
-          create_post(
-            title: "I just made a PM",
-            raw: "Hey @#{persona.user.username}, can you help me?",
-            target_usernames: "#{user.username},#{gpt3_5_bot_user.username}",
-            archetype: Archetype.private_message,
-            user: admin,
-          )
+        messages =
+          MessageBus.track_publish do
+            post =
+              create_post(
+                title: "I just made a PM",
+                raw: "Hey @#{persona.user.username}, can you help me?",
+                target_usernames: "#{user.username},#{gpt3_5_bot_user.username}",
+                archetype: Archetype.private_message,
+                user: admin,
+              )
+          end
       end
 
+      title_update_message =
+        messages.find { |m| m.channel == "/discourse-ai/ai-bot/topic/#{post.topic.id}" }
+
+      expect(title_update_message.data).to eq({ title: "Magic Title" })
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
       expect(last_post.user_id).to eq(persona.user_id)

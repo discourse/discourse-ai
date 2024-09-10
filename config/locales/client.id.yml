@@ -154,7 +154,6 @@ id:
           view_changes: "Lihat Perubahan"
           confirm: "Konfirmasi"
           revert: "Dibalik"
-          changes: "Perubahan"
           custom_prompt:
             title: "Perintah Khusus"
             placeholder: "Masukkan perintah khusus..."
