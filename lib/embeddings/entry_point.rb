@@ -67,6 +67,11 @@ module DiscourseAi
         plugin.on(:topic_edited, &callback)
         plugin.on(:post_created, &callback)
         plugin.on(:post_edited, &callback)
+
+        plugin.add_api_key_scope(
+          :discourse_ai,
+          { search: { actions: %w[discourse_ai/embeddings/embeddings#search] } },
+        )
       end
     end
   end

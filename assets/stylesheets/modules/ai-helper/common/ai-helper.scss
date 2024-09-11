@@ -14,6 +14,18 @@
       height: 200px;
     }
   }
+  @keyframes fadeOpacity {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.5;
+    }
+  }
+
+  &__loading {
+    animation: fadeOpacity 1.5s infinite alternate;
+  }
 
   &__old-value {
     background-color: var(--danger-low);

@@ -7,7 +7,6 @@ import DButton from "discourse/components/d-button";
 import withEventValue from "discourse/helpers/with-event-value";
 import I18n from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
-import and from "truth-helpers/helpers/and";
 
 const PARAMETER_TYPES = [
   { name: "string", id: "string" },
@@ -59,6 +58,9 @@ export default class AiToolParameterEditor extends Component {
   @action
   removeEnumValue(parameter, index) {
     parameter.enum.splice(index, 1);
+    if (parameter.enum.length === 0) {
+      parameter.enum = null;
+    }
   }
 
   @action
@@ -94,6 +96,7 @@ export default class AiToolParameterEditor extends Component {
               {{on "input" (fn this.toggleRequired parameter)}}
               checked={{parameter.required}}
               type="checkbox"
+              class="parameter-row__required-toggle"
             />
             {{I18n.t "discourse_ai.tools.parameter_required"}}
           </label>
@@ -101,8 +104,9 @@ export default class AiToolParameterEditor extends Component {
           <label>
             <input
               {{on "input" (fn this.toggleEnum parameter)}}
-              checked={{and parameter.enum parameter.enum.length}}
+              checked={{parameter.enum}}
               type="checkbox"
+              class="parameter-row__enum-toggle"
             />
             {{I18n.t "discourse_ai.tools.parameter_enum"}}
           </label>
@@ -114,7 +118,7 @@ export default class AiToolParameterEditor extends Component {
           />
         </div>
 
-        {{#if (and parameter.enum parameter.enum.length)}}
+        {{#if parameter.enum}}
           <div class="parameter-enum-values">
             {{#each parameter.enum as |enumValue enumIndex|}}
               <div class="enum-value-row">

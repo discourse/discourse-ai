@@ -10,7 +10,6 @@ zh_CN:
       llm_triage:
         title: 使用 AI 对帖子进行分类
         description: "使用大语言模型对帖子进行分类"
-        system_prompt_missing_post_placeholder: "系统提示必须包含帖子占位符：%%POST%%"
       llm_report:
         title: 使用 AI 的定期报告
         description: "基于大语言模型的定期报告"

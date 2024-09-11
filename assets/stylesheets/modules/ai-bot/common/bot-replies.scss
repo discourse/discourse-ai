@@ -51,38 +51,6 @@ article.streaming nav.post-controls .actions button.cancel-streaming {
   display: inline-block;
 }
 
-@keyframes flashing {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-article.streaming .cooked {
-  .progress-dot::after {
-    content: "\25CF";
-    font-family: Söhne Circle, system-ui, -apple-system, Segoe UI, Roboto,
-      Ubuntu, Cantarell, Noto Sans, sans-serif;
-    line-height: normal;
-    margin-left: 0.25rem;
-    vertical-align: baseline;
-    animation: flashing 1.5s 3s infinite;
-    display: inline-block;
-    font-size: 1rem;
-    color: var(--tertiary-medium);
-  }
-
-  > .progress-dot:only-child::after {
-    // if the progress dot is the only content
-    // we are likely waiting longer for a response
-    // so it can start animating instantly
-    animation: flashing 1.5s infinite;
-  }
-}
-
 .ai-bot-available-bot-options {
   padding: 0.5em;
 

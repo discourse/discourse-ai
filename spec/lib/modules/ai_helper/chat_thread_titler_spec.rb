@@ -9,6 +9,16 @@ RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
   fab!(:chat_message) { Fabricate(:chat_message, thread: thread) }
   fab!(:user)
 
+  describe "#suggested_title" do
+    it "bails early if thread has no content" do
+      empty_thread = Chat::Thread.new
+
+      result = described_class.new(empty_thread).suggested_title
+
+      expect(result).to be_nil
+    end
+  end
+
   describe "#cleanup" do
     it "picks the first when there are multiple" do
       titles = "The solitary horse\nThe horse etched in gold"

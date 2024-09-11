@@ -24,22 +24,40 @@ module DiscourseAi
 
       def get_updated_title(conversation_context, post)
         system_insts = <<~TEXT.strip
-        You are titlebot. Given a topic, you will figure out a title.
-        You will never respond with anything but 7 word topic title.
+        You are titlebot. Given a conversation, you will suggest a title.
+
+        - You will never respond with anything but the suggested title.
+        - You will always match the conversation language in your title suggestion.
+        - Title will capture the essence of the conversation.
+        TEXT
+
+        # conversation context may contain tool calls, and confusing user names
+        # clean it up
+        conversation = +""
+        conversation_context.each do |context|
+          if context[:type] == :user
+            conversation << "User said:\n#{context[:content]}\n\n"
+          elsif context[:type] == :model
+            conversation << "Model said:\n#{context[:content]}\n\n"
+          end
+        end
+
+        instruction = <<~TEXT.strip
+        Given the following conversation:
+
+        {{{
+        #{conversation}
+        }}}
+
+        Reply only with a title that is 7 words or less.
         TEXT
 
         title_prompt =
           DiscourseAi::Completions::Prompt.new(
             system_insts,
-            messages: conversation_context,
+            messages: [type: :user, content: instruction],
             topic_id: post.topic_id,
           )
-
-        title_prompt.push(
-          type: :user,
-          content:
-            "Based on our previous conversation, suggest a 7 word title without quoting any of it.",
-        )
 
         DiscourseAi::Completions::Llm
           .proxy(model)

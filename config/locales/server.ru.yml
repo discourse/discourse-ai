@@ -10,7 +10,6 @@ ru:
       llm_triage:
         title: Сортировка публикаций с помощью AI
         description: "Сортировка публикаций с использованием большой языковой модели"
-        system_prompt_missing_post_placeholder: "Системная подсказка должна содержать плейсхолдер для публикации: %%POST%%"
       llm_report:
         title: Периодический отчет с использованием AI
         description: "Периодический отчет на основе большой языковой модели"
@@ -321,8 +320,8 @@ ru:
         other: "Мы не смогли удалить эту модель, потому что ее используют %{settings}. Обновите настройки и попробуйте еще раз."
     embeddings:
       configuration:
-        disable_embeddings: "Сначала вам необходимо отключить настройку «AI-эмбеддингы включены» ('ai embeddings enabled')."
-        choose_model: "Сначала установите «AI-модель эмбеддингов» ('ai embeddings model')."
+        disable_embeddings: "Сначала вам необходимо отключить настройку 'ai embeddings enabled'."
+        choose_model: "Сначала задайте 'ai embeddings model'."
         model_unreachable: "Не удалось создать тестовый эмбеддинг с этой моделью. Проверьте правильность настроек."
         hint:
           one: "Убедитесь, что настроен параметр `%{settings}`."

@@ -282,7 +282,6 @@ ar:
           view_changes: "عرض التغييرات"
           confirm: "تأكيد"
           revert: "عودة"
-          changes: "التغييرات"
           custom_prompt:
             title: "رسالة مطالبة مخصَّصة"
             placeholder: "أدخل رسالة مطالبة مخصَّصة..."

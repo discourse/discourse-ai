@@ -11,6 +11,7 @@ module DiscourseAi
 
         Discourse.cache.delete(hyde_key)
         Discourse.cache.delete("#{hyde_key}-#{SiteSetting.ai_embeddings_model}")
+        Discourse.cache.delete("-#{SiteSetting.ai_embeddings_model}")
       end
 
       def initialize(guardian)
@@ -29,19 +30,14 @@ module DiscourseAi
         Discourse.cache.read(embedding_key).present?
       end
 
-      def search_for_topics(query, page = 1)
-        max_results_per_page = 100
-        limit = [Search.per_filter, max_results_per_page].min + 1
-        offset = (page - 1) * limit
-        search = Search.new(query, { guardian: guardian })
-        search_term = search.term
+      def vector_rep
+        @vector_rep ||=
+          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(
+            DiscourseAi::Embeddings::Strategies::Truncation.new,
+          )
+      end
 
-        return [] if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
-
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-
+      def hyde_embedding(search_term)
         digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
         hyde_key = build_hyde_key(digest, SiteSetting.ai_embeddings_semantic_search_hyde_model)
 
@@ -57,15 +53,42 @@ module DiscourseAi
             .cache
             .fetch(hyde_key, expires_in: 1.week) { hypothetical_post_from(search_term) }
 
-        hypothetical_post_embedding =
-          Discourse
-            .cache
-            .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(hypothetical_post) }
+        Discourse
+          .cache
+          .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(hypothetical_post) }
+      end
+
+      def embedding(search_term)
+        digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
+        embedding_key = build_embedding_key(digest, "", SiteSetting.ai_embeddings_model)
+
+        Discourse
+          .cache
+          .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(search_term) }
+      end
+
+      # this ensures the candidate topics are over selected
+      # that way we have a much better chance of finding topics
+      # if the user filtered the results or index is a bit out of date
+      OVER_SELECTION_FACTOR = 4
+
+      def search_for_topics(query, page = 1, hyde: true)
+        max_results_per_page = 100
+        limit = [Search.per_filter, max_results_per_page].min + 1
+        offset = (page - 1) * limit
+        search = Search.new(query, { guardian: guardian })
+        search_term = search.term
+
+        return [] if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
+
+        search_embedding = hyde ? hyde_embedding(search_term) : embedding(search_term)
+
+        over_selection_limit = limit * OVER_SELECTION_FACTOR
 
         candidate_topic_ids =
           vector_rep.asymmetric_topics_similarity_search(
-            hypothetical_post_embedding,
-            limit: limit,
+            search_embedding,
+            limit: over_selection_limit,
             offset: offset,
           )
 
@@ -76,6 +99,7 @@ module DiscourseAi
             .where("topics.visible")
             .where(topic_id: candidate_topic_ids, post_number: 1)
             .order("array_position(ARRAY#{candidate_topic_ids}, posts.topic_id)")
+            .limit(limit)
 
         query_filter_results = search.apply_filters(semantic_results)
 
