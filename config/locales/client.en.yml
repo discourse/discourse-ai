@@ -292,22 +292,18 @@ en:
         suggest: "Suggest with AI"
         missing_content: "Please enter some content to generate suggestions."
         context_menu:
-          back: "Back"
           trigger: "Ask AI"
-          undo: "Undo"
-          loading: "AI is generating"
+          loading: "AI is generating..."
           cancel: "Cancel"
           regen: "Try Again"
-          view_changes: "View Changes"
           confirm: "Confirm"
-          revert: "Revert"
+          discard: "Discard"
           changes: "Suggested Edits"
           custom_prompt:
             title: "Custom Prompt"
             placeholder: "Enter a custom prompt..."
             submit: "Send Prompt"
           translate_prompt: "Translate to %{language}"
-          proofread_prompt: "Proofread Text"
         post_options_menu:
           trigger: "Ask AI"
           title: "Ask AI"
@@ -335,8 +331,7 @@ en:
             prompt: "This post contains non-captioned images. Would you like to enable automatic AI captions on image uploads? (This can be changed in your preferences later)"
             confirm: "Enable"
             cancel: "Don't ask again"
-        proofread:
-          no_content_error: "Unable to proofread text, please add some content to proofread."
+        no_content_error: "Please add some content to perform AI actions on."
 
       reviewables:
         model_used: "Model used:"
