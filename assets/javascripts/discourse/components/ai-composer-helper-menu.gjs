@@ -191,7 +191,7 @@ export default class AiComposerHelperMenu extends Component {
 
   @action
   async updateSelected(option) {
-    this._toggleLoadingState(true);
+    this.loading = true;
     this.lastUsedOption = option;
     this.updateMenuState(this.MENU_STATES.loading);
     this.initialValue = this.args.data.selectedText;
@@ -216,7 +216,7 @@ export default class AiComposerHelperMenu extends Component {
       this.thumbnailSuggestions = null;
 
       if (option.name === "illustrate_post") {
-        this._toggleLoadingState(false);
+        this.loading = false;
         this.closeMenu();
         this.thumbnailSuggestions = data.thumbnails;
         this.modal.show(ThumbnailSuggestion, {
@@ -230,7 +230,7 @@ export default class AiComposerHelperMenu extends Component {
     } catch (error) {
       popupAjaxError(error);
     } finally {
-      this._toggleLoadingState(false);
+      this.loading = false;
     }
 
     return this._activeAiRequest;
@@ -241,7 +241,7 @@ export default class AiComposerHelperMenu extends Component {
     if (this._activeAiRequest) {
       this._activeAiRequest.abort();
       this._activeAiRequest = null;
-      this._toggleLoadingState(false);
+      this.loading = false;
       this.closeMenu();
     }
   }
@@ -281,16 +281,6 @@ export default class AiComposerHelperMenu extends Component {
     this.closeMenu();
   }
 
-  _toggleLoadingState(loading) {
-    if (loading) {
-      this.args.data.dEditorInput.classList.add("loading");
-      return (this.loading = true);
-    }
-
-    this.args.data.dEditorInput.classList.remove("loading");
-    this.loading = false;
-  }
-
   _updateSuggestedByAi(data) {
     this.newSelectedText = data.suggestions[0];
 
@@ -308,9 +298,9 @@ export default class AiComposerHelperMenu extends Component {
   }
 
   _insertAt(start, end, text) {
-    this.args.data.dEditorInput.setSelectionRange(start, end);
-    this.args.data.dEditorInput.focus();
-    document.execCommand("insertText", false, text);
+    this.args.data.replaceText(this.args.data.selectedText, text);
+    // this.args.data.dEditorInput.focus();
+    // document.execCommand("insertText", false, text);
   }
 
   <template>

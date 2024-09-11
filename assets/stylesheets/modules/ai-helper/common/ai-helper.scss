@@ -44,11 +44,8 @@
 }
 
 .ai-composer-helper-menu {
-  background: var(--secondary);
-  box-shadow: var(--shadow-card);
   padding: 0.25rem;
   max-width: 25rem;
-  border: 1px solid var(--primary-low);
   list-style: none;
   z-index: 999;
 
@@ -568,6 +565,16 @@
 .ai-helper-options {
   margin: 0;
   list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+
+    .shortcut {
+      border: none;
+      color: var(--primary-medium);
+    }
+  }
 
   &__button {
     justify-content: left;

@@ -2,7 +2,7 @@ import { tracked } from "@glimmer/tracking";
 import Service from "@ember/service";
 
 export default class AiComposerHelper extends Service {
-  @tracked menuState = this.MENU_STATES.triggers;
+  @tracked menuState = this.MENU_STATES.options;
 
   MENU_STATES = {
     triggers: "TRIGGERS",

@@ -6,12 +6,17 @@ import { caretPosition, getCaretPosition } from "discourse/lib/utilities";
 import { INPUT_DELAY } from "discourse-common/config/environment";
 import { afterRender, bind, debounce } from "discourse-common/utils/decorators";
 import AiComposerHelperMenu from "../../components/ai-composer-helper-menu";
-import { showComposerAIHelper } from "../../lib/show-ai-helper";
+import { showComposerAiHelper } from "../../lib/show-ai-helper";
 import virtualElementFromCaretCoords from "../../lib/virtual-element-from-caret-coords";
 
 export default class AiComposerHelper extends Component {
   static shouldRender(outletArgs, helper) {
-    return showComposerAIHelper(outletArgs, helper, "context_menu");
+    return showComposerAiHelper(
+      outletArgs?.composer,
+      helper.siteSettings,
+      helper.currentUser,
+      "context_menu"
+    );
   }
 
   @service site;

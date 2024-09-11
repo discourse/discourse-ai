@@ -1,6 +1,44 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import i18n from "discourse-common/helpers/i18n";
+import AiComposerHelperMenu from "../discourse/components/ai-composer-helper-menu";
 import ModalDiffModal from "../discourse/components/modal/diff-modal";
+import { showComposerAiHelper } from "../discourse/lib/show-ai-helper";
+
+function initializeAiHelperTrigger(api) {
+  // TODO (@keegan): Add keyboard shortcut for Proofread
+  api.onToolbarCreate((toolbar) => {
+    toolbar.addButton({
+      id: "ai-helper-trigger",
+      group: "extras",
+      icon: "discourse-sparkles",
+      title: "discourse_ai.ai_helper.context_menu.trigger",
+      condition: () =>
+        showComposerAiHelper(
+          api.container.lookup("service:composer").model,
+          api.container.lookup("service:site-settings"),
+          api.getCurrentUser(),
+          "context_menu"
+        ),
+      sendAction: (event) => {
+        const menu = api.container.lookup("service:menu");
+        menu.show(document.querySelector(".ai-helper-trigger"), {
+          identifier: "ai-composer-helper-menu",
+          component: AiComposerHelperMenu,
+          modalForMobile: true,
+          data: {
+            selectedText: event.selected.value,
+            selectionRange: {
+              x: event.selected.start,
+              y: event.selected.end,
+            },
+            replaceText: event.replaceText,
+          },
+          interactive: true,
+        });
+      },
+    });
+  });
+}
 
 function initializeProofread(api) {
   api.addComposerToolbarPopupMenuOption({
@@ -45,6 +83,7 @@ export default {
   initialize() {
     withPluginApi("1.1.0", (api) => {
       initializeProofread(api);
+      initializeAiHelperTrigger(api);
     });
   },
 };

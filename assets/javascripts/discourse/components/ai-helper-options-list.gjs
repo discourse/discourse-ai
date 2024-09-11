@@ -22,6 +22,9 @@ const AiHelperOptionsList = <template>
             data-value={{option.id}}
             class="ai-helper-options__button"
           />
+          {{#if (eq option.name "proofread")}}
+            <kbd class="shortcut">⌘⌥p</kbd>
+          {{/if}}
         </li>
       {{/if}}
     {{/each}}

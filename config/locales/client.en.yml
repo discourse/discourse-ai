@@ -243,7 +243,7 @@ en:
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
         seeded_warning: "This model is pre-configured on your site and cannot be edited."
-        in_use_warning: 
+        in_use_warning:
           one: "This model is currently used by the %{settings} setting. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following settings: %{settings}. If misconfigured, features won't work as expected. "
 
@@ -293,7 +293,7 @@ en:
         missing_content: "Please enter some content to generate suggestions."
         context_menu:
           back: "Back"
-          trigger: "AI"
+          trigger: "Ask AI"
           undo: "Undo"
           loading: "AI is generating"
           cancel: "Cancel"
