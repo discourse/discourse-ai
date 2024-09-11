@@ -78,7 +78,7 @@
 .ai-custom-prompt {
   display: flex;
   gap: 0.25rem;
-  margin-bottom: 0.5rem;
+  padding: 0.75em 1rem;
 
   &__input[type="text"] {
     border-color: var(--primary-400);
@@ -308,9 +308,18 @@
 
 .ai-post-helper {
   &__suggestion {
-    padding: 0.5rem;
     display: flex;
     flex-direction: column;
+
+    h2 {
+      font-size: var(--font-0);
+      border-bottom: 1px solid var(--primary-low);
+      padding-bottom: 0.5em;
+    }
+
+    p {
+      margin: 0;
+    }
 
     &__copy {
       .d-icon-check {
@@ -325,18 +334,17 @@
     &__buttons {
       display: flex;
       align-items: center;
-      justify-content: stretch;
-      margin-top: 0.5rem;
       gap: 0.5rem;
       .btn {
-        width: 100%;
+        flex-grow: 1;
+        padding-inline: 0;
       }
     }
   }
 
   &__fast-edit {
     .fast-edit-container {
-      padding-top: 0.5em;
+      padding: 0.75em 1rem;
     }
   }
 }
@@ -556,43 +564,10 @@
   color: var(--primary-high);
 }
 
-.ai-post-helper-menu__selected-text {
-  padding: 0.75rem 1rem;
-  margin: 0.5rem;
-  border: 1px solid var(--primary-low-mid);
-  border-radius: var(--d-border-radius);
-
-  h2 {
-    font-size: var(--font-0);
-  }
-
-  p {
-    @include ellipsis;
-    font-size: var(--font-down-2);
-    margin: 0;
-  }
-}
-
-// Mobile Bottom Modal
-.ai-post-helper-menu-content {
-  .ai-helper-loading {
-    justify-content: center;
-  }
-
-  .ai-helper-options__button {
-    padding: 1rem;
-  }
-}
-
 // AI Helper Options List
 .ai-helper-options {
   margin: 0;
   list-style: none;
-  padding: 0.5rem;
-
-  li:not(:last-child) {
-    border-bottom: 1px solid var(--primary-low);
-  }
 
   &__button {
     justify-content: left;
@@ -601,19 +576,24 @@
     width: 100%;
     border-radius: 0;
     margin: 0;
-    padding-block: 0.6rem;
-
-    .d-button-label {
-      color: var(--primary-very-high);
-    }
+    padding: 0.5em 1rem;
 
     &:focus,
     &:hover {
       color: var(--primary);
       background: var(--d-hover);
 
+      .discourse-no-touch & {
+        color: var(--primary);
+        background: var(--d-hover);
+      }
+
       .d-icon {
-        color: var(--primary-medium);
+        color: var(--primary-high);
+
+        .discourse-no-touch & {
+          color: var(--primary-high);
+        }
       }
     }
   }
