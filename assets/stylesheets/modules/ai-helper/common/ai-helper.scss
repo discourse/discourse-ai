@@ -37,6 +37,12 @@
     background-color: var(--success-low);
     color: var(--success);
   }
+
+  .d-modal__footer {
+    .regenerate {
+      margin-left: auto;
+    }
+  }
 }
 
 .topic-above-suggested-outlet.related-topics {

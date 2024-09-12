@@ -1,7 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { next } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
@@ -23,6 +22,7 @@ export default class ModalDiffModal extends Component {
     this.suggestChanges();
   }
 
+  @action
   async suggestChanges() {
     this.loading = true;
 
@@ -56,6 +56,11 @@ export default class ModalDiffModal extends Component {
         this.suggestion
       );
     }
+  }
+
+  @action
+  regenerateResponse() {
+    // todo: remove
   }
 
   <template>
@@ -104,6 +109,12 @@ export default class ModalDiffModal extends Component {
             class="btn-flat discard"
             @action={{@closeModal}}
             @label="discourse_ai.ai_helper.context_menu.discard"
+          />
+          <DButton
+            class="regenerate"
+            @icon="arrows-rotate"
+            @action={{this.suggestChanges}}
+            @label="discourse_ai.ai_helper.context_menu.regen"
           />
         {{/if}}
       </:footer>
