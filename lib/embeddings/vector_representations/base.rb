@@ -280,7 +280,8 @@ module DiscourseAi
 
         def asymmetric_rag_fragment_similarity_search(
           raw_vector,
-          persona_id:,
+          target_id:,
+          target_type:,
           limit:,
           offset:,
           return_distance: false
@@ -299,14 +300,16 @@ module DiscourseAi
             WHERE
               model_id = #{id} AND
               strategy_id = #{@strategy.id} AND
-              rdf.ai_persona_id = :persona_id
+              rdf.target_id = :target_id AND
+              rdf.target_type = :target_type
             ORDER BY
               embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
             LIMIT :limit
             OFFSET :offset
           SQL
               query_embedding: raw_vector,
-              persona_id: persona_id,
+              target_id: target_id,
+              target_type: target_type,
               limit: limit,
               offset: offset,
             )

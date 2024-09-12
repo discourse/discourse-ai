@@ -288,7 +288,8 @@ module DiscourseAi
           candidate_fragment_ids =
             vector_rep.asymmetric_rag_fragment_similarity_search(
               interactions_vector,
-              persona_id: id,
+              target_type: "AiPersona",
+              target_id: id,
               limit:
                 (
                   if reranker.reranker_configured?

@@ -12,14 +12,14 @@ RSpec.describe RagDocumentFragment do
 
   describe ".link_uploads_and_persona" do
     it "does nothing if there is no persona" do
-      expect { described_class.link_persona_and_uploads(nil, [upload_1.id]) }.not_to change(
+      expect { described_class.link_target_and_uploads(nil, [upload_1.id]) }.not_to change(
         Jobs::DigestRagUpload.jobs,
         :size,
       )
     end
 
     it "does nothing if there are no uploads" do
-      expect { described_class.link_persona_and_uploads(persona, []) }.not_to change(
+      expect { described_class.link_target_and_uploads(persona, []) }.not_to change(
         Jobs::DigestRagUpload.jobs,
         :size,
       )
@@ -27,12 +27,12 @@ RSpec.describe RagDocumentFragment do
 
     it "queues a job for each upload to generate fragments" do
       expect {
-        described_class.link_persona_and_uploads(persona, [upload_1.id, upload_2.id])
+        described_class.link_target_and_uploads(persona, [upload_1.id, upload_2.id])
       }.to change(Jobs::DigestRagUpload.jobs, :size).by(2)
     end
 
     it "creates references between the persona an each upload" do
-      described_class.link_persona_and_uploads(persona, [upload_1.id, upload_2.id])
+      described_class.link_target_and_uploads(persona, [upload_1.id, upload_2.id])
 
       refs = UploadReference.where(target: persona).pluck(:upload_id)
 
@@ -40,26 +40,25 @@ RSpec.describe RagDocumentFragment do
     end
   end
 
-  describe ".update_persona_uploads" do
+  describe ".update_target_uploads" do
     it "does nothing if there is no persona" do
-      expect { described_class.update_persona_uploads(nil, [upload_1.id]) }.not_to change(
+      expect { described_class.update_target_uploads(nil, [upload_1.id]) }.not_to change(
         Jobs::DigestRagUpload.jobs,
         :size,
       )
     end
 
     it "deletes the fragment if its not present in the uploads list" do
-      fragment = Fabricate(:rag_document_fragment, ai_persona: persona)
+      fragment = Fabricate(:rag_document_fragment, target: persona)
 
-      described_class.update_persona_uploads(persona, [])
+      described_class.update_target_uploads(persona, [])
 
       expect { fragment.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "delete references between the upload and the persona" do
-      described_class.link_persona_and_uploads(persona, [upload_1.id, upload_2.id])
-
-      described_class.update_persona_uploads(persona, [upload_2.id])
+      described_class.link_target_and_uploads(persona, [upload_1.id, upload_2.id])
+      described_class.update_target_uploads(persona, [upload_2.id])
 
       refs = UploadReference.where(target: persona).pluck(:upload_id)
 
@@ -67,7 +66,7 @@ RSpec.describe RagDocumentFragment do
     end
 
     it "queues jobs to generate new fragments" do
-      expect { described_class.update_persona_uploads(persona, [upload_1.id]) }.to change(
+      expect { described_class.update_target_uploads(persona, [upload_1.id]) }.to change(
         Jobs::DigestRagUpload.jobs,
         :size,
       ).by(1)
@@ -81,11 +80,11 @@ RSpec.describe RagDocumentFragment do
     end
 
     fab!(:rag_document_fragment_1) do
-      Fabricate(:rag_document_fragment, upload: upload_1, ai_persona: persona)
+      Fabricate(:rag_document_fragment, upload: upload_1, target: persona)
     end
 
     fab!(:rag_document_fragment_2) do
-      Fabricate(:rag_document_fragment, upload: upload_1, ai_persona: persona)
+      Fabricate(:rag_document_fragment, upload: upload_1, target: persona)
     end
 
     let(:expected_embedding) { [0.0038493] * vector_rep.dimensions }

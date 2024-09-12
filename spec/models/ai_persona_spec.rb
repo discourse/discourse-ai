@@ -55,7 +55,7 @@ RSpec.describe AiPersona do
 
     id =
       RagDocumentFragment.create!(
-        ai_persona: persona,
+        target: persona,
         fragment: "test",
         fragment_number: 1,
         upload: Fabricate(:upload),
