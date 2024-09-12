@@ -71,3 +71,11 @@ Fabricator(:cohere_model, from: :llm_model) do
   api_key "ABC"
   url "https://api.cohere.ai/v1/chat"
 end
+
+Fabricator(:samba_nova_model, from: :llm_model) do
+  display_name "Samba Nova"
+  name "samba-nova"
+  provider "samba_nova"
+  api_key "ABC"
+  url "https://api.sambanova.ai/v1/chat/completions"
+end

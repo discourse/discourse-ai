@@ -85,15 +85,14 @@ module DiscourseAi
           encoded_uploads = prompt.encoded_uploads(message)
           return content if encoded_uploads.blank?
 
-          content_w_imgs =
-            encoded_uploads.reduce([{ type: "text", text: message[:content] }]) do |memo, details|
-              memo << {
-                type: "image_url",
-                image_url: {
-                  url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
-                },
-              }
-            end
+          encoded_uploads.reduce([{ type: "text", text: message[:content] }]) do |memo, details|
+            memo << {
+              type: "image_url",
+              image_url: {
+                url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
+              },
+            }
+          end
         end
       end
     end

@@ -70,13 +70,13 @@ module DiscourseAi
                   tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
                   endpoint: "https://api.openai.com/v1/chat/completions",
                   provider: "open_ai",
-                },
+                }
               ]
             end
         end
 
         def provider_names
-          providers = %w[aws_bedrock anthropic vllm hugging_face cohere open_ai google azure]
+          providers = %w[aws_bedrock anthropic vllm hugging_face cohere open_ai google azure samba_nova]
           if !Rails.env.production?
             providers << "fake"
             providers << "ollama"
