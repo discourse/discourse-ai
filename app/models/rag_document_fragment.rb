@@ -16,7 +16,12 @@ class RagDocumentFragment < ActiveRecord::Base
       UploadReference.ensure_exist!(upload_ids: upload_ids, target: target)
 
       upload_ids.each do |upload_id|
-        Jobs.enqueue(:digest_rag_upload, target_id: target.id, target_type: target.class.to_s, upload_id: upload_id)
+        Jobs.enqueue(
+          :digest_rag_upload,
+          target_id: target.id,
+          target_type: target.class.to_s,
+          upload_id: upload_id,
+        )
       end
     end
 
@@ -40,7 +45,9 @@ class RagDocumentFragment < ActiveRecord::Base
 
       embeddings_table = vector_rep.rag_fragments_table_name
 
-      results = DB.query(<<~SQL, target_id: persona.id, target_type: persona.class.to_s, upload_ids: uploads.map(&:id))
+      results =
+        DB.query(
+          <<~SQL,
         SELECT
           uploads.id,
           SUM(CASE WHEN (rdf.upload_id IS NOT NULL) THEN 1 ELSE 0 END) AS total,
@@ -53,6 +60,10 @@ class RagDocumentFragment < ActiveRecord::Base
         WHERE uploads.id IN (:upload_ids)
         GROUP BY uploads.id
       SQL
+          target_id: persona.id,
+          target_type: persona.class.to_s,
+          upload_ids: uploads.map(&:id),
+        )
 
       results.reduce({}) do |acc, r|
         acc[r.id] = { total: r.total, indexed: r.indexed, left: r.left }
