@@ -61,23 +61,6 @@
   }
 }
 
-.ai-helper-button-group {
-  display: flex;
-  align-items: center;
-  flex-flow: row wrap;
-  &__resets {
-    display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-  }
-
-  &__review {
-    display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-  }
-}
-
 .ai-custom-prompt {
   display: flex;
   gap: 0.25rem;
