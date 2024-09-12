@@ -12,6 +12,7 @@ class AiApiAuditLog < ActiveRecord::Base
     Vllm = 5
     Cohere = 6
     Ollama = 7
+    SambaNova = 8
   end
 end
 
