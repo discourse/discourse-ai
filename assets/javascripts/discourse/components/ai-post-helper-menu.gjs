@@ -295,6 +295,7 @@ export default class AiPostHelperMenu extends Component {
             @options={{this.helperOptions}}
             @customPromptValue={{this.customPromptValue}}
             @performAction={{this.performAiSuggestion}}
+            @shortcutVisible={{false}}
           />
         {{else if (eq this.menuState this.MENU_STATES.loading)}}
           <AiHelperLoading @cancel={{this.cancelAiAction}} />

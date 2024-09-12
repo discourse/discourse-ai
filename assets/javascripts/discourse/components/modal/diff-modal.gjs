@@ -58,11 +58,6 @@ export default class ModalDiffModal extends Component {
     }
   }
 
-  @action
-  regenerateResponse() {
-    // todo: remove
-  }
-
   <template>
     <DModal
       class="composer-ai-helper-modal"

@@ -15,18 +15,6 @@
       overflow: hidden;
     }
 
-    .ai-post-helper-menu {
-      &__selected-text {
-        margin: 0.75em 1rem;
-        padding: 0.5em;
-        border-radius: var(--d-border-radius);
-        border: 1px solid var(--primary-low);
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.125);
-        overflow: auto;
-        overscroll-behavior: contain;
-      }
-    }
-
     .ai-helper-options {
       padding: 0;
     }
@@ -38,6 +26,19 @@
 
     .ai-helper-loading {
       justify-content: center;
+    }
+  }
+
+  .ai-post-helper-menu,
+  .ai-composer-helper-menu {
+    &__selected-text {
+      margin: 0.75em 1rem;
+      padding: 0.5em;
+      border-radius: var(--d-border-radius);
+      border: 1px solid var(--primary-low);
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.125);
+      overflow: auto;
+      overscroll-behavior: contain;
     }
   }
 }

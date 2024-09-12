@@ -11,6 +11,7 @@ export default class AiComposerHelperMenu extends Component {
   @service modal;
   @service siteSettings;
   @service currentUser;
+  @service site;
   @tracked newSelectedText;
   @tracked diff;
   @tracked customPromptValue = "";
@@ -72,16 +73,17 @@ export default class AiComposerHelperMenu extends Component {
   @action
   suggestChanges(option) {
     if (option.name === "illustrate_post") {
-      return this.modal.show(ThumbnailSuggestion, {
+      this.modal.show(ThumbnailSuggestion, {
         model: {
           mode: option.id,
           selectedText: this.args.data.selectedText,
           thumbnails: this.thumbnailSuggestions,
         },
       });
+      return this.args.close();
     }
 
-    return this.modal.show(ModalDiffModal, {
+    this.modal.show(ModalDiffModal, {
       model: {
         mode: option.id,
         selectedText: this.args.data.selectedText,
@@ -90,6 +92,7 @@ export default class AiComposerHelperMenu extends Component {
         customPromptValue: this.customPromptValue,
       },
     });
+    return this.args.close();
   }
 
   @action
@@ -100,10 +103,17 @@ export default class AiComposerHelperMenu extends Component {
 
   <template>
     <div class="ai-composer-helper-menu">
+      {{#if this.site.mobileView}}
+        <div class="ai-composer-helper-menu__selected-text">
+          {{@data.selectedText}}
+        </div>
+      {{/if}}
+
       <AiHelperOptionsList
         @options={{this.helperOptions}}
         @customPromptValue={{this.customPromptValue}}
         @performAction={{this.suggestChanges}}
+        @shortcutVisible={{true}}
       />
     </div>
   </template>
