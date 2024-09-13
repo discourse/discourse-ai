@@ -3,6 +3,8 @@ import { fn } from "@ember/helper";
 import { service } from "@ember/service";
 import { and } from "truth-helpers";
 import DButton from "discourse/components/d-button";
+import { PLATFORM_KEY_MODIFIER } from "discourse/lib/keyboard-shortcuts";
+import { translateModKey } from "discourse/lib/utilities";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperCustomPrompt from "../components/ai-helper-custom-prompt";
 
@@ -11,6 +13,10 @@ export default class AiHelperOptionsList extends Component {
 
   get showShortcut() {
     return this.site.desktopView && this.args.shortcutVisible;
+  }
+
+  get shortcut() {
+    return translateModKey(`${PLATFORM_KEY_MODIFIER}+alt+p`);
   }
 
   <template>
@@ -33,7 +39,7 @@ export default class AiHelperOptionsList extends Component {
               class="ai-helper-options__button"
             >
               {{#if (and (eq option.name "proofread") this.showShortcut)}}
-                <kbd class="shortcut">⌘⌥p</kbd>
+                <kbd class="shortcut">{{this.shortcut}}</kbd>
               {{/if}}
             </DButton>
           </li>
