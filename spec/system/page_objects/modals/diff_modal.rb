@@ -11,8 +11,8 @@ module PageObjects
         find(".d-modal__footer button.confirm", wait: 5).click
       end
 
-      def revert_changes
-        find(".d-modal__footer button.revert", wait: 5).click
+      def discard_changes
+        find(".d-modal__footer button.discard", wait: 5).click
       end
 
       def old_value
