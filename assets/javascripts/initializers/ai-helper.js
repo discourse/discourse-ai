@@ -4,17 +4,18 @@ import AiComposerHelperMenu from "../discourse/components/ai-composer-helper-men
 import ModalDiffModal from "../discourse/components/modal/diff-modal";
 import { showComposerAiHelper } from "../discourse/lib/show-ai-helper";
 
-function showErrorToast(api) {
-  const toasts = api.container.lookup("service:toasts");
-  return toasts.error({
-    duration: 3000,
-    data: {
-      message: i18n("discourse_ai.ai_helper.no_content_error"),
-    },
-  });
-}
-
 function initializeAiHelperTrigger(api) {
+  const showErrorToast = () => {
+    const toasts = api.container.lookup("service:toasts");
+
+    return toasts.error({
+      duration: 3000,
+      data: {
+        message: i18n("discourse_ai.ai_helper.no_content_error"),
+      },
+    });
+  };
+
   api.onToolbarCreate((toolbar) => {
     const currentUser = api.getCurrentUser();
     const modal = api.container.lookup("service:modal");
@@ -40,7 +41,7 @@ function initializeAiHelperTrigger(api) {
       shortcut: "ALT+P",
       shortcutAction: (toolbarEvent) => {
         if (toolbarEvent.getText().length === 0) {
-          return showErrorToast(api);
+          return showErrorToast();
         }
 
         const mode = currentUser?.ai_helper_prompts.find(
@@ -64,7 +65,7 @@ function initializeAiHelperTrigger(api) {
         ),
       sendAction: (event) => {
         if (toolbar.context.value.length === 0) {
-          return showErrorToast(api);
+          return showErrorToast();
         }
 
         const menu = api.container.lookup("service:menu");
