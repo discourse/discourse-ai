@@ -4,7 +4,6 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import DButton from "discourse/components/d-button";
 import withEventValue from "discourse/helpers/with-event-value";
-import autoFocus from "discourse/modifiers/auto-focus";
 import i18n from "discourse-common/helpers/i18n";
 import not from "truth-helpers/helpers/not";
 
@@ -29,12 +28,7 @@ export default class AiHelperCustomPrompt extends Component {
         }}
         class="ai-custom-prompt__input"
         type="text"
-        {{!-- Using {{autoFocus}} helper instead of built in autofocus="autofocus"
-            because built in autofocus doesn't work consistently when component is
-            invoked twice separetly without a page refresh.
-            (i.e. trigger in post AI helper followed by trigger in composer AI helper)
-      --}}
-        {{autoFocus}}
+        autofocus="autofocus"
       />
 
       <DButton

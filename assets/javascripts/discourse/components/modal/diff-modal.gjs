@@ -1,9 +1,9 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { next } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
+import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
@@ -15,30 +15,24 @@ export default class ModalDiffModal extends Component {
   @service currentUser;
   @tracked loading = false;
   @tracked diff;
-  suggestion = "";
-
-  PROOFREAD_ID = -303;
+  @tracked suggestion = "";
 
   constructor() {
     super(...arguments);
-    this.diff = this.args.model.diff;
-
-    next(() => {
-      if (this.args.model.toolbarEvent) {
-        this.loadDiff();
-      }
-    });
+    this.suggestChanges();
   }
 
-  async loadDiff() {
+  @action
+  async suggestChanges() {
     this.loading = true;
 
     try {
       const suggestion = await ajax("/discourse-ai/ai-helper/suggest", {
         method: "POST",
         data: {
-          mode: this.PROOFREAD_ID,
-          text: this.selectedText,
+          mode: this.args.model.mode,
+          text: this.args.model.selectedText,
+          custom_prompt: this.args.model.customPromptValue,
           force_default_locale: true,
         },
       });
@@ -52,35 +46,16 @@ export default class ModalDiffModal extends Component {
     }
   }
 
-  get selectedText() {
-    const selected = this.args.model.toolbarEvent.selected;
-
-    if (selected.value === "") {
-      return selected.pre + selected.post;
-    }
-
-    return selected.value;
-  }
-
   @action
   triggerConfirmChanges() {
     this.args.closeModal();
-    if (this.args.model.confirm) {
-      this.args.model.confirm();
-    }
 
-    if (this.args.model.toolbarEvent && this.suggestion) {
+    if (this.suggestion) {
       this.args.model.toolbarEvent.replaceText(
-        this.selectedText,
+        this.args.model.selectedText,
         this.suggestion
       );
     }
-  }
-
-  @action
-  triggerRevertChanges() {
-    this.args.model.revert();
-    this.args.closeModal();
   }
 
   <template>
@@ -90,23 +65,26 @@ export default class ModalDiffModal extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
-        {{#if this.loading}}
-          <div class="composer-ai-helper-modal__loading">
-            <CookText @rawText={{this.selectedText}} />
-          </div>
-        {{else}}
-          {{#if this.diff}}
-            {{htmlSafe this.diff}}
+        <ConditionalLoadingSpinner @condition={{this.loading}}>
+          {{#if this.loading}}
+            <div class="composer-ai-helper-modal__loading">
+              <CookText @rawText={{this.selectedText}} />
+            </div>
           {{else}}
-            <div class="composer-ai-helper-modal__old-value">
-              {{@model.oldValue}}
-            </div>
+            {{#if this.diff}}
+              {{htmlSafe this.diff}}
+            {{else}}
+              <div class="composer-ai-helper-modal__old-value">
+                {{@model.selectedText}}
+              </div>
 
-            <div class="composer-ai-helper-modal__new-value">
-              {{@model.newValue}}
-            </div>
+              <div class="composer-ai-helper-modal__new-value">
+                {{this.suggestion}}
+              </div>
+            {{/if}}
           {{/if}}
-        {{/if}}
+        </ConditionalLoadingSpinner>
+
       </:body>
 
       <:footer>
@@ -122,13 +100,17 @@ export default class ModalDiffModal extends Component {
             @action={{this.triggerConfirmChanges}}
             @label="discourse_ai.ai_helper.context_menu.confirm"
           />
-          {{#if @model.revert}}
-            <DButton
-              class="btn-flat revert"
-              @action={{this.triggerRevertChanges}}
-              @label="discourse_ai.ai_helper.context_menu.revert"
-            />
-          {{/if}}
+          <DButton
+            class="btn-flat discard"
+            @action={{@closeModal}}
+            @label="discourse_ai.ai_helper.context_menu.discard"
+          />
+          <DButton
+            class="regenerate"
+            @icon="arrows-rotate"
+            @action={{this.suggestChanges}}
+            @label="discourse_ai.ai_helper.context_menu.regen"
+          />
         {{/if}}
       </:footer>
     </DModal>

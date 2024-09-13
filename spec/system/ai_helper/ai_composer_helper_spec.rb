@@ -12,11 +12,12 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   let(:input) { "The rain in spain stays mainly in the Plane." }
-
   let(:composer) { PageObjects::Components::Composer.new }
-  let(:ai_helper_context_menu) { PageObjects::Components::AiComposerHelperMenu.new }
+  let(:ai_helper_menu) { PageObjects::Components::AiComposerHelperMenu.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
   let(:ai_suggestion_dropdown) { PageObjects::Components::AISuggestionDropdown.new }
+  let(:toasts) { PageObjects::Components::Toasts.new }
+
   fab!(:category)
   fab!(:category_2) { Fabricate(:category) }
   fab!(:video) { Fabricate(:tag) }
@@ -25,51 +26,28 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   fab!(:feedback) { Fabricate(:tag) }
   fab!(:review) { Fabricate(:tag) }
 
-  def trigger_context_menu(content)
+  def trigger_composer_helper(content)
     visit("/latest")
     page.find("#create-topic").click
     composer.fill_content(content)
-    page.execute_script("document.querySelector('.d-editor-input')?.select();")
+    composer.click_toolbar_button("ai-helper-trigger")
   end
 
-  context "when triggering AI with context menu in composer" do
-    it "shows the context menu when selecting a passage of text in the composer" do
-      trigger_context_menu(input)
-      expect(ai_helper_context_menu).to have_context_menu
+  context "when triggering composer AI helper" do
+    it "shows the context menu when clicking the AI button in the composer toolbar" do
+      trigger_composer_helper(input)
+      expect(ai_helper_menu).to have_context_menu
     end
 
-    it "does not show the context menu when selecting insufficient text" do
-      visit("/latest")
-      page.find("#create-topic").click
-      composer.fill_content(input)
-      page.execute_script(
-        "const input = document.querySelector('.d-editor-input'); input.setSelectionRange(0, 2);",
-      )
-      expect(ai_helper_context_menu).to have_no_context_menu
+    it "shows a toast error when clicking the AI button without content" do
+      trigger_composer_helper("")
+      expect(ai_helper_menu).to have_no_context_menu
+      expect(toasts).to have_error(I18n.t("js.discourse_ai.ai_helper.no_content_error"))
     end
 
-    it "shows context menu in 'trigger' state when first showing" do
-      trigger_context_menu(input)
-      expect(ai_helper_context_menu).to be_showing_triggers
-    end
-
-    it "shows prompt options in context menu when AI button is clicked" do
-      trigger_context_menu(input)
-      ai_helper_context_menu.click_ai_button
-      expect(ai_helper_context_menu).to be_showing_options
-    end
-
-    it "closes the context menu when clicking outside" do
-      trigger_context_menu(input)
-      find(".d-editor-preview").click
-      expect(ai_helper_context_menu).to have_no_context_menu
-    end
-
-    it "closes the context menu when selected text is deleted" do
-      trigger_context_menu(input)
-      expect(ai_helper_context_menu).to have_context_menu
-      page.send_keys(:backspace)
-      expect(ai_helper_context_menu).to have_no_context_menu
+    it "shows prompt options in menu when AI button is clicked" do
+      trigger_composer_helper(input)
+      expect(ai_helper_menu).to be_showing_options
     end
 
     context "when using custom prompt" do
@@ -79,40 +57,27 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       let(:custom_prompt_response) { "La pluie en Espagne reste principalement dans l'avion." }
 
       it "shows custom prompt option" do
-        trigger_context_menu(input)
-        ai_helper_context_menu.click_ai_button
-        expect(ai_helper_context_menu).to have_custom_prompt
+        trigger_composer_helper(input)
+        expect(ai_helper_menu).to have_custom_prompt
       end
 
       it "enables the custom prompt button when input is filled" do
-        trigger_context_menu(input)
-        ai_helper_context_menu.click_ai_button
-        expect(ai_helper_context_menu).to have_custom_prompt_button_disabled
-        ai_helper_context_menu.fill_custom_prompt(custom_prompt_input)
-        expect(ai_helper_context_menu).to have_custom_prompt_button_enabled
+        trigger_composer_helper(input)
+        expect(ai_helper_menu).to have_custom_prompt_button_disabled
+        ai_helper_menu.fill_custom_prompt(custom_prompt_input)
+        expect(ai_helper_menu).to have_custom_prompt_button_enabled
       end
 
       it "replaces the composed message with AI generated content" do
-        trigger_context_menu(input)
-        ai_helper_context_menu.click_ai_button
-        ai_helper_context_menu.fill_custom_prompt(custom_prompt_input)
+        trigger_composer_helper(input)
+        ai_helper_menu.fill_custom_prompt(custom_prompt_input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([custom_prompt_response]) do
-          ai_helper_context_menu.click_custom_prompt_button
-
+          ai_helper_menu.click_custom_prompt_button
+          diff_modal.confirm_changes
           wait_for { composer.composer_input.value == custom_prompt_response }
-
           expect(composer.composer_input.value).to eq(custom_prompt_response)
         end
-      end
-
-      it "should not close the context menu if backspace is pressed" do
-        trigger_context_menu(input)
-        ai_helper_context_menu.click_ai_button
-        expect(ai_helper_context_menu).to have_context_menu
-        ai_helper_context_menu.fill_custom_prompt(custom_prompt_input)
-        page.find(".ai-custom-prompt__input").send_keys(:backspace)
-        expect(ai_helper_context_menu).to have_context_menu
       end
     end
 
@@ -121,9 +86,8 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       before { SiteSetting.ai_helper_custom_prompts_allowed_groups = non_member_group.id.to_s }
 
       it "does not show custom prompt option" do
-        trigger_context_menu(input)
-        ai_helper_context_menu.click_ai_button
-        expect(ai_helper_context_menu).to have_no_custom_prompt
+        trigger_composer_helper(input)
+        expect(ai_helper_menu).to have_no_custom_prompt
       end
     end
 
@@ -133,129 +97,51 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       let(:spanish_input) { "La lluvia en España se queda principalmente en el avión." }
 
       it "replaces the composed message with AI generated content" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
+        trigger_composer_helper(spanish_input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
+          ai_helper_menu.select_helper_model(mode)
+          diff_modal.confirm_changes
           wait_for { composer.composer_input.value == input }
-
           expect(composer.composer_input.value).to eq(input)
-        end
-      end
-
-      it "shows reset options after results are complete" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
-
-        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
-          wait_for { composer.composer_input.value == input }
-
-          ai_helper_context_menu.click_confirm_button
-          expect(ai_helper_context_menu).to be_showing_resets
-        end
-      end
-
-      it "reverts results when Undo button is clicked" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
-
-        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
-          wait_for { composer.composer_input.value == input }
-
-          ai_helper_context_menu.click_confirm_button
-          ai_helper_context_menu.click_undo_button
-          expect(composer.composer_input.value).to eq(spanish_input)
-        end
-      end
-
-      it "reverts results when revert button is clicked" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
-
-        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
-          wait_for { composer.composer_input.value == input }
-
-          ai_helper_context_menu.click_revert_button
-          expect(composer.composer_input.value).to eq(spanish_input)
         end
       end
 
       it "reverts results when Ctrl/Cmd + Z is pressed on the keyboard" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
+        trigger_composer_helper(spanish_input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
+          ai_helper_menu.select_helper_model(mode)
+          diff_modal.confirm_changes
           wait_for { composer.composer_input.value == input }
-
-          ai_helper_context_menu.press_undo_keys
+          ai_helper_menu.press_undo_keys
           expect(composer.composer_input.value).to eq(spanish_input)
         end
       end
 
-      it "confirms the results when confirm button is pressed" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
+      it "shows the changes in a modal" do
+        trigger_composer_helper(spanish_input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
+          ai_helper_menu.select_helper_model(mode)
 
-          wait_for { composer.composer_input.value == input }
-
-          ai_helper_context_menu.click_confirm_button
-          expect(composer.composer_input.value).to eq(input)
-        end
-      end
-
-      it "hides the context menu when pressing Escape on the keyboard" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
-        ai_helper_context_menu.press_escape_key
-        expect(ai_helper_context_menu).to have_no_context_menu
-      end
-
-      it "shows the changes in a modal when view changes button is pressed" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
-
-        DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
-          wait_for { composer.composer_input.value == input }
-
-          ai_helper_context_menu.click_view_changes_button
           expect(diff_modal).to be_visible
           expect(diff_modal.old_value).to eq(spanish_input.gsub(/[[:space:]]+/, " ").strip)
           expect(diff_modal.new_value).to eq(
             input.gsub(/[[:space:]]+/, " ").gsub(/[‘’]/, "'").gsub(/[“”]/, '"').strip,
           )
           diff_modal.confirm_changes
-          expect(ai_helper_context_menu).to have_no_context_menu
+          expect(ai_helper_menu).to have_no_context_menu
         end
       end
 
-      it "reverts the changes when revert button is pressed in the modal" do
-        trigger_context_menu(spanish_input)
-        ai_helper_context_menu.click_ai_button
-
+      it "does not apply the changes when discard button is pressed in the modal" do
+        trigger_composer_helper(spanish_input)
         DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
-          wait_for { composer.composer_input.value == input }
-
-          ai_helper_context_menu.click_view_changes_button
+          ai_helper_menu.select_helper_model(mode)
           expect(diff_modal).to be_visible
-          diff_modal.revert_changes
-          expect(ai_helper_context_menu).to have_no_context_menu
+          diff_modal.discard_changes
+          expect(ai_helper_menu).to have_no_context_menu
           expect(composer.composer_input.value).to eq(spanish_input)
         end
       end
@@ -267,14 +153,12 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       let(:proofread_text) { "The rain in Spain, stays mainly in the Plane." }
 
       it "replaces the composed message with AI generated content" do
-        trigger_context_menu(input)
-        ai_helper_context_menu.click_ai_button
+        trigger_composer_helper(input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
-          ai_helper_context_menu.select_helper_model(mode)
-
+          ai_helper_menu.select_helper_model(mode)
+          diff_modal.confirm_changes
           wait_for { composer.composer_input.value == proofread_text }
-
           expect(composer.composer_input.value).to eq(proofread_text)
         end
       end
@@ -402,9 +286,11 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     let(:mode) { CompletionPrompt::GENERATE_TITLES }
     before { SiteSetting.ai_helper_enabled = false }
 
-    it "does not trigger AI context menu" do
-      trigger_context_menu(input)
-      expect(ai_helper_context_menu).to have_no_context_menu
+    it "does not show the AI helper button in the composer toolbar" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(input)
+      expect(page).to have_no_css(".d-editor-button-bar button.ai-helper-trigger")
     end
 
     it "does not trigger AI suggestion buttons" do
@@ -419,9 +305,11 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     let(:mode) { CompletionPrompt::GENERATE_TITLES }
     before { SiteSetting.composer_ai_helper_allowed_groups = non_member_group.id.to_s }
 
-    it "does not trigger AI context menu" do
-      trigger_context_menu(input)
-      expect(ai_helper_context_menu).to have_no_context_menu
+    it "does not show the AI helper button in the composer toolbar" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(input)
+      expect(page).to have_no_css(".d-editor-button-bar button.ai-helper-trigger")
     end
 
     it "does not trigger AI suggestion buttons" do
@@ -444,12 +332,14 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     end
   end
 
-  context "when context menu feature is disabled" do
+  context "when composer helper feature is disabled" do
     before { SiteSetting.ai_helper_enabled_features = "suggestions" }
 
-    it "does not show context menu in the composer" do
-      trigger_context_menu(input)
-      expect(ai_helper_context_menu).to have_no_context_menu
+    it "does not show button in the composer toolbar" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(input)
+      expect(page).to have_no_css(".d-editor-button-bar button.ai-helper-trigger")
     end
   end
 end
