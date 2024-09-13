@@ -4,6 +4,16 @@ import AiComposerHelperMenu from "../discourse/components/ai-composer-helper-men
 import ModalDiffModal from "../discourse/components/modal/diff-modal";
 import { showComposerAiHelper } from "../discourse/lib/show-ai-helper";
 
+function showErrorToast(api) {
+  const toasts = api.container.lookup("service:toasts");
+  return toasts.error({
+    duration: 3000,
+    data: {
+      message: i18n("discourse_ai.ai_helper.no_content_error"),
+    },
+  });
+}
+
 function initializeAiHelperTrigger(api) {
   api.onToolbarCreate((toolbar) => {
     const currentUser = api.getCurrentUser();
@@ -29,6 +39,10 @@ function initializeAiHelperTrigger(api) {
       preventFocus: true,
       shortcut: "ALT+P",
       shortcutAction: (toolbarEvent) => {
+        if (toolbarEvent.getText().length === 0) {
+          return showErrorToast(api);
+        }
+
         const mode = currentUser?.ai_helper_prompts.find(
           (p) => p.name === "proofread"
         ).id;
@@ -50,13 +64,7 @@ function initializeAiHelperTrigger(api) {
         ),
       sendAction: (event) => {
         if (toolbar.context.value.length === 0) {
-          const toasts = api.container.lookup("service:toasts");
-          return toasts.error({
-            duration: 3000,
-            data: {
-              message: i18n("discourse_ai.ai_helper.no_content_error"),
-            },
-          });
+          return showErrorToast(api);
         }
 
         const menu = api.container.lookup("service:menu");

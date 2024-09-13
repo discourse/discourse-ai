@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+include SystemHelpers
+
 RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
   fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
 
@@ -11,47 +13,42 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
 
   let(:composer) { PageObjects::Components::Composer.new }
   let(:toasts) { PageObjects::Components::Toasts.new }
+  let(:diff_modal) { PageObjects::Modals::DiffModal.new }
 
-  it "proofreads selected text using the composer toolbar" do
-    visit "/new-topic"
-    composer.fill_content("hello worldd !")
+  context "when triggering via keyboard shortcut" do
+    it "proofreads selected text using" do
+      visit "/new-topic"
+      composer.fill_content("hello worldd !")
 
-    composer.select_range(6, 12)
+      composer.select_range(6, 12)
 
-    DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do
-      ai_toolbar = PageObjects::Components::SelectKit.new(".toolbar-popup-menu-options")
-      ai_toolbar.expand
-      ai_toolbar.select_row_by_name("Proofread Text")
-
-      find(".composer-ai-helper-modal .btn-primary.confirm").click
-      expect(composer.composer_input.value).to eq("hello world !")
+      DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do
+        composer.composer_input.send_keys([PLATFORM_KEY_MODIFIER, :alt, "p"])
+        diff_modal.confirm_changes
+        expect(composer.composer_input.value).to eq("hello world !")
+      end
     end
-  end
 
-  it "proofreads all text when nothing is selected" do
-    visit "/new-topic"
-    composer.fill_content("hello worrld")
+    it "proofreads all text when nothing is selected" do
+      visit "/new-topic"
+      composer.fill_content("hello worrld")
 
-    # Simulate AI response
-    DiscourseAi::Completions::Llm.with_prepared_responses(["hello world"]) do
-      ai_toolbar = PageObjects::Components::SelectKit.new(".toolbar-popup-menu-options")
-      ai_toolbar.expand
-      ai_toolbar.select_row_by_name("Proofread Text")
-
-      find(".composer-ai-helper-modal .btn-primary.confirm").click
-      expect(composer.composer_input.value).to eq("hello world")
+      # Simulate AI response
+      DiscourseAi::Completions::Llm.with_prepared_responses(["hello world"]) do
+        composer.composer_input.send_keys([PLATFORM_KEY_MODIFIER, :alt, "p"])
+        diff_modal.confirm_changes
+        expect(composer.composer_input.value).to eq("hello world")
+      end
     end
-  end
 
-  it "does not trigger proofread modal if composer is empty" do
-    visit "/new-topic"
+    it "does not trigger proofread modal if composer is empty" do
+      visit "/new-topic"
 
-    # Simulate AI response
-    DiscourseAi::Completions::Llm.with_prepared_responses(["hello world"]) do
-      ai_toolbar = PageObjects::Components::SelectKit.new(".toolbar-popup-menu-options")
-      ai_toolbar.expand
-      ai_toolbar.select_row_by_name("Proofread Text")
-      expect(toasts).to have_error(I18n.t("js.discourse_ai.ai_helper.proofread.no_content_error"))
+      # Simulate AI response
+      DiscourseAi::Completions::Llm.with_prepared_responses(["hello world"]) do
+        composer.composer_input.send_keys([PLATFORM_KEY_MODIFIER, :alt, "p"])
+        expect(toasts).to have_error(I18n.t("js.discourse_ai.ai_helper.no_content_error"))
+      end
     end
   end
 end
