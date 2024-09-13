@@ -1,8 +1,11 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { getOwner } from "@ember/owner";
 import { service } from "@ember/service";
 import I18n from "discourse-i18n";
+import DToast from "float-kit/components/d-toast";
+import DToastInstance from "float-kit/lib/d-toast-instance";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
 import ModalDiffModal from "../components/modal/diff-modal";
 import ThumbnailSuggestion from "../components/modal/thumbnail-suggestions";
@@ -15,8 +18,17 @@ export default class AiComposerHelperMenu extends Component {
   @tracked newSelectedText;
   @tracked diff;
   @tracked customPromptValue = "";
+  @tracked noContentError = false;
   prompts = [];
   promptTypes = {};
+
+  constructor() {
+    super(...arguments);
+
+    if (this.args.data.toolbarEvent.getText().length === 0) {
+      this.noContentError = true;
+    }
+  }
 
   get helperOptions() {
     let prompts = this.currentUser?.ai_helper_prompts;
@@ -70,6 +82,32 @@ export default class AiComposerHelperMenu extends Component {
     return prompts;
   }
 
+  get toast() {
+    const owner = getOwner(this);
+    const options = {
+      close: () => this.args.close(),
+      duration: 3000,
+      data: {
+        theme: "error",
+        icon: "triangle-exclamation",
+        message: I18n.t("discourse_ai.ai_helper.no_content_error"),
+      },
+    };
+
+    const custom = class CustomToastInstance extends DToastInstance {
+      constructor() {
+        super(owner, options);
+      }
+
+      @action
+      close() {
+        this.options.close();
+      }
+    };
+
+    return new custom(owner, options);
+  }
+
   @action
   suggestChanges(option) {
     if (option.name === "illustrate_post") {
@@ -102,19 +140,23 @@ export default class AiComposerHelperMenu extends Component {
   }
 
   <template>
-    <div class="ai-composer-helper-menu">
-      {{#if this.site.mobileView}}
-        <div class="ai-composer-helper-menu__selected-text">
-          {{@data.selectedText}}
-        </div>
-      {{/if}}
+    {{#if this.noContentError}}
+      <DToast @toast={{this.toast}} />
+    {{else}}
+      <div class="ai-composer-helper-menu">
+        {{#if this.site.mobileView}}
+          <div class="ai-composer-helper-menu__selected-text">
+            {{@data.selectedText}}
+          </div>
+        {{/if}}
 
-      <AiHelperOptionsList
-        @options={{this.helperOptions}}
-        @customPromptValue={{this.customPromptValue}}
-        @performAction={{this.suggestChanges}}
-        @shortcutVisible={{true}}
-      />
-    </div>
+        <AiHelperOptionsList
+          @options={{this.helperOptions}}
+          @customPromptValue={{this.customPromptValue}}
+          @performAction={{this.suggestChanges}}
+          @shortcutVisible={{true}}
+        />
+      </div>
+    {{/if}}
   </template>
 }
