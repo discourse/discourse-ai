@@ -17,10 +17,10 @@ module ::Jobs
       fragments.map { |fragment| vector_rep.generate_representation_from(fragment) }
 
       last_fragment = fragments.last
-      ai_persona = last_fragment.ai_persona
+      target = last_fragment.target
       upload = last_fragment.upload
 
-      indexing_status = RagDocumentFragment.indexing_status(ai_persona, [upload])[upload.id]
+      indexing_status = RagDocumentFragment.indexing_status(target, [upload])[upload.id]
       RagDocumentFragment.publish_status(upload, indexing_status)
     end
   end

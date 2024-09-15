@@ -139,7 +139,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     it "includes rag uploads for each persona" do
       upload = Fabricate(:upload)
-      RagDocumentFragment.link_persona_and_uploads(ai_persona, [upload.id])
+      RagDocumentFragment.link_target_and_uploads(ai_persona, [upload.id])
 
       get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
       expect(response).to be_successful

@@ -11,8 +11,8 @@ RSpec.describe Jobs::GenerateRagEmbeddings do
 
     fab!(:ai_persona)
 
-    fab!(:rag_document_fragment_1) { Fabricate(:rag_document_fragment, ai_persona: ai_persona) }
-    fab!(:rag_document_fragment_2) { Fabricate(:rag_document_fragment, ai_persona: ai_persona) }
+    fab!(:rag_document_fragment_1) { Fabricate(:rag_document_fragment, target: ai_persona) }
+    fab!(:rag_document_fragment_2) { Fabricate(:rag_document_fragment, target: ai_persona) }
 
     before do
       SiteSetting.ai_embeddings_enabled = true

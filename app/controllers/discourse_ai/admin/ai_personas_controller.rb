@@ -41,7 +41,7 @@ module DiscourseAi
       def create
         ai_persona = AiPersona.new(ai_persona_params.except(:rag_uploads))
         if ai_persona.save
-          RagDocumentFragment.link_persona_and_uploads(ai_persona, attached_upload_ids)
+          RagDocumentFragment.link_target_and_uploads(ai_persona, attached_upload_ids)
 
           render json: {
                    ai_persona: LocalizedAiPersonaSerializer.new(ai_persona, root: false),
@@ -59,7 +59,7 @@ module DiscourseAi
 
       def update
         if @ai_persona.update(ai_persona_params.except(:rag_uploads))
-          RagDocumentFragment.update_persona_uploads(@ai_persona, attached_upload_ids)
+          RagDocumentFragment.update_target_uploads(@ai_persona, attached_upload_ids)
 
           render json: LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
         else
