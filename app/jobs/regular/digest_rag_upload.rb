@@ -126,7 +126,9 @@ module ::Jobs
 
         while overlap_token_ids.present?
           begin
-            overlap = tokenizer.decode(overlap_token_ids) + split_char
+            padding = split_char
+            padding = " " if padding.empty?
+            overlap = tokenizer.decode(overlap_token_ids) + padding
             break if overlap.encoding == Encoding::UTF_8
           rescue StandardError
             # it is possible that we truncated mid char
@@ -135,7 +137,7 @@ module ::Jobs
         end
 
         # remove first word it is probably truncated
-        overlap = overlap.split(" ", 2).last
+        overlap = overlap.split(/\s/, 2).last.to_s.lstrip
       end
     end
 

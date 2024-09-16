@@ -35,6 +35,7 @@ module DiscourseAi
               )
             attach_truncate(ctx)
             attach_http(ctx)
+            attach_index(ctx)
             ctx.eval(framework_script)
             ctx
           end
@@ -50,6 +51,10 @@ module DiscourseAi
         const llm = {
           truncate: _llm_truncate,
         };
+
+        const index = {
+          search: _index_search,
+        }
         function details() { return ""; };
       JS
       end
@@ -105,10 +110,70 @@ module DiscourseAi
 
       private
 
+      MAX_FRAGMENTS = 200
+
+      def rag_search(query, filenames: nil, limit: 10)
+        limit = limit.to_i
+        return [] if limit < 1
+        limit = [MAX_FRAGMENTS, limit].min
+
+        upload_refs = UploadReference.where(target_id: tool.id, target_type: "AiTool").pluck(:upload_id)
+
+        if filenames
+          upload_refs = Upload.where(id: upload_refs).where(original_filename: filenames).pluck(:id)
+        end
+
+        if upload_refs.empty?
+          return []
+        end
+
+        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
+        vector_rep =
+          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        query_vector = vector_rep.vector_from(query)
+        fragment_ids =
+          vector_rep.asymmetric_rag_fragment_similarity_search(
+            query_vector,
+            target_type: "AiTool",
+            target_id: tool.id,
+            limit: limit,
+            offset: 0
+          )
+        fragments =
+          RagDocumentFragment.where(id: fragment_ids, upload_id: upload_refs).pluck(
+            :id,
+            :fragment,
+            :metadata,
+          )
+
+        mapped = {}
+        fragments.each do |id, fragment, metadata|
+          mapped[id] = { fragment: fragment, metadata: metadata }
+        end
+
+        fragment_ids.take(limit).map { |fragment_id| mapped[fragment_id] }
+      end
+
       def attach_truncate(mini_racer_context)
         mini_racer_context.attach(
           "_llm_truncate",
           ->(text, length) { @llm.tokenizer.truncate(text, length) },
+        )
+      end
+
+      def attach_index(mini_racer_context)
+        mini_racer_context.attach(
+          "_index_search",
+          ->(query, options) do
+            begin
+              self.running_attached_function = true
+              options ||= {}
+              options = options.symbolize_keys
+              self.rag_search(query, **options)
+            ensure
+              self.running_attached_function = false
+            end
+          end,
         )
       end
 

@@ -7,6 +7,7 @@ class AiTool < ActiveRecord::Base
   validates :script, presence: true, length: { maximum: 100_000 }
   validates :created_by_id, presence: true
   belongs_to :created_by, class_name: "User"
+  has_many :rag_document_fragments, dependent: :destroy, as: :target
 
   def signature
     { name: name, description: description, parameters: parameters.map(&:symbolize_keys) }
@@ -173,14 +174,16 @@ end
 #
 # Table name: ai_tools
 #
-#  id            :bigint           not null, primary key
-#  name          :string           not null
-#  description   :string           not null
-#  summary       :string           not null
-#  parameters    :jsonb            not null
-#  script        :text             not null
-#  created_by_id :integer          not null
-#  enabled       :boolean          default(TRUE), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  id                       :bigint           not null, primary key
+#  name                     :string           not null
+#  description              :string           not null
+#  summary                  :string           not null
+#  parameters               :jsonb            not null
+#  script                   :text             not null
+#  created_by_id            :integer          not null
+#  enabled                  :boolean          default(TRUE), not null
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  rag_chunk_tokens         :integer          default(374), not null
+#  rag_chunk_overlap_tokens :integer          default(10), not null
 #
