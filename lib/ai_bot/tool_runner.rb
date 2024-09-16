@@ -117,15 +117,14 @@ module DiscourseAi
         return [] if limit < 1
         limit = [MAX_FRAGMENTS, limit].min
 
-        upload_refs = UploadReference.where(target_id: tool.id, target_type: "AiTool").pluck(:upload_id)
+        upload_refs =
+          UploadReference.where(target_id: tool.id, target_type: "AiTool").pluck(:upload_id)
 
         if filenames
           upload_refs = Upload.where(id: upload_refs).where(original_filename: filenames).pluck(:id)
         end
 
-        if upload_refs.empty?
-          return []
-        end
+        return [] if upload_refs.empty?
 
         strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
         vector_rep =
@@ -137,7 +136,7 @@ module DiscourseAi
             target_type: "AiTool",
             target_id: tool.id,
             limit: limit,
-            offset: 0
+            offset: 0,
           )
         fragments =
           RagDocumentFragment.where(id: fragment_ids, upload_id: upload_refs).pluck(
