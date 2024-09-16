@@ -342,4 +342,19 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       expect(page).to have_no_css(".d-editor-button-bar button.ai-helper-trigger")
     end
   end
+
+  context "when triggering composer AI helper", mobile: true do
+    it "should close the composer helper before showing the diff modal" do
+      visit("/latest")
+      page.find("#create-topic").click
+      composer.fill_content(input)
+      composer.click_toolbar_button("ai-helper-trigger")
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
+        ai_helper_menu.select_helper_model(CompletionPrompt::TRANSLATE)
+        expect(ai_helper_menu).to have_no_context_menu
+        expect(diff_modal).to be_visible
+      end
+    end
+  end
 end
