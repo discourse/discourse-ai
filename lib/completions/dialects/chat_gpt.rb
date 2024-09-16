@@ -39,6 +39,11 @@ module DiscourseAi
           llm_model.max_prompt_tokens - buffer
         end
 
+        # no support for streaming or tools or system messages
+        def is_gpt_o?
+          llm_model.provider == "open_ai" && llm_model.name.include?("o1-")
+        end
+
         private
 
         def tools_dialect
@@ -46,7 +51,11 @@ module DiscourseAi
         end
 
         def system_msg(msg)
-          { role: "system", content: msg[:content] }
+          if is_gpt_o?
+            { role: "user", content: msg[:content] }
+          else
+            { role: "system", content: msg[:content] }
+          end
         end
 
         def model_msg(msg)
