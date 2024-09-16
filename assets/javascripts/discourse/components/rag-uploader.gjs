@@ -12,7 +12,7 @@ import discourseDebounce from "discourse-common/lib/debounce";
 import I18n from "discourse-i18n";
 import RagUploadProgress from "./rag-upload-progress";
 
-export default class PersonaRagUploader extends Component.extend(
+export default class RagUploader extends Component.extend(
   UppyUploadMixin
 ) {
   @service appEvents;
@@ -21,9 +21,9 @@ export default class PersonaRagUploader extends Component.extend(
   @tracked filteredUploads = null;
   @tracked ragIndexingStatuses = null;
   @tracked ragUploads = null;
-  id = "discourse-ai-persona-rag-uploader";
+  id = "discourse-ai-rag-uploader";
   maxFiles = 20;
-  uploadUrl = "/admin/plugins/discourse-ai/ai-personas/files/upload";
+  uploadUrl = "/admin/plugins/discourse-ai/rag-document-fragments/files/upload";
   preventDirectS3Uploads = true;
 
   didReceiveAttrs() {
@@ -112,19 +112,19 @@ export default class PersonaRagUploader extends Component.extend(
   }
 
   <template>
-    <div class="persona-rag-uploader">
+    <div class="rag-uploader">
       <h3>{{I18n.t "discourse_ai.ai_persona.uploads.title"}}</h3>
       <p>{{I18n.t "discourse_ai.ai_persona.uploads.description"}}</p>
 
       {{#if this.ragUploads}}
-        <div class="persona-rag-uploader__search-input-container">
-          <div class="persona-rag-uploader__search-input">
+        <div class="rag-uploader__search-input-container">
+          <div class="rag-uploader__search-input">
             {{icon
               "search"
-              class="persona-rag-uploader__search-input__search-icon"
+              class="rag-uploader__search-input__search-icon"
             }}
             <Input
-              class="persona-rag-uploader__search-input__input"
+              class="rag-uploader__search-input__input"
               placeholder={{I18n.t "discourse_ai.ai_persona.uploads.filter"}}
               @value={{this.term}}
               {{on "keyup" this.debouncedSearch}}
@@ -133,12 +133,12 @@ export default class PersonaRagUploader extends Component.extend(
         </div>
       {{/if}}
 
-      <table class="persona-rag-uploader__uploads-list">
+      <table class="rag-uploader__uploads-list">
         <tbody>
           {{#each this.filteredUploads as |upload|}}
             <tr>
               <td>
-                <span class="persona-rag-uploader__rag-file-icon">{{icon
+                <span class="rag-uploader__rag-file-icon">{{icon
                     "file"
                   }}</span>
                 {{upload.original_filename}}
@@ -147,7 +147,7 @@ export default class PersonaRagUploader extends Component.extend(
                 @upload={{upload}}
                 @ragIndexingStatuses={{this.ragIndexingStatuses}}
               />
-              <td class="persona-rag-uploader__remove-file">
+              <td class="rag-uploader__remove-file">
                 <DButton
                   @icon="times"
                   @title="discourse_ai.ai_persona.uploads.remove"
@@ -159,16 +159,16 @@ export default class PersonaRagUploader extends Component.extend(
           {{/each}}
           {{#each this.inProgressUploads as |upload|}}
             <tr>
-              <td><span class="persona-rag-uploader__rag-file-icon">{{icon
+              <td><span class="rag-uploader__rag-file-icon">{{icon
                     "file"
                   }}</span>
                 {{upload.original_filename}}</td>
-              <td class="persona-rag-uploader__upload-status">
+              <td class="rag-uploader__upload-status">
                 <div class="spinner small"></div>
                 <span>{{I18n.t "discourse_ai.ai_persona.uploads.uploading"}}
                   {{upload.uploadProgress}}%</span>
               </td>
-              <td class="persona-rag-uploader__remove-file">
+              <td class="rag-uploader__remove-file">
                 <DButton
                   @icon="times"
                   @title="discourse_ai.ai_persona.uploads.remove"

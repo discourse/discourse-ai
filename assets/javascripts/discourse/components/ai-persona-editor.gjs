@@ -23,7 +23,7 @@ import DTooltip from "float-kit/components/d-tooltip";
 import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaToolOptions from "./ai-persona-tool-options";
 import AiToolSelector from "./ai-tool-selector";
-import PersonaRagUploader from "./persona-rag-uploader";
+import RagUploader from "./rag-uploader";
 
 export default class PersonaEditor extends Component {
   @service router;
@@ -487,7 +487,7 @@ export default class PersonaEditor extends Component {
       {{/if}}
       {{#if this.siteSettings.ai_embeddings_enabled}}
         <div class="control-group">
-          <PersonaRagUploader
+          <RagUploader
             @persona={{this.editingModel}}
             @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}

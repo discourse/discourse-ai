@@ -65,7 +65,7 @@ export default class RagUploadProgress extends Component {
 
   <template>
     <td
-      class="persona-rag-uploader__upload-status"
+      class="rag-uploader__upload-status"
       {{didInsert this.trackProgress}}
     >
       {{#if this.progress}}
