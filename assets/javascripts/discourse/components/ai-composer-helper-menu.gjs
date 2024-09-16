@@ -109,19 +109,20 @@ export default class AiComposerHelperMenu extends Component {
   }
 
   @action
-  suggestChanges(option) {
+  async suggestChanges(option) {
+    await this.args.close();
+
     if (option.name === "illustrate_post") {
-      this.modal.show(ThumbnailSuggestion, {
+      return this.modal.show(ThumbnailSuggestion, {
         model: {
           mode: option.id,
           selectedText: this.args.data.selectedText,
           thumbnails: this.thumbnailSuggestions,
         },
       });
-      return this.args.close();
     }
 
-    this.modal.show(ModalDiffModal, {
+    return this.modal.show(ModalDiffModal, {
       model: {
         mode: option.id,
         selectedText: this.args.data.selectedText,
@@ -130,7 +131,6 @@ export default class AiComposerHelperMenu extends Component {
         customPromptValue: this.customPromptValue,
       },
     });
-    return this.args.close();
   }
 
   @action
