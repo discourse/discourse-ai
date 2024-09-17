@@ -169,15 +169,12 @@ pl_PL:
         suggest: "Zasugeruj za pomocą AI"
         missing_content: "Wprowadź treść, aby wygenerować sugestie."
         context_menu:
-          back: "Poprzednia"
-          trigger: "AI"
-          undo: "Cofnij"
-          loading: "AI generuje"
+          trigger: "Zapytaj AI"
+          loading: "AI generuje..."
           cancel: "Anuluj"
           regen: "Spróbuj ponownie"
-          view_changes: "Zobacz zmiany"
           confirm: "Potwierdź"
-          revert: "Przywróć"
+          discard: "Odrzuć"
           custom_prompt:
             title: "Niestandardowy monit"
             placeholder: "Wprowadź niestandardowy monit..."

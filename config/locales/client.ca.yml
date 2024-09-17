@@ -69,12 +69,10 @@ ca:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Enrere"
-          undo: "Desfés"
           cancel: "Cancel·la"
           regen: "Torna-ho a intentar"
           confirm: "Confirma"
-          revert: "Reverteix"
+          discard: "Descarta"
         post_options_menu:
           close: "Tanca"
           copy: "Còpia"

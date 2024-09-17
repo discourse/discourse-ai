@@ -273,15 +273,12 @@ pt_BR:
         suggest: "Sugestão com IA"
         missing_content: "Insira conteúdo para gerar sugestões."
         context_menu:
-          back: "Voltar"
-          trigger: "IA"
-          undo: "Desfazer"
-          loading: "A IA está gerando"
+          trigger: "Perguntar à IA"
+          loading: "A IA está gerando..."
           cancel: "Cancelar"
           regen: "Tentar novamente"
-          view_changes: "Visualizar alterações"
           confirm: "Confirmar"
-          revert: "Reverter"
+          discard: "Descartar"
           custom_prompt:
             title: "Prompt personalizado"
             placeholder: "Insira um prompt personalizado..."
@@ -297,7 +294,6 @@ pt_BR:
           cancel: "Cancelar"
           insert_footnote: "Adicionar nota de rodapé"
           footnote_credits: "Explicação da IA"
-          selected_text: "Texto selecionado"
         fast_edit:
           suggest_button: "Sugerir edição"
         thumbnail_suggestions:

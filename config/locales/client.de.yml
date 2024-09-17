@@ -269,6 +269,7 @@ de:
           azure: "Azure"
           ollama: "Ollama"
           CDCK: "CDCK"
+          samba_nova: "SambaNova"
         provider_fields:
           access_key_id: "AWS-Bedrock-Zugangsschlüssel-ID"
           region: "AWS-Bedrock-Region"
@@ -284,22 +285,18 @@ de:
         suggest: "Mit KI vorschlagen"
         missing_content: "Bitte gib einige Inhalte ein, um Vorschläge zu generieren."
         context_menu:
-          back: "Zurück"
-          trigger: "KI"
-          undo: "Rückgängig machen"
-          loading: "KI generiert"
+          trigger: "KI fragen"
+          loading: "KI generiert..."
           cancel: "Abbrechen"
           regen: "Erneut versuchen"
-          view_changes: "Änderungen anzeigen"
           confirm: "Bestätigen"
-          revert: "Verwerfen"
+          discard: "Verwerfen"
           changes: "Empfohlene Änderungen"
           custom_prompt:
             title: "Benutzerdefinierte Eingabeaufforderung"
             placeholder: "Benutzerdefinierte Eingabeaufforderung …"
             submit: "Aufforderung senden"
           translate_prompt: "Übersetzen in %{language}"
-          proofread_prompt: "Text Korrekturlesen"
         post_options_menu:
           trigger: "KI fragen"
           title: "KI fragen"
@@ -310,7 +307,6 @@ de:
           cancel: "Abbrechen"
           insert_footnote: "Fußnote hinzufügen"
           footnote_credits: "Erklärung durch KI"
-          selected_text: "Ausgewählter Text"
         fast_edit:
           suggest_button: "Bearbeiten vorschlagen"
         thumbnail_suggestions:
@@ -328,8 +324,7 @@ de:
             prompt: "Dieser Beitrag enthält nicht beschriftete Bilder. Möchtest du automatische KI-Beschriftungen für hochgeladene Bilder aktivieren? (Das kannst du später in deinen Einstellungen ändern.)"
             confirm: "Aktivieren"
             cancel: "Nicht noch einmal fragen"
-        proofread:
-          no_content_error: "Text kann nicht Korrektur gelesen werden. Bitte füge einige Inhalte zum Korrekturlesen hinzu."
+        no_content_error: "Füge zuerst Inhalte hinzu, um KI-Aktionen darauf auszuführen"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"

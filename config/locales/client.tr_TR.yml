@@ -273,15 +273,12 @@ tr_TR:
         suggest: "YZ ile öner"
         missing_content: "Lütfen öneri oluşturmak için biraz içerik girin."
         context_menu:
-          back: "Geri"
-          trigger: "YZ"
-          undo: "Geri Al"
-          loading: "YZ oluşturuyor"
+          trigger: "YZ'ye sor"
+          loading: "YZ oluşturuyor..."
           cancel: "İptal et"
           regen: "Tekrar Dene"
-          view_changes: "Değişiklikleri görüntüle"
           confirm: "Onayla"
-          revert: "Eski Haline Getir"
+          discard: "Kapat"
           custom_prompt:
             title: "Özel İstem"
             placeholder: "Özel bir istem girin..."
@@ -297,7 +294,6 @@ tr_TR:
           cancel: "İptal et"
           insert_footnote: "Dipnot ekle"
           footnote_credits: "YZ ile açıklama"
-          selected_text: "Seçili Metin"
         fast_edit:
           suggest_button: "Düzenleme öner"
         thumbnail_suggestions:

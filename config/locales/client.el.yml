@@ -69,11 +69,9 @@ el:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Πίσω"
-          undo: "Αναίρεση"
           cancel: "Ακύρωση"
           regen: "Δοκίμασε ξανά"
-          revert: "Επαναφορά"
+          discard: "Απόρριψη"
         post_options_menu:
           close: "Κλείσιμο"
           copy: "Αντιγραφή"

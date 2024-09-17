@@ -145,15 +145,12 @@ id:
       ai_helper:
         missing_content: "Silakan masukkan beberapa konten untuk menghasilkan saran."
         context_menu:
-          back: "Kembali"
-          trigger: "AI"
-          undo: "Batalkan perintah"
-          loading: "AI sedang menghasilkan"
+          trigger: "Tanya AI"
+          loading: "AI sedang menghasilkan..."
           cancel: "Batal"
           regen: "Coba Lagi"
-          view_changes: "Lihat Perubahan"
           confirm: "Konfirmasi"
-          revert: "Dibalik"
+          discard: "Batalkan"
           custom_prompt:
             title: "Perintah Khusus"
             placeholder: "Masukkan perintah khusus..."

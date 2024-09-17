@@ -71,12 +71,10 @@ ko:
           google: "구글"
       ai_helper:
         context_menu:
-          back: "뒤로"
-          undo: "실행 취소"
           cancel: "취소"
           regen: "다시 시도"
           confirm: "확인"
-          revert: "되돌리기"
+          discard: "포기"
         post_options_menu:
           close: "닫기"
           copy: "복사"

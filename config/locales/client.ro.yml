@@ -65,11 +65,9 @@ ro:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Înapoi"
-          undo: "Anulează acțiunea"
           cancel: "Anulare"
           regen: "Încearcă din nou"
-          revert: "Revenire la starea inițială"
+          discard: "Renunță"
         post_options_menu:
           close: "Închide sondajul"
           copy: "Copiază"

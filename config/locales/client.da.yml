@@ -69,12 +69,10 @@ da:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Tilbage"
-          undo: "Fortryd"
           cancel: "Annuller"
           regen: "Prøv igen"
           confirm: "Bekræft"
-          revert: "Gendan"
+          discard: "Kassér"
         post_options_menu:
           close: "Luk"
           copy: "Kopier"

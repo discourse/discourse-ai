@@ -65,11 +65,8 @@ th:
           google: "กูเกิล"
       ai_helper:
         context_menu:
-          back: "กลับ"
-          undo: "เลิกทำ"
           cancel: "ยกเลิก"
           regen: "ลองอีกครั้ง"
-          revert: "ย้อนกลับ"
         post_options_menu:
           close: "ปิด"
           copy: "คัดลอก"
