@@ -606,6 +606,10 @@
   z-index: z("mobile-composer");
 }
 
+html.footer-nav-ipad .fk-d-menu[data-identifier="ai-composer-helper-menu"] {
+  z-index: z("ipad-header-nav") + 1;
+}
+
 .fk-d-toasts:has(.ai-proofread-error-toast) {
   top: unset;
   bottom: calc(var(--composer-height) - 5%);
