@@ -178,9 +178,10 @@ en:
 
           Moreover, you can set it up so that certain user groups have access to specific personas. This means you can have different AI behaviors for different sections of your forum, further enhancing the diversity and richness of your community's interactions.
 
+      rag:
         uploads:
           title: "Uploads"
-          description: "Your AI persona will be able to search and reference the content of included files. Uploaded files should be formatted as plaintext (.txt) or markdown (.md)."
+          description: "Uploaded files should be formatted as plaintext (.txt) or markdown (.md)."
           button: "Add Files"
           filter: "Filter uploads"
           indexed: "Indexed"

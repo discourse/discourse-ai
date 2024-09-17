@@ -488,7 +488,7 @@ export default class PersonaEditor extends Component {
       {{#if this.siteSettings.ai_embeddings_enabled}}
         <div class="control-group">
           <RagUploader
-            @persona={{this.editingModel}}
+            @target={{this.editingModel}}
             @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}
           />

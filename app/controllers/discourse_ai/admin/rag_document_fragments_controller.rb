@@ -5,6 +5,18 @@ module DiscourseAi
     class RagDocumentFragmentsController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
+      def indexing_status_check
+        if params[:target_type] == "AiPersona"
+          @target = AiPersona.find(params[:target_id])
+        elsif params[:target_type] == "AiTool"
+          @target = AiTool.find(params[:target_id])
+        else
+          raise Discourse::InvalidParameters.new("Invalid target type")
+        end
+
+        render json: RagDocumentFragment.indexing_status(@target, @target.uploads)
+      end
+
       def upload_file
         file = params[:file] || params[:files].first
 

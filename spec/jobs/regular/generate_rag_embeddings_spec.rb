@@ -39,7 +39,7 @@ RSpec.describe Jobs::GenerateRagEmbeddings do
       it "sends an update through mb after a batch finishes" do
         updates =
           MessageBus.track_publish(
-            "/discourse-ai/ai-persona-rag/#{rag_document_fragment_1.upload_id}",
+            "/discourse-ai/rag/#{rag_document_fragment_1.upload_id}",
           ) { subject.execute(fragment_ids: [rag_document_fragment_1.id]) }
 
         upload_index_stats = updates.last.data

@@ -6,7 +6,7 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
       before_action :find_ai_persona,
-                    only: %i[show update destroy create_user indexing_status_check]
+                    only: %i[show update destroy create_user]
 
       def index
         ai_personas =
@@ -75,10 +75,6 @@ module DiscourseAi
         end
       end
 
-
-      def indexing_status_check
-        render json: RagDocumentFragment.indexing_status(@ai_persona, @ai_persona.uploads)
-      end
 
       private
 
