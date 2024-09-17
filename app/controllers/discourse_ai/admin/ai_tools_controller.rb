@@ -17,10 +17,11 @@ module DiscourseAi
       end
 
       def create
-        ai_tool = AiTool.new(ai_tool_params)
+        ai_tool = AiTool.new(ai_tool_params.except(:rag_uploads))
         ai_tool.created_by_id = current_user.id
 
         if ai_tool.save
+          RagDocumentFragment.link_target_and_uploads(ai_tool, attached_upload_ids)
           render_serialized(ai_tool, AiCustomToolSerializer, status: :created)
         else
           render_json_error ai_tool
@@ -28,7 +29,8 @@ module DiscourseAi
       end
 
       def update
-        if @ai_tool.update(ai_tool_params)
+        if @ai_tool.update(ai_tool_params.except(:rag_uploads))
+          RagDocumentFragment.update_target_uploads(@ai_tool, attached_upload_ids)
           render_serialized(@ai_tool, AiCustomToolSerializer)
         else
           render_json_error @ai_tool
@@ -71,6 +73,10 @@ module DiscourseAi
 
       private
 
+      def attached_upload_ids
+        ai_tool_params[:rag_uploads].to_a.map { |h| h[:id] }
+      end
+
       def find_ai_tool
         @ai_tool = AiTool.find(params[:id])
       end
@@ -81,6 +87,7 @@ module DiscourseAi
           :description,
           :script,
           :summary,
+          rag_uploads: [:id],
           parameters: [:name, :type, :description, :required, enum: []],
         )
       end

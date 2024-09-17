@@ -8,6 +8,8 @@ class AiTool < ActiveRecord::Base
   validates :created_by_id, presence: true
   belongs_to :created_by, class_name: "User"
   has_many :rag_document_fragments, dependent: :destroy, as: :target
+  has_many :upload_references, as: :target, dependent: :destroy
+  has_many :uploads, through: :upload_references
 
   def signature
     { name: name, description: description, parameters: parameters.map(&:symbolize_keys) }

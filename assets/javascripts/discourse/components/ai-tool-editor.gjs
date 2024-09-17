@@ -16,6 +16,7 @@ import I18n from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
+import RagUploader from "./rag-uploader";
 
 const ACE_EDITOR_MODE = "javascript";
 const ACE_EDITOR_THEME = "chrome";
@@ -26,6 +27,7 @@ export default class AiToolEditor extends Component {
   @service modal;
   @service toasts;
   @service store;
+  @service siteSettings;
 
   @tracked isSaving = false;
   @tracked editingModel = null;
@@ -61,6 +63,19 @@ export default class AiToolEditor extends Component {
   }
 
   @action
+  updateUploads(uploads) {
+    this.editingModel.rag_uploads = uploads;
+  }
+
+  @action
+  removeUpload(upload) {
+    this.editingModel.rag_uploads.removeObject(upload);
+    if (!this.args.model.isNew) {
+      this.save();
+    }
+  }
+
+  @action
   async save() {
     this.isSaving = true;
 
@@ -70,7 +85,8 @@ export default class AiToolEditor extends Component {
         "description",
         "parameters",
         "script",
-        "summary"
+        "summary",
+        "rag_uploads"
       );
 
       await this.args.model.save(data);
@@ -200,6 +216,16 @@ export default class AiToolEditor extends Component {
             @editorId="ai-tool-script-editor"
           />
         </div>
+
+        {{#if this.siteSettings.ai_embeddings_enabled}}
+          <div class="control-group">
+            <RagUploader
+              @target={{this.editingModel}}
+              @updateUploads={{this.updateUploads}}
+              @onRemove={{this.removeUpload}}
+            />
+          </div>
+        {{/if}}
 
         <div class="control-group ai-tool-editor__action_panel">
           <DButton
