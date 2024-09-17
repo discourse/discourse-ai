@@ -31,8 +31,9 @@ export default class RagUploadProgress extends Component {
     // Order not guaranteed. Discard old updates.
     if (
       !this.updatedProgress ||
-      data.total === 0 ||
-      this.updatedProgress.left > data.left
+      this.updatedProgress.left === 0 ||
+      this.updatedProgress.left > data.left ||
+      data.total === data.indexed
     ) {
       this.updatedProgress = data;
     }
