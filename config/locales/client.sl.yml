@@ -65,12 +65,10 @@ sl:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Nazaj"
-          undo: "Razveljavi"
           cancel: "Prekliči"
           regen: "Poskusi ponovno"
           confirm: "Potrdi"
-          revert: "Povrni"
+          discard: "Zavrzi"
         post_options_menu:
           close: "Zapri"
           copy: "Kopiraj"

@@ -62,11 +62,9 @@ bg:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Назад"
-          undo: "Отмени"
           cancel: "Прекрати"
           regen: "Опитайте отново"
-          revert: "Върни"
+          discard: "Отхвърляне"
         post_options_menu:
           close: "Затвори"
           copy: "Копирай"

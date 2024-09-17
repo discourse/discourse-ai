@@ -69,12 +69,10 @@ hr:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Natrag"
-          undo: "Vrati na prethodno"
           cancel: "Odustani"
           regen: "Pokušaj ponovno"
           confirm: "Potvrdi"
-          revert: "Vrati nazad"
+          discard: "Odbaci"
         post_options_menu:
           close: "Zatvori"
           copy: "Kopija"

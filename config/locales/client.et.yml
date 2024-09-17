@@ -65,11 +65,8 @@ et:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Tagasi"
-          undo: "Ennista"
           cancel: "Tühista"
           regen: "Proovi uuesti"
-          revert: "Võta tagasi"
         post_options_menu:
           close: "Sulge"
           copy: "Kopeeri"

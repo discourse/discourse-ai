@@ -69,12 +69,10 @@ ur:
           google: "گُوگَل"
       ai_helper:
         context_menu:
-          back: "واپس"
-          undo: "کالعدم کریں"
           cancel: "منسوخ"
           regen: "دوبارہ کوشش کریں"
           confirm: "تصدیق کریں"
-          revert: "رِیوَرٹ"
+          discard: "منسوخ"
         post_options_menu:
           close: "بند کریں"
           copy: "کاپی"

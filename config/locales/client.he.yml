@@ -7,6 +7,11 @@
 he:
   admin_js:
     admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "הפעלת חיפוש סמנטי דרך נקודת הקצה ‎./discourse-ai/embeddings/semantic-search"
       site_settings:
         categories:
           discourse_ai: "בינה מלאכותית ב־Discourse"
@@ -266,6 +271,7 @@ he:
           azure: "Azure"
           ollama: "Ollama"
           CDCK: "CDCK"
+          samba_nova: "SambaNova"
         provider_fields:
           access_key_id: "מזהה מפתח גישה ל־AWS Bedrock"
           region: "אזור של AWS Bedrock"
@@ -281,22 +287,18 @@ he:
         suggest: "הצעה עם בינה מלאכותית"
         missing_content: "נא למלא קצת תוכן כדי לחולל הצעות."
         context_menu:
-          back: "חזרה"
-          trigger: "בינה מלאכותית"
-          undo: "ביטול פעולה"
-          loading: "הבינה המלאכותית נוצרת"
+          trigger: "לשאול בינה מלאכותית"
+          loading: "הבינה המלאכותית נוצרת..."
           cancel: "ביטול"
           regen: "ניסיון נוסף"
-          view_changes: "הצגת שינויים"
           confirm: "אישור"
-          revert: "החזרה"
+          discard: "להשליך"
           changes: "עריכות מוצעות"
           custom_prompt:
             title: "בקשה מותאמת אישית"
             placeholder: "נא למלא בקשה מותאמת…"
             submit: "שליחת בקשה"
           translate_prompt: "תרגום ל%{language}"
-          proofread_prompt: "הגהת טקסט"
         post_options_menu:
           trigger: "לשאול בינה מלאכותית"
           title: "לשאול בינה מלאכותית"
@@ -307,7 +309,6 @@ he:
           cancel: "ביטול"
           insert_footnote: "הוספת הערת שוליים"
           footnote_credits: "הסבר של בינה מלאכותית"
-          selected_text: "טקסט נבחר"
         fast_edit:
           suggest_button: "הצעת עריכה"
         thumbnail_suggestions:
@@ -325,8 +326,7 @@ he:
             prompt: "הפוסט הזה מכיל תמונות בלי כותרת. להפעיל כותרות בינה מלאכותית אוטומטיות עם העלאת תמונות? (אפשר לשנות את זה בהמשך דרך ההעדפות שלך)"
             confirm: "הפעלה"
             cancel: "לא לשאול שוב"
-        proofread:
-          no_content_error: "לא ניתן לבדוק הגהת טקסט, נא להוסיף הקשר להגהה."
+        no_content_error: "יש להוסיף קודם תוכן כדי לבצע עליו פעולות בינה מלאכותית"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"

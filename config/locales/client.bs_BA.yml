@@ -69,11 +69,9 @@ bs_BA:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Prethodno"
-          undo: "Vrati nazad"
           cancel: "Odustani"
           regen: "Pokušaj ponovo"
-          revert: "Vrati nazad"
+          discard: "Odbaci"
         post_options_menu:
           close: "Zatvori"
           copy: "Copy"

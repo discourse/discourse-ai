@@ -273,15 +273,12 @@ ar:
         suggest: "الاقتراح باستخدام الذكاء الاصطناعي"
         missing_content: "يُرجى إدخال بعض المحتوى لإنشاء الاقتراحات."
         context_menu:
-          back: "رجوع"
-          trigger: "الذكاء الاصطناعي"
-          undo: "تراجع"
-          loading: "الذكاء الاصطناعي قيد إنشاء المحتوى"
+          trigger: "اسأل الذكاء الاصطناعي"
+          loading: "الذكاء الاصطناعي قيد إنشاء المحتوى..."
           cancel: "إلغاء"
           regen: "إعادة المحاولة"
-          view_changes: "عرض التغييرات"
           confirm: "تأكيد"
-          revert: "عودة"
+          discard: "تجاهل"
           custom_prompt:
             title: "رسالة مطالبة مخصَّصة"
             placeholder: "أدخل رسالة مطالبة مخصَّصة..."
@@ -297,7 +294,6 @@ ar:
           cancel: "إلغاء"
           insert_footnote: "إضافة حاشية سفلية"
           footnote_credits: "شرح بواسطة الذكاء الاصطناعي"
-          selected_text: "النص المحدَّد"
         fast_edit:
           suggest_button: "اقتراح تعديل"
         thumbnail_suggestions:

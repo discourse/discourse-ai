@@ -63,11 +63,9 @@ pt:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Retroceder"
-          undo: "Desfazer"
           cancel: "Cancelar"
           regen: "Tentar Novamente"
-          revert: "Reverter"
+          discard: "Descartar"
         post_options_menu:
           close: "Fechar"
           copy: "Copiar"

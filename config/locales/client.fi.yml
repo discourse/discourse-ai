@@ -273,15 +273,12 @@ fi:
         suggest: "Ehdota tekoälyllä"
         missing_content: "Anna sisältöä ehdotusten luomiseksi."
         context_menu:
-          back: "Takaisin"
-          trigger: "Tekoäly"
-          undo: "Kumoa"
-          loading: "Tekoäly tuottaa"
+          trigger: "Kysy tekoälyltä"
+          loading: "Tekoäly tuottaa..."
           cancel: "Peruuta"
           regen: "Yritä uudelleen"
-          view_changes: "Näytä muutokset"
           confirm: "Vahvista"
-          revert: "Palauta"
+          discard: "Hylkää"
           custom_prompt:
             title: "Mukautettu kehote"
             placeholder: "Anna mukautettu kehote..."
@@ -297,7 +294,6 @@ fi:
           cancel: "Peruuta"
           insert_footnote: "Lisää alaviite"
           footnote_credits: "Tekoälyn selitys"
-          selected_text: "Valittu teksti"
         fast_edit:
           suggest_button: "Ehdota muokkausta"
         thumbnail_suggestions:

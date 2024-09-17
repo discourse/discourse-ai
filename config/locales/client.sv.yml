@@ -69,12 +69,10 @@ sv:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Tillbaka"
-          undo: "Ångra"
           cancel: "Avbryt"
           regen: "Försök igen"
           confirm: "Bekräfta"
-          revert: "Återställ"
+          discard: "Förkasta"
         post_options_menu:
           close: "Stäng"
           copy: "Kopiera"

@@ -69,12 +69,10 @@ gl:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Volver"
-          undo: "Desfacer"
           cancel: "Cancelar"
           regen: "Tentar de novo"
           confirm: "Confirmar"
-          revert: "Reverter"
+          discard: "Desbotar"
         post_options_menu:
           close: "Pechar"
           copy: "Copiar"

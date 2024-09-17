@@ -273,15 +273,12 @@ it:
         suggest: "Suggerisci con l'IA"
         missing_content: "Inserisci alcuni contenuti per generare suggerimenti."
         context_menu:
-          back: "Indietro"
-          trigger: "IA"
-          undo: "Annulla"
-          loading: "L'IA sta generando"
+          trigger: "Chiedi all'IA"
+          loading: "L'IA sta generando..."
           cancel: "Annulla"
           regen: "Riprova"
-          view_changes: "Visualizza modifiche"
           confirm: "Conferma"
-          revert: "Ripristina"
+          discard: "Elimina"
           custom_prompt:
             title: "Comando personalizzato"
             placeholder: "Inserisci un comando personalizzato..."
@@ -297,7 +294,6 @@ it:
           cancel: "Annulla"
           insert_footnote: "Aggiungi nota a piè di pagina"
           footnote_credits: "Spiegazione dell'IA"
-          selected_text: "Testo selezionato"
         fast_edit:
           suggest_button: "Suggerisci modifica"
         thumbnail_suggestions:

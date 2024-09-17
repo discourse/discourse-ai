@@ -273,15 +273,12 @@ fr:
         suggest: "Suggérer avec l'IA"
         missing_content: "Veuillez saisir du contenu pour générer des suggestions."
         context_menu:
-          back: "Retour"
-          trigger: "IA"
-          undo: "Annuler"
-          loading: "L'IA est en train de générer des suggestions"
+          trigger: "Demander à l'IA"
+          loading: "L'IA est en train de générer..."
           cancel: "Annuler"
           regen: "Réessayer"
-          view_changes: "Afficher les modifications"
           confirm: "Confirmer"
-          revert: "Rétablir"
+          discard: "Abandonner"
           custom_prompt:
             title: "Invite personnalisée"
             placeholder: "Saisissez une invite personnalisée..."
@@ -297,7 +294,6 @@ fr:
           cancel: "Annuler"
           insert_footnote: "Ajouter une note de bas de page"
           footnote_credits: "Explication par l'IA"
-          selected_text: "Texte sélectionné"
         fast_edit:
           suggest_button: "Suggérer une modification"
         thumbnail_suggestions:

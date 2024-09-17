@@ -62,11 +62,8 @@ sq:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Kthehu mbrapa"
-          undo: "Çbëj"
           cancel: "Anulo"
           regen: "Provo përsëri"
-          revert: "Rikthe"
         post_options_menu:
           close: "Mbyll"
           copy: "Kopjo"
