@@ -7,7 +7,9 @@
       right: 1rem !important;
       width: 470px;
       max-width: 470px !important; //overruling JS
-      max-height: calc(100vh - var(--header-offset) - 3rem);
+      max-height: calc(
+        100vh - var(--header-offset) - 3rem - var(--composer-height, 0px)
+      );
 
       .ai-summary__header,
       .ai-summary-box {
