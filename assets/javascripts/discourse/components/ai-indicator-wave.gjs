@@ -1,9 +1,8 @@
-import { array } from "@ember/helper";
-
+const indicatorDots = [".", ".", "."];
 const AiIndicatorWave = <template>
   {{#if @loading}}
     <span class="ai-indicator-wave">
-      {{#each (array "." "." ".") as |dot|}}
+      {{#each indicatorDots as |dot|}}
         <span class="ai-indicator-wave__dot">{{dot}}</span>
       {{/each}}
     </span>
