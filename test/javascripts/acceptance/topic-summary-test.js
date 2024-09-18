@@ -1,5 +1,5 @@
 import { click, visit } from "@ember/test-helpers";
-import { skip } from "qunit";
+import { skip, test } from "qunit";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import {
   acceptance,
@@ -125,7 +125,7 @@ acceptance("Topic - Summary - Anon", function (needs) {
     });
   });
 
-  skip("displays cached summary immediately", async function (assert) {
+  test("displays cached summary immediately", async function (assert) {
     await visit("/t/-/1");
 
     await click(".ai-topic-summarization");
@@ -137,5 +137,12 @@ acceptance("Topic - Summary - Anon", function (needs) {
     assert
       .dom(".ai-summary-box .summarized-on")
       .exists("summary metadata exists");
+  });
+
+  test("clicking outside of summary should not close the summary box", async function (assert) {
+    await visit("/t/-/1");
+    await click(".ai-topic-summarization");
+    await click("#main-outlet-wrapper");
+    assert.dom(".ai-summary-box").exists();
   });
 });
