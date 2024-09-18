@@ -13,9 +13,7 @@ export default class RagUploadProgress extends Component {
 
   willDestroy() {
     super.willDestroy(...arguments);
-    this.messageBus.unsubscribe(
-      `/discourse-ai/rag/${this.args.upload.id}`
-    );
+    this.messageBus.unsubscribe(`/discourse-ai/rag/${this.args.upload.id}`);
   }
 
   @action
@@ -64,10 +62,7 @@ export default class RagUploadProgress extends Component {
   }
 
   <template>
-    <td
-      class="rag-uploader__upload-status"
-      {{didInsert this.trackProgress}}
-    >
+    <td class="rag-uploader__upload-status" {{didInsert this.trackProgress}}>
       {{#if this.progress}}
         {{#if this.fullyIndexed}}
           <span class="indexed">
