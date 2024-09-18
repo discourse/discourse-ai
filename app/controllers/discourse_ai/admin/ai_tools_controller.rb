@@ -87,6 +87,8 @@ module DiscourseAi
           :description,
           :script,
           :summary,
+          :rag_chunk_tokens,
+          :rag_chunk_overlap_tokens,
           rag_uploads: [:id],
           parameters: [:name, :type, :description, :required, enum: []],
         )

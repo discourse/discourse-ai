@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { Input } from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
@@ -33,6 +34,14 @@ export default class AiToolEditor extends Component {
   @tracked editingModel = null;
   @tracked showDelete = false;
   @tracked selectedPreset = null;
+  @tracked showIndexingOptions = false;
+
+  @action
+  toggleIndexingOptions(event) {
+    this.showIndexingOptions = !this.showIndexingOptions;
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
   get presets() {
     return this.args.presets.map((preset) => {
@@ -45,6 +54,12 @@ export default class AiToolEditor extends Component {
 
   get showPresets() {
     return !this.selectedPreset && this.args.model.isNew;
+  }
+
+  get indexingOptionsText() {
+    return this.showIndexingOptions
+      ? I18n.t("discourse_ai.ai_persona.hide_indexing_options")
+      : I18n.t("discourse_ai.ai_persona.show_indexing_options");
   }
 
   @action
@@ -86,7 +101,9 @@ export default class AiToolEditor extends Component {
         "parameters",
         "script",
         "summary",
-        "rag_uploads"
+        "rag_uploads",
+        "rag_chunk_tokens",
+        "rag_chunk_overlap_tokens"
       );
 
       await this.args.model.save(data);
@@ -224,7 +241,54 @@ export default class AiToolEditor extends Component {
               @updateUploads={{this.updateUploads}}
               @onRemove={{this.removeUpload}}
             />
+
+            {{#if this.editingModel.rag_uploads}}
+              <a
+                href="#"
+                class="ai-tool-editor__indexing-options"
+                {{on "click" this.toggleIndexingOptions}}
+              >{{this.indexingOptionsText}}</a>
+            {{/if}}
           </div>
+
+          {{#if this.showIndexingOptions}}
+            <div class="control-group">
+              <label>{{I18n.t
+                  "discourse_ai.ai_persona.rag_chunk_tokens"
+                }}</label>
+              <Input
+                @type="number"
+                step="any"
+                lang="en"
+                class="ai-tool-editor__rag_chunk_tokens"
+                @value={{this.editingModel.rag_chunk_tokens}}
+              />
+              <DTooltip
+                @icon="question-circle"
+                @content={{I18n.t
+                  "discourse_ai.ai_persona.rag_chunk_tokens_help"
+                }}
+              />
+            </div>
+            <div class="control-group">
+              <label>{{I18n.t
+                  "discourse_ai.ai_persona.rag_chunk_overlap_tokens"
+                }}</label>
+              <Input
+                @type="number"
+                step="any"
+                lang="en"
+                class="ai-persona-editor__rag_chunk_overlap_tokens"
+                @value={{this.editingModel.rag_chunk_overlap_tokens}}
+              />
+              <DTooltip
+                @icon="question-circle"
+                @content={{I18n.t
+                  "discourse_ai.ai_persona.rag_chunk_overlap_tokens_help"
+                }}
+              />
+            </div>
+          {{/if}}
         {{/if}}
 
         <div class="control-group ai-tool-editor__action_panel">
