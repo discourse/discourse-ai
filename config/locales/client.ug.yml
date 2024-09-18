@@ -72,12 +72,10 @@ ug:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "كەينى"
-          undo: "يېنىۋال"
           cancel: "ۋاز كەچ"
           regen: "قايتا سىنا"
           confirm: "جەزملە"
-          revert: "ئەسلىگە قايتۇر"
+          discard: "تاشلىۋەت"
         post_options_menu:
           close: "تاقا"
           copy: "كۆچۈر"

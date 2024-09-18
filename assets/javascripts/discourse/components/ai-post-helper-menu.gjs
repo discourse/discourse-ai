@@ -284,10 +284,7 @@ export default class AiPostHelperMenu extends Component {
       (and this.site.mobileView (eq this.menuState this.MENU_STATES.options))
     }}
       <div class="ai-post-helper-menu__selected-text">
-        <h2>
-          {{i18n "discourse_ai.ai_helper.post_options_menu.selected_text"}}
-        </h2>
-        <p>{{@data.selectedText}}</p>
+        {{@data.selectedText}}
       </div>
     {{/if}}
 
@@ -298,6 +295,7 @@ export default class AiPostHelperMenu extends Component {
             @options={{this.helperOptions}}
             @customPromptValue={{this.customPromptValue}}
             @performAction={{this.performAiSuggestion}}
+            @shortcutVisible={{false}}
           />
         {{else if (eq this.menuState this.MENU_STATES.loading)}}
           <AiHelperLoading @cancel={{this.cancelAiAction}} />

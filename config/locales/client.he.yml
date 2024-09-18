@@ -7,6 +7,11 @@
 he:
   admin_js:
     admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "הפעלת חיפוש סמנטי דרך נקודת הקצה ‎./discourse-ai/embeddings/semantic-search"
       site_settings:
         categories:
           discourse_ai: "בינה מלאכותית ב־Discourse"
@@ -235,6 +240,7 @@ he:
         back: "חזרה"
         confirm_delete: למחוק את המודל הזה?
         delete: מחיקה
+        seeded_warning: "המודל הזה מוגדר מראש באתר שלך ואי אפשר לערוך אותו."
         in_use_warning:
           one: "ההגדרה %{settings} משתמשת כרגע במודל הזה. אם ההגדרה שגויה היכולת לא תעבוד כמצופה."
           two: "ההגדרות הבאות משתמשות במודל הזה: %{settings}. אם ההגדרות שגויות היכולת לא תעבוד כמצופה. "
@@ -264,10 +270,13 @@ he:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          CDCK: "CDCK"
+          samba_nova: "SambaNova"
         provider_fields:
           access_key_id: "מזהה מפתח גישה ל־AWS Bedrock"
           region: "אזור של AWS Bedrock"
           organization: "מזהה ארגון OpenAI כרשות"
+          disable_system_prompt: "השבתת הודעת מערכת בבקשות"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
@@ -278,16 +287,13 @@ he:
         suggest: "הצעה עם בינה מלאכותית"
         missing_content: "נא למלא קצת תוכן כדי לחולל הצעות."
         context_menu:
-          back: "חזרה"
-          trigger: "בינה מלאכותית"
-          undo: "ביטול פעולה"
-          loading: "הבינה המלאכותית נוצרת"
+          trigger: "לשאול בינה מלאכותית"
+          loading: "הבינה המלאכותית נוצרת..."
           cancel: "ביטול"
           regen: "ניסיון נוסף"
-          view_changes: "הצגת שינויים"
           confirm: "אישור"
-          revert: "החזרה"
-          changes: "שינויים"
+          discard: "להשליך"
+          changes: "עריכות מוצעות"
           custom_prompt:
             title: "בקשה מותאמת אישית"
             placeholder: "נא למלא בקשה מותאמת…"
@@ -303,7 +309,6 @@ he:
           cancel: "ביטול"
           insert_footnote: "הוספת הערת שוליים"
           footnote_credits: "הסבר של בינה מלאכותית"
-          selected_text: "טקסט נבחר"
         fast_edit:
           suggest_button: "הצעת עריכה"
         thumbnail_suggestions:
@@ -321,6 +326,7 @@ he:
             prompt: "הפוסט הזה מכיל תמונות בלי כותרת. להפעיל כותרות בינה מלאכותית אוטומטיות עם העלאת תמונות? (אפשר לשנות את זה בהמשך דרך ההעדפות שלך)"
             confirm: "הפעלה"
             cancel: "לא לשאול שוב"
+        no_content_error: "יש להוסיף קודם תוכן כדי לבצע עליו פעולות בינה מלאכותית"
       reviewables:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"

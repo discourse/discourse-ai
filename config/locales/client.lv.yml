@@ -65,11 +65,9 @@ lv:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Atpakaļ"
-          undo: "Atsaukt"
           cancel: "Atcelt"
           regen: "Mēģināt vēlreiz"
-          revert: "Atgriezt"
+          discard: "Izmest"
         post_options_menu:
           close: "Aizvērt"
           copy: "Kopēt"

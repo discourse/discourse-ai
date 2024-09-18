@@ -69,12 +69,10 @@ cs:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Zpět"
-          undo: "Zpět"
           cancel: "Zrušit"
           regen: "Zkusit znovu"
           confirm: "Potvrdit"
-          revert: "Vrátit"
+          discard: "Zahodit"
         post_options_menu:
           close: "Zavřít"
           copy: "Kopírovat"

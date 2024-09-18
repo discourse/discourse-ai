@@ -395,7 +395,8 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           candidate_ids << Fabricate(
             :rag_document_fragment,
             fragment: "fragment-n#{i}",
-            ai_persona_id: ai_persona.id,
+            target_id: ai_persona.id,
+            target_type: "AiPersona",
             upload: upload,
           ).id
         end

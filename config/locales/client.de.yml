@@ -7,6 +7,11 @@
 de:
   admin_js:
     admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "Ermöglicht die semantische Suche über den Endpunkt /discourse-ai/embeddings/semantic-search."
       site_settings:
         categories:
           discourse_ai: "Discourse-KI"
@@ -235,6 +240,7 @@ de:
         back: "Zurück"
         confirm_delete: Bist du sicher, dass du dieses Modell löschen willst?
         delete: Löschen
+        seeded_warning: "Dieses Modell ist auf deiner Website vorkonfiguriert und kann nicht bearbeitet werden."
         in_use_warning:
           one: "Dieses Modell wird derzeit von der Einstellung %{settings} verwendet. Wenn die Funktion falsch konfiguriert ist, funktioniert sie nicht wie erwartet."
           other: "Dieses Modell wird derzeit von den folgenden Einstellungen verwendet: %{settings}. Bei einer falschen Konfiguration funktionieren die Funktionen nicht wie erwartet. "
@@ -262,10 +268,13 @@ de:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          CDCK: "CDCK"
+          samba_nova: "SambaNova"
         provider_fields:
           access_key_id: "AWS-Bedrock-Zugangsschlüssel-ID"
           region: "AWS-Bedrock-Region"
           organization: "Optionale OpenAI-Organisations-ID"
+          disable_system_prompt: "Systemmeldung in Eingabeaufforderungen deaktivieren"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -276,16 +285,13 @@ de:
         suggest: "Mit KI vorschlagen"
         missing_content: "Bitte gib einige Inhalte ein, um Vorschläge zu generieren."
         context_menu:
-          back: "Zurück"
-          trigger: "KI"
-          undo: "Rückgängig machen"
-          loading: "KI generiert"
+          trigger: "KI fragen"
+          loading: "KI generiert..."
           cancel: "Abbrechen"
           regen: "Erneut versuchen"
-          view_changes: "Änderungen anzeigen"
           confirm: "Bestätigen"
-          revert: "Verwerfen"
-          changes: "Änderungen"
+          discard: "Verwerfen"
+          changes: "Empfohlene Änderungen"
           custom_prompt:
             title: "Benutzerdefinierte Eingabeaufforderung"
             placeholder: "Benutzerdefinierte Eingabeaufforderung …"
@@ -301,7 +307,6 @@ de:
           cancel: "Abbrechen"
           insert_footnote: "Fußnote hinzufügen"
           footnote_credits: "Erklärung durch KI"
-          selected_text: "Ausgewählter Text"
         fast_edit:
           suggest_button: "Bearbeiten vorschlagen"
         thumbnail_suggestions:
@@ -319,6 +324,7 @@ de:
             prompt: "Dieser Beitrag enthält nicht beschriftete Bilder. Möchtest du automatische KI-Beschriftungen für hochgeladene Bilder aktivieren? (Das kannst du später in deinen Einstellungen ändern.)"
             confirm: "Aktivieren"
             cancel: "Nicht noch einmal fragen"
+        no_content_error: "Füge zuerst Inhalte hinzu, um KI-Aktionen darauf auszuführen"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"

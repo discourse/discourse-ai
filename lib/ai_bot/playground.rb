@@ -9,8 +9,6 @@ module DiscourseAi
       # The bot will take care of completions while this class updates the topic title
       # and stream replies.
 
-      REQUIRE_TITLE_UPDATE = "discourse-ai-title-update"
-
       def self.find_chat_persona(message, channel, user)
         if channel.direct_message_channel?
           AiPersona.allowed_chat.find do |p|
@@ -126,10 +124,7 @@ module DiscourseAi
       end
 
       def update_playground_with(post)
-        if can_attach?(post)
-          schedule_playground_titling(post)
-          schedule_bot_reply(post)
-        end
+        schedule_bot_reply(post) if can_attach?(post)
       end
 
       def conversation_context(post)
@@ -217,9 +212,14 @@ module DiscourseAi
               bot.bot_user,
               title: new_title.sub(/\A"/, "").sub(/"\Z/, ""),
             )
-            post.topic.custom_fields.delete(DiscourseAi::AiBot::EntryPoint::REQUIRE_TITLE_UPDATE)
-            post.topic.save_custom_fields
           end
+
+        allowed_users = post.topic.topic_allowed_users.pluck(:user_id)
+        MessageBus.publish(
+          "/discourse-ai/ai-bot/topic/#{post.topic.id}",
+          { title: post.topic.title },
+          user_ids: allowed_users,
+        )
       end
 
       def chat_context(message, channel, persona_user, context_post_ids)
@@ -487,6 +487,9 @@ module DiscourseAi
         reply_post
       ensure
         publish_final_update(reply_post) if stream_reply
+        if reply_post && post.post_number == 1 && post.topic.private_message?
+          title_playground(reply_post)
+        end
       end
 
       def available_bot_usernames
@@ -524,21 +527,6 @@ module DiscourseAi
         return false if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).blank?
 
         true
-      end
-
-      def schedule_playground_titling(post)
-        if post.post_number == 1 && post.topic.private_message?
-          post.topic.custom_fields[REQUIRE_TITLE_UPDATE] = true
-          post.topic.save_custom_fields
-
-          ::Jobs.enqueue_in(
-            1.minute,
-            :update_ai_bot_pm_title,
-            post_id: post.id,
-            bot_user_id: bot.bot_user.id,
-            model: bot.model,
-          )
-        end
       end
 
       def schedule_bot_reply(post)

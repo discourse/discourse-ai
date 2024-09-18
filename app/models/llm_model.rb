@@ -89,6 +89,10 @@ class LlmModel < ActiveRecord::Base
     provider_params&.dig(key)
   end
 
+  def seeded?
+    id < 0
+  end
+
   private
 
   def required_provider_params

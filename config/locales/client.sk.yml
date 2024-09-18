@@ -72,12 +72,10 @@ sk:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Späť"
-          undo: "Späť"
           cancel: "Zrušiť"
           regen: "Skúsiť znova"
           confirm: "Potvrďte"
-          revert: "Vrátiť zmeny"
+          discard: "Zahodiť"
         post_options_menu:
           close: "Zavrieť"
           copy: "Kopírovať"

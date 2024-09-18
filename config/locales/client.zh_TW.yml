@@ -67,11 +67,9 @@ zh_TW:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "上一步"
-          undo: "復原"
           cancel: "取消"
           regen: "請再試一次"
-          revert: "恢復"
+          discard: "捨棄"
         post_options_menu:
           close: "關閉"
           copy: "複製"

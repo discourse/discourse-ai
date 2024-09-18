@@ -72,12 +72,10 @@ uk:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Назад"
-          undo: "Скасувати"
           cancel: "Скасувати"
           regen: "Спробувати ще раз"
           confirm: "Підтвердити"
-          revert: "Повернути"
+          discard: "Відкинути"
         post_options_menu:
           close: "Закрити"
           copy: "Копіювати"

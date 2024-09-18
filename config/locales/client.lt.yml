@@ -107,13 +107,11 @@ lt:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Atgal"
-          trigger: "AI"
-          undo: "Anuliuoti"
+          trigger: "Paklauskite AI"
           cancel: "Atšaukti"
           regen: "Bandyti dar kartą"
           confirm: "Patvirtinti"
-          revert: "Grąžinti"
+          discard: "Išmesti"
         post_options_menu:
           trigger: "Paklauskite AI"
           title: "Paklauskite AI"

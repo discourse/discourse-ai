@@ -273,16 +273,12 @@ nl:
         suggest: "Voorstellen met AI"
         missing_content: "Voer wat inhoud in om suggesties te genereren."
         context_menu:
-          back: "Vorige"
-          trigger: "AI"
-          undo: "Ongedaan maken"
-          loading: "AI is aan het genereren"
+          trigger: "AI vragen"
+          loading: "AI is aan het genereren..."
           cancel: "Annuleren"
           regen: "Opnieuw proberen"
-          view_changes: "Wijzigingen weergeven"
           confirm: "Bevestigen"
-          revert: "Herstellen"
-          changes: "Wijzigingen"
+          discard: "Weggooien"
           custom_prompt:
             title: "Aangepaste prompt"
             placeholder: "Voer een aangepaste prompt in..."
@@ -298,7 +294,6 @@ nl:
           cancel: "Annuleren"
           insert_footnote: "Voetnoot toevoegen"
           footnote_credits: "Uitleg door AI"
-          selected_text: "Geselecteerde tekst"
         fast_edit:
           suggest_button: "Bewerking voorstellen"
         thumbnail_suggestions:

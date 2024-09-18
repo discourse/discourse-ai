@@ -1,10 +1,15 @@
 import Component from "@glimmer/component";
 import AISuggestionDropdown from "../../components/ai-suggestion-dropdown";
-import { showComposerAIHelper } from "../../lib/show-ai-helper";
+import { showComposerAiHelper } from "../../lib/show-ai-helper";
 
 export default class AiTitleSuggestion extends Component {
   static shouldRender(outletArgs, helper) {
-    return showComposerAIHelper(outletArgs, helper, "suggestions");
+    return showComposerAiHelper(
+      outletArgs?.composer,
+      helper.siteSettings,
+      helper.currentUser,
+      "suggestions"
+    );
   }
 
   <template>

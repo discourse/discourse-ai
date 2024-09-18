@@ -12,7 +12,6 @@ module DiscourseAi
         system_message_text = nil,
         messages: [],
         tools: [],
-        skip_validations: false,
         topic_id: nil,
         post_id: nil,
         max_pixels: nil
@@ -26,7 +25,6 @@ module DiscourseAi
         @post_id = post_id
 
         @messages = []
-        @skip_validations = skip_validations
 
         if system_message_text
           system_message = { type: :system, content: system_message_text }
@@ -68,7 +66,6 @@ module DiscourseAi
       private
 
       def validate_message(message)
-        return if @skip_validations
         valid_types = %i[system user model tool tool_call]
         if !valid_types.include?(message[:type])
           raise ArgumentError, "message type must be one of #{valid_types}"
@@ -91,7 +88,6 @@ module DiscourseAi
       end
 
       def validate_turn(last_turn, new_turn)
-        return if @skip_validations
         valid_types = %i[tool tool_call model user]
         raise INVALID_TURN if !valid_types.include?(new_turn[:type])
 

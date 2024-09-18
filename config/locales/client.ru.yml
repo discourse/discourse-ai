@@ -278,16 +278,12 @@ ru:
         suggest: "Подсказки от AI"
         missing_content: "Введите контент для генерации подсказок."
         context_menu:
-          back: "Назад"
-          trigger: "AI"
-          undo: "Отменить"
-          loading: "AI генерирует ответ"
+          trigger: "Спросить AI"
+          loading: "AI генерирует ответ..."
           cancel: "Отменить"
           regen: "Попробовать снова"
-          view_changes: "Просмотреть изменения"
           confirm: "Подтвердить"
-          revert: "Вернуть"
-          changes: "Изменения"
+          discard: "Отменить"
           custom_prompt:
             title: "Пользовательский запрос"
             placeholder: "Введите пользовательский запрос..."
@@ -303,7 +299,6 @@ ru:
           cancel: "Отменить"
           insert_footnote: "Добавить сноску"
           footnote_credits: "Объяснение от AI"
-          selected_text: "Выбранный текст"
         fast_edit:
           suggest_button: "Предложить правку"
         thumbnail_suggestions:

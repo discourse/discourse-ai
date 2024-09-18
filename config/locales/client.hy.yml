@@ -69,11 +69,9 @@ hy:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Ետ"
-          undo: "Ետարկել"
           cancel: "Չեղարկել"
           regen: "Կրկին Փորձել"
-          revert: "Հետադարձել"
+          discard: "Չեղարկել"
         post_options_menu:
           close: "Փակել"
           copy: "Կրկնօրինակել"

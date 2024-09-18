@@ -69,12 +69,10 @@ vi:
           google: "G"
       ai_helper:
         context_menu:
-          back: "Quay lại"
-          undo: "Hoàn tác"
           cancel: "Huỷ"
           regen: "Thử lại"
           confirm: "Xác nhận"
-          revert: "Phục hồi"
+          discard: "Hủy bỏ"
         post_options_menu:
           close: "Đóng"
           copy: "Sao chép"

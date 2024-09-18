@@ -10,7 +10,6 @@ id:
       llm_triage:
         title: Triase posting menggunakan AI
         description: "Triase posting menggunakan model bahasa besar"
-        system_prompt_missing_post_placeholder: "Perintah sistem harus berisi placeholder untuk posting: %%POST%%"
       llm_report:
         title: Laporan berkala menggunakan AI
         description: "Laporan berkala berdasarkan model bahasa besar"

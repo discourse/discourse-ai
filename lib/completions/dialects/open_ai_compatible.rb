@@ -29,9 +29,16 @@ module DiscourseAi
 
           return translated unless llm_model.lookup_custom_param("disable_system_prompt")
 
-          system_and_user_msgs = translated.shift(2)
-          user_msg = system_and_user_msgs.last
-          user_msg[:content] = [system_and_user_msgs.first[:content], user_msg[:content]].join("\n")
+          system_msg, user_msg = translated.shift(2)
+
+          if user_msg[:content].is_a?(Array) # Has inline images.
+            user_msg[:content].first[:text] = [
+              system_msg[:content],
+              user_msg[:content].first[:text],
+            ].join("\n")
+          else
+            user_msg[:content] = [system_msg[:content], user_msg[:content]].join("\n")
+          end
 
           translated.unshift(user_msg)
         end
@@ -78,17 +85,14 @@ module DiscourseAi
           encoded_uploads = prompt.encoded_uploads(message)
           return content if encoded_uploads.blank?
 
-          content_w_imgs =
-            encoded_uploads.reduce([]) do |memo, details|
-              memo << {
-                type: "image_url",
-                image_url: {
-                  url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
-                },
-              }
-            end
-
-          content_w_imgs << { type: "text", text: message[:content] }
+          encoded_uploads.reduce([{ type: "text", text: message[:content] }]) do |memo, details|
+            memo << {
+              type: "image_url",
+              image_url: {
+                url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
+              },
+            }
+          end
         end
       end
     end

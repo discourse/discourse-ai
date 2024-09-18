@@ -9,14 +9,9 @@
       max-width: 470px !important; //overruling JS
       max-height: calc(100vh - var(--header-offset) - 3rem);
 
-      &__inner-content {
-        max-height: unset;
-        padding: 0;
-      }
-
       .ai-summary__header,
       .ai-summary-box {
-        padding-inline: 1.5rem;
+        padding: 0.75em 1rem;
         box-sizing: border-box;
       }
 
@@ -35,9 +30,6 @@
           h3 {
             margin: 0;
           }
-        }
-        &-box {
-          padding-block: 1rem;
         }
       }
     }

@@ -1,11 +1,16 @@
-export function showComposerAIHelper(outletArgs, helper, featureType) {
-  const enableHelper = _helperEnabled(helper.siteSettings);
-  const enableAssistant = helper.currentUser.can_use_assistant;
-  const canShowInPM = helper.siteSettings.ai_helper_allowed_in_pm;
+export function showComposerAiHelper(
+  composerModel,
+  siteSettings,
+  currentUser,
+  featureType
+) {
+  const enableHelper = _helperEnabled(siteSettings);
+  const enableAssistant = currentUser.can_use_assistant;
+  const canShowInPM = siteSettings.ai_helper_allowed_in_pm;
   const enableFeature =
-    helper.siteSettings.ai_helper_enabled_features.includes(featureType);
+    siteSettings.ai_helper_enabled_features.includes(featureType);
 
-  if (outletArgs?.composer?.privateMessage) {
+  if (composerModel?.privateMessage) {
     return enableHelper && enableAssistant && canShowInPM && enableFeature;
   }
 

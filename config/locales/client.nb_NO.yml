@@ -69,11 +69,9 @@ nb_NO:
           google: "Google"
       ai_helper:
         context_menu:
-          back: "Forrige"
-          undo: "Angre"
           cancel: "Avbryt"
           regen: "Prøv igjen"
-          revert: "Reverser"
+          discard: "Forkast"
         post_options_menu:
           close: "Lukk"
           copy: "Kopier"

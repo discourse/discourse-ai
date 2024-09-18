@@ -1,16 +1,11 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { getOwner } from "@ember/owner";
 import { service } from "@ember/service";
-import { modifier } from "ember-modifier";
-import { eq } from "truth-helpers";
-import DButton from "discourse/components/d-button";
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import { bind } from "discourse-common/utils/decorators";
 import I18n from "discourse-i18n";
-import AiHelperButtonGroup from "../components/ai-helper-button-group";
-import AiHelperLoading from "../components/ai-helper-loading";
+import DToast from "float-kit/components/d-toast";
+import DToastInstance from "float-kit/lib/d-toast-instance";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
 import ModalDiffModal from "../components/modal/diff-modal";
 import ThumbnailSuggestion from "../components/modal/thumbnail-suggestions";
@@ -18,29 +13,22 @@ import ThumbnailSuggestion from "../components/modal/thumbnail-suggestions";
 export default class AiComposerHelperMenu extends Component {
   @service modal;
   @service siteSettings;
-  @service aiComposerHelper;
   @service currentUser;
-  @service capabilities;
+  @service site;
   @tracked newSelectedText;
   @tracked diff;
-  @tracked initialValue = "";
   @tracked customPromptValue = "";
-  @tracked loading = false;
-  @tracked lastUsedOption = null;
-  @tracked thumbnailSuggestions = null;
-  @tracked showThumbnailModal = false;
-  @tracked lastSelectionRange = null;
-  MENU_STATES = this.aiComposerHelper.MENU_STATES;
+  @tracked noContentError = false;
   prompts = [];
   promptTypes = {};
 
-  documentListeners = modifier(() => {
-    document.addEventListener("keydown", this.onKeyDown, { passive: true });
+  constructor() {
+    super(...arguments);
 
-    return () => {
-      document.removeEventListener("keydown", this.onKeyDown);
-    };
-  });
+    if (this.args.data.toolbarEvent.getText().length === 0) {
+      this.noContentError = true;
+    }
+  }
 
   get helperOptions() {
     let prompts = this.currentUser?.ai_helper_prompts;
@@ -94,260 +82,81 @@ export default class AiComposerHelperMenu extends Component {
     return prompts;
   }
 
-  get reviewButtons() {
-    return [
-      {
-        icon: "exchange-alt",
-        label: "discourse_ai.ai_helper.context_menu.view_changes",
-        action: () =>
-          this.modal.show(ModalDiffModal, {
-            model: {
-              diff: this.diff,
-              oldValue: this.initialValue,
-              newValue: this.newSelectedText,
-              revert: this.undoAiAction,
-              confirm: () => this.updateMenuState(this.MENU_STATES.resets),
-            },
-          }),
-        classes: "view-changes",
+  get toast() {
+    const owner = getOwner(this);
+    const options = {
+      close: () => this.args.close(),
+      duration: 3000,
+      data: {
+        theme: "error",
+        icon: "triangle-exclamation",
+        message: I18n.t("discourse_ai.ai_helper.no_content_error"),
       },
-      {
-        icon: "undo",
-        label: "discourse_ai.ai_helper.context_menu.revert",
-        action: this.undoAiAction,
-        classes: "revert",
-      },
-      {
-        icon: "check",
-        label: "discourse_ai.ai_helper.context_menu.confirm",
-        action: () => this.updateMenuState(this.MENU_STATES.resets),
-        classes: "confirm",
-      },
-    ];
-  }
+    };
 
-  get resetButtons() {
-    return [
-      {
-        icon: "undo",
-        label: "discourse_ai.ai_helper.context_menu.undo",
-        action: this.undoAiAction,
-        classes: "undo",
-      },
-      {
-        icon: "discourse-sparkles",
-        label: "discourse_ai.ai_helper.context_menu.regen",
-        action: () => this.updateSelected(this.lastUsedOption),
-        classes: "regenerate",
-      },
-    ];
-  }
+    const custom = class CustomToastInstance extends DToastInstance {
+      constructor() {
+        super(owner, options);
+      }
 
-  get canCloseMenu() {
-    if (
-      document.activeElement ===
-      document.querySelector(".ai-custom-prompt__input")
-    ) {
-      return false;
-    }
+      @action
+      close() {
+        this.options.close();
+      }
+    };
 
-    if (this.loading && this._activeAiRequest !== null) {
-      return false;
-    }
-
-    if (this.aiComposerHelper.menuState === this.MENU_STATES.review) {
-      return false;
-    }
-
-    return true;
-  }
-
-  get isExpanded() {
-    if (this.aiComposerHelper.menuState === this.MENU_STATES.triggers) {
-      return "";
-    }
-
-    return "is-expanded";
-  }
-
-  @bind
-  onKeyDown(event) {
-    if (event.key === "Escape") {
-      return this.closeMenu();
-    }
-    if (
-      event.key === "Backspace" &&
-      this.args.data.selectedText &&
-      this.aiComposerHelper.menuState === this.MENU_STATES.triggers
-    ) {
-      return this.closeMenu();
-    }
+    return new custom(owner, options);
   }
 
   @action
-  toggleAiHelperOptions() {
-    this.updateMenuState(this.MENU_STATES.options);
-  }
+  async suggestChanges(option) {
+    await this.args.close();
 
-  @action
-  async updateSelected(option) {
-    this._toggleLoadingState(true);
-    this.lastUsedOption = option;
-    this.updateMenuState(this.MENU_STATES.loading);
-    this.initialValue = this.args.data.selectedText;
-    this.lastSelectionRange = this.args.data.selectionRange;
-
-    try {
-      this._activeAiRequest = await ajax("/discourse-ai/ai-helper/suggest", {
-        method: "POST",
-        data: {
+    if (option.name === "illustrate_post") {
+      return this.modal.show(ThumbnailSuggestion, {
+        model: {
           mode: option.id,
-          text: this.args.data.selectedText,
-          custom_prompt: this.customPromptValue,
-          force_default_locale: true,
+          selectedText: this.args.data.selectedText,
+          thumbnails: this.thumbnailSuggestions,
         },
       });
-
-      const data = await this._activeAiRequest;
-
-      // resets the values if new suggestion is started:
-      this.diff = null;
-      this.newSelectedText = null;
-      this.thumbnailSuggestions = null;
-
-      if (option.name === "illustrate_post") {
-        this._toggleLoadingState(false);
-        this.closeMenu();
-        this.thumbnailSuggestions = data.thumbnails;
-        this.modal.show(ThumbnailSuggestion, {
-          model: {
-            thumbnails: this.thumbnailSuggestions,
-          },
-        });
-      } else {
-        this._updateSuggestedByAi(data);
-      }
-    } catch (error) {
-      popupAjaxError(error);
-    } finally {
-      this._toggleLoadingState(false);
     }
 
-    return this._activeAiRequest;
-  }
-
-  @action
-  cancelAiAction() {
-    if (this._activeAiRequest) {
-      this._activeAiRequest.abort();
-      this._activeAiRequest = null;
-      this._toggleLoadingState(false);
-      this.closeMenu();
-    }
-  }
-
-  @action
-  updateMenuState(newState) {
-    this.aiComposerHelper.menuState = newState;
+    return this.modal.show(ModalDiffModal, {
+      model: {
+        mode: option.id,
+        selectedText: this.args.data.selectedText,
+        revert: this.undoAiAction,
+        toolbarEvent: this.args.data.toolbarEvent,
+        customPromptValue: this.customPromptValue,
+      },
+    });
   }
 
   @action
   closeMenu() {
-    if (!this.canCloseMenu) {
-      return;
-    }
-
     this.customPromptValue = "";
-    this.updateMenuState(this.MENU_STATES.triggers);
     this.args.close();
   }
 
-  @action
-  undoAiAction() {
-    if (this.capabilities.isFirefox) {
-      // execCommand("undo") is no not supported in Firefox so we insert old text at range
-      // we also need to calculate the length diffrence between the old and new text
-      const lengthDifference =
-        this.args.data.selectedText.length - this.initialValue.length;
-      const end = this.lastSelectionRange.y - lengthDifference;
-      this._insertAt(this.lastSelectionRange.x, end, this.initialValue);
-    } else {
-      document.execCommand("undo", false, null);
-    }
-
-    // context menu is prevented from closing when in review state
-    // so we change to reset state quickly before closing
-    this.updateMenuState(this.MENU_STATES.resets);
-    this.closeMenu();
-  }
-
-  _toggleLoadingState(loading) {
-    if (loading) {
-      this.args.data.dEditorInput.classList.add("loading");
-      return (this.loading = true);
-    }
-
-    this.args.data.dEditorInput.classList.remove("loading");
-    this.loading = false;
-  }
-
-  _updateSuggestedByAi(data) {
-    this.newSelectedText = data.suggestions[0];
-
-    if (data.diff) {
-      this.diff = data.diff;
-    }
-
-    this._insertAt(
-      this.args.data.selectionRange.x,
-      this.args.data.selectionRange.y,
-      this.newSelectedText
-    );
-
-    this.updateMenuState(this.MENU_STATES.review);
-  }
-
-  _insertAt(start, end, text) {
-    this.args.data.dEditorInput.setSelectionRange(start, end);
-    this.args.data.dEditorInput.focus();
-    document.execCommand("insertText", false, text);
-  }
-
   <template>
-    <div
-      class="ai-composer-helper-menu {{this.isExpanded}}"
-      {{this.documentListeners}}
-    >
-      {{#if (eq this.aiComposerHelper.menuState this.MENU_STATES.triggers)}}
-        <ul class="ai-composer-helper-menu__triggers">
-          <li>
-            <DButton
-              @icon="discourse-sparkles"
-              @label="discourse_ai.ai_helper.context_menu.trigger"
-              @action={{this.toggleAiHelperOptions}}
-              class="btn-flat"
-            />
-          </li>
-        </ul>
-      {{else if (eq this.aiComposerHelper.menuState this.MENU_STATES.options)}}
+    {{#if this.noContentError}}
+      <DToast @toast={{this.toast}} />
+    {{else}}
+      <div class="ai-composer-helper-menu">
+        {{#if this.site.mobileView}}
+          <div class="ai-composer-helper-menu__selected-text">
+            {{@data.selectedText}}
+          </div>
+        {{/if}}
+
         <AiHelperOptionsList
           @options={{this.helperOptions}}
           @customPromptValue={{this.customPromptValue}}
-          @performAction={{this.updateSelected}}
+          @performAction={{this.suggestChanges}}
+          @shortcutVisible={{true}}
         />
-      {{else if (eq this.aiComposerHelper.menuState this.MENU_STATES.loading)}}
-        <AiHelperLoading @cancel={{this.cancelAiAction}} />
-      {{else if (eq this.aiComposerHelper.menuState this.MENU_STATES.review)}}
-        <AiHelperButtonGroup
-          @buttons={{this.reviewButtons}}
-          class="ai-composer-helper-menu__review"
-        />
-      {{else if (eq this.aiComposerHelper.menuState this.MENU_STATES.resets)}}
-        <AiHelperButtonGroup
-          @buttons={{this.resetButtons}}
-          class="ai-composer-helper-menu__resets"
-        />
-      {{/if}}
-    </div>
+      </div>
+    {{/if}}
   </template>
 }

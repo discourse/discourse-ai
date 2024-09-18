@@ -273,16 +273,12 @@ es:
         suggest: "Sugerir con IA"
         missing_content: "Introduce algún contenido para generar sugerencias."
         context_menu:
-          back: "Atrás"
-          trigger: "IA"
-          undo: "Deshacer"
-          loading: "La IA está generando"
+          trigger: "Pregúntale a la IA"
+          loading: "La IA está generando..."
           cancel: "Cancelar"
           regen: "Intentar de nuevo"
-          view_changes: "Ver cambios"
           confirm: "Confirmar"
-          revert: "Revertir"
-          changes: "Cambios"
+          discard: "Descartar"
           custom_prompt:
             title: "Aviso personalizado"
             placeholder: "Introduzca un aviso personalizado..."
@@ -298,7 +294,6 @@ es:
           cancel: "Cancelar"
           insert_footnote: "Añadir nota al pie de página"
           footnote_credits: "Explicación por IA"
-          selected_text: "Texto seleccionado"
         fast_edit:
           suggest_button: "Sugerir edición"
         thumbnail_suggestions:

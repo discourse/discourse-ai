@@ -20,6 +20,7 @@ class AiPersona < ActiveRecord::Base
   validates :rag_chunk_tokens, numericality: { greater_than: 0, maximum: 50_000 }
   validates :rag_chunk_overlap_tokens, numericality: { greater_than: -1, maximum: 200 }
   validates :rag_conversation_chunks, numericality: { greater_than: 0, maximum: 1000 }
+  has_many :rag_document_fragments, dependent: :destroy, as: :target
 
   belongs_to :created_by, class_name: "User"
   belongs_to :user
@@ -27,12 +28,7 @@ class AiPersona < ActiveRecord::Base
   has_many :upload_references, as: :target, dependent: :destroy
   has_many :uploads, through: :upload_references
 
-  has_many :rag_document_fragment, dependent: :destroy
-
-  has_many :rag_document_fragments, through: :ai_persona_rag_document_fragments
-
   before_destroy :ensure_not_system
-
   before_update :regenerate_rag_fragments
 
   def self.persona_cache
@@ -230,7 +226,7 @@ class AiPersona < ActiveRecord::Base
 
   def regenerate_rag_fragments
     if rag_chunk_tokens_changed? || rag_chunk_overlap_tokens_changed?
-      RagDocumentFragment.where(ai_persona: self).delete_all
+      RagDocumentFragment.where(target: self).delete_all
     end
   end
 

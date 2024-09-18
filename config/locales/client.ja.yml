@@ -273,16 +273,12 @@ ja:
         suggest: "AI で提案"
         missing_content: "提案を生成するにはコンテンツを入力してください。"
         context_menu:
-          back: "戻る"
-          trigger: "AI"
-          undo: "元に戻す"
-          loading: "AI が生成中です"
+          trigger: "AI に尋ねる"
+          loading: "AI が生成中です..."
           cancel: "キャンセル"
           regen: "やり直す"
-          view_changes: "変更を表示"
           confirm: "確認"
-          revert: "戻す"
-          changes: "変更"
+          discard: "破棄"
           custom_prompt:
             title: "カスタムプロンプト"
             placeholder: "カスタムプロンプトを入力してください..."
@@ -298,7 +294,6 @@ ja:
           cancel: "キャンセル"
           insert_footnote: "脚注を追加"
           footnote_credits: "AI による説明"
-          selected_text: "選択されたテキスト"
         fast_edit:
           suggest_button: "編集を提案"
         thumbnail_suggestions:

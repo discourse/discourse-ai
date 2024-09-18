@@ -27,6 +27,17 @@ module DiscourseAi
           AiApiAuditLog::Provider::OpenAI
         end
 
+        def perform_completion!(dialect, user, model_params = {}, feature_name: nil, &blk)
+          if dialect.respond_to?(:is_gpt_o?) && dialect.is_gpt_o? && block_given?
+            # we need to disable streaming and simulate it
+            blk.call "", lambda { |*| }
+            response = super(dialect, user, model_params, feature_name: feature_name, &nil)
+            blk.call response, lambda { |*| }
+          else
+            super
+          end
+        end
+
         private
 
         def model_uri

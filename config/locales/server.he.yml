@@ -10,7 +10,6 @@ he:
       llm_triage:
         title: מיון ראשוני של פוסטים באמצעות בינה מלאכותית
         description: "מיון ראשוני של פוסטים באמצעות דגם שפה גדול"
-        system_prompt_missing_post_placeholder: "בקשת המערכת חייבת להכיל ממלא מקום לפוסט: %%POST%%"
         flagged_post: |
           <div>תגובה מהמודל:</div>
           <p>%%LLM_RESPONSE%%</p>
@@ -81,6 +80,7 @@ he:
     ai_summarization_enabled: "הפעלת מודול תקציר הנושא."
     ai_summarization_model: "מודל לשימוש לסיכום."
     ai_custom_summarization_allowed_groups: "קבוצות שמורשות להשתמש ליצירת סיכומים חדשים."
+    ai_pm_summarization_allowed_groups: "קבוצות שמורשות ליצור ולצפות בתקצירים בהודעות פרטיות."
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."
     ai_bot_enable_chat_warning: "הצגת אזהרה עם פתיחת שיח הודעות פרטיות. אפשר לדרוס את זה על ידי עריכת מחרוזת התרגום: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "כאשר לבוט של GPT יש גישה להודעות הפרטיות, הוא יגיב לחברים בקבוצות האלה."
@@ -312,6 +312,7 @@ he:
         disable_module_first: "קודם צריך להשבית את %{setting}."
         set_llm_first: "קודם יש להגדיר את %{setting}."
         model_unreachable: "לא הצלחנו לקבל תגובה מהמודל הזה. נא לוודא שההגדרות שלך נכונות קודם."
+        invalid_seeded_model: "אי אפשר להשתמש במודל הזה עם היכולת הזאת."
       endpoints:
         not_configured: "%{display_name} (לא מוגדר)"
         configuration_hint:
@@ -324,6 +325,7 @@ he:
         two: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
         many: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
         other: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
+      cannot_edit_builtin: "אי אפשר לערוך מודל מובנה."
     embeddings:
       configuration:
         disable_embeddings: "יש להשבית קודם את ‚הטמעת בינה מלאכותית פעילה’."

@@ -5,11 +5,11 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
+import { next } from "@ember/runloop";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
 import { shortDateNoYear } from "discourse/lib/formatter";
-import { cook } from "discourse/lib/text";
 import dIcon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import { bind } from "discourse-common/utils/decorators";
@@ -17,6 +17,7 @@ import I18n from "discourse-i18n";
 import DMenu from "float-kit/components/d-menu";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
+import { streamSummaryText } from "../../lib/ai-streamer";
 
 export default class AiSummaryBox extends Component {
   @service siteSettings;
@@ -31,6 +32,8 @@ export default class AiSummaryBox extends Component {
   @tracked outdated = false;
   @tracked canRegenerate = false;
   @tracked loading = false;
+  oldRaw = null; // used for comparison in SummaryUpdater in lib/ai-streamer
+  finalSummary = null;
 
   get outdatedSummaryWarningText() {
     let outdatedText = I18n.t("summary.outdated");
@@ -77,7 +80,8 @@ export default class AiSummaryBox extends Component {
     }
     const channel = `/discourse-ai/summaries/topic/${this.args.outletArgs.topic.id}`;
     this._channel = channel;
-    this.messageBus.subscribe(channel, this._updateSummary);
+    // we attempt to recover the last message in the bus so we subscrcibe at -2
+    this.messageBus.subscribe(channel, this._updateSummary, -2);
   }
 
   @bind
@@ -127,33 +131,35 @@ export default class AiSummaryBox extends Component {
     return ajax(url).then((data) => {
       if (data?.ai_topic_summary?.summarized_text) {
         data.done = true;
-        this._updateSummary(data);
+        // Our streamer won't display the summary unless the summary box is in the DOM.
+        // Wait for the next runloop or cached summaries won't appear.
+        next(() => this._updateSummary(data));
       }
     });
   }
 
   @bind
   _updateSummary(update) {
-    const topicSummary = update.ai_topic_summary;
+    const topicSummary = {
+      done: update.done,
+      raw: update.ai_topic_summary?.summarized_text,
+      ...update.ai_topic_summary,
+    };
+    this.loading = false;
 
-    return cook(topicSummary.summarized_text)
-      .then((cooked) => {
-        this.text = cooked;
-        this.loading = false;
-      })
-      .then(() => {
-        if (update.done) {
-          this.summarizedOn = shortDateNoYear(
-            moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
-          );
-          this.summarizedBy = topicSummary.algorithm;
-          this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
-          this.outdated = topicSummary.outdated;
-          this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
-          this.canRegenerate =
-            topicSummary.outdated && topicSummary.can_regenerate;
-        }
-      });
+    streamSummaryText(topicSummary, this);
+
+    if (update.done) {
+      this.text = this.finalSummary;
+      this.summarizedOn = shortDateNoYear(
+        moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
+      );
+      this.summarizedBy = topicSummary.algorithm;
+      this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
+      this.outdated = topicSummary.outdated;
+      this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
+      this.canRegenerate = topicSummary.outdated && topicSummary.can_regenerate;
+    }
   }
 
   @action
@@ -177,7 +183,7 @@ export default class AiSummaryBox extends Component {
       >
         <DMenu
           @onShow={{this.generateSummary}}
-          @arrow={{true}}
+          @arrow={{false}}
           @identifier="topic-map__ai-summary"
           @onRegisterApi={{this.onRegisterApi}}
           @interactive={{true}}
@@ -209,7 +215,7 @@ export default class AiSummaryBox extends Component {
                 {{#if this.loading}}
                   <AiSummarySkeleton />
                 {{else}}
-                  <div class="generated-summary">{{this.text}}</div>
+                  <div class="generated-summary cooked">{{this.text}}</div>
                   {{#if this.summarizedOn}}
                     <div class="summarized-on">
                       <p>

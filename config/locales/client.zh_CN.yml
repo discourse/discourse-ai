@@ -273,16 +273,12 @@ zh_CN:
         suggest: "通过 AI 提出建议"
         missing_content: "请输入一些内容以生成建议。"
         context_menu:
-          back: "返回"
-          trigger: "AI"
-          undo: "撤消"
-          loading: "AI 正在生成"
+          trigger: "询问 AI"
+          loading: "AI 正在生成..."
           cancel: "取消"
           regen: "重试"
-          view_changes: "查看更改"
           confirm: "确认"
-          revert: "还原"
-          changes: "更改"
+          discard: "舍弃"
           custom_prompt:
             title: "自定义提示"
             placeholder: "输入自定义提示…"
@@ -298,7 +294,6 @@ zh_CN:
           cancel: "取消"
           insert_footnote: "添加脚注"
           footnote_credits: "AI 的解释"
-          selected_text: "所选文本"
         fast_edit:
           suggest_button: "建议编辑"
         thumbnail_suggestions:
