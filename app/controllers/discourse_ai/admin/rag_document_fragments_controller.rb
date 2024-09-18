@@ -70,7 +70,6 @@ module DiscourseAi
                 )
         end
       end
-
     end
   end
 end

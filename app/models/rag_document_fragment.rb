@@ -72,11 +72,7 @@ class RagDocumentFragment < ActiveRecord::Base
     end
 
     def publish_status(upload, status)
-      MessageBus.publish(
-        "/discourse-ai/rag/#{upload.id}",
-        status,
-        user_ids: [upload.user_id],
-      )
+      MessageBus.publish("/discourse-ai/rag/#{upload.id}", status, user_ids: [upload.user_id])
     end
   end
 end
