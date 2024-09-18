@@ -1,5 +1,5 @@
 import { click, visit } from "@ember/test-helpers";
-import { test, skip } from "qunit";
+import { skip, test } from "qunit";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import {
   acceptance,
