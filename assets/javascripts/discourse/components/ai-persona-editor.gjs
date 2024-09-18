@@ -23,6 +23,7 @@ import DTooltip from "float-kit/components/d-tooltip";
 import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaToolOptions from "./ai-persona-tool-options";
 import AiToolSelector from "./ai-tool-selector";
+import RagOptions from "./rag-options";
 import RagUploader from "./rag-uploader";
 
 export default class PersonaEditor extends Component {
@@ -38,7 +39,6 @@ export default class PersonaEditor extends Component {
   @tracked showDelete = false;
   @tracked maxPixelsValue = null;
   @tracked ragIndexingStatuses = null;
-  @tracked showIndexingOptions = false;
 
   get chatPluginEnabled() {
     return this.siteSettings.chat_enabled;
@@ -51,13 +51,6 @@ export default class PersonaEditor extends Component {
     this.maxPixelsValue = this.findClosestPixelValue(
       this.editingModel.vision_max_pixels
     );
-  }
-
-  @action
-  toggleIndexingOptions(event) {
-    this.showIndexingOptions = !this.showIndexingOptions;
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   findClosestPixelValue(pixels) {
@@ -79,12 +72,6 @@ export default class PersonaEditor extends Component {
       { id: "medium", name: l("medium"), pixels: 262144 },
       { id: "high", name: l("high"), pixels: 1048576 },
     ];
-  }
-
-  get indexingOptionsText() {
-    return this.showIndexingOptions
-      ? I18n.t("discourse_ai.ai_persona.hide_indexing_options")
-      : I18n.t("discourse_ai.ai_persona.show_indexing_options");
   }
 
   @action
@@ -492,49 +479,8 @@ export default class PersonaEditor extends Component {
             @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}
           />
-          {{#if this.editingModel.rag_uploads}}
-            <a
-              href="#"
-              class="ai-persona-editor__indexing-options"
-              {{on "click" this.toggleIndexingOptions}}
-            >{{this.indexingOptionsText}}</a>
-          {{/if}}
         </div>
-        {{#if this.showIndexingOptions}}
-          <div class="control-group">
-            <label>{{I18n.t "discourse_ai.ai_persona.rag_chunk_tokens"}}</label>
-            <Input
-              @type="number"
-              step="any"
-              lang="en"
-              class="ai-persona-editor__rag_chunk_tokens"
-              @value={{this.editingModel.rag_chunk_tokens}}
-            />
-            <DTooltip
-              @icon="question-circle"
-              @content={{I18n.t
-                "discourse_ai.ai_persona.rag_chunk_tokens_help"
-              }}
-            />
-          </div>
-          <div class="control-group">
-            <label>{{I18n.t
-                "discourse_ai.ai_persona.rag_chunk_overlap_tokens"
-              }}</label>
-            <Input
-              @type="number"
-              step="any"
-              lang="en"
-              class="ai-persona-editor__rag_chunk_overlap_tokens"
-              @value={{this.editingModel.rag_chunk_overlap_tokens}}
-            />
-            <DTooltip
-              @icon="question-circle"
-              @content={{I18n.t
-                "discourse_ai.ai_persona.rag_chunk_overlap_tokens_help"
-              }}
-            />
-          </div>
+        <RagOptions @model={{this.editingModel}}>
           <div class="control-group">
             <label>{{I18n.t
                 "discourse_ai.ai_persona.rag_conversation_chunks"
@@ -553,7 +499,6 @@ export default class PersonaEditor extends Component {
               }}
             />
           </div>
-
           <div class="control-group">
             <label>{{I18n.t
                 "discourse_ai.ai_persona.question_consolidator_llm"
@@ -571,7 +516,7 @@ export default class PersonaEditor extends Component {
               }}
             />
           </div>
-        {{/if}}
+        </RagOptions>
       {{/if}}
       <div class="control-group ai-persona-editor__action_panel">
         <DButton

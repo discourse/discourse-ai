@@ -139,8 +139,6 @@ en:
         question_consolidator_llm: Language Model for Question Consolidator
         question_consolidator_llm_help: The language model to use for the question consolidator, you may choose a less powerful model to save costs.
         system_prompt: System Prompt
-        show_indexing_options: "Show Upload Options"
-        hide_indexing_options: "Hide Upload Options"
         allow_chat: "Allow Chat"
         allow_chat_help: "If enabled, users in allowed groups can DM this persona"
         save: Save
@@ -160,10 +158,6 @@ en:
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
         tool_options: "Tool Options"
-        rag_chunk_tokens: "Upload Chunk Tokens"
-        rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
-        rag_chunk_overlap_tokens: "Upload Chunk Overlap Tokens"
-        rag_chunk_overlap_tokens_help: "The number of tokens to overlap between chunks in the RAG model. (changing will re-index all uploads)"
         rag_conversation_chunks: "Search Conversation Chunks"
         rag_conversation_chunks_help: "The number of chunks to use for the RAG model searches. Increase to increase the amount of context the AI can use."
         what_are_personas: "What are AI Personas?"
@@ -179,6 +173,13 @@ en:
           Moreover, you can set it up so that certain user groups have access to specific personas. This means you can have different AI behaviors for different sections of your forum, further enhancing the diversity and richness of your community's interactions.
 
       rag:
+        options:
+          rag_chunk_tokens: "Upload Chunk Tokens"
+          rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
+          rag_chunk_overlap_tokens: "Upload Chunk Overlap Tokens"
+          rag_chunk_overlap_tokens_help: "The number of tokens to overlap between chunks in the RAG model. (changing will re-index all uploads)"
+          show_indexing_options: "Show Upload Options"
+          hide_indexing_options: "Hide Upload Options"
         uploads:
           title: "Uploads"
           description: "Uploaded files should be formatted as plaintext (.txt) or markdown (.md)."

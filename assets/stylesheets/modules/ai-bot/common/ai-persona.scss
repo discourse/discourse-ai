@@ -75,11 +75,16 @@
     align-items: center;
   }
 
+}
+
+.rag-options {
   &__indexing-options {
     display: block;
     margin-top: 1em;
+    margin-bottom: 1em;
   }
 }
+
 .rag-uploader {
   width: 500px;
 
