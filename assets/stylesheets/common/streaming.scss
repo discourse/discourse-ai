@@ -29,3 +29,32 @@ article.streaming .cooked {
     animation: flashing 1.5s infinite;
   }
 }
+
+@keyframes ai-indicator-wave {
+  0%,
+  60%,
+  100% {
+    transform: initial;
+  }
+  30% {
+    transform: translateY(-0.2em);
+  }
+}
+
+.ai-indicator-wave {
+  flex: 0 0 auto;
+  display: inline-flex;
+
+  &__dot {
+    display: inline-block;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: ai-indicator-wave 1.8s linear infinite;
+    }
+    &:nth-child(2) {
+      animation-delay: -1.6s;
+    }
+    &:nth-child(3) {
+      animation-delay: -1.4s;
+    }
+  }
+}

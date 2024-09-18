@@ -11,6 +11,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { isValidSearchTerm, translateResults } from "discourse/lib/search";
 import icon from "discourse-common/helpers/d-icon";
 import I18n from "I18n";
+import AiIndicatorWave from "../../components/ai-indicator-wave";
 
 export default class SemanticSearch extends Component {
   static shouldRender(_args, { siteSettings }) {
@@ -173,13 +174,7 @@ export default class SemanticSearch extends Component {
               {{this.searchStateText}}
             </div>
 
-            {{#if this.searching}}
-              <span class="semantic-search__indicator-wave">
-                <span class="semantic-search__indicator-dot">.</span>
-                <span class="semantic-search__indicator-dot">.</span>
-                <span class="semantic-search__indicator-dot">.</span>
-              </span>
-            {{/if}}
+            <AiIndicatorWave @loading={{this.searching}} />
           </div>
         </div>
       </div>
