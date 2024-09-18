@@ -268,6 +268,27 @@ RSpec.describe AiTool do
       ]
 
       expect(result).to eq(expected)
+
+      # will force a reindex
+      tool.rag_chunk_tokens = 5
+      tool.rag_chunk_overlap_tokens = 2
+      tool.save!
+
+      # this part of the API is a bit awkward, maybe we should do it
+      # automatically
+      RagDocumentFragment.update_target_uploads(tool, [upload1.id, upload2.id])
+      result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
+
+      expected = [
+        [{ "fragment" => "48 49 50", "metadata" => nil }],
+        [
+          { "fragment" => "48 49 50", "metadata" => nil },
+          { "fragment" => "45 46 47", "metadata" => nil },
+          { "fragment" => "42 43 44", "metadata" => nil },
+        ],
+      ]
+
+      expect(result).to eq(expected)
     end
   end
 end

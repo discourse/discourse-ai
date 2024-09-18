@@ -10,6 +10,7 @@ class AiTool < ActiveRecord::Base
   has_many :rag_document_fragments, dependent: :destroy, as: :target
   has_many :upload_references, as: :target, dependent: :destroy
   has_many :uploads, through: :upload_references
+  before_update :regenerate_rag_fragments
 
   def signature
     { name: name, description: description, parameters: parameters.map(&:symbolize_keys) }
@@ -29,6 +30,12 @@ class AiTool < ActiveRecord::Base
 
   def bump_persona_cache
     AiPersona.persona_cache.flush!
+  end
+
+  def regenerate_rag_fragments
+    if rag_chunk_tokens_changed? || rag_chunk_overlap_tokens_changed?
+      RagDocumentFragment.where(target: self).delete_all
+    end
   end
 
   def self.preamble
