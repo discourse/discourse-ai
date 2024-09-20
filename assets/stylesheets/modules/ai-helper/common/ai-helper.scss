@@ -53,7 +53,6 @@
   padding: 0.25rem;
   max-width: 25rem;
   list-style: none;
-  z-index: 999;
 
   ul {
     margin: 0;
@@ -599,7 +598,11 @@
 }
 
 .fk-d-menu[data-identifier="ai-composer-helper-menu"] {
-  z-index: z("composer", "dropdown");
+  z-index: z("composer", "dropdown") + 1;
+
+  .fullscreen-composer & {
+    z-index: z("header") + 1;
+  }
 }
 
 .mobile-view .fk-d-menu[data-identifier="ai-composer-helper-menu"] {
