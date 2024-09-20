@@ -9,6 +9,7 @@ import { cancel } from "@ember/runloop";
 import concatClass from "discourse/helpers/concat-class";
 import i18n from "discourse-common/helpers/i18n";
 import discourseLater from "discourse-common/lib/later";
+import AiIndicatorWave from "./ai-indicator-wave";
 
 class Block {
   @tracked show = false;
@@ -118,11 +119,7 @@ export default class AiSummarySkeleton extends Component {
         <div class="ai-summary__generating-text">
           {{i18n "summary.in_progress"}}
         </div>
-        <span class="ai-summary__indicator-wave">
-          <span class="ai-summary__indicator-dot">.</span>
-          <span class="ai-summary__indicator-dot">.</span>
-          <span class="ai-summary__indicator-dot">.</span>
-        </span>
+        <AiIndicatorWave @loading={{true}} />
       </span>
     </div>
   </template>

@@ -3,13 +3,13 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { inject as service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
-import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
+import AiIndicatorWave from "../ai-indicator-wave";
 
 export default class ModalDiffModal extends Component {
   @service currentUser;
@@ -65,25 +65,23 @@ export default class ModalDiffModal extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
-        <ConditionalLoadingSpinner @condition={{this.loading}}>
-          {{#if this.loading}}
-            <div class="composer-ai-helper-modal__loading">
-              <CookText @rawText={{this.selectedText}} />
-            </div>
+        {{#if this.loading}}
+          <div class="composer-ai-helper-modal__loading">
+            <CookText @rawText={{@model.selectedText}} />
+          </div>
+        {{else}}
+          {{#if this.diff}}
+            {{htmlSafe this.diff}}
           {{else}}
-            {{#if this.diff}}
-              {{htmlSafe this.diff}}
-            {{else}}
-              <div class="composer-ai-helper-modal__old-value">
-                {{@model.selectedText}}
-              </div>
+            <div class="composer-ai-helper-modal__old-value">
+              {{@model.selectedText}}
+            </div>
 
-              <div class="composer-ai-helper-modal__new-value">
-                {{this.suggestion}}
-              </div>
-            {{/if}}
+            <div class="composer-ai-helper-modal__new-value">
+              {{this.suggestion}}
+            </div>
           {{/if}}
-        </ConditionalLoadingSpinner>
+        {{/if}}
 
       </:body>
 
@@ -93,7 +91,9 @@ export default class ModalDiffModal extends Component {
             class="btn-primary"
             @label="discourse_ai.ai_helper.context_menu.loading"
             @disabled={{true}}
-          />
+          >
+            <AiIndicatorWave @loading={{this.loading}} />
+          </DButton>
         {{else}}
           <DButton
             class="btn-primary confirm"

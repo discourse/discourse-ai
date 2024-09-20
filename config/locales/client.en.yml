@@ -294,7 +294,7 @@ en:
         missing_content: "Please enter some content to generate suggestions."
         context_menu:
           trigger: "Ask AI"
-          loading: "AI is generating..."
+          loading: "AI is generating"
           cancel: "Cancel"
           regen: "Try Again"
           confirm: "Confirm"

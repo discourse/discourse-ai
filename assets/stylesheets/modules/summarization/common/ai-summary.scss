@@ -157,22 +157,6 @@
       display: inline-block;
       margin-left: 3px;
     }
-    &__indicator-wave {
-      flex: 0 0 auto;
-      display: inline-flex;
-    }
-    &__indicator-dot {
-      display: inline-block;
-      @media (prefers-reduced-motion: no-preference) {
-        animation: ai-summary__indicator-wave 1.8s linear infinite;
-      }
-      &:nth-child(2) {
-        animation-delay: -1.6s;
-      }
-      &:nth-child(3) {
-        animation-delay: -1.4s;
-      }
-    }
   }
 
   .placeholder-summary {
@@ -208,17 +192,6 @@
     p {
       color: var(--primary-medium);
     }
-  }
-}
-
-@keyframes ai-summary__indicator-wave {
-  0%,
-  60%,
-  100% {
-    transform: initial;
-  }
-  30% {
-    transform: translateY(-0.2em);
   }
 }
 

@@ -196,6 +196,7 @@ export default class AiSummaryBox extends Component {
           @title={{i18n "summary.buttons.generate"}}
           @icon="discourse-sparkles"
           @triggerClass="ai-topic-summarization"
+          @closeOnClickOutside={{false}}
         >
           <:content>
             <div class="ai-summary-container">
