@@ -274,7 +274,7 @@ zh_CN:
         missing_content: "请输入一些内容以生成建议。"
         context_menu:
           trigger: "询问 AI"
-          loading: "AI 正在生成..."
+          loading: "AI 正在生成"
           cancel: "取消"
           regen: "重试"
           confirm: "确认"

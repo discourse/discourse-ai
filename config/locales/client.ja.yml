@@ -274,7 +274,7 @@ ja:
         missing_content: "提案を生成するにはコンテンツを入力してください。"
         context_menu:
           trigger: "AI に尋ねる"
-          loading: "AI が生成中です..."
+          loading: "AI が生成中です"
           cancel: "キャンセル"
           regen: "やり直す"
           confirm: "確認"

@@ -274,7 +274,7 @@ tr_TR:
         missing_content: "Lütfen öneri oluşturmak için biraz içerik girin."
         context_menu:
           trigger: "YZ'ye sor"
-          loading: "YZ oluşturuyor..."
+          loading: "YZ oluşturuyor"
           cancel: "İptal et"
           regen: "Tekrar Dene"
           confirm: "Onayla"

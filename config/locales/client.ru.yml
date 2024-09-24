@@ -279,7 +279,7 @@ ru:
         missing_content: "Введите контент для генерации подсказок."
         context_menu:
           trigger: "Спросить AI"
-          loading: "AI генерирует ответ..."
+          loading: "AI генерирует ответ"
           cancel: "Отменить"
           regen: "Попробовать снова"
           confirm: "Подтвердить"
