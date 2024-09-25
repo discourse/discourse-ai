@@ -79,3 +79,12 @@ Fabricator(:samba_nova_model, from: :llm_model) do
   api_key "ABC"
   url "https://api.sambanova.ai/v1/chat/completions"
 end
+
+Fabricator(:ollama_model, from: :llm_model) do
+  display_name "Ollama llama 3.1"
+  name "llama-3.1"
+  provider "ollama"
+  api_key "ABC"
+  tokenizer "DiscourseAi::Tokenizer::Llama3Tokenizer"
+  url "http://api.ollama.ai/api/chat"
+end
