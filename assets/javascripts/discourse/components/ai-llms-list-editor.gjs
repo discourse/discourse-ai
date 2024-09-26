@@ -1,10 +1,12 @@
 import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
 import { concat, fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { inject as service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
+import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
@@ -14,9 +16,55 @@ import AiLlmEditor from "./ai-llm-editor";
 
 export default class AiLlmsListEditor extends Component {
   @service adminPluginNavManager;
+  @service router;
 
   get hasLLMElements() {
     return this.args.llms.length !== 0;
+  }
+
+  get preConfiguredLlms() {
+    let options = [
+      {
+        id: "none",
+        name: I18n.t(`discourse_ai.llms.preconfigured.none`),
+        provider: "none",
+      },
+    ];
+
+    const llmsContent = this.args.llms.content.map((llm) => ({
+      provider: llm.provider,
+      name: llm.name,
+    }));
+
+    this.args.llms.resultSetMeta.presets.forEach((llm) => {
+      if (llm.models) {
+        llm.models.forEach((model) => {
+          const id = `${llm.id}-${model.name}`;
+          const isConfigured = llmsContent.some(
+            (content) =>
+              content.provider === llm.provider && content.name === model.name
+          );
+
+          // only list if it's not already configured
+          if (!isConfigured) {
+            options.push({
+              id,
+              name: model.display_name,
+              provider: llm.provider,
+            });
+          }
+        });
+      }
+    });
+
+    return options;
+  }
+
+  @action
+  transitionToLlmEditor(llm) {
+    this.router.transitionTo("adminPlugins.show.discourse-ai-llms.new", {
+      queryParams: { llmTemplate: llm },
+    });
   }
 
   @action
@@ -42,22 +90,16 @@ export default class AiLlmsListEditor extends Component {
     <section class="ai-llms-list-editor admin-detail pull-left">
 
       {{#if @currentLlm}}
-        <AiLlmEditor @model={{@currentLlm}} @llms={{@llms}} />
+        <AiLlmEditor
+          @model={{@currentLlm}}
+          @llms={{@llms}}
+          @llmTemplate={{@llmTemplate}}
+        />
       {{else}}
-        <div class="ai-llms-list-editor__header">
-          <h3>{{i18n "discourse_ai.llms.short_title"}}</h3>
-          {{#unless @currentLlm.isNew}}
-            <LinkTo
-              @route="adminPlugins.show.discourse-ai-llms.new"
-              class="btn btn-small btn-primary ai-llms-list-editor__new"
-            >
-              {{icon "plus"}}
-              <span>{{I18n.t "discourse_ai.llms.new"}}</span>
-            </LinkTo>
-          {{/unless}}
-        </div>
-
         {{#if this.hasLLMElements}}
+          <h3>
+            {{i18n "discourse_ai.llms.configured.title"}}
+          </h3>
           <table class="content-list ai-persona-list-editor">
             <thead>
               <tr>
@@ -93,6 +135,39 @@ export default class AiLlmsListEditor extends Component {
             </tbody>
           </table>
         {{/if}}
+
+        <h3>
+          {{#if this.hasLLMElements}}
+            {{i18n "discourse_ai.llms.preconfigured.title"}}
+          {{else}}
+            {{i18n "discourse_ai.llms.preconfigured.title_no_llms"}}
+          {{/if}}
+        </h3>
+        <table class="content-list ai-persona-list-editor">
+          <thead>
+            <tr>
+              <th>{{i18n "discourse_ai.llms.display_name"}}</th>
+              <th>{{i18n "discourse_ai.llms.provider"}}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each this.preConfiguredLlms as |llm|}}
+              <tr data-persona-id={{llm.id}} class="ai-llm-list__row">
+                <td>{{llm.name}}</td>
+                <td>{{i18n
+                    (concat "discourse_ai.llms.providers." llm.provider)
+                  }}</td>
+                <td>
+                  <DButton
+                    @action={{fn this.transitionToLlmEditor llm.id}}
+                    @icon="plus"
+                  />
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
       {{/if}}
     </section>
   </template>
