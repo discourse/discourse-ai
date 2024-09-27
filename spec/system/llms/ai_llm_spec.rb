@@ -20,8 +20,7 @@ RSpec.describe "Managing LLM configurations", type: :system do
   it "correctly sets defaults" do
     visit "/admin/plugins/discourse-ai/ai-llms"
 
-    find(".ai-llms-list-editor__new").click()
-    select_preset("anthropic-claude-3-haiku")
+    find("[data-llm-id='anthropic-claude-3-haiku'] button").click()
 
     find("input.ai-llm-editor__api-key").fill_in(with: "abcd")
 
@@ -50,7 +49,7 @@ RSpec.describe "Managing LLM configurations", type: :system do
   it "manually configures an LLM" do
     visit "/admin/plugins/discourse-ai/ai-llms"
 
-    find(".ai-llms-list-editor__new").click()
+    find("[data-llm-id='none'] button").click()
     select_preset("none")
 
     find("input.ai-llm-editor__display-name").fill_in(with: "Self-hosted LLM")
