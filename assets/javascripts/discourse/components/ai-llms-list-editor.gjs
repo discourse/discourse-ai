@@ -22,7 +22,7 @@ export default class AiLlmsListEditor extends Component {
     return id.replace(/\./g, "-");
   }
 
-  get hasLLMElements() {
+  get hasLlmElements() {
     return this.args.llms.length !== 0;
   }
 
@@ -30,7 +30,7 @@ export default class AiLlmsListEditor extends Component {
     let options = [
       {
         id: "none",
-        name: I18n.t(`discourse_ai.llms.preconfigured.fake`),
+        name: I18n.t("discourse_ai.llms.preconfigured.fake"),
         provider: "fake",
       },
     ];
@@ -64,9 +64,9 @@ export default class AiLlmsListEditor extends Component {
   }
 
   @action
-  transitionToLlmEditor(llm) {
+  transitionToLlmEditor(llmTemplate) {
     this.router.transitionTo("adminPlugins.show.discourse-ai-llms.new", {
-      queryParams: { llmTemplate: llm },
+      queryParams: { llmTemplate },
     });
   }
 
@@ -98,7 +98,7 @@ export default class AiLlmsListEditor extends Component {
           @llmTemplate={{@llmTemplate}}
         />
       {{else}}
-        {{#if this.hasLLMElements}}
+        {{#if this.hasLlmElements}}
           <section class="ai-llms-list-editor__configured">
             <div class="admin-page-subheader">
               <div class="admin-page-subheader__title-row">
@@ -165,7 +165,7 @@ export default class AiLlmsListEditor extends Component {
           <div class="admin-page-subheader">
             <div class="admin-page-subheader__title-row">
               <h2 class="admin-page-subheader__title">
-                {{#if this.hasLLMElements}}
+                {{#if this.hasLlmElements}}
                   {{i18n "discourse_ai.llms.preconfigured.title"}}
                 {{else}}
                   {{i18n "discourse_ai.llms.preconfigured.title_no_llms"}}
