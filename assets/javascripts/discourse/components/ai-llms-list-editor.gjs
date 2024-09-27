@@ -150,7 +150,9 @@ export default class AiLlmsListEditor extends Component {
                         @model={{or llm.id llm.llm.id}}
                       >
                         {{icon "wrench"}}
-                        {{i18n "discourse_ai.llms.edit"}}
+                        <div class="d-button-label">
+                          {{i18n "discourse_ai.llms.edit"}}
+                        </div>
                       </LinkTo>
                     </td>
                   </tr>
