@@ -8,15 +8,6 @@ RSpec.describe "Managing LLM configurations", type: :system do
     sign_in(admin)
   end
 
-  def select_preset(option)
-    select_kit = PageObjects::Components::SelectKit.new(".ai-llm-editor__presets")
-
-    select_kit.expand
-    select_kit.select_row_by_value("anthropic-claude-3-haiku")
-
-    find(".ai-llm-editor__next").click()
-  end
-
   it "correctly sets defaults" do
     visit "/admin/plugins/discourse-ai/ai-llms"
 
@@ -50,7 +41,6 @@ RSpec.describe "Managing LLM configurations", type: :system do
     visit "/admin/plugins/discourse-ai/ai-llms"
 
     find("[data-llm-id='none'] button").click()
-    select_preset("none")
 
     find("input.ai-llm-editor__display-name").fill_in(with: "Self-hosted LLM")
     find("input.ai-llm-editor__name").fill_in(with: "llava-hf/llava-v1.6-mistral-7b-hf")
