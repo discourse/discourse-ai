@@ -133,6 +133,7 @@ module DiscourseAi
           content_range: (post_numbers.first..post_numbers.last),
           summarized_text: result[:summary],
           original_content_sha: summary_sha,
+          summary_type: AiSummary::COMPLETE,
         )
 
       cached_summary

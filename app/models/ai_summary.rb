@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class AiSummary < ActiveRecord::Base
+  COMPLETE = "complete"
+  GIST = "gist"
+
   belongs_to :target, polymorphic: true
 
   def mark_as_outdated
@@ -25,6 +28,7 @@ end
 #  algorithm            :string           not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  summary_type         :string
 #
 # Indexes
 #
