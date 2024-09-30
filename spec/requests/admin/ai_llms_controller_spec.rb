@@ -45,7 +45,6 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         expect(created_model["tokenizer"]).to eq(valid_attrs[:tokenizer])
         expect(created_model["max_prompt_tokens"]).to eq(valid_attrs[:max_prompt_tokens])
 
-
         model = LlmModel.find(created_model["id"])
         expect(model.display_name).to eq(valid_attrs[:display_name])
       end
