@@ -41,13 +41,37 @@ nb_NO:
         uploads:
           title: "Opplastinger"
           uploading: "Laster opp…"
+      tools:
+        back: "Forrige"
+        name: "Navn"
+        description: "Beskrivelse"
+        summary: "Sammendrag"
+        save: "Lagre"
+        parameter_required: "Påkrevd"
+        edit: "Endre"
+        test: "Kjør test"
+        delete: "Slett"
+        next:
+          title: "Neste"
+        test_modal:
+          run: "Kjør test"
+      llms:
+        save: "Lagre"
+        edit: "Endre"
+        back: "Forrige"
+        delete: Slett
+        next:
+          title: "Neste"
+        tests:
+          title: "Kjør test"
+          success: "Suksess!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Forrige"
-          undo: "Angre"
           cancel: "Avbryt"
           regen: "Prøv igjen"
-          revert: "Reverser"
+          discard: "Forkast"
         post_options_menu:
           close: "Lukk"
           copy: "Kopier"
@@ -55,6 +79,11 @@ nb_NO:
           cancel: "Avbryt"
         image_caption:
           save_caption: "Lagre"
+          automatic_caption_dialog:
+            confirm: "Aktiver"
       ai_bot:
+        debug_ai_modal:
+          request: "Forespørsel"
+          response: "Svar"
         share_modal:
           copy: "Kopier"

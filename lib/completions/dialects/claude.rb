@@ -5,63 +5,39 @@ module DiscourseAi
     module Dialects
       class Claude < Dialect
         class << self
-          def can_translate?(model_name)
-            %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus].include?(
-              model_name,
-            )
-          end
-
-          def tokenizer
-            DiscourseAi::Tokenizer::AnthropicTokenizer
+          def can_translate?(provider_name)
+            provider_name == "anthropic" || provider_name == "aws_bedrock"
           end
         end
 
         class ClaudePrompt
           attr_reader :system_prompt
           attr_reader :messages
+          attr_reader :tools
 
-          def initialize(system_prompt, messages)
+          def initialize(system_prompt, messages, tools)
             @system_prompt = system_prompt
             @messages = messages
+            @tools = tools
+          end
+
+          def has_tools?
+            tools.present?
           end
         end
 
         def translate
-          messages = prompt.messages
-          system_prompt = +""
+          messages = super
 
-          messages =
-            trim_messages(messages)
-              .map do |msg|
-                case msg[:type]
-                when :system
-                  system_prompt << msg[:content]
-                  nil
-                when :tool_call
-                  { role: "assistant", content: tool_call_to_xml(msg) }
-                when :tool
-                  { role: "user", content: tool_result_to_xml(msg) }
-                when :model
-                  { role: "assistant", content: msg[:content] }
-                when :user
-                  content = +""
-                  content << "#{msg[:id]}: " if msg[:id]
-                  content << msg[:content]
-                  content = inline_images(content, msg)
+          system_prompt = messages.shift[:content] if messages.first[:role] == "system"
 
-                  { role: "user", content: content }
-                end
-              end
-              .compact
-
-          if prompt.tools.present?
-            system_prompt << "\n\n"
-            system_prompt << build_tools_prompt
+          if !system_prompt && !native_tool_support?
+            system_prompt = tools_dialect.instructions.presence
           end
 
           interleving_messages = []
-
           previous_message = nil
+
           messages.each do |message|
             if previous_message
               if previous_message[:role] == "user" && message[:role] == "user"
@@ -74,39 +50,80 @@ module DiscourseAi
             previous_message = message
           end
 
-          ClaudePrompt.new(system_prompt.presence, interleving_messages)
+          tools = nil
+          tools = tools_dialect.translated_tools if native_tool_support?
+
+          ClaudePrompt.new(system_prompt.presence, interleving_messages, tools)
         end
 
         def max_prompt_tokens
-          # Longer term it will have over 1 million
-          200_000 # Claude-3 has a 200k context window for now
+          llm_model.max_prompt_tokens
+        end
+
+        def native_tool_support?
+          SiteSetting.ai_anthropic_native_tool_call_models_map.include?(llm_model.name)
         end
 
         private
 
-        def inline_images(content, message)
-          if model_name.include?("claude-3")
-            encoded_uploads = prompt.encoded_uploads(message)
-            if encoded_uploads.present?
-              new_content = []
-              new_content.concat(
-                encoded_uploads.map do |details|
-                  {
-                    source: {
-                      type: "base64",
-                      data: details[:base64],
-                      media_type: details[:mime_type],
-                    },
-                    type: "image",
-                  }
-                end,
-              )
-              new_content << { type: "text", text: content }
-              content = new_content
-            end
+        def tools_dialect
+          if native_tool_support?
+            @tools_dialect ||= DiscourseAi::Completions::Dialects::ClaudeTools.new(prompt.tools)
+          else
+            super
+          end
+        end
+
+        def tool_call_msg(msg)
+          translated = tools_dialect.from_raw_tool_call(msg)
+          { role: "assistant", content: translated }
+        end
+
+        def tool_msg(msg)
+          translated = tools_dialect.from_raw_tool(msg)
+          { role: "user", content: translated }
+        end
+
+        def model_msg(msg)
+          { role: "assistant", content: msg[:content] }
+        end
+
+        def system_msg(msg)
+          msg = { role: "system", content: msg[:content] }
+
+          if tools_dialect.instructions.present?
+            msg[:content] = msg[:content].dup << "\n\n#{tools_dialect.instructions}"
           end
 
-          content
+          msg
+        end
+
+        def user_msg(msg)
+          content = +""
+          content << "#{msg[:id]}: " if msg[:id]
+          content << msg[:content]
+          content = inline_images(content, msg) if vision_support?
+
+          { role: "user", content: content }
+        end
+
+        def inline_images(content, message)
+          encoded_uploads = prompt.encoded_uploads(message)
+          return content if encoded_uploads.blank?
+
+          content_w_imgs =
+            encoded_uploads.reduce([]) do |memo, details|
+              memo << {
+                source: {
+                  type: "base64",
+                  data: details[:base64],
+                  media_type: details[:mime_type],
+                },
+                type: "image",
+              }
+            end
+
+          content_w_imgs << { type: "text", text: content }
         end
       end
     end

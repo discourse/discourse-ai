@@ -41,21 +41,58 @@ hu:
         uploads:
           title: "Feltöltések"
           uploading: "Feltültés..."
+      tools:
+        back: "Vissza"
+        name: "Név"
+        description: "Leírás"
+        summary: "Összefoglaló"
+        save: "Mentés"
+        parameter_required: "Kötelező"
+        edit: "Szerkesztés"
+        test: "Teszt futtatása"
+        delete: "Törlés"
+        next:
+          title: "Tovább"
+        test_modal:
+          run: "Teszt futtatása"
+      llms:
+        save: "Mentés"
+        edit: "Szerkesztés"
+        back: "Vissza"
+        delete: Törlés
+        next:
+          title: "Tovább"
+        tests:
+          title: "Teszt futtatása"
+          success: "Siker!"
+        providers:
+          google: "Google"
+      related_topics:
+        title: "Kapcsolódó témák"
+        pill: "Kapcsolódó"
       ai_helper:
         context_menu:
-          back: "Vissza"
-          undo: "Visszavonás"
           cancel: "Mégse"
           regen: "Újrapróbálkozás"
           confirm: "Megerősít"
-          revert: "Visszaállítás"
+          discard: "Elvetés"
         post_options_menu:
           close: "Lezárás"
           copy: "Másolás"
           copied: "Másolva!"
           cancel: "Mégse"
+        thumbnail_suggestions:
+          selected: "Kiválasztott"
         image_caption:
           save_caption: "Mentés"
+          automatic_caption_dialog:
+            confirm: "Engedélyez"
       ai_bot:
+        debug_ai_modal:
+          request: "Kérés"
+          response: "Válasz"
         share_modal:
           copy: "Másolás"
+      summarization:
+        chat:
+          summarize: "Összefoglalás"

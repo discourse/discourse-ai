@@ -41,19 +41,48 @@ hy:
         uploads:
           title: "Վերբեռնումներ"
           uploading: "Վերբեռնում..."
+      tools:
+        back: "Ետ"
+        name: "Անուն"
+        description: "Նկարագրությունը"
+        summary: "Ամփոփումը"
+        save: "Պահպանել"
+        parameter_required: "Պարտադիր"
+        edit: "Խմբագրել"
+        test: "Մեկնարկել Փորձարկումը"
+        delete: "Ջնջել"
+        next:
+          title: "Հաջորդը"
+        test_modal:
+          run: "Մեկնարկել Փորձարկումը"
+      llms:
+        save: "Պահպանել"
+        edit: "Խմբագրել"
+        back: "Ետ"
+        delete: Ջնջել
+        next:
+          title: "Հաջորդը"
+        tests:
+          title: "Մեկնարկել Փորձարկումը"
+          success: "Հաջողություն!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Ետ"
-          undo: "Ետարկել"
           cancel: "Չեղարկել"
           regen: "Կրկին Փորձել"
-          revert: "Հետադարձել"
+          discard: "Չեղարկել"
         post_options_menu:
           close: "Փակել"
           copy: "Կրկնօրինակել"
           cancel: "Չեղարկել"
         image_caption:
           save_caption: "Պահպանել"
+          automatic_caption_dialog:
+            confirm: "Միացնել"
       ai_bot:
+        debug_ai_modal:
+          request: "Հարցում"
+          response: "Արձագանք"
         share_modal:
           copy: "Կրկնօրինակել"

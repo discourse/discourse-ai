@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class AiPersona < ActiveRecord::Base
+  # TODO remove this line 01-11-2024
+  self.ignored_columns = [:commands]
+
   # places a hard limit, so per site we cache a maximum of 500 classes
   MAX_PERSONAS_PER_SITE = 500
 
@@ -8,6 +11,7 @@ class AiPersona < ActiveRecord::Base
   validates :description, presence: true, length: { maximum: 2000 }
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
+  validate :chat_preconditions
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
   # leaves some room for growth but sets a maximum to avoid memory issues
   # we may want to revisit this in the future
@@ -16,6 +20,7 @@ class AiPersona < ActiveRecord::Base
   validates :rag_chunk_tokens, numericality: { greater_than: 0, maximum: 50_000 }
   validates :rag_chunk_overlap_tokens, numericality: { greater_than: -1, maximum: 200 }
   validates :rag_conversation_chunks, numericality: { greater_than: 0, maximum: 1000 }
+  has_many :rag_document_fragments, dependent: :destroy, as: :target
 
   belongs_to :created_by, class_name: "User"
   belongs_to :user
@@ -23,12 +28,7 @@ class AiPersona < ActiveRecord::Base
   has_many :upload_references, as: :target, dependent: :destroy
   has_many :uploads, through: :upload_references
 
-  has_many :rag_document_fragment, dependent: :destroy
-
-  has_many :rag_document_fragments, through: :ai_persona_rag_document_fragments
-
   before_destroy :ensure_not_system
-
   before_update :regenerate_rag_fragments
 
   def self.persona_cache
@@ -52,9 +52,9 @@ class AiPersona < ActiveRecord::Base
         .where(enabled: true)
         .joins(:user)
         .pluck(
-          "ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm, mentionable",
+          "ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm, mentionable, allow_chat",
         )
-        .map do |id, user_id, username, allowed_group_ids, default_llm, mentionable|
+        .map do |id, user_id, username, allowed_group_ids, default_llm, mentionable, allow_chat|
           {
             id: id,
             user_id: user_id,
@@ -62,6 +62,7 @@ class AiPersona < ActiveRecord::Base
             allowed_group_ids: allowed_group_ids,
             default_llm: default_llm,
             mentionable: mentionable,
+            allow_chat: allow_chat,
           }
         end
 
@@ -72,23 +73,20 @@ class AiPersona < ActiveRecord::Base
     end
   end
 
+  def self.allowed_chat(user: nil)
+    personas = persona_cache[:allowed_chat] ||= persona_users.select { |u| u[:allow_chat] }
+    if user
+      personas.select { |u| user.in_any_groups?(u[:allowed_group_ids]) }
+    else
+      personas
+    end
+  end
+
   def self.mentionables(user: nil)
     all_mentionables =
-      persona_cache[:mentionable_usernames] ||= AiPersona
-        .where(mentionable: true)
-        .where(enabled: true)
-        .joins(:user)
-        .pluck("ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm")
-        .map do |id, user_id, username, allowed_group_ids, default_llm|
-          {
-            id: id,
-            user_id: user_id,
-            username: username,
-            allowed_group_ids: allowed_group_ids,
-            default_llm: default_llm,
-          }
-        end
-
+      persona_cache[:mentionables] ||= persona_users.select do |mentionable|
+        mentionable[:mentionable]
+      end
     if user
       all_mentionables.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
     else
@@ -103,186 +101,87 @@ class AiPersona < ActiveRecord::Base
   end
 
   def class_instance
-    allowed_group_ids = self.allowed_group_ids
-    id = self.id
-    system = self.system
-    user_id = self.user_id
-    mentionable = self.mentionable
-    default_llm = self.default_llm
-    max_context_posts = self.max_context_posts
-    vision_enabled = self.vision_enabled
-    vision_max_pixels = self.vision_max_pixels
-    rag_conversation_chunks = self.rag_conversation_chunks
+    attributes = %i[
+      id
+      user_id
+      system
+      mentionable
+      default_llm
+      max_context_posts
+      vision_enabled
+      vision_max_pixels
+      rag_conversation_chunks
+      question_consolidator_llm
+      allow_chat
+      name
+      description
+      allowed_group_ids
+      tool_details
+    ]
 
     persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
+
+    instance_attributes = {}
+    attributes.each do |attr|
+      value = self.read_attribute(attr)
+      instance_attributes[attr] = value
+    end
+
     if persona_class
-      persona_class.define_singleton_method :allowed_group_ids do
-        allowed_group_ids
+      instance_attributes.each do |key, value|
+        # description/name are localized
+        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
       end
-
-      persona_class.define_singleton_method :id do
-        id
-      end
-
-      persona_class.define_singleton_method :system do
-        system
-      end
-
-      persona_class.define_singleton_method :user_id do
-        user_id
-      end
-
-      persona_class.define_singleton_method :mentionable do
-        mentionable
-      end
-
-      persona_class.define_singleton_method :default_llm do
-        default_llm
-      end
-
-      persona_class.define_singleton_method :max_context_posts do
-        max_context_posts
-      end
-
-      persona_class.define_singleton_method :vision_enabled do
-        vision_enabled
-      end
-
-      persona_class.define_singleton_method :vision_max_pixels do
-        vision_max_pixels
-      end
-
-      persona_class.define_singleton_method :rag_conversation_chunks do
-        rag_conversation_chunks
-      end
-
       return persona_class
     end
 
-    name = self.name
-    description = self.description
+    options = {}
+    tools =
+      self.tools.filter_map do |element|
+        klass = nil
+
+        if element.is_a?(String) && element.start_with?("custom-")
+          custom_tool_id = element.split("-", 2).last.to_i
+          if AiTool.exists?(id: custom_tool_id, enabled: true)
+            klass = DiscourseAi::AiBot::Tools::Custom.class_instance(custom_tool_id)
+          end
+        else
+          inner_name, current_options = element.is_a?(Array) ? element : [element, nil]
+          inner_name = inner_name.gsub("Tool", "")
+          inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
+
+          begin
+            klass = "DiscourseAi::AiBot::Tools::#{inner_name}".constantize
+            options[klass] = current_options if current_options
+          rescue StandardError
+          end
+
+          klass
+        end
+      end
+
     ai_persona_id = self.id
 
-    options = {}
-
-    tools = self.respond_to?(:commands) ? self.commands : self.tools
-
-    tools =
-      tools.filter_map do |element|
-        inner_name = element
-        current_options = nil
-
-        if element.is_a?(Array)
-          inner_name = element[0]
-          current_options = element[1]
-        end
-
-        # Won't migrate data yet. Let's rewrite to the tool name.
-        inner_name = inner_name.gsub("Command", "")
-        inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
-
-        begin
-          klass = ("DiscourseAi::AiBot::Tools::#{inner_name}").constantize
-          options[klass] = current_options if current_options
-          klass
-        rescue StandardError
-          nil
-        end
-      end
-
     Class.new(DiscourseAi::AiBot::Personas::Persona) do
-      define_singleton_method :id do
-        id
+      instance_attributes.each { |key, value| define_singleton_method(key) { value } }
+
+      define_singleton_method(:to_s) do
+        "#<#{self.class.name} @name=#{name} @allowed_group_ids=#{allowed_group_ids.join(",")}>"
       end
 
-      define_singleton_method :name do
-        name
-      end
+      define_singleton_method(:inspect) { to_s }
 
-      define_singleton_method :user_id do
-        user_id
-      end
-
-      define_singleton_method :description do
-        description
-      end
-
-      define_singleton_method :system do
-        system
-      end
-
-      define_singleton_method :allowed_group_ids do
-        allowed_group_ids
-      end
-
-      define_singleton_method :user_id do
-        user_id
-      end
-
-      define_singleton_method :mentionable do
-        mentionable
-      end
-
-      define_singleton_method :default_llm do
-        default_llm
-      end
-
-      define_singleton_method :max_context_posts do
-        max_context_posts
-      end
-
-      define_singleton_method :vision_enabled do
-        vision_enabled
-      end
-
-      define_singleton_method :vision_max_pixels do
-        vision_max_pixels
-      end
-
-      define_singleton_method :rag_conversation_chunks do
-        rag_conversation_chunks
-      end
-
-      define_singleton_method :to_s do
-        "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
-      end
-
-      define_singleton_method :inspect do
-        "#<DiscourseAi::AiBot::Personas::Persona::Custom @name=#{self.name} @allowed_group_ids=#{self.allowed_group_ids.join(",")}>"
-      end
-
-      define_method :initialize do |*args, **kwargs|
+      define_method(:initialize) do |*args, **kwargs|
         @ai_persona = AiPersona.find_by(id: ai_persona_id)
         super(*args, **kwargs)
       end
 
-      define_method :persona_id do
-        @ai_persona&.id
-      end
-
-      define_method :tools do
-        tools
-      end
-
-      define_method :options do
-        options
-      end
-
-      define_method :temperature do
-        @ai_persona&.temperature
-      end
-
-      define_method :top_p do
-        @ai_persona&.top_p
-      end
-
-      define_method :system_prompt do
-        @ai_persona&.system_prompt || "You are a helpful bot."
-      end
-
-      define_method :uploads do
-        @ai_persona&.uploads
-      end
+      define_method(:tools) { tools }
+      define_method(:options) { options }
+      define_method(:temperature) { @ai_persona&.temperature }
+      define_method(:top_p) { @ai_persona&.top_p }
+      define_method(:system_prompt) { @ai_persona&.system_prompt || "You are a helpful bot." }
+      define_method(:uploads) { @ai_persona&.uploads }
     end
   end
 
@@ -327,14 +226,20 @@ class AiPersona < ActiveRecord::Base
 
   def regenerate_rag_fragments
     if rag_chunk_tokens_changed? || rag_chunk_overlap_tokens_changed?
-      RagDocumentFragment.where(ai_persona: self).delete_all
+      RagDocumentFragment.where(target: self).delete_all
     end
   end
 
   private
 
+  def chat_preconditions
+    if allow_chat && !default_llm
+      errors.add(:default_llm, I18n.t("discourse_ai.ai_bot.personas.default_llm_required"))
+    end
+  end
+
   def system_persona_unchangeable
-    if top_p_changed? || temperature_changed? || system_prompt_changed? || commands_changed? ||
+    if top_p_changed? || temperature_changed? || system_prompt_changed? || tools_changed? ||
          name_changed? || description_changed?
       errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
     end
@@ -352,31 +257,32 @@ end
 #
 # Table name: ai_personas
 #
-#  id                       :bigint           not null, primary key
-#  name                     :string(100)      not null
-#  description              :string(2000)     not null
-#  commands                 :json             not null
-#  system_prompt            :string(10000000) not null
-#  allowed_group_ids        :integer          default([]), not null, is an Array
-#  created_by_id            :integer
-#  enabled                  :boolean          default(TRUE), not null
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  system                   :boolean          default(FALSE), not null
-#  priority                 :boolean          default(FALSE), not null
-#  temperature              :float
-#  top_p                    :float
-#  user_id                  :integer
-#  mentionable              :boolean          default(FALSE), not null
-#  default_llm              :text
-#  max_context_posts        :integer
-#  max_post_context_tokens  :integer
-#  max_context_tokens       :integer
-#  vision_enabled           :boolean          default(FALSE), not null
-#  vision_max_pixels        :integer          default(1048576), not null
-#  rag_chunk_tokens         :integer          default(374), not null
-#  rag_chunk_overlap_tokens :integer          default(10), not null
-#  rag_conversation_chunks  :integer          default(10), not null
+#  id                        :bigint           not null, primary key
+#  name                      :string(100)      not null
+#  description               :string(2000)     not null
+#  system_prompt             :string(10000000) not null
+#  allowed_group_ids         :integer          default([]), not null, is an Array
+#  created_by_id             :integer
+#  enabled                   :boolean          default(TRUE), not null
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  system                    :boolean          default(FALSE), not null
+#  priority                  :boolean          default(FALSE), not null
+#  temperature               :float
+#  top_p                     :float
+#  user_id                   :integer
+#  mentionable               :boolean          default(FALSE), not null
+#  default_llm               :text
+#  max_context_posts         :integer
+#  vision_enabled            :boolean          default(FALSE), not null
+#  vision_max_pixels         :integer          default(1048576), not null
+#  rag_chunk_tokens          :integer          default(374), not null
+#  rag_chunk_overlap_tokens  :integer          default(10), not null
+#  rag_conversation_chunks   :integer          default(10), not null
+#  question_consolidator_llm :text
+#  allow_chat                :boolean          default(FALSE), not null
+#  tool_details              :boolean          default(TRUE), not null
+#  tools                     :json             not null
 #
 # Indexes
 #

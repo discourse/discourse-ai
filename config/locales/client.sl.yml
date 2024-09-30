@@ -41,14 +41,34 @@ sl:
         uploads:
           title: "Prenosi"
           uploading: "Nalagam..."
+      tools:
+        back: "Nazaj"
+        name: "Ime"
+        description: "Opis"
+        summary: "Povzetek"
+        save: "Shrani"
+        parameter_required: "Zahtevano"
+        edit: "Uredi"
+        delete: "Izbriši"
+        next:
+          title: "Naprej"
+      llms:
+        save: "Shrani"
+        edit: "Uredi"
+        back: "Nazaj"
+        delete: Izbriši
+        next:
+          title: "Naprej"
+        tests:
+          success: "Uspeh!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Nazaj"
-          undo: "Razveljavi"
           cancel: "Prekliči"
           regen: "Poskusi ponovno"
           confirm: "Potrdi"
-          revert: "Povrni"
+          discard: "Zavrzi"
         post_options_menu:
           close: "Zapri"
           copy: "Kopiraj"
@@ -56,6 +76,10 @@ sl:
           cancel: "Prekliči"
         image_caption:
           save_caption: "Shrani"
+          automatic_caption_dialog:
+            confirm: "Omogoči"
       ai_bot:
+        debug_ai_modal:
+          request: "Zahteva"
         share_modal:
           copy: "Kopiraj"

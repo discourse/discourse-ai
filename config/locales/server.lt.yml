@@ -6,8 +6,6 @@
 
 lt:
   site_settings:
-    ai_llava_endpoint: URL, kuriame veikia llava API
-    ai_llava_api_key: API raktas, skirtas llava API
     ai_helper_image_caption_model: "Pasirinkite modelį, kurį naudosite vaizdų antraštėms generuoti"
   reports:
     overall_sentiment:
@@ -17,11 +15,11 @@ lt:
       image_caption:
         attribution: "Antraštė teikiama AI"
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Paieška"
         time: "Laikas"
         summarize: "Apibendrinti"
     sentiment:
       reports:
         post_emotion:
-          neutral: "Neutrali"
+          neutral: "Neutrali \U0001F610"

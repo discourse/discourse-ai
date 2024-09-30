@@ -41,14 +41,38 @@ vi:
         uploads:
           title: "Tải lên"
           uploading: "Đang đăng "
+      tools:
+        back: "Quay lại"
+        name: "Tên"
+        description: "Mô tả"
+        summary: "Tóm tắt"
+        save: "Lưu lại"
+        parameter_required: "Bắt buộc"
+        edit: "Sửa"
+        test: "Chạy thử nghiệm"
+        delete: "Xóa"
+        next:
+          title: "Kế tiếp"
+        test_modal:
+          run: "Chạy thử nghiệm"
+      llms:
+        save: "Lưu lại"
+        edit: "Sửa"
+        back: "Quay lại"
+        delete: Xóa
+        next:
+          title: "Kế tiếp"
+        tests:
+          title: "Chạy thử nghiệm"
+          success: "Thành công!"
+        providers:
+          google: "G"
       ai_helper:
         context_menu:
-          back: "Quay lại"
-          undo: "Hoàn tác"
           cancel: "Huỷ"
           regen: "Thử lại"
           confirm: "Xác nhận"
-          revert: "Phục hồi"
+          discard: "Hủy bỏ"
         post_options_menu:
           close: "Đóng"
           copy: "Sao chép"
@@ -58,6 +82,14 @@ vi:
           select: "Chọn"
         image_caption:
           save_caption: "Lưu lại"
+          automatic_caption_dialog:
+            confirm: "Bật"
       ai_bot:
+        debug_ai_modal:
+          request: "Yêu cầu"
+          response: "Đáp ứng"
         share_modal:
           copy: "Sao chép"
+      summarization:
+        chat:
+          summarize: "Tóm tắt"

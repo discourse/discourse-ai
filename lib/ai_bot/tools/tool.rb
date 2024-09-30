@@ -4,6 +4,12 @@ module DiscourseAi
   module AiBot
     module Tools
       class Tool
+        # Why 30 mega bytes?
+        # This general limit is mainly a security feature to avoid tools
+        # forcing infinite downloads or causing memory exhaustion.
+        # The limit is somewhat arbitrary and can be increased in future if needed.
+        MAX_RESPONSE_BODY_LENGTH = 30.megabyte
+
         class << self
           def signature
             raise NotImplemented
@@ -11,6 +17,10 @@ module DiscourseAi
 
           def name
             raise NotImplemented
+          end
+
+          def custom?
+            false
           end
 
           def accepted_options
@@ -22,7 +32,7 @@ module DiscourseAi
           end
 
           def help
-            I18n.t("discourse_ai.ai_bot.command_help.#{signature[:name]}")
+            I18n.t("discourse_ai.ai_bot.tool_help.#{signature[:name]}")
           end
 
           def custom_system_message
@@ -31,40 +41,55 @@ module DiscourseAi
         end
 
         attr_accessor :custom_raw
+        attr_reader :tool_call_id, :persona_options, :bot_user, :llm, :context, :parameters
 
-        def initialize(parameters, tool_call_id: "", persona_options: {})
+        def initialize(
+          parameters,
+          tool_call_id: "",
+          persona_options: {},
+          bot_user:,
+          llm:,
+          context: {}
+        )
           @parameters = parameters
           @tool_call_id = tool_call_id
           @persona_options = persona_options
+          @bot_user = bot_user
+          @llm = llm
+          @context = context
         end
-
-        attr_reader :parameters, :tool_call_id
 
         def name
           self.class.name
         end
 
         def summary
-          I18n.t("discourse_ai.ai_bot.command_summary.#{name}")
+          I18n.t("discourse_ai.ai_bot.tool_summary.#{name}")
         end
 
         def details
-          I18n.t("discourse_ai.ai_bot.command_description.#{name}", description_args)
+          I18n.t("discourse_ai.ai_bot.tool_description.#{name}", description_args)
         end
 
         def help
-          I18n.t("discourse_ai.ai_bot.command_help.#{name}")
+          I18n.t("discourse_ai.ai_bot.tool_help.#{name}")
         end
 
         def options
-          self
-            .class
-            .accepted_options
-            .reduce(HashWithIndifferentAccess.new) do |memo, option|
-              val = @persona_options[option.name]
-              memo[option.name] = val if val
-              memo
+          result = HashWithIndifferentAccess.new
+          self.class.accepted_options.each do |option|
+            val = @persona_options[option.name]
+            if val
+              case option.type
+              when :boolean
+                val = (val.to_s == "true")
+              when :integer
+                val = val.to_i
+              end
+              result[option.name] = val
             end
+          end
+          result
         end
 
         def chain_next_response?
@@ -77,7 +102,60 @@ module DiscourseAi
 
         protected
 
-        def send_http_request(url, headers: {}, authenticate_github: false, follow_redirects: false)
+        def fetch_default_branch(repo)
+          api_url = "https://api.github.com/repos/#{repo}"
+
+          response_code = "unknown error"
+          repo_data = nil
+
+          send_http_request(
+            api_url,
+            headers: {
+              "Accept" => "application/vnd.github.v3+json",
+            },
+            authenticate_github: true,
+          ) do |response|
+            response_code = response.code
+            if response_code == "200"
+              begin
+                repo_data = JSON.parse(read_response_body(response))
+              rescue JSON::ParserError
+                response_code = "500 - JSON parse error"
+              end
+            end
+          end
+
+          response_code == "200" ? repo_data["default_branch"] : "main"
+        end
+
+        def send_http_request(
+          url,
+          headers: {},
+          authenticate_github: false,
+          follow_redirects: false,
+          method: :get,
+          body: nil,
+          &blk
+        )
+          self.class.send_http_request(
+            url,
+            headers: headers,
+            authenticate_github: authenticate_github,
+            follow_redirects: follow_redirects,
+            method: method,
+            body: body,
+            &blk
+          )
+        end
+
+        def self.send_http_request(
+          url,
+          headers: {},
+          authenticate_github: false,
+          follow_redirects: false,
+          method: :get,
+          body: nil
+        )
           raise "Expecting caller to use a block" if !block_given?
 
           uri = nil
@@ -105,7 +183,17 @@ module DiscourseAi
 
           return if uri.blank?
 
-          request = FinalDestination::HTTP::Get.new(uri)
+          request = nil
+          if method == :get
+            request = FinalDestination::HTTP::Get.new(uri)
+          elsif method == :post
+            request = FinalDestination::HTTP::Post.new(uri)
+          end
+
+          raise ArgumentError, "Invalid method: #{method}" if !request
+
+          request.body = body if body
+
           request["User-Agent"] = DiscourseAi::AiBot::USER_AGENT
           headers.each { |k, v| request[k] = v }
           if authenticate_github && SiteSetting.ai_bot_github_access_token.present?
@@ -117,14 +205,24 @@ module DiscourseAi
           end
         end
 
-        def read_response_body(response, max_length: 4.megabyte)
+        def self.read_response_body(response, max_length: nil)
+          max_length ||= MAX_RESPONSE_BODY_LENGTH
+
           body = +""
           response.read_body do |chunk|
             body << chunk
             break if body.bytesize > max_length
           end
 
-          body[0..max_length]
+          if body.bytesize > max_length
+            body[0...max_length].scrub
+          else
+            body.scrub
+          end
+        end
+
+        def read_response_body(response, max_length: nil)
+          self.class.read_response_body(response, max_length: max_length)
         end
 
         def truncate(text, llm:, percent_length: nil, max_length: nil)

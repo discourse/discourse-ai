@@ -27,7 +27,7 @@ module DiscourseAi
           parameters[:query].to_s.strip
         end
 
-        def invoke(bot_user, llm)
+        def invoke
           yield(query)
 
           api_key = SiteSetting.ai_google_custom_search_api_key

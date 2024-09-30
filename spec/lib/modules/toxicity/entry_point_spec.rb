@@ -54,16 +54,12 @@ describe DiscourseAi::Toxicity::EntryPoint do
       # This fabricator trigger events because it uses the UpdateMessage service.
       # Using let makes the test fail.
       fab!(:chat_message)
-      let(:updater) do
-        Chat::UpdateMessage.call(
-          guardian: Guardian.new(chat_message.user),
-          message_id: chat_message.id,
-          message: "This is my updated message",
-        )
-      end
 
       it "queues a job on chat message update" do
-        expect { updater.update }.to change(Jobs::ToxicityClassifyChatMessage.jobs, :size).by(1)
+        expect { update_message!(chat_message, text: "abcdef") }.to change(
+          Jobs::ToxicityClassifyChatMessage.jobs,
+          :size,
+        ).by(1)
       end
     end
   end

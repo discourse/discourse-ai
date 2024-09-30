@@ -44,10 +44,10 @@ module DiscourseAi
         end
 
         def setting_name
-          parameters[:setting_name]
+          @setting_name ||= parameters[:setting_name].to_s.downcase.gsub(" ", "_")
         end
 
-        def invoke(_bot_user, llm)
+        def invoke
           if !self.class.rg_installed?
             return(
               {

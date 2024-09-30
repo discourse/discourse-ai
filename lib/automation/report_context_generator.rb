@@ -85,8 +85,10 @@ module DiscourseAi
         info << "topic_id: #{topic.id}"
         info << "solved: true" if @solutions.key?(topic.id)
         info << "category: #{topic.category&.name}"
-        tags = topic.tags.pluck(:name)
-        info << "tags: #{topic.tags.pluck(:name).join(", ")}" if tags.present?
+        # We may make this optional, but for now we remove all
+        # tags that are not visible to anon
+        tags = topic.tags.visible(Guardian.new).pluck(:name)
+        info << "tags: #{tags.join(", ")}" if tags.present?
         info << topic.created_at.strftime("%Y-%m-%d %H:%M")
         { created_at: topic.created_at, info: info.join("\n"), posts: {} }
       end

@@ -38,8 +38,8 @@ RSpec.describe "AI Post helper", type: :system, js: true do
 
   before do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
-    SiteSetting.ai_helper_model = "fake:fake"
-    SiteSetting.composer_ai_helper_enabled = true
+    assign_fake_provider_to(:ai_helper_model)
+    SiteSetting.ai_helper_enabled = true
     sign_in(user)
   end
 

@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { next } from "@ember/runloop";
 import { htmlSafe } from "@ember/template";
@@ -10,10 +11,12 @@ import { clipboardCopy, escapeExpression } from "discourse/lib/utilities";
 import i18n from "discourse-common/helpers/i18n";
 import discourseLater from "discourse-common/lib/later";
 import I18n from "discourse-i18n";
+import { jsonToHtml } from "../../lib/utilities";
 
 export default class DebugAiModal extends Component {
   @tracked info = null;
   @tracked justCopiedText = "";
+  @tracked activeTab = "request";
 
   constructor() {
     super(...arguments);
@@ -30,41 +33,24 @@ export default class DebugAiModal extends Component {
     let parsed;
 
     try {
-      parsed = JSON.parse(this.info.raw_request_payload);
+      if (this.activeTab === "request") {
+        parsed = JSON.parse(this.info.raw_request_payload);
+      } else {
+        return this.formattedResponse(this.info.raw_response_payload);
+      }
     } catch (e) {
       return this.info.raw_request_payload;
     }
 
-    return htmlSafe(this.jsonToHtml(parsed));
+    return jsonToHtml(parsed);
   }
 
-  jsonToHtml(json) {
-    let html = "<ul>";
-    for (let key in json) {
-      if (!json.hasOwnProperty(key)) {
-        continue;
-      }
-      html += "<li>";
-      if (typeof json[key] === "object" && Array.isArray(json[key])) {
-        html += `<strong>${escapeExpression(key)}:</strong> ${this.jsonToHtml(
-          json[key]
-        )}`;
-      } else if (typeof json[key] === "object") {
-        html += `<strong>${escapeExpression(
-          key
-        )}:</strong> <ul><li>${this.jsonToHtml(json[key])}</li></ul>`;
-      } else {
-        let value = json[key];
-        if (typeof value === "string") {
-          value = escapeExpression(value);
-          value = value.replace(/\n/g, "<br>");
-        }
-        html += `<strong>${escapeExpression(key)}:</strong> ${value}`;
-      }
-      html += "</li>";
-    }
-    html += "</ul>";
-    return html;
+  formattedResponse(response) {
+    // we need to replace the new lines with <br> to make it look good
+    const split = response.split("\n");
+    const safe = split.map((line) => escapeExpression(line)).join("<br>");
+
+    return htmlSafe(safe);
   }
 
   @action
@@ -94,6 +80,26 @@ export default class DebugAiModal extends Component {
     });
   }
 
+  get requestActive() {
+    return this.activeTab === "request" ? "active" : "";
+  }
+
+  get responseActive() {
+    return this.activeTab === "response" ? "active" : "";
+  }
+
+  @action
+  requestClicked(e) {
+    this.activeTab = "request";
+    e.preventDefault();
+  }
+
+  @action
+  responseClicked(e) {
+    this.activeTab = "response";
+    e.preventDefault();
+  }
+
   <template>
     <DModal
       class="ai-debug-modal"
@@ -101,6 +107,18 @@ export default class DebugAiModal extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
+        <ul class="nav nav-pills ai-debug-modal__nav">
+          <li><a
+              href=""
+              class={{this.requestActive}}
+              {{on "click" this.requestClicked}}
+            >{{i18n "discourse_ai.ai_bot.debug_ai_modal.request"}}</a></li>
+          <li><a
+              href=""
+              class={{this.responseActive}}
+              {{on "click" this.responseClicked}}
+            >{{i18n "discourse_ai.ai_bot.debug_ai_modal.response"}}</a></li>
+        </ul>
         <div class="ai-debug-modal__tokens">
           <span>
             {{i18n "discourse_ai.ai_bot.debug_ai_modal.request_tokens"}}

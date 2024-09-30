@@ -36,13 +36,31 @@ sr:
         delete: Obriši
         uploads:
           uploading: "Uploading..."
+      tools:
+        back: "Nazad"
+        name: "Ime foruma"
+        description: "Opis"
+        summary: "Rezime"
+        save: "Sačuvaj"
+        parameter_required: "Potrebno"
+        edit: "Izmeni"
+        delete: "Obriši"
+        next:
+          title: "Dalje"
+      llms:
+        save: "Sačuvaj"
+        edit: "Izmeni"
+        back: "Nazad"
+        delete: Obriši
+        next:
+          title: "Dalje"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Nazad"
-          undo: "Vrati na prethodno"
           cancel: "Odustani"
           regen: "Pokušaj ponovno"
-          revert: "Vrati nazad"
+          discard: "Odbaci"
         post_options_menu:
           close: "Zatvori"
           copy: "Kopija"
@@ -50,6 +68,8 @@ sr:
           cancel: "Odustani"
         image_caption:
           save_caption: "Sačuvaj"
+          automatic_caption_dialog:
+            confirm: "Omogući"
       ai_bot:
         share_modal:
           copy: "Kopija"

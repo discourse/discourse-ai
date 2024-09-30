@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class CompletionPrompt < ActiveRecord::Base
-  # TODO(roman): Remove may 2024.
-  self.ignored_columns = ["provider"]
-
   TRANSLATE = -301
   GENERATE_TITLES = -307
   PROOFREAD = -303

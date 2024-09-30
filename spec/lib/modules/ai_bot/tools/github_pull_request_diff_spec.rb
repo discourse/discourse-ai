@@ -3,9 +3,10 @@
 require "rails_helper"
 
 RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
-  let(:tool) { described_class.new({ repo: repo, pull_id: pull_id }) }
   let(:bot_user) { Fabricate(:user) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4") }
+  fab!(:llm_model)
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
+  let(:tool) { described_class.new({ repo: repo, pull_id: pull_id }, bot_user: bot_user, llm: llm) }
 
   context "with #sort_and_shorten_diff" do
     it "sorts and shortens the diff without dropping data" do
@@ -64,7 +65,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
         },
       ).to_return(status: 200, body: diff)
 
-      result = tool.invoke(bot_user, llm)
+      result = tool.invoke
       expect(result[:diff]).to eq(diff)
       expect(result[:error]).to be_nil
     end
@@ -80,7 +81,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
         },
       ).to_return(status: 200, body: diff)
 
-      result = tool.invoke(bot_user, llm)
+      result = tool.invoke
       expect(result[:diff]).to eq(diff)
       expect(result[:error]).to be_nil
     end
@@ -98,7 +99,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
         },
       ).to_return(status: 404)
 
-      result = tool.invoke(bot_user, nil)
+      result = tool.invoke
       expect(result[:diff]).to be_nil
       expect(result[:error]).to include("Failed to retrieve the diff")
     end

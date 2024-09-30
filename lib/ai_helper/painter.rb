@@ -68,6 +68,7 @@ module DiscourseAi
         DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model).generate(
           prompt,
           user: user,
+          feature_name: "illustrate_post",
         )
       end
     end

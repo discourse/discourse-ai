@@ -41,13 +41,32 @@ th:
         uploads:
           title: "อัปโหลด"
           uploading: "กำลังอัปโหลด..."
+      tools:
+        back: "กลับ"
+        name: "ชื่อ"
+        description: "รายละเอียด"
+        summary: "สรุป"
+        save: "บันทึก"
+        parameter_required: "ต้องการ"
+        edit: "แก้ไข"
+        delete: "ลบ"
+        next:
+          title: "ต่อไป"
+      llms:
+        save: "บันทึก"
+        edit: "แก้ไข"
+        back: "กลับ"
+        delete: ลบ
+        next:
+          title: "ต่อไป"
+        tests:
+          success: "สำเร็จ!"
+        providers:
+          google: "กูเกิล"
       ai_helper:
         context_menu:
-          back: "กลับ"
-          undo: "เลิกทำ"
           cancel: "ยกเลิก"
           regen: "ลองอีกครั้ง"
-          revert: "ย้อนกลับ"
         post_options_menu:
           close: "ปิด"
           copy: "คัดลอก"
@@ -55,6 +74,10 @@ th:
           cancel: "ยกเลิก"
         image_caption:
           save_caption: "บันทึก"
+          automatic_caption_dialog:
+            confirm: "เปิดใช้งาน"
       ai_bot:
+        debug_ai_modal:
+          request: "ร้องขอ"
         share_modal:
           copy: "คัดลอก"

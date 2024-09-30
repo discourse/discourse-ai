@@ -3,6 +3,9 @@
 require "rails_helper"
 
 RSpec.describe DiscourseAi::AiBot::Tools::GithubFileContent do
+  fab!(:llm_model)
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
+
   let(:tool) do
     described_class.new(
       {
@@ -10,10 +13,10 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubFileContent do
         file_paths: %w[lib/database/connection.rb lib/ai_bot/tools/github_pull_request_diff.rb],
         branch: "8b382d6098fde879d28bbee68d3cbe0a193e4ffc",
       },
+      bot_user: nil,
+      llm: llm,
     )
   end
-
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-4") }
 
   describe "#invoke" do
     before do
@@ -35,7 +38,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubFileContent do
     end
 
     it "retrieves the content of the specified GitHub files" do
-      result = tool.invoke(nil, llm)
+      result = tool.invoke
       expected = {
         file_contents:
           "File Path: lib/database/connection.rb:\ncontent of connection.rb\nFile Path: lib/ai_bot/tools/github_pull_request_diff.rb:\ncontent of github_pull_request_diff.rb",

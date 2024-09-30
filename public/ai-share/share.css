@@ -306,6 +306,11 @@ h1 h2 h3 h4 h5 h6 {
 .post__content {
   line-height: 1.4;
   color: var(--primary-800);
+  overflow: hidden;
+}
+
+.post__content img {
+  max-width: 100%;
 }
 
 .post__content p:first-child {
@@ -412,12 +417,29 @@ li, p {
   height: auto;
 }
 
+aside .title,
 blockquote {
   background-color: var(--primary-50);
   border-left: 6px solid var(--primary-200);
   padding: 0.5em 1em;
   margin: 1em 0;
 }
+
+aside .title + blockquote {
+  margin-top: 0;
+}
+
+aside .title  {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+aside .title .avatar {
+  border-radius: 100%;
+  margin-right: 0.5em;
+}
+
 
 .lightbox-wrapper .meta svg, .lightbox-wrapper .meta .informations {
   display: none;

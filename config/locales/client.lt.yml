@@ -12,12 +12,6 @@ lt:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: '“Gemini Pro”'
       scriptables:
         llm_report:
           fields:
@@ -80,21 +74,44 @@ lt:
         system_prompt: Sistemos pranešimas
         save: Išsaugoti
         enabled: "Galimas?"
-        commands: Įgalintos komandos
         allowed_groups: Leidžiamos grupės
         delete: Pašalinti
         uploads:
           title: "Įkėlimai"
           uploading: "Įkeliama"
+      tools:
+        back: "Atgal"
+        name: "Vardas"
+        description: "Aprašymas"
+        summary: "Santrauka"
+        save: "Išsaugoti"
+        parameter_required: "Privalomi"
+        edit: "Redaguoti"
+        test: "Vykdyti testą"
+        delete: "Pašalinti"
+        next:
+          title: "Kitas"
+        test_modal:
+          run: "Vykdyti testą"
+      llms:
+        save: "Išsaugoti"
+        edit: "Redaguoti"
+        back: "Atgal"
+        delete: Pašalinti
+        next:
+          title: "Kitas"
+        tests:
+          title: "Vykdyti testą"
+          success: "Sėkmingai!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Atgal"
-          trigger: "AI"
-          undo: "Anuliuoti"
+          trigger: "Paklauskite AI"
           cancel: "Atšaukti"
           regen: "Bandyti dar kartą"
           confirm: "Patvirtinti"
-          revert: "Grąžinti"
+          discard: "Išmesti"
         post_options_menu:
           trigger: "Paklauskite AI"
           title: "Paklauskite AI"
@@ -107,9 +124,17 @@ lt:
           generating: "Generuojama antraštė..."
           credits: "Antraštė teikiama AI"
           save_caption: "Išsaugoti"
+          automatic_caption_dialog:
+            confirm: "Įgalinti"
       ai_bot:
+        debug_ai_modal:
+          request: "Užklausa"
+          response: "Atsakymas"
         ai_label: "AI"
         share_modal:
           copy: "Kopijuoti"
         bot_names:
           claude-2: "Claude 2"
+      summarization:
+        chat:
+          summarize: "Apibendrinti"

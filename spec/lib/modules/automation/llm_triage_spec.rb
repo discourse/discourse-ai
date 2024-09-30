@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 describe DiscourseAi::Automation::LlmTriage do
   fab!(:post)
+  fab!(:llm_model)
 
   def triage(**args)
     DiscourseAi::Automation::LlmTriage.handle(**args)
@@ -10,10 +11,11 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["good"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
+        automation: nil,
       )
     end
 
@@ -24,10 +26,11 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         hide_topic: true,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
+        automation: nil,
       )
     end
 
@@ -40,10 +43,11 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         category_id: category.id,
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
+        automation: nil,
       )
     end
 
@@ -55,11 +59,12 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         canned_reply: "test canned reply 123",
         canned_reply_user: user.username,
+        automation: nil,
       )
     end
 
@@ -73,31 +78,51 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         flag_post: true,
+        automation: nil,
       )
     end
 
     reviewable = ReviewablePost.last
 
     expect(reviewable.target).to eq(post)
+    expect(reviewable.reviewable_scores.first.reason).to include("bad")
   end
 
   it "can handle garbled output from LLM" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["Bad.\n\nYo"]) do
       triage(
         post: post,
-        model: "gpt-4",
+        model: "custom:#{llm_model.id}",
         system_prompt: "test %%POST%%",
         search_for_text: "bad",
         flag_post: true,
+        automation: nil,
       )
     end
 
     reviewable = ReviewablePost.last
 
     expect(reviewable&.target).to eq(post)
+  end
+
+  it "treats search_for_text as case-insensitive" do
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "BAD",
+        flag_post: true,
+        automation: nil,
+      )
+    end
+
+    reviewable = ReviewablePost.last
+
+    expect(reviewable.target).to eq(post)
   end
 end

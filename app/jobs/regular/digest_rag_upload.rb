@@ -9,17 +9,24 @@ module ::Jobs
     # TODO(roman): Add a way to automatically recover from errors, resulting in unindexed uploads.
     def execute(args)
       return if (upload = Upload.find_by(id: args[:upload_id])).nil?
-      return if (ai_persona = AiPersona.find_by(id: args[:ai_persona_id])).nil?
+
+      target_type = args[:target_type]
+      target_id = args[:target_id]
+
+      return if !target_type || !target_id
+
+      target = target_type.constantize.find_by(id: target_id)
+      return if !target
 
       truncation = DiscourseAi::Embeddings::Strategies::Truncation.new
       vector_rep =
         DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
 
       tokenizer = vector_rep.tokenizer
-      chunk_tokens = ai_persona.rag_chunk_tokens
-      overlap_tokens = ai_persona.rag_chunk_overlap_tokens
+      chunk_tokens = target.rag_chunk_tokens
+      overlap_tokens = target.rag_chunk_overlap_tokens
 
-      fragment_ids = RagDocumentFragment.where(ai_persona: ai_persona, upload: upload).pluck(:id)
+      fragment_ids = RagDocumentFragment.where(target: target, upload: upload).pluck(:id)
 
       # Check if this is the first time we process this upload.
       if fragment_ids.empty?
@@ -39,7 +46,7 @@ module ::Jobs
             overlap_tokens: overlap_tokens,
           ) do |chunk, metadata|
             fragment_ids << RagDocumentFragment.create!(
-              ai_persona: ai_persona,
+              target: target,
               fragment: chunk,
               fragment_number: idx + 1,
               upload: upload,
@@ -119,7 +126,9 @@ module ::Jobs
 
         while overlap_token_ids.present?
           begin
-            overlap = tokenizer.decode(overlap_token_ids) + split_char
+            padding = split_char
+            padding = " " if padding.empty?
+            overlap = tokenizer.decode(overlap_token_ids) + padding
             break if overlap.encoding == Encoding::UTF_8
           rescue StandardError
             # it is possible that we truncated mid char
@@ -128,7 +137,7 @@ module ::Jobs
         end
 
         # remove first word it is probably truncated
-        overlap = overlap.split(" ", 2).last
+        overlap = overlap.split(/\s/, 2).last.to_s.lstrip
       end
     end
 

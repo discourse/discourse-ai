@@ -9,20 +9,17 @@ import I18n from "discourse-i18n";
 
 export default class RagUploadProgress extends Component {
   @service messageBus;
-
   @tracked updatedProgress = null;
 
   willDestroy() {
     super.willDestroy(...arguments);
-    this.messageBus.unsubscribe(
-      `/discourse-ai/ai-persona-rag/${this.args.upload.id}`
-    );
+    this.messageBus.unsubscribe(`/discourse-ai/rag/${this.args.upload.id}`);
   }
 
   @action
   trackProgress() {
     this.messageBus.subscribe(
-      `/discourse-ai/ai-persona-rag/${this.args.upload.id}`,
+      `/discourse-ai/rag/${this.args.upload.id}`,
       this.onIndexingUpdate
     );
   }
@@ -32,8 +29,9 @@ export default class RagUploadProgress extends Component {
     // Order not guaranteed. Discard old updates.
     if (
       !this.updatedProgress ||
-      data.total === 0 ||
-      this.updatedProgress.left > data.left
+      this.updatedProgress.left === 0 ||
+      this.updatedProgress.left > data.left ||
+      data.total === data.indexed
     ) {
       this.updatedProgress = data;
     }
@@ -64,26 +62,23 @@ export default class RagUploadProgress extends Component {
   }
 
   <template>
-    <td
-      class="persona-rag-uploader__upload-status"
-      {{didInsert this.trackProgress}}
-    >
+    <td class="rag-uploader__upload-status" {{didInsert this.trackProgress}}>
       {{#if this.progress}}
         {{#if this.fullyIndexed}}
           <span class="indexed">
             {{icon "check"}}
-            {{I18n.t "discourse_ai.ai_persona.uploads.indexed"}}
+            {{I18n.t "discourse_ai.rag.uploads.indexed"}}
           </span>
         {{else}}
           <span class="indexing">
             {{icon "robot"}}
-            {{I18n.t "discourse_ai.ai_persona.uploads.indexing"}}
+            {{I18n.t "discourse_ai.rag.uploads.indexing"}}
             {{this.calculateProgress}}%
           </span>
         {{/if}}
       {{else}}
         <span class="uploaded">{{I18n.t
-            "discourse_ai.ai_persona.uploads.uploaded"
+            "discourse_ai.rag.uploads.uploaded"
           }}</span>
       {{/if}}
     </td>

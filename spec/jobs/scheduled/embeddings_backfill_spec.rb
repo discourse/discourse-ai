@@ -24,13 +24,14 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
   end
 
-  it "backfills topics based on bumped_at date" do
+  before do
     SiteSetting.ai_embeddings_enabled = true
     SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
     SiteSetting.ai_embeddings_backfill_batch_size = 1
-
     Jobs.run_immediately!
+  end
 
+  it "backfills topics based on bumped_at date" do
     embedding = Array.new(1024) { 1 }
 
     WebMock.stub_request(
@@ -51,5 +52,20 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     topic_ids = DB.query_single("SELECT topic_id from #{vector_rep.topic_table_name}")
 
     expect(topic_ids).to contain_exactly(first_topic.id, second_topic.id, third_topic.id)
+
+    freeze_time 1.day.from_now
+
+    # new title forces a reindex
+    third_topic.update!(updated_at: Time.zone.now, title: "new title - 123")
+
+    Jobs::EmbeddingsBackfill.new.execute({})
+
+    index_date =
+      DB.query_single(
+        "SELECT updated_at from #{vector_rep.topic_table_name} WHERE topic_id = ?",
+        third_topic.id,
+      ).first
+
+    expect(index_date).to be_within_one_second_of(Time.zone.now)
   end
 end

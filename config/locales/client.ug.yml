@@ -1,0 +1,104 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+ug:
+  js:
+    discourse_automation:
+      scriptables:
+        llm_report:
+          fields:
+            sender:
+              label: "يوللىغۇچى"
+            topic_id:
+              label: "تېما كىملىكى"
+            title:
+              label: "ئاتاق"
+            categories:
+              label: "سەھىپە"
+            tags:
+              label: "بەلگە"
+        llm_triage:
+          fields:
+            category:
+              label: "سەھىپە"
+            tags:
+              label: "بەلگە"
+            canned_reply:
+              label: "جاۋاب"
+    discourse_ai:
+      modals:
+        select_option: "تاللانما تاللىنىدۇ..."
+      ai_persona:
+        back: كەينى
+        name: ئىسمى
+        edit: تەھرىر
+        description: چۈشەندۈرۈش
+        user: ئىشلەتكۈچى
+        save: ساقلا
+        enabled: "قوزغىتىلدى؟"
+        delete: ئۆچۈر
+        uploads:
+          title: "يۈكلەنمە"
+          uploading: "يۈكلەۋاتىدۇ..."
+      tools:
+        back: "كەينى"
+        name: "ئىسمى"
+        description: "چۈشەندۈرۈش"
+        summary: "خۇلاسە"
+        script: "قوليازما"
+        save: "ساقلا"
+        parameter_required: "زۆرۈر"
+        edit: "تەھرىر"
+        test: "سىناقنى ئىجرا قىل"
+        delete: "ئۆچۈر"
+        next:
+          title: "كېيىنكى"
+        test_modal:
+          run: "سىناقنى ئىجرا قىل"
+      llms:
+        save: "ساقلا"
+        edit: "تەھرىر"
+        back: "كەينى"
+        delete: ئۆچۈر
+        next:
+          title: "كېيىنكى"
+        tests:
+          title: "سىناقنى ئىجرا قىل"
+          success: "مۇۋەپپەقىيەتلىك!"
+        providers:
+          google: "Google"
+      ai_helper:
+        context_menu:
+          cancel: "ۋاز كەچ"
+          regen: "قايتا سىنا"
+          confirm: "جەزملە"
+          discard: "تاشلىۋەت"
+        post_options_menu:
+          close: "تاقا"
+          copy: "كۆچۈر"
+          copied: "كۆچۈرۈلدى!"
+          cancel: "ۋاز كەچ"
+        thumbnail_suggestions:
+          select: "تاللا"
+          selected: "تاللاندى"
+        image_caption:
+          save_caption: "ساقلا"
+          automatic_caption_dialog:
+            confirm: "قوزغات"
+      ai_bot:
+        debug_ai_modal:
+          request: "ئىلتىماس"
+          response: "ئىنكاس"
+        share_modal:
+          copy: "كۆچۈر"
+      summarization:
+        chat:
+          title: "ئۇچۇرنى خۇلاسىلە"
+          description: "تۆۋەندىكى تاللانما تاللانسا لازىملىق ۋاقىت دائىرىسىدە يوللانغان سۆھبەتنى خۇلاسىلەيدۇ."
+          summarize: "خۇلاسە"
+          since:
+            one: "ئاخىرقى %{count} سائەت"
+            other: "ئاخىرقى %{count} سائەت"

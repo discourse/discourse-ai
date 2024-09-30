@@ -4,6 +4,15 @@ module DiscourseAi
   module Tokenizer
     class BasicTokenizer
       class << self
+        def available_llm_tokenizers
+          [
+            DiscourseAi::Tokenizer::AnthropicTokenizer,
+            DiscourseAi::Tokenizer::Llama3Tokenizer,
+            DiscourseAi::Tokenizer::MixtralTokenizer,
+            DiscourseAi::Tokenizer::OpenAiTokenizer,
+          ]
+        end
+
         def tokenizer
           raise NotImplementedError
         end

@@ -6,27 +6,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class AwsBedrock < Base
-        class << self
-          def can_contact?(endpoint_name, model_name)
-            endpoint_name == "aws_bedrock" &&
-              %w[claude-instant-1 claude-2 claude-3-haiku claude-3-sonnet claude-3-opus].include?(
-                model_name,
-              )
-          end
-
-          def dependant_setting_names
-            %w[ai_bedrock_access_key_id ai_bedrock_secret_access_key ai_bedrock_region]
-          end
-
-          def correctly_configured?(model)
-            SiteSetting.ai_bedrock_access_key_id.present? &&
-              SiteSetting.ai_bedrock_secret_access_key.present? &&
-              SiteSetting.ai_bedrock_region.present? && can_contact?("aws_bedrock", model)
-          end
-
-          def endpoint_name(model_name)
-            "AWS Bedrock - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "aws_bedrock"
         end
 
         def normalize_model_params(model_params)
@@ -39,7 +20,9 @@ module DiscourseAi
 
         def default_options(dialect)
           options = { max_tokens: 3_000, anthropic_version: "bedrock-2023-05-31" }
-          options[:stop_sequences] = ["</function_calls>"] if dialect.prompt.has_tools?
+
+          options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
+            dialect.prompt.has_tools?
           options
         end
 
@@ -47,20 +30,26 @@ module DiscourseAi
           AiApiAuditLog::Provider::Anthropic
         end
 
+        def xml_tags_to_strip(dialect)
+          if dialect.prompt.has_tools?
+            %w[thinking search_quality_reflection search_quality_score]
+          else
+            []
+          end
+        end
+
         private
 
         def prompt_size(prompt)
           # approximation
-          super(prompt.system_prompt.to_s + " " + prompt.messages.to_s)
+          tokenizer.size(prompt.system_prompt.to_s + " " + prompt.messages.to_s)
         end
 
         def model_uri
-          # See: https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
-          #
-          # FYI there is a 2.0 version of Claude, very little need to support it given
-          # haiku/sonnet are better fits anyway, we map to claude-2.1
+          region = llm_model.lookup_custom_param("region")
+
           bedrock_model_id =
-            case model
+            case llm_model.name
             when "claude-2"
               "anthropic.claude-v2:1"
             when "claude-3-haiku"
@@ -71,10 +60,18 @@ module DiscourseAi
               "anthropic.claude-instant-v1"
             when "claude-3-opus"
               "anthropic.claude-3-opus-20240229-v1:0"
+            when "claude-3-5-sonnet"
+              "anthropic.claude-3-5-sonnet-20240620-v1:0"
+            else
+              llm_model.name
             end
 
+          if region.blank? || bedrock_model_id.blank?
+            raise CompletionFailed.new(I18n.t("discourse_ai.llm_models.bedrock_invalid_url"))
+          end
+
           api_url =
-            "https://bedrock-runtime.#{SiteSetting.ai_bedrock_region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
+            "https://bedrock-runtime.#{region}.amazonaws.com/model/#{bedrock_model_id}/invoke"
 
           api_url = @streaming_mode ? (api_url + "-with-response-stream") : api_url
 
@@ -82,8 +79,12 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
+          @native_tool_support = dialect.native_tool_support?
+
           payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
+          payload[:tools] = prompt.tools if prompt.has_tools?
+
           payload
         end
 
@@ -92,9 +93,9 @@ module DiscourseAi
 
           signer =
             Aws::Sigv4::Signer.new(
-              access_key_id: SiteSetting.ai_bedrock_access_key_id,
-              region: SiteSetting.ai_bedrock_region,
-              secret_access_key: SiteSetting.ai_bedrock_secret_access_key,
+              access_key_id: llm_model.lookup_custom_param("access_key_id"),
+              region: llm_model.lookup_custom_param("region"),
+              secret_access_key: llm_model.api_key,
               service: "bedrock",
             )
 
@@ -111,23 +112,31 @@ module DiscourseAi
         end
 
         def decode(chunk)
-          parsed =
-            Aws::EventStream::Decoder
-              .new
-              .decode_chunk(chunk)
-              .first
-              .payload
-              .string
-              .then { JSON.parse(_1) }
+          @decoder ||= Aws::EventStream::Decoder.new
 
-          bytes = parsed.dig("bytes")
+          decoded, _done = @decoder.decode_chunk(chunk)
 
-          if !bytes
-            Rails.logger.error("#{self.class.name}: #{parsed.to_s[0..500]}")
-            nil
-          else
-            Base64.decode64(parsed.dig("bytes"))
+          messages = []
+          return messages if !decoded
+
+          i = 0
+          while decoded
+            parsed = JSON.parse(decoded.payload.string)
+            # perhaps some control message we can just ignore
+            messages << Base64.decode64(parsed["bytes"]) if parsed && parsed["bytes"]
+
+            decoded, _done = @decoder.decode_chunk
+
+            i += 1
+            if i > 10_000
+              Rails.logger.error(
+                "DiscourseAI: Stream decoder looped too many times, logic error needs fixing",
+              )
+              break
+            end
           end
+
+          messages
         rescue JSON::ParserError,
                Aws::EventStream::Errors::MessageChecksumError,
                Aws::EventStream::Errors::PreludeChecksumError => e
@@ -136,33 +145,39 @@ module DiscourseAi
         end
 
         def final_log_update(log)
-          log.request_tokens = @input_tokens if @input_tokens
-          log.response_tokens = @output_tokens if @output_tokens
+          log.request_tokens = processor.input_tokens if processor.input_tokens
+          log.response_tokens = processor.output_tokens if processor.output_tokens
+        end
+
+        def processor
+          @processor ||=
+            DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
+        end
+
+        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
+          processor.to_xml_tool_calls(function_buffer) if !partial
         end
 
         def extract_completion_from(response_raw)
-          result = ""
-          parsed = JSON.parse(response_raw, symbolize_names: true)
-
-          if @streaming_mode
-            if parsed[:type] == "content_block_start" || parsed[:type] == "content_block_delta"
-              result = parsed.dig(:delta, :text).to_s
-            elsif parsed[:type] == "message_start"
-              @input_tokens = parsed.dig(:message, :usage, :input_tokens)
-            elsif parsed[:type] == "message_delta"
-              @output_tokens = parsed.dig(:delta, :usage, :output_tokens)
-            end
-          else
-            result = parsed.dig(:content, 0, :text).to_s
-            @input_tokens = parsed.dig(:usage, :input_tokens)
-            @output_tokens = parsed.dig(:usage, :output_tokens)
-          end
-
-          result
+          processor.process_message(response_raw)
         end
 
-        def partials_from(decoded_chunk)
-          [decoded_chunk]
+        def has_tool?(_response_data)
+          processor.tool_calls.present?
+        end
+
+        def partials_from(decoded_chunks)
+          decoded_chunks
+        end
+
+        def native_tool_support?
+          @native_tool_support
+        end
+
+        def chunk_to_string(chunk)
+          joined = +chunk.join("\n")
+          joined << "\n" if joined.length > 0
+          joined
         end
       end
     end

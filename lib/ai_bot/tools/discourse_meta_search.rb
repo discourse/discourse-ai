@@ -78,7 +78,7 @@ module DiscourseAi
           parameters.slice(:category, :user, :order, :max_posts, :tags, :before, :after, :status)
         end
 
-        def invoke(bot_user, llm)
+        def invoke
           search_string =
             search_args.reduce(+parameters[:search_query].to_s) do |memo, (key, value)|
               return memo if value.blank?
@@ -110,7 +110,13 @@ module DiscourseAi
           if posts.blank?
             { args: parameters, rows: [], instruction: "nothing was found, expand your search" }
           else
-            categories = self.class.categories
+            categories =
+              if categories_json = json.dig("grouped_search_result", "extra", "categories")
+                categories_json.map { |c| [c["id"], c] }.to_h
+              else
+                self.class.categories
+              end
+
             topics = (json["topics"]).map { |t| [t["id"], t] }.to_h
 
             format_results(posts, args: parameters) do |post|
@@ -148,25 +154,14 @@ module DiscourseAi
         def self.categories
           return @categories if defined?(@categories)
 
-          @categories = {}
-
-          page = 0
-          loop do
-            page += 1
-            url = "https://meta.discourse.org/categories.json?page=#{page}"
-
-            json = JSON.parse(Net::HTTP.get(URI(url)))
-            break if json["category_list"]["categories"].blank?
-
-            json["category_list"]["categories"].each do |c|
-              @categories[c["id"]] = {
-                "name" => c["name"],
-                "parent_category_id" => c["parent_category_id"],
-              }
-            end
-          end
-
-          @categories
+          url = "https://meta.discourse.org/site.json"
+          json = JSON.parse(Net::HTTP.get(URI(url)))
+          @categories =
+            json["categories"]
+              .map do |c|
+                [c["id"], { "name" => c["name"], "parent_category_id" => c["parent_category_id"] }]
+              end
+              .to_h
         end
 
         def description_args

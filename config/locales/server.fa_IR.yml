@@ -12,13 +12,14 @@ fa_IR:
       yaxis: "تاریخ"
   discourse_ai:
     share_ai:
+      onebox_title: "گفتگوی هوش‌مصنوعی با %{llm_name}"
       formatted_excerpt: "گفتگوی هوش‌مصنوعی با %{llm_name}:\n %{excerpt}"
       title: "%{title} - گفتگوی هوش‌مصنوعی - %{site_name}"
     ai_bot:
       personas:
         dall_e3:
           name: "DALL-E 3"
-      command_summary:
+      tool_summary:
         categories: "فهرست دسته‌بندی‌ها"
         search: "جستجو"
         tags: "فهرست برچسب‌ها"
@@ -27,7 +28,7 @@ fa_IR:
         image: "تولید تصویر"
         google: "جستجو در گوگل"
         dall_e: "تولید تصویر"
-      command_description:
+      tool_description:
         summarize: "خلاصه شده <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
         image: "%{prompt}"

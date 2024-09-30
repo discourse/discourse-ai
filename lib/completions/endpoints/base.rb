@@ -8,7 +8,7 @@ module DiscourseAi
         TIMEOUT = 60
 
         class << self
-          def endpoint_for(provider_name, model_name)
+          def endpoint_for(provider_name)
             endpoints = [
               DiscourseAi::Completions::Endpoints::AwsBedrock,
               DiscourseAi::Completions::Endpoints::OpenAi,
@@ -17,68 +17,69 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::Vllm,
               DiscourseAi::Completions::Endpoints::Anthropic,
               DiscourseAi::Completions::Endpoints::Cohere,
+              DiscourseAi::Completions::Endpoints::SambaNova,
             ]
+
+            endpoints << DiscourseAi::Completions::Endpoints::Ollama if Rails.env.development?
 
             if Rails.env.test? || Rails.env.development?
               endpoints << DiscourseAi::Completions::Endpoints::Fake
             end
 
             endpoints.detect(-> { raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL }) do |ek|
-              ek.can_contact?(provider_name, model_name)
+              ek.can_contact?(provider_name)
             end
           end
 
-          def configuration_hint
-            settings = dependant_setting_names
-            I18n.t(
-              "discourse_ai.llm.endpoints.configuration_hint",
-              settings: settings.join(", "),
-              count: settings.length,
-            )
-          end
-
-          def display_name(model_name)
-            to_display = endpoint_name(model_name)
-
-            return to_display if correctly_configured?(model_name)
-
-            I18n.t("discourse_ai.llm.endpoints.not_configured", display_name: to_display)
-          end
-
-          def dependant_setting_names
-            raise NotImplementedError
-          end
-
-          def endpoint_name(_model_name)
-            raise NotImplementedError
-          end
-
-          def can_contact?(_endpoint_name, _model_name)
+          def can_contact?(_model_provider)
             raise NotImplementedError
           end
         end
 
-        def initialize(model_name, tokenizer)
-          @model = model_name
-          @tokenizer = tokenizer
+        def initialize(llm_model)
+          @llm_model = llm_model
         end
 
         def native_tool_support?
           false
         end
 
-        def perform_completion!(dialect, user, model_params = {}, &blk)
+        def use_ssl?
+          if model_uri&.scheme.present?
+            model_uri.scheme == "https"
+          else
+            true
+          end
+        end
+
+        def xml_tags_to_strip(dialect)
+          []
+        end
+
+        def perform_completion!(dialect, user, model_params = {}, feature_name: nil, &blk)
           allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
+          orig_blk = blk
 
           @streaming_mode = block_given?
+          to_strip = xml_tags_to_strip(dialect)
+          @xml_stripper =
+            DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
+
+          if @streaming_mode && @xml_stripper
+            blk =
+              lambda do |partial, cancel|
+                partial = @xml_stripper << partial
+                orig_blk.call(partial, cancel) if partial
+              end
+          end
 
           prompt = dialect.translate
 
           FinalDestination::HTTP.start(
             model_uri.host,
             model_uri.port,
-            use_ssl: true,
+            use_ssl: use_ssl?,
             read_timeout: TIMEOUT,
             open_timeout: TIMEOUT,
             write_timeout: TIMEOUT,
@@ -97,7 +98,7 @@ module DiscourseAi
                 Rails.logger.error(
                   "#{self.class.name}: status: #{response.code.to_i} - body: #{response.body}",
                 )
-                raise CompletionFailed
+                raise CompletionFailed, response.body
               end
 
               log =
@@ -108,6 +109,8 @@ module DiscourseAi
                   request_tokens: prompt_size(prompt),
                   topic_id: dialect.prompt.topic_id,
                   post_id: dialect.prompt.post_id,
+                  feature_name: feature_name,
+                  language_model: llm_model.name,
                 )
 
               if !@streaming_mode
@@ -162,9 +165,15 @@ module DiscourseAi
                   if decoded_chunk.nil?
                     raise CompletionFailed, "#{self.class.name}: Failed to decode LLM completion"
                   end
-                  response_raw << decoded_chunk
+                  response_raw << chunk_to_string(decoded_chunk)
 
-                  redo_chunk = leftover + decoded_chunk
+                  if decoded_chunk.is_a?(String)
+                    redo_chunk = leftover + decoded_chunk
+                  else
+                    # custom implementation for endpoint
+                    # no implicit leftover support
+                    redo_chunk = decoded_chunk
+                  end
 
                   raw_partials = partials_from(redo_chunk)
 
@@ -223,12 +232,14 @@ module DiscourseAi
                   else
                     leftover = ""
                   end
+
                   prev_processed_partials = 0 if leftover.blank?
                 end
               rescue IOError, StandardError
                 raise if !cancelled
               end
 
+              has_tool ||= has_tool?(partials_raw)
               # Once we have the full response, try to return the tool as a XML doc.
               if has_tool && native_tool_support?
                 function_buffer = add_to_function_buffer(function_buffer, payload: partials_raw)
@@ -247,6 +258,11 @@ module DiscourseAi
               if !native_tool_support? && function_calls = normalizer.function_calls
                 response_data << function_calls
                 blk.call(function_calls, cancel)
+              end
+
+              if @xml_stripper
+                leftover = @xml_stripper.finish
+                orig_blk.call(leftover, cancel) if leftover.present?
               end
 
               return response_data
@@ -281,9 +297,13 @@ module DiscourseAi
           tokenizer.size(extract_prompt_for_tokenizer(prompt))
         end
 
-        attr_reader :tokenizer, :model
+        attr_reader :llm_model
 
         protected
+
+        def tokenizer
+          llm_model.tokenizer_class
+        end
 
         # should normalize temperature, max_tokens, stop_words to endpoint specific values
         def normalize_model_params(model_params)
@@ -315,7 +335,7 @@ module DiscourseAi
         end
 
         def extract_prompt_for_tokenizer(prompt)
-          prompt
+          prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
         end
 
         def build_buffer
@@ -326,7 +346,7 @@ module DiscourseAi
           TEXT
         end
 
-        def noop_function_call_text
+        def self.noop_function_call_text
           (<<~TEXT).strip
             <invoke>
             <tool_name></tool_name>
@@ -337,8 +357,20 @@ module DiscourseAi
           TEXT
         end
 
+        def noop_function_call_text
+          self.class.noop_function_call_text
+        end
+
         def has_tool?(response)
           response.include?("<function_calls>")
+        end
+
+        def chunk_to_string(chunk)
+          if chunk.is_a?(String)
+            chunk
+          else
+            chunk.to_s
+          end
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)

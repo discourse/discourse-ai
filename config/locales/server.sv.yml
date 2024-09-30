@@ -10,11 +10,14 @@ sv:
       yaxis: "Datum"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Sök"
         time: "Tid"
         summarize: "Sammanfatta"
+    summarization:
+      chat:
+        no_targets: "Det fanns inga meddelanden under den valda perioden."
     sentiment:
       reports:
         post_emotion:
-          neutral: "Neutralt"
+          neutral: "Neutralt \U0001F610"

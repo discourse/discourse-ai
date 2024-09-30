@@ -1,37 +1,24 @@
 # frozen_string_literal: true
 RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
-  before do
-    SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_openai_api_key = "asd"
-  end
+  before { SiteSetting.ai_bot_enabled = true }
 
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  fab!(:llm_model) { Fabricate(:llm_model, max_prompt_tokens: 8192) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   let(:progress_blk) { Proc.new {} }
 
   let(:mock_search_json) { plugin_file_from_fixtures("search.json", "search_meta").read }
 
-  let(:mock_categories_page_1) do
-    plugin_file_from_fixtures("categories_page_1.json", "search_meta").read
+  let(:mock_search_with_categories_json) do
+    plugin_file_from_fixtures("search_with_categories.json", "search_meta").read
   end
 
-  let(:mock_categories_page_2) do
-    plugin_file_from_fixtures("categories_page_2.json", "search_meta").read
-  end
+  let(:mock_site_json) { plugin_file_from_fixtures("site.json", "search_meta").read }
 
   before do
-    stub_request(:get, "https://meta.discourse.org/categories.json?page=1").to_return(
+    stub_request(:get, "https://meta.discourse.org/site.json").to_return(
       status: 200,
-      body: mock_categories_page_1,
-      headers: {
-      },
-    )
-  end
-
-  before do
-    stub_request(:get, "https://meta.discourse.org/categories.json?page=2").to_return(
-      status: 200,
-      body: mock_categories_page_2,
+      body: mock_site_json,
       headers: {
       },
     )
@@ -45,8 +32,25 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
       },
     )
 
-    search = described_class.new({ search_query: "test" })
-    results = search.invoke(bot_user, llm, &progress_blk)
+    search = described_class.new({ search_query: "test" }, bot_user: bot_user, llm: llm)
+    results = search.invoke(&progress_blk)
+    expect(results[:rows].length).to eq(20)
+
+    expect(results[:rows].first[results[:column_names].index("category")]).to eq(
+      "documentation > developers",
+    )
+  end
+
+  it "searches meta.discourse.org with lazy_load_categories enabled" do
+    stub_request(:get, "https://meta.discourse.org/search.json?q=test").to_return(
+      status: 200,
+      body: mock_search_with_categories_json,
+      headers: {
+      },
+    )
+
+    search = described_class.new({ search_query: "test" }, bot_user: bot_user, llm: llm)
+    results = search.invoke(&progress_blk)
     expect(results[:rows].length).to eq(20)
 
     expect(results[:rows].first[results[:column_names].index("category")]).to eq(
@@ -71,8 +75,8 @@ RSpec.describe DiscourseAi::AiBot::Tools::DiscourseMetaSearch do
         .to_h
         .symbolize_keys
 
-    search = described_class.new(params)
-    results = search.invoke(bot_user, llm, &progress_blk)
+    search = described_class.new(params, bot_user: bot_user, llm: llm)
+    results = search.invoke(&progress_blk)
 
     expect(results[:args]).to eq(params)
   end

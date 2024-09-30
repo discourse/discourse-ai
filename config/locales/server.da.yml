@@ -10,10 +10,10 @@ da:
       yaxis: "Dato"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Søg"
         time: "Tidspunkt"
     sentiment:
       reports:
         post_emotion:
-          neutral: "Neutral"
+          neutral: "Neutral \U0001F610"

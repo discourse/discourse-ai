@@ -5,90 +5,24 @@ module DiscourseAi
     module Dialects
       class ChatGpt < Dialect
         class << self
-          def can_translate?(model_name)
-            %w[
-              gpt-3.5-turbo
-              gpt-4
-              gpt-3.5-turbo-16k
-              gpt-4-32k
-              gpt-4-turbo
-              gpt-4-vision-preview
-            ].include?(model_name)
-          end
-
-          def tokenizer
-            DiscourseAi::Tokenizer::OpenAiTokenizer
+          def can_translate?(model_provider)
+            model_provider == "open_ai" || model_provider == "azure"
           end
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
 
+        def native_tool_support?
+          llm_model.provider == "open_ai" || llm_model.provider == "azure"
+        end
+
         def translate
-          messages = prompt.messages
-
-          # ChatGPT doesn't use an assistant msg to improve long-context responses.
-          if messages.last[:type] == :model
-            messages = messages.dup
-            messages.pop
-          end
-
-          trimmed_messages = trim_messages(messages)
-
-          embed_user_ids =
-            trimmed_messages.any? do |m|
+          @embed_user_ids =
+            prompt.messages.any? do |m|
               m[:id] && m[:type] == :user && !m[:id].to_s.match?(VALID_ID_REGEX)
             end
 
-          trimmed_messages.map do |msg|
-            if msg[:type] == :system
-              { role: "system", content: msg[:content] }
-            elsif msg[:type] == :model
-              { role: "assistant", content: msg[:content] }
-            elsif msg[:type] == :tool_call
-              call_details = JSON.parse(msg[:content], symbolize_names: true)
-              call_details[:arguments] = call_details[:arguments].to_json
-              call_details[:name] = msg[:name]
-
-              {
-                role: "assistant",
-                content: nil,
-                tool_calls: [{ type: "function", function: call_details, id: msg[:id] }],
-              }
-            elsif msg[:type] == :tool
-              { role: "tool", tool_call_id: msg[:id], content: msg[:content], name: msg[:name] }
-            else
-              user_message = { role: "user", content: msg[:content] }
-              if msg[:id]
-                if embed_user_ids
-                  user_message[:content] = "#{msg[:id]}: #{msg[:content]}"
-                else
-                  user_message[:name] = msg[:id]
-                end
-              end
-              user_message[:content] = inline_images(user_message[:content], msg)
-              user_message
-            end
-          end
-        end
-
-        def tools
-          prompt.tools.map do |t|
-            tool = t.dup
-
-            tool[:parameters] = t[:parameters]
-              .to_a
-              .reduce({ type: "object", properties: {}, required: [] }) do |memo, p|
-                name = p[:name]
-                memo[:required] << name if p[:required]
-
-                memo[:properties][name] = p.except(:name, :required, :item_type)
-
-                memo[:properties][name][:items] = { type: p[:item_type] } if p[:item_type]
-                memo
-              end
-
-            { type: "function", function: tool }
-          end
+          super
         end
 
         def max_prompt_tokens
@@ -98,37 +32,74 @@ module DiscourseAi
 
           if tools.present?
             # note this is about 100 tokens over, OpenAI have a more optimal representation
-            @function_size ||= self.class.tokenizer.size(tools.to_json.to_s)
+            @function_size ||= llm_model.tokenizer_class.size(tools.to_json.to_s)
             buffer += @function_size
           end
 
-          model_max_tokens - buffer
+          llm_model.max_prompt_tokens - buffer
+        end
+
+        # no support for streaming or tools or system messages
+        def is_gpt_o?
+          llm_model.provider == "open_ai" && llm_model.name.include?("o1-")
         end
 
         private
 
-        def inline_images(content, message)
-          if model_name.include?("gpt-4-vision") || model_name == "gpt-4-turbo"
-            content = message[:content]
-            encoded_uploads = prompt.encoded_uploads(message)
-            if encoded_uploads.present?
-              new_content = []
-              new_content.concat(
-                encoded_uploads.map do |details|
-                  {
-                    type: "image_url",
-                    image_url: {
-                      url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
-                    },
-                  }
-                end,
-              )
-              new_content << { type: "text", text: content }
-              content = new_content
+        def tools_dialect
+          @tools_dialect ||= DiscourseAi::Completions::Dialects::OpenAiTools.new(prompt.tools)
+        end
+
+        def system_msg(msg)
+          if is_gpt_o?
+            { role: "user", content: msg[:content] }
+          else
+            { role: "system", content: msg[:content] }
+          end
+        end
+
+        def model_msg(msg)
+          { role: "assistant", content: msg[:content] }
+        end
+
+        def tool_call_msg(msg)
+          tools_dialect.from_raw_tool_call(msg)
+        end
+
+        def tool_msg(msg)
+          tools_dialect.from_raw_tool(msg)
+        end
+
+        def user_msg(msg)
+          user_message = { role: "user", content: msg[:content] }
+
+          if msg[:id]
+            if @embed_user_ids
+              user_message[:content] = "#{msg[:id]}: #{msg[:content]}"
+            else
+              user_message[:name] = msg[:id]
             end
           end
 
-          content
+          user_message[:content] = inline_images(user_message[:content], msg) if vision_support?
+          user_message
+        end
+
+        def inline_images(content, message)
+          encoded_uploads = prompt.encoded_uploads(message)
+          return content if encoded_uploads.blank?
+
+          content_w_imgs =
+            encoded_uploads.reduce([]) do |memo, details|
+              memo << {
+                type: "image_url",
+                image_url: {
+                  url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
+                },
+              }
+            end
+
+          content_w_imgs << { type: "text", text: message[:content] }
         end
 
         def per_message_overhead
@@ -137,22 +108,7 @@ module DiscourseAi
         end
 
         def calculate_message_token(context)
-          self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
-        end
-
-        def model_max_tokens
-          case model_name
-          when "gpt-3.5-turbo-16k"
-            16_384
-          when "gpt-4"
-            8192
-          when "gpt-4-32k"
-            32_768
-          when "gpt-4-turbo"
-            131_072
-          else
-            8192
-          end
+          llm_model.tokenizer_class.size(context[:content].to_s + context[:name].to_s)
         end
       end
     end

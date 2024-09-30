@@ -10,7 +10,10 @@ he:
       llm_triage:
         title: מיון ראשוני של פוסטים באמצעות בינה מלאכותית
         description: "מיון ראשוני של פוסטים באמצעות דגם שפה גדול"
-        system_prompt_missing_post_placeholder: "בקשת המערכת חייבת להכיל ממלא מקום לפוסט: %%POST%%"
+        flagged_post: |
+          <div>תגובה מהמודל:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>הוזנקה על ידי הכלל <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: דוח תקופתי בעזרת בינה מלאכותית
         description: "דוח תקופתי שמבוסס על דגם שפה גדול"
@@ -43,30 +46,13 @@ he:
     ai_nsfw_flag_threshold_porn: "סף לתמונה שמוגדרת כארוטית כדי שתיחשב פוגענית."
     ai_nsfw_flag_threshold_sexy: "סף לתמונה שמוגדרת כמינית כדי שתיחשב פוגענית."
     ai_nsfw_models: "מודלים לשימוש להסקת פוגענות."
-    ai_openai_gpt35_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 3.5.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt35_16k_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 3.5 16k.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt4_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt4_32k_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4 32k.‏ (לתמיכה ב־Azure)"
-    ai_openai_gpt4_turbo_url: "כתובת מותאמת אישית להשלמת שיחות עם GPT 4 טורבו.‏ (לתמיכה ב־Azure)"
-    ai_openai_dall_e_3_url: "כתובת מותאמת אישית שמשמשת ליצירת תמונות עם DALL-E 3. (לתמיכה ב־Azure)"
-    ai_openai_organization: "(רשות, אפשר להשאיר ריק כדי להשמיט) מזהה הארגון שמשמש ל־API של OpenAI. מועבר דרך הכותרת OpenAI-Organization."
     ai_openai_embeddings_url: "כתובת מותאמת אישית ל־API ההטמעות של OpenAI. (במקרה של Azure זה יכול להיות: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "מפתח API ל־API של OpenAI"
-    ai_anthropic_api_key: "מפתח API ל־API של Anthropic"
-    ai_cohere_api_key: "מפתח API ל־API של Cohere"
-    ai_hugging_face_api_url: "כתובת משלך להסקה על בסיס OpenSource LLM. עם תאימות ל־https://github.com/huggingface/text-generation-inference"
-    ai_hugging_face_api_key: מפתח API ל־API של Hugging Face
-    ai_hugging_face_token_limit: כמות אסימונים מרבית שה־API של Hugging Face יכול להשתמש בה לכל בקשה
-    ai_hugging_face_model_display_name: השם שיוצג לדגם הבינה המלאכותית של Hugging Face
+    ai_openai_api_key: "מפתח API ל־API של OpenAI. משמש רק להטבעות ול־Dall-E. ל־GPT יש להשתמש בלשונית הגדרות LLM (מודלי שפה גדולים)"
+    ai_anthropic_native_tool_call_models: "רשימת דגמים שישתמשו בקריאות כלי טבעיות לעומת כלים מיושנים מבוססי XML."
     ai_hugging_face_tei_endpoint: כתובת בה פועל ה־API להסקת הטמעת הטקסט ב־Hugging Face
     ai_hugging_face_tei_api_key: מפתח API להסרת הטמעת טקסט ב־Hugging Face
-    ai_gemini_api_key: מפתח API ל־API של Google Gemini
-    ai_vllm_endpoint: הכתובת בה פועל ה־API של vLLM
-    ai_vllm_api_key: מפתח API ל־API של vLLM
-    ai_llava_endpoint: כתובת בה פועל ה־API עבור llava
-    ai_llava_api_key: מפתח API ל־API של llava
-    composer_ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית של כותב ההודעות."
-    ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
+    ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית."
+    composer_ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
     ai_helper_allowed_in_pm: "הפעלת מסייע הבינה המלאכותית בכותב ההודעות בהודעות הפרטיות."
     ai_helper_model: "דגם לשימוש למסייע הבינה המלאכותית."
     ai_helper_custom_prompts_allowed_groups: "משתמשים בקבוצות אלה יראו את אפשרות הבקשה המותאמת אישית במסייע הבינה המלאכותית."
@@ -76,6 +62,7 @@ he:
     ai_helper_enabled_features: "נא לבחור יכולות להפעלה במסייע הבינה המלאכותית."
     post_ai_helper_allowed_groups: "קבוצות משתמשים שמורשות לגשת ליכולות מסייע בינה מלאכותית בפוסטים"
     ai_helper_image_caption_model: "נא לבחור את הדגם שישמש ליצירת כותרות לתמונות"
+    ai_auto_image_caption_allowed_groups: "משתמשים בקבוצות האלה יכולים להפעיל או לכבות כותרות אוטומטיות לתמונות."
     ai_embeddings_enabled: "הפעלת מודול ההטמעות."
     ai_embeddings_discourse_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול ההטמעות"
     ai_embeddings_discourse_service_api_key: "מפתח API ל־API של ההטמעות"
@@ -90,14 +77,15 @@ he:
     ai_embeddings_semantic_related_include_closed_topics: "כולל נושאים סגורים בתוצאות החיפוש הסמנטיות"
     ai_embeddings_semantic_search_hyde_model: "הדגם שמשמש להרחבת מילות החיפוש לקבלת תוצאות טובות יותר במהלך חיפוש סמנטי"
     ai_embeddings_per_post_enabled: יצירת הטמעות בכל פוסט בנפרד
-    ai_summarization_discourse_service_api_endpoint: "כתובת בה API הסיכום של Dicourse פעיל."
-    ai_summarization_discourse_service_api_key: "מפתח API ל־API הסיכומים של Discourse."
+    ai_summarization_enabled: "הפעלת מודול תקציר הנושא."
+    ai_summarization_model: "מודל לשימוש לסיכום."
+    ai_custom_summarization_allowed_groups: "קבוצות שמורשות להשתמש ליצירת סיכומים חדשים."
+    ai_pm_summarization_allowed_groups: "קבוצות שמורשות ליצור ולצפות בתקצירים בהודעות פרטיות."
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."
     ai_bot_enable_chat_warning: "הצגת אזהרה עם פתיחת שיח הודעות פרטיות. אפשר לדרוס את זה על ידי עריכת מחרוזת התרגום: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "כאשר לבוט של GPT יש גישה להודעות הפרטיות, הוא יגיב לחברים בקבוצות האלה."
     ai_bot_debugging_allowed_groups: "לאפשר לקבוצות האלו לצפות בכפתור ניפוי שיאות שמציג את בקשת ותגובה הבינה המלאכותית באופן גולמי"
-    ai_bot_public_sharing_allowed_groups: "לאפשר לקבוצות האלה לשתף הודעות בינה מלאכותית פרטיות באופן ציבורי דרך קישור ייחודי שזמין לציבור"
-    ai_bot_enabled_chat_bots: "מודלים זמינים שיכהנו כבוט בינה מלאכותית"
+    ai_bot_public_sharing_allowed_groups: "לאפשר לקבוצות האלה לשתף הודעות אישיות של בינה למאכותית עם הציבור באמצעות קישור ייחודי גלוי לציבור. הערה: אם האתר שלך דורש כניסה, גם שיתופים ידרשו כניסה."
     ai_bot_add_to_header: "הצגת כפתור בכותרת כדי לפתוח הודעה פרטית עם בוט בינה מלאכותית"
     ai_bot_github_access_token: "אסימון גישה ל־GitHub לשימוש עם כלי הבינה המלאכותית של GitHub (נחוץ לתמיכה בחיפוש)"
     ai_stability_api_key: "מפתח API ל־API של stability.ai"
@@ -105,11 +93,6 @@ he:
     ai_stability_api_url: "כתובת ל־API של stability.ai"
     ai_google_custom_search_api_key: "מפתח API ל־API החיפוש המותאם אישית של Google, ר׳: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX ל־API החיפוש המותאם אישית של Google"
-    ai_bedrock_access_key_id: "מזהה מפתח גישה ל־API של Bedrock"
-    ai_bedrock_secret_access_key: "מפתח גישה סודי ל־API של Bedrock"
-    ai_bedrock_region: "אזור של AWS ל־API של Bedrock"
-    ai_cloudflare_workers_account_id: "מזהה חשבון Cloudflare ל־API של פועלי הבינה המלאכותית של Cloudflare"
-    ai_cloudflare_workers_api_token: "אסימון API ל־API של פועלי הבינה המלאכותית של Cloudflare"
   reviewables:
     reasons:
       flagged_by_toxicity: תוסף הבינה המלאכותית סימן את זה לאחר סיווג כרעיל.
@@ -128,11 +111,22 @@ he:
       description: "מספר הפוסטים שסווגו עם אחד הרגשות הבאים, מקובצים לפי דרגות אמון המפרסמים."
   discourse_ai:
     unknown_model: "דגם בינה מלאכותית לא ידוע"
+    tools:
+      custom_name: "%{name} (מותאם אישית)"
+      presets:
+        browse_web_jina:
+          name: "גלישה באינטרנט דרך jina.ai"
+        exchange_rate:
+          name: "שער חליפין"
+        stock_quote:
+          name: "מחיר המניה (AlphaVantage)"
+        empty_tool:
+          name: "התחלה מאפס…"
     ai_helper:
       errors:
         completion_request_failed: "משהו השתבש במהלך הניסיון לספק הצעות. נא לנסות שוב."
       prompts:
-        translate: תרגום לאנגלית
+        translate: תרגום ל%{language}
         generate_titles: הצעת כותרות לנושא
         proofread: הגהת הטקסט
         markdown_table: יצירת טבלה ב־Markdown
@@ -158,8 +152,9 @@ he:
         conversation_deleted: "שיתוף השיחה נמחק בהצלחה"
     ai_bot:
       personas:
+        default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
-        cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך פקודות או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
+        cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך כלים או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
         github_helper:
           name: "מסייע GitHub"
           description: "בוט בינה מלאכותית שמסייע במשימות ובשאלות שקשורות ב־GitHub"
@@ -190,16 +185,24 @@ he:
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
-      command_options:
+      tool_options:
+        read:
+          read_private:
+            name: "קריאה פרטית"
+            description: "לאפשר גישה לכל הנושאים שיש למשתמש גישה אליהם (כברירת מחדל רק נושאים ציבוריים כלולים)"
         search:
+          search_private:
+            name: "חיפוש פרטי"
+            description: "לכלול את כל הנושאים שלמשתמש יש גישה אליהם בתוצאות החיפוש (כברירת המחדל רק נושאים ציבוריים כלולים)"
           max_results:
             name: "מספר תוצאות מרבי"
             description: "המספר המרבי של תוצאות שיכללו בחיפוש - אם ייעשה שימוש בכללי ברירת מחדל ריקים והספירה תשתנה בהתאם לדגם שבשימוש. הערך הגבוה ביותר הוא 100."
           base_query:
             name: "שאילתת חיפוש בסיסית"
             description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‚‎#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
-      command_summary:
+      tool_summary:
         web_browser: "גלישה באינטרנט"
+        github_search_files: "חיפוש קבצים ב־GitHub"
         github_search_code: "חיפוש קוד ב־GitHub"
         github_file_content: "תוכן קובץ ב־GitHub"
         github_pull_request_diff: "הבדל בבקשת דחיפה ב־GitHub"
@@ -217,9 +220,11 @@ he:
         search_settings: "מתבצע חיפוש בהגדרות האתר"
         dall_e: "יצירת תמונה"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
-      command_help:
+        javascript_evaluator: "שערוך JavaScript"
+      tool_help:
         web_browser: "גלישה באינטרנט באמצעות בוט בינה מלאכותית"
         github_search_code: "חיפוש אחר קוד במאגר GitHub"
+        github_search_files: "חיפוש אחר קבצים במאגר GitHub"
         github_file_content: "משיכת תוכן של קבצים ממאגר ב־GitHub"
         github_pull_request_diff: "משיכת הבדל לבקשת דחיפה ב־GitHub"
         random_picker: "נא לבחור מספר אקראי או רכיב אקראי מרשימה"
@@ -227,7 +232,7 @@ he:
         search: "חיפוש בכל הנושאים הציבוריים בפורום"
         tags: "הצגת כל התגיות בפורום"
         time: "איתור זמן באזורי זמן שונים"
-        summarize: "סיכום נושא"
+        summary: "סיכום נושא"
         image: "יצירת תמונה באמצעות Stable Diffusion"
         google: "חיפוש שאילתה ב־Google"
         read: "הצגת נושא ציבורי בפורום"
@@ -236,8 +241,10 @@ he:
         search_settings: "חיפוש בהגדרות האתר"
         dall_e: "יצירת תמונה באמצעות DALL-E 3"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
-      command_description:
+        javascript_evaluator: "שערוך JavaScript"
+      tool_description:
         web_browser: "קורא את <a href='%{url}'>%{url}</a>"
+        github_search_files: "בוצע חיפוש אחר ‚%{keywords}’ בתוך %{repo}/%{branch}"
         github_search_code: "בוצע חיפוש אחר ‚%{query}’ בתוך %{repo}"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
         github_file_content: "התקבל תוכן של %{file_paths} מתוך %{repo_name}@%{branch}"
@@ -248,35 +255,35 @@ he:
         dall_e: "%{prompt}"
         image: "%{prompt}"
         categories:
-          one: "נמצאה קטגוריה אחת"
-          two: "נמצאו %{count} קטגוריות"
+          one: "נמצאה קטגוריה"
+          two: "נמצאו שתי קטגוריות"
           many: "נמצאו %{count} קטגוריות"
           other: "נמצאו %{count} קטגוריות"
         tags:
-          one: "נמצאה תגית אחת"
-          two: "נמצאו %{count} תגיות"
+          one: "נמצאה תגית"
+          two: "נמצאו שתי תגיות"
           many: "נמצאו %{count} תגיות"
           other: "נמצאו %{count} תגיות"
         search:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         search_meta_discourse:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         google:
-          one: "נמצאה <a href='%{url}'>תוצאה</a> אחת לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
+          one: "נמצאה <a href='%{url}'>תוצאה</a> לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
           other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         setting_context: "נקרא הקשר עבור: %{setting_name}"
         schema: "%{tables}"
         search_settings:
           one: "נמצאה תוצאה לחיפוש אחר ‚%{query}’"
-          two: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
+          two: "נמצאו שתי תוצאות לחיפוש אחר ‚%{query}’"
           many: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
           other: "נמצאו %{count} תוצאות לחיפוש אחר ‚%{query}’"
     summarization:
@@ -285,26 +292,27 @@ he:
         two: "יש להגדיר את ההגדרות האלו תחילה: %{settings}."
         many: "יש להגדיר את ההגדרות האלו תחילה: %{settings}."
         other: "יש להגדיר את ההגדרות האלו תחילה: %{settings}."
+      chat:
+        no_targets: "לא היו הודעות במהלך התקופה הנבחרת."
     sentiment:
       reports:
         overall_sentiment:
           positive: "חיובי"
           negative: "שלילי"
         post_emotion:
-          tl_01: "דרגות אמון 0‏-1"
-          tl_234: "דרגות אמון 2‎+‎"
-          sadness: "עצב"
-          surprise: "הפתעה"
-          neutral: "נייטרלי"
-          fear: "פחד"
-          anger: "כעס"
-          joy: "הנאה"
-          disgust: "גועל"
+          sadness: "עצב \U0001F622"
+          surprise: "הפתעה \U0001F631"
+          neutral: "נייטרלי \U0001F610"
+          fear: "פחד \U0001F628"
+          anger: "כעס \U0001F621"
+          joy: "הנאה \U0001F600"
+          disgust: "גועל \U0001F922"
     llm:
       configuration:
         disable_module_first: "קודם צריך להשבית את %{setting}."
         set_llm_first: "קודם יש להגדיר את %{setting}."
         model_unreachable: "לא הצלחנו לקבל תגובה מהמודל הזה. נא לוודא שההגדרות שלך נכונות קודם."
+        invalid_seeded_model: "אי אפשר להשתמש במודל הזה עם היכולת הזאת."
       endpoints:
         not_configured: "%{display_name} (לא מוגדר)"
         configuration_hint:
@@ -312,6 +320,12 @@ he:
           two: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           many: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
           other: "נא לוודא שההגדרות האלו הוגדרו: %{settings}"
+      delete_failed:
+        one: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמש בו. נא לעדכן את ההגדרות לנסות שוב."
+        two: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
+        many: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
+        other: "לא הצלחנו למחוק את המודל הזה כי %{settings} משתמשים בו. נא לעדכן את ההגדרות לנסות שוב."
+      cannot_edit_builtin: "אי אפשר לערוך מודל מובנה."
     embeddings:
       configuration:
         disable_embeddings: "יש להשבית קודם את ‚הטמעת בינה מלאכותית פעילה’."
@@ -322,3 +336,6 @@ he:
           two: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
           many: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
           other: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
+    llm_models:
+      missing_provider_param: "%{param} לא יכול להישאר ריק"
+      bedrock_invalid_url: "נא למלא את כל השדות די ליצור קשר עם המודל הזה."

@@ -65,9 +65,7 @@ module DiscourseAi
             I18n.t("discourse_automation.scriptables.llm_report.title")
           end
         @model = model
-
-        translated_model = DiscourseAi::Automation.translate_model(model)
-        @llm = DiscourseAi::Completions::Llm.proxy(translated_model)
+        @llm = DiscourseAi::Completions::Llm.proxy(model)
         @category_ids = category_ids
         @tags = tags
         @allow_secure_categories = allow_secure_categories
@@ -154,6 +152,7 @@ Follow the provided writing composition instructions carefully and precisely ste
           temperature: @temperature,
           top_p: @top_p,
           user: Discourse.system_user,
+          feature_name: "ai_report",
         ) do |response|
           print response if Rails.env.development? && @debug_mode
           result << response

@@ -5,11 +5,13 @@ require "rails_helper"
 RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
   before do
     SiteSetting.discourse_ai_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
+    toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "10"
     SiteSetting.ai_bot_public_sharing_allowed_groups = "10"
   end
+
+  fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
 
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
   fab!(:topic)
@@ -18,11 +20,11 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
 
   fab!(:bot_user) do
     SiteSetting.discourse_ai_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
+    toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "10"
     SiteSetting.ai_bot_public_sharing_allowed_groups = "10"
-    User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
+    claude_2.reload.user
   end
 
   fab!(:user_pm_share) do
@@ -252,6 +254,12 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
   end
 
   describe "GET show" do
+    it "redirects to home page if site require login" do
+      SiteSetting.login_required = true
+      get "#{path}/#{shared_conversation.share_key}"
+      expect(response).to redirect_to("/login")
+    end
+
     it "renders the shared conversation" do
       get "#{path}/#{shared_conversation.share_key}"
       expect(response).to have_http_status(:success)

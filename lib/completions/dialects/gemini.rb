@@ -5,68 +5,41 @@ module DiscourseAi
     module Dialects
       class Gemini < Dialect
         class << self
-          def can_translate?(model_name)
-            %w[gemini-pro gemini-1.5-pro].include?(model_name)
+          def can_translate?(model_provider)
+            model_provider == "google"
           end
+        end
 
-          def tokenizer
-            DiscourseAi::Tokenizer::OpenAiTokenizer ## TODO Replace with GeminiTokenizer
-          end
+        def native_tool_support?
+          true
         end
 
         def translate
           # Gemini complains if we don't alternate model/user roles.
           noop_model_response = { role: "model", parts: { text: "Ok." } }
+          messages = super
 
-          messages = prompt.messages
+          interleving_messages = []
+          previous_message = nil
 
-          # Gemini doesn't use an assistant msg to improve long-context responses.
-          messages.pop if messages.last[:type] == :model
+          system_instruction = nil
 
-          memo = []
-
-          trim_messages(messages).each do |msg|
-            if msg[:type] == :system
-              memo << { role: "user", parts: { text: msg[:content] } }
-              memo << noop_model_response.dup
-            elsif msg[:type] == :model
-              memo << { role: "model", parts: { text: msg[:content] } }
-            elsif msg[:type] == :tool_call
-              call_details = JSON.parse(msg[:content], symbolize_names: true)
-
-              memo << {
-                role: "model",
-                parts: {
-                  functionCall: {
-                    name: msg[:name] || call_details[:name],
-                    args: call_details[:arguments],
-                  },
-                },
-              }
-            elsif msg[:type] == :tool
-              memo << {
-                role: "function",
-                parts: {
-                  functionResponse: {
-                    name: msg[:name] || msg[:id],
-                    response: {
-                      content: msg[:content],
-                    },
-                  },
-                },
-              }
-            else
-              # Gemini quirk. Doesn't accept tool -> user or user -> user msgs.
-              previous_msg_role = memo.last&.dig(:role)
-              if previous_msg_role == "user" || previous_msg_role == "function"
-                memo << noop_model_response.dup
-              end
-
-              memo << { role: "user", parts: { text: msg[:content] } }
+          messages.each do |message|
+            if message[:role] == "system"
+              system_instruction = message[:content]
+              next
             end
+            if previous_message
+              if (previous_message[:role] == "user" || previous_message[:role] == "function") &&
+                   message[:role] == "user"
+                interleving_messages << noop_model_response.dup
+              end
+            end
+            interleving_messages << message
+            previous_message = message
           end
 
-          memo
+          { messages: interleving_messages, system_instruction: system_instruction }
         end
 
         def tools
@@ -97,18 +70,91 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          if model_name == "gemini-1.5-pro"
-            # technically we support 1 million tokens, but we're being conservative
-            800_000
-          else
-            16_384 # 50% of model tokens
-          end
+          llm_model.max_prompt_tokens
         end
 
         protected
 
         def calculate_message_token(context)
-          self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
+          llm_model.tokenizer_class.size(context[:content].to_s + context[:name].to_s)
+        end
+
+        def beta_api?
+          @beta_api ||= llm_model.name.start_with?("gemini-1.5")
+        end
+
+        def system_msg(msg)
+          if beta_api?
+            { role: "system", content: msg[:content] }
+          else
+            { role: "user", parts: { text: msg[:content] } }
+          end
+        end
+
+        def model_msg(msg)
+          if beta_api?
+            { role: "model", parts: [{ text: msg[:content] }] }
+          else
+            { role: "model", parts: { text: msg[:content] } }
+          end
+        end
+
+        def user_msg(msg)
+          if beta_api?
+            # support new format with multiple parts
+            result = { role: "user", parts: [{ text: msg[:content] }] }
+            return result unless vision_support?
+
+            upload_parts = uploaded_parts(msg)
+            result[:parts].concat(upload_parts) if upload_parts.present?
+            result
+          else
+            { role: "user", parts: { text: msg[:content] } }
+          end
+        end
+
+        def uploaded_parts(message)
+          encoded_uploads = prompt.encoded_uploads(message)
+          result = []
+          if encoded_uploads.present?
+            encoded_uploads.each do |details|
+              result << { inlineData: { mimeType: details[:mime_type], data: details[:base64] } }
+            end
+          end
+          result
+        end
+
+        def tool_call_msg(msg)
+          call_details = JSON.parse(msg[:content], symbolize_names: true)
+          part = {
+            functionCall: {
+              name: msg[:name] || call_details[:name],
+              args: call_details[:arguments],
+            },
+          }
+
+          if beta_api?
+            { role: "model", parts: [part] }
+          else
+            { role: "model", parts: part }
+          end
+        end
+
+        def tool_msg(msg)
+          part = {
+            functionResponse: {
+              name: msg[:name] || msg[:id],
+              response: {
+                content: msg[:content],
+              },
+            },
+          }
+
+          if beta_api?
+            { role: "function", parts: [part] }
+          else
+            { role: "function", parts: part }
+          end
         end
       end
     end

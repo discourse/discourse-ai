@@ -4,11 +4,19 @@ export default {
   path: "/plugins",
 
   map() {
-    this.route("discourse-ai", { path: "/" }, function () {
-      this.route("ai-personas", function () {
-        this.route("new");
-        this.route("show", { path: "/:id" });
-      });
+    this.route("discourse-ai-personas", { path: "ai-personas" }, function () {
+      this.route("new");
+      this.route("show", { path: "/:id" });
+    });
+
+    this.route("discourse-ai-llms", { path: "ai-llms" }, function () {
+      this.route("new");
+      this.route("show", { path: "/:id" });
+    });
+
+    this.route("discourse-ai-tools", { path: "ai-tools" }, function () {
+      this.route("new");
+      this.route("show", { path: "/:id" });
     });
   },
 };

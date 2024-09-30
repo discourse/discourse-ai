@@ -1,0 +1,159 @@
+.ai-llms-list-editor {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 1em 0;
+  }
+
+  &__configured + &__templates {
+    margin-top: 3em;
+  }
+}
+
+.ai-llm-editor {
+  padding-left: 0.5em;
+
+  .ai-llm-editor-input {
+    width: 350px;
+  }
+
+  .ai-llm-editor-provider-param {
+    &__checkbox {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: row-reverse;
+      justify-content: left;
+    }
+  }
+
+  .fk-d-tooltip__icon {
+    padding-left: 0.25em;
+    color: var(--primary-medium);
+  }
+
+  .ai-llm-editor-tests {
+    &__failure {
+      color: var(--danger);
+    }
+
+    &__success {
+      color: var(--success);
+    }
+  }
+
+  &__api-key {
+    margin-right: 0.5em;
+  }
+
+  &__secret-api-key-group {
+    display: flex;
+    align-items: center;
+  }
+
+  &__vision-enabled {
+    display: flex;
+    align-items: flex-start;
+  }
+}
+
+[class*="ai-llms-list-editor"] {
+  .admin-page-subheader {
+    h3 {
+      font-size: var(--font-up-2);
+      margin: 0;
+      font-weight: bold;
+    }
+  }
+  h3 {
+    font-weight: normal;
+    margin: 0;
+    line-height: var(--line-height-medium);
+  }
+}
+
+.ai-llms-list-editor__configured {
+  p {
+    margin: 0;
+    color: var(--primary-high);
+    @include breakpoint("mobile-extra-large") {
+      display: none;
+    }
+  }
+
+  table {
+    th {
+      white-space: nowrap;
+    }
+    tr:hover {
+      background: transparent;
+    }
+    td {
+      padding: 1em 0.5em;
+    }
+  }
+
+  .column-name {
+    width: 100%;
+  }
+
+  .column-edit {
+    text-align: right;
+
+    @include breakpoint("mobile-extra-large") {
+      .d-button-label {
+        display: none;
+      }
+      .d-icon {
+        margin: 0;
+      }
+    }
+  }
+
+  .d-toggle-switch {
+    justify-content: center;
+  }
+}
+
+.ai-llms-list-editor__templates {
+  &-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16em, 1fr));
+    gap: 1em 2em;
+    margin-top: 1em;
+    border-top: 3px solid var(--primary-low); // matches tbody border
+    padding-top: 1em;
+  }
+  &-list-item {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 4;
+    gap: 0;
+    margin-bottom: 2em;
+    @include breakpoint("mobile-extra-large", min-width) {
+      margin-bottom: 3em;
+    }
+  }
+
+  p {
+    color: var(--primary-high);
+    margin: 0.25em 0 0.5em;
+    line-height: var(--line-height-large);
+    align-self: start;
+    @include breakpoint("mobile-extra-large", min-width) {
+      max-width: 17em;
+    }
+  }
+
+  button {
+    justify-self: start;
+  }
+
+  h4 {
+    font-size: var(--font-down-1);
+    font-weight: normal;
+    color: var(--primary-high);
+    margin: 0;
+    letter-spacing: 0.1px;
+  }
+}

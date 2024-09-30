@@ -4,17 +4,21 @@ nav.post-controls .actions button.cancel-streaming {
 
 .ai-bot-chat {
   #reply-control {
+    .user-selector,
     .title-and-category,
     #private-message-users {
       display: none;
     }
   }
-  .gpt-persona {
-    margin-bottom: 5px;
-    margin-top: -10px;
+  .persona-llm-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     .select-kit.single-select.dropdown-select-box ul.select-kit-collection {
       max-height: 200px;
     }
+    margin-bottom: 1em;
   }
 }
 
@@ -45,38 +49,6 @@ nav.post-controls .actions button.cancel-streaming {
 
 article.streaming nav.post-controls .actions button.cancel-streaming {
   display: inline-block;
-}
-
-@keyframes flashing {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-article.streaming .cooked {
-  .progress-dot::after {
-    content: "\25CF";
-    font-family: Söhne Circle, system-ui, -apple-system, Segoe UI, Roboto,
-      Ubuntu, Cantarell, Noto Sans, sans-serif;
-    line-height: normal;
-    margin-left: 0.25rem;
-    vertical-align: baseline;
-    animation: flashing 1.5s 3s infinite;
-    display: inline-block;
-    font-size: 1rem;
-    color: var(--tertiary-medium);
-  }
-
-  > .progress-dot:only-child::after {
-    // if the progress dot is the only content
-    // we are likely waiting longer for a response
-    // so it can start animating instantly
-    animation: flashing 1.5s infinite;
-  }
 }
 
 .ai-bot-available-bot-options {
@@ -160,4 +132,10 @@ span.onebox-ai-llm-title {
 
 .ai-debug-modal__tokens span {
   display: block;
+}
+
+.d-modal ul.ai-debug-modal__nav {
+  margin: 0 0 1em;
+  padding: 0;
+  border-bottom: none;
 }

@@ -8,12 +8,14 @@ module DiscourseAi
       end
 
       def suggested_title
-        @thread.then { thread_content(_1) }.then { call_llm(_1) }.then { cleanup(_1) }
+        content = thread_content(@thread)
+        return nil if content.blank?
+
+        suggested_title = call_llm(content)
+        cleanup(suggested_title)
       end
 
       def call_llm(thread_content)
-        return nil if thread_content.blank?
-
         chat = "<input>\n#{thread_content}\n</input>"
 
         prompt =
@@ -32,6 +34,7 @@ module DiscourseAi
           prompt,
           user: Discourse.system_user,
           stop_sequences: ["</input>"],
+          feature_name: "chat_thread_title",
         )
       end
 

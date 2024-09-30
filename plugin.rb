@@ -9,11 +9,19 @@
 # required_version: 2.7.0
 
 gem "tokenizers", "0.4.4"
-gem "tiktoken_ruby", "0.0.7"
+gem "tiktoken_ruby", "0.0.9"
 
 enabled_site_setting :discourse_ai_enabled
 
+register_asset "stylesheets/common/streaming.scss"
+
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
+register_asset "stylesheets/modules/ai-helper/desktop/ai-helper-fk-modals.scss", :desktop
+register_asset "stylesheets/modules/ai-helper/mobile/ai-helper-fk-modals.scss", :mobile
+
+register_asset "stylesheets/modules/summarization/mobile/ai-summary.scss", :mobile
+register_asset "stylesheets/modules/summarization/common/ai-summary.scss"
+register_asset "stylesheets/modules/summarization/desktop/ai-summary.scss", :desktop
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
@@ -25,6 +33,10 @@ register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
 register_asset "stylesheets/modules/sentiment/common/dashboard.scss"
 register_asset "stylesheets/modules/sentiment/desktop/dashboard.scss", :desktop
 register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
+
+register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
+
+register_asset "stylesheets/modules/ai-bot/common/ai-tools.scss"
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
@@ -66,6 +78,12 @@ after_initialize do
   reloadable_patch { |plugin| Guardian.prepend DiscourseAi::GuardianExtensions }
 
   register_modifier(:post_should_secure_uploads?) do |_, _, topic|
-    false if topic.private_message? && SharedAiConversation.exists?(target: topic)
+    if topic.private_message? && SharedAiConversation.exists?(target: topic)
+      false
+    else
+      # revert to default behavior
+      # even though this can be shortened this is the clearest way to express it
+      nil
+    end
   end
 end

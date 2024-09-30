@@ -12,8 +12,6 @@ fa_IR:
           discourse_ai: "هوش مصنوعی دیسکورس"
   js:
     discourse_automation:
-      ai_models:
-        claude_2: Claude 2
       scriptables:
         llm_report:
           fields:
@@ -33,6 +31,8 @@ fa_IR:
               label: "برچسب‌ها"
             suppress_notifications:
               label: "توقف آگاه‌سازی‌ها"
+            debug_mode:
+              label: "حالت اشکال زدایی"
         llm_triage:
           fields:
             search_for_text:
@@ -45,6 +45,8 @@ fa_IR:
               label: "پاسخ"
             canned_reply_user:
               label: "پاسخ کاربر"
+            model:
+              label: "مدل"
     discourse_ai:
       title: "هوش مصنوعی"
       modals:
@@ -61,6 +63,38 @@ fa_IR:
         uploads:
           title: "بارگذاری‌ها"
           uploading: "در حال بار گذاری..."
+      tools:
+        back: "بازگشت"
+        name: "نام"
+        description: "توضیح"
+        summary: "خلاصه"
+        save: "ذخیره"
+        parameter_required: "مورد نیاز"
+        edit: "ویرایش"
+        test: "اجرای آزمایش"
+        delete: "حذف"
+        next:
+          title: "بعدی"
+        test_modal:
+          run: "اجرای آزمایش"
+      llms:
+        new: "مدل جدید"
+        display_name: "نام برای نمایش"
+        name: "نام مدل"
+        provider: "سرویس میزبانی مدل"
+        save: "ذخیره"
+        edit: "ویرایش"
+        back: "بازگشت"
+        delete: حذف
+        next:
+          title: "بعدی"
+        tests:
+          title: "اجرای آزمایش"
+          running: "در حال اجرای آزمایش..."
+          success: "موفقیت!"
+          failure: "در حال ارتباط با مدل این خطا رخ داد: %{error}"
+        providers:
+          google: "گوگل"
       related_topics:
         title: "موضوعات مرتبط"
       ai_helper:
@@ -68,25 +102,25 @@ fa_IR:
         description: "یکی از گزینه‌های زیر را انتخاب کنید و هوش مصنوعی نسخه جدیدی از متن را به شما پیشنهاد می‌کند."
         selection_hint: "نکته: شما همچنین می‌توانید بخشی از متن را قبل از باز کردن راهنما انتخاب کنید، تا فقط آن قسمت بازنویسی شود."
         context_menu:
-          back: "بازگشت"
-          trigger: "هوش مصنوعی"
-          undo: "بی‌اثر کردن"
           cancel: "انصراف"
           regen: "تلاش دوباره"
           confirm: "تایید"
-          revert: "برگشت"
-          changes: "تغییرات"
+          discard: "حذف"
         post_options_menu:
           close: "بستن"
           copy: "کپی"
           copied: "کپی شد!"
           cancel: "انصراف"
+          insert_footnote: "افزودن پاورقی"
+          footnote_credits: "توضیح توسط هوش مصنوعی"
         fast_edit:
           suggest_button: "پیشنهاد ویرایش"
         thumbnail_suggestions:
           select: "انتخاب"
         image_caption:
           save_caption: "ذخیره"
+          automatic_caption_dialog:
+            confirm: "فعال کردن"
       reviewables:
         model_used: "مدل مورد استفاده:"
         accuracy: "دقت:"
@@ -95,6 +129,9 @@ fa_IR:
       ai_bot:
         cancel_streaming: "توقف پاسخ"
         conversation_shared: "گفتگو کپی شد"
+        debug_ai_modal:
+          request: "درخواست"
+          response: "پاسخ"
         ai_label: "هوش مصنوعی"
         share_modal:
           copy: "کپی"
@@ -103,3 +140,6 @@ fa_IR:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+      summarization:
+        chat:
+          summarize: "خلاصه کنید"

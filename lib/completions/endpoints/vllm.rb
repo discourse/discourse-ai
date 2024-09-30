@@ -4,30 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Vllm < Base
-        class << self
-          def can_contact?(endpoint_name, model_name)
-            endpoint_name == "vllm" &&
-              %w[
-                mistralai/Mixtral-8x7B-Instruct-v0.1
-                mistralai/Mistral-7B-Instruct-v0.2
-                StableBeluga2
-                Upstage-Llama-2-*-instruct-v2
-                Llama2-*-chat-hf
-                Llama2-chat-hf
-              ].include?(model_name)
-          end
-
-          def dependant_setting_names
-            %w[ai_vllm_endpoint_srv ai_vllm_endpoint]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_vllm_endpoint_srv.present? || SiteSetting.ai_vllm_endpoint.present?
-          end
-
-          def endpoint_name(model_name)
-            "vLLM - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "vllm"
         end
 
         def normalize_model_params(model_params)
@@ -42,7 +20,7 @@ module DiscourseAi
         end
 
         def default_options
-          { max_tokens: 2000, model: model }
+          { max_tokens: 2000, model: llm_model.name }
         end
 
         def provider_id
@@ -52,37 +30,30 @@ module DiscourseAi
         private
 
         def model_uri
-          service = DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_vllm_endpoint_srv)
-          if service.present?
-            api_endpoint = "https://#{service.target}:#{service.port}/v1/completions"
+          if llm_model.url.to_s.starts_with?("srv://")
+            service = DiscourseAi::Utils::DnsSrv.lookup(llm_model.url.sub("srv://", ""))
+            api_endpoint = "https://#{service.target}:#{service.port}/v1/chat/completions"
           else
-            api_endpoint = "#{SiteSetting.ai_vllm_endpoint}/v1/completions"
+            api_endpoint = llm_model.url
           end
+
           @uri ||= URI(api_endpoint)
         end
 
-        def prepare_payload(prompt, model_params, _dialect)
-          default_options
-            .merge(model_params)
-            .merge(prompt: prompt)
-            .tap { |payload| payload[:stream] = true if @streaming_mode }
+        def prepare_payload(prompt, model_params, dialect)
+          payload = default_options.merge(model_params).merge(messages: prompt)
+          payload[:stream] = true if @streaming_mode
+
+          payload
         end
 
         def prepare_request(payload)
           headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
 
-          headers["X-API-KEY"] = SiteSetting.ai_vllm_api_key if SiteSetting.ai_vllm_api_key.present?
+          api_key = llm_model&.api_key || SiteSetting.ai_vllm_api_key
+          headers["X-API-KEY"] = api_key if api_key.present?
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
-        end
-
-        def extract_completion_from(response_raw)
-          parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
-
-          # half a line sent here
-          return if !parsed
-
-          parsed.dig(:text)
         end
 
         def partials_from(decoded_chunk)
@@ -93,6 +64,16 @@ module DiscourseAi
               data == "[DONE]" ? nil : data
             end
             .compact
+        end
+
+        def extract_completion_from(response_raw)
+          parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
+          # half a line sent here
+          return if !parsed
+
+          response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
+
+          response_h.dig(:content)
         end
       end
     end

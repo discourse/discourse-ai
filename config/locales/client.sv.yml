@@ -41,14 +41,38 @@ sv:
         uploads:
           title: "Uppladdningar"
           uploading: "Laddar upp..."
+      tools:
+        back: "Tillbaka"
+        name: "Namn"
+        description: "Beskrivning"
+        summary: "Sammanfattning"
+        save: "Spara"
+        parameter_required: "Krävs"
+        edit: "Redigera"
+        test: "Kör test"
+        delete: "Ta bort"
+        next:
+          title: "Nästa"
+        test_modal:
+          run: "Kör test"
+      llms:
+        save: "Spara"
+        edit: "Redigera"
+        back: "Tillbaka"
+        delete: Radera
+        next:
+          title: "Nästa"
+        tests:
+          title: "Kör test"
+          success: "Lyckades!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Tillbaka"
-          undo: "Ångra"
           cancel: "Avbryt"
           regen: "Försök igen"
           confirm: "Bekräfta"
-          revert: "Återställ"
+          discard: "Förkasta"
         post_options_menu:
           close: "Stäng"
           copy: "Kopiera"
@@ -59,6 +83,21 @@ sv:
           selected: "Markerat"
         image_caption:
           save_caption: "Spara"
+          automatic_caption_dialog:
+            confirm: "Aktivera"
       ai_bot:
+        debug_ai_modal:
+          request: "Förfrågning"
+          response: "Svar"
         share_modal:
           copy: "Kopiera"
+      summarization:
+        chat:
+          title: "Sammanfatta meddelanden"
+          description: "Välj ett alternativ nedan för att sammanfatta samtalet som skickades under den önskade tidsramen."
+          summarize: "Sammanfatta"
+          since:
+            one: "Senaste timmen"
+            other: "Senaste %{count} timmarna"
+        topic:
+          title: "Sammanfattning av ämne"

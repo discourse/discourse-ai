@@ -39,19 +39,52 @@ te:
         uploads:
           title: "అప్‌లోడ్‌లు"
           uploading: "ఎగుమతవుతోంది..."
+      tools:
+        back: "వెనుకకు"
+        name: "పేరు"
+        description: "వివరణ"
+        summary: "సారాంశం"
+        save: "సేవ్ చేయండి"
+        parameter_required: "అవసరం"
+        edit: "సవరించండి"
+        test: "పరీక్షను అమలు చేయండి"
+        delete: "తొలగించండి"
+        next:
+          title: "తదుపరి"
+        test_modal:
+          run: "పరీక్షను అమలు చేయండి"
+      llms:
+        save: "సేవ్ చేయండి"
+        edit: "సవరించండి"
+        back: "వెనుకకు"
+        delete: తొలగించండి
+        next:
+          title: "తదుపరి"
+        tests:
+          title: "పరీక్షను అమలు చేయండి"
+        providers:
+          google: "గూగుల్"
       ai_helper:
         context_menu:
-          back: "వెనుకకు"
-          undo: "రద్దు"
           cancel: "రద్దుచేయి"
           regen: "మళ్ళీ ప్రయత్నించండి"
-          revert: "తిద్దు"
+          confirm: "నిర్ధారించండి"
+          discard: "విస్మరించండి"
         post_options_menu:
           close: "మూసివేయి"
           copy: "నకలు"
+          copied: "కాపీ చేయబడింది!"
           cancel: "రద్దుచేయి"
+        thumbnail_suggestions:
+          select: "ఎంచుకోండి"
+          selected: "ఎంపిక చేయబడినవి"
         image_caption:
           save_caption: "భద్రపరుచు"
+          automatic_caption_dialog:
+            confirm: "ప్రారంభించండి"
       ai_bot:
+        debug_ai_modal:
+          request: "అభ్యర్థన"
+          response: "ప్రతిస్పందన"
         share_modal:
           copy: "నకలు"

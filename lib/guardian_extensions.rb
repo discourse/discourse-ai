@@ -2,6 +2,33 @@
 
 module DiscourseAi
   module GuardianExtensions
+    def can_see_summary?(target)
+      return false if !SiteSetting.ai_summarization_enabled
+
+      if target.class == Topic && target.private_message?
+        allowed =
+          SiteSetting.ai_pm_summarization_allowed_groups_map.any? do |group_id|
+            user.group_ids.include?(group_id)
+          end
+
+        return false if !allowed
+      end
+
+      has_cached_summary = AiSummary.exists?(target: target)
+      return has_cached_summary if user.nil?
+
+      has_cached_summary || can_request_summary?
+    end
+
+    def can_request_summary?
+      return false if anonymous?
+
+      user_group_ids = user.group_ids
+      SiteSetting.ai_custom_summarization_allowed_groups_map.any? do |group_id|
+        user_group_ids.include?(group_id)
+      end
+    end
+
     def can_debug_ai_bot_conversation?(target)
       return false if anonymous?
 

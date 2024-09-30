@@ -41,13 +41,37 @@ bs_BA:
         uploads:
           title: "Uploads"
           uploading: "Učitavanje..."
+      tools:
+        back: "Prethodno"
+        name: "Ime"
+        description: "Opis"
+        summary: "Sažetak"
+        save: "Save"
+        parameter_required: "Required"
+        edit: "Edit"
+        test: "Pokreni test"
+        delete: "Delete"
+        next:
+          title: "Iduće"
+        test_modal:
+          run: "Pokreni test"
+      llms:
+        save: "Save"
+        edit: "Edit"
+        back: "Prethodno"
+        delete: Delete
+        next:
+          title: "Iduće"
+        tests:
+          title: "Pokreni test"
+          success: "Uspjeh!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Prethodno"
-          undo: "Vrati nazad"
           cancel: "Odustani"
           regen: "Pokušaj ponovo"
-          revert: "Vrati nazad"
+          discard: "Odbaci"
         post_options_menu:
           close: "Zatvori"
           copy: "Copy"
@@ -55,6 +79,11 @@ bs_BA:
           cancel: "Odustani"
         image_caption:
           save_caption: "Save"
+          automatic_caption_dialog:
+            confirm: "Omogući"
       ai_bot:
+        debug_ai_modal:
+          request: "Zatraži"
+          response: "Odgovor"
         share_modal:
           copy: "Copy"

@@ -10,6 +10,8 @@ sk:
       scriptables:
         llm_report:
           fields:
+            sender:
+              label: "Odosielateľ"
             topic_id:
               label: "ID témy"
             title:
@@ -39,23 +41,66 @@ sk:
         enabled: "Povolené?"
         delete: Odstrániť
         uploads:
+          title: "Nahrávanie"
           uploading: "Načítavam..."
+      tools:
+        back: "Späť"
+        name: "Meno"
+        description: "Popis"
+        summary: "Zhrnutie"
+        script: "Skript"
+        save: "Uložiť"
+        parameter_required: "Povinné"
+        edit: "Upraviť"
+        test: "Spustiť test"
+        delete: "Odstrániť"
+        next:
+          title: "Ďalej"
+        test_modal:
+          run: "Spustiť test"
+      llms:
+        save: "Uložiť"
+        edit: "Upraviť"
+        back: "Späť"
+        delete: Odstrániť
+        next:
+          title: "Ďalej"
+        tests:
+          title: "Spustiť test"
+          success: "Úspech!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Späť"
-          undo: "Späť"
           cancel: "Zrušiť"
           regen: "Skúsiť znova"
           confirm: "Potvrďte"
-          revert: "Vrátiť zmeny"
+          discard: "Zahodiť"
         post_options_menu:
           close: "Zavrieť"
           copy: "Kopírovať"
+          copied: "Skopírované!"
           cancel: "Zrušiť"
         thumbnail_suggestions:
           select: "Vyberte"
+          selected: "Vybrané"
         image_caption:
           save_caption: "Uložiť"
+          automatic_caption_dialog:
+            confirm: "Povoliť"
       ai_bot:
+        debug_ai_modal:
+          request: "Požiadavka"
+          response: "Odpoveď"
         share_modal:
           copy: "Kopírovať"
+      summarization:
+        chat:
+          title: "Zhrnutie správ"
+          description: "Ak chcete zhrnúť konverzáciu odoslanú počas požadovaného časového obdobia, vyberte nižšie uvedenú možnosť."
+          summarize: "Zhrnúť"
+          since:
+            one: "Posledná hodina"
+            few: "Posledných %{count} hodín"
+            many: "Posledných %{count} hodín"
+            other: "Posledných %{count} hodín"

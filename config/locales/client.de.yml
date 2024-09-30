@@ -7,25 +7,16 @@
 de:
   admin_js:
     admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "Ermöglicht die semantische Suche über den Endpunkt /discourse-ai/embeddings/semantic-search."
       site_settings:
         categories:
           discourse_ai: "Discourse-KI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_pro: Gemini 1.5 Pro
-        claude_3_opus: Claude 3 Opus
-        claude_3_sonnet: Claude 3 Sonett
-        claude_3_haiku: Claude 3 Haiku
-        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Anleitung V0.1
-        mistral_7b_instruct_v0_2: Mistral 7B Anleitung V0.2
-        command_r: Cohere Befehl R
-        command_r_plus: Cohere Befehl R+
       scriptables:
         llm_report:
           fields:
@@ -66,7 +57,7 @@ de:
               label: "Schlagwörter"
               description: "Themen nur nach diesen Schlagwörtern filtern"
             exclude_tags:
-              label: "Schlagworte ausschließen"
+              label: "Schlagwörter ausschließen"
               description: "Themen mit diesen Schlagwörtern ausschließen"
             exclude_categories:
               label: "Kategorien ausschließen"
@@ -85,10 +76,10 @@ de:
               description: "Inhalte aus dieser Gruppe im Bericht hervorheben"
             temperature:
               label: "Temperatur"
-              description: "Temperatur, die für das LLM verwendet werden soll, erhöhen, um die Zufälligkeit zu erhöhen (0, um das Standardmodell zu verwenden)"
+              description: "Temperatur, die für das LLM verwendet werden soll. Erhöhen, um die Zufälligkeit zu steigern (0, um den Standard des Modells zu verwenden)"
             top_p:
               label: "Top P"
-              description: "Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (0, um das Standardmodell zu verwenden)"
+              description: "Top P für das LLM. Erhöhen, um die Zufälligkeit zu steigern (0, um den Standard des Modells zu verwenden)"
         llm_triage:
           fields:
             system_prompt:
@@ -114,10 +105,10 @@ de:
               description: "Thema nicht für die Öffentlichkeit sichtbar machen, wenn ausgelöst"
             flag_post:
               label: "Zur Überprüfung senden"
-              description: "Setzt den Beitrag in die Überprüfungswarteschlange, wenn er ausgelöst wurde, damit die Moderatoren ihn sichten können."
+              description: "Setzt den Beitrag bei Auslösung in die Überprüfungswarteschlange, damit die Moderatoren ihn sichten können"
             model:
               label: "Modell"
-              description: "Entweder gpt-4 oder gpt-3-5-turbo oder claude-2"
+              description: "Für die Triage verwendetes Sprachmodell"
     discourse_ai:
       title: "KI"
       modals:
@@ -129,28 +120,34 @@ de:
         description: Beschreibung
         no_llm_selected: "Kein Sprachmodell ausgewählt"
         max_context_posts: "Max. Kontext-Beiträge"
-        max_context_posts_help: "Die maximale Anzahl von Beiträgen, die die KI als Kontext für die Antwort auf einen Nutzer verwenden soll. (leer für Standard)"
-        vision_enabled: Vision Aktiviert
-        vision_enabled_help: Wenn diese Funktion aktiviert ist, versucht die KI, die Bilder zu verstehen, die die Benutzer in dem Thema posten, je nachdem, welches Modell das Sehen unterstützt. Anthropic Claude 3 Modelle unterstützen das Sehen.
+        max_context_posts_help: "Die maximale Anzahl von Beiträgen, die die KI als Kontext für die Antwort auf einen Nutzer verwenden soll (leer für Standardwert)."
+        vision_enabled: Sehen aktiviert
+        vision_enabled_help: Wenn diese Funktion aktiviert ist, versucht die KI, die Bilder zu verstehen, die Nutzer im Thema posten (abhängig davon, ob das verwendete Modell Sehen unterstützt). Unterstützt von den neuesten Modellen von Anthropic, Google und OpenAI.
         vision_max_pixels: Unterstützte Bildgröße
         vision_max_pixel_sizes:
-          low: Niedrige Qualität - am günstigsten (256x256)
-          medium: Mittlere Qualität (512x512)
-          high: Hohe Qualität — am langsamsten (1024x1024)
-        mentionable: Erwähnenswert
-        mentionable_help: Wenn diese Funktion aktiviert ist, können Benutzer in erlaubten Gruppen diese Persona in Beiträgen und Nachrichten erwähnen und die KI wird als diese Persona antworten.
-        user: Benutzer
-        create_user: Benutzer erstellen
-        create_user_help: Du kannst dieser Persona optional einen Benutzer zuordnen. Wenn du das tust, wird die KI diesen Benutzer verwenden, um auf Anfragen zu antworten.
+          low: Niedrige Qualität – am günstigsten (256 x 256)
+          medium: Mittlere Qualität (512 x 512)
+          high: Hohe Qualität – am langsamsten (1024 x 1024)
+        tool_details: Tool-Details anzeigen
+        tool_details_help: Zeigt den Endnutzern Details darüber, welche Tools das Sprachmodell ausgelöst hat.
+        mentionable: Erwähnungen zulassen
+        mentionable_help: Wenn diese Funktion aktiviert ist, können Nutzer in erlaubten Gruppen diesen Nutzer in Beiträgen erwähnen und die KI wird als diese Persona antworten.
+        user: Nutzer
+        create_user: Nutzer erstellen
+        create_user_help: Du kannst dieser Persona optional einen Nutzer zuordnen. Wenn du das tust, wird die KI diesen Nutzer verwenden, um auf Anfragen zu antworten.
         default_llm: Standard-Sprachmodell
         default_llm_help: Das Standard-Sprachmodell, das für diese Persona verwendet werden soll. Erforderlich, wenn du die Persona in öffentlichen Beiträgen erwähnen möchtest.
+        question_consolidator_llm: Sprachmodell für Fragenkonsolidierer
+        question_consolidator_llm_help: Das Sprachmodell, das für den Fragenkonsolidierer verwendet werden soll. Du kannst ein weniger leistungsfähiges Modell wählen, um Kosten zu sparen.
         system_prompt: System-Eingabeaufforderung
-        show_indexing_options: "Indizierungsoptionen anzeigen"
-        hide_indexing_options: "Indizierungsoptionen ausblenden"
+        show_indexing_options: "Upload-Optionen anzeigen"
+        hide_indexing_options: "Upload-Optionen ausblenden"
+        allow_chat: "Chat zulassen"
+        allow_chat_help: "Wenn diese Option aktiviert ist, können Nutzer in erlaubten Gruppen dieser Persona eine DN senden"
         save: Speichern
         saved: KI-Persona gespeichert
         enabled: "Aktiviert?"
-        commands: Aktivierte Befehle
+        tools: Aktivierte Tools
         allowed_groups: Erlaubte Gruppen
         confirm_delete: Bist du sicher, dass du diese Persona löschen willst?
         new: "Neue Persona"
@@ -160,31 +157,30 @@ de:
         temperature: Temperatur
         temperature_help: Temperatur, die für das LLM verwendet werden soll, erhöhen, um die Kreativität zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, im Allgemeinen ein Wert zwischen 0,0 und 2,0)
         top_p: Top P
-        top_p_help: Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (leer lassen, um die Modellvorgabe zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)
+        top_p_help: Top P für das LLM. Erhöhen, um die Zufälligkeit zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)
         priority: Priorität
         priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
-        command_options: "Befehlsoptionen"
+        tool_options: "Tool-Optionen"
         rag_chunk_tokens: "Chunk-Token hochladen"
-        rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu erhöhen, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads)"
+        rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads.)"
         rag_chunk_overlap_tokens: "Chunk-Überlappungs-Token hochladen"
-        rag_chunk_overlap_tokens_help: "Die Anzahl der Token, die sich zwischen den Chunks im RAG-Modell überlappen sollen. (eine Änderung führt zu einer Neuindizierung aller Uploads)"
-        rag_conversation_chunks: "Suche Unterhaltungs-Chunks"
-        rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu erhöhen, den die KI verwenden kann."
+        rag_chunk_overlap_tokens_help: "Die Anzahl der Token, die sich zwischen den Chunks im RAG-Modell überlappen sollen. (Eine Änderung führt zu einer Neuindizierung aller Uploads.)"
+        rag_conversation_chunks: "Suchunterhaltungs-Chunks"
+        rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann."
         what_are_personas: "Was sind KI-Personas?"
         no_persona_selected: |
-          KI-Personas sind eine leistungsstarke Funktion, mit der Sie das Verhalten der KI-Engine in Ihrem Discourse-Forum anpassen können. Sie dienen als „Systembotschaft“, die die Reaktionen und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Nutzererlebnis zu schaffen.
+          KI-Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie dienen als „Systembotschaft“, die die Reaktionen und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Nutzererlebnis zu schaffen.
 
-          #### Warum KI-Personas verwenden?
+          #### Warum sollte man KI-Personas verwenden?
 
-          Mit KI-Personas kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI für ein professionelles Umfeld formeller, für ein Community-Forum lockerer ist oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert, KI-Personas bieten dir die nötige Flexibilität dafür.
+          Mit KI-Personas kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI für ein professionelles Umfeld formeller, für ein Community-Forum lockerer ist oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert: KI-Personas bieten dir die nötige Flexibilität dafür.
 
           #### Gruppenspezifischer Zugriff auf KI-Personas
 
-          Außerdem kannst du ihn so einrichten, dass bestimmte Benutzergruppen Zugriff auf bestimmte Personas haben. Das bedeutet, dass Sie für verschiedene Bereiche Ihres Forums unterschiedliche KI-Verhaltensweisen verwenden können, was die Vielfalt und den Reichtum der Interaktionen Ihrer Community weiter verbessert.
+          Außerdem kannst du die Funktion so einrichten, dass bestimmte Nutzergruppen Zugriff auf gewisse Personas haben. Das bedeutet, dass du für verschiedene Bereiche deines Forums unterschiedliche KI-Verhaltensweisen verwenden kannst, was die Vielfalt und Fülle der Interaktionen deiner Community weiter verbessert.
         uploads:
           title: "Uploads"
-          description: "Deine KI-Persona wird in der Lage sein, den Inhalt der enthaltenen Dateien zu durchsuchen und zu referenzieren. Hochgeladene Dateien müssen als Klartext (.txt) formatiert sein."
-          hint: "Um zu kontrollieren, wo der Inhalt der Datei in der System-Eingabeaufforderung platziert wird, füge den Platzhalter {uploads} in die obige System-Eingabeaufforderung ein."
+          description: "Deine KI-Persona wird in der Lage sein, den Inhalt der beigefügten Dateien zu durchsuchen und zu referenzieren. Hochgeladene Dateien sollten als Klartext (.txt) oder Markdown (.md) formatiert sein."
           button: "Dateien hinzufügen"
           filter: "Uploads filtern"
           indexed: "Indiziert"
@@ -192,6 +188,93 @@ de:
           uploaded: "Bereit zur Indizierung"
           uploading: "Wird hochgeladen …"
           remove: "Upload entfernen"
+      tools:
+        back: "Zurück"
+        short_title: "Tools"
+        new: "Neues Tool"
+        name: "Name"
+        name_help: "Der eindeutige Name des Tools (wie vom Sprachmodell verwendet)"
+        description: "Beschreibung"
+        description_help: "Eine klare Beschreibung des Zwecks des Tools für das Sprachmodell"
+        summary: "Zusammenfassung"
+        summary_help: "Zusammenfassung des Zwecks der Tools, die den Endnutzern angezeigt werden soll"
+        script: "Skript"
+        parameters: "Parameter"
+        save: "Speichern"
+        add_parameter: "Parameter hinzufügen"
+        parameter_required: "Erforderlich"
+        parameter_enum: "Aufzählung"
+        parameter_name: "Parametername"
+        parameter_description: "Parameterbeschreibung"
+        enum_value: "Aufzählungswert"
+        add_enum_value: "Aufzählungswert hinzufügen"
+        edit: "Bearbeiten"
+        test: "Test ausführen"
+        delete: "Löschen"
+        saved: "Tool gespeichert"
+        presets: "Wähle eine Voreinstellung aus …"
+        confirm_delete: Bist du sicher, dass du dieses Tool löschen willst?
+        next:
+          title: "Nächstes"
+        test_modal:
+          title: "KI-Tool testen"
+          run: "Test ausführen"
+          result: "Testergebnis"
+      llms:
+        short_title: "LLM"
+        no_llms: "Noch keine LLM"
+        new: "Neues Modell"
+        display_name: "Anzeigename"
+        name: "Modellname"
+        provider: "Dienst, der das Modell hostet"
+        tokenizer: "Tokenizer"
+        max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung"
+        url: "URL des Dienstes, der das Modell hostet"
+        api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
+        enabled_chat_bot: "KI-Bot zulassen"
+        vision_enabled: "Sehen aktiviert"
+        ai_bot_user: "KI-Bot-Nutzer"
+        save: "Speichern"
+        edit: "Bearbeiten"
+        saved: "LLM-Modell gespeichert"
+        back: "Zurück"
+        confirm_delete: Bist du sicher, dass du dieses Modell löschen willst?
+        delete: Löschen
+        seeded_warning: "Dieses Modell ist auf deiner Website vorkonfiguriert und kann nicht bearbeitet werden."
+        in_use_warning:
+          one: "Dieses Modell wird derzeit von der Einstellung %{settings} verwendet. Wenn die Funktion falsch konfiguriert ist, funktioniert sie nicht wie erwartet."
+          other: "Dieses Modell wird derzeit von den folgenden Einstellungen verwendet: %{settings}. Bei einer falschen Konfiguration funktionieren die Funktionen nicht wie erwartet. "
+        preconfigured_llms: "Wähle dein LLM"
+        preconfigured:
+          none: "Manuell konfigurieren …"
+        next:
+          title: "Nächstes"
+        tests:
+          title: "Test ausführen"
+          running: "Test wird aufgeführt …"
+          success: "Erfolg!"
+          failure: "Beim Versuch, das Modell zu kontaktieren, wurde dieser Fehler zurückgegeben: %{error}"
+        hints:
+          max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50 % des Kontextfensters des Modells sein sollten."
+          name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden."
+          vision_enabled: "Wenn diese Funktion aktiviert ist, versucht die KI, Bilder zu verstehen. Dafür wird ein Modell benötigt, das Sehen unterstützt. Verfügbar in den neuesten Modellen von Anthropic, Google und OpenAI."
+        providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
+          google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
+          CDCK: "CDCK"
+          samba_nova: "SambaNova"
+        provider_fields:
+          access_key_id: "AWS-Bedrock-Zugangsschlüssel-ID"
+          region: "AWS-Bedrock-Region"
+          organization: "Optionale OpenAI-Organisations-ID"
+          disable_system_prompt: "Systemmeldung in Eingabeaufforderungen deaktivieren"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -202,20 +285,18 @@ de:
         suggest: "Mit KI vorschlagen"
         missing_content: "Bitte gib einige Inhalte ein, um Vorschläge zu generieren."
         context_menu:
-          back: "Zurück"
-          trigger: "KI"
-          undo: "Rückgängig machen"
+          trigger: "KI fragen"
           loading: "KI generiert"
           cancel: "Abbrechen"
           regen: "Erneut versuchen"
-          view_changes: "Änderungen anzeigen"
           confirm: "Bestätigen"
-          revert: "Verwerfen"
-          changes: "Änderungen"
+          discard: "Verwerfen"
+          changes: "Empfohlene Änderungen"
           custom_prompt:
             title: "Benutzerdefinierte Eingabeaufforderung"
             placeholder: "Benutzerdefinierte Eingabeaufforderung …"
             submit: "Aufforderung senden"
+          translate_prompt: "Übersetzen in %{language}"
         post_options_menu:
           trigger: "KI fragen"
           title: "KI fragen"
@@ -224,6 +305,8 @@ de:
           copy: "Kopieren"
           copied: "Kopiert!"
           cancel: "Abbrechen"
+          insert_footnote: "Fußnote hinzufügen"
+          footnote_credits: "Erklärung durch KI"
         fast_edit:
           suggest_button: "Bearbeiten vorschlagen"
         thumbnail_suggestions:
@@ -232,16 +315,22 @@ de:
           selected: "Ausgewählt"
         image_caption:
           button_label: "Beschriftung mit KI"
-          generating: "Beschriftung generieren..."
-          credits: "Untertitelt von KI"
+          generating: "Beschriftung wird generiert …"
+          credits: "Beschriftet durch KI"
           save_caption: "Speichern"
+          automatic_caption_setting: "Automatische KI-Bildbeschriftungen aktivieren"
+          automatic_caption_loading: "Bilder werden beschriftet …"
+          automatic_caption_dialog:
+            prompt: "Dieser Beitrag enthält nicht beschriftete Bilder. Möchtest du automatische KI-Beschriftungen für hochgeladene Bilder aktivieren? (Das kannst du später in deinen Einstellungen ändern.)"
+            confirm: "Aktivieren"
+            cancel: "Nicht noch einmal fragen"
+        no_content_error: "Füge zuerst Inhalte hinzu, um KI-Aktionen darauf auszuführen"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"
       embeddings:
         semantic_search: "Themen (semantisch)"
         semantic_search_loading: "Suche mehr Ergebnisse mithilfe der KI"
-        semantic_search_disabled_sort: "Die KI-Suche ist für diese Sortierreihenfolge deaktiviert. Sortiere nach Relevanz, um sie zu aktivieren."
         semantic_search_results:
           toggle: "%{count} Ergebnisse, die mit KI gefunden wurden, werden angezeigt"
           toggle_hidden: "%{count} mit KI gefundene Ergebnisse werden ausgeblendet"
@@ -262,10 +351,12 @@ de:
           title: "KI-Interaktion ansehen"
           copy_request: "Anfrage kopieren"
           copy_response: "Antwort kopieren"
-          request_tokens: "Token anfordern:"
+          request_tokens: "Anfrage-Token:"
           response_tokens: "Antwort-Token:"
+          request: "Anfrage"
+          response: "Antwort"
         share_full_topic_modal:
-          title: "Gespräch öffentlich teilen"
+          title: "Unterhaltung öffentlich teilen"
           share: "Link teilen und kopieren"
           update: "Link aktualisieren und kopieren"
           delete: "Freigabe löschen"
@@ -280,13 +371,14 @@ de:
           context: "Interaktionen zum Teilen:"
           share_tip: Alternativ kannst du auch die gesamte Unterhaltung teilen.
         bot_names:
-          fake: "Fake Test Bot"
+          fake: "Fake-Test-Bot"
           claude-3-opus: "Claude 3 Opus"
           claude-3-sonnet: "Claude 3 Sonett"
           claude-3-haiku: "Claude 3 Haiku"
-          cohere-command-r-plus: "Cohere Befehl R Plus"
+          cohere-command-r-plus: "Cohere Command R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
@@ -297,6 +389,17 @@ de:
       sentiments:
         dashboard:
           title: "Stimmung"
+      summarization:
+        chat:
+          title: "Nachrichten zusammenfassen"
+          description: "Wähle unten eine Option aus, um die im gewünschten Zeitraum gesendete Unterhaltung zusammenzufassen."
+          summarize: "Zusammenfassen"
+          since:
+            one: "Letzte Stunde"
+            other: "Letzte %{count} Stunden"
+        topic:
+          title: "Zusammenfassung des Themas"
+          close: "Zusammenfassungspanel schließen"
     review:
       types:
         reviewable_ai_post:

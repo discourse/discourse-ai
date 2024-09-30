@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
-  before { SiteSetting.ai_helper_model = "fake:fake" }
+  before { assign_fake_provider_to(:ai_helper_model) }
 
   describe "#suggest" do
     let(:text_to_proofread) { "The rain in spain stays mainly in the plane." }
@@ -21,7 +21,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
       before do
         sign_in(user)
-        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:staff]
+        SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:staff]
       end
 
       it "returns a 403 response" do
@@ -37,7 +37,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       before do
         sign_in(user)
         user.group_ids = [Group::AUTO_GROUPS[:trust_level_1]]
-        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
+        SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
       end
 
       it "returns a 400 if the helper mode is invalid" do
@@ -87,11 +87,6 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         expected_diff =
           "<div class=\"inline-diff\"><p><ins>Un </ins><ins>usuario </ins><ins>escribio </ins><ins>esto</ins><del>A </del><del>user </del><del>wrote </del><del>this</del></p></div>"
 
-        expected_input = <<~TEXT.strip
-        <input>Translate to Spanish:
-        A user wrote this</input>
-        TEXT
-
         DiscourseAi::Completions::Llm.with_prepared_responses([translated_text]) do
           post "/discourse-ai/ai-helper/suggest",
                params: {
@@ -109,11 +104,22 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
   end
 
   describe "#caption_image" do
-    fab!(:upload)
+    let(:image) { plugin_file_from_fixtures("100x100.jpg") }
+    let(:upload) { UploadCreator.new(image, "image.jpg").create_for(Discourse.system_user.id) }
     let(:image_url) { "#{Discourse.base_url}#{upload.url}" }
     let(:caption) { "A picture of a cat sitting on a table" }
     let(:caption_with_attrs) do
       "A picture of a cat sitting on a table (#{I18n.t("discourse_ai.ai_helper.image_caption.attribution")})"
+    end
+
+    before { assign_fake_provider_to(:ai_helper_image_caption_model) }
+
+    def request_caption(params)
+      DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
+        post "/discourse-ai/ai-helper/caption_image", params: params
+
+        yield(response)
+      end
     end
 
     context "when logged in as an allowed user" do
@@ -121,28 +127,51 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
       before do
         sign_in(user)
-        SiteSetting.ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
-        SiteSetting.ai_llava_endpoint = "https://example.com"
 
-        stub_request(:post, "https://example.com/predictions").to_return(
-          status: 200,
-          body: { output: caption.gsub(" ", " |").split("|") }.to_json,
-        )
+        SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
       end
 
       it "returns the suggested caption for the image" do
-        post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
+        request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+          expect(r.status).to eq(200)
+          expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+        end
+      end
 
-        expect(response.status).to eq(200)
-        expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+      context "when the image_url is a short_url" do
+        let(:image_url) { upload.short_url }
+
+        it "returns the suggested caption for the image" do
+          request_caption({ image_url: image_url, image_url_type: "short_url" }) do |r|
+            expect(r.status).to eq(200)
+            expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+          end
+        end
+      end
+
+      context "when the image_url is a short_path" do
+        let(:image_url) { "#{Discourse.base_url}#{upload.short_path}" }
+
+        it "returns the suggested caption for the image" do
+          request_caption({ image_url: image_url, image_url_type: "short_path" }) do |r|
+            expect(r.status).to eq(200)
+            expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+          end
+        end
       end
 
       it "returns a 502 error when the completion call fails" do
-        stub_request(:post, "https://example.com/predictions").to_return(status: 502)
+        DiscourseAi::Completions::Llm.with_prepared_responses(
+          [DiscourseAi::Completions::Endpoints::Base::CompletionFailed.new],
+        ) do
+          post "/discourse-ai/ai-helper/caption_image",
+               params: {
+                 image_url: image_url,
+                 image_url_type: "long_url",
+               }
 
-        post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
-
-        expect(response.status).to eq(502)
+          expect(response.status).to eq(502)
+        end
       end
 
       it "returns a 400 error when the image_url is blank" do
@@ -155,6 +184,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         post "/discourse-ai/ai-helper/caption_image",
              params: {
                image_url: "http://blah.com/img.jpeg",
+               image_url_type: "long_url",
              }
 
         expect(response.status).to eq(404)
@@ -163,24 +193,56 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       context "for secure uploads" do
         fab!(:group)
         fab!(:private_category) { Fabricate(:private_category, group: group) }
-        fab!(:post_in_secure_context) do
-          Fabricate(:post, topic: Fabricate(:topic, category: private_category))
-        end
-        fab!(:upload) { Fabricate(:secure_upload, access_control_post: post_in_secure_context) }
+        let(:image) { plugin_file_from_fixtures("100x100.jpg") }
+        let(:upload) { UploadCreator.new(image, "image.jpg").create_for(Discourse.system_user.id) }
         let(:image_url) { "#{Discourse.base_url}/secure-uploads/#{upload.url}" }
 
-        before { enable_secure_uploads }
+        before do
+          Jobs.run_immediately!
+
+          # this is done so the after_save callbacks for site settings to make
+          # UploadReference records works
+          @original_provider = SiteSetting.provider
+          SiteSetting.provider = SiteSettings::DbProvider.new(SiteSetting)
+          setup_s3
+          stub_s3_store
+          assign_fake_provider_to(:ai_helper_image_caption_model)
+          SiteSetting.secure_uploads = true
+          SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
+
+          Group.find(SiteSetting.composer_ai_helper_allowed_groups_map.first).add(user)
+          user.reload
+
+          stub_request(
+            :get,
+            "http://s3-upload-bucket.s3.dualstack.us-west-1.amazonaws.com/original/1X/#{upload.sha1}.#{upload.extension}",
+          ).to_return(status: 200, body: "", headers: {})
+        end
+        after { SiteSetting.provider = @original_provider }
 
         it "returns a 403 error if the user cannot access the secure upload" do
-          post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
+          create_post(
+            title: "Secure upload post",
+            raw: "This is a new post <img src=\"#{upload.url}\" />",
+            category: private_category,
+            user: Discourse.system_user,
+          )
+
+          post "/discourse-ai/ai-helper/caption_image",
+               params: {
+                 image_url: image_url,
+                 image_url_type: "long_url",
+               }
           expect(response.status).to eq(403)
         end
 
         it "returns a 200 message and caption if user can access the secure upload" do
           group.add(user)
-          post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
-          expect(response.status).to eq(200)
-          expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+
+          request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+            expect(r.status).to eq(200)
+            expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+          end
         end
 
         context "if the input URL is for a secure upload but not on the secure-uploads path" do
@@ -188,9 +250,11 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
           it "creates a signed URL properly and makes the caption" do
             group.add(user)
-            post "/discourse-ai/ai-helper/caption_image", params: { image_url: image_url }
-            expect(response.status).to eq(200)
-            expect(response.parsed_body["caption"]).to eq(caption_with_attrs)
+
+            request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+              expect(r.status).to eq(200)
+              expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+            end
           end
         end
       end

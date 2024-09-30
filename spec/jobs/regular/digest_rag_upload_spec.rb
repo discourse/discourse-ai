@@ -41,7 +41,11 @@ RSpec.describe Jobs::DigestRagUpload do
         # be explicit here about chunking strategy
         persona.update!(rag_chunk_tokens: 100, rag_chunk_overlap_tokens: 10)
 
-        described_class.new.execute(upload_id: upload_with_metadata.id, ai_persona_id: persona.id)
+        described_class.new.execute(
+          upload_id: upload_with_metadata.id,
+          target_id: persona.id,
+          target_type: persona.class.to_s,
+        )
 
         parsed = +""
         first = true
@@ -66,7 +70,11 @@ RSpec.describe Jobs::DigestRagUpload do
       before { File.expects(:open).returns(document_file) }
 
       it "splits an upload into chunks" do
-        subject.execute(upload_id: upload.id, ai_persona_id: persona.id)
+        subject.execute(
+          upload_id: upload.id,
+          target_id: persona.id,
+          target_type: persona.class.to_s,
+        )
 
         created_fragment = RagDocumentFragment.last
 
@@ -76,19 +84,23 @@ RSpec.describe Jobs::DigestRagUpload do
       end
 
       it "queue jobs to generate embeddings for each fragment" do
-        expect { subject.execute(upload_id: upload.id, ai_persona_id: persona.id) }.to change(
-          Jobs::GenerateRagEmbeddings.jobs,
-          :size,
-        ).by(1)
+        expect {
+          subject.execute(
+            upload_id: upload.id,
+            target_id: persona.id,
+            target_type: persona.class.to_s,
+          )
+        }.to change(Jobs::GenerateRagEmbeddings.jobs, :size).by(1)
       end
     end
 
     it "doesn't generate new fragments if we already processed the upload" do
-      Fabricate(:rag_document_fragment, upload: upload, ai_persona: persona)
-      previous_count = RagDocumentFragment.where(upload: upload, ai_persona: persona).count
+      Fabricate(:rag_document_fragment, upload: upload, target: persona)
 
-      subject.execute(upload_id: upload.id, ai_persona_id: persona.id)
-      updated_count = RagDocumentFragment.where(upload: upload, ai_persona: persona).count
+      previous_count = RagDocumentFragment.where(upload: upload, target: persona).count
+
+      subject.execute(upload_id: upload.id, target_id: persona.id, target_type: persona.class.to_s)
+      updated_count = RagDocumentFragment.where(upload: upload, target: persona).count
 
       expect(updated_count).to eq(previous_count)
     end

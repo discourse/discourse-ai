@@ -67,6 +67,12 @@ class StreamUpdater {
 }
 
 class PostUpdater extends StreamUpdater {
+  morphingOptions = {
+    beforeAttributeUpdated: (element, attributeName) => {
+      return !(element.tagName === "DETAILS" && attributeName === "open");
+    },
+  };
+
   constructor(postStream, postId) {
     super();
     this.postStream = postStream;
@@ -116,17 +122,72 @@ class PostUpdater extends StreamUpdater {
   async setCooked(value) {
     this.post.set("cooked", value);
 
-    const oldElement = this.postElement.querySelector(".cooked");
-
-    // TODO: use `morphInner` once version morphlex 0.0.16 is out
-    const newElement = oldElement.cloneNode(false);
-    newElement.innerHTML = value;
-
-    (await loadMorphlex()).morph(oldElement, newElement);
+    (await loadMorphlex()).morphInner(
+      this.postElement.querySelector(".cooked"),
+      `<div>${value}</div>`,
+      this.morphingOptions
+    );
   }
 
   get raw() {
     return this.post.get("raw") || "";
+  }
+}
+
+export class SummaryUpdater extends StreamUpdater {
+  constructor(topicSummary, componentContext) {
+    super();
+    this.topicSummary = topicSummary;
+    this.componentContext = componentContext;
+
+    if (this.topicSummary) {
+      this.summaryBox = document.querySelector("article.ai-summary-box");
+    }
+  }
+
+  get element() {
+    return this.summaryBox;
+  }
+
+  set streaming(value) {
+    if (this.element) {
+      if (value) {
+        this.element.classList.add("streaming");
+      } else {
+        this.element.classList.remove("streaming");
+      }
+    }
+  }
+
+  async setRaw(value, done) {
+    this.componentContext.oldRaw = value;
+    const cooked = await cook(value);
+
+    // resets animation
+    this.element.classList.remove("streaming");
+    void this.element.offsetWidth;
+    this.element.classList.add("streaming");
+
+    const cookedElement = document.createElement("div");
+    cookedElement.innerHTML = cooked;
+
+    if (!done) {
+      addProgressDot(cookedElement);
+    }
+    await this.setCooked(cookedElement.innerHTML);
+
+    if (done) {
+      this.componentContext.finalSummary = cooked;
+    }
+  }
+
+  async setCooked(value) {
+    const cookedContainer = this.element.querySelector(".generated-summary");
+    cookedContainer.innerHTML = value;
+  }
+
+  get raw() {
+    return this.componentContext.oldRaw || "";
   }
 }
 
@@ -144,7 +205,6 @@ export async function applyProgress(status, updater) {
   }
 
   const oldRaw = updater.raw;
-
   if (status.raw === oldRaw && !status.done) {
     const hasProgressDot = updater.element.querySelector(".progress-dot");
     if (hasProgressDot) {
@@ -207,6 +267,22 @@ async function handleProgress(postStream) {
 
   await Promise.all(promises);
   return keepPolling;
+}
+
+export function streamSummaryText(topicSummary, context) {
+  const summaryUpdater = new SummaryUpdater(topicSummary, context);
+
+  if (!progressTimer) {
+    progressTimer = later(async () => {
+      await applyProgress(topicSummary, summaryUpdater);
+
+      progressTimer = null;
+
+      if (!topicSummary.done) {
+        await applyProgress(topicSummary, summaryUpdater);
+      }
+    }, PROGRESS_INTERVAL);
+  }
 }
 
 function ensureProgress(postStream) {

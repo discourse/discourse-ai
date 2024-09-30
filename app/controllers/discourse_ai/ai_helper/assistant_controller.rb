@@ -12,6 +12,7 @@ module DiscourseAi
 
       def suggest
         input = get_text_param!
+        force_default_locale = params[:force_default_locale] || false
 
         prompt = CompletionPrompt.find_by(id: params[:mode])
 
@@ -31,6 +32,7 @@ module DiscourseAi
                      prompt,
                      input,
                      current_user,
+                     force_default_locale,
                    ),
                  status: 200
         end
@@ -87,18 +89,26 @@ module DiscourseAi
         end
       end
 
-      def explain
+      def stream_suggestion
         post_id = get_post_param!
-        term_to_explain = get_text_param!
+        text = get_text_param!
         post = Post.includes(:topic).find_by(id: post_id)
+        prompt = CompletionPrompt.find_by(id: params[:mode])
 
+        raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
         raise Discourse::InvalidParameters.new(:post_id) unless post
+
+        if prompt.id == CompletionPrompt::CUSTOM_PROMPT
+          raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
+        end
 
         Jobs.enqueue(
           :stream_post_helper,
           post_id: post.id,
           user_id: current_user.id,
-          term_to_explain: term_to_explain,
+          text: text,
+          prompt: prompt.name,
+          custom_prompt: params[:custom_prompt],
         )
 
         render json: { success: true }, status: 200
@@ -109,18 +119,26 @@ module DiscourseAi
 
       def caption_image
         image_url = params[:image_url]
-        raise Discourse::InvalidParameters.new(:image_url) if !image_url
+        image_url_type = params[:image_url_type]
 
-        image = upload_from_full_url(image_url)
+        raise Discourse::InvalidParameters.new(:image_url) if !image_url
+        raise Discourse::InvalidParameters.new(:image_url) if !image_url_type
+
+        if image_url_type == "short_path"
+          image = Upload.find_by(sha1: Upload.sha1_from_short_path(image_url))
+        elsif image_url_type == "short_url"
+          image = Upload.find_by(sha1: Upload.sha1_from_short_url(image_url))
+        else
+          image = upload_from_full_url(image_url)
+        end
+
         raise Discourse::NotFound if image.blank?
-        final_image_url = get_caption_url(image, image_url)
+
+        check_secure_upload_permission(image) if image.secure?
+        user = current_user
 
         hijack do
-          caption =
-            DiscourseAi::AiHelper::Assistant.new.generate_image_caption(
-              final_image_url,
-              current_user,
-            )
+          caption = DiscourseAi::AiHelper::Assistant.new.generate_image_caption(image, user)
           render json: {
                    caption:
                      "#{caption} (#{I18n.t("discourse_ai.ai_helper.image_caption.attribution")})",
@@ -147,18 +165,13 @@ module DiscourseAi
       end
 
       def ensure_can_request_suggestions
-        if !current_user.in_any_groups?(SiteSetting.ai_helper_allowed_groups_map)
-          raise Discourse::InvalidAccess
-        end
-      end
+        allowed_groups =
+          (
+            SiteSetting.composer_ai_helper_allowed_groups_map |
+              SiteSetting.post_ai_helper_allowed_groups_map
+          )
 
-      def get_caption_url(image_upload, image_url)
-        if image_upload.secure?
-          check_secure_upload_permission(image_upload)
-          return Discourse.store.url_for(image_upload)
-        end
-
-        UrlHelper.absolute(image_url)
+        raise Discourse::InvalidAccess if !current_user.in_any_groups?(allowed_groups)
       end
     end
   end

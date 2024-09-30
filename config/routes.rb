@@ -6,7 +6,7 @@ DiscourseAi::Engine.routes.draw do
     post "suggest_title" => "assistant#suggest_title"
     post "suggest_category" => "assistant#suggest_category"
     post "suggest_tags" => "assistant#suggest_tags"
-    post "explain" => "assistant#explain"
+    post "stream_suggestion" => "assistant#stream_suggestion"
     post "caption_image" => "assistant#caption_image"
   end
 
@@ -27,6 +27,11 @@ DiscourseAi::Engine.routes.draw do
     get "/:share_key" => "shared_ai_conversations#show"
     get "/preview/:topic_id" => "shared_ai_conversations#preview"
   end
+
+  scope module: :summarization, path: "/summarization", defaults: { format: :json } do
+    get "/t/:topic_id" => "summary#show", :constraints => { topic_id: /\d+/ }
+    get "/channels/:channel_id" => "chat_summary#show"
+  end
 end
 
 Discourse::Application.routes.draw do
@@ -41,9 +46,35 @@ Discourse::Application.routes.draw do
               path: "ai-personas",
               controller: "discourse_ai/admin/ai_personas"
 
+    resources(
+      :ai_tools,
+      only: %i[index create show update destroy],
+      path: "ai-tools",
+      controller: "discourse_ai/admin/ai_tools",
+    ) { post :test, on: :collection }
+
     post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
-    post "/ai-personas/files/upload", to: "discourse_ai/admin/ai_personas#upload_file"
+
     put "/ai-personas/:id/files/remove", to: "discourse_ai/admin/ai_personas#remove_file"
     get "/ai-personas/:id/files/status", to: "discourse_ai/admin/ai_personas#indexing_status_check"
+
+    post "/rag-document-fragments/files/upload",
+         to: "discourse_ai/admin/rag_document_fragments#upload_file"
+    get "/rag-document-fragments/files/status",
+        to: "discourse_ai/admin/rag_document_fragments#indexing_status_check"
+
+    resources :ai_llms,
+              only: %i[index create show update destroy],
+              path: "ai-llms",
+              controller: "discourse_ai/admin/ai_llms" do
+      collection { get :test }
+    end
   end
+end
+
+Discourse::Application.routes.append do
+  get "u/:username/preferences/ai" => "users#preferences",
+      :constraints => {
+        username: RouteFormat.username,
+      }
 end

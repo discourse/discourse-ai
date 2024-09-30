@@ -6,71 +6,55 @@ module DiscourseAi
   module Completions
     module Dialects
       class Command < Dialect
-        class << self
-          def can_translate?(model_name)
-            %w[command-light command command-r command-r-plus].include?(model_name)
-          end
-
-          def tokenizer
-            DiscourseAi::Tokenizer::OpenAiTokenizer
-          end
+        def self.can_translate?(model_provider)
+          model_provider == "cohere"
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
 
         def translate
-          messages = prompt.messages
+          messages = super
 
-          # ChatGPT doesn't use an assistant msg to improve long-context responses.
-          if messages.last[:type] == :model
-            messages = messages.dup
-            messages.pop
-          end
+          system_message = messages.shift[:message] if messages.first[:role] == "SYSTEM"
 
-          trimmed_messages = trim_messages(messages)
+          prompt = { preamble: +"#{system_message}" }
 
-          chat_history = []
-          system_message = nil
+          if messages.present?
+            with_mapped_tools = []
 
-          prompt = {}
-
-          trimmed_messages.each do |msg|
-            case msg[:type]
-            when :system
-              if system_message
-                chat_history << { role: "SYSTEM", message: msg[:content] }
+            current_pair = nil
+            messages.each do |msg|
+              if current_pair == nil && msg[:type] == :tool_call
+                current_pair = [msg]
+              elsif current_pair && msg[:type] == :tool
+                current_pair << msg
+                tool_results = tools_dialect.tool_results(current_pair)
+                with_mapped_tools << { role: "TOOL", message: "", tool_results: tool_results }
+                current_pair = nil
               else
-                system_message = msg[:content]
+                with_mapped_tools << msg
+                current_pair = nil
               end
-            when :model
-              chat_history << { role: "CHATBOT", message: msg[:content] }
-            when :tool_call
-              chat_history << { role: "CHATBOT", message: tool_call_to_xml(msg) }
-            when :tool
-              chat_history << { role: "USER", message: tool_result_to_xml(msg) }
-            when :user
-              user_message = { role: "USER", message: msg[:content] }
-              user_message[:message] = "#{msg[:id]}: #{msg[:content]}" if msg[:id]
-              chat_history << user_message
             end
+
+            messages = with_mapped_tools
+            prompt[:chat_history] = messages
           end
 
-          tools_prompt = build_tools_prompt
-          prompt[:preamble] = +"#{system_message}"
-          if tools_prompt.present?
-            prompt[:preamble] << "\n#{tools_prompt}"
-            prompt[
-              :preamble
-            ] << "\nNEVER attempt to run tools using JSON, always use XML. Lives depend on it."
-          end
+          tools = tools_dialect.translated_tools
+          prompt[:tools] = tools if tools.present?
 
-          prompt[:chat_history] = chat_history if chat_history.present?
+          tool_results =
+            messages.last && messages.last[:role] == "TOOL" && messages.last[:tool_results]
+          prompt[:tool_results] = tool_results if tool_results.present?
 
-          chat_history.reverse_each do |msg|
-            if msg[:role] == "USER"
-              prompt[:message] = msg[:message]
-              chat_history.delete(msg)
-              break
+          if tool_results.blank?
+            messages.reverse_each do |msg|
+              if msg[:role] == "USER"
+                prompt[:message] = msg[:message]
+                messages.delete(msg)
+                break
+              end
             end
           end
 
@@ -78,28 +62,58 @@ module DiscourseAi
         end
 
         def max_prompt_tokens
-          case model_name
-          when "command-light"
-            4096
-          when "command"
-            8192
-          when "command-r"
-            131_072
-          when "command-r-plus"
-            131_072
-          else
-            8192
-          end
+          llm_model.max_prompt_tokens
+        end
+
+        def native_tool_support?
+          true
         end
 
         private
+
+        def tools_dialect
+          @tools_dialect ||= DiscourseAi::Completions::Dialects::CohereTools.new(prompt.tools)
+        end
 
         def per_message_overhead
           0
         end
 
         def calculate_message_token(context)
-          self.class.tokenizer.size(context[:content].to_s + context[:name].to_s)
+          llm_model.tokenizer_class.size(context[:content].to_s + context[:name].to_s)
+        end
+
+        def system_msg(msg)
+          cmd_msg = { role: "SYSTEM", message: msg[:content] }
+
+          if tools_dialect.instructions.present?
+            cmd_msg[:message] = [
+              msg[:content],
+              tools_dialect.instructions,
+              "NEVER attempt to run tools using JSON, always use XML. Lives depend on it.",
+            ].join("\n")
+          end
+
+          cmd_msg
+        end
+
+        def model_msg(msg)
+          { role: "CHATBOT", message: msg[:content] }
+        end
+
+        def tool_call_msg(msg)
+          msg
+        end
+
+        def tool_msg(msg)
+          msg
+        end
+
+        def user_msg(msg)
+          user_message = { role: "USER", message: msg[:content] }
+          user_message[:message] = "#{msg[:id]}: #{msg[:content]}" if msg[:id]
+
+          user_message
         end
       end
     end

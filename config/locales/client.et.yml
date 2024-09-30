@@ -41,13 +41,32 @@ et:
         uploads:
           title: "Üleslaadimised"
           uploading: "Laen üles..."
+      tools:
+        back: "Tagasi"
+        name: "Nimi"
+        description: "Kirjeldus"
+        summary: "Kokkuvõte"
+        save: "Salvesta"
+        parameter_required: "Nõutud"
+        edit: "Muuda"
+        delete: "Kustuta"
+        next:
+          title: "Järgmine"
+      llms:
+        save: "Salvesta"
+        edit: "Muuda"
+        back: "Tagasi"
+        delete: Kustuta
+        next:
+          title: "Järgmine"
+        tests:
+          success: "Korras!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Tagasi"
-          undo: "Ennista"
           cancel: "Tühista"
           regen: "Proovi uuesti"
-          revert: "Võta tagasi"
         post_options_menu:
           close: "Sulge"
           copy: "Kopeeri"
@@ -55,6 +74,11 @@ et:
           cancel: "Tühista"
         image_caption:
           save_caption: "Salvesta"
+          automatic_caption_dialog:
+            confirm: "Lülita sisse"
       ai_bot:
+        debug_ai_modal:
+          request: "Päring"
+          response: "Vastus"
         share_modal:
           copy: "Kopeeri"

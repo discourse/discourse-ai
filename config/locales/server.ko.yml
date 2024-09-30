@@ -10,11 +10,11 @@ ko:
       yaxis: "날짜"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "검색"
         time: "시간"
         summarize: "요약하기"
     sentiment:
       reports:
         post_emotion:
-          neutral: "중립국"
+          neutral: "중립국 \U0001F610"

@@ -8,7 +8,7 @@ module DiscourseAi
       VERSION = "1"
 
       def share_asset_url(short_path)
-        ::UrlHelper.local_cdn_url("/plugins/discourse-ai/ai-share/#{short_path}?#{VERSION}")
+        ::UrlHelper.absolute("/plugins/discourse-ai/ai-share/#{short_path}?#{VERSION}")
       end
     end
   end

@@ -41,13 +41,37 @@ el:
         uploads:
           title: "Μεταφορτώσεις"
           uploading: "Επιφόρτωση..."
+      tools:
+        back: "Πίσω"
+        name: "Όνομα"
+        description: "Περιγραφή"
+        summary: "Περίληψη"
+        save: "Αποθήκευση"
+        parameter_required: "Απαιτείται"
+        edit: "Επεξεργασία"
+        test: "Εκτέλεση δοκιμής"
+        delete: "Σβήσιμο"
+        next:
+          title: "Επόμενο"
+        test_modal:
+          run: "Εκτέλεση δοκιμής"
+      llms:
+        save: "Αποθήκευση"
+        edit: "Επεξεργασία"
+        back: "Πίσω"
+        delete: Σβήσιμο
+        next:
+          title: "Επόμενο"
+        tests:
+          title: "Εκτέλεση δοκιμής"
+          success: "Επιτυχία!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Πίσω"
-          undo: "Αναίρεση"
           cancel: "Ακύρωση"
           regen: "Δοκίμασε ξανά"
-          revert: "Επαναφορά"
+          discard: "Απόρριψη"
         post_options_menu:
           close: "Κλείσιμο"
           copy: "Αντιγραφή"
@@ -55,6 +79,11 @@ el:
           cancel: "Ακύρωση"
         image_caption:
           save_caption: "Αποθήκευση"
+          automatic_caption_dialog:
+            confirm: "Ενεργοποίηση"
       ai_bot:
+        debug_ai_modal:
+          request: "Αίτημα"
+          response: "Απάντηση"
         share_modal:
           copy: "Αντιγραφή"

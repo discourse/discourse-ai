@@ -10,7 +10,7 @@ cs:
       yaxis: "Datum"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Vyhledat"
         tags: "Seznam značek"
         time: "Čas"

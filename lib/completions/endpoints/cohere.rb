@@ -4,39 +4,18 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Cohere < Base
-        class << self
-          def can_contact?(endpoint_name, model_name)
-            return false unless endpoint_name == "cohere"
-
-            %w[command-light command command-r command-r-plus].include?(model_name)
-          end
-
-          def dependant_setting_names
-            %w[ai_cohere_api_key]
-          end
-
-          def correctly_configured?(model_name)
-            SiteSetting.ai_cohere_api_key.present?
-          end
-
-          def endpoint_name(model_name)
-            "Cohere - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "cohere"
         end
 
         def normalize_model_params(model_params)
           model_params = model_params.dup
-
           model_params[:p] = model_params.delete(:top_p) if model_params[:top_p]
-
           model_params
         end
 
         def default_options(dialect)
-          options = { model: "command-r-plus" }
-
-          options[:stop_sequences] = ["</function_calls>"] if dialect.prompt.has_tools?
-          options
+          { model: "command-r-plus" }
         end
 
         def provider_id
@@ -46,12 +25,16 @@ module DiscourseAi
         private
 
         def model_uri
-          URI("https://api.cohere.ai/v1/chat")
+          URI(llm_model.url)
         end
 
         def prepare_payload(prompt, model_params, dialect)
           payload = default_options(dialect).merge(model_params).merge(prompt)
-
+          if prompt[:tools].present?
+            payload[:tools] = prompt[:tools]
+            payload[:force_single_step] = false
+          end
+          payload[:tool_results] = prompt[:tool_results] if prompt[:tool_results].present?
           payload[:stream] = true if @streaming_mode
 
           payload
@@ -60,7 +43,7 @@ module DiscourseAi
         def prepare_request(payload)
           headers = {
             "Content-Type" => "application/json",
-            "Authorization" => "Bearer #{SiteSetting.ai_cohere_api_key}",
+            "Authorization" => "Bearer #{llm_model.api_key}",
           }
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
@@ -72,6 +55,14 @@ module DiscourseAi
           if @streaming_mode
             if parsed[:event_type] == "text-generation"
               parsed[:text]
+            elsif parsed[:event_type] == "tool-calls-generation"
+              # could just be random thinking...
+              if parsed.dig(:tool_calls).present?
+                @has_tool = true
+                parsed.dig(:tool_calls).to_json
+              else
+                ""
+              end
             else
               if parsed[:event_type] == "stream-end"
                 @input_tokens = parsed.dig(:response, :meta, :billed_units, :input_tokens)
@@ -84,6 +75,38 @@ module DiscourseAi
             @output_tokens = parsed.dig(:meta, :billed_units, :output_tokens)
             parsed[:text].to_s
           end
+        end
+
+        def has_tool?(_ignored)
+          @has_tool
+        end
+
+        def native_tool_support?
+          true
+        end
+
+        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
+          if partial
+            tools = JSON.parse(partial)
+            tools.each do |tool|
+              name = tool["name"]
+              parameters = tool["parameters"]
+              xml_params = parameters.map { |k, v| "<#{k}>#{v}</#{k}>\n" }.join
+
+              current_function = function_buffer.at("invoke")
+              if current_function.nil? || current_function.at("tool_name").content.present?
+                current_function =
+                  function_buffer.at("function_calls").add_child(
+                    Nokogiri::HTML5::DocumentFragment.parse(noop_function_call_text + "\n"),
+                  )
+              end
+
+              current_function.at("tool_name").content = name == "search_local" ? "search" : name
+              current_function.at("parameters").children =
+                Nokogiri::HTML5::DocumentFragment.parse(xml_params)
+            end
+          end
+          function_buffer
         end
 
         def final_log_update(log)

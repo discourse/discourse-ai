@@ -4,6 +4,8 @@ module DiscourseAi
   module AiBot
     module Tools
       class Search < Tool
+        attr_reader :last_query
+
         MIN_SEMANTIC_RESULTS = 5
 
         class << self
@@ -83,7 +85,11 @@ module DiscourseAi
           end
 
           def accepted_options
-            [option(:base_query, type: :string), option(:max_results, type: :integer)]
+            [
+              option(:base_query, type: :string),
+              option(:max_results, type: :integer),
+              option(:search_private, type: :boolean),
+            ]
           end
         end
 
@@ -91,36 +97,38 @@ module DiscourseAi
           parameters.slice(:category, :user, :order, :max_posts, :tags, :before, :after, :status)
         end
 
-        def invoke(bot_user, llm)
-          search_string =
-            search_args.reduce(+parameters[:search_query].to_s) do |memo, (key, value)|
-              return memo if value.blank?
-              memo << " " << "#{key}:#{value}"
-            end
+        def search_query
+          parameters[:search_query]
+        end
 
+        def invoke
+          search_terms = []
+
+          search_terms << options[:base_query] if options[:base_query].present?
+          search_terms << search_query.strip if search_query.present?
+          search_args.each { |key, value| search_terms << "#{key}:#{value}" if value.present? }
+
+          guardian = nil
+          if options[:search_private] && context[:user]
+            guardian = Guardian.new(context[:user])
+          else
+            guardian = Guardian.new
+            search_terms << "status:public"
+          end
+
+          search_string = search_terms.join(" ").to_s
           @last_query = search_string
 
           yield(I18n.t("discourse_ai.ai_bot.searching", query: search_string))
 
-          if options[:base_query].present?
-            search_string = "#{search_string} #{options[:base_query]}"
-          end
+          results = ::Search.execute(search_string, search_type: :full_page, guardian: guardian)
 
-          results =
-            ::Search.execute(
-              search_string.to_s + " status:public",
-              search_type: :full_page,
-              guardian: Guardian.new(),
-            )
-
-          # let's be frugal with tokens, 50 results is too much and stuff gets cut off
           max_results = calculate_max_results(llm)
           results_limit = parameters[:limit] || max_results
           results_limit = max_results if parameters[:limit].to_i > max_results
 
           should_try_semantic_search =
-            SiteSetting.ai_embeddings_semantic_search_enabled && results_limit == max_results &&
-              parameters[:search_query].present?
+            SiteSetting.ai_embeddings_semantic_search_enabled && search_query.present?
 
           max_semantic_results = max_results / 4
           results_limit = results_limit - max_semantic_results if should_try_semantic_search
@@ -129,10 +137,10 @@ module DiscourseAi
           posts = posts[0..results_limit.to_i - 1]
 
           if should_try_semantic_search
-            semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(Guardian.new())
+            semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(guardian)
             topic_ids = Set.new(posts.map(&:topic_id))
 
-            search = ::Search.new(search_string, guardian: Guardian.new)
+            search = ::Search.new(search_string, guardian: guardian)
 
             results = nil
             begin

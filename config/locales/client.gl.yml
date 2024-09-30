@@ -41,14 +41,38 @@ gl:
         uploads:
           title: "Cargas"
           uploading: "Cargando..."
+      tools:
+        back: "Volver"
+        name: "Nome"
+        description: "Descrición"
+        summary: "Resumo"
+        save: "Gardar"
+        parameter_required: "Obrigatorio"
+        edit: "Editar"
+        test: "Executar proba"
+        delete: "Eliminar"
+        next:
+          title: "Seguinte"
+        test_modal:
+          run: "Executar proba"
+      llms:
+        save: "Gardar"
+        edit: "Editar"
+        back: "Volver"
+        delete: Eliminar
+        next:
+          title: "Seguinte"
+        tests:
+          title: "Executar proba"
+          success: "Feito!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Volver"
-          undo: "Desfacer"
           cancel: "Cancelar"
           regen: "Tentar de novo"
           confirm: "Confirmar"
-          revert: "Reverter"
+          discard: "Desbotar"
         post_options_menu:
           close: "Pechar"
           copy: "Copiar"
@@ -56,6 +80,11 @@ gl:
           cancel: "Cancelar"
         image_caption:
           save_caption: "Gardar"
+          automatic_caption_dialog:
+            confirm: "Activar"
       ai_bot:
+        debug_ai_modal:
+          request: "Petición"
+          response: "Resposta"
         share_modal:
           copy: "Copiar"

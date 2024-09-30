@@ -41,13 +41,31 @@ pt:
         uploads:
           title: "Uploads"
           uploading: "A enviar…"
+      tools:
+        back: "Retroceder"
+        name: "Nome"
+        description: "Descrição"
+        summary: "Resumo"
+        save: "Guardar"
+        parameter_required: "Necessário"
+        edit: "Editar"
+        delete: "Eliminar"
+        next:
+          title: "Próximo"
+      llms:
+        save: "Guardar"
+        edit: "Editar"
+        back: "Retroceder"
+        delete: Eliminar
+        next:
+          title: "Próximo"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Retroceder"
-          undo: "Desfazer"
           cancel: "Cancelar"
           regen: "Tentar Novamente"
-          revert: "Reverter"
+          discard: "Descartar"
         post_options_menu:
           close: "Fechar"
           copy: "Copiar"
@@ -57,6 +75,14 @@ pt:
           select: "Selecionar"
         image_caption:
           save_caption: "Guardar"
+          automatic_caption_dialog:
+            confirm: "Ativar"
       ai_bot:
+        debug_ai_modal:
+          request: "Pedido"
+          response: "Resposta"
         share_modal:
           copy: "Copiar"
+      summarization:
+        chat:
+          summarize: "Resumir"

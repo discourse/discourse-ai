@@ -1,25 +1,17 @@
 en:
   admin_js:
     admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "Allows semantic search via the /discourse-ai/embeddings/semantic-search endpoint."
+
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        gemini_1_5_pro: Gemini 1.5 Pro
-        claude_3_opus: Claude 3 Opus
-        claude_3_sonnet: Claude 3 Sonnet
-        claude_3_haiku: Claude 3 Haiku
-        mixtral_8x7b_instruct_v0_1: Mixtral 8x7B Instruct V0.1
-        mistral_7b_instruct_v0_2: Mistral 7B Instruct V0.2
-        command_r: Cohere Command R
-        command_r_plus: Cohere Command R+
       scriptables:
         llm_report:
           fields:
@@ -112,10 +104,11 @@ en:
               description: "Puts the post into the review queue if triggered, for moderators to triage"
             model:
               label: "Model"
-              description: "Either gpt-4 or gpt-3-5-turbo or claude-2"
+              description: "Language model used for triage"
 
     discourse_ai:
       title: "AI"
+
       modals:
         select_option: "Select an option..."
 
@@ -128,26 +121,30 @@ en:
         max_context_posts: "Max Context Posts"
         max_context_posts_help: "The maximum number of posts to use as context for the AI when responding to a user. (empty for default)"
         vision_enabled: Vision Enabled
-        vision_enabled_help: If enabled, the AI will attempt to understand images users post in the topic, depends on the model being used supporting vision. Anthropic Claude 3 models support vision.
+        vision_enabled_help: If enabled, the AI will attempt to understand images users post in the topic, depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI.
         vision_max_pixels: Supported image size
         vision_max_pixel_sizes:
           low: Low Quality - cheapest (256x256)
           medium: Medium Quality (512x512)
           high: High Quality - slowest (1024x1024)
-        mentionable: Mentionable
-        mentionable_help: If enabled, users in allowed groups can mention this user in posts and messages, the AI will respond as this persona.
+        tool_details: Show Tool Details
+        tool_details_help: Will show end users details on which tools the language model has triggered.
+        mentionable: Allow Mentions
+        mentionable_help: If enabled, users in allowed groups can mention this user in posts, the AI will respond as this persona.
         user: User
         create_user: Create User
         create_user_help: You can optionally attach a user to this persona. If you do, the AI will use this user to respond to requests.
         default_llm: Default Language Model
         default_llm_help: The default language model to use for this persona. Required if you wish to mention persona on public posts.
+        question_consolidator_llm: Language Model for Question Consolidator
+        question_consolidator_llm_help: The language model to use for the question consolidator, you may choose a less powerful model to save costs.
         system_prompt: System Prompt
-        show_indexing_options: "Show Indexing Options"
-        hide_indexing_options: "Hide Indexing Options"
+        allow_chat: "Allow Chat"
+        allow_chat_help: "If enabled, users in allowed groups can DM this persona"
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"
-        commands: Enabled Commands
+        tools: Enabled Tools
         allowed_groups: Allowed Groups
         confirm_delete: Are you sure you want to delete this persona?
         new: "New Persona"
@@ -160,11 +157,7 @@ en:
         top_p_help: Top P to use for the LLM, increase to increase randomness (leave empty to use model default, generally a value from 0.0 to 1.0)
         priority: Priority
         priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
-        command_options: "Command Options"
-        rag_chunk_tokens: "Upload Chunk Tokens"
-        rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
-        rag_chunk_overlap_tokens: "Upload Chunk Overlap Tokens"
-        rag_chunk_overlap_tokens_help: "The number of tokens to overlap between chunks in the RAG model. (changing will re-index all uploads)"
+        tool_options: "Tool Options"
         rag_conversation_chunks: "Search Conversation Chunks"
         rag_conversation_chunks_help: "The number of chunks to use for the RAG model searches. Increase to increase the amount of context the AI can use."
         what_are_personas: "What are AI Personas?"
@@ -179,10 +172,17 @@ en:
 
           Moreover, you can set it up so that certain user groups have access to specific personas. This means you can have different AI behaviors for different sections of your forum, further enhancing the diversity and richness of your community's interactions.
 
+      rag:
+        options:
+          rag_chunk_tokens: "Upload Chunk Tokens"
+          rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
+          rag_chunk_overlap_tokens: "Upload Chunk Overlap Tokens"
+          rag_chunk_overlap_tokens_help: "The number of tokens to overlap between chunks in the RAG model. (changing will re-index all uploads)"
+          show_indexing_options: "Show Upload Options"
+          hide_indexing_options: "Hide Upload Options"
         uploads:
           title: "Uploads"
-          description: "Your AI persona will be able to search and reference the content of included files. Uploaded files must be formatted as plaintext (.txt)"
-          hint: "To control where the file's content gets placed within the system prompt, include the {uploads} placeholder in the system prompt above."
+          description: "Uploaded files should be formatted as plaintext (.txt) or markdown (.md)."
           button: "Add Files"
           filter: "Filter uploads"
           indexed: "Indexed"
@@ -190,6 +190,118 @@ en:
           uploaded: "Ready to be indexed"
           uploading: "Uploading..."
           remove: "Remove upload"
+
+      tools:
+        back: "Back"
+        short_title: "Tools"
+        new: "New Tool"
+        name: "Name"
+        name_help: "The unique name of the tool as used by the language model"
+        description: "Description"
+        description_help: "A clear description of the tool's purpose for the language model"
+        summary: "Summary"
+        summary_help: "Summary of tools purpose to be displayed to end users"
+        script: "Script"
+        parameters: "Parameters"
+        save: "Save"
+        add_parameter: "Add Parameter"
+        parameter_required: "Required"
+        parameter_enum: "Enum"
+        parameter_name: "Parameter Name"
+        parameter_description: "Parameter Description"
+        enum_value: "Enum value"
+        add_enum_value: "Add enum value"
+        edit: "Edit"
+        test: "Run Test"
+        delete: "Delete"
+        saved: "Tool saved"
+        presets: "Select a preset..."
+        confirm_delete: Are you sure you want to delete this tool?
+        next:
+          title: "Next"
+        test_modal:
+          title: "Test AI Tool"
+          run: "Run Test"
+          result: "Test Result"
+
+      llms:
+        short_title: "LLMs"
+        no_llms: "No LLMs yet"
+        new: "New Model"
+        display_name: "Name"
+        name: "Model id"
+        provider: "Provider"
+        tokenizer: "Tokenizer"
+        max_prompt_tokens: "Number of tokens for the prompt"
+        url: "URL of the service hosting the model"
+        api_key: "API Key of the service hosting the model"
+        enabled_chat_bot: "Allow AI Bot"
+        vision_enabled: "Vision enabled"
+        ai_bot_user: "AI Bot User"
+        save: "Save"
+        edit: "Edit"
+        saved: "LLM Model Saved"
+        back: "Back"
+        confirm_delete: Are you sure you want to delete this model?
+        delete: Delete
+        seeded_warning: "This model is pre-configured on your site and cannot be edited."
+        in_use_warning:
+          one: "This model is currently used by the %{settings} setting. If misconfigured, the feature won't work as expected."
+          other: "This model is currently used by the following settings: %{settings}. If misconfigured, features won't work as expected. "
+
+        model_description:
+          none: "General settings that work for most language models"
+          anthropic-claude-3-5-sonnet: "Anthropic's most intelligent model"
+          anthropic-claude-3-opus: "Excels at writing and complex tasks"
+          anthropic-claude-3-sonnet: "Balance of speed and intelligence"
+          anthropic-claude-3-haiku: "Fast and cost-effective"
+          google-gemini-1-5-pro: "Mid-sized multimodal model capable of a wide range of tasks"
+          google-gemini-1-5-flash: "Lightweight, fast, and cost-efficient with multimodal reasoning"
+          open_ai-gpt-4-turbo: "Previous generation high-intelligence model"
+          open_ai-gpt-4o: "High intelligence model for complex, multi-step tasks"
+          open_ai-gpt-4o-mini: "Affordable and fast small model for lightweight tasks"
+
+        configured:
+          title: "Configured LLMs"
+        preconfigured_llms: "Select your LLM"
+        preconfigured:
+          title_no_llms: "Select a template to get started"
+          title: "Unconfigured LLM templates"
+          fake: "Manual configuration"
+          button: "Set up"
+        next:
+          title: "Next"
+
+        tests:
+          title: "Run Test"
+          running: "Running test..."
+          success: "Success!"
+          failure: "Trying to contact the model returned this error: %{error}"
+
+        hints:
+          max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
+          name: "We include this in the API call to specify which model we'll use."
+          vision_enabled: "If enabled, the AI will attempt to understand images. It depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI."
+
+        providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
+          google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
+          CDCK: "CDCK"
+          samba_nova: "SambaNova"
+          fake: "Custom"
+
+        provider_fields:
+          access_key_id: "AWS Bedrock Access key ID"
+          region: "AWS Bedrock Region"
+          organization: "Optional OpenAI Organization ID"
+          disable_system_prompt: "Disable system message in prompts"
 
       related_topics:
         title: "Related Topics"
@@ -201,20 +313,18 @@ en:
         suggest: "Suggest with AI"
         missing_content: "Please enter some content to generate suggestions."
         context_menu:
-          back: "Back"
-          trigger: "AI"
-          undo: "Undo"
+          trigger: "Ask AI"
           loading: "AI is generating"
           cancel: "Cancel"
           regen: "Try Again"
-          view_changes: "View Changes"
           confirm: "Confirm"
-          revert: "Revert"
-          changes: "Changes"
+          discard: "Discard"
+          changes: "Suggested Edits"
           custom_prompt:
             title: "Custom Prompt"
             placeholder: "Enter a custom prompt..."
             submit: "Send Prompt"
+          translate_prompt: "Translate to %{language}"
         post_options_menu:
           trigger: "Ask AI"
           title: "Ask AI"
@@ -223,6 +333,8 @@ en:
           copy: "Copy"
           copied: "Copied!"
           cancel: "Cancel"
+          insert_footnote: "Add footnote"
+          footnote_credits: "Explanation by AI"
         fast_edit:
           suggest_button: "Suggest Edit"
         thumbnail_suggestions:
@@ -234,6 +346,13 @@ en:
           generating: "Generating caption..."
           credits: "Captioned by AI"
           save_caption: "Save"
+          automatic_caption_setting: "Enable automatic AI image captions"
+          automatic_caption_loading: "Captioning images..."
+          automatic_caption_dialog:
+            prompt: "This post contains non-captioned images. Would you like to enable automatic AI captions on image uploads? (This can be changed in your preferences later)"
+            confirm: "Enable"
+            cancel: "Don't ask again"
+        no_content_error: "Add content first to perform AI actions on it"
 
       reviewables:
         model_used: "Model used:"
@@ -242,7 +361,6 @@ en:
       embeddings:
         semantic_search: "Topics (Semantic)"
         semantic_search_loading: "Searching for more results using AI"
-        semantic_search_disabled_sort: "AI Search disabled for this sort order, sort by Relevance to enable."
         semantic_search_results:
           toggle: "Showing %{count} results found using AI"
           toggle_hidden: "Hiding %{count} results found using AI"
@@ -266,6 +384,8 @@ en:
           copy_response: "Copy response"
           request_tokens: "Request tokens:"
           response_tokens: "Response tokens:"
+          request: "Request"
+          response: "Response"
 
         share_full_topic_modal:
           title: "Share Conversation Publicly"
@@ -294,6 +414,7 @@ en:
           cohere-command-r-plus: "Cohere Command R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
@@ -304,6 +425,18 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+
+      summarization:
+        chat:
+          title: "Summarize messages"
+          description: "Select an option below to summarize the conversation sent during the desired timeframe."
+          summarize: "Summarize"
+          since:
+            one: "Last hour"
+            other: "Last %{count} hours"
+        topic:
+          title: "Topic summary"
+          close: "Close summary panel"
     review:
       types:
         reviewable_ai_post:

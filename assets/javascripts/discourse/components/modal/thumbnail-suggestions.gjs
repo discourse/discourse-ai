@@ -1,17 +1,48 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import DModalCancel from "discourse/components/d-modal-cancel";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 import ThumbnailSuggestionItem from "../thumbnail-suggestion-item";
 
 export default class ThumbnailSuggestions extends Component {
+  @tracked loading = false;
   @tracked selectedImages = [];
+  @tracked thumbnails = null;
+
+  constructor() {
+    super(...arguments);
+
+    this.findThumbnails();
+  }
 
   get isDisabled() {
     return this.selectedImages.length === 0;
+  }
+
+  async findThumbnails() {
+    this.loading = true;
+    try {
+      const thumbnails = await ajax("/discourse-ai/ai-helper/suggest", {
+        method: "POST",
+        data: {
+          mode: this.args.model.mode,
+          text: this.args.model.selectedText,
+          force_default_locale: true,
+        },
+      });
+
+      this.thumbnails = thumbnails.thumbnails;
+    } catch (error) {
+      popupAjaxError(error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   @action
@@ -52,15 +83,17 @@ export default class ThumbnailSuggestions extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
-        <div class="ai-thumbnail-suggestions">
-          {{#each @thumbnails as |thumbnail|}}
-            <ThumbnailSuggestionItem
-              @thumbnail={{thumbnail}}
-              @addSelection={{this.addSelection}}
-              @removeSelection={{this.removeSelection}}
-            />
-          {{/each}}
-        </div>
+        <ConditionalLoadingSpinner @condition={{this.loading}}>
+          <div class="ai-thumbnail-suggestions">
+            {{#each this.thumbnails as |thumbnail|}}
+              <ThumbnailSuggestionItem
+                @thumbnail={{thumbnail}}
+                @addSelection={{this.addSelection}}
+                @removeSelection={{this.removeSelection}}
+              />
+            {{/each}}
+          </div>
+        </ConditionalLoadingSpinner>
       </:body>
 
       <:footer>

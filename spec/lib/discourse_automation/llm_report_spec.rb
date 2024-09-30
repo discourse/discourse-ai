@@ -5,6 +5,8 @@ return if !defined?(DiscourseAutomation)
 describe DiscourseAutomation do
   let(:automation) { Fabricate(:automation, script: "llm_report", enabled: true) }
 
+  fab!(:llm_model)
+
   fab!(:user)
   fab!(:post)
 
@@ -22,7 +24,7 @@ describe DiscourseAutomation do
   it "can trigger via automation" do
     add_automation_field("sender", user.username, type: "user")
     add_automation_field("receivers", [user.username], type: "users")
-    add_automation_field("model", "gpt-4-turbo")
+    add_automation_field("model", "custom:#{llm_model.id}")
     add_automation_field("title", "Weekly report")
 
     DiscourseAi::Completions::Llm.with_prepared_responses(["An Amazing Report!!!"]) do
@@ -36,7 +38,7 @@ describe DiscourseAutomation do
   it "can target a topic" do
     add_automation_field("sender", user.username, type: "user")
     add_automation_field("topic_id", "#{post.topic_id}")
-    add_automation_field("model", "gpt-4-turbo")
+    add_automation_field("model", "custom:#{llm_model.id}")
 
     DiscourseAi::Completions::Llm.with_prepared_responses(["An Amazing Report!!!"]) do
       automation.trigger!

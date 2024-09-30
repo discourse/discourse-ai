@@ -3,13 +3,15 @@
 RSpec.describe DiscourseAi::Completions::Llm do
   subject(:llm) do
     described_class.new(
-      DiscourseAi::Completions::Dialects::OrcaStyle,
+      DiscourseAi::Completions::Dialects::OpenAiCompatible,
       canned_response,
-      "hugging_face:Upstage-Llama-2-*-instruct-v2",
+      model,
+      gateway: canned_response,
     )
   end
 
   fab!(:user)
+  fab!(:model) { Fabricate(:llm_model) }
 
   describe ".proxy" do
     it "raises an exception when we can't proxy the model" do
@@ -45,7 +47,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
       )
       result = +""
       described_class
-        .proxy("open_ai:gpt-3.5-turbo")
+        .proxy("custom:#{model.id}")
         .generate(prompt, user: user) { |partial| result << partial }
 
       expect(result).to eq("Hello")
@@ -56,12 +58,14 @@ RSpec.describe DiscourseAi::Completions::Llm do
   end
 
   describe "#generate with fake model" do
+    fab!(:fake_model)
+
     before do
       DiscourseAi::Completions::Endpoints::Fake.delays = []
       DiscourseAi::Completions::Endpoints::Fake.chunk_count = 10
     end
 
-    let(:llm) { described_class.proxy("fake:fake") }
+    let(:llm) { described_class.proxy("custom:#{fake_model.id}") }
 
     let(:prompt) do
       DiscourseAi::Completions::Prompt.new(

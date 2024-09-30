@@ -41,21 +41,61 @@ hr:
         uploads:
           title: "Prijenosi"
           uploading: "Učitavanje..."
+      tools:
+        back: "Natrag"
+        name: "Ime"
+        description: "Opis"
+        summary: "Sažetak"
+        save: "Spremi"
+        parameter_required: "Potrebno"
+        edit: "Uredi"
+        test: "Pokreni test"
+        delete: "Pobriši"
+        next:
+          title: "Sljedeći"
+        test_modal:
+          run: "Pokreni test"
+      llms:
+        save: "Spremi"
+        edit: "Uredi"
+        back: "Natrag"
+        delete: Pobriši
+        next:
+          title: "Sljedeći"
+        tests:
+          title: "Pokreni test"
+          success: "Uspjeh!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Natrag"
-          undo: "Vrati na prethodno"
           cancel: "Odustani"
           regen: "Pokušaj ponovno"
           confirm: "Potvrdi"
-          revert: "Vrati nazad"
+          discard: "Odbaci"
         post_options_menu:
           close: "Zatvori"
           copy: "Kopija"
           copied: "Kopirano!"
           cancel: "Odustani"
+        thumbnail_suggestions:
+          select: "Odaberite"
         image_caption:
           save_caption: "Spremi"
+          automatic_caption_dialog:
+            confirm: "Omogućiti"
       ai_bot:
+        debug_ai_modal:
+          request: "Zahtjev"
+          response: "Odgovor"
         share_modal:
           copy: "Kopija"
+      summarization:
+        chat:
+          title: "Sažmi poruke"
+          description: "Odaberite opciju u nastavku da biste saželi razgovor poslan tijekom željenog vremenskog okvira."
+          summarize: "Rezimirati"
+          since:
+            one: "Posljednji sat"
+            few: "Posljednja %{count} sata"
+            other: "Posljednjih %{count} sati"

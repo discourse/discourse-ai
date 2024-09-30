@@ -4,13 +4,15 @@ RSpec.describe DiscourseAi::AiBot::Bot do
   subject(:bot) { described_class.as(bot_user) }
 
   fab!(:admin)
+  fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
+  fab!(:fake) { Fabricate(:llm_model, name: "fake", provider: "fake") }
 
   before do
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
+    toggle_enabled_bots(bots: [gpt_4])
     SiteSetting.ai_bot_enabled = true
   end
 
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT4_ID) }
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(gpt_4.name) }
 
   let!(:user) { Fabricate(:user) }
 
@@ -33,11 +35,10 @@ RSpec.describe DiscourseAi::AiBot::Bot do
       DiscourseAi::Completions::Endpoints::Fake.delays = []
       DiscourseAi::Completions::Endpoints::Fake.last_call = nil
 
-      SiteSetting.ai_bot_enabled_chat_bots = "fake"
-      SiteSetting.ai_bot_enabled = true
+      toggle_enabled_bots(bots: [fake])
       Group.refresh_automatic_groups!
 
-      bot_user = User.find(DiscourseAi::AiBot::EntryPoint::FAKE_ID)
+      bot_user = DiscourseAi::AiBot::EntryPoint.find_user_from_model(fake.name)
       AiPersona.create!(
         name: "TestPersona",
         top_p: 0.5,
@@ -63,7 +64,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
     context "when using function chaining" do
       it "yields a loading placeholder while proceeds to invoke the command" do
-        tool = DiscourseAi::AiBot::Tools::ListCategories.new({})
+        tool = DiscourseAi::AiBot::Tools::ListCategories.new({}, bot_user: nil, llm: nil)
         partial_placeholder = +(<<~HTML)
         <details>
           <summary>#{tool.summary}</summary>

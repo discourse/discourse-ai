@@ -4,10 +4,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
   before { SearchIndexer.enable }
   after { SearchIndexer.disable }
 
-  before { SiteSetting.ai_openai_api_key = "asd" }
-
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  fab!(:llm_model)
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   let(:progress_blk) { Proc.new {} }
 
   fab!(:admin)
@@ -29,34 +28,75 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
     Fabricate(:topic, category: category, tags: [tag_funny, tag_sad, tag_hidden])
   end
 
+  fab!(:user)
+  fab!(:group)
+  fab!(:private_category) do
+    c = Fabricate(:category_with_definition)
+    c.set_permissions(group => :readonly)
+    c.save
+    c
+  end
+
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#invoke" do
     it "can retrieve options from persona correctly" do
-      persona_options = { "base_query" => "#funny" }
+      persona_options = {
+        "base_query" => "#funny",
+        "search_private" => "true",
+        "max_results" => "10",
+      }
 
       search_post = Fabricate(:post, topic: topic_with_tags)
+      private_search_post = Fabricate(:post, topic: Fabricate(:topic, category: private_category))
+      private_search_post.topic.tags = [tag_funny]
+      private_search_post.topic.save!
 
       _bot_post = Fabricate(:post)
 
-      search = described_class.new({ order: "latest" }, persona_options: persona_options)
+      search =
+        described_class.new(
+          { order: "latest" },
+          persona_options: persona_options,
+          bot_user: bot_user,
+          llm: llm,
+          context: {
+            user: user,
+          },
+        )
 
-      results = search.invoke(bot_user, llm, &progress_blk)
+      expect(search.options[:base_query]).to eq("#funny")
+      expect(search.options[:search_private]).to eq(true)
+      expect(search.options[:max_results]).to eq(10)
+
+      results = search.invoke(&progress_blk)
       expect(results[:rows].length).to eq(1)
+
+      expect(search.last_query).to eq("#funny order:latest")
+
+      GroupUser.create!(group: group, user: user)
+
+      results = search.invoke(&progress_blk)
+      expect(results[:rows].length).to eq(2)
 
       search_post.topic.tags = []
       search_post.topic.save!
 
-      # no longer has the tag funny
-      results = search.invoke(bot_user, llm, &progress_blk)
-      expect(results[:rows].length).to eq(0)
+      # no longer has the tag funny, but secure one does
+      results = search.invoke(&progress_blk)
+      expect(results[:rows].length).to eq(1)
     end
 
     it "can handle no results" do
       _post1 = Fabricate(:post, topic: topic_with_tags)
-      search = described_class.new({ search_query: "ABDDCDCEDGDG", order: "fake" })
+      search =
+        described_class.new(
+          { search_query: "ABDDCDCEDGDG", order: "fake" },
+          bot_user: bot_user,
+          llm: llm,
+        )
 
-      results = search.invoke(bot_user, llm, &progress_blk)
+      results = search.invoke(&progress_blk)
 
       expect(results[:args]).to eq({ search_query: "ABDDCDCEDGDG", order: "fake" })
       expect(results[:rows]).to eq([])
@@ -67,7 +107,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
       after { DiscourseAi::Embeddings::SemanticSearch.clear_cache_for(query) }
 
       it "supports semantic search when enabled" do
-        SiteSetting.ai_embeddings_semantic_search_hyde_model = "fake:fake"
+        assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model)
         SiteSetting.ai_embeddings_semantic_search_enabled = true
         SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
 
@@ -79,7 +119,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
         )
 
         post1 = Fabricate(:post, topic: topic_with_tags)
-        search = described_class.new({ search_query: "hello world, sam", status: "public" })
+        search =
+          described_class.new(
+            { search_query: "hello world, sam", status: "public" },
+            llm: llm,
+            bot_user: bot_user,
+          )
 
         DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
           .any_instance
@@ -88,7 +133,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
         results =
           DiscourseAi::Completions::Llm.with_prepared_responses(["<ai>#{query}</ai>"]) do
-            search.invoke(bot_user, llm, &progress_blk)
+            search.invoke(&progress_blk)
           end
 
         expect(results[:args]).to eq({ search_query: "hello world, sam", status: "public" })
@@ -101,9 +146,10 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
       post1 = Fabricate(:post, topic: topic_with_tags)
 
-      search = described_class.new({ limit: 1, user: post1.user.username })
+      search =
+        described_class.new({ limit: 1, user: post1.user.username }, bot_user: bot_user, llm: llm)
 
-      results = search.invoke(bot_user, llm, &progress_blk)
+      results = search.invoke(&progress_blk)
       expect(results[:rows].to_s).to include("/subfolder" + post1.url)
     end
 
@@ -120,18 +166,18 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
           .to_h
           .symbolize_keys
 
-      search = described_class.new(params)
-      results = search.invoke(bot_user, llm, &progress_blk)
+      search = described_class.new(params, bot_user: bot_user, llm: llm)
+      results = search.invoke(&progress_blk)
 
       expect(results[:args]).to eq(params)
     end
 
     it "returns rich topic information" do
       post1 = Fabricate(:post, like_count: 1, topic: topic_with_tags)
-      search = described_class.new({ user: post1.user.username })
+      search = described_class.new({ user: post1.user.username }, bot_user: bot_user, llm: llm)
       post1.topic.update!(views: 100, posts_count: 2, like_count: 10)
 
-      results = search.invoke(bot_user, llm, &progress_blk)
+      results = search.invoke(&progress_blk)
 
       row = results[:rows].first
       category = row[results[:column_names].index("category")]

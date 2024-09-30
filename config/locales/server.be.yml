@@ -7,9 +7,9 @@
 be:
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Пошук"
     sentiment:
       reports:
         post_emotion:
-          neutral: "нейтральны"
+          neutral: "нейтральны \U0001F610"

@@ -12,12 +12,6 @@ ja:
           discourse_ai: "Discourse AI"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
       scriptables:
         llm_report:
           fields:
@@ -53,18 +47,34 @@ ja:
               description: "レポートの生成に使用する LLM"
             categories:
               label: "カテゴリ"
+              description: "トピックをこれらのカテゴリのみにフィルタします"
             tags:
               label: "タグ"
               description: "トピックをこれらのタグのみにフィルタします"
+            exclude_tags:
+              label: "タグを除外"
+              description: "これらのタグが付いたトピックを除外します"
+            exclude_categories:
+              label: "カテゴリを除外"
+              description: "これらのカテゴリのトピックを除外します"
             allow_secure_categories:
               label: "安全なカテゴリを許可する"
               description: "安全なカテゴリに含まれるトピックに対しレポートの生成を許可します"
+            suppress_notifications:
+              label: "通知を非表示"
+              description: "コンテンツに変換することでレポートが生成する可能性のある通知を非表示にします。これにより、メンションと内部リンクが再マッピングされます。"
             debug_mode:
               label: "デバッグモード"
               description: "デバッグモードを有効にして、LLM の生の入力と出力を確認します"
             priority_group:
               label: "優先グループ"
               description: "レポートでこのグループのコンテンツを優先します"
+            temperature:
+              label: "Temperature"
+              description: "LLM に使用する Temperature。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は 0)"
+            top_p:
+              label: "Top P"
+              description: "LLM に使用する Top P。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は 0)"
         llm_triage:
           fields:
             system_prompt:
@@ -88,9 +98,12 @@ ja:
             hide_topic:
               label: "トピックを非表示"
               description: "トリガーされると、トピックを一般公開しないようにします"
+            flag_post:
+              label: "レビューに送信"
+              description: "トリガーされると、モデレーターがトリアージできるように投稿をレビューキューに入れます"
             model:
               label: "モデル"
-              description: "gpt-4 または gpt-3-5-turbo または claude-2 のいずれか"
+              description: "トリアージに使用される言語モデル"
     discourse_ai:
       title: "AI"
       modals:
@@ -100,22 +113,156 @@ ja:
         name: 名前
         edit: 編集
         description: 説明
+        no_llm_selected: "言語モデルは選択されていません"
+        max_context_posts: "最大コンテキスト投稿数"
+        max_context_posts_help: "AI がユーザーに返答するときにコンテキストとして使用する投稿の最大数。(デフォルトの場合は空白)"
+        vision_enabled: ビジョン対応
+        vision_enabled_help: 有効にすると、AI は、ビジョンのサポートに使用されているモデルに応じてユーザーがトピックに投稿する画像を理解しようとします。Anthropic、Google、および OpenAI の最新モデルでサポートされています。
+        vision_max_pixels: サポートされている画像サイズ
+        vision_max_pixel_sizes:
+          low: 低品質 - 最割安 (256x256)
+          medium: 中品質 (512x512)
+          high: 高品質 - 最も遅い (1024x1024)
+        tool_details: ツールの詳細を表示
+        tool_details_help: 言語モデルがトリガーしたツールの詳細をエンドユーザーに表示します。
+        mentionable: メンションを許可
+        mentionable_help: 有効にすると、許可されているグループのユーザーは投稿内でこのユーザーをメンションでき、AI はこのペルソナとして返答します。
         user: ユーザー
+        create_user: ユーザーを作成
+        create_user_help: オプションで、このペルソナにユーザーを関連付けられます。その場合、AI はこのユーザーを使用してリクエストに応答します。
+        default_llm: デフォルトの言語モデル
+        default_llm_help: このペルソナに使用するデフォルトの言語モデル。公開投稿でペルソナをメンションする場合には必須です。
+        question_consolidator_llm: 質問統合用の言語モデル
+        question_consolidator_llm_help: 質問統合に使用する言語モデル。それほど強力でないモデルを選択してコストを節約することも可能です。
         system_prompt: システムプロンプト
+        show_indexing_options: "アップロードオプションを表示"
+        hide_indexing_options: "アップロードオプションを非表示"
+        allow_chat: "チャットを許可"
+        allow_chat_help: "有効にすると、許可されているグループのユーザーはこのペルソナに DM を送信できます"
         save: 保存
         saved: AI ペルソナが保存されました
         enabled: "有効化？"
-        commands: 有効なコマンド
+        tools: 有効なツール
         allowed_groups: 許可されたグループ
         confirm_delete: このペルソナを削除してもよろしいですか？
+        new: "新しいペルソナ"
         title: "AI ペルソナ"
+        short_title: "ペルソナ"
         delete: 削除
+        temperature: Temperature
+        temperature_help: LLM に使用する Temperature。値を増やすと創造性が増加します (モデルのデフォルトを使用する場合は空白にします。一般に 0.0～2.0 の値です)
+        top_p: Top P
+        top_p_help: LLM に使用する Top P。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は空白にします。一般に 0.0～1.0 の値です)
         priority: 優先度
         priority_help: 優先ペルソナはペルソナリストの先頭に表示されます。複数のペルソナが優先されている場合は、アルファベット順に並べ替えられます。
-        command_options: "コマンドオプション"
+        tool_options: "ツールのオプション"
+        rag_chunk_tokens: "チャンクトークンをアップロード"
+        rag_chunk_tokens_help: "RAG モデルの各チャンクに使用するトークン数。値を増やすと、AI が使用できるコンテキストの数が増加します (変更するとすべてのアップロードのインデックスが再作成されます)"
+        rag_chunk_overlap_tokens: "チャンクオーバーラップトークンをアップロード"
+        rag_chunk_overlap_tokens_help: "RAG モデル内のチャンク間で重複するトークンの数。(変更するとすべてのアップロードのインデックスが再作成されます)"
+        rag_conversation_chunks: "会話チャンクを検索"
+        rag_conversation_chunks_help: "RAG モデル検索に使用するチャンクの数。値を増やすと、AI が使用できるコンテキストの量が増えます。"
+        what_are_personas: "AI ペルソナとは何ですか？"
+        no_persona_selected: |
+          AI ペルソナは、Discourse フォーラムにおける AI エンジンの動作をカスタマイズできる強力な機能です。AI の返答とインタラクションを誘導する「システムメッセージ」として機能し、よりパーソナライズ化された魅力的なユーザーエクスペリエンスを作り出すのに役立ちます。
+
+          #### AI ペルソナを使用する理由
+
+          AI ペルソナを使用すると、フォーラムのコンテキストと論調に合わせて AI の動作をカスタマイズできます。仕事環境でよりフォーマルな振る舞いを望む場合もで、ロールプレイングゲームの特定のキャラを真似たい場合でも、AI ペルソナはそれを柔軟に実現できます。
+
+          #### AI ペルソナへのアクセスをグループごとに設定
+
+          さらに、特定のユーザーグループが特定のペルソナにアクセスできるようにセットアップすることができます。そのため、フォーラムのセクションごとに異なる AI の振る舞いを適用し、コミュニティーの対話の多様性と充実度をさらに強化することができます。
         uploads:
           title: "アップロード"
+          description: "AI ペルソナは含まれているファイルのコンテンツを検索して参照できます。アップロードされるファイルはプレーンテキスト (.txt) または Markdown (.md) としてフォーマットされている必要があります。"
+          button: "ファイルを追加"
+          filter: "アップロードをフィルタ"
+          indexed: "インデックスを作成しました"
+          indexing: "インデックス作成中"
+          uploaded: "インデックス作成の準備ができました"
           uploading: "アップロード中..."
+          remove: "アップロードを削除"
+      tools:
+        back: "戻る"
+        short_title: "ツール"
+        new: "新しいツール"
+        name: "名前"
+        name_help: "言語モデルで使用されるツールの一意の名前"
+        description: "説明"
+        description_help: "言語モデルに対するツールの目的の明確な説明"
+        summary: "要約"
+        summary_help: "エンドユーザーに表示されるツールの目的の要約"
+        script: "スクリプト"
+        parameters: "パラメーター"
+        save: "保存"
+        add_parameter: "パラメーターを追加"
+        parameter_required: "必須"
+        parameter_enum: "列挙型"
+        parameter_name: "パラメーター名"
+        parameter_description: "パラメーターの説明"
+        enum_value: "列挙型値"
+        add_enum_value: "列挙型値を追加"
+        edit: "編集"
+        test: "テストを実行"
+        delete: "削除"
+        saved: "ツールが保存されました"
+        presets: "プリセットを選択..."
+        confirm_delete: このツールを削除してもよろしいですか？
+        next:
+          title: "次へ"
+        test_modal:
+          title: "AI ツールのテスト"
+          run: "テストを実行"
+          result: "テストの結果"
+      llms:
+        short_title: "LLM"
+        no_llms: "まだ LLM がありません"
+        new: "新しいモデル"
+        display_name: "表示する名前"
+        name: "モデル名"
+        provider: "モデルをホストするサービス"
+        tokenizer: "トークナイザ―"
+        max_prompt_tokens: "プロンプトのトークン数"
+        url: "モデルをホストするサービスの URL"
+        api_key: "モデルをホストするサービスの API キー"
+        enabled_chat_bot: "AI ボットを許可"
+        vision_enabled: "ビジョン対応"
+        ai_bot_user: "AI ボットユーザー"
+        save: "保存"
+        edit: "編集"
+        saved: "LLM モデルが保存されました"
+        back: "戻る"
+        confirm_delete: このモデルを削除してもよろしいですか？
+        delete: 削除
+        preconfigured_llms: "LLM を選択してください"
+        preconfigured:
+          none: "手動で構成..."
+        next:
+          title: "次へ"
+        tests:
+          title: "テストを実行"
+          running: "テストを実行中…"
+          success: "成功!"
+          failure: "モデルに接続しようとした際に、次のエラーが返されました: %{error}"
+        hints:
+          max_prompt_tokens: "プロンプトのトークンの最大数。目安として、これはモデルのコンテキストウィンドウの 50% です。"
+          name: "これを API 呼び出しに含めて、使用するモデルを指定します。"
+          vision_enabled: "有効にすると、AI は画像を理解しようとします。ビジョンのサポートに使用されているモデルに応じます。Anthropic、Google、および OpenAI の最新モデルでサポートされています。"
+        providers:
+          aws_bedrock: "AWS Bedrock"
+          anthropic: "Anthropic"
+          vllm: "vLLM"
+          hugging_face: "Hugging Face"
+          cohere: "Cohere"
+          open_ai: "OpenAI"
+          google: "Google"
+          azure: "Azure"
+          ollama: "Ollama"
+        provider_fields:
+          access_key_id: "AWS Bedrock アクセスキー ID"
+          region: "AWS Bedrock リージョン"
+          organization: "オプションの OpenAI 組織 ID"
       related_topics:
         title: "関連トピック"
         pill: "関連"
@@ -126,20 +273,17 @@ ja:
         suggest: "AI で提案"
         missing_content: "提案を生成するにはコンテンツを入力してください。"
         context_menu:
-          back: "戻る"
-          trigger: "AI"
-          undo: "元に戻す"
+          trigger: "AI に尋ねる"
           loading: "AI が生成中です"
           cancel: "キャンセル"
           regen: "やり直す"
-          view_changes: "変更を表示"
           confirm: "確認"
-          revert: "戻す"
-          changes: "変更"
+          discard: "破棄"
           custom_prompt:
             title: "カスタムプロンプト"
             placeholder: "カスタムプロンプトを入力してください..."
             submit: "プロンプトを送信"
+          translate_prompt: "%{language} に翻訳する"
         post_options_menu:
           trigger: "AI に尋ねる"
           title: "AI に尋ねる"
@@ -148,6 +292,8 @@ ja:
           copy: "コピー"
           copied: "コピーしました！"
           cancel: "キャンセル"
+          insert_footnote: "脚注を追加"
+          footnote_credits: "AI による説明"
         fast_edit:
           suggest_button: "編集を提案"
         thumbnail_suggestions:
@@ -155,20 +301,30 @@ ja:
           select: "選択"
           selected: "選択済み"
         image_caption:
+          button_label: "AI によるキャプション"
+          generating: "キャプションを生成中..."
+          credits: "AI によるキャプション"
           save_caption: "保存"
+          automatic_caption_setting: "自動 AI 画像キャプションを有効にする"
+          automatic_caption_loading: "画像のキャプションを作成中..."
+          automatic_caption_dialog:
+            prompt: "この投稿にはキャプションのない画像が含まれています。画像アップロード時に、自動 AI キャプションを有効にしますか？(これは後で設定で変更できます)"
+            confirm: "有効化"
+            cancel: "今後表示しない"
       reviewables:
         model_used: "使用モデル:"
         accuracy: "精度:"
       embeddings:
         semantic_search: "トピック (セマンティック)"
         semantic_search_loading: "AI を使ってさらに多くの結果を検索中"
-        semantic_search_disabled_sort: "この並べ替え順では AI 検索は無効です。有効にするには関連性で並べ替えてください。"
         semantic_search_results:
           toggle: "AI で見つかった %{count} 件の結果を表示中"
           toggle_hidden: "AI で見つかった %{count} 件の結果を非表示"
           none: "AI 検索ではどのトピックも一致しませんでした。"
           new: "「検索」を押すと、AI が新しい結果を検索し始めるます"
         ai_generated_result: "AI で見つかった検索結果"
+        quick_search:
+          suffix: "AI によるすべてのトピックと投稿"
       ai_bot:
         pm_warning: "AI チャットボットのメッセージは、モデレーターによって定期的に監視されます。"
         cancel_streaming: "返信を停止する"
@@ -176,14 +332,39 @@ ja:
         shortcut_title: "AI ボットと PM を開始する"
         share: "AI の会話を共有"
         conversation_shared: "会話をコピーしました"
+        debug_ai: "生の AI リクエストと返答を表示する"
+        debug_ai_modal:
+          title: "AI インタラクションを表示"
+          copy_request: "リクエストをコピー"
+          copy_response: "返答をコピー"
+          request_tokens: "リクエストトークン:"
+          response_tokens: "レスポンストークン:"
+          request: "リクエスト"
+          response: "応答"
+        share_full_topic_modal:
+          title: "会話の公開共有"
+          share: "共有してリンクをコピー"
+          update: "更新してリンクをコピー"
+          delete: "共有を削除"
+        share_ai_conversation:
+          name: "AI の会話を共有"
+          title: "この AI の会話を公開共有する"
         ai_label: "AI"
         ai_title: "AI との会話"
         share_modal:
+          title: "AI の会話のコピー"
           copy: "コピー"
           context: "共有する対話:"
+          share_tip: または、会話全体を共有できます。
         bot_names:
+          fake: "偽のテストボット"
+          claude-3-opus: "Claude 3 Opus"
+          claude-3-sonnet: "Claude 3 Sonnet"
+          claude-3-haiku: "Claude 3 Haiku"
+          cohere-command-r-plus: "Cohere Command R Plus"
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
@@ -194,6 +375,13 @@ ja:
       sentiments:
         dashboard:
           title: "センチメント"
+      summarization:
+        chat:
+          title: "メッセージを要約する"
+          description: "以下から、希望する期間に送信される会話を要約するオプションを選択してください。"
+          summarize: "要約"
+          since:
+            other: "過去 %{count} 時間"
     review:
       types:
         reviewable_ai_post:

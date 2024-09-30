@@ -4,49 +4,23 @@ module DiscourseAi
   module Completions
     module Endpoints
       class HuggingFace < Base
-        class << self
-          def can_contact?(endpoint_name, model_name)
-            return false unless endpoint_name == "hugging_face"
-
-            %w[
-              StableBeluga2
-              Upstage-Llama-2-*-instruct-v2
-              Llama2-*-chat-hf
-              Llama2-chat-hf
-              mistralai/Mixtral-8x7B-Instruct-v0.1
-              mistralai/Mistral-7B-Instruct-v0.2
-            ].include?(model_name)
-          end
-
-          def dependant_setting_names
-            %w[ai_hugging_face_api_url]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_hugging_face_api_url.present?
-          end
-
-          def endpoint_name(model_name)
-            "Hugging Face - #{model_name}"
-          end
-        end
-
-        def default_options
-          { parameters: { repetition_penalty: 1.1, temperature: 0.7, return_full_text: false } }
+        def self.can_contact?(model_provider)
+          model_provider == "hugging_face"
         end
 
         def normalize_model_params(model_params)
           model_params = model_params.dup
 
+          # max_tokens, temperature are already supported
           if model_params[:stop_sequences]
             model_params[:stop] = model_params.delete(:stop_sequences)
           end
 
-          if model_params[:max_tokens]
-            model_params[:max_new_tokens] = model_params.delete(:max_tokens)
-          end
-
           model_params
+        end
+
+        def default_options
+          { model: llm_model.name, temperature: 0.7 }
         end
 
         def provider_id
@@ -56,45 +30,43 @@ module DiscourseAi
         private
 
         def model_uri
-          URI(SiteSetting.ai_hugging_face_api_url)
+          URI(llm_model.url)
         end
 
         def prepare_payload(prompt, model_params, _dialect)
           default_options
-            .merge(inputs: prompt)
+            .merge(model_params)
+            .merge(messages: prompt)
             .tap do |payload|
-              payload[:parameters].merge!(model_params)
+              if !payload[:max_tokens]
+                token_limit = llm_model.max_prompt_tokens
 
-              token_limit = SiteSetting.ai_hugging_face_token_limit || 4_000
-
-              payload[:parameters][:max_new_tokens] = token_limit - prompt_size(prompt)
+                payload[:max_tokens] = token_limit - prompt_size(prompt)
+              end
 
               payload[:stream] = true if @streaming_mode
             end
         end
 
         def prepare_request(payload)
+          api_key = llm_model.api_key
+
           headers =
             { "Content-Type" => "application/json" }.tap do |h|
-              if SiteSetting.ai_hugging_face_api_key.present?
-                h["Authorization"] = "Bearer #{SiteSetting.ai_hugging_face_api_key}"
-              end
+              h["Authorization"] = "Bearer #{api_key}" if api_key.present?
             end
 
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
         def extract_completion_from(response_raw)
-          parsed = JSON.parse(response_raw, symbolize_names: true)
+          parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
+          # half a line sent here
+          return if !parsed
 
-          if @streaming_mode
-            # Last chunk contains full response, which we already yielded.
-            return if parsed.dig(:token, :special)
+          response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
 
-            parsed.dig(:token, :text).to_s
-          else
-            parsed[0][:generated_text].to_s
-          end
+          response_h.dig(:content)
         end
 
         def partials_from(decoded_chunk)

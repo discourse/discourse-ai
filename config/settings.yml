@@ -66,7 +66,7 @@ discourse_ai:
   ai_sentiment_models:
     type: list
     list_type: compact
-    default: "emotion"
+    default: "emotion|sentiment"
     allow_any: false
     choices:
       - sentiment
@@ -96,23 +96,48 @@ discourse_ai:
       - opennsfw2
       - nsfw_detector
 
-  ai_openai_gpt35_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt35_16k_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt4_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt4_32k_url: "https://api.openai.com/v1/chat/completions"
-  ai_openai_gpt4_turbo_url: "https://api.openai.com/v1/chat/completions"
+  ai_openai_gpt35_url:
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt35_16k_url:
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt4o_url:
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt4_url:
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt4_32k_url:
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
+  ai_openai_gpt4_turbo_url:
+    default: "https://api.openai.com/v1/chat/completions"
+    hidden: true
   ai_openai_dall_e_3_url: "https://api.openai.com/v1/images/generations"
   ai_openai_embeddings_url: "https://api.openai.com/v1/embeddings"
-  ai_openai_organization: ""
+  ai_openai_organization:
+    default: ""
+    hidden: true
   ai_openai_api_key:
     default: ""
     secret: true
   ai_anthropic_api_key:
     default: ""
-    secret: true
+    hidden: true
+  ai_anthropic_native_tool_call_models:
+    type: list
+    list_type: compact
+    default: "claude-3-sonnet|claude-3-haiku"
+    allow_any: false
+    choices:
+      - claude-3-opus
+      - claude-3-sonnet
+      - claude-3-haiku
+      - claude-3-5-sonnet
   ai_cohere_api_key:
     default: ""
-    secret: true
+    hidden: true
   ai_stability_api_key:
     default: ""
     secret: true
@@ -129,13 +154,16 @@ discourse_ai:
       - "stable-diffusion-v1-5"
   ai_hugging_face_api_url:
     default: ""
+    hidden: true
   ai_hugging_face_api_key:
     default: ""
-    secret: true
+    hidden: true
   ai_hugging_face_token_limit:
     default: 4096
+    hidden: true
   ai_hugging_face_model_display_name:
     default: ""
+    hidden: true
   ai_hugging_face_tei_endpoint:
     default: ""
   ai_hugging_face_tei_endpoint_srv:
@@ -156,11 +184,13 @@ discourse_ai:
   ai_bedrock_access_key_id:
     default: ""
     secret: true
+    hidden: true
   ai_bedrock_secret_access_key:
     default: ""
-    secret: true
+    hidden: true
   ai_bedrock_region:
     default: "us-east-1"
+    hidden: true
   ai_cloudflare_workers_account_id:
     default: ""
     secret: true
@@ -169,28 +199,37 @@ discourse_ai:
     secret: true
   ai_gemini_api_key:
     default: ""
-    secret: true
+    hidden: true
   ai_vllm_endpoint:
     default: ""
+    hidden: true
   ai_vllm_endpoint_srv:
     default: ""
     hidden: true
-  ai_vllm_api_key: ""
+  ai_vllm_api_key:
+    default: ""
+    hidden: true
   ai_llava_endpoint:
     default: ""
+    hidden: true
   ai_llava_endpoint_srv:
     default: ""
     hidden: true
-  ai_llava_api_key: ""
+  ai_llava_api_key:
+    default: ""
+    hidden: true
   ai_strict_token_counting:
     default: false
     hidden: true
+  ai_ollama_endpoint:
+    hidden: true
+    default: ""
 
-  composer_ai_helper_enabled:
+  ai_helper_enabled:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
-  ai_helper_allowed_groups:
+  composer_ai_helper_allowed_groups:
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
@@ -240,11 +279,26 @@ discourse_ai:
       - "context_menu"
       - "image_caption"
   ai_helper_image_caption_model:
-    default: "llava"
+    default: ""
     type: enum
-    choices:
-      - "llava"
-      - "open_ai:gpt-4-vision-preview"
+    enum: "DiscourseAi::Configuration::LlmVisionEnumerator"
+  ai_auto_image_caption_allowed_groups:
+    client: true
+    type: group_list
+    list_type: compact
+    default: "10" # 10: @trust_level_0
+    allow_any: false
+    refresh: true
+  ai_helper_model_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact
+  ai_helper_image_caption_model_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact
 
   ai_embeddings_enabled:
     default: false
@@ -296,18 +350,42 @@ discourse_ai:
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
+  ai_embeddings_semantic_search_hyde_model_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact
   ai_embeddings_semantic_quick_search_enabled:
     default: false
     client: true
     hidden: true
-
-  ai_summarization_discourse_service_api_endpoint: ""
-  ai_summarization_discourse_service_api_endpoint_srv:
+  ai_summarization_enabled:
+    default: false
+    validator: "DiscourseAi::Configuration::LlmDependencyValidator"
+  ai_summarization_model:
+    default: ""
+    allow_any: false
+    type: enum
+    enum: "DiscourseAi::Configuration::LlmEnumerator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
+  ai_pm_summarization_allowed_groups:
+    type: group_list
+    list_type: compact
+    default: ""
+  ai_custom_summarization_allowed_groups:
+    type: group_list
+    list_type: compact
+    default: "3|13" # 3: @staff, 13: @trust_level_3
+  ai_summarization_strategy: # TODO(roman): Deprecated. Remove by Sept 2024
+    type: enum
     default: ""
     hidden: true
-  ai_summarization_discourse_service_api_key:
+    choices: "DiscourseAi::Configuration::LlmEnumerator.old_summarization_options + ['']"
+  ai_summarization_model_allowed_seeded_models:
     default: ""
-    secret: true
+    hidden: true
+    type: list
+    list_type: compact
 
   ai_bot_enabled:
     default: false
@@ -324,7 +402,6 @@ discourse_ai:
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
-  # Adding a new bot? Make sure to create a user for it on the seed file and update translations.
   ai_bot_public_sharing_allowed_groups:
     client: false
     type: group_list
@@ -332,24 +409,25 @@ discourse_ai:
     default: "1|2" # 1: admins, 2: moderators
     allow_any: false
     refresh: true
-  ai_bot_enabled_chat_bots:
+  ai_bot_enabled_chat_bots: # TODO(roman): Deprecated. Remove by Sept 2024
     type: list
     default: "gpt-3.5-turbo"
-    client: true
-    choices:
-      - gpt-3.5-turbo
-      - gpt-4
-      - gpt-4-turbo
-      - claude-2
-      - gemini-1.5-pro
-      - mixtral-8x7B-Instruct-V0.1
-      - claude-3-opus
-      - claude-3-sonnet
-      - claude-3-haiku
-      - cohere-command-r-plus
+    hidden: true
+    choices: "DiscourseAi::Configuration::LlmEnumerator.available_ai_bots"
   ai_bot_add_to_header:
     default: true
     client: true
   ai_bot_github_access_token:
     default: ""
     secret: true
+  ai_automation_max_triage_per_minute:
+    default: 60
+    hidden: true
+  ai_automation_max_triage_per_post_per_minute:
+    default: 2
+    hidden: true
+  ai_automation_allowed_seeded_models:
+    default: ""
+    hidden: true
+    type: list
+    list_type: compact

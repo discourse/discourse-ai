@@ -40,6 +40,11 @@ module DiscourseAi
           "image"
         end
 
+        def initialize(*args, **kwargs)
+          super
+          @chain_next_response = false
+        end
+
         def prompts
           parameters[:prompts]
         end
@@ -53,10 +58,10 @@ module DiscourseAi
         end
 
         def chain_next_response?
-          false
+          @chain_next_response
         end
 
-        def invoke(bot_user, _llm)
+        def invoke
           # max 4 prompts
           selected_prompts = prompts.take(4)
           seeds = seeds.take(4) if seeds
@@ -101,7 +106,15 @@ module DiscourseAi
           results = threads.map(&:value).compact
 
           if !results.present?
-            return { prompts: prompts, error: "Something went wrong, could not generate image" }
+            @chain_next_response = true
+            return(
+              {
+                prompts: prompts,
+                error:
+                  "Something went wrong inform user you could not generate image, check Discourse logs, give up don't try anymore",
+                give_up: true,
+              }
+            )
           end
 
           uploads = []
@@ -114,7 +127,12 @@ module DiscourseAi
                 file.rewind
                 uploads << {
                   prompt: prompts[index],
-                  upload: UploadCreator.new(file, "image.png").create_for(bot_user.id),
+                  upload:
+                    UploadCreator.new(
+                      file,
+                      "image.png",
+                      for_private_message: context[:private_message],
+                    ).create_for(bot_user.id),
                   seed: image[:seed],
                 }
               end
@@ -126,9 +144,7 @@ module DiscourseAi
           [grid]
           #{
             uploads
-              .map do |item|
-                "![#{item[:prompt].gsub(/\|\'\"/, "")}|50%](#{item[:upload].short_url})"
-              end
+              .map { |item| "![#{item[:prompt].gsub(/\|\'\"/, "")}](#{item[:upload].short_url})" }
               .join(" ")
           }
           [/grid]

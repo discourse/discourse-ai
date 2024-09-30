@@ -3,11 +3,21 @@
 RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
   subject(:titler) { described_class.new(thread) }
 
-  before { SiteSetting.ai_helper_model = "fake:fake" }
+  before { assign_fake_provider_to(:ai_helper_model) }
 
   fab!(:thread) { Fabricate(:chat_thread) }
   fab!(:chat_message) { Fabricate(:chat_message, thread: thread) }
   fab!(:user)
+
+  describe "#suggested_title" do
+    it "bails early if thread has no content" do
+      empty_thread = Chat::Thread.new
+
+      result = described_class.new(empty_thread).suggested_title
+
+      expect(result).to be_nil
+    end
+  end
 
   describe "#cleanup" do
     it "picks the first when there are multiple" do

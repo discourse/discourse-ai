@@ -24,33 +24,52 @@ module DiscourseAi
 
       def get_updated_title(conversation_context, post)
         system_insts = <<~TEXT.strip
-        You are titlebot. Given a topic, you will figure out a title.
-        You will never respond with anything but 7 word topic title.
+        You are titlebot. Given a conversation, you will suggest a title.
+
+        - You will never respond with anything but the suggested title.
+        - You will always match the conversation language in your title suggestion.
+        - Title will capture the essence of the conversation.
+        TEXT
+
+        # conversation context may contain tool calls, and confusing user names
+        # clean it up
+        conversation = +""
+        conversation_context.each do |context|
+          if context[:type] == :user
+            conversation << "User said:\n#{context[:content]}\n\n"
+          elsif context[:type] == :model
+            conversation << "Model said:\n#{context[:content]}\n\n"
+          end
+        end
+
+        instruction = <<~TEXT.strip
+        Given the following conversation:
+
+        {{{
+        #{conversation}
+        }}}
+
+        Reply only with a title that is 7 words or less.
         TEXT
 
         title_prompt =
           DiscourseAi::Completions::Prompt.new(
             system_insts,
-            messages: conversation_context,
+            messages: [type: :user, content: instruction],
             topic_id: post.topic_id,
           )
 
-        title_prompt.push(
-          type: :user,
-          content:
-            "Based on our previous conversation, suggest a 7 word title without quoting any of it.",
-        )
-
         DiscourseAi::Completions::Llm
           .proxy(model)
-          .generate(title_prompt, user: post.user)
+          .generate(title_prompt, user: post.user, feature_name: "bot_title")
           .strip
           .split("\n")
           .last
       end
 
       def reply(context, &update_blk)
-        prompt = persona.craft_prompt(context)
+        llm = DiscourseAi::Completions::Llm.proxy(model)
+        prompt = persona.craft_prompt(context, llm: llm)
 
         total_completions = 0
         ongoing_chain = true
@@ -62,22 +81,29 @@ module DiscourseAi
         llm_kwargs[:temperature] = persona.temperature if persona.temperature
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
 
+        needs_newlines = false
+
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
-          current_model = model
-          llm = DiscourseAi::Completions::Llm.proxy(current_model)
           tool_found = false
 
           result =
-            llm.generate(prompt, **llm_kwargs) do |partial, cancel|
-              tools = persona.find_tools(partial)
+            llm.generate(prompt, feature_name: "bot", **llm_kwargs) do |partial, cancel|
+              tools = persona.find_tools(partial, bot_user: user, llm: llm, context: context)
 
               if (tools.present?)
                 tool_found = true
+                # a bit hacky, but extra newlines do no harm
+                if needs_newlines
+                  update_blk.call("\n\n", cancel, nil)
+                  needs_newlines = false
+                end
+
                 tools[0..MAX_TOOLS].each do |tool|
+                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
                   ongoing_chain &&= tool.chain_next_response?
-                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
                 end
               else
+                needs_newlines = true
                 update_blk.call(partial, cancel, nil)
               end
             end
@@ -97,9 +123,9 @@ module DiscourseAi
 
       private
 
-      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt)
+      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
         tool_call_id = tool.tool_call_id
-        invocation_result_json = invoke_tool(tool, llm, cancel, &update_blk).to_json
+        invocation_result_json = invoke_tool(tool, llm, cancel, context, &update_blk).to_json
 
         tool_call_message = {
           type: :tool_call,
@@ -134,73 +160,32 @@ module DiscourseAi
         raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
       end
 
-      def invoke_tool(tool, llm, cancel, &update_blk)
+      def invoke_tool(tool, llm, cancel, context, &update_blk)
         update_blk.call("", cancel, build_placeholder(tool.summary, ""))
 
         result =
-          tool.invoke(bot_user, llm) do |progress|
+          tool.invoke do |progress|
             placeholder = build_placeholder(tool.summary, progress)
             update_blk.call("", cancel, placeholder)
           end
 
         tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
-        update_blk.call(tool_details, cancel, nil)
+
+        if context[:skip_tool_details] && tool.custom_raw.present?
+          update_blk.call(tool.custom_raw, cancel, nil)
+        elsif !context[:skip_tool_details]
+          update_blk.call(tool_details, cancel, nil)
+        end
 
         result
       end
 
       def self.guess_model(bot_user)
-        # HACK(roman): We'll do this until we define how we represent different providers in the bot settings
-        case bot_user.id
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-2")
-            "aws_bedrock:claude-2"
-          else
-            "anthropic:claude-2"
-          end
-        when DiscourseAi::AiBot::EntryPoint::GPT4_ID
-          "open_ai:gpt-4"
-        when DiscourseAi::AiBot::EntryPoint::GPT4_TURBO_ID
-          "open_ai:gpt-4-turbo"
-        when DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID
-          "open_ai:gpt-3.5-turbo-16k"
-        when DiscourseAi::AiBot::EntryPoint::MIXTRAL_ID
-          if DiscourseAi::Completions::Endpoints::Vllm.correctly_configured?(
-               "mistralai/Mixtral-8x7B-Instruct-v0.1",
-             )
-            "vllm:mistralai/Mixtral-8x7B-Instruct-v0.1"
-          else
-            "hugging_face:mistralai/Mixtral-8x7B-Instruct-v0.1"
-          end
-        when DiscourseAi::AiBot::EntryPoint::GEMINI_ID
-          "google:gemini-pro"
-        when DiscourseAi::AiBot::EntryPoint::FAKE_ID
-          "fake:fake"
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_OPUS_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-opus")
-            "aws_bedrock:claude-3-opus"
-          else
-            "anthropic:claude-3-opus"
-          end
-        when DiscourseAi::AiBot::EntryPoint::COHERE_COMMAND_R_PLUS
-          "cohere:command-r-plus"
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_SONNET_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?(
-               "claude-3-sonnet",
-             )
-            "aws_bedrock:claude-3-sonnet"
-          else
-            "anthropic:claude-3-sonnet"
-          end
-        when DiscourseAi::AiBot::EntryPoint::CLAUDE_3_HAIKU_ID
-          if DiscourseAi::Completions::Endpoints::AwsBedrock.correctly_configured?("claude-3-haiku")
-            "aws_bedrock:claude-3-haiku"
-          else
-            "anthropic:claude-3-haiku"
-          end
-        else
-          nil
-        end
+        associated_llm = LlmModel.find_by(user_id: bot_user.id)
+
+        return if associated_llm.nil? # Might be a persona user. Handled by constructor.
+
+        "custom:#{associated_llm.id}"
       end
 
       def build_placeholder(summary, details, custom_raw: nil)

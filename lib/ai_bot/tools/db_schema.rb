@@ -28,7 +28,7 @@ module DiscourseAi
           parameters[:tables]
         end
 
-        def invoke(_bot_user, _llm)
+        def invoke
           tables_arr = tables.split(",").map(&:strip)
 
           table_info = {}

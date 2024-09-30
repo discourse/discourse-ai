@@ -7,7 +7,7 @@ RSpec.describe AiPersona do
         name: "test",
         description: "test",
         system_prompt: "test",
-        commands: [],
+        tools: [],
         allowed_group_ids: [],
       )
 
@@ -30,7 +30,7 @@ RSpec.describe AiPersona do
         name: "test",
         description: "test",
         system_prompt: "test",
-        commands: [],
+        tools: [],
         allowed_group_ids: [],
       )
 
@@ -47,7 +47,7 @@ RSpec.describe AiPersona do
         name: "test",
         description: "test",
         system_prompt: "test",
-        commands: [],
+        tools: [],
         allowed_group_ids: [],
         rag_chunk_tokens: 10,
         rag_chunk_overlap_tokens: 5,
@@ -55,7 +55,7 @@ RSpec.describe AiPersona do
 
     id =
       RagDocumentFragment.create!(
-        ai_persona: persona,
+        target: persona,
         fragment: "test",
         fragment_number: 1,
         upload: Fabricate(:upload),
@@ -94,7 +94,7 @@ RSpec.describe AiPersona do
         name: "test",
         description: "test",
         system_prompt: "test",
-        commands: [],
+        tools: [],
         allowed_group_ids: [],
         default_llm: "anthropic:claude-2",
         max_context_posts: 3,
@@ -113,12 +113,29 @@ RSpec.describe AiPersona do
     expect(klass.max_context_posts).to eq(3)
   end
 
+  it "does not allow setting allow_chat without a default_llm" do
+    persona =
+      AiPersona.create(
+        name: "test",
+        description: "test",
+        system_prompt: "test",
+        allowed_group_ids: [],
+        default_llm: nil,
+        allow_chat: true,
+      )
+
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:default_llm].first).to eq(
+      I18n.t("discourse_ai.ai_bot.personas.default_llm_required"),
+    )
+  end
+
   it "does not leak caches between sites" do
     AiPersona.create!(
       name: "pun_bot",
       description: "you write puns",
       system_prompt: "you are pun bot",
-      commands: ["ImageCommand"],
+      tools: ["ImageCommand"],
       allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
     )
 

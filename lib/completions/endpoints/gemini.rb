@@ -4,27 +4,20 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Gemini < Base
-        class << self
-          def can_contact?(endpoint_name, model_name)
-            return false unless endpoint_name == "google"
-            %w[gemini-pro gemini-1.5-pro].include?(model_name)
-          end
-
-          def dependant_setting_names
-            %w[ai_gemini_api_key]
-          end
-
-          def correctly_configured?(_model_name)
-            SiteSetting.ai_gemini_api_key.present?
-          end
-
-          def endpoint_name(model_name)
-            "Google - #{model_name}"
-          end
+        def self.can_contact?(model_provider)
+          model_provider == "google"
         end
 
         def default_options
-          { generationConfig: {} }
+          # the default setting is a problem, it blocks too much
+          categories = %w[HARASSMENT SEXUALLY_EXPLICIT HATE_SPEECH DANGEROUS_CONTENT]
+
+          safety_settings =
+            categories.map do |category|
+              { category: "HARM_CATEGORY_#{category}", threshold: "BLOCK_NONE" }
+            end
+
+          { generationConfig: {}, safetySettings: safety_settings }
         end
 
         def normalize_model_params(model_params)
@@ -52,9 +45,14 @@ module DiscourseAi
         private
 
         def model_uri
-          mapped_model = model == "gemini-1.5-pro" ? "gemini-1.5-pro-latest" : model
-          url =
-            "https://generativelanguage.googleapis.com/v1beta/models/#{mapped_model}:#{@streaming_mode ? "streamGenerateContent" : "generateContent"}?key=#{SiteSetting.ai_gemini_api_key}"
+          url = llm_model.url
+          key = llm_model.api_key
+
+          if @streaming_mode
+            url = "#{url}:streamGenerateContent?key=#{key}&alt=sse"
+          else
+            url = "#{url}:generateContent?key=#{key}"
+          end
 
           URI(url)
         end
@@ -62,12 +60,17 @@ module DiscourseAi
         def prepare_payload(prompt, model_params, dialect)
           tools = dialect.tools
 
-          default_options
-            .merge(contents: prompt)
-            .tap do |payload|
-              payload[:tools] = tools if tools.present?
-              payload[:generationConfig].merge!(model_params) if model_params.present?
-            end
+          payload = default_options.merge(contents: prompt[:messages])
+          payload[:systemInstruction] = {
+            role: "system",
+            parts: [{ text: prompt[:system_instruction].to_s }],
+          } if prompt[:system_instruction].present?
+          if tools.present?
+            payload[:tools] = tools
+            payload[:tool_config] = { function_calling_config: { mode: "AUTO" } }
+          end
+          payload[:generationConfig].merge!(model_params) if model_params.present?
+          payload
         end
 
         def prepare_request(payload)
@@ -90,11 +93,55 @@ module DiscourseAi
         end
 
         def partials_from(decoded_chunk)
-          begin
-            JSON.parse(decoded_chunk, symbolize_names: true)
-          rescue JSON::ParserError
-            []
+          decoded_chunk
+        end
+
+        def chunk_to_string(chunk)
+          chunk.to_s
+        end
+
+        class Decoder
+          def initialize
+            @buffer = +""
           end
+
+          def decode(str)
+            @buffer << str
+
+            lines = @buffer.split(/\r?\n\r?\n/)
+
+            keep_last = false
+
+            decoded =
+              lines
+                .map do |line|
+                  if line.start_with?("data: {")
+                    begin
+                      JSON.parse(line[6..-1], symbolize_names: true)
+                    rescue JSON::ParserError
+                      keep_last = line
+                      nil
+                    end
+                  else
+                    keep_last = line
+                    nil
+                  end
+                end
+                .compact
+
+            if keep_last
+              @buffer = +(keep_last)
+            else
+              @buffer = +""
+            end
+
+            decoded
+          end
+        end
+
+        def decode(chunk)
+          @decoder ||= Decoder.new
+          @decoder.decode(chunk)
         end
 
         def extract_prompt_for_tokenizer(prompt)

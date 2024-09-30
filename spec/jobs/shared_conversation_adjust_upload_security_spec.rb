@@ -3,13 +3,15 @@
 RSpec.describe Jobs::SharedConversationAdjustUploadSecurity do
   let(:params) { {} }
 
+  fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
+
   fab!(:bot_user) do
     SiteSetting.discourse_ai_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "claude-2"
+    toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "10"
     SiteSetting.ai_bot_public_sharing_allowed_groups = "10"
-    User.find(DiscourseAi::AiBot::EntryPoint::CLAUDE_V2_ID)
+    claude_2.reload.user
   end
   fab!(:user)
   fab!(:topic) { Fabricate(:private_message_topic, user: user, recipient: bot_user) }

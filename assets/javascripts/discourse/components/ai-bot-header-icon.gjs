@@ -1,21 +1,25 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { gt } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import i18n from "discourse-common/helpers/i18n";
-import DMenu from "float-kit/components/d-menu";
 import { composeAiBotMessage } from "../lib/ai-bot-helper";
-import AiBotHeaderPanel from "./ai-bot-header-panel";
 
 export default class AiBotHeaderIcon extends Component {
+  @service currentUser;
   @service siteSettings;
   @service composer;
 
   get bots() {
-    return this.siteSettings.ai_bot_add_to_header
-      ? this.siteSettings.ai_bot_enabled_chat_bots.split("|").filter(Boolean)
-      : [];
+    const availableBots = this.currentUser.ai_enabled_chat_bots
+      .filter((bot) => !bot.is_persosna)
+      .filter(Boolean);
+
+    return availableBots ? availableBots.map((bot) => bot.model_name) : [];
+  }
+
+  get showHeaderButton() {
+    return this.bots.length > 0 && this.siteSettings.ai_bot_add_to_header;
   }
 
   @action
@@ -24,26 +28,14 @@ export default class AiBotHeaderIcon extends Component {
   }
 
   <template>
-    {{#if (gt this.bots.length 0)}}
+    {{#if this.showHeaderButton}}
       <li>
-        {{#if (gt this.bots.length 1)}}
-          <DMenu
-            @icon="robot"
-            @title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
-            class="ai-bot-button icon btn-flat"
-          >
-            <:content as |args|>
-              <AiBotHeaderPanel @closePanel={{args.close}} />
-            </:content>
-          </DMenu>
-        {{else}}
-          <DButton
-            @icon="robot"
-            @title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
-            class="ai-bot-button icon btn-flat"
-            @action={{this.compose}}
-          />
-        {{/if}}
+        <DButton
+          @action={{this.compose}}
+          @icon="robot"
+          title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
+          class="ai-bot-button icon btn-flat"
+        />
       </li>
     {{/if}}
   </template>

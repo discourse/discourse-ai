@@ -10,7 +10,10 @@ de:
       llm_triage:
         title: Beiträge mithilfe von KI sortieren
         description: "Beiträge mithilfe eines großen Sprachmodells sortieren"
-        system_prompt_missing_post_placeholder: "System-Eingabeaufforderung muss einen Platzhalter für den Beitrag enthalten: %%POST%%"
+        flagged_post: |
+          <div>Antwort des Modells:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Ausgelöst durch die <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> Regel.</b>
       llm_report:
         title: Regelmäßiger Bericht mit KI
         description: "Regelmäßiger Bericht auf der Grundlage eines großen Sprachmodells"
@@ -43,30 +46,13 @@ de:
     ai_nsfw_flag_threshold_porn: "Schwellenwert, ab dem ein Bild, das als Porno eingestuft wird, als NSFW gilt."
     ai_nsfw_flag_threshold_sexy: "Schwellenwert, ab dem ein Bild, das als sexy eingestuft wird, als NSFW gilt."
     ai_nsfw_models: "Modelle, die für NSFW-Inferenz verwendet werden."
-    ai_openai_gpt35_url: "Benutzerdefinierte URL, die für GPT-3.5-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
-    ai_openai_gpt35_16k_url: "Benutzerdefinierte URL, die für GPT-3.5-16k-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
-    ai_openai_gpt4_url: "Benutzerdefinierte URL, die für GPT-4-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
-    ai_openai_gpt4_32k_url: "Benutzerdefinierte URL, die für GPT-4-32k-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
-    ai_openai_gpt4_turbo_url: "Benutzerdefinierte URL, die für GPT-4-Turbo-Chat-Vervollständigungen verwendet wird (für Azure-Support)."
-    ai_openai_dall_e_3_url: "Benutzerdefinierte URL, die für die DALL-E-3-Bilderzeugung verwendet wird (für Azure-Support)."
-    ai_openai_organization: "(Optional; leer lassen, um sie wegzulassen) Organisations-ID, die für die OpenAI-API verwendet wird. Wird mit dem OpenAI-Organization-Header übergeben."
     ai_openai_embeddings_url: "Benutzerdefinierte URL, die für die OpenAI-Embeddings-API verwendet wird (im Falle von Azure gegebenenfalls: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
-    ai_openai_api_key: "API-Schlüssel für OpenAI-API"
-    ai_anthropic_api_key: "API-Schlüssel für Anthropic-API"
-    ai_cohere_api_key: "API-Schlüssel für die Cohere API"
-    ai_hugging_face_api_url: "Benutzerdefinierte URL, die für OpenSource-LLM-Inferenz verwendet wird. Kompatibel mit https://github.com/huggingface/text-generation-inference"
-    ai_hugging_face_api_key: API-Schlüssel für Hugging Face API
-    ai_hugging_face_token_limit: Maximale Token, die Hugging Face API pro Anfrage verwenden kann
-    ai_hugging_face_model_display_name: Angezeigter Name für das KI-Modell Hugging Face
+    ai_openai_api_key: "API-Schlüssel für OpenAI-API. Wird NUR für Einbettungen und Dall-E verwendet. Für GPT verwende die Registerkarte für die LLM-Konfiguration"
+    ai_anthropic_native_tool_call_models: "Liste der Modelle, die native Tool-Aufrufe im Vergleich zu den alten XML-basierten Tools verwenden werden."
     ai_hugging_face_tei_endpoint: URL, auf der die API für die Inferenz der Texteinbettungen von Hugging Face ausgeführt wird
-    ai_hugging_face_tei_api_key: API-Schlüssel für die Inferenz von Texteinbettungen bei Hugging Face
-    ai_gemini_api_key: API-Schlüssel für Google Gemini API
-    ai_vllm_endpoint: URL, unter der die API für vLLM ausgeführt wird
-    ai_vllm_api_key: API-Schlüssel für vLLM API
-    ai_llava_endpoint: URL, unter der die API für llava ausgeführt wird
-    ai_llava_api_key: API-Schlüssel für die Llava-API
-    composer_ai_helper_enabled: "Aktiviere den Composer-KI-Helfer."
-    ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
+    ai_hugging_face_tei_api_key: API-Schlüssel für die Inferenz von Texteinbettungen von Hugging Face
+    ai_helper_enabled: "Aktiviere den KI-Helfer."
+    composer_ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
     ai_helper_allowed_in_pm: "Aktiviere den Composer-KI-Helfer in PN."
     ai_helper_model: "Modell, das für den KI-Helfer verwendet werden soll."
     ai_helper_custom_prompts_allowed_groups: "Die Benutzer dieser Gruppen sehen die Option „Benutzerdefinierte Eingabeaufforderung“ im KI-Helfer."
@@ -74,8 +60,9 @@ de:
     ai_helper_automatic_chat_thread_title: "Lege die Titel der Chat-Threads automatisch anhand der Thread-Inhalte fest."
     ai_helper_illustrate_post_model: "Modell, das für die Funktion „Beitrag illustrieren“ des Composer-KI-Helfers verwendet wird"
     ai_helper_enabled_features: "Wähle die Funktionen aus, die im KI-Helfer aktiviert werden sollen."
-    post_ai_helper_allowed_groups: "Benutzergruppen, die auf KI Helper-Funktionen in Beiträgen zugreifen dürfen"
-    ai_helper_image_caption_model: "Wähle das Modell aus, das für die Erstellung von Bildunterschriften verwendet werden soll"
+    post_ai_helper_allowed_groups: "Nutzergruppen, die auf KI-Helfer-Funktionen in Beiträgen zugreifen dürfen"
+    ai_helper_image_caption_model: "Wähle das Modell aus, das für die Erstellung von Bildbeschriftungen verwendet werden soll"
+    ai_auto_image_caption_allowed_groups: "Benutzer dieser Gruppen können die automatische Bildbeschriftung ein- und ausschalten."
     ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
     ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
     ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
@@ -86,18 +73,19 @@ de:
     ai_embeddings_backfill_batch_size: "Anzahl der Einbettungen, die alle 15 Minuten aufgefüllt werden."
     ai_embeddings_pg_connection_string: "PostgreSQL-Verbindungsstring für das Einbettungsmodul. Die pgvector-Erweiterung muss aktiviert sein und eine Reihe von Tabellen erstellt werden. Siehe Dokumentation für weitere Informationen."
     ai_embeddings_semantic_search_enabled: "Aktiviere die semantische Ganzseitensuche."
-    ai_embeddings_semantic_quick_search_enabled: "Aktiviere die semantische Suche im Popup-Menü der Suche."
+    ai_embeddings_semantic_quick_search_enabled: "Aktiviere die semantische Suchoption im Such-Menü-Pop-up."
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"
     ai_embeddings_semantic_search_hyde_model: "Modell zur Erweiterung von Schlüsselwörtern, um bessere Ergebnisse bei der semantischen Suche zu erzielen"
     ai_embeddings_per_post_enabled: Erstelle Einbettungen für jeden Beitrag
-    ai_summarization_discourse_service_api_endpoint: "URL, unter der die Discourse-Zusammenfassungs-API läuft."
-    ai_summarization_discourse_service_api_key: "API-Schlüssel für die Discourse-Zusammenfassungs-API."
+    ai_summarization_enabled: "Aktiviere das Modul für die Themenzusammenfassung."
+    ai_summarization_model: "Modell, das für die Zusammenfassung verwendet werden soll."
+    ai_custom_summarization_allowed_groups: "Gruppen, die neue Zusammenfassungen erstellen dürfen."
+    ai_pm_summarization_allowed_groups: "Gruppen können Zusammenfassungen in PMs erstellen und ansehen."
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
     ai_bot_enable_chat_warning: "Zeigt eine Warnung an, wenn der PN-Chat initiiert wird. Kann durch Bearbeiten der Übersetzungszeichenfolge überschrieben werden: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
-    ai_bot_debugging_allowed_groups: "Erlaube diesen Gruppen, einen Debug-Button in Beiträgen zu sehen, der die rohe KI-Anfrage und -Antwort anzeigt."
-    ai_bot_public_sharing_allowed_groups: "Erlaube diesen Gruppen, persönliche KI-Nachrichten über einen eindeutigen, öffentlich zugänglichen Link mit der Öffentlichkeit zu teilen"
-    ai_bot_enabled_chat_bots: "Verfügbare Modelle, die als KI-Bot agieren können"
+    ai_bot_debugging_allowed_groups: "Erlaube diesen Gruppen, eine Debug-Schaltfläche in Beiträgen zu sehen, der die rohe KI-Anfrage und -Antwort anzeigt."
+    ai_bot_public_sharing_allowed_groups: "Erlaube diesen Gruppen, persönliche KI-Nachrichten über einen eindeutigen, öffentlich zugänglichen Link mit der Öffentlichkeit zu teilen. Hinweis: Wenn für deine Website eine Anmeldung erforderlich ist, ist auch zum Ansehen des geteilten Inhalts eine Anmeldung erforderlich."
     ai_bot_add_to_header: "Eine Schaltfläche in der Kopfzeile anzeigen, um eine PN mit einem KI-Bot zu starten"
     ai_bot_github_access_token: "GitHub-Zugangstoken für die Verwendung mit den GitHub-KI-Tools (erforderlich für die Suchunterstützung)"
     ai_stability_api_key: "API-Schlüssel für die stability.ai-API"
@@ -105,11 +93,6 @@ de:
     ai_stability_api_url: "URL für die stability.ai-API"
     ai_google_custom_search_api_key: "API-Schlüssel für die Google Custom Search API, siehe: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX für Google Custom Search API"
-    ai_bedrock_access_key_id: "Zugangsschlüssel-ID für die Bedrock-API"
-    ai_bedrock_secret_access_key: "Geheimer Zugangsschlüssel für die Bedrock-API"
-    ai_bedrock_region: "AWS-Region für die Bedrock-API"
-    ai_cloudflare_workers_account_id: "Cloudflare-Konto-ID für die Cloudflare-Workers-AI-API"
-    ai_cloudflare_workers_api_token: "API-Token für die Cloudflare-Workers-AI-API"
   reviewables:
     reasons:
       flagged_by_toxicity: Das KI-Plug-in meldete dies nach der Klassifizierung als toxisch.
@@ -128,11 +111,22 @@ de:
       description: "Anzahl der Beiträge, die mit einer der folgenden Emotionen klassifiziert wurden, gruppiert nach der Vertrauensstufe des Autors."
   discourse_ai:
     unknown_model: "Unbekanntes KI-Modell"
+    tools:
+      custom_name: "%{name} (benutzerdefiniert)"
+      presets:
+        browse_web_jina:
+          name: "Mit jina.ai das Web durchsuchen"
+        exchange_rate:
+          name: "Wechselkurs"
+        stock_quote:
+          name: "Aktienkurs (AlphaVantage)"
+        empty_tool:
+          name: "Von vorne beginnen …"
     ai_helper:
       errors:
         completion_request_failed: "Beim Versuch, Vorschläge zu machen, ist etwas schiefgelaufen. Bitte versuche es noch einmal."
       prompts:
-        translate: Übersetzen ins Englische
+        translate: Übersetzen in %{language}
         generate_titles: Thementitel vorschlagen
         proofread: Text korrekturlesen
         markdown_table: Markdown-Tabelle generieren
@@ -144,22 +138,23 @@ de:
           stable_diffusion_xl: "Bild von Stable Diffusion XL"
           dall_e_3: "Bild von DALL-E 3"
       image_caption:
-        attribution: "Untertitelt von KI"
+        attribution: "Beschriftet durch KI"
     share_ai:
       read_more: "Vollständiges Transkript lesen"
       onebox_title: "KI-Unterhaltung mit %{llm_name}"
       formatted_excerpt: "KI-Unterhaltung mit %{llm_name}:\n %{excerpt}"
-      title: "%{title} - KI-Unterhaltung - %{site_name}"
+      title: "%{title} – KI-Unterhaltung – %{site_name}"
       errors:
         not_allowed: "Du darfst dieses Thema nicht teilen"
         other_people_in_pm: "Persönliche Nachrichten mit anderen Menschen können nicht öffentlich geteilt werden"
         other_content_in_pm: "Persönliche Nachrichten, die Beiträge von anderen Personen enthalten, können nicht öffentlich geteilt werden"
         failed_to_share: "Die Unterhaltung konnte nicht geteilt werden"
-        conversation_deleted: "Unterhaltsfreigabe erfolgreich gelöscht"
+        conversation_deleted: "Unterhaltungsfreigabe erfolgreich gelöscht"
     ai_bot:
       personas:
+        default_llm_required: "Standard-LLM-Modell ist erforderlich, bevor der Chat aktiviert werden kann"
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
-        cannot_edit_system_persona: "System-Personas können nur umbenannt werden. Du kannst keine Befehle oder die System-Eingabeaufforderung bearbeiten. Deaktiviere sie stattdessen und erstelle eine Kopie"
+        cannot_edit_system_persona: "System-Personas können nur umbenannt werden. Du darfst keine Tools oder die System-Eingabeaufforderung bearbeiten, sondern musst sie deaktivieren und eine Kopie erstellen"
         github_helper:
           name: "GitHub-Helfer"
           description: "KI-Bot, der auf die Unterstützung bei GitHub-bezogenen Aufgaben und Fragen spezialisiert ist"
@@ -190,19 +185,27 @@ de:
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
-      command_options:
+      tool_options:
+        read:
+          read_private:
+            name: "Privat lesen"
+            description: "Erlaube den Zugriff auf alle Themen, auf die der Nutzer Zugriff hat (standardmäßig sind nur öffentliche Themen verfügbar)"
         search:
+          search_private:
+            name: "Privat suchen"
+            description: "Alle Themen, auf die der Nutzer Zugriff hat, in die Suchergebnisse einbeziehen (standardmäßig werden nur öffentliche Themen einbezogen)"
           max_results:
             name: "Maximale Anzahl von Ergebnissen"
             description: "Maximale Anzahl der Ergebnisse, die in die Suche einbezogen werden sollen – wenn leer, werden die Standardregeln verwendet und die Anzahl wird je nach verwendetem Modell skaliert. Der höchste Wert ist 100."
           base_query:
             name: "Basissuchanfrage"
             description: "Basisanfrage, die bei der Suche verwendet wird. Beispiel: Bei „#dringend“ wird der Suchanfrage „#dringend“ vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort „dringend“ angezeigt."
-      command_summary:
+      tool_summary:
         web_browser: "Web durchsuchen"
-        github_search_code: "GitHub Code-Suche"
-        github_file_content: "Inhalt der GitHub-Datei"
-        github_pull_request_diff: "GitHub Pull-Request Unterschied"
+        github_search_files: "GitHub-Datei-Suche"
+        github_search_code: "GitHub-Code-Suche"
+        github_file_content: "GitHub-Datei-Inhalt"
+        github_pull_request_diff: "GitHub-Pull-Request-Diff"
         random_picker: "Zufallsauswahl"
         categories: "Kategorien auflisten"
         search: "Suche"
@@ -214,35 +217,39 @@ de:
         read: "Thema lesen"
         setting_context: "Kontext der Website-Einstellung nachschlagen"
         schema: "Datenbankschema nachschlagen"
-        search_settings: "Website-Einstellungen durchsuchen"
+        search_settings: "Website-Einstellungen werden durchsucht"
         dall_e: "Bild generieren"
-        search_meta_discourse: "Suche Meta Discourse"
-      command_help:
-        web_browser: "Webseite mit dem KI Bot durchsuchen"
-        github_search_code: "Suche nach Code in einem GitHub-Repository"
+        search_meta_discourse: "Meta-Discourse durchsuchen"
+        javascript_evaluator: "JavaScript auswerten"
+      tool_help:
+        web_browser: "Webseite mit dem KI-Bot durchsuchen"
+        github_search_code: "Code in einem GitHub-Repository suchen"
+        github_search_files: "Dateien in einem GitHub-Repository suchen"
         github_file_content: "Inhalt von Dateien aus einem GitHub-Repository abrufen"
-        github_pull_request_diff: "Abrufen eines GitHub Pull Request Unterschieds"
-        random_picker: "Wähle eine Zufallszahl oder ein zufälliges Element aus einer Liste"
+        github_pull_request_diff: "GitHub-Pull-Request-Diff abrufen"
+        random_picker: "Zufallszahl oder zufälliges Element aus einer Liste auswählen"
         categories: "Alle öffentlich sichtbaren Kategorien im Forum auflisten"
         search: "Alle öffentlichen Themen im Forum durchsuchen"
         tags: "Alle Schlagwörter im Forum auflisten"
         time: "Zeit in verschiedenen Zeitzonen finden"
-        summarize: "Ein Thema zusammenfassen"
+        summary: "Ein Thema zusammenfassen"
         image: "Bild mit Stable Diffusion generieren"
-        google: "Suche bei Google nach einer Anfrage"
+        google: "Bei Google nach einer Anfrage suchen"
         read: "Öffentliches Thema im Forum lesen"
         setting_context: "Kontext der Website-Einstellung nachschlagen"
         schema: "Datenbankschema nachschlagen"
         search_settings: "Website-Einstellungen durchsuchen"
         dall_e: "Bild mit DALL-E 3 generieren"
-        search_meta_discourse: "Suche Meta Discourse"
-      command_description:
-        web_browser: "Lesen <a href='%{url}'>%{url}</a>"
-        github_search_code: "Gesucht wurde nach '%{query}' in %{repo}"
+        search_meta_discourse: "Meta-Discourse durchsuchen"
+        javascript_evaluator: "JavaScript auswerten"
+      tool_description:
+        web_browser: "<a href='%{url}'>%{url}</a> wird gelesen"
+        github_search_files: "Gesucht wurde nach „%{keywords}“ in %{repo}/%{branch}"
+        github_search_code: "Gesucht wurde nach „%{query}“ in %{repo}"
         github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
-        github_file_content: "Abgerufener Inhalt von %{file_paths} von %{repo_name}@%{branch}"
-        random_picker: "Auswahl aus %{options}, ausgewählt: %{result}"
-        read: "Lesen: <a href='%{url}'>%{title}</a>"
+        github_file_content: "Inhalt von %{file_paths} in %{repo_name}@%{branch} wurde abgerufen"
+        random_picker: "Auswahl aus %{options}. Ausgewählt wurde: %{result}"
+        read: "Wird gelesen: <a href='%{url}'>%{title}</a>"
         time: "Die Uhrzeit in %{timezone} ist %{time}"
         summarize: "<a href='%{url}'>%{title}</a> zusammengefasst"
         dall_e: "%{prompt}"
@@ -262,7 +269,7 @@ de:
         google:
           one: "%{count} <a href='%{url}'>Ergebnis</a> für „%{query}“ gefunden"
           other: "%{count} <a href='%{url}'>Ergebnisse</a> für „%{query}“ gefunden"
-        setting_context: "Kontext lesen für: %{setting_name}"
+        setting_context: "Kontext wird gelesen für: %{setting_name}"
         schema: "%{tables}"
         search_settings:
           one: "%{count} Ergebnis für „%{query}“ gefunden"
@@ -271,36 +278,44 @@ de:
       configuration_hint:
         one: "Konfiguriere zunächst die Einstellung `%{setting}`."
         other: "Konfiguriere zunächst diese Einstellungen: %{settings}"
+      chat:
+        no_targets: "Im ausgewählten Zeitraum gab es keine Nachrichten."
     sentiment:
       reports:
         overall_sentiment:
           positive: "Positiv"
           negative: "Negativ"
         post_emotion:
-          tl_01: "Vertrauensstufen 0–1"
-          tl_234: "Vertrauensstufen 2+"
-          sadness: "Traurigkeit"
-          surprise: "Überraschung"
-          neutral: "Neutral"
-          fear: "Furcht"
-          anger: "Wut"
-          joy: "Freude"
-          disgust: "Ekel"
+          sadness: "Traurigkeit \U0001F622"
+          surprise: "Überraschung \U0001F631"
+          neutral: "Neutral \U0001F610"
+          fear: "Furcht \U0001F628"
+          anger: "Wut \U0001F621"
+          joy: "Freude \U0001F600"
+          disgust: "Ekel \U0001F922"
     llm:
       configuration:
         disable_module_first: "Du musst zuerst %{setting} deaktivieren."
         set_llm_first: "Stelle zuerst %{setting} ein."
-        model_unreachable: "Wir konnten keine Antwort von diesem Modell bekommen. Überprüfe zuerst deine Einstellungen."
+        model_unreachable: "Wir konnten keine Antwort von diesem Modell abrufen. Überprüfe zuerst deine Einstellungen."
+        invalid_seeded_model: "Du kannst dieses Modell nicht mit dieser Funktion verwenden."
       endpoints:
         not_configured: "%{display_name} (nicht konfiguriert)"
         configuration_hint:
           one: "Vergewissere dich, dass die Einstellung \"%{settings}\" konfiguriert wurde."
           other: "Vergewissere dich, dass diese Einstellungen konfiguriert wurden: %{settings}"
+      delete_failed:
+        one: "Wir konnten dieses Modell nicht löschen, weil es von %{settings} verwendet wird. Aktualisiere die Einstellung und versuche es erneut."
+        other: "Wir konnten dieses Modell nicht löschen, weil %{settings} es verwenden. Aktualisiere die Einstellungen und versuche es erneut."
+      cannot_edit_builtin: "Du kannst ein eingebautes Modell nicht bearbeiten."
     embeddings:
       configuration:
-        disable_embeddings: "Du musst zuerst \"KI-Einbettungen aktiviert\" deaktivieren."
+        disable_embeddings: "Du musst zuerst „KI-Einbettungen aktiviert“ deaktivieren."
         choose_model: "Lege zuerst „KI-Einbettungsmodell“ fest."
         model_unreachable: "Es ist uns nicht gelungen, eine Testeinbettung mit diesem Modell zu erstellen. Prüfe, ob deine Einstellungen korrekt sind."
         hint:
-          one: "Vergewissere dich, dass die Einstellung \"%{settings}\" konfiguriert wurde."
+          one: "Vergewissere dich, dass die Einstellung `%{settings}` konfiguriert wurde."
           other: "Vergewissere dich, dass die Einstellungen des gewünschten Anbieters konfiguriert wurden. Die Optionen sind: %{settings}"
+    llm_models:
+      missing_provider_param: "%{param} darf nicht leer sein"
+      bedrock_invalid_url: "Bitte fülle alle Felder aus, um dieses Model zu kontaktieren."

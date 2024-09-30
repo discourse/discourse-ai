@@ -5,8 +5,15 @@
 # https://translate.discourse.org/
 
 te:
+  reports:
+    overall_sentiment:
+      yaxis: "తేదీ"
   discourse_ai:
     ai_bot:
-      command_summary:
-        search: "వెతుకు"
+      tool_summary:
+        search: "శోధించండి"
         time: "కాలం"
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "తటస్థ \U0001F610"

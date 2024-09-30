@@ -41,14 +41,38 @@ ca:
         uploads:
           title: "Càrregues"
           uploading: "Carregant..."
+      tools:
+        back: "Enrere"
+        name: "Nom"
+        description: "Descripció"
+        summary: "Resum"
+        save: "Desa"
+        parameter_required: "Necessari"
+        edit: "Edita"
+        test: "Executa el test"
+        delete: "Suprimeix"
+        next:
+          title: "Següent"
+        test_modal:
+          run: "Executa el test"
+      llms:
+        save: "Desa"
+        edit: "Edita"
+        back: "Enrere"
+        delete: Suprimeix
+        next:
+          title: "Següent"
+        tests:
+          title: "Executa el test"
+          success: "Èxit!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Enrere"
-          undo: "Desfés"
           cancel: "Cancel·la"
           regen: "Torna-ho a intentar"
           confirm: "Confirma"
-          revert: "Reverteix"
+          discard: "Descarta"
         post_options_menu:
           close: "Tanca"
           copy: "Còpia"
@@ -56,6 +80,11 @@ ca:
           cancel: "Cancel·la"
         image_caption:
           save_caption: "Desa"
+          automatic_caption_dialog:
+            confirm: "Activa"
       ai_bot:
+        debug_ai_modal:
+          request: "Sol·licita"
+          response: "Reacció"
         share_modal:
           copy: "Còpia"

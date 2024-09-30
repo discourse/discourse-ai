@@ -10,10 +10,10 @@ gl:
       yaxis: "Data"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Buscar"
         time: "Hora"
     sentiment:
       reports:
         post_emotion:
-          neutral: "Neutro"
+          neutral: "Neutro \U0001F610"

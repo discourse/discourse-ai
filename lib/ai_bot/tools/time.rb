@@ -27,7 +27,7 @@ module DiscourseAi
           parameters[:timezone].to_s
         end
 
-        def invoke(_bot_user, _llm)
+        def invoke
           time =
             begin
               ::Time.now.in_time_zone(timezone)

@@ -41,19 +41,43 @@ sw:
         uploads:
           title: "Upakiaji"
           uploading: "Inaongezwa"
+      tools:
+        back: "Iliyopita"
+        name: "Jina"
+        description: "Elezo"
+        summary: "Muhtasari"
+        save: "Hifadhi"
+        parameter_required: "Muhimu na Inahitajika"
+        edit: "Hariri"
+        delete: "Futa"
+        next:
+          title: "Ijayo"
+      llms:
+        save: "Hifadhi"
+        edit: "Hariri"
+        back: "Iliyopita"
+        delete: Futa
+        next:
+          title: "Ijayo"
+        tests:
+          success: "Mafanikio!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Iliyopita"
-          undo: "Tendua"
           cancel: "Ghairi"
           regen: "Jaribu Tena"
-          revert: "Rudisha Nyuma"
         post_options_menu:
           close: "Funga"
           copy: "Nakili"
           cancel: "Ghairi"
         image_caption:
           save_caption: "Hifadhi"
+          automatic_caption_dialog:
+            confirm: "Wezesha"
       ai_bot:
+        debug_ai_modal:
+          request: "Ombi"
+          response: "Mwitikio"
         share_modal:
           copy: "Nakili"

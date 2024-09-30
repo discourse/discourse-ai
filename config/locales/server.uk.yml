@@ -10,12 +10,15 @@ uk:
       yaxis: "Дата"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Пошук"
         tags: "Список тегів"
         time: "Час"
         summarize: "Підсумок"
+    summarization:
+      chat:
+        no_targets: "За вибраний період повідомлень не було."
     sentiment:
       reports:
         post_emotion:
-          neutral: "Нейтральна"
+          neutral: "Нейтральна \U0001F610"

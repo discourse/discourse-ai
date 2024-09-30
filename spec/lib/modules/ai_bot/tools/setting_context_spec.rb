@@ -9,18 +9,29 @@ def has_rg?
 end
 
 RSpec.describe DiscourseAi::AiBot::Tools::SettingContext, if: has_rg? do
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  fab!(:llm_model)
+
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
   before { SiteSetting.ai_bot_enabled = true }
 
   def setting_context(setting_name)
-    described_class.new({ setting_name: setting_name })
+    described_class.new({ setting_name: setting_name }, bot_user: bot_user, llm: llm)
   end
 
   describe "#execute" do
     it "returns the context for core setting" do
-      result = setting_context("moderators_view_emails").invoke(bot_user, llm)
+      result = setting_context("moderators_view_emails").invoke
+
+      expect(result[:setting_name]).to eq("moderators_view_emails")
+
+      expect(result[:context]).to include("site_settings.yml")
+      expect(result[:context]).to include("moderators_view_emails")
+    end
+
+    it "supports spaces and case insensitive setting name" do
+      result = setting_context("moderaTors View Emails").invoke
 
       expect(result[:setting_name]).to eq("moderators_view_emails")
 
@@ -29,7 +40,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::SettingContext, if: has_rg? do
     end
 
     it "returns the context for plugin setting" do
-      result = setting_context("ai_bot_enabled").invoke(bot_user, llm)
+      result = setting_context("ai_bot_enabled").invoke
 
       expect(result[:setting_name]).to eq("ai_bot_enabled")
       expect(result[:context]).to include("ai_bot_enabled:")
@@ -37,7 +48,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::SettingContext, if: has_rg? do
 
     context "when the setting does not exist" do
       it "returns an error message" do
-        result = setting_context("this_setting_does_not_exist").invoke(bot_user, llm)
+        result = setting_context("this_setting_does_not_exist").invoke
 
         expect(result[:context]).to eq("This setting does not exist")
       end

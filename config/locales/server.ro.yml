@@ -10,7 +10,7 @@ ro:
       yaxis: "Dată"
   discourse_ai:
     ai_bot:
-      command_summary:
-        search: "Caută"
+      tool_summary:
+        search: "Căutare"
         time: "Oră"
         summarize: "Rezumat"

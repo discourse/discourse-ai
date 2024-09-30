@@ -49,7 +49,7 @@ module DiscourseAi
         def topic_truncation(topic, tokenizer, max_length)
           text = +topic_information(topic)
 
-          if topic&.topic_embed&.embed_content_cache&.present?
+          if topic&.topic_embed&.embed_content_cache.present?
             text << Nokogiri::HTML5.fragment(topic.topic_embed.embed_content_cache).text
             text << "\n\n"
           end
@@ -66,7 +66,7 @@ module DiscourseAi
         def post_truncation(post, tokenizer, max_length)
           text = +topic_information(post.topic)
 
-          if post.is_first_post? && post.topic&.topic_embed&.embed_content_cache&.present?
+          if post.is_first_post? && post.topic&.topic_embed&.embed_content_cache.present?
             text << Nokogiri::HTML5.fragment(post.topic.topic_embed.embed_content_cache).text
           else
             text << Nokogiri::HTML5.fragment(post.cooked).text

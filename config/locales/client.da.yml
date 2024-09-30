@@ -41,14 +41,38 @@ da:
         uploads:
           title: "Overførsler"
           uploading: "Overfører…"
+      tools:
+        back: "Tilbage"
+        name: "Navn"
+        description: "Beskrivelse"
+        summary: "Statistik"
+        save: "Gem"
+        parameter_required: "Obligatoriske"
+        edit: "Rediger"
+        test: "Kør test"
+        delete: "Slet"
+        next:
+          title: "Næste"
+        test_modal:
+          run: "Kør test"
+      llms:
+        save: "Gem"
+        edit: "Rediger"
+        back: "Tilbage"
+        delete: Slet
+        next:
+          title: "Næste"
+        tests:
+          title: "Kør test"
+          success: "Succes!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Tilbage"
-          undo: "Fortryd"
           cancel: "Annuller"
           regen: "Prøv igen"
           confirm: "Bekræft"
-          revert: "Gendan"
+          discard: "Kassér"
         post_options_menu:
           close: "Luk"
           copy: "Kopier"
@@ -58,6 +82,11 @@ da:
           select: "Vælg"
         image_caption:
           save_caption: "Gem"
+          automatic_caption_dialog:
+            confirm: "Aktiver"
       ai_bot:
+        debug_ai_modal:
+          request: "Anmod om medlemskab"
+          response: "Svar"
         share_modal:
           copy: "Kopier"

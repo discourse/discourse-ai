@@ -9,23 +9,13 @@ if defined?(DiscourseAutomation)
 
     triggerables %i[post_created_edited]
 
-    field :system_prompt,
-          component: :message,
-          required: true,
-          validator: ->(input) do
-            if !input.include?("%%POST%%")
-              I18n.t(
-                "discourse_automation.scriptables.llm_triage.system_prompt_missing_post_placeholder",
-              )
-            end
-          end,
-          accepts_placeholders: true
+    field :system_prompt, component: :message, required: false
     field :search_for_text, component: :text, required: true
     field :model,
           component: :choices,
           required: true,
           extra: {
-            content: DiscourseAi::Automation::AVAILABLE_MODELS,
+            content: DiscourseAi::Automation.available_models,
           }
     field :category, component: :category
     field :tags, component: :tags
@@ -53,6 +43,20 @@ if defined?(DiscourseAutomation)
       flag_post = fields.dig("flag_post", "value")
 
       begin
+        RateLimiter.new(
+          Discourse.system_user,
+          "llm_triage_#{post.id}",
+          SiteSetting.ai_automation_max_triage_per_post_per_minute,
+          1.minute,
+        ).performed!
+
+        RateLimiter.new(
+          Discourse.system_user,
+          "llm_triage",
+          SiteSetting.ai_automation_max_triage_per_minute,
+          1.minute,
+        ).performed!
+
         DiscourseAi::Automation::LlmTriage.handle(
           post: post,
           model: model,
@@ -64,9 +68,10 @@ if defined?(DiscourseAutomation)
           canned_reply_user: canned_reply_user,
           hide_topic: hide_topic,
           flag_post: flag_post,
+          automation: self.automation,
         )
       rescue => e
-        Discourse.warn_exception(e, message: "llm_triage: failed to run inference")
+        Discourse.warn_exception(e, message: "llm_triage: skipped triage on post #{post.id}")
       end
     end
   end

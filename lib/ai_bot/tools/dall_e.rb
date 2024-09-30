@@ -17,6 +17,13 @@ module DiscourseAi
                 item_type: "string",
                 required: true,
               },
+              {
+                name: "aspect_ratio",
+                description: "The aspect ratio (optional, square by default)",
+                type: "string",
+                required: false,
+                enum: %w[tall square wide],
+              },
             ],
           }
         end
@@ -29,11 +36,15 @@ module DiscourseAi
           parameters[:prompts]
         end
 
+        def aspect_ratio
+          parameters[:aspect_ratio]
+        end
+
         def chain_next_response?
           false
         end
 
-        def invoke(bot_user, _llm)
+        def invoke
           # max 4 prompts
           max_prompts = prompts.take(4)
           progress = prompts.first
@@ -47,6 +58,13 @@ module DiscourseAi
           api_key = SiteSetting.ai_openai_api_key
           api_url = SiteSetting.ai_openai_dall_e_3_url
 
+          size = "1024x1024"
+          if aspect_ratio == "tall"
+            size = "1024x1792"
+          elsif aspect_ratio == "wide"
+            size = "1792x1024"
+          end
+
           threads = []
           max_prompts.each_with_index do |prompt, index|
             threads << Thread.new(prompt) do |inner_prompt|
@@ -54,6 +72,7 @@ module DiscourseAi
               begin
                 DiscourseAi::Inference::OpenAiImageGenerator.perform!(
                   inner_prompt,
+                  size: size,
                   api_key: api_key,
                   api_url: api_url,
                 )
@@ -88,7 +107,12 @@ module DiscourseAi
                 file.rewind
                 uploads << {
                   prompt: image[:revised_prompt],
-                  upload: UploadCreator.new(file, "image.png").create_for(bot_user.id),
+                  upload:
+                    UploadCreator.new(
+                      file,
+                      "image.png",
+                      for_private_message: context[:private_message],
+                    ).create_for(bot_user.id),
                 }
               end
             end
@@ -99,9 +123,7 @@ module DiscourseAi
             [grid]
             #{
             uploads
-              .map do |item|
-                "![#{item[:prompt].gsub(/\|\'\"/, "")}|512x512, 50%](#{item[:upload].short_url})"
-              end
+              .map { |item| "![#{item[:prompt].gsub(/\|\'\"/, "")}](#{item[:upload].short_url})" }
               .join(" ")
           }
             [/grid]

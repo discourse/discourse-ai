@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::ListCategories do
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  fab!(:llm_model)
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
   before { SiteSetting.ai_bot_enabled = true }
 
@@ -10,7 +11,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::ListCategories do
     it "list available categories" do
       Fabricate(:category, name: "america", posts_year: 999)
 
-      info = described_class.new({}).invoke(bot_user, llm).to_s
+      info = described_class.new({}, bot_user: bot_user, llm: llm).invoke.to_s
 
       expect(info).to include("america")
       expect(info).to include("999")

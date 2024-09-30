@@ -10,7 +10,6 @@ ru:
       llm_triage:
         title: Сортировка публикаций с помощью AI
         description: "Сортировка публикаций с использованием большой языковой модели"
-        system_prompt_missing_post_placeholder: "Системная подсказка должна содержать плейсхолдер для публикации: %%POST%%"
       llm_report:
         title: Периодический отчет с использованием AI
         description: "Периодический отчет на основе большой языковой модели"
@@ -43,25 +42,22 @@ ru:
     ai_nsfw_flag_threshold_porn: "Пороговое значение, при котором изображение, отнесенное к категории «порно», определяется как NSFW-контент."
     ai_nsfw_flag_threshold_sexy: "Пороговое значение, при котором изображение, отнесенное к категории «сексуальное», определяется как NSFW-контент."
     ai_nsfw_models: "Модели, используемые для оценки NSFW-контента."
-    ai_openai_gpt35_url: "Специальный URL-адрес для запросов Chat Completion к GPT 3.5 (для поддержки Azure)."
-    ai_openai_gpt35_16k_url: "Специальный URL-адрес для запросов Chat Completion к GPT 3.5 16k (для поддержки Azure)."
-    ai_openai_gpt4_url: "Специальный URL-адрес для запросов Chat Completion к GPT 4 (для поддержки Azure)."
-    ai_openai_gpt4_32k_url: "Специальный URL-адрес для запросов Chat Completion к GPT 4 32k (для поддержки Azure)."
-    ai_openai_gpt4_turbo_url: "Специальный URL-адрес для запросов Chat Completion к GPT 4 Turbo (для поддержки Azure)."
-    ai_openai_dall_e_3_url: "Специальный URL-адрес для генерации изображений для DALL-E 3 (для поддержки Azure)."
-    ai_openai_organization: "(Необязательно, оставьте поле пустым, чтобы опустить) Идентификатор организации, используемый для API OpenAI. Передан с использованием заголовка OpenAI-Organization."
     ai_openai_embeddings_url: "Специальный URL-адрес для API векторных представлений OpenAI (в случае с Azure это может быть https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
-    ai_openai_api_key: "API-ключ для API OpenAI"
-    ai_anthropic_api_key: "API-ключ для API Anthropic"
-    ai_hugging_face_api_url: "Специальный URL-адрес для получения вывода от LLM с открытым исходным кодом. Совместимо с https://github.com/huggingface/text-generation-inference"
-    composer_ai_helper_enabled: "Включить AI-помощник для редактора."
-    ai_helper_allowed_groups: "Для пользователей в этих группах будет отображаться кнопка AI-помощника в редакторе."
+    ai_openai_api_key: "API-ключ для API OpenAI. Используется ТОЛЬКО для эмбеддингов и Dall-E. Для GPT используйте вкладку конфигурации LLM"
+    ai_anthropic_native_tool_call_models: "Список моделей, которые будут использовать вызовы собственных инструментов, а не устаревшие инструменты на основе XML."
+    ai_hugging_face_tei_endpoint: URL-адрес, по которому работает API для вывода текстовых эмбеддингов Hugging Face
+    ai_hugging_face_tei_api_key: Ключ API для вывода текстовых эмбеддингов Hugging Face
+    composer_ai_helper_allowed_groups: "Для пользователей в этих группах будет отображаться кнопка AI-помощника в редакторе."
     ai_helper_allowed_in_pm: "Включить AI-помощник для редактора в личных сообщениях."
     ai_helper_model: "Модели, используемые для AI-помощника."
     ai_helper_custom_prompts_allowed_groups: "Пользователи этих групп увидят опцию пользовательского запроса в AI- помощнике."
     ai_helper_automatic_chat_thread_title_delay: "Задержка в минутах, прежде чем AI-помощник автоматически установит заголовок темы чата."
     ai_helper_automatic_chat_thread_title: "Автоматически устанавливать заголовки тем чата в зависимости от содержимого темы."
     ai_helper_illustrate_post_model: "Модель, которая будет использоваться для функции иллюстрации публикации AI-помощника для редактора"
+    ai_helper_enabled_features: "Выберите функции, которые нужно включить в AI-помощнике."
+    post_ai_helper_allowed_groups: "Группы пользователей, которым разрешен доступ к функциям AI-помощника в публикациях"
+    ai_helper_image_caption_model: "Выберите модель, которая будет использоваться для создания подписей к изображениям"
+    ai_auto_image_caption_allowed_groups: "Пользователи в этих группах могут включать автоматическое добавление подписей к изображениям."
     ai_embeddings_enabled: "Включить модуль векторных представлений."
     ai_embeddings_discourse_service_api_endpoint: "URL-адрес, по которому работает API для модуля векторных представлений"
     ai_embeddings_discourse_service_api_key: "API-ключ для API векторных представлений"
@@ -72,25 +68,25 @@ ru:
     ai_embeddings_backfill_batch_size: "Количество векторных представлений для обратного заполнения каждые 15 минут."
     ai_embeddings_pg_connection_string: "Строка подключения PostgreSQL для модуля векторных представлений. Необходимо включить расширение «pgvector» и создать таблицы. Подробнее см. в документации."
     ai_embeddings_semantic_search_enabled: "Включить полностраничный семантический поиск."
+    ai_embeddings_semantic_quick_search_enabled: "Включить опцию семантического поиска во всплывающем меню поиска."
     ai_embeddings_semantic_related_include_closed_topics: "Включать в результаты семантического поиска закрытые темы"
     ai_embeddings_semantic_search_hyde_model: "Модель, используемая для расширения ключевых слов, чтобы получить лучшие результаты во время семантического поиска"
-    ai_summarization_discourse_service_api_endpoint: "URL-адрес, по которому работает API сводок Discourse."
-    ai_summarization_discourse_service_api_key: "API-ключ для API сводок Discourse."
+    ai_embeddings_per_post_enabled: Генерировать эмбеддинги для каждой публикации
+    ai_summarization_enabled: "Включить модуль сводки по теме."
+    ai_summarization_model: "Модель, используемая для формирования сводки."
+    ai_custom_summarization_allowed_groups: "Группы, которым разрешено делать новые сводки."
     ai_bot_enabled: "Включить модуль AI-бота."
     ai_bot_enable_chat_warning: "Показывать предупреждение при запуске личного чата. Можно переопределить путем редактирования строки перевода: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Если у GPT-бота есть доступ к личным сообщениям, он будет отвечать участникам указанных групп."
-    ai_bot_enabled_chat_bots: "Доступные модели для использования в качестве AI-бота"
+    ai_bot_debugging_allowed_groups: "Разрешить этим группам видеть кнопку отладки в публикациях, которая отображает необработанный запрос и ответ AI."
+    ai_bot_public_sharing_allowed_groups: "Разрешить этим группам делиться личными сообщениями AI с общественностью по уникальной общедоступной ссылке. Примечание: если ваш сайт требует входа, для доступа также потребуется вход."
     ai_bot_add_to_header: "Кнопка в заголовке для начала личного разговора с AI-ботом"
+    ai_bot_github_access_token: "Токен доступа к GitHub для использования с инструментами GitHub AI (требуется для поддержки поиска)"
     ai_stability_api_key: "API-ключ для API stability.ai"
     ai_stability_engine: "Движок генерации изображений для использования в API stability.ai"
     ai_stability_api_url: "URL-адрес для API stability.ai"
     ai_google_custom_search_api_key: "API-ключ для API программируемого поиска Google — см. https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX для API программируемого поиска Google"
-    ai_bedrock_access_key_id: "Идентификатор ключа доступа к API Bedrock"
-    ai_bedrock_secret_access_key: "Секретный ключ доступа к API Bedrock"
-    ai_bedrock_region: "Регион AWS для API Bedrock"
-    ai_cloudflare_workers_account_id: "Идентификатор аккаунта Cloudflare для API Cloudflare Workers AI"
-    ai_cloudflare_workers_api_token: "Токен API для API Cloudflare Workers AI"
   reviewables:
     reasons:
       flagged_by_toxicity: Плагин AI определил этот контент как токсичный и отправил жалобу.
@@ -108,11 +104,23 @@ ru:
       title: "Эмоция публикации"
       description: "Количество публикаций, отнесенных к одной из следующих эмоций, сгруппированных по уровню доверия автора."
   discourse_ai:
+    unknown_model: "Неизвестная модель AI"
+    tools:
+      custom_name: "%{name} (пользовательский)"
+      presets:
+        browse_web_jina:
+          name: "Просматривать веб-страницы с помощью jina.ai"
+        exchange_rate:
+          name: "Обменный курс"
+        stock_quote:
+          name: "Котировка акций (AlphaVantage)"
+        empty_tool:
+          name: "Начать с нуля..."
     ai_helper:
       errors:
         completion_request_failed: "При попытке дать рекомендации произошла ошибка. Попробуйте еще раз."
       prompts:
-        translate: Перевести на английский
+        translate: Перевести на %{language}
         generate_titles: Предложить названия для темы
         proofread: Вычитать текст
         markdown_table: Сгенерировать таблицу в формате Markdown
@@ -123,10 +131,27 @@ ru:
         attribution:
           stable_diffusion_xl: "Изображение от Stable Diffusion XL"
           dall_e_3: "Изображение от DALL-E 3"
+      image_caption:
+        attribution: "Подпись к изображению от AI"
+    share_ai:
+      read_more: "Прочитать полное содержимое"
+      onebox_title: "Разговор AI с пользователем %{llm_name}"
+      formatted_excerpt: "Разговор AI с пользователем %{llm_name}:\n %{excerpt}"
+      title: "%{title} — разговор AI — %{site_name}"
+      errors:
+        not_allowed: "Вы не можете поделиться этой темой"
+        other_people_in_pm: "Личные сообщения с другими людьми нельзя делать общедоступными"
+        other_content_in_pm: "Личные сообщения, содержащие публикации других людей, нельзя делать общедоступными"
+        failed_to_share: "Не удалось поделиться разговором"
+        conversation_deleted: "Общий доступ к разговору успешно удален"
     ai_bot:
       personas:
+        default_llm_required: "Для включения чата требуется модель LLM по умолчанию"
         cannot_delete_system_persona: "Системные персоны нельзя удалить, вместо этого отключите их"
-        cannot_edit_system_persona: "Системные персоны можно только переименовать, вы не можете редактировать команды или системную подсказку, вместо этого отключите их и создайте копию"
+        cannot_edit_system_persona: "Системные персоны можно только переименовать, вы не можете редактировать инструменты или системный запрос, вместо этого отключите их и создайте копию"
+        github_helper:
+          name: "Помощник по GitHub"
+          description: "AI-бот, специализирующийся на оказании помощи в решении задач и вопросов, связанных с GitHub"
         general:
           name: Помощник по форуму
           description: "AI-бот общего назначения, способный выполнять различные задачи."
@@ -148,20 +173,36 @@ ru:
         dall_e3:
           name: "DALL-E 3"
           description: "AI-бот, специализирующийся на генерации изображений с использованием DALL-E 3"
+        discourse_helper:
+          name: "Помощник по Discourse"
+          description: "AI-бот, специализирующийся на решении задач, связанных с Discourse"
       topic_not_found: "Сводка недоступна: тема не найдена!"
       summarizing: "Аналитик темы"
       searching: "Поиск: '%{query}'"
-      command_options:
+      tool_options:
+        read:
+          read_private:
+            name: "Читать приватные темы"
+            description: "Разрешить доступ ко всем темам, к которым есть доступ у пользователя (по умолчанию включены только публичные темы)"
         search:
+          search_private:
+            name: "Поиск по приватным темам"
+            description: "Включить в результаты поиска все темы, к которым есть доступ у пользователя (по умолчанию включены только публичные темы)"
           max_results:
             name: "Максимальное количество результатов"
             description: "Максимальное количество результатов, включаемых в поиск, — если будут использоваться пустые правила по умолчанию, а количество будет масштабироваться в зависимости от используемой модели. Максимальное значение — 100."
           base_query:
             name: "Базовый поисковый запрос"
             description: "Базовый запрос, используемый при поиске. Пример: '#urgent' добавит '#urgent' к поисковому запросу и будет включать только темы со срочной категорией или тегом."
-      command_summary:
+      tool_summary:
+        web_browser: "Просмотр веб-страниц"
+        github_search_files: "Поиск файлов на GitHub"
+        github_search_code: "Поиск кода на GitHub"
+        github_file_content: "Контент файла на GitHub"
+        github_pull_request_diff: "Сравнение изменений в запросе на вытягивание на GitHub"
+        random_picker: "Случайный выбор"
         categories: "Вывод списка категорий"
-        search: "Поиск"
+        search: "Искать"
         tags: "Вывод списка тегов"
         time: "Время"
         summarize: "Сводка"
@@ -172,20 +213,36 @@ ru:
         schema: "Найти схему базы данных"
         search_settings: "Поиск настроек сайта"
         dall_e: "Сгенерировать изображение"
-      command_help:
+        search_meta_discourse: "Поиск на Meta Discourse"
+        javascript_evaluator: "Оценить JavaScript"
+      tool_help:
+        web_browser: "Просмотр веб-страницы с помощью AI-бота"
+        github_search_code: "Поиск кода в репозитории GitHub"
+        github_search_files: "Поиск файлов в репозитории GitHub"
+        github_file_content: "Извлечение контента файлов из репозитория на GitHub"
+        github_pull_request_diff: "Получить сравнение изменений в запросе на вытягивание на GitHub"
+        random_picker: "Выбирает случайное число или случайный элемент списка"
         categories: "Вывод всех общедоступных категорий на форуме"
         search: "Поиск по всем общедоступным темам на форуме"
         tags: "Вывод всех тегов на форуме"
         time: "Определить время в разных часовых поясах"
-        summarize: "Краткое изложение темы"
+        summary: "Сводка по теме"
         image: "Генерировать изображение с помощью Stable Diffusion"
         google: "Поиск в Google по запросу"
         read: "Читать общедоступную тему на форуме"
-        setting_context: "Найти контекст настроек сайта"
+        setting_context: "Поиск контекста настроек сайта"
         schema: "Найти схему базы данных"
-        search_settings: "Настройки поиска по сайту"
+        search_settings: "Поиск по настройкам сайта"
         dall_e: "Создать изображение с помощью DALL-E 3"
-      command_description:
+        search_meta_discourse: "Поиск на Meta Discourse"
+        javascript_evaluator: "Оценить JavaScript"
+      tool_description:
+        web_browser: "Чтение: <a href='%{url}'>%{url}</a>"
+        github_search_files: "Выполнен поиск «%{keywords}» в %{repo}/%{branch}"
+        github_search_code: "Выполнен поиск «%{query}» в %{repo}"
+        github_pull_request_diff: "<a href='%{url}'>%{repo} %{pull_id}</a>"
+        github_file_content: "Получен контент файла %{file_paths} из репозитория %{repo_name}@%{branch}"
+        random_picker: "Выбор из %{options}, выбрано: %{result}"
         read: "Чтение: <a href='%{url}'>%{title}</a>"
         time: "Время по часовому поясу %{timezone} — %{time}"
         summarize: "Получена сводка: <a href='%{url}'>%{title}</a>"
@@ -195,7 +252,7 @@ ru:
           one: "Найдена %{count} категория"
           few: "Найдены %{count} категории"
           many: "Найдено %{count} категорий"
-          other: "Найдены %{count} категории"
+          other: "Найдено %{count} категории"
         tags:
           one: "Найден %{count} тег"
           few: "Найдено %{count} тега"
@@ -205,17 +262,17 @@ ru:
           one: "Найден %{count} <a href='%{url}'>результат</a> по запросу «%{query}»"
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
           many: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
-          other: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
+          other: "Найдено %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
         search_meta_discourse:
           one: "Найден %{count} <a href='%{url}'>результат</a> по запросу «%{query}»"
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
           many: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
-          other: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
+          other: "Найдено %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
         google:
           one: "Найден %{count} <a href='%{url}'>результат</a> по запросу «%{query}»"
           few: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
           many: "Найдено %{count} <a href='%{url}'>результатов</a> по запросу «%{query}»"
-          other: "Найдены %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
+          other: "Найдено %{count} <a href='%{url}'>результата</a> по запросу «%{query}»"
         setting_context: "Чтение контекста для: %{setting_name}"
         schema: "%{tables}"
         search_settings:
@@ -229,18 +286,48 @@ ru:
         few: "Сначала настройте следующие параметры: %{settings}"
         many: "Сначала настройте следующие параметры: %{settings}"
         other: "Сначала настройте следующие параметры: %{settings}"
+      chat:
+        no_targets: "За выбранный период сообщений не было."
     sentiment:
       reports:
         overall_sentiment:
           positive: "Позитивное"
           negative: "Негативное"
         post_emotion:
-          tl_01: "Уровни доверия 0–1"
-          tl_234: "Уровни доверия 2+"
-          sadness: "Грусть"
-          surprise: "Удивление"
-          neutral: "Нейтральность"
-          fear: "Страх"
-          anger: "Гнев"
-          joy: "Радость"
-          disgust: "Отвращение"
+          sadness: "Грусть \U0001F622"
+          surprise: "Удивление \U0001F631"
+          neutral: "Нейтральность \U0001F610"
+          fear: "Страх \U0001F628"
+          anger: "Гнев \U0001F621"
+          joy: "Радость \U0001F600"
+          disgust: "Отвращение \U0001F922"
+    llm:
+      configuration:
+        disable_module_first: "Сначала вам нужно отключить %{setting}."
+        set_llm_first: "Сначала задайте %{setting}."
+        model_unreachable: "Мы не смогли получить ответ от этой модели. Проверьте настройки."
+      endpoints:
+        not_configured: "%{display_name} (не настроено)"
+        configuration_hint:
+          one: "Убедитесь, что настроен параметр `%{settings}`."
+          few: "Убедитесь, что настроены параметры: `%{settings}`."
+          many: "Убедитесь, что настроены параметры: `%{settings}`."
+          other: "Убедитесь, что настроены параметры: `%{settings}`."
+      delete_failed:
+        one: "Мы не смогли удалить эту модель, потому что ее использует %{settings}. Обновите настройки и попробуйте еще раз."
+        few: "Мы не смогли удалить эту модель, потому что ее используют %{settings}. Обновите настройки и попробуйте еще раз."
+        many: "Мы не смогли удалить эту модель, потому что ее используют %{settings}. Обновите настройки и попробуйте еще раз."
+        other: "Мы не смогли удалить эту модель, потому что ее используют %{settings}. Обновите настройки и попробуйте еще раз."
+    embeddings:
+      configuration:
+        disable_embeddings: "Сначала вам необходимо отключить настройку 'ai embeddings enabled'."
+        choose_model: "Сначала задайте 'ai embeddings model'."
+        model_unreachable: "Не удалось создать тестовый эмбеддинг с этой моделью. Проверьте правильность настроек."
+        hint:
+          one: "Убедитесь, что настроен параметр `%{settings}`."
+          few: "Убедитесь, что параметры нужного вам поставщика настроены. Варианты: %{settings}"
+          many: "Убедитесь, что параметры нужного вам поставщика настроены. Варианты: %{settings}"
+          other: "Убедитесь, что параметры нужного вам поставщика настроены. Варианты: %{settings}"
+    llm_models:
+      missing_provider_param: "Параметр %{param} не может быть пустым"
+      bedrock_invalid_url: "Заполните все поля, чтобы установить связь с этой моделью."

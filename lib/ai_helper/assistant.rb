@@ -11,7 +11,7 @@ module DiscourseAi
         prompt_cache.flush!
       end
 
-      def available_prompts
+      def available_prompts(user)
         key = "prompt_cache_#{I18n.locale}"
         self
           .class
@@ -27,9 +27,21 @@ module DiscourseAi
 
             prompts =
               prompts.map do |prompt|
-                translation =
-                  I18n.t("discourse_ai.ai_helper.prompts.#{prompt.name}", default: nil) ||
-                    prompt.translated_name || prompt.name
+                if prompt.name == "translate"
+                  locale = user.effective_locale
+                  locale_hash =
+                    LocaleSiteSetting.language_names[locale] ||
+                      LocaleSiteSetting.language_names[locale.split("_")[0]]
+                  translation =
+                    I18n.t(
+                      "discourse_ai.ai_helper.prompts.translate",
+                      language: locale_hash["nativeName"],
+                    ) || prompt.translated_name || prompt.name
+                else
+                  translation =
+                    I18n.t("discourse_ai.ai_helper.prompts.#{prompt.name}", default: nil) ||
+                      prompt.translated_name || prompt.name
+                end
 
                 {
                   id: prompt.id,
@@ -44,9 +56,9 @@ module DiscourseAi
           end
       end
 
-      def custom_locale_instructions(user = nil)
+      def custom_locale_instructions(user = nil, force_default_locale)
         locale = SiteSetting.default_locale
-        locale = user.locale || SiteSetting.default_locale if SiteSetting.allow_user_locale && user
+        locale = user.effective_locale if !force_default_locale
         locale_hash = LocaleSiteSetting.language_names[locale]
 
         if locale != "en" && locale_hash
@@ -57,15 +69,17 @@ module DiscourseAi
         end
       end
 
-      def localize_prompt!(prompt, user = nil)
-        locale_instructions = custom_locale_instructions(user)
+      def localize_prompt!(prompt, user = nil, force_default_locale)
+        locale_instructions = custom_locale_instructions(user, force_default_locale)
         if locale_instructions
           prompt.messages[0][:content] = prompt.messages[0][:content] + locale_instructions
         end
 
         if prompt.messages[0][:content].include?("%LANGUAGE%")
           locale = SiteSetting.default_locale
-          locale = user.locale if SiteSetting.allow_user_locale && user&.locale.present?
+
+          locale = user.effective_locale if user && !force_default_locale
+
           locale_hash = LocaleSiteSetting.language_names[locale]
 
           prompt.messages[0][:content] = prompt.messages[0][:content].gsub(
@@ -75,22 +89,23 @@ module DiscourseAi
         end
       end
 
-      def generate_prompt(completion_prompt, input, user, &block)
+      def generate_prompt(completion_prompt, input, user, force_default_locale = false, &block)
         llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
         prompt = completion_prompt.messages_with_input(input)
-        localize_prompt!(prompt, user)
+        localize_prompt!(prompt, user, force_default_locale)
 
         llm.generate(
           prompt,
           user: user,
           temperature: completion_prompt.temperature,
           stop_sequences: completion_prompt.stop_sequences,
+          feature_name: "ai_helper",
           &block
         )
       end
 
-      def generate_and_send_prompt(completion_prompt, input, user)
-        completion_result = generate_prompt(completion_prompt, input, user)
+      def generate_and_send_prompt(completion_prompt, input, user, force_default_locale = false)
+        completion_result = generate_prompt(completion_prompt, input, user, force_default_locale)
         result = { type: completion_prompt.prompt_type }
 
         result[:suggestions] = (
@@ -127,44 +142,26 @@ module DiscourseAi
         end
       end
 
-      def generate_image_caption(image_url, user)
-        if SiteSetting.ai_helper_image_caption_model == "llava"
-          parameters = {
-            input: {
-              image: image_url,
-              top_p: 1,
-              max_tokens: 1024,
-              temperature: 0.2,
-              prompt: "Please describe this image in a single sentence",
-            },
-          }
-
-          ::DiscourseAi::Inference::Llava.perform!(parameters).dig(:output).join
-        else
-          prompt =
-            DiscourseAi::Completions::Prompt.new(
-              messages: [
-                {
-                  type: :user,
-                  content: [
-                    {
-                      type: "text",
-                      text:
-                        "Describe this image in a single sentence#{custom_locale_instructions(user)}",
-                    },
-                    { type: "image_url", image_url: image_url },
-                  ],
-                },
-              ],
-              skip_validations: true,
-            )
-
-          DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
-            prompt,
-            user: Discourse.system_user,
-            max_tokens: 1024,
+      def generate_image_caption(upload, user)
+        prompt =
+          DiscourseAi::Completions::Prompt.new(
+            "You are a bot specializing in image captioning.",
+            messages: [
+              {
+                type: :user,
+                content:
+                  "Describe this image in a single sentence#{custom_locale_instructions(user)}",
+                upload_ids: [upload.id],
+              },
+            ],
           )
-        end
+
+        DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
+          prompt,
+          user: user,
+          max_tokens: 1024,
+          feature_name: "image_caption",
+        )
       end
 
       private

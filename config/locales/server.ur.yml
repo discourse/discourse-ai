@@ -10,11 +10,11 @@ ur:
       yaxis: "تاریخ"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "تلاش کریں"
         time: "وقت"
         summarize: "خلاصہ"
     sentiment:
       reports:
         post_emotion:
-          neutral: "نیوٹرل"
+          neutral: "نیوٹرل \U0001F610"

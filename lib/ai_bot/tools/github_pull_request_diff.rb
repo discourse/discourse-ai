@@ -43,7 +43,7 @@ module DiscourseAi
           @url
         end
 
-        def invoke(_bot_user, llm)
+        def invoke
           api_url = "https://api.github.com/repos/#{repo}/pulls/#{pull_id}"
           @url = "https://github.com/#{repo}/pull/#{pull_id}"
 

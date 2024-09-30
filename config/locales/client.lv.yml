@@ -41,13 +41,33 @@ lv:
         uploads:
           title: "Augšupielādes"
           uploading: "Notiek ielāde..."
+      tools:
+        back: "Atpakaļ"
+        name: "Vārds"
+        description: "Apraksts"
+        summary: "Kopsavilkums"
+        save: "Saglabāt"
+        parameter_required: "Nepieciešams"
+        edit: "Rediģēt"
+        delete: "Dzēst"
+        next:
+          title: "Nākamais"
+      llms:
+        save: "Saglabāt"
+        edit: "Rediģēt"
+        back: "Atpakaļ"
+        delete: Dzēst
+        next:
+          title: "Nākamais"
+        tests:
+          success: "Veiksmīgi!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Atpakaļ"
-          undo: "Atsaukt"
           cancel: "Atcelt"
           regen: "Mēģināt vēlreiz"
-          revert: "Atgriezt"
+          discard: "Izmest"
         post_options_menu:
           close: "Aizvērt"
           copy: "Kopēt"
@@ -55,6 +75,11 @@ lv:
           cancel: "Atcelt"
         image_caption:
           save_caption: "Saglabāt"
+          automatic_caption_dialog:
+            confirm: "Ieslēgt"
       ai_bot:
+        debug_ai_modal:
+          request: "Pieprasījums"
+          response: "Atbilde"
         share_modal:
           copy: "Kopēt"

@@ -10,7 +10,6 @@ pl_PL:
       llm_triage:
         title: Oceniaj posty za pomocą sztucznej inteligencji
         description: "Oceniaj posty przy użyciu dużego modelu językowego"
-        system_prompt_missing_post_placeholder: "Monit systemowy musi zawierać symbol zastępczy dla postu: %%POST%%"
       llm_report:
         title: Raport okresowy z wykorzystaniem AI
         description: "Okresowy raport oparty na dużym modelu językowym"
@@ -43,20 +42,8 @@ pl_PL:
     ai_nsfw_flag_threshold_porn: "Próg uznania obrazu zaklasyfikowanego jako pornograficzny, aby został uznany za NSFW."
     ai_nsfw_flag_threshold_sexy: "Próg uznania obrazu zaklasyfikowanego jako seksowny, aby został uznany za NSFW."
     ai_nsfw_models: "Modele używane do wnioskowania NSFW."
-    ai_openai_gpt35_url: "Niestandardowy adres URL używany do uzupełniania czatu GPT 3.5. (dla wsparcia platformy Azure)"
-    ai_openai_gpt35_16k_url: "Niestandardowy adres URL używany do zakończenia czatu GPT 3.5 16k (dla wsparcia Azure)"
-    ai_openai_gpt4_url: "Niestandardowy adres URL używany do uzupełniania czatu GPT 4. (dla wsparcia platformy Azure)"
-    ai_openai_gpt4_32k_url: "Niestandardowy adres URL używany do zakończenia czatu GPT 4 32k (dla wsparcia Azure)"
-    ai_openai_gpt4_turbo_url: "Niestandardowy adres URL używany do kończenia czatu GPT 4 Turbo. (dla wsparcia Azure)"
-    ai_openai_dall_e_3_url: "Niestandardowy adres URL używany do generowania obrazu DALL-E 3. (dla wsparcia Azure)"
-    ai_openai_organization: "(Opcjonalnie, pozostaw puste, aby pominąć) Identyfikator organizacji używany w interfejsie API OpenAI. Przekazywany przy użyciu nagłówka OpenAI-Organization."
     ai_openai_embeddings_url: "Niestandardowy adres URL używany w interfejsie API osadzania OpenAI. (w przypadku Azure może to być: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "Klucz dla API OpenAI"
-    ai_anthropic_api_key: "Klucz dla Anthropic API"
-    ai_hugging_face_api_url: "Niestandardowy adres URL używany do wnioskowania OpenSource LLM. Kompatybilny z https://github.com/huggingface/text-generation-inference"
-    ai_hugging_face_api_key: Klucz API dla Hugging Face API
-    composer_ai_helper_enabled: "Włącz pomocnika AI kompozytora."
-    ai_helper_allowed_groups: "Użytkownicy w tych grupach zobaczą przycisk pomocy AI w kompozytorze."
+    composer_ai_helper_allowed_groups: "Użytkownicy w tych grupach zobaczą przycisk pomocy AI w kompozytorze."
     ai_helper_allowed_in_pm: "Włącz asystenta AI kompozytora w PW."
     ai_helper_model: "Model do użycia dla pomocnika AI."
     ai_helper_custom_prompts_allowed_groups: "Użytkownicy w tych grupach zobaczą opcję niestandardowego monitu w pomocniku AI."
@@ -74,23 +61,15 @@ pl_PL:
     ai_embeddings_semantic_search_enabled: "Włącz wyszukiwanie semantyczne na całej stronie."
     ai_embeddings_semantic_related_include_closed_topics: "Uwzględnij zamknięte tematy w semantycznych wynikach wyszukiwania"
     ai_embeddings_semantic_search_hyde_model: "Model używany do rozwijania słów kluczowych w celu uzyskania lepszych wyników podczas wyszukiwania semantycznego"
-    ai_summarization_discourse_service_api_endpoint: "Adres URL, pod którym działa interfejs API podsumowania Discourse."
-    ai_summarization_discourse_service_api_key: "Klucz API dla interfejsu API podsumowania Discourse."
     ai_bot_enabled: "Włącz moduł bota AI."
     ai_bot_enable_chat_warning: "Wyświetl ostrzeżenie po zainicjowaniu czatu PW. Można je zastąpić, edytując ciąg tłumaczenia: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Gdy bot GPT uzyska dostęp do PW, odpowie członkom tych grup."
-    ai_bot_enabled_chat_bots: "Dostępne modele do działania jako bot AI"
     ai_bot_add_to_header: "Wyświetl przycisk w nagłówku, aby rozpocząć PW z botem AI"
     ai_stability_api_key: "Klucz dla API stability.ai"
     ai_stability_engine: "Silnik generowania obrazów do wykorzystania w stability.ai API"
     ai_stability_api_url: "Adres URL interfejsu API stability.ai"
     ai_google_custom_search_api_key: "Klucz dla Google Custom Search API, zobacz: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX dla Google Custom Search API"
-    ai_bedrock_access_key_id: "Identyfikator klucza dostępu dla API Bedrock"
-    ai_bedrock_secret_access_key: "Tajny klucz dostępu do API Bedrock"
-    ai_bedrock_region: "Region AWS dla API Bedrock"
-    ai_cloudflare_workers_account_id: "ID konta Cloudflare dla Cloudflare Workers AI API"
-    ai_cloudflare_workers_api_token: "Token API dla Cloudflare Workers AI API"
   reviewables:
     reasons:
       flagged_by_toxicity: Wtyczka AI oznaczyła to po sklasyfikowaniu jako toksyczne.
@@ -113,7 +92,6 @@ pl_PL:
       errors:
         completion_request_failed: "Coś poszło nie tak podczas próby przedstawienia sugestii. Spróbuj ponownie."
       prompts:
-        translate: Przetłumacz na angielski
         generate_titles: Zaproponuj tytuły tematu
         proofread: Popraw tekst
         markdown_table: Wygeneruj tabelę Markdown
@@ -125,7 +103,6 @@ pl_PL:
     ai_bot:
       personas:
         cannot_delete_system_persona: "Person systemowych nie można usunąć, zamiast tego wyłącz je."
-        cannot_edit_system_persona: "Personom systemowym można zmieniać tylko nazwy, nie możesz edytować poleceń ani monitu systemowego, zamiast tego wyłącz je i utwórz kopię."
         general:
           name: Pomocnik forumowy
           description: "Bot AI ogólnego przeznaczenia zdolny do wykonywania różnych zadań"
@@ -150,7 +127,7 @@ pl_PL:
       topic_not_found: "Podsumowanie niedostępne, nie znaleziono tematu!"
       summarizing: "Podsumowanie tematu"
       searching: "Wyszukiwanie: '%{query}'"
-      command_options:
+      tool_options:
         search:
           max_results:
             name: "Maksymalna liczba wyników"
@@ -158,7 +135,7 @@ pl_PL:
           base_query:
             name: "Podstawowe zapytanie wyszukiwania"
             description: "Podstawowe zapytanie używane podczas wyszukiwania. Przykład: '#pilne' spowoduje dodanie '#pilne' do zapytania wyszukiwania i uwzględnienie tylko tematów z kategorią lub tagiem pilne."
-      command_summary:
+      tool_summary:
         random_picker: "Losowy selektor"
         categories: "Wymień kategorie"
         search: "Szukaj"
@@ -172,21 +149,21 @@ pl_PL:
         schema: "Wyszukaj schemat bazy danych"
         search_settings: "Wyszukiwanie ustawień witryny"
         dall_e: "Wygeneruj obraz"
-      command_help:
+      tool_help:
         random_picker: "Wybierz losową liczbę lub losowy element listy"
         categories: "Wyświetl wszystkie publicznie widoczne kategorie na forum"
         search: "Przeszukaj wszystkie publiczne tematy na forum"
         tags: "Wymień wszystkie tagi na forum"
         time: "Znajdź czas w różnych strefach czasowych"
-        summarize: "Podsumuj temat"
+        summary: "Podsumuj temat"
         image: "Wygeneruj obraz przy użyciu Stable Diffusion"
         google: "Wyszukaj zapytanie w Google"
         read: "Przeczytaj temat publiczny na forum"
-        setting_context: "Sprawdź kontekst ustawień witryny"
+        setting_context: "Wyszukaj kontekst ustawienia witryny"
         schema: "Wyszukaj schemat bazy danych"
         search_settings: "Wyszukaj ustawienia witryny"
         dall_e: "Wygeneruj obraz za pomocą DALL-E 3"
-      command_description:
+      tool_description:
         random_picker: "Wybieranie z %{options}, wybrane: %{result}"
         read: "Czytanie: <a href='%{url}'>%{title}</a>"
         time: "Czas w %{timezone} wynosi %{time}"
@@ -204,7 +181,7 @@ pl_PL:
           many: "Znaleziono %{count} tagów"
           other: "Znaleziono %{count} tagów"
         search:
-          one: "Znaleziono %{count} <a href='%{url}'>wynik</a> dla '%{query}'"
+          one: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           few: "Znaleziono %{count} <a href='%{url}'>wyniki</a> dla '%{query}'"
           many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
@@ -214,7 +191,7 @@ pl_PL:
           many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
         google:
-          one: "Znaleziono %{count} <a href='%{url}'>wynik</a> dla '%{query}'"
+          one: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           few: "Znaleziono %{count} <a href='%{url}'>wyniki</a> dla '%{query}'"
           many: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
           other: "Znaleziono %{count} <a href='%{url}'>wyników</a> dla '%{query}'"
@@ -231,21 +208,20 @@ pl_PL:
         few: "Najpierw skonfiguruj ustawienia: %{settings}"
         many: "Najpierw skonfiguruj ustawienia: %{settings}"
         other: "Najpierw skonfiguruj ustawienia: %{settings}"
+      chat:
+        no_targets: "W wybranym okresie nie było żadnych wiadomości."
     sentiment:
       reports:
         overall_sentiment:
           positive: "Pozytywne"
           negative: "Negatywne"
         post_emotion:
-          tl_01: "Poziomy zaufania 0-1"
-          tl_234: "Poziomy zaufania 2+"
-          sadness: "Smutek"
-          surprise: "Niespodzianka"
-          neutral: "Neutralne"
-          fear: "Strach"
-          anger: "Gniew"
-          joy: "Radość"
-          disgust: "Niesmak"
+          sadness: "Smutek \U0001F622"
+          surprise: "Niespodzianka \U0001F631"
+          neutral: "Neutralne \U0001F610"
+          fear: "Strach \U0001F628"
+          anger: "Gniew \U0001F621"
+          disgust: "Niesmak \U0001F922"
     llm:
       configuration:
         disable_module_first: "Najpierw musisz wyłączyć %{setting}."

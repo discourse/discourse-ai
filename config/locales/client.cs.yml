@@ -41,14 +41,38 @@ cs:
         uploads:
           title: "Nahrané soubory"
           uploading: "Nahrává se..."
+      tools:
+        back: "Zpět"
+        name: "Jméno"
+        description: "Popis"
+        summary: "Souhrn"
+        save: "Uložit"
+        parameter_required: "Nezbytnosti"
+        edit: "Upravit"
+        test: "Spustit test"
+        delete: "Smazat"
+        next:
+          title: "Další"
+        test_modal:
+          run: "Spustit test"
+      llms:
+        save: "Uložit"
+        edit: "Upravit"
+        back: "Zpět"
+        delete: Smazat
+        next:
+          title: "Další"
+        tests:
+          title: "Spustit test"
+          success: "Úspěch!"
+        providers:
+          google: "Google"
       ai_helper:
         context_menu:
-          back: "Zpět"
-          undo: "Zpět"
           cancel: "Zrušit"
           regen: "Zkusit znovu"
           confirm: "Potvrdit"
-          revert: "Vrátit"
+          discard: "Zahodit"
         post_options_menu:
           close: "Zavřít"
           copy: "Kopírovat"
@@ -59,6 +83,14 @@ cs:
           selected: "Vybrané"
         image_caption:
           save_caption: "Uložit"
+          automatic_caption_dialog:
+            confirm: "Zapnout"
       ai_bot:
+        debug_ai_modal:
+          request: "Požadavek"
+          response: "Odpověď"
         share_modal:
           copy: "Kopírovat"
+      summarization:
+        chat:
+          title: "Shrnout zprávy"

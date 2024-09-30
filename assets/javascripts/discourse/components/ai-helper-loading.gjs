@@ -2,7 +2,7 @@ import DButton from "discourse/components/d-button";
 import i18n from "discourse-common/helpers/i18n";
 
 const AiHelperLoading = <template>
-  <div class="ai-helper-context-menu__loading">
+  <div class="ai-helper-loading">
     <div class="dot-falling"></div>
     <span>
       {{i18n "discourse_ai.ai_helper.context_menu.loading"}}

@@ -1,0 +1,24 @@
+{{!   
+  Later when we have more preferences, 
+  move the conditional (showAutoImageCaptionSetting)
+  to be only around the auto-image-caption preference.
+ }}
+{{#if this.showAutoImageCaptionSetting}}
+  <label class="control-label">{{i18n "discourse_ai.title"}}</label>
+
+  <div class="control-group ai-setting">
+    <PreferenceCheckbox
+      @labelKey="discourse_ai.ai_helper.image_caption.automatic_caption_setting"
+      @checked={{this.model.user_option.auto_image_caption}}
+      data-setting-name="auto-image-caption"
+      class="pref-auto-image-caption"
+    />
+  </div>
+
+  <SaveControls
+    @id="user_ai_preference_save"
+    @model={{this.model}}
+    @action={{this.save}}
+    @saved={{this.saved}}
+  />
+{{/if}}

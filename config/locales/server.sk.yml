@@ -10,7 +10,15 @@ sk:
       yaxis: "Dátum"
   discourse_ai:
     ai_bot:
-      command_summary:
+      tool_summary:
         search: "Hľadať"
+        tags: "Zoznam značiek"
         time: "Čas"
         summarize: "Zhrnúť"
+    summarization:
+      chat:
+        no_targets: "Počas vybraného obdobia neboli zaznamenané žiadne správy."
+    sentiment:
+      reports:
+        post_emotion:
+          neutral: "Neutrálna \U0001F610"

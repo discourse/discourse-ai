@@ -1,20 +1,32 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::Image do
-  subject(:tool) { described_class.new({ prompts: prompts, seeds: [99, 32] }) }
-
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
   let(:progress_blk) { Proc.new {} }
-
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-
   let(:prompts) { ["a pink cow", "a red cow"] }
 
-  before { SiteSetting.ai_bot_enabled = true }
+  let(:tool) do
+    described_class.new(
+      { prompts: prompts, seeds: [99, 32] },
+      bot_user: bot_user,
+      llm: llm,
+      context: {
+      },
+    )
+  end
+
+  fab!(:gpt_35_turbo) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
+  before do
+    SiteSetting.ai_bot_enabled = true
+    toggle_enabled_bots(bots: [gpt_35_turbo])
+  end
+
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{gpt_35_turbo.id}") }
+
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(gpt_35_turbo.name) }
 
   describe "#process" do
     it "can generate correct info" do
-      post = Fabricate(:post)
+      _post = Fabricate(:post)
 
       SiteSetting.ai_stability_api_url = "https://api.stability.dev"
       SiteSetting.ai_stability_api_key = "abc"
@@ -36,7 +48,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Image do
         end
         .to_return(status: 200, body: { artifacts: artifacts }.to_json)
 
-      info = tool.invoke(bot_user, llm, &progress_blk).to_json
+      info = tool.invoke(&progress_blk).to_json
 
       expect(JSON.parse(info)).to eq("prompts" => ["a pink cow", "a red cow"], "seeds" => [99, 99])
       expect(tool.custom_raw).to include("upload://")

@@ -12,15 +12,6 @@ id:
           discourse_ai: "Discourse"
   js:
     discourse_automation:
-      ai_models:
-        gpt_4_turbo: GPT 4 Turbo
-        gpt_4: GPT 4
-        gpt_3_5_turbo: GPT 3.5 Turbo
-        claude_2: Claude 2
-        gemini_pro: Gemini Pro
-        claude_3_opus: Karya Claude 3
-        claude_3_sonnet: Claude 3 Soneta
-        claude_3_haiku: Claude 3 Haiku
       scriptables:
         llm_report:
           fields:
@@ -99,32 +90,67 @@ id:
               label: "Label"
             canned_reply:
               label: "Balas"
+            model:
+              label: "Model"
     discourse_ai:
+      title: "AI"
       modals:
         select_option: "Memilih sebuah pilihan..."
       ai_persona:
+        back: Kembali
         name: Nama
         edit: Ubah
         description: Deskripsi
+        mentionable: Izinkan Penyebutan
+        mentionable_help: Jika diaktifkan, pengguna di grup yang diizinkan dapat menyebut pengguna ini di posting, AI akan merespons sebagai persona ini.
         user: Pengguna
+        question_consolidator_llm: Model Bahasa untuk Konsolidator Pertanyaan
+        question_consolidator_llm_help: Model bahasa yang digunakan untuk konsolidator pertanyaan, Anda dapat memilih model yang kurang kuat untuk menghemat biaya.
+        system_prompt: Perintah Sistem
+        show_indexing_options: "Tampilkan Opsi Unggah"
+        hide_indexing_options: "Sembunyikan Opsi Unggah"
+        allow_chat: "Izinkan Obrolan"
+        allow_chat_help: "Jika diaktifkan, pengguna di grup yang diizinkan dapat mengirimkan DM ke persona ini"
         save: Simpan
         enabled: "Diaktifkan?"
         delete: Hapus
+        temperature: Temperatur
+        top_p: Top P
         uploads:
+          description: "Persona AI Anda akan dapat mencari dan mereferensikan konten file yang disertakan. File yang diunggah harus diformat sebagai teks biasa (.txt) atau markdown (.md)."
           uploading: "Mengunggah..."
+      tools:
+        back: "Kembali"
+        name: "Nama"
+        description: "Deskripsi"
+        summary: "Ringkasan"
+        save: "Simpan"
+        edit: "Ubah"
+        test: "Operasikan Tes"
+        delete: "Hapus"
+        test_modal:
+          run: "Operasikan Tes"
+      llms:
+        save: "Simpan"
+        edit: "Ubah"
+        back: "Kembali"
+        delete: Hapus
+        tests:
+          title: "Operasikan Tes"
+          running: "Tes berlangsung..."
+          success: "Sukses!"
+          failure: "Mencoba menghubungi model menghasilkan kesalahan ini: %{error}"
+        providers:
+          google: "Google"
       ai_helper:
         missing_content: "Silakan masukkan beberapa konten untuk menghasilkan saran."
         context_menu:
-          back: "Kembali"
-          trigger: "AI"
-          undo: "Batalkan perintah"
+          trigger: "Tanya AI"
           loading: "AI sedang menghasilkan"
           cancel: "Batal"
           regen: "Coba Lagi"
-          view_changes: "Lihat Perubahan"
           confirm: "Konfirmasi"
-          revert: "Dibalik"
-          changes: "Perubahan"
+          discard: "Batalkan"
           custom_prompt:
             title: "Perintah Khusus"
             placeholder: "Masukkan perintah khusus..."
@@ -137,6 +163,8 @@ id:
           copy: "Menyalin"
           copied: "Disalin!"
           cancel: "Batal"
+          insert_footnote: "Tambahkan catatan kaki"
+          footnote_credits: "Penjelasan oleh AI"
         fast_edit:
           suggest_button: "Sarankan Edit"
         thumbnail_suggestions:
@@ -148,13 +176,14 @@ id:
           generating: "Menghasilkan keterangan..."
           credits: "Keterangan oleh AI"
           save_caption: "Simpan"
+          automatic_caption_dialog:
+            confirm: "Aktifkan"
       reviewables:
         model_used: "Model yang digunakan:"
         accuracy: "Akurasi:"
       embeddings:
         semantic_search: "Topik (Semantik)"
         semantic_search_loading: "Mencari hasil lebih banyak menggunakan AI"
-        semantic_search_disabled_sort: "Pencarian AI dinonaktifkan untuk urutan ini, urutkan berdasarkan Relevansi untuk mengaktifkan."
         semantic_search_results:
           toggle: "Menampilkan %{count} hasil yang ditemukan menggunakan AI"
           toggle_hidden: "Menyembunyikan %{count} hasil yang ditemukan menggunakan AI"
@@ -170,6 +199,8 @@ id:
         shortcut_title: "Mulai PM dengan bot AI"
         share: "Bagikan percakapan AI"
         conversation_shared: "Percakapan disalin"
+        debug_ai_modal:
+          request: "Pinta"
         share_full_topic_modal:
           title: "Bagikan Percakapan Secara Publik"
           share: "Bagikan dan Salin Tautan"
@@ -188,4 +219,15 @@ id:
         bot_names:
           fake: "Bot Tes Palsu"
           claude-3-opus: "Claude 3 Opus"
+          claude-3-sonnet: "Claude 3 Soneta"
           claude-3-haiku: "Claude 3 Haiku"
+          claude-2: "Claude 2"
+      summarization:
+        chat:
+          title: "Meringkas pesan"
+          description: "Pilih opsi di bawah untuk meringkas percakapan yang dikirim selama jangka waktu yang diinginkan."
+          summarize: "Meringkas"
+          since:
+            other: "%{count} jam terakhir"
+        topic:
+          title: "Ringkasan topik"

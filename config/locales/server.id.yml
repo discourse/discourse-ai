@@ -10,7 +10,6 @@ id:
       llm_triage:
         title: Triase posting menggunakan AI
         description: "Triase posting menggunakan model bahasa besar"
-        system_prompt_missing_post_placeholder: "Perintah sistem harus berisi placeholder untuk posting: %%POST%%"
       llm_report:
         title: Laporan berkala menggunakan AI
         description: "Laporan berkala berdasarkan model bahasa besar"
@@ -38,12 +37,40 @@ id:
     ai_nsfw_inference_service_api_key: "Kunci API untuk API NSFW"
     ai_nsfw_flag_automatically: "Secara otomatis menandai postingan NSFW yang berada di atas ambang batas yang dikonfigurasi."
     ai_nsfw_flag_threshold_general: "Ambang Batas Umum agar suatu gambar dianggap NSFW."
+    ai_nsfw_models: "Model yang digunakan untuk inferensi NSFW."
+    ai_openai_embeddings_url: "URL khusus yang digunakan untuk OpenAI embeddings API. (dalam kasus Azure bisa jadi: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
+    ai_embeddings_enabled: "Aktifkan modul embeddings."
+    ai_embeddings_discourse_service_api_key: "Kunci API untuk API embeddings"
+    ai_embeddings_pg_connection_string: "String koneksi PostgreSQL untuk modul embeddings. Perlu mengaktifkan ekstensi pgvector dan dibuat serangkaian tabel. Lihat dokumen untuk info lebih lanjut."
+    ai_bot_public_sharing_allowed_groups: "Izinkan grup-grup ini untuk membagikan pesan pribadi AI kepada publik melalui tautan unik yang tersedia untuk umum. Catatan: jika situs Anda memerlukan login, berbagi juga akan memerlukan login."
   reports:
     overall_sentiment:
       yaxis: "Tanggal"
   discourse_ai:
+    ai_helper:
+      prompts:
+        custom_prompt: "Perintah Khusus"
+      image_caption:
+        attribution: "Keterangan oleh AI"
     ai_bot:
-      command_summary:
+      personas:
+        default_llm_required: "Model LLM default diperlukan sebelum mengaktifkan Obrolan"
+      tool_options:
+        search:
+          search_private:
+            name: "Pencarian Pribadi"
+            description: "Sertakan semua topik yang dapat diakses pengguna dalam hasil pencarian (secara bawaan hanya topik publik yang disertakan)"
+      tool_summary:
+        github_search_files: "File pencarian GitHub"
         search: "Cari"
         time: "Waktu"
         summarize: "Meringkas"
+      tool_help:
+        github_search_files: "Cari file di repositori GitHub"
+        summary: "Meringkas suatu topik"
+      tool_description:
+        github_search_files: "Mencari '%{keywords}' di %{repo}/%{branch}"
+        github_search_code: "Mencari '%{query}' di %{repo}"
+    summarization:
+      chat:
+        no_targets: "Tidak ada pesan selama periode yang dipilih."

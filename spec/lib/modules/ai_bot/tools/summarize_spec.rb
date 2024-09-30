@@ -1,8 +1,9 @@
 #frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::Summarize do
-  let(:bot_user) { User.find(DiscourseAi::AiBot::EntryPoint::GPT3_5_TURBO_ID) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("open_ai:gpt-3.5-turbo") }
+  fab!(:llm_model)
+  let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   let(:progress_blk) { Proc.new {} }
 
   before { SiteSetting.ai_bot_enabled = true }
@@ -15,8 +16,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::Summarize do
 
       DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
         summarization =
-          described_class.new({ topic_id: post.topic_id, guidance: "why did it happen?" })
-        info = summarization.invoke(bot_user, llm, &progress_blk)
+          described_class.new(
+            { topic_id: post.topic_id, guidance: "why did it happen?" },
+            bot_user: bot_user,
+            llm: llm,
+          )
+        info = summarization.invoke(&progress_blk)
 
         expect(info).to include("Topic summarized")
         expect(summarization.custom_raw).to include(summary)
@@ -34,8 +39,12 @@ RSpec.describe DiscourseAi::AiBot::Tools::Summarize do
 
       DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
         summarization =
-          described_class.new({ topic_id: post.topic_id, guidance: "why did it happen?" })
-        info = summarization.invoke(bot_user, llm, &progress_blk)
+          described_class.new(
+            { topic_id: post.topic_id, guidance: "why did it happen?" },
+            bot_user: bot_user,
+            llm: llm,
+          )
+        info = summarization.invoke(&progress_blk)
 
         expect(info).not_to include(post.raw)
 

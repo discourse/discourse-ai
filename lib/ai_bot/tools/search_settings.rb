@@ -31,20 +31,35 @@ module DiscourseAi
           parameters[:query].to_s
         end
 
-        def invoke(_bot_user, _llm)
+        def all_settings
+          @all_settings ||= SiteSetting.all_settings
+        end
+
+        def all_settings=(settings)
+          # this is only used for testing
+          @all_settings = settings
+        end
+
+        def invoke
           @last_num_results = 0
 
           terms = query.split(",").map(&:strip).map(&:downcase).reject(&:blank?)
 
+          terms_regexes =
+            terms.map do |term|
+              regex_string = term.split(/[ _\.\|]/).map { |t| Regexp.escape(t) }.join(".*")
+              Regexp.new(regex_string, Regexp::IGNORECASE)
+            end
+
           found =
-            SiteSetting.all_settings.filter do |setting|
+            all_settings.filter do |setting|
               name = setting[:setting].to_s.downcase
               description = setting[:description].to_s.downcase
               plugin = setting[:plugin].to_s.downcase
 
               search_string = "#{name} #{description} #{plugin}"
 
-              terms.any? { |term| search_string.include?(term) }
+              terms_regexes.any? { |regex| search_string.match?(regex) }
             end
 
           if found.blank?
