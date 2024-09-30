@@ -226,9 +226,9 @@ en:
         short_title: "LLMs"
         no_llms: "No LLMs yet"
         new: "New Model"
-        display_name: "Name to display"
-        name: "Model name"
-        provider: "Service hosting the model"
+        display_name: "Name"
+        name: "Model id"
+        provider: "Provider"
         tokenizer: "Tokenizer"
         max_prompt_tokens: "Number of tokens for the prompt"
         url: "URL of the service hosting the model"
@@ -247,9 +247,26 @@ en:
           one: "This model is currently used by the %{settings} setting. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following settings: %{settings}. If misconfigured, features won't work as expected. "
 
+        model_description:
+          none: "General settings that work for most language models"
+          anthropic-claude-3-5-sonnet: "Anthropic's most intelligent model"
+          anthropic-claude-3-opus: "Excels at writing and complex tasks"
+          anthropic-claude-3-sonnet: "Balance of speed and intelligence"
+          anthropic-claude-3-haiku: "Fast and cost-effective"
+          google-gemini-1-5-pro: "Mid-sized multimodal model capable of a wide range of tasks"
+          google-gemini-1-5-flash: "Lightweight, fast, and cost-efficient with multimodal reasoning"
+          open_ai-gpt-4-turbo: "Previous generation high-intelligence model"
+          open_ai-gpt-4o: "High intelligence model for complex, multi-step tasks"
+          open_ai-gpt-4o-mini: "Affordable and fast small model for lightweight tasks"
+
+        configured:
+          title: "Configured LLMs"
         preconfigured_llms: "Select your LLM"
         preconfigured:
-          none: "Configure manually..."
+          title_no_llms: "Select a template to get started"
+          title: "Unconfigured LLM templates"
+          fake: "Manual configuration"
+          button: "Set up"
         next:
           title: "Next"
 
@@ -276,6 +293,7 @@ en:
           ollama: "Ollama"
           CDCK: "CDCK"
           samba_nova: "SambaNova"
+          fake: "Custom"
 
         provider_fields:
           access_key_id: "AWS Bedrock Access key ID"

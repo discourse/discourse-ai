@@ -1,49 +1,19 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import BackButton from "discourse/components/back-button";
-import DButton from "discourse/components/d-button";
-import I18n from "discourse-i18n";
-import ComboBox from "select-kit/components/combo-box";
 import AiLlmEditorForm from "./ai-llm-editor-form";
 
 export default class AiLlmEditor extends Component {
-  @tracked presetConfigured = false;
-  presetId = "none";
-
-  get showPresets() {
-    return (
-      this.args.model.isNew && !this.presetConfigured && !this.args.model.url
-    );
-  }
-
-  get preConfiguredLlms() {
-    let options = [
-      {
-        id: "none",
-        name: I18n.t(`discourse_ai.llms.preconfigured.none`),
-      },
-    ];
-
-    this.args.llms.resultSetMeta.presets.forEach((llm) => {
-      if (llm.models) {
-        llm.models.forEach((model) => {
-          options.push({
-            id: `${llm.id}-${model.name}`,
-            name: model.display_name,
-          });
-        });
-      }
-    });
-
-    return options;
+  constructor() {
+    super(...arguments);
+    if (this.args.llmTemplate) {
+      this.configurePreset();
+    }
   }
 
   @action
   configurePreset() {
-    this.presetConfigured = true;
-
-    let [id, model] = this.presetId.split(/-(.*)/);
+    let [id, model] = this.args.llmTemplate.split(/-(.*)/);
     if (id === "none") {
       return;
     }
@@ -66,25 +36,6 @@ export default class AiLlmEditor extends Component {
       @route="adminPlugins.show.discourse-ai-llms"
       @label="discourse_ai.llms.back"
     />
-    {{#if this.showPresets}}
-      <form class="form-horizontal ai-llm-editor">
-        <div class="control-group">
-          <label>{{I18n.t "discourse_ai.llms.preconfigured_llms"}}</label>
-          <ComboBox
-            @value={{this.presetId}}
-            @content={{this.preConfiguredLlms}}
-            class="ai-llm-editor__presets"
-          />
-        </div>
-
-        <div class="control-group ai-llm-editor__action_panel">
-          <DButton class="ai-llm-editor__next" @action={{this.configurePreset}}>
-            {{I18n.t "discourse_ai.llms.next.title"}}
-          </DButton>
-        </div>
-      </form>
-    {{else}}
-      <AiLlmEditorForm @model={{@model}} @llms={{@llms}} />
-    {{/if}}
+    <AiLlmEditorForm @model={{@model}} @llms={{@llms}} />
   </template>
 }
