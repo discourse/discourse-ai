@@ -286,7 +286,7 @@ de:
         missing_content: "Bitte gib einige Inhalte ein, um Vorschläge zu generieren."
         context_menu:
           trigger: "KI fragen"
-          loading: "KI generiert..."
+          loading: "KI generiert"
           cancel: "Abbrechen"
           regen: "Erneut versuchen"
           confirm: "Bestätigen"

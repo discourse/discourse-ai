@@ -146,7 +146,7 @@ id:
         missing_content: "Silakan masukkan beberapa konten untuk menghasilkan saran."
         context_menu:
           trigger: "Tanya AI"
-          loading: "AI sedang menghasilkan..."
+          loading: "AI sedang menghasilkan"
           cancel: "Batal"
           regen: "Coba Lagi"
           confirm: "Konfirmasi"

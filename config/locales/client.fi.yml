@@ -274,7 +274,7 @@ fi:
         missing_content: "Anna sisältöä ehdotusten luomiseksi."
         context_menu:
           trigger: "Kysy tekoälyltä"
-          loading: "Tekoäly tuottaa..."
+          loading: "Tekoäly tuottaa"
           cancel: "Peruuta"
           regen: "Yritä uudelleen"
           confirm: "Vahvista"

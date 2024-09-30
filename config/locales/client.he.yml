@@ -288,7 +288,7 @@ he:
         missing_content: "נא למלא קצת תוכן כדי לחולל הצעות."
         context_menu:
           trigger: "לשאול בינה מלאכותית"
-          loading: "הבינה המלאכותית נוצרת..."
+          loading: "הבינה המלאכותית מייצרת"
           cancel: "ביטול"
           regen: "ניסיון נוסף"
           confirm: "אישור"

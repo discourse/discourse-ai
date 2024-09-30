@@ -170,7 +170,7 @@ pl_PL:
         missing_content: "Wprowadź treść, aby wygenerować sugestie."
         context_menu:
           trigger: "Zapytaj AI"
-          loading: "AI generuje..."
+          loading: "AI generuje"
           cancel: "Anuluj"
           regen: "Spróbuj ponownie"
           confirm: "Potwierdź"

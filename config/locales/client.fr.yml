@@ -274,7 +274,7 @@ fr:
         missing_content: "Veuillez saisir du contenu pour générer des suggestions."
         context_menu:
           trigger: "Demander à l'IA"
-          loading: "L'IA est en train de générer..."
+          loading: "L'IA est en train de générer"
           cancel: "Annuler"
           regen: "Réessayer"
           confirm: "Confirmer"

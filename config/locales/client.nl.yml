@@ -274,7 +274,7 @@ nl:
         missing_content: "Voer wat inhoud in om suggesties te genereren."
         context_menu:
           trigger: "AI vragen"
-          loading: "AI is aan het genereren..."
+          loading: "AI is aan het genereren"
           cancel: "Annuleren"
           regen: "Opnieuw proberen"
           confirm: "Bevestigen"

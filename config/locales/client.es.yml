@@ -274,7 +274,7 @@ es:
         missing_content: "Introduce algún contenido para generar sugerencias."
         context_menu:
           trigger: "Pregúntale a la IA"
-          loading: "La IA está generando..."
+          loading: "La IA está generando"
           cancel: "Cancelar"
           regen: "Intentar de nuevo"
           confirm: "Confirmar"
