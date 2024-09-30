@@ -4,7 +4,6 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { inject as service } from "@ember/service";
-import { or } from "truth-helpers";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
@@ -17,6 +16,27 @@ import AiLlmEditor from "./ai-llm-editor";
 export default class AiLlmsListEditor extends Component {
   @service adminPluginNavManager;
   @service router;
+
+  @action
+  modelDescription(llm) {
+    // this is a bit of an odd object, it can be an llm model or a preset model
+    // handle both flavors
+
+    // in the case of model
+    let key = "";
+    if (typeof llm.id === "number") {
+      key = `${llm.provider}-${llm.name}`;
+    } else {
+      // case of preset
+      key = llm.id.replace(/\./g, "-");
+    }
+
+    key = `discourse_ai.llms.model_description.${key}`;
+    if (I18n.lookup(key, { ignoreMissing: true })) {
+      return I18n.t(key);
+    }
+    return "";
+  }
 
   sanitizedTranslationKey(id) {
     return id.replace(/\./g, "-");
@@ -122,14 +142,7 @@ export default class AiLlmsListEditor extends Component {
                     <td class="column-name">
                       <h3>{{llm.display_name}}</h3>
                       <p>
-                        {{i18n
-                          (concat
-                            "discourse_ai.llms.model_description."
-                            llm.provider
-                            "-"
-                            llm.name
-                          )
-                        }}
+                        {{this.modelDescription llm}}
                       </p>
                     </td>
                     <td>
@@ -147,7 +160,7 @@ export default class AiLlmsListEditor extends Component {
                       <LinkTo
                         @route="adminPlugins.show.discourse-ai-llms.show"
                         class="btn btn-default"
-                        @model={{or llm.id llm.llm.id}}
+                        @model={{llm.id}}
                       >
                         {{icon "wrench"}}
                         <div class="d-button-label">
@@ -186,12 +199,7 @@ export default class AiLlmsListEditor extends Component {
                   {{llm.name}}
                 </h3>
                 <p>
-                  {{i18n
-                    (concat
-                      "discourse_ai.llms.model_description."
-                      (this.sanitizedTranslationKey llm.id)
-                    )
-                  }}
+                  {{this.modelDescription llm}}
                 </p>
                 <DButton
                   @action={{fn this.transitionToLlmEditor llm.id}}

@@ -87,9 +87,7 @@ export default class AiLlmEditorForm extends Component {
     const isNew = this.args.model.isNew;
 
     try {
-      const result = await this.args.model.save();
-
-      this.args.model.setProperties(result.responseJson.ai_persona);
+      await this.args.model.save();
 
       if (isNew) {
         this.args.llms.addObject(this.args.model);

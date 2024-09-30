@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 class LlmModelSerializer < ApplicationSerializer
-  root "llm"
-
+  # TODO: we probably should rename the table LlmModel to AiLlm
+  # it is consistent with AiPersona and AiTool
+  # LLM model is a bit confusing given that large langauge model model is a confusing
+  # name
+  root "ai_llm"
   attributes :id,
              :display_name,
              :name,

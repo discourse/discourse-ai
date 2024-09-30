@@ -35,14 +35,19 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
     context "with valid attributes" do
       it "creates a new LLM model" do
         post "/admin/plugins/discourse-ai/ai-llms.json", params: { ai_llm: valid_attrs }
+        response_body = response.parsed_body
 
-        created_model = LlmModel.last
+        created_model = response_body["ai_llm"]
 
-        expect(created_model.display_name).to eq(valid_attrs[:display_name])
-        expect(created_model.name).to eq(valid_attrs[:name])
-        expect(created_model.provider).to eq(valid_attrs[:provider])
-        expect(created_model.tokenizer).to eq(valid_attrs[:tokenizer])
-        expect(created_model.max_prompt_tokens).to eq(valid_attrs[:max_prompt_tokens])
+        expect(created_model["display_name"]).to eq(valid_attrs[:display_name])
+        expect(created_model["name"]).to eq(valid_attrs[:name])
+        expect(created_model["provider"]).to eq(valid_attrs[:provider])
+        expect(created_model["tokenizer"]).to eq(valid_attrs[:tokenizer])
+        expect(created_model["max_prompt_tokens"]).to eq(valid_attrs[:max_prompt_tokens])
+
+
+        model = LlmModel.find(created_model["id"])
+        expect(model.display_name).to eq(valid_attrs[:display_name])
       end
 
       it "creates a companion user" do
