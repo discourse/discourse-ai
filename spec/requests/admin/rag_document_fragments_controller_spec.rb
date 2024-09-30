@@ -28,6 +28,9 @@ RSpec.describe DiscourseAi::Admin::RagDocumentFragmentsController do
            }
 
       expect(response.status).to eq(200)
+
+      upload = Upload.last
+      expect(upload.original_filename).to end_with("spec.txt")
     end
   end
 end
