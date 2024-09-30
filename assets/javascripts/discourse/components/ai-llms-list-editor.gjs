@@ -11,6 +11,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
+import AdminPageSubheader from "admin/components/admin-page-subheader";
 import AiLlmEditor from "./ai-llm-editor";
 
 export default class AiLlmsListEditor extends Component {
@@ -46,8 +47,16 @@ export default class AiLlmsListEditor extends Component {
     return this.args.llms.length !== 0;
   }
 
+  get preconfiguredTitle() {
+    if (this.hasLlmElements) {
+      return "discourse_ai.llms.preconfigured.title";
+    } else {
+      return "discourse_ai.llms.preconfigured.title_no_llms";
+    }
+  }
+
   get preConfiguredLlms() {
-    let options = [
+    const options = [
       {
         id: "none",
         name: I18n.t("discourse_ai.llms.preconfigured.fake"),
@@ -120,13 +129,9 @@ export default class AiLlmsListEditor extends Component {
       {{else}}
         {{#if this.hasLlmElements}}
           <section class="ai-llms-list-editor__configured">
-            <div class="admin-page-subheader">
-              <div class="admin-page-subheader__title-row">
-                <h2 class="admin-page-subheader__title">
-                  {{i18n "discourse_ai.llms.configured.title"}}
-                </h2>
-              </div>
-            </div>
+            <AdminPageSubheader
+              @titleLabel="discourse_ai.llms.configured.title"
+            />
             <table>
               <thead>
                 <tr>
@@ -175,17 +180,7 @@ export default class AiLlmsListEditor extends Component {
           </section>
         {{/if}}
         <section class="ai-llms-list-editor__templates">
-          <div class="admin-page-subheader">
-            <div class="admin-page-subheader__title-row">
-              <h2 class="admin-page-subheader__title">
-                {{#if this.hasLlmElements}}
-                  {{i18n "discourse_ai.llms.preconfigured.title"}}
-                {{else}}
-                  {{i18n "discourse_ai.llms.preconfigured.title_no_llms"}}
-                {{/if}}
-              </h2>
-            </div>
-          </div>
+          <AdminPageSubheader @titleLabel={{this.preconfiguredTitle}} />
           <div class="ai-llms-list-editor__templates-list">
             {{#each this.preConfiguredLlms as |llm|}}
               <div

@@ -58,9 +58,12 @@
 }
 
 [class*="ai-llms-list-editor"] {
-  h2 {
-    font-size: var(--font-up-2);
-    margin: 0;
+  .admin-page-subheader {
+    h3 {
+      font-size: var(--font-up-2);
+      margin: 0;
+      font-weight: bold;
+    }
   }
   h3 {
     font-weight: normal;
