@@ -4,7 +4,12 @@ RSpec.describe AiTool do
   fab!(:llm_model) { Fabricate(:llm_model, name: "claude-2") }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
-  def create_tool(parameters: nil, script: nil)
+  def create_tool(
+    parameters: nil,
+    script: nil,
+    rag_chunk_tokens: nil,
+    rag_chunk_overlap_tokens: nil
+  )
     AiTool.create!(
       name: "test",
       description: "test",
@@ -12,6 +17,8 @@ RSpec.describe AiTool do
       script: script || "function invoke(params) { return params; }",
       created_by_id: 1,
       summary: "Test tool summary",
+      rag_chunk_tokens: rag_chunk_tokens || 374,
+      rag_chunk_overlap_tokens: rag_chunk_overlap_tokens || 10,
     )
   end
 
@@ -192,5 +199,96 @@ RSpec.describe AiTool do
 
     result = runner.invoke
     expect(result[:error]).to eq("Script terminated due to timeout")
+  end
+
+  context "when defining RAG fragments" do
+    before do
+      SiteSetting.authorized_extensions = "txt"
+      SiteSetting.ai_embeddings_enabled = true
+      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+      SiteSetting.ai_embeddings_model = "bge-large-en"
+
+      Jobs.run_immediately!
+    end
+
+    def create_upload(content, filename)
+      upload = nil
+      Tempfile.create(filename) do |file|
+        file.write(content)
+        file.rewind
+
+        upload = UploadCreator.new(file, filename).create_for(Discourse.system_user.id)
+      end
+      upload
+    end
+
+    def stub_embeddings
+      # this is a trick, we get ever increasing embeddings, this gives us in turn
+      # 100% consistent search results
+      @counter = 0
+      stub_request(:post, "http://test.com/api/v1/classify").to_return(
+        status: 200,
+        body: lambda { |req| ([@counter += 1] * 1024).to_json },
+        headers: {
+        },
+      )
+    end
+
+    it "allows search within uploads" do
+      stub_embeddings
+
+      upload1 = create_upload(<<~TXT, "test.txt")
+        1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
+      TXT
+
+      upload2 = create_upload(<<~TXT, "test.txt")
+        30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50
+      TXT
+
+      tool = create_tool(rag_chunk_tokens: 10, rag_chunk_overlap_tokens: 4, script: <<~JS)
+        function invoke(params) {
+          let result1 = index.search("testing a search", { limit: 1 });
+          let result2 = index.search("testing another search", { limit: 3, filenames: ["test.txt"] });
+
+          return [result1, result2];
+        }
+      JS
+
+      RagDocumentFragment.link_target_and_uploads(tool, [upload1.id, upload2.id])
+
+      result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
+
+      expected = [
+        [{ "fragment" => "44 45 46 47 48 49 50", "metadata" => nil }],
+        [
+          { "fragment" => "44 45 46 47 48 49 50", "metadata" => nil },
+          { "fragment" => "36 37 38 39 40 41 42 43 44 45", "metadata" => nil },
+          { "fragment" => "30 31 32 33 34 35 36 37", "metadata" => nil },
+        ],
+      ]
+
+      expect(result).to eq(expected)
+
+      # will force a reindex
+      tool.rag_chunk_tokens = 5
+      tool.rag_chunk_overlap_tokens = 2
+      tool.save!
+
+      # this part of the API is a bit awkward, maybe we should do it
+      # automatically
+      RagDocumentFragment.update_target_uploads(tool, [upload1.id, upload2.id])
+      result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
+
+      expected = [
+        [{ "fragment" => "48 49 50", "metadata" => nil }],
+        [
+          { "fragment" => "48 49 50", "metadata" => nil },
+          { "fragment" => "45 46 47", "metadata" => nil },
+          { "fragment" => "42 43 44", "metadata" => nil },
+        ],
+      ]
+
+      expect(result).to eq(expected)
+    end
   end
 end

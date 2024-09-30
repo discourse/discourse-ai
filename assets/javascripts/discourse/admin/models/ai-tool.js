@@ -8,6 +8,9 @@ const CREATE_ATTRIBUTES = [
   "parameters",
   "script",
   "summary",
+  "rag_uploads",
+  "rag_chunk_tokens",
+  "rag_chunk_overlap_tokens",
   "enabled",
 ];
 

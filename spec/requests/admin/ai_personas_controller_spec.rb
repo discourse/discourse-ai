@@ -369,17 +369,6 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
   end
 
-  describe "POST #upload_file" do
-    it "works" do
-      post "/admin/plugins/discourse-ai/ai-personas/files/upload.json",
-           params: {
-             file: Rack::Test::UploadedFile.new(file_from_fixtures("spec.txt", "md")),
-           }
-
-      expect(response.status).to eq(200)
-    end
-  end
-
   describe "DELETE #destroy" do
     it "destroys the requested ai_persona" do
       expect {

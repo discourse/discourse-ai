@@ -12,18 +12,16 @@ import discourseDebounce from "discourse-common/lib/debounce";
 import I18n from "discourse-i18n";
 import RagUploadProgress from "./rag-upload-progress";
 
-export default class PersonaRagUploader extends Component.extend(
-  UppyUploadMixin
-) {
+export default class RagUploader extends Component.extend(UppyUploadMixin) {
   @service appEvents;
 
   @tracked term = null;
   @tracked filteredUploads = null;
   @tracked ragIndexingStatuses = null;
   @tracked ragUploads = null;
-  id = "discourse-ai-persona-rag-uploader";
+  id = "discourse-ai-rag-uploader";
   maxFiles = 20;
-  uploadUrl = "/admin/plugins/discourse-ai/ai-personas/files/upload";
+  uploadUrl = "/admin/plugins/discourse-ai/rag-document-fragments/files/upload";
   preventDirectS3Uploads = true;
 
   didReceiveAttrs() {
@@ -33,12 +31,14 @@ export default class PersonaRagUploader extends Component.extend(
       this._uppyInstance?.cancelAll();
     }
 
-    this.ragUploads = this.persona?.rag_uploads || [];
+    this.ragUploads = this.target?.rag_uploads || [];
     this.filteredUploads = this.ragUploads;
 
-    if (this.ragUploads?.length && this.persona?.id) {
+    const targetName = this.target?.constructor?.name;
+
+    if (this.ragUploads?.length && this.target?.id) {
       ajax(
-        `/admin/plugins/discourse-ai/ai-personas/${this.persona.id}/files/status.json`
+        `/admin/plugins/discourse-ai/rag-document-fragments/files/status.json?target_type=${targetName}&target_id=${this.target.id}`
       ).then((statuses) => {
         this.set("ragIndexingStatuses", statuses);
       });
@@ -47,7 +47,7 @@ export default class PersonaRagUploader extends Component.extend(
     this.appEvents.on(
       `upload-mixin:${this.id}:all-uploads-complete`,
       this,
-      "_updatePersonaWithUploads"
+      "_updateTargetWithUploads"
     );
   }
 
@@ -56,18 +56,18 @@ export default class PersonaRagUploader extends Component.extend(
     this.appEvents.off(
       `upload-mixin:${this.id}:all-uploads-complete`,
       this,
-      "_updatePersonaWithUploads"
+      "_updateTargetWithUploads"
     );
   }
 
-  _updatePersonaWithUploads() {
+  _updateTargetWithUploads() {
     this.updateUploads(this.ragUploads);
   }
 
   uploadDone(uploadedFile) {
     const newUpload = uploadedFile.upload;
     newUpload.status = "uploaded";
-    newUpload.statusText = I18n.t("discourse_ai.ai_persona.uploads.uploaded");
+    newUpload.statusText = I18n.t("discourse_ai.rag.uploads.uploaded");
     this.ragUploads.pushObject(newUpload);
     this.debouncedSearch();
   }
@@ -112,20 +112,17 @@ export default class PersonaRagUploader extends Component.extend(
   }
 
   <template>
-    <div class="persona-rag-uploader">
-      <h3>{{I18n.t "discourse_ai.ai_persona.uploads.title"}}</h3>
-      <p>{{I18n.t "discourse_ai.ai_persona.uploads.description"}}</p>
+    <div class="rag-uploader">
+      <h3>{{I18n.t "discourse_ai.rag.uploads.title"}}</h3>
+      <p>{{I18n.t "discourse_ai.rag.uploads.description"}}</p>
 
       {{#if this.ragUploads}}
-        <div class="persona-rag-uploader__search-input-container">
-          <div class="persona-rag-uploader__search-input">
-            {{icon
-              "search"
-              class="persona-rag-uploader__search-input__search-icon"
-            }}
+        <div class="rag-uploader__search-input-container">
+          <div class="rag-uploader__search-input">
+            {{icon "search" class="rag-uploader__search-input__search-icon"}}
             <Input
-              class="persona-rag-uploader__search-input__input"
-              placeholder={{I18n.t "discourse_ai.ai_persona.uploads.filter"}}
+              class="rag-uploader__search-input__input"
+              placeholder={{I18n.t "discourse_ai.rag.uploads.filter"}}
               @value={{this.term}}
               {{on "keyup" this.debouncedSearch}}
             />
@@ -133,24 +130,22 @@ export default class PersonaRagUploader extends Component.extend(
         </div>
       {{/if}}
 
-      <table class="persona-rag-uploader__uploads-list">
+      <table class="rag-uploader__uploads-list">
         <tbody>
           {{#each this.filteredUploads as |upload|}}
             <tr>
               <td>
-                <span class="persona-rag-uploader__rag-file-icon">{{icon
-                    "file"
-                  }}</span>
+                <span class="rag-uploader__rag-file-icon">{{icon "file"}}</span>
                 {{upload.original_filename}}
               </td>
               <RagUploadProgress
                 @upload={{upload}}
                 @ragIndexingStatuses={{this.ragIndexingStatuses}}
               />
-              <td class="persona-rag-uploader__remove-file">
+              <td class="rag-uploader__remove-file">
                 <DButton
                   @icon="times"
-                  @title="discourse_ai.ai_persona.uploads.remove"
+                  @title="discourse_ai.rag.uploads.remove"
                   @action={{fn this.removeUpload upload}}
                   @class="btn-flat"
                 />
@@ -159,19 +154,19 @@ export default class PersonaRagUploader extends Component.extend(
           {{/each}}
           {{#each this.inProgressUploads as |upload|}}
             <tr>
-              <td><span class="persona-rag-uploader__rag-file-icon">{{icon
+              <td><span class="rag-uploader__rag-file-icon">{{icon
                     "file"
                   }}</span>
                 {{upload.original_filename}}</td>
-              <td class="persona-rag-uploader__upload-status">
+              <td class="rag-uploader__upload-status">
                 <div class="spinner small"></div>
-                <span>{{I18n.t "discourse_ai.ai_persona.uploads.uploading"}}
+                <span>{{I18n.t "discourse_ai.rag.uploads.uploading"}}
                   {{upload.uploadProgress}}%</span>
               </td>
-              <td class="persona-rag-uploader__remove-file">
+              <td class="rag-uploader__remove-file">
                 <DButton
                   @icon="times"
-                  @title="discourse_ai.ai_persona.uploads.remove"
+                  @title="discourse_ai.rag.uploads.remove"
                   @action={{fn this.cancelUploading upload}}
                   @class="btn-flat"
                 />
@@ -189,9 +184,9 @@ export default class PersonaRagUploader extends Component.extend(
         accept=".txt,.md"
       />
       <DButton
-        @label="discourse_ai.ai_persona.uploads.button"
+        @label="discourse_ai.rag.uploads.button"
         @icon="plus"
-        @title="discourse_ai.ai_persona.uploads.button"
+        @title="discourse_ai.rag.uploads.button"
         @action={{this.submitFiles}}
         class="btn-default"
       />

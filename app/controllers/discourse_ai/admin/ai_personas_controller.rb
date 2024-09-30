@@ -5,8 +5,7 @@ module DiscourseAi
     class AiPersonasController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      before_action :find_ai_persona,
-                    only: %i[show update destroy create_user indexing_status_check]
+      before_action :find_ai_persona, only: %i[show update destroy create_user]
 
       def index
         ai_personas =
@@ -75,37 +74,6 @@ module DiscourseAi
         end
       end
 
-      def upload_file
-        file = params[:file] || params[:files].first
-
-        if !SiteSetting.ai_embeddings_enabled?
-          raise Discourse::InvalidAccess.new("Embeddings not enabled")
-        end
-
-        validate_extension!(file.original_filename)
-        validate_file_size!(file.tempfile.size)
-
-        hijack do
-          upload =
-            UploadCreator.new(
-              file.tempfile,
-              file.original_filename,
-              type: "discourse_ai_rag_upload",
-              skip_validations: true,
-            ).create_for(current_user.id)
-
-          if upload.persisted?
-            render json: UploadSerializer.new(upload)
-          else
-            render json: failed_json.merge(errors: upload.errors.full_messages), status: 422
-          end
-        end
-      end
-
-      def indexing_status_check
-        render json: RagDocumentFragment.indexing_status(@ai_persona, @ai_persona.uploads)
-      end
-
       private
 
       def find_ai_persona
@@ -161,31 +129,6 @@ module DiscourseAi
           else
             tool
           end
-        end
-      end
-
-      def validate_extension!(filename)
-        extension = File.extname(filename)[1..-1] || ""
-        authorized_extensions = %w[txt md]
-        if !authorized_extensions.include?(extension)
-          raise Discourse::InvalidParameters.new(
-                  I18n.t(
-                    "upload.unauthorized",
-                    authorized_extensions: authorized_extensions.join(" "),
-                  ),
-                )
-        end
-      end
-
-      def validate_file_size!(filesize)
-        max_size_bytes = 20.megabytes
-        if filesize > max_size_bytes
-          raise Discourse::InvalidParameters.new(
-                  I18n.t(
-                    "upload.attachments.too_large_humanized",
-                    max_size: ActiveSupport::NumberHelper.number_to_human_size(max_size_bytes),
-                  ),
-                )
         end
       end
     end
