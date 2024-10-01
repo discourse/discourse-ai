@@ -36,7 +36,7 @@ function initializeAiHelperTrigger(api) {
             class: "ai-proofread-error-toast",
             duration: 3000,
             data: {
-              message: i18n("discourse_ai.ai_helper.no_content_error"),
+              message: i18n("discourse_ai.ai_helper.image_caption.error"),
             },
           });
         }

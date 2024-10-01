@@ -111,7 +111,13 @@ export default apiInitializer("1.25.0", (api) => {
       });
       return response.caption;
     } catch (error) {
-      popupAjaxError(error);
+      toasts.error({
+        class: "ai-image-caption-error-toast",
+        duration: 3000,
+        data: {
+          message: I18n.t("discourse_ai.ai_helper.image_caption.error"),
+        },
+      });
     }
   }
 
@@ -129,6 +135,7 @@ export default apiInitializer("1.25.0", (api) => {
     return;
   }
 
+  const toasts = api.container.lookup("service:toasts");
   // Automatically caption uploaded images
   api.addComposerUploadMarkdownResolver(async (upload) => {
     const autoCaptionEnabled = currentUser.get(
