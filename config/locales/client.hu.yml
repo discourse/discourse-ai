@@ -38,9 +38,10 @@ hu:
         save: Mentés
         enabled: "Engedélyezed?"
         delete: Törlés
+      rag:
         uploads:
           title: "Feltöltések"
-          uploading: "Feltültés..."
+          uploading: "Feltöltés…"
       tools:
         back: "Vissza"
         name: "Név"
@@ -56,6 +57,7 @@ hu:
         test_modal:
           run: "Teszt futtatása"
       llms:
+        display_name: "Név"
         save: "Mentés"
         edit: "Szerkesztés"
         back: "Vissza"
@@ -67,6 +69,7 @@ hu:
           success: "Siker!"
         providers:
           google: "Google"
+          fake: "Egyéni"
       related_topics:
         title: "Kapcsolódó témák"
         pill: "Kapcsolódó"

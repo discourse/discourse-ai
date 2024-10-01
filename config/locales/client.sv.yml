@@ -38,6 +38,7 @@ sv:
         save: Spara
         enabled: "Aktiverad?"
         delete: Radera
+      rag:
         uploads:
           title: "Uppladdningar"
           uploading: "Laddar upp..."
@@ -56,6 +57,7 @@ sv:
         test_modal:
           run: "Kör test"
       llms:
+        display_name: "Namn"
         save: "Spara"
         edit: "Redigera"
         back: "Tillbaka"
@@ -67,6 +69,7 @@ sv:
           success: "Lyckades!"
         providers:
           google: "Google"
+          fake: "Anpassad"
       ai_helper:
         context_menu:
           cancel: "Avbryt"

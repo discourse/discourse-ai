@@ -135,8 +135,6 @@ es:
         question_consolidator_llm: Modelo lingüístico para el consolidador de preguntas
         question_consolidator_llm_help: El modelo lingüístico a utilizar para el consolidador de preguntas, puedes elegir un modelo menos potente para ahorrar costes.
         system_prompt: Aviso del sistema
-        show_indexing_options: "Mostrar opciones de carga"
-        hide_indexing_options: "Ocultar opciones de carga"
         allow_chat: "Permitir chat"
         allow_chat_help: "Si está activada, los usuarios de los grupos permitidos pueden DM a esta persona"
         save: Guardar
@@ -156,10 +154,6 @@ es:
         priority: Prioridad
         priority_help: Las personas prioritarias se muestran a los usuarios en la parte superior de la lista de personas. Si varias personas tienen prioridad, se ordenarán alfabéticamente.
         tool_options: "Opciones de herramientas"
-        rag_chunk_tokens: "Cargar tokens de lotes"
-        rag_chunk_tokens_help: "El número de tokens a utilizar para cada fragmento en el modelo RAG. Aumentar para incrementar la cantidad de contexto que puede utilizar la IA. (Al cambiar se reindexarán todas las cargas)"
-        rag_chunk_overlap_tokens: "Cargar tokens de solapamiento de fragmentos"
-        rag_chunk_overlap_tokens_help: "El número de tokens a solapar entre fragmentos en el modelo RAG. (al cambiar se reindexarán todas las cargas)"
         rag_conversation_chunks: "Buscar fragmentos de conversación"
         rag_conversation_chunks_help: "El número de fragmentos a utilizar para las búsquedas del modelo RAG. Aumentar para incrementar la cantidad de contexto que puede utilizar la IA."
         what_are_personas: "¿Qué son las Personas de IA?"
@@ -173,9 +167,16 @@ es:
           #### Acceso específico de grupo a Personas de IA
 
           Además, puedes configurarlo para que determinados grupos de usuarios tengan acceso a personas concretas. Esto significa que puedes tener diferentes comportamientos de IA para diferentes secciones de tu foro, mejorando aún más la diversidad y riqueza de las interacciones de tu comunidad.
+      rag:
+        options:
+          rag_chunk_tokens: "Cargar tokens de lotes"
+          rag_chunk_tokens_help: "El número de tokens a utilizar para cada fragmento en el modelo RAG. Aumentar para incrementar la cantidad de contexto que puede utilizar la IA. (Al cambiar se reindexarán todas las cargas)"
+          rag_chunk_overlap_tokens: "Cargar tokens de solapamiento de fragmentos"
+          rag_chunk_overlap_tokens_help: "El número de tokens a solapar entre fragmentos en el modelo RAG. (al cambiar se reindexarán todas las cargas)"
+          show_indexing_options: "Mostrar opciones de carga"
+          hide_indexing_options: "Ocultar opciones de carga"
         uploads:
           title: "Subidos"
-          description: "Tu persona de IA podrá buscar y consultar el contenido de los archivos incluidos. Los archivos subidos deben tener formato de texto plano (.txt) o marcado (.md)."
           button: "Añadir archivos"
           filter: "Filtrar cargas"
           indexed: "Indexado"
@@ -219,9 +220,7 @@ es:
         short_title: "LLM"
         no_llms: "Aún no hay LLM"
         new: "Nuevo modelo"
-        display_name: "Nombre para mostrar"
-        name: "Nombre del modelo"
-        provider: "Servicio de alojamiento del modelo"
+        display_name: "Nombre"
         tokenizer: "Tokenizador"
         max_prompt_tokens: "Número de tokens para la solicitud"
         url: "URL del servicio que aloja el modelo"
@@ -236,8 +235,6 @@ es:
         confirm_delete: '¿Seguro que quieres eliminar este modelo?'
         delete: Eliminar
         preconfigured_llms: "Selecciona tu LLM"
-        preconfigured:
-          none: "Configurar manualmente..."
         next:
           title: "Siguiente"
         tests:
@@ -259,6 +256,7 @@ es:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          fake: "Personalizado"
         provider_fields:
           access_key_id: "ID de clave de acceso a AWS Bedrock"
           region: "Región de AWS Bedrock"

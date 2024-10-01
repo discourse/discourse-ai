@@ -140,8 +140,6 @@ de:
         question_consolidator_llm: Sprachmodell für Fragenkonsolidierer
         question_consolidator_llm_help: Das Sprachmodell, das für den Fragenkonsolidierer verwendet werden soll. Du kannst ein weniger leistungsfähiges Modell wählen, um Kosten zu sparen.
         system_prompt: System-Eingabeaufforderung
-        show_indexing_options: "Upload-Optionen anzeigen"
-        hide_indexing_options: "Upload-Optionen ausblenden"
         allow_chat: "Chat zulassen"
         allow_chat_help: "Wenn diese Option aktiviert ist, können Nutzer in erlaubten Gruppen dieser Persona eine DN senden"
         save: Speichern
@@ -161,10 +159,6 @@ de:
         priority: Priorität
         priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
         tool_options: "Tool-Optionen"
-        rag_chunk_tokens: "Chunk-Token hochladen"
-        rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads.)"
-        rag_chunk_overlap_tokens: "Chunk-Überlappungs-Token hochladen"
-        rag_chunk_overlap_tokens_help: "Die Anzahl der Token, die sich zwischen den Chunks im RAG-Modell überlappen sollen. (Eine Änderung führt zu einer Neuindizierung aller Uploads.)"
         rag_conversation_chunks: "Suchunterhaltungs-Chunks"
         rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann."
         what_are_personas: "Was sind KI-Personas?"
@@ -178,9 +172,17 @@ de:
           #### Gruppenspezifischer Zugriff auf KI-Personas
 
           Außerdem kannst du die Funktion so einrichten, dass bestimmte Nutzergruppen Zugriff auf gewisse Personas haben. Das bedeutet, dass du für verschiedene Bereiche deines Forums unterschiedliche KI-Verhaltensweisen verwenden kannst, was die Vielfalt und Fülle der Interaktionen deiner Community weiter verbessert.
+      rag:
+        options:
+          rag_chunk_tokens: "Chunk-Token hochladen"
+          rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads.)"
+          rag_chunk_overlap_tokens: "Chunk-Überlappungs-Token hochladen"
+          rag_chunk_overlap_tokens_help: "Die Anzahl der Token, die sich zwischen den Chunks im RAG-Modell überlappen sollen. (Eine Änderung führt zu einer Neuindizierung aller Uploads.)"
+          show_indexing_options: "Upload-Optionen anzeigen"
+          hide_indexing_options: "Upload-Optionen ausblenden"
         uploads:
           title: "Uploads"
-          description: "Deine KI-Persona wird in der Lage sein, den Inhalt der beigefügten Dateien zu durchsuchen und zu referenzieren. Hochgeladene Dateien sollten als Klartext (.txt) oder Markdown (.md) formatiert sein."
+          description: "Hochgeladene Dateien sollten als Klartext (.txt) oder Markdown (.md) formatiert sein."
           button: "Dateien hinzufügen"
           filter: "Uploads filtern"
           indexed: "Indiziert"
@@ -224,9 +226,9 @@ de:
         short_title: "LLM"
         no_llms: "Noch keine LLM"
         new: "Neues Modell"
-        display_name: "Anzeigename"
-        name: "Modellname"
-        provider: "Dienst, der das Modell hostet"
+        display_name: "Name"
+        name: "Modell-ID"
+        provider: "Anbieter"
         tokenizer: "Tokenizer"
         max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung"
         url: "URL des Dienstes, der das Modell hostet"
@@ -244,9 +246,25 @@ de:
         in_use_warning:
           one: "Dieses Modell wird derzeit von der Einstellung %{settings} verwendet. Wenn die Funktion falsch konfiguriert ist, funktioniert sie nicht wie erwartet."
           other: "Dieses Modell wird derzeit von den folgenden Einstellungen verwendet: %{settings}. Bei einer falschen Konfiguration funktionieren die Funktionen nicht wie erwartet. "
+        model_description:
+          none: "Allgemeine Einstellungen, die für die meisten Sprachmodelle funktionieren"
+          anthropic-claude-3-5-sonnet: "Das intelligenteste Modell der Anthropologie"
+          anthropic-claude-3-opus: "Hervorragend im Schreiben und bei komplexen Aufgaben"
+          anthropic-claude-3-sonnet: "Ausgewogenheit zwischen Geschwindigkeit und Intelligenz"
+          anthropic-claude-3-haiku: "Schnell und kosteneffizient"
+          google-gemini-1-5-pro: "Multimodales Modell mittlerer Größe, das eine Vielzahl von Aufgaben bewältigen kann"
+          google-gemini-1-5-flash: "Leicht, schnell und kosteneffizient mit multimodaler Argumentation"
+          open_ai-gpt-4-turbo: "Hochintelligentes Modell der vorherigen Generation"
+          open_ai-gpt-4o: "Hochintelligentes Modell für komplexe, mehrstufige Aufgaben"
+          open_ai-gpt-4o-mini: "Erschwingliches und schnelles kleines Modell für leichte Aufgaben"
+        configured:
+          title: "Konfigurierte LLMs"
         preconfigured_llms: "Wähle dein LLM"
         preconfigured:
-          none: "Manuell konfigurieren …"
+          title_no_llms: "Wähle eine Vorlage aus, um loszulegen"
+          title: "Unkonfigurierte LLM-Vorlagen"
+          fake: "Manuelle Konfiguration"
+          button: "Einrichten"
         next:
           title: "Nächstes"
         tests:
@@ -270,6 +288,7 @@ de:
           ollama: "Ollama"
           CDCK: "CDCK"
           samba_nova: "SambaNova"
+          fake: "Benutzerdefiniert"
         provider_fields:
           access_key_id: "AWS-Bedrock-Zugangsschlüssel-ID"
           region: "AWS-Bedrock-Region"

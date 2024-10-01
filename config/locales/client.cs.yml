@@ -38,6 +38,7 @@ cs:
         save: Uložit
         enabled: "Zapnuto?"
         delete: Smazat
+      rag:
         uploads:
           title: "Nahrané soubory"
           uploading: "Nahrává se..."
@@ -56,6 +57,7 @@ cs:
         test_modal:
           run: "Spustit test"
       llms:
+        display_name: "Jméno"
         save: "Uložit"
         edit: "Upravit"
         back: "Zpět"
@@ -67,6 +69,7 @@ cs:
           success: "Úspěch!"
         providers:
           google: "Google"
+          fake: "Přizpůsobené"
       ai_helper:
         context_menu:
           cancel: "Zrušit"

@@ -135,8 +135,6 @@ fr:
         question_consolidator_llm: Modèle linguistique pour le consolidateur de questions
         question_consolidator_llm_help: Le modèle linguistique à utiliser pour le consolidateur de questions, vous pouvez choisir un modèle moins puissant pour réduire les coûts.
         system_prompt: Invite du système
-        show_indexing_options: "Afficher les options de téléversement"
-        hide_indexing_options: "Masquer les options de téléversement"
         allow_chat: "Autoriser la messagerie instantanée"
         allow_chat_help: "Si cette option est activée, les utilisateurs des groupes autorisés peuvent envoyer un DM à ce personnage"
         save: Enregistrer
@@ -156,10 +154,6 @@ fr:
         priority: Priorité
         priority_help: Les personnages prioritaires sont affichés aux utilisateurs en haut de la liste des personnages. Si plusieurs personnages sont prioritaires, ils seront triés par ordre alphabétique.
         tool_options: "Options de l'outil"
-        rag_chunk_tokens: "Télécharger des jetons de fragments"
-        rag_chunk_tokens_help: "Le nombre de jetons à utiliser pour chaque morceau du modèle RAG. Augmentez pour augmenter la quantité de contexte que l'IA peut utiliser. (la modification indexera à nouveau tous les téléversements)"
-        rag_chunk_overlap_tokens: "Téléverser des jetons de chevauchement de morceaux"
-        rag_chunk_overlap_tokens_help: "Le nombre de jetons à superposer entre les morceaux dans le modèle RAG. (la modification indexera à nouveau tous les téléversements)"
         rag_conversation_chunks: "Rechercher des morceaux de conversation"
         rag_conversation_chunks_help: "Le nombre de segments à utiliser pour les recherches de modèles RAG. Augmentez pour augmenter la quantité de contexte que l'IA peut utiliser."
         what_are_personas: "Que sont les personnages IA ?"
@@ -173,9 +167,16 @@ fr:
           #### Accès spécifique à un groupe aux personnages IA
 
           De plus, vous pouvez les configurer pour que certains groupes d'utilisateurs aient accès à des personnages spécifiques. Cela signifie que vous pouvez avoir différents comportements d'IA pour différentes sections de votre forum, et améliorer ainsi encore la diversité et la richesse des interactions de votre communauté.
+      rag:
+        options:
+          rag_chunk_tokens: "Télécharger des jetons de fragments"
+          rag_chunk_tokens_help: "Le nombre de jetons à utiliser pour chaque morceau du modèle RAG. Augmentez pour augmenter la quantité de contexte que l'IA peut utiliser. (la modification indexera à nouveau tous les téléversements)"
+          rag_chunk_overlap_tokens: "Téléverser des jetons de chevauchement de morceaux"
+          rag_chunk_overlap_tokens_help: "Le nombre de jetons à superposer entre les morceaux dans le modèle RAG. (la modification indexera à nouveau tous les téléversements)"
+          show_indexing_options: "Afficher les options de téléversement"
+          hide_indexing_options: "Masquer les options de téléversement"
         uploads:
           title: "Fichiers envoyés"
-          description: "Votre personnage IA pourra rechercher et référencer le contenu des fichiers inclus. Les fichiers téléversés doivent être formatés en texte brut (.txt) ou en markdown (.md)."
           button: "Ajouter des fichiers"
           filter: "Filtrer les téléversements"
           indexed: "Indexé"
@@ -219,9 +220,7 @@ fr:
         short_title: "LLM"
         no_llms: "Pas encore de LLM"
         new: "Nouveau modèle"
-        display_name: "Nom à afficher"
-        name: "Nom du modèle"
-        provider: "Service hébergeant le modèle"
+        display_name: "Nom"
         tokenizer: "Tokéniseur"
         max_prompt_tokens: "Nombre de jetons pour l'invite"
         url: "URL du service hébergeant le modèle"
@@ -236,8 +235,6 @@ fr:
         confirm_delete: Voulez-vous vraiment supprimer ce modèle ?
         delete: Supprimer
         preconfigured_llms: "Sélectionnez votre LLM"
-        preconfigured:
-          none: "Configurer manuellement..."
         next:
           title: "Suivant"
         tests:
@@ -259,6 +256,7 @@ fr:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          fake: "Personnalisé"
         provider_fields:
           access_key_id: "ID de clé d'accès AWS Bedrock"
           region: "Région AWS Bedrock"

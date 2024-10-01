@@ -38,6 +38,7 @@ lv:
         save: Saglabāt
         enabled: "Ieslēgts?"
         delete: Dzēst
+      rag:
         uploads:
           title: "Augšupielādes"
           uploading: "Notiek ielāde..."
@@ -53,6 +54,7 @@ lv:
         next:
           title: "Nākamais"
       llms:
+        display_name: "Vārds"
         save: "Saglabāt"
         edit: "Rediģēt"
         back: "Atpakaļ"

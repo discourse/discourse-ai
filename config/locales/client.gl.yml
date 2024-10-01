@@ -38,6 +38,7 @@ gl:
         save: Gardar
         enabled: "Activado?"
         delete: Eliminar
+      rag:
         uploads:
           title: "Cargas"
           uploading: "Cargando..."
@@ -56,6 +57,7 @@ gl:
         test_modal:
           run: "Executar proba"
       llms:
+        display_name: "Nome"
         save: "Gardar"
         edit: "Editar"
         back: "Volver"
@@ -67,6 +69,7 @@ gl:
           success: "Feito!"
         providers:
           google: "Google"
+          fake: "Personalizado"
       ai_helper:
         context_menu:
           cancel: "Cancelar"

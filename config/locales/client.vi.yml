@@ -38,6 +38,7 @@ vi:
         save: Lưu lại
         enabled: "Kích hoạt"
         delete: Xóa
+      rag:
         uploads:
           title: "Tải lên"
           uploading: "Đang đăng "
@@ -56,6 +57,7 @@ vi:
         test_modal:
           run: "Chạy thử nghiệm"
       llms:
+        display_name: "Tên"
         save: "Lưu lại"
         edit: "Sửa"
         back: "Quay lại"
@@ -67,6 +69,7 @@ vi:
           success: "Thành công!"
         providers:
           google: "G"
+          fake: "Tùy biến"
       ai_helper:
         context_menu:
           cancel: "Huỷ"

@@ -38,6 +38,7 @@ hr:
         save: Spremi
         enabled: "Omogućeno?"
         delete: Pobriši
+      rag:
         uploads:
           title: "Prijenosi"
           uploading: "Učitavanje..."
@@ -56,6 +57,7 @@ hr:
         test_modal:
           run: "Pokreni test"
       llms:
+        display_name: "Ime"
         save: "Spremi"
         edit: "Uredi"
         back: "Natrag"
@@ -67,6 +69,7 @@ hr:
           success: "Uspjeh!"
         providers:
           google: "Google"
+          fake: "Posebna"
       ai_helper:
         context_menu:
           cancel: "Odustani"

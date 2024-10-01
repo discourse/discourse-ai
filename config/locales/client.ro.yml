@@ -38,6 +38,7 @@ ro:
         save: Salvare
         enabled: "Activat?"
         delete: Șterge
+      rag:
         uploads:
           title: "Urcări"
           uploading: "Se încarcă..."
@@ -53,6 +54,7 @@ ro:
         next:
           title: "Următorul"
       llms:
+        display_name: "Nume"
         save: "Salvează"
         edit: "Modifică"
         back: "Înapoi"
@@ -63,6 +65,7 @@ ro:
           success: "Succes!"
         providers:
           google: "Google"
+          fake: "Personalizat"
       ai_helper:
         context_menu:
           cancel: "Anulare"

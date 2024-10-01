@@ -40,6 +40,7 @@ ko:
         save: 저장
         enabled: "활성화?"
         delete: 삭제하기
+      rag:
         uploads:
           title: "업로드된 파일"
           uploading: "업로드 중..."
@@ -58,6 +59,7 @@ ko:
         test_modal:
           run: "테스트 실행"
       llms:
+        display_name: "그룹명"
         save: "저장"
         edit: "편집"
         back: "뒤로"
@@ -69,6 +71,7 @@ ko:
           success: "성공!"
         providers:
           google: "구글"
+          fake: "사용자 정의"
       ai_helper:
         context_menu:
           cancel: "취소"

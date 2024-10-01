@@ -38,6 +38,7 @@ pt:
         save: Guardar
         enabled: "Ativado?"
         delete: Eliminar
+      rag:
         uploads:
           title: "Uploads"
           uploading: "A enviar…"
@@ -53,6 +54,7 @@ pt:
         next:
           title: "Próximo"
       llms:
+        display_name: "Nome"
         save: "Guardar"
         edit: "Editar"
         back: "Retroceder"
@@ -61,6 +63,7 @@ pt:
           title: "Próximo"
         providers:
           google: "Google"
+          fake: "Personalizar"
       ai_helper:
         context_menu:
           cancel: "Cancelar"

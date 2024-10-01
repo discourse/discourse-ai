@@ -38,6 +38,7 @@ nb_NO:
         save: Lagre
         enabled: "Aktivert?"
         delete: Slett
+      rag:
         uploads:
           title: "Opplastinger"
           uploading: "Laster opp…"
@@ -56,6 +57,7 @@ nb_NO:
         test_modal:
           run: "Kjør test"
       llms:
+        display_name: "Navn"
         save: "Lagre"
         edit: "Endre"
         back: "Forrige"
@@ -67,6 +69,7 @@ nb_NO:
           success: "Suksess!"
         providers:
           google: "Google"
+          fake: "Egendefinert"
       ai_helper:
         context_menu:
           cancel: "Avbryt"

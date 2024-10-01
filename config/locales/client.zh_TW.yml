@@ -36,6 +36,7 @@ zh_TW:
         save: 保存
         enabled: "啟用?"
         delete: 刪除
+      rag:
         uploads:
           title: "上傳檔案"
           uploading: "上傳中..."
@@ -54,6 +55,7 @@ zh_TW:
         test_modal:
           run: "執行測試"
       llms:
+        display_name: "名字"
         save: "保存"
         edit: "編輯"
         back: "上一步"
@@ -65,6 +67,7 @@ zh_TW:
           success: "成功!"
         providers:
           google: "Google"
+          fake: "客製"
       ai_helper:
         context_menu:
           cancel: "取消"

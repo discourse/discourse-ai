@@ -107,8 +107,6 @@ id:
         question_consolidator_llm: Model Bahasa untuk Konsolidator Pertanyaan
         question_consolidator_llm_help: Model bahasa yang digunakan untuk konsolidator pertanyaan, Anda dapat memilih model yang kurang kuat untuk menghemat biaya.
         system_prompt: Perintah Sistem
-        show_indexing_options: "Tampilkan Opsi Unggah"
-        hide_indexing_options: "Sembunyikan Opsi Unggah"
         allow_chat: "Izinkan Obrolan"
         allow_chat_help: "Jika diaktifkan, pengguna di grup yang diizinkan dapat mengirimkan DM ke persona ini"
         save: Simpan
@@ -116,8 +114,11 @@ id:
         delete: Hapus
         temperature: Temperatur
         top_p: Top P
+      rag:
+        options:
+          show_indexing_options: "Tampilkan Opsi Unggah"
+          hide_indexing_options: "Sembunyikan Opsi Unggah"
         uploads:
-          description: "Persona AI Anda akan dapat mencari dan mereferensikan konten file yang disertakan. File yang diunggah harus diformat sebagai teks biasa (.txt) atau markdown (.md)."
           uploading: "Mengunggah..."
       tools:
         back: "Kembali"
@@ -131,6 +132,7 @@ id:
         test_modal:
           run: "Operasikan Tes"
       llms:
+        display_name: "Nama"
         save: "Simpan"
         edit: "Ubah"
         back: "Kembali"

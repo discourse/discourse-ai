@@ -34,6 +34,7 @@ sr:
         save: Sačuvaj
         enabled: "Omgućeno"
         delete: Obriši
+      rag:
         uploads:
           uploading: "Uploading..."
       tools:
@@ -48,6 +49,7 @@ sr:
         next:
           title: "Dalje"
       llms:
+        display_name: "Ime foruma"
         save: "Sačuvaj"
         edit: "Izmeni"
         back: "Nazad"
@@ -56,6 +58,7 @@ sr:
           title: "Dalje"
         providers:
           google: "Google"
+          fake: "Posebna"
       ai_helper:
         context_menu:
           cancel: "Odustani"
