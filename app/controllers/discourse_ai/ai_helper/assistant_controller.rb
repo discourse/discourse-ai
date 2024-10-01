@@ -161,7 +161,11 @@ module DiscourseAi
       end
 
       def rate_limiter_performed!
-        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
+        if action_name == "caption_image"
+          RateLimiter.new(current_user, "ai_assistant_caption_image", 20, 1.minutes).performed!
+        else
+          RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
+        end
       end
 
       def ensure_can_request_suggestions
