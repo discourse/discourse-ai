@@ -6,7 +6,7 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_login
       before_action :ensure_can_request_suggestions
-      before_action :rate_limiter_performed!, except: %i[prompts]
+      before_action :rate_limiter_performed!
 
       include SecureUploadEndpointHelpers
 
