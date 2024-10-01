@@ -29,8 +29,8 @@ RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
 
   describe "#max_prompt_tokens" do
     it "returns the max_prompt_tokens from the llm_model" do
-      model.max_prompt_tokens = 10000
-      expect(context.dialect(nil).max_prompt_tokens).to eq(10000)
+      model.max_prompt_tokens = 10_000
+      expect(context.dialect(nil).max_prompt_tokens).to eq(10_000)
     end
   end
 end

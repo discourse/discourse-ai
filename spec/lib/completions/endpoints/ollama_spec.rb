@@ -12,12 +12,12 @@ class OllamaMock < EndpointMock
       message: { role: "assistant" }.merge(message_content),
       done: true,
       done_reason: "stop",
-      total_duration: 7639718541,
-      load_duration: 299886663,
+      total_duration: 7_639_718_541,
+      load_duration: 299_886_663,
       prompt_eval_count: 18,
-      prompt_eval_duration: 220447000,
+      prompt_eval_duration: 220_447_000,
       eval_count: 18,
-      eval_duration: 220447000,
+      eval_duration: 220_447_000,
     }
   end
 
@@ -47,23 +47,27 @@ class OllamaMock < EndpointMock
   end
 
   def stub_streamed_response(prompt, deltas)
-    chunks = deltas.each_with_index.map do |_, index|
-      stream_line(deltas[index])
-    end
+    chunks = deltas.each_with_index.map { |_, index| stream_line(deltas[index]) }
 
-    chunks = (chunks.join("\n\n") << {
-      model: "llama3.1",
-      created_at: "2024-09-25T06:47:21.283028Z",
-      message: { role: "assistant", content: "" },
-      done: true,
-      done_reason: "stop",
-      total_duration: 7639718541,
-      load_duration: 299886663,
-      prompt_eval_count: 18,
-      prompt_eval_duration: 220447000,
-      eval_count: 18,
-      eval_duration: 220447000,
-    }.to_json).split("")
+    chunks =
+      (
+        chunks.join("\n\n") << {
+          model: "llama3.1",
+          created_at: "2024-09-25T06:47:21.283028Z",
+          message: {
+            role: "assistant",
+            content: "",
+          },
+          done: true,
+          done_reason: "stop",
+          total_duration: 7_639_718_541,
+          load_duration: 299_886_663,
+          prompt_eval_count: 18,
+          prompt_eval_duration: 220_447_000,
+          eval_count: 18,
+          eval_duration: 220_447_000,
+        }.to_json
+      ).split("")
 
     WebMock
       .stub_request(:post, "http://api.ollama.ai/api/chat")
@@ -74,15 +78,7 @@ class OllamaMock < EndpointMock
   end
 
   def request_body(prompt, stream: false)
-    model
-      .default_options
-      .merge(messages: prompt)
-      .tap do |b|
-        if !stream
-          b[:stream] = false
-        end
-      end
-      .to_json
+    model.default_options.merge(messages: prompt).tap { |b| b[:stream] = false if !stream }.to_json
   end
 end
 

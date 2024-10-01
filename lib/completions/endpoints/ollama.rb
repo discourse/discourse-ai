@@ -51,9 +51,7 @@ module DiscourseAi
         end
 
         def partials_from(decoded_chunk)
-          decoded_chunk
-            .split("\n")
-            .compact
+          decoded_chunk.split("\n").compact
         end
 
         def extract_completion_from(response_raw)
