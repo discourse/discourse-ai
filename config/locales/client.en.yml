@@ -375,7 +375,7 @@ en:
         cancel_streaming: "Stop reply"
         default_pm_prefix: "[Untitled AI bot PM]"
         shortcut_title: "Start a PM with an AI bot"
-        share: "Share AI conversation"
+        share: "Copy AI conversation"
         conversation_shared: "Conversation copied"
         debug_ai: "View raw AI request and response"
         debug_ai_modal:
