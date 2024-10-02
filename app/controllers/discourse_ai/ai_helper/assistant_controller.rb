@@ -11,8 +11,14 @@ module DiscourseAi
       include SecureUploadEndpointHelpers
 
       RATE_LIMITS = {
-        "default" => { amount: 6, interval: 3.minutes },
-        "caption_image" => { amount: 20, interval: 1.minute }
+        "default" => {
+          amount: 6,
+          interval: 3.minutes,
+        },
+        "caption_image" => {
+          amount: 20,
+          interval: 1.minute,
+        },
       }.freeze
 
       def suggest
@@ -167,7 +173,12 @@ module DiscourseAi
 
       def rate_limiter_performed!
         action_rate_limit = RATE_LIMITS[action_name] || RATE_LIMITS["default"]
-        RateLimiter.new(current_user, "ai_assistant", action_rate_limit[:amount], action_rate_limit[:interval]).performed!
+        RateLimiter.new(
+          current_user,
+          "ai_assistant",
+          action_rate_limit[:amount],
+          action_rate_limit[:interval],
+        ).performed!
       end
 
       def ensure_can_request_suggestions
