@@ -5,13 +5,14 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { inject as service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
-import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 import AdminPageSubheader from "admin/components/admin-page-subheader";
+import AdminSectionLandingItem from "admin/components/admin-section-landing-item";
+import AdminSectionLandingWrapper from "admin/components/admin-section-landing-wrapper";
 import AiLlmEditor from "./ai-llm-editor";
 
 export default class AiLlmsListEditor extends Component {
@@ -181,29 +182,31 @@ export default class AiLlmsListEditor extends Component {
         {{/if}}
         <section class="ai-llms-list-editor__templates">
           <AdminPageSubheader @titleLabel={{this.preconfiguredTitle}} />
-          <div class="ai-llms-list-editor__templates-list">
+
+          <AdminSectionLandingWrapper
+            class="ai-llms-list-editor__templates-list"
+          >
             {{#each this.preConfiguredLlms as |llm|}}
-              <div
+              <AdminSectionLandingItem
+                @titleLabelTranslated={{llm.name}}
+                @descriptionLabelTranslated={{this.modelDescription llm}}
+                @taglineLabel={{concat
+                  "discourse_ai.llms.providers."
+                  llm.provider
+                }}
                 data-llm-id={{llm.id}}
                 class="ai-llms-list-editor__templates-list-item"
               >
-                <h4>
-                  {{i18n (concat "discourse_ai.llms.providers." llm.provider)}}
-                </h4>
-                <h3>
-                  {{llm.name}}
-                </h3>
-                <p>
-                  {{this.modelDescription llm}}
-                </p>
-                <DButton
-                  @action={{fn this.transitionToLlmEditor llm.id}}
-                  @icon="gear"
-                  @label="discourse_ai.llms.preconfigured.button"
-                />
-              </div>
+                <:buttons as |buttons|>
+                  <buttons.Default
+                    @action={{fn this.transitionToLlmEditor llm.id}}
+                    @icon="gear"
+                    @label="discourse_ai.llms.preconfigured.button"
+                  />
+                </:buttons>
+              </AdminSectionLandingItem>
             {{/each}}
-          </div>
+          </AdminSectionLandingWrapper>
         </section>
       {{/if}}
     </section>
