@@ -129,6 +129,7 @@ pl_PL:
         temperature_help: Temperatura do zastosowania w LLM, zwiększ, aby zwiększyć kreatywność (pozostaw puste, aby użyć domyślnego modelu, zazwyczaj wartość od 0,0 do 2,0)
         priority: Priorytet
         priority_help: Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie.
+      rag:
         uploads:
           title: "Pliki"
           button: "Dodaj pliki"
@@ -148,6 +149,7 @@ pl_PL:
         test_modal:
           run: "Przeprowadź test"
       llms:
+        display_name: "Nazwa"
         save: "Zapisz"
         edit: "Edytuj"
         back: "Poprzednia"
@@ -159,6 +161,7 @@ pl_PL:
           success: "Sukces!"
         providers:
           google: "Google"
+          fake: "Niestandardowe"
       related_topics:
         title: "Powiązane tematy"
         pill: "Powiązane"

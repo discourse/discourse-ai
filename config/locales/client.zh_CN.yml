@@ -135,8 +135,6 @@ zh_CN:
         question_consolidator_llm: 问题整合器的语言模型
         question_consolidator_llm_help: 用于问题整合器的语言模型，您可以选择功能较弱的模型来节省成本。
         system_prompt: 系统提示
-        show_indexing_options: "显示上传选项"
-        hide_indexing_options: "隐藏上传选项"
         allow_chat: "允许聊天"
         allow_chat_help: "如果启用，允许的群组中的用户可以向此角色发送私信"
         save: 保存
@@ -156,10 +154,6 @@ zh_CN:
         priority: 优先
         priority_help: 优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。
         tool_options: "工具选项"
-        rag_chunk_tokens: "上传分块词元"
-        rag_chunk_tokens_help: "RAG 模型中为每个分块使用的词元数。增大词元数会增加 AI 可以使用的上下文数量。（更改词元数将为所有上传内容重新编制索引）"
-        rag_chunk_overlap_tokens: "上传分块重叠词元"
-        rag_chunk_overlap_tokens_help: "RAG 模型中分块之间重叠的词元数。（更改词元数将为所有上传内容重新编制索引）"
         rag_conversation_chunks: "搜索对话分块"
         rag_conversation_chunks_help: "为 RAG 模型搜索使用的分块数。增加分块数会增加 AI 可以使用的上下文数量。"
         what_are_personas: "什么是 AI 角色？"
@@ -173,9 +167,16 @@ zh_CN:
           #### 对 AI 角色的群组特定的访问
 
           此外，您还可以对其进行设置，以便某些用户群组可以访问特定角色。这意味着您可以为论坛的不同版块设置不同的 AI 行为，从而进一步增强社区互动的多元化和丰富性。
+      rag:
+        options:
+          rag_chunk_tokens: "上传分块词元"
+          rag_chunk_tokens_help: "RAG 模型中为每个分块使用的词元数。增大词元数会增加 AI 可以使用的上下文数量。（更改词元数将为所有上传内容重新编制索引）"
+          rag_chunk_overlap_tokens: "上传分块重叠词元"
+          rag_chunk_overlap_tokens_help: "RAG 模型中分块之间重叠的词元数。（更改词元数将为所有上传内容重新编制索引）"
+          show_indexing_options: "显示上传选项"
+          hide_indexing_options: "隐藏上传选项"
         uploads:
           title: "上传"
-          description: "您的 AI 角色将能够搜索和引用所包含文件的内容。上传的文件应格式化为纯文本 (.txt) 或 markdown (.md)。"
           button: "添加文件"
           filter: "筛选上传"
           indexed: "已编制索引"
@@ -219,9 +220,7 @@ zh_CN:
         short_title: "LLM"
         no_llms: "没有 LLM"
         new: "新建模型"
-        display_name: "用于显示的名称"
-        name: "模型名称"
-        provider: "托管模型的服务"
+        display_name: "名称"
         tokenizer: "词元生成器"
         max_prompt_tokens: "提示的词元数"
         url: "托管模型的服务的 URL"
@@ -236,8 +235,6 @@ zh_CN:
         confirm_delete: 确定要删除此模型吗？
         delete: 删除
         preconfigured_llms: "选择您的 LLM"
-        preconfigured:
-          none: "手动配置..."
         next:
           title: "下一步"
         tests:
@@ -259,6 +256,7 @@ zh_CN:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          fake: "自定义"
         provider_fields:
           access_key_id: "AWS Bedrock 访问密钥 ID"
           region: "AWS Bedrock 区域"

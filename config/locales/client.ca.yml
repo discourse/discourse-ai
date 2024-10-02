@@ -38,6 +38,7 @@ ca:
         save: Desa
         enabled: "Activat?"
         delete: Suprimeix
+      rag:
         uploads:
           title: "Càrregues"
           uploading: "Carregant..."
@@ -56,6 +57,7 @@ ca:
         test_modal:
           run: "Executa el test"
       llms:
+        display_name: "Nom"
         save: "Desa"
         edit: "Edita"
         back: "Enrere"
@@ -67,6 +69,7 @@ ca:
           success: "Èxit!"
         providers:
           google: "Google"
+          fake: "Personalitzat"
       ai_helper:
         context_menu:
           cancel: "Cancel·la"

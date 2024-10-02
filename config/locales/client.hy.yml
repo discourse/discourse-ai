@@ -38,6 +38,7 @@ hy:
         save: Պահպանել
         enabled: "Միացվա՞ծ է:"
         delete: Ջնջել
+      rag:
         uploads:
           title: "Վերբեռնումներ"
           uploading: "Վերբեռնում..."
@@ -56,6 +57,7 @@ hy:
         test_modal:
           run: "Մեկնարկել Փորձարկումը"
       llms:
+        display_name: "Անուն"
         save: "Պահպանել"
         edit: "Խմբագրել"
         back: "Ետ"
@@ -67,6 +69,7 @@ hy:
           success: "Հաջողություն!"
         providers:
           google: "Google"
+          fake: "Մասնավոր"
       ai_helper:
         context_menu:
           cancel: "Չեղարկել"

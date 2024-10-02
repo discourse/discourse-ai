@@ -38,6 +38,7 @@ bs_BA:
         save: Save
         enabled: "Omogućen?"
         delete: Delete
+      rag:
         uploads:
           title: "Uploads"
           uploading: "Učitavanje..."
@@ -56,6 +57,7 @@ bs_BA:
         test_modal:
           run: "Pokreni test"
       llms:
+        display_name: "Ime"
         save: "Save"
         edit: "Edit"
         back: "Prethodno"
@@ -67,6 +69,7 @@ bs_BA:
           success: "Uspjeh!"
         providers:
           google: "Google"
+          fake: "Custom"
       ai_helper:
         context_menu:
           cancel: "Odustani"

@@ -135,8 +135,6 @@ ja:
         question_consolidator_llm: 質問統合用の言語モデル
         question_consolidator_llm_help: 質問統合に使用する言語モデル。それほど強力でないモデルを選択してコストを節約することも可能です。
         system_prompt: システムプロンプト
-        show_indexing_options: "アップロードオプションを表示"
-        hide_indexing_options: "アップロードオプションを非表示"
         allow_chat: "チャットを許可"
         allow_chat_help: "有効にすると、許可されているグループのユーザーはこのペルソナに DM を送信できます"
         save: 保存
@@ -156,10 +154,6 @@ ja:
         priority: 優先度
         priority_help: 優先ペルソナはペルソナリストの先頭に表示されます。複数のペルソナが優先されている場合は、アルファベット順に並べ替えられます。
         tool_options: "ツールのオプション"
-        rag_chunk_tokens: "チャンクトークンをアップロード"
-        rag_chunk_tokens_help: "RAG モデルの各チャンクに使用するトークン数。値を増やすと、AI が使用できるコンテキストの数が増加します (変更するとすべてのアップロードのインデックスが再作成されます)"
-        rag_chunk_overlap_tokens: "チャンクオーバーラップトークンをアップロード"
-        rag_chunk_overlap_tokens_help: "RAG モデル内のチャンク間で重複するトークンの数。(変更するとすべてのアップロードのインデックスが再作成されます)"
         rag_conversation_chunks: "会話チャンクを検索"
         rag_conversation_chunks_help: "RAG モデル検索に使用するチャンクの数。値を増やすと、AI が使用できるコンテキストの量が増えます。"
         what_are_personas: "AI ペルソナとは何ですか？"
@@ -173,9 +167,16 @@ ja:
           #### AI ペルソナへのアクセスをグループごとに設定
 
           さらに、特定のユーザーグループが特定のペルソナにアクセスできるようにセットアップすることができます。そのため、フォーラムのセクションごとに異なる AI の振る舞いを適用し、コミュニティーの対話の多様性と充実度をさらに強化することができます。
+      rag:
+        options:
+          rag_chunk_tokens: "チャンクトークンをアップロード"
+          rag_chunk_tokens_help: "RAG モデルの各チャンクに使用するトークン数。値を増やすと、AI が使用できるコンテキストの数が増加します (変更するとすべてのアップロードのインデックスが再作成されます)"
+          rag_chunk_overlap_tokens: "チャンクオーバーラップトークンをアップロード"
+          rag_chunk_overlap_tokens_help: "RAG モデル内のチャンク間で重複するトークンの数。(変更するとすべてのアップロードのインデックスが再作成されます)"
+          show_indexing_options: "アップロードオプションを表示"
+          hide_indexing_options: "アップロードオプションを非表示"
         uploads:
           title: "アップロード"
-          description: "AI ペルソナは含まれているファイルのコンテンツを検索して参照できます。アップロードされるファイルはプレーンテキスト (.txt) または Markdown (.md) としてフォーマットされている必要があります。"
           button: "ファイルを追加"
           filter: "アップロードをフィルタ"
           indexed: "インデックスを作成しました"
@@ -219,9 +220,7 @@ ja:
         short_title: "LLM"
         no_llms: "まだ LLM がありません"
         new: "新しいモデル"
-        display_name: "表示する名前"
-        name: "モデル名"
-        provider: "モデルをホストするサービス"
+        display_name: "名前"
         tokenizer: "トークナイザ―"
         max_prompt_tokens: "プロンプトのトークン数"
         url: "モデルをホストするサービスの URL"
@@ -236,8 +235,6 @@ ja:
         confirm_delete: このモデルを削除してもよろしいですか？
         delete: 削除
         preconfigured_llms: "LLM を選択してください"
-        preconfigured:
-          none: "手動で構成..."
         next:
           title: "次へ"
         tests:
@@ -259,6 +256,7 @@ ja:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          fake: "カスタム"
         provider_fields:
           access_key_id: "AWS Bedrock アクセスキー ID"
           region: "AWS Bedrock リージョン"

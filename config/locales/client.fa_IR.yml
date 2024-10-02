@@ -60,6 +60,7 @@ fa_IR:
         save: ذخیره
         enabled: "فعال شده؟"
         delete: حذف
+      rag:
         uploads:
           title: "بارگذاری‌ها"
           uploading: "در حال بار گذاری..."
@@ -79,9 +80,7 @@ fa_IR:
           run: "اجرای آزمایش"
       llms:
         new: "مدل جدید"
-        display_name: "نام برای نمایش"
-        name: "نام مدل"
-        provider: "سرویس میزبانی مدل"
+        display_name: "نام"
         save: "ذخیره"
         edit: "ویرایش"
         back: "بازگشت"
@@ -95,6 +94,7 @@ fa_IR:
           failure: "در حال ارتباط با مدل این خطا رخ داد: %{error}"
         providers:
           google: "گوگل"
+          fake: "سفارشی"
       related_topics:
         title: "موضوعات مرتبط"
       ai_helper:

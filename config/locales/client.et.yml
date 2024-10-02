@@ -38,6 +38,7 @@ et:
         save: Salvesta
         enabled: "Sisse lülitatud?"
         delete: Kustuta
+      rag:
         uploads:
           title: "Üleslaadimised"
           uploading: "Laen üles..."
@@ -53,6 +54,7 @@ et:
         next:
           title: "Järgmine"
       llms:
+        display_name: "Nimi"
         save: "Salvesta"
         edit: "Muuda"
         back: "Tagasi"
@@ -63,6 +65,7 @@ et:
           success: "Korras!"
         providers:
           google: "Google"
+          fake: "Individuaalne"
       ai_helper:
         context_menu:
           cancel: "Tühista"

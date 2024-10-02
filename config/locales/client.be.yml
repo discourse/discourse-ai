@@ -35,6 +35,7 @@ be:
         user: карыстальнік
         save: Захаваць
         delete: выдаляць
+      rag:
         uploads:
           title: "Загрузкі"
           uploading: "Запампоўванне ..."
@@ -50,6 +51,7 @@ be:
         next:
           title: "Далей"
       llms:
+        display_name: "імя"
         save: "Захаваць"
         edit: "рэдагаваць"
         back: "Назад"

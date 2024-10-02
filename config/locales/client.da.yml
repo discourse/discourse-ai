@@ -38,6 +38,7 @@ da:
         save: Gem
         enabled: "Aktiveret?"
         delete: Slet
+      rag:
         uploads:
           title: "Overførsler"
           uploading: "Overfører…"
@@ -56,6 +57,7 @@ da:
         test_modal:
           run: "Kør test"
       llms:
+        display_name: "Navn"
         save: "Gem"
         edit: "Rediger"
         back: "Tilbage"
@@ -67,6 +69,7 @@ da:
           success: "Succes!"
         providers:
           google: "Google"
+          fake: "Tilpasset"
       ai_helper:
         context_menu:
           cancel: "Annuller"

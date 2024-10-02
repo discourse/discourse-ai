@@ -40,6 +40,7 @@ sk:
         save: Uložiť
         enabled: "Povolené?"
         delete: Odstrániť
+      rag:
         uploads:
           title: "Nahrávanie"
           uploading: "Načítavam..."
@@ -59,6 +60,7 @@ sk:
         test_modal:
           run: "Spustiť test"
       llms:
+        display_name: "Meno"
         save: "Uložiť"
         edit: "Upraviť"
         back: "Späť"
@@ -70,6 +72,7 @@ sk:
           success: "Úspech!"
         providers:
           google: "Google"
+          fake: "Vlastné"
       ai_helper:
         context_menu:
           cancel: "Zrušiť"

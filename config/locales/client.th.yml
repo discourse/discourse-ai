@@ -38,6 +38,7 @@ th:
         save: บันทึก
         enabled: "เปิดใช้"
         delete: ลบ
+      rag:
         uploads:
           title: "อัปโหลด"
           uploading: "กำลังอัปโหลด..."
@@ -53,6 +54,7 @@ th:
         next:
           title: "ต่อไป"
       llms:
+        display_name: "ชื่อ"
         save: "บันทึก"
         edit: "แก้ไข"
         back: "กลับ"

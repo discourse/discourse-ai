@@ -38,6 +38,7 @@ sl:
         save: Shrani
         enabled: "Vključeno?"
         delete: Izbriši
+      rag:
         uploads:
           title: "Prenosi"
           uploading: "Nalagam..."
@@ -53,6 +54,7 @@ sl:
         next:
           title: "Naprej"
       llms:
+        display_name: "Ime"
         save: "Shrani"
         edit: "Uredi"
         back: "Nazaj"
@@ -63,6 +65,7 @@ sl:
           success: "Uspeh!"
         providers:
           google: "Google"
+          fake: "Po meri"
       ai_helper:
         context_menu:
           cancel: "Prekliči"

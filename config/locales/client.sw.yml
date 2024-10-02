@@ -38,6 +38,7 @@ sw:
         save: Hifadhi
         enabled: "Imeruhusiwa?"
         delete: Futa
+      rag:
         uploads:
           title: "Upakiaji"
           uploading: "Inaongezwa"
@@ -53,6 +54,7 @@ sw:
         next:
           title: "Ijayo"
       llms:
+        display_name: "Jina"
         save: "Hifadhi"
         edit: "Hariri"
         back: "Iliyopita"
@@ -63,6 +65,7 @@ sw:
           success: "Mafanikio!"
         providers:
           google: "Google"
+          fake: "Binafsi"
       ai_helper:
         context_menu:
           cancel: "Ghairi"

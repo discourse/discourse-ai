@@ -38,6 +38,7 @@ el:
         save: Αποθήκευση
         enabled: "Ενεργοποιημένο;"
         delete: Σβήσιμο
+      rag:
         uploads:
           title: "Μεταφορτώσεις"
           uploading: "Επιφόρτωση..."
@@ -56,6 +57,7 @@ el:
         test_modal:
           run: "Εκτέλεση δοκιμής"
       llms:
+        display_name: "Όνομα"
         save: "Αποθήκευση"
         edit: "Επεξεργασία"
         back: "Πίσω"
@@ -67,6 +69,7 @@ el:
           success: "Επιτυχία!"
         providers:
           google: "Google"
+          fake: "Προσαρμοσμένο"
       ai_helper:
         context_menu:
           cancel: "Ακύρωση"

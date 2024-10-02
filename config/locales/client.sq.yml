@@ -38,6 +38,7 @@ sq:
         save: Ruaj
         enabled: "Aktivizuar?"
         delete: Fshij
+      rag:
         uploads:
           uploading: "Duke ngarkuar..."
       tools:
@@ -52,6 +53,7 @@ sq:
         next:
           title: "Vazhdo përpara"
       llms:
+        display_name: "Emri"
         save: "Ruaj"
         edit: "Redakto"
         back: "Kthehu mbrapa"
@@ -60,6 +62,7 @@ sq:
           title: "Vazhdo përpara"
         providers:
           google: "Google"
+          fake: "Grupet e krijuara"
       ai_helper:
         context_menu:
           cancel: "Anulo"

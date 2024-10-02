@@ -76,6 +76,7 @@ lt:
         enabled: "Galimas?"
         allowed_groups: Leidžiamos grupės
         delete: Pašalinti
+      rag:
         uploads:
           title: "Įkėlimai"
           uploading: "Įkeliama"
@@ -94,6 +95,7 @@ lt:
         test_modal:
           run: "Vykdyti testą"
       llms:
+        display_name: "Vardas"
         save: "Išsaugoti"
         edit: "Redaguoti"
         back: "Atgal"
@@ -105,6 +107,7 @@ lt:
           success: "Sėkmingai!"
         providers:
           google: "Google"
+          fake: "Išskirtinės"
       ai_helper:
         context_menu:
           trigger: "Paklauskite AI"

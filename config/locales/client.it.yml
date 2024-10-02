@@ -135,8 +135,6 @@ it:
         question_consolidator_llm: Modello linguistico per il consolidatore di domande
         question_consolidator_llm_help: Il modello linguistico da utilizzare per il consolidatore di domande. È possibile scegliere un modello meno potente per risparmiare sui costi.
         system_prompt: Comando di sistema
-        show_indexing_options: "Mostra opzioni di caricamento"
-        hide_indexing_options: "Nascondi opzioni di caricamento"
         allow_chat: "Consenti chat"
         allow_chat_help: "Se l'opzione è abilitata, gli utenti nei gruppi consentiti possono scrivere in DM questa persona"
         save: Salva
@@ -156,10 +154,6 @@ it:
         priority: Priorità
         priority_help: I personaggi prioritari vengono visualizzati agli utenti nella parte superiore dell'elenco dei personaggi. Se più personaggi hanno la priorità, verranno ordinati in ordine alfabetico.
         tool_options: "Opzioni dello strumento"
-        rag_chunk_tokens: "Carica token di blocco"
-        rag_chunk_tokens_help: "Il numero di token da utilizzare per ogni blocco nel modello RAG. Aumenta per aumentare la quantità di contesto che l'IA può utilizzare. (La modifica reindicizzerà tutti i caricamenti)"
-        rag_chunk_overlap_tokens: "Carica token di sovrapposizione di blocco"
-        rag_chunk_overlap_tokens_help: "Il numero di token da sovrapporre tra i blocchi nel modello RAG. (La modifica reindicizzerà tutti i caricamenti)"
         rag_conversation_chunks: "Cerca blocchi di conversazione"
         rag_conversation_chunks_help: "Il numero di blocchi da utilizzare per le ricerche del modello RAG. Aumenta per aumentare la quantità di contesto che l'IA può utilizzare."
         what_are_personas: "Cosa sono i personaggi IA?"
@@ -173,9 +167,16 @@ it:
           #### Accesso specifico per gruppo ai personaggi IA
 
           Inoltre, puoi configurarli in modo che determinati gruppi di utenti abbiano accesso a personaggi specifici. Ciò significa che puoi avere comportamenti IA diversi per le diverse sezioni del tuo forum, migliorando ulteriormente la diversità e la ricchezza delle interazioni della tua community.
+      rag:
+        options:
+          rag_chunk_tokens: "Carica token di blocco"
+          rag_chunk_tokens_help: "Il numero di token da utilizzare per ogni blocco nel modello RAG. Aumenta per aumentare la quantità di contesto che l'IA può utilizzare. (La modifica reindicizzerà tutti i caricamenti)"
+          rag_chunk_overlap_tokens: "Carica token di sovrapposizione di blocco"
+          rag_chunk_overlap_tokens_help: "Il numero di token da sovrapporre tra i blocchi nel modello RAG. (La modifica reindicizzerà tutti i caricamenti)"
+          show_indexing_options: "Mostra opzioni di caricamento"
+          hide_indexing_options: "Nascondi opzioni di caricamento"
         uploads:
           title: "Caricamenti"
-          description: "Il tuo personaggio IA sarà in grado di cercare e fare riferimento al contenuto dei file inclusi. I file caricati devono essere formattati come testo normale (.txt) o markdown (.md)."
           button: "Aggiungi file"
           filter: "Filtro caricamenti"
           indexed: "Indicizzato"
@@ -219,9 +220,7 @@ it:
         short_title: "LLM"
         no_llms: "Ancora nessun LLM"
         new: "Nuovo modello"
-        display_name: "Nome da visualizzare"
-        name: "Nome del modello"
-        provider: "Servizio che ospita il modello"
+        display_name: "Nome"
         tokenizer: "Tokenizzatore"
         max_prompt_tokens: "Numero di token per il comando"
         url: "URL del servizio che ospita il modello"
@@ -236,8 +235,6 @@ it:
         confirm_delete: Vuoi davvero eliminare questo modello?
         delete: Elimina
         preconfigured_llms: "Seleziona il tuo LLM"
-        preconfigured:
-          none: "Configura manualmente..."
         next:
           title: "Avanti"
         tests:
@@ -259,6 +256,7 @@ it:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          fake: "Personalizzato"
         provider_fields:
           access_key_id: "ID chiave di accesso AWS Bedrock"
           region: "Regione AWS Bedrock"

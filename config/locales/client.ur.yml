@@ -38,6 +38,7 @@ ur:
         save: محفوظ کریں
         enabled: "فعال؟"
         delete: مٹائیں
+      rag:
         uploads:
           title: "اَپ لوڈز"
           uploading: "اَپ لوڈ کیا جا رہا ہے..."
@@ -56,6 +57,7 @@ ur:
         test_modal:
           run: "ٹیسٹ چلائیں"
       llms:
+        display_name: "نام"
         save: "محفوظ کریں"
         edit: "ترمیم کریں"
         back: "واپس"
@@ -67,6 +69,7 @@ ur:
           success: "کامیابی!"
         providers:
           google: "گُوگَل"
+          fake: "اپنی مرضی کا"
       ai_helper:
         context_menu:
           cancel: "منسوخ"

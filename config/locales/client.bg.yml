@@ -38,6 +38,7 @@ bg:
         save: Запази
         enabled: "Да е включен?"
         delete: Изтрий
+      rag:
         uploads:
           uploading: "Качва се..."
       tools:
@@ -52,6 +53,7 @@ bg:
         next:
           title: "Напред"
       llms:
+        display_name: "Име"
         save: "Запази "
         edit: "Редактирай"
         back: "Назад"
@@ -60,6 +62,7 @@ bg:
           title: "Напред"
         providers:
           google: "Google"
+          fake: "По избор"
       ai_helper:
         context_menu:
           cancel: "Прекрати"

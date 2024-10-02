@@ -40,6 +40,7 @@ uk:
         save: Зберегти
         enabled: "Включено?"
         delete: Видалити
+      rag:
         uploads:
           title: "Завантаження"
           uploading: "Надсилання…"
@@ -59,6 +60,7 @@ uk:
         test_modal:
           run: "Виконати Тест"
       llms:
+        display_name: "Імʼя"
         save: "Зберегти"
         edit: "Редагувати"
         back: "Назад"
@@ -70,6 +72,7 @@ uk:
           success: "Успіх!"
         providers:
           google: "Google"
+          fake: "Користувацька"
       ai_helper:
         context_menu:
           cancel: "Скасувати"
