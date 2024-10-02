@@ -162,7 +162,7 @@ module DiscourseAi
 
       def rate_limiter_performed!
         if action_name == "caption_image"
-          RateLimiter.new(current_user, "ai_assistant_caption_image", 20, 1.minutes).performed!
+          RateLimiter.new(current_user, "ai_assistant_caption_image", 20, 1.minute).performed!
         else
           RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
         end
