@@ -104,7 +104,10 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       context "when performing numerous requests" do
         it "rate limits" do
           RateLimiter.enable
-          6.times do
+          rate_limit = described_class::RATE_LIMITS["default"]
+          amount = rate_limit[:amount]
+
+          amount.times do
             post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text_to_proofread }
             expect(response.status).to eq(200)
           end
@@ -276,7 +279,11 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       context "when performing numerous requests" do
         it "rate limits" do
           RateLimiter.enable
-          20.times do
+
+          rate_limit = described_class::RATE_LIMITS["caption_image"]
+          amount = rate_limit[:amount]
+          
+          amount.times do
             request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
               expect(r.status).to eq(200)
             end

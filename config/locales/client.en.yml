@@ -352,7 +352,6 @@ en:
             prompt: "This post contains non-captioned images. Would you like to enable automatic AI captions on image uploads? (This can be changed in your preferences later)"
             confirm: "Enable"
             cancel: "Don't ask again"
-          error: "There was an error generating a caption for the image."
         no_content_error: "Add content first to perform AI actions on it"
 
       reviewables:

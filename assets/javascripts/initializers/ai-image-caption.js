@@ -1,5 +1,5 @@
 import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import { extractError, popupAjaxError } from "discourse/lib/ajax-error";
 import { apiInitializer } from "discourse/lib/api";
 import { getUploadMarkdown, isImage } from "discourse/lib/uploads";
 import I18n from "discourse-i18n";
@@ -115,7 +115,7 @@ export default apiInitializer("1.25.0", (api) => {
         class: "ai-image-caption-error-toast",
         duration: 3000,
         data: {
-          message: I18n.t("discourse_ai.ai_helper.image_caption.error"),
+          message: extractError(error),
         },
       });
     }

@@ -10,6 +10,11 @@ module DiscourseAi
 
       include SecureUploadEndpointHelpers
 
+      RATE_LIMITS = {
+        "default" => { amount: 6, interval: 3.minutes },
+        "caption_image" => { amount: 20, interval: 1.minute }
+      }.freeze
+
       def suggest
         input = get_text_param!
         force_default_locale = params[:force_default_locale] || false
@@ -161,11 +166,8 @@ module DiscourseAi
       end
 
       def rate_limiter_performed!
-        if action_name == "caption_image"
-          RateLimiter.new(current_user, "ai_assistant_caption_image", 20, 1.minute).performed!
-        else
-          RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
-        end
+        action_rate_limit = RATE_LIMITS[action_name] || RATE_LIMITS["default"]
+        RateLimiter.new(current_user, "ai_assistant", action_rate_limit[:amount], action_rate_limit[:interval]).performed!
       end
 
       def ensure_can_request_suggestions
