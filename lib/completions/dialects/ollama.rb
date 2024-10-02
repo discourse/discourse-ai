@@ -10,7 +10,9 @@ module DiscourseAi
           end
         end
 
-        # TODO: Add tool suppport
+        def native_tool_support?
+          true
+        end
 
         def max_prompt_tokens
           llm_model.max_prompt_tokens
@@ -18,12 +20,24 @@ module DiscourseAi
 
         private
 
+        def tools_dialect
+          @tools_dialect ||= DiscourseAi::Completions::Dialects::OllamaTools.new(prompt.tools)
+        end
+
         def tokenizer
           llm_model.tokenizer_class
         end
 
         def model_msg(msg)
           { role: "assistant", content: msg[:content] }
+        end
+
+        def tool_call_msg(msg)
+          tools_dialect.from_raw_tool_call(msg)
+        end
+
+        def tool_msg(msg)
+          tools_dialect.from_raw_tool(msg)
         end
 
         def system_msg(msg)
