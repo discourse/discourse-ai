@@ -282,7 +282,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
           rate_limit = described_class::RATE_LIMITS["caption_image"]
           amount = rate_limit[:amount]
-          
+
           amount.times do
             request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
               expect(r.status).to eq(200)
