@@ -60,6 +60,10 @@ module DiscourseAi
           @tools ||= tools_dialect.translated_tools
         end
 
+        def tool_choice
+          prompt.tool_choice
+        end
+
         def translate
           messages = prompt.messages
 

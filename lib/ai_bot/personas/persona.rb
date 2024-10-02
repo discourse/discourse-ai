@@ -113,6 +113,10 @@ module DiscourseAi
           []
         end
 
+        def force_tool_use
+          []
+        end
+
         def required_tools
           []
         end

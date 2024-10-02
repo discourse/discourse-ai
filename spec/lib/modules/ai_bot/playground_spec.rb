@@ -78,13 +78,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
-
-    it "uses custom tool in conversation" do
-      persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
-      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
-      playground = DiscourseAi::AiBot::Playground.new(bot)
-
-      function_call = (<<~XML).strip
+    let(:function_call) { (<<~XML).strip }
         <function_calls>
           <invoke>
             <tool_name>search</tool_name>
@@ -95,6 +89,32 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           </invoke>
         </function_calls>",
       XML
+
+    let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
+
+    let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
+
+    it "can force usage of a tool" do
+      tool_name = "custom-#{custom_tool.id}"
+      ai_persona.update!(tools: [[tool_name, nil, "force"]])
+      responses = [function_call, "custom tool did stuff (maybe)"]
+
+      prompt = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompt|
+        new_post = Fabricate(:post, raw: "Can you use the custom tool?")
+        _reply_post = playground.reply_to(new_post)
+        prompt = _prompt
+      end
+
+      expect(prompt.length).to eq(2)
+      expect(prompt[0].tool_choice).to eq("search")
+      expect(prompt[1].tool_choice).to eq(nil)
+    end
+
+    it "uses custom tool in conversation" do
+      persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
+      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
+      playground = DiscourseAi::AiBot::Playground.new(bot)
 
       responses = [function_call, "custom tool did stuff (maybe)"]
 

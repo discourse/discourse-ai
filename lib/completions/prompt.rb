@@ -6,7 +6,7 @@ module DiscourseAi
       INVALID_TURN = Class.new(StandardError)
 
       attr_reader :messages
-      attr_accessor :tools, :topic_id, :post_id, :max_pixels
+      attr_accessor :tools, :topic_id, :post_id, :max_pixels, :tool_choice
 
       def initialize(
         system_message_text = nil,
@@ -14,7 +14,8 @@ module DiscourseAi
         tools: [],
         topic_id: nil,
         post_id: nil,
-        max_pixels: nil
+        max_pixels: nil,
+        tool_choice: nil
       )
         raise ArgumentError, "messages must be an array" if !messages.is_a?(Array)
         raise ArgumentError, "tools must be an array" if !tools.is_a?(Array)
@@ -37,6 +38,7 @@ module DiscourseAi
         @messages.each_cons(2) { |last_turn, new_turn| validate_turn(last_turn, new_turn) }
 
         @tools = tools
+        @tool_choice = tool_choice
       end
 
       def push(type:, content:, id: nil, name: nil, upload_ids: nil)
