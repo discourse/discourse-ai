@@ -1,5 +1,5 @@
 import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
+import { extractError, popupAjaxError } from "discourse/lib/ajax-error";
 import { apiInitializer } from "discourse/lib/api";
 import { getUploadMarkdown, isImage } from "discourse/lib/uploads";
 import I18n from "discourse-i18n";
@@ -111,7 +111,13 @@ export default apiInitializer("1.25.0", (api) => {
       });
       return response.caption;
     } catch (error) {
-      popupAjaxError(error);
+      toasts.error({
+        class: "ai-image-caption-error-toast",
+        duration: 3000,
+        data: {
+          message: extractError(error),
+        },
+      });
     }
   }
 
@@ -129,6 +135,7 @@ export default apiInitializer("1.25.0", (api) => {
     return;
   }
 
+  const toasts = api.container.lookup("service:toasts");
   // Automatically caption uploaded images
   api.addComposerUploadMarkdownResolver(async (upload) => {
     const autoCaptionEnabled = currentUser.get(

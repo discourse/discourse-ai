@@ -100,6 +100,23 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           expect(response.parsed_body["diff"]).to eq(expected_diff)
         end
       end
+
+      context "when performing numerous requests" do
+        it "rate limits" do
+          RateLimiter.enable
+          rate_limit = described_class::RATE_LIMITS["default"]
+          amount = rate_limit[:amount]
+
+          amount.times do
+            post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text_to_proofread }
+            expect(response.status).to eq(200)
+          end
+          DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
+            post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text_to_proofread }
+            expect(response.status).to eq(429)
+          end
+        end
+      end
     end
   end
 
@@ -255,6 +272,25 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
               expect(r.status).to eq(200)
               expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
             end
+          end
+        end
+      end
+
+      context "when performing numerous requests" do
+        it "rate limits" do
+          RateLimiter.enable
+
+          rate_limit = described_class::RATE_LIMITS["caption_image"]
+          amount = rate_limit[:amount]
+
+          amount.times do
+            request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+              expect(r.status).to eq(200)
+            end
+          end
+
+          request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+            expect(r.status).to eq(429)
           end
         end
       end

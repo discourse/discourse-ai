@@ -6,9 +6,20 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_login
       before_action :ensure_can_request_suggestions
-      before_action :rate_limiter_performed!, except: %i[prompts]
+      before_action :rate_limiter_performed!
 
       include SecureUploadEndpointHelpers
+
+      RATE_LIMITS = {
+        "default" => {
+          amount: 6,
+          interval: 3.minutes,
+        },
+        "caption_image" => {
+          amount: 20,
+          interval: 1.minute,
+        },
+      }.freeze
 
       def suggest
         input = get_text_param!
@@ -161,7 +172,13 @@ module DiscourseAi
       end
 
       def rate_limiter_performed!
-        RateLimiter.new(current_user, "ai_assistant", 6, 3.minutes).performed!
+        action_rate_limit = RATE_LIMITS[action_name] || RATE_LIMITS["default"]
+        RateLimiter.new(
+          current_user,
+          "ai_assistant",
+          action_rate_limit[:amount],
+          action_rate_limit[:interval],
+        ).performed!
       end
 
       def ensure_can_request_suggestions
