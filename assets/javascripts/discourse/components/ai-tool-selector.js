@@ -6,7 +6,7 @@ export default MultiSelectComponent.extend({
     this.selectKit.options.set("disabled", this.get("attrs.disabled.value"));
   }),
 
-  content: computed(function () {
+  content: computed("tools", function () {
     return this.tools;
   }),
 

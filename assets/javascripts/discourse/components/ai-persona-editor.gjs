@@ -60,10 +60,10 @@ export default class PersonaEditor extends Component {
 
   @action
   toolsChanged(tools) {
-    this.selectedToolNames = tools;
     this.selectedTools = this.args.personas.resultSetMeta.tools.filter((tool) =>
-      this.editingModel.tools.includes(tool.id)
+      tools.includes(tool.id)
     );
+    this.selectedToolNames = tools.slice();
 
     this.forcedToolNames = this.forcedToolNames.filter(
       (tool) => this.editingModel.tools.indexOf(tool) !== -1
