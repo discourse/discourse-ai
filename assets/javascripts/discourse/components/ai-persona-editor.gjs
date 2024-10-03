@@ -40,8 +40,37 @@ export default class PersonaEditor extends Component {
   @tracked maxPixelsValue = null;
   @tracked ragIndexingStatuses = null;
 
+  @tracked selectedTools = [];
+  @tracked selectedToolNames = [];
+  @tracked forcedToolNames = [];
+
   get chatPluginEnabled() {
     return this.siteSettings.chat_enabled;
+  }
+
+  get allowForceTools() {
+    return !this.editingModel?.system && this.editingModel?.tools?.length > 0;
+  }
+
+  @action
+  forcedToolsChanged(tools) {
+    this.forcedToolNames = tools;
+    this.editingModel.forcedTools = this.forcedToolNames;
+  }
+
+  @action
+  toolsChanged(tools) {
+    this.selectedToolNames = tools;
+    this.selectedTools = this.args.personas.resultSetMeta.tools.filter((tool) =>
+      this.editingModel.tools.includes(tool.id)
+    );
+
+    this.forcedToolNames = this.forcedToolNames.filter(
+      (tool) => this.editingModel.tools.indexOf(tool) !== -1
+    );
+
+    this.editingModel.tools = this.selectedToolNames;
+    this.editingModel.forcedTools = this.forcedToolNames;
   }
 
   @action
@@ -51,6 +80,12 @@ export default class PersonaEditor extends Component {
     this.maxPixelsValue = this.findClosestPixelValue(
       this.editingModel.vision_max_pixels
     );
+
+    this.selectedToolNames = this.editingModel.tools || [];
+    this.selectedTools = this.args.personas.resultSetMeta.tools.filter((tool) =>
+      this.editingModel.tools.includes(tool.id)
+    );
+    this.forcedToolNames = this.editingModel.forcedTools || [];
   }
 
   findClosestPixelValue(pixels) {
@@ -336,11 +371,23 @@ export default class PersonaEditor extends Component {
         <label>{{I18n.t "discourse_ai.ai_persona.tools"}}</label>
         <AiToolSelector
           class="ai-persona-editor__tools"
-          @value={{this.editingModel.tools}}
+          @value={{this.selectedToolNames}}
           @disabled={{this.editingModel.system}}
           @tools={{@personas.resultSetMeta.tools}}
+          @onChange={{this.toolsChanged}}
         />
       </div>
+      {{#if this.allowForceTools}}
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.ai_persona.forced_tools"}}</label>
+          <AiToolSelector
+            class="ai-persona-editor__tools"
+            @value={{this.forcedToolNames}}
+            @tools={{this.selectedTools}}
+            @onChange={{this.forcedToolsChanged}}
+          />
+        </div>
+      {{/if}}
       {{#unless this.editingModel.system}}
         <AiPersonaToolOptions
           @persona={{this.editingModel}}
