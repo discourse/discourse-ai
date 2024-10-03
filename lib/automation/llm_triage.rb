@@ -13,11 +13,12 @@ module DiscourseAi
         canned_reply: nil,
         canned_reply_user: nil,
         hide_topic: nil,
+        hide_post: nil,
         flag_post: nil,
         automation: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
-             flag_post.blank?
+             flag_post.blank? && hide_post.blank?
           raise ArgumentError, "llm_triage: no action specified!"
         end
 
@@ -81,6 +82,25 @@ module DiscourseAi
               reason: score_reason,
               force_review: true,
             )
+          end
+
+          # note this does not notify user of the action
+          # as it is mainly used for spam where notification
+          # is not needed.
+          # we will need another flag if we want to notify
+          if hide_post
+            reason ||=
+              (
+                if post.hidden_at
+                  Post.hidden_reasons[:flag_threshold_reached_again]
+                else
+                  Post.hidden_reasons[:flag_threshold_reached]
+                end
+              )
+
+            post.update!(hidden: true, hidden_at: Time.zone.now, hidden_reason_id: reason)
+
+            post.topic.update!(visible: false) if post.post_number == 1
           end
         end
       end

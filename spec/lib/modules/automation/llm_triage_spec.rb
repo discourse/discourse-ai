@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 describe DiscourseAi::Automation::LlmTriage do
   fab!(:post)
+  fab!(:reply) { Fabricate(:post, topic: post.topic, user: Fabricate(:user)) }
   fab!(:llm_model)
 
   def triage(**args)
@@ -35,6 +36,38 @@ describe DiscourseAi::Automation::LlmTriage do
     end
 
     expect(post.topic.reload.visible).to eq(false)
+  end
+
+  context "when hiding posts on triage" do
+    it "can hide posts if they are replies" do
+      DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+        triage(
+          post: reply,
+          model: "custom:#{llm_model.id}",
+          hide_post: true,
+          system_prompt: "test %%POST%%",
+          search_for_text: "bad",
+          automation: nil,
+        )
+      end
+
+      expect(reply.reload.hidden).to eq(true)
+    end
+
+    it "can hide topic if the post is the first post" do
+      DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+        triage(
+          post: post,
+          model: "custom:#{llm_model.id}",
+          hide_post: true,
+          system_prompt: "test %%POST%%",
+          search_for_text: "bad",
+          automation: nil,
+        )
+      end
+
+      expect(post.reload.topic.visible).to eq(false)
+    end
   end
 
   it "can categorize topics on triage" do
