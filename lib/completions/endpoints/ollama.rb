@@ -49,14 +49,13 @@ module DiscourseAi
           @native_tool_support = dialect.native_tool_support?
 
           # https://github.com/ollama/ollama/blob/main/docs/api.md#parameters-1
-          # Due to ollama enforce a 'stream: false' for tool calls, we need to make a trick
-          # This is a trick to make a streamable rquest right after a tool call
-          streamable = !dialect.prompt.has_tools? || prompt.last[:role] == "tool"
+          # Due to ollama enforce a 'stream: false' for tool calls,
+          # instead of complicating the code, we will just disable streaming for all ollama calls.
 
           default_options
             .merge(model_params)
             .merge(messages: prompt)
-            .tap { |payload| payload[:stream] = streamable }
+            .tap { |payload| payload[:stream] = false }
             .tap { |payload| payload[:tools] = dialect.tools if dialect.tools.present? }
         end
 

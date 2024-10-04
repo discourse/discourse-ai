@@ -29,7 +29,7 @@ class OllamaMock < EndpointMock
   def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(:post, "http://api.ollama.ai/api/chat")
-      .with(body: request_body(prompt, stream: !tool_call, tool_call: tool_call))
+      .with(body: request_body(prompt, tool_call: tool_call))
       .to_return(status: 200, body: JSON.dump(response(response_text, tool_call: tool_call)))
   end
 
@@ -76,7 +76,7 @@ class OllamaMock < EndpointMock
 
     WebMock
       .stub_request(:post, "http://api.ollama.ai/api/chat")
-      .with(body: request_body(prompt, stream: true))
+      .with(body: request_body(prompt))
       .to_return(status: 200, body: chunks)
 
     yield if block_given?
@@ -111,12 +111,12 @@ class OllamaMock < EndpointMock
     }
   end
 
-  def request_body(prompt, stream: false, tool_call: false)
+  def request_body(prompt, tool_call: false)
     model
       .default_options
       .merge(messages: prompt)
       .tap do |b|
-        b[:stream] = stream
+        b[:stream] = false
         b[:tools] = [tool_payload] if tool_call
       end
       .to_json
