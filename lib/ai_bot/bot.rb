@@ -67,6 +67,19 @@ module DiscourseAi
           .last
       end
 
+      def force_tool_if_needed(prompt, context)
+        context[:chosen_tools] ||= []
+        forced_tools = persona.force_tool_use.map { |tool| tool.name }
+        force_tool = forced_tools.find { |name| !context[:chosen_tools].include?(name) }
+
+        if force_tool
+          context[:chosen_tools] << force_tool
+          prompt.tool_choice = force_tool
+        else
+          prompt.tool_choice = nil
+        end
+      end
+
       def reply(context, &update_blk)
         llm = DiscourseAi::Completions::Llm.proxy(model)
         prompt = persona.craft_prompt(context, llm: llm)
@@ -85,6 +98,7 @@ module DiscourseAi
 
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
           tool_found = false
+          force_tool_if_needed(prompt, context)
 
           result =
             llm.generate(prompt, feature_name: "bot", **llm_kwargs) do |partial, cancel|

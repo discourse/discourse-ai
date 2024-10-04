@@ -123,7 +123,7 @@ module DiscourseAi
         end
 
         def record_prompt(prompt)
-          @prompts << prompt if @prompts
+          @prompts << prompt.dup if @prompts
         end
 
         def proxy(model)

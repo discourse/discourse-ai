@@ -160,7 +160,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           name: "superbot",
           description: "Assists with tasks",
           system_prompt: "you are a helpful bot",
-          tools: [["search", { "base_query" => "test" }]],
+          tools: [["search", { "base_query" => "test" }, true]],
           top_p: 0.1,
           temperature: 0.5,
           mentionable: true,
@@ -186,7 +186,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
           persona = AiPersona.find(persona_json["id"])
 
-          expect(persona.tools).to eq([["search", { "base_query" => "test" }]])
+          expect(persona.tools).to eq([["search", { "base_query" => "test" }, true]])
           expect(persona.top_p).to eq(0.1)
           expect(persona.temperature).to eq(0.5)
         }.to change(AiPersona, :count).by(1)
@@ -296,7 +296,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         ai_persona.reload
         expect(ai_persona.name).to eq("SuperBot")
         expect(ai_persona.enabled).to eq(false)
-        expect(ai_persona.tools).to eq(["search"])
+        expect(ai_persona.tools).to eq([["search", nil, false]])
       end
     end
 

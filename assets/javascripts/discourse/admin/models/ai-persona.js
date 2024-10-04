@@ -59,20 +59,24 @@ class ToolOption {
 export default class AiPersona extends RestModel {
   // this code is here to convert the wire schema to easier to work with object
   // on the wire we pass in/out tools as an Array.
-  // [[ToolName, {option1: value, option2: value}], ToolName2, ToolName3]
+  // [[ToolName, {option1: value, option2: value}, force], ToolName2, ToolName3]
   // So we rework this into a "tools" property and nested toolOptions
   init(properties) {
+    this.forcedTools = [];
     if (properties.tools) {
       properties.tools = properties.tools.map((tool) => {
         if (typeof tool === "string") {
           return tool;
         } else {
-          let [toolId, options] = tool;
+          let [toolId, options, force] = tool;
           for (let optionId in options) {
             if (!options.hasOwnProperty(optionId)) {
               continue;
             }
             this.getToolOption(toolId, optionId).value = options[optionId];
+          }
+          if (force) {
+            this.forcedTools.push(toolId);
           }
           return toolId;
         }
@@ -109,6 +113,8 @@ export default class AiPersona extends RestModel {
       if (typeof toolId !== "string") {
         toolId = toolId[0];
       }
+
+      let force = this.forcedTools.includes(toolId);
       if (this.toolOptions && this.toolOptions[toolId]) {
         let options = this.toolOptions[toolId];
         let optionsWithValues = {};
@@ -119,9 +125,9 @@ export default class AiPersona extends RestModel {
           let option = options[optionId];
           optionsWithValues[optionId] = option.value;
         }
-        toolsWithOptions.push([toolId, optionsWithValues]);
+        toolsWithOptions.push([toolId, optionsWithValues, force]);
       } else {
-        toolsWithOptions.push(toolId);
+        toolsWithOptions.push([toolId, {}, force]);
       }
     });
     attrs.tools = toolsWithOptions;
@@ -133,7 +139,6 @@ export default class AiPersona extends RestModel {
       : this.getProperties(CREATE_ATTRIBUTES);
     attrs.id = this.id;
     this.populateToolOptions(attrs);
-
     return attrs;
   }
 
@@ -146,6 +151,9 @@ export default class AiPersona extends RestModel {
   workingCopy() {
     let attrs = this.getProperties(CREATE_ATTRIBUTES);
     this.populateToolOptions(attrs);
-    return AiPersona.create(attrs);
+
+    const persona = AiPersona.create(attrs);
+    persona.forcedTools = (this.forcedTools || []).slice();
+    return persona;
   }
 }

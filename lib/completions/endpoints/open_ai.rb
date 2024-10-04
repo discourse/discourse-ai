@@ -54,8 +54,12 @@ module DiscourseAi
             # We'll fallback to guess this using the tokenizer.
             payload[:stream_options] = { include_usage: true } if llm_model.provider == "open_ai"
           end
-
-          payload[:tools] = dialect.tools if dialect.tools.present?
+          if dialect.tools.present?
+            payload[:tools] = dialect.tools
+            if dialect.tool_choice.present?
+              payload[:tool_choice] = { type: "function", function: { name: dialect.tool_choice } }
+            end
+          end
           payload
         end
 

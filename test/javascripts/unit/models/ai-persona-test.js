@@ -60,7 +60,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
     const updatedProperties = aiPersona.updateProperties();
 
     // perform remapping for save
-    properties.tools = [["ToolName", { option1: "value1" }]];
+    properties.tools = [["ToolName", { option1: "value1" }, false]];
 
     assert.deepEqual(updatedProperties, properties);
   });
@@ -100,7 +100,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
 
     const createdProperties = aiPersona.createProperties();
 
-    properties.tools = [["ToolName", { option1: "value1" }]];
+    properties.tools = [["ToolName", { option1: "value1" }, false]];
 
     assert.deepEqual(createdProperties, properties);
   });

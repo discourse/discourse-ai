@@ -120,15 +120,12 @@ module DiscourseAi
       def permit_tools(tools)
         return [] if !tools.is_a?(Array)
 
-        tools.filter_map do |tool, options|
+        tools.filter_map do |tool, options, force_tool|
           break nil if !tool.is_a?(String)
           options&.permit! if options && options.is_a?(ActionController::Parameters)
 
-          if options
-            [tool, options]
-          else
-            tool
-          end
+          # this is simpler from a storage perspective, 1 way to store tools
+          [tool, options, !!force_tool]
         end
       end
     end

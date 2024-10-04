@@ -136,17 +136,23 @@ class AiPersona < ActiveRecord::Base
     end
 
     options = {}
+    force_tool_use = []
+
     tools =
       self.tools.filter_map do |element|
         klass = nil
 
-        if element.is_a?(String) && element.start_with?("custom-")
-          custom_tool_id = element.split("-", 2).last.to_i
+        element = [element] if element.is_a?(String)
+
+        inner_name, current_options, should_force_tool_use =
+          element.is_a?(Array) ? element : [element, nil]
+
+        if inner_name.start_with?("custom-")
+          custom_tool_id = inner_name.split("-", 2).last.to_i
           if AiTool.exists?(id: custom_tool_id, enabled: true)
             klass = DiscourseAi::AiBot::Tools::Custom.class_instance(custom_tool_id)
           end
         else
-          inner_name, current_options = element.is_a?(Array) ? element : [element, nil]
           inner_name = inner_name.gsub("Tool", "")
           inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
 
@@ -155,9 +161,10 @@ class AiPersona < ActiveRecord::Base
             options[klass] = current_options if current_options
           rescue StandardError
           end
-
-          klass
         end
+
+        force_tool_use << klass if should_force_tool_use
+        klass
       end
 
     ai_persona_id = self.id
@@ -177,6 +184,7 @@ class AiPersona < ActiveRecord::Base
       end
 
       define_method(:tools) { tools }
+      define_method(:force_tool_use) { force_tool_use }
       define_method(:options) { options }
       define_method(:temperature) { @ai_persona&.temperature }
       define_method(:top_p) { @ai_persona&.top_p }
