@@ -21,9 +21,13 @@ if defined?(DiscourseAutomation)
     field :tags, component: :tags
     field :hide_topic, component: :boolean
     field :flag_post, component: :boolean
-    field :flag_type, component: :choices, required: false, extra:{
-      content: DiscourseAi::Automation.flag_types
-    }, default: "review"
+    field :flag_type,
+          component: :choices,
+          required: false,
+          extra: {
+            content: DiscourseAi::Automation.flag_types,
+          },
+          default: "review"
     field :canned_reply, component: :message
     field :canned_reply_user, component: :user
 
