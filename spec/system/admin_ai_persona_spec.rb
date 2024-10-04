@@ -30,7 +30,7 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
     expect(persona.name).to eq("Test Persona")
     expect(persona.description).to eq("I am a test persona")
     expect(persona.system_prompt).to eq("You are a helpful bot")
-    expect(persona.tools).to eq([["Read", { "read_private" => nil }]])
+    expect(persona.tools).to eq([["Read", { "read_private" => nil }, false]])
   end
 
   it "will not allow deletion or editing of system personas" do

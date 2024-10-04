@@ -83,7 +83,7 @@ export default class PersonaEditor extends Component {
 
     this.selectedToolNames = this.editingModel.tools || [];
     this.selectedTools = this.args.personas.resultSetMeta.tools.filter((tool) =>
-      this.editingModel.tools.includes(tool.id)
+      this.selectedToolNames.includes(tool.id)
     );
     this.forcedToolNames = this.editingModel.forcedTools || [];
   }
@@ -391,7 +391,7 @@ export default class PersonaEditor extends Component {
       {{#unless this.editingModel.system}}
         <AiPersonaToolOptions
           @persona={{this.editingModel}}
-          @tools={{this.editingModel.tools}}
+          @tools={{this.selectedToolNames}}
           @allTools={{@personas.resultSetMeta.tools}}
         />
       {{/unless}}
