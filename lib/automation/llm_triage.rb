@@ -13,12 +13,12 @@ module DiscourseAi
         canned_reply: nil,
         canned_reply_user: nil,
         hide_topic: nil,
-        hide_post: nil,
         flag_post: nil,
+        flag_type: nil,
         automation: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
-             flag_post.blank? && hide_post.blank?
+             flag_post.blank?
           raise ArgumentError, "llm_triage: no action specified!"
         end
 
@@ -66,9 +66,6 @@ module DiscourseAi
           post.topic.update!(visible: false) if hide_topic
 
           if flag_post
-            reviewable =
-              ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user)
-
             score_reason =
               I18n
                 .t("discourse_automation.scriptables.llm_triage.flagged_post")
@@ -76,31 +73,25 @@ module DiscourseAi
                 .sub("%%AUTOMATION_ID%%", automation&.id.to_s)
                 .sub("%%AUTOMATION_NAME%%", automation&.name.to_s)
 
-            reviewable.add_score(
-              Discourse.system_user,
-              ReviewableScore.types[:needs_approval],
-              reason: score_reason,
-              force_review: true,
-            )
-          end
+            if flag_type == :spam
+              PostActionCreator.new(
+                Discourse.system_user,
+                post,
+                PostActionType.types[:spam],
+                message: score_reason,
+                queue_for_review: true,
+              ).perform
+            else
+              reviewable =
+                ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user)
 
-          # note this does not notify user of the action
-          # as it is mainly used for spam where notification
-          # is not needed.
-          # we will need another flag if we want to notify
-          if hide_post
-            reason ||=
-              (
-                if post.hidden_at
-                  Post.hidden_reasons[:flag_threshold_reached_again]
-                else
-                  Post.hidden_reasons[:flag_threshold_reached]
-                end
+              reviewable.add_score(
+                Discourse.system_user,
+                ReviewableScore.types[:needs_approval],
+                reason: score_reason,
+                force_review: true,
               )
-
-            post.update!(hidden: true, hidden_at: Time.zone.now, hidden_reason_id: reason)
-
-            post.topic.update!(visible: false) if post.post_number == 1
+            end
           end
         end
       end

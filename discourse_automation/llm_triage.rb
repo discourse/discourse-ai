@@ -20,8 +20,10 @@ if defined?(DiscourseAutomation)
     field :category, component: :category
     field :tags, component: :tags
     field :hide_topic, component: :boolean
-    field :hide_post, component: :boolean
     field :flag_post, component: :boolean
+    field :flag_type, component: :choices, required: false, extra:{
+      content: DiscourseAi::Automation.flag_types
+    }, default: "review"
     field :canned_reply, component: :message
     field :canned_reply_user, component: :user
 
@@ -41,8 +43,8 @@ if defined?(DiscourseAutomation)
       category_id = fields.dig("category", "value")
       tags = fields.dig("tags", "value")
       hide_topic = fields.dig("hide_topic", "value")
-      hide_post = fields.dig("hide_post", "value")
       flag_post = fields.dig("flag_post", "value")
+      flag_type = fields.dig("flag_type", "value")
 
       begin
         RateLimiter.new(
@@ -69,8 +71,8 @@ if defined?(DiscourseAutomation)
           canned_reply: canned_reply,
           canned_reply_user: canned_reply_user,
           hide_topic: hide_topic,
-          hide_post: hide_post,
           flag_post: flag_post,
+          flag_type: flag_type.to_s.to_sym,
           automation: self.automation,
         )
       rescue => e

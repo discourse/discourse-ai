@@ -99,12 +99,12 @@ en:
             hide_topic:
               label: "Hide topic"
               description: "Make topic non visible to the public if triggered"
-            hide_post:
-              label: "Hide post"
-              description: "Make post non visible to the public if triggered"
+            flag_type:
+              label: "Flag type"
+              description: "Type of flag to apply to the post (spam or simply raise for review)"
             flag_post:
-              label: "Send to review"
-              description: "Puts the post into the review queue if triggered, for moderators to triage"
+              label: "Flag post"
+              description: "Flags post (either as spam or for review)"
             model:
               label: "Model"
               description: "Language model used for triage"

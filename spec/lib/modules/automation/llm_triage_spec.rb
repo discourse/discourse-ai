@@ -38,38 +38,6 @@ describe DiscourseAi::Automation::LlmTriage do
     expect(post.topic.reload.visible).to eq(false)
   end
 
-  context "when hiding posts on triage" do
-    it "can hide posts if they are replies" do
-      DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-        triage(
-          post: reply,
-          model: "custom:#{llm_model.id}",
-          hide_post: true,
-          system_prompt: "test %%POST%%",
-          search_for_text: "bad",
-          automation: nil,
-        )
-      end
-
-      expect(reply.reload.hidden).to eq(true)
-    end
-
-    it "can hide topic if the post is the first post" do
-      DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-        triage(
-          post: post,
-          model: "custom:#{llm_model.id}",
-          hide_post: true,
-          system_prompt: "test %%POST%%",
-          search_for_text: "bad",
-          automation: nil,
-        )
-      end
-
-      expect(post.reload.topic.visible).to eq(false)
-    end
-  end
-
   it "can categorize topics on triage" do
     category = Fabricate(:category)
 
@@ -123,6 +91,23 @@ describe DiscourseAi::Automation::LlmTriage do
 
     expect(reviewable.target).to eq(post)
     expect(reviewable.reviewable_scores.first.reason).to include("bad")
+  end
+
+  it "can handle spam flags" do
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        flag_type: :spam,
+        automation: nil,
+      )
+    end
+
+    expect(post.reload).to be_hidden
+    expect(post.topic.reload.visible).to eq(false)
   end
 
   it "can handle garbled output from LLM" do
