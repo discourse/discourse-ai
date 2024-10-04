@@ -2,6 +2,12 @@
 
 module DiscourseAi
   module Automation
+    def self.flag_types
+      [
+        { id: "review", translated_name: I18n.t("discourse_automation.ai.flag_types.review") },
+        { id: "spam", translated_name: I18n.t("discourse_automation.ai.flag_types.spam") },
+      ]
+    end
     def self.available_models
       values = DB.query_hash(<<~SQL)
         SELECT display_name AS translated_name, id AS id

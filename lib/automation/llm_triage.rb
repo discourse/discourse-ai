@@ -14,6 +14,7 @@ module DiscourseAi
         canned_reply_user: nil,
         hide_topic: nil,
         flag_post: nil,
+        flag_type: nil,
         automation: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
@@ -65,9 +66,6 @@ module DiscourseAi
           post.topic.update!(visible: false) if hide_topic
 
           if flag_post
-            reviewable =
-              ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user)
-
             score_reason =
               I18n
                 .t("discourse_automation.scriptables.llm_triage.flagged_post")
@@ -75,12 +73,25 @@ module DiscourseAi
                 .sub("%%AUTOMATION_ID%%", automation&.id.to_s)
                 .sub("%%AUTOMATION_NAME%%", automation&.name.to_s)
 
-            reviewable.add_score(
-              Discourse.system_user,
-              ReviewableScore.types[:needs_approval],
-              reason: score_reason,
-              force_review: true,
-            )
+            if flag_type == :spam
+              PostActionCreator.new(
+                Discourse.system_user,
+                post,
+                PostActionType.types[:spam],
+                message: score_reason,
+                queue_for_review: true,
+              ).perform
+            else
+              reviewable =
+                ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user)
+
+              reviewable.add_score(
+                Discourse.system_user,
+                ReviewableScore.types[:needs_approval],
+                reason: score_reason,
+                force_review: true,
+              )
+            end
           end
         end
       end
