@@ -31,7 +31,12 @@ module DiscourseAi
         end
 
         def invoke
-          runner.invoke
+          result = runner.invoke
+          if runner.custom_raw
+            self.custom_raw = runner.custom_raw
+            @chain_next_response = false
+          end
+          result
         end
 
         def runner
@@ -48,6 +53,10 @@ module DiscourseAi
 
         def details
           runner.details
+        end
+
+        def chain_next_response?
+          !!@chain_next_response
         end
 
         def help

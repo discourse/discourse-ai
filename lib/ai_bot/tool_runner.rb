@@ -4,7 +4,7 @@ module DiscourseAi
   module AiBot
     class ToolRunner
       attr_reader :tool, :parameters, :llm
-      attr_accessor :running_attached_function, :timeout
+      attr_accessor :running_attached_function, :timeout, :custom_raw
 
       TooManyRequestsError = Class.new(StandardError)
 
@@ -25,6 +25,7 @@ module DiscourseAi
         @http_requests_made = 0
       end
 
+
       def mini_racer_context
         @mini_racer_context ||=
           begin
@@ -36,6 +37,8 @@ module DiscourseAi
             attach_truncate(ctx)
             attach_http(ctx)
             attach_index(ctx)
+            attach_upload(ctx)
+            attach_chain(ctx)
             ctx.eval(framework_script)
             ctx
           end
@@ -55,6 +58,15 @@ module DiscourseAi
         const index = {
           search: _index_search,
         }
+
+        const upload = {
+          create: _upload_create,
+        }
+
+        const chain = {
+          setCustomRaw: _chain_set_custom_raw,
+        };
+
         function details() { return ""; };
       JS
       end
@@ -169,6 +181,40 @@ module DiscourseAi
               options ||= {}
               options = options.symbolize_keys
               self.rag_search(query, **options)
+            ensure
+              self.running_attached_function = false
+            end
+          end,
+        )
+      end
+
+      def attach_chain(mini_racer_context)
+        mini_racer_context.attach("_chain_set_custom_raw", ->(raw) { self.custom_raw = raw })
+      end
+
+      def attach_upload(mini_racer_context)
+        mini_racer_context.attach(
+          "_upload_create",
+          ->(filename, base_64_content) do
+            begin
+              self.running_attached_function = true
+              # protect against misuse
+              filename = File.basename(filename)
+
+              Tempfile.create(filename) do |file|
+                file.binmode
+                file.write(Base64.decode64(base_64_content))
+                file.rewind
+
+                upload =
+                  UploadCreator.new(
+                    file,
+                    filename,
+                    for_private_message: @context[:private_message],
+                  ).create_for(@bot_user.id)
+
+                { id: upload.id, short_url: upload.short_url }
+              end
             ensure
               self.running_attached_function = false
             end
