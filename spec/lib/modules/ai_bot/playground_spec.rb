@@ -94,21 +94,52 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
 
-    it "can force usage of a tool" do
-      tool_name = "custom-#{custom_tool.id}"
-      ai_persona.update!(tools: [[tool_name, nil, "force"]])
-      responses = [function_call, "custom tool did stuff (maybe)"]
+    it "can create uploads from a tool" do
+      custom_tool.update!(script: <<~JS)
+        let imageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgEB/awxUE0AAAAASUVORK5CYII="
+        function invoke(params) {
+          let image = upload.create("image.png", imageBase64);
+          chain.setCustomRaw(`![image](${image.short_url})`);
+          return image.id;
+        };
+      JS
 
-      prompt = nil
-      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompt|
+      tool_name = "custom-#{custom_tool.id}"
+      ai_persona.update!(tools: [[tool_name, nil, true]], tool_details: false)
+
+      reply_post = nil
+      prompts = nil
+
+      responses = [function_call]
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
         new_post = Fabricate(:post, raw: "Can you use the custom tool?")
-        _reply_post = playground.reply_to(new_post)
-        prompt = _prompt
+        reply_post = playground.reply_to(new_post)
+        prompts = _prompts
       end
 
-      expect(prompt.length).to eq(2)
-      expect(prompt[0].tool_choice).to eq("search")
-      expect(prompt[1].tool_choice).to eq(nil)
+      expect(prompts.length).to eq(1)
+      upload_id = prompts[0].messages[3][:content].to_i
+
+      upload = Upload.find(upload_id)
+
+      expect(reply_post.raw).to eq("![image](#{upload.short_url})")
+    end
+
+    it "can force usage of a tool" do
+      tool_name = "custom-#{custom_tool.id}"
+      ai_persona.update!(tools: [[tool_name, nil, true]])
+      responses = [function_call, "custom tool did stuff (maybe)"]
+
+      prompts = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
+        new_post = Fabricate(:post, raw: "Can you use the custom tool?")
+        _reply_post = playground.reply_to(new_post)
+        prompts = _prompts
+      end
+
+      expect(prompts.length).to eq(2)
+      expect(prompts[0].tool_choice).to eq("search")
+      expect(prompts[1].tool_choice).to eq(nil)
     end
 
     it "uses custom tool in conversation" do

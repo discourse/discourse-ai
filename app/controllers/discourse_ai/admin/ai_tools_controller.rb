@@ -49,7 +49,7 @@ module DiscourseAi
         if params[:id].present?
           ai_tool = AiTool.find(params[:id])
         else
-          ai_tool = AiTool.new(ai_tool_params)
+          ai_tool = AiTool.new(ai_tool_params.except(:rag_uploads))
         end
 
         parameters = params[:parameters].to_unsafe_h

@@ -10,25 +10,8 @@ describe "AI Tool Management", type: :system do
     sign_in(admin)
   end
 
-  it "allows admin to create a new AI tool from preset" do
-    visit "/admin/plugins/discourse-ai/ai-tools"
-
-    expect(page).to have_content("Tools")
-
-    find(".ai-tool-list-editor__new-button").click
-
-    select_kit = PageObjects::Components::SelectKit.new(".ai-tool-editor__presets")
-    select_kit.expand
-    select_kit.select_row_by_value("exchange_rate")
-
-    find(".ai-tool-editor__next").click
-
-    expect(page.first(".parameter-row__required-toggle").checked?).to eq(true)
-    expect(page.first(".parameter-row__enum-toggle").checked?).to eq(false)
-
+  def ensure_can_run_test
     find(".ai-tool-editor__test-button").click
-
-    expect(page).not_to have_button(".ai-tool-editor__delete")
 
     modal = PageObjects::Modals::AiToolTest.new
     modal.base_currency = "USD"
@@ -48,13 +31,35 @@ describe "AI Tool Management", type: :system do
     expect(modal).to have_content("0.85")
 
     modal.close
+  end
 
+  it "allows admin to create a new AI tool from preset" do
+    visit "/admin/plugins/discourse-ai/ai-tools"
+
+    expect(page).to have_content("Tools")
+
+    find(".ai-tool-list-editor__new-button").click
+
+    select_kit = PageObjects::Components::SelectKit.new(".ai-tool-editor__presets")
+    select_kit.expand
+    select_kit.select_row_by_value("exchange_rate")
+
+    find(".ai-tool-editor__next").click
+
+    expect(page.first(".parameter-row__required-toggle").checked?).to eq(true)
+    expect(page.first(".parameter-row__enum-toggle").checked?).to eq(false)
+
+    ensure_can_run_test
+
+    expect(page).not_to have_button(".ai-tool-editor__delete")
     find(".ai-tool-editor__save").click
 
     expect(page).to have_content("Tool saved")
 
     last_tool = AiTool.order("id desc").limit(1).first
     visit "/admin/plugins/discourse-ai/ai-tools/#{last_tool.id}"
+
+    ensure_can_run_test
 
     expect(page.first(".parameter-row__required-toggle").checked?).to eq(true)
     expect(page.first(".parameter-row__enum-toggle").checked?).to eq(false)
