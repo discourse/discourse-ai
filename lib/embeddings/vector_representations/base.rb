@@ -46,113 +46,6 @@ module DiscourseAi
           @strategy = strategy
         end
 
-        def consider_indexing(memory: "100MB")
-          [topic_table_name, post_table_name].each do |table_name|
-            index_name = index_name(table_name)
-            # Using extension maintainer's recommendation for ivfflat indexes
-            # Results are not as good as without indexes, but it's much faster
-            # Disk usage is ~1x the size of the table, so this doubles table total size
-            count =
-              DB.query_single(
-                "SELECT count(*) FROM #{table_name} WHERE model_id = #{id} AND strategy_id = #{@strategy.id};",
-              ).first
-            lists = [count < 1_000_000 ? count / 1000 : Math.sqrt(count).to_i, 10].max
-            probes = [count < 1_000_000 ? lists / 10 : Math.sqrt(lists).to_i, 1].max
-            Discourse.cache.write("#{table_name}-#{id}-#{@strategy.id}-probes", probes)
-
-            existing_index = DB.query_single(<<~SQL, index_name: index_name).first
-              SELECT
-                indexdef
-              FROM
-                pg_indexes
-              WHERE
-                indexname = :index_name
-                AND schemaname = 'public'
-              LIMIT 1
-            SQL
-
-            if !existing_index.present?
-              Rails.logger.info("Index #{index_name} does not exist, creating...")
-              return create_index!(table_name, memory, lists, probes)
-            end
-
-            existing_index_age =
-              DB
-                .query_single(
-                  "SELECT pg_catalog.obj_description((:index_name)::regclass, 'pg_class');",
-                  index_name: index_name,
-                )
-                .first
-                .to_i || 0
-            new_rows =
-              DB.query_single(
-                "SELECT count(*) FROM #{table_name} WHERE model_id = #{id} AND strategy_id = #{@strategy.id} AND created_at > '#{Time.at(existing_index_age)}';",
-              ).first
-            existing_lists = existing_index.match(/lists='(\d+)'/)&.captures&.first&.to_i
-
-            if existing_index_age > 0 &&
-                 existing_index_age <
-                   (
-                     if SiteSetting.ai_embeddings_semantic_related_topics_enabled
-                       1.hour.ago.to_i
-                     else
-                       1.day.ago.to_i
-                     end
-                   )
-              if new_rows > 10_000
-                Rails.logger.info(
-                  "Index #{index_name} is #{existing_index_age} seconds old, and there are #{new_rows} new rows, updating...",
-                )
-                return create_index!(table_name, memory, lists, probes)
-              elsif existing_lists != lists
-                Rails.logger.info(
-                  "Index #{index_name} already exists, but lists is #{existing_lists} instead of #{lists}, updating...",
-                )
-                return create_index!(table_name, memory, lists, probes)
-              end
-            end
-
-            Rails.logger.info(
-              "Index #{index_name} kept. #{Time.now.to_i - existing_index_age} seconds old, #{new_rows} new rows, #{existing_lists} lists, #{probes} probes.",
-            )
-          end
-        end
-
-        def create_index!(table_name, memory, lists, probes)
-          tries = 0
-          index_name = index_name(table_name)
-          DB.exec("SET work_mem TO '#{memory}';")
-          DB.exec("SET maintenance_work_mem TO '#{memory}';")
-          begin
-            DB.exec(<<~SQL)
-              DROP INDEX IF EXISTS #{index_name};
-              CREATE INDEX IF NOT EXISTS
-                #{index_name}
-              ON
-                #{table_name}
-              USING
-                ivfflat ((embeddings::halfvec(#{dimensions})) #{pg_index_type})
-              WITH
-                (lists = #{lists})
-              WHERE
-                model_id = #{id} AND strategy_id = #{@strategy.id};
-            SQL
-          rescue PG::ProgramLimitExceeded => e
-            parsed_error = e.message.match(/memory required is (\d+ [A-Z]{2}), ([a-z_]+)/)
-            if parsed_error[1].present? && parsed_error[2].present?
-              DB.exec("SET #{parsed_error[2]} TO '#{parsed_error[1].tr(" ", "")}';")
-              tries += 1
-              retry if tries < 3
-            else
-              raise e
-            end
-          end
-
-          DB.exec("COMMENT ON INDEX #{index_name} IS '#{Time.now.to_i}';")
-          DB.exec("RESET work_mem;")
-          DB.exec("RESET maintenance_work_mem;")
-        end
-
         def vector_from(text, asymetric: false)
           raise NotImplementedError
         end
@@ -224,14 +117,23 @@ module DiscourseAi
 
         def asymmetric_topics_similarity_search(raw_vector, limit:, offset:, return_distance: false)
           results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
-            #{probes_sql(topic_table_name)}
+            WITH candidates AS (
+              SELECT
+                topic_id,
+                embeddings::halfvec(#{dimensions}) AS embeddings
+              FROM
+                #{topic_table_name}
+              WHERE
+                model_id = #{id} AND strategy_id = #{@strategy.id}
+              ORDER BY
+                binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
+              LIMIT :limit * 2               
+            )
             SELECT
               topic_id,
               embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
             FROM
-              #{topic_table_name}
-            WHERE
-              model_id = #{id} AND strategy_id = #{@strategy.id}
+              candidates
             ORDER BY
               embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
             LIMIT :limit
@@ -250,18 +152,23 @@ module DiscourseAi
 
         def asymmetric_posts_similarity_search(raw_vector, limit:, offset:, return_distance: false)
           results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
-            #{probes_sql(post_table_name)}
+            WITH candidates AS (
+              SELECT
+                post_id,
+                embeddings::halfvec(#{dimensions}) AS embeddings
+              FROM
+                #{post_table_name}
+              WHERE
+                model_id = #{id} AND strategy_id = #{@strategy.id}
+              ORDER BY
+                binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
+              LIMIT :limit * 2               
+            )
             SELECT
               post_id,
               embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
             FROM
-              #{post_table_name}
-            INNER JOIN
-              posts AS p ON p.id = post_id
-            INNER JOIN
-              topics AS t ON t.id = p.topic_id AND t.archetype = 'regular'
-            WHERE
-              model_id = #{id} AND strategy_id = #{@strategy.id}
+              candidates
             ORDER BY
               embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
             LIMIT :limit
@@ -289,24 +196,28 @@ module DiscourseAi
           results =
             DB.query(
               <<~SQL,
-            #{probes_sql(post_table_name)}
-            SELECT
-              rag_document_fragment_id,
-              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
-            FROM
-              #{rag_fragments_table_name}
-            INNER JOIN
-              rag_document_fragments AS rdf ON rdf.id = rag_document_fragment_id
-            WHERE
-              model_id = #{id} AND
-              strategy_id = #{@strategy.id} AND
-              rdf.target_id = :target_id AND
-              rdf.target_type = :target_type
-            ORDER BY
-              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
-            LIMIT :limit
-            OFFSET :offset
-          SQL
+                WITH candidates AS (
+                  SELECT
+                    rag_document_fragment_id,
+                    embeddings::halfvec(#{dimensions}) AS embeddings
+                  FROM
+                    #{rag_fragments_table_name}
+                  WHERE
+                    model_id = #{id} AND strategy_id = #{@strategy.id}
+                  ORDER BY
+                    binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
+                  LIMIT :limit * 2               
+                )
+                SELECT
+                  rag_document_fragment_id,
+                  embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
+                FROM
+                  candidates
+                ORDER BY
+                  embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
+                LIMIT :limit
+                OFFSET :offset
+              SQL
               query_embedding: raw_vector,
               target_id: target_id,
               target_type: target_type,
@@ -326,27 +237,44 @@ module DiscourseAi
 
         def symmetric_topics_similarity_search(topic)
           DB.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
-            #{probes_sql(topic_table_name)}
-            SELECT
-              topic_id
-            FROM
-              #{topic_table_name}
-            WHERE
-              model_id = #{id} AND
-              strategy_id = #{@strategy.id}
-            ORDER BY
-              embeddings::halfvec(#{dimensions}) #{pg_function} (
-                SELECT
+            WITH le_target AS (
+              SELECT
                   embeddings
                 FROM
-                  #{topic_table_name}
+                  ai_topic_embeddings
                 WHERE
                   model_id = #{id} AND
                   strategy_id = #{@strategy.id} AND
                   topic_id = :topic_id
                 LIMIT 1
-              )::halfvec(#{dimensions})
-            LIMIT 100
+            )
+            SELECT topic_id FROM (
+              SELECT
+                topic_id, embeddings
+              FROM
+                #{topic_table_name}
+              WHERE
+                model_id = #{id} AND
+                strategy_id = #{@strategy.id}
+              ORDER BY
+                binary_quantize(embeddings)::bit(#{dimensions}) <~> (
+                  SELECT
+                    binary_quantize(embeddings)::bit(#{dimensions})
+                  FROM
+                    le_target
+                  LIMIT 1
+                )
+              LIMIT 200
+            )
+            ORDER BY
+              embeddings::halfvec(#{dimensions}) #{pg_function} (
+                SELECT
+                  embeddings::halfvec(#{dimensions})
+                FROM
+                  le_target
+                LIMIT 1
+              )
+            LIMIT 100;
           SQL
         rescue PG::Error => e
           Rails.logger.error(
@@ -382,11 +310,6 @@ module DiscourseAi
 
         def index_name(table_name)
           "#{table_name}_#{id}_#{@strategy.id}_search"
-        end
-
-        def probes_sql(table_name)
-          probes = Discourse.cache.read("#{table_name}-#{id}-#{@strategy.id}-probes")
-          probes.present? ? "SET LOCAL ivfflat.probes TO #{probes};" : ""
         end
 
         def name
@@ -492,18 +415,6 @@ module DiscourseAi
             )
           else
             raise ArgumentError, "Invalid target type"
-          end
-        end
-
-        def discourse_embeddings_endpoint
-          if SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present?
-            service =
-              DiscourseAi::Utils::DnsSrv.lookup(
-                SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv,
-              )
-            "https://#{service.target}:#{service.port}"
-          else
-            SiteSetting.ai_embeddings_discourse_service_api_endpoint
           end
         end
       end
