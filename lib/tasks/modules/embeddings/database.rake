@@ -44,11 +44,3 @@ task "ai:embeddings:backfill", %i[model concurrency] => [:environment] do |_, ar
     end
   end
 end
-
-desc "Creates indexes for embeddings"
-task "ai:embeddings:index", [:work_mem] => [:environment] do |_, args|
-  strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-  vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-
-  vector_rep.consider_indexing(memory: args[:work_mem] || "100MB")
-end
