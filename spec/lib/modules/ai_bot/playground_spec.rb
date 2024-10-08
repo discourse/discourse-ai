@@ -96,19 +96,19 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "can force usage of a tool" do
       tool_name = "custom-#{custom_tool.id}"
-      ai_persona.update!(tools: [[tool_name, nil, "force"]])
+      ai_persona.update!(tools: [[tool_name, nil, true]])
       responses = [function_call, "custom tool did stuff (maybe)"]
 
-      prompt = nil
-      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompt|
+      prompts = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
         new_post = Fabricate(:post, raw: "Can you use the custom tool?")
         _reply_post = playground.reply_to(new_post)
-        prompt = _prompt
+        prompts = _prompts
       end
 
-      expect(prompt.length).to eq(2)
-      expect(prompt[0].tool_choice).to eq("search")
-      expect(prompt[1].tool_choice).to eq(nil)
+      expect(prompts.length).to eq(2)
+      expect(prompts[0].tool_choice).to eq("search")
+      expect(prompts[1].tool_choice).to eq(nil)
     end
 
     it "uses custom tool in conversation" do

@@ -25,7 +25,6 @@ module DiscourseAi
         @http_requests_made = 0
       end
 
-
       def mini_racer_context
         @mini_racer_context ||=
           begin

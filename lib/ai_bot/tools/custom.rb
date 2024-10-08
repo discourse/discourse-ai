@@ -30,6 +30,11 @@ module DiscourseAi
           AiTool.where(id: tool_id).pluck(:name).first
         end
 
+        def initialize(*args, **kwargs)
+          @chain_next_response = true
+          super(*args, **kwargs)
+        end
+
         def invoke
           result = runner.invoke
           if runner.custom_raw
