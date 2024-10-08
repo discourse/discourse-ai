@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class DropPersonaIdFromRagDocumentFragments < ActiveRecord::Migration[7.1]
+class DropOldEmbeddingsIndexes < ActiveRecord::Migration[7.1]
   def up
     execute <<~SQL
       DROP INDEX IF EXISTS ai_topic_embeddings_1_1_search;
