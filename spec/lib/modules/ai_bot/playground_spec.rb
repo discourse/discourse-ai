@@ -94,6 +94,31 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
 
+    it "can halt chains using setCustomRaw" do
+      custom_tool.update!(script: <<~JS)
+        function invoke(params) {
+          chain.setCustomRaw('custom raw');
+          return "result";
+        };
+      JS
+
+      tool_name = "custom-#{custom_tool.id}"
+      ai_persona.update!(tools: [[tool_name, nil, true]], tool_details: false)
+
+      reply_post = nil
+      prompts = nil
+
+      responses = [function_call]
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
+        new_post = Fabricate(:post, raw: "Can you use the custom tool?")
+        reply_post = playground.reply_to(new_post)
+        prompts = _prompts
+      end
+
+      expect(prompts.length).to eq(1)
+      expect(reply_post.raw).to eq("custom raw")
+    end
+
     it "can force usage of a tool" do
       tool_name = "custom-#{custom_tool.id}"
       ai_persona.update!(tools: [[tool_name, nil, true]])
