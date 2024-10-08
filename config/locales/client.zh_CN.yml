@@ -98,9 +98,6 @@ zh_CN:
             hide_topic:
               label: "隐藏话题"
               description: "如果触发，使话题对公众不可见"
-            flag_post:
-              label: "发送审核"
-              description: "如果触发，则将帖子置入审核队列，供版主进行分类"
             model:
               label: "模型"
               description: "用于分类的语言模型"
@@ -328,7 +325,7 @@ zh_CN:
         cancel_streaming: "停止回复"
         default_pm_prefix: "[无标题 AI 机器人私信]"
         shortcut_title: "使用 AI 机器人启动私信"
-        share: "分享 AI 对话"
+        share: "复制 AI 对话"
         conversation_shared: "对话已复制"
         debug_ai: "查看原始 AI 请求和响应"
         debug_ai_modal:

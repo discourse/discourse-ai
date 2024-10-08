@@ -199,7 +199,7 @@ id:
         cancel_streaming: "Berhenti membalas"
         default_pm_prefix: "[PM bot AI tanpa judul]"
         shortcut_title: "Mulai PM dengan bot AI"
-        share: "Bagikan percakapan AI"
+        share: "Salin percakapan AI"
         conversation_shared: "Percakapan disalin"
         debug_ai_modal:
           request: "Pinta"

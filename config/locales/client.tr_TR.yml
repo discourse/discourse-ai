@@ -98,9 +98,6 @@ tr_TR:
             hide_topic:
               label: "Konuyu gizle"
               description: "Tetiklenirse konuyu herkese görünmez hale getirin"
-            flag_post:
-              label: "İncelemeye gönder"
-              description: "Tetiklenirse moderatörlerin önceliklendirmesi için gönderiyi inceleme kuyruğuna alır"
             model:
               label: "Model"
               description: "Triyaj için kullanılan dil modeli"
@@ -328,7 +325,7 @@ tr_TR:
         cancel_streaming: "Yanıtı durdur"
         default_pm_prefix: "[Adsız YZ botu kişisel mesajı]"
         shortcut_title: "YZ botuyla kişisel mesaj başlatın"
-        share: "YZ konuşmasını paylaş"
+        share: "YZ konuşmasını kopyala"
         conversation_shared: "Konuşma kopyalandı"
         debug_ai: "Ham YZ isteğini ve yanıtını görüntüleyin"
         debug_ai_modal:

@@ -98,9 +98,6 @@ pt_BR:
             hide_topic:
               label: "Ocultar tópico"
               description: "Ocultar visibilidade do tópico para o público se for ativado"
-            flag_post:
-              label: "Enviar para revisar"
-              description: "Coloca a postagem na fila de revisão em caso de acionamento, para triagem dos moderadores(as)"
             model:
               label: "Modelo"
               description: "Modelo de linguagem usado para triagem"
@@ -328,7 +325,7 @@ pt_BR:
         cancel_streaming: "Parar resposta"
         default_pm_prefix: "[MP de bot de IA não identificado]"
         shortcut_title: "Iniciar uma MP com bot de IA"
-        share: "Compartilhar conversação com IA"
+        share: "Copiar conversa com IA"
         conversation_shared: "Conversação copiada"
         debug_ai: "Visualizar resposta e pedido de IA não processado"
         debug_ai_modal:

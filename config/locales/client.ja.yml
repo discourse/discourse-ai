@@ -98,9 +98,6 @@ ja:
             hide_topic:
               label: "トピックを非表示"
               description: "トリガーされると、トピックを一般公開しないようにします"
-            flag_post:
-              label: "レビューに送信"
-              description: "トリガーされると、モデレーターがトリアージできるように投稿をレビューキューに入れます"
             model:
               label: "モデル"
               description: "トリアージに使用される言語モデル"
@@ -328,7 +325,7 @@ ja:
         cancel_streaming: "返信を停止する"
         default_pm_prefix: "[無題の AI ボット PM]"
         shortcut_title: "AI ボットと PM を開始する"
-        share: "AI の会話を共有"
+        share: "AI の会話のコピー"
         conversation_shared: "会話をコピーしました"
         debug_ai: "生の AI リクエストと返答を表示する"
         debug_ai_modal:

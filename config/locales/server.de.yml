@@ -6,6 +6,10 @@
 
 de:
   discourse_automation:
+    ai:
+      flag_types:
+        review: "Beitrag zur Überprüfungswarteschlange hinzufügen"
+        spam: "Als Spam markieren und Beitrag verbergen"
     scriptables:
       llm_triage:
         title: Beiträge mithilfe von KI sortieren

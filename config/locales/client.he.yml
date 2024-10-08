@@ -103,9 +103,8 @@ he:
             hide_topic:
               label: "הסתרת נושא"
               description: "הפיכת הנושא למוסתר בפני הציבור אם מוקפץ"
-            flag_post:
-              label: "שליחה לסקירה"
-              description: "מציב את הפוסט בתור לסקירה אם מוזנק, לבדיקת המפקחים"
+            flag_type:
+              label: "סוג סימון"
             model:
               label: "מודל"
               description: "מודל שפה שמשמש למיון ראשוני"
@@ -146,6 +145,7 @@ he:
         saved: דמות בינה מלאכותית נשמרה
         enabled: "מאופשר?"
         tools: כלים פעילים
+        forced_tools: כלים מאולצים
         allowed_groups: קבוצות מורשות
         confirm_delete: למחוק את הדמות?
         new: "דמות חדשה"
@@ -352,7 +352,7 @@ he:
         cancel_streaming: "עצירת התגובה"
         default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
         shortcut_title: "התחלת הודעה פרטית עם בוט בינה מלאכותית"
-        share: "שיתוף דיון עם בינה מלאכותית"
+        share: "העתקת דיון עם בינה מלאכותית"
         conversation_shared: "הדיון הועתק"
         debug_ai: "הצגת בקשה ותגובה גולמיות לבינה המלאכותית"
         debug_ai_modal:
