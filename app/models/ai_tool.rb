@@ -93,6 +93,19 @@ class AiTool < ActiveRecord::Base
       *    Returns:
       *      Array of { fragment: string, metadata: string }
       *
+      * 4. upload
+      *    upload.create(filename, base_64_content): Uploads a file.
+      *    Parameters:
+      *      filename (string): Name of the file.
+      *      base_64_content (string): Base64 encoded file content.
+      *    Returns:
+      *      { id: number, short_url: string }
+      *
+      * 5. chain
+      *    chain.setCustomRaw(raw): Sets the body of the post and exist chain.
+      *    Parameters:
+      *      raw (string): raw content to add to post.
+      *
       * Constraints
       *
       * Execution Time: ≤ 2000ms
@@ -235,6 +248,70 @@ class AiTool < ActiveRecord::Base
         }
       SCRIPT
         summary: "Get real-time stock quotes using AlphaVantage API",
+      },
+      {
+        preset_id: "image_generation",
+        name: "image_generation",
+        description:
+          "Generate images using the FLUX model from Black Forest Labs using together.ai",
+        parameters: [
+          {
+            name: "prompt",
+            type: "string",
+            required: true,
+            description: "The text prompt for image generation",
+          },
+          {
+            name: "seed",
+            type: "number",
+            required: false,
+            description: "Optional seed for random number generation",
+          },
+        ],
+        script: <<~SCRIPT,
+          #{preamble}
+          const apiKey = "YOUR_KEY";
+          const model = "black-forest-labs/FLUX.1.1-pro";
+
+          function invoke(params) {
+            let seed = parseInt(params.seed);
+            if (!(seed > 0)) {
+              seed = Math.floor(Math.random() * 1000000) + 1;
+            }
+
+            const prompt = params.prompt;
+            const body = {
+              model: model,
+              prompt: prompt,
+              width: 1024,
+              height: 768,
+              steps: 10,
+              n: 1,
+              seed: seed,
+              response_format: "b64_json",
+            };
+
+            const result = http.post("https://api.together.xyz/v1/images/generations", {
+              headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            });
+
+            const base64Image = JSON.parse(result.body).data[0].b64_json;
+            const image = upload.create("generated_image.png", base64Image);
+            const raw = `\n![${prompt}](${image.short_url})\n`;
+            chain.setCustomRaw(raw);
+
+            return { result: "Image generated successfully", seed: seed };
+          }
+
+          function details() {
+            return "Generates images based on a text prompt using the FLUX model.";
+          }
+  SCRIPT
+        summary: "Generate image",
       },
       { preset_id: "empty_tool", script: <<~SCRIPT },
           #{preamble}

@@ -94,11 +94,13 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
 
-    it "can halt chains using setCustomRaw" do
+    it "can create uploads from a tool" do
       custom_tool.update!(script: <<~JS)
+        let imageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgEB/awxUE0AAAAASUVORK5CYII="
         function invoke(params) {
-          chain.setCustomRaw('custom raw');
-          return "result";
+          let image = upload.create("image.png", imageBase64);
+          chain.setCustomRaw(`![image](${image.short_url})`);
+          return image.id;
         };
       JS
 
@@ -116,7 +118,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       expect(prompts.length).to eq(1)
-      expect(reply_post.raw).to eq("custom raw")
+      upload_id = prompts[0].messages[3][:content].to_i
+
+      upload = Upload.find(upload_id)
+
+      expect(reply_post.raw).to eq("![image](#{upload.short_url})")
     end
 
     it "can force usage of a tool" do

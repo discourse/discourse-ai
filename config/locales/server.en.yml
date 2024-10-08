@@ -128,11 +128,13 @@ en:
       custom_name: "%{name} (custom)"
       presets:
         browse_web_jina:
-          name: "Browse web using jina.ai"
+          name: "Browse web (jina.ai)"
         exchange_rate:
           name: "Exchange rate"
         stock_quote:
           name: "Stock quote (AlphaVantage)"
+        image_generation:
+          name: "Flux image generator (Together.ai)"
         empty_tool:
           name: "Start from blank..."
 
