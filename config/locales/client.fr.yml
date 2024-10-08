@@ -98,9 +98,6 @@ fr:
             hide_topic:
               label: "Masquer le sujet"
               description: "Rendez le sujet invisible au public si l'action est déclenchée"
-            flag_post:
-              label: "Envoyer pour examen"
-              description: "Place la publication dans la file d'attente de révision si elle est déclenchée, pour que les modérateurs puissent la trier"
             model:
               label: "Modèle"
               description: "Modèle linguistique utilisé pour le tri"
@@ -328,7 +325,7 @@ fr:
         cancel_streaming: "Arrêter de répondre"
         default_pm_prefix: "[Message privé de robot IA sans titre]"
         shortcut_title: "Démarrer une conversation avec un robot IA"
-        share: "Partager une conversation IA"
+        share: "Copier la conversation avec l'IA"
         conversation_shared: "Conversation copiée"
         debug_ai: "Afficher la demande et la réponse brutes de l'IA"
         debug_ai_modal:

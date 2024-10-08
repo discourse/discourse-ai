@@ -103,9 +103,12 @@ de:
             hide_topic:
               label: "Thema ausblenden"
               description: "Thema nicht für die Öffentlichkeit sichtbar machen, wenn ausgelöst"
+            flag_type:
+              label: "Markierungs-Typ"
+              description: "Art der Meldung, die auf den Beitrag angewendet werden soll (Spam oder einfach zur Überprüfung anheben)"
             flag_post:
-              label: "Zur Überprüfung senden"
-              description: "Setzt den Beitrag bei Auslösung in die Überprüfungswarteschlange, damit die Moderatoren ihn sichten können"
+              label: "Beitrag melden"
+              description: "Meldet Beiträge (entweder als Spam oder zur Überprüfung)"
             model:
               label: "Modell"
               description: "Für die Triage verwendetes Sprachmodell"
@@ -146,6 +149,7 @@ de:
         saved: KI-Persona gespeichert
         enabled: "Aktiviert?"
         tools: Aktivierte Tools
+        forced_tools: Erzwungene Werkzeuge
         allowed_groups: Erlaubte Gruppen
         confirm_delete: Bist du sicher, dass du diese Persona löschen willst?
         new: "Neue Persona"
@@ -363,7 +367,7 @@ de:
         cancel_streaming: "Antwort abbrechen"
         default_pm_prefix: "[KI-Bot-PN ohne Titel]"
         shortcut_title: "Starte eine PN mit einem KI-Bot"
-        share: "KI-Unterhaltung teilen"
+        share: "KI-Unterhaltung kopieren"
         conversation_shared: "Unterhaltung kopiert"
         debug_ai: "Rohdaten der KI-Anfrage und -Antwort anzeigen"
         debug_ai_modal:

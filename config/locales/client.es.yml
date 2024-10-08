@@ -98,9 +98,6 @@ es:
             hide_topic:
               label: "Ocultar tema"
               description: "Hacer que el tema no sea visible para el público si se activa"
-            flag_post:
-              label: "Enviar a revisión"
-              description: "Pone la entrada en la cola de revisión si se activa, para que los moderadores hagan el triaje"
             model:
               label: "Modelo"
               description: "Modelo lingüístico utilizado para el triaje"
@@ -328,7 +325,7 @@ es:
         cancel_streaming: "Detener respuesta"
         default_pm_prefix: "[MP de bot de IA sin título]"
         shortcut_title: "Iniciar un MP con un bot de IA"
-        share: "Compartir conversación de IA"
+        share: "Copiar conversación de IA"
         conversation_shared: "Conversación copiada"
         debug_ai: "Ver solicitud y respuesta de IA sin procesar"
         debug_ai_modal:

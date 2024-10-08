@@ -98,9 +98,6 @@ it:
             hide_topic:
               label: "Nascondi argomento"
               description: "Rendi l'argomento non visibile al pubblico se attivato"
-            flag_post:
-              label: "Invia per il controllo"
-              description: "Se l'opzione è attiva, inserisce il post nella coda di revisione per consentire ai moderatori di valutarlo"
             model:
               label: "Modello"
               description: "Modello linguistico utilizzato per il triage"
@@ -328,7 +325,7 @@ it:
         cancel_streaming: "Interrompi risposta"
         default_pm_prefix: "[Bot IA senza titolo MP]"
         shortcut_title: "Avvia un MP con un bot IA"
-        share: "Condividi la conversazione con IA"
+        share: "Copia la conversazione IA"
         conversation_shared: "Conversazione copiata"
         debug_ai: "Visualizza la richiesta e la risposta IA non elaborate"
         debug_ai_modal:

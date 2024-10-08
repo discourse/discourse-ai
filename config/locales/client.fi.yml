@@ -98,9 +98,6 @@ fi:
             hide_topic:
               label: "Piilota ketju"
               description: "Tee ketjusta näkymätön yleisölle, jos tämä laukaistaan"
-            flag_post:
-              label: "Lähetä käsiteltäväksi"
-              description: "Asettaa laukaistaessa viestin tarkastusjonoon valvojien luokiteltavaksi"
             model:
               label: "Malli"
               description: "Luokitteluun käytettävä kielimalli"
@@ -328,7 +325,7 @@ fi:
         cancel_streaming: "Lopeta vastaus"
         default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
         shortcut_title: "Aloita yksityiskeskustelu tekoälybotin kanssa"
-        share: "Jaa tekoälykeskustelu"
+        share: "Kopioi tekoälykeskustelu"
         conversation_shared: "Keskustelu kopioitu"
         debug_ai: "Katso raaka tekoälypyyntö ja vastaus"
         debug_ai_modal:

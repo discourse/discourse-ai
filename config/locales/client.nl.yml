@@ -98,9 +98,6 @@ nl:
             hide_topic:
               label: "Topic verbergen"
               description: "Maak het topic onzichtbaar voor het publiek als dit wordt geactiveerd"
-            flag_post:
-              label: "Verzenden ter beoordeling"
-              description: "Plaatst het bericht in de beoordelingswachtrij indien geactiveerd, zodat moderators het kunnen beoordelen"
             model:
               label: "Model"
               description: "Taalmodel gebruikt voor triage"
@@ -328,7 +325,7 @@ nl:
         cancel_streaming: "Stoppen met antwoorden"
         default_pm_prefix: "[Ongetitelde PB van AI-bot]"
         shortcut_title: "Start een PB met een AI-bot"
-        share: "AI-conversatie delen"
+        share: "AI-conversatie kopiëren"
         conversation_shared: "Conversatie gekopieerd"
         debug_ai: "Ruw AI-verzoek en -antwoord weergeven"
         debug_ai_modal:

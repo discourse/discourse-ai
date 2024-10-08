@@ -217,7 +217,7 @@ pl_PL:
         cancel_streaming: "Zatrzymaj odpowiedź"
         default_pm_prefix: "[PW bota AI bez tytułu]"
         shortcut_title: "Rozpocznij PW z botem AI"
-        share: "Udostępnij rozmowę AI"
+        share: "Skopiuj rozmowę AI"
         conversation_shared: "Rozmowa skopiowana"
         debug_ai_modal:
           request: "Żądanie"
