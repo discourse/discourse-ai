@@ -265,7 +265,7 @@ module DiscourseAi
                   LIMIT 1
                 )
               LIMIT 200
-            )
+            ) AS widenet
             ORDER BY
               embeddings::halfvec(#{dimensions}) #{pg_function} (
                 SELECT
@@ -415,6 +415,18 @@ module DiscourseAi
             )
           else
             raise ArgumentError, "Invalid target type"
+          end
+        end
+
+        def discourse_embeddings_endpoint
+          if SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present?
+            service =
+              DiscourseAi::Utils::DnsSrv.lookup(
+                SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv,
+              )
+            "https://#{service.target}:#{service.port}"
+          else
+            SiteSetting.ai_embeddings_discourse_service_api_endpoint
           end
         end
       end
