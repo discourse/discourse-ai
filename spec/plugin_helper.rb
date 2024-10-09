@@ -14,4 +14,14 @@ module DiscourseAi::ChatBotHelper
   end
 end
 
-RSpec.configure { |c| c.include DiscourseAi::ChatBotHelper }
+RSpec.configure do |config|
+  config.include DiscourseAi::ChatBotHelper
+
+  config.before(:suite) do
+    if defined?(migrate_column_to_bigint)
+      migrate_column_to_bigint(RagDocumentFragment, :target_id)
+      migrate_column_to_bigint("ai_document_fragment_embeddings", "rag_document_fragment_id")
+      migrate_column_to_bigint(ClassificationResult, :target_id)
+    end
+  end
+end
