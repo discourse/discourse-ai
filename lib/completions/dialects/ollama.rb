@@ -11,7 +11,7 @@ module DiscourseAi
         end
 
         def native_tool_support?
-          true
+          llm_model.lookup_custom_param("enable_native_tool")
         end
 
         def max_prompt_tokens

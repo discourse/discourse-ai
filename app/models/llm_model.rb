@@ -31,6 +31,7 @@ class LlmModel < ActiveRecord::Base
       },
       ollama: {
         disable_system_prompt: :checkbox,
+        enable_native_tool: :checkbox,
       },
     }
   end

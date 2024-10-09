@@ -55,7 +55,7 @@ module DiscourseAi
           default_options
             .merge(model_params)
             .merge(messages: prompt)
-            .tap { |payload| payload[:stream] = false }
+            .tap { |payload| payload[:stream] = false if @native_tool_support || !@streaming_mode }
             .tap { |payload| payload[:tools] = dialect.tools if dialect.tools.present? }
         end
 

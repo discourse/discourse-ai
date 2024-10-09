@@ -277,6 +277,7 @@ he:
           region: "אזור של AWS Bedrock"
           organization: "מזהה ארגון OpenAI כרשות"
           disable_system_prompt: "השבתת הודעת מערכת בבקשות"
+          enable_native_tool: "הפעל כלי מקומי"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
