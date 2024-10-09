@@ -202,6 +202,8 @@ module DiscourseAi
                     embeddings::halfvec(#{dimensions}) AS embeddings
                   FROM
                     #{rag_fragments_table_name}
+                  INNER JOIN
+                    rag_document_fragments ON rag_document_fragments.id = rag_document_fragment_id
                   WHERE
                     model_id = #{id} AND strategy_id = #{@strategy.id}
                   ORDER BY
