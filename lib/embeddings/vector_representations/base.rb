@@ -127,7 +127,7 @@ module DiscourseAi
                 model_id = #{id} AND strategy_id = #{@strategy.id}
               ORDER BY
                 binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
-              LIMIT :limit * 2               
+              LIMIT :limit * 2
             )
             SELECT
               topic_id,
@@ -162,7 +162,7 @@ module DiscourseAi
                 model_id = #{id} AND strategy_id = #{@strategy.id}
               ORDER BY
                 binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
-              LIMIT :limit * 2               
+              LIMIT :limit * 2
             )
             SELECT
               post_id,
@@ -193,6 +193,8 @@ module DiscourseAi
           offset:,
           return_distance: false
         )
+          # A too low limit exacerbates the the recall loss of binary quantization
+          binary_search_limit = [limit * 2, 100].max
           results =
             DB.query(
               <<~SQL,
@@ -208,7 +210,7 @@ module DiscourseAi
                     model_id = #{id} AND strategy_id = #{@strategy.id}
                   ORDER BY
                     binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
-                  LIMIT :limit * 20
+                  LIMIT :binary_search_limit
                 )
                 SELECT
                   rag_document_fragment_id,
@@ -225,6 +227,7 @@ module DiscourseAi
               target_type: target_type,
               limit: limit,
               offset: offset,
+              binary_search_limit: binary_search_limit,
             )
 
           if return_distance
