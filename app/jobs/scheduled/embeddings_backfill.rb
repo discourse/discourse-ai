@@ -35,8 +35,6 @@ module Jobs
 
       rebaked += populate_topic_embeddings(vector_rep, topics)
 
-      vector_rep.consider_indexing
-
       return if rebaked >= limit
 
       # Then, we'll try to backfill embeddings for topics that have outdated
@@ -81,8 +79,6 @@ module Jobs
           vector_rep.generate_representation_from(t)
           rebaked += 1
         end
-
-      vector_rep.consider_indexing
 
       return if rebaked >= limit
 
