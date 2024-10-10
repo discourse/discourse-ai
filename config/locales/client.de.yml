@@ -275,7 +275,6 @@ de:
           region: "AWS-Bedrock-Region"
           organization: "Optionale OpenAI-Organisations-ID"
           disable_system_prompt: "Systemmeldung in Eingabeaufforderungen deaktivieren"
-          enable_native_tool: "Nativen Tool aktivieren"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"

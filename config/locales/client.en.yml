@@ -302,7 +302,7 @@ en:
           region: "AWS Bedrock Region"
           organization: "Optional OpenAI Organization ID"
           disable_system_prompt: "Disable system message in prompts"
-          enable_native_tool: "Enable native tool"
+          enable_native_tool: "Enable native tool support"
 
       related_topics:
         title: "Related Topics"
