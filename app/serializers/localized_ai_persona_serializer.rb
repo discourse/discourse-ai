@@ -25,7 +25,8 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :rag_conversation_chunks,
              :question_consolidator_llm,
              :allow_chat,
-             :tool_details
+             :tool_details,
+             :forced_tool_count
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object

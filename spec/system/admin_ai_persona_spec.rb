@@ -19,6 +19,16 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
     tool_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__tools")
     tool_selector.expand
     tool_selector.select_row_by_value("Read")
+    tool_selector.collapse
+
+    tool_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__forced_tools")
+    tool_selector.expand
+    tool_selector.select_row_by_value("Read")
+    tool_selector.collapse
+
+    strategy_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__forced_tool_strategy")
+    strategy_selector.expand
+    strategy_selector.select_row_by_value(1)
 
     find(".ai-persona-editor__save").click()
 
@@ -30,7 +40,8 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
     expect(persona.name).to eq("Test Persona")
     expect(persona.description).to eq("I am a test persona")
     expect(persona.system_prompt).to eq("You are a helpful bot")
-    expect(persona.tools).to eq([["Read", { "read_private" => nil }, false]])
+    expect(persona.tools).to eq([["Read", { "read_private" => nil }, true]])
+    expect(persona.forced_tool_count).to eq(1)
   end
 
   it "will not allow deletion or editing of system personas" do

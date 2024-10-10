@@ -28,6 +28,7 @@ const CREATE_ATTRIBUTES = [
   "question_consolidator_llm",
   "allow_chat",
   "tool_details",
+  "forced_tool_count",
 ];
 
 const SYSTEM_ATTRIBUTES = [
@@ -154,6 +155,7 @@ export default class AiPersona extends RestModel {
 
     const persona = AiPersona.create(attrs);
     persona.forcedTools = (this.forcedTools || []).slice();
+    persona.forced_tool_count = this.forced_tool_count || -1;
     return persona;
   }
 }

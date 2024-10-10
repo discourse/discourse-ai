@@ -51,6 +51,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       question_consolidator_llm: "Question Consolidator LLM",
       allow_chat: false,
       tool_details: true,
+      forced_tool_count: -1,
     };
 
     const aiPersona = AiPersona.create({ ...properties });
@@ -92,6 +93,7 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       question_consolidator_llm: "Question Consolidator LLM",
       allow_chat: false,
       tool_details: true,
+      forced_tool_count: -1,
     };
 
     const aiPersona = AiPersona.create({ ...properties });
