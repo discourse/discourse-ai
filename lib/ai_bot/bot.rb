@@ -72,6 +72,11 @@ module DiscourseAi
         forced_tools = persona.force_tool_use.map { |tool| tool.name }
         force_tool = forced_tools.find { |name| !context[:chosen_tools].include?(name) }
 
+        if force_tool && persona.forced_tool_count > 0
+          user_turns = prompt.messages.select { |m| m[:type] == :user }.length
+          force_tool = false if user_turns > persona.forced_tool_count
+        end
+
         if force_tool
           context[:chosen_tools] << force_tool
           prompt.tool_choice = force_tool

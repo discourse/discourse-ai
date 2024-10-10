@@ -106,6 +106,7 @@ module DiscourseAi
             :question_consolidator_llm,
             :allow_chat,
             :tool_details,
+            :forced_tool_count,
             allowed_group_ids: [],
             rag_uploads: [:id],
           )

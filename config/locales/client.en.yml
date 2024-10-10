@@ -116,6 +116,11 @@ en:
         select_option: "Select an option..."
 
       ai_persona:
+        tool_strategies:
+          all: "Apply to all replies"
+          replies:
+            one: "Apply to first reply only"
+            other: "Apply to first %{count} replies"
         back: Back
         name: Name
         edit: Edit
@@ -142,6 +147,7 @@ en:
         question_consolidator_llm: Language Model for Question Consolidator
         question_consolidator_llm_help: The language model to use for the question consolidator, you may choose a less powerful model to save costs.
         system_prompt: System Prompt
+        forced_tool_strategy: Forced Tool Strategy
         allow_chat: "Allow Chat"
         allow_chat_help: "If enabled, users in allowed groups can DM this persona"
         save: Save

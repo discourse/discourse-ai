@@ -39,9 +39,10 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         Fabricate(
           :ai_persona,
           name: "search2",
-          tools: [["SearchCommand", { base_query: "test" }]],
+          tools: [["SearchCommand", { base_query: "test" }, true]],
           mentionable: true,
           default_llm: "anthropic:claude-2",
+          forced_tool_count: 2,
         )
       persona2.create_user!
 
@@ -55,6 +56,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(serializer_persona2["default_llm"]).to eq("anthropic:claude-2")
       expect(serializer_persona2["user_id"]).to eq(persona2.user_id)
       expect(serializer_persona2["user"]["id"]).to eq(persona2.user_id)
+      expect(serializer_persona2["forced_tool_count"]).to eq(2)
 
       tools = response.parsed_body["meta"]["tools"]
       search_tool = tools.find { |c| c["id"] == "Search" }
@@ -85,7 +87,9 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       )
 
       expect(serializer_persona1["tools"]).to eq(["SearchCommand"])
-      expect(serializer_persona2["tools"]).to eq([["SearchCommand", { "base_query" => "test" }]])
+      expect(serializer_persona2["tools"]).to eq(
+        [["SearchCommand", { "base_query" => "test" }, true]],
+      )
     end
 
     context "with translations" do
@@ -165,6 +169,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           temperature: 0.5,
           mentionable: true,
           default_llm: "anthropic:claude-2",
+          forced_tool_count: 2,
         }
       end
 
@@ -183,6 +188,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           expect(persona_json["temperature"]).to eq(0.5)
           expect(persona_json["mentionable"]).to eq(true)
           expect(persona_json["default_llm"]).to eq("anthropic:claude-2")
+          expect(persona_json["forced_tool_count"]).to eq(2)
 
           persona = AiPersona.find(persona_json["id"])
 

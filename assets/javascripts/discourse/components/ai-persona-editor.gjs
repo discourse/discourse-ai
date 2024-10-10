@@ -20,6 +20,7 @@ import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import GroupChooser from "select-kit/components/group-chooser";
 import DTooltip from "float-kit/components/d-tooltip";
+import AiForcedToolStrategySelector from "./ai-forced-tool-strategy-selector";
 import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaToolOptions from "./ai-persona-tool-options";
 import AiToolSelector from "./ai-tool-selector";
@@ -49,7 +50,11 @@ export default class PersonaEditor extends Component {
   }
 
   get allowForceTools() {
-    return !this.editingModel?.system && this.editingModel?.tools?.length > 0;
+    return !this.editingModel?.system && this.selectedToolNames.length > 0;
+  }
+
+  get hasForcedTools() {
+    return this.forcedToolNames.length > 0;
   }
 
   @action
@@ -381,12 +386,23 @@ export default class PersonaEditor extends Component {
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.ai_persona.forced_tools"}}</label>
           <AiToolSelector
-            class="ai-persona-editor__tools"
+            class="ai-persona-editor__forced_tools"
             @value={{this.forcedToolNames}}
             @tools={{this.selectedTools}}
             @onChange={{this.forcedToolsChanged}}
           />
         </div>
+        {{#if this.hasForcedTools}}
+          <div class="control-group">
+            <label>{{I18n.t
+                "discourse_ai.ai_persona.forced_tool_strategy"
+              }}</label>
+            <AiForcedToolStrategySelector
+              class="ai-persona-editor__forced_tool_strategy"
+              @value={{this.editingModel.forced_tool_count}}
+            />
+          </div>
+        {{/if}}
       {{/if}}
       {{#unless this.editingModel.system}}
         <AiPersonaToolOptions
