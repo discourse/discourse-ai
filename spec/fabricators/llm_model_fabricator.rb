@@ -87,4 +87,5 @@ Fabricator(:ollama_model, from: :llm_model) do
   api_key "ABC"
   tokenizer "DiscourseAi::Tokenizer::Llama3Tokenizer"
   url "http://api.ollama.ai/api/chat"
+  provider_params { { enable_native_tool: true } }
 end

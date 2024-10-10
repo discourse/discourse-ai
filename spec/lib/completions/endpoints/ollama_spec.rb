@@ -3,8 +3,13 @@
 require_relative "endpoint_compliance"
 
 class OllamaMock < EndpointMock
-  def response(content)
-    message_content = { content: content }
+  def response(content, tool_call: false)
+    message_content =
+      if tool_call
+        { content: "", tool_calls: [content] }
+      else
+        { content: content }
+      end
 
     {
       created_at: "2024-09-25T06:47:21.283028Z",
@@ -21,11 +26,11 @@ class OllamaMock < EndpointMock
     }
   end
 
-  def stub_response(prompt, response_text)
+  def stub_response(prompt, response_text, tool_call: false)
     WebMock
       .stub_request(:post, "http://api.ollama.ai/api/chat")
-      .with(body: request_body(prompt))
-      .to_return(status: 200, body: JSON.dump(response(response_text)))
+      .with(body: request_body(prompt, tool_call: tool_call))
+      .to_return(status: 200, body: JSON.dump(response(response_text, tool_call: tool_call)))
   end
 
   def stream_line(delta)
@@ -71,14 +76,50 @@ class OllamaMock < EndpointMock
 
     WebMock
       .stub_request(:post, "http://api.ollama.ai/api/chat")
-      .with(body: request_body(prompt, stream: true))
+      .with(body: request_body(prompt))
       .to_return(status: 200, body: chunks)
 
     yield if block_given?
   end
 
-  def request_body(prompt, stream: false)
-    model.default_options.merge(messages: prompt).tap { |b| b[:stream] = false if !stream }.to_json
+  def tool_response
+    { function: { name: "get_weather", arguments: { location: "Sydney", unit: "c" } } }
+  end
+
+  def tool_payload
+    {
+      type: "function",
+      function: {
+        name: "get_weather",
+        description: "Get the weather in a city",
+        parameters: {
+          type: "object",
+          properties: {
+            location: {
+              type: "string",
+              description: "the city name",
+            },
+            unit: {
+              type: "string",
+              description: "the unit of measurement celcius c or fahrenheit f",
+              enum: %w[c f],
+            },
+          },
+          required: %w[location unit],
+        },
+      },
+    }
+  end
+
+  def request_body(prompt, tool_call: false)
+    model
+      .default_options
+      .merge(messages: prompt)
+      .tap do |b|
+        b[:stream] = false
+        b[:tools] = [tool_payload] if tool_call
+      end
+      .to_json
   end
 end
 
@@ -98,6 +139,12 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Ollama do
     context "when using regular mode" do
       it "completes a trivial prompt and logs the response" do
         compliance.regular_mode_simple_prompt(ollama_mock)
+      end
+    end
+
+    context "with tools" do
+      it "returns a function invocation" do
+        compliance.regular_mode_tools(ollama_mock)
       end
     end
   end
