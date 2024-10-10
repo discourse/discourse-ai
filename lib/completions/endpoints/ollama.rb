@@ -56,7 +56,9 @@ module DiscourseAi
             .merge(model_params)
             .merge(messages: prompt)
             .tap { |payload| payload[:stream] = false if @native_tool_support || !@streaming_mode }
-            .tap { |payload| payload[:tools] = dialect.tools if @native_tool_support && dialect.tools.present? }
+            .tap do |payload|
+              payload[:tools] = dialect.tools if @native_tool_support && dialect.tools.present?
+            end
         end
 
         def prepare_request(payload)
@@ -81,7 +83,7 @@ module DiscourseAi
 
         def add_to_function_buffer(function_buffer, payload: nil, partial: nil)
           @args_buffer ||= +""
-
+
           if @streaming_mode
             return function_buffer if !partial
           else

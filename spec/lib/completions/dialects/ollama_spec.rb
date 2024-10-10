@@ -24,7 +24,10 @@ RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
       it "includes the instructions in the system message" do
         allow(model).to receive(:lookup_custom_param).with("enable_native_tool").and_return(false)
 
-        DiscourseAi::Completions::Dialects::XmlTools.any_instance.stubs(:instructions).returns("Instructions")
+        DiscourseAi::Completions::Dialects::XmlTools
+          .any_instance
+          .stubs(:instructions)
+          .returns("Instructions")
 
         ollama_version = [
           { role: "system", content: "#{context.system_insts}\n\nInstructions" },
@@ -64,7 +67,9 @@ RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
 
         context.dialect_tools
 
-        expect(DiscourseAi::Completions::Dialects::OllamaTools).to have_received(:new).with(context.prompt.tools)
+        expect(DiscourseAi::Completions::Dialects::OllamaTools).to have_received(:new).with(
+          context.prompt.tools,
+        )
         expect(tool).to have_received(:translated_tools)
       end
     end
@@ -79,7 +84,9 @@ RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
 
         context.dialect_tools
 
-        expect(DiscourseAi::Completions::Dialects::XmlTools).to have_received(:new).with(context.prompt.tools)
+        expect(DiscourseAi::Completions::Dialects::XmlTools).to have_received(:new).with(
+          context.prompt.tools,
+        )
         expect(tool).to have_received(:translated_tools)
       end
     end
