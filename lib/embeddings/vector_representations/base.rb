@@ -208,7 +208,7 @@ module DiscourseAi
                     model_id = #{id} AND strategy_id = #{@strategy.id}
                   ORDER BY
                     binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
-                  LIMIT :limit * 2               
+                  LIMIT :limit * 10
                 )
                 SELECT
                   rag_document_fragment_id,

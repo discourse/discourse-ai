@@ -259,11 +259,11 @@ RSpec.describe AiTool do
       result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
 
       expected = [
-        [{ "fragment" => "7 8 9 10 11 12 13 14 15 16", "metadata" => nil }],
+        [{ "fragment" => "44 45 46 47 48 49 50", "metadata" => nil }],
         [
+          { "fragment" => "44 45 46 47 48 49 50", "metadata" => nil },
           { "fragment" => "36 37 38 39 40 41 42 43 44 45", "metadata" => nil },
           { "fragment" => "30 31 32 33 34 35 36 37", "metadata" => nil },
-          { "fragment" => "23 24 25 26 27 28 29 30", "metadata" => nil },
         ],
       ]
 
@@ -280,11 +280,11 @@ RSpec.describe AiTool do
       result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
 
       expected = [
-        [{ "fragment" => "4 5 6", "metadata" => nil }],
+        [{ "fragment" => "28 29 30", "metadata" => nil }],
         [
-          { "fragment" => "16 17 18", "metadata" => nil },
-          { "fragment" => "13 14 15", "metadata" => nil },
-          { "fragment" => "10 11 12", "metadata" => nil },
+          { "fragment" => "48 49 50", "metadata" => nil },
+          { "fragment" => "45 46 47", "metadata" => nil },
+          { "fragment" => "42 43 44", "metadata" => nil },
         ],
       ]
 
