@@ -246,7 +246,7 @@ module DiscourseAi
               SELECT
                   embeddings
                 FROM
-                  ai_topic_embeddings
+                  #{topic_table_name}
                 WHERE
                   model_id = #{id} AND
                   strategy_id = #{@strategy.id} AND
