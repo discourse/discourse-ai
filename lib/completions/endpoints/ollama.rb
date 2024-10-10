@@ -81,7 +81,7 @@ module DiscourseAi
 
         def add_to_function_buffer(function_buffer, payload: nil, partial: nil)
           @args_buffer ||= +""
-
+
           if @streaming_mode
             return function_buffer if !partial
           else

@@ -45,7 +45,13 @@ module DiscourseAi
         end
 
         def system_msg(msg)
-          { role: "system", content: msg[:content] }
+          msg = { role: "system", content: msg[:content] }
+
+          if tools_dialect.instructions.present?
+            msg[:content] = msg[:content].dup << "\n\n#{tools_dialect.instructions}"
+          end
+
+          msg
         end
 
         def enable_native_tool?

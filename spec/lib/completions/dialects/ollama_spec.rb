@@ -7,15 +7,34 @@ RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
   let(:context) { DialectContext.new(described_class, model) }
 
   describe "#translate" do
-    it "translates a prompt written in our generic format to the Ollama format" do
-      ollama_version = [
-        { role: "system", content: context.system_insts },
-        { role: "user", content: context.simple_user_input },
-      ]
+    context "when native tool support is enabled" do
+      it "translates a prompt written in our generic format to the Ollama format" do
+        ollama_version = [
+          { role: "system", content: context.system_insts },
+          { role: "user", content: context.simple_user_input },
+        ]
 
-      translated = context.system_user_scenario
+        translated = context.system_user_scenario
 
-      expect(translated).to eq(ollama_version)
+        expect(translated).to eq(ollama_version)
+      end
+    end
+
+    context "when native tool support is disabled - XML tools" do
+      it "includes the instructions in the system message" do
+        allow(model).to receive(:lookup_custom_param).with("enable_native_tool").and_return(false)
+
+        DiscourseAi::Completions::Dialects::XmlTools.any_instance.stubs(:instructions).returns("Instructions")
+
+        ollama_version = [
+          { role: "system", content: "#{context.system_insts}\n\nInstructions" },
+          { role: "user", content: context.simple_user_input },
+        ]
+
+        translated = context.system_user_scenario
+
+        expect(translated).to eq(ollama_version)
+      end
     end
 
     it "trims content if it's getting too long" do

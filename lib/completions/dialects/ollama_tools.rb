@@ -3,9 +3,14 @@
 module DiscourseAi
   module Completions
     module Dialects
+      # TODO: Define the Tool class to be inherited by all tools.
       class OllamaTools
         def initialize(tools)
           @raw_tools = tools
+        end
+
+        def instructions
+          "" # Noop. Tools are listed separate.
         end
 
         def translated_tools
