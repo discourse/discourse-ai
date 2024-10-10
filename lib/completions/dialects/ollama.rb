@@ -11,7 +11,7 @@ module DiscourseAi
         end
 
         def native_tool_support?
-          llm_model.lookup_custom_param("enable_native_tool")
+          enable_native_tool?
         end
 
         def max_prompt_tokens
@@ -21,7 +21,11 @@ module DiscourseAi
         private
 
         def tools_dialect
-          @tools_dialect ||= DiscourseAi::Completions::Dialects::OllamaTools.new(prompt.tools)
+          if enable_native_tool?
+            @tools_dialect ||= DiscourseAi::Completions::Dialects::OllamaTools.new(prompt.tools)
+          else
+            super
+          end
         end
 
         def tokenizer
@@ -42,6 +46,12 @@ module DiscourseAi
 
         def system_msg(msg)
           { role: "system", content: msg[:content] }
+        end
+
+        def enable_native_tool?
+          return @enable_native_tool if defined?(@enable_native_tool)
+
+          @enable_native_tool = llm_model.lookup_custom_param("enable_native_tool")
         end
 
         def user_msg(msg)

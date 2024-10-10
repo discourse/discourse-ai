@@ -33,4 +33,36 @@ RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
       expect(context.dialect(nil).max_prompt_tokens).to eq(10_000)
     end
   end
+
+  describe "#tools" do
+    context "when native tools are enabled" do
+      it "returns the translated tools from the OllamaTools class" do
+        tool = instance_double(DiscourseAi::Completions::Dialects::OllamaTools)
+
+        allow(model).to receive(:lookup_custom_param).with("enable_native_tool").and_return(true)
+        allow(tool).to receive(:translated_tools)
+        allow(DiscourseAi::Completions::Dialects::OllamaTools).to receive(:new).and_return(tool)
+
+        context.dialect_tools
+
+        expect(DiscourseAi::Completions::Dialects::OllamaTools).to have_received(:new).with(context.prompt.tools)
+        expect(tool).to have_received(:translated_tools)
+      end
+    end
+
+    context "when native tools are disabled" do
+      it "returns the translated tools from the XmlTools class" do
+        tool = instance_double(DiscourseAi::Completions::Dialects::XmlTools)
+
+        allow(model).to receive(:lookup_custom_param).with("enable_native_tool").and_return(false)
+        allow(tool).to receive(:translated_tools)
+        allow(DiscourseAi::Completions::Dialects::XmlTools).to receive(:new).and_return(tool)
+
+        context.dialect_tools
+
+        expect(DiscourseAi::Completions::Dialects::XmlTools).to have_received(:new).with(context.prompt.tools)
+        expect(tool).to have_received(:translated_tools)
+      end
+    end
+  end
 end

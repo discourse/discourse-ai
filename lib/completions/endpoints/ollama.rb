@@ -38,7 +38,7 @@ module DiscourseAi
         end
 
         def native_tool_support?
-          true
+          @native_tool_support
         end
 
         def has_tool?(_response_data)
@@ -49,14 +49,14 @@ module DiscourseAi
           @native_tool_support = dialect.native_tool_support?
 
           # https://github.com/ollama/ollama/blob/main/docs/api.md#parameters-1
-          # Due to ollama enforce a 'stream: false' for tool calls,
-          # instead of complicating the code, we will just disable streaming for all ollama calls.
+          # Due to ollama enforce a 'stream: false' for tool calls, instead of complicating the code,
+          # we will just disable streaming for all ollama calls if native tool support is enabled
 
           default_options
             .merge(model_params)
             .merge(messages: prompt)
             .tap { |payload| payload[:stream] = false if @native_tool_support || !@streaming_mode }
-            .tap { |payload| payload[:tools] = dialect.tools if dialect.tools.present? }
+            .tap { |payload| payload[:tools] = dialect.tools if @native_tool_support && dialect.tools.present? }
         end
 
         def prepare_request(payload)
