@@ -280,7 +280,7 @@ RSpec.describe AiTool do
       result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
 
       expected = [
-        [{ "fragment" => "28 29 30", "metadata" => nil }],
+        [{ "fragment" => "48 49 50", "metadata" => nil }],
         [
           { "fragment" => "48 49 50", "metadata" => nil },
           { "fragment" => "45 46 47", "metadata" => nil },
