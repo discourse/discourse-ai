@@ -26,7 +26,8 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
     tool_selector.select_row_by_value("Read")
     tool_selector.collapse
 
-    strategy_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__forced_tool_strategy")
+    strategy_selector =
+      PageObjects::Components::SelectKit.new(".ai-persona-editor__forced_tool_strategy")
     strategy_selector.expand
     strategy_selector.select_row_by_value(1)
 
