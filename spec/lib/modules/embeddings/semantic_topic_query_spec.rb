@@ -112,6 +112,28 @@ describe DiscourseAi::Embeddings::EntryPoint do
           )
         end
       end
+
+      context "with semantic_related_topics_query modifier registered" do
+        fab!(:included_topic) { Fabricate(:topic) }
+        fab!(:excluded_topic) { Fabricate(:topic) }
+
+        before { stub_semantic_search_with([included_topic.id, excluded_topic.id]) }
+
+        let(:modifier_block) { Proc.new { |query| query.where.not(id: excluded_topic.id) } }
+
+        it "Allows modifications to default results (excluding a topic in this case)" do
+          plugin_instance = Plugin::Instance.new
+          plugin_instance.register_modifier(:semantic_related_topics_query, &modifier_block)
+
+          expect(topic_query.list_semantic_related_topics(target).topics).to eq([included_topic])
+        ensure
+          DiscoursePluginRegistry.unregister_modifier(
+            plugin_instance,
+            :semantic_related_topics_query,
+            &modifier_block
+          )
+        end
+      end
     end
   end
 end
