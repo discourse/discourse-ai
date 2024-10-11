@@ -15,6 +15,10 @@ DiscourseAi::Engine.routes.draw do
     get "quick-search" => "embeddings#quick_search"
   end
 
+  scope module: :discord, path: "/discord", defaults: { format: :json } do
+    post "interactions" => "bot#interactions"
+  end
+
   scope module: :ai_bot, path: "/ai-bot", defaults: { format: :json } do
     get "bot-username" => "bot#show_bot_username"
     get "post/:post_id/show-debug-info" => "bot#show_debug_info"

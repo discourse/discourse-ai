@@ -10,6 +10,7 @@
 
 gem "tokenizers", "0.4.4"
 gem "tiktoken_ruby", "0.0.9"
+gem "ed25519", "1.2.4" #TODO remove this as existing ssl gem should handle this
 
 enabled_site_setting :discourse_ai_enabled
 

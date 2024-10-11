@@ -431,3 +431,10 @@ discourse_ai:
     hidden: true
     type: list
     list_type: compact
+
+  ai_discord_app_id:
+    default: ""
+    client: false
+  ai_discord_app_public_key:
+    default: ""
+    client: false
