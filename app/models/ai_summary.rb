@@ -6,6 +6,21 @@ class AiSummary < ActiveRecord::Base
 
   belongs_to :target, polymorphic: true
 
+  def self.store!(target, summary_type, model, summary, content_ids)
+    AiSummary.create!(
+      target: target,
+      algorithm: model,
+      content_range: (content_ids.first..content_ids.last),
+      summarized_text: summary,
+      original_content_sha: build_sha(content_ids.join),
+      summary_type: summary_type,
+    )
+  end
+
+  def self.build_sha(joined_ids)
+    Digest::SHA256.hexdigest(joined_ids)
+  end
+
   def mark_as_outdated
     @outdated = true
   end
@@ -28,7 +43,7 @@ end
 #  algorithm            :string           not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  summary_type         :string
+#  summary_type         :string           default("complete"), not null
 #
 # Indexes
 #

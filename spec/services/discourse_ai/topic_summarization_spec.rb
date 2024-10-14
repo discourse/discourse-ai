@@ -11,55 +11,13 @@ describe DiscourseAi::TopicSummarization do
     SiteSetting.ai_summarization_enabled = true
   end
 
-  let(:strategy) { DiscourseAi::Summarization.default_strategy }
-
-  shared_examples "includes only public-visible topics" do
-    subject { DiscourseAi::TopicSummarization.new(strategy, topic, user) }
-
-    it "only includes visible posts" do
-      topic.first_post.update!(hidden: true)
-
-      posts = subject.summary_targets
-
-      expect(posts.none?(&:hidden?)).to eq(true)
-    end
-
-    it "doesn't include posts without users" do
-      topic.first_post.user.destroy!
-
-      posts = subject.summary_targets
-
-      expect(posts.detect { |p| p.id == topic.first_post.id }).to be_nil
-    end
-
-    it "doesn't include deleted posts" do
-      topic.first_post.update!(user_id: nil)
-
-      posts = subject.summary_targets
-
-      expect(posts.detect { |p| p.id == topic.first_post.id }).to be_nil
-    end
-  end
-
-  describe "#summary_targets" do
-    context "when the topic has a best replies summary" do
-      before { topic.has_summary = true }
-
-      it_behaves_like "includes only public-visible topics"
-    end
-
-    context "when the topic doesn't have a best replies summary" do
-      before { topic.has_summary = false }
-
-      it_behaves_like "includes only public-visible topics"
-    end
-  end
+  let(:strategy) { DiscourseAi::Summarization.topic_summary(topic) }
 
   describe "#summarize" do
-    subject(:summarization) { described_class.new(strategy, topic, user) }
+    subject(:summarization) { described_class.new(strategy, user) }
 
     def assert_summary_is_cached(topic, summary_response)
-      cached_summary = AiSummary.find_by(target: topic)
+      cached_summary = AiSummary.find_by(target: topic, summary_type: AiSummary::COMPLETE)
 
       expect(cached_summary.content_range).to cover(*topic.posts.map(&:post_number))
       expect(cached_summary.summarized_text).to eq(summary)
@@ -82,40 +40,14 @@ describe DiscourseAi::TopicSummarization do
         summarization.summarize
 
         cached_summary_text = "This is a cached summary"
-        AiSummary.find_by(target: topic).update!(
+        AiSummary.find_by(target: topic, summary_type: AiSummary::COMPLETE).update!(
           summarized_text: cached_summary_text,
           updated_at: 24.hours.ago,
         )
 
-        summarization = described_class.new(strategy, topic, user)
+        summarization = described_class.new(strategy, user)
         section = summarization.summarize
         expect(section.summarized_text).to eq(cached_summary_text)
-      end
-
-      context "when the topic has embed content cached" do
-        it "embed content is used instead of the raw text" do
-          topic_embed =
-            Fabricate(
-              :topic_embed,
-              topic: topic,
-              embed_content_cache: "<p>hello world new post :D</p>",
-            )
-
-          DiscourseAi::Completions::Llm.with_prepared_responses(["A summary"]) do |spy|
-            summarization.summarize
-
-            prompt_raw =
-              spy
-                .prompt_messages
-                .reduce(+"") do |memo, m|
-                  memo << m[:content] << "\n"
-
-                  memo
-                end
-
-            expect(prompt_raw).to include(topic_embed.embed_content_cache)
-          end
-        end
       end
     end
 
@@ -124,7 +56,7 @@ describe DiscourseAi::TopicSummarization do
       let(:updated_summary) { "This is the final summary" }
 
       def cached_summary
-        AiSummary.find_by(target: topic)
+        AiSummary.find_by(target: topic, summary_type: AiSummary::COMPLETE)
       end
 
       before do
@@ -133,8 +65,8 @@ describe DiscourseAi::TopicSummarization do
         # since it is glued to the old llm instance
         # so we create the cached summary totally independantly
         DiscourseAi::Completions::Llm.with_prepared_responses([cached_text]) do
-          strategy = DiscourseAi::Summarization.default_strategy
-          described_class.new(strategy, topic, user).summarize
+          strategy = DiscourseAi::Summarization.topic_summary(topic)
+          described_class.new(strategy, user).summarize
         end
 
         cached_summary.update!(summarized_text: cached_text, created_at: 24.hours.ago)

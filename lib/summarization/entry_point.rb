@@ -2,14 +2,6 @@
 
 module DiscourseAi
   module Summarization
-    def self.default_strategy
-      if SiteSetting.ai_summarization_model.present? && SiteSetting.ai_summarization_enabled
-        DiscourseAi::Summarization::Strategies::FoldContent.new(SiteSetting.ai_summarization_model)
-      else
-        nil
-      end
-    end
-
     class EntryPoint
       def inject_into(plugin)
         plugin.add_to_serializer(:current_user, :can_summarize) do
@@ -18,11 +10,11 @@ module DiscourseAi
         end
 
         plugin.add_to_serializer(:topic_view, :summarizable) do
-          scope.can_see_summary?(object.topic)
+          scope.can_see_summary?(object.topic, AiSummary::COMPLETE)
         end
 
         plugin.add_to_serializer(:web_hook_topic_view, :summarizable) do
-          scope.can_see_summary?(object.topic)
+          scope.can_see_summary?(object.topic, AiSummary::COMPLETE)
         end
       end
     end
