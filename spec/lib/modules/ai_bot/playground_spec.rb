@@ -805,6 +805,70 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(custom_prompt.last.last).to eq(bot_user.username)
     end
 
+    context "with title_playground" do
+      let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
+
+      before { allow(playground).to receive(:title_playground) }
+
+      context "when the ai_bot_automatic_topic_title config is disabled" do
+        before { SiteSetting.ai_bot_automatic_topic_title = false }
+
+        it "does not update the title" do
+          response = "This is a suggested title"
+
+          DiscourseAi::Completions::Llm.with_prepared_responses([response]) do
+            playground.reply_to(first_post)
+          end
+
+          expect(playground).not_to have_received(:title_playground)
+        end
+      end
+
+      context "when the message in the topic is not the private message" do
+        before { SiteSetting.ai_bot_automatic_topic_title = true }
+
+        it "does not update the title" do
+          allow(first_post.topic).to receive(:private_message?).and_return(false)
+
+          response = "This is a suggested title"
+
+          DiscourseAi::Completions::Llm.with_prepared_responses([response]) do
+            playground.reply_to(first_post)
+          end
+
+          expect(playground).not_to have_received(:title_playground)
+        end
+      end
+
+      context "when the post is not the first one in the topic" do
+        before { SiteSetting.ai_bot_automatic_topic_title = true }
+
+        it "does not update the title" do
+          response = "This is a suggested title"
+
+          DiscourseAi::Completions::Llm.with_prepared_responses([response]) do
+            playground.reply_to(second_post)
+          end
+
+          expect(playground).not_to have_received(:title_playground)
+        end
+      end
+
+      context "when the AI bot can automatically update the title" do
+        before { SiteSetting.ai_bot_automatic_topic_title = true }
+
+        it "updates the title using bot suggestions" do
+          response = "This is a suggested title"
+
+          DiscourseAi::Completions::Llm.with_prepared_responses([response]) do
+            playground.reply_to(first_post)
+          end
+
+          expect(playground).to have_received(:title_playground)
+        end
+      end
+    end
+
     context "with Dall E bot" do
       before { SiteSetting.ai_openai_api_key = "123" }
 

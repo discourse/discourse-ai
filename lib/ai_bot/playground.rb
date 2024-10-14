@@ -487,9 +487,7 @@ module DiscourseAi
         reply_post
       ensure
         publish_final_update(reply_post) if stream_reply
-        if reply_post && post.post_number == 1 && post.topic.private_message?
-          title_playground(reply_post)
-        end
+        title_playground(reply_post) if reply_post && can_automatically_update_title?(post)
       end
 
       def available_bot_usernames
@@ -502,6 +500,14 @@ module DiscourseAi
       end
 
       private
+
+      def can_automatically_update_title?(post)
+        return false if !SiteSetting.ai_bot_automatic_topic_title
+        return false if !post.topic.private_message?
+        return false if post.post_number != 1
+
+        true
+      end
 
       def available_bot_users
         @available_bots ||=

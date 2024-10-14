@@ -393,6 +393,8 @@ discourse_ai:
   ai_bot_enable_chat_warning:
     default: false
     client: true
+  ai_bot_automatic_topic_title:
+    default: true
   ai_bot_debugging_allowed_groups:
     type: group_list
     list_type: compact
