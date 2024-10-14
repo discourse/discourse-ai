@@ -55,6 +55,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     )
   end
 
+  after do
+    # we must reset cache on persona cause data can be rolled back
+    AiPersona.persona_cache.flush!
+  end
+
   describe "is_bot_user_id?" do
     it "properly detects ALL bots as bot users" do
       persona = Fabricate(:ai_persona, enabled: false)
@@ -227,7 +232,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         vision_enabled: true,
         vision_max_pixels: 1_000,
         default_llm: "custom:#{opus_model.id}",
-        mentionable: true,
+        allow_topic_mentions: true,
       )
     end
 
@@ -277,7 +282,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         )
 
       persona.create_user!
-      persona.update!(default_llm: "custom:#{claude_2.id}", mentionable: true)
+      persona.update!(
+        default_llm: "custom:#{claude_2.id}",
+        allow_chat_channel_mentions: true,
+        allow_topic_mentions: true,
+      )
       persona
     end
 
@@ -294,7 +303,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         SiteSetting.ai_bot_enabled = true
         SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
         Group.refresh_automatic_groups!
-        persona.update!(allow_chat: true, mentionable: true, default_llm: "custom:#{opus_model.id}")
+        persona.update!(allow_chat_channel_mentions: true, default_llm: "custom:#{opus_model.id}")
       end
 
       it "should behave in a sane way when threading is enabled" do
@@ -406,8 +415,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
         Group.refresh_automatic_groups!
         persona.update!(
-          allow_chat: true,
-          mentionable: false,
+          allow_chat_direct_messages: true,
+          allow_topic_mentions: false,
+          allow_chat_channel_mentions: false,
           default_llm: "custom:#{opus_model.id}",
         )
         SiteSetting.ai_bot_enabled = true
@@ -481,7 +491,6 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         # it also needs to include history per config - first feed some history
         persona.update!(enabled: false)
-
         persona_guardian = Guardian.new(persona.user)
 
         4.times do |i|
@@ -561,6 +570,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       # we still should be able to mention with no bots
       toggle_enabled_bots(bots: [])
 
+      persona.update!(allow_topic_mentions: true)
+
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
         post =
@@ -574,6 +585,16 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
       expect(last_post.user_id).to eq(persona.user_id)
+
+      persona.update!(allow_topic_mentions: false)
+
+      post =
+        create_post(
+          title: "My public topic ABC",
+          raw: "Hey @#{persona.user.username}, can you help me?",
+        )
+
+      expect(post.topic.posts.last.post_number).to eq(1)
     end
 
     it "allows PMing a persona even when no particular bots are enabled" do
@@ -603,6 +624,48 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
 
       expect(last_post.topic.participant_count).to eq(2)
+
+      # ensure it can be disabled
+      persona.update!(allow_personal_messages: false)
+
+      post = create_post(
+        raw: "Hey there #{persona.user.username}, can you help me please",
+        topic_id: post.topic.id,
+        user: admin,
+      )
+
+      expect(post.post_number).to eq(3)
+    end
+
+    it "can tether a persona unconditionally to an llm" do
+      gpt_35_turbo = Fabricate(:llm_model, name: "gpt-3.5-turbo")
+
+      # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
+      SiteSetting.ai_bot_enabled = true
+      toggle_enabled_bots(bots: [gpt_35_turbo, claude_2])
+
+      post = nil
+      persona.update!(force_default_llm: true, default_llm: "custom:#{gpt_35_turbo.id}")
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Yes I can", "Magic Title"],
+        llm: "custom:#{gpt_35_turbo.id}",
+      ) do
+        post = create_post(
+          title:  "I just made a PM",
+          raw: "hello world",
+          target_usernames: "#{user.username},#{claude_2.user.username}",
+          archetype: Archetype.private_message,
+          user: admin,
+          custom_fields: { "ai_persona_id" => persona.id },
+        )
+
+      end
+
+      last_post = post.topic.posts.order(:post_number).last
+      expect(last_post.raw).to eq("Yes I can")
+      expect(last_post.user_id).to eq(persona.user_id)
+
     end
 
     it "picks the correct llm for persona in PMs" do

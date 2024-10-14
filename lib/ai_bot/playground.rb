@@ -11,17 +11,19 @@ module DiscourseAi
 
       def self.find_chat_persona(message, channel, user)
         if channel.direct_message_channel?
-          AiPersona.allowed_chat.find do |p|
-            p[:user_id].in?(channel.allowed_user_ids) && (user.group_ids & p[:allowed_group_ids])
-          end
+          AiPersona
+            .allowed_modalities(allow_chat_direct_messages: true)
+            .find do |p|
+              p[:user_id].in?(channel.allowed_user_ids) && (user.group_ids & p[:allowed_group_ids])
+            end
         else
           # let's defer on the parse if there is no @ in the message
           if message.message.include?("@")
             mentions = message.parsed_mentions.parsed_direct_mentions
             if mentions.present?
-              AiPersona.allowed_chat.find do |p|
-                p[:username].in?(mentions) && (user.group_ids & p[:allowed_group_ids])
-              end
+              AiPersona
+                .allowed_modalities(allow_chat_channel_mentions: true)
+                .find { |p| p[:username].in?(mentions) && (user.group_ids & p[:allowed_group_ids]) }
             end
           end
         end
@@ -29,8 +31,14 @@ module DiscourseAi
 
       def self.schedule_chat_reply(message, channel, user, context)
         return if !SiteSetting.ai_bot_enabled
-        return if AiPersona.allowed_chat.blank?
-        return if AiPersona.allowed_chat.any? { |m| m[:user_id] == user.id }
+
+        all_chat =
+          AiPersona.allowed_modalities(
+            allow_chat_channel_mentions: true,
+            allow_chat_direct_messages: true,
+          )
+        return if all_chat.blank?
+        return if all_chat.any? { |m| m[:user_id] == user.id }
 
         persona = find_chat_persona(message, channel, user)
         return if !persona
@@ -56,15 +64,22 @@ module DiscourseAi
 
       def self.schedule_reply(post)
         return if is_bot_user_id?(post.user_id)
+        mentionables = nil
 
-        bot_ids = LlmModel.joins(:user).pluck("users.id")
-        mentionables = AiPersona.mentionables(user: post.user)
+        if post.topic.private_message?
+          mentionables = AiPersona.allowed_modalities(user: post.user, allow_personal_messages: true)
+        else
+          mentionables = AiPersona.allowed_modalities(user: post.user, allow_topic_mentions: true)
+        end
 
         bot_user = nil
         mentioned = nil
 
+        all_llm_user_ids = LlmModel.joins(:user).pluck("users.id")
+
         if post.topic.private_message?
-          bot_user = post.topic.topic_allowed_users.where(user_id: bot_ids).first&.user
+          # this is an edge case, you started a PM with a different bot
+          bot_user = post.topic.topic_allowed_users.where(user_id: all_llm_user_ids).first&.user
           bot_user ||=
             post
               .topic
@@ -113,6 +128,10 @@ module DiscourseAi
           end
 
           persona ||= DiscourseAi::AiBot::Personas::General
+
+          if persona && persona.force_default_llm
+            bot_user = User.find(persona.user_id)
+          end
 
           bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.new)
           new(bot).update_playground_with(post)

@@ -8,11 +8,7 @@ module DiscourseAi
       Bot = Struct.new(:id, :name, :llm)
 
       def self.all_bot_ids
-        mentionable_persona_user_ids =
-          AiPersona.mentionables.map { |mentionable| mentionable[:user_id] }
-        mentionable_bot_users = LlmModel.joins(:user).pluck("users.id")
-
-        mentionable_bot_users + mentionable_persona_user_ids
+        AiPersona.persona_users.map { |persona| persona[:user_id] }
       end
 
       def self.find_participant_in(participant_ids)
@@ -140,7 +136,7 @@ module DiscourseAi
                 {
                   "id" => persona_user[:user_id],
                   "username" => persona_user[:username],
-                  "mentionable" => persona_user[:mentionable],
+                  "force_default_llm" => persona_user[:force_default_llm],
                   "is_persona" => true,
                 }
               end,
