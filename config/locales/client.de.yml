@@ -117,6 +117,11 @@ de:
       modals:
         select_option: "Wähle eine Option aus..."
       ai_persona:
+        tool_strategies:
+          all: "Auf alle Antworten anwenden"
+          replies:
+            one: "Nur auf die erste Antwort anwenden"
+            other: "Auf die ersten %{count} Antworten anwenden"
         back: Zurück
         name: Name
         edit: Bearbeiten
@@ -143,6 +148,7 @@ de:
         question_consolidator_llm: Sprachmodell für Fragenkonsolidierer
         question_consolidator_llm_help: Das Sprachmodell, das für den Fragenkonsolidierer verwendet werden soll. Du kannst ein weniger leistungsfähiges Modell wählen, um Kosten zu sparen.
         system_prompt: System-Eingabeaufforderung
+        forced_tool_strategy: Erzwungene Werkzeugstrategie
         allow_chat: "Chat zulassen"
         allow_chat_help: "Wenn diese Option aktiviert ist, können Nutzer in erlaubten Gruppen dieser Persona eine DN senden"
         save: Speichern
@@ -298,6 +304,7 @@ de:
           region: "AWS-Bedrock-Region"
           organization: "Optionale OpenAI-Organisations-ID"
           disable_system_prompt: "Systemmeldung in Eingabeaufforderungen deaktivieren"
+          enable_native_tool: "Aktiviere native Tool-Unterstützung"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"

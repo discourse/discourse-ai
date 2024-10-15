@@ -108,8 +108,6 @@ ja:
     tools:
       custom_name: "%{name} (カスタム)"
       presets:
-        browse_web_jina:
-          name: "jina.ai を使ってウェブを閲覧する"
         exchange_rate:
           name: "為替レート"
         stock_quote:

@@ -108,8 +108,6 @@ tr_TR:
     tools:
       custom_name: "%{name} (özel)"
       presets:
-        browse_web_jina:
-          name: "jina.ai kullanarak web'de gezinin"
         exchange_rate:
           name: "Döviz kuru"
         stock_quote:
