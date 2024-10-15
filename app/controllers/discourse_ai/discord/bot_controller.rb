@@ -22,8 +22,13 @@ module DiscourseAi
           # Respond to Discord PING request
           render json: { type: 1 }
         else
+          unless SiteSetting.ai_discord_allowed_guilds_map.include?(interaction.guild_id)
+            return head :forbidden
+          end
           response = { type: 5, data: { content: "Searching..." } }
           hijack { render json: response }
+
+          Rails.logger.info("Discord interaction received: #{body}")
 
           # Respond to Discord command
           Jobs.enqueue(:stream_discord_reply, interaction: body.dup)
