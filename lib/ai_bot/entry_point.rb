@@ -113,7 +113,7 @@ module DiscourseAi
                 name: persona.name,
                 description: persona.description,
                 force_default_llm: persona.force_default_llm,
-                username: persona.username
+                username: persona.username,
               }
             end
         end

@@ -628,11 +628,12 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       # ensure it can be disabled
       persona.update!(allow_personal_messages: false)
 
-      post = create_post(
-        raw: "Hey there #{persona.user.username}, can you help me please",
-        topic_id: post.topic.id,
-        user: admin,
-      )
+      post =
+        create_post(
+          raw: "Hey there #{persona.user.username}, can you help me please",
+          topic_id: post.topic.id,
+          user: admin,
+        )
 
       expect(post.post_number).to eq(3)
     end
@@ -651,21 +652,22 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         ["Yes I can", "Magic Title"],
         llm: "custom:#{gpt_35_turbo.id}",
       ) do
-        post = create_post(
-          title:  "I just made a PM",
-          raw: "hello world",
-          target_usernames: "#{user.username},#{claude_2.user.username}",
-          archetype: Archetype.private_message,
-          user: admin,
-          custom_fields: { "ai_persona_id" => persona.id },
-        )
-
+        post =
+          create_post(
+            title: "I just made a PM",
+            raw: "hello world",
+            target_usernames: "#{user.username},#{claude_2.user.username}",
+            archetype: Archetype.private_message,
+            user: admin,
+            custom_fields: {
+              "ai_persona_id" => persona.id,
+            },
+          )
       end
 
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
       expect(last_post.user_id).to eq(persona.user_id)
-
     end
 
     it "picks the correct llm for persona in PMs" do

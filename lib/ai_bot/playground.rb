@@ -67,7 +67,8 @@ module DiscourseAi
         mentionables = nil
 
         if post.topic.private_message?
-          mentionables = AiPersona.allowed_modalities(user: post.user, allow_personal_messages: true)
+          mentionables =
+            AiPersona.allowed_modalities(user: post.user, allow_personal_messages: true)
         else
           mentionables = AiPersona.allowed_modalities(user: post.user, allow_topic_mentions: true)
         end
@@ -129,9 +130,7 @@ module DiscourseAi
 
           persona ||= DiscourseAi::AiBot::Personas::General
 
-          if persona && persona.force_default_llm
-            bot_user = User.find(persona.user_id)
-          end
+          bot_user = User.find(persona.user_id) if persona && persona.force_default_llm
 
           bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.new)
           new(bot).update_playground_with(post)

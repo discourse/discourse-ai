@@ -119,7 +119,6 @@ export default class BotSelector extends Component {
     if (this.allowLLMSelector) {
       this.composer.set("targetRecipients", botUsername);
     } else {
-
       const persona = this.currentUser.ai_enabled_personas.find(
         (innerPersona) => innerPersona.id === this._value
       );
