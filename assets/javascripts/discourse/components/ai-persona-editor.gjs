@@ -44,6 +44,7 @@ export default class PersonaEditor extends Component {
   @tracked selectedTools = [];
   @tracked selectedToolNames = [];
   @tracked forcedToolNames = [];
+  @tracked hasDefaultLlm = false;
 
   get chatPluginEnabled() {
     return this.siteSettings.chat_enabled;
@@ -81,6 +82,7 @@ export default class PersonaEditor extends Component {
   @action
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
+    this.hasDefaultLlm = !!this.editingModel.default_llm;
     this.showDelete = !this.args.model.isNew && !this.args.model.system;
     this.maxPixelsValue = this.findClosestPixelValue(
       this.editingModel.vision_max_pixels
@@ -183,8 +185,10 @@ export default class PersonaEditor extends Component {
   set mappedDefaultLlm(value) {
     if (value === "blank") {
       this.editingModel.default_llm = null;
+      this.hasDefaultLlm = false;
     } else {
       this.editingModel.default_llm = value;
+      this.hasDefaultLlm = true;
     }
   }
 
@@ -344,6 +348,16 @@ export default class PersonaEditor extends Component {
           @content={{I18n.t "discourse_ai.ai_persona.default_llm_help"}}
         />
       </div>
+      {{#if this.hasDefaultLlm}}
+        <div class="control-group">
+          <label>
+            <Input
+              @type="checkbox"
+              @checked={{this.editingModel.force_default_llm}}
+            />
+            {{I18n.t "discourse_ai.ai_persona.force_default_llm"}}</label>
+        </div>
+      {{/if}}
       {{#unless @model.isNew}}
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.ai_persona.user"}}</label>
@@ -429,33 +443,73 @@ export default class PersonaEditor extends Component {
           disabled={{this.editingModel.system}}
         />
       </div>
+      <div class="control-group ai-persona-editor__allow_personal_messages">
+        <label>
+          <Input
+            @type="checkbox"
+            @checked={{this.editingModel.allow_personal_messages}}
+          />
+          {{I18n.t "discourse_ai.ai_persona.allow_personal_messages"}}</label>
+        <DTooltip
+          @icon="question-circle"
+          @content={{I18n.t
+            "discourse_ai.ai_persona.allow_personal_messages_help"
+          }}
+        />
+      </div>
       {{#if this.editingModel.user}}
-        {{#if this.chatPluginEnabled}}
-          <div class="control-group ai-persona-editor__allow_chat">
-            <label>
-              <Input
-                @type="checkbox"
-                @checked={{this.editingModel.allow_chat}}
-              />
-              {{I18n.t "discourse_ai.ai_persona.allow_chat"}}</label>
-            <DTooltip
-              @icon="question-circle"
-              @content={{I18n.t "discourse_ai.ai_persona.allow_chat_help"}}
-            />
-          </div>
-        {{/if}}
-        <div class="control-group ai-persona-editor__mentionable">
+        <div class="control-group ai-persona-editor__allow_topic_mentions">
           <label>
             <Input
               @type="checkbox"
-              @checked={{this.editingModel.mentionable}}
+              @checked={{this.editingModel.allow_topic_mentions}}
             />
-            {{I18n.t "discourse_ai.ai_persona.mentionable"}}</label>
+            {{I18n.t "discourse_ai.ai_persona.allow_topic_mentions"}}</label>
           <DTooltip
             @icon="question-circle"
-            @content={{I18n.t "discourse_ai.ai_persona.mentionable_help"}}
+            @content={{I18n.t
+              "discourse_ai.ai_persona.allow_topic_mentions_help"
+            }}
           />
         </div>
+        {{#if this.chatPluginEnabled}}
+          <div
+            class="control-group ai-persona-editor__allow_chat_direct_messages"
+          >
+            <label>
+              <Input
+                @type="checkbox"
+                @checked={{this.editingModel.allow_chat_direct_messages}}
+              />
+              {{I18n.t
+                "discourse_ai.ai_persona.allow_chat_direct_messages"
+              }}</label>
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.allow_chat_direct_messages_help"
+              }}
+            />
+          </div>
+          <div
+            class="control-group ai-persona-editor__allow_chat_channel_mentions"
+          >
+            <label>
+              <Input
+                @type="checkbox"
+                @checked={{this.editingModel.allow_chat_channel_mentions}}
+              />
+              {{I18n.t
+                "discourse_ai.ai_persona.allow_chat_channel_mentions"
+              }}</label>
+            <DTooltip
+              @icon="question-circle"
+              @content={{I18n.t
+                "discourse_ai.ai_persona.allow_chat_channel_mentions_help"
+              }}
+            />
+          </div>
+        {{/if}}
       {{/if}}
       <div class="control-group ai-persona-editor__tool-details">
         <label>

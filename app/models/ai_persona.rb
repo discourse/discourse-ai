@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class AiPersona < ActiveRecord::Base
-  # TODO remove this line 01-11-2024
-  self.ignored_columns = [:commands]
+  # TODO remove this line 01-1-2025
+  self.ignored_columns = %i[commands allow_chat mentionable]
 
   # places a hard limit, so per site we cache a maximum of 500 classes
   MAX_PERSONAS_PER_SITE = 500
@@ -52,46 +52,51 @@ class AiPersona < ActiveRecord::Base
       persona_cache[:persona_users] ||= AiPersona
         .where(enabled: true)
         .joins(:user)
-        .pluck(
-          "ai_personas.id, users.id, users.username_lower, allowed_group_ids, default_llm, mentionable, allow_chat",
-        )
-        .map do |id, user_id, username, allowed_group_ids, default_llm, mentionable, allow_chat|
+        .map do |persona|
           {
-            id: id,
-            user_id: user_id,
-            username: username,
-            allowed_group_ids: allowed_group_ids,
-            default_llm: default_llm,
-            mentionable: mentionable,
-            allow_chat: allow_chat,
+            id: persona.id,
+            user_id: persona.user_id,
+            username: persona.user.username_lower,
+            allowed_group_ids: persona.allowed_group_ids,
+            default_llm: persona.default_llm,
+            force_default_llm: persona.force_default_llm,
+            allow_chat_channel_mentions: persona.allow_chat_channel_mentions,
+            allow_chat_direct_messages: persona.allow_chat_direct_messages,
+            allow_topic_mentions: persona.allow_topic_mentions,
+            allow_personal_messages: persona.allow_personal_messages,
           }
         end
 
     if user
-      persona_users.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
+      persona_users.select { |persona_user| user.in_any_groups?(persona_user[:allowed_group_ids]) }
     else
       persona_users
     end
   end
 
-  def self.allowed_chat(user: nil)
-    personas = persona_cache[:allowed_chat] ||= persona_users.select { |u| u[:allow_chat] }
+  def self.allowed_modalities(
+    user: nil,
+    allow_chat_channel_mentions: false,
+    allow_chat_direct_messages: false,
+    allow_topic_mentions: false,
+    allow_personal_messages: false
+  )
+    index =
+      "modality-#{allow_chat_channel_mentions}-#{allow_chat_direct_messages}-#{allow_topic_mentions}-#{allow_personal_messages}"
+
+    personas =
+      persona_cache[index.to_sym] ||= persona_users.select do |persona|
+        next true if allow_chat_channel_mentions && persona[:allow_chat_channel_mentions]
+        next true if allow_chat_direct_messages && persona[:allow_chat_direct_messages]
+        next true if allow_topic_mentions && persona[:allow_topic_mentions]
+        next true if allow_personal_messages && persona[:allow_personal_messages]
+        false
+      end
+
     if user
       personas.select { |u| user.in_any_groups?(u[:allowed_group_ids]) }
     else
       personas
-    end
-  end
-
-  def self.mentionables(user: nil)
-    all_mentionables =
-      persona_cache[:mentionables] ||= persona_users.select do |mentionable|
-        mentionable[:mentionable]
-      end
-    if user
-      all_mentionables.select { |mentionable| user.in_any_groups?(mentionable[:allowed_group_ids]) }
-    else
-      all_mentionables
     end
   end
 
@@ -113,7 +118,11 @@ class AiPersona < ActiveRecord::Base
       vision_max_pixels
       rag_conversation_chunks
       question_consolidator_llm
-      allow_chat
+      allow_chat_channel_mentions
+      allow_chat_direct_messages
+      allow_topic_mentions
+      allow_personal_messages
+      force_default_llm
       name
       description
       allowed_group_ids
@@ -127,6 +136,8 @@ class AiPersona < ActiveRecord::Base
       value = self.read_attribute(attr)
       instance_attributes[attr] = value
     end
+
+    instance_attributes[:username] = user&.username_lower
 
     if persona_class
       instance_attributes.each do |key, value|
@@ -243,7 +254,10 @@ class AiPersona < ActiveRecord::Base
   private
 
   def chat_preconditions
-    if allow_chat && !default_llm
+    if (
+         allow_chat_channel_mentions || allow_chat_direct_messages || allow_topic_mentions ||
+           force_default_llm
+       ) && !default_llm
       errors.add(:default_llm, I18n.t("discourse_ai.ai_bot.personas.default_llm_required"))
     end
   end
@@ -281,7 +295,6 @@ end
 #  temperature                 :float
 #  top_p                       :float
 #  user_id                     :integer
-#  mentionable                 :boolean          default(FALSE), not null
 #  default_llm                 :text
 #  max_context_posts           :integer
 #  max_post_context_tokens     :integer
@@ -291,16 +304,15 @@ end
 #  rag_chunk_tokens            :integer          default(374), not null
 #  rag_chunk_overlap_tokens    :integer          default(10), not null
 #  rag_conversation_chunks     :integer          default(10), not null
-#  role                        :enum             default("bot"), not null
-#  role_category_ids           :integer          default([]), not null, is an Array
-#  role_tags                   :string           default([]), not null, is an Array
-#  role_group_ids              :integer          default([]), not null, is an Array
-#  role_whispers               :boolean          default(FALSE), not null
-#  role_max_responses_per_hour :integer          default(50), not null
 #  question_consolidator_llm   :text
-#  allow_chat                  :boolean          default(FALSE), not null
 #  tool_details                :boolean          default(TRUE), not null
 #  tools                       :json             not null
+#  forced_tool_count           :integer          default(-1), not null
+#  allow_chat_channel_mentions :boolean          default(FALSE), not null
+#  allow_chat_direct_messages  :boolean          default(FALSE), not null
+#  allow_topic_mentions        :boolean          default(FALSE), not null
+#  allow_personal_message      :boolean          default(TRUE), not null
+#  force_default_llm           :boolean          default(FALSE), not null
 #
 # Indexes
 #

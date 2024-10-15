@@ -21,7 +21,15 @@ module DiscourseAi
             nil
           end
 
-          def allow_chat
+          def force_default_llm
+            false
+          end
+
+          def allow_chat_channel_mentions
+            false
+          end
+
+          def allow_chat_direct_messages
             false
           end
 

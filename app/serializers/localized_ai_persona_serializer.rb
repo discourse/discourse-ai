@@ -14,7 +14,6 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :allowed_group_ids,
              :temperature,
              :top_p,
-             :mentionable,
              :default_llm,
              :user_id,
              :max_context_posts,
@@ -24,9 +23,13 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :rag_chunk_overlap_tokens,
              :rag_conversation_chunks,
              :question_consolidator_llm,
-             :allow_chat,
              :tool_details,
-             :forced_tool_count
+             :forced_tool_count,
+             :allow_chat_channel_mentions,
+             :allow_chat_direct_messages,
+             :allow_topic_mentions,
+             :allow_personal_messages,
+             :force_default_llm
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object

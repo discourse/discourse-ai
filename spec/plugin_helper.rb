@@ -2,7 +2,10 @@
 
 module DiscourseAi::ChatBotHelper
   def toggle_enabled_bots(bots: [])
-    LlmModel.update_all(enabled_chat_bot: false)
+    models = LlmModel.all
+    models = models.where("id not in (?)", bots.map(&:id)) if bots.present?
+    models.update_all(enabled_chat_bot: false)
+
     bots.each { |b| b.update!(enabled_chat_bot: true) }
     DiscourseAi::AiBot::SiteSettingsExtension.enable_or_disable_ai_bots
   end

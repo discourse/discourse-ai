@@ -63,8 +63,6 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
     context "when rate limiting is enabled" do
       before { RateLimiter.enable }
 
-      use_redis_snapshotting
-
       it "will rate limit correctly" do
         stub_const(subject.class, :MAX_HYDE_SEARCHES_PER_MINUTE, 1) do
           stub_const(subject.class, :MAX_SEARCHES_PER_MINUTE, 2) do

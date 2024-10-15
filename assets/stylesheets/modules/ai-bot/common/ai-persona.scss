@@ -68,9 +68,12 @@
 
   &__tool-details,
   &__vision_enabled,
-  &__allow_chat,
-  &__priority,
-  &__mentionable {
+  &__allow_chat_direct_messages,
+  &__allow_chat_channel_mentions,
+  &__allow_topic_mentions,
+  &__allow_personal_messages,
+  &__force_default_llm,
+  &__priority {
     display: flex;
     align-items: center;
   }
