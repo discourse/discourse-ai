@@ -15,8 +15,8 @@ const CREATE_ATTRIBUTES = [
   "top_p",
   "temperature",
   "user_id",
-  "mentionable",
   "default_llm",
+  "force_default_llm",
   "user",
   "max_context_posts",
   "vision_enabled",
@@ -29,6 +29,10 @@ const CREATE_ATTRIBUTES = [
   "allow_chat",
   "tool_details",
   "forced_tool_count",
+  "allow_personal_messages",
+  "allow_topic_mentions",
+  "allow_chat_channel_mentions",
+  "allow_chat_direct_messages",
 ];
 
 const SYSTEM_ATTRIBUTES = [
@@ -38,8 +42,8 @@ const SYSTEM_ATTRIBUTES = [
   "system",
   "priority",
   "user_id",
-  "mentionable",
   "default_llm",
+  "force_default_llm",
   "user",
   "max_context_posts",
   "vision_enabled",
@@ -49,8 +53,11 @@ const SYSTEM_ATTRIBUTES = [
   "rag_chunk_overlap_tokens",
   "rag_conversation_chunks",
   "question_consolidator_llm",
-  "allow_chat",
   "tool_details",
+  "allow_personal_messages",
+  "allow_topic_mentions",
+  "allow_chat_channel_mentions",
+  "allow_chat_direct_messages",
 ];
 
 class ToolOption {

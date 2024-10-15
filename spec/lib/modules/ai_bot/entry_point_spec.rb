@@ -35,7 +35,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
         expect(serializer[:current_user][:can_debug_ai_bot_conversations]).to eq(true)
       end
 
-      it "adds information about forcint default llm to current_user_serializer" do
+      it "adds information about forcing default llm to current_user_serializer" do
         Group.refresh_automatic_groups!
 
         persona =

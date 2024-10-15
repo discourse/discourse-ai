@@ -137,6 +137,8 @@ class AiPersona < ActiveRecord::Base
       instance_attributes[attr] = value
     end
 
+    instance_attributes[:username] = user&.username_lower
+
     if persona_class
       instance_attributes.each do |key, value|
         # description/name are localized

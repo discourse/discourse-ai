@@ -8,9 +8,10 @@ module DiscourseAi
       Bot = Struct.new(:id, :name, :llm)
 
       def self.all_bot_ids
-        AiPersona.persona_users.map { |persona| persona[:user_id] }.concat(
-          LlmModel.where(enabled_chat_bot: true).pluck(:user_id),
-        )
+        AiPersona
+          .persona_users
+          .map { |persona| persona[:user_id] }
+          .concat(LlmModel.where(enabled_chat_bot: true).pluck(:user_id))
       end
 
       def self.find_participant_in(participant_ids)
@@ -107,7 +108,13 @@ module DiscourseAi
           DiscourseAi::AiBot::Personas::Persona
             .all(user: scope.user)
             .map do |persona|
-              { id: persona.id, name: persona.name, description: persona.description }
+              {
+                id: persona.id,
+                name: persona.name,
+                description: persona.description,
+                force_default_llm: persona.force_default_llm,
+                username: persona.username
+              }
             end
         end
 

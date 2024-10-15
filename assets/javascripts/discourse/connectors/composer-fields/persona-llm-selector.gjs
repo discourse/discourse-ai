@@ -32,6 +32,7 @@ export default class BotSelector extends Component {
   @service currentUser;
   @service siteSettings;
   @tracked llm;
+  @tracked allowLLMSelector = true;
 
   STORE_NAMESPACE = "discourse_ai_persona_selector_";
   LLM_STORE_NAMESPACE = "discourse_ai_llm_selector_";
@@ -54,6 +55,7 @@ export default class BotSelector extends Component {
       }
 
       this.composer.metaData = { ai_persona_id: this._value };
+      this.setAllowLLMSelector();
 
       let llm = this.preferredLlmStore.getObject("id");
       llm = llm || this.llmOptions[0].id;
@@ -93,6 +95,15 @@ export default class BotSelector extends Component {
     this._value = newValue;
     this.preferredPersonaStore.setObject({ key: "id", value: newValue });
     this.composer.metaData = { ai_persona_id: newValue };
+    this.setAllowLLMSelector();
+  }
+
+  setAllowLLMSelector() {
+    const persona = this.currentUser.ai_enabled_personas.find(
+      (innerPersona) => innerPersona.id === this._value
+    );
+
+    this.allowLLMSelector = !persona?.force_default_llm;
   }
 
   get currentLlm() {
@@ -105,7 +116,15 @@ export default class BotSelector extends Component {
       (bot) => bot.model_name === this.llm
     ).username;
     this.preferredLlmStore.setObject({ key: "id", value: newValue });
-    this.composer.set("targetRecipients", botUsername);
+    if (this.allowLLMSelector) {
+      this.composer.set("targetRecipients", botUsername);
+    } else {
+
+      const persona = this.currentUser.ai_enabled_personas.find(
+        (innerPersona) => innerPersona.id === this._value
+      );
+      this.composer.set("targetRecipients", persona.username || "");
+    }
   }
 
   get llmOptions() {
@@ -131,14 +150,16 @@ export default class BotSelector extends Component {
           @options={{hash icon="robot" filterable=this.filterable}}
         />
       </div>
-      <div class="llm-selector">
-        <DropdownSelectBox
-          class="persona-llm-selector__llm-dropdown"
-          @value={{this.currentLlm}}
-          @content={{this.llmOptions}}
-          @options={{hash icon="globe"}}
-        />
-      </div>
+      {{#if this.allowLLMSelector}}
+        <div class="llm-selector">
+          <DropdownSelectBox
+            class="persona-llm-selector__llm-dropdown"
+            @value={{this.currentLlm}}
+            @content={{this.llmOptions}}
+            @options={{hash icon="globe"}}
+          />
+        </div>
+      {{/if}}
     </div>
   </template>
 }

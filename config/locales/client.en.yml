@@ -148,8 +148,15 @@ en:
         question_consolidator_llm_help: The language model to use for the question consolidator, you may choose a less powerful model to save costs.
         system_prompt: System Prompt
         forced_tool_strategy: Forced Tool Strategy
-        allow_chat: "Allow Chat"
-        allow_chat_help: "If enabled, users in allowed groups can DM this persona"
+        allow_chat_direct_messages: "Allow Chat Direct Messages"
+        allow_chat_direct_messages_help: "If enabled, users in allowed groups can send direct messages to this persona."
+        allow_chat_channel_mentions: "Allow Chat Channel Mentions"
+        allow_chat_channel_mentions_help: "If enabled, users in allowed groups can mention this persona in chat channels."
+        allow_personal_messages: "Allow Personal Messages"
+        allow_personal_messages_help: "If enabled, users in allowed groups can send personal messages to this persona."
+        allow_topic_mentions: "Allow Topic Mentions"
+        allow_topic_mentions_help: "If enabled, users in allowed groups can mention this persona in topics."
+        force_default_llm: "Force Default Language Model to be used unconditionally"
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"
