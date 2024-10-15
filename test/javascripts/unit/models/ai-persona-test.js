@@ -37,8 +37,8 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       description: "Description",
       top_p: 0.8,
       temperature: 0.7,
-      mentionable: false,
       default_llm: "Default LLM",
+      force_default_llm: false,
       user: null,
       user_id: null,
       max_context_posts: 5,
@@ -52,6 +52,10 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       allow_chat: false,
       tool_details: true,
       forced_tool_count: -1,
+      allow_personal_messages: true,
+      allow_topic_mentions: true,
+      allow_chat_channel_mentions: true,
+      allow_chat_direct_messages: true,
     };
 
     const aiPersona = AiPersona.create({ ...properties });
@@ -82,7 +86,6 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       user: null,
       user_id: null,
       default_llm: "Default LLM",
-      mentionable: false,
       max_context_posts: 5,
       vision_enabled: true,
       vision_max_pixels: 100,
@@ -94,6 +97,11 @@ module("Discourse AI | Unit | Model | ai-persona", function () {
       allow_chat: false,
       tool_details: true,
       forced_tool_count: -1,
+      allow_personal_messages: true,
+      allow_topic_mentions: true,
+      allow_chat_channel_mentions: true,
+      allow_chat_direct_messages: true,
+      force_default_llm: false,
     };
 
     const aiPersona = AiPersona.create({ ...properties });
