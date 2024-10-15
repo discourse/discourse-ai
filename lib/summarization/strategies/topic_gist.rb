@@ -5,7 +5,7 @@ module DiscourseAi
     module Strategies
       class TopicGist < Base
         def type
-          AiSummary::GIST
+          AiSummary.summary_types[:gist]
         end
 
         def targets_data

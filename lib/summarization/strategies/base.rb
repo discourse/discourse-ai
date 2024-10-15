@@ -14,7 +14,7 @@ module DiscourseAi
         attr_reader :target
 
         # The summary type differentiates instances of `AiSummary` pointing to a single target.
-        # See the constants defined in that class for available options.
+        # See the `summary_type` enum for available options.
         def type
           raise NotImplementedError
         end

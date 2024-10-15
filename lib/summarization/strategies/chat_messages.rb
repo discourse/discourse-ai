@@ -5,7 +5,7 @@ module DiscourseAi
     module Strategies
       class ChatMessages < Base
         def type
-          AiSummary::COMPLETE
+          AiSummary.summary_types[:complete]
         end
 
         def initialize(target, since)

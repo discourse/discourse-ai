@@ -10,11 +10,11 @@ module DiscourseAi
         end
 
         plugin.add_to_serializer(:topic_view, :summarizable) do
-          scope.can_see_summary?(object.topic, AiSummary::COMPLETE)
+          scope.can_see_summary?(object.topic, AiSummary.summary_types[:complete])
         end
 
         plugin.add_to_serializer(:web_hook_topic_view, :summarizable) do
-          scope.can_see_summary?(object.topic, AiSummary::COMPLETE)
+          scope.can_see_summary?(object.topic, AiSummary.summary_types[:complete])
         end
       end
     end

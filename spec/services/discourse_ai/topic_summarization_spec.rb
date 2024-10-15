@@ -17,7 +17,8 @@ describe DiscourseAi::TopicSummarization do
     subject(:summarization) { described_class.new(strategy, user) }
 
     def assert_summary_is_cached(topic, summary_response)
-      cached_summary = AiSummary.find_by(target: topic, summary_type: AiSummary::COMPLETE)
+      cached_summary =
+        AiSummary.find_by(target: topic, summary_type: AiSummary.summary_types[:complete])
 
       expect(cached_summary.content_range).to cover(*topic.posts.map(&:post_number))
       expect(cached_summary.summarized_text).to eq(summary)
@@ -40,7 +41,7 @@ describe DiscourseAi::TopicSummarization do
         summarization.summarize
 
         cached_summary_text = "This is a cached summary"
-        AiSummary.find_by(target: topic, summary_type: AiSummary::COMPLETE).update!(
+        AiSummary.find_by(target: topic, summary_type: AiSummary.summary_types[:complete]).update!(
           summarized_text: cached_summary_text,
           updated_at: 24.hours.ago,
         )
@@ -56,7 +57,7 @@ describe DiscourseAi::TopicSummarization do
       let(:updated_summary) { "This is the final summary" }
 
       def cached_summary
-        AiSummary.find_by(target: topic, summary_type: AiSummary::COMPLETE)
+        AiSummary.find_by(target: topic, summary_type: AiSummary.summary_types[:complete])
       end
 
       before do

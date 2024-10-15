@@ -9,7 +9,9 @@ module DiscourseAi
         topic = Topic.find(params[:topic_id])
         guardian.ensure_can_see!(topic)
 
-        raise Discourse::NotFound if !guardian.can_see_summary?(topic, AiSummary::COMPLETE)
+        if !guardian.can_see_summary?(topic, AiSummary.summary_types[:complete])
+          raise Discourse::NotFound
+        end
 
         RateLimiter.new(current_user, "summary", 6, 5.minutes).performed! if current_user
 

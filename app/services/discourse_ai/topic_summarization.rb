@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module DiscourseAi
+  # A cache layer on top of our topic summarization engine. Also handle permissions.
   class TopicSummarization
     def self.for(topic, user)
       new(DiscourseAi::Summarization.topic_summary(topic), user)

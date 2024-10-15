@@ -19,7 +19,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
             summarized_text: "test",
             algorithm: "test",
             original_content_sha: "test",
-            summary_type: AiSummary::COMPLETE,
+            summary_type: AiSummary.summary_types[:complete],
           )
 
         sign_in(Fabricate(:admin))
@@ -48,7 +48,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
             summarized_text: "test",
             algorithm: "test",
             original_content_sha: "test",
-            summary_type: AiSummary::COMPLETE,
+            summary_type: AiSummary.summary_types[:complete],
           )
 
         get "/discourse-ai/summarization/t/#{topic.id}.json"
@@ -135,7 +135,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
             summarized_text: "test",
             algorithm: "test",
             original_content_sha: "test",
-            summary_type: AiSummary::COMPLETE,
+            summary_type: AiSummary.summary_types[:complete],
           )
 
         get "/discourse-ai/summarization/t/#{topic.id}.json"

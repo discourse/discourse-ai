@@ -32,7 +32,7 @@ RSpec.describe "Summarize a topic ", type: :system do
         summarized_text: summarization_result,
         algorithm: "test",
         original_content_sha: "test",
-        summary_type: AiSummary::COMPLETE,
+        summary_type: AiSummary.summary_types[:complete],
       )
     end
 

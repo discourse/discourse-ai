@@ -5,7 +5,7 @@ module DiscourseAi
     module Strategies
       class TopicSummary < Base
         def type
-          AiSummary::COMPLETE
+          AiSummary.summary_types[:complete]
         end
 
         def targets_data

@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 class AiSummary < ActiveRecord::Base
-  COMPLETE = "complete"
-  GIST = "gist"
-
   belongs_to :target, polymorphic: true
+
+  enum :summary_type, { complete: 0, gist: 1 }
 
   def self.store!(target, summary_type, model, summary, content_ids)
     AiSummary.create!(
