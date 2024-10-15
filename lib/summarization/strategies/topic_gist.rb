@@ -45,7 +45,7 @@ module DiscourseAi
 
         def concatenation_prompt(texts_to_summarize)
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-            You are a summarization bot tasked with creating a single, concise sentence by merging disjoint summaries into a cohesive statement. 
+            You are a summarization bot tasked with creating a single, concise sentence by merging disjointed summaries into a cohesive statement. 
             Your response should strictly be this single, comprehensive sentence, without any additional text or comments.
           TEXT
 
