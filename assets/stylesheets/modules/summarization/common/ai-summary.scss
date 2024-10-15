@@ -215,3 +215,11 @@
     opacity: 1;
   }
 }
+
+.ai-topic-gist {
+  margin-top: .5em;
+
+  &__text {
+    font-size: var(--font-down-2);
+  }
+}

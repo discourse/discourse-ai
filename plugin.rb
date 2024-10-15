@@ -76,7 +76,10 @@ after_initialize do
     require_relative "spec/support/stable_diffusion_stubs"
   end
 
-  reloadable_patch { |plugin| Guardian.prepend DiscourseAi::GuardianExtensions }
+  reloadable_patch do |plugin|
+    Guardian.prepend DiscourseAi::GuardianExtensions
+    Topic.prepend DiscourseAi::TopicExtensions
+  end
 
   register_modifier(:post_should_secure_uploads?) do |_, _, topic|
     if topic.private_message? && SharedAiConversation.exists?(target: topic)
