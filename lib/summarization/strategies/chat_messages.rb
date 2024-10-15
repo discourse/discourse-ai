@@ -29,7 +29,7 @@ module DiscourseAi
 
         def contatenation_prompt(texts_to_summarize)
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-          You are a summarization bot tasked with creating a cohesive narrative by intelligently merging multiple disjoint summaries. 
+          You are a summarization bot tasked with creating a cohesive narrative by intelligently merging multiple disjointed summaries. 
           Your response should consist of well-structured paragraphs that combines these summaries into a clear and comprehensive overview. 
           Avoid adding any additional text or commentary. Format your output using Discourse forum Markdown.
         TEXT
