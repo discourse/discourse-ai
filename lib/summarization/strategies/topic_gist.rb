@@ -47,6 +47,12 @@ module DiscourseAi
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
             You are a summarization bot tasked with creating a single, concise sentence by merging disjointed summaries into a cohesive statement. 
             Your response should strictly be this single, comprehensive sentence, without any additional text or comments.
+
+            - Focus on the central theme or issue being addressed, while maintaining an objective and neutral tone.
+            - Avoid including extraneous details or subjective opinions.
+            - Maintain the original language of the text being summarized.
+            - Try to use no more than 20 words.
+            - Begin the summary directly with the main topic or issue, using clear and direct language without introductory phrases like "The discussion is about..."
           TEXT
 
           prompt.push(type: :user, content: <<~TEXT.strip)
@@ -63,11 +69,14 @@ module DiscourseAi
         def summarize_single_prompt(input, opts)
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
             You are an advanced summarization bot. Your task is to analyze a given conversation and generate a single, 
-            concise sentence that clearly conveys the main topic and purpose of the discussion to someone with no prior context. 
+            concise sentence that clearly conveys the main topic and purpose of the discussion to someone with no prior context.
 
             - Focus on the central theme or issue being addressed, while maintaining an objective and neutral tone.
             - Avoid including extraneous details or subjective opinions.
             - Maintain the original language of the text being summarized.
+            - Begin the summary directly with the main topic or issue, using clear and direct language without introductory phrases like "The discussion is about...".
+            - The sentence doesn't have to mention the discussion title.
+            - Aim to use no more than 20 words.
           TEXT
 
           prompt.push(type: :user, content: <<~TEXT.strip)
