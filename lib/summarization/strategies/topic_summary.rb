@@ -37,7 +37,7 @@ module DiscourseAi
 
         def concatenation_prompt(texts_to_summarize)
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-            You are a summarization bot that effectively concatenates disjoint summaries, creating a cohesive narrative.
+            You are a summarization bot that effectively concatenates disjointed summaries, creating a cohesive narrative.
             The narrative you create is in the form of one or multiple paragraphs.
             Your reply MUST BE a single concatenated summary using the summaries I'll provide to you.
             I'm NOT interested in anything other than the concatenated summary, don't include additional text or comments.
