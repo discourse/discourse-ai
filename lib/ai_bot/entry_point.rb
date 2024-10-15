@@ -66,7 +66,12 @@ module DiscourseAi
       def inject_into(plugin)
         plugin.register_modifier(:chat_allowed_bot_user_ids) do |user_ids, guardian|
           if guardian.user
-            allowed_chat = AiPersona.allowed_chat(user: guardian.user)
+            allowed_chat =
+              AiPersona.allowed_modalities(
+                user: guardian.user,
+                allow_chat_direct_messages: true,
+                allow_chat_channel_mentions: true,
+              )
             allowed_bot_ids = allowed_chat.map { |info| info[:user_id] }
             user_ids.concat(allowed_bot_ids)
           end
