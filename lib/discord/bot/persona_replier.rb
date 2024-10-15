@@ -1,0 +1,51 @@
+# frozen_string_literal: true
+
+module DiscourseAi
+  module Discord::Bot
+    class PersonaReplier < Base
+      def initialize(body)
+        @persona =
+          AiPersona
+            .all_personas
+            .find { |persona| persona.id == SiteSetting.ai_discord_search_persona.to_i }
+            .new
+        @bot =
+          DiscourseAi::AiBot::Bot.as(
+            Discourse.system_user,
+            persona: @persona,
+            model: AiPersona.find(@persona.id).default_llm, # TODO this is weird
+          )
+        super(body)
+      end
+
+      def handle_interaction!
+        last_update_sent_at = Time.now - 1
+        reply = +""
+        full_reply =
+          @bot.reply(
+            { conversation_context: [{ type: :user, content: @query }], skip_tool_details: true },
+          ) do |partial, _cancel, _something|
+            reply << partial
+            next if reply.blank?
+
+            if @reply_response.nil?
+              create_reply(reply.dup)
+            elsif @last_update_response.nil?
+              update_reply(reply.dup)
+            elsif Time.now - last_update_sent_at > 1
+              update_reply(reply.dup)
+              last_update_sent_at = Time.now
+            end
+          end
+
+        discord_reply = full_reply.last.first
+
+        if @reply_response.nil?
+          create_reply(discord_reply)
+        else
+          update_reply(discord_reply)
+        end
+      end
+    end
+  end
+end
