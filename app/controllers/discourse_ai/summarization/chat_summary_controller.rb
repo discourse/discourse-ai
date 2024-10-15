@@ -15,29 +15,21 @@ module DiscourseAi
         channel = ::Chat::Channel.find(params[:channel_id])
         guardian.ensure_can_join_chat_channel!(channel)
 
-        strategy = DiscourseAi::Summarization.default_strategy
-        raise Discourse::NotFound.new unless strategy
+        summarizer = DiscourseAi::Summarization.chat_channel_summary(channel, since)
+        raise Discourse::NotFound.new unless summarizer
 
         guardian.ensure_can_request_summary!
 
         RateLimiter.new(current_user, "channel_summary", 6, 5.minutes).performed!
 
         hijack do
-          content = { content_title: channel.name }
-
-          content[:contents] = channel
-            .chat_messages
-            .where("chat_messages.created_at > ?", since.hours.ago)
-            .includes(:user)
-            .order(created_at: :asc)
-            .pluck(:id, :username_lower, :message)
-            .map { { id: _1, poster: _2, text: _3 } }
+          strategy = DiscourseAi::Summarization::Strategies::ChatMessages.new(channel, since)
 
           summarized_text =
-            if content[:contents].empty?
+            if strategy.targets_data[:contents].empty?
               I18n.t("discourse_ai.summarization.chat.no_targets")
             else
-              strategy.summarize(content, current_user).dig(:summary)
+              summarizer.summarize(current_user)&.summarized_text
             end
 
           render json: { summary: summarized_text }

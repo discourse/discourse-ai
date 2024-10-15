@@ -8,8 +8,11 @@ module Jobs
       return unless topic = Topic.find_by(id: args[:topic_id])
       return unless user = User.find_by(id: args[:user_id])
 
-      strategy = DiscourseAi::Summarization.default_strategy
-      return if strategy.nil? || !Guardian.new(user).can_see_summary?(topic)
+      strategy = DiscourseAi::Summarization.topic_summary(topic)
+      if strategy.nil? ||
+           !Guardian.new(user).can_see_summary?(topic, AiSummary.summary_types[:complete])
+        return
+      end
 
       guardian = Guardian.new(user)
       return unless guardian.can_see?(topic)
@@ -21,7 +24,7 @@ module Jobs
 
       summary =
         DiscourseAi::TopicSummarization
-          .new(strategy, topic, user)
+          .new(strategy, user)
           .summarize(skip_age_check: skip_age_check) do |partial_summary|
             streamed_summary << partial_summary
 

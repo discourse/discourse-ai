@@ -20,7 +20,7 @@ describe DiscourseAi::GuardianExtensions do
       it "returns false" do
         SiteSetting.ai_custom_summarization_allowed_groups = ""
 
-        expect(guardian.can_see_summary?(topic)).to eq(false)
+        expect(guardian.can_see_summary?(topic, AiSummary.summary_types[:complete])).to eq(false)
       end
 
       it "returns true if there is a cached summary" do
@@ -29,9 +29,10 @@ describe DiscourseAi::GuardianExtensions do
           summarized_text: "test",
           original_content_sha: "123",
           algorithm: "test",
+          summary_type: AiSummary.summary_types[:complete],
         )
 
-        expect(guardian.can_see_summary?(topic)).to eq(true)
+        expect(guardian.can_see_summary?(topic, AiSummary.summary_types[:complete])).to eq(true)
       end
     end
 
@@ -39,7 +40,7 @@ describe DiscourseAi::GuardianExtensions do
       before { SiteSetting.ai_custom_summarization_allowed_groups = group.id }
 
       it "returns true if the user group is present in the ai_custom_summarization_allowed_groups_map setting" do
-        expect(guardian.can_see_summary?(topic)).to eq(true)
+        expect(guardian.can_see_summary?(topic, AiSummary.summary_types[:complete])).to eq(true)
       end
     end
 
@@ -48,12 +49,12 @@ describe DiscourseAi::GuardianExtensions do
       let(:pm) { Fabricate(:private_message_topic) }
 
       it "returns false" do
-        expect(guardian.can_see_summary?(pm)).to eq(false)
+        expect(guardian.can_see_summary?(pm, AiSummary.summary_types[:complete])).to eq(false)
       end
 
       it "returns true if user is in a group that is allowed summaries" do
         SiteSetting.ai_pm_summarization_allowed_groups = group.id
-        expect(guardian.can_see_summary?(pm)).to eq(true)
+        expect(guardian.can_see_summary?(pm, AiSummary.summary_types[:complete])).to eq(true)
       end
     end
 
@@ -61,7 +62,7 @@ describe DiscourseAi::GuardianExtensions do
       let(:guardian) { Guardian.new }
 
       it "returns false for anons" do
-        expect(guardian.can_see_summary?(topic)).to eq(false)
+        expect(guardian.can_see_summary?(topic, AiSummary.summary_types[:complete])).to eq(false)
       end
 
       it "returns true for anons when there is a cached summary" do
@@ -70,9 +71,10 @@ describe DiscourseAi::GuardianExtensions do
           summarized_text: "test",
           original_content_sha: "123",
           algorithm: "test",
+          summary_type: AiSummary.summary_types[:complete],
         )
 
-        expect(guardian.can_see_summary?(topic)).to eq(true)
+        expect(guardian.can_see_summary?(topic, AiSummary.summary_types[:complete])).to eq(true)
       end
     end
   end
