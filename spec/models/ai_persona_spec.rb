@@ -71,9 +71,12 @@ RSpec.describe AiPersona do
     forum_helper = AiPersona.find_by(name: "Forum Helper")
     forum_helper.update!(
       user_id: 1,
-      mentionable: true,
       default_llm: "anthropic:claude-2",
       max_context_posts: 3,
+      allow_topic_mentions: true,
+      allow_personal_messages: true,
+      allow_chat_channel_mentions: true,
+      allow_chat_direct_messages: true,
     )
 
     klass = forum_helper.class_instance
@@ -83,9 +86,12 @@ RSpec.describe AiPersona do
     # tl 0 by default
     expect(klass.allowed_group_ids).to eq([10])
     expect(klass.user_id).to eq(1)
-    expect(klass.mentionable).to eq(true)
     expect(klass.default_llm).to eq("anthropic:claude-2")
     expect(klass.max_context_posts).to eq(3)
+    expect(klass.allow_topic_mentions).to eq(true)
+    expect(klass.allow_personal_messages).to eq(true)
+    expect(klass.allow_chat_channel_mentions).to eq(true)
+    expect(klass.allow_chat_direct_messages).to eq(true)
   end
 
   it "defines singleton methods non persona classes" do
@@ -98,7 +104,10 @@ RSpec.describe AiPersona do
         allowed_group_ids: [],
         default_llm: "anthropic:claude-2",
         max_context_posts: 3,
-        mentionable: true,
+        allow_topic_mentions: true,
+        allow_personal_messages: true,
+        allow_chat_channel_mentions: true,
+        allow_chat_direct_messages: true,
         user_id: 1,
       )
 
@@ -108,12 +117,15 @@ RSpec.describe AiPersona do
     expect(klass.system).to eq(false)
     expect(klass.allowed_group_ids).to eq([])
     expect(klass.user_id).to eq(1)
-    expect(klass.mentionable).to eq(true)
     expect(klass.default_llm).to eq("anthropic:claude-2")
     expect(klass.max_context_posts).to eq(3)
+    expect(klass.allow_topic_mentions).to eq(true)
+    expect(klass.allow_personal_messages).to eq(true)
+    expect(klass.allow_chat_channel_mentions).to eq(true)
+    expect(klass.allow_chat_direct_messages).to eq(true)
   end
 
-  it "does not allow setting allow_chat without a default_llm" do
+  it "does not allow setting allowing chat without a default_llm" do
     persona =
       AiPersona.create(
         name: "test",
@@ -121,7 +133,37 @@ RSpec.describe AiPersona do
         system_prompt: "test",
         allowed_group_ids: [],
         default_llm: nil,
-        allow_chat: true,
+        allow_chat_channel_mentions: true,
+      )
+
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:default_llm].first).to eq(
+      I18n.t("discourse_ai.ai_bot.personas.default_llm_required"),
+    )
+
+    persona =
+      AiPersona.create(
+        name: "test",
+        description: "test",
+        system_prompt: "test",
+        allowed_group_ids: [],
+        default_llm: nil,
+        allow_chat_direct_messages: true,
+      )
+
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:default_llm].first).to eq(
+      I18n.t("discourse_ai.ai_bot.personas.default_llm_required"),
+    )
+
+    persona =
+      AiPersona.create(
+        name: "test",
+        description: "test",
+        system_prompt: "test",
+        allowed_group_ids: [],
+        default_llm: nil,
+        allow_topic_mentions: true,
       )
 
     expect(persona.valid?).to eq(false)

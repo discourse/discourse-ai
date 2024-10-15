@@ -2,7 +2,7 @@
 
 class AiPersona < ActiveRecord::Base
   # TODO remove this line 01-1-2025
-  self.ignored_columns = [:commands, :allow_chat, :mentionable]
+  self.ignored_columns = %i[commands allow_chat mentionable]
 
   # places a hard limit, so per site we cache a maximum of 500 classes
   MAX_PERSONAS_PER_SITE = 500
@@ -68,7 +68,7 @@ class AiPersona < ActiveRecord::Base
         end
 
     if user
-      persona_users.select { |user| user.in_any_groups?(mentionable[:allowed_group_ids]) }
+      persona_users.select { |persona_user| user.in_any_groups?(persona_user[:allowed_group_ids]) }
     else
       persona_users
     end
@@ -252,7 +252,10 @@ class AiPersona < ActiveRecord::Base
   private
 
   def chat_preconditions
-    if (allow_chat_channel_mentions || allow_chat_direct_messages) && !default_llm
+    if (
+         allow_chat_channel_mentions || allow_chat_direct_messages || allow_topic_mentions ||
+           force_default_llm
+       ) && !default_llm
       errors.add(:default_llm, I18n.t("discourse_ai.ai_bot.personas.default_llm_required"))
     end
   end

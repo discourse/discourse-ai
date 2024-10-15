@@ -40,7 +40,10 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           :ai_persona,
           name: "search2",
           tools: [["SearchCommand", { base_query: "test" }, true]],
-          mentionable: true,
+          allow_topic_mentions: true,
+          allow_personal_messages: true,
+          allow_chat_channel_mentions: true,
+          allow_chat_direct_messages: true,
           default_llm: "anthropic:claude-2",
           forced_tool_count: 2,
         )
@@ -52,7 +55,11 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       serializer_persona1 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona1.id }
       serializer_persona2 = response.parsed_body["ai_personas"].find { |p| p["id"] == persona2.id }
 
-      expect(serializer_persona2["mentionable"]).to eq(true)
+      expect(serializer_persona2["allow_topic_mentions"]).to eq(true)
+      expect(serializer_persona2["allow_personal_messages"]).to eq(true)
+      expect(serializer_persona2["allow_chat_channel_mentions"]).to eq(true)
+      expect(serializer_persona2["allow_chat_direct_messages"]).to eq(true)
+
       expect(serializer_persona2["default_llm"]).to eq("anthropic:claude-2")
       expect(serializer_persona2["user_id"]).to eq(persona2.user_id)
       expect(serializer_persona2["user"]["id"]).to eq(persona2.user_id)
@@ -167,7 +174,10 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           tools: [["search", { "base_query" => "test" }, true]],
           top_p: 0.1,
           temperature: 0.5,
-          mentionable: true,
+          allow_topic_mentions: true,
+          allow_personal_messages: true,
+          allow_chat_channel_mentions: true,
+          allow_chat_direct_messages: true,
           default_llm: "anthropic:claude-2",
           forced_tool_count: 2,
         }
@@ -186,9 +196,12 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           expect(persona_json["name"]).to eq("superbot")
           expect(persona_json["top_p"]).to eq(0.1)
           expect(persona_json["temperature"]).to eq(0.5)
-          expect(persona_json["mentionable"]).to eq(true)
           expect(persona_json["default_llm"]).to eq("anthropic:claude-2")
           expect(persona_json["forced_tool_count"]).to eq(2)
+          expect(persona_json["allow_topic_mentions"]).to eq(true)
+          expect(persona_json["allow_personal_messages"]).to eq(true)
+          expect(persona_json["allow_chat_channel_mentions"]).to eq(true)
+          expect(persona_json["allow_chat_direct_messages"]).to eq(true)
 
           persona = AiPersona.find(persona_json["id"])
 

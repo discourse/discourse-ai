@@ -35,15 +35,16 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
         expect(serializer[:current_user][:can_debug_ai_bot_conversations]).to eq(true)
       end
 
-      it "adds mentionables to current_user_serializer" do
+      it "adds information about forcint default llm to current_user_serializer" do
         Group.refresh_automatic_groups!
 
         persona =
           Fabricate(
             :ai_persona,
-            mentionable: true,
             enabled: true,
             allowed_group_ids: [bot_allowed_group.id],
+            default_llm: "claude-2",
+            force_default_llm: true,
           )
         persona.create_user!
 
@@ -54,7 +55,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
         persona_bot = bots.find { |bot| bot["id"] == persona.user_id }
 
         expect(persona_bot["username"]).to eq(persona.user.username)
-        expect(persona_bot["mentionable"]).to eq(true)
+        expect(persona_bot["force_default_llm"]).to eq(true)
       end
 
       it "includes user ids for all personas in the serializer" do
@@ -69,7 +70,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
 
         persona_bot = bots.find { |bot| bot["id"] == persona.user_id }
         expect(persona_bot["username"]).to eq(persona.user.username)
-        expect(persona_bot["mentionable"]).to eq(false)
+        expect(persona_bot["force_default_llm"]).to eq(false)
       end
 
       it "queues a job to generate a reply by the AI" do
