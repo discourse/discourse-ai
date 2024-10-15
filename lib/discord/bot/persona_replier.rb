@@ -38,13 +38,17 @@ module DiscourseAi
             end
           end
 
-        discord_reply = full_reply.last.first
+        discord_reply = wrap_links(full_reply.last.first)
 
         if @reply_response.nil?
           create_reply(discord_reply)
         else
           update_reply(discord_reply)
         end
+      end
+
+      def wrap_links(text)
+        text.gsub(%r{(?<url>https?://[^\s]+)}, "<\\k<url>>")
       end
     end
   end
