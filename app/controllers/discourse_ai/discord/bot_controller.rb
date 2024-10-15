@@ -30,7 +30,7 @@ module DiscourseAi
           hijack { render json: response }
 
           # Respond to Discord command
-          Jobs.enqueue(:stream_discord_reply, interaction: body.dup)
+          Jobs.enqueue(:stream_discord_reply, interaction: body)
         end
       end
 
