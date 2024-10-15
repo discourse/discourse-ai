@@ -22,7 +22,7 @@ module DiscourseAi
           # Respond to Discord PING request
           render json: { type: 1 }
         else
-          unless SiteSetting.ai_discord_allowed_guilds_map.include?(interaction.guild_id)
+          if !SiteSetting.ai_discord_allowed_guilds_map.include?(interaction.guild_id)
             return head :forbidden
           end
 
