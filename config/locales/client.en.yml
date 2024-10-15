@@ -156,7 +156,7 @@ en:
         allow_personal_messages_help: "If enabled, users in allowed groups can send personal messages to this persona."
         allow_topic_mentions: "Allow Topic Mentions"
         allow_topic_mentions_help: "If enabled, users in allowed groups can mention this persona in topics."
-        force_default_llm: "Force Default Language Model to be used unconditionally"
+        force_default_llm: "Always use default Language Model"
         save: Save
         saved: AI Persona Saved
         enabled: "Enabled?"
