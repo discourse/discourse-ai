@@ -7,7 +7,11 @@ module Jobs
     def execute(args)
       interaction = args[:interaction]
 
-      DiscourseAi::Discord::Bot::PersonaReplier.new(interaction).handle_interaction!
+      if SiteSetting.ai_discord_search_mode == "persona"
+        DiscourseAi::Discord::Bot::PersonaReplier.new(interaction).handle_interaction!
+      else
+        DiscourseAi::Discord::Bot::Search.new(interaction).handle_interaction!
+      end
     end
   end
 end

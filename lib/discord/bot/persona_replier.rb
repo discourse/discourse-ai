@@ -29,11 +29,11 @@ module DiscourseAi
             next if reply.blank?
 
             if @reply_response.nil?
-              create_reply(reply.dup)
+              create_reply(wrap_links(reply.dup))
             elsif @last_update_response.nil?
-              update_reply(reply.dup)
+              update_reply(wrap_links(reply.dup))
             elsif Time.now - last_update_sent_at > 1
-              update_reply(reply.dup)
+              update_reply(wrap_links(reply.dup))
               last_update_sent_at = Time.now
             end
           end

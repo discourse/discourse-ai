@@ -23,8 +23,6 @@ module DiscourseAi
             { "Content-Type" => "application/json" },
           )
         @reply_response = JSON.parse(response.body, symbolize_names: true)
-        Rails.logger.info("Discord reply created: #{@reply_response}")
-        @reply_response
       end
 
       def update_reply(reply)
@@ -38,8 +36,6 @@ module DiscourseAi
             { "Content-Type" => "application/json" },
           )
         @last_update_response = JSON.parse(response.body, symbolize_names: true)
-        Rails.logger.info("Discord reply updated: #{@last_update_response}")
-        @last_update_response
       end
     end
   end
