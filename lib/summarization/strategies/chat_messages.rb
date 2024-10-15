@@ -53,9 +53,10 @@ module DiscourseAi
             Analyze the messages to extract key themes, participants' intentions, and any significant conclusions or decisions. 
             Your summary should be concise yet comprehensive, providing an overview that is accessible to someone with no prior context of the conversation. 
 
-            - Only include the summary, without any additional commentary.
-            - You understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
+            - Only include the summary, WITHOUT additional commentary.
+            - Don't mention the channel title. Avoid including extraneous details or subjective opinions.
             - Maintain the original language of the text being summarized.
+            - The same user could write multiple messages in a row, don't treat them as different persons.
             - Aim for summaries to be 400 words or less.
 
           TEXT
