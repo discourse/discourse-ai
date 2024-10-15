@@ -21,7 +21,6 @@ module DiscourseAi
 
         formatted_results = results[:rows].map.with_index { |result, index| <<~RESULT }.join("\n")
           #{index + 1}. [#{result[0]}](<#{Discourse.base_url}#{result[1]}>)
-          #{result[3].truncate(50)}
           RESULT
 
         reply = <<~REPLY
