@@ -13,12 +13,13 @@ RSpec.describe DiscourseAi::Discord::Bot::PersonaReplier do
     allow_any_instance_of(DiscourseAi::AiBot::Bot).to receive(:reply).and_return(
       "This is a reply from bot!",
     )
+    allow(persona_replier).to receive(:create_reply)
   end
 
   describe "#handle_interaction!" do
     it "creates and updates replies" do
-      expect(persona_replier).to receive(:create_reply).at_least(:once)
       persona_replier.handle_interaction!
+      expect(persona_replier).to have_received(:create_reply).at_least(:once)
     end
   end
 end
