@@ -433,12 +433,12 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           DiscourseAi::Completions::Llm.with_prepared_responses(["World"]) do |_, _, _prompts|
             prompts = _prompts
 
-            ::Chat::CreateMessage.call!(
-              chat_channel_id: dm_channel.id,
-              message: "Hello",
-              guardian: guardian,
+            ChatSDK::Message.create(
+              raw: "Hello",
+              channel_id: dm_channel.id,
               context_post_ids: [post.id],
-            ).message_instance
+              guardian:,
+            )
           end
 
         expect(prompts[0].messages[1][:content]).to include("this is post content")
