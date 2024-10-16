@@ -431,3 +431,24 @@ discourse_ai:
     hidden: true
     type: list
     list_type: compact
+
+  ai_discord_app_id:
+    default: ""
+    client: false
+  ai_discord_app_public_key:
+    default: ""
+    client: false
+  ai_discord_search_mode:
+    default: "search"
+    type: enum
+    choices:
+      - search
+      - persona
+  ai_discord_search_persona:
+    default: ""
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_discord_allowed_guilds:
+    type: list
+    list_type: compact
+    default: ""
