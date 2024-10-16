@@ -6,6 +6,10 @@
 
 he:
   discourse_automation:
+    ai:
+      flag_types:
+        review: "הוספת פוסט לתור הביקורת"
+        spam: "סימון כזבל והסתרת הפוסט"
     scriptables:
       llm_triage:
         title: מיון ראשוני של פוסטים באמצעות בינה מלאכותית
@@ -115,11 +119,13 @@ he:
       custom_name: "%{name} (מותאם אישית)"
       presets:
         browse_web_jina:
-          name: "גלישה באינטרנט דרך jina.ai"
+          name: "גלישה באינטרנט (jina.ai)"
         exchange_rate:
           name: "שער חליפין"
         stock_quote:
           name: "מחיר המניה (AlphaVantage)"
+        image_generation:
+          name: "מחולל תמונות Flux‏ (Together.ai)"
         empty_tool:
           name: "התחלה מאפס…"
     ai_helper:

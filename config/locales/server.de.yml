@@ -119,11 +119,13 @@ de:
       custom_name: "%{name} (benutzerdefiniert)"
       presets:
         browse_web_jina:
-          name: "Mit jina.ai das Web durchsuchen"
+          name: "Web durchsuchen (jina.ai)"
         exchange_rate:
           name: "Wechselkurs"
         stock_quote:
           name: "Aktienkurs (AlphaVantage)"
+        image_generation:
+          name: "Flux-Bildgenerator (Together.ai)"
         empty_tool:
           name: "Von vorne beginnen …"
     ai_helper:

@@ -105,6 +105,8 @@ he:
               description: "הפיכת הנושא למוסתר בפני הציבור אם מוקפץ"
             flag_type:
               label: "סוג סימון"
+            flag_post:
+              label: "סימון פוסט"
             model:
               label: "מודל"
               description: "מודל שפה שמשמש למיון ראשוני"
@@ -113,6 +115,13 @@ he:
       modals:
         select_option: "בחירת אפשרות…"
       ai_persona:
+        tool_strategies:
+          all: "החלה על כל התגובות"
+          replies:
+            one: "החלה על התגובה הראשונה בלבד"
+            two: "החלה על שתי התגובות הראשונות בלבד"
+            many: "החלה על %{count} התגובות הראשונות בלבד"
+            other: "החלה על %{count} התגובות הראשונות בלבד"
         back: חזרה
         name: שם
         edit: עריכה
@@ -139,6 +148,7 @@ he:
         question_consolidator_llm: מודל שפה למגבש השאלות
         question_consolidator_llm_help: מודל השפה לשימוש עבור מגבש השאלות, אפשר לבחור במודל פחות חזק כדי לחסוך בעלויות.
         system_prompt: בקשת מערכת
+        forced_tool_strategy: אסטרטגיית כלי כפוי
         allow_chat: "לאפשר צ׳אט"
         allow_chat_help: "אם האפשרות פעילה, משתמשים בקבוצות מורשות יכולים לשלוח לדמות הזאת הודעות פרטיות"
         save: שמירה
@@ -254,6 +264,10 @@ he:
           anthropic-claude-3-sonnet: "איזון בין מהירות לחוכמה"
           anthropic-claude-3-haiku: "מהיר וחסכוני"
         preconfigured_llms: "בחירת ה־LLM שלך"
+        preconfigured:
+          title_no_llms: "נא לבחור תבנית כדי להתחיל"
+          fake: "הגדרות ידניות"
+          button: "הגדרה"
         next:
           title: "הבא"
         tests:
@@ -283,6 +297,7 @@ he:
           region: "אזור של AWS Bedrock"
           organization: "מזהה ארגון OpenAI כרשות"
           disable_system_prompt: "השבתת הודעת מערכת בבקשות"
+          enable_native_tool: "הפעלת תמיכה בכלים מובנים"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"

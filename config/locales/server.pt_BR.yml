@@ -114,8 +114,6 @@ pt_BR:
     tools:
       custom_name: "%{name} (personalizado)"
       presets:
-        browse_web_jina:
-          name: "Navegar na Web com jina.ai"
         exchange_rate:
           name: "Taxa de câmbio"
         stock_quote:

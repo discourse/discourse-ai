@@ -108,8 +108,6 @@ fi:
     tools:
       custom_name: "%{name} (mukautettu)"
       presets:
-        browse_web_jina:
-          name: "Selaa verkkoa jina.ai:llä"
         exchange_rate:
           name: "Vaihtokurssi"
         stock_quote:

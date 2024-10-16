@@ -108,8 +108,6 @@ zh_CN:
     tools:
       custom_name: "%{name}（自定义）"
       presets:
-        browse_web_jina:
-          name: "使用 jina.ai 浏览网页"
         exchange_rate:
           name: "汇率"
         stock_quote:
