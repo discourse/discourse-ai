@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DiscourseAi::Summarization::Strategies::TopicGist do
+RSpec.describe DiscourseAi::Summarization::Strategies::HotTopicGists do
   subject(:gist) { described_class.new(topic) }
 
   fab!(:topic) { Fabricate(:topic, highest_post_number: 25) }
@@ -8,22 +8,13 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicGist do
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
 
   describe "#targets_data" do
-    context "when the topic has more than 20 posts" do
-      before do
-        offset = 3 # Already created posts 1 and 2
-        (topic.highest_post_number - 2).times do |i|
-          Fabricate(:post, topic: topic, post_number: i + offset)
-        end
-      end
+    it "respects the `hot_topics_recent_days` setting" do
+      post_2.update(created_at: (SiteSetting.hot_topics_recent_days + 1).days.ago)
+      Fabricate(:post, topic: topic, post_number: 3)
 
-      it "includes the OP and the last 20 posts" do
-        content = gist.targets_data
-        post_numbers = content[:contents].map { |c| c[:id] }
+      post_numbers = gist.targets_data[:contents].map { |c| c[:id] }
 
-        expected = (6..25).to_a << 1
-
-        expect(post_numbers).to contain_exactly(*expected)
-      end
+      expect(post_numbers).to contain_exactly(1, 3)
     end
 
     it "only includes visible posts" do

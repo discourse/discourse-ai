@@ -17,7 +17,7 @@ module DiscourseAi
       if SiteSetting.ai_summarization_model.present? && SiteSetting.ai_summarization_enabled
         DiscourseAi::Summarization::FoldContent.new(
           DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_summarization_model),
-          DiscourseAi::Summarization::Strategies::TopicGist.new(topic),
+          DiscourseAi::Summarization::Strategies::HotTopicGists.new(topic),
         )
       else
         nil
