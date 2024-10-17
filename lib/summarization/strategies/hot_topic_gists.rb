@@ -3,7 +3,7 @@
 module DiscourseAi
   module Summarization
     module Strategies
-      class TopicGist < Base
+      class HotTopicGists < Base
         def type
           AiSummary.summary_types[:gist]
         end
@@ -13,20 +13,21 @@ module DiscourseAi
 
           op_post_number = 1
 
-          last_twenty_posts =
+          hot_topics_recent_cutoff = Time.zone.now - SiteSetting.hot_topics_recent_days.days
+
+          recent_hot_posts =
             Post
               .where(topic_id: target.id)
               .where("post_type = ?", Post.types[:regular])
               .where("NOT hidden")
-              .order("post_number DESC")
-              .limit(20)
+              .where("created_at >= ?", hot_topics_recent_cutoff)
               .pluck(:post_number)
 
           posts_data =
             Post
               .where(topic_id: target.id)
               .joins(:user)
-              .where("post_number IN (?)", last_twenty_posts << op_post_number)
+              .where("post_number IN (?)", recent_hot_posts << op_post_number)
               .order(:post_number)
               .pluck(:post_number, :raw, :username)
 

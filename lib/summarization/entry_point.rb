@@ -36,6 +36,10 @@ module DiscourseAi
             SiteSetting.ai_summarization_enabled && SiteSetting.ai_summarize_hot_topics_list
           end,
         ) { object.ai_summaries.to_a.first&.summarized_text }
+
+        # To make sure hot topic gists are inmediately up to date, we rely on this event
+        # instead of using a scheduled job.
+        plugin.on(:topic_hot_scores_updated) { Jobs.enqueue(:summarize_hot_topics_batch) }
       end
     end
   end
