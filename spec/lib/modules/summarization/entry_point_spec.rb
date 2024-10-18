@@ -59,8 +59,26 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
 
             expect(serialized[:ai_topic_gist]).to be_present
           end
+
+          it "doesn't include the summary when looking at other topic lists" do
+            gist_topic = topic_query.list_latest.topics.find { |t| t.id == topic_ai_gist.target_id }
+
+            serialized =
+              TopicListItemSerializer.new(gist_topic, scope: Guardian.new, root: false).as_json
+
+            expect(serialized[:ai_topic_gist]).to be_nil
+          end
         end
       end
+    end
+  end
+
+  describe "#on topic_hot_scores_updated" do
+    it "queues a job to generate gists" do
+      expect { DiscourseEvent.trigger(:topic_hot_scores_updated) }.to change(
+        Jobs::HotTopicsGistBatch.jobs,
+        :size,
+      ).by(1)
     end
   end
 end

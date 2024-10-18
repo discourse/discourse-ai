@@ -33,14 +33,24 @@ module DiscourseAi
           :topic_list_item,
           :ai_topic_gist,
           include_condition: -> do
+            # Hack(roman): Not ideal but at this point I don't have a better way of knowing if I'm serializing items for the hot filter.
+            # If the association wasn't loaded, assume don't care about summaries, and including it anyway will result in multiple n+1 queries.
+            # In the future, the serializer could have more informacion about the topic list, so we don't depend on this.
             SiteSetting.ai_summarization_enabled &&
-              SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0
+              SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0 &&
+              object.ai_summaries.loaded?
           end,
-        ) { object.ai_summaries.to_a.first&.summarized_text }
+        ) do
+          summaries = object.ai_summaries.to_a
+
+          # Summaries should always have one element here.
+          # This is an extra safeguard to avoid including regular summaries.
+          summaries.find { |s| s.summary_type == "gist" }&.summarized_text
+        end
 
         # To make sure hot topic gists are inmediately up to date, we rely on this event
         # instead of using a scheduled job.
-        plugin.on(:topic_hot_scores_updated) { Jobs.enqueue(:summarize_hot_topics_batch) }
+        plugin.on(:topic_hot_scores_updated) { Jobs.enqueue(:hot_topics_gist_batch) }
       end
     end
   end
