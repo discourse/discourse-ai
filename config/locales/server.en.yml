@@ -137,6 +137,8 @@ en:
           name: "Flux image generator (Together.ai)"
         empty_tool:
           name: "Start from blank..."
+      name:
+        characters: "must only include numbers, letters, and underscores"
 
     ai_helper:
       errors:

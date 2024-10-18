@@ -211,7 +211,6 @@ en:
       tools:
         back: "Back"
         short_title: "Tools"
-        new: "New Tool"
         name: "Name"
         name_help: "The unique name of the tool as used by the language model"
         description: "Description"
@@ -240,6 +239,12 @@ en:
           title: "Test AI Tool"
           run: "Run Test"
           result: "Test Result"
+        new:
+          title: "New Tool"
+          name:
+            blank: "Tool name cannot be blank"
+            checking: "Checking tool name…"
+            available: "Tool name is available"
 
       llms:
         short_title: "LLMs"
