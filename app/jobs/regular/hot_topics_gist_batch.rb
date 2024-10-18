@@ -15,9 +15,11 @@ module ::Jobs
           summarizer = DiscourseAi::Summarization.topic_gist(topic)
           gist = summarizer.existing_summary
 
-          summarizer.delete_cached_summaries! if gist && gist.outdated
+          if gist.blank? || gist.outdated
+            summarizer.delete_cached_summaries!
 
-          summarizer.summarize(Discourse.system_user)
+            summarizer.summarize(Discourse.system_user)
+          end
         end
     end
   end
