@@ -23,6 +23,19 @@ module DiscourseAi
               .where("created_at >= ?", hot_topics_recent_cutoff)
               .pluck(:post_number)
 
+          # It may happen that a topic is hot without any recent posts
+          # In that case, we'll just grab the last 20 posts
+          # for an useful summary of the current state of the topic
+          if recent_hot_posts.empty?
+            recent_hot_posts =
+              Post
+                .where(topic_id: target.id)
+                .where("post_type = ?", Post.types[:regular])
+                .where("NOT hidden")
+                .order("post_number DESC")
+                .limit(20)
+                .pluck(:post_number)
+          end
           posts_data =
             Post
               .where(topic_id: target.id)
