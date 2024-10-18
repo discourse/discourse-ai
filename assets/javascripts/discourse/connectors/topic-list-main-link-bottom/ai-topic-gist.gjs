@@ -1,8 +1,7 @@
 import Component from "@glimmer/component";
-import icon from "discourse-common/helpers/d-icon";
 
 export default class AiTopicGist extends Component {
-  static shouldRender(outletArgs, helper) {
+  static shouldRender(outletArgs) {
     return outletArgs?.topic?.ai_topic_gist && !outletArgs.topic.excerpt;
   }
 

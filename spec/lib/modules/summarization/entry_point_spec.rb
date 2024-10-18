@@ -19,7 +19,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
 
       describe "topic_query_create_list_topics modifier" do
         context "when hot topic summarization is enabled" do
-          before { SiteSetting.ai_summarize_hot_topics_list = true }
+          before { SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100 }
 
           it "preloads only gist summaries" do
             gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
@@ -49,7 +49,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
         end
 
         context "when hot topics summarization is enabled" do
-          before { SiteSetting.ai_summarize_hot_topics_list = true }
+          before { SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100 }
 
           it "includes the summary" do
             gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }

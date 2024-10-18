@@ -376,9 +376,10 @@ discourse_ai:
     type: group_list
     list_type: compact
     default: "3|13" # 3: @staff, 13: @trust_level_3
-  ai_summarize_hot_topics_list:
-    client: true
-    default: false
+  ai_summarize_max_hot_topics_gists_per_batch:
+    default: 0
+    min: 0
+    max: 1000
   ai_summarization_strategy: # TODO(roman): Deprecated. Remove by Sept 2024
     type: enum
     default: ""

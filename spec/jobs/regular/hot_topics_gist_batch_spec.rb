@@ -8,11 +8,11 @@ RSpec.describe Jobs::HotTopicsGistBatch do
   before do
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true
-    SiteSetting.ai_summarize_hot_topics_list = true
+    SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100
   end
 
   describe "#execute" do
-    context "When there is a topic with a hot score" do
+    context "when there is a topic with a hot score" do
       before { TopicHotScore.create!(topic_id: topic_1.id, score: 0.1) }
 
       it "does nothing if the plugin is disabled" do
@@ -34,7 +34,7 @@ RSpec.describe Jobs::HotTopicsGistBatch do
       end
 
       it "does nothing if hot topics summarization is disabled" do
-        SiteSetting.ai_summarize_hot_topics_list = false
+        SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 0
 
         subject.execute({})
 
@@ -48,10 +48,10 @@ RSpec.describe Jobs::HotTopicsGistBatch do
         DiscourseAi::Completions::Llm.with_prepared_responses([gist_result]) { subject.execute({}) }
 
         gist = AiSummary.gist.find_by(target: topic_1)
-        expect(gist.summarized_text).to eq("I'm a gist")
+        expect(gist.summarized_text).to eq(gist_result)
       end
 
-      context "and we already generated a gist of it" do
+      context "when we already generated a gist of it" do
         fab!(:ai_gist) do
           Fabricate(
             :topic_ai_gist,

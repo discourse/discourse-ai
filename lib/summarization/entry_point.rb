@@ -19,7 +19,7 @@ module DiscourseAi
 
         plugin.register_modifier(:topic_query_create_list_topics) do |topics, options|
           if options[:filter] == :hot && SiteSetting.ai_summarization_enabled &&
-               SiteSetting.ai_summarize_hot_topics_list
+               SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0
             topics.includes(:ai_summaries).where(
               "ai_summaries.id IS NULL OR ai_summaries.summary_type = ?",
               AiSummary.summary_types[:gist],
@@ -33,7 +33,8 @@ module DiscourseAi
           :topic_list_item,
           :ai_topic_gist,
           include_condition: -> do
-            SiteSetting.ai_summarization_enabled && SiteSetting.ai_summarize_hot_topics_list
+            SiteSetting.ai_summarization_enabled &&
+              SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0
           end,
         ) { object.ai_summaries.to_a.first&.summarized_text }
 
