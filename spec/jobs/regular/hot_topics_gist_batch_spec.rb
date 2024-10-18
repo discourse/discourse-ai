@@ -61,10 +61,15 @@ RSpec.describe Jobs::HotTopicsGistBatch do
         end
 
         it "does nothing if the gist is up to date" do
-          subject.execute({})
+          updated_gist = "They updated me :("
+
+          DiscourseAi::Completions::Llm.with_prepared_responses([updated_gist]) do
+            subject.execute({})
+          end
 
           gist = AiSummary.gist.find_by(target: topic_1)
-          expect(gist.summarized_text).to eq(ai_gist.summarized_text)
+          expect(AiSummary.gist.where(target: topic_1).count).to eq(1)
+          expect(gist.summarized_text).not_to eq(updated_gist)
           expect(gist.original_content_sha).to eq(ai_gist.original_content_sha)
         end
 
