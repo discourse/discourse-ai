@@ -4,7 +4,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
   fab!(:admin)
   fab!(:ai_tool) do
     AiTool.create!(
-      name: "Test Tool",
+      name: "TestTool",
       description: "A test tool",
       script: "function invoke(params) { return params; }",
       parameters: [
@@ -46,7 +46,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
   describe "POST #create" do
     let(:valid_attributes) do
       {
-        name: "Test Tool",
+        name: "TestTool",
         description: "A test tool",
         parameters: [{ name: "query", type: "string", description: "perform a search" }],
         script: "function invoke(params) { return params; }",
@@ -64,7 +64,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       }.to change(AiTool, :count).by(1)
 
       expect(response).to have_http_status(:created)
-      expect(response.parsed_body["ai_tool"]["name"]).to eq("Test Tool")
+      expect(response.parsed_body["ai_tool"]["name"]).to eq("TestTool")
     end
 
     context "when the parameter is a enum" do
@@ -94,12 +94,12 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       put "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json",
           params: {
             ai_tool: {
-              name: "Updated Tool",
+              name: "UpdatedTool",
             },
           }
 
       expect(response).to be_successful
-      expect(ai_tool.reload.name).to eq("Updated Tool")
+      expect(ai_tool.reload.name).to eq("UpdatedTool")
     end
 
     context "when updating an enum parameters" do
@@ -135,6 +135,20 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
     end
   end
 
+  describe "GET #check_name" do
+    it "call ToolNameChecker and returns the result" do
+      allow(DiscourseAi::ToolNameChecker).to receive(:new).and_return(
+        instance_double(DiscourseAi::ToolNameChecker, check: { available: true }),
+      )
+
+      get "/admin/plugins/discourse-ai/ai-tools/check-name.json?tool_name=TestTool"
+
+      expect(DiscourseAi::ToolNameChecker).to have_received(:new).with("TestTool")
+      expect(response).to be_successful
+      expect(response.parsed_body).to eq("available" => true)
+    end
+  end
+
   describe "#test" do
     it "runs an existing tool and returns the result" do
       post "/admin/plugins/discourse-ai/ai-tools/test.json",
@@ -153,7 +167,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       post "/admin/plugins/discourse-ai/ai-tools/test.json",
            params: {
              ai_tool: {
-               name: "New Tool",
+               name: "NewTool",
                description: "A new test tool",
                script: "function invoke(params) { return 'New test result: ' + params.input; }",
                parameters: [

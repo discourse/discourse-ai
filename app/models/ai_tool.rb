@@ -12,6 +12,14 @@ class AiTool < ActiveRecord::Base
   has_many :uploads, through: :upload_references
   before_update :regenerate_rag_fragments
 
+  ALPHANUMERIC_PATTERN = /\A[a-zA-Z0-9_]+\z/
+
+  validates :name,
+            format: {
+              with: ALPHANUMERIC_PATTERN,
+              message: I18n.t("discourse_ai.tools.name.characters"),
+            }
+
   def signature
     { name: name, description: description, parameters: parameters.map(&:symbolize_keys) }
   end

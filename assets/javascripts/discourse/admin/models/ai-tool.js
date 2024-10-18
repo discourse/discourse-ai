@@ -1,4 +1,5 @@
 import { TrackedArray, TrackedObject } from "@ember-compat/tracked-built-ins";
+import { ajax } from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
 
 const CREATE_ATTRIBUTES = [
@@ -15,6 +16,11 @@ const CREATE_ATTRIBUTES = [
 ];
 
 export default class AiTool extends RestModel {
+  static checkName(name) {
+    return ajax("/admin/plugins/discourse-ai/ai-tools/check-name", {
+      data: { tool_name: name },
+    });
+  }
   createProperties() {
     return this.getProperties(CREATE_ATTRIBUTES);
   }
