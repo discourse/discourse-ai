@@ -23,7 +23,12 @@ module DiscourseAi
           .each do |tool|
             tools << {
               id: "custom-#{tool.id}",
-              name: I18n.t("discourse_ai.tools.custom_name", name: tool.name.capitalize),
+              name:
+                I18n.t(
+                  "discourse_ai.tools.custom_name",
+                  name: tool.name.capitalize,
+                  tool_name: tool.tool_name,
+                ),
             }
           end
         llms =

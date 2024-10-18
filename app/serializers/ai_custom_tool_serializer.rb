@@ -3,6 +3,7 @@
 class AiCustomToolSerializer < ApplicationSerializer
   attributes :id,
              :name,
+             :tool_name,
              :description,
              :summary,
              :parameters,

@@ -24,6 +24,29 @@ RSpec.describe AiPersona do
     expect(persona.valid?).to eq(true)
   end
 
+  it "validates tools" do
+    persona =
+      AiPersona.new(
+        name: "test",
+        description: "test",
+        system_prompt: "test",
+        tools: [],
+        allowed_group_ids: [],
+      )
+
+    expect(persona.valid?).to eq(true)
+
+    persona.tools = [["test-1", { test: "test" }, false]]
+    expect(persona.valid?).to eq(true)
+
+    persona.tools = [["test-1", { test: "test" }, false], ["test-1", { test: "test" }, false]]
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
+
+    persona.tools = [["test-1", { test: "test" }, false], ["test-2", { test: "test" }, false]]
+    expect(persona.valid?).to eq(true)
+  end
+
   it "allows creation of user" do
     persona =
       AiPersona.create!(

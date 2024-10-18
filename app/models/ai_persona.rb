@@ -21,6 +21,9 @@ class AiPersona < ActiveRecord::Base
   validates :rag_chunk_overlap_tokens, numericality: { greater_than: -1, maximum: 200 }
   validates :rag_conversation_chunks, numericality: { greater_than: 0, maximum: 1000 }
   validates :forced_tool_count, numericality: { greater_than: -2, maximum: 100_000 }
+
+  validate :tools_can_not_be_duplicated
+
   has_many :rag_document_fragments, dependent: :destroy, as: :target
 
   belongs_to :created_by, class_name: "User"
@@ -104,6 +107,22 @@ class AiPersona < ActiveRecord::Base
 
   def bump_cache
     self.class.persona_cache.flush!
+  end
+
+  def tools_can_not_be_duplicated
+    return unless tools.is_a?(Array)
+
+    seen_tools = Set.new
+
+    tools.each do |tool|
+      inner_name, _, _ = tool.is_a?(Array) ? tool : [tool, nil]
+
+      if seen_tools.include?(inner_name)
+        errors.add(:tools, I18n.t("discourse_ai.ai_bot.personas.cannot_have_duplicate_tools"))
+      else
+        seen_tools.add(inner_name)
+      end
+    end
   end
 
   def class_instance

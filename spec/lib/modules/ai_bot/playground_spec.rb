@@ -73,6 +73,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     let!(:custom_tool) do
       AiTool.create!(
         name: "search",
+        tool_name: "search",
         summary: "searching for things",
         description: "A test custom tool",
         parameters: [{ name: "query", type: "string", description: "Input for the custom tool" }],
