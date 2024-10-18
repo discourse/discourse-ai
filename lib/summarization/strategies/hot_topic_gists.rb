@@ -49,11 +49,11 @@ module DiscourseAi
             You are a summarization bot tasked with creating a single, concise sentence by merging disjointed summaries into a cohesive statement. 
             Your response should strictly be this single, comprehensive sentence, without any additional text or comments.
 
-            - Focus on the central theme or issue being addressed, while maintaining an objective and neutral tone.
-            - Avoid including extraneous details or subjective opinions.
-            - Maintain the original language of the text being summarized.
-            - Try to use no more than 20 words.
-            - Begin the summary directly with the main topic or issue, using clear and direct language without introductory phrases like "The discussion is about..."
+            - Focus on the central theme or issue being addressed, maintaining an objective and neutral tone.
+            - Exclude extraneous details or subjective opinions.
+            - Use the original language of the text.
+            - Begin directly with the main topic or issue, avoiding introductory phrases.
+            - Limit the summary to a maximum of 20 words.
           TEXT
 
           prompt.push(type: :user, content: <<~TEXT.strip)
@@ -68,28 +68,36 @@ module DiscourseAi
         end
 
         def summarize_single_prompt(input, opts)
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-            You are an advanced summarization bot. Your task is to analyze a given conversation and generate a single, 
-            concise sentence that clearly conveys the main topic and purpose of the discussion to someone with no prior context.
+          statements = input.split(/(?=\d+\) \w+ said:)/)
 
-            - Focus on the central theme or issue being addressed, while maintaining an objective and neutral tone.
-            - Avoid including extraneous details or subjective opinions.
-            - Maintain the original language of the text being summarized.
-            - Begin the summary directly with the main topic or issue, using clear and direct language without introductory phrases like "The discussion is about...".
-            - The sentence doesn't have to mention the discussion title.
-            - Aim to use no more than 20 words.
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
+            You are an advanced summarization bot. Analyze a given conversation and produce a concise, 
+            single-sentence summary that conveys the main topic and current developments to someone with no prior context.
+
+            ### Guidelines:
+          
+            - Emphasize the most recent updates while considering their significance within the original post.
+            - Focus on the central theme or issue being addressed, maintaining an objective and neutral tone.
+            - Exclude extraneous details or subjective opinions.
+            - Use the original language of the text.
+            - Begin directly with the main topic or issue, avoiding introductory phrases.
+            - Limit the summary to a maximum of 20 words.
           TEXT
 
           prompt.push(type: :user, content: <<~TEXT.strip)
+            ### Context:
+          
+            The conversation began with the following statement:
+
             #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ".\n" : ""}
-            
-            Here are the posts, inside <input></input> XML tags:
+        
+            #{statements&.pop}
+        
+            Subsequent discussion includes the following:
 
-            <input>
-              #{input}
-            </input>
-
-            Generate a single sentence of the text above maintaining the original language.
+            #{statements&.join}
+                  
+            Your task is to focus on these latest messages, capturing their meaning in the context of the initial post.
           TEXT
 
           prompt
