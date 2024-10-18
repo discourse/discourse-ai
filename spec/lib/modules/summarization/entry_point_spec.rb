@@ -55,16 +55,26 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
             gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
 
             serialized =
-              TopicListItemSerializer.new(gist_topic, scope: Guardian.new, root: false).as_json
+              TopicListItemSerializer.new(
+                gist_topic,
+                scope: Guardian.new,
+                root: false,
+                filter: :hot,
+              ).as_json
 
             expect(serialized[:ai_topic_gist]).to be_present
           end
 
           it "doesn't include the summary when looking at other topic lists" do
-            gist_topic = topic_query.list_latest.topics.find { |t| t.id == topic_ai_gist.target_id }
+            gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
 
             serialized =
-              TopicListItemSerializer.new(gist_topic, scope: Guardian.new, root: false).as_json
+              TopicListItemSerializer.new(
+                gist_topic,
+                scope: Guardian.new,
+                root: false,
+                filter: :latest,
+              ).as_json
 
             expect(serialized[:ai_topic_gist]).to be_nil
           end
