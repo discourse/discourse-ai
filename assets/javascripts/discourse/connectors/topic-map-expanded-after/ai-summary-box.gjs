@@ -8,6 +8,7 @@ import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { next } from "@ember/runloop";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
+import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { shortDateNoYear } from "discourse/lib/formatter";
 import dIcon from "discourse-common/helpers/d-icon";
@@ -32,6 +33,7 @@ export default class AiSummaryBox extends Component {
   @tracked outdated = false;
   @tracked canRegenerate = false;
   @tracked loading = false;
+  @tracked isStreaming = false;
   oldRaw = null; // used for comparison in SummaryUpdater in lib/ai-streamer
   finalSummary = null;
 
@@ -147,9 +149,11 @@ export default class AiSummaryBox extends Component {
     };
     this.loading = false;
 
+    this.isStreaming = true;
     streamSummaryText(topicSummary, this);
 
     if (update.done) {
+      this.isStreaming = false;
       this.text = this.finalSummary;
       this.summarizedOn = shortDateNoYear(
         moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
@@ -212,11 +216,18 @@ export default class AiSummaryBox extends Component {
                 {{/if}}
               </header>
 
-              <article class="ai-summary-box">
+              <article
+                class={{concatClass
+                  "ai-summary-box"
+                  (if this.isStreaming "streaming")
+                }}
+              >
                 {{#if this.loading}}
                   <AiSummarySkeleton />
                 {{else}}
-                  <div class="generated-summary cooked">{{this.text}}</div>
+                  <div class="generated-summary cooked">
+                    {{this.text}}
+                  </div>
                   {{#if this.summarizedOn}}
                     <div class="summarized-on">
                       <p>
