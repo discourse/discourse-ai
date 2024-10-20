@@ -46,7 +46,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
   describe "POST #create" do
     let(:valid_attributes) do
       {
-        name: "TestTool",
+        name: "Test_Tool_1",
         description: "A test tool",
         parameters: [{ name: "query", type: "string", description: "perform a search" }],
         script: "function invoke(params) { return params; }",
@@ -64,7 +64,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       }.to change(AiTool, :count).by(1)
 
       expect(response).to have_http_status(:created)
-      expect(response.parsed_body["ai_tool"]["name"]).to eq("TestTool")
+      expect(response.parsed_body["ai_tool"]["name"]).to eq("Test_Tool_1")
     end
 
     context "when the parameter is a enum" do
