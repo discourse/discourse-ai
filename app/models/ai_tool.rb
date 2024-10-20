@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AiTool < ActiveRecord::Base
-  validates :name, presence: true, length: { maximum: 100 }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: true
   validates :description, presence: true, length: { maximum: 1000 }
   validates :summary, presence: true, length: { maximum: 255 }
   validates :script, presence: true, length: { maximum: 100_000 }
@@ -354,4 +354,8 @@ end
 #  updated_at               :datetime         not null
 #  rag_chunk_tokens         :integer          default(374), not null
 #  rag_chunk_overlap_tokens :integer          default(10), not null
+#
+# Indexes
+#
+#  index_ai_tools_on_name  (name) UNIQUE
 #
