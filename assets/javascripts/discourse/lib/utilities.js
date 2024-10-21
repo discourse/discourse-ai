@@ -1,9 +1,6 @@
 import { htmlSafe } from "@ember/template";
 import { escapeExpression } from "discourse/lib/utilities";
 
-export const IMAGE_MARKDOWN_REGEX =
-  /!\[(.*?)\|(\d{1,4}x\d{1,4})(,\s*\d{1,3}%)?(.*?)\]\((upload:\/\/.*?)\)(?!(.*`))/g;
-
 export function jsonToHtml(json) {
   if (json === null) {
     return "null";

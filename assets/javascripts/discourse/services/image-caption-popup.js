@@ -1,6 +1,6 @@
 import { tracked } from "@glimmer/tracking";
 import Service, { inject as service } from "@ember/service";
-import { IMAGE_MARKDOWN_REGEX } from "../lib/utilities";
+import { IMAGE_MARKDOWN_REGEX } from "discourse/lib/uploads";
 
 export default class ImageCaptionPopup extends Service {
   @service composer;
