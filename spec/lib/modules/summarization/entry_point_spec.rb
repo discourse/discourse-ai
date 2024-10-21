@@ -49,7 +49,13 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
         end
 
         context "when hot topics summarization is enabled" do
-          before { SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100 }
+          fab!(:group)
+
+          before do
+            group.add(user)
+            SiteSetting.ai_hot_topic_gists_allowed_groups = group.id
+            SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100
+          end
 
           it "includes the summary" do
             gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
@@ -57,7 +63,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
             serialized =
               TopicListItemSerializer.new(
                 gist_topic,
-                scope: Guardian.new,
+                scope: Guardian.new(user),
                 root: false,
                 filter: :hot,
               ).as_json
@@ -71,9 +77,25 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
             serialized =
               TopicListItemSerializer.new(
                 gist_topic,
-                scope: Guardian.new,
+                scope: Guardian.new(user),
                 root: false,
                 filter: :latest,
+              ).as_json
+
+            expect(serialized[:ai_topic_gist]).to be_nil
+          end
+
+          it "doesn't include the summary when the user is not a member of the opt-in group" do
+            SiteSetting.ai_hot_topic_gists_allowed_groups = ""
+
+            gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
+
+            serialized =
+              TopicListItemSerializer.new(
+                gist_topic,
+                scope: Guardian.new(user),
+                root: false,
+                filter: :hot,
               ).as_json
 
             expect(serialized[:ai_topic_gist]).to be_nil
