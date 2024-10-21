@@ -1,12 +1,9 @@
 import Component from "@glimmer/component";
 import { concat, fn } from "@ember/helper";
-import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { inject as service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
-import DToggleSwitch from "discourse/components/d-toggle-switch";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
@@ -100,18 +97,13 @@ export default class AiLlmsListEditor extends Component {
     });
   }
 
-  @action
-  async toggleEnabledChatBot(llm) {
-    const oldValue = llm.enabled_chat_bot;
-    const newValue = !oldValue;
-    try {
-      llm.set("enabled_chat_bot", newValue);
-      await llm.update({
-        enabled_chat_bot: newValue,
+  localizeUsage(usage) {
+    if (usage.type === "ai_persona") {
+      return I18n.t("discourse_ai.llms.usage.ai_persona", {
+        persona: usage.name,
       });
-    } catch (err) {
-      llm.set("enabled_chat_bot", oldValue);
-      popupAjaxError(err);
+    } else {
+      return I18n.t("discourse_ai.llms.usage." + usage.type);
     }
   }
 
@@ -138,7 +130,6 @@ export default class AiLlmsListEditor extends Component {
                 <tr>
                   <th>{{i18n "discourse_ai.llms.display_name"}}</th>
                   <th>{{i18n "discourse_ai.llms.provider"}}</th>
-                  <th>{{i18n "discourse_ai.llms.enabled_chat_bot"}}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -150,17 +141,18 @@ export default class AiLlmsListEditor extends Component {
                       <p>
                         {{this.modelDescription llm}}
                       </p>
+                      {{#if llm.used_by}}
+                        <ul class="ai-llm-list-editor__usages">
+                          {{#each llm.used_by as |usage|}}
+                            <li>{{this.localizeUsage usage}}</li>
+                          {{/each}}
+                        </ul>
+                      {{/if}}
                     </td>
                     <td>
                       {{i18n
                         (concat "discourse_ai.llms.providers." llm.provider)
                       }}
-                    </td>
-                    <td>
-                      <DToggleSwitch
-                        @state={{llm.enabled_chat_bot}}
-                        {{on "click" (fn this.toggleEnabledChatBot llm)}}
-                      />
                     </td>
                     <td class="column-edit">
                       <LinkTo

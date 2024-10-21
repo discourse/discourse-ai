@@ -22,7 +22,9 @@ class LlmModelSerializer < ApplicationSerializer
   has_one :user, serializer: BasicUserSerializer, embed: :object
 
   def used_by
-    DiscourseAi::Configuration::LlmValidator.new.modules_using(object)
+    llm_usage = (scope && scope[:llm_usage]) ? scope[:llm_usage] : DiscourseAi::Configuration::LlmValidator.global_usage
+
+    llm_usage[object.id]
   end
 
   def api_key
