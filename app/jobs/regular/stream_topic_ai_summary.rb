@@ -9,10 +9,7 @@ module Jobs
       return unless user = User.find_by(id: args[:user_id])
 
       strategy = DiscourseAi::Summarization.topic_summary(topic)
-      if strategy.nil? ||
-           !Guardian.new(user).can_see_summary?(topic, AiSummary.summary_types[:complete])
-        return
-      end
+      return if strategy.nil? || !Guardian.new(user).can_see_summary?(topic)
 
       guardian = Guardian.new(user)
       return unless guardian.can_see?(topic)

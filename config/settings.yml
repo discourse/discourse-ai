@@ -380,6 +380,10 @@ discourse_ai:
     default: 0
     min: 0
     max: 1000
+  ai_hot_topic_gists_allowed_groups:
+    type: group_list
+    list_type: compact
+    default: ""
   ai_summarization_strategy: # TODO(roman): Deprecated. Remove by Sept 2024
     type: enum
     default: ""

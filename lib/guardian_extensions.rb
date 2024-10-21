@@ -2,7 +2,7 @@
 
 module DiscourseAi
   module GuardianExtensions
-    def can_see_summary?(target, summary_type)
+    def can_see_summary?(target)
       return false if !SiteSetting.ai_summarization_enabled
 
       if target.class == Topic && target.private_message?
@@ -14,10 +14,22 @@ module DiscourseAi
         return false if !allowed
       end
 
-      has_cached_summary = AiSummary.exists?(target: target, summary_type: summary_type)
+      has_cached_summary =
+        AiSummary.exists?(target: target, summary_type: AiSummary.summary_types[:complete])
       return has_cached_summary if user.nil?
 
       has_cached_summary || can_request_summary?
+    end
+
+    def can_see_gists?
+      return false if !SiteSetting.ai_summarization_enabled
+      return false if SiteSetting.ai_summarize_max_hot_topics_gists_per_batch.zero?
+      return false if anonymous?
+      return false if SiteSetting.ai_hot_topic_gists_allowed_groups_map.empty?
+
+      SiteSetting.ai_hot_topic_gists_allowed_groups_map.any? do |group_id|
+        user.group_ids.include?(group_id)
+      end
     end
 
     def can_request_summary?

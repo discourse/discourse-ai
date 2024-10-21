@@ -10,11 +10,11 @@ module DiscourseAi
         end
 
         plugin.add_to_serializer(:topic_view, :summarizable) do
-          scope.can_see_summary?(object.topic, AiSummary.summary_types[:complete])
+          scope.can_see_summary?(object.topic)
         end
 
         plugin.add_to_serializer(:web_hook_topic_view, :summarizable) do
-          scope.can_see_summary?(object.topic, AiSummary.summary_types[:complete])
+          scope.can_see_summary?(object.topic)
         end
 
         plugin.register_modifier(:topic_query_create_list_topics) do |topics, options|
@@ -32,12 +32,11 @@ module DiscourseAi
         plugin.add_to_serializer(
           :topic_list_item,
           :ai_topic_gist,
-          include_condition: -> do
-            SiteSetting.ai_summarization_enabled &&
-              SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0 &&
-              options[:filter] == :hot
-          end,
+          include_condition: -> { scope.can_see_gists? },
         ) do
+          # Options is defined at the instance level so we cannot run this check inside "include_condition".
+          return if options[:filter] != :hot
+
           summaries = object.ai_summaries.to_a
 
           # Summaries should always have one or zero elements here.
