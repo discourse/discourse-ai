@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class AiTool < ActiveRecord::Base
-  validates :name, presence: true, length: { maximum: 100 }, uniqueness: true
+  validates :name, presence: true, length: { maximum: 100 }
+  validates :tool_name, presence: true, length: { maximum: 100 }, uniqueness: true
   validates :description, presence: true, length: { maximum: 1000 }
   validates :summary, presence: true, length: { maximum: 255 }
   validates :script, presence: true, length: { maximum: 100_000 }
@@ -14,7 +15,7 @@ class AiTool < ActiveRecord::Base
 
   ALPHANUMERIC_PATTERN = /\A[a-zA-Z0-9_]+\z/
 
-  validates :name,
+  validates :tool_name,
             format: {
               with: ALPHANUMERIC_PATTERN,
               message: I18n.t("discourse_ai.tools.name.characters"),
@@ -354,8 +355,9 @@ end
 #  updated_at               :datetime         not null
 #  rag_chunk_tokens         :integer          default(374), not null
 #  rag_chunk_overlap_tokens :integer          default(10), not null
+#  tool_name                :string           default(""), not null
 #
 # Indexes
 #
-#  index_ai_tools_on_name  (name) UNIQUE
+#  index_ai_tools_on_tool_name  (tool_name) UNIQUE
 #

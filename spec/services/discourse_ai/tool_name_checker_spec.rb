@@ -23,7 +23,7 @@ describe DiscourseAi::ToolNameChecker do
     context "when the tool name is already" do
       let(:tool_name) { "toolname" }
 
-      before { Fabricate(:ai_tool, name: tool_name) }
+      before { Fabricate(:ai_tool, tool_name: tool_name) }
 
       it "returns an error" do
         expect(DiscourseAi::ToolNameChecker.new(tool_name).check).to eq(

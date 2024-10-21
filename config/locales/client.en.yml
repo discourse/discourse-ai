@@ -213,6 +213,8 @@ en:
         short_title: "Tools"
         name: "Name"
         name_help: "The unique name of the tool as used by the language model"
+        tool_name: "Tool Name"
+        tool_name_help: "Tool name, only include numbers, letters, and underscores"
         description: "Description"
         description_help: "A clear description of the tool's purpose for the language model"
         summary: "Summary"
@@ -241,7 +243,7 @@ en:
           result: "Test Result"
         new:
           title: "New Tool"
-          name:
+          tool_name:
             blank: "Tool name cannot be blank"
             checking: "Checking tool name…"
             available: "Tool name is available"

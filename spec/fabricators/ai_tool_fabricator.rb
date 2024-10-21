@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 Fabricator(:ai_tool) do
-  name "github_tool"
+  name "github tool"
+  tool_name "github_tool"
   description "This is a tool for GitHub"
   summary "This is a tool for GitHub"
   script "puts 'Hello, GitHub!'"

@@ -17,7 +17,7 @@ module DiscourseAi
     private
 
     def check_name_availability
-      if AiTool.exists?(name: @tool_name)
+      if AiTool.exists?(tool_name: @tool_name)
         { available: false, errors: [I18n.t("errors.messages.taken")] }
       else
         { available: true }

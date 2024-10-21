@@ -86,7 +86,7 @@ export default class AiToolEditor extends Component {
   }
 
   @action
-  validateAndUpdateName(value) {
+  validateAndUpdateToolName(value) {
     // Skip validation if name hasn't changed
     if (value === this.jobName) {
       this._failedInputValidation("");
@@ -94,7 +94,7 @@ export default class AiToolEditor extends Component {
       return;
     }
 
-    this.editingModel.name = value;
+    this.editingModel.tool_name = value;
 
     if (value === undefined) {
       return this._failedInputValidation();
@@ -102,14 +102,14 @@ export default class AiToolEditor extends Component {
 
     if (isEmpty(value)) {
       return this._failedInputValidation(
-        I18n.t("discourse_ai.tools.new.name.blank")
+        I18n.t("discourse_ai.tools.new.tool_name.blank")
       );
     }
 
     this._checkToolNameDebounced();
 
     return this._failedInputValidation(
-      I18n.t("discourse_ai.tools.new.name.checking")
+      I18n.t("discourse_ai.tools.new.tool_name.checking")
     );
   }
 
@@ -118,17 +118,17 @@ export default class AiToolEditor extends Component {
   }
 
   _checkToolName() {
-    if (isEmpty(this.editingModel.name)) {
+    if (isEmpty(this.editingModel.tool_name)) {
       return;
     }
 
-    AiTool.checkName(this.editingModel.name)
+    AiTool.checkName(this.editingModel.tool_name)
       .then((response) => {
         if (response.available) {
           this.disableSave = false;
           this.nameValidation = {
             ok: true,
-            reason: I18n.t("discourse_ai.tools.new.name.available"),
+            reason: I18n.t("discourse_ai.tools.new.tool_name.available"),
           };
         } else {
           this.disableSave = true;
@@ -146,6 +146,7 @@ export default class AiToolEditor extends Component {
     try {
       const data = this.editingModel.getProperties(
         "name",
+        "tool_name",
         "description",
         "parameters",
         "script",
@@ -244,7 +245,7 @@ export default class AiToolEditor extends Component {
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.name"}}</label>
           <input
-            {{on "input" (withEventValue this.validateAndUpdateName)}}
+            {{on "input" (withEventValue (fn (mut this.editingModel.name)))}}
             value={{this.editingModel.name}}
             type="text"
             class="ai-tool-editor__name"
@@ -252,6 +253,20 @@ export default class AiToolEditor extends Component {
           <DTooltip
             @icon="question-circle"
             @content={{I18n.t "discourse_ai.tools.name_help"}}
+          />
+        </div>
+
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.tools.tool_name"}}</label>
+          <input
+            {{on "input" (withEventValue this.validateAndUpdateToolName)}}
+            value={{this.editingModel.tool_name}}
+            type="text"
+            class="ai-tool-editor__tool_name"
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.tools.tool_name_help"}}
           />
           <InputTip @validation={{this.nameValidation}} />
         </div>
