@@ -22,7 +22,14 @@ class LlmModelSerializer < ApplicationSerializer
   has_one :user, serializer: BasicUserSerializer, embed: :object
 
   def used_by
-    llm_usage = (scope && scope[:llm_usage]) ? scope[:llm_usage] : DiscourseAi::Configuration::LlmValidator.global_usage
+    llm_usage =
+      (
+        if (scope && scope[:llm_usage])
+          scope[:llm_usage]
+        else
+          DiscourseAi::Configuration::LlmValidator.global_usage
+        end
+      )
 
     llm_usage[object.id]
   end
