@@ -22,7 +22,12 @@ class AiTool < ActiveRecord::Base
             }
 
   def signature
-    { name: name, description: description, parameters: parameters.map(&:symbolize_keys) }
+    { name: function_call_name, description: description, parameters: parameters.map(&:symbolize_keys) }
+  end
+
+  # Backwards compatibility: if tool_name is not set (existing custom tools), use name
+  def function_call_name
+    tool_name.presence || name
   end
 
   def runner(parameters, llm:, bot_user:, context: {})
@@ -134,7 +139,8 @@ class AiTool < ActiveRecord::Base
     [
       {
         preset_id: "browse_web_jina",
-        name: "browse_web",
+        name: "Browse Web",
+        tool_name: "browse_web",
         description: "Browse the web as a markdown document",
         parameters: [
           { name: "url", type: "string", required: true, description: "The URL to browse" },
@@ -155,7 +161,8 @@ class AiTool < ActiveRecord::Base
       },
       {
         preset_id: "exchange_rate",
-        name: "exchange_rate",
+        name: "Exchange Rate",
+        tool_name: "exchange_rate",
         description: "Get current exchange rates for various currencies",
         parameters: [
           {
@@ -211,7 +218,8 @@ class AiTool < ActiveRecord::Base
       },
       {
         preset_id: "stock_quote",
-        name: "stock_quote",
+        name: "Stock Quote",
+        tool_name: "stock_quote",
         description: "Get real-time stock quote information using AlphaVantage API",
         parameters: [
           {
@@ -260,7 +268,8 @@ class AiTool < ActiveRecord::Base
       },
       {
         preset_id: "image_generation",
-        name: "image_generation",
+        name: "Image Generation",
+        tool_name: "image_generation",
         description:
           "Generate images using the FLUX model from Black Forest Labs using together.ai",
         parameters: [

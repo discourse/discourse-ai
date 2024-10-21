@@ -125,7 +125,7 @@ en:
     unknown_model: "Unknown AI model"
 
     tools:
-      custom_name: "%{name} (custom)"
+      custom_name: "%{name} - %{tool_name} (custom)"
       presets:
         browse_web_jina:
           name: "Browse web (jina.ai)"

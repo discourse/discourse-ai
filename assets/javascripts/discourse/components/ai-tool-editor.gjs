@@ -34,7 +34,7 @@ export default class AiToolEditor extends Component {
   @service store;
   @service siteSettings;
 
-  @tracked jobName = null;
+  @tracked toolName = null;
   @tracked isSaving = false;
   @tracked editingModel = null;
   @tracked showDelete = false;
@@ -60,7 +60,7 @@ export default class AiToolEditor extends Component {
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
     this.showDelete = !this.args.model.isNew;
-    this.jobName = this.editingModel.name;
+    this.toolName = this.editingModel.tool_name;
   }
 
   @action
@@ -69,6 +69,7 @@ export default class AiToolEditor extends Component {
     this.editingModel = this.store
       .createRecord("ai-tool", this.selectedPreset)
       .workingCopy();
+
     this.showDelete = false;
   }
 
