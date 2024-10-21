@@ -152,9 +152,9 @@ export class SummaryUpdater extends StreamUpdater {
   set streaming(value) {
     if (this.element) {
       if (value) {
-        this.element.classList.add("streaming");
+        this.componentContext.isStreaming = true;
       } else {
-        this.element.classList.remove("streaming");
+        this.componentContext.isStreaming = false;
       }
     }
   }
@@ -163,18 +163,7 @@ export class SummaryUpdater extends StreamUpdater {
     this.componentContext.oldRaw = value;
     const cooked = await cook(value);
 
-    // resets animation
-    this.element.classList.remove("streaming");
-    void this.element.offsetWidth;
-    this.element.classList.add("streaming");
-
-    const cookedElement = document.createElement("div");
-    cookedElement.innerHTML = cooked;
-
-    if (!done) {
-      addProgressDot(cookedElement);
-    }
-    await this.setCooked(cookedElement.innerHTML);
+    await this.setCooked(cooked);
 
     if (done) {
       this.componentContext.finalSummary = cooked;
@@ -182,8 +171,7 @@ export class SummaryUpdater extends StreamUpdater {
   }
 
   async setCooked(value) {
-    const cookedContainer = this.element.querySelector(".generated-summary");
-    cookedContainer.innerHTML = value;
+    this.componentContext.text = value;
   }
 
   get raw() {

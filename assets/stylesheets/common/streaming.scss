@@ -8,18 +8,26 @@
   }
 }
 
+@mixin progress-dot {
+  content: "\25CF";
+  font-family: Söhne Circle, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+    Cantarell, Noto Sans, sans-serif;
+  line-height: normal;
+  margin-left: 0.25rem;
+  vertical-align: baseline;
+  animation: flashing 1.5s 3s infinite;
+  display: inline-block;
+  font-size: 1rem;
+  color: var(--tertiary-medium);
+}
+
+.streaming .cooked p:last-child::after {
+  @include progress-dot;
+}
+
 article.streaming .cooked {
   .progress-dot::after {
-    content: "\25CF";
-    font-family: Söhne Circle, system-ui, -apple-system, Segoe UI, Roboto,
-      Ubuntu, Cantarell, Noto Sans, sans-serif;
-    line-height: normal;
-    margin-left: 0.25rem;
-    vertical-align: baseline;
-    animation: flashing 1.5s 3s infinite;
-    display: inline-block;
-    font-size: 1rem;
-    color: var(--tertiary-medium);
+    @include progress-dot;
   }
 
   > .progress-dot:only-child::after {
