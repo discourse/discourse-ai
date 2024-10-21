@@ -22,7 +22,11 @@ class AiTool < ActiveRecord::Base
             }
 
   def signature
-    { name: function_call_name, description: description, parameters: parameters.map(&:symbolize_keys) }
+    {
+      name: function_call_name,
+      description: description,
+      parameters: parameters.map(&:symbolize_keys),
+    }
   end
 
   # Backwards compatibility: if tool_name is not set (existing custom tools), use name
