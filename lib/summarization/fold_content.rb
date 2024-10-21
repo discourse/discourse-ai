@@ -45,16 +45,19 @@ module DiscourseAi
             summarize_chunks(initial_chunks, user, opts, &on_partial_blk)
           end
 
+        clean_summary =
+          Nokogiri::HTML5.fragment(result[:summary]).css("ai")&.first&.text || result[:summary]
+
         if persist_summaries
           AiSummary.store!(
             strategy.target,
             strategy.type,
             llm_model.name,
-            result[:summary],
+            clean_summary,
             content_to_summarize[:contents].map { |c| c[:id] },
           )
         else
-          AiSummary.new(summarized_text: result[:summary])
+          AiSummary.new(summarized_text: clean_summary)
         end
       end
 
