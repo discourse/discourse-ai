@@ -95,22 +95,34 @@ module DiscourseAi
             - Use the original language of the text.
             - Begin directly with the main topic or issue, avoiding introductory phrases.
             - Limit the summary to a maximum of 20 words.
+
+            Return the 20-word summary inside <ai></ai> tags.
           TEXT
 
-          prompt.push(type: :user, content: <<~TEXT.strip)
+          context = +<<~TEXT
             ### Context:
-          
-            The conversation began with the following statement:
-
+            
             #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ".\n" : ""}
+            
+            The conversation began with the following statement:
         
-            #{statements&.pop}
-        
-            Subsequent discussion includes the following:
+            #{statements&.pop}\n
+          TEXT
 
-            #{statements&.join}
+          if statements.present?
+            context << <<~TEXT
+              Subsequent discussion includes the following:
+
+              #{statements&.join("\n")}
                   
-            Your task is to focus on these latest messages, capturing their meaning in the context of the initial post.
+              Your task is to focus on these latest messages, capturing their meaning in the context of the initial statement.
+            TEXT
+          else
+            context << "Your task is to capture the meaning of the initial statement."
+          end
+
+          prompt.push(type: :user, content: <<~TEXT.strip)
+            #{context} Return the 20-word summary inside <ai></ai> tags.
           TEXT
 
           prompt
