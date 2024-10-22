@@ -9,12 +9,61 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
   end
 
   describe "GET #index" do
+    fab!(:llm_model) { Fabricate(:llm_model, enabled_chat_bot: true) }
+    fab!(:llm_model2) { Fabricate(:llm_model) }
+    fab!(:ai_persona) do
+      Fabricate(
+        :ai_persona,
+        name: "Cool persona",
+        force_default_llm: true,
+        default_llm: "custom:#{llm_model2.id}",
+      )
+    end
+
     it "includes all available providers metadata" do
       get "/admin/plugins/discourse-ai/ai-llms.json"
       expect(response).to be_successful
 
       expect(response.parsed_body["meta"]["providers"]).to contain_exactly(
         *DiscourseAi::Completions::Llm.provider_names,
+      )
+    end
+
+    it "lists enabled features on appropriate LLMs" do
+      SiteSetting.ai_bot_enabled = true
+
+      # setting the setting calls the model
+      DiscourseAi::Completions::Llm.with_prepared_responses(["OK"]) do
+        SiteSetting.ai_helper_model = "custom:#{llm_model.id}"
+        SiteSetting.ai_helper_enabled = true
+      end
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(["OK"]) do
+        SiteSetting.ai_summarization_model = "custom:#{llm_model2.id}"
+        SiteSetting.ai_summarization_enabled = true
+      end
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(["OK"]) do
+        SiteSetting.ai_embeddings_semantic_search_hyde_model = "custom:#{llm_model2.id}"
+        SiteSetting.ai_embeddings_semantic_search_enabled = true
+      end
+
+      get "/admin/plugins/discourse-ai/ai-llms.json"
+
+      llms = response.parsed_body["ai_llms"]
+
+      model_json = llms.find { |m| m["id"] == llm_model.id }
+      expect(model_json["used_by"]).to contain_exactly(
+        { "type" => "ai_bot" },
+        { "type" => "ai_helper" },
+      )
+
+      model2_json = llms.find { |m| m["id"] == llm_model2.id }
+
+      expect(model2_json["used_by"]).to contain_exactly(
+        { "type" => "ai_persona", "name" => "Cool persona", "id" => ai_persona.id },
+        { "type" => "ai_summarization" },
+        { "type" => "ai_embeddings_semantic_search" },
       )
     end
   end

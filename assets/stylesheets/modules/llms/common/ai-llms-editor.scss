@@ -51,7 +51,8 @@
     align-items: center;
   }
 
-  &__vision-enabled {
+  &__vision-enabled,
+  &__enabled-chat-bot {
     display: flex;
     align-items: flex-start;
   }
@@ -148,5 +149,19 @@
     color: var(--primary-high);
     margin: 0;
     letter-spacing: 0.1px;
+  }
+}
+
+.ai-llm-list-editor__usages {
+  list-style: none;
+  margin: 0.5em 0 0 0;
+  display: flex;
+  li {
+    font-size: var(--font-down-2);
+    border-radius: 0.25em;
+    background: var(--primary-very-low);
+    border: 1px solid var(--primary-low);
+    padding: 1px 3px;
+    margin-right: 0.5em;
   }
 }

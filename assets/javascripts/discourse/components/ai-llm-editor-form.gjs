@@ -9,7 +9,6 @@ import { later } from "@ember/runloop";
 import { inject as service } from "@ember/service";
 import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
-import DToggleSwitch from "discourse/components/d-toggle-switch";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
@@ -59,7 +58,20 @@ export default class AiLlmEditorForm extends Component {
   }
 
   get modulesUsingModel() {
-    return this.args.model.used_by?.join(", ");
+    const usedBy = this.args.model.used_by?.filter((m) => m.type !== "ai_bot");
+
+    if (!usedBy || usedBy.length === 0) {
+      return null;
+    }
+
+    const localized = usedBy.map((m) => {
+      return I18n.t(`discourse_ai.llms.usage.${m.type}`, {
+        persona: m.name,
+      });
+    });
+
+    // TODO: this is not perfectly localized
+    return localized.join(", ");
   }
 
   get seeded() {
@@ -155,20 +167,6 @@ export default class AiLlmEditorForm extends Component {
           .catch(popupAjaxError);
       },
     });
-  }
-
-  @action
-  async toggleEnabledChatBot() {
-    this.args.model.set("enabled_chat_bot", !this.args.model.enabled_chat_bot);
-    if (!this.args.model.isNew) {
-      try {
-        await this.args.model.update({
-          enabled_chat_bot: this.args.model.enabled_chat_bot,
-        });
-      } catch (e) {
-        popupAjaxError(e);
-      }
-    }
   }
 
   <template>
@@ -291,12 +289,12 @@ export default class AiLlmEditorForm extends Component {
             @content={{I18n.t "discourse_ai.llms.hints.vision_enabled"}}
           />
         </div>
-        <div class="control-group">
-          <DToggleSwitch
-            class="ai-llm-editor__enabled-chat-bot"
-            @state={{@model.enabled_chat_bot}}
-            @label="discourse_ai.llms.enabled_chat_bot"
-            {{on "click" this.toggleEnabledChatBot}}
+        <div class="control-group ai-llm-editor__enabled-chat-bot">
+          <Input @type="checkbox" @checked={{@model.enabled_chat_bot}} />
+          <label>{{I18n.t "discourse_ai.llms.enabled_chat_bot"}}</label>
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.llms.hints.enabled_chat_bot"}}
           />
         </div>
         {{#if @model.user}}

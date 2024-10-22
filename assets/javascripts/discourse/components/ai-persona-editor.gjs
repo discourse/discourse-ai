@@ -336,27 +336,29 @@ export default class PersonaEditor extends Component {
           disabled={{this.editingModel.system}}
         />
       </div>
-      <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai_persona.default_llm"}}</label>
-        <AiLlmSelector
-          class="ai-persona-editor__llms"
-          @value={{this.mappedDefaultLlm}}
-          @llms={{@personas.resultSetMeta.llms}}
-        />
-        <DTooltip
-          @icon="question-circle"
-          @content={{I18n.t "discourse_ai.ai_persona.default_llm_help"}}
-        />
-      </div>
-      {{#if this.hasDefaultLlm}}
+      {{#if this.editingModel.user}}
         <div class="control-group">
-          <label>
-            <Input
-              @type="checkbox"
-              @checked={{this.editingModel.force_default_llm}}
-            />
-            {{I18n.t "discourse_ai.ai_persona.force_default_llm"}}</label>
+          <label>{{I18n.t "discourse_ai.ai_persona.default_llm"}}</label>
+          <AiLlmSelector
+            class="ai-persona-editor__llms"
+            @value={{this.mappedDefaultLlm}}
+            @llms={{@personas.resultSetMeta.llms}}
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.ai_persona.default_llm_help"}}
+          />
         </div>
+        {{#if this.hasDefaultLlm}}
+          <div class="control-group">
+            <label>
+              <Input
+                @type="checkbox"
+                @checked={{this.editingModel.force_default_llm}}
+              />
+              {{I18n.t "discourse_ai.ai_persona.force_default_llm"}}</label>
+          </div>
+        {{/if}}
       {{/if}}
       {{#unless @model.isNew}}
         <div class="control-group">

@@ -12,11 +12,8 @@ RSpec.describe "Managing LLM configurations", type: :system do
     visit "/admin/plugins/discourse-ai/ai-llms"
 
     find("[data-llm-id='anthropic-claude-3-haiku'] button").click()
-
     find("input.ai-llm-editor__api-key").fill_in(with: "abcd")
-
-    PageObjects::Components::DToggleSwitch.new(".ai-llm-editor__enabled-chat-bot").toggle
-
+    find(".ai-llm-editor__enabled-chat-bot input").click
     find(".ai-llm-editor__save").click()
 
     expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-llms")
@@ -55,8 +52,7 @@ RSpec.describe "Managing LLM configurations", type: :system do
     find(".select-kit-row[data-name=\"Llama3Tokenizer\"]").click
 
     find(".ai-llm-editor__vision-enabled input").click
-
-    PageObjects::Components::DToggleSwitch.new(".ai-llm-editor__enabled-chat-bot").toggle
+    find(".ai-llm-editor__enabled-chat-bot input").click
 
     find(".ai-llm-editor__save").click()
 

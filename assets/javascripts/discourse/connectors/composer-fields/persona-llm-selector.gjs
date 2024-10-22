@@ -58,7 +58,13 @@ export default class BotSelector extends Component {
       this.setAllowLLMSelector();
 
       let llm = this.preferredLlmStore.getObject("id");
-      llm = llm || this.llmOptions[0].id;
+
+      const llmOption =
+        this.llmOptions.find((innerLlmOption) => innerLlmOption.id === llm) ||
+        this.llmOptions[0];
+
+      llm = llmOption.id;
+
       if (llm) {
         next(() => {
           this.currentLlm = llm;
@@ -96,6 +102,7 @@ export default class BotSelector extends Component {
     this.preferredPersonaStore.setObject({ key: "id", value: newValue });
     this.composer.metaData = { ai_persona_id: newValue };
     this.setAllowLLMSelector();
+    this.resetTargetRecipients();
   }
 
   setAllowLLMSelector() {
@@ -112,11 +119,16 @@ export default class BotSelector extends Component {
 
   set currentLlm(newValue) {
     this.llm = newValue;
-    const botUsername = this.currentUser.ai_enabled_chat_bots.find(
-      (bot) => bot.model_name === this.llm
-    ).username;
     this.preferredLlmStore.setObject({ key: "id", value: newValue });
+
+    this.resetTargetRecipients();
+  }
+
+  resetTargetRecipients() {
     if (this.allowLLMSelector) {
+      const botUsername = this.currentUser.ai_enabled_chat_bots.find(
+        (bot) => bot.model_name === this.llm
+      ).username;
       this.composer.set("targetRecipients", botUsername);
     } else {
       const persona = this.currentUser.ai_enabled_personas.find(
