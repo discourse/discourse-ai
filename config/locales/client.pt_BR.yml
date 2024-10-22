@@ -132,8 +132,6 @@ pt_BR:
         question_consolidator_llm: Modelo de linguagem para consolidador de pergunta
         question_consolidator_llm_help: O modelo de linguagem a ser usado para o consolidador de pergunta. Para economizar, você pode escolher um modelo menos robusto.
         system_prompt: Prompt do sistema
-        allow_chat: "Permitir chat"
-        allow_chat_help: "Ative para que os(às) usuários(as) nos grupos permitidos possam enviar mensagens diretas a esta persona"
         save: Salvar
         saved: Persona de IA salva
         enabled: "Ativado(a)?"
@@ -222,7 +220,6 @@ pt_BR:
         max_prompt_tokens: "Quantidade de tokens para o prompt"
         url: "URL do serviço da hospedagem do modelo"
         api_key: "Chave de API do serviço da hospedagem do modelo"
-        enabled_chat_bot: "Permitir bot de IA"
         vision_enabled: "Visão ativada"
         ai_bot_user: "Usuário(a) de bot de IA"
         save: "Salvar"

@@ -132,8 +132,6 @@ fr:
         question_consolidator_llm: Modèle linguistique pour le consolidateur de questions
         question_consolidator_llm_help: Le modèle linguistique à utiliser pour le consolidateur de questions, vous pouvez choisir un modèle moins puissant pour réduire les coûts.
         system_prompt: Invite du système
-        allow_chat: "Autoriser la messagerie instantanée"
-        allow_chat_help: "Si cette option est activée, les utilisateurs des groupes autorisés peuvent envoyer un DM à ce personnage"
         save: Enregistrer
         saved: Personnage IA enregistré
         enabled: "Activé ?"
@@ -222,7 +220,6 @@ fr:
         max_prompt_tokens: "Nombre de jetons pour l'invite"
         url: "URL du service hébergeant le modèle"
         api_key: "Clé API du service hébergeant le modèle"
-        enabled_chat_bot: "Autoriser le robot IA"
         vision_enabled: "Vision activée"
         ai_bot_user: "Utilisateur robot IA"
         save: "Enregistrer"

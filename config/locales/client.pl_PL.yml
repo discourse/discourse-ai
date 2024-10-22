@@ -117,7 +117,6 @@ pl_PL:
         default_llm: Domyślny model językowy
         default_llm_help: Domyślny model językowy używany dla tej persony. Wymagane, jeśli chcesz wspomnieć o osobie w postach publicznych.
         system_prompt: Monit systemowy
-        allow_chat: "Zezwalaj na czat"
         save: Zapisz
         saved: Zapisano AI Persona
         enabled: "Włączona?"

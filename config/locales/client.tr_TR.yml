@@ -132,8 +132,6 @@ tr_TR:
         question_consolidator_llm: Soru Konsolidatörü için Dil Modeli
         question_consolidator_llm_help: Soru birleştirici için kullanılacak dil modeli, maliyetten tasarruf etmek için daha az güçlü bir model seçebilirsiniz.
         system_prompt: Sistem İstemi
-        allow_chat: "Sohbete izin ver"
-        allow_chat_help: "Etkinleştirilirse izin verilen gruplardaki kullanıcılar bu kişiye DM gönderebilir"
         save: Kaydet
         saved: YZ Kişiliği Kaydedildi
         enabled: "Etkin mi?"
@@ -222,7 +220,6 @@ tr_TR:
         max_prompt_tokens: "İstem için token sayısı"
         url: "Modeli barındıran hizmetin URL'si"
         api_key: "Modeli barındıran hizmetin API Anahtarı"
-        enabled_chat_bot: "YZ Botuna izin ver"
         vision_enabled: "Vizyon etkin"
         ai_bot_user: "YZ Botu Kullanıcısı"
         save: "Kaydet"

@@ -132,8 +132,6 @@ zh_CN:
         question_consolidator_llm: 问题整合器的语言模型
         question_consolidator_llm_help: 用于问题整合器的语言模型，您可以选择功能较弱的模型来节省成本。
         system_prompt: 系统提示
-        allow_chat: "允许聊天"
-        allow_chat_help: "如果启用，允许的群组中的用户可以向此角色发送私信"
         save: 保存
         saved: AI 角色已保存
         enabled: "已启用？"
@@ -222,7 +220,6 @@ zh_CN:
         max_prompt_tokens: "提示的词元数"
         url: "托管模型的服务的 URL"
         api_key: "托管模型的服务的 API 密钥"
-        enabled_chat_bot: "允许 AI 机器人"
         vision_enabled: "启用视觉"
         ai_bot_user: "AI 机器人用户"
         save: "保存"

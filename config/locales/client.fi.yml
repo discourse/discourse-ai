@@ -132,8 +132,6 @@ fi:
         question_consolidator_llm: Kielimalli kysymysten yhdistäjälle
         question_consolidator_llm_help: Kysymysten yhdistäjälle käytettävä kielimalli, voit valita vähemmän tehokkaan mallin kustannusten säästämiseksi.
         system_prompt: Järjestelmäkehote
-        allow_chat: "Salli chat"
-        allow_chat_help: "Jos tämä on käytössä, sallittujen ryhmien käyttäjät voivat lähettää yksityisviestin tälle persoonalle"
         save: Tallenna
         saved: Tekoälypersoona tallennettu
         enabled: "Otettu käyttöön?"
@@ -222,7 +220,6 @@ fi:
         max_prompt_tokens: "Kehotteen tokenien määrä"
         url: "Mallia isännöivän palvelun URL-osoite"
         api_key: "Mallia isännöivän palvelun API-avain"
-        enabled_chat_bot: "Salli tekoälybotti"
         vision_enabled: "Näkö käytössä"
         ai_bot_user: "Tekoälybottikäyttäjä"
         save: "Tallenna"

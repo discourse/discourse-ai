@@ -132,8 +132,6 @@ nl:
         question_consolidator_llm: Taalmodel voor Vragenconsolidator
         question_consolidator_llm_help: Het te gebruiken taalmodel voor de vragenconsolidator. Je kunt een minder krachtig model kiezen om kosten te besparen.
         system_prompt: Systeemprompt
-        allow_chat: "Chat toestaan"
-        allow_chat_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen deze persona een direct bericht sturen"
         save: Opslaan
         saved: AI-persona opgeslagen
         enabled: "Ingeschakeld?"
@@ -222,7 +220,6 @@ nl:
         max_prompt_tokens: "Aantal tokens voor de prompt"
         url: "URL van de service die het model host"
         api_key: "API-sleutel van de service die het model host"
-        enabled_chat_bot: "AI-bot toestaan"
         vision_enabled: "Zicht ingeschakeld"
         ai_bot_user: "Gebruiker AI-bot"
         save: "Opslaan"
