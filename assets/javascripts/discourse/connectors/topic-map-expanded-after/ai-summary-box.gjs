@@ -18,7 +18,8 @@ import I18n from "discourse-i18n";
 import DMenu from "float-kit/components/d-menu";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
-import { streamSummaryText } from "../../lib/ai-streamer";
+import streamUpdaterText from "../../lib/ai-streamer/progress-handlers";
+import SummaryUpdater from "../../lib/ai-streamer/updaters/summary-updater";
 
 export default class AiSummaryBox extends Component {
   @service siteSettings;
@@ -34,7 +35,7 @@ export default class AiSummaryBox extends Component {
   @tracked canRegenerate = false;
   @tracked loading = false;
   @tracked isStreaming = false;
-  oldRaw = null; // used for comparison in SummaryUpdater in lib/ai-streamer
+  oldRaw = null; // used for comparison in SummaryUpdater in lib/ai-streamer/updaters
   finalSummary = null;
 
   get outdatedSummaryWarningText() {
@@ -150,7 +151,7 @@ export default class AiSummaryBox extends Component {
     this.loading = false;
 
     this.isStreaming = true;
-    streamSummaryText(topicSummary, this);
+    streamUpdaterText(SummaryUpdater, topicSummary, this);
 
     if (update.done) {
       this.isStreaming = false;
@@ -219,6 +220,7 @@ export default class AiSummaryBox extends Component {
               <article
                 class={{concatClass
                   "ai-summary-box"
+                  "streamable-content"
                   (if this.isStreaming "streaming")
                 }}
               >

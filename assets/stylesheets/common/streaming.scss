@@ -21,7 +21,7 @@
   color: var(--tertiary-medium);
 }
 
-.streaming .cooked p:last-child::after {
+.streamable-content.streaming .cooked p:last-child::after {
   @include progress-dot;
 }
 

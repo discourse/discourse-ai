@@ -3,7 +3,7 @@ import {
   addProgressDot,
   applyProgress,
   MIN_LETTERS_PER_INTERVAL,
-} from "discourse/plugins/discourse-ai/discourse/lib/ai-streamer";
+} from "discourse/plugins/discourse-ai/discourse/lib/ai-streamer/progress-handlers";
 
 class FakeStreamUpdater {
   constructor() {
