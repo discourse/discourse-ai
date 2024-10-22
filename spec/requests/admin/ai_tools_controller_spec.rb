@@ -97,12 +97,12 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       put "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json",
           params: {
             ai_tool: {
-              name: "UpdatedTool",
+              name: "Updated Tool",
             },
           }
 
       expect(response).to be_successful
-      expect(ai_tool.reload.name).to eq("UpdatedTool")
+      expect(ai_tool.reload.name).to eq("Updated Tool")
     end
 
     context "when updating an enum parameters" do
@@ -170,7 +170,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       post "/admin/plugins/discourse-ai/ai-tools/test.json",
            params: {
              ai_tool: {
-               name: "NewTool",
+               name: "New Tool",
                description: "A new test tool",
                script: "function invoke(params) { return 'New test result: ' + params.input; }",
                parameters: [

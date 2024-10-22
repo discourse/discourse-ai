@@ -2,7 +2,7 @@
 
 class AiTool < ActiveRecord::Base
   validates :name, presence: true, length: { maximum: 100 }
-  validates :tool_name, presence: true, length: { maximum: 100 }, uniqueness: true
+  validates :tool_name, presence: true, length: { maximum: 100 }
   validates :description, presence: true, length: { maximum: 1000 }
   validates :summary, presence: true, length: { maximum: 255 }
   validates :script, presence: true, length: { maximum: 100_000 }
@@ -222,7 +222,7 @@ class AiTool < ActiveRecord::Base
       },
       {
         preset_id: "stock_quote",
-        name: "Stock Quote",
+        name: "Stock Quote (AlphaVantage)",
         tool_name: "stock_quote",
         description: "Get real-time stock quote information using AlphaVantage API",
         parameters: [

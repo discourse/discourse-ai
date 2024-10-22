@@ -19,17 +19,5 @@ describe DiscourseAi::ToolNameChecker do
         end
       end
     end
-
-    context "when the tool name is already" do
-      let(:tool_name) { "toolname" }
-
-      before { Fabricate(:ai_tool, tool_name: tool_name) }
-
-      it "returns an error" do
-        expect(DiscourseAi::ToolNameChecker.new(tool_name).check).to eq(
-          { available: false, errors: [I18n.t("errors.messages.taken")] },
-        )
-      end
-    end
   end
 end
