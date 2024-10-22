@@ -149,8 +149,15 @@ de:
         question_consolidator_llm_help: Das Sprachmodell, das für den Fragenkonsolidierer verwendet werden soll. Du kannst ein weniger leistungsfähiges Modell wählen, um Kosten zu sparen.
         system_prompt: System-Eingabeaufforderung
         forced_tool_strategy: Erzwungene Werkzeugstrategie
-        allow_chat: "Chat zulassen"
-        allow_chat_help: "Wenn diese Option aktiviert ist, können Nutzer in erlaubten Gruppen dieser Persona eine DN senden"
+        allow_chat_direct_messages: "Chat-Direktnachrichten zulassen"
+        allow_chat_direct_messages_help: "Wenn aktiviert, können Benutzer in erlaubten Gruppen Direktnachrichten an diese Person senden."
+        allow_chat_channel_mentions: "Chat-Kanal-Erwähnungen zulassen"
+        allow_chat_channel_mentions_help: "Wenn aktiviert, können Benutzer in erlaubten Gruppen diese Person in Chatkanälen erwähnen."
+        allow_personal_messages: "Persönliche Nachrichten zulassen"
+        allow_personal_messages_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen persönliche Nachrichten an diese Person senden."
+        allow_topic_mentions: "Themenerwähnungen zulassen"
+        allow_topic_mentions_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen diese Person in Themen erwähnen."
+        force_default_llm: "Immer das Standard-Sprachmodell verwenden"
         save: Speichern
         saved: KI-Persona gespeichert
         enabled: "Aktiviert?"
@@ -243,7 +250,7 @@ de:
         max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung"
         url: "URL des Dienstes, der das Modell hostet"
         api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
-        enabled_chat_bot: "KI-Bot zulassen"
+        enabled_chat_bot: "KI Bot-Auswahl zulassen"
         vision_enabled: "Sehen aktiviert"
         ai_bot_user: "KI-Bot-Nutzer"
         save: "Speichern"
@@ -253,9 +260,15 @@ de:
         confirm_delete: Bist du sicher, dass du dieses Modell löschen willst?
         delete: Löschen
         seeded_warning: "Dieses Modell ist auf deiner Website vorkonfiguriert und kann nicht bearbeitet werden."
+        usage:
+          ai_bot: "KI-Bot"
+          ai_helper: "KI-Helfer"
+          ai_persona: "Persona (%{persona})"
+          ai_summarization: "Zusammenfassung"
+          ai_embeddings_semantic_search: "Semantische Suche"
         in_use_warning:
-          one: "Dieses Modell wird derzeit von der Einstellung %{settings} verwendet. Wenn die Funktion falsch konfiguriert ist, funktioniert sie nicht wie erwartet."
-          other: "Dieses Modell wird derzeit von den folgenden Einstellungen verwendet: %{settings}. Bei einer falschen Konfiguration funktionieren die Funktionen nicht wie erwartet. "
+          one: "Dieses Modell wird derzeit von %{settings}verwendet. Wenn es falsch konfiguriert ist, wird die Funktion nicht wie erwartet funktionieren."
+          other: "Dieses Modell wird derzeit von den folgenden Unternehmen verwendet: %{settings}. Wenn es falsch konfiguriert ist, werden die Funktionen nicht wie erwartet funktionieren. "
         model_description:
           none: "Allgemeine Einstellungen, die für die meisten Sprachmodelle funktionieren"
           anthropic-claude-3-5-sonnet: "Das intelligenteste Modell der Anthropologie"
@@ -286,6 +299,7 @@ de:
           max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50 % des Kontextfensters des Modells sein sollten."
           name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden."
           vision_enabled: "Wenn diese Funktion aktiviert ist, versucht die KI, Bilder zu verstehen. Dafür wird ein Modell benötigt, das Sehen unterstützt. Verfügbar in den neuesten Modellen von Anthropic, Google und OpenAI."
+          enabled_chat_bot: "Wenn diese Option aktiviert ist, können Benutzer dieses Modell auswählen, wenn sie PMs mit dem KI-Bot erstellen."
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"

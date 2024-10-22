@@ -85,6 +85,7 @@ he:
     ai_summarization_model: "מודל לשימוש לסיכום."
     ai_custom_summarization_allowed_groups: "קבוצות שמורשות להשתמש ליצירת סיכומים חדשים."
     ai_pm_summarization_allowed_groups: "קבוצות שמורשות ליצור ולצפות בתקצירים בהודעות פרטיות."
+    ai_hot_topic_gists_allowed_groups: "קבוצות שמורשות לראות gists ברשימת הנושאים החמים."
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."
     ai_bot_enable_chat_warning: "הצגת אזהרה עם פתיחת שיח הודעות פרטיות. אפשר לדרוס את זה על ידי עריכת מחרוזת התרגום: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "כאשר לבוט של GPT יש גישה להודעות הפרטיות, הוא יגיב לחברים בקבוצות האלה."

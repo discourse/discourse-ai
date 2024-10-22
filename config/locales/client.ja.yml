@@ -132,8 +132,6 @@ ja:
         question_consolidator_llm: 質問統合用の言語モデル
         question_consolidator_llm_help: 質問統合に使用する言語モデル。それほど強力でないモデルを選択してコストを節約することも可能です。
         system_prompt: システムプロンプト
-        allow_chat: "チャットを許可"
-        allow_chat_help: "有効にすると、許可されているグループのユーザーはこのペルソナに DM を送信できます"
         save: 保存
         saved: AI ペルソナが保存されました
         enabled: "有効化？"
@@ -222,7 +220,6 @@ ja:
         max_prompt_tokens: "プロンプトのトークン数"
         url: "モデルをホストするサービスの URL"
         api_key: "モデルをホストするサービスの API キー"
-        enabled_chat_bot: "AI ボットを許可"
         vision_enabled: "ビジョン対応"
         ai_bot_user: "AI ボットユーザー"
         save: "保存"

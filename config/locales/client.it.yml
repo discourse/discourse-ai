@@ -132,8 +132,6 @@ it:
         question_consolidator_llm: Modello linguistico per il consolidatore di domande
         question_consolidator_llm_help: Il modello linguistico da utilizzare per il consolidatore di domande. È possibile scegliere un modello meno potente per risparmiare sui costi.
         system_prompt: Comando di sistema
-        allow_chat: "Consenti chat"
-        allow_chat_help: "Se l'opzione è abilitata, gli utenti nei gruppi consentiti possono scrivere in DM questa persona"
         save: Salva
         saved: Personaggio IA salvato
         enabled: "Abilitato?"
@@ -222,7 +220,6 @@ it:
         max_prompt_tokens: "Numero di token per il comando"
         url: "URL del servizio che ospita il modello"
         api_key: "Chiave API del servizio che ospita il modello"
-        enabled_chat_bot: "Consenti bot IA"
         vision_enabled: "Visione abilitata"
         ai_bot_user: "Utente bot IA"
         save: "Salva"

@@ -107,8 +107,6 @@ id:
         question_consolidator_llm: Model Bahasa untuk Konsolidator Pertanyaan
         question_consolidator_llm_help: Model bahasa yang digunakan untuk konsolidator pertanyaan, Anda dapat memilih model yang kurang kuat untuk menghemat biaya.
         system_prompt: Perintah Sistem
-        allow_chat: "Izinkan Obrolan"
-        allow_chat_help: "Jika diaktifkan, pengguna di grup yang diizinkan dapat mengirimkan DM ke persona ini"
         save: Simpan
         enabled: "Diaktifkan?"
         delete: Hapus
