@@ -5,7 +5,7 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import DebugAiModal from "../discourse/components/modal/debug-ai-modal";
 import ShareModal from "../discourse/components/modal/share-modal";
-import streamText from "../discourse/lib/ai-streamer";
+import { streamPostText } from "../discourse/lib/ai-streamer/progress-handlers";
 import copyConversation from "../discourse/lib/copy-conversation";
 const AUTO_COPY_THRESHOLD = 4;
 import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
@@ -50,7 +50,7 @@ function initializeAIBotReplies(api) {
     pluginId: "discourse-ai",
 
     onAIBotStreamedReply: function (data) {
-      streamText(this.model.postStream, data);
+      streamPostText(this.model.postStream, data);
     },
     subscribe: function () {
       this._super();
