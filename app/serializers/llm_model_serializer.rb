@@ -27,7 +27,7 @@ class LlmModelSerializer < ApplicationSerializer
         if (scope && scope[:llm_usage])
           scope[:llm_usage]
         else
-          DiscourseAi::Configuration::LlmValidator.global_usage
+          DiscourseAi::Configuration::LlmEnumerator.global_usage
         end
       )
 

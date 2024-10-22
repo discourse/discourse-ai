@@ -15,7 +15,7 @@ module DiscourseAi
                      each_serializer: LlmModelSerializer,
                      root: false,
                      scope: {
-                       llm_usage: DiscourseAi::Configuration::LlmValidator.global_usage,
+                       llm_usage: DiscourseAi::Configuration::LlmEnumerator.global_usage,
                      },
                    ).as_json,
                  meta: {

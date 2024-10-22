@@ -3,42 +3,6 @@
 module DiscourseAi
   module Configuration
     class LlmValidator
-      def self.global_usage
-        rval = Hash.new { |h, k| h[k] = [] }
-
-        if SiteSetting.ai_bot_enabled
-          LlmModel
-            .where("enabled_chat_bot = ?", true)
-            .pluck(:id)
-            .each { |llm_id| rval[llm_id] << { type: :ai_bot } }
-
-          AiPersona
-            .where("force_default_llm = ?", true)
-            .pluck(:default_llm, :name, :id)
-            .each do |llm_name, name, id|
-              llm_id = llm_name.split(":").last.to_i
-              rval[llm_id] << { type: :ai_persona, name: name, id: id }
-            end
-        end
-
-        if SiteSetting.ai_helper_enabled
-          model_id = SiteSetting.ai_helper_model.split(":").last.to_i
-          rval[model_id] << { type: :ai_helper }
-        end
-
-        if SiteSetting.ai_summarization_enabled
-          model_id = SiteSetting.ai_summarization_model.split(":").last.to_i
-          rval[model_id] << { type: :ai_summarization }
-        end
-
-        if SiteSetting.ai_embeddings_semantic_search_enabled
-          model_id = SiteSetting.ai_embeddings_semantic_search_hyde_model.split(":").last.to_i
-          rval[model_id] << { type: :ai_embeddings_semantic_search }
-        end
-
-        rval
-      end
-
       def initialize(opts = {})
         @opts = opts
       end
