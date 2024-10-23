@@ -76,32 +76,6 @@ export default class AiToolEditor extends Component {
     }
   }
 
-  _checkToolNameDebounced() {
-    discourseDebounce(this, this._checkToolName, 500);
-  }
-
-  _checkToolName() {
-    if (isEmpty(this.editingModel.tool_name)) {
-      return;
-    }
-
-    AiTool.checkName(this.editingModel.tool_name)
-      .then((response) => {
-        if (response.available) {
-          this.disableSave = false;
-          this.nameValidation = {
-            ok: true,
-            reason: I18n.t("discourse_ai.tools.new.tool_name.available"),
-          };
-        } else {
-          this.disableSave = true;
-          let reason = response.errors.join(" ");
-          this.validationName = this._failedInputValidation(reason);
-        }
-      })
-      .catch(popupAjaxError);
-  }
-
   @action
   async save() {
     this.isSaving = true;
