@@ -208,7 +208,7 @@ en:
         google:
           base_query:
             name: "Base Search Query"
-            description: "Base query to use when searching. Example: 'site:example.com' will only include results from example.com."
+            description: "Base query to use when searching. Examples: 'site:example.com' will only include results from example.com, before:2022-01-01 will only includes results from 2021 and earlier. This text is prepended to the search query."
         read:
           read_private:
             name: "Read Private"
