@@ -47,6 +47,10 @@ module DiscourseAi
         # To make sure hot topic gists are inmediately up to date, we rely on this event
         # instead of using a scheduled job.
         plugin.on(:topic_hot_scores_updated) { Jobs.enqueue(:hot_topics_gist_batch) }
+
+        plugin.on(:post_created) do |post|
+          Jobs.enqueue(:update_hot_topic_gist, topic_id: post&.topic_id)
+        end
       end
     end
   end

@@ -2,7 +2,7 @@
 
 module ::Jobs
   class HotTopicsGistBatch < ::Jobs::Base
-    def execute(args)
+    def execute(_args)
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_summarization_enabled
       return if SiteSetting.ai_summarize_max_hot_topics_gists_per_batch.zero?
