@@ -300,25 +300,23 @@ export default class AiLlmEditorForm extends Component {
             @content={{i18n "discourse_ai.llms.hints.enabled_chat_bot"}}
           />
         </div>
-      {{/unless}}
 
-      {{#if @model.user}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.llms.ai_bot_user"}}</label>
-          <a
-            class="avatar"
-            href={{@model.user.path}}
-            data-user-card={{@model.user.username}}
-          >
-            {{Avatar @model.user.avatar_template "small"}}
-          </a>
-          <LinkTo @route="adminUser" @model={{this.adminUser}}>
-            {{@model.user.username}}
-          </LinkTo>
-        </div>
-      {{/if}}
+        {{#if @model.user}}
+          <div class="control-group">
+            <label>{{i18n "discourse_ai.llms.ai_bot_user"}}</label>
+            <a
+              class="avatar"
+              href={{@model.user.path}}
+              data-user-card={{@model.user.username}}
+            >
+              {{Avatar @model.user.avatar_template "small"}}
+            </a>
+            <LinkTo @route="adminUser" @model={{this.adminUser}}>
+              {{@model.user.username}}
+            </LinkTo>
+          </div>
+        {{/if}}
 
-      {{#unless this.seeded}}
         <div class="control-group ai-llm-editor__action_panel">
           <DButton
             class="ai-llm-editor__test"
