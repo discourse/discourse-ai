@@ -324,20 +324,20 @@ export default class AiLlmEditorForm extends Component {
             class="ai-llm-editor__test"
             @action={{this.test}}
             @disabled={{this.testRunning}}
-            @label={{"discourse_ai.llms.tests.title"}}
+            @label="discourse_ai.llms.tests.title"
           />
 
           <DButton
             class="btn-primary ai-llm-editor__save"
             @action={{this.save}}
             @disabled={{this.isSaving}}
-            @label={{"discourse_ai.llms.save"}}
+            @label="discourse_ai.llms.save"
           />
           {{#unless @model.isNew}}
             <DButton
               @action={{this.delete}}
               class="btn-danger ai-llm-editor__delete"
-              @label={{"discourse_ai.llms.delete"}}
+              @label="discourse_ai.llms.delete"
             />
           {{/unless}}
         </div>
