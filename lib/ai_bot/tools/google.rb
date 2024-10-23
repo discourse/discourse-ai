@@ -23,15 +23,26 @@ module DiscourseAi
           "google"
         end
 
+        def self.accepted_options
+          [option(:base_query, type: :string)]
+        end
+
         def query
           parameters[:query].to_s.strip
         end
 
         def invoke
+          query = self.query
+
           yield(query)
 
           api_key = SiteSetting.ai_google_custom_search_api_key
           cx = SiteSetting.ai_google_custom_search_cx
+
+          if options[:base_query].present?
+            query = "#{options[:base_query]} #{query}"
+          end
+
           escaped_query = CGI.escape(query)
           uri =
             URI(

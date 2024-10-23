@@ -205,6 +205,10 @@ en:
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "Base Search Query"
+            description: "Base query to use when searching. Example: 'site:example.com' will only include results from example.com."
         read:
           read_private:
             name: "Read Private"

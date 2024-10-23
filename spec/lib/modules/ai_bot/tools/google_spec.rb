@@ -7,13 +7,14 @@ RSpec.describe DiscourseAi::AiBot::Tools::Google do
   let(:progress_blk) { Proc.new {} }
   let(:search) { described_class.new({ query: "some search term" }, bot_user: bot_user, llm: llm) }
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    SiteSetting.ai_bot_enabled = true
+    SiteSetting.ai_google_custom_search_api_key = "abc"
+    SiteSetting.ai_google_custom_search_cx = "cx"
+  end
 
   describe "#process" do
     it "will not explode if there are no results" do
-      SiteSetting.ai_google_custom_search_api_key = "abc"
-      SiteSetting.ai_google_custom_search_cx = "cx"
-
       json_text = { searchInformation: { totalResults: "0" } }.to_json
 
       stub_request(
@@ -27,10 +28,30 @@ RSpec.describe DiscourseAi::AiBot::Tools::Google do
       expect(info).to_not include("oops")
     end
 
-    it "can generate correct info" do
-      SiteSetting.ai_google_custom_search_api_key = "abc"
-      SiteSetting.ai_google_custom_search_cx = "cx"
+    it "supports base_query" do
+      base_query = "site:discourse.org"
 
+      search =
+        described_class.new(
+          { query: "some search term" },
+          bot_user: bot_user,
+          llm: llm,
+          persona_options: {
+            "base_query" => base_query,
+          },
+        )
+
+      json_text = { searchInformation: { totalResults: "0" } }.to_json
+
+      stub_request(
+        :get,
+        "https://www.googleapis.com/customsearch/v1?cx=cx&key=abc&num=10&q=site:discourse.org%20some%20search%20term",
+      ).to_return(status: 200, body: json_text, headers: {})
+
+      search.invoke(&progress_blk)
+    end
+
+    it "can generate correct info" do
       json_text = {
         searchInformation: {
           totalResults: "2",
