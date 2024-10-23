@@ -217,9 +217,15 @@
 }
 
 .ai-topic-gist {
-  margin-top: 0.5em;
+  margin-bottom: 0.25em;
 
   &__text {
+    color: var(--primary-high);
+    text-wrap: pretty;
+    word-wrap: break-word;
     font-size: var(--font-down-2);
+    .visited & {
+      color: var(--primary-medium);
+    }
   }
 }
