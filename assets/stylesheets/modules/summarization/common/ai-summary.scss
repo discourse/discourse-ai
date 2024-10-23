@@ -217,8 +217,15 @@
 }
 
 .ai-topic-gist {
-  margin-top: 0.15em;
-  margin-bottom: -0.15em;
+  .mobile-view & {
+    position: relative;
+    top: -0.33em;
+    line-height: 1.4;
+  }
+  .desktop-view & {
+    margin-top: 0.15em;
+    margin-bottom: -0.15em;
+  }
   &__text {
     color: var(--primary-high);
     text-wrap: pretty;
