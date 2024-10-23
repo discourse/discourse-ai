@@ -47,7 +47,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
   describe "POST #create" do
     let(:valid_attributes) do
       {
-        name: "Test Tool",
+        name: "Test Tool 1",
         tool_name: "test_tool_1",
         description: "A test tool",
         parameters: [{ name: "query", type: "string", description: "perform a search" }],
@@ -66,7 +66,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       }.to change(AiTool, :count).by(1)
 
       expect(response).to have_http_status(:created)
-      expect(response.parsed_body["ai_tool"]["name"]).to eq("Test Tool")
+      expect(response.parsed_body["ai_tool"]["name"]).to eq("Test Tool 1")
       expect(response.parsed_body["ai_tool"]["tool_name"]).to eq("test_tool_1")
     end
 
