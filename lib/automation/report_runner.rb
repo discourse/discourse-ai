@@ -158,7 +158,7 @@ Follow the provided writing composition instructions carefully and precisely ste
           feature_context: {
             automation_id: @automation&.id,
             automation_name: @automation&.name,
-          }
+          },
         ) do |response|
           print response if Rails.env.development? && @debug_mode
           result << response

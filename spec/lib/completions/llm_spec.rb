@@ -65,11 +65,7 @@ RSpec.describe DiscourseAi::Completions::Llm do
           total_tokens: 499,
         },
         choices: [
-          {
-            message: { role: "assistant", content: "test" },
-            finish_reason: "stop",
-            index: 0,
-          },
+          { message: { role: "assistant", content: "test" }, finish_reason: "stop", index: 0 },
         ],
       }.to_json
 

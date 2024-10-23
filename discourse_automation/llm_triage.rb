@@ -52,9 +52,7 @@ if defined?(DiscourseAutomation)
       flag_type = fields.dig("flag_type", "value")
       max_post_tokens = fields.dig("max_post_tokens", "value").to_i
 
-      if max_post_tokens <= 0
-        max_post_tokens = nil
-      end
+      max_post_tokens = nil if max_post_tokens <= 0
 
       begin
         RateLimiter.new(

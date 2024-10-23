@@ -30,14 +30,11 @@ module DiscourseAi
 
         content = "title: #{post.topic.title}\n#{post.raw}"
 
-        if max_post_tokens.present?
-          content = llm.tokenizer.truncate(content, max_post_tokens)
-        end
+        content = llm.tokenizer.truncate(content, max_post_tokens) if max_post_tokens.present?
 
         prompt.push(type: :user, content: content)
 
         result = nil
-
 
         result =
           llm.generate(
@@ -49,7 +46,7 @@ module DiscourseAi
             feature_context: {
               automation_id: automation&.id,
               automation_name: automation&.name,
-            }
+            },
           )&.strip
 
         if result.present? && result.downcase.include?(search_for_text.downcase)
