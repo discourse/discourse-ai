@@ -93,6 +93,7 @@ if defined?(DiscourseAutomation)
           temperature: temperature,
           top_p: top_p,
           suppress_notifications: suppress_notifications,
+          automation: self.automation,
         )
       rescue => e
         Discourse.warn_exception e, message: "Error running LLM report!"

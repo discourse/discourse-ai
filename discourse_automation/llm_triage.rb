@@ -11,6 +11,7 @@ if defined?(DiscourseAutomation)
 
     field :system_prompt, component: :message, required: false
     field :search_for_text, component: :text, required: true
+    field :max_post_tokens, component: :text
     field :model,
           component: :choices,
           required: true,
@@ -49,6 +50,11 @@ if defined?(DiscourseAutomation)
       hide_topic = fields.dig("hide_topic", "value")
       flag_post = fields.dig("flag_post", "value")
       flag_type = fields.dig("flag_type", "value")
+      max_post_tokens = fields.dig("max_post_tokens", "value").to_i
+
+      if max_post_tokens <= 0
+        max_post_tokens = nil
+      end
 
       begin
         RateLimiter.new(
@@ -77,6 +83,7 @@ if defined?(DiscourseAutomation)
           hide_topic: hide_topic,
           flag_post: flag_post,
           flag_type: flag_type.to_s.to_sym,
+          max_post_tokens: max_post_tokens,
           automation: self.automation,
         )
       rescue => e

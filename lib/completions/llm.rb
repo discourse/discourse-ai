@@ -191,6 +191,7 @@ module DiscourseAi
         stop_sequences: nil,
         user:,
         feature_name: nil,
+        feature_context: nil,
         &partial_read_blk
       )
         self.class.record_prompt(prompt)
@@ -224,6 +225,7 @@ module DiscourseAi
           user,
           model_params,
           feature_name: feature_name,
+          feature_context: feature_context,
           &partial_read_blk
         )
       end

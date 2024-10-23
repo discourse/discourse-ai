@@ -32,15 +32,31 @@ describe DiscourseAi::Automation::LlmTriage do
     add_automation_field("flag_post", true, type: "boolean")
     add_automation_field("canned_reply", "Yo this is a reply")
     add_automation_field("canned_reply_user", reply_user.username, type: "user")
+    add_automation_field("max_post_tokens", 100)
   end
 
   it "can trigger via automation" do
-    post = Fabricate(:post)
+    post = Fabricate(:post, raw: "hello " * 5000)
 
-    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
-      automation.running_in_background!
-      automation.trigger!({ "post" => post })
-    end
+    body = {
+      model: "gpt-3.5-turbo-0301",
+      usage: {
+        prompt_tokens: 337,
+        completion_tokens: 162,
+        total_tokens: 499,
+      },
+      choices: [
+        { message: { role: "assistant", content: "bad" }, finish_reason: "stop", index: 0 },
+      ],
+    }.to_json
+
+    WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+      status: 200,
+      body: body,
+    )
+
+    automation.running_in_background!
+    automation.trigger!({ "post" => post })
 
     topic = post.topic.reload
     expect(topic.category_id).to eq(category.id)
@@ -49,6 +65,18 @@ describe DiscourseAi::Automation::LlmTriage do
     reply = topic.posts.order(:post_number).last
     expect(reply.raw).to eq("Yo this is a reply")
     expect(reply.user.id).to eq(reply_user.id)
+
+    ai_log = AiApiAuditLog.order("id desc").first
+    expect(ai_log.feature_name).to eq("llm_triage")
+    expect(ai_log.feature_context).to eq(
+      { "automation_id" => automation.id, "automation_name" => automation.name },
+    )
+
+    count = ai_log.raw_request_payload.scan("hello").size
+    # we could use the exact count here but it can get fragile
+    # as we change tokenizers, this will give us reasonable confidence
+    expect(count).to be <= (100)
+    expect(count).to be > (50)
   end
 
   it "does not reply to the canned_reply_user" do

@@ -53,7 +53,8 @@ module DiscourseAi
         exclude_tags: nil,
         top_p: 0.1,
         temperature: 0.2,
-        suppress_notifications: false
+        suppress_notifications: false,
+        automation: nil
       )
         @sender = User.find_by(username: sender_username)
         @receivers = User.where(username: receivers)
@@ -90,6 +91,7 @@ module DiscourseAi
         if !@topic_id && !@receivers.present? && !@email_receivers.present?
           raise ArgumentError, "Must specify topic_id or receivers"
         end
+        @automation = automation
       end
 
       def run!
@@ -153,6 +155,10 @@ Follow the provided writing composition instructions carefully and precisely ste
           top_p: @top_p,
           user: Discourse.system_user,
           feature_name: "ai_report",
+          feature_context: {
+            automation_id: @automation&.id,
+            automation_name: @automation&.name,
+          }
         ) do |response|
           print response if Rails.env.development? && @debug_mode
           result << response

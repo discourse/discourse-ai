@@ -81,6 +81,9 @@ en:
             system_prompt:
               label: "System Prompt"
               description: "The prompt that will be used to triage, be sure for it to reply with a single word you can use to trigger the action"
+            max_post_tokens:
+              label: "Max Post Tokens"
+              description: "The maximum number of tokens to scan using LLM triage"
             search_for_text:
               label: "Search for text"
               description: "If the following text appears in the llm reply, apply this actions"
