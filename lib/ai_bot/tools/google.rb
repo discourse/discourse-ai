@@ -39,9 +39,7 @@ module DiscourseAi
           api_key = SiteSetting.ai_google_custom_search_api_key
           cx = SiteSetting.ai_google_custom_search_cx
 
-          if options[:base_query].present?
-            query = "#{options[:base_query]} #{query}"
-          end
+          query = "#{options[:base_query]} #{query}" if options[:base_query].present?
 
           escaped_query = CGI.escape(query)
           uri =
