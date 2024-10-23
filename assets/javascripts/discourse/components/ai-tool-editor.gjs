@@ -6,18 +6,14 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { service } from "@ember/service";
-import { isEmpty } from "@ember/utils";
 import AceEditor from "discourse/components/ace-editor";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import DTooltip from "discourse/components/d-tooltip";
-import InputTip from "discourse/components/input-tip";
 import withEventValue from "discourse/helpers/with-event-value";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import discourseDebounce from "discourse-common/lib/debounce";
 import I18n from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
-import AiTool from "../admin/models/ai-tool";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
 import RagOptions from "./rag-options";
@@ -34,14 +30,10 @@ export default class AiToolEditor extends Component {
   @service store;
   @service siteSettings;
 
-  @tracked toolName = null;
   @tracked isSaving = false;
   @tracked editingModel = null;
   @tracked showDelete = false;
   @tracked selectedPreset = null;
-
-  @tracked disableSave = null;
-  @tracked nameValidation = null;
 
   get presets() {
     return this.args.presets.map((preset) => {
@@ -60,7 +52,6 @@ export default class AiToolEditor extends Component {
   updateModel() {
     this.editingModel = this.args.model.workingCopy();
     this.showDelete = !this.args.model.isNew;
-    this.toolName = this.editingModel.tool_name;
   }
 
   @action
@@ -69,7 +60,6 @@ export default class AiToolEditor extends Component {
     this.editingModel = this.store
       .createRecord("ai-tool", this.selectedPreset)
       .workingCopy();
-
     this.showDelete = false;
   }
 
@@ -84,34 +74,6 @@ export default class AiToolEditor extends Component {
     if (!this.args.model.isNew) {
       this.save();
     }
-  }
-
-  @action
-  validateAndUpdateToolName(value) {
-    // Skip validation if name hasn't changed
-    if (value === this.jobName) {
-      this._failedInputValidation("");
-      this.disableSave = false;
-      return;
-    }
-
-    this.editingModel.tool_name = value;
-
-    if (value === undefined) {
-      return this._failedInputValidation();
-    }
-
-    if (isEmpty(value)) {
-      return this._failedInputValidation(
-        I18n.t("discourse_ai.tools.new.tool_name.blank")
-      );
-    }
-
-    this._checkToolNameDebounced();
-
-    return this._failedInputValidation(
-      I18n.t("discourse_ai.tools.new.tool_name.checking")
-    );
   }
 
   _checkToolNameDebounced() {
@@ -200,20 +162,6 @@ export default class AiToolEditor extends Component {
     });
   }
 
-  get disableSaveButton() {
-    return this.disableSave || this.isSaving;
-  }
-
-  _failedInputValidation(reason) {
-    this.disableSave = true;
-    const options = { failed: true };
-    if (reason) {
-      options.reason = reason;
-    }
-    this.nameValidation = options;
-    return options;
-  }
-
   <template>
     <BackButton
       @route="adminPlugins.show.discourse-ai-tools"
@@ -260,7 +208,10 @@ export default class AiToolEditor extends Component {
         <div class="control-group">
           <label>{{I18n.t "discourse_ai.tools.tool_name"}}</label>
           <input
-            {{on "input" (withEventValue this.validateAndUpdateToolName)}}
+            {{on
+              "input"
+              (withEventValue (fn (mut this.editingModel.tool_name)))
+            }}
             value={{this.editingModel.tool_name}}
             type="text"
             class="ai-tool-editor__tool_name"
@@ -269,7 +220,6 @@ export default class AiToolEditor extends Component {
             @icon="question-circle"
             @content={{I18n.t "discourse_ai.tools.tool_name_help"}}
           />
-          <InputTip @validation={{this.nameValidation}} />
         </div>
 
         <div class="control-group">
@@ -335,7 +285,7 @@ export default class AiToolEditor extends Component {
           <DButton
             @action={{this.save}}
             @label="discourse_ai.tools.save"
-            @disabled={{this.disableSaveButton}}
+            @disabled={{this.isSaving}}
             class="btn-primary ai-tool-editor__save"
           />
 

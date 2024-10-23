@@ -22,7 +22,7 @@ export default class AiToolListEditor extends Component {
           class="btn btn-small btn-primary ai-tool-list-editor__new-button"
         >
           {{icon "plus"}}
-          <span>{{I18n.t "discourse_ai.tools.new.title"}}</span>
+          <span>{{I18n.t "discourse_ai.tools.new"}}</span>
         </LinkTo>
       </div>
 

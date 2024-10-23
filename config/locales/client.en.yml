@@ -211,6 +211,7 @@ en:
       tools:
         back: "Back"
         short_title: "Tools"
+        new: "New tool"
         name: "Name"
         name_help: "Name will show up in the Discourse UI and is the short identifier you will use to find the tool in various settings, it should be distinct (it is required)"
         tool_name: "Tool Name"
@@ -241,12 +242,6 @@ en:
           title: "Test AI Tool"
           run: "Run Test"
           result: "Test Result"
-        new:
-          title: "New Tool"
-          tool_name:
-            blank: "Tool name cannot be blank"
-            checking: "Checking tool name…"
-            available: "Tool name is available"
 
       llms:
         short_title: "LLMs"

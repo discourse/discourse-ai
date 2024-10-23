@@ -45,12 +45,6 @@ module DiscourseAi
         end
       end
 
-      def check_name
-        tool_name = params.require(:tool_name)
-
-        render json: DiscourseAi::ToolNameChecker.new(tool_name).check
-      end
-
       def test
         if params[:id].present?
           ai_tool = AiTool.find(params[:id])
