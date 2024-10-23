@@ -138,20 +138,6 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
     end
   end
 
-  describe "GET #check_name" do
-    it "call ToolNameChecker and returns the result" do
-      allow(DiscourseAi::ToolNameChecker).to receive(:new).and_return(
-        instance_double(DiscourseAi::ToolNameChecker, check: { available: true }),
-      )
-
-      get "/admin/plugins/discourse-ai/ai-tools/check-name.json?tool_name=TestTool"
-
-      expect(DiscourseAi::ToolNameChecker).to have_received(:new).with("TestTool")
-      expect(response).to be_successful
-      expect(response.parsed_body).to eq("available" => true)
-    end
-  end
-
   describe "#test" do
     it "runs an existing tool and returns the result" do
       post "/admin/plugins/discourse-ai/ai-tools/test.json",

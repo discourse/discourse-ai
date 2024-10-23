@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AiTool < ActiveRecord::Base
-  validates :name, presence: true, length: { maximum: 100 }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: true
   validates :tool_name, presence: true, length: { maximum: 100 }
   validates :description, presence: true, length: { maximum: 1000 }
   validates :summary, presence: true, length: { maximum: 255 }
