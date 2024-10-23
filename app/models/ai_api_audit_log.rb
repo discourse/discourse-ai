@@ -33,4 +33,4 @@ end
 #  post_id              :integer
 #  feature_name         :string(255)
 #  language_model       :string(255)
-#
+#  feature_context      :jsonb

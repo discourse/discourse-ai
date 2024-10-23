@@ -56,7 +56,14 @@ module DiscourseAi
           []
         end
 
-        def perform_completion!(dialect, user, model_params = {}, feature_name: nil, &blk)
+        def perform_completion!(
+          dialect,
+          user,
+          model_params = {},
+          feature_name: nil,
+          feature_context: nil,
+          &blk
+        )
           allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
           orig_blk = blk
@@ -111,6 +118,7 @@ module DiscourseAi
                   post_id: dialect.prompt.post_id,
                   feature_name: feature_name,
                   language_model: llm_model.name,
+                  feature_context: feature_context.present? ? feature_context.as_json : nil,
                 )
 
               if !@streaming_mode

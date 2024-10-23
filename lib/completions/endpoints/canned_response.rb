@@ -23,7 +23,13 @@ module DiscourseAi
           dialect.prompt.messages
         end
 
-        def perform_completion!(dialect, _user, _model_params, feature_name: nil)
+        def perform_completion!(
+          dialect,
+          _user,
+          _model_params,
+          feature_name: nil,
+          feature_context: nil
+        )
           @dialect = dialect
           response = responses[completions]
           if response.nil?

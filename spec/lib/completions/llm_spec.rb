@@ -55,6 +55,40 @@ RSpec.describe DiscourseAi::Completions::Llm do
       expect(log.topic_id).to eq(123)
       expect(log.post_id).to eq(1)
     end
+
+    it "can track feature_name and feature_context" do
+      body = {
+        model: "gpt-3.5-turbo-0301",
+        usage: {
+          prompt_tokens: 337,
+          completion_tokens: 162,
+          total_tokens: 499,
+        },
+        choices: [
+          { message: { role: "assistant", content: "test" }, finish_reason: "stop", index: 0 },
+        ],
+      }.to_json
+
+      WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
+        status: 200,
+        body: body,
+      )
+
+      result =
+        described_class.proxy("custom:#{model.id}").generate(
+          "Hello",
+          user: user,
+          feature_name: "llm_triage",
+          feature_context: {
+            foo: "bar",
+          },
+        )
+
+      expect(result).to eq("test")
+      log = AiApiAuditLog.order("id desc").first
+      expect(log.feature_name).to eq("llm_triage")
+      expect(log.feature_context).to eq({ "foo" => "bar" })
+    end
   end
 
   describe "#generate with fake model" do

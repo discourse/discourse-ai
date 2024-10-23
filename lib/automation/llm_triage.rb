@@ -15,20 +15,26 @@ module DiscourseAi
         hide_topic: nil,
         flag_post: nil,
         flag_type: nil,
-        automation: nil
+        automation: nil,
+        max_post_tokens: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
              flag_post.blank?
           raise ArgumentError, "llm_triage: no action specified!"
         end
 
+        llm = DiscourseAi::Completions::Llm.proxy(model)
+
         s_prompt = system_prompt.to_s.sub("%%POST%%", "") # Backwards-compat. We no longer sub this.
         prompt = DiscourseAi::Completions::Prompt.new(s_prompt)
-        prompt.push(type: :user, content: "title: #{post.topic.title}\n#{post.raw}")
+
+        content = "title: #{post.topic.title}\n#{post.raw}"
+
+        content = llm.tokenizer.truncate(content, max_post_tokens) if max_post_tokens.present?
+
+        prompt.push(type: :user, content: content)
 
         result = nil
-
-        llm = DiscourseAi::Completions::Llm.proxy(model)
 
         result =
           llm.generate(
@@ -37,6 +43,10 @@ module DiscourseAi
             max_tokens: 700, # ~500 words
             user: Discourse.system_user,
             feature_name: "llm_triage",
+            feature_context: {
+              automation_id: automation&.id,
+              automation_name: automation&.name,
+            },
           )&.strip
 
         if result.present? && result.downcase.include?(search_for_text.downcase)
