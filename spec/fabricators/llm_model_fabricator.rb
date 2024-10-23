@@ -89,3 +89,14 @@ Fabricator(:ollama_model, from: :llm_model) do
   url "http://api.ollama.ai/api/chat"
   provider_params { { enable_native_tool: true } }
 end
+
+Fabricator(:seeded_model, from: :llm_model) do
+  id "-2"
+  display_name "CDCK Hosted Model"
+  name "cdck-hosted"
+  provider "fake"
+  api_key "DSC"
+  tokenizer "DiscourseAi::Tokenizer::OpenAiTokenizer"
+  url "https://cdck.test/"
+  enabled_chat_bot true
+end
