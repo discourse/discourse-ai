@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
-import { concat, get } from "@ember/helper";
+import { concat, get, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action, computed } from "@ember/object";
 import { LinkTo } from "@ember/routing";
@@ -189,6 +189,7 @@ export default class AiLlmEditorForm extends Component {
           class="ai-llm-editor-input ai-llm-editor__display-name"
           @type="text"
           @value={{@model.display_name}}
+          disabled={{this.seeded}}
         />
       </div>
       <div class="control-group">
@@ -197,24 +198,26 @@ export default class AiLlmEditorForm extends Component {
           class="ai-llm-editor-input ai-llm-editor__name"
           @type="text"
           @value={{@model.name}}
+          disabled={{this.seeded}}
         />
         <DTooltip
           @icon="question-circle"
-          @content={{I18n.t "discourse_ai.llms.hints.name"}}
+          @content={{i18n "discourse_ai.llms.hints.name"}}
         />
       </div>
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.llms.provider"}}</label>
+        <label>{{i18n "discourse_ai.llms.provider"}}</label>
         <ComboBox
           @value={{@model.provider}}
           @content={{this.selectedProviders}}
           @class="ai-llm-editor__provider"
+          @options={{hash disabled=this.seeded}}
         />
       </div>
       {{#unless this.seeded}}
         {{#if this.canEditURL}}
           <div class="control-group">
-            <label>{{I18n.t "discourse_ai.llms.url"}}</label>
+            <label>{{i18n "discourse_ai.llms.url"}}</label>
             <Input
               class="ai-llm-editor-input ai-llm-editor__url"
               @type="text"
@@ -224,7 +227,7 @@ export default class AiLlmEditorForm extends Component {
           </div>
         {{/if}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.llms.api_key"}}</label>
+          <label>{{i18n "discourse_ai.llms.api_key"}}</label>
           <div class="ai-llm-editor__secret-api-key-group">
             <Input
               @value={{@model.api_key}}
@@ -241,7 +244,7 @@ export default class AiLlmEditorForm extends Component {
         </div>
         {{#each-in this.metaProviderParams as |field type|}}
           <div class="control-group ai-llm-editor-provider-param__{{type}}">
-            <label>{{I18n.t
+            <label>{{i18n
                 (concat "discourse_ai.llms.provider_fields." field)
               }}</label>
             {{#if (eq type "checkbox")}}
@@ -258,7 +261,7 @@ export default class AiLlmEditorForm extends Component {
           </div>
         {{/each-in}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.llms.tokenizer"}}</label>
+          <label>{{i18n "discourse_ai.llms.tokenizer"}}</label>
           <ComboBox
             @value={{@model.tokenizer}}
             @content={{@llms.resultSetMeta.tokenizers}}
@@ -278,63 +281,64 @@ export default class AiLlmEditorForm extends Component {
           />
           <DTooltip
             @icon="question-circle"
-            @content={{I18n.t "discourse_ai.llms.hints.max_prompt_tokens"}}
+            @content={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
           />
         </div>
         <div class="control-group ai-llm-editor__vision-enabled">
           <Input @type="checkbox" @checked={{@model.vision_enabled}} />
-          <label>{{I18n.t "discourse_ai.llms.vision_enabled"}}</label>
+          <label>{{i18n "discourse_ai.llms.vision_enabled"}}</label>
           <DTooltip
             @icon="question-circle"
-            @content={{I18n.t "discourse_ai.llms.hints.vision_enabled"}}
+            @content={{i18n "discourse_ai.llms.hints.vision_enabled"}}
           />
         </div>
         <div class="control-group ai-llm-editor__enabled-chat-bot">
           <Input @type="checkbox" @checked={{@model.enabled_chat_bot}} />
-          <label>{{I18n.t "discourse_ai.llms.enabled_chat_bot"}}</label>
+          <label>{{i18n "discourse_ai.llms.enabled_chat_bot"}}</label>
           <DTooltip
             @icon="question-circle"
-            @content={{I18n.t "discourse_ai.llms.hints.enabled_chat_bot"}}
+            @content={{i18n "discourse_ai.llms.hints.enabled_chat_bot"}}
           />
         </div>
-        {{#if @model.user}}
-          <div class="control-group">
-            <label>{{i18n "discourse_ai.llms.ai_bot_user"}}</label>
-            <a
-              class="avatar"
-              href={{@model.user.path}}
-              data-user-card={{@model.user.username}}
-            >
-              {{Avatar @model.user.avatar_template "small"}}
-            </a>
-            <LinkTo @route="adminUser" @model={{this.adminUser}}>
-              {{@model.user.username}}
-            </LinkTo>
-          </div>
-        {{/if}}
+      {{/unless}}
+
+      {{#if @model.user}}
+        <div class="control-group">
+          <label>{{i18n "discourse_ai.llms.ai_bot_user"}}</label>
+          <a
+            class="avatar"
+            href={{@model.user.path}}
+            data-user-card={{@model.user.username}}
+          >
+            {{Avatar @model.user.avatar_template "small"}}
+          </a>
+          <LinkTo @route="adminUser" @model={{this.adminUser}}>
+            {{@model.user.username}}
+          </LinkTo>
+        </div>
+      {{/if}}
+
+      {{#unless this.seeded}}
         <div class="control-group ai-llm-editor__action_panel">
           <DButton
             class="ai-llm-editor__test"
             @action={{this.test}}
             @disabled={{this.testRunning}}
-          >
-            {{I18n.t "discourse_ai.llms.tests.title"}}
-          </DButton>
+            @label="discourse_ai.llms.tests.title"
+          />
 
           <DButton
             class="btn-primary ai-llm-editor__save"
             @action={{this.save}}
             @disabled={{this.isSaving}}
-          >
-            {{I18n.t "discourse_ai.llms.save"}}
-          </DButton>
+            @label="discourse_ai.llms.save"
+          />
           {{#unless @model.isNew}}
             <DButton
               @action={{this.delete}}
               class="btn-danger ai-llm-editor__delete"
-            >
-              {{I18n.t "discourse_ai.llms.delete"}}
-            </DButton>
+              @label="discourse_ai.llms.delete"
+            />
           {{/unless}}
         </div>
       {{/unless}}
@@ -343,12 +347,12 @@ export default class AiLlmEditorForm extends Component {
         {{#if this.displayTestResult}}
           {{#if this.testRunning}}
             <div class="spinner small"></div>
-            {{I18n.t "discourse_ai.llms.tests.running"}}
+            {{i18n "discourse_ai.llms.tests.running"}}
           {{else}}
             {{#if this.testResult}}
               <div class="ai-llm-editor-tests__success">
                 {{icon "check"}}
-                {{I18n.t "discourse_ai.llms.tests.success"}}
+                {{i18n "discourse_ai.llms.tests.success"}}
               </div>
             {{else}}
               <div class="ai-llm-editor-tests__failure">

@@ -135,7 +135,7 @@ export default class AiLlmsListEditor extends Component {
               </thead>
               <tbody>
                 {{#each @llms as |llm|}}
-                  <tr data-persona-id={{llm.id}} class="ai-llm-list__row">
+                  <tr data-llm-id={{llm.name}} class="ai-llm-list__row">
                     <td class="column-name">
                       <h3>{{llm.display_name}}</h3>
                       <p>
@@ -149,7 +149,7 @@ export default class AiLlmsListEditor extends Component {
                         </ul>
                       {{/if}}
                     </td>
-                    <td>
+                    <td class="column-provider">
                       {{i18n
                         (concat "discourse_ai.llms.providers." llm.provider)
                       }}
