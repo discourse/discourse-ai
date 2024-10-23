@@ -128,10 +128,11 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     let(:caption_with_attrs) do
       "A picture of a cat sitting on a table (#{I18n.t("discourse_ai.ai_helper.image_caption.attribution")})"
     end
+    let(:bad_caption) { "A picture of a cat \nsitting on a |table|" }
 
     before { assign_fake_provider_to(:ai_helper_image_caption_model) }
 
-    def request_caption(params)
+    def request_caption(params, caption = "A picture of a cat sitting on a table")
       DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
         post "/discourse-ai/ai-helper/caption_image", params: params
 
@@ -150,6 +151,13 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
       it "returns the suggested caption for the image" do
         request_caption({ image_url: image_url, image_url_type: "long_url" }) do |r|
+          expect(r.status).to eq(200)
+          expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+        end
+      end
+
+      it "returns a cleaned up caption from the LLM" do
+        request_caption({ image_url: image_url, image_url_type: "long_url" }, bad_caption) do |r|
           expect(r.status).to eq(200)
           expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
         end
