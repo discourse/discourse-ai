@@ -79,7 +79,7 @@ module DiscourseAi
         search = Search.new(query, { guardian: guardian })
         search_term = search.term
 
-        if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
+        if search_term.blank? || search_term.length < SiteSetting.min_search_term_length
           return Post.none
         end
 
