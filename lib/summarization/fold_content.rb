@@ -90,10 +90,10 @@ module DiscourseAi
       # Note: The block is only called with results of the final summary, not intermediate summaries.
       #
       # The summarization algorithm.
-      # The idea is to build an initial summary packing as much content as we can. Once we have the initial summary, we'll keep extending using the lefover
+      # The idea is to build an initial summary packing as much content as we can. Once we have the initial summary, we'll keep extending using the leftover
       # content until there is nothing left.
       #
-      # @returns { AiSummary } - Resulting summary.
+      # @returns { String } - Resulting summary.
       def fold(items, summary, cursor, user, &on_partial_blk)
         tokenizer = llm_model.tokenizer_class
         tokens_left = available_tokens - tokenizer.size(summary)
