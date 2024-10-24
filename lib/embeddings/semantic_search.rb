@@ -79,7 +79,9 @@ module DiscourseAi
         search = Search.new(query, { guardian: guardian })
         search_term = search.term
 
-        return Post.none if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
+        if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
+          return Post.none
+        end
 
         search_embedding = hyde ? hyde_embedding(search_term) : embedding(search_term)
 
