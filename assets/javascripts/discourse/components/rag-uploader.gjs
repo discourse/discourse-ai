@@ -3,32 +3,44 @@ import Component, { Input } from "@ember/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { getOwner } from "@ember/owner";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
-import UppyUploadMixin from "discourse/mixins/uppy-upload";
+import UppyUpload from "discourse/lib/uppy/uppy-upload";
 import icon from "discourse-common/helpers/d-icon";
 import discourseDebounce from "discourse-common/lib/debounce";
 import I18n from "discourse-i18n";
 import RagUploadProgress from "./rag-upload-progress";
 
-export default class RagUploader extends Component.extend(UppyUploadMixin) {
+export default class RagUploader extends Component {
   @service appEvents;
-
   @tracked term = null;
   @tracked filteredUploads = null;
   @tracked ragIndexingStatuses = null;
   @tracked ragUploads = null;
-  id = "discourse-ai-rag-uploader";
-  maxFiles = 20;
-  uploadUrl = "/admin/plugins/discourse-ai/rag-document-fragments/files/upload";
-  preventDirectS3Uploads = true;
+
+  uppyUpload = new UppyUpload(getOwner(this), {
+    id: "discourse-ai-rag-uploader",
+    maxFiles: 20,
+    uploadUrl:
+      "/admin/plugins/discourse-ai/rag-document-fragments/files/upload",
+    preventDirectS3Uploads: true,
+    uploadDone: (uploadedFile) => {
+      const newUpload = uploadedFile.upload;
+      newUpload.status = "uploaded";
+      newUpload.statusText = I18n.t("discourse_ai.rag.uploads.uploaded");
+      this.ragUploads.pushObject(newUpload);
+      this.debouncedSearch();
+    },
+  });
 
   didReceiveAttrs() {
     super.didReceiveAttrs(...arguments);
 
-    if (this.inProgressUploads?.length > 0) {
-      this._uppyInstance?.cancelAll();
+    if (this.uppyUpload.inProgressUploads?.length > 0) {
+      this.uppyUpload.cancelAllUploads();
     }
 
     this.ragUploads = this.target?.rag_uploads || [];
@@ -45,7 +57,7 @@ export default class RagUploader extends Component.extend(UppyUploadMixin) {
     }
 
     this.appEvents.on(
-      `upload-mixin:${this.id}:all-uploads-complete`,
+      `upload-mixin:${this.uppyUpload.config.id}:all-uploads-complete`,
       this,
       "_updateTargetWithUploads"
     );
@@ -54,7 +66,7 @@ export default class RagUploader extends Component.extend(UppyUploadMixin) {
   willDestroy() {
     super.willDestroy(...arguments);
     this.appEvents.off(
-      `upload-mixin:${this.id}:all-uploads-complete`,
+      `upload-mixin:${this.uppyUpload.config}:all-uploads-complete`,
       this,
       "_updateTargetWithUploads"
     );
@@ -64,22 +76,14 @@ export default class RagUploader extends Component.extend(UppyUploadMixin) {
     this.updateUploads(this.ragUploads);
   }
 
-  uploadDone(uploadedFile) {
-    const newUpload = uploadedFile.upload;
-    newUpload.status = "uploaded";
-    newUpload.statusText = I18n.t("discourse_ai.rag.uploads.uploaded");
-    this.ragUploads.pushObject(newUpload);
-    this.debouncedSearch();
-  }
-
   @action
   submitFiles() {
-    this.fileInputEl.click();
+    this.uppyUpload.openPicker();
   }
 
   @action
   cancelUploading(upload) {
-    this.appEvents.trigger(`upload-mixin:${this.id}:cancel-upload`, {
+    this.uppyUpload.cancelSingleUpload({
       fileId: upload.id,
     });
   }
@@ -152,7 +156,7 @@ export default class RagUploader extends Component.extend(UppyUploadMixin) {
               </td>
             </tr>
           {{/each}}
-          {{#each this.inProgressUploads as |upload|}}
+          {{#each this.uppyUpload.inProgressUploads as |upload|}}
             <tr>
               <td><span class="rag-uploader__rag-file-icon">{{icon
                     "file"
@@ -177,6 +181,7 @@ export default class RagUploader extends Component.extend(UppyUploadMixin) {
       </table>
 
       <input
+        {{didInsert this.uppyUpload.setup}}
         class="hidden-upload-field"
         disabled={{this.uploading}}
         type="file"
