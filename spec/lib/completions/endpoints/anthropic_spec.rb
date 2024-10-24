@@ -48,7 +48,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   end
 
   it "does not eat spaces with tool calls" do
-    SiteSetting.ai_anthropic_native_tool_call_models = "claude-3-opus"
     body = <<~STRING
     event: message_start
     data: {"type":"message_start","message":{"id":"msg_01Ju4j2MiGQb9KV9EEQ522Y3","type":"message","role":"assistant","model":"claude-3-haiku-20240307","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":1293,"output_tokens":1}}   }
@@ -195,8 +194,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
   end
 
   it "supports non streaming tool calls" do
-    SiteSetting.ai_anthropic_native_tool_call_models = "claude-3-opus"
-
     tool = {
       name: "calculate",
       description: "calculate something",
