@@ -217,10 +217,12 @@
 }
 
 .ai-topic-gist {
+  width: 100%;
   .mobile-view & {
     position: relative;
     top: -0.33em;
     line-height: 1.4;
+    width: 90%;
   }
   .desktop-view & {
     margin-top: 0.15em;
@@ -231,6 +233,7 @@
     text-wrap: pretty;
     word-wrap: break-word;
     font-size: var(--font-down-1);
+    max-width: 70ch;
     .visited & {
       color: var(--primary-medium);
     }
