@@ -59,7 +59,7 @@ module DiscourseAi
 
         def concatenation_prompt(texts_to_summarize)
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-            You are a summarization bot tasked with creating a single, concise sentence by merging disjointed summaries into a cohesive statement. 
+            You are a summarization bot tasked with creating a single, concise sentence by merging disjointed summaries into a cohesive statement.
             Your response should strictly be this single, comprehensive sentence, without any additional text or comments.
 
             - Focus on the central theme or issue being addressed, maintaining an objective and neutral tone.
@@ -84,28 +84,29 @@ module DiscourseAi
           statements = input.split(/(?=\d+\) \w+ said:)/)
 
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-            You are an advanced summarization bot. Analyze a given conversation and produce a concise, 
+            You are an advanced summarization bot. Analyze a given conversation and produce a concise,
             single-sentence summary that conveys the main topic and current developments to someone with no prior context.
 
             ### Guidelines:
-          
+
             - Emphasize the most recent updates while considering their significance within the original post.
             - Focus on the central theme or issue being addressed, maintaining an objective and neutral tone.
             - Exclude extraneous details or subjective opinions.
             - Use the original language of the text.
             - Begin directly with the main topic or issue, avoiding introductory phrases.
             - Limit the summary to a maximum of 20 words.
+            - Do *NOT* repeat the discussion title in the summary
 
-            Return the 20-word summary inside <ai></ai> tags.
+            Return the summary inside <ai></ai> tags.
           TEXT
 
           context = +<<~TEXT
             ### Context:
-            
-            #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ".\n" : ""}
-            
+
+            #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ". (DO NOT REPEAT THIS IN THE SUMMARY)\n" : ""}
+
             The conversation began with the following statement:
-        
+
             #{statements&.pop}\n
           TEXT
 
@@ -114,7 +115,7 @@ module DiscourseAi
               Subsequent discussion includes the following:
 
               #{statements&.join("\n")}
-                  
+
               Your task is to focus on these latest messages, capturing their meaning in the context of the initial statement.
             TEXT
           else
