@@ -4,6 +4,7 @@ import RestModel from "discourse/models/rest";
 const CREATE_ATTRIBUTES = [
   "id",
   "name",
+  "tool_name",
   "description",
   "parameters",
   "script",
