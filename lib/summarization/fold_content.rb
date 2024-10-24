@@ -18,35 +18,18 @@ module DiscourseAi
       attr_reader :llm, :strategy
 
       # @param user { User } - User object used for auditing usage.
-      #
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       # Note: The block is only called with results of the final summary, not intermediate summaries.
       #
       # @returns { AiSummary } - Resulting summary.
       def summarize(user, &on_partial_blk)
-        opts = content_to_summarize.except(:contents)
-
-        initial_chunks =
-          rebalance_chunks(
-            content_to_summarize[:contents].map do |c|
-              { ids: [c[:id]], summary: format_content_item(c) }
-            end,
-          )
-
-        # Special case where we can do all the summarization in one pass.
-        result =
-          if initial_chunks.length == 1
-            {
-              summary:
-                summarize_single(initial_chunks.first[:summary], user, opts, &on_partial_blk),
-              chunks: [],
-            }
-          else
-            summarize_chunks(initial_chunks, user, opts, &on_partial_blk)
-          end
+        base_summary = ""
+        initial_pos = 0
+        folded_summary =
+          fold(content_to_summarize, base_summary, initial_pos, user, &on_partial_blk)
 
         clean_summary =
-          Nokogiri::HTML5.fragment(result[:summary]).css("ai")&.first&.text || result[:summary]
+          Nokogiri::HTML5.fragment(folded_summary).css("ai")&.first&.text || folded_summary
 
         if persist_summaries
           AiSummary.store!(
@@ -54,7 +37,7 @@ module DiscourseAi
             strategy.type,
             llm_model.name,
             clean_summary,
-            content_to_summarize[:contents].map { |c| c[:id] },
+            content_to_summarize.map { |c| c[:id] },
           )
         else
           AiSummary.new(summarized_text: clean_summary)
@@ -96,88 +79,56 @@ module DiscourseAi
       end
 
       def latest_sha
-        @latest_sha ||= AiSummary.build_sha(content_to_summarize[:contents].map { |c| c[:id] }.join)
+        @latest_sha ||= AiSummary.build_sha(content_to_summarize.map { |c| c[:id] }.join)
       end
 
-      def summarize_chunks(chunks, user, opts, &on_partial_blk)
-        # Safely assume we always have more than one chunk.
-        summarized_chunks = summarize_in_chunks(chunks, user, opts)
-        total_summaries_size =
-          llm_model.tokenizer_class.size(summarized_chunks.map { |s| s[:summary].to_s }.join)
+      # @param items { Array<Hash> } - Content to summarize. Structure will be: { poster: who wrote the content, id: a way to order content, text: content }
+      # @param summary { String } - Intermediate summaries that we'll keep extending as part of our "folding" algorithm.
+      # @param cursor { Integer } - Idx to know how much we already summarized.
+      # @param user { User } - User object used for auditing usage.
+      # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
+      # Note: The block is only called with results of the final summary, not intermediate summaries.
+      #
+      # The summarization algorithm.
+      # The idea is to build an initial summary packing as much content as we can. Once we have the initial summary, we'll keep extending using the lefover
+      # content until there is nothing left.
+      #
+      # @returns { AiSummary } - Resulting summary.
+      def fold(items, summary, cursor, user, &on_partial_blk)
+        tokenizer = llm_model.tokenizer_class
+        tokens_left = available_tokens - tokenizer.size(summary)
+        iteration_content = []
 
-        if total_summaries_size < available_tokens
-          # Chunks are small enough, we can concatenate them.
-          {
-            summary:
-              concatenate_summaries(
-                summarized_chunks.map { |s| s[:summary] },
-                user,
-                &on_partial_blk
-              ),
-            chunks: summarized_chunks,
-          }
-        else
-          # We have summarized chunks but we can't concatenate them yet. Split them into smaller summaries and summarize again.
-          rebalanced_chunks = rebalance_chunks(summarized_chunks)
+        items.each_with_index do |item, idx|
+          next if idx < cursor
 
-          summarize_chunks(rebalanced_chunks, user, opts, &on_partial_blk)
-        end
-      end
+          as_text = "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
 
-      def format_content_item(item)
-        "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
-      end
-
-      def rebalance_chunks(chunks)
-        section = { ids: [], summary: "" }
-
-        chunks =
-          chunks.reduce([]) do |sections, chunk|
-            if llm_model.tokenizer_class.can_expand_tokens?(
-                 section[:summary],
-                 chunk[:summary],
-                 available_tokens,
-               )
-              section[:summary] += chunk[:summary]
-              section[:ids] = section[:ids].concat(chunk[:ids])
-            else
-              sections << section
-              section = chunk
-            end
-
-            sections
+          if tokenizer.below_limit?(as_text, tokens_left)
+            iteration_content << item
+            tokens_left -= tokenizer.size(as_text)
+            cursor += 1
+          else
+            break
           end
+        end
 
-        chunks << section if section[:summary].present?
-
-        chunks
-      end
-
-      def summarize_single(text, user, opts, &on_partial_blk)
-        prompt = strategy.summarize_single_prompt(text, opts)
-
-        llm.generate(prompt, user: user, feature_name: "summarize", &on_partial_blk)
-      end
-
-      def summarize_in_chunks(chunks, user, opts)
-        chunks.map do |chunk|
-          prompt = strategy.summarize_single_prompt(chunk[:summary], opts)
-
-          chunk[:summary] = llm.generate(
-            prompt,
-            user: user,
-            max_tokens: 300,
-            feature_name: "summarize",
+        prompt =
+          (
+            if summary.blank?
+              strategy.first_summary_prompt(iteration_content)
+            else
+              strategy.summary_extension_prompt(summary, iteration_content)
+            end
           )
 
-          chunk
+        if cursor == items.length
+          llm.generate(prompt, user: user, feature_name: "summarize", &on_partial_blk)
+        else
+          latest_summary =
+            llm.generate(prompt, user: user, max_tokens: 600, feature_name: "summarize")
+          fold(items, latest_summary, cursor, user, &on_partial_blk)
         end
-      end
-
-      def concatenate_summaries(texts_to_summarize, user, &on_partial_blk)
-        prompt = strategy.concatenation_prompt(texts_to_summarize)
-
-        llm.generate(prompt, user: user, &on_partial_blk)
       end
 
       def available_tokens
