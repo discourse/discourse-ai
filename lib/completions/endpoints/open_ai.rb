@@ -48,7 +48,14 @@ module DiscourseAi
         private
 
         def model_uri
-          URI(llm_model.url)
+          if llm_model.url.to_s.starts_with?("srv://")
+            service = DiscourseAi::Utils::DnsSrv.lookup(llm_model.url.sub("srv://", ""))
+            api_endpoint = "https://#{service.target}:#{service.port}/v1/chat/completions"
+          else
+            api_endpoint = llm_model.url
+          end
+
+          @uri ||= URI(api_endpoint)
         end
 
         def prepare_payload(prompt, model_params, dialect)
