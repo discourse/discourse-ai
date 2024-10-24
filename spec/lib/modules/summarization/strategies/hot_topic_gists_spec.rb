@@ -12,7 +12,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::HotTopicGists do
       post_2.update(created_at: (SiteSetting.hot_topics_recent_days + 1).days.ago)
       Fabricate(:post, topic: topic, post_number: 3)
 
-      post_numbers = gist.targets_data[:contents].map { |c| c[:id] }
+      post_numbers = gist.targets_data.map { |c| c[:id] }
 
       expect(post_numbers).to contain_exactly(1, 3)
     end
@@ -20,7 +20,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::HotTopicGists do
     it "only includes visible posts" do
       post_2.update!(hidden: true)
 
-      post_numbers = gist.targets_data[:contents].map { |c| c[:id] }
+      post_numbers = gist.targets_data.map { |c| c[:id] }
 
       expect(post_numbers).to contain_exactly(1)
     end
@@ -28,7 +28,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::HotTopicGists do
     it "doesn't include posts without users" do
       post_2.update!(user_id: nil)
 
-      post_numbers = gist.targets_data[:contents].map { |c| c[:id] }
+      post_numbers = gist.targets_data.map { |c| c[:id] }
 
       expect(post_numbers).to contain_exactly(1)
     end
@@ -36,7 +36,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::HotTopicGists do
     it "doesn't include whispers" do
       post_2.update!(post_type: Post.types[:whisper])
 
-      post_numbers = gist.targets_data[:contents].map { |c| c[:id] }
+      post_numbers = gist.targets_data.map { |c| c[:id] }
 
       expect(post_numbers).to contain_exactly(1)
     end
@@ -51,8 +51,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::HotTopicGists do
           )
 
         content = gist.targets_data
-
-        op_content = content[:contents].first[:text]
+        op_content = content.first[:text]
 
         expect(op_content).to include(topic_embed.embed_content_cache)
       end

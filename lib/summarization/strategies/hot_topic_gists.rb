@@ -9,8 +9,6 @@ module DiscourseAi
         end
 
         def targets_data
-          content = { content_title: target.title, contents: [] }
-
           op_post_number = 1
 
           hot_topics_recent_cutoff = Time.zone.now - SiteSetting.hot_topics_recent_days.days
@@ -44,44 +42,62 @@ module DiscourseAi
               .order(:post_number)
               .pluck(:post_number, :raw, :username)
 
-          posts_data.each do |(pn, raw, username)|
+          posts_data.reduce([]) do |memo, (pn, raw, username)|
             raw_text = raw
 
             if pn == 1 && target.topic_embed&.embed_content_cache.present?
               raw_text = target.topic_embed&.embed_content_cache
             end
 
-            content[:contents] << { poster: username, id: pn, text: raw_text }
+            memo << { poster: username, id: pn, text: raw_text }
           end
-
-          content
         end
 
-        def concatenation_prompt(texts_to_summarize)
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-            You are a summarization bot tasked with creating a single, concise sentence by merging disjointed summaries into a cohesive statement. 
-            Your response should strictly be this single, comprehensive sentence, without any additional text or comments.
+        def summary_extension_prompt(summary, contents)
+          statements =
+            contents
+              .to_a
+              .map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
+              .join("\n")
 
-            - Focus on the central theme or issue being addressed, maintaining an objective and neutral tone.
-            - Exclude extraneous details or subjective opinions.
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
+            You are an advanced summarization bot. Your task is to update an existing single-sentence summary by integrating new developments from a conversation.
+            Analyze the most recent messages to identify key updates or shifts in the main topic and reflect these in the updated summary.
+            Emphasize new significant information or developments within the context of the initial conversation theme.
+
+            ### Guidelines:
+
+            - Ensure the revised summary remains concise and objective, maintaining a focus on the central theme or issue.
+            - Omit extraneous details or subjective opinions.
             - Use the original language of the text.
             - Begin directly with the main topic or issue, avoiding introductory phrases.
-            - Limit the summary to a maximum of 20 words.
+            - Limit the updated summary to a maximum of 20 words.
+            - Return the 20-word summary inside <ai></ai> tags.
+
           TEXT
 
           prompt.push(type: :user, content: <<~TEXT.strip)
-            THESE are the summaries, each one separated by a newline, all of them inside <input></input> XML tags:
+            ### Context:
 
-            <input>
-              #{texts_to_summarize.join("\n")}
-            </input>
+            This is the existing single-sentence summary:
+
+            #{summary}
+
+            And these are the new developments in the conversation:
+
+            #{statements}
+
+            Your task is to update an existing single-sentence summary by integrating new developments from a conversation.
+            Return the 20-word summary inside <ai></ai> tags.
           TEXT
 
           prompt
         end
 
-        def summarize_single_prompt(input, opts)
-          statements = input.split(/(?=\d+\) \w+ said:)/)
+        def first_summary_prompt(contents)
+          content_title = target.title
+          statements =
+            contents.to_a.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
 
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
             You are an advanced summarization bot. Analyze a given conversation and produce a concise, 
@@ -95,25 +111,25 @@ module DiscourseAi
             - Use the original language of the text.
             - Begin directly with the main topic or issue, avoiding introductory phrases.
             - Limit the summary to a maximum of 20 words.
+            - Return the 20-word summary inside <ai></ai> tags.
 
-            Return the 20-word summary inside <ai></ai> tags.
           TEXT
 
           context = +<<~TEXT
             ### Context:
             
-            #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ".\n" : ""}
+            #{content_title.present? ? "The discussion title is: " + content_title + ".\n" : ""}
             
             The conversation began with the following statement:
         
-            #{statements&.pop}\n
+            #{statements.pop}\n
           TEXT
 
           if statements.present?
             context << <<~TEXT
               Subsequent discussion includes the following:
 
-              #{statements&.join("\n")}
+              #{statements.join("\n")}
                   
               Your task is to focus on these latest messages, capturing their meaning in the context of the initial statement.
             TEXT

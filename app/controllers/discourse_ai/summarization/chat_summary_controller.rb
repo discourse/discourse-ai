@@ -26,7 +26,7 @@ module DiscourseAi
           strategy = DiscourseAi::Summarization::Strategies::ChatMessages.new(channel, since)
 
           summarized_text =
-            if strategy.targets_data[:contents].empty?
+            if strategy.targets_data.empty?
               I18n.t("discourse_ai.summarization.chat.no_targets")
             else
               summarizer.summarize(current_user)&.summarized_text

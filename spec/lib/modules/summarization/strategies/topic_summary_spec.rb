@@ -12,7 +12,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
       it "only includes visible posts" do
         post_2.update!(hidden: true)
 
-        post_numbers = topic_summary.targets_data[:contents].map { |c| c[:id] }
+        post_numbers = topic_summary.targets_data.map { |c| c[:id] }
 
         expect(post_numbers).to contain_exactly(1)
       end
@@ -20,7 +20,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
       it "doesn't include posts without users" do
         post_2.update!(user_id: nil)
 
-        post_numbers = topic_summary.targets_data[:contents].map { |c| c[:id] }
+        post_numbers = topic_summary.targets_data.map { |c| c[:id] }
 
         expect(post_numbers).to contain_exactly(1)
       end
@@ -28,7 +28,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
       it "doesn't include whispers" do
         post_2.update!(post_type: Post.types[:whisper])
 
-        post_numbers = topic_summary.targets_data[:contents].map { |c| c[:id] }
+        post_numbers = topic_summary.targets_data.map { |c| c[:id] }
 
         expect(post_numbers).to contain_exactly(1)
       end
@@ -56,8 +56,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
           )
 
         content = topic_summary.targets_data
-
-        op_content = content[:contents].first[:text]
+        op_content = content.first[:text]
 
         expect(op_content).to include(topic_embed.embed_content_cache)
       end
