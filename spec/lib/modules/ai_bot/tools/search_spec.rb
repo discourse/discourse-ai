@@ -138,6 +138,23 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
         expect(results[:args]).to eq({ search_query: "hello world, sam", status: "public" })
         expect(results[:rows].length).to eq(1)
+
+
+        # it also works with no query
+        search =
+          described_class.new(
+            { order: "likes", user: "sam", status: "public", search_query: "a"},
+            llm: llm,
+            bot_user: bot_user,
+          )
+
+        # results will be expanded by semantic search, but it will find nothing
+        results =
+          DiscourseAi::Completions::Llm.with_prepared_responses(["<ai>#{query}</ai>"]) do
+            search.invoke(&progress_blk)
+          end
+
+        expect(results[:rows].length).to eq(0)
       end
     end
 

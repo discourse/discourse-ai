@@ -329,6 +329,7 @@ en:
           organization: "Optional OpenAI Organization ID"
           disable_system_prompt: "Disable system message in prompts"
           enable_native_tool: "Enable native tool support"
+          disable_native_tools: "Disable native tool support (use XML based tools)"
 
       related_topics:
         title: "Related Topics"

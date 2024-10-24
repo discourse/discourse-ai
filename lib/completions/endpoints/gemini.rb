@@ -67,7 +67,16 @@ module DiscourseAi
           } if prompt[:system_instruction].present?
           if tools.present?
             payload[:tools] = tools
-            payload[:tool_config] = { function_calling_config: { mode: "AUTO" } }
+
+            function_calling_config = { mode: "AUTO" }
+            if dialect.tool_choice.present?
+              function_calling_config = {
+                mode: "ANY",
+                allowed_function_names: [dialect.tool_choice],
+              }
+            end
+
+            payload[:tool_config] = { function_calling_config: function_calling_config }
           end
           payload[:generationConfig].merge!(model_params) if model_params.present?
           payload
@@ -88,8 +97,10 @@ module DiscourseAi
             end
           response_h = parsed.dig(:candidates, 0, :content, :parts, 0)
 
-          @has_function_call ||= response_h.dig(:functionCall).present?
-          @has_function_call ? response_h[:functionCall] : response_h.dig(:text)
+          if response_h
+            @has_function_call ||= response_h.dig(:functionCall).present?
+            @has_function_call ? response_h.dig(:functionCall) : response_h.dig(:text)
+          end
         end
 
         def partials_from(decoded_chunk)

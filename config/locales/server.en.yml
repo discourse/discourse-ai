@@ -49,7 +49,6 @@ en:
 
     ai_openai_embeddings_url: "Custom URL used for the OpenAI embeddings API. (in the case of Azure it can be: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API key for OpenAI API. ONLY used for embeddings and Dall-E. For GPT use the LLM config tab"
-    ai_anthropic_native_tool_call_models: "List of models that will use native tool calls vs legacy XML based tools."
     ai_hugging_face_tei_endpoint: URL where the API is running for the Hugging Face text embeddings inference
     ai_hugging_face_tei_api_key: API key for Hugging Face text embeddings inference
 

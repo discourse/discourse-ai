@@ -19,6 +19,10 @@ class LlmModel < ActiveRecord::Base
       aws_bedrock: {
         access_key_id: :text,
         region: :text,
+        disable_native_tools: :checkbox,
+      },
+      anthropic: {
+        disable_native_tools: :checkbox,
       },
       open_ai: {
         organization: :text,

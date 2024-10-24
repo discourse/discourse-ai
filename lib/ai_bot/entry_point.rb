@@ -145,6 +145,8 @@ module DiscourseAi
 
           persona_users = AiPersona.persona_users(user: scope.user)
           if persona_users.present?
+            persona_users.filter! { |persona_user| persona_user[:username].present? }
+
             bots_map.concat(
               persona_users.map do |persona_user|
                 {

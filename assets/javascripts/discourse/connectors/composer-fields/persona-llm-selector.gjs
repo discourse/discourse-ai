@@ -15,7 +15,7 @@ function isBotMessage(composer, currentUser) {
     const reciepients = composer.targetRecipients.split(",");
 
     return currentUser.ai_enabled_chat_bots
-      .filter((bot) => !bot.is_persona)
+      .filter((bot) => bot.username)
       .any((bot) => reciepients.any((username) => username === bot.username));
   }
   return false;
@@ -43,7 +43,7 @@ export default class BotSelector extends Component {
   constructor() {
     super(...arguments);
 
-    if (this.botOptions && this.composer) {
+    if (this.botOptions && this.botOptions.length && this.composer) {
       let personaId = this.preferredPersonaStore.getObject("id");
 
       this._value = this.botOptions[0].id;
@@ -57,19 +57,29 @@ export default class BotSelector extends Component {
       this.composer.metaData = { ai_persona_id: this._value };
       this.setAllowLLMSelector();
 
-      let llm = this.preferredLlmStore.getObject("id");
+      if (this.hasLlmSelector) {
+        let llm = this.preferredLlmStore.getObject("id");
 
-      const llmOption =
-        this.llmOptions.find((innerLlmOption) => innerLlmOption.id === llm) ||
-        this.llmOptions[0];
+        const llmOption =
+          this.llmOptions.find((innerLlmOption) => innerLlmOption.id === llm) ||
+          this.llmOptions[0];
 
-      llm = llmOption.id;
+        if (llmOption) {
+          llm = llmOption.id;
+        } else {
+          llm = "";
+        }
 
-      if (llm) {
-        next(() => {
-          this.currentLlm = llm;
-        });
+        if (llm) {
+          next(() => {
+            this.currentLlm = llm;
+          });
+        }
       }
+
+      next(() => {
+        this.resetTargetRecipients();
+      });
     }
   }
 
@@ -77,9 +87,19 @@ export default class BotSelector extends Component {
     return this.args?.outletArgs?.model;
   }
 
+  get hasLlmSelector() {
+    return this.currentUser.ai_enabled_chat_bots.any((bot) => !bot.is_persona);
+  }
+
   get botOptions() {
     if (this.currentUser.ai_enabled_personas) {
-      return this.currentUser.ai_enabled_personas.map((persona) => {
+      let enabledPersonas = this.currentUser.ai_enabled_personas;
+
+      if (!this.hasLlmSelector) {
+        enabledPersonas = enabledPersonas.filter((persona) => persona.username);
+      }
+
+      return enabledPersonas.map((persona) => {
         return {
           id: persona.id,
           name: persona.name,
@@ -106,6 +126,11 @@ export default class BotSelector extends Component {
   }
 
   setAllowLLMSelector() {
+    if (!this.hasLlmSelector) {
+      this.allowLLMSelector = false;
+      return;
+    }
+
     const persona = this.currentUser.ai_enabled_personas.find(
       (innerPersona) => innerPersona.id === this._value
     );
