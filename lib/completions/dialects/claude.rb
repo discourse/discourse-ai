@@ -61,7 +61,7 @@ module DiscourseAi
         end
 
         def native_tool_support?
-          SiteSetting.ai_anthropic_native_tool_call_models_map.include?(llm_model.name)
+          !llm_model.lookup_custom_param("disable_native_tools")
         end
 
         private

@@ -35,7 +35,8 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
     end
 
     it "can properly translate a prompt (legacy tools)" do
-      SiteSetting.ai_anthropic_native_tool_call_models = ""
+      llm_model.provider_params["disable_native_tools"] = true
+      llm_model.save!
 
       tools = [
         {
@@ -88,8 +89,6 @@ RSpec.describe DiscourseAi::Completions::Dialects::Claude do
     end
 
     it "can properly translate a prompt (native tools)" do
-      SiteSetting.ai_anthropic_native_tool_call_models = "claude-3-opus"
-
       tools = [
         {
           name: "echo",

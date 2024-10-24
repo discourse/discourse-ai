@@ -61,7 +61,7 @@ module DiscourseAi
             when "claude-3-opus"
               "anthropic.claude-3-opus-20240229-v1:0"
             when "claude-3-5-sonnet"
-              "anthropic.claude-3-5-sonnet-20240620-v1:0"
+              "anthropic.claude-3-5-sonnet-20241022-v2:0"
             else
               llm_model.name
             end
@@ -83,7 +83,13 @@ module DiscourseAi
 
           payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
-          payload[:tools] = prompt.tools if prompt.has_tools?
+
+          if prompt.has_tools?
+            payload[:tools] = prompt.tools
+            if dialect.tool_choice.present?
+              payload[:tool_choice] = { type: "tool", name: dialect.tool_choice }
+            end
+          end
 
           payload
         end

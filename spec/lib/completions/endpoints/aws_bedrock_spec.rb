@@ -28,7 +28,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
 
   describe "function calling" do
     it "supports old school xml function calls" do
-      SiteSetting.ai_anthropic_native_tool_call_models = ""
+      model.provider_params["disable_native_tools"] = true
+      model.save!
+
       proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
 
       incomplete_tool_call = <<~XML.strip

@@ -27,7 +27,7 @@ module DiscourseAi
             when "claude-3-opus"
               "claude-3-opus-20240229"
             when "claude-3-5-sonnet"
-              "claude-3-5-sonnet-20240620"
+              "claude-3-5-sonnet-latest"
             else
               llm_model.name
             end
@@ -70,7 +70,12 @@ module DiscourseAi
 
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
           payload[:stream] = true if @streaming_mode
-          payload[:tools] = prompt.tools if prompt.has_tools?
+          if prompt.has_tools?
+            payload[:tools] = prompt.tools
+            if dialect.tool_choice.present?
+              payload[:tool_choice] = { type: "tool", name: dialect.tool_choice }
+            end
+          end
 
           payload
         end
