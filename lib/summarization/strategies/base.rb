@@ -11,7 +11,7 @@ module DiscourseAi
           @target = target
         end
 
-        attr_reader :target
+        attr_reader :target, :opts
 
         # The summary type differentiates instances of `AiSummary` pointing to a single target.
         # See the `summary_type` enum for available options.
@@ -19,11 +19,9 @@ module DiscourseAi
           raise NotImplementedError
         end
 
-        # @returns { Hash } - Content to summarize.
+        # @returns { Array<Hash> } - Content to summarize.
         #
-        # This method returns a hash with the content to summarize and additional information.
-        # The only mandatory key is `contents`, which must be an array of hashes with
-        # the following structure:
+        # This method returns an array of hashes with the content to summarize using the following structure:
         #
         # {
         #  poster: A way to tell who write the content,
@@ -31,26 +29,17 @@ module DiscourseAi
         #  text: Text to summarize
         # }
         #
-        # Additionally, you could add more context, which will be available in the prompt. e.g.:
-        #
-        # {
-        #   resource_path: "#{Discourse.base_path}/t/-/#{target.id}",
-        #   content_title: target.title,
-        #   contents: [...]
-        # }
-        #
         def targets_data
           raise NotImplementedError
         end
 
-        # @returns { DiscourseAi::Completions::Prompt } - Prompt passed to the LLM when concatenating multiple chunks.
-        def contatenation_prompt(_texts_to_summarize)
+        # @returns { DiscourseAi::Completions::Prompt } - Prompt passed to the LLM when extending an existing summary.
+        def summary_extension_prompt(_summary, _texts_to_summarize)
           raise NotImplementedError
         end
 
-        # @returns { DiscourseAi::Completions::Prompt } - Prompt passed to the LLM on each chunk,
-        # and when the whole content fits in one call.
-        def summarize_single_prompt(_input, _opts)
+        # @returns { DiscourseAi::Completions::Prompt } - Prompt passed to the LLM for summarizing a single chunk of content.
+        def first_summary_prompt(_input)
           raise NotImplementedError
         end
       end

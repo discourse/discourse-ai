@@ -9,12 +9,6 @@ module DiscourseAi
         end
 
         def targets_data
-          content = {
-            resource_path: "#{Discourse.base_path}/t/-/#{target.id}",
-            content_title: target.title,
-            contents: [],
-          }
-
           posts_data =
             (target.has_summary? ? best_replies : pick_selection).pluck(
               :post_number,
@@ -22,85 +16,102 @@ module DiscourseAi
               :username,
             )
 
-          posts_data.each do |(pn, raw, username)|
+          posts_data.reduce([]) do |memo, (pn, raw, username)|
             raw_text = raw
 
             if pn == 1 && target.topic_embed&.embed_content_cache.present?
               raw_text = target.topic_embed&.embed_content_cache
             end
 
-            content[:contents] << { poster: username, id: pn, text: raw_text }
+            memo << { poster: username, id: pn, text: raw_text }
           end
-
-          content
         end
 
-        def concatenation_prompt(texts_to_summarize)
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-            You are a summarization bot that effectively concatenates disjointed summaries, creating a cohesive narrative.
-            The narrative you create is in the form of one or multiple paragraphs.
-            Your reply MUST BE a single concatenated summary using the summaries I'll provide to you.
-            I'm NOT interested in anything other than the concatenated summary, don't include additional text or comments.
-            You understand and generate Discourse forum Markdown.
-            You format the response, including links, using Markdown.
+        def summary_extension_prompt(summary, contents)
+          resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
+          content_title = target.title
+          input =
+            contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]})" }.join
+
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT)
+            You are an advanced summarization bot tasked with enhancing an existing summary by incorporating additional posts.
+
+            ### Guidelines:
+            - Only include the enhanced summary, without any additional commentary.
+            - Understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
+            - Maintain the original language of the text being summarized.
+            - Aim for summaries to be 400 words or less.
+            - Each new post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
+            - Cite specific noteworthy posts using the format [NAME](#{resource_path}/POST_NUMBER)
+              - Example: link to the 3rd post by sam: [sam](#{resource_path}/3)
+              - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
+              - Example: link to the 13th post by joe: [#13](#{resource_path}/13)
+            - When formatting usernames either use @USERNAME or [USERNAME](#{resource_path}/POST_NUMBER)
           TEXT
 
           prompt.push(type: :user, content: <<~TEXT.strip)
-            THESE are the summaries, each one separated by a newline, all of them inside <input></input> XML tags:
+            ### Context:
+
+            #{content_title.present? ? "The discussion title is: " + content_title + ".\n" : ""}
+              
+            Here is the existing summary:
+              
+            #{summary}
+          
+            Here are the new posts, inside <input></input> XML tags:
 
             <input>
-              #{texts_to_summarize.join("\n")}
+            #{input}
             </input>
+
+            Integrate the new information to generate an enhanced concise and coherent summary.
           TEXT
 
           prompt
         end
 
-        def summarize_single_prompt(input, opts)
-          insts = +<<~TEXT
-          You are an advanced summarization bot that generates concise, coherent summaries of provided text.
+        def first_summary_prompt(contents)
+          resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
+          content_title = target.title
+          input =
+            contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }.join
 
-          - Only include the summary, without any additional commentary.
-          - You understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
-          - Maintain the original language of the text being summarized.
-          - Aim for summaries to be 400 words or less.
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
+            You are an advanced summarization bot that generates concise, coherent summaries of provided text.
 
-        TEXT
+            - Only include the summary, without any additional commentary.
+            - You understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
+            - Maintain the original language of the text being summarized.
+            - Aim for summaries to be 400 words or less.
+            - Each post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
+            - Cite specific noteworthy posts using the format [NAME](#{resource_path}/POST_NUMBER)
+              - Example: link to the 3rd post by sam: [sam](#{resource_path}/3)
+              - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
+              - Example: link to the 13th post by joe: [#13](#{resource_path}/13)
+            - When formatting usernames either use @USERNMAE OR [USERNAME](#{resource_path}/POST_NUMBER)
+          TEXT
 
-          insts << <<~TEXT if opts[:resource_path]
-              - Each post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
-              - Cite specific noteworthy posts using the format [NAME](#{opts[:resource_path]}/POST_NUMBER)
-                - Example: link to the 3rd post by sam: [sam](#{opts[:resource_path]}/3)
-                - Example: link to the 6th post by jane: [agreed with](#{opts[:resource_path]}/6)
-                - Example: link to the 13th post by joe: [#13](#{opts[:resource_path]}/13)
-              - When formatting usernames either use @USERNMAE OR [USERNAME](#{opts[:resource_path]}/POST_NUMBER)
-            TEXT
-
-          prompt = DiscourseAi::Completions::Prompt.new(insts.strip)
-
-          if opts[:resource_path]
-            prompt.push(
-              type: :user,
-              content:
-                "Here are the posts inside <input></input> XML tags:\n\n<input>1) user1 said: I love Mondays 2) user2 said: I hate Mondays</input>\n\nGenerate a concise, coherent summary of the text above maintaining the original language.",
-            )
-            prompt.push(
-              type: :model,
-              content:
-                "Two users are sharing their feelings toward Mondays. [user1](#{opts[:resource_path]}/1) hates them, while [user2](#{opts[:resource_path]}/2) loves them.",
-            )
-          end
+          prompt.push(
+            type: :user,
+            content:
+              "Here are the posts inside <input></input> XML tags:\n\n<input>1) user1 said: I love Mondays 2) user2 said: I hate Mondays</input>\n\nGenerate a concise, coherent summary of the text above maintaining the original language.",
+          )
+          prompt.push(
+            type: :model,
+            content:
+              "Two users are sharing their feelings toward Mondays. [user1](#{resource_path}/1) hates them, while [user2](#{resource_path}/2) loves them.",
+          )
 
           prompt.push(type: :user, content: <<~TEXT.strip)
-        #{opts[:content_title].present? ? "The discussion title is: " + opts[:content_title] + ".\n" : ""}
-        Here are the posts, inside <input></input> XML tags:
+            #{content_title.present? ? "The discussion title is: " + content_title + ".\n" : ""}
+            Here are the posts, inside <input></input> XML tags:
 
-        <input>
-          #{input}
-        </input>
+            <input>
+              #{input}
+            </input>
 
-        Generate a concise, coherent summary of the text above maintaining the original language.
-        TEXT
+            Generate a concise, coherent summary of the text above maintaining the original language.
+          TEXT
 
           prompt
         end

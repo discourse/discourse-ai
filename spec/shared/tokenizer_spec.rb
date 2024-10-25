@@ -90,21 +90,21 @@ describe DiscourseAi::Tokenizer::OpenAiTokenizer do
     end
   end
 
-  describe "#can_expand_tokens?" do
+  describe "#below_limit?" do
     it "returns true when the tokens can be expanded" do
-      expect(described_class.can_expand_tokens?("foo bar", "baz qux", 6)).to eq(true)
+      expect(described_class.below_limit?("foo bar baz qux", 6)).to eq(true)
     end
 
     it "returns false when the tokens cannot be expanded" do
-      expect(described_class.can_expand_tokens?("foo bar", "baz qux", 3)).to eq(false)
+      expect(described_class.below_limit?("foo bar baz qux", 3)).to eq(false)
     end
 
     it "returns false when the tokens cannot be expanded due to multibyte unicode characters" do
-      expect(described_class.can_expand_tokens?("foo bar 👨🏿", "baz qux", 6)).to eq(false)
+      expect(described_class.below_limit?("foo bar 👨🏿 baz qux", 6)).to eq(false)
     end
 
     it "handles unicode characters properly when they use more than one token per char" do
-      expect(described_class.can_expand_tokens?("我喜欢吃比萨", "萨", 10)).to eq(false)
+      expect(described_class.below_limit?("我喜欢吃比萨萨", 10)).to eq(false)
     end
   end
 end

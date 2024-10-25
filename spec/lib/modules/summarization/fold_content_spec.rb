@@ -15,12 +15,15 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
       # Make sure each content fits in a single chunk.
       # 700 is the number of tokens reserved for the prompt.
       model_tokens =
-        700 + DiscourseAi::Tokenizer::OpenAiTokenizer.size("(1 asd said: This is a text ") + 3
+        700 +
+          DiscourseAi::Tokenizer::OpenAiTokenizer.size(
+            "(1 #{post_1.user.username_lower} said: This is a text ",
+          ) + 3
 
       llm_model.update!(max_prompt_tokens: model_tokens)
     end
 
-    let(:single_summary) { "this is a single summary" }
+    let(:single_summary) { "single" }
     let(:concatenated_summary) { "this is a concatenated summary" }
 
     let(:user) { User.new }
@@ -39,29 +42,11 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
     context "when the content to summarize doesn't fit in a single call" do
       fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2, raw: "This is a text") }
 
-      it "summarizes each chunk and then concatenates them" do
+      it "keeps extending the summary until there is nothing else to process" do
         result =
           DiscourseAi::Completions::Llm.with_prepared_responses(
-            [single_summary, single_summary, concatenated_summary],
-          ) { |spy| summarizer.summarize(user).tap { expect(spy.completions).to eq(3) } }
-
-        expect(result.summarized_text).to eq(concatenated_summary)
-      end
-
-      it "keeps splitting into chunks until the content fits into a single call to create a cohesive narrative" do
-        max_length_response = "(1 asd said: This is a text "
-        chunk_of_chunks = "I'm smol"
-
-        result =
-          DiscourseAi::Completions::Llm.with_prepared_responses(
-            [
-              max_length_response,
-              max_length_response,
-              chunk_of_chunks,
-              chunk_of_chunks,
-              concatenated_summary,
-            ],
-          ) { |spy| summarizer.summarize(user).tap { expect(spy.completions).to eq(5) } }
+            [single_summary, concatenated_summary],
+          ) { |spy| summarizer.summarize(user).tap { expect(spy.completions).to eq(2) } }
 
         expect(result.summarized_text).to eq(concatenated_summary)
       end
