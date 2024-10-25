@@ -77,16 +77,19 @@ module DiscourseAi
       end
 
       def ai_tool_params
-        params.require(:ai_tool).permit(
-          :name,
-          :description,
-          :script,
-          :summary,
-          :rag_chunk_tokens,
-          :rag_chunk_overlap_tokens,
-          rag_uploads: [:id],
-          parameters: [:name, :type, :description, :required, enum: []],
-        ).except(:rag_uploads)
+        params
+          .require(:ai_tool)
+          .permit(
+            :name,
+            :description,
+            :script,
+            :summary,
+            :rag_chunk_tokens,
+            :rag_chunk_overlap_tokens,
+            rag_uploads: [:id],
+            parameters: [:name, :type, :description, :required, enum: []],
+          )
+          .except(:rag_uploads)
       end
     end
   end

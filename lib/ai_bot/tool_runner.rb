@@ -157,7 +157,6 @@ module DiscourseAi
             :metadata,
           )
 
-
         mapped = {}
         fragments.each do |id, fragment, metadata|
           mapped[id] = { fragment: fragment, metadata: metadata }
