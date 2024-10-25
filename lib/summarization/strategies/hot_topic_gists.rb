@@ -122,7 +122,7 @@ module DiscourseAi
             
             The conversation began with the following statement:
         
-            #{statements.pop}\n
+            #{statements.shift}\n
           TEXT
 
           if statements.present?
