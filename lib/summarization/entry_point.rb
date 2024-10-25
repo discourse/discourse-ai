@@ -55,7 +55,7 @@ module DiscourseAi
                SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0 && post.topic
             hot_score = TopicHotScore.find_by(topic: post.topic)
 
-            if hot_score.exists? && hot_score.updated_at > 1.day.ago
+            if hot_score.present? && hot_score.updated_at > 1.day.ago
               Jobs.enqueue(:update_hot_topic_gist, topic_id: post&.topic_id)
             end
           end
