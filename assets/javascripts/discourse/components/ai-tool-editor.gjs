@@ -232,11 +232,13 @@ export default class AiToolEditor extends Component {
         {{/if}}
 
         <div class="control-group ai-tool-editor__action_panel">
-          <DButton
-            @action={{this.openTestModal}}
-            @label="discourse_ai.tools.test"
-            class="ai-tool-editor__test-button"
-          />
+          {{#unless @model.isNew}}
+            <DButton
+              @action={{this.openTestModal}}
+              @label="discourse_ai.tools.test"
+              class="ai-tool-editor__test-button"
+            />
+          {{/unless}}
 
           <DButton
             @action={{this.save}}

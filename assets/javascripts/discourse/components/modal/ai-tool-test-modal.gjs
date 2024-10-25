@@ -25,7 +25,7 @@ export default class AiToolTestModal extends Component {
     this.isLoading = true;
     try {
       const response = await ajax(
-        "/admin/plugins/discourse-ai/ai-tools/test.json",
+        `/admin/plugins/discourse-ai/ai-tools/${this.args.model.tool.id}/test.json`,
         {
           type: "POST",
           data: JSON.stringify({

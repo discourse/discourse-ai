@@ -205,7 +205,10 @@ module DiscourseAi
                   FROM
                     #{rag_fragments_table_name}
                   INNER JOIN
-                    rag_document_fragments ON rag_document_fragments.id = rag_document_fragment_id
+                    rag_document_fragments ON
+                      rag_document_fragments.id = rag_document_fragment_id AND
+                      rag_document_fragments.target_id = :target_id AND
+                      rag_document_fragments.target_type = :target_type
                   WHERE
                     model_id = #{id} AND strategy_id = #{@strategy.id}
                   ORDER BY

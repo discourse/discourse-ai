@@ -137,9 +137,8 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
 
   describe "#test" do
     it "runs an existing tool and returns the result" do
-      post "/admin/plugins/discourse-ai/ai-tools/test.json",
+      post "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}/test.json",
            params: {
-             id: ai_tool.id,
              parameters: {
                input: "Hello, World!",
              },
@@ -149,43 +148,36 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       expect(response.parsed_body["output"]).to eq("input" => "Hello, World!")
     end
 
-    it "runs a new unsaved tool and returns the result" do
-      post "/admin/plugins/discourse-ai/ai-tools/test.json",
+    it "accept changes to the ai_tool parameters that redefine stuff" do
+      post "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}/test.json",
            params: {
              ai_tool: {
-               name: "New Tool",
-               description: "A new test tool",
-               script: "function invoke(params) { return 'New test result: ' + params.input; }",
-               parameters: [
-                 { name: "input", type: "string", description: "Input for the new test tool" },
-               ],
+               script: "function invoke(params) { return 'hi there'; }",
              },
-             parameters: {
-               input: "Test input",
-             },
-           }
-
-      expect(response.status).to eq(200)
-      expect(response.parsed_body["output"]).to eq("New test result: Test input")
-    end
-
-    it "returns an error for invalid tool_id" do
-      post "/admin/plugins/discourse-ai/ai-tools/test.json",
-           params: {
-             id: -1,
              parameters: {
                input: "Hello, World!",
              },
            }
 
-      expect(response.status).to eq(400)
-      expect(response.parsed_body["errors"]).to include("Couldn't find AiTool with 'id'=-1")
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["output"]).to eq("hi there")
+    end
+
+    it "returns an error for invalid tool_id" do
+      post "/admin/plugins/discourse-ai/ai-tools/-1/test.json",
+           params: {
+             parameters: {
+               input: "Hello, World!",
+             },
+           }
+
+      expect(response.status).to eq(404)
     end
 
     it "handles exceptions during tool execution" do
       ai_tool.update!(script: "function invoke(params) { throw new Error('Test error'); }")
 
-      post "/admin/plugins/discourse-ai/ai-tools/test.json",
+      post "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}/test.json",
            params: {
              id: ai_tool.id,
              parameters: {

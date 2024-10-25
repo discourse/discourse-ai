@@ -55,7 +55,9 @@ Discourse::Application.routes.draw do
       only: %i[index create show update destroy],
       path: "ai-tools",
       controller: "discourse_ai/admin/ai_tools",
-    ) { post :test, on: :collection }
+    )
+
+    post "/ai-tools/:id/test", to: "discourse_ai/admin/ai_tools#test"
 
     post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
 

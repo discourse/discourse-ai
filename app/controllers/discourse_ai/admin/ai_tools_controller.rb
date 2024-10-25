@@ -5,7 +5,7 @@ module DiscourseAi
     class AiToolsController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      before_action :find_ai_tool, only: %i[show update destroy]
+      before_action :find_ai_tool, only: %i[test show update destroy]
 
       def index
         ai_tools = AiTool.all
@@ -17,7 +17,7 @@ module DiscourseAi
       end
 
       def create
-        ai_tool = AiTool.new(ai_tool_params.except(:rag_uploads))
+        ai_tool = AiTool.new(ai_tool_params)
         ai_tool.created_by_id = current_user.id
 
         if ai_tool.save
@@ -29,7 +29,7 @@ module DiscourseAi
       end
 
       def update
-        if @ai_tool.update(ai_tool_params.except(:rag_uploads))
+        if @ai_tool.update(ai_tool_params)
           RagDocumentFragment.update_target_uploads(@ai_tool, attached_upload_ids)
           render_serialized(@ai_tool, AiCustomToolSerializer)
         else
@@ -46,18 +46,13 @@ module DiscourseAi
       end
 
       def test
-        if params[:id].present?
-          ai_tool = AiTool.find(params[:id])
-        else
-          ai_tool = AiTool.new(ai_tool_params.except(:rag_uploads))
-        end
-
+        @ai_tool.assign_attributes(ai_tool_params) if params[:ai_tool]
         parameters = params[:parameters].to_unsafe_h
 
         # we need an llm so we have a tokenizer
         # but will do without if none is available
         llm = LlmModel.first&.to_llm
-        runner = ai_tool.runner(parameters, llm: llm, bot_user: current_user, context: {})
+        runner = @ai_tool.runner(parameters, llm: llm, bot_user: current_user, context: {})
         result = runner.invoke
 
         if result.is_a?(Hash) && result[:error]
@@ -74,24 +69,27 @@ module DiscourseAi
       private
 
       def attached_upload_ids
-        ai_tool_params[:rag_uploads].to_a.map { |h| h[:id] }
+        params[:ai_tool][:rag_uploads].to_a.map { |h| h[:id] }
       end
 
       def find_ai_tool
-        @ai_tool = AiTool.find(params[:id])
+        @ai_tool = AiTool.find(params[:id].to_i)
       end
 
       def ai_tool_params
-        params.require(:ai_tool).permit(
-          :name,
-          :description,
-          :script,
-          :summary,
-          :rag_chunk_tokens,
-          :rag_chunk_overlap_tokens,
-          rag_uploads: [:id],
-          parameters: [:name, :type, :description, :required, enum: []],
-        )
+        params
+          .require(:ai_tool)
+          .permit(
+            :name,
+            :description,
+            :script,
+            :summary,
+            :rag_chunk_tokens,
+            :rag_chunk_overlap_tokens,
+            rag_uploads: [:id],
+            parameters: [:name, :type, :description, :required, enum: []],
+          )
+          .except(:rag_uploads)
       end
     end
   end
