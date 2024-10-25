@@ -149,12 +149,14 @@ module DiscourseAi
             limit: limit,
             offset: 0,
           )
+
         fragments =
           RagDocumentFragment.where(id: fragment_ids, upload_id: upload_refs).pluck(
             :id,
             :fragment,
             :metadata,
           )
+
 
         mapped = {}
         fragments.each do |id, fragment, metadata|
@@ -174,8 +176,9 @@ module DiscourseAi
       def attach_index(mini_racer_context)
         mini_racer_context.attach(
           "_index_search",
-          ->(query, options) do
+          ->(*params) do
             begin
+              query, options = params
               self.running_attached_function = true
               options ||= {}
               options = options.symbolize_keys

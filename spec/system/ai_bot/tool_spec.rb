@@ -49,7 +49,8 @@ describe "AI Tool Management", type: :system do
     expect(page.first(".parameter-row__required-toggle").checked?).to eq(true)
     expect(page.first(".parameter-row__enum-toggle").checked?).to eq(false)
 
-    ensure_can_run_test
+    # not allowed to test yet
+    expect(page).not_to have_button(".ai-tool-editor__test-button")
 
     expect(page).not_to have_button(".ai-tool-editor__delete")
     find(".ai-tool-editor__save").click
