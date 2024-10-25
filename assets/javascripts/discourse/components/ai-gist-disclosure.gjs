@@ -7,7 +7,7 @@ export default class AiGistDisclosure extends Component {
   @service router;
 
   get shouldShow() {
-    return this.router.currentRoute.attributes.list?.topics?.some(
+    return this.router.currentRoute.attributes?.list?.topics?.some(
       (topic) => topic.ai_topic_gist
     );
   }
