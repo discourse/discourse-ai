@@ -19,8 +19,7 @@ module ::Jobs
       return if gist.blank?
       return if !gist.outdated
 
-      summarizer.delete_cached_summaries!
-      summarizer.summarize(Discourse.system_user)
+      summarizer.force_summarize(Discourse.system_user)
     end
   end
 end
