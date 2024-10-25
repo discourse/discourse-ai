@@ -2,7 +2,7 @@
 
 module ::Jobs
   class HotTopicsGistBatch < ::Jobs::Base
-    def execute(args)
+    def execute(_args)
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_summarization_enabled
       return if SiteSetting.ai_summarize_max_hot_topics_gists_per_batch.zero?
@@ -15,11 +15,7 @@ module ::Jobs
           summarizer = DiscourseAi::Summarization.topic_gist(topic)
           gist = summarizer.existing_summary
 
-          if gist.blank? || gist.outdated
-            summarizer.delete_cached_summaries!
-
-            summarizer.summarize(Discourse.system_user)
-          end
+          summarizer.force_summarize(Discourse.system_user) if gist.blank? || gist.outdated
         end
     end
   end

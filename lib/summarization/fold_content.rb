@@ -66,6 +66,11 @@ module DiscourseAi
         AiSummary.where(target: strategy.target, summary_type: strategy.type).destroy_all
       end
 
+      def force_summarize(user, &on_partial_blk)
+        delete_cached_summaries!
+        summarize(user, &on_partial_blk)
+      end
+
       private
 
       attr_reader :persist_summaries
