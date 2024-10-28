@@ -6,8 +6,9 @@ discourse_ai:
   ai_toxicity_enabled:
     default: false
     client: true
+    hidden: true
   ai_toxicity_inference_service_api_endpoint:
-    default: "https://disorder-testing.demo-by-discourse.com"
+    default: ""
   ai_toxicity_inference_service_api_endpoint_srv:
     default: ""
     hidden: true
@@ -72,9 +73,11 @@ discourse_ai:
       - sentiment
       - emotion
 
-  ai_nsfw_detection_enabled: false
+  ai_nsfw_detection_enabled:
+    default: false
+    hidden: true
   ai_nsfw_inference_service_api_endpoint:
-    default: "https://nsfw-testing.demo-by-discourse.com"
+    default: ""
   ai_nsfw_inference_service_api_endpoint_srv:
     default: ""
     hidden: true
