@@ -84,13 +84,12 @@ end
 #  id              :bigint           not null, primary key
 #  fragment        :text             not null
 #  upload_id       :integer          not null
-#  ai_persona_id   :integer          not null
 #  fragment_number :integer          not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  metadata        :text
-#  target_id       :integer
-#  target_type     :string(800)
+#  target_id       :bigint           not null
+#  target_type     :string(800)      not null
 #
 # Indexes
 #

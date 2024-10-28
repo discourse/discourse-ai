@@ -42,7 +42,7 @@ end
 #  algorithm            :string           not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  summary_type         :string           default("complete"), not null
+#  summary_type         :integer          default("complete"), not null
 #
 # Indexes
 #

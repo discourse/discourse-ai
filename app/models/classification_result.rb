@@ -11,7 +11,7 @@ end
 #  id                  :bigint           not null, primary key
 #  model_used          :string
 #  classification_type :string
-#  target_id           :integer
+#  target_id           :bigint
 #  target_type         :string
 #  classification      :jsonb
 #  created_at          :datetime         not null

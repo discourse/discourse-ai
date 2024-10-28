@@ -297,8 +297,6 @@ end
 #  user_id                     :integer
 #  default_llm                 :text
 #  max_context_posts           :integer
-#  max_post_context_tokens     :integer
-#  max_context_tokens          :integer
 #  vision_enabled              :boolean          default(FALSE), not null
 #  vision_max_pixels           :integer          default(1048576), not null
 #  rag_chunk_tokens            :integer          default(374), not null
@@ -311,7 +309,7 @@ end
 #  allow_chat_channel_mentions :boolean          default(FALSE), not null
 #  allow_chat_direct_messages  :boolean          default(FALSE), not null
 #  allow_topic_mentions        :boolean          default(FALSE), not null
-#  allow_personal_message      :boolean          default(TRUE), not null
+#  allow_personal_messages     :boolean          default(TRUE), not null
 #  force_default_llm           :boolean          default(FALSE), not null
 #
 # Indexes
