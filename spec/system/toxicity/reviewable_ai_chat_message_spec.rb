@@ -10,6 +10,7 @@ RSpec.describe "Toxicity-flagged chat messages", type: :system, js: true do
     sign_in(admin)
     SiteSetting.ai_toxicity_enabled = true
     SiteSetting.ai_toxicity_flag_automatically = true
+    SiteSetting.ai_toxicity_inference_service_api_endpoint = "http://example.com"
 
     ToxicityInferenceStubs.stub_chat_message_classification(chat_message, toxic: true)
 

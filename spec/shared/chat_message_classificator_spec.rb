@@ -8,6 +8,8 @@ describe DiscourseAi::ChatMessageClassificator do
   let(:model) { DiscourseAi::Toxicity::ToxicityClassification.new }
   let(:classification) { described_class.new(model) }
 
+  before { SiteSetting.ai_toxicity_inference_service_api_endpoint = "http://example.com" }
+
   describe "#classify!" do
     before { ToxicityInferenceStubs.stub_chat_message_classification(chat_message, toxic: true) }
 
