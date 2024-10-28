@@ -351,6 +351,7 @@ discourse_ai:
     hidden: true
   ai_summarization_enabled:
     default: false
+    client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
   ai_summarization_model:
     default: ""
