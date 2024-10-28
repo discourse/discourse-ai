@@ -8,6 +8,10 @@ module DiscourseAi
           AiSummary.summary_types[:gist]
         end
 
+        def feature
+          "gists"
+        end
+
         def targets_data
           op_post_number = 1
 

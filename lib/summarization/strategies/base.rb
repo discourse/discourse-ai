@@ -42,6 +42,11 @@ module DiscourseAi
         def first_summary_prompt(_input)
           raise NotImplementedError
         end
+
+        # We'll pass this as the feature_name when doing LLM calls.
+        def feature
+          "summarize"
+        end
       end
     end
   end
