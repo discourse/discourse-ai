@@ -5,7 +5,8 @@ en:
         scopes:
           descriptions:
             discourse_ai:
-              search: "Allows semantic search via the /discourse-ai/embeddings/semantic-search endpoint."
+              search: "Allows semantic search"
+              stream_completion: "Allows streaming ai persona completions"
 
       site_settings:
         categories:

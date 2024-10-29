@@ -113,7 +113,7 @@ module DiscourseAi
                 tool_found = true
                 # a bit hacky, but extra newlines do no harm
                 if needs_newlines
-                  update_blk.call("\n\n", cancel, nil)
+                  update_blk.call("\n\n", cancel)
                   needs_newlines = false
                 end
 
@@ -123,7 +123,7 @@ module DiscourseAi
                 end
               else
                 needs_newlines = true
-                update_blk.call(partial, cancel, nil)
+                update_blk.call(partial, cancel)
               end
             end
 
@@ -191,9 +191,9 @@ module DiscourseAi
         tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
 
         if context[:skip_tool_details] && tool.custom_raw.present?
-          update_blk.call(tool.custom_raw, cancel, nil)
+          update_blk.call(tool.custom_raw, cancel, nil, :custom_raw)
         elsif !context[:skip_tool_details]
-          update_blk.call(tool_details, cancel, nil)
+          update_blk.call(tool_details, cancel, nil, :tool_details)
         end
 
         result

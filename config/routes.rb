@@ -50,6 +50,8 @@ Discourse::Application.routes.draw do
               path: "ai-personas",
               controller: "discourse_ai/admin/ai_personas"
 
+    post "/ai-personas/stream-reply" => "discourse_ai/admin/ai_personas#stream_reply"
+
     resources(
       :ai_tools,
       only: %i[index create show update destroy],

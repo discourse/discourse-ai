@@ -56,7 +56,7 @@ class CompletionPrompt < ActiveRecord::Base
     messages.each_with_index do |msg, idx|
       next if msg["content"].length <= 1000
 
-      errors.add(:messages, I18n.t("errors.prompt_message_length", idx: idx + 1))
+      errors.add(:messages, I18n.t("discourse_ai.errors.prompt_message_length", idx: idx + 1))
     end
   end
 end

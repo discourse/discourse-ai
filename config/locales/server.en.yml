@@ -106,10 +106,6 @@ en:
       flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.
       flagged_by_nsfw: The AI plugin flagged this after classifying at least one of the attached images as NSFW.
 
-  errors:
-    prompt_message_length: The message %{idx} is over the 1000 character limit.
-    invalid_prompt_role: The message %{idx} has an invalid role.
-
   reports:
     overall_sentiment:
       title: "Overall sentiment"
@@ -169,6 +165,7 @@ en:
         failed_to_share: "Failed to share the conversation"
         conversation_deleted: "Conversation share deleted successfully"
     ai_bot:
+      default_pm_prefix: "[Untitled AI bot PM]"
       personas:
         default_llm_required: "Default LLM model is required prior to enabling Chat"
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
@@ -347,3 +344,14 @@ en:
     llm_models:
       missing_provider_param: "%{param} can't be blank"
       bedrock_invalid_url: "Please complete all the fields to contact this model."
+
+    errors:
+      no_query_specified: The query parameter is required, please specify it.
+      no_user_for_persona: The persona specified does not have a user associated with it.
+      persona_not_found: The persona specified does not exist. Check the persona_name or persona_id params.
+      no_user_specified: The username or the user_unique_id parameter is required, please specify it.
+      user_not_found: The user specified does not exist. Check the username param.
+      persona_disabled: The persona specified is disabled. Check the persona_name or persona_id params.
+      no_default_llm: The persona must have a default_llm defined.
+      user_not_allowed: The user is not allowed to participate in the topic.
+      prompt_message_length: The message %{idx} is over the 1000 character limit.

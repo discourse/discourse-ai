@@ -390,7 +390,12 @@ module DiscourseAi
         result
       end
 
-      def reply_to(post)
+      def reply_to(post, &blk)
+        # this is a multithreading issue
+        # post custom prompt is needed and it may not
+        # be properly loaded, ensure it is loaded
+        PostCustomPrompt.none
+
         reply = +""
         start = Time.now
 
@@ -441,10 +446,12 @@ module DiscourseAi
         context[:skip_tool_details] ||= !bot.persona.class.tool_details
 
         new_custom_prompts =
-          bot.reply(context) do |partial, cancel, placeholder|
+          bot.reply(context) do |partial, cancel, placeholder, type|
             reply << partial
             raw = reply.dup
             raw << "\n\n" << placeholder if placeholder.present? && !context[:skip_tool_details]
+
+            blk.call(partial) if blk && type != :tool_details
 
             if stream_reply && !Discourse.redis.get(redis_stream_key)
               cancel&.call
