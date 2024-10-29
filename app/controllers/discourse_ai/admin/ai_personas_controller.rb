@@ -74,7 +74,191 @@ module DiscourseAi
         end
       end
 
+      class << self
+        POOL_SIZE = 10
+        def thread_pool
+          @thread_pool ||=
+            Concurrent::CachedThreadPool.new(min_threads: 0, max_threads: POOL_SIZE, idletime: 30)
+        end
+
+        def queue_reply(&block)
+          # think about a better way to handle cross thread connections
+          if Rails.env.test?
+            block.call
+            return
+          end
+
+          db = RailsMultisite::ConnectionManagement.current_db
+          thread_pool.post do
+            RailsMultisite::ConnectionManagement.with_connection(db) { block.call }
+          end
+        end
+      end
+
+      CRLF = "\r\n"
+
+      def stream_reply
+        persona =
+          AiPersona.find_by(name: params[:persona_name]) ||
+            AiPersona.find_by(id: params[:persona_id])
+        return render_json_error(I18n.t("discourse_ai.errors.persona_not_found")) if persona.nil?
+
+        return render_json_error(I18n.t("discourse_ai.errors.persona_disabled")) if !persona.enabled
+
+        if !persona.default_llm.present?
+          return render_json_error(I18n.t("discourse_ai.errors.no_default_llm"))
+        end
+
+        if params[:query].blank?
+          return render_json_error(I18n.t("discourse_ai.errors.no_query_specified"))
+        end
+
+        if !persona.user_id
+          return render_json_error(I18n.t("discourse_ai.errors.no_user_for_persona"))
+        end
+
+        if !params[:username] && !params[:user_unique_id]
+          return render_json_error(I18n.t("discourse_ai.errors.no_user_specified"))
+        end
+
+        user = nil
+
+        if params[:username]
+          user = User.find_by(username_lower: params[:username].downcase)
+          return render_json_error(I18n.t("discourse_ai.errors.user_not_found")) if user.nil?
+        elsif params[:user_unique_id]
+          user = stage_user
+        end
+
+        raise Discourse::NotFound if user.nil?
+
+        topic_id = params[:topic_id].to_i
+        topic = nil
+        post = nil
+
+        if topic_id > 0
+          topic = Topic.find(topic_id)
+
+          raise Discourse::NotFound if topic.nil?
+
+          if topic.topic_allowed_users.where(user_id: user.id).empty?
+            return render_json_error(I18n.t("discourse_ai.errors.user_not_allowed"))
+          end
+
+          post =
+            PostCreator.create!(
+              user,
+              topic_id: topic_id,
+              raw: params[:query],
+              skip_validations: true,
+            )
+        else
+          post =
+            PostCreator.create!(
+              user,
+              title: I18n.t("discourse_ai.ai_bot.default_pm_prefix"),
+              raw: params[:question],
+              archetype: Archetype.private_message,
+              target_usernames: "#{user.username},#{persona.user.username}",
+              skip_validations: true,
+            )
+
+          topic = post.topic
+        end
+
+        hijack = request.env["rack.hijack"]
+        io = hijack.call
+
+        user = current_user
+
+        self.class.queue_reply do
+          begin
+            io.write "HTTP/1.1 200 OK"
+            io.write CRLF
+            io.write "Content-Type: application/json"
+            io.write CRLF
+            io.write "Transfer-Encoding: chunked"
+            io.write CRLF
+            io.write "Cache-Control: no-cache, no-store, must-revalidate"
+            io.write CRLF
+            io.write "Connection: keep-alive"
+            io.write CRLF
+            io.write "X-Accel-Buffering: no"
+            io.write CRLF
+            io.write CRLF
+            io.flush
+
+            persona_class =
+              DiscourseAi::AiBot::Personas::Persona.find_by(id: persona.id, user: user)
+            bot = DiscourseAi::AiBot::Bot.as(persona.user, persona: persona_class.new)
+
+            topic_id = topic.id
+            data =
+              { topic_id: topic.id, bot_user_id: persona.user.id, persona_id: persona.id }.to_json +
+                "\n\n"
+
+            io.write data.bytesize.to_s(16)
+            io.write CRLF
+            io.write data
+            io.write CRLF
+
+            io.flush
+
+            DiscourseAi::AiBot::Playground
+              .new(bot)
+              .reply_to(post) do |partial|
+                data = { partial: partial }.to_json + "\n\n"
+
+                io.write data.bytesize.to_s(16)
+                io.write CRLF
+                io.write data
+                io.write CRLF
+
+                io.flush
+              end
+
+            # End the response with zero-length chunk
+            io.write "0"
+            io.write CRLF
+            io.write CRLF
+            io.flush
+          rescue StandardError => e
+            p e
+            puts e.backtrace
+          rescue IOError => e
+            Rails.logger.error "Streaming error: #{e.message}"
+          ensure
+            io.close
+          end
+        end
+      end
+
       private
+
+      AI_STREAM_CONVERSATION_UNIQUE_ID = "ai-stream-conversation-unique-id"
+
+      def stage_user
+        unique_id = params[:user_unique_id].to_s
+        field = UserCustomField.find_by(name: AI_STREAM_CONVERSATION_UNIQUE_ID, value: unique_id)
+
+        if field
+          field.user
+        else
+          preferred_username = params[:preferred_username]
+          username = UserNameSuggester.suggest(preferred_username || unique_id)
+
+          user =
+            User.new(
+              username: username,
+              email: "#{SecureRandom.hex}@invalid.com",
+              staged: true,
+              active: false,
+            )
+          user.custom_fields[AI_STREAM_CONVERSATION_UNIQUE_ID] = unique_id
+          user.save!
+          user
+        end
+      end
 
       def find_ai_persona
         @ai_persona = AiPersona.find(params[:id])

@@ -347,3 +347,13 @@ en:
     llm_models:
       missing_provider_param: "%{param} can't be blank"
       bedrock_invalid_url: "Please complete all the fields to contact this model."
+
+    errors:
+      no_query_specified: The query parameter is required, please specify it.
+      no_user_for_persona: The persona specified does not have a user associated with it.
+      persona_not_found: The persona specified does not exist. Check the persona_name or persona_id params.
+      no_user_specified: The username or the user_unique_id parameter is required, please specify it.
+      user_not_found: The user specified does not exist. Check the username param.
+      persona_disabled: The persona specified is disabled. Check the persona_name or persona_id params.
+      no_default_llm: The persona must have a default_llm defined.
+      user_not_allowed: The user is not allowed to participate in the topic.

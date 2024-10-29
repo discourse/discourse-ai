@@ -390,7 +390,7 @@ module DiscourseAi
         result
       end
 
-      def reply_to(post)
+      def reply_to(post, &blk)
         reply = +""
         start = Time.now
 
@@ -441,10 +441,14 @@ module DiscourseAi
         context[:skip_tool_details] ||= !bot.persona.class.tool_details
 
         new_custom_prompts =
-          bot.reply(context) do |partial, cancel, placeholder|
+          bot.reply(context) do |partial, cancel, placeholder, type|
             reply << partial
             raw = reply.dup
             raw << "\n\n" << placeholder if placeholder.present? && !context[:skip_tool_details]
+
+            if blk && type != :tool_details
+              blk.call(partial)
+            end
 
             if stream_reply && !Discourse.redis.get(redis_stream_key)
               cancel&.call

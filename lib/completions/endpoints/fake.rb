@@ -72,6 +72,10 @@ module DiscourseAi
           @fake_content = nil
         end
 
+        def self.fake_content=(content)
+          @fake_content = content
+        end
+
         def self.fake_content
           @fake_content || STOCK_CONTENT
         end
@@ -100,6 +104,13 @@ module DiscourseAi
           @last_call = params
         end
 
+        def self.reset!
+          @last_call = nil
+          @fake_content = nil
+          @delays = nil
+          @chunk_count = nil
+        end
+
         def perform_completion!(
           dialect,
           user,
@@ -110,6 +121,8 @@ module DiscourseAi
           self.class.last_call = { dialect: dialect, user: user, model_params: model_params }
 
           content = self.class.fake_content
+
+          content = content.shift if content.is_a?(Array)
 
           if block_given?
             split_indices = (1...content.length).to_a.sample(self.class.chunk_count - 1).sort
