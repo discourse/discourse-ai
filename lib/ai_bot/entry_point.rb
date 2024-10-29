@@ -189,6 +189,12 @@ module DiscourseAi
           plugin.register_editable_topic_custom_field(:ai_persona_id)
         end
 
+
+        plugin.add_api_key_scope(
+          :discourse_ai,
+          { stream_completion: { actions: %w[discourse_ai/admin/ai_personas#stream_reply] } },
+        )
+
         plugin.on(:site_setting_changed) do |name, old_value, new_value|
           if name == :ai_embeddings_model && SiteSetting.ai_embeddings_enabled? &&
                new_value != old_value
