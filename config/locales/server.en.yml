@@ -106,10 +106,6 @@ en:
       flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.
       flagged_by_nsfw: The AI plugin flagged this after classifying at least one of the attached images as NSFW.
 
-  errors:
-    prompt_message_length: The message %{idx} is over the 1000 character limit.
-    invalid_prompt_role: The message %{idx} has an invalid role.
-
   reports:
     overall_sentiment:
       title: "Overall sentiment"
@@ -358,3 +354,4 @@ en:
       persona_disabled: The persona specified is disabled. Check the persona_name or persona_id params.
       no_default_llm: The persona must have a default_llm defined.
       user_not_allowed: The user is not allowed to participate in the topic.
+      prompt_message_length: The message %{idx} is over the 1000 character limit.
