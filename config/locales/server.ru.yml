@@ -44,7 +44,6 @@ ru:
     ai_nsfw_models: "Модели, используемые для оценки NSFW-контента."
     ai_openai_embeddings_url: "Специальный URL-адрес для API векторных представлений OpenAI (в случае с Azure это может быть https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
     ai_openai_api_key: "API-ключ для API OpenAI. Используется ТОЛЬКО для эмбеддингов и Dall-E. Для GPT используйте вкладку конфигурации LLM"
-    ai_anthropic_native_tool_call_models: "Список моделей, которые будут использовать вызовы собственных инструментов, а не устаревшие инструменты на основе XML."
     ai_hugging_face_tei_endpoint: URL-адрес, по которому работает API для вывода текстовых эмбеддингов Hugging Face
     ai_hugging_face_tei_api_key: Ключ API для вывода текстовых эмбеддингов Hugging Face
     composer_ai_helper_allowed_groups: "Для пользователей в этих группах будет отображаться кнопка AI-помощника в редакторе."
@@ -178,6 +177,9 @@ ru:
       summarizing: "Аналитик темы"
       searching: "Поиск: '%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "Базовый поисковый запрос"
         read:
           read_private:
             name: "Читать приватные темы"

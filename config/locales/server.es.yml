@@ -44,7 +44,6 @@ es:
     ai_nsfw_models: "Modelos que se utilizarán para la inferencia NSFW."
     ai_openai_embeddings_url: "URL personalizada utilizada para la API de incrustaciones de OpenAI. (en el caso de Azure puede ser: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "Clave API para la API de OpenAI. Solo se utiliza para incrustaciones y Dall-E. Para GPT utiliza la pestaña de configuración de LLM"
-    ai_anthropic_native_tool_call_models: "Lista de modelos que utilizarán llamadas a herramientas nativas frente a herramientas heredadas basadas en XML."
     ai_hugging_face_tei_endpoint: URL donde se ejecuta la API para la inferencia de incrustaciones de texto de Hugging Face
     ai_hugging_face_tei_api_key: Clave API para la inferencia de incrustaciones de texto de Hugging Face
     composer_ai_helper_allowed_groups: "Los usuarios de estos grupos verán el botón del asistente de IA en el compositor."
@@ -178,6 +177,9 @@ es:
       summarizing: "Resumiendo tema"
       searching: "Buscando: '%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "Consulta de búsqueda básica"
         read:
           read_private:
             name: "Leer privado"

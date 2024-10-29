@@ -85,6 +85,9 @@ de:
             system_prompt:
               label: "System-Eingabeaufforderung"
               description: "Die Eingabeaufforderung, die für die Triage verwendet wird. Achte darauf, dass sie mit einem einzigen Wort antwortet, das du zum Auslösen der Aktion verwenden kannst"
+            max_post_tokens:
+              label: "Max Post Token"
+              description: "Die maximale Anzahl von Token, die mit LLM Triage gescannt werden"
             search_for_text:
               label: "Suche nach Text"
               description: "Wenn der folgende Text in der LLM-Antwort erscheint, wende diese Maßnahmen an"
@@ -319,6 +322,7 @@ de:
           organization: "Optionale OpenAI-Organisations-ID"
           disable_system_prompt: "Systemmeldung in Eingabeaufforderungen deaktivieren"
           enable_native_tool: "Aktiviere native Tool-Unterstützung"
+          disable_native_tools: "Native Tool-Unterstützung deaktivieren (XML-basierte Tools verwenden)"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -444,6 +448,7 @@ de:
         topic:
           title: "Zusammenfassung des Themas"
           close: "Zusammenfassungspanel schließen"
+        disclosure: "Von KI erstellte Zusammenfassungen"
     review:
       types:
         reviewable_ai_post:

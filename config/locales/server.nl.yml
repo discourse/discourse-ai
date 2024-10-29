@@ -44,7 +44,6 @@ nl:
     ai_nsfw_models: "Te gebruiken modellen voor NVWW-inferentie."
     ai_openai_embeddings_url: "Aangepaste URL voor de OpenAI-insluitings-API. (in het geval van Azure kan dit zijn: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "API-sleutel voor OpenAI-API. ALLEEN gebruikt voor insluitingen en Dall-E. Gebruik voor GPT het tabblad LLM-configuratie"
-    ai_anthropic_native_tool_call_models: "Lijst van modellen die gebruik maken van native toolaanroepen versus oudere, op XML gebaseerde tools."
     ai_hugging_face_tei_endpoint: URL waar de API wordt uitgevoerd voor inferentie van Hugging Face-tekstinsluitingen
     ai_hugging_face_tei_api_key: API-sleutel voor inferentie van Hugging Face-tekstinsluitingen
     composer_ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
@@ -178,6 +177,9 @@ nl:
       summarizing: "Topic samenvatten"
       searching: "Zoeken naar: '%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "Basiszoekquery"
         read:
           read_private:
             name: "Privé lezen"

@@ -52,7 +52,6 @@ he:
     ai_nsfw_models: "מודלים לשימוש להסקת פוגענות."
     ai_openai_embeddings_url: "כתובת מותאמת אישית ל־API ההטמעות של OpenAI. (במקרה של Azure זה יכול להיות: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "מפתח API ל־API של OpenAI. משמש רק להטבעות ול־Dall-E. ל־GPT יש להשתמש בלשונית הגדרות LLM (מודלי שפה גדולים)"
-    ai_anthropic_native_tool_call_models: "רשימת דגמים שישתמשו בקריאות כלי טבעיות לעומת כלים מיושנים מבוססי XML."
     ai_hugging_face_tei_endpoint: כתובת בה פועל ה־API להסקת הטמעת הטקסט ב־Hugging Face
     ai_hugging_face_tei_api_key: מפתח API להסרת הטמעת טקסט ב־Hugging Face
     ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית."
@@ -85,6 +84,7 @@ he:
     ai_summarization_model: "מודל לשימוש לסיכום."
     ai_custom_summarization_allowed_groups: "קבוצות שמורשות להשתמש ליצירת סיכומים חדשים."
     ai_pm_summarization_allowed_groups: "קבוצות שמורשות ליצור ולצפות בתקצירים בהודעות פרטיות."
+    ai_summarize_max_hot_topics_gists_per_batch: "לאחר עדכון הנושאים ברשימה החמה, נייצר תקצירים של N הראשונים. (0 להשבתה)"
     ai_hot_topic_gists_allowed_groups: "קבוצות שמורשות לראות gists ברשימת הנושאים החמים."
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."
     ai_bot_enable_chat_warning: "הצגת אזהרה עם פתיחת שיח הודעות פרטיות. אפשר לדרוס את זה על ידי עריכת מחרוזת התרגום: discourse_ai.ai_bot.pm_warning"
@@ -193,6 +193,9 @@ he:
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
       tool_options:
+        google:
+          base_query:
+            name: "שאילתת חיפוש בסיסית"
         read:
           read_private:
             name: "קריאה פרטית"
