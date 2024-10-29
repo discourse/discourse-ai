@@ -90,7 +90,11 @@ module DiscourseAi
 
           db = RailsMultisite::ConnectionManagement.current_db
           thread_pool.post do
-            RailsMultisite::ConnectionManagement.with_connection(db) { block.call }
+            begin
+              RailsMultisite::ConnectionManagement.with_connection(db) { block.call }
+            rescue StandardError => e
+              Discourse.warn_exception(e, message: "Discourse AI: Unable to stream reply")
+            end
           end
         end
       end
@@ -157,7 +161,7 @@ module DiscourseAi
             PostCreator.create!(
               user,
               title: I18n.t("discourse_ai.ai_bot.default_pm_prefix"),
-              raw: params[:question],
+              raw: params[:query],
               archetype: Archetype.private_message,
               target_usernames: "#{user.username},#{persona.user.username}",
               skip_validations: true,
@@ -175,15 +179,17 @@ module DiscourseAi
           begin
             io.write "HTTP/1.1 200 OK"
             io.write CRLF
-            io.write "Content-Type: application/json"
+            io.write "Content-Type: text/plain; charset=utf-8"
             io.write CRLF
             io.write "Transfer-Encoding: chunked"
             io.write CRLF
             io.write "Cache-Control: no-cache, no-store, must-revalidate"
             io.write CRLF
-            io.write "Connection: keep-alive"
+            io.write "Connection: close"
             io.write CRLF
             io.write "X-Accel-Buffering: no"
+            io.write CRLF
+            io.write "X-Content-Type-Options: nosniff"
             io.write CRLF
             io.write CRLF
             io.flush
@@ -202,31 +208,33 @@ module DiscourseAi
             io.write data
             io.write CRLF
 
-            io.flush
-
             DiscourseAi::AiBot::Playground
               .new(bot)
               .reply_to(post) do |partial|
+                next if partial.length == 0
+
                 data = { partial: partial }.to_json + "\n\n"
+
+                data.force_encoding("UTF-8")
 
                 io.write data.bytesize.to_s(16)
                 io.write CRLF
                 io.write data
                 io.write CRLF
-
                 io.flush
               end
 
-            # End the response with zero-length chunk
             io.write "0"
             io.write CRLF
             io.write CRLF
+
             io.flush
+            io.done
           rescue StandardError => e
-            p e
-            puts e.backtrace
-          rescue IOError => e
-            Rails.logger.error "Streaming error: #{e.message}"
+            # make it a tiny bit easier to debug in dev, this is tricky
+            # multi-threaded code that exhibits various limitations in rails
+            p e if Rails.env.development?
+            Discourse.warn_exception(e, message: "Discourse AI: Unable to stream reply")
           ensure
             io.close
           end

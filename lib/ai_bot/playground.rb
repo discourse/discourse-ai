@@ -391,6 +391,11 @@ module DiscourseAi
       end
 
       def reply_to(post, &blk)
+        # this is a multithreading issue
+        # post custom prompt is needed and it may not
+        # be properly loaded, ensure it is loaded
+        PostCustomPrompt.none
+
         reply = +""
         start = Time.now
 

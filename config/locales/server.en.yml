@@ -169,6 +169,7 @@ en:
         failed_to_share: "Failed to share the conversation"
         conversation_deleted: "Conversation share deleted successfully"
     ai_bot:
+      default_pm_prefix: "[Untitled AI bot PM]"
       personas:
         default_llm_required: "Default LLM model is required prior to enabling Chat"
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"

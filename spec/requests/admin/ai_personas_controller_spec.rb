@@ -456,11 +456,12 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
       preamble = (<<~PREAMBLE).strip
         HTTP/1.1 200 OK
-        Content-Type: application/json
+        Content-Type: text/plain; charset=utf-8
         Transfer-Encoding: chunked
         Cache-Control: no-cache, no-store, must-revalidate
-        Connection: keep-alive
+        Connection: close
         X-Accel-Buffering: no
+        X-Content-Type-Options: nosniff
       PREAMBLE
 
       expect(header_lines.join("\n")).to eq(preamble)
@@ -521,6 +522,9 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       topic = Topic.find(context_info["topic_id"])
       last_post = topic.posts.order(:created_at).last
       expect(last_post.raw).to eq("This is a test! Testing!")
+
+      user_post = topic.posts.find_by(post_number: 1)
+      expect(user_post.raw).to eq("how are you today?")
 
       # need ai persona and user
       expect(topic.topic_allowed_users.count).to eq(2)
