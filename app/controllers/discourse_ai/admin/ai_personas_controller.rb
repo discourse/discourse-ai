@@ -128,7 +128,7 @@ module DiscourseAi
         user = nil
 
         if params[:username]
-          user = User.find_by(username_lower: params[:username].downcase)
+          user = User.find_by_username(params[:username])
           return render_json_error(I18n.t("discourse_ai.errors.user_not_found")) if user.nil?
         elsif params[:user_unique_id]
           user = stage_user
