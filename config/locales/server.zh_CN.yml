@@ -44,7 +44,6 @@ zh_CN:
     ai_nsfw_models: "用于 NSFW 推断的模型。"
     ai_openai_embeddings_url: "用于 OpenAI 嵌入向量 API 的自定义 URL。（对于 Azure，可以是：https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15）"
     ai_openai_api_key: "OpenAI API 的 API 密钥。仅用于嵌入向量和 Dall-E。对于 GPT，请使用 LLM 配置标签页"
-    ai_anthropic_native_tool_call_models: "将使用原生工具调用的模型与使用传统的基于 XML 工具的模型对照列表。"
     ai_hugging_face_tei_endpoint: 运行 Hugging Face 文本嵌入向量推断 API 的 URL
     ai_hugging_face_tei_api_key: Hugging Face 文本嵌入向量推断的 API 密钥
     composer_ai_helper_allowed_groups: "这些群组中的用户将在编辑器中看到 AI 助手按钮。"
@@ -178,6 +177,9 @@ zh_CN:
       summarizing: "正在总结话题"
       searching: "搜索：'%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "基本搜索查询"
         read:
           read_private:
             name: "阅读不公开话题"

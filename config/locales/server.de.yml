@@ -52,7 +52,6 @@ de:
     ai_nsfw_models: "Modelle, die für NSFW-Inferenz verwendet werden."
     ai_openai_embeddings_url: "Benutzerdefinierte URL, die für die OpenAI-Embeddings-API verwendet wird (im Falle von Azure gegebenenfalls: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
     ai_openai_api_key: "API-Schlüssel für OpenAI-API. Wird NUR für Einbettungen und Dall-E verwendet. Für GPT verwende die Registerkarte für die LLM-Konfiguration"
-    ai_anthropic_native_tool_call_models: "Liste der Modelle, die native Tool-Aufrufe im Vergleich zu den alten XML-basierten Tools verwenden werden."
     ai_hugging_face_tei_endpoint: URL, auf der die API für die Inferenz der Texteinbettungen von Hugging Face ausgeführt wird
     ai_hugging_face_tei_api_key: API-Schlüssel für die Inferenz von Texteinbettungen von Hugging Face
     ai_helper_enabled: "Aktiviere den KI-Helfer."
@@ -194,6 +193,10 @@ de:
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
       tool_options:
+        google:
+          base_query:
+            name: "Basissuchanfrage"
+            description: "Basisabfrage, die bei der Suche verwendet werden soll. Beispiele: „site:example.com“ enthält nur Ergebnisse von example.com, „before:2022-01-01“ enthält nur Ergebnisse aus dem Jahr 2021 und früher. Dieser Text wird der Suchanfrage vorangestellt."
         read:
           read_private:
             name: "Privat lesen"
