@@ -109,7 +109,7 @@ module DiscourseAi
 
         return render_json_error(I18n.t("discourse_ai.errors.persona_disabled")) if !persona.enabled
 
-        if !persona.default_llm.present?
+        if persona.default_llm.blank?
           return render_json_error(I18n.t("discourse_ai.errors.no_default_llm"))
         end
 
