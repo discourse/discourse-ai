@@ -14,7 +14,8 @@ export default class AiTopicGist extends Component {
       this.router.currentRoute.attributes?.filterType === "hot" &&
       this.args.topic?.ai_topic_gist &&
       !this.args.topic?.excerpt &&
-      this.prefersGist
+      this.prefersGist &&
+      !this.args.topic?.excerpt
     );
   }
 
