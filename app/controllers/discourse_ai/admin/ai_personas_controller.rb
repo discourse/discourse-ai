@@ -81,7 +81,7 @@ module DiscourseAi
             Concurrent::CachedThreadPool.new(min_threads: 0, max_threads: POOL_SIZE, idletime: 30)
         end
 
-        def queue_reply(&block)
+        def schedule_block(&block)
           # think about a better way to handle cross thread connections
           if Rails.env.test?
             block.call
@@ -175,7 +175,17 @@ module DiscourseAi
 
         user = current_user
 
-        self.class.queue_reply do
+        self.class.queue_streamed_reply(io, persona, user, topic, post)
+      end
+
+      private
+
+      AI_STREAM_CONVERSATION_UNIQUE_ID = "ai-stream-conversation-unique-id"
+
+      # keeping this in a static method so we don't capture ENV and other bits
+      # this allows us to release memory earlier
+      def self.queue_streamed_reply(io, persona, user, topic, post)
+        schedule_block do
           begin
             io.write "HTTP/1.1 200 OK"
             io.write CRLF
@@ -198,7 +208,6 @@ module DiscourseAi
               DiscourseAi::AiBot::Personas::Persona.find_by(id: persona.id, user: user)
             bot = DiscourseAi::AiBot::Bot.as(persona.user, persona: persona_class.new)
 
-            topic_id = topic.id
             data =
               { topic_id: topic.id, bot_user_id: persona.user.id, persona_id: persona.id }.to_json +
                 "\n\n"
@@ -240,10 +249,6 @@ module DiscourseAi
           end
         end
       end
-
-      private
-
-      AI_STREAM_CONVERSATION_UNIQUE_ID = "ai-stream-conversation-unique-id"
 
       def stage_user
         unique_id = params[:user_unique_id].to_s
