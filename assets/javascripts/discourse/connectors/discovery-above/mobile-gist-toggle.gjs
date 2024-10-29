@@ -1,13 +1,13 @@
 import Component from "@glimmer/component";
-import AiGistDisclosure from "../../components/ai-gist-disclosure";
+import AiGistToggle from "../../components/ai-gist-toggle";
 
-export default class AiTopicGistDisclosure extends Component {
+export default class AiTopicGistToggle extends Component {
   static shouldRender(outletArgs, helper) {
     const isMobileView = helper.site.mobileView;
     return isMobileView;
   }
 
   <template>
-    <AiGistDisclosure />
+    <AiGistToggle />
   </template>
 }

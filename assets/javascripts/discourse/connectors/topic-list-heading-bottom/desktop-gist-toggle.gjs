@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import AiGistDisclosure from "../../components/ai-gist-disclosure";
+import AiGistToggle from "../../components/ai-gist-toggle";
 
 export default class AiTopicGist extends Component {
   static shouldRender(outletArgs) {
@@ -11,6 +11,6 @@ export default class AiTopicGist extends Component {
   }
 
   <template>
-    <AiGistDisclosure />
+    <AiGistToggle />
   </template>
 }
