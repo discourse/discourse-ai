@@ -128,10 +128,10 @@ module DiscourseAi
           )
 
         if cursor == items.length
-          llm.generate(prompt, user: user, feature_name: "summarize", &on_partial_blk)
+          llm.generate(prompt, user: user, feature_name: strategy.feature, &on_partial_blk)
         else
           latest_summary =
-            llm.generate(prompt, user: user, max_tokens: 600, feature_name: "summarize")
+            llm.generate(prompt, user: user, max_tokens: 600, feature_name: strategy.feature)
           fold(items, latest_summary, cursor, user, &on_partial_blk)
         end
       end
