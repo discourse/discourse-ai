@@ -189,7 +189,6 @@ module DiscourseAi
           plugin.register_editable_topic_custom_field(:ai_persona_id)
         end
 
-
         plugin.add_api_key_scope(
           :discourse_ai,
           { stream_completion: { actions: %w[discourse_ai/admin/ai_personas#stream_reply] } },
