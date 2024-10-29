@@ -85,6 +85,9 @@ he:
             system_prompt:
               label: "בקשת מערכת"
               description: "הבקשה שתשמש למיון ראשוני, נא לוודא שהתשובה היא מילה אחת בה ניתן להשתמש כדי להקפיץ את הפקודה"
+            max_post_tokens:
+              label: "כמות אסימונים מרבית לפוסט"
+              description: "מספר האסימונים המרבי לסריקה בעזרת מיון ראשוני עם LLM"
             search_for_text:
               label: "חיפוש טקסט"
               description: "אם הטקסט הבא מופיע בתגובה של ה־llm (דגם שפה גדול), להחיל את הפעולות האלה"
@@ -105,8 +108,10 @@ he:
               description: "הפיכת הנושא למוסתר בפני הציבור אם מוקפץ"
             flag_type:
               label: "סוג סימון"
+              description: "סוג הסימון להחלה על הפוסט (ספאם או לקדם לסקירה)"
             flag_post:
               label: "סימון פוסט"
+              description: "סימון פוסט (או כספאם או לסקירה)"
             model:
               label: "מודל"
               description: "מודל שפה שמשמש למיון ראשוני"
@@ -295,6 +300,7 @@ he:
           organization: "מזהה ארגון OpenAI כרשות"
           disable_system_prompt: "השבתת הודעת מערכת בבקשות"
           enable_native_tool: "הפעלת תמיכה בכלים מובנים"
+          disable_native_tools: "השבתת תמיכה בבלי מובנה (להשתמש בכלים מבוססי XML)"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
@@ -422,6 +428,7 @@ he:
         topic:
           title: "תקציר הנושא"
           close: "סגירת חלונית תקציר"
+        disclosure: "סיכומים שנוצרו על ידי בינה מלאכותית"
     review:
       types:
         reviewable_ai_post:

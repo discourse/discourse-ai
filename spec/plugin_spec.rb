@@ -3,7 +3,10 @@
 require_relative "support/toxicity_inference_stubs"
 
 describe Plugin::Instance do
-  before { SiteSetting.discourse_ai_enabled = true }
+  before do
+    SiteSetting.discourse_ai_enabled = true
+    SiteSetting.ai_toxicity_inference_service_api_endpoint = "http://example.com"
+  end
 
   describe "on reviewable_transitioned_to event" do
     fab!(:post)

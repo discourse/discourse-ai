@@ -44,7 +44,6 @@ fi:
     ai_nsfw_models: "NSFW-päätelmiin käytettävät mallit."
     ai_openai_embeddings_url: "Mukautettu URL, jota käytetään OpenAI:n upotus-APIssa. (Azuren tapauksessa se voi olla: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "OpenAI APIn API-avain. Käytetään VAIN upotuksiin ja Dall-E:hen. Käytä LLM-määritysvälilehteä GPT:lle."
-    ai_anthropic_native_tool_call_models: "Luettelo malleista, jotka käyttävät alkuperäisiä työkalukutsuja verrattuna vanhoihin XML-pohjaisiin työkaluihin."
     ai_hugging_face_tei_endpoint: URL-osoite, jossa API toimii Hugging Facen tekstiupotuskäyttöliittymää varten
     ai_hugging_face_tei_api_key: Hugging Facen tekstiupotuskäyttöliittymän API-avain
     composer_ai_helper_allowed_groups: "Näiden ryhmien käyttäjät näkevät tekoälyavustajan painikkeen kirjoitustoiminnossa."
@@ -178,6 +177,9 @@ fi:
       summarizing: "Laaditaan yhteenvetoa ketjusta"
       searching: "Haetaan: \"%{query}\""
       tool_options:
+        google:
+          base_query:
+            name: "Perushakukysely"
         read:
           read_private:
             name: "Lue yksityisesti"

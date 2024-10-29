@@ -2,21 +2,27 @@ import Component from "@glimmer/component";
 import { service } from "@ember/service";
 
 export default class AiTopicGist extends Component {
-  static shouldRender(outletArgs) {
-    return outletArgs?.topic?.ai_topic_gist && !outletArgs.topic.excerpt;
-  }
-
+  @service router;
   @service gistPreference;
 
-  get showGists() {
+  get prefersGist() {
     return this.gistPreference.preference === "gists_enabled";
   }
 
+  get showGist() {
+    return (
+      this.router.currentRoute.attributes?.filterType === "hot" &&
+      this.args.topic?.ai_topic_gist &&
+      !this.args.topic?.excerpt &&
+      this.prefersGist
+    );
+  }
+
   <template>
-    {{#if this.showGists}}
+    {{#if this.showGist}}
       <div class="ai-topic-gist">
         <div class="ai-topic-gist__text">
-          {{@outletArgs.topic.ai_topic_gist}}
+          {{@topic.ai_topic_gist}}
         </div>
       </div>
     {{/if}}

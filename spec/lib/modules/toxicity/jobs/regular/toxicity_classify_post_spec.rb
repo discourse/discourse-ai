@@ -8,6 +8,7 @@ describe Jobs::ToxicityClassifyPost do
     before do
       SiteSetting.ai_toxicity_enabled = true
       SiteSetting.ai_toxicity_flag_automatically = true
+      SiteSetting.ai_toxicity_inference_service_api_endpoint = "http://example.com"
     end
 
     fab!(:post)

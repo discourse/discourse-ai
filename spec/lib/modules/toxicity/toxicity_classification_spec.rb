@@ -5,6 +5,8 @@ require_relative "../../../support/toxicity_inference_stubs"
 describe DiscourseAi::Toxicity::ToxicityClassification do
   fab!(:target) { Fabricate(:post) }
 
+  before { SiteSetting.ai_toxicity_inference_service_api_endpoint = "http://example.com" }
+
   describe "#request" do
     it "returns the classification and the model used for it" do
       ToxicityInferenceStubs.stub_post_classification(target, toxic: false)

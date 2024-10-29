@@ -44,7 +44,6 @@ ja:
     ai_nsfw_models: "NSFW 推論に使用するモデル。"
     ai_openai_embeddings_url: "OpenAI 埋め込み API に使用されるカスタム URL。(Azure の場合: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "OpenAI API の API キー。埋め込みと Dall-E のみに使用されます。GPT の場合は LLM 構成タブを使用します"
-    ai_anthropic_native_tool_call_models: "ネイティブツール呼び出しと従来の XML ベースのツールを使用するモデルのリスト。"
     ai_hugging_face_tei_endpoint: Hugging Face テキスト埋め込み推論の API が実行している URL
     ai_hugging_face_tei_api_key: Hugging Face テキスト埋め込み推論の API キー
     composer_ai_helper_allowed_groups: "これらのグループのユーザーの作成ツールには、AI ヘルパーボタンが表示されます。"
@@ -178,6 +177,9 @@ ja:
       summarizing: "トピックの要約を生成中"
       searching: "検索中: '%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "ベース検索クエリ"
         read:
           read_private:
             name: "非公開を読む"

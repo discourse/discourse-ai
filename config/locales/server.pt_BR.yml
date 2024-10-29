@@ -48,7 +48,6 @@ pt_BR:
     ai_nsfw_models: "Modelos usados para inferência de NSFW."
     ai_openai_embeddings_url: "URL personalizada usada para incorporações da API da OpenAI. (No caso do Azure, pode ser: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     ai_openai_api_key: "Chave de API para API da OpenAI. Usado APENAS para incorporações e Dall-E. Para o GPT, use a aba de configurações de LLM"
-    ai_anthropic_native_tool_call_models: "Lista de modelos que usarão chamadas de ferramentas nativas em relação a ferramentas baseadas XML herdadas."
     ai_hugging_face_tei_endpoint: URL em que a API está em execução para as inferências das incorporações de texto do Hugging Face
     ai_hugging_face_tei_api_key: Chave de API para inferência de incorporações de texto do Hugging Face
     ai_helper_enabled: "Habilite o assistente de IA."
@@ -184,6 +183,9 @@ pt_BR:
       summarizing: "Resumindo tópico"
       searching: "Pesquisando: \"%{query}\""
       tool_options:
+        google:
+          base_query:
+            name: "Consulta de pesquisa básica"
         read:
           read_private:
             name: "Ler conteúdo privado"
