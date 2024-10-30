@@ -3,6 +3,8 @@
 module DiscourseAi
   module AiBot
     class Playground
+      BYPASS_AI_REPLY_CUSTOM_FIELD = "discourse_ai_bypass_ai_reply"
+
       attr_reader :bot
 
       # An abstraction to manage the bot and topic interactions.
@@ -550,6 +552,7 @@ module DiscourseAi
         return false if bot.bot_user.nil?
         return false if post.topic.private_message? && post.post_type != Post.types[:regular]
         return false if (SiteSetting.ai_bot_allowed_groups_map & post.user.group_ids).blank?
+        return false if post.custom_fields[BYPASS_AI_REPLY_CUSTOM_FIELD].present?
 
         true
       end

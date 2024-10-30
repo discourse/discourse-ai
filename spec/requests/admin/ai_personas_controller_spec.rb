@@ -490,13 +490,16 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     it "is able to create a new conversation" do
       Jobs.run_immediately!
+      # trust level 0
+      SiteSetting.ai_bot_allowed_groups = "10"
 
       fake_endpoint.fake_content = ["This is a test! Testing!", "An amazing title"]
 
       ai_persona.create_user!
       ai_persona.update!(
-        allowed_group_ids: [Group::AUTO_GROUPS[:staff]],
+        allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
         default_llm: "custom:#{llm.id}",
+        allow_personal_messages: true,
       )
 
       io_out, io_in = IO.pipe
@@ -530,6 +533,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(topic.topic_allowed_users.count).to eq(2)
       expect(topic.archetype).to eq(Archetype.private_message)
       expect(topic.title).to eq("An amazing title")
+      expect(topic.posts.count).to eq(2)
 
       # now let's try to make a reply with a tool call
       function_call = <<~XML
@@ -545,6 +549,16 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       fake_endpoint.chunk_count = 1
 
       ai_persona.update!(tools: ["Categories"])
+
+      # lets also unstage the user and add the user to tl0
+      # this will ensure there are no feedback loops
+      new_user = user_post.user
+      new_user.update!(staged: false)
+      Group.user_trust_level_change!(new_user.id, new_user.trust_level)
+
+      # double check this happened and user is in group
+      personas = AiPersona.allowed_modalities(user: new_user.reload, allow_personal_messages: true)
+      expect(personas.count).to eq(1)
 
       io_out, io_in = IO.pipe
 
@@ -579,6 +593,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(user_post.user.custom_fields).to eq(
         { "ai-stream-conversation-unique-id" => "site:test.com:user_id:1" },
       )
+
+      expect(topic.posts.count).to eq(4)
     end
   end
 end
