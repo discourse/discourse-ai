@@ -413,7 +413,7 @@ li, p {
 }
 
 .lightbox-wrapper img {
-  width: 100%;
+  width: auto;
   height: auto;
 }
 
@@ -440,8 +440,9 @@ aside .title .avatar {
   margin-right: 0.5em;
 }
 
-
-.lightbox-wrapper .meta svg, .lightbox-wrapper .meta .informations {
+.lightbox-wrapper .meta .filename,
+.lightbox-wrapper .meta svg, 
+.lightbox-wrapper .meta .informations {
   display: none;
 }
 
