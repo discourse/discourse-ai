@@ -109,12 +109,12 @@ en:
   reports:
     overall_sentiment:
       title: "Overall sentiment"
-      description: "This chart compares the number of posts classified either positive or negative."
+      description: "The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Private messages (PMs) are also excluded."
       xaxis: "Positive(%)"
       yaxis: "Date"
     post_emotion:
       title: "Post emotion"
-      description: "Number of posts classified with one of the following emotions, grouped by poster's trust level."
+      description: "Number of posts classified with one of the following emotions, grouped by poster's trust level. Posts that are not positive or negative and considered neutral, are not shown. Private messages (PMs) are also excluded."
       xaxis:
       yaxis:
 
