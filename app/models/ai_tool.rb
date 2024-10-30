@@ -370,7 +370,3 @@ end
 #  rag_chunk_overlap_tokens :integer          default(10), not null
 #  tool_name                :string           default(""), not null
 #
-# Indexes
-#
-#  index_ai_tools_on_tool_name  (tool_name) UNIQUE
-#
