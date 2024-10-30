@@ -128,7 +128,9 @@ module DiscourseAi
               topic_id: topic_id,
               raw: params[:query],
               skip_validations: true,
-              custom_fields: { DiscourseAi::AiBot::Playground::BYPASS_AI_REPLY_CUSTOM_FIELD => true },
+              custom_fields: {
+                DiscourseAi::AiBot::Playground::BYPASS_AI_REPLY_CUSTOM_FIELD => true,
+              },
             )
         else
           post =
@@ -139,7 +141,9 @@ module DiscourseAi
               archetype: Archetype.private_message,
               target_usernames: "#{user.username},#{persona.user.username}",
               skip_validations: true,
-              custom_fields: { DiscourseAi::AiBot::Playground::BYPASS_AI_REPLY_CUSTOM_FIELD => true },
+              custom_fields: {
+                DiscourseAi::AiBot::Playground::BYPASS_AI_REPLY_CUSTOM_FIELD => true,
+              },
             )
 
           topic = post.topic
@@ -150,7 +154,13 @@ module DiscourseAi
 
         user = current_user
 
-        DiscourseAi::AiBot::ResponseHttpStreamer.queue_streamed_reply(io, persona, user, topic, post)
+        DiscourseAi::AiBot::ResponseHttpStreamer.queue_streamed_reply(
+          io,
+          persona,
+          user,
+          topic,
+          post,
+        )
       end
 
       private

@@ -3,7 +3,6 @@
 module DiscourseAi
   module AiBot
     class Playground
-
       BYPASS_AI_REPLY_CUSTOM_FIELD = "discourse_ai_bypass_ai_reply"
 
       attr_reader :bot
