@@ -34,17 +34,41 @@ RSpec.describe AiPersona do
         allowed_group_ids: [],
       )
 
+    Fabricate(:ai_tool, id: 1)
+    Fabricate(:ai_tool, id: 2, name: "Archie search", tool_name: "search")
+
     expect(persona.valid?).to eq(true)
 
-    persona.tools = [["test-1", { test: "test" }, false]]
+    persona.tools = %w[search image_generation]
     expect(persona.valid?).to eq(true)
 
-    persona.tools = [["test-1", { test: "test" }, false], ["test-1", { test: "test" }, false]]
+    persona.tools = %w[search image_generation search]
     expect(persona.valid?).to eq(false)
     expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
 
-    persona.tools = [["test-1", { test: "test" }, false], ["test-2", { test: "test" }, false]]
+    persona.tools = [["custom-1", { test: "test" }, false], ["custom-2", { test: "test" }, false]]
     expect(persona.valid?).to eq(true)
+    expect(persona.errors[:tools]).to eq([])
+
+    persona.tools = [["custom-1", { test: "test" }, false], ["custom-1", { test: "test" }, false]]
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
+
+    persona.tools = [
+      ["custom-1", { test: "test" }, false],
+      ["custom-2", { test: "test" }, false],
+      "image_generation",
+    ]
+    expect(persona.valid?).to eq(true)
+    expect(persona.errors[:tools]).to eq([])
+
+    persona.tools = [
+      ["custom-1", { test: "test" }, false],
+      ["custom-2", { test: "test" }, false],
+      "Search",
+    ]
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
   end
 
   it "allows creation of user" do

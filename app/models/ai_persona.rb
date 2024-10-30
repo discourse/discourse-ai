@@ -114,14 +114,39 @@ class AiPersona < ActiveRecord::Base
 
     seen_tools = Set.new
 
+    custom_tool_ids = Set.new
+    builtin_tool_names = Set.new
+
     tools.each do |tool|
       inner_name, _, _ = tool.is_a?(Array) ? tool : [tool, nil]
 
+      if inner_name.start_with?("custom-")
+        custom_tool_ids.add(inner_name.split("-", 2).last.to_i)
+      else
+        builtin_tool_names.add(inner_name.downcase)
+      end
+
       if seen_tools.include?(inner_name)
         errors.add(:tools, I18n.t("discourse_ai.ai_bot.personas.cannot_have_duplicate_tools"))
+        break
       else
         seen_tools.add(inner_name)
       end
+    end
+
+    return if errors.any?
+
+    # Checking if there are any duplicate tool_names between custom and builtin tools
+    if builtin_tool_names.present? && custom_tool_ids.present?
+      AiTool
+        .where(id: custom_tool_ids)
+        .pluck(:tool_name)
+        .each do |tool_name|
+          if builtin_tool_names.include?(tool_name.downcase)
+            errors.add(:tools, I18n.t("discourse_ai.ai_bot.personas.cannot_have_duplicate_tools"))
+            break
+          end
+        end
     end
   end
 
