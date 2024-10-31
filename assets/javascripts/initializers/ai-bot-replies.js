@@ -12,7 +12,10 @@ import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
 import AiCancelStreamingButton from "../discourse/components/post-menu/ai-cancel-streaming-button";
 import AiDebugButton from "../discourse/components/post-menu/ai-debug-button";
 import AiShareButton from "../discourse/components/post-menu/ai-share-button";
-import { showShareConversationModal } from "../discourse/lib/ai-bot-helper";
+import {
+  isPostFromAiBot,
+  showShareConversationModal,
+} from "../discourse/lib/ai-bot-helper";
 import { streamPostText } from "../discourse/lib/ai-streamer/progress-handlers";
 
 let enabledChatBotIds = [];
@@ -85,7 +88,12 @@ function initializePersonaDecorator(api) {
   );
 }
 
-const MAX_PERSONA_USER_ID = -1200;
+const POST_MENU_BUTTONS_POSITION_BEFORE = [
+  POST_MENU_LIKE_BUTTON_KEY,
+  POST_MENU_COPY_LINK_BUTTON_KEY,
+  POST_MENU_SHARE_BUTTON_KEY,
+  POST_MENU_SHOW_MORE_BUTTON_KEY,
+];
 
 function initializePauseButton(api) {
   const transformerRegistered = api.registerValueTransformer(
@@ -93,12 +101,7 @@ function initializePauseButton(api) {
     ({ value: dag, context: { post } }) => {
       if (isGPTBot(post.user)) {
         dag.add("ai-cancel-gpt", AiCancelStreamingButton, {
-          before: [
-            POST_MENU_LIKE_BUTTON_KEY,
-            POST_MENU_COPY_LINK_BUTTON_KEY,
-            POST_MENU_SHARE_BUTTON_KEY,
-            POST_MENU_SHOW_MORE_BUTTON_KEY,
-          ],
+          before: POST_MENU_BUTTONS_POSITION_BEFORE,
           after: ["ai-share", "ai-debug"],
         });
       }
@@ -142,12 +145,7 @@ function initializeDebugButton(api) {
     ({ value: dag, context: { post } }) => {
       if (post.topic?.archetype === "private_message") {
         dag.add("ai-debug", AiDebugButton, {
-          before: [
-            POST_MENU_LIKE_BUTTON_KEY,
-            POST_MENU_COPY_LINK_BUTTON_KEY,
-            POST_MENU_SHARE_BUTTON_KEY,
-            POST_MENU_SHOW_MORE_BUTTON_KEY,
-          ],
+          before: POST_MENU_BUTTONS_POSITION_BEFORE,
           after: "ai-share",
         });
       }
@@ -175,15 +173,8 @@ function initializeDebugWidgetButton(api) {
       return;
     }
 
-    if (
-      !currentUser.ai_enabled_chat_bots.any(
-        (bot) => post.username === bot.username
-      )
-    ) {
-      // special handling for personas (persona bot users start at ID -1200 and go down)
-      if (post.user_id > MAX_PERSONA_USER_ID) {
-        return;
-      }
+    if (!isPostFromAiBot(post, currentUser)) {
+      return;
     }
 
     return {
@@ -207,12 +198,7 @@ function initializeShareButton(api) {
     ({ value: dag, context: { post } }) => {
       if (post.topic?.archetype === "private_message") {
         dag.add("ai-share", AiShareButton, {
-          before: [
-            POST_MENU_LIKE_BUTTON_KEY,
-            POST_MENU_COPY_LINK_BUTTON_KEY,
-            POST_MENU_SHARE_BUTTON_KEY,
-            POST_MENU_SHOW_MORE_BUTTON_KEY,
-          ],
+          before: POST_MENU_BUTTONS_POSITION_BEFORE,
         });
       }
 
@@ -240,15 +226,8 @@ function initializeShareWidgetButton(api) {
       return;
     }
 
-    if (
-      !currentUser.ai_enabled_chat_bots.any(
-        (bot) => post.username === bot.username
-      )
-    ) {
-      // special handling for personas (persona bot users start at ID -1200 and go down)
-      if (post.user_id > MAX_PERSONA_USER_ID) {
-        return;
-      }
+    if (!isPostFromAiBot(post, currentUser)) {
+      return;
     }
 
     return {
