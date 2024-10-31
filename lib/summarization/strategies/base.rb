@@ -34,12 +34,12 @@ module DiscourseAi
         end
 
         # @returns { DiscourseAi::Completions::Prompt } - Prompt passed to the LLM when extending an existing summary.
-        def summary_extension_prompt(_summary, _texts_to_summarize, _tokenizer)
+        def summary_extension_prompt(_summary, _texts_to_summarize)
           raise NotImplementedError
         end
 
         # @returns { DiscourseAi::Completions::Prompt } - Prompt passed to the LLM for summarizing a single chunk of content.
-        def first_summary_prompt(_input, _tokenizer)
+        def first_summary_prompt(_input)
           raise NotImplementedError
         end
 
