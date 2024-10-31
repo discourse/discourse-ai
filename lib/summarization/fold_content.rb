@@ -121,9 +121,9 @@ module DiscourseAi
         prompt =
           (
             if summary.blank?
-              strategy.first_summary_prompt(iteration_content)
+              strategy.first_summary_prompt(iteration_content, tokenizer)
             else
-              strategy.summary_extension_prompt(summary, iteration_content)
+              strategy.summary_extension_prompt(summary, iteration_content, tokenizer)
             end
           )
 

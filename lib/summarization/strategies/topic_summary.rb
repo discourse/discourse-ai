@@ -27,7 +27,7 @@ module DiscourseAi
           end
         end
 
-        def summary_extension_prompt(summary, contents)
+        def summary_extension_prompt(summary, contents, _tokenizer)
           resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
           content_title = target.title
           input =
@@ -70,7 +70,7 @@ module DiscourseAi
           prompt
         end
 
-        def first_summary_prompt(contents)
+        def first_summary_prompt(contents, _tokenizer)
           resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
           content_title = target.title
           input =

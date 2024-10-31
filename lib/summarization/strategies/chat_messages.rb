@@ -23,7 +23,7 @@ module DiscourseAi
             .map { { id: _1, poster: _2, text: _3 } }
         end
 
-        def summary_extension_prompt(summary, contents)
+        def summary_extension_prompt(summary, contents, _tokenizer)
           input =
             contents
               .map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
@@ -63,7 +63,7 @@ module DiscourseAi
           prompt
         end
 
-        def first_summary_prompt(contents)
+        def first_summary_prompt(contents, _tokenizer)
           content_title = target.name
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }.join
