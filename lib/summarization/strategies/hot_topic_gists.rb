@@ -57,7 +57,7 @@ module DiscourseAi
           end
         end
 
-        def summary_extension_prompt(summary, contents, _tokenizer)
+        def summary_extension_prompt(summary, contents)
           statements =
             contents
               .to_a
@@ -98,21 +98,10 @@ module DiscourseAi
           prompt
         end
 
-        def first_summary_prompt(contents, tokenizer)
+        def first_summary_prompt(contents)
           content_title = target.title
           statements =
             contents.to_a.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
-
-          op_statement = statements.shift.to_s
-          split_1, split_2 =
-            [op_statement[0, op_statement.size / 2], op_statement[(op_statement.size / 2)..-1]]
-
-          truncation_length = 500
-
-          op_statement = [
-            tokenizer.truncate(split_1, truncation_length),
-            tokenizer.truncate(split_2.reverse, truncation_length).reverse,
-          ].join(" ")
 
           prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
             You are an advanced summarization bot. Analyze a given conversation and produce a concise,
@@ -138,7 +127,7 @@ module DiscourseAi
             
             The conversation began with the following statement:
         
-            #{op_statement}\n
+            #{statements.shift}\n
           TEXT
 
           if statements.present?
