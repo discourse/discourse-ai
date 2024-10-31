@@ -56,22 +56,9 @@ discourse_ai:
   ai_sentiment_enabled:
     default: false
     client: true
-  ai_sentiment_inference_service_api_endpoint:
-    default: "https://sentiment-testing.demo-by-discourse.com"
-  ai_sentiment_inference_service_api_endpoint_srv:
+  ai_sentiment_model_configs:
     default: ""
-    hidden: true
-  ai_sentiment_inference_service_api_key:
-    default: ""
-    secret: true
-  ai_sentiment_models:
-    type: list
-    list_type: compact
-    default: "emotion|sentiment"
-    allow_any: false
-    choices:
-      - sentiment
-      - emotion
+    json_schema: DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema
 
   ai_nsfw_detection_enabled:
     default: false

@@ -58,6 +58,29 @@ module ::DiscourseAi
           JSON.parse(response.body, symbolize_names: true)
         end
 
+        def classify(content, model_config)
+          headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
+          headers["X-API-KEY"] = model_config.api_key
+          headers["Authorization"] = "Bearer #{model_config.api_key}"
+
+          body = { inputs: content, truncate: true }.to_json
+
+          api_endpoint = model_config.endpoint
+          if api_endpoint.present? && api_endpoint.start_with?("srv://")
+            service = DiscourseAi::Utils::DnsSrv.lookup(api_endpoint.delete_prefix("srv://"))
+            api_endpoint = "https://#{service.target}:#{service.port}"
+          end
+
+          conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
+          response = conn.post(api_endpoint, body, headers)
+
+          if response.status != 200
+            raise Net::HTTPBadResponse.new("Status: #{response.status}\n\n#{response.body}")
+          end
+
+          JSON.parse(response.body, symbolize_names: true)
+        end
+
         def reranker_configured?
           SiteSetting.ai_hugging_face_tei_reranker_endpoint.present? ||
             SiteSetting.ai_hugging_face_tei_reranker_endpoint_srv.present?
