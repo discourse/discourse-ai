@@ -54,7 +54,7 @@ RSpec.describe "Share conversation", type: :system do
 
     visit(pm.url)
 
-    find("#post_2 .post-action-menu__share").click
+    find("#post_2 .post-action-menu__share-ai").click
 
     try_until_success do
       clip_text = cdp.read_clipboard
@@ -89,7 +89,7 @@ RSpec.describe "Share conversation", type: :system do
 
     visit(pm.url)
 
-    find("#post_2 .post-action-menu__share").click
+    find("#post_2 .post-action-menu__share-ai").click
 
     try_until_success do
       clip_text = cdp.read_clipboard
@@ -117,7 +117,7 @@ RSpec.describe "Share conversation", type: :system do
 
     page.execute_script("window.navigator.clipboard.writeText('')")
 
-    find("#post_6 .post-action-menu__share").click
+    find("#post_6 .post-action-menu__share-ai").click
     find(".ai-share-modal__slider input").set("2")
     find(".ai-share-modal button.btn-primary").click
 
