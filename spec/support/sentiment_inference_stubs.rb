@@ -3,7 +3,7 @@
 class SentimentInferenceStubs
   class << self
     def endpoint
-      "#{SiteSetting.ai_sentiment_inference_service_api_endpoint}/api/v1/classify"
+      "http://test.com/api/v1/classify"
     end
 
     def model_response(model)

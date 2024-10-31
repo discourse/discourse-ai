@@ -6,7 +6,10 @@ describe DiscourseAi::Sentiment::SentimentClassification do
   fab!(:target) { Fabricate(:post) }
 
   describe "#request" do
-    before { SiteSetting.ai_sentiment_inference_service_api_endpoint = "http://test.com" }
+    before do
+      SiteSetting.ai_sentiment_model_configs =
+        "[{\"model_name\":\"SamLowe/roberta-base-go_emotions\",\"endpoint\":\"http://samlowe-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"j-hartmann/emotion-english-distilroberta-base\",\"endpoint\":\"http://jhartmann-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"cardiffnlp/twitter-roberta-base-sentiment-latest\",\"endpoint\":\"http://cardiffnlp-sentiment.com\",\"api_key\":\"123\"}]"
+    end
 
     it "returns the classification and the model used for it" do
       SentimentInferenceStubs.stub_classification(target)

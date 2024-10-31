@@ -8,7 +8,8 @@ describe Jobs::PostSentimentAnalysis do
 
     before do
       SiteSetting.ai_sentiment_enabled = true
-      SiteSetting.ai_sentiment_inference_service_api_endpoint = "http://test.com"
+      SiteSetting.ai_sentiment_model_configs =
+        "[{\"model_name\":\"SamLowe/roberta-base-go_emotions\",\"endpoint\":\"http://samlowe-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"j-hartmann/emotion-english-distilroberta-base\",\"endpoint\":\"http://jhartmann-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"cardiffnlp/twitter-roberta-base-sentiment-latest\",\"endpoint\":\"http://cardiffnlp-sentiment.com\",\"api_key\":\"123\"}]"
     end
 
     describe "scenarios where we return early without doing anything" do
