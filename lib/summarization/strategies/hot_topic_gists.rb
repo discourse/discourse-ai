@@ -75,8 +75,8 @@ module DiscourseAi
             - Omit extraneous details or subjective opinions.
             - Use the original language of the text.
             - Begin directly with the main topic or issue, avoiding introductory phrases.
-            - Limit the updated summary to a maximum of 20 words.
-            - Return the 20-word summary inside <ai></ai> tags.
+            - Limit the updated summary to a maximum of 40 words.
+            - Return the 40-word summary inside <ai></ai> tags.
 
           TEXT
 
@@ -92,7 +92,7 @@ module DiscourseAi
             #{statements}
 
             Your task is to update an existing single-sentence summary by integrating new developments from a conversation.
-            Return the 20-word summary inside <ai></ai> tags.
+            Return the 40-word summary inside <ai></ai> tags.
           TEXT
 
           prompt
@@ -114,7 +114,7 @@ module DiscourseAi
             - Exclude extraneous details or subjective opinions.
             - Use the original language of the text.
             - Begin directly with the main topic or issue, avoiding introductory phrases.
-            - Limit the summary to a maximum of 20 words.
+            - Limit the summary to a maximum of 40 words.
             - Do *NOT* repeat the discussion title in the summary.
 
             Return the summary inside <ai></ai> tags.\n
@@ -143,7 +143,7 @@ module DiscourseAi
           end
 
           prompt.push(type: :user, content: <<~TEXT.strip)
-            #{context} Return the 20-word summary inside <ai></ai> tags.
+            #{context} Return the 40-word summary inside <ai></ai> tags.
           TEXT
 
           prompt
