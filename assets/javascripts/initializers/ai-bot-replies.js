@@ -105,8 +105,6 @@ function initializePauseButton(api) {
           after: ["ai-share", "ai-debug"],
         });
       }
-
-      return dag;
     }
   );
 
@@ -149,8 +147,6 @@ function initializeDebugButton(api) {
           after: "ai-share",
         });
       }
-
-      return dag;
     }
   );
 
@@ -201,8 +197,6 @@ function initializeShareButton(api) {
           before: POST_MENU_BUTTONS_POSITION_BEFORE,
         });
       }
-
-      return dag;
     }
   );
 
