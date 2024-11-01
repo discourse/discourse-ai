@@ -43,7 +43,8 @@ describe Jobs::PostSentimentAnalysis do
     end
 
     it "successfully classifies the post" do
-      expected_analysis = SiteSetting.ai_sentiment_models.split("|").length
+      expected_analysis =
+        DiscourseAi::Sentiment::SentimentClassification.new.available_classifiers.length
       SentimentInferenceStubs.stub_classification(post)
 
       subject.execute({ post_id: post.id })
