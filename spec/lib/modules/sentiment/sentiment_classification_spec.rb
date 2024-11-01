@@ -16,8 +16,10 @@ describe DiscourseAi::Sentiment::SentimentClassification do
 
       result = subject.request(target)
 
-      subject.available_models.each do |model|
-        expect(result[model]).to eq(SentimentInferenceStubs.model_response(model))
+      subject.available_classifiers.each do |model_config|
+        expect(result[model_config.model_name]).to eq(
+          subject.transform_result(SentimentInferenceStubs.model_response(model_config.model_name)),
+        )
       end
     end
   end

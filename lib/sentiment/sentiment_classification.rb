@@ -36,13 +36,17 @@ module DiscourseAi
         end
       end
 
+      def transform_result(result)
+        hash_result = {}
+        result.each { |r| hash_result[r[:label]] = r[:score] }
+        hash_result
+      end
+
       private
 
       def request_with(content, model_config)
         result = ::DiscourseAi::Inference::HuggingFaceTextEmbeddings.classify(content, model_config)
-        hash_result = {}
-        result.each { |r| hash_result[r[:label]] = r[:score] }
-        hash_result
+        transform_result(result)
       end
 
       def content_of(target_to_classify)
