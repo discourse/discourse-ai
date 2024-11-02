@@ -44,10 +44,14 @@ module DiscourseAi
       end
 
       def framework_script
+        http_methods = %i[get post put patch delete].map { |method| <<~JS }.join("\n")
+          #{method}: function(url, options) {
+            return _http_#{method}(url, options);
+          },
+          JS
         <<~JS
         const http = {
-          get: function(url, options) { return _http_get(url, options) },
-          post: function(url, options) { return _http_post(url, options) },
+          #{http_methods}
         };
 
         const llm = {
@@ -249,36 +253,44 @@ module DiscourseAi
           end,
         )
 
-        mini_racer_context.attach(
-          "_http_post",
-          ->(url, options) do
-            begin
-              @http_requests_made += 1
-              if @http_requests_made > MAX_HTTP_REQUESTS
-                raise TooManyRequestsError.new("Tool made too many HTTP requests")
+        %i[post put patch delete].each do |method|
+          mini_racer_context.attach(
+            "_http_#{method}",
+            ->(url, options) do
+              begin
+                @http_requests_made += 1
+                if @http_requests_made > MAX_HTTP_REQUESTS
+                  raise TooManyRequestsError.new("Tool made too many HTTP requests")
+                end
+
+                self.running_attached_function = true
+                headers = (options && options["headers"]) || {}
+                body = options && options["body"]
+
+                result = {}
+                DiscourseAi::AiBot::Tools::Tool.send_http_request(
+                  url,
+                  method: method,
+                  headers: headers,
+                  body: body,
+                ) do |response|
+                  result[:body] = response.body
+                  result[:status] = response.code.to_i
+                end
+
+                result
+              rescue => e
+                p url
+                p options
+                p e
+                puts e.backtrace
+                raise e
+              ensure
+                self.running_attached_function = false
               end
-
-              self.running_attached_function = true
-              headers = (options && options["headers"]) || {}
-              body = options && options["body"]
-
-              result = {}
-              DiscourseAi::AiBot::Tools::Tool.send_http_request(
-                url,
-                method: :post,
-                headers: headers,
-                body: body,
-              ) do |response|
-                result[:body] = response.body
-                result[:status] = response.code.to_i
-              end
-
-              result
-            ensure
-              self.running_attached_function = false
-            end
-          end,
-        )
+            end,
+          )
+        end
       end
     end
   end
