@@ -74,7 +74,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"y\\": \\"s"}      }
 
     event: content_block_delta
-    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"am"}          }
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"<a>m"}          }
 
     event: content_block_delta
     data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":" "}          }
@@ -118,7 +118,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       <function_calls>
       <invoke>
       <tool_name>search</tool_name>
-      <parameters><search_query>sam sam</search_query>
+      <parameters><search_query>s&lt;a&gt;m sam</search_query>
       <category>general</category></parameters>
       <tool_id>toolu_01DjrShFRRHp9SnHYRFRc53F</tool_id>
       </invoke>
