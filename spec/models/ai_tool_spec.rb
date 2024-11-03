@@ -38,35 +38,37 @@ RSpec.describe AiTool do
     expect(runner.invoke).to eq("query" => "test")
   end
 
-  it "can perform POST HTTP requests" do
-    script = <<~JS
-    function invoke(params) {
-      result = http.post("https://example.com/api",
-        {
-          headers: { TestHeader: "TestValue" },
-          body: JSON.stringify({ data: params.data })
-        }
-      );
+  it "can perform HTTP requests with various verbs" do
+    %i[post put delete patch].each do |verb|
+      script = <<~JS
+      function invoke(params) {
+        result = http.#{verb}("https://example.com/api",
+          {
+            headers: { TestHeader: "TestValue" },
+            body: JSON.stringify({ data: params.data })
+          }
+        );
 
-      return result.body;
-    }
-  JS
+        return result.body;
+      }
+    JS
 
-    tool = create_tool(script: script)
-    runner = tool.runner({ "data" => "test data" }, llm: nil, bot_user: nil, context: {})
+      tool = create_tool(script: script)
+      runner = tool.runner({ "data" => "test data" }, llm: nil, bot_user: nil, context: {})
 
-    stub_request(:post, "https://example.com/api").with(
-      body: "{\"data\":\"test data\"}",
-      headers: {
-        "Accept" => "*/*",
-        "Testheader" => "TestValue",
-        "User-Agent" => "Discourse AI Bot 1.0 (https://www.discourse.org)",
-      },
-    ).to_return(status: 200, body: "Success", headers: {})
+      stub_request(verb, "https://example.com/api").with(
+        body: "{\"data\":\"test data\"}",
+        headers: {
+          "Accept" => "*/*",
+          "Testheader" => "TestValue",
+          "User-Agent" => "Discourse AI Bot 1.0 (https://www.discourse.org)",
+        },
+      ).to_return(status: 200, body: "Success", headers: {})
 
-    result = runner.invoke
+      result = runner.invoke
 
-    expect(result).to eq("Success")
+      expect(result).to eq("Success")
+    end
   end
 
   it "can perform GET HTTP requests, with 1 param" do

@@ -182,6 +182,34 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     expect(parsed[:tool_config]).to eq({ function_calling_config: { mode: "AUTO" } })
   end
 
+  it "properly encodes tool calls" do
+    prompt = DiscourseAi::Completions::Prompt.new("Hello", tools: [echo_tool])
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:generateContent?key=123"
+
+    response_json = { "functionCall" => { name: "echo", args: { text: "<S>ydney" } } }
+    response = gemini_mock.response(response_json, tool_call: true).to_json
+
+    stub_request(:post, url).to_return(status: 200, body: response)
+
+    response = llm.generate(prompt, user: user)
+
+    expected = (<<~XML).strip
+      <function_calls>
+      <invoke>
+      <tool_name>echo</tool_name>
+      <parameters>
+      <text>&lt;S&gt;ydney</text>
+      </parameters>
+      <tool_id>tool_0</tool_id>
+      </invoke>
+      </function_calls>
+    XML
+
+    expect(response.strip).to eq(expected)
+  end
+
   it "Supports Vision API" do
     prompt =
       DiscourseAi::Completions::Prompt.new(
