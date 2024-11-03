@@ -188,7 +188,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
     url = "#{model.url}:generateContent?key=123"
 
-    response_json = { "functionCall" => { name: "echo", args: {text: "<S>ydney" } } }
+    response_json = { "functionCall" => { name: "echo", args: { text: "<S>ydney" } } }
     response = gemini_mock.response(response_json, tool_call: true).to_json
 
     stub_request(:post, url).to_return(status: 200, body: response)

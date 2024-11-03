@@ -39,7 +39,7 @@ RSpec.describe AiTool do
   end
 
   it "can perform HTTP requests with various verbs" do
-    [:post, :put, :delete, :patch].each do |verb|
+    %i[post put delete patch].each do |verb|
       script = <<~JS
       function invoke(params) {
         result = http.#{verb}("https://example.com/api",

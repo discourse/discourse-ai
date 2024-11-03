@@ -41,7 +41,6 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
       params = JSON.parse(tool_call.raw_json, symbolize_names: true)
       xml = params.map { |name, value| "<#{name}>#{CGI.escapeHTML(value)}</#{name}>" }.join("\n")
 
-
       node.at("tool_name").content = tool_call.name
       node.at("tool_id").content = tool_call.id
       node.at("parameters").children = Nokogiri::HTML5::DocumentFragment.parse(xml) if xml.present?
