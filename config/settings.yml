@@ -388,6 +388,13 @@ discourse_ai:
     hidden: true
     type: list
     list_type: compact
+  ai_summary_backfill_maximum_topics_per_hour:
+    default: 10
+    min: 0
+    max: 1000
+  ai_summary_backfill_minimum_word_count:
+    default: 200
+    hidden: true
 
   ai_bot_enabled:
     default: false

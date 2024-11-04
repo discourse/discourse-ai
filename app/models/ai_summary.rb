@@ -4,15 +4,19 @@ class AiSummary < ActiveRecord::Base
   belongs_to :target, polymorphic: true
 
   enum :summary_type, { complete: 0, gist: 1 }
+  enum :origin, { human: 0, system: 1 }
 
-  def self.store!(target, summary_type, model, summary, content_ids)
+  def self.store!(strategy, llm_model, summary, og_content, human:)
+    content_ids = og_content.map { |c| c[:id] }
+
     AiSummary.create!(
-      target: target,
-      algorithm: model,
+      target: strategy.target,
+      algorithm: llm_model.name,
       content_range: (content_ids.first..content_ids.last),
       summarized_text: summary,
       original_content_sha: build_sha(content_ids.join),
-      summary_type: summary_type,
+      summary_type: strategy.type,
+      origin: !!human ? origins[:human] : origins[:system],
     )
   end
 
@@ -43,6 +47,7 @@ end
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
 #  summary_type         :integer          default("complete"), not null
+#  origin               :integer
 #
 # Indexes
 #
