@@ -392,7 +392,7 @@ module DiscourseAi
         result
       end
 
-      def reply_to(post, &blk)
+      def reply_to(post, custom_instructions: nil, &blk)
         # this is a multithreading issue
         # post custom prompt is needed and it may not
         # be properly loaded, ensure it is loaded
@@ -413,6 +413,7 @@ module DiscourseAi
         context[:post_id] = post.id
         context[:topic_id] = post.topic_id
         context[:private_message] = post.topic.private_message?
+        context[:custom_instructions] = custom_instructions
 
         reply_user = bot.bot_user
         if bot.persona.class.respond_to?(:user_id)

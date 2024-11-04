@@ -171,6 +171,11 @@ module DiscourseAi
               DiscourseAi::Completions::Llm.proxy(self.class.question_consolidator_llm)
           end
 
+          if context[:custom_instructions].present?
+            prompt_insts << "\n"
+            prompt_insts << context[:custom_instructions]
+          end
+
           fragments_guidance =
             rag_fragments_prompt(
               context[:conversation_context].to_a,

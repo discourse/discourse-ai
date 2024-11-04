@@ -31,9 +31,36 @@ module DiscourseAi
 
         # keeping this in a static method so we don't capture ENV and other bits
         # this allows us to release memory earlier
-        def queue_streamed_reply(io, persona, user, topic, post)
+        def queue_streamed_reply(
+          io:,
+          persona:,
+          user:,
+          topic:,
+          query:,
+          custom_instructions:,
+          current_user:
+        )
           schedule_block do
             begin
+              post_params = {
+                raw: query,
+                skip_validations: true,
+                custom_fields: {
+                  DiscourseAi::AiBot::Playground::BYPASS_AI_REPLY_CUSTOM_FIELD => true,
+                },
+              }
+
+              if topic
+                post_params[:topic_id] = topic.id
+              else
+                post_params[:title] = I18n.t("discourse_ai.ai_bot.default_pm_prefix")
+                post_params[:archetype] = Archetype.private_message
+                post_params[:target_usernames] = "#{user.username},#{persona.user.username}"
+              end
+
+              post = PostCreator.create!(user, post_params)
+              topic = post.topic
+
               io.write "HTTP/1.1 200 OK"
               io.write CRLF
               io.write "Content-Type: text/plain; charset=utf-8"
@@ -52,7 +79,7 @@ module DiscourseAi
               io.flush
 
               persona_class =
-                DiscourseAi::AiBot::Personas::Persona.find_by(id: persona.id, user: user)
+                DiscourseAi::AiBot::Personas::Persona.find_by(id: persona.id, user: current_user)
               bot = DiscourseAi::AiBot::Bot.as(persona.user, persona: persona_class.new)
 
               data =
@@ -69,7 +96,7 @@ module DiscourseAi
 
               DiscourseAi::AiBot::Playground
                 .new(bot)
-                .reply_to(post) do |partial|
+                .reply_to(post, custom_instructions: custom_instructions) do |partial|
                   next if partial.length == 0
 
                   data = { partial: partial }.to_json + "\n\n"
@@ -88,11 +115,11 @@ module DiscourseAi
               io.write CRLF
 
               io.flush
-              io.done
+              io.done if io.respond_to?(:done)
             rescue StandardError => e
               # make it a tiny bit easier to debug in dev, this is tricky
               # multi-threaded code that exhibits various limitations in rails
-              p e if Rails.env.development?
+              p e if Rails.env.development? || Rails.env.test?
               Discourse.warn_exception(e, message: "Discourse AI: Unable to stream reply")
             ensure
               io.close
