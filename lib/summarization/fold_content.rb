@@ -35,11 +35,11 @@ module DiscourseAi
 
         if persist_summaries
           AiSummary.store!(
-            strategy.target,
-            strategy.type,
-            llm_model.name,
+            strategy,
+            llm_model,
             clean_summary,
-            truncated_content.map { |c| c[:id] },
+            truncated_content,
+            human: user&.human?,
           )
         else
           AiSummary.new(summarized_text: clean_summary)
