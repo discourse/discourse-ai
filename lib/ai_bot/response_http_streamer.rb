@@ -31,10 +31,17 @@ module DiscourseAi
 
         # keeping this in a static method so we don't capture ENV and other bits
         # this allows us to release memory earlier
-        def queue_streamed_reply(io: , persona:, user:, topic:, query:, custom_instructions:, current_user:)
+        def queue_streamed_reply(
+          io:,
+          persona:,
+          user:,
+          topic:,
+          query:,
+          custom_instructions:,
+          current_user:
+        )
           schedule_block do
             begin
-
               post_params = {
                 raw: query,
                 skip_validations: true,
