@@ -25,8 +25,10 @@ module DiscourseAi
       def summarize(user, &on_partial_blk)
         base_summary = ""
         initial_pos = 0
-        folded_summary =
-          fold(content_to_summarize, base_summary, initial_pos, user, &on_partial_blk)
+
+        truncated_content = content_to_summarize.map { |cts| truncate(cts) }
+
+        folded_summary = fold(truncated_content, base_summary, initial_pos, user, &on_partial_blk)
 
         clean_summary =
           Nokogiri::HTML5.fragment(folded_summary).css("ai")&.first&.text || folded_summary
@@ -37,7 +39,7 @@ module DiscourseAi
             strategy.type,
             llm_model.name,
             clean_summary,
-            content_to_summarize.map { |c| c[:id] },
+            truncated_content.map { |c| c[:id] },
           )
         else
           AiSummary.new(summarized_text: clean_summary)
@@ -142,6 +144,22 @@ module DiscourseAi
         reserved_tokens = 700
 
         llm_model.max_prompt_tokens - reserved_tokens
+      end
+
+      def truncate(item)
+        item_content = item[:text].to_s
+        split_1, split_2 =
+          [item_content[0, item_content.size / 2], item_content[(item_content.size / 2)..-1]]
+
+        truncation_length = 500
+        tokenizer = llm_model.tokenizer_class
+
+        item[:text] = [
+          tokenizer.truncate(split_1, truncation_length),
+          tokenizer.truncate(split_2.reverse, truncation_length).reverse,
+        ].join(" ")
+
+        item
       end
     end
   end

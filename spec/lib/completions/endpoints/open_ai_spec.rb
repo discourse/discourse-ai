@@ -294,7 +294,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
                   type: "function",
                   function: {
                     name: "echo",
-                    arguments: "{\"text\":\"hello\"}",
+                    arguments: "{\"text\":\"h<e>llo\"}",
                   },
                 },
               ],
@@ -325,7 +325,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
         <invoke>
         <tool_name>echo</tool_name>
         <parameters>
-        <text>hello</text>
+        <text>h&lt;e&gt;llo</text>
         </parameters>
         <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
         </invoke>

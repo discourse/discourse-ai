@@ -188,6 +188,12 @@ module DiscourseAi
             request = FinalDestination::HTTP::Get.new(uri)
           elsif method == :post
             request = FinalDestination::HTTP::Post.new(uri)
+          elsif method == :put
+            request = FinalDestination::HTTP::Put.new(uri)
+          elsif method == :patch
+            request = FinalDestination::HTTP::Patch.new(uri)
+          elsif method == :delete
+            request = FinalDestination::HTTP::Delete.new(uri)
           end
 
           raise ArgumentError, "Invalid method: #{method}" if !request
