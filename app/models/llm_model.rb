@@ -98,6 +98,15 @@ class LlmModel < ActiveRecord::Base
     id < 0
   end
 
+  def api_key
+    if seeded?
+      env_key = "DISCOURSE_AI_SEEDED_LLM_API_KEY_#{id.abs}"
+      ENV[env_key] || super
+    else
+      super
+    end
+  end
+
   private
 
   def required_provider_params
