@@ -111,55 +111,26 @@ module DiscourseAi
 
         topic_id = params[:topic_id].to_i
         topic = nil
-        post = nil
 
         if topic_id > 0
           topic = Topic.find(topic_id)
 
-          raise Discourse::NotFound if topic.nil?
-
           if topic.topic_allowed_users.where(user_id: user.id).empty?
             return render_json_error(I18n.t("discourse_ai.errors.user_not_allowed"))
           end
-
-          post =
-            PostCreator.create!(
-              user,
-              topic_id: topic_id,
-              raw: params[:query],
-              skip_validations: true,
-              custom_fields: {
-                DiscourseAi::AiBot::Playground::BYPASS_AI_REPLY_CUSTOM_FIELD => true,
-              },
-            )
-        else
-          post =
-            PostCreator.create!(
-              user,
-              title: I18n.t("discourse_ai.ai_bot.default_pm_prefix"),
-              raw: params[:query],
-              archetype: Archetype.private_message,
-              target_usernames: "#{user.username},#{persona.user.username}",
-              skip_validations: true,
-              custom_fields: {
-                DiscourseAi::AiBot::Playground::BYPASS_AI_REPLY_CUSTOM_FIELD => true,
-              },
-            )
-
-          topic = post.topic
         end
 
         hijack = request.env["rack.hijack"]
         io = hijack.call
 
-        user = current_user
-
         DiscourseAi::AiBot::ResponseHttpStreamer.queue_streamed_reply(
-          io,
-          persona,
-          user,
-          topic,
-          post,
+          io: io,
+          persona: persona,
+          user: user,
+          topic: topic,
+          query: params[:query].to_s,
+          custom_instructions: params[:custom_instructions].to_s,
+          current_user: current_user,
         )
       end
 

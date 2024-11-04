@@ -500,6 +500,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
         default_llm: "custom:#{llm.id}",
         allow_personal_messages: true,
+        system_prompt: "you are a helpful bot",
       )
 
       io_out, io_in = IO.pipe
@@ -510,6 +511,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
              query: "how are you today?",
              user_unique_id: "site:test.com:user_id:1",
              preferred_username: "test_user",
+             custom_instructions: "To be appended to system prompt",
            },
            env: {
              "rack.hijack" => lambda { io_in },
@@ -520,6 +522,10 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
       raw = io_out.read
       context_info = validate_streamed_response(raw, "This is a test! Testing!")
+
+      system_prompt = fake_endpoint.previous_calls[-2][:dialect].prompt.messages.first[:content]
+
+      expect(system_prompt).to eq("you are a helpful bot\nTo be appended to system prompt")
 
       expect(context_info["topic_id"]).to be_present
       topic = Topic.find(context_info["topic_id"])

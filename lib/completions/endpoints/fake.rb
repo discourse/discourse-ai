@@ -104,6 +104,10 @@ module DiscourseAi
           @last_call = params
         end
 
+        def self.previous_calls
+          @previous_calls ||= []
+        end
+
         def self.reset!
           @last_call = nil
           @fake_content = nil
@@ -118,7 +122,11 @@ module DiscourseAi
           feature_name: nil,
           feature_context: nil
         )
-          self.class.last_call = { dialect: dialect, user: user, model_params: model_params }
+          last_call = { dialect: dialect, user: user, model_params: model_params }
+          self.class.last_call = last_call
+          self.class.previous_calls << last_call
+          # guard memory in test
+          self.class.previous_calls.shift if self.class.previous_calls.length > 10
 
           content = self.class.fake_content
 
