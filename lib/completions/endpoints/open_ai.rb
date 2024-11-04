@@ -173,7 +173,7 @@ module DiscourseAi
 
               argument_fragments =
                 json_args.reduce(+"") do |memo, (arg_name, value)|
-                  memo << "\n<#{arg_name}>#{CGI.escapeHTML(value)}</#{arg_name}>"
+                  memo << "\n<#{arg_name}>#{CGI.escapeHTML(value.to_s)}</#{arg_name}>"
                 end
               argument_fragments << "\n"
 
