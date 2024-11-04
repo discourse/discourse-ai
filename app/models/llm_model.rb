@@ -95,7 +95,7 @@ class LlmModel < ActiveRecord::Base
   end
 
   def seeded?
-    id < 0
+    id.present? && id < 0
   end
 
   def api_key
