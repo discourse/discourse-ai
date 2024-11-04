@@ -53,7 +53,10 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
   end
 
   describe "custom reports" do
-    before { SiteSetting.ai_sentiment_inference_service_api_endpoint = "http://test.com" }
+    before do
+      SiteSetting.ai_sentiment_model_configs =
+        "[{\"model_name\":\"SamLowe/roberta-base-go_emotions\",\"endpoint\":\"http://samlowe-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"j-hartmann/emotion-english-distilroberta-base\",\"endpoint\":\"http://jhartmann-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"cardiffnlp/twitter-roberta-base-sentiment-latest\",\"endpoint\":\"http://cardiffnlp-sentiment.com\",\"api_key\":\"123\"}]"
+    end
 
     fab!(:pm) { Fabricate(:private_message_post) }
 
@@ -61,8 +64,8 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
     fab!(:post_2) { Fabricate(:post) }
 
     describe "overall_sentiment report" do
-      let(:positive_classification) { { negative: 2, neutral: 30, positive: 70 } }
-      let(:negative_classification) { { negative: 65, neutral: 2, positive: 10 } }
+      let(:positive_classification) { { negative: 0.2, neutral: 0.3, positive: 0.7 } }
+      let(:negative_classification) { { negative: 0.65, neutral: 0.2, positive: 0.1 } }
 
       def sentiment_classification(post, classification)
         Fabricate(:sentiment_classification, target: post, classification: classification)
@@ -84,12 +87,28 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
 
     describe "post_emotion report" do
       let(:emotion_1) do
-        { sadness: 49, surprise: 23, neutral: 6, fear: 34, anger: 87, joy: 22, disgust: 70 }
+        {
+          sadness: 0.49,
+          surprise: 0.23,
+          neutral: 0.6,
+          fear: 0.34,
+          anger: 0.87,
+          joy: 0.22,
+          disgust: 0.70,
+        }
       end
       let(:emotion_2) do
-        { sadness: 19, surprise: 63, neutral: 45, fear: 44, anger: 27, joy: 62, disgust: 30 }
+        {
+          sadness: 0.19,
+          surprise: 0.63,
+          neutral: 0.45,
+          fear: 0.44,
+          anger: 0.27,
+          joy: 0.62,
+          disgust: 0.30,
+        }
       end
-      let(:model_used) { "emotion" }
+      let(:model_used) { "j-hartmann/emotion-english-distilroberta-base" }
 
       def emotion_classification(post, classification)
         Fabricate(
@@ -106,7 +125,7 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
       end
 
       it "calculate averages using only public posts" do
-        threshold = 30
+        threshold = 0.30
 
         emotion_classification(post_1, emotion_1)
         emotion_classification(post_2, emotion_2)

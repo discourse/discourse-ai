@@ -7,8 +7,8 @@ module DiscourseAi
         :sentiment
       end
 
-      def available_models
-        SiteSetting.ai_sentiment_models.split("|")
+      def available_classifiers
+        DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema.values
       end
 
       def can_classify?(target)
@@ -16,8 +16,8 @@ module DiscourseAi
       end
 
       def get_verdicts(_)
-        available_models.reduce({}) do |memo, model|
-          memo[model] = false
+        available_classifiers.reduce({}) do |memo, model|
+          memo[model.model_name] = false
           memo
         end
       end
@@ -30,21 +30,23 @@ module DiscourseAi
       def request(target_to_classify)
         target_content = content_of(target_to_classify)
 
-        available_models.reduce({}) do |memo, model|
-          memo[model] = request_with(model, target_content)
+        available_classifiers.reduce({}) do |memo, model|
+          memo[model.model_name] = request_with(target_content, model)
           memo
         end
       end
 
+      def transform_result(result)
+        hash_result = {}
+        result.each { |r| hash_result[r[:label]] = r[:score] }
+        hash_result
+      end
+
       private
 
-      def request_with(model, content)
-        ::DiscourseAi::Inference::DiscourseClassifier.perform!(
-          "#{endpoint}/api/v1/classify",
-          model,
-          content,
-          SiteSetting.ai_sentiment_inference_service_api_key,
-        )
+      def request_with(content, model_config)
+        result = ::DiscourseAi::Inference::HuggingFaceTextEmbeddings.classify(content, model_config)
+        transform_result(result)
       end
 
       def content_of(target_to_classify)
@@ -56,18 +58,6 @@ module DiscourseAi
           end
 
         Tokenizer::BertTokenizer.truncate(content, 512)
-      end
-
-      def endpoint
-        if SiteSetting.ai_sentiment_inference_service_api_endpoint_srv.present?
-          service =
-            DiscourseAi::Utils::DnsSrv.lookup(
-              SiteSetting.ai_sentiment_inference_service_api_endpoint_srv,
-            )
-          "https://#{service.target}:#{service.port}"
-        else
-          SiteSetting.ai_sentiment_inference_service_api_endpoint
-        end
       end
     end
   end

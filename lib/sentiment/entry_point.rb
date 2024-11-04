@@ -16,11 +16,11 @@ module DiscourseAi
 
         plugin.add_report("overall_sentiment") do |report|
           report.modes = [:stacked_chart]
-          threshold = 60
+          threshold = 0.6
 
           sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
             COUNT(
-              CASE WHEN (cr.classification::jsonb->'#{sentiment}')::integer > :threshold THEN 1 ELSE NULL END
+              CASE WHEN (cr.classification::jsonb->'#{sentiment}')::float > :threshold THEN 1 ELSE NULL END
             ) AS #{sentiment}_count
           SQL
 
@@ -39,7 +39,7 @@ module DiscourseAi
             WHERE
               t.archetype = 'regular' AND
               p.user_id > 0 AND
-              cr.model_used = 'sentiment' AND
+              cr.model_used = 'cardiffnlp/twitter-roberta-base-sentiment-latest' AND
               (p.created_at > :report_start AND p.created_at < :report_end)
             GROUP BY DATE_TRUNC('day', p.created_at)
           SQL
@@ -68,11 +68,11 @@ module DiscourseAi
 
         plugin.add_report("post_emotion") do |report|
           report.modes = [:stacked_line_chart]
-          threshold = 30
+          threshold = 0.3
 
           emotion_count_clause = Proc.new { |emotion| <<~SQL }
     COUNT(
-      CASE WHEN (cr.classification::jsonb->'#{emotion}')::integer > :threshold THEN 1 ELSE NULL END
+      CASE WHEN (cr.classification::jsonb->'#{emotion}')::float > :threshold THEN 1 ELSE NULL END
     ) AS #{emotion}_count
   SQL
 
@@ -96,7 +96,7 @@ module DiscourseAi
       WHERE
         t.archetype = 'regular' AND
         p.user_id > 0 AND
-        cr.model_used = 'emotion' AND
+        cr.model_used = 'j-hartmann/emotion-english-distilroberta-base' AND
         (p.created_at > :report_start AND p.created_at < :report_end)
       GROUP BY DATE_TRUNC('day', p.created_at)
       SQL
