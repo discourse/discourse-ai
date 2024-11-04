@@ -39,7 +39,8 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
         )
 
       params = JSON.parse(tool_call.raw_json, symbolize_names: true)
-      xml = params.map { |name, value| "<#{name}>#{CGI.escapeHTML(value)}</#{name}>" }.join("\n")
+      xml =
+        params.map { |name, value| "<#{name}>#{CGI.escapeHTML(value.to_s)}</#{name}>" }.join("\n")
 
       node.at("tool_name").content = tool_call.name
       node.at("tool_id").content = tool_call.id
