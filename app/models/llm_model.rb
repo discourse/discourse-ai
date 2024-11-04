@@ -101,9 +101,9 @@ class LlmModel < ActiveRecord::Base
   def api_key
     if seeded?
       env_key = "DISCOURSE_AI_SEEDED_LLM_API_KEY_#{id.abs}"
-      ENV[env_key] || super
+      ENV[env_key] || self[:api_key]
     else
-      super
+      self[:api_key]
     end
   end
 
