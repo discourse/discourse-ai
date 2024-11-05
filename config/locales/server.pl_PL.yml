@@ -74,18 +74,13 @@ pl_PL:
     reasons:
       flagged_by_toxicity: Wtyczka AI oznaczyła to po sklasyfikowaniu jako toksyczne.
       flagged_by_nsfw: Wtyczka AI oznaczyła to po sklasyfikowaniu co najmniej jednego z załączonych obrazów jako NSFW.
-  errors:
-    prompt_message_length: Wiadomość %{idx} przekracza limit 1000 znaków.
-    invalid_prompt_role: Wiadomość %{idx} ma nieprawidłową rolę.
   reports:
     overall_sentiment:
       title: "Ogólny sentyment"
-      description: "Ten wykres porównuje liczbę postów sklasyfikowanych jako pozytywne lub negatywne."
       xaxis: "Pozytywny(%)"
       yaxis: "Data"
     post_emotion:
       title: "Emocje postu"
-      description: "Liczba postów sklasyfikowanych z jedną z poniższych emocji, pogrupowanych według poziomu zaufania autora posta."
   discourse_ai:
     unknown_model: "Nieznany model AI"
     ai_helper:
@@ -101,6 +96,7 @@ pl_PL:
     share_ai:
       read_more: "Przeczytaj pełną transkrypcję"
     ai_bot:
+      default_pm_prefix: "[PW bota AI bez tytułu]"
       personas:
         cannot_delete_system_persona: "Person systemowych nie można usunąć, zamiast tego wyłącz je."
         general:
@@ -230,3 +226,5 @@ pl_PL:
         disable_module_first: "Najpierw musisz wyłączyć %{setting}."
         set_llm_first: "Najpierw ustaw %{setting}."
         model_unreachable: "Nie mogliśmy uzyskać odpowiedzi od tego modelu. Sprawdź najpierw swoje ustawienia."
+    errors:
+      prompt_message_length: Wiadomość %{idx} przekracza limit 1000 znaków.

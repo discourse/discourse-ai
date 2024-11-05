@@ -102,18 +102,13 @@ he:
     reasons:
       flagged_by_toxicity: תוסף הבינה המלאכותית סימן את זה לאחר סיווג כרעיל.
       flagged_by_nsfw: תוסף הבינה המלאכותית סימן את זה לאחר סיווג לפחות אחת התמונות כפוגעניות.
-  errors:
-    prompt_message_length: ההודעה %{idx} חורגת ממגבלת 1000 התווים.
-    invalid_prompt_role: להודעה %{idx} יש תפקיד שגוי.
   reports:
     overall_sentiment:
       title: "רגש כללי"
-      description: "התרשים הזה משווה בין מספר הפוסטים שסווגו כחיוביים מול השליליים."
       xaxis: "חיובי(%)"
       yaxis: "תאריך"
     post_emotion:
       title: "רגש הפוסט"
-      description: "מספר הפוסטים שסווגו עם אחד הרגשות הבאים, מקובצים לפי דרגות אמון המפרסמים."
   discourse_ai:
     unknown_model: "דגם בינה מלאכותית לא ידוע"
     tools:
@@ -158,6 +153,7 @@ he:
         failed_to_share: "שיתוף השיחה נכשל"
         conversation_deleted: "שיתוף השיחה נמחק בהצלחה"
     ai_bot:
+      default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
       personas:
         default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
@@ -196,6 +192,7 @@ he:
         google:
           base_query:
             name: "שאילתת חיפוש בסיסית"
+            description: "שאילתת בסיס לשימוש בחיפוש. דוגמאות: ‚site:example.com’ יכלול תוצאות מ־example.com,‏ before:2022-01-01 יכלול תוצאות מ־2021 ולפני כן. הטקסט הזה נוסף לשאילתת החיפוש."
         read:
           read_private:
             name: "קריאה פרטית"
@@ -349,3 +346,13 @@ he:
     llm_models:
       missing_provider_param: "%{param} לא יכול להישאר ריק"
       bedrock_invalid_url: "נא למלא את כל השדות די ליצור קשר עם המודל הזה."
+    errors:
+      no_query_specified: משתנה השאילתה נחוץ, נא לציין אותו.
+      no_user_for_persona: לדמות שצוינה אין משתמש שמשויך אליה.
+      persona_not_found: הדמות שצוינה לא קיימת. נא לבדוק את המשתנים persona_name או persona_id.
+      no_user_specified: המשתנים username או user_unique_id נחוצים, נא לציין לפחות אחד מהם.
+      user_not_found: המשתמש שצוין לא קיים. נא לבדוק את המשתנה username.
+      persona_disabled: הדמות שצוינה הושבתה. נא לבדוק את המשתנים persona_name או persona_id.
+      no_default_llm: לדמות חייב להיות מוגדר default_llm (מודל ברירת מחדל).
+      user_not_allowed: המשתמש לא מורשה להשתתף בנושא.
+      prompt_message_length: ההודעה %{idx} חורגת ממגבלת 1000 התווים.

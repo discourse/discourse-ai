@@ -90,18 +90,13 @@ tr_TR:
     reasons:
       flagged_by_toxicity: YZ eklentisi, toksik olarak sınıflandırdıktan sonra buna bayrak ekledi.
       flagged_by_nsfw: YZ eklentisi, eklenen resimlerden en az birini NSFW olarak sınıflandırdıktan sonra buna bayrak ekledi.
-  errors:
-    prompt_message_length: '%{idx} mesajı 1000 karakter sınırının üzerinde.'
-    invalid_prompt_role: '%{idx} mesajının geçersiz bir rolü var.'
   reports:
     overall_sentiment:
       title: "Genel duyarlılık"
-      description: "Bu grafik, olumlu ya da olumsuz olarak sınıflandırılan paylaşımların sayısını karşılaştırmaktadır."
       xaxis: "Pozitif(%)"
       yaxis: "Tarih"
     post_emotion:
       title: "Duygu gönder"
-      description: "Aşağıdaki duygulardan biriyle sınıflandırılan ve gönderi sahibinin güven seviyesine göre gruplandırılan gönderilerin sayısı."
   discourse_ai:
     unknown_model: "Bilinmeyen YZ modeli"
     tools:
@@ -142,6 +137,7 @@ tr_TR:
         failed_to_share: "Konuşma paylaşılamadı"
         conversation_deleted: "Konuşma paylaşımı başarıyla silindi"
     ai_bot:
+      default_pm_prefix: "[Adsız YZ botu kişisel mesajı]"
       personas:
         default_llm_required: "Sohbeti etkinleştirmeden önce varsayılan LLM modeli gereklidir"
         cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
@@ -308,3 +304,5 @@ tr_TR:
         hint:
           one: "`%{settings}` ayarının yapılandırıldığından emin olun."
           other: "İstediğiniz sağlayıcının ayarlarının yapılandırıldığından emin olun. Seçenekler şunlardır: %{settings}"
+    errors:
+      prompt_message_length: '%{idx} mesajı 1000 karakter sınırının üzerinde.'

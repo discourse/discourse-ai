@@ -143,3 +143,6 @@ fa_IR:
       summarization:
         chat:
           summarize: "خلاصه کنید"
+        gists_enabled: "با خلاصه"
+        gists_enabled_long: "با خلاصه تولید شده توسط هوش مصنوعی"
+        gists_disabled: "بدون خلاصه"

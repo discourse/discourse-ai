@@ -11,7 +11,8 @@ he:
         scopes:
           descriptions:
             discourse_ai:
-              search: "הפעלת חיפוש סמנטי דרך נקודת הקצה ‎./discourse-ai/embeddings/semantic-search"
+              search: "מאפשר חיפוש סמנטי"
+              stream_completion: "מאפשר הזרמת השלמות דמות בינה מלאכותית"
       site_settings:
         categories:
           discourse_ai: "בינה מלאכותית ב־Discourse"
@@ -154,6 +155,13 @@ he:
         question_consolidator_llm_help: מודל השפה לשימוש עבור מגבש השאלות, אפשר לבחור במודל פחות חזק כדי לחסוך בעלויות.
         system_prompt: בקשת מערכת
         forced_tool_strategy: אסטרטגיית כלי כפוי
+        allow_chat_direct_messages: "לאפשר הודעות ישירות בצ׳אט"
+        allow_chat_direct_messages_help: "אם האפשרות פעילה, משתמשים בקבוצות המורשות יכולים לשלוח הודעות ישירות לדמות הזאת."
+        allow_personal_messages: "לאפשר הודעות פרטיות"
+        allow_personal_messages_help: "אם האפשרות פעילה, משתמשים בקבוצות המורשות יכולים לשלוח הודעות פרטיות לדמות הזאת."
+        allow_topic_mentions: "לאפשר אזכורים בנושאים"
+        allow_topic_mentions_help: "אם האפשרות פעילה, משתמשים בקבוצות המורשות יכולים לאזכר את הדמות הזאת בנושאים."
+        force_default_llm: "תמיד להשתמש במודל השפה כברירת מחדל"
         save: שמירה
         saved: דמות בינה מלאכותית נשמרה
         enabled: "מאופשר?"
@@ -195,6 +203,7 @@ he:
           hide_indexing_options: "הסתרת אפשרויות העלאה"
         uploads:
           title: "העלאות"
+          description: "קבצים שמועלים צריכים להיות בתסדיר טקסט פשוט (‎.txt) או Markdown‏ (‎.md)"
           button: "הוספת קבצים"
           filter: "סינון העלאות"
           indexed: "סודר במפתח"
@@ -258,6 +267,7 @@ he:
           ai_bot: "בוט בינה מלאכותית"
           ai_helper: "מסייע בינה מלאכותית"
           ai_persona: "דמות (%{persona})"
+          ai_summarization: "תקצור"
           ai_embeddings_semantic_search: "חיפוש סמנטי"
         model_description:
           none: "הגדרות כלליות שעובדות עבור רוב המודלים של השפות"
@@ -265,9 +275,17 @@ he:
           anthropic-claude-3-opus: "מצטיין בכתיבה ובמשימות מורכבות"
           anthropic-claude-3-sonnet: "איזון בין מהירות לחוכמה"
           anthropic-claude-3-haiku: "מהיר וחסכוני"
+          google-gemini-1-5-pro: "מודל בינוני רב־נדבכים שבנוי למגוון רחב של משימות"
+          google-gemini-1-5-flash: "קליל, מהיר וחסכוני עם עיבוד מרובה נדבכים"
+          open_ai-gpt-4-turbo: "מודל חכם מאוד מהדור הקודם"
+          open_ai-gpt-4o: "מודל חכם במיוחד למשימות מורכבות, רבות שלבים"
+          open_ai-gpt-4o-mini: "מודל חסכוני, קטן ומהיר למשימות קלילות"
+        configured:
+          title: "LLMs (מודלי שפה גדולים) מוגדרים"
         preconfigured_llms: "בחירת ה־LLM שלך"
         preconfigured:
           title_no_llms: "נא לבחור תבנית כדי להתחיל"
+          title: "תבניות LLM (מודלי שפה גדולים) לא מוגדרות"
           fake: "הגדרות ידניות"
           button: "הגדרה"
         next:
@@ -428,7 +446,9 @@ he:
         topic:
           title: "תקציר הנושא"
           close: "סגירת חלונית תקציר"
-        disclosure: "סיכומים שנוצרו על ידי בינה מלאכותית"
+        gists_enabled: "עם סיכום"
+        gists_enabled_long: "עם סיכום מבוסס בינה מלאכותית"
+        gists_disabled: "ללא סיכום"
     review:
       types:
         reviewable_ai_post:

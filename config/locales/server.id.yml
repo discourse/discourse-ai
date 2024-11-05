@@ -53,6 +53,7 @@ id:
       image_caption:
         attribution: "Keterangan oleh AI"
     ai_bot:
+      default_pm_prefix: "[PM bot AI tanpa judul]"
       personas:
         default_llm_required: "Model LLM default diperlukan sebelum mengaktifkan Obrolan"
       tool_options:

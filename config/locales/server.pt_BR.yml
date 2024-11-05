@@ -96,18 +96,13 @@ pt_BR:
     reasons:
       flagged_by_toxicity: O plugin de IA sinalizou isto após classificar como tóxico.
       flagged_by_nsfw: O plugin de IA sinalizou isto após classificar pelo menos uma das imagens anexas como NSFW.
-  errors:
-    prompt_message_length: A mensagem %{idx} excede o limite de 1000 caracteres.
-    invalid_prompt_role: A mensagem %{idx} tem uma função inválida.
   reports:
     overall_sentiment:
       title: "Sentimento geral"
-      description: "Este gráfico compara a quantidade de postagens classificadas como positivas ou negativas."
       xaxis: "Positivo (%)"
       yaxis: "Data"
     post_emotion:
       title: "Emoção da postagem"
-      description: "O número de postagens classificadas com uma das emoções a seguir, agrupadas pelo nível de confiança do(a) autor(a) da postagem."
   discourse_ai:
     unknown_model: "Modelo de IA desconhecido"
     tools:
@@ -148,6 +143,7 @@ pt_BR:
         failed_to_share: "Falha ao compartilhar conversa"
         conversation_deleted: "Compartilhamento de conversa excluído"
     ai_bot:
+      default_pm_prefix: "[MP de bot de IA não identificado]"
       personas:
         default_llm_required: "É preciso de um modelo de LLM padrão para ativar o chat"
         cannot_delete_system_persona: "Personas de sistema não podem ser excluídas, desative"
@@ -317,3 +313,5 @@ pt_BR:
     llm_models:
       missing_provider_param: "%{param} Não pode ficar em branco"
       bedrock_invalid_url: "Preencha todos os campos para entrar em contato com este modelo."
+    errors:
+      prompt_message_length: A mensagem %{idx} excede o limite de 1000 caracteres.

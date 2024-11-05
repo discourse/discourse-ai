@@ -90,18 +90,13 @@ fi:
     reasons:
       flagged_by_toxicity: Tekoälylisäosa liputti tämän luokiteltuaan sen toksiseksi.
       flagged_by_nsfw: Tekoälylisäosa liputti tämän luokiteltuaan ainakin yhden liitetyistä kuvista NSFW:ksi.
-  errors:
-    prompt_message_length: Viesti %{idx} ylittää 1 000 merkin rajan.
-    invalid_prompt_role: Viestillä %{idx} on virheellinen rooli.
   reports:
     overall_sentiment:
       title: "Yleinen tunne"
-      description: "Tämä kaavio vertaa positiivisiksi tai negatiivisiksi luokiteltujen viestien määrää."
       xaxis: "Positiivinen (%)"
       yaxis: "Päivämäärä"
     post_emotion:
       title: "Viestin tunne"
-      description: "Niiden viestien määrä, jotka on luokiteltu jollakin seuraavista tunteista ryhmiteltynä julkaisijan luottamustason mukaan."
   discourse_ai:
     unknown_model: "Tuntematon tekoälymalli"
     tools:
@@ -142,6 +137,7 @@ fi:
         failed_to_share: "Keskustelun jakaminen epäonnistui"
         conversation_deleted: "Keskustelun jaon poistaminen onnistui"
     ai_bot:
+      default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
       personas:
         default_llm_required: "Oletus-LLM-malli vaaditaan ennen chatin käyttöönottoa"
         cannot_delete_system_persona: "Järjestelmäpersoonia ei voi poistaa, poista se sen sijaan käytöstä"
@@ -308,3 +304,5 @@ fi:
         hint:
           one: "Varmista, että asetus \"%{settings}\" on määritetty."
           other: "Varmista, että haluamasi palveluntarjoajan asetukset on määritetty. Vaihtoehdot ovat: %{settings}"
+    errors:
+      prompt_message_length: Viesti %{idx} ylittää 1 000 merkin rajan.

@@ -90,18 +90,13 @@ ja:
     reasons:
       flagged_by_toxicity: AI プラグインは、これを毒コメントとして分類した後に通報しました。
       flagged_by_nsfw: AI プラグインは、添付画像の少なくとも 1 つを NSFW として分類した後に通報しました。
-  errors:
-    prompt_message_length: メッセージ %{idx} は 1000 文字の上限を超えています。
-    invalid_prompt_role: メッセージ %{idx} には無効な権限があります。
   reports:
     overall_sentiment:
       title: "全体的なセンチメント"
-      description: "このチャートは、ポジティブまたはネガティブのいずれかに分類された投稿数を比較します。"
       xaxis: "ポジティブ(%)"
       yaxis: "日付"
     post_emotion:
       title: "投稿の感情"
-      description: "次のいずれかの感情で分類された投稿数。投稿者の信頼レベルによってグループ化されています。"
   discourse_ai:
     unknown_model: "不明な AI モデル"
     tools:
@@ -142,6 +137,7 @@ ja:
         failed_to_share: "会話を共有できませんでした"
         conversation_deleted: "会話の共有が削除されました"
     ai_bot:
+      default_pm_prefix: "[無題の AI ボット PM]"
       personas:
         default_llm_required: "チャットを有効にする前に、デフォルトの LLM モデルが必要です"
         cannot_delete_system_persona: "システムペルソナは削除できません。代わりに無効にしてください"
@@ -298,3 +294,5 @@ ja:
         model_unreachable: "このモデルでテスト埋め込みを生成できませんでした。設定が正しいことを確認してください。"
         hint:
           other: "必要なプロバイダーの設定が構成されていることを確認してください。オプション: %{settings}"
+    errors:
+      prompt_message_length: メッセージ %{idx} は 1000 文字の上限を超えています。
