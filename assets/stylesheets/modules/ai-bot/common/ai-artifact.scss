@@ -1,0 +1,56 @@
+.ai-artifact {
+  margin: 1em 0;
+
+  .ai-artifact-tabs {
+    display: flex;
+    gap: 0.20em;
+    border-bottom: 2px solid var(--primary-low);
+    padding: 0 0.2em;
+
+    .ai-artifact-tab {
+      margin-bottom: -2px;
+
+      &[data-selected] {
+        a {
+          color: var(--tertiary);
+          font-weight: 500;
+          border-bottom: 2px solid var(--tertiary);
+        }
+      }
+
+      &:hover:not([data-selected]) {
+        a {
+          color: var(--primary);
+          background: var(--primary-very-low);
+        }
+      }
+
+      a {
+        display: block;
+        padding: 0.5em 1em;
+        color: var(--primary-medium);
+        text-decoration: none;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+      }
+    }
+  }
+
+  .ai-artifact-panels {
+    padding: 1em 0 0 0;
+    background: var(--blend-primary-secondary-5);
+
+    .ai-artifact-panel {
+      display: none;
+      min-height: 400px;
+
+      &[data-selected] {
+        display: block;
+      }
+
+      pre {
+        margin: 0;
+      }
+    }
+  }
+}

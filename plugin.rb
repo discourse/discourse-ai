@@ -39,6 +39,8 @@ register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/ai-tools.scss"
 
+register_asset "stylesheets/modules/ai-bot/common/ai-artifact.scss"
+
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
 end

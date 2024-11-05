@@ -222,6 +222,7 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       tool_summary:
+        create_artifact: "Create web artifact"
         web_browser: "Browse Web"
         github_search_files: "GitHub search files"
         github_search_code: "GitHub code search"
@@ -243,6 +244,7 @@ en:
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
       tool_help:
+        create_artifact: "Create a web artifact using the AI Bot"
         web_browser: "Browse web page using the AI Bot"
         github_search_code: "Search for code in a GitHub repository"
         github_search_files: "Search for files in a GitHub repository"
@@ -264,6 +266,7 @@ en:
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
       tool_description:
+        create_artifact: "Created a web artifact using the AI Bot"
         web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_files: "Searched for '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Searched for '%{query}' in %{repo}"
