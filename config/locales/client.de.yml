@@ -11,7 +11,8 @@ de:
         scopes:
           descriptions:
             discourse_ai:
-              search: "Ermöglicht die semantische Suche über den Endpunkt /discourse-ai/embeddings/semantic-search."
+              search: "Ermöglicht semantische Suche"
+              stream_completion: "Ermöglicht das Streamen von KI-Persona-Vervollständigungen"
       site_settings:
         categories:
           discourse_ai: "Discourse-KI"
@@ -448,7 +449,9 @@ de:
         topic:
           title: "Zusammenfassung des Themas"
           close: "Zusammenfassungspanel schließen"
-        disclosure: "Von KI erstellte Zusammenfassungen"
+        gists_enabled: "mit Zusammenfassung"
+        gists_enabled_long: "mit KI-generierter Zusammenfassung"
+        gists_disabled: "ohne Zusammenfassung"
     review:
       types:
         reviewable_ai_post:

@@ -90,18 +90,13 @@ nl:
     reasons:
       flagged_by_toxicity: De AI-plug-in heeft dit gemarkeerd nadat het als toxisch was geclassificeerd.
       flagged_by_nsfw: De AI-plug-in heeft dit gemarkeerd na classificatie van ten minste één van de bijgevoegde afbeeldingen als NVWW.
-  errors:
-    prompt_message_length: Het bericht %{idx} is langer dan de limiet van 1000 tekens.
-    invalid_prompt_role: Het bericht %{idx} heeft een ongeldige rol.
   reports:
     overall_sentiment:
       title: "Algemeen sentiment"
-      description: "Dit diagram vergelijkt het aantal berichten dat als positief of negatief is geclassificeerd."
       xaxis: "Positief (%)"
       yaxis: "Datum"
     post_emotion:
       title: "Berichtemotie"
-      description: "Aantal berichten geclassificeerd met een van de volgende emoties, gegroepeerd op vertrouwensniveau van de plaatser."
   discourse_ai:
     unknown_model: "Onbekend AI-model"
     tools:
@@ -142,6 +137,7 @@ nl:
         failed_to_share: "Delen van de conversatie mislukt"
         conversation_deleted: "Conversatiedeling verwijderd"
     ai_bot:
+      default_pm_prefix: "[Ongetitelde PB van AI-bot]"
       personas:
         default_llm_required: "Standaard LLM-model is vereist voordat Chat wordt ingeschakeld"
         cannot_delete_system_persona: "Systeempersona's kunnen niet worden verwijderd. Schakel deze in plaats daarvan uit"
@@ -308,3 +304,5 @@ nl:
         hint:
           one: "Zorg dat de instelling `%{settings}` is geconfigureerd."
           other: "Zorg dat de instellingen van de gewenste provider zijn geconfigureerd. Opties zijn: %{settings}"
+    errors:
+      prompt_message_length: Het bericht %{idx} is langer dan de limiet van 1000 tekens.

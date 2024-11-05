@@ -5,6 +5,17 @@
 # https://translate.discourse.org/
 
 uk:
+  admin_js:
+    admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "Дозволяє семантичний пошук"
+              stream_completion: "Дозволяє потокове передавання ШІ персонажів"
+      site_settings:
+        categories:
+          discourse_ai: "Дискурс ШІ"
   js:
     discourse_automation:
       scriptables:
@@ -12,14 +23,45 @@ uk:
           fields:
             sender:
               label: "Відправник"
+              description: "Користувач, який надсилатиме звіт"
+            receivers:
+              label: "Отримувачі"
+              description: "Користувачі, які отримають звіт (електронні листи будуть надіслані безпосередньо на електронну пошту, імена користувачів будуть надіслані в приватному повідомленні)"
             topic_id:
               label: "ID теми"
+              description: "Ідентифікатор теми для публікації звіту"
             title:
               label: "Назва"
+              description: "Назва звіту"
+            days:
+              label: "Дні"
+              description: "Часові рамки звіту"
+            offset:
+              label: "Зсув"
+              description: "Під час тестування ви можете запустити звіт за минулі періоди, використовуйте зсув, щоб почати звіт із більш ранньої дати"
+            instructions:
+              label: "Інструкції"
+              description: "Інструкції, надані до великої мовної моделі"
+            sample_size:
+              label: "Розмір вибірки"
+              description: "Кількість дописів до вибірки для звіту"
+            tokens_per_post:
+              label: "Токени на пост"
+              description: "Кількість лексем llm для використовання на публікацію"
+            model:
+              label: "Модель"
+              description: "LLM для створення звітів"
             categories:
               label: "Розділи"
+              description: "Фільтрувати теми лише за цими категоріями"
             tags:
               label: "Теґи"
+              description: "Фільтрувати теми лише за цими тегами"
+            exclude_tags:
+              label: "Виключити теги"
+              description: "Виключити теми з цими тегами"
+            exclude_categories:
+              label: "Виключити категорії"
         llm_triage:
           fields:
             category:

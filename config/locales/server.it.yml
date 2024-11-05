@@ -90,18 +90,13 @@ it:
     reasons:
       flagged_by_toxicity: Il plugin IA lo ha segnalato dopo averlo classificato come tossico.
       flagged_by_nsfw: Il plugin IA lo ha segnalato dopo aver classificato almeno una delle immagini allegate come NSFW.
-  errors:
-    prompt_message_length: Il messaggio %{idx} supera il limite di 1000 caratteri.
-    invalid_prompt_role: Il messaggio %{idx} ha un ruolo non valido.
   reports:
     overall_sentiment:
       title: "Sentimento generale"
-      description: "Questo grafico confronta il numero di messaggi classificati positivi o negativi."
       xaxis: "Positiva(%)"
       yaxis: "Data"
     post_emotion:
       title: "Emozione del messaggio"
-      description: "Numero di messaggi classificati con una delle seguenti emozioni, raggruppati in base al livello di attendibilità dell'utente che ha pubblicato."
   discourse_ai:
     unknown_model: "Modello IA sconosciuto"
     tools:
@@ -142,6 +137,7 @@ it:
         failed_to_share: "Condivisione della conversazione non riuscita"
         conversation_deleted: "Condivisione di conversazione eliminata correttamente"
     ai_bot:
+      default_pm_prefix: "[Bot IA senza titolo MP]"
       personas:
         default_llm_required: "Il modello LLM predefinito è obbligatorio prima di abilitare la chat"
         cannot_delete_system_persona: "I personaggi di sistema non possono essere eliminati, vanno invece disattivati"
@@ -308,3 +304,5 @@ it:
         hint:
           one: "Assicurati che l'impostazione `%{settings}` sia stata configurata."
           other: "Assicurati che le impostazioni del fornitore che desideri siano state configurate. Le opzioni sono: %{settings}"
+    errors:
+      prompt_message_length: Il messaggio %{idx} supera il limite di 1000 caratteri.

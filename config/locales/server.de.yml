@@ -86,6 +86,7 @@ de:
     ai_pm_summarization_allowed_groups: "Gruppen können Zusammenfassungen in PMs erstellen und ansehen."
     ai_summarize_max_hot_topics_gists_per_batch: "Nach der Aktualisierung der Themen in der angesagten Liste erstellen wir kurze Zusammenfassungen der ersten N Themen. (Deaktiviert, wenn 0)"
     ai_hot_topic_gists_allowed_groups: "Gruppen, die die wichtigsten Themen in der Liste der aktuellen Themen sehen dürfen."
+    ai_summary_backfill_maximum_topics_per_hour: "Anzahl der Themenzusammenfassungen, die pro Stunde aufgefüllt werden müssen."
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
     ai_bot_enable_chat_warning: "Zeigt eine Warnung an, wenn der PN-Chat initiiert wird. Kann durch Bearbeiten der Übersetzungszeichenfolge überschrieben werden: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wenn der GPT-Bot Zugriff auf die PN hat, wird er den Mitgliedern dieser Gruppen antworten."
@@ -102,18 +103,15 @@ de:
     reasons:
       flagged_by_toxicity: Das KI-Plug-in meldete dies nach der Klassifizierung als toxisch.
       flagged_by_nsfw: Das KI-Plug-in meldete dies nach der Klassifizierung von mindestens einem der angehängten Bilder als NSFW.
-  errors:
-    prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.
-    invalid_prompt_role: Die Nachricht %{idx} hat eine ungültige Rolle.
   reports:
     overall_sentiment:
       title: "Allgemeine Stimmung"
-      description: "Diese Grafik vergleicht die Anzahl der Beiträge, die als positiv oder negativ eingestuft werden."
+      description: "Das Diagramm vergleicht die Anzahl der Beiträge, die entweder als positiv oder negativ eingestuft werden. Sie werden berechnet, wenn die positive oder negative Bewertung über dem festgelegten Schwellenwert liegt. Das bedeutet, dass neutrale Beiträge nicht angezeigt werden. Private Nachrichten (PMs) sind ebenfalls ausgeschlossen. Klassifiziert mit \"cardiffnlp/twitter-roberta-base-sentiment-latest\""
       xaxis: "Positiv (%)"
       yaxis: "Datum"
     post_emotion:
       title: "Beitragsemotion"
-      description: "Anzahl der Beiträge, die mit einer der folgenden Emotionen klassifiziert wurden, gruppiert nach der Vertrauensstufe des Autors."
+      description: "Anzahl der Beiträge, die mit einer der folgenden Emotionen klassifiziert wurden, gruppiert nach dem Vertrauenslevel des Posters. Beiträge, die weder positiv noch negativ sind und als neutral gelten, werden nicht angezeigt. Private Nachrichten (PMs) sind ebenfalls ausgeschlossen. Klassifiziert mit \"j-hartmann/emotion-english-roberta-large\""
   discourse_ai:
     unknown_model: "Unbekanntes KI-Modell"
     tools:
@@ -158,6 +156,7 @@ de:
         failed_to_share: "Die Unterhaltung konnte nicht geteilt werden"
         conversation_deleted: "Unterhaltungsfreigabe erfolgreich gelöscht"
     ai_bot:
+      default_pm_prefix: "[KI-Bot-PN ohne Titel]"
       personas:
         default_llm_required: "Standard-LLM-Modell ist erforderlich, bevor der Chat aktiviert werden kann"
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
@@ -330,3 +329,13 @@ de:
     llm_models:
       missing_provider_param: "%{param} darf nicht leer sein"
       bedrock_invalid_url: "Bitte fülle alle Felder aus, um dieses Model zu kontaktieren."
+    errors:
+      no_query_specified: Der Abfrageparameter ist erforderlich, bitte gib ihn an.
+      no_user_for_persona: Die angegebene Persona hat keinen Benutzer, der mit ihr verbunden ist.
+      persona_not_found: Die angegebene Persona existiert nicht. Überprüfe die Parameter persona_name oder persona_id.
+      no_user_specified: Der Benutzername oder der Parameter user_unique_id ist erforderlich. Bitte gib ihn an.
+      user_not_found: Der angegebene Benutzer existiert nicht. Überprüfe den Parameter username.
+      persona_disabled: Die angegebene Persona ist deaktiviert. Überprüfe die Parameter persona_name oder persona_id.
+      no_default_llm: Die Persona muss eine default_llm definiert haben.
+      user_not_allowed: Der Benutzer darf nicht am Thema teilnehmen.
+      prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.

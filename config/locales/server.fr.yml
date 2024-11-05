@@ -90,18 +90,13 @@ fr:
     reasons:
       flagged_by_toxicity: L'extension IA l'a signalé après l'avoir classé comme toxique.
       flagged_by_nsfw: L'extension IA l'a signalé après avoir classé au moins une des images jointes comme NSFW.
-  errors:
-    prompt_message_length: Le message %{idx} dépasse la limite de 1 000 caractères.
-    invalid_prompt_role: Le message %{idx} a un rôle invalide.
   reports:
     overall_sentiment:
       title: "Sentiment général"
-      description: "Ce graphique compare le nombre de publications classées positives ou négatives."
       xaxis: "Positif (%)"
       yaxis: "Date"
     post_emotion:
       title: "Publier une émotion"
-      description: "Nombre de publications classées avec l'une des émotions suivantes, regroupées par niveau de confiance de l'annonceur."
   discourse_ai:
     unknown_model: "Modèle d'IA inconnu"
     tools:
@@ -142,6 +137,7 @@ fr:
         failed_to_share: "Échec du partage de la conversation"
         conversation_deleted: "Partage de conversation supprimé avec succès"
     ai_bot:
+      default_pm_prefix: "[Message privé de robot IA sans titre]"
       personas:
         default_llm_required: "Le modèle LLM par défaut est requis avant d'activer Chat"
         cannot_delete_system_persona: "Les personnages système ne peuvent pas être supprimés, veuillez plutôt les désactiver"
@@ -308,3 +304,5 @@ fr:
         hint:
           one: "Assurez-vous que le paramètre « %{settings} » a été configuré."
           other: "Assurez-vous que les paramètres du fournisseur souhaité ont été configurés. Les options sont les suivantes : %{settings}"
+    errors:
+      prompt_message_length: Le message %{idx} dépasse la limite de 1 000 caractères.

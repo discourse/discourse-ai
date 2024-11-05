@@ -90,18 +90,13 @@ zh_CN:
     reasons:
       flagged_by_toxicity: AI 插件将其分类为有毒后对其进行了举报。
       flagged_by_nsfw: AI 插件在将至少一张附加图片分类为 NSFW 后对其进行了举报。
-  errors:
-    prompt_message_length: 消息 %{idx} 超过 1000 个字符限制。
-    invalid_prompt_role: 消息 %{idx} 的角色无效。
   reports:
     overall_sentiment:
       title: "整体情绪"
-      description: "此图表比较了分类为积极或消极的帖子数。"
       xaxis: "积极 (%)"
       yaxis: "日期"
     post_emotion:
       title: "帖子情绪"
-      description: "按发帖人信任级别分组的具有以下一种情绪的帖子数。"
   discourse_ai:
     unknown_model: "未知 AI 模型"
     tools:
@@ -142,6 +137,7 @@ zh_CN:
         failed_to_share: "无法分享对话"
         conversation_deleted: "对话分享已成功删除"
     ai_bot:
+      default_pm_prefix: "[无标题 AI 机器人私信]"
       personas:
         default_llm_required: "启用聊天之前需要默认的 LLM 模型"
         cannot_delete_system_persona: "无法删除系统角色，请改为将其禁用"
@@ -298,3 +294,5 @@ zh_CN:
         model_unreachable: "我们无法使用此模型生成测试嵌入向量。请检查设置是否正确。"
         hint:
           other: "确保已配置 `%{settings}` 设置。"
+    errors:
+      prompt_message_length: 消息 %{idx} 超过 1000 个字符限制。
