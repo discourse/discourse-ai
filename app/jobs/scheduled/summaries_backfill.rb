@@ -10,34 +10,48 @@ module ::Jobs
       return if !SiteSetting.ai_summarization_enabled
       return if SiteSetting.ai_summary_backfill_maximum_topics_per_hour.zero?
 
-      # Split budget in 12 intervals, but make sure is at least one.
-      limit_per_job = [SiteSetting.ai_summary_backfill_maximum_topics_per_hour, 12].max / 12
-      budget = [current_budget, limit_per_job].min
+      system_user = Discourse.system_user
 
-      backfill_candidates
-        .limit(budget)
+      complete_t = AiSummary.summary_types[:complete]
+      backfill_candidates(complete_t)
+        .limit(current_budget(complete_t))
         .each do |topic|
-          DiscourseAi::Summarization.topic_summary(topic).force_summarize(Discourse.system_user)
+          DiscourseAi::Summarization.topic_summary(topic).force_summarize(system_user)
         end
+
+      gist_t = AiSummary.summary_types[:gist]
+      backfill_candidates(gist_t)
+        .limit(current_budget(gist_t))
+        .each { |topic| DiscourseAi::Summarization.topic_gist(topic).force_summarize(system_user) }
     end
 
-    def backfill_candidates
+    def backfill_candidates(summary_type)
       Topic
         .where("topics.word_count >= ?", SiteSetting.ai_summary_backfill_minimum_word_count)
-        .joins(
-          "LEFT OUTER JOIN ai_summaries ais ON topics.id = ais.target_id AND ais.target_type = 'Topic'",
-        )
+        .joins(<<~SQL)
+          LEFT OUTER JOIN ai_summaries ais ON 
+                          topics.id = ais.target_id AND 
+                          ais.target_type = 'Topic' AND 
+                          ais.summary_type = '#{summary_type}'
+        SQL
         .where(
           "ais.id IS NULL OR UPPER(ais.content_range) < topics.highest_post_number + 1",
         ) # (1..1) gets stored ad (1..2).
         .order("ais.created_at DESC NULLS FIRST, topics.last_posted_at DESC")
     end
 
-    def current_budget
+    def current_budget(type)
+      # Split budget in 12 intervals, but make sure is at least one.
       base_budget = SiteSetting.ai_summary_backfill_maximum_topics_per_hour
-      used_budget = AiSummary.complete.system.where("created_at > ?", 1.hour.ago).count
+      limit_per_job = [base_budget, 12].max / 12
 
-      base_budget - used_budget
+      used_budget =
+        AiSummary.system.where("created_at > ?", 1.hour.ago).where(summary_type: type).count
+
+      current_budget = [(base_budget - used_budget), limit_per_job].min
+      return 0 if current_budget < 0
+
+      current_budget
     end
   end
 end
