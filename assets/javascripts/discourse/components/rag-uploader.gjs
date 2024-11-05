@@ -24,6 +24,7 @@ export default class RagUploader extends Component {
   uppyUpload = new UppyUpload(getOwner(this), {
     id: "discourse-ai-rag-uploader",
     maxFiles: 20,
+    type: "discourse_ai_rag_upload",
     uploadUrl:
       "/admin/plugins/discourse-ai/rag-document-fragments/files/upload",
     preventDirectS3Uploads: true,
