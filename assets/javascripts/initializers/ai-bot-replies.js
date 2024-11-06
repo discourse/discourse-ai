@@ -1,10 +1,4 @@
 import { hbs } from "ember-cli-htmlbars";
-import {
-  POST_MENU_COPY_LINK_BUTTON_KEY,
-  POST_MENU_LIKE_BUTTON_KEY,
-  POST_MENU_SHARE_BUTTON_KEY,
-  POST_MENU_SHOW_MORE_BUTTON_KEY,
-} from "discourse/components/post/menu";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import { withSilencedDeprecations } from "discourse-common/lib/deprecated";
@@ -88,20 +82,13 @@ function initializePersonaDecorator(api) {
   );
 }
 
-const POST_MENU_BUTTONS_POSITION_BEFORE = [
-  POST_MENU_LIKE_BUTTON_KEY,
-  POST_MENU_COPY_LINK_BUTTON_KEY,
-  POST_MENU_SHARE_BUTTON_KEY,
-  POST_MENU_SHOW_MORE_BUTTON_KEY,
-];
-
 function initializePauseButton(api) {
   const transformerRegistered = api.registerValueTransformer(
     "post-menu-buttons",
-    ({ value: dag, context: { post } }) => {
+    ({ value: dag, context: { post, firstButtonKey } }) => {
       if (isGPTBot(post.user)) {
         dag.add("ai-cancel-gpt", AiCancelStreamingButton, {
-          before: POST_MENU_BUTTONS_POSITION_BEFORE,
+          before: firstButtonKey,
           after: ["ai-share", "ai-debug"],
         });
       }
@@ -140,10 +127,10 @@ function initializeDebugButton(api) {
 
   const transformerRegistered = api.registerValueTransformer(
     "post-menu-buttons",
-    ({ value: dag, context: { post } }) => {
+    ({ value: dag, context: { post, firstButtonKey } }) => {
       if (post.topic?.archetype === "private_message") {
         dag.add("ai-debug", AiDebugButton, {
-          before: POST_MENU_BUTTONS_POSITION_BEFORE,
+          before: firstButtonKey,
           after: "ai-share",
         });
       }
@@ -191,10 +178,10 @@ function initializeShareButton(api) {
 
   const transformerRegistered = api.registerValueTransformer(
     "post-menu-buttons",
-    ({ value: dag, context: { post } }) => {
+    ({ value: dag, context: { post, firstButtonKey } }) => {
       if (post.topic?.archetype === "private_message") {
         dag.add("ai-share", AiShareButton, {
-          before: POST_MENU_BUTTONS_POSITION_BEFORE,
+          before: firstButtonKey,
         });
       }
     }
