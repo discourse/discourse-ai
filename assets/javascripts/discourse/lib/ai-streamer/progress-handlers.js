@@ -113,6 +113,10 @@ export async function applyProgress(status, updater) {
     if (status.cooked) {
       await updater.setCooked(status.cooked);
     }
+    // Ensure the final summary is set
+    if (status.raw !== undefined) {
+      await updater.setRaw(status.raw, true);
+    }
     updater.streaming = false;
   }
 
