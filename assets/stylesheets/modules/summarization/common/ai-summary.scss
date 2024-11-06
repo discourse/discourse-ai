@@ -224,18 +224,58 @@
     line-height: 1.4;
     width: 90%;
   }
-  .desktop-view & {
-    margin-top: 0.15em;
-    margin-bottom: -0.15em;
-  }
+
   &__text {
     color: var(--primary-high);
     text-wrap: pretty;
     word-wrap: break-word;
     font-size: var(--font-down-1);
-    max-width: 70ch;
+    max-width: 65ch;
     .visited & {
       color: var(--primary-medium);
+    }
+  }
+}
+
+.--topic-list-with-gist {
+  .topic-list-item {
+    .main-link {
+      .desktop-view & {
+        padding: 1em 1em 1em 0.67em;
+      }
+      font-size: var(--font-up-2);
+      line-height: var(--line-height-medium);
+    }
+    .link-bottom-line {
+      font-size: var(--font-down-2);
+      margin-top: 0.25em;
+    }
+    .ai-topic-gist {
+      font-size: var(--font-up-1);
+      line-height: var(--line-height-large);
+      margin-top: 0.25em;
+      margin-bottom: 0.15em;
+    }
+    .topic-post-badges {
+      font-size: var(--font-down-1);
+    }
+  }
+
+  .mobile-view & {
+    .topic-list {
+      .topic-list-item > .topic-list-data {
+        padding: 1em 0;
+      }
+      .topic-item-stats .num.activity {
+        align-self: end;
+        margin-bottom: -0.15em; // vertical alignment
+      }
+      .pull-left {
+        padding-top: 0.25em;
+      }
+      .right {
+        margin-left: 3.75em;
+      }
     }
   }
 }

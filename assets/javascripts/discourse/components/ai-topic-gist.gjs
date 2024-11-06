@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { service } from "@ember/service";
+import bodyClass from "discourse/helpers/body-class";
 
 export default class AiTopicGist extends Component {
   @service router;
@@ -21,6 +22,7 @@ export default class AiTopicGist extends Component {
 
   <template>
     {{#if this.showGist}}
+      {{bodyClass "--topic-list-with-gist"}}
       <div class="ai-topic-gist">
         <div class="ai-topic-gist__text">
           {{@topic.ai_topic_gist}}
