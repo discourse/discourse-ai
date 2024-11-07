@@ -376,9 +376,9 @@ discourse_ai:
     type: list
     list_type: compact
   ai_summary_backfill_maximum_topics_per_hour:
-    default: 10
+    default: 0
     min: 0
-    max: 1000
+    max: 10000
   ai_summary_backfill_minimum_word_count:
     default: 200
     hidden: true
