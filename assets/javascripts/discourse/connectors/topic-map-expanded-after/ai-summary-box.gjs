@@ -5,8 +5,9 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
-import { next } from "@ember/runloop";
+import { cancel, later } from "@ember/runloop";
 import { service } from "@ember/service";
+import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
@@ -18,8 +19,8 @@ import I18n from "discourse-i18n";
 import DMenu from "float-kit/components/d-menu";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
-import streamUpdaterText from "../../lib/ai-streamer/progress-handlers";
-import SummaryUpdater from "../../lib/ai-streamer/updaters/summary-updater";
+
+const STREAMED_TEXT_SPEED = 15;
 
 export default class AiSummaryBox extends Component {
   @service siteSettings;
@@ -35,8 +36,10 @@ export default class AiSummaryBox extends Component {
   @tracked canRegenerate = false;
   @tracked loading = false;
   @tracked isStreaming = false;
-  oldRaw = null; // used for comparison in SummaryUpdater in lib/ai-streamer/updaters
-  finalSummary = null;
+  @tracked streamedText = "";
+  @tracked currentIndex = 0;
+  typingTimer = null;
+  streamedTextLength = 0;
 
   get outdatedSummaryWarningText() {
     let outdatedText = I18n.t("summary.outdated");
@@ -52,6 +55,8 @@ export default class AiSummaryBox extends Component {
   }
 
   resetSummary() {
+    this.streamedText = "";
+    this.currentIndex = 0;
     this.text = "";
     this.summarizedOn = null;
     this.summarizedBy = null;
@@ -83,8 +88,7 @@ export default class AiSummaryBox extends Component {
     }
     const channel = `/discourse-ai/summaries/topic/${this.args.outletArgs.topic.id}`;
     this._channel = channel;
-    // we attempt to recover the last message in the bus so we subscrcibe at -2
-    this.messageBus.subscribe(channel, this._updateSummary, -2);
+    this.messageBus.subscribe(channel, this._updateSummary);
   }
 
   @bind
@@ -134,36 +138,63 @@ export default class AiSummaryBox extends Component {
     return ajax(url).then((data) => {
       if (data?.ai_topic_summary?.summarized_text) {
         data.done = true;
-        // Our streamer won't display the summary unless the summary box is in the DOM.
-        // Wait for the next runloop or cached summaries won't appear.
-        next(() => this._updateSummary(data));
+        this._updateSummary(data);
       }
     });
   }
 
+  typeCharacter() {
+    if (this.streamedTextLength < this.text.length) {
+      this.streamedText += this.text.charAt(this.streamedTextLength);
+      this.streamedTextLength++;
+
+      this.typingTimer = later(this, this.typeCharacter, STREAMED_TEXT_SPEED);
+    } else {
+      this.typingTimer = null;
+    }
+  }
+
+  onTextUpdate() {
+    // Reset only if there’s a new summary to process
+    if (this.typingTimer) {
+      cancel(this.typingTimer);
+    }
+
+    this.typeCharacter();
+  }
+
   @bind
-  _updateSummary(update) {
+  async _updateSummary(update) {
     const topicSummary = {
       done: update.done,
       raw: update.ai_topic_summary?.summarized_text,
       ...update.ai_topic_summary,
     };
+    const newText = topicSummary.raw || "";
     this.loading = false;
 
-    this.isStreaming = true;
-    streamUpdaterText(SummaryUpdater, topicSummary, this);
-
     if (update.done) {
+      this.text = newText;
+      this.streamedText = newText;
+      this.displayedTextLength = newText.length;
       this.isStreaming = false;
-      this.text = this.finalSummary;
       this.summarizedOn = shortDateNoYear(
         moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
       );
       this.summarizedBy = topicSummary.algorithm;
       this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
       this.outdated = topicSummary.outdated;
-      this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
       this.canRegenerate = topicSummary.outdated && topicSummary.can_regenerate;
+
+      // Clear pending animations
+      if (this.typingTimer) {
+        cancel(this.typingTimer);
+        this.typingTimer = null;
+      }
+    } else if (newText.length > this.text.length) {
+      this.text = newText;
+      this.isStreaming = true;
+      this.onTextUpdate();
     }
   }
 
@@ -228,7 +259,7 @@ export default class AiSummaryBox extends Component {
                   <AiSummarySkeleton />
                 {{else}}
                   <div class="generated-summary cooked">
-                    {{this.text}}
+                    <CookText @rawText={{this.streamedText}} />
                   </div>
                   {{#if this.summarizedOn}}
                     <div class="summarized-on">
