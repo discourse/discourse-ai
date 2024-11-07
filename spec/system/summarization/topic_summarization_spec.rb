@@ -14,6 +14,7 @@ RSpec.describe "Summarize a topic ", type: :system do
   end
   let(:summarization_result) { "This is a summary" }
   let(:topic_page) { PageObjects::Pages::Topic.new }
+  let(:summary_box) { PageObjects::Components::AiSummaryBox.new }
 
   before do
     group.add(current_user)
@@ -38,10 +39,35 @@ RSpec.describe "Summarize a topic ", type: :system do
 
     it "displays it" do
       topic_page.visit_topic(topic)
+      summary_box.click_summarize
+      expect(summary_box).to have_summary(summarization_result)
+    end
+  end
 
-      find(".ai-summarization-button button").click
+  context "when a summary is outdated" do
+    before do
+      AiSummary.create!(
+        target: topic,
+        summarized_text: summarization_result,
+        algorithm: "test",
+        original_content_sha: "test",
+        summary_type: AiSummary.summary_types[:complete],
+      )
+    end
+    fab!(:new_post) do
+      Fabricate(
+        :post,
+        topic: topic,
+        raw:
+          "Idk, I think pie is overrated. I prefer cake. Cake is the best dessert. I always eat cake. I never throw it at people.",
+      )
+    end
 
-      expect(find(".generated-summary p").text).to eq(summarization_result)
+    it "displays the new summary instead of a cached one" do
+      topic_page.visit_topic(topic)
+      summary_box.click_summarize
+      summary_box.click_regenerate_summary
+      expect(summary_box).to have_generating_summary_indicator
     end
   end
 end

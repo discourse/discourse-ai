@@ -123,6 +123,8 @@ export default class AiSummaryBox extends Component {
       }
     }
 
+    // ensure summary is reset before requesting a new one:
+    this.resetSummary();
     return this._requestSummary(fetchURL);
   }
 

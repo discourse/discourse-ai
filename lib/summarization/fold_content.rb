@@ -48,7 +48,7 @@ module DiscourseAi
 
       # @returns { AiSummary } - Resulting summary.
       #
-      # Finds a summary matching the target and strategy. Marks it as outdates if the strategy found newer content
+      # Finds a summary matching the target and strategy. Marks it as outdated if the strategy found newer content
       def existing_summary
         if !defined?(@existing_summary)
           summary = AiSummary.find_by(target: strategy.target, summary_type: strategy.type)
