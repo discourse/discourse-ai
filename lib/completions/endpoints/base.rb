@@ -147,6 +147,7 @@ module DiscourseAi
                 end
 
                 response.read_body do |chunk|
+                  response_raw << chunk
                   decode_chunk(chunk).each do |partial|
                     yield partial, cancel
                   end

@@ -190,6 +190,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expect(log.feature_name).to eq("testing")
     expect(log.response_tokens).to eq(15)
     expect(log.request_tokens).to eq(25)
+    expect(log.raw_request_payload).to eq(expected_body.to_json)
+    expect(log.raw_response_payload.strip).to eq(body.strip)
   end
 
   it "supports non streaming tool calls" do
