@@ -4,6 +4,8 @@ RSpec.describe DiscourseAi::AiBot::BotController do
   fab!(:user)
   fab!(:pm_topic) { Fabricate(:private_message_topic) }
   fab!(:pm_post) { Fabricate(:post, topic: pm_topic) }
+  fab!(:pm_post2) { Fabricate(:post, topic: pm_topic) }
+  fab!(:pm_post3) { Fabricate(:post, topic: pm_topic) }
 
   before { sign_in(user) }
 
@@ -22,8 +24,28 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       user = pm_topic.topic_allowed_users.first.user
       sign_in(user)
 
-      AiApiAuditLog.create!(
+
+      log1 = AiApiAuditLog.create!(
+        provider_id: 1,
+        topic_id: pm_topic.id,
+        raw_request_payload: "request",
+        raw_response_payload: "response",
+        request_tokens: 1,
+        response_tokens: 2,
+      )
+
+      log2 = AiApiAuditLog.create!(
         post_id: pm_post.id,
+        provider_id: 1,
+        topic_id: pm_topic.id,
+        raw_request_payload: "request",
+        raw_response_payload: "response",
+        request_tokens: 1,
+        response_tokens: 2,
+      )
+
+      log3 = AiApiAuditLog.create!(
+        post_id: pm_post2.id,
         provider_id: 1,
         topic_id: pm_topic.id,
         raw_request_payload: "request",
@@ -38,18 +60,27 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       get "/discourse-ai/ai-bot/post/#{pm_post.id}/show-debug-info"
       expect(response.status).to eq(200)
 
+      expect(response.parsed_body["id"]).to eq(log2.id)
+      expect(response.parsed_body["next_log_id"]).to eq(log3.id)
+      expect(response.parsed_body["prev_log_id"]).to eq(log1.id)
+      expect(response.parsed_body["topic_id"]).to eq(pm_topic.id)
+
       expect(response.parsed_body["request_tokens"]).to eq(1)
       expect(response.parsed_body["response_tokens"]).to eq(2)
       expect(response.parsed_body["raw_request_payload"]).to eq("request")
       expect(response.parsed_body["raw_response_payload"]).to eq("response")
 
-      post2 = Fabricate(:post, topic: pm_topic)
 
       # return previous post if current has no debug info
-      get "/discourse-ai/ai-bot/post/#{post2.id}/show-debug-info"
+      get "/discourse-ai/ai-bot/post/#{pm_post3.id}/show-debug-info"
       expect(response.status).to eq(200)
       expect(response.parsed_body["request_tokens"]).to eq(1)
       expect(response.parsed_body["response_tokens"]).to eq(2)
+
+      # can return debug info by id as well
+      get "/discourse-ai/ai-bot/show-debug-info/#{log1.id}"
+      expect(response.status).to eq(200)
+      expect(response.parsed_body["id"]).to eq(log1.id)
     end
   end
 

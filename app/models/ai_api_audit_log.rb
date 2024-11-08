@@ -14,6 +14,14 @@ class AiApiAuditLog < ActiveRecord::Base
     Ollama = 7
     SambaNova = 8
   end
+
+  def next_log_id
+    self.class.where("id > ?", id).where(topic_id: topic_id).order(id: :asc).pluck(:id).first
+  end
+
+  def prev_log_id
+    self.class.where("id < ?", id).where(topic_id: topic_id).order(id: :desc).pluck(:id).first
+  end
 end
 
 # == Schema Information

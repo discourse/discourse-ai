@@ -415,6 +415,8 @@ en:
           response_tokens: "Response tokens:"
           request: "Request"
           response: "Response"
+          next_log: "Next"
+          previous_log: "Previous"
 
         share_full_topic_modal:
           title: "Share Conversation Publicly"

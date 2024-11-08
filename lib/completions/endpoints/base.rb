@@ -126,21 +126,128 @@ module DiscourseAi
                 response_data = extract_completion_from(response_raw)
                 partials_raw = response_data.to_s
 
-                if native_tool_support?
-                  if allow_tools && has_tool?(response_data)
-                    function_buffer = build_buffer # Nokogiri document
-                    function_buffer =
-                      add_to_function_buffer(function_buffer, payload: response_data)
-                    FunctionCallNormalizer.normalize_function_ids!(function_buffer)
+                if allow_tools && !native_tool_support?
+                  response_data, function_calls = FunctionCallNormalizer.normalize(response_data)
+                  response_data = function_calls if function_calls.present?
+                end
 
-                    response_data = +function_buffer.at("function_calls").to_s
-                    response_data << "\n"
+                if response_data.is_a?(Array) && response_data.length == 1
+                  response_data = response_data.first
+                end
+
+                return response_data
+              end
+
+              begin
+                cancelled = false
+                cancel = -> { cancelled = true }
+                if cancelled
+                  http.finish
+                  break
+                end
+
+                response.read_body do |chunk|
+                  decode_chunk(chunk).each do |partial|
+                    yield partial, cancel
                   end
-                else
-                  if allow_tools
-                    response_data, function_calls = FunctionCallNormalizer.normalize(response_data)
-                    response_data = function_calls if function_calls.present?
-                  end
+                end
+              rescue IOError, StandardError
+                raise if !cancelled
+              end
+              return response_data
+            ensure
+              if log
+                log.raw_response_payload = response_raw
+                final_log_update(log)
+
+                log.response_tokens = tokenizer.size(partials_raw) if log.response_tokens.blank?
+                log.save!
+
+                if Rails.env.development?
+                  puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
+                end
+              end
+            end
+          end
+        end
+
+        def perform_completionx!(
+          dialect,
+          user,
+          model_params = {},
+          feature_name: nil,
+          feature_context: nil,
+          &blk
+        )
+          allow_tools = dialect.prompt.has_tools?
+          model_params = normalize_model_params(model_params)
+          orig_blk = blk
+
+          @streaming_mode = block_given?
+          to_strip = xml_tags_to_strip(dialect)
+          @xml_stripper =
+            DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
+
+          if @streaming_mode && @xml_stripper
+            blk =
+              lambda do |partial, cancel|
+                partial = @xml_stripper << partial
+                orig_blk.call(partial, cancel) if partial
+              end
+          end
+
+          prompt = dialect.translate
+
+          FinalDestination::HTTP.start(
+            model_uri.host,
+            model_uri.port,
+            use_ssl: use_ssl?,
+            read_timeout: TIMEOUT,
+            open_timeout: TIMEOUT,
+            write_timeout: TIMEOUT,
+          ) do |http|
+            response_data = +""
+            response_raw = +""
+
+            # Needed to response token calculations. Cannot rely on response_data due to function buffering.
+            partials_raw = +""
+            request_body = prepare_payload(prompt, model_params, dialect).to_json
+
+            request = prepare_request(request_body)
+
+            http.request(request) do |response|
+              if response.code.to_i != 200
+                Rails.logger.error(
+                  "#{self.class.name}: status: #{response.code.to_i} - body: #{response.body}",
+                )
+                raise CompletionFailed, response.body
+              end
+
+              log =
+                AiApiAuditLog.new(
+                  provider_id: provider_id,
+                  user_id: user&.id,
+                  raw_request_payload: request_body,
+                  request_tokens: prompt_size(prompt),
+                  topic_id: dialect.prompt.topic_id,
+                  post_id: dialect.prompt.post_id,
+                  feature_name: feature_name,
+                  language_model: llm_model.name,
+                  feature_context: feature_context.present? ? feature_context.as_json : nil,
+                )
+
+              if !@streaming_mode
+                response_raw = response.read_body
+                response_data = extract_completion_from(response_raw)
+                partials_raw = response_data.to_s
+
+                if allow_tools && !native_tool_support?
+                  response_data, function_calls = FunctionCallNormalizer.normalize(response_data)
+                  response_data = function_calls if function_calls.present?
+                end
+
+                if response_data.is_a?(Array) && response_data.length == 1
+                  response_data = response_data.first
                 end
 
                 return response_data
@@ -277,8 +384,9 @@ module DiscourseAi
             ensure
               if log
                 log.raw_response_payload = response_raw
-                log.response_tokens = tokenizer.size(partials_raw)
                 final_log_update(log)
+
+                log.response_tokens = tokenizer.size(partials_raw) if log.response_tokens.blank?
                 log.save!
 
                 if Rails.env.development?

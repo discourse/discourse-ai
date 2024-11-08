@@ -220,6 +220,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     before do
       Jobs.run_immediately!
       SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
+      SiteSetting.ai_embeddings_enabled = false
     end
 
     fab!(:persona) do
@@ -452,10 +453,25 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       it "can run tools" do
         persona.update!(tools: ["Time"])
 
-        responses = [
-          "<function_calls><invoke><tool_name>time</tool_name><tool_id>time</tool_id><parameters><timezone>Buenos Aires</timezone></parameters></invoke></function_calls>",
-          "The time is 2023-12-14 17:24:00 -0300",
-        ]
+        tool_call1 =
+          DiscourseAi::Completions::ToolCall.new(
+            name: "time",
+            id: "time",
+            parameters: {
+              timezone: "Buenos Aires",
+            },
+          )
+
+        tool_call2 =
+          DiscourseAi::Completions::ToolCall.new(
+            name: "time",
+            id: "time",
+            parameters: {
+              timezone: "Sydney",
+            },
+          )
+
+        responses = [[tool_call1, tool_call2], "The time is 2023-12-14 17:24:00 -0300"]
 
         message =
           DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
@@ -470,7 +486,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         # it also needs to have tool details now set on message
         prompt = ChatMessageCustomPrompt.find_by(message_id: reply.id)
-        expect(prompt.custom_prompt.length).to eq(3)
+
+        expect(prompt.custom_prompt.length).to eq(5)
 
         # TODO in chat I am mixed on including this in the context, but I guess maybe?
         # thinking about this

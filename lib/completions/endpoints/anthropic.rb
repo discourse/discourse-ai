@@ -90,13 +90,16 @@ module DiscourseAi
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
+        def decode_chunk(partial_data)
+          @decoder ||= JsonStreamDecoder.new
+          (@decoder << partial_data).map do |parsed_json|
+            processor.process_streamed_message(parsed_json)
+          end.compact
+        end
+
         def processor
           @processor ||=
             DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
-        end
-
-        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          processor.to_xml_tool_calls(function_buffer) if !partial
         end
 
         def extract_completion_from(response_raw)
@@ -105,6 +108,10 @@ module DiscourseAi
 
         def has_tool?(_response_data)
           processor.tool_calls.present?
+        end
+
+        def tool_calls
+          processor.to_tool_calls
         end
 
         def final_log_update(log)

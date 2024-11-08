@@ -100,6 +100,7 @@ module DiscourseAi
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
 
         needs_newlines = false
+        tools_ran = 0
 
         while total_completions <= MAX_COMPLETIONS && ongoing_chain
           tool_found = false
@@ -107,9 +108,10 @@ module DiscourseAi
 
           result =
             llm.generate(prompt, feature_name: "bot", **llm_kwargs) do |partial, cancel|
-              tools = persona.find_tools(partial, bot_user: user, llm: llm, context: context)
+              tool = persona.find_tool(partial, bot_user: user, llm: llm, context: context)
+              tool = nil if tools_ran >= MAX_TOOLS
 
-              if (tools.present?)
+              if (tool.present?)
                 tool_found = true
                 # a bit hacky, but extra newlines do no harm
                 if needs_newlines
@@ -117,10 +119,9 @@ module DiscourseAi
                   needs_newlines = false
                 end
 
-                tools[0..MAX_TOOLS].each do |tool|
-                  process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
-                  ongoing_chain &&= tool.chain_next_response?
-                end
+                process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
+                tools_ran += 1
+                ongoing_chain &&= tool.chain_next_response?
               else
                 needs_newlines = true
                 update_blk.call(partial, cancel)
