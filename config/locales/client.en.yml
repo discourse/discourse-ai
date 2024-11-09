@@ -5,8 +5,8 @@ en:
         scopes:
           descriptions:
             discourse_ai:
-              search: "Allows semantic search"
-              stream_completion: "Allows streaming ai persona completions"
+              search: "Allows AI search"
+              stream_completion: "Allows streaming AI persona completions"
 
       site_settings:
         categories:
@@ -24,7 +24,7 @@ en:
               description: "The users that will receive the report (emails will be sent direct emails, usernames will be sent a PM)"
             topic_id:
               label: "Topic ID"
-              description: "The topic id to post the report to"
+              description: "The topic ID to post the report to"
             title:
               label: "Title"
               description: "The title of the report"
@@ -42,7 +42,7 @@ en:
               description: "The number of posts to sample for the report"
             tokens_per_post:
               label: "Tokens per post"
-              description: "The number of llm tokens to use per post"
+              description: "The number of LLM tokens to use per post"
             model:
               label: "Model"
               description: "LLM to use for report generation"
@@ -72,7 +72,7 @@ en:
               description: "Prioritize content from this group in the report"
             temperature:
               label: "Temperature"
-              description: "Temperature to use for the LLM, increase to increase randomness (0 to use model default)"
+              description: "Temperature to use for the LLM. Increase to increase randomness (0 to use model default)"
             top_p:
               label: "Top P"
               description: "Top P to use for the LLM, increase to increase randomness (0 to use model default)"
@@ -87,7 +87,7 @@ en:
               description: "The maximum number of tokens to scan using LLM triage"
             search_for_text:
               label: "Search for text"
-              description: "If the following text appears in the llm reply, apply this actions"
+              description: "If the following text appears in the LLM reply, apply these actions"
             category:
               label: "Category"
               description: "Category to apply to the topic"
@@ -96,13 +96,13 @@ en:
               description: "Tags to apply to the topic"
             canned_reply:
               label: "Reply"
-              description: "Raw text of canned reply to post on the topic"
+              description: "Raw text of the canned reply to post on the topic"
             canned_reply_user:
               label: "Reply User"
               description: "Username of the user to post the canned reply"
             hide_topic:
               label: "Hide topic"
-              description: "Make topic non visible to the public if triggered"
+              description: "Make topic not visible to the public if triggered"
             flag_type:
               label: "Flag type"
               description: "Type of flag to apply to the post (spam or simply raise for review)"
@@ -125,86 +125,86 @@ en:
           replies:
             one: "Apply to first reply only"
             other: "Apply to first %{count} replies"
-        back: Back
-        name: Name
-        edit: Edit
-        description: Description
+        back: "Back"
+        name: "Name"
+        edit: "Edit"
+        description: "Description"
         no_llm_selected: "No language model selected"
-        max_context_posts: "Max Context Posts"
+        max_context_posts: "Max context posts"
         max_context_posts_help: "The maximum number of posts to use as context for the AI when responding to a user. (empty for default)"
-        vision_enabled: Vision Enabled
+        vision_enabled: Vision enabled
         vision_enabled_help: If enabled, the AI will attempt to understand images users post in the topic, depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI.
         vision_max_pixels: Supported image size
         vision_max_pixel_sizes:
-          low: Low Quality - cheapest (256x256)
-          medium: Medium Quality (512x512)
-          high: High Quality - slowest (1024x1024)
-        tool_details: Show Tool Details
+          low: Low quality - cheapest (256x256)
+          medium: Medium quality (512x512)
+          high: High quality - slowest (1024x1024)
+        tool_details: Show tool details
         tool_details_help: Will show end users details on which tools the language model has triggered.
-        mentionable: Allow Mentions
+        mentionable: Allow mentions
         mentionable_help: If enabled, users in allowed groups can mention this user in posts, the AI will respond as this persona.
         user: User
-        create_user: Create User
+        create_user: Create user
         create_user_help: You can optionally attach a user to this persona. If you do, the AI will use this user to respond to requests.
-        default_llm: Default Language Model
+        default_llm: Default language model
         default_llm_help: The default language model to use for this persona. Required if you wish to mention persona on public posts.
         question_consolidator_llm: Language Model for Question Consolidator
         question_consolidator_llm_help: The language model to use for the question consolidator, you may choose a less powerful model to save costs.
-        system_prompt: System Prompt
-        forced_tool_strategy: Forced Tool Strategy
-        allow_chat_direct_messages: "Allow Chat Direct Messages"
+        system_prompt: System prompt
+        forced_tool_strategy: Forced tool strategy
+        allow_chat_direct_messages: "Allow chat direct messages"
         allow_chat_direct_messages_help: "If enabled, users in allowed groups can send direct messages to this persona."
-        allow_chat_channel_mentions: "Allow Chat Channel Mentions"
+        allow_chat_channel_mentions: "Allow chat channel mentions"
         allow_chat_channel_mentions_help: "If enabled, users in allowed groups can mention this persona in chat channels."
-        allow_personal_messages: "Allow Personal Messages"
+        allow_personal_messages: "Allow personal messages"
         allow_personal_messages_help: "If enabled, users in allowed groups can send personal messages to this persona."
-        allow_topic_mentions: "Allow Topic Mentions"
+        allow_topic_mentions: "Allow topic mentions"
         allow_topic_mentions_help: "If enabled, users in allowed groups can mention this persona in topics."
-        force_default_llm: "Always use default Language Model"
-        save: Save
-        saved: AI Persona Saved
+        force_default_llm: "Always use default language model"
+        save: "Save"
+        saved: "Persona saved"
         enabled: "Enabled?"
-        tools: Enabled Tools
-        forced_tools: Forced Tools
-        allowed_groups: Allowed Groups
-        confirm_delete: Are you sure you want to delete this persona?
-        new: "New Persona"
-        title: "AI Personas"
+        tools: "Enabled tools"
+        forced_tools: "Forced fools"
+        allowed_groups: "Allowed groups"
+        confirm_delete: "Are you sure you want to delete this persona?"
+        new: "New persona"
+        title: "Personas"
         short_title: "Personas"
-        delete: Delete
-        temperature: Temperature
-        temperature_help: Temperature to use for the LLM, increase to increase creativity (leave empty to use model default, generally a value from 0.0 to 2.0)
-        top_p: Top P
-        top_p_help: Top P to use for the LLM, increase to increase randomness (leave empty to use model default, generally a value from 0.0 to 1.0)
-        priority: Priority
-        priority_help: Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically.
-        tool_options: "Tool Options"
-        rag_conversation_chunks: "Search Conversation Chunks"
+        delete: "Delete"
+        temperature: "Temperature"
+        temperature_help: "Temperature to use for the LLM. Increase to increase creativity (leave empty to use model default, generally a value from 0.0 to 2.0)"
+        top_p: "Top P"
+        top_p_help: "Top P to use for the LLM, increase to increase randomness (leave empty to use model default, generally a value from 0.0 to 1.0)"
+        priority: "Priority"
+        priority_help: "Priority personas are displayed to users at the top of the persona list. If multiple personas have priority, they will be sorted alphabetically."
+        tool_options: "Tool options"
+        rag_conversation_chunks: "Search conversation chunks"
         rag_conversation_chunks_help: "The number of chunks to use for the RAG model searches. Increase to increase the amount of context the AI can use."
-        what_are_personas: "What are AI Personas?"
+        what_are_personas: "What are Personas?"
         no_persona_selected: |
-          AI Personas are a powerful feature that allows you to customize the behavior of the AI engine in your Discourse forum. They act as a 'system message' that guides the AI's responses and interactions, helping to create a more personalized and engaging user experience.
+          Personas are a powerful feature that allows you to customize the behavior of the AI engine in your Discourse forum. They act as a 'system message' that guides the AI's responses and interactions, helping to create a more personalized and engaging user experience.
 
-          #### Why use AI Personas?
+          #### Why use personas?
 
-          With AI Personas, you can tailor the AI's behavior to better fit the context and tone of your forum. Whether you want the AI to be more formal for a professional setting, more casual for a community forum, or even embody a specific character for a role-playing game, AI Personas give you the flexibility to do so.
+          With personas, you can tailor the AI's behavior to better fit the context and tone of your forum. Whether you want the AI to be more formal for a professional setting, more casual for a community forum, or even embody a specific character for a role-playing game, personas give you the flexibility to do so.
 
-          #### Group-Specific Access to AI Personas
+          #### Group-specific access to personas
 
           Moreover, you can set it up so that certain user groups have access to specific personas. This means you can have different AI behaviors for different sections of your forum, further enhancing the diversity and richness of your community's interactions.
 
       rag:
         options:
-          rag_chunk_tokens: "Upload Chunk Tokens"
+          rag_chunk_tokens: "Upload chunk tokens"
           rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
-          rag_chunk_overlap_tokens: "Upload Chunk Overlap Tokens"
+          rag_chunk_overlap_tokens: "Upload chunk overlap tokens"
           rag_chunk_overlap_tokens_help: "The number of tokens to overlap between chunks in the RAG model. (changing will re-index all uploads)"
-          show_indexing_options: "Show Upload Options"
-          hide_indexing_options: "Hide Upload Options"
+          show_indexing_options: "Show upload options"
+          hide_indexing_options: "Hide upload options"
         uploads:
           title: "Uploads"
           description: "Uploaded files should be formatted as plaintext (.txt) or markdown (.md)."
-          button: "Add Files"
+          button: "Add files"
           filter: "Filter uploads"
           indexed: "Indexed"
           indexing: "Indexing"
@@ -215,7 +215,7 @@ en:
       tools:
         back: "Back"
         short_title: "Tools"
-        new: "New Tool"
+        new: "New tool"
         name: "Name"
         name_help: "The unique name of the tool as used by the language model"
         description: "Description"
@@ -228,27 +228,27 @@ en:
         add_parameter: "Add Parameter"
         parameter_required: "Required"
         parameter_enum: "Enum"
-        parameter_name: "Parameter Name"
-        parameter_description: "Parameter Description"
+        parameter_name: "Parameter name"
+        parameter_description: "Parameter description"
         enum_value: "Enum value"
         add_enum_value: "Add enum value"
         edit: "Edit"
-        test: "Run Test"
+        test: "Run test"
         delete: "Delete"
         saved: "Tool saved"
         presets: "Select a preset..."
-        confirm_delete: Are you sure you want to delete this tool?
+        confirm_delete: "Are you sure you want to delete this tool?"
         next:
           title: "Next"
         test_modal:
-          title: "Test AI Tool"
-          run: "Run Test"
-          result: "Test Result"
+          title: "Test AI tool"
+          run: "Run test"
+          result: "Test result"
 
       llms:
         short_title: "LLMs"
         no_llms: "No LLMs yet"
-        new: "New Model"
+        new: "New model"
         display_name: "Name"
         name: "Model id"
         provider: "Provider"
@@ -256,22 +256,22 @@ en:
         max_prompt_tokens: "Number of tokens for the prompt"
         url: "URL of the service hosting the model"
         api_key: "API Key of the service hosting the model"
-        enabled_chat_bot: "Allow AI Bot selector"
+        enabled_chat_bot: "Allow AI bot selector"
         vision_enabled: "Vision enabled"
-        ai_bot_user: "AI Bot User"
+        ai_bot_user: "AI bot User"
         save: "Save"
         edit: "Edit"
-        saved: "LLM Model Saved"
+        saved: "LLM model saved"
         back: "Back"
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
         seeded_warning: "This model is pre-configured on your site and cannot be edited."
         usage:
-          ai_bot: "AI Bot"
-          ai_helper: "AI Helper"
+          ai_bot: "AI bot"
+          ai_helper: "Helper"
           ai_persona: "Persona (%{persona})"
-          ai_summarization: "Summarization"
-          ai_embeddings_semantic_search: "Semantic Search"
+          ai_summarization: "Summarize"
+          ai_embeddings_semantic_search: "AI search"
         in_use_warning:
           one: "This model is currently used by %{settings}. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following: %{settings}. If misconfigured, features won't work as expected. "
@@ -300,16 +300,16 @@ en:
           title: "Next"
 
         tests:
-          title: "Run Test"
+          title: "Run test"
           running: "Running test..."
           success: "Success!"
           failure: "Trying to contact the model returned this error: %{error}"
 
         hints:
           max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
-          name: "We include this in the API call to specify which model we'll use."
+          name: "We include this in the API call to specify which model we'll use"
           vision_enabled: "If enabled, the AI will attempt to understand images. It depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI."
-          enabled_chat_bot: "If enabled, users can select this model when creating PMs with the AI bot."
+          enabled_chat_bot: "If enabled, users can select this model when creating PMs with the AI bot"
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
@@ -325,15 +325,15 @@ en:
           fake: "Custom"
 
         provider_fields:
-          access_key_id: "AWS Bedrock Access key ID"
-          region: "AWS Bedrock Region"
-          organization: "Optional OpenAI Organization ID"
+          access_key_id: "AWS Bedrock access key ID"
+          region: "AWS Bedrock region"
+          organization: "Optional OpenAI organization ID"
           disable_system_prompt: "Disable system message in prompts"
           enable_native_tool: "Enable native tool support"
           disable_native_tools: "Disable native tool support (use XML based tools)"
 
       related_topics:
-        title: "Related Topics"
+        title: "Related topics"
         pill: "Related"
       ai_helper:
         title: "Suggest changes using AI"
@@ -348,11 +348,11 @@ en:
           regen: "Try Again"
           confirm: "Confirm"
           discard: "Discard"
-          changes: "Suggested Edits"
+          changes: "Suggested edits"
           custom_prompt:
-            title: "Custom Prompt"
+            title: "Custom prompt"
             placeholder: "Enter a custom prompt..."
-            submit: "Send Prompt"
+            submit: "Send prompt"
           translate_prompt: "Translate to %{language}"
         post_options_menu:
           trigger: "Ask AI"
@@ -365,9 +365,9 @@ en:
           insert_footnote: "Add footnote"
           footnote_credits: "Explanation by AI"
         fast_edit:
-          suggest_button: "Suggest Edit"
+          suggest_button: "Suggest edit"
         thumbnail_suggestions:
-          title: "Suggested Thumbnails"
+          title: "Suggested thumbnails"
           select: "Select"
           selected: "Selected"
         image_caption:
@@ -375,10 +375,10 @@ en:
           generating: "Generating caption..."
           credits: "Captioned by AI"
           save_caption: "Save"
-          automatic_caption_setting: "Enable automatic AI image captions"
+          automatic_caption_setting: "Enable auto caption"
           automatic_caption_loading: "Captioning images..."
           automatic_caption_dialog:
-            prompt: "This post contains non-captioned images. Would you like to enable automatic AI captions on image uploads? (This can be changed in your preferences later)"
+            prompt: "This post contains non-captioned images. Would you like to enable automatic auto captions on image uploads? (This can be changed in your preferences later)"
             confirm: "Enable"
             cancel: "Don't ask again"
         no_content_error: "Add content first to perform AI actions on it"
@@ -393,8 +393,8 @@ en:
         semantic_search_results:
           toggle: "Showing %{count} results found using AI"
           toggle_hidden: "Hiding %{count} results found using AI"
-          none: "Sorry, our AI search found no matching topics."
-          new: "Press 'Search' to begin looking for new results with AI"
+          none: "Sorry, our AI search found no matching topics"
+          new: "Press 'search' to begin looking for new results with AI"
         ai_generated_result: "Search result found using AI"
         quick_search:
           suffix: "in all topics and posts with AI"
@@ -417,13 +417,13 @@ en:
           response: "Response"
 
         share_full_topic_modal:
-          title: "Share Conversation Publicly"
-          share: "Share and Copy Link"
-          update: "Update and Copy Link"
-          delete: "Delete Share"
+          title: "Share conversation publicly"
+          share: "Share and copy link"
+          update: "Update and copy link"
+          delete: "Delete share"
 
         share_ai_conversation:
-          name: "Share AI Conversation"
+          name: "Share AI conversation"
           title: "Share this AI conversation publicly"
 
         ai_label: "AI"
@@ -433,7 +433,7 @@ en:
           title: "Copy AI conversation"
           copy: "Copy"
           context: "Interactions to share:"
-          share_tip: Alternatively, you can share the entire conversation.
+          share_tip: "Alternatively, you can share the entire conversation"
 
         bot_names:
           fake: "Fake Test Bot"
