@@ -117,7 +117,22 @@ module DiscourseAi
             end
         end
 
-        def decode(chunk)
+        def decode_chunk(partial_data)
+          bedrock_decode(partial_data).map do |decoded_partial_data|
+            @raw_response ||= +""
+            @raw_response << decoded_partial_data
+            @raw_response << "\n"
+
+            parsed_json = JSON.parse(decoded_partial_data, symbolize_names: true)
+            processor.process_streamed_message(parsed_json)
+          end.compact
+        end
+
+        def decode(response_data)
+          processor.process_message(response_data)
+        end
+
+        def bedrock_decode(chunk)
           @decoder ||= Aws::EventStream::Decoder.new
 
           decoded, _done = @decoder.decode_chunk(chunk)
@@ -147,12 +162,13 @@ module DiscourseAi
                Aws::EventStream::Errors::MessageChecksumError,
                Aws::EventStream::Errors::PreludeChecksumError => e
           Rails.logger.error("#{self.class.name}: #{e.message}")
-          nil
+          []
         end
 
         def final_log_update(log)
           log.request_tokens = processor.input_tokens if processor.input_tokens
           log.response_tokens = processor.output_tokens if processor.output_tokens
+          log.raw_response_payload = @raw_response
         end
 
         def processor
@@ -164,20 +180,13 @@ module DiscourseAi
           processor.to_xml_tool_calls(function_buffer) if !partial
         end
 
-        def extract_completion_from(response_raw)
-          processor.process_message(response_raw)
-        end
 
         def has_tool?(_response_data)
           processor.tool_calls.present?
         end
 
-        def partials_from(decoded_chunks)
-          decoded_chunks
-        end
-
-        def native_tool_support?
-          @native_tool_support
+        def xml_tools_enabled?
+          !@native_tool_support
         end
 
         def chunk_to_string(chunk)

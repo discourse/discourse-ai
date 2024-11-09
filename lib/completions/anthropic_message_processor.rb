@@ -70,7 +70,8 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
 
   def process_message(payload)
     result = ""
-    parsed = JSON.parse(payload, symbolize_names: true)
+    parsed = payload
+    parsed = JSON.parse(payload, symbolize_names: true) if payload.is_a?(String)
 
     content = parsed.dig(:content)
     if content.is_a?(Array)

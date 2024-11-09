@@ -40,10 +40,6 @@ module DiscourseAi
           @llm_model = llm_model
         end
 
-        def native_tool_support?
-          false
-        end
-
         def use_ssl?
           if model_uri&.scheme.present?
             model_uri.scheme == "https"
@@ -64,22 +60,10 @@ module DiscourseAi
           feature_context: nil,
           &blk
         )
-          allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
           orig_blk = blk
 
           @streaming_mode = block_given?
-          to_strip = xml_tags_to_strip(dialect)
-          @xml_stripper =
-            DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
-
-          if @streaming_mode && @xml_stripper
-            blk =
-              lambda do |partial, cancel|
-                partial = @xml_stripper << partial
-                orig_blk.call(partial, cancel) if partial
-              end
-          end
 
           prompt = dialect.translate
 
@@ -108,6 +92,22 @@ module DiscourseAi
                 raise CompletionFailed, response.body
               end
 
+              xml_tool_processor = XmlToolProcessor.new if xml_tools_enabled? && dialect..prompt.has_tools?
+
+              to_strip = xml_tags_to_strip(dialect)
+              xml_stripper =
+                DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
+
+              if @streaming_mode && xml_stripper
+                blk =
+                  lambda do |partial, cancel|
+                    if partial.is_a?(String)
+                      partial = xml_stripper << partial
+                    end
+                    orig_blk.call(partial, cancel) if partial
+                  end
+              end
+
               log =
                 AiApiAuditLog.new(
                   provider_id: provider_id,
@@ -123,17 +123,31 @@ module DiscourseAi
 
               if !@streaming_mode
                 response_raw = response.read_body
-                response_data = extract_completion_from(response_raw)
+                response_data = decode(response_raw)
                 partials_raw = response_data.to_s
 
-                if allow_tools && !native_tool_support?
-                  response_data, function_calls = FunctionCallNormalizer.normalize(response_data)
-                  response_data = function_calls if function_calls.present?
+                if xml_tool_processor
+                  processed = (xml_tool_processor << response_data)
+                  processed << xml_tool_processor.finish
+                  response_data = []
+                  processed.flatten.compact.each { |partial| response_data << partial }
                 end
 
-                if response_data.is_a?(Array) && response_data.length == 1
-                  response_data = response_data.first
+                if xml_stripper
+                  response_data.map! { |partial|
+                    stripped = (xml_stripper << partial) if partial.is_a?(String)
+                    if stripped.present?
+                      stripped
+                    else
+                      partial
+                    end
+                  }
+                  response_data << xml_stripper.finish
+                  response_data.compact!
                 end
+
+                # this is to keep stuff backwards compatible
+                response_data = response_data.first if response_data.length == 1
 
                 return response_data
               end
@@ -149,238 +163,33 @@ module DiscourseAi
                 response.read_body do |chunk|
                   response_raw << chunk
                   decode_chunk(chunk).each do |partial|
-                    yield partial, cancel
-                  end
-                end
-              rescue IOError, StandardError
-                raise if !cancelled
-              end
-              return response_data
-            ensure
-              if log
-                log.raw_response_payload = response_raw
-                final_log_update(log)
-
-                log.response_tokens = tokenizer.size(partials_raw) if log.response_tokens.blank?
-                log.save!
-
-                if Rails.env.development?
-                  puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
-                end
-              end
-            end
-          end
-        end
-
-        def perform_completionx!(
-          dialect,
-          user,
-          model_params = {},
-          feature_name: nil,
-          feature_context: nil,
-          &blk
-        )
-          allow_tools = dialect.prompt.has_tools?
-          model_params = normalize_model_params(model_params)
-          orig_blk = blk
-
-          @streaming_mode = block_given?
-          to_strip = xml_tags_to_strip(dialect)
-          @xml_stripper =
-            DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
-
-          if @streaming_mode && @xml_stripper
-            blk =
-              lambda do |partial, cancel|
-                partial = @xml_stripper << partial
-                orig_blk.call(partial, cancel) if partial
-              end
-          end
-
-          prompt = dialect.translate
-
-          FinalDestination::HTTP.start(
-            model_uri.host,
-            model_uri.port,
-            use_ssl: use_ssl?,
-            read_timeout: TIMEOUT,
-            open_timeout: TIMEOUT,
-            write_timeout: TIMEOUT,
-          ) do |http|
-            response_data = +""
-            response_raw = +""
-
-            # Needed to response token calculations. Cannot rely on response_data due to function buffering.
-            partials_raw = +""
-            request_body = prepare_payload(prompt, model_params, dialect).to_json
-
-            request = prepare_request(request_body)
-
-            http.request(request) do |response|
-              if response.code.to_i != 200
-                Rails.logger.error(
-                  "#{self.class.name}: status: #{response.code.to_i} - body: #{response.body}",
-                )
-                raise CompletionFailed, response.body
-              end
-
-              log =
-                AiApiAuditLog.new(
-                  provider_id: provider_id,
-                  user_id: user&.id,
-                  raw_request_payload: request_body,
-                  request_tokens: prompt_size(prompt),
-                  topic_id: dialect.prompt.topic_id,
-                  post_id: dialect.prompt.post_id,
-                  feature_name: feature_name,
-                  language_model: llm_model.name,
-                  feature_context: feature_context.present? ? feature_context.as_json : nil,
-                )
-
-              if !@streaming_mode
-                response_raw = response.read_body
-                response_data = extract_completion_from(response_raw)
-                partials_raw = response_data.to_s
-
-                if allow_tools && !native_tool_support?
-                  response_data, function_calls = FunctionCallNormalizer.normalize(response_data)
-                  response_data = function_calls if function_calls.present?
-                end
-
-                if response_data.is_a?(Array) && response_data.length == 1
-                  response_data = response_data.first
-                end
-
-                return response_data
-              end
-
-              has_tool = false
-
-              begin
-                cancelled = false
-                cancel = -> { cancelled = true }
-
-                wrapped_blk = ->(partial, inner_cancel) do
-                  response_data << partial
-                  blk.call(partial, inner_cancel)
-                end
-
-                normalizer = FunctionCallNormalizer.new(wrapped_blk, cancel)
-
-                leftover = ""
-                function_buffer = build_buffer # Nokogiri document
-                prev_processed_partials = 0
-
-                response.read_body do |chunk|
-                  if cancelled
-                    http.finish
-                    break
-                  end
-
-                  decoded_chunk = decode(chunk)
-                  if decoded_chunk.nil?
-                    raise CompletionFailed, "#{self.class.name}: Failed to decode LLM completion"
-                  end
-                  response_raw << chunk_to_string(decoded_chunk)
-
-                  if decoded_chunk.is_a?(String)
-                    redo_chunk = leftover + decoded_chunk
-                  else
-                    # custom implementation for endpoint
-                    # no implicit leftover support
-                    redo_chunk = decoded_chunk
-                  end
-
-                  raw_partials = partials_from(redo_chunk)
-
-                  raw_partials =
-                    raw_partials[prev_processed_partials..-1] if prev_processed_partials > 0
-
-                  if raw_partials.blank? || (raw_partials.size == 1 && raw_partials.first.blank?)
-                    leftover = redo_chunk
-                    next
-                  end
-
-                  json_error = false
-
-                  raw_partials.each do |raw_partial|
-                    json_error = false
-                    prev_processed_partials += 1
-
-                    next if cancelled
-                    next if raw_partial.blank?
-
-                    begin
-                      partial = extract_completion_from(raw_partial)
-                      next if partial.nil?
-                      # empty vs blank... we still accept " "
-                      next if response_data.empty? && partial.empty?
-                      partials_raw << partial.to_s
-
-                      if native_tool_support?
-                        # Stop streaming the response as soon as you find a tool.
-                        # We'll buffer and yield it later.
-                        has_tool = true if allow_tools && has_tool?(partials_raw)
-
-                        if has_tool
-                          function_buffer =
-                            add_to_function_buffer(function_buffer, partial: partial)
-                        else
-                          response_data << partial
-                          blk.call(partial, cancel) if partial
-                        end
-                      else
-                        if allow_tools
-                          normalizer << partial
-                        else
-                          response_data << partial
-                          blk.call(partial, cancel) if partial
-                        end
+                    response_data << partial if partial.is_a?(String)
+                    partials = [partial]
+                    if xml_tool_processor && partial.is_a?(String)
+                      partials = (xml_tool_processor << partial)
+                      if xml_tool_processor.should_cancel?
+                        cancel.call
+                        break
                       end
-                    rescue JSON::ParserError
-                      leftover = redo_chunk
-                      json_error = true
                     end
+                    partials.each { |inner_partial| blk.call(inner_partial, cancel) }
                   end
-
-                  if json_error
-                    prev_processed_partials -= 1
-                  else
-                    leftover = ""
-                  end
-
-                  prev_processed_partials = 0 if leftover.blank?
                 end
               rescue IOError, StandardError
                 raise if !cancelled
               end
-
-              has_tool ||= has_tool?(partials_raw)
-              # Once we have the full response, try to return the tool as a XML doc.
-              if has_tool && native_tool_support?
-                function_buffer = add_to_function_buffer(function_buffer, payload: partials_raw)
-
-                if function_buffer.at("tool_name").text.present?
-                  FunctionCallNormalizer.normalize_function_ids!(function_buffer)
-
-                  invocation = +function_buffer.at("function_calls").to_s
-                  invocation << "\n"
-
-                  response_data << invocation
-                  blk.call(invocation, cancel)
+              if xml_stripper
+                stripped = xml_stripper.finish
+                if stripped.present?
+                  response_data << stripped
+                  result = []
+                  result = (xml_tool_processor << stripped) if xml_tool_processor
+                  result.each { |partial| blk.call(partial, cancel) }
                 end
               end
-
-              if !native_tool_support? && function_calls = normalizer.function_calls
-                response_data << function_calls
-                blk.call(function_calls, cancel)
+              if xml_tool_processor
+                xml_tool_processor.finish.each { |partial| blk.call(partial, cancel) }
               end
-
-              if @xml_stripper
-                leftover = @xml_stripper.finish
-                orig_blk.call(leftover, cancel) if leftover.present?
-              end
-
               return response_data
             ensure
               if log
@@ -439,20 +248,20 @@ module DiscourseAi
           raise NotImplementedError
         end
 
-        def extract_completion_from(_response_raw)
+        def decode(_response_raw)
           raise NotImplementedError
         end
 
-        def decode(chunk)
-          chunk
-        end
-
-        def partials_from(_decoded_chunk)
+        def decode_chunk(_chunk)
           raise NotImplementedError
         end
 
         def extract_prompt_for_tokenizer(prompt)
           prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
+        end
+
+        def xml_tools_enabled?
+          raise NotImplementedError
         end
 
         def build_buffer
@@ -488,16 +297,6 @@ module DiscourseAi
           else
             chunk.to_s
           end
-        end
-
-        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          if payload&.include?("</invoke>")
-            matches = payload.match(%r{<function_calls>.*</invoke>}m)
-            function_buffer =
-              Nokogiri::HTML5.fragment(matches[0] + "\n</function_calls>") if matches
-          end
-
-          function_buffer
         end
       end
     end

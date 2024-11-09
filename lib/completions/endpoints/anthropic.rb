@@ -119,10 +119,6 @@ module DiscourseAi
           log.response_tokens = processor.output_tokens if processor.output_tokens
         end
 
-        def native_tool_support?
-          @native_tool_support
-        end
-
         def partials_from(decoded_chunk)
           decoded_chunk.split("\n").map { |line| line.split("data: ", 2)[1] }.compact
         end
