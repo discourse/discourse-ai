@@ -176,23 +176,12 @@ module DiscourseAi
             DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
         end
 
-        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          processor.to_xml_tool_calls(function_buffer) if !partial
-        end
-
-
         def has_tool?(_response_data)
           processor.tool_calls.present?
         end
 
         def xml_tools_enabled?
           !@native_tool_support
-        end
-
-        def chunk_to_string(chunk)
-          joined = +chunk.join("\n")
-          joined << "\n" if joined.length > 0
-          joined
         end
       end
     end

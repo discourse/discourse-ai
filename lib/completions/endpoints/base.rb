@@ -123,8 +123,8 @@ module DiscourseAi
 
               if !@streaming_mode
                 response_raw = response.read_body
+                partials_raw = response_raw
                 response_data = decode(response_raw)
-                partials_raw = response_data.to_s
 
                 if xml_tool_processor
                   processed = (xml_tool_processor << response_data)
@@ -143,8 +143,9 @@ module DiscourseAi
                     end
                   }
                   response_data << xml_stripper.finish
-                  response_data.compact!
                 end
+
+                response_data.reject!(&:blank?)
 
                 # this is to keep stuff backwards compatible
                 response_data = response_data.first if response_data.length == 1
@@ -264,13 +265,6 @@ module DiscourseAi
           raise NotImplementedError
         end
 
-        def build_buffer
-          Nokogiri::HTML5.fragment(<<~TEXT)
-          <function_calls>
-          #{noop_function_call_text}
-          </function_calls>
-          TEXT
-        end
 
         def self.noop_function_call_text
           (<<~TEXT).strip
