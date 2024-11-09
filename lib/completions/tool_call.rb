@@ -11,6 +11,11 @@ module DiscourseAi
         @parameters = parameters || {}
       end
 
+      def parameters=(parameters)
+        raise ArgumentError, "parameters must be a hash" unless parameters.is_a?(Hash)
+        @parameters = parameters
+      end
+
       def ==(other)
         id == other.id && name == other.name && parameters == other.parameters
       end
