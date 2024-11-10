@@ -17,8 +17,8 @@ class OpenAiMock < EndpointMock
       created: 1_678_464_820,
       model: "gpt-3.5-turbo-0301",
       usage: {
-        prompt_tokens: 337,
-        completion_tokens: 162,
+        prompt_tokens: 8,
+        completion_tokens: 13,
         total_tokens: 499,
       },
       choices: [

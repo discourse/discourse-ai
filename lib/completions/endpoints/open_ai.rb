@@ -146,10 +146,7 @@ module DiscourseAi
               #index = tool_calls[0].dig(:index)
 
               if id.present? && @tool && @tool.id != id
-                if @tool_arguments.present?
-                  parsed_args = JSON.parse(@tool_arguments, symbolize_names: true)
-                  @tool.parameters = parsed_args
-                end
+                process_arguments
                 rval = @tool
                 @tool = nil
               end
@@ -174,7 +171,26 @@ module DiscourseAi
             rval
           end
 
+          def finish
+            rval = []
+            if @tool
+              process_arguments
+              rval << @tool
+              @tool = nil
+            end
+
+            rval
+          end
+
           private
+
+          def process_arguments
+            if @tool_arguments.present?
+              parsed_args = JSON.parse(@tool_arguments, symbolize_names: true)
+              @tool.parameters = parsed_args
+              @tool_arguments = nil
+            end
+          end
 
           def update_usage(json)
             @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
@@ -192,6 +208,10 @@ module DiscourseAi
             .map { |parsed_json| processor.process_streamed_message(parsed_json) }
             .flatten
             .compact
+        end
+
+        def decode_chunk_finish
+          @processor.finish
         end
 
         def xml_tools_enabled?

@@ -92,7 +92,8 @@ module DiscourseAi
                 raise CompletionFailed, response.body
               end
 
-              xml_tool_processor = XmlToolProcessor.new if xml_tools_enabled? && dialect..prompt.has_tools?
+              xml_tool_processor = XmlToolProcessor.new if xml_tools_enabled? &&
+                dialect .. prompt.has_tools?
 
               to_strip = xml_tags_to_strip(dialect)
               xml_stripper =
@@ -101,58 +102,29 @@ module DiscourseAi
               if @streaming_mode && xml_stripper
                 blk =
                   lambda do |partial, cancel|
-                    if partial.is_a?(String)
-                      partial = xml_stripper << partial
-                    end
+                    partial = xml_stripper << partial if partial.is_a?(String)
                     orig_blk.call(partial, cancel) if partial
                   end
               end
 
               log =
-                AiApiAuditLog.new(
+                start_log(
                   provider_id: provider_id,
-                  user_id: user&.id,
-                  raw_request_payload: request_body,
-                  request_tokens: prompt_size(prompt),
-                  topic_id: dialect.prompt.topic_id,
-                  post_id: dialect.prompt.post_id,
+                  request_body: request_body,
+                  dialect: dialect,
+                  prompt: prompt,
+                  user: user,
                   feature_name: feature_name,
-                  language_model: llm_model.name,
-                  feature_context: feature_context.present? ? feature_context.as_json : nil,
+                  feature_context: feature_context,
                 )
 
-              if !@streaming_mode
-                response_raw = response.read_body
-                response_data = decode(response_raw)
-
-                response_data.each { |partial| partials_raw << partial.to_s }
-
-                if xml_tool_processor
-                  processed = (xml_tool_processor << response_data)
-                  processed << xml_tool_processor.finish
-                  response_data = []
-                  processed.flatten.compact.each { |partial| response_data << partial }
-                end
-
-                if xml_stripper
-                  response_data.map! { |partial|
-                    stripped = (xml_stripper << partial) if partial.is_a?(String)
-                    if stripped.present?
-                      stripped
-                    else
-                      partial
-                    end
-                  }
-                  response_data << xml_stripper.finish
-                end
-
-                response_data.reject!(&:blank?)
-
-                # this is to keep stuff backwards compatible
-                response_data = response_data.first if response_data.length == 1
-
-                return response_data
-              end
+              return non_streaming_response(
+                response: response,
+                xml_tool_processor: xml_tool_processor,
+                xml_stripper: xml_stripper,
+                partials_raw: partials_raw,
+                response_raw: response_raw,
+              ) if !@streaming_mode
 
               begin
                 cancelled = false
@@ -193,6 +165,7 @@ module DiscourseAi
               if xml_tool_processor
                 xml_tool_processor.finish.each { |partial| blk.call(partial, cancel) }
               end
+              decode_chunk_finish.each { |partial| blk.call(partial, cancel) }
               return response_data
             ensure
               if log
@@ -255,6 +228,10 @@ module DiscourseAi
           raise NotImplementedError
         end
 
+        def decode_chunk_finish
+          []
+        end
+
         def decode_chunk(_chunk)
           raise NotImplementedError
         end
@@ -266,7 +243,6 @@ module DiscourseAi
         def xml_tools_enabled?
           raise NotImplementedError
         end
-
 
         def self.noop_function_call_text
           (<<~TEXT).strip
@@ -293,6 +269,69 @@ module DiscourseAi
           else
             chunk.to_s
           end
+        end
+
+        private
+
+        def start_log(
+          provider_id:,
+          request_body:,
+          dialect:,
+          prompt:,
+          user:,
+          feature_name:,
+          feature_context:
+        )
+          AiApiAuditLog.new(
+            provider_id: provider_id,
+            user_id: user&.id,
+            raw_request_payload: request_body,
+            request_tokens: prompt_size(prompt),
+            topic_id: dialect.prompt.topic_id,
+            post_id: dialect.prompt.post_id,
+            feature_name: feature_name,
+            language_model: llm_model.name,
+            feature_context: feature_context.present? ? feature_context.as_json : nil,
+          )
+        end
+
+        def non_streaming_response(
+          response:,
+          xml_tool_processor:,
+          xml_stripper:,
+          partials_raw:,
+          response_raw:
+        )
+          response_raw << response.read_body
+          response_data = decode(response_raw)
+
+          response_data.each { |partial| partials_raw << partial.to_s }
+
+          if xml_tool_processor
+            processed = (xml_tool_processor << response_data)
+            processed << xml_tool_processor.finish
+            response_data = []
+            processed.flatten.compact.each { |partial| response_data << partial }
+          end
+
+          if xml_stripper
+            response_data.map! do |partial|
+              stripped = (xml_stripper << partial) if partial.is_a?(String)
+              if stripped.present?
+                stripped
+              else
+                partial
+              end
+            end
+            response_data << xml_stripper.finish
+          end
+
+          response_data.reject!(&:blank?)
+
+          # this is to keep stuff backwards compatible
+          response_data = response_data.first if response_data.length == 1
+
+          response_data
         end
       end
     end
