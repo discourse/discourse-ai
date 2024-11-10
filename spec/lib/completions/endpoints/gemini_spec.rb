@@ -195,19 +195,16 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     response = llm.generate(prompt, user: user)
 
-    expected = (<<~XML).strip
-      <function_calls>
-      <invoke>
-      <tool_name>echo</tool_name>
-      <parameters>
-      <text>&lt;S&gt;ydney</text>
-      </parameters>
-      <tool_id>tool_0</tool_id>
-      </invoke>
-      </function_calls>
-    XML
+    tool =
+      DiscourseAi::Completions::ToolCall.new(
+        id: "tool_0",
+        name: "echo",
+        parameters: {
+          text: "<S>ydney",
+        },
+      )
 
-    expect(response.strip).to eq(expected)
+    expect(response).to eq(tool)
   end
 
   it "Supports Vision API" do
@@ -265,6 +262,67 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     expect(JSON.parse(req_body)).to eq(expected_prompt)
   end
 
+  it "Can stream tool calls correctly" do
+    rows = [
+      {
+        candidates: [
+          {
+            content: {
+              parts: [{ functionCall: { name: "echo", args: { text: "sam<>wh!s" } } }],
+              role: "model",
+            },
+            safetyRatings: [
+              { category: "HARM_CATEGORY_HATE_SPEECH", probability: "NEGLIGIBLE" },
+              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", probability: "NEGLIGIBLE" },
+              { category: "HARM_CATEGORY_HARASSMENT", probability: "NEGLIGIBLE" },
+              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", probability: "NEGLIGIBLE" },
+            ],
+          },
+        ],
+        usageMetadata: {
+          promptTokenCount: 625,
+          totalTokenCount: 625,
+        },
+        modelVersion: "gemini-1.5-pro-002",
+      },
+      {
+        candidates: [{ content: { parts: [{ text: "" }], role: "model" }, finishReason: "STOP" }],
+        usageMetadata: {
+          promptTokenCount: 625,
+          candidatesTokenCount: 4,
+          totalTokenCount: 629,
+        },
+        modelVersion: "gemini-1.5-pro-002",
+      },
+    ]
+
+    payload = rows.map { |r| "data: #{r.to_json}\n\n" }.join
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
+
+    prompt = DiscourseAi::Completions::Prompt.new("Hello", tools: [echo_tool])
+
+    output = []
+
+    stub_request(:post, url).to_return(status: 200, body: payload)
+    llm.generate(prompt, user: user) { |partial| output << partial }
+
+    tool_call = DiscourseAi::Completions::ToolCall.new(
+      id: "tool_0",
+      name: "echo",
+      parameters: {
+        text: "sam<>wh!s",
+      },
+    )
+
+    expect(output).to eq([tool_call])
+
+    log = AiApiAuditLog.order(:id).last
+    expect(log.request_tokens).to eq(625)
+    expect(log.response_tokens).to eq(4)
+  end
+
   it "Can correctly handle streamed responses even if they are chunked badly" do
     data = +""
     data << "da|ta: |"
@@ -279,12 +337,12 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
     url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
 
-    output = +""
+    output = []
     gemini_mock.with_chunk_array_support do
       stub_request(:post, url).to_return(status: 200, body: split)
       llm.generate("Hello", user: user) { |partial| output << partial }
     end
 
-    expect(output).to eq("Hello World Sam")
+    expect(output.join).to eq("Hello World Sam")
   end
 end

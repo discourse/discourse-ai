@@ -77,12 +77,8 @@ module DiscourseAi
           end
         end
 
-        def has_tool?(_ignored)
-          @has_tool
-        end
-
-        def native_tool_support?
-          true
+        def xml_tools_enabled?
+          false
         end
 
         def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
