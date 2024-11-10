@@ -231,19 +231,13 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
       result = llm.generate(prompt, user: user)
 
-      expected = (<<~TXT).strip
-        <function_calls>
-        <invoke>
-        <tool_name>echo</tool_name>
-        <parameters>
-        <text>hello</text>
-        </parameters>
-        <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
-        </invoke>
-        </function_calls>
-      TXT
+      tool_call = DiscourseAi::Completions::ToolCall.new(
+        id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+        name: "echo",
+        parameters: { text: "hello" },
+      )
 
-      expect(result.strip).to eq(expected)
+      expect(result).to eq(tool_call)
 
       stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
         body: { choices: [message: { content: "OK" }] }.to_json,
@@ -320,19 +314,17 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
       expect(body_json[:tool_choice]).to eq({ type: "function", function: { name: "echo" } })
 
-      expected = (<<~TXT).strip
-        <function_calls>
-        <invoke>
-        <tool_name>echo</tool_name>
-        <parameters>
-        <text>h&lt;e&gt;llo</text>
-        </parameters>
-        <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
-        </invoke>
-        </function_calls>
-      TXT
+      log = AiApiAuditLog.order(:id).last
+      expect(log.request_tokens).to eq(55)
+      expect(log.response_tokens).to eq(13)
 
-      expect(result.strip).to eq(expected)
+      expected = DiscourseAi::Completions::ToolCall.new(
+        id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+        name: "echo",
+        parameters: { text: "h<e>llo" },
+      )
+
+      expect(result).to eq(expected)
 
       stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
         body: { choices: [message: { content: "OK" }] }.to_json,

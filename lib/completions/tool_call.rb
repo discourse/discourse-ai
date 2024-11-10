@@ -8,12 +8,13 @@ module DiscourseAi
       def initialize(id:, name:, parameters: nil)
         @id = id
         @name = name
-        @parameters = parameters || {}
+        self.parameters = parameters if parameters
+        @parameters ||= {}
       end
 
       def parameters=(parameters)
         raise ArgumentError, "parameters must be a hash" unless parameters.is_a?(Hash)
-        @parameters = parameters
+        @parameters = parameters.symbolize_keys
       end
 
       def ==(other)

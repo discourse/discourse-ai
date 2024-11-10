@@ -62,18 +62,14 @@ class EndpointMock
   end
 
   def invocation_response
-    <<~TEXT
-      <function_calls>
-      <invoke>
-      <tool_name>get_weather</tool_name>
-      <parameters>
-      <location>Sydney</location>
-      <unit>c</unit>
-      </parameters>
-      <tool_id>tool_0</tool_id>
-      </invoke>
-      </function_calls>
-    TEXT
+    DiscourseAi::Completions::ToolCall.new(
+      id: "tool_0",
+      name: "get_weather",
+      parameters: {
+        location: "Sydney",
+        unit: "c",
+      },
+    )
   end
 
   def tool_id
@@ -185,7 +181,7 @@ class EndpointsCompliance
     mock.stub_tool_call(a_dialect.translate)
 
     completion_response = endpoint.perform_completion!(a_dialect, user)
-    expect(completion_response.strip).to eq(mock.invocation_response.strip)
+    expect(completion_response).to eq(mock.invocation_response)
   end
 
   def streaming_mode_simple_prompt(mock)
@@ -216,14 +212,14 @@ class EndpointsCompliance
     a_dialect = dialect(prompt: prompt)
 
     mock.stub_streamed_tool_call(a_dialect.translate) do
-      buffered_partial = +""
+      buffered_partial = []
 
       endpoint.perform_completion!(a_dialect, user) do |partial, cancel|
         buffered_partial << partial
-        cancel.call if buffered_partial.include?("<function_calls>")
+        cancel.call if partial.is_a?(DiscourseAi::Completions::ToolCall)
       end
 
-      expect(buffered_partial.strip).to eq(mock.invocation_response.strip)
+      expect(buffered_partial).to eq([mock.invocation_response])
     end
   end
 

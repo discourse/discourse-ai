@@ -123,8 +123,9 @@ module DiscourseAi
 
               if !@streaming_mode
                 response_raw = response.read_body
-                partials_raw = response_raw
                 response_data = decode(response_raw)
+
+                response_data.each { |partial| partials_raw << partial.to_s }
 
                 if xml_tool_processor
                   processed = (xml_tool_processor << response_data)
@@ -164,6 +165,7 @@ module DiscourseAi
                 response.read_body do |chunk|
                   response_raw << chunk
                   decode_chunk(chunk).each do |partial|
+                    partials_raw << partial.to_s
                     response_data << partial if partial.is_a?(String)
                     partials = [partial]
                     if xml_tool_processor && partial.is_a?(String)

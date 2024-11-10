@@ -107,6 +107,28 @@ module DiscourseAi
             @completion_tokens = nil
           end
 
+          def process_message(json)
+            result = []
+            tool_calls = json.dig(:choices, 0, :message, :tool_calls)
+
+            message = json.dig(:choices, 0, :message, :content)
+            result << message if message.present?
+
+            if tool_calls.present?
+              tool_calls.each do |tool_call|
+                id = tool_call.dig(:id)
+                name = tool_call.dig(:function, :name)
+                arguments = tool_call.dig(:function, :arguments)
+                parameters = arguments.present? ? JSON.parse(arguments, symbolize_names: true) : {}
+                result << ToolCall.new(id: id, name: name, parameters: parameters)
+              end
+            end
+
+            update_usage(json)
+
+            result
+          end
+
           def process_streamed_message(json)
             rval = nil
 
@@ -119,8 +141,11 @@ module DiscourseAi
               id = tool_calls.dig(0, :id)
               name = tool_calls.dig(0, :function, :name)
               arguments = tool_calls.dig(0, :function, :arguments)
+
+              # TODO: multiple tool support may require index
               #index = tool_calls[0].dig(:index)
-              if id.present? && @tool
+
+              if id.present? && @tool && @tool.id != id
                 if @tool_arguments.present?
                   parsed_args = JSON.parse(@tool_arguments, symbolize_names: true)
                   @tool.parameters = parsed_args
@@ -129,7 +154,7 @@ module DiscourseAi
                 @tool = nil
               end
 
-              if id.present?
+              if id.present? && name.present?
                 @tool_arguments = +""
                 @tool = ToolCall.new(id: id, name: name)
               end
@@ -144,22 +169,29 @@ module DiscourseAi
               rval = content
             end
 
-            @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
-            @completion_tokens ||= json.dig(:usage, :completion_tokens)
+            update_usage(json)
 
             rval
           end
+
+          private
+
+          def update_usage(json)
+            @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
+            @completion_tokens ||= json.dig(:usage, :completion_tokens)
+          end
+        end
+
+        def decode(response_raw)
+          processor.process_message(JSON.parse(response_raw, symbolize_names: true))
         end
 
         def decode_chunk(chunk)
           @decoder ||= JsonStreamDecoder.new
-          (@decoder << chunk).map do |parsed_json|
-            processor.process_streamed_message(parsed_json)
-          end.flatten.compact
-        end
-
-        def has_tool?(_response_data)
-          @has_function_call
+          (@decoder << chunk)
+            .map { |parsed_json| processor.process_streamed_message(parsed_json) }
+            .flatten
+            .compact
         end
 
         def xml_tools_enabled?
@@ -171,7 +203,6 @@ module DiscourseAi
         def processor
           @processor ||= OpenAiMessageProcessor.new
         end
-
       end
     end
   end
