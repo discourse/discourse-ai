@@ -8,9 +8,10 @@ module DiscourseAi
 
       LINE_REGEX = /data: ({.*})\s*$/
 
-      def initialize(symbolize_keys: true)
+      def initialize(symbolize_keys: true, line_regex: LINE_REGEX)
         @symbolize_keys = symbolize_keys
         @buffer = +""
+        @line_regex = line_regex
       end
 
       def <<(raw)
@@ -23,13 +24,13 @@ module DiscourseAi
         @buffer = +(split.pop.to_s)
 
         split.each do |line|
-          matches = line.match(LINE_REGEX)
+          matches = line.match(@line_regex)
           next if !matches
           rval << JSON.parse(matches[1], symbolize_names: @symbolize_keys)
         end
 
         if @buffer.present?
-          matches = @buffer.match(LINE_REGEX)
+          matches = @buffer.match(@line_regex)
           if matches
             begin
               rval << JSON.parse(matches[1], symbolize_names: @symbolize_keys)

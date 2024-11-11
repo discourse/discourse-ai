@@ -66,7 +66,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     TEXT
 
     parsed_body = nil
-    result = +""
+    result = []
 
     sig = {
       name: "google",
@@ -91,21 +91,17 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
         },
       ).to_return(status: 200, body: body.split("|"))
 
-      result = llm.generate(prompt, user: user) { |partial, cancel| result << partial }
+      llm.generate(prompt, user: user) { |partial, cancel| result << partial }
     end
 
-    expected = <<~TEXT
-      <function_calls>
-      <invoke>
-      <tool_name>google</tool_name>
-      <parameters><query>who is sam saffron</query>
-      </parameters>
-      <tool_id>tool_0</tool_id>
-      </invoke>
-      </function_calls>
-    TEXT
+    text = "I will search for 'who is sam saffron' and relay the information to the user."
+    tool_call = DiscourseAi::Completions::ToolCall.new(
+      id: "tool_0",
+      name: "google",
+      parameters: { query: "who is sam saffron" },
+    )
 
-    expect(result.strip).to eq(expected.strip)
+    expect(result).to eq([text, tool_call])
 
     expected = {
       model: "command-r-plus",
