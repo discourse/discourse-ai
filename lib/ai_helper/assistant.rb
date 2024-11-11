@@ -164,7 +164,7 @@ module DiscourseAi
             feature_name: "image_caption",
           )
 
-        raw_caption.delete("|").squish
+        raw_caption.delete("|").squish.truncate_words(50)
       end
 
       private
