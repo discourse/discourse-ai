@@ -312,10 +312,12 @@ module DiscourseAi
           response_data.each { |partial| partials_raw << partial.to_s }
 
           if xml_tool_processor
-            processed = (xml_tool_processor << response_data)
-            processed << xml_tool_processor.finish
-            response_data = []
-            processed.flatten.compact.each { |partial| response_data << partial }
+            response_data.each do |partial|
+              processed = (xml_tool_processor << partial)
+              processed << xml_tool_processor.finish
+              response_data = []
+              processed.flatten.compact.each { |inner| response_data << inner }
+            end
           end
 
           if xml_stripper

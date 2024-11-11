@@ -136,18 +136,13 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
 
       result = llm.generate(prompt, user: Discourse.system_user)
 
-      expected = <<~TEXT
-        <function_calls>
-        <invoke>
-        <tool_name>calculate</tool_name>
-        <parameters>
-        <expression>1+1</expression></parameters>
-        <tool_id>tool_0</tool_id>
-        </invoke>
-        </function_calls>
-      TEXT
+      expected = DiscourseAi::Completions::ToolCall.new(
+        name: "calculate",
+        id: "tool_0",
+        parameters: { expression: "1+1" },
+      )
 
-      expect(result.strip).to eq(expected.strip)
+      expect(result).to eq(expected)
     end
   end
 

@@ -201,6 +201,7 @@ class EndpointsCompliance
       expect(log.raw_request_payload).to be_present
       expect(log.raw_response_payload).to be_present
       expect(log.request_tokens).to eq(endpoint.prompt_size(dialect.translate))
+
       expect(log.response_tokens).to eq(
         endpoint.llm_model.tokenizer_class.size(mock.streamed_simple_deltas[0...-1].join),
       )

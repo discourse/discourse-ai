@@ -56,6 +56,27 @@ module DiscourseAi
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
+        def xml_tools_enabled?
+          true
+        end
+
+        def decode(response_raw)
+          json = JSON.parse(response_raw, symbolize_names: true)
+          [json.dig(:choices, 0, :message, :content)]
+        end
+
+        def decode_chunk(chunk)
+          @json_decoder ||= JsonStreamDecoder.new
+          (@json_decoder << chunk).map do |parsed|
+            text = parsed.dig(:choices, 0, :delta, :content)
+            if text.to_s.empty?
+              nil
+            else
+              text
+            end
+          end.compact
+        end
+
         def partials_from(decoded_chunk)
           decoded_chunk
             .split("\n")
