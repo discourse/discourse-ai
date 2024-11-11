@@ -146,14 +146,28 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
     end
   end
 
+  it "correctly accounts for tokens in non streaming mode" do
+    body = (<<~TEXT).strip
+      {"id":"chat-c580e4a9ebaa44a0becc802ed5dc213a","object":"chat.completion","created":1731294404,"model":"meta-llama/Meta-Llama-3.1-70B-Instruct","choices":[{"index":0,"message":{"role":"assistant","content":"Random Number Generator Produces Smallest Possible Result","tool_calls":[]},"logprobs":null,"finish_reason":"stop","stop_reason":null}],"usage":{"prompt_tokens":146,"total_tokens":156,"completion_tokens":10},"prompt_logprobs":null}
+    TEXT
+
+    stub_request(:post, "https://test.dev/v1/chat/completions").to_return(
+      status: 200,
+      body: body,
+    )
+
+    result = llm.generate("generate a title", user: Discourse.system_user)
+
+    expect(result).to eq("Random Number Generator Produces Smallest Possible Result")
+
+    log = AiApiAuditLog.order(:id).last
+    expect(log.request_tokens).to eq(146)
+    expect(log.response_tokens).to eq(10)
+
+  end
+
   describe "#perform_completion!" do
     context "when using regular mode" do
-      context "with simple prompts" do
-        it "completes a trivial prompt and logs the response" do
-          compliance.regular_mode_simple_prompt(vllm_mock)
-        end
-      end
-
       context "with tools" do
         it "returns a function invocation" do
           compliance.regular_mode_tools(vllm_mock)

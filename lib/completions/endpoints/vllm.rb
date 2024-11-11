@@ -60,8 +60,15 @@ module DiscourseAi
           true
         end
 
+        def final_log_update(log)
+          log.request_tokens = @prompt_tokens if @prompt_tokens
+          log.response_tokens = @completion_tokens if @completion_tokens
+        end
+
         def decode(response_raw)
           json = JSON.parse(response_raw, symbolize_names: true)
+          @prompt_tokens = json.dig(:usage, :prompt_tokens)
+          @completion_tokens = json.dig(:usage, :completion_tokens)
           [json.dig(:choices, 0, :message, :content)]
         end
 
