@@ -248,33 +248,6 @@ module DiscourseAi
           raise NotImplementedError
         end
 
-        def self.noop_function_call_text
-          (<<~TEXT).strip
-            <invoke>
-            <tool_name></tool_name>
-            <parameters>
-            </parameters>
-            <tool_id></tool_id>
-            </invoke>
-          TEXT
-        end
-
-        def noop_function_call_text
-          self.class.noop_function_call_text
-        end
-
-        def has_tool?(response)
-          response.include?("<function_calls>")
-        end
-
-        def chunk_to_string(chunk)
-          if chunk.is_a?(String)
-            chunk
-          else
-            chunk.to_s
-          end
-        end
-
         private
 
         def start_log(

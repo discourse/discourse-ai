@@ -96,26 +96,6 @@ module DiscourseAi
             end
             .compact
         end
-
-        def partials_from(decoded_chunk)
-          decoded_chunk
-            .split("\n")
-            .map do |line|
-              data = line.split("data: ", 2)[1]
-              data == "[DONE]" ? nil : data
-            end
-            .compact
-        end
-
-        def extract_completion_from(response_raw)
-          parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
-          # half a line sent here
-          return if !parsed
-
-          response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
-
-          response_h.dig(:content)
-        end
       end
     end
   end

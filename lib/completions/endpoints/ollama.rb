@@ -63,11 +63,8 @@ module DiscourseAi
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
-        def partials_from(decoded_chunk)
-          decoded_chunk.split("\n").compact
-        end
-
         def decode_chunk(chunk)
+          # Native tool calls are not working right in streaming mode, use XML
           @json_decoder ||= JsonStreamDecoder.new(line_regex: /^\s*({.*})$/)
           (@json_decoder << chunk).map { |parsed| parsed.dig(:message, :content) }.compact
         end

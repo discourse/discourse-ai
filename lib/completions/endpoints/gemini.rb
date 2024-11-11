@@ -103,14 +103,6 @@ module DiscourseAi
           end
         end
 
-        def partials_from(decoded_chunk)
-          decoded_chunk
-        end
-
-        def chunk_to_string(chunk)
-          chunk.to_s
-        end
-
         class GeminiStreamingDecoder
           def initialize
             @buffer = +""
@@ -219,7 +211,6 @@ module DiscourseAi
 
         def final_log_update(log)
           log.request_tokens = @prompt_token_count if @prompt_token_count
-
           log.response_tokens = @candidate_token_count if @candidate_token_count
         end
 

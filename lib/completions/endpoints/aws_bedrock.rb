@@ -178,10 +178,6 @@ module DiscourseAi
             DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
         end
 
-        def has_tool?(_response_data)
-          processor.tool_calls.present?
-        end
-
         def xml_tools_enabled?
           !@native_tool_support
         end
