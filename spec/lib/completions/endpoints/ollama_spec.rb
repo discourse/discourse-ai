@@ -150,7 +150,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Ollama do
   end
 
   describe "when using streaming mode" do
-    context "with simpel prompts" do
+    context "with simple prompts" do
       it "completes a trivial prompt and logs the response" do
         compliance.streaming_mode_simple_prompt(ollama_mock)
       end
