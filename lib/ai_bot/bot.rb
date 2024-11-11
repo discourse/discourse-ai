@@ -124,7 +124,11 @@ module DiscourseAi
                 ongoing_chain &&= tool.chain_next_response?
               else
                 needs_newlines = true
-                update_blk.call(partial, cancel)
+                if partial.is_a?(DiscourseAi::Completions::ToolCall)
+                  logger.warn("DiscourseAi: Tool not found: #{partial.tool_name}")
+                else
+                  update_blk.call(partial, cancel)
+                end
               end
             end
 
