@@ -93,7 +93,7 @@ module DiscourseAi
               end
 
               xml_tool_processor = XmlToolProcessor.new if xml_tools_enabled? &&
-                dialect .. prompt.has_tools?
+                dialect.prompt.has_tools?
 
               to_strip = xml_tags_to_strip(dialect)
               xml_stripper =
@@ -118,13 +118,17 @@ module DiscourseAi
                   feature_context: feature_context,
                 )
 
-              return non_streaming_response(
-                response: response,
-                xml_tool_processor: xml_tool_processor,
-                xml_stripper: xml_stripper,
-                partials_raw: partials_raw,
-                response_raw: response_raw,
-              ) if !@streaming_mode
+              if !@streaming_mode
+                return(
+                  non_streaming_response(
+                    response: response,
+                    xml_tool_processor: xml_tool_processor,
+                    xml_stripper: xml_stripper,
+                    partials_raw: partials_raw,
+                    response_raw: response_raw,
+                  )
+                )
+              end
 
               begin
                 cancelled = false
