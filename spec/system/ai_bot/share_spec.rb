@@ -13,7 +13,7 @@ RSpec.describe "Share conversation", type: :system do
         Fabricate.build(:topic_allowed_user, user: admin),
         Fabricate.build(:topic_allowed_user, user: bot_user),
       ],
-      )
+    )
   end
 
   let(:pm_posts) do
@@ -47,9 +47,7 @@ RSpec.describe "Share conversation", type: :system do
 
   glimmer_post_menu_states.each do |state|
     context "with the glimmer post menu #{state}" do
-      before do
-        SiteSetting.glimmer_post_menu_mode = state
-      end
+      before { SiteSetting.glimmer_post_menu_mode = state }
 
       it "can share a conversation with a persona user" do
         clip_text = nil
