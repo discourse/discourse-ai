@@ -93,98 +93,34 @@ module DiscourseAi
         end
 
         def final_log_update(log)
-          log.request_tokens = @prompt_tokens if @prompt_tokens
-          log.response_tokens = @completion_tokens if @completion_tokens
+          log.request_tokens = processor.prompt_tokens if processor.prompt_tokens
+          log.response_tokens = processor.completion_tokens if processor.completion_tokens
         end
 
-        def extract_completion_from(response_raw)
-          json = JSON.parse(response_raw, symbolize_names: true)
-
-          if @streaming_mode
-            @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
-            @completion_tokens ||= json.dig(:usage, :completion_tokens)
-          end
-
-          parsed = json.dig(:choices, 0)
-          return if !parsed
-
-          response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
-          @has_function_call ||= response_h.dig(:tool_calls).present?
-          @has_function_call ? response_h.dig(:tool_calls, 0) : response_h.dig(:content)
+        def decode(response_raw)
+          processor.process_message(JSON.parse(response_raw, symbolize_names: true))
         end
 
-        def partials_from(decoded_chunk)
-          decoded_chunk
-            .split("\n")
-            .map do |line|
-              data = line.split("data: ", 2)[1]
-              data == "[DONE]" ? nil : data
-            end
+        def decode_chunk(chunk)
+          @decoder ||= JsonStreamDecoder.new
+          (@decoder << chunk)
+            .map { |parsed_json| processor.process_streamed_message(parsed_json) }
+            .flatten
             .compact
         end
 
-        def has_tool?(_response_data)
-          @has_function_call
+        def decode_chunk_finish
+          @processor.finish
         end
 
-        def native_tool_support?
-          true
+        def xml_tools_enabled?
+          false
         end
 
-        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          if @streaming_mode
-            return function_buffer if !partial
-          else
-            partial = payload
-          end
+        private
 
-          @args_buffer ||= +""
-
-          f_name = partial.dig(:function, :name)
-
-          @current_function ||= function_buffer.at("invoke")
-
-          if f_name
-            current_name = function_buffer.at("tool_name").content
-
-            if current_name.blank?
-              # first call
-            else
-              # we have a previous function, so we need to add a noop
-              @args_buffer = +""
-              @current_function =
-                function_buffer.at("function_calls").add_child(
-                  Nokogiri::HTML5::DocumentFragment.parse(noop_function_call_text + "\n"),
-                )
-            end
-          end
-
-          @current_function.at("tool_name").content = f_name if f_name
-          @current_function.at("tool_id").content = partial[:id] if partial[:id]
-
-          args = partial.dig(:function, :arguments)
-
-          # allow for SPACE within arguments
-          if args && args != ""
-            @args_buffer << args
-
-            begin
-              json_args = JSON.parse(@args_buffer, symbolize_names: true)
-
-              argument_fragments =
-                json_args.reduce(+"") do |memo, (arg_name, value)|
-                  memo << "\n<#{arg_name}>#{CGI.escapeHTML(value.to_s)}</#{arg_name}>"
-                end
-              argument_fragments << "\n"
-
-              @current_function.at("parameters").children =
-                Nokogiri::HTML5::DocumentFragment.parse(argument_fragments)
-            rescue JSON::ParserError
-              return function_buffer
-            end
-          end
-
-          function_buffer
+        def processor
+          @processor ||= OpenAiMessageProcessor.new
         end
       end
     end

@@ -6,6 +6,14 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_login
 
+      def show_debug_info_by_id
+        log = AiApiAuditLog.find(params[:id])
+        raise Discourse::NotFound if !log.topic
+
+        guardian.ensure_can_debug_ai_bot_conversation!(log.topic)
+        render json: AiApiAuditLogSerializer.new(log, root: false), status: 200
+      end
+
       def show_debug_info
         post = Post.find(params[:post_id])
         guardian.ensure_can_debug_ai_bot_conversation!(post)

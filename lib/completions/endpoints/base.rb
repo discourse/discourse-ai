@@ -40,10 +40,6 @@ module DiscourseAi
           @llm_model = llm_model
         end
 
-        def native_tool_support?
-          false
-        end
-
         def use_ssl?
           if model_uri&.scheme.present?
             model_uri.scheme == "https"
@@ -64,22 +60,10 @@ module DiscourseAi
           feature_context: nil,
           &blk
         )
-          allow_tools = dialect.prompt.has_tools?
           model_params = normalize_model_params(model_params)
           orig_blk = blk
 
           @streaming_mode = block_given?
-          to_strip = xml_tags_to_strip(dialect)
-          @xml_stripper =
-            DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
-
-          if @streaming_mode && @xml_stripper
-            blk =
-              lambda do |partial, cancel|
-                partial = @xml_stripper << partial
-                orig_blk.call(partial, cancel) if partial
-              end
-          end
 
           prompt = dialect.translate
 
@@ -108,177 +92,91 @@ module DiscourseAi
                 raise CompletionFailed, response.body
               end
 
+              xml_tool_processor = XmlToolProcessor.new if xml_tools_enabled? &&
+                dialect.prompt.has_tools?
+
+              to_strip = xml_tags_to_strip(dialect)
+              xml_stripper =
+                DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
+
+              if @streaming_mode && xml_stripper
+                blk =
+                  lambda do |partial, cancel|
+                    partial = xml_stripper << partial if partial.is_a?(String)
+                    orig_blk.call(partial, cancel) if partial
+                  end
+              end
+
               log =
-                AiApiAuditLog.new(
+                start_log(
                   provider_id: provider_id,
-                  user_id: user&.id,
-                  raw_request_payload: request_body,
-                  request_tokens: prompt_size(prompt),
-                  topic_id: dialect.prompt.topic_id,
-                  post_id: dialect.prompt.post_id,
+                  request_body: request_body,
+                  dialect: dialect,
+                  prompt: prompt,
+                  user: user,
                   feature_name: feature_name,
-                  language_model: llm_model.name,
-                  feature_context: feature_context.present? ? feature_context.as_json : nil,
+                  feature_context: feature_context,
                 )
 
               if !@streaming_mode
-                response_raw = response.read_body
-                response_data = extract_completion_from(response_raw)
-                partials_raw = response_data.to_s
-
-                if native_tool_support?
-                  if allow_tools && has_tool?(response_data)
-                    function_buffer = build_buffer # Nokogiri document
-                    function_buffer =
-                      add_to_function_buffer(function_buffer, payload: response_data)
-                    FunctionCallNormalizer.normalize_function_ids!(function_buffer)
-
-                    response_data = +function_buffer.at("function_calls").to_s
-                    response_data << "\n"
-                  end
-                else
-                  if allow_tools
-                    response_data, function_calls = FunctionCallNormalizer.normalize(response_data)
-                    response_data = function_calls if function_calls.present?
-                  end
-                end
-
-                return response_data
+                return(
+                  non_streaming_response(
+                    response: response,
+                    xml_tool_processor: xml_tool_processor,
+                    xml_stripper: xml_stripper,
+                    partials_raw: partials_raw,
+                    response_raw: response_raw,
+                  )
+                )
               end
-
-              has_tool = false
 
               begin
                 cancelled = false
                 cancel = -> { cancelled = true }
-
-                wrapped_blk = ->(partial, inner_cancel) do
-                  response_data << partial
-                  blk.call(partial, inner_cancel)
+                if cancelled
+                  http.finish
+                  break
                 end
 
-                normalizer = FunctionCallNormalizer.new(wrapped_blk, cancel)
-
-                leftover = ""
-                function_buffer = build_buffer # Nokogiri document
-                prev_processed_partials = 0
-
                 response.read_body do |chunk|
-                  if cancelled
-                    http.finish
-                    break
-                  end
-
-                  decoded_chunk = decode(chunk)
-                  if decoded_chunk.nil?
-                    raise CompletionFailed, "#{self.class.name}: Failed to decode LLM completion"
-                  end
-                  response_raw << chunk_to_string(decoded_chunk)
-
-                  if decoded_chunk.is_a?(String)
-                    redo_chunk = leftover + decoded_chunk
-                  else
-                    # custom implementation for endpoint
-                    # no implicit leftover support
-                    redo_chunk = decoded_chunk
-                  end
-
-                  raw_partials = partials_from(redo_chunk)
-
-                  raw_partials =
-                    raw_partials[prev_processed_partials..-1] if prev_processed_partials > 0
-
-                  if raw_partials.blank? || (raw_partials.size == 1 && raw_partials.first.blank?)
-                    leftover = redo_chunk
-                    next
-                  end
-
-                  json_error = false
-
-                  raw_partials.each do |raw_partial|
-                    json_error = false
-                    prev_processed_partials += 1
-
-                    next if cancelled
-                    next if raw_partial.blank?
-
-                    begin
-                      partial = extract_completion_from(raw_partial)
-                      next if partial.nil?
-                      # empty vs blank... we still accept " "
-                      next if response_data.empty? && partial.empty?
-                      partials_raw << partial.to_s
-
-                      if native_tool_support?
-                        # Stop streaming the response as soon as you find a tool.
-                        # We'll buffer and yield it later.
-                        has_tool = true if allow_tools && has_tool?(partials_raw)
-
-                        if has_tool
-                          function_buffer =
-                            add_to_function_buffer(function_buffer, partial: partial)
-                        else
-                          response_data << partial
-                          blk.call(partial, cancel) if partial
-                        end
-                      else
-                        if allow_tools
-                          normalizer << partial
-                        else
-                          response_data << partial
-                          blk.call(partial, cancel) if partial
-                        end
+                  response_raw << chunk
+                  decode_chunk(chunk).each do |partial|
+                    partials_raw << partial.to_s
+                    response_data << partial if partial.is_a?(String)
+                    partials = [partial]
+                    if xml_tool_processor && partial.is_a?(String)
+                      partials = (xml_tool_processor << partial)
+                      if xml_tool_processor.should_cancel?
+                        cancel.call
+                        break
                       end
-                    rescue JSON::ParserError
-                      leftover = redo_chunk
-                      json_error = true
                     end
+                    partials.each { |inner_partial| blk.call(inner_partial, cancel) }
                   end
-
-                  if json_error
-                    prev_processed_partials -= 1
-                  else
-                    leftover = ""
-                  end
-
-                  prev_processed_partials = 0 if leftover.blank?
                 end
               rescue IOError, StandardError
                 raise if !cancelled
               end
-
-              has_tool ||= has_tool?(partials_raw)
-              # Once we have the full response, try to return the tool as a XML doc.
-              if has_tool && native_tool_support?
-                function_buffer = add_to_function_buffer(function_buffer, payload: partials_raw)
-
-                if function_buffer.at("tool_name").text.present?
-                  FunctionCallNormalizer.normalize_function_ids!(function_buffer)
-
-                  invocation = +function_buffer.at("function_calls").to_s
-                  invocation << "\n"
-
-                  response_data << invocation
-                  blk.call(invocation, cancel)
+              if xml_stripper
+                stripped = xml_stripper.finish
+                if stripped.present?
+                  response_data << stripped
+                  result = []
+                  result = (xml_tool_processor << stripped) if xml_tool_processor
+                  result.each { |partial| blk.call(partial, cancel) }
                 end
               end
-
-              if !native_tool_support? && function_calls = normalizer.function_calls
-                response_data << function_calls
-                blk.call(function_calls, cancel)
+              if xml_tool_processor
+                xml_tool_processor.finish.each { |partial| blk.call(partial, cancel) }
               end
-
-              if @xml_stripper
-                leftover = @xml_stripper.finish
-                orig_blk.call(leftover, cancel) if leftover.present?
-              end
-
+              decode_chunk_finish.each { |partial| blk.call(partial, cancel) }
               return response_data
             ensure
               if log
                 log.raw_response_payload = response_raw
-                log.response_tokens = tokenizer.size(partials_raw)
                 final_log_update(log)
+
+                log.response_tokens = tokenizer.size(partials_raw) if log.response_tokens.blank?
                 log.save!
 
                 if Rails.env.development?
@@ -330,15 +228,15 @@ module DiscourseAi
           raise NotImplementedError
         end
 
-        def extract_completion_from(_response_raw)
+        def decode(_response_raw)
           raise NotImplementedError
         end
 
-        def decode(chunk)
-          chunk
+        def decode_chunk_finish
+          []
         end
 
-        def partials_from(_decoded_chunk)
+        def decode_chunk(_chunk)
           raise NotImplementedError
         end
 
@@ -346,49 +244,73 @@ module DiscourseAi
           prompt.map { |message| message[:content] || message["content"] || "" }.join("\n")
         end
 
-        def build_buffer
-          Nokogiri::HTML5.fragment(<<~TEXT)
-          <function_calls>
-          #{noop_function_call_text}
-          </function_calls>
-          TEXT
+        def xml_tools_enabled?
+          raise NotImplementedError
         end
 
-        def self.noop_function_call_text
-          (<<~TEXT).strip
-            <invoke>
-            <tool_name></tool_name>
-            <parameters>
-            </parameters>
-            <tool_id></tool_id>
-            </invoke>
-          TEXT
+        private
+
+        def start_log(
+          provider_id:,
+          request_body:,
+          dialect:,
+          prompt:,
+          user:,
+          feature_name:,
+          feature_context:
+        )
+          AiApiAuditLog.new(
+            provider_id: provider_id,
+            user_id: user&.id,
+            raw_request_payload: request_body,
+            request_tokens: prompt_size(prompt),
+            topic_id: dialect.prompt.topic_id,
+            post_id: dialect.prompt.post_id,
+            feature_name: feature_name,
+            language_model: llm_model.name,
+            feature_context: feature_context.present? ? feature_context.as_json : nil,
+          )
         end
 
-        def noop_function_call_text
-          self.class.noop_function_call_text
-        end
+        def non_streaming_response(
+          response:,
+          xml_tool_processor:,
+          xml_stripper:,
+          partials_raw:,
+          response_raw:
+        )
+          response_raw << response.read_body
+          response_data = decode(response_raw)
 
-        def has_tool?(response)
-          response.include?("<function_calls>")
-        end
+          response_data.each { |partial| partials_raw << partial.to_s }
 
-        def chunk_to_string(chunk)
-          if chunk.is_a?(String)
-            chunk
-          else
-            chunk.to_s
+          if xml_tool_processor
+            response_data.each do |partial|
+              processed = (xml_tool_processor << partial)
+              processed << xml_tool_processor.finish
+              response_data = []
+              processed.flatten.compact.each { |inner| response_data << inner }
+            end
           end
-        end
 
-        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          if payload&.include?("</invoke>")
-            matches = payload.match(%r{<function_calls>.*</invoke>}m)
-            function_buffer =
-              Nokogiri::HTML5.fragment(matches[0] + "\n</function_calls>") if matches
+          if xml_stripper
+            response_data.map! do |partial|
+              stripped = (xml_stripper << partial) if partial.is_a?(String)
+              if stripped.present?
+                stripped
+              else
+                partial
+              end
+            end
+            response_data << xml_stripper.finish
           end
 
-          function_buffer
+          response_data.reject!(&:blank?)
+
+          # this is to keep stuff backwards compatible
+          response_data = response_data.first if response_data.length == 1
+
+          response_data
         end
       end
     end

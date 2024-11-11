@@ -17,8 +17,8 @@ class OpenAiMock < EndpointMock
       created: 1_678_464_820,
       model: "gpt-3.5-turbo-0301",
       usage: {
-        prompt_tokens: 337,
-        completion_tokens: 162,
+        prompt_tokens: 8,
+        completion_tokens: 13,
         total_tokens: 499,
       },
       choices: [
@@ -231,19 +231,16 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
       result = llm.generate(prompt, user: user)
 
-      expected = (<<~TXT).strip
-        <function_calls>
-        <invoke>
-        <tool_name>echo</tool_name>
-        <parameters>
-        <text>hello</text>
-        </parameters>
-        <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
-        </invoke>
-        </function_calls>
-      TXT
+      tool_call =
+        DiscourseAi::Completions::ToolCall.new(
+          id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+          name: "echo",
+          parameters: {
+            text: "hello",
+          },
+        )
 
-      expect(result.strip).to eq(expected)
+      expect(result).to eq(tool_call)
 
       stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
         body: { choices: [message: { content: "OK" }] }.to_json,
@@ -320,19 +317,20 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
       expect(body_json[:tool_choice]).to eq({ type: "function", function: { name: "echo" } })
 
-      expected = (<<~TXT).strip
-        <function_calls>
-        <invoke>
-        <tool_name>echo</tool_name>
-        <parameters>
-        <text>h&lt;e&gt;llo</text>
-        </parameters>
-        <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
-        </invoke>
-        </function_calls>
-      TXT
+      log = AiApiAuditLog.order(:id).last
+      expect(log.request_tokens).to eq(55)
+      expect(log.response_tokens).to eq(13)
 
-      expect(result.strip).to eq(expected)
+      expected =
+        DiscourseAi::Completions::ToolCall.new(
+          id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+          name: "echo",
+          parameters: {
+            text: "h<e>llo",
+          },
+        )
+
+      expect(result).to eq(expected)
 
       stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
         body: { choices: [message: { content: "OK" }] }.to_json,
@@ -487,7 +485,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"e AI "}}]},"logprobs":null,"finish_reason":null}]}
 
-  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"bot\\"}"}}]},"logprobs":null,"finish_reason":null}]}
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"bot2\\"}"}}]},"logprobs":null,"finish_reason":null}]}
 
   data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"tool_calls"}]}
 
@@ -495,32 +493,30 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 TEXT
 
           open_ai_mock.stub_raw(raw_data)
-          content = +""
+          response = []
 
           dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
 
-          endpoint.perform_completion!(dialect, user) { |partial| content << partial }
+          endpoint.perform_completion!(dialect, user) { |partial| response << partial }
 
-          expected = <<~TEXT
-            <function_calls>
-            <invoke>
-            <tool_name>search</tool_name>
-            <parameters>
-            <search_query>Discourse AI bot</search_query>
-            </parameters>
-            <tool_id>call_3Gyr3HylFJwfrtKrL6NaIit1</tool_id>
-            </invoke>
-            <invoke>
-            <tool_name>search</tool_name>
-            <parameters>
-            <query>Discourse AI bot</query>
-            </parameters>
-            <tool_id>call_H7YkbgYurHpyJqzwUN4bghwN</tool_id>
-            </invoke>
-            </function_calls>
-          TEXT
+          tool_calls = [
+            DiscourseAi::Completions::ToolCall.new(
+              name: "search",
+              id: "call_3Gyr3HylFJwfrtKrL6NaIit1",
+              parameters: {
+                search_query: "Discourse AI bot",
+              },
+            ),
+            DiscourseAi::Completions::ToolCall.new(
+              name: "search",
+              id: "call_H7YkbgYurHpyJqzwUN4bghwN",
+              parameters: {
+                query: "Discourse AI bot2",
+              },
+            ),
+          ]
 
-          expect(content).to eq(expected)
+          expect(response).to eq(tool_calls)
         end
 
         it "uses proper token accounting" do
@@ -593,21 +589,16 @@ TEXT
             dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
             endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
 
-            expect(partials.length).to eq(1)
+            tool_call =
+              DiscourseAi::Completions::ToolCall.new(
+                id: "func_id",
+                name: "google",
+                parameters: {
+                  query: "Adabas 9.1",
+                },
+              )
 
-            function_call = (<<~TXT).strip
-            <function_calls>
-            <invoke>
-            <tool_name>google</tool_name>
-            <parameters>
-            <query>Adabas 9.1</query>
-            </parameters>
-            <tool_id>func_id</tool_id>
-            </invoke>
-            </function_calls>
-            TXT
-
-            expect(partials[0].strip).to eq(function_call)
+            expect(partials).to eq([tool_call])
           end
         end
       end

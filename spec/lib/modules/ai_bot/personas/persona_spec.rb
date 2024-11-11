@@ -72,40 +72,27 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
 
   it "can parse string that are wrapped in quotes" do
     SiteSetting.ai_stability_api_key = "123"
-    xml = <<~XML
-      <function_calls>
-        <invoke>
-        <tool_name>image</tool_name>
-        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
-        <parameters>
-        <prompts>["cat oil painting", "big car"]</prompts>
-        <aspect_ratio>"16:9"</aspect_ratio>
-        </parameters>
-        </invoke>
-        <invoke>
-        <tool_name>image</tool_name>
-        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
-        <parameters>
-        <prompts>["cat oil painting", "big car"]</prompts>
-        <aspect_ratio>'16:9'</aspect_ratio>
-        </parameters>
-        </invoke>
-      </function_calls>
-    XML
 
-    image1, image2 =
-      tools =
-        DiscourseAi::AiBot::Personas::Artist.new.find_tools(
-          xml,
-          bot_user: nil,
-          llm: nil,
-          context: nil,
-        )
-    expect(image1.parameters[:prompts]).to eq(["cat oil painting", "big car"])
-    expect(image1.parameters[:aspect_ratio]).to eq("16:9")
-    expect(image2.parameters[:aspect_ratio]).to eq("16:9")
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "image",
+        id: "call_JtYQMful5QKqw97XFsHzPweB",
+        parameters: {
+          prompts: ["cat oil painting", "big car"],
+          aspect_ratio: "16:9",
+        },
+      )
 
-    expect(tools.length).to eq(2)
+    tool_instance =
+      DiscourseAi::AiBot::Personas::Artist.new.find_tool(
+        tool_call,
+        bot_user: nil,
+        llm: nil,
+        context: nil,
+      )
+
+    expect(tool_instance.parameters[:prompts]).to eq(["cat oil painting", "big car"])
+    expect(tool_instance.parameters[:aspect_ratio]).to eq("16:9")
   end
 
   it "enforces enums" do
@@ -132,42 +119,68 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       </function_calls>
     XML
 
-    search1, search2 =
-      tools =
-        DiscourseAi::AiBot::Personas::General.new.find_tools(
-          xml,
-          bot_user: nil,
-          llm: nil,
-          context: nil,
-        )
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "search",
+        id: "call_JtYQMful5QKqw97XFsHzPweB",
+        parameters: {
+          max_posts: "3.2",
+          status: "cow",
+          foo: "bar",
+        },
+      )
 
-    expect(search1.parameters.key?(:status)).to eq(false)
-    expect(search2.parameters[:status]).to eq("open")
+    tool_instance =
+      DiscourseAi::AiBot::Personas::General.new.find_tool(
+        tool_call,
+        bot_user: nil,
+        llm: nil,
+        context: nil,
+      )
+
+    expect(tool_instance.parameters.key?(:status)).to eq(false)
+
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "search",
+        id: "call_JtYQMful5QKqw97XFsHzPweB",
+        parameters: {
+          max_posts: "3.2",
+          status: "open",
+          foo: "bar",
+        },
+      )
+
+    tool_instance =
+      DiscourseAi::AiBot::Personas::General.new.find_tool(
+        tool_call,
+        bot_user: nil,
+        llm: nil,
+        context: nil,
+      )
+
+    expect(tool_instance.parameters[:status]).to eq("open")
   end
 
   it "can coerce integers" do
-    xml = <<~XML
-      <function_calls>
-        <invoke>
-        <tool_name>search</tool_name>
-        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
-        <parameters>
-        <max_posts>"3.2"</max_posts>
-        <search_query>hello world</search_query>
-        <foo>bar</foo>
-        </parameters>
-        </invoke>
-      </function_calls>
-    XML
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "search",
+        id: "call_JtYQMful5QKqw97XFsHzPweB",
+        parameters: {
+          max_posts: "3.2",
+          search_query: "hello world",
+          foo: "bar",
+        },
+      )
 
-    search, =
-      tools =
-        DiscourseAi::AiBot::Personas::General.new.find_tools(
-          xml,
-          bot_user: nil,
-          llm: nil,
-          context: nil,
-        )
+    search =
+      DiscourseAi::AiBot::Personas::General.new.find_tool(
+        tool_call,
+        bot_user: nil,
+        llm: nil,
+        context: nil,
+      )
 
     expect(search.parameters[:max_posts]).to eq(3)
     expect(search.parameters[:search_query]).to eq("hello world")
@@ -177,43 +190,23 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
   it "can correctly parse arrays in tools" do
     SiteSetting.ai_openai_api_key = "123"
 
-    # Dall E tool uses an array for params
-    xml = <<~XML
-      <function_calls>
-        <invoke>
-        <tool_name>dall_e</tool_name>
-        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
-        <parameters>
-        <prompts>["cat oil painting", "big car"]</prompts>
-        </parameters>
-        </invoke>
-        <invoke>
-        <tool_name>dall_e</tool_name>
-        <tool_id>abc</tool_id>
-        <parameters>
-        <prompts>["pic3"]</prompts>
-        </parameters>
-        </invoke>
-        <invoke>
-        <tool_name>unknown</tool_name>
-        <tool_id>abc</tool_id>
-        <parameters>
-        <prompts>["pic3"]</prompts>
-        </parameters>
-        </invoke>
-      </function_calls>
-    XML
-    dall_e1, dall_e2 =
-      tools =
-        DiscourseAi::AiBot::Personas::DallE3.new.find_tools(
-          xml,
-          bot_user: nil,
-          llm: nil,
-          context: nil,
-        )
-    expect(dall_e1.parameters[:prompts]).to eq(["cat oil painting", "big car"])
-    expect(dall_e2.parameters[:prompts]).to eq(["pic3"])
-    expect(tools.length).to eq(2)
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "dall_e",
+        id: "call_JtYQMful5QKqw97XFsHzPweB",
+        parameters: {
+          prompts: ["cat oil painting", "big car"],
+        },
+      )
+
+    tool_instance =
+      DiscourseAi::AiBot::Personas::DallE3.new.find_tool(
+        tool_call,
+        bot_user: nil,
+        llm: nil,
+        context: nil,
+      )
+    expect(tool_instance.parameters[:prompts]).to eq(["cat oil painting", "big car"])
   end
 
   describe "custom personas" do

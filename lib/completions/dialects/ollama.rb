@@ -63,8 +63,23 @@ module DiscourseAi
         def user_msg(msg)
           user_message = { role: "user", content: msg[:content] }
 
-          # TODO: Add support for user messages with empbeded user ids
-          # TODO: Add support for user messages with attachments
+          encoded_uploads = prompt.encoded_uploads(msg)
+          if encoded_uploads.present?
+            images =
+              encoded_uploads
+                .map do |upload|
+                  if upload[:mime_type].start_with?("image/")
+                    upload[:base64]
+                  else
+                    nil
+                  end
+                end
+                .compact
+
+            user_message[:images] = images if images.present?
+          end
+
+          # TODO: Add support for user messages with embedded user ids
 
           user_message
         end

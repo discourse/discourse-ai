@@ -79,7 +79,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         }
 
         prompt.tools = [tool]
-        response = +""
+        response = []
         proxy.generate(prompt, user: user) { |partial| response << partial }
 
         expect(request.headers["Authorization"]).to be_present
@@ -90,21 +90,18 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         expect(parsed_body["tools"]).to eq(nil)
         expect(parsed_body["stop_sequences"]).to eq(["</function_calls>"])
 
-        # note we now have a tool_id cause we were normalized
-        function_call = <<~XML.strip
-          hello
+        expected = [
+          "hello\n",
+          DiscourseAi::Completions::ToolCall.new(
+            id: "tool_0",
+            name: "google",
+            parameters: {
+              query: "sydney weather today",
+            },
+          ),
+        ]
 
-
-          <function_calls>
-          <invoke>
-          <tool_name>google</tool_name>
-          <parameters><query>sydney weather today</query></parameters>
-          <tool_id>tool_0</tool_id>
-          </invoke>
-          </function_calls>
-        XML
-
-        expect(response.strip).to eq(function_call)
+        expect(response).to eq(expected)
       end
     end
 
@@ -230,23 +227,23 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         }
 
         prompt.tools = [tool]
-        response = +""
+        response = []
         proxy.generate(prompt, user: user) { |partial| response << partial }
 
         expect(request.headers["Authorization"]).to be_present
         expect(request.headers["X-Amz-Content-Sha256"]).to be_present
 
-        expected_response = (<<~RESPONSE).strip
-        <function_calls>
-        <invoke>
-        <tool_name>google</tool_name>
-        <parameters><query>sydney weather today</query></parameters>
-        <tool_id>toolu_bdrk_014CMjxtGmKUtGoEFPgc7PF7</tool_id>
-        </invoke>
-        </function_calls>
-        RESPONSE
+        expected_response = [
+          DiscourseAi::Completions::ToolCall.new(
+            id: "toolu_bdrk_014CMjxtGmKUtGoEFPgc7PF7",
+            name: "google",
+            parameters: {
+              query: "sydney weather today",
+            },
+          ),
+        ]
 
-        expect(response.strip).to eq(expected_response)
+        expect(response).to eq(expected_response)
 
         expected = {
           "max_tokens" => 3000,

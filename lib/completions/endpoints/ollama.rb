@@ -37,12 +37,8 @@ module DiscourseAi
           URI(llm_model.url)
         end
 
-        def native_tool_support?
-          @native_tool_support
-        end
-
-        def has_tool?(_response_data)
-          @has_function_call
+        def xml_tools_enabled?
+          !@native_tool_support
         end
 
         def prepare_payload(prompt, model_params, dialect)
@@ -67,74 +63,30 @@ module DiscourseAi
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
-        def partials_from(decoded_chunk)
-          decoded_chunk.split("\n").compact
+        def decode_chunk(chunk)
+          # Native tool calls are not working right in streaming mode, use XML
+          @json_decoder ||= JsonStreamDecoder.new(line_regex: /^\s*({.*})$/)
+          (@json_decoder << chunk).map { |parsed| parsed.dig(:message, :content) }.compact
         end
 
-        def extract_completion_from(response_raw)
+        def decode(response_raw)
+          rval = []
           parsed = JSON.parse(response_raw, symbolize_names: true)
-          return if !parsed
+          content = parsed.dig(:message, :content)
+          rval << content if !content.to_s.empty?
 
-          response_h = parsed.dig(:message)
-
-          @has_function_call ||= response_h.dig(:tool_calls).present?
-          @has_function_call ? response_h.dig(:tool_calls, 0) : response_h.dig(:content)
-        end
-
-        def add_to_function_buffer(function_buffer, payload: nil, partial: nil)
-          @args_buffer ||= +""
-
-          if @streaming_mode
-            return function_buffer if !partial
-          else
-            partial = payload
-          end
-
-          f_name = partial.dig(:function, :name)
-
-          @current_function ||= function_buffer.at("invoke")
-
-          if f_name
-            current_name = function_buffer.at("tool_name").content
-
-            if current_name.blank?
-              # first call
-            else
-              # we have a previous function, so we need to add a noop
-              @args_buffer = +""
-              @current_function =
-                function_buffer.at("function_calls").add_child(
-                  Nokogiri::HTML5::DocumentFragment.parse(noop_function_call_text + "\n"),
-                )
+          idx = -1
+          parsed
+            .dig(:message, :tool_calls)
+            &.each do |tool_call|
+              idx += 1
+              id = "tool_#{idx}"
+              name = tool_call.dig(:function, :name)
+              args = tool_call.dig(:function, :arguments)
+              rval << ToolCall.new(id: id, name: name, parameters: args)
             end
-          end
 
-          @current_function.at("tool_name").content = f_name if f_name
-          @current_function.at("tool_id").content = partial[:id] if partial[:id]
-
-          args = partial.dig(:function, :arguments)
-
-          # allow for SPACE within arguments
-          if args && args != ""
-            @args_buffer << args.to_json
-
-            begin
-              json_args = JSON.parse(@args_buffer, symbolize_names: true)
-
-              argument_fragments =
-                json_args.reduce(+"") do |memo, (arg_name, value)|
-                  memo << "\n<#{arg_name}>#{value}</#{arg_name}>"
-                end
-              argument_fragments << "\n"
-
-              @current_function.at("parameters").children =
-                Nokogiri::HTML5::DocumentFragment.parse(argument_fragments)
-            rescue JSON::ParserError
-              return function_buffer
-            end
-          end
-
-          function_buffer
+          rval
         end
       end
     end

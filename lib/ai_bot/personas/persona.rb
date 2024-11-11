@@ -199,23 +199,16 @@ module DiscourseAi
           prompt
         end
 
-        def find_tools(partial, bot_user:, llm:, context:)
-          return [] if !partial.include?("</invoke>")
-
-          parsed_function = Nokogiri::HTML5.fragment(partial)
-          parsed_function
-            .css("invoke")
-            .map do |fragment|
-              tool_instance(fragment, bot_user: bot_user, llm: llm, context: context)
-            end
-            .compact
+        def find_tool(partial, bot_user:, llm:, context:)
+          return nil if !partial.is_a?(DiscourseAi::Completions::ToolCall)
+          tool_instance(partial, bot_user: bot_user, llm: llm, context: context)
         end
 
         protected
 
-        def tool_instance(parsed_function, bot_user:, llm:, context:)
-          function_id = parsed_function.at("tool_id")&.text
-          function_name = parsed_function.at("tool_name")&.text
+        def tool_instance(tool_call, bot_user:, llm:, context:)
+          function_id = tool_call.id
+          function_name = tool_call.name
           return nil if function_name.nil?
 
           tool_klass = available_tools.find { |c| c.signature.dig(:name) == function_name }
@@ -224,7 +217,7 @@ module DiscourseAi
           arguments = {}
           tool_klass.signature[:parameters].to_a.each do |param|
             name = param[:name]
-            value = parsed_function.at(name)&.text
+            value = tool_call.parameters[name.to_sym]
 
             if param[:type] == "array" && value
               value =

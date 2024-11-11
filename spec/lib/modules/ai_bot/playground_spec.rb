@@ -55,6 +55,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     )
   end
 
+  before { SiteSetting.ai_embeddings_enabled = false }
+
   after do
     # we must reset cache on persona cause data can be rolled back
     AiPersona.persona_cache.flush!
@@ -83,17 +85,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
-    let(:function_call) { (<<~XML).strip }
-        <function_calls>
-          <invoke>
-            <tool_name>search</tool_name>
-            <tool_id>666</tool_id>
-            <parameters>
-              <query>Can you use the custom tool</query>
-            </parameters>
-          </invoke>
-        </function_calls>",
-      XML
+    let(:tool_call) do
+      DiscourseAi::Completions::ToolCall.new(
+        name: "search",
+        id: "666",
+        parameters: {
+          query: "Can you use the custom tool",
+        },
+      )
+    end
 
     let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
 
@@ -115,7 +115,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       reply_post = nil
       prompts = nil
 
-      responses = [function_call]
+      responses = [tool_call]
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
         new_post = Fabricate(:post, raw: "Can you use the custom tool?")
         reply_post = playground.reply_to(new_post)
@@ -133,7 +133,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     it "can force usage of a tool" do
       tool_name = "custom-#{custom_tool.id}"
       ai_persona.update!(tools: [[tool_name, nil, true]], forced_tool_count: 1)
-      responses = [function_call, "custom tool did stuff (maybe)"]
+      responses = [tool_call, "custom tool did stuff (maybe)"]
 
       prompts = nil
       reply_post = nil
@@ -166,7 +166,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
       playground = DiscourseAi::AiBot::Playground.new(bot)
 
-      responses = [function_call, "custom tool did stuff (maybe)"]
+      responses = [tool_call, "custom tool did stuff (maybe)"]
 
       reply_post = nil
 
@@ -206,13 +206,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
       playground = DiscourseAi::AiBot::Playground.new(bot)
 
+      responses = ["custom tool did stuff (maybe)", tool_call]
+
       # lets ensure tool does not run...
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompt|
         new_post = Fabricate(:post, raw: "Can you use the custom tool?")
         reply_post = playground.reply_to(new_post)
       end
 
-      expect(reply_post.raw.strip).to eq(function_call)
+      expect(reply_post.raw.strip).to eq("custom tool did stuff (maybe)")
     end
   end
 
@@ -452,10 +454,25 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       it "can run tools" do
         persona.update!(tools: ["Time"])
 
-        responses = [
-          "<function_calls><invoke><tool_name>time</tool_name><tool_id>time</tool_id><parameters><timezone>Buenos Aires</timezone></parameters></invoke></function_calls>",
-          "The time is 2023-12-14 17:24:00 -0300",
-        ]
+        tool_call1 =
+          DiscourseAi::Completions::ToolCall.new(
+            name: "time",
+            id: "time",
+            parameters: {
+              timezone: "Buenos Aires",
+            },
+          )
+
+        tool_call2 =
+          DiscourseAi::Completions::ToolCall.new(
+            name: "time",
+            id: "time",
+            parameters: {
+              timezone: "Sydney",
+            },
+          )
+
+        responses = [[tool_call1, tool_call2], "The time is 2023-12-14 17:24:00 -0300"]
 
         message =
           DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
@@ -470,7 +487,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         # it also needs to have tool details now set on message
         prompt = ChatMessageCustomPrompt.find_by(message_id: reply.id)
-        expect(prompt.custom_prompt.length).to eq(3)
+
+        expect(prompt.custom_prompt.length).to eq(5)
 
         # TODO in chat I am mixed on including this in the context, but I guess maybe?
         # thinking about this
@@ -782,30 +800,29 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     it "supports multiple function calls" do
-      response1 = (<<~TXT).strip
-          <function_calls>
-          <invoke>
-          <tool_name>search</tool_name>
-          <tool_id>search</tool_id>
-          <parameters>
-          <search_query>testing various things</search_query>
-          </parameters>
-          </invoke>
-          <invoke>
-          <tool_name>search</tool_name>
-          <tool_id>search</tool_id>
-          <parameters>
-          <search_query>another search</search_query>
-          </parameters>
-          </invoke>
-          </function_calls>
-       TXT
+      tool_call1 =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "search",
+          id: "search",
+          parameters: {
+            search_query: "testing various things",
+          },
+        )
+
+      tool_call2 =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "search",
+          id: "search",
+          parameters: {
+            search_query: "another search",
+          },
+        )
 
       response2 = "I found stuff"
 
-      DiscourseAi::Completions::Llm.with_prepared_responses([response1, response2]) do
-        playground.reply_to(third_post)
-      end
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        [[tool_call1, tool_call2], response2],
+      ) { playground.reply_to(third_post) }
 
       last_post = third_post.topic.reload.posts.order(:post_number).last
 
@@ -819,17 +836,14 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new)
       playground = described_class.new(bot)
 
-      response1 = (<<~TXT).strip
-          <function_calls>
-          <invoke>
-          <tool_name>search</tool_name>
-          <tool_id>search</tool_id>
-          <parameters>
-          <search_query>testing various things</search_query>
-          </parameters>
-          </invoke>
-          </function_calls>
-       TXT
+      response1 =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "search",
+          id: "search",
+          parameters: {
+            search_query: "testing various things",
+          },
+        )
 
       response2 = "I found stuff"
 
@@ -843,17 +857,14 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     it "does not include placeholders in conversation context but includes all completions" do
-      response1 = (<<~TXT).strip
-          <function_calls>
-          <invoke>
-          <tool_name>search</tool_name>
-          <tool_id>search</tool_id>
-          <parameters>
-          <search_query>testing various things</search_query>
-          </parameters>
-          </invoke>
-          </function_calls>
-       TXT
+      response1 =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "search",
+          id: "search",
+          parameters: {
+            search_query: "testing various things",
+          },
+        )
 
       response2 = "I found some really amazing stuff!"
 
@@ -889,17 +900,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         [{ b64_json: image, revised_prompt: "a pink cow 1" }]
       end
 
-      let(:response) { (<<~TXT).strip }
-          <function_calls>
-          <invoke>
-          <tool_name>dall_e</tool_name>
-          <tool_id>dall_e</tool_id>
-          <parameters>
-          <prompts>["a pink cow"]</prompts>
-          </parameters>
-          </invoke>
-          </function_calls>
-       TXT
+      let(:response) do
+        DiscourseAi::Completions::ToolCall.new(
+          name: "dall_e",
+          id: "dall_e",
+          parameters: {
+            prompts: ["a pink cow"],
+          },
+        )
+      end
 
       it "properly returns an image when skipping tool details" do
         persona.update!(tool_details: false)

@@ -104,7 +104,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     data: {"type":"message_stop"}
     STRING
 
-    result = +""
+    result = []
     body = body.scan(/.*\n/)
     EndpointMock.with_chunk_array_support do
       stub_request(:post, url).to_return(status: 200, body: body)
@@ -114,18 +114,17 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       end
     end
 
-    expected = (<<~TEXT).strip
-      <function_calls>
-      <invoke>
-      <tool_name>search</tool_name>
-      <parameters><search_query>s&lt;a&gt;m sam</search_query>
-      <category>general</category></parameters>
-      <tool_id>toolu_01DjrShFRRHp9SnHYRFRc53F</tool_id>
-      </invoke>
-      </function_calls>
-    TEXT
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "search",
+        id: "toolu_01DjrShFRRHp9SnHYRFRc53F",
+        parameters: {
+          search_query: "s<a>m sam",
+          category: "general",
+        },
+      )
 
-    expect(result.strip).to eq(expected)
+    expect(result).to eq([tool_call])
   end
 
   it "can stream a response" do
@@ -191,6 +190,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expect(log.feature_name).to eq("testing")
     expect(log.response_tokens).to eq(15)
     expect(log.request_tokens).to eq(25)
+    expect(log.raw_request_payload).to eq(expected_body.to_json)
+    expect(log.raw_response_payload.strip).to eq(body.strip)
   end
 
   it "supports non streaming tool calls" do
@@ -242,17 +243,20 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     result = llm.generate(prompt, user: Discourse.system_user)
 
-    expected = <<~TEXT.strip
-      <function_calls>
-      <invoke>
-      <tool_name>calculate</tool_name>
-      <parameters><expression>2758975 + 21.11</expression></parameters>
-      <tool_id>toolu_012kBdhG4eHaV68W56p4N94h</tool_id>
-      </invoke>
-      </function_calls>
-    TEXT
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "calculate",
+        id: "toolu_012kBdhG4eHaV68W56p4N94h",
+        parameters: {
+          expression: "2758975 + 21.11",
+        },
+      )
 
-    expect(result.strip).to eq(expected)
+    expect(result).to eq(["Here is the calculation:", tool_call])
+
+    log = AiApiAuditLog.order(:id).last
+    expect(log.request_tokens).to eq(345)
+    expect(log.response_tokens).to eq(65)
   end
 
   it "can send images via a completion prompt" do

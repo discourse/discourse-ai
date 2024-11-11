@@ -133,31 +133,35 @@ module DiscourseAi
           content = content.shift if content.is_a?(Array)
 
           if block_given?
-            split_indices = (1...content.length).to_a.sample(self.class.chunk_count - 1).sort
-            indexes = [0, *split_indices, content.length]
+            if content.is_a?(DiscourseAi::Completions::ToolCall)
+              yield(content, -> {})
+            else
+              split_indices = (1...content.length).to_a.sample(self.class.chunk_count - 1).sort
+              indexes = [0, *split_indices, content.length]
 
-            original_content = content
-            content = +""
+              original_content = content
+              content = +""
 
-            cancel = false
-            cancel_proc = -> { cancel = true }
+              cancel = false
+              cancel_proc = -> { cancel = true }
 
-            i = 0
-            indexes
-              .each_cons(2)
-              .map { |start, finish| original_content[start...finish] }
-              .each do |chunk|
-                break if cancel
-                if self.class.delays.present? &&
-                     (delay = self.class.delays[i % self.class.delays.length])
-                  sleep(delay)
-                  i += 1
+              i = 0
+              indexes
+                .each_cons(2)
+                .map { |start, finish| original_content[start...finish] }
+                .each do |chunk|
+                  break if cancel
+                  if self.class.delays.present? &&
+                       (delay = self.class.delays[i % self.class.delays.length])
+                    sleep(delay)
+                    i += 1
+                  end
+                  break if cancel
+
+                  content << chunk
+                  yield(chunk, cancel_proc)
                 end
-                break if cancel
-
-                content << chunk
-                yield(chunk, cancel_proc)
-              end
+            end
           end
 
           content
