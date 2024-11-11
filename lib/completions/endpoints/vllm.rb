@@ -42,7 +42,10 @@ module DiscourseAi
 
         def prepare_payload(prompt, model_params, dialect)
           payload = default_options.merge(model_params).merge(messages: prompt)
-          payload[:stream] = true if @streaming_mode
+          if @streaming_mode
+            payload[:stream] = true if @streaming_mode
+            payload[:stream_options] = { include_usage: true }
+          end
 
           payload
         end
@@ -74,14 +77,29 @@ module DiscourseAi
 
         def decode_chunk(chunk)
           @json_decoder ||= JsonStreamDecoder.new
-          (@json_decoder << chunk).map do |parsed|
-            text = parsed.dig(:choices, 0, :delta, :content)
-            if text.to_s.empty?
-              nil
-            else
-              text
+          (@json_decoder << chunk)
+            .map do |parsed|
+
+              # vLLM keeps sending usage over and over again
+              prompt_tokens = parsed.dig(:usage, :prompt_tokens)
+              completion_tokens = parsed.dig(:usage, :completion_tokens)
+
+              if prompt_tokens
+                @prompt_tokens = prompt_tokens
+              end
+
+              if completion_tokens
+                @completion_tokens = completion_tokens
+              end
+
+              text = parsed.dig(:choices, 0, :delta, :content)
+              if text.to_s.empty?
+                nil
+              else
+                text
+              end
             end
-          end.compact
+            .compact
         end
 
         def partials_from(decoded_chunk)
