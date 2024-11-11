@@ -79,18 +79,13 @@ module DiscourseAi
           @json_decoder ||= JsonStreamDecoder.new
           (@json_decoder << chunk)
             .map do |parsed|
-
               # vLLM keeps sending usage over and over again
               prompt_tokens = parsed.dig(:usage, :prompt_tokens)
               completion_tokens = parsed.dig(:usage, :completion_tokens)
 
-              if prompt_tokens
-                @prompt_tokens = prompt_tokens
-              end
+              @prompt_tokens = prompt_tokens if prompt_tokens
 
-              if completion_tokens
-                @completion_tokens = completion_tokens
-              end
+              @completion_tokens = completion_tokens if completion_tokens
 
               text = parsed.dig(:choices, 0, :delta, :content)
               if text.to_s.empty?

@@ -118,14 +118,16 @@ module DiscourseAi
         end
 
         def decode_chunk(partial_data)
-          bedrock_decode(partial_data).map do |decoded_partial_data|
-            @raw_response ||= +""
-            @raw_response << decoded_partial_data
-            @raw_response << "\n"
+          bedrock_decode(partial_data)
+            .map do |decoded_partial_data|
+              @raw_response ||= +""
+              @raw_response << decoded_partial_data
+              @raw_response << "\n"
 
-            parsed_json = JSON.parse(decoded_partial_data, symbolize_names: true)
-            processor.process_streamed_message(parsed_json)
-          end.compact
+              parsed_json = JSON.parse(decoded_partial_data, symbolize_names: true)
+              processor.process_streamed_message(parsed_json)
+            end
+            .compact
         end
 
         def decode(response_data)

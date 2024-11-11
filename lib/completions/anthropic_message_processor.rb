@@ -37,9 +37,7 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
     if parsed[:type] == "content_block_start" && parsed.dig(:content_block, :type) == "tool_use"
       tool_name = parsed.dig(:content_block, :name)
       tool_id = parsed.dig(:content_block, :id)
-      if @current_tool_call
-        result = @current_tool_call.to_tool_call
-      end
+      result = @current_tool_call.to_tool_call if @current_tool_call
       @current_tool_call = AnthropicToolCall.new(tool_name, tool_id) if tool_name
     elsif parsed[:type] == "content_block_start" || parsed[:type] == "content_block_delta"
       if @current_tool_call

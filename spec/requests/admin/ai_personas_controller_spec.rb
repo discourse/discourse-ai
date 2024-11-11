@@ -541,16 +541,10 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(topic.title).to eq("An amazing title")
       expect(topic.posts.count).to eq(2)
 
-      # now let's try to make a reply with a tool call
-      function_call = <<~XML
-        <function_calls>
-          <invoke>
-          <tool_name>categories</tool_name>
-          </invoke>
-        </function_calls>
-      XML
+      tool_call =
+        DiscourseAi::Completions::ToolCall.new(name: "categories", parameters: {}, id: "tool_1")
 
-      fake_endpoint.fake_content = [function_call, "this is the response after the tool"]
+      fake_endpoint.fake_content = [tool_call, "this is the response after the tool"]
       # this simplifies function calls
       fake_endpoint.chunk_count = 1
 

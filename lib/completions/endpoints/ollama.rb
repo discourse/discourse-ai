@@ -69,9 +69,7 @@ module DiscourseAi
 
         def decode_chunk(chunk)
           @json_decoder ||= JsonStreamDecoder.new(line_regex: /^\s*({.*})$/)
-          (@json_decoder << chunk).map do |parsed|
-            parsed.dig(:message, :content)
-          end.compact
+          (@json_decoder << chunk).map { |parsed| parsed.dig(:message, :content) }.compact
         end
 
         def decode(response_raw)
@@ -81,13 +79,15 @@ module DiscourseAi
           rval << content if !content.to_s.empty?
 
           idx = -1
-          parsed.dig(:message, :tool_calls)&.each do |tool_call|
-            idx += 1
-            id = "tool_#{idx}"
-            name = tool_call.dig(:function, :name)
-            args = tool_call.dig(:function, :arguments)
-            rval << ToolCall.new(id: id, name: name, parameters: args)
-          end
+          parsed
+            .dig(:message, :tool_calls)
+            &.each do |tool_call|
+              idx += 1
+              id = "tool_#{idx}"
+              name = tool_call.dig(:function, :name)
+              args = tool_call.dig(:function, :arguments)
+              rval << ToolCall.new(id: id, name: name, parameters: args)
+            end
 
           rval
         end

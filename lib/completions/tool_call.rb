@@ -24,7 +24,6 @@ module DiscourseAi
       def to_s
         "#{name} - #{id} (\n#{parameters.map(&:to_s).join("\n")}\n)"
       end
-
     end
   end
 end

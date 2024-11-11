@@ -8,9 +8,7 @@ module DiscourseAi
 
       def show_debug_info_by_id
         log = AiApiAuditLog.find(params[:id])
-        if !log.topic
-          raise Discourse::NotFound
-        end
+        raise Discourse::NotFound if !log.topic
 
         guardian.ensure_can_debug_ai_bot_conversation!(log.topic)
         render json: AiApiAuditLogSerializer.new(log, root: false), status: 200

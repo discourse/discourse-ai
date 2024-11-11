@@ -66,20 +66,22 @@ module DiscourseAi
 
         def decode_chunk(chunk)
           @json_decoder ||= JsonStreamDecoder.new
-          (@json_decoder << chunk).map { |json|
-            text = json.dig(:choices, 0, :delta, :content)
+          (@json_decoder << chunk)
+            .map do |json|
+              text = json.dig(:choices, 0, :delta, :content)
 
-            @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
-            @completion_tokens ||= json.dig(:usage, :completion_tokens)
+              @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
+              @completion_tokens ||= json.dig(:usage, :completion_tokens)
 
-            if !text.to_s.empty?
-              text
-            else
-              nil
+              if !text.to_s.empty?
+                text
+              else
+                nil
+              end
             end
-          }.flatten.compact
+            .flatten
+            .compact
         end
-
       end
     end
   end

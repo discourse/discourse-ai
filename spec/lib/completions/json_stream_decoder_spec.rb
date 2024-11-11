@@ -23,11 +23,9 @@ describe DiscourseAi::Completions::JsonStreamDecoder do
     TEXT
 
     results = []
-    stream.each do |chunk|
-      results << (decoder << chunk)
-    end
+    stream.each { |chunk| results << (decoder << chunk) }
 
-    expect(results.flatten.compact).to eq([{ "hello": "world" }, { "foo": "bar" }, { "baz": "qux" }])
+    expect(results.flatten.compact).to eq([{ hello: "world" }, { foo: "bar" }, { baz: "qux" }])
   end
 
   it "should be able to handle complex overlaps" do
@@ -42,10 +40,8 @@ describe DiscourseAi::Completions::JsonStreamDecoder do
     TEXT
 
     results = []
-    stream.each do |chunk|
-      results << (decoder << chunk)
-    end
+    stream.each { |chunk| results << (decoder << chunk) }
 
-    expect(results.flatten.compact).to eq([{ "hello": "world" }, { "foo": "bar" }, { "baz": "qux" }])
+    expect(results.flatten.compact).to eq([{ hello: "world" }, { foo: "bar" }, { baz: "qux" }])
   end
 end

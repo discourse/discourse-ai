@@ -308,13 +308,14 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     stub_request(:post, url).to_return(status: 200, body: payload)
     llm.generate(prompt, user: user) { |partial| output << partial }
 
-    tool_call = DiscourseAi::Completions::ToolCall.new(
-      id: "tool_0",
-      name: "echo",
-      parameters: {
-        text: "sam<>wh!s",
-      },
-    )
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        id: "tool_0",
+        name: "echo",
+        parameters: {
+          text: "sam<>wh!s",
+        },
+      )
 
     expect(output).to eq([tool_call])
 

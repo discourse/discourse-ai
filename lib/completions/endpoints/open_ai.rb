@@ -97,7 +97,6 @@ module DiscourseAi
           log.response_tokens = processor.completion_tokens if processor.completion_tokens
         end
 
-
         def decode(response_raw)
           processor.process_message(JSON.parse(response_raw, symbolize_names: true))
         end

@@ -96,9 +96,9 @@ module DiscourseAi
 
         def decode_chunk(partial_data)
           @decoder ||= JsonStreamDecoder.new
-          (@decoder << partial_data).map do |parsed_json|
-            processor.process_streamed_message(parsed_json)
-          end.compact
+          (@decoder << partial_data)
+            .map { |parsed_json| processor.process_streamed_message(parsed_json) }
+            .compact
         end
 
         def decode(response_data)

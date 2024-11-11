@@ -153,48 +153,56 @@ module DiscourseAi
         def decode(chunk)
           json = JSON.parse(chunk, symbolize_names: true)
           idx = -1
-          json.dig(:candidates, 0, :content, :parts).map do |part|
-            if part[:functionCall]
-              idx += 1
-              ToolCall.new(
-                id: "tool_#{idx}",
-                name: part[:functionCall][:name],
-                parameters: part[:functionCall][:args],
-              )
-            else
-              part = part[:text]
-              if part != ""
-                part
+          json
+            .dig(:candidates, 0, :content, :parts)
+            .map do |part|
+              if part[:functionCall]
+                idx += 1
+                ToolCall.new(
+                  id: "tool_#{idx}",
+                  name: part[:functionCall][:name],
+                  parameters: part[:functionCall][:args],
+                )
               else
-                nil
-              end
-            end
-          end
-        end
-
-        def decode_chunk(chunk)
-          @tool_index ||= -1
-
-          streaming_decoder.decode(chunk).map do |parsed|
-            update_usage(parsed)
-            parsed.dig(:candidates, 0, :content, :parts).map do |part|
-              if part[:text]
                 part = part[:text]
                 if part != ""
                   part
                 else
                   nil
                 end
-              elsif part[:functionCall]
-                @tool_index += 1
-                ToolCall.new(
-                  id: "tool_#{@tool_index}",
-                  name: part[:functionCall][:name],
-                  parameters: part[:functionCall][:args],
-                )
               end
             end
-          end.flatten.compact
+        end
+
+        def decode_chunk(chunk)
+          @tool_index ||= -1
+
+          streaming_decoder
+            .decode(chunk)
+            .map do |parsed|
+              update_usage(parsed)
+              parsed
+                .dig(:candidates, 0, :content, :parts)
+                .map do |part|
+                  if part[:text]
+                    part = part[:text]
+                    if part != ""
+                      part
+                    else
+                      nil
+                    end
+                  elsif part[:functionCall]
+                    @tool_index += 1
+                    ToolCall.new(
+                      id: "tool_#{@tool_index}",
+                      name: part[:functionCall][:name],
+                      parameters: part[:functionCall][:args],
+                    )
+                  end
+                end
+            end
+            .flatten
+            .compact
         end
 
         def update_usage(parsed)
@@ -210,13 +218,9 @@ module DiscourseAi
         end
 
         def final_log_update(log)
-          if @prompt_token_count
-            log.request_tokens = @prompt_token_count
-          end
+          log.request_tokens = @prompt_token_count if @prompt_token_count
 
-          if @candidate_token_count
-            log.response_tokens = @candidate_token_count
-          end
+          log.response_tokens = @candidate_token_count if @candidate_token_count
         end
 
         def streaming_decoder
@@ -230,7 +234,6 @@ module DiscourseAi
         def xml_tools_enabled?
           false
         end
-
       end
     end
   end

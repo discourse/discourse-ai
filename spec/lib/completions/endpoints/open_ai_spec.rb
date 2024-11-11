@@ -231,11 +231,14 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
       result = llm.generate(prompt, user: user)
 
-      tool_call = DiscourseAi::Completions::ToolCall.new(
-        id: "call_I8LKnoijVuhKOM85nnEQgWwd",
-        name: "echo",
-        parameters: { text: "hello" },
-      )
+      tool_call =
+        DiscourseAi::Completions::ToolCall.new(
+          id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+          name: "echo",
+          parameters: {
+            text: "hello",
+          },
+        )
 
       expect(result).to eq(tool_call)
 
@@ -318,11 +321,14 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
       expect(log.request_tokens).to eq(55)
       expect(log.response_tokens).to eq(13)
 
-      expected = DiscourseAi::Completions::ToolCall.new(
-        id: "call_I8LKnoijVuhKOM85nnEQgWwd",
-        name: "echo",
-        parameters: { text: "h<e>llo" },
-      )
+      expected =
+        DiscourseAi::Completions::ToolCall.new(
+          id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+          name: "echo",
+          parameters: {
+            text: "h<e>llo",
+          },
+        )
 
       expect(result).to eq(expected)
 

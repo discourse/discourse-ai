@@ -46,7 +46,6 @@ module DiscourseAi
 
             # We buffer and return tool invocations in one go.
             as_array = response.is_a?(Array) ? response : [response]
-
             as_array.each do |response|
               if is_tool?(response)
                 yield(response, cancel_fn)
@@ -57,9 +56,10 @@ module DiscourseAi
                 end
               end
             end
-          else
-            response
           end
+
+          response = response.first if response.is_a?(Array) && response.length == 1
+          response
         end
 
         def tokenizer

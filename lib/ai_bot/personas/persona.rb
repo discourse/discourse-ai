@@ -207,7 +207,6 @@ module DiscourseAi
         protected
 
         def tool_instance(tool_call, bot_user:, llm:, context:)
-
           function_id = tool_call.id
           function_name = tool_call.name
           return nil if function_name.nil?

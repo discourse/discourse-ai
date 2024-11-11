@@ -53,9 +53,7 @@ module DiscourseAi
 
           result << text if text.length > 0
         else
-          if text.include?("</function_calls>")
-            @should_cancel = true
-          end
+          @should_cancel = true if text.include?("</function_calls>")
         end
 
         result
@@ -72,18 +70,23 @@ module DiscourseAi
           xml.at("invoke:last").add_next_sibling("\n") if !last_invoke.next_sibling
         end
 
-        xml.css("invoke").map do |invoke|
-          tool_name = invoke.at("tool_name").content.force_encoding("UTF-8")
-          tool_id = invoke.at("tool_id").content.force_encoding("UTF-8")
-          parameters = {}
-          invoke.at("parameters")&.children&.each do |node|
-            next if node.text?
-            name = node.name
-            value = node.content.to_s
-            parameters[name.to_sym] = value.to_s.force_encoding("UTF-8")
+        xml
+          .css("invoke")
+          .map do |invoke|
+            tool_name = invoke.at("tool_name").content.force_encoding("UTF-8")
+            tool_id = invoke.at("tool_id").content.force_encoding("UTF-8")
+            parameters = {}
+            invoke
+              .at("parameters")
+              &.children
+              &.each do |node|
+                next if node.text?
+                name = node.name
+                value = node.content.to_s
+                parameters[name.to_sym] = value.to_s.force_encoding("UTF-8")
+              end
+            ToolCall.new(id: tool_id, name: tool_name, parameters: parameters)
           end
-          ToolCall.new(id: tool_id, name: tool_name, parameters: parameters)
-        end
       end
 
       def should_cancel?

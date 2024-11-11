@@ -36,7 +36,7 @@ module DiscourseAi
               rval << JSON.parse(matches[1], symbolize_names: @symbolize_keys)
               @buffer = +""
             rescue JSON::ParserError
-               # maybe it is a partial line
+              # maybe it is a partial line
             end
           end
         end

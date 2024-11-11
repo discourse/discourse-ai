@@ -96,13 +96,13 @@ export default class DebugAiModal extends Component {
   }
 
   loadApiRequestInfo() {
-    ajax(
-      `/discourse-ai/ai-bot/post/${this.args.model.id}/show-debug-info.json`
-    ).then((result) => {
-      this.info = result;
-    }).catch((e) => {
-      popupAjaxError(e);
-    });
+    ajax(`/discourse-ai/ai-bot/post/${this.args.model.id}/show-debug-info.json`)
+      .then((result) => {
+        this.info = result;
+      })
+      .catch((e) => {
+        popupAjaxError(e);
+      });
   }
 
   get requestActive() {

@@ -111,7 +111,7 @@ module DiscourseAi
               tool = persona.find_tool(partial, bot_user: user, llm: llm, context: context)
               tool = nil if tools_ran >= MAX_TOOLS
 
-              if (tool.present?)
+              if tool.present?
                 tool_found = true
                 # a bit hacky, but extra newlines do no harm
                 if needs_newlines
@@ -125,7 +125,7 @@ module DiscourseAi
               else
                 needs_newlines = true
                 if partial.is_a?(DiscourseAi::Completions::ToolCall)
-                  logger.warn("DiscourseAi: Tool not found: #{partial.tool_name}")
+                  Rails.logger.warn("DiscourseAi: Tool not found: #{partial.name}")
                 else
                   update_blk.call(partial, cancel)
                 end

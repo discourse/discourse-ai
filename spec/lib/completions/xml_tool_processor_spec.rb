@@ -150,7 +150,7 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
 
     # Should just do its best to parse the XML
     tool_call =
-      DiscourseAi::Completions::ToolCall.new(id: "tool_0", name: "test", parameters: {param: ""})
+      DiscourseAi::Completions::ToolCall.new(id: "tool_0", name: "test", parameters: { param: "" })
     expect(result).to eq([["text"], [tool_call]])
   end
 

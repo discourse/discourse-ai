@@ -24,35 +24,37 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       user = pm_topic.topic_allowed_users.first.user
       sign_in(user)
 
+      log1 =
+        AiApiAuditLog.create!(
+          provider_id: 1,
+          topic_id: pm_topic.id,
+          raw_request_payload: "request",
+          raw_response_payload: "response",
+          request_tokens: 1,
+          response_tokens: 2,
+        )
 
-      log1 = AiApiAuditLog.create!(
-        provider_id: 1,
-        topic_id: pm_topic.id,
-        raw_request_payload: "request",
-        raw_response_payload: "response",
-        request_tokens: 1,
-        response_tokens: 2,
-      )
+      log2 =
+        AiApiAuditLog.create!(
+          post_id: pm_post.id,
+          provider_id: 1,
+          topic_id: pm_topic.id,
+          raw_request_payload: "request",
+          raw_response_payload: "response",
+          request_tokens: 1,
+          response_tokens: 2,
+        )
 
-      log2 = AiApiAuditLog.create!(
-        post_id: pm_post.id,
-        provider_id: 1,
-        topic_id: pm_topic.id,
-        raw_request_payload: "request",
-        raw_response_payload: "response",
-        request_tokens: 1,
-        response_tokens: 2,
-      )
-
-      log3 = AiApiAuditLog.create!(
-        post_id: pm_post2.id,
-        provider_id: 1,
-        topic_id: pm_topic.id,
-        raw_request_payload: "request",
-        raw_response_payload: "response",
-        request_tokens: 1,
-        response_tokens: 2,
-      )
+      log3 =
+        AiApiAuditLog.create!(
+          post_id: pm_post2.id,
+          provider_id: 1,
+          topic_id: pm_topic.id,
+          raw_request_payload: "request",
+          raw_response_payload: "response",
+          request_tokens: 1,
+          response_tokens: 2,
+        )
 
       Group.refresh_automatic_groups!
       SiteSetting.ai_bot_debugging_allowed_groups = user.groups.first.id.to_s
@@ -69,7 +71,6 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       expect(response.parsed_body["response_tokens"]).to eq(2)
       expect(response.parsed_body["raw_request_payload"]).to eq("request")
       expect(response.parsed_body["raw_response_payload"]).to eq("response")
-
 
       # return previous post if current has no debug info
       get "/discourse-ai/ai-bot/post/#{pm_post3.id}/show-debug-info"
