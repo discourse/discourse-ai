@@ -95,11 +95,14 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     end
 
     text = "I will search for 'who is sam saffron' and relay the information to the user."
-    tool_call = DiscourseAi::Completions::ToolCall.new(
-      id: "tool_0",
-      name: "google",
-      parameters: { query: "who is sam saffron" },
-    )
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        id: "tool_0",
+        name: "google",
+        parameters: {
+          query: "who is sam saffron",
+        },
+      )
 
     expect(result).to eq([text, tool_call])
 

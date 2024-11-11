@@ -67,26 +67,27 @@ module DiscourseAi
         def decode_chunk(chunk)
           @tool_idx ||= -1
           @json_decoder ||= JsonStreamDecoder.new(line_regex: /^\s*({.*})$/)
-          (@json_decoder << chunk).map do |parsed|
-            update_usage(parsed)
-            rval = []
+          (@json_decoder << chunk)
+            .map do |parsed|
+              update_usage(parsed)
+              rval = []
 
-            if !parsed[:text].to_s.empty?
-              rval << parsed[:text]
-            end
+              rval << parsed[:text] if !parsed[:text].to_s.empty?
 
-            if tool_calls = parsed[:tool_calls]
-              tool_calls&.each do |tool_call|
-                @tool_idx += 1
-                tool_name = tool_call[:name]
-                tool_params = tool_call[:parameters]
-                tool_id = "tool_#{@tool_idx}"
-                rval << ToolCall.new(id: tool_id, name: tool_name, parameters: tool_params)
+              if tool_calls = parsed[:tool_calls]
+                tool_calls&.each do |tool_call|
+                  @tool_idx += 1
+                  tool_name = tool_call[:name]
+                  tool_params = tool_call[:parameters]
+                  tool_id = "tool_#{@tool_idx}"
+                  rval << ToolCall.new(id: tool_id, name: tool_name, parameters: tool_params)
+                end
               end
-            end
 
-            rval
-          end.flatten.compact
+              rval
+            end
+            .flatten
+            .compact
         end
 
         def extract_completion_from(response_raw)
