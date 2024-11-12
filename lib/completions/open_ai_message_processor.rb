@@ -65,7 +65,8 @@ module DiscourseAi::Completions
         @tool.parameters = parsed_args
         rval = @tool
         @tool = nil
-      elsif content.present?
+      elsif !content.to_s.empty?
+        # we don't want to strip empty content like "\n", do not use present?
         rval = content
       end
 

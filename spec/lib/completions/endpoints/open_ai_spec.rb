@@ -519,6 +519,28 @@ TEXT
           expect(response).to eq(tool_calls)
         end
 
+        it "properly handles newlines" do
+          response = <<~TEXT.strip
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":":\\n\\n"},"logprobs":null,"finish_reason":null}],"usage":null}
+
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":"```"},"logprobs":null,"finish_reason":null}],"usage":null}
+
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":"ruby"},"logprobs":null,"finish_reason":null}],"usage":null}
+
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":"\\n"},"logprobs":null,"finish_reason":null}],"usage":null}
+
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":"def"},"logprobs":null,"finish_reason":null}],"usage":null}
+         TEXT
+
+          open_ai_mock.stub_raw(response)
+          partials = []
+
+          dialect = compliance.dialect(prompt: compliance.generic_prompt)
+          endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
+
+          expect(partials).to eq([":\n\n", "```", "ruby", "\n", "def"])
+        end
+
         it "uses proper token accounting" do
           response = <<~TEXT.strip
             data: {"id":"chatcmpl-9OZidiHncpBhhNMcqCus9XiJ3TkqR","object":"chat.completion.chunk","created":1715644203,"model":"gpt-4o-2024-05-13","system_fingerprint":"fp_729ea513f7","choices":[{"index":0,"delta":{"role":"assistant","content":""},"logprobs":null,"finish_reason":null}],"usage":null}|
