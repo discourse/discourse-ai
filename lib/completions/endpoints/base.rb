@@ -4,6 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Base
+        attr_reader :partial_tool_calls
+
         CompletionFailed = Class.new(StandardError)
         TIMEOUT = 60
 
@@ -58,8 +60,10 @@ module DiscourseAi
           model_params = {},
           feature_name: nil,
           feature_context: nil,
+          partial_tool_calls: false,
           &blk
         )
+          @partial_tool_calls = partial_tool_calls
           model_params = normalize_model_params(model_params)
           orig_blk = blk
 

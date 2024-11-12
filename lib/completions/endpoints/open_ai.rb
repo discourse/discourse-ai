@@ -33,6 +33,7 @@ module DiscourseAi
           model_params = {},
           feature_name: nil,
           feature_context: nil,
+          partial_tool_calls: false,
           &blk
         )
           if dialect.respond_to?(:is_gpt_o?) && dialect.is_gpt_o? && block_given?

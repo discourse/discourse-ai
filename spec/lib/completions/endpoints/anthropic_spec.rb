@@ -109,8 +109,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     EndpointMock.with_chunk_array_support do
       stub_request(:post, url).to_return(status: 200, body: body)
 
-      llm.generate(prompt_with_google_tool, user: Discourse.system_user) do |partial|
-        result << partial
+      llm.generate(prompt_with_google_tool, user: Discourse.system_user, partial_tool_calls: true) do |partial|
+        result << partial.dup
       end
     end
 
@@ -124,7 +124,13 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
         },
       )
 
-    expect(result).to eq([tool_call])
+    expect(result.last).to eq(tool_call)
+
+    search_queries = result.filter(&:partial).map { |r| r.parameters[:search_query] }
+    categories = result.filter(&:partial).map { |r| r.parameters[:category]}
+
+    expect(categories).to eq([nil, nil, nil, nil, "gene", "general"])
+    expect(search_queries).to eq(["s", "s<a>m", "s<a>m ", "s<a>m sam", "s<a>m sam", "s<a>m sam"])
   end
 
   it "can stream a response" do
