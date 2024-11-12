@@ -163,6 +163,13 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         end
       end
 
+      it "truncates the caption from the LLM" do
+        request_caption({ image_url: image_url, image_url_type: "long_url" }, caption * 10) do |r|
+          expect(r.status).to eq(200)
+          expect(r.parsed_body["caption"].size).to be < caption.size * 10
+        end
+      end
+
       context "when the image_url is a short_url" do
         let(:image_url) { upload.short_url }
 
