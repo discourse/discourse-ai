@@ -4,6 +4,17 @@ import Composer from "discourse/models/composer";
 import I18n from "I18n";
 import ShareFullTopicModal from "../components/modal/share-full-topic-modal";
 
+const MAX_PERSONA_USER_ID = -1200;
+
+export function isPostFromAiBot(post, currentUser) {
+  return (
+    post.user_id <= MAX_PERSONA_USER_ID ||
+    !!currentUser?.ai_enabled_chat_bots?.any(
+      (bot) => post.username === bot.username
+    )
+  );
+}
+
 export function showShareConversationModal(modal, topicId) {
   ajax(`/discourse-ai/ai-bot/shared-ai-conversations/preview/${topicId}.json`)
     .then((payload) => {

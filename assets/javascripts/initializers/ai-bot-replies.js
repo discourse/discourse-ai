@@ -1,18 +1,20 @@
 import { hbs } from "ember-cli-htmlbars";
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
-import DebugAiModal from "../discourse/components/modal/debug-ai-modal";
-import ShareModal from "../discourse/components/modal/share-modal";
-import { streamPostText } from "../discourse/lib/ai-streamer/progress-handlers";
-import copyConversation from "../discourse/lib/copy-conversation";
-const AUTO_COPY_THRESHOLD = 4;
+import { withSilencedDeprecations } from "discourse-common/lib/deprecated";
 import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
-import { showShareConversationModal } from "../discourse/lib/ai-bot-helper";
+import AiCancelStreamingButton from "../discourse/components/post-menu/ai-cancel-streaming-button";
+import AiDebugButton from "../discourse/components/post-menu/ai-debug-button";
+import AiShareButton from "../discourse/components/post-menu/ai-share-button";
+import {
+  isPostFromAiBot,
+  showShareConversationModal,
+} from "../discourse/lib/ai-bot-helper";
+import { streamPostText } from "../discourse/lib/ai-streamer/progress-handlers";
 
 let enabledChatBotIds = [];
 let allowDebug = false;
+
 function isGPTBot(user) {
   return user && enabledChatBotIds.includes(user.id);
 }
@@ -22,29 +24,7 @@ function attachHeaderIcon(api) {
 }
 
 function initializeAIBotReplies(api) {
-  api.addPostMenuButton("cancel-gpt", (post) => {
-    if (isGPTBot(post.user)) {
-      return {
-        icon: "pause",
-        action: "cancelStreaming",
-        title: "discourse_ai.ai_bot.cancel_streaming",
-        className: "btn btn-default cancel-streaming",
-        position: "first",
-      };
-    }
-  });
-
-  api.attachWidgetAction("post", "cancelStreaming", function () {
-    ajax(`/discourse-ai/ai-bot/post/${this.model.id}/stop-streaming`, {
-      type: "POST",
-    })
-      .then(() => {
-        document
-          .querySelector(`#post_${this.model.post_number}`)
-          .classList.remove("streaming");
-      })
-      .catch(popupAjaxError);
-  });
+  initializePauseButton(api);
 
   api.modifyClass("controller:topic", {
     pluginId: "discourse-ai",
@@ -102,7 +82,42 @@ function initializePersonaDecorator(api) {
   );
 }
 
-const MAX_PERSONA_USER_ID = -1200;
+function initializePauseButton(api) {
+  const transformerRegistered = api.registerValueTransformer(
+    "post-menu-buttons",
+    ({ value: dag, context: { post, firstButtonKey } }) => {
+      if (isGPTBot(post.user)) {
+        dag.add("ai-cancel-gpt", AiCancelStreamingButton, {
+          before: firstButtonKey,
+          after: ["ai-share", "ai-debug"],
+        });
+      }
+    }
+  );
+
+  const silencedKey =
+    transformerRegistered && "discourse.post-menu-widget-overrides";
+
+  withSilencedDeprecations(silencedKey, () => initializePauseWidgetButton(api));
+}
+
+function initializePauseWidgetButton(api) {
+  api.addPostMenuButton("cancel-gpt", (post) => {
+    if (isGPTBot(post.user)) {
+      return {
+        icon: "pause",
+        action: "cancelStreaming",
+        title: "discourse_ai.ai_bot.cancel_streaming",
+        className: "btn btn-default cancel-streaming",
+        position: "first",
+      };
+    }
+  });
+
+  api.attachWidgetAction("post", "cancelStreaming", function () {
+    AiCancelStreamingButton.cancelStreaming(this.model);
+  });
+}
 
 function initializeDebugButton(api) {
   const currentUser = api.getCurrentUser();
@@ -110,10 +125,30 @@ function initializeDebugButton(api) {
     return;
   }
 
+  const transformerRegistered = api.registerValueTransformer(
+    "post-menu-buttons",
+    ({ value: dag, context: { post, firstButtonKey } }) => {
+      if (post.topic?.archetype === "private_message") {
+        dag.add("ai-debug", AiDebugButton, {
+          before: firstButtonKey,
+          after: "ai-share",
+        });
+      }
+    }
+  );
+
+  const silencedKey =
+    transformerRegistered && "discourse.post-menu-widget-overrides";
+
+  withSilencedDeprecations(silencedKey, () => initializeDebugWidgetButton(api));
+}
+
+function initializeDebugWidgetButton(api) {
+  const currentUser = api.getCurrentUser();
+
   let debugAiResponse = async function ({ post }) {
     const modal = api.container.lookup("service:modal");
-
-    modal.show(DebugAiModal, { model: post });
+    AiDebugButton.debugAiResponse(post, modal);
   };
 
   api.addPostMenuButton("debugAi", (post) => {
@@ -121,15 +156,8 @@ function initializeDebugButton(api) {
       return;
     }
 
-    if (
-      !currentUser.ai_enabled_chat_bots.any(
-        (bot) => post.username === bot.username
-      )
-    ) {
-      // special handling for personas (persona bot users start at ID -1200 and go down)
-      if (post.user_id > MAX_PERSONA_USER_ID) {
-        return;
-      }
+    if (!isPostFromAiBot(post, currentUser)) {
+      return;
     }
 
     return {
@@ -148,14 +176,29 @@ function initializeShareButton(api) {
     return;
   }
 
-  let shareAiResponse = async function ({ post, showFeedback }) {
-    if (post.post_number <= AUTO_COPY_THRESHOLD) {
-      await copyConversation(post.topic, 1, post.post_number);
-      showFeedback("discourse_ai.ai_bot.conversation_shared");
-    } else {
-      const modal = api.container.lookup("service:modal");
-      modal.show(ShareModal, { model: post });
+  const transformerRegistered = api.registerValueTransformer(
+    "post-menu-buttons",
+    ({ value: dag, context: { post, firstButtonKey } }) => {
+      if (post.topic?.archetype === "private_message") {
+        dag.add("ai-share", AiShareButton, {
+          before: firstButtonKey,
+        });
+      }
     }
+  );
+
+  const silencedKey =
+    transformerRegistered && "discourse.post-menu-widget-overrides";
+
+  withSilencedDeprecations(silencedKey, () => initializeShareWidgetButton(api));
+}
+
+function initializeShareWidgetButton(api) {
+  const currentUser = api.getCurrentUser();
+
+  let shareAiResponse = async function ({ post, showFeedback }) {
+    const modal = api.container.lookup("service:modal");
+    AiShareButton.shareAiResponse(post, modal, showFeedback);
   };
 
   api.addPostMenuButton("share", (post) => {
@@ -164,21 +207,14 @@ function initializeShareButton(api) {
       return;
     }
 
-    if (
-      !currentUser.ai_enabled_chat_bots.any(
-        (bot) => post.username === bot.username
-      )
-    ) {
-      // special handling for personas (persona bot users start at ID -1200 and go down)
-      if (post.user_id > MAX_PERSONA_USER_ID) {
-        return;
-      }
+    if (!isPostFromAiBot(post, currentUser)) {
+      return;
     }
 
     return {
       action: shareAiResponse,
       icon: "far-copy",
-      className: "post-action-menu__share",
+      className: "post-action-menu__share-ai",
       title: "discourse_ai.ai_bot.share",
       position: "first",
     };
@@ -218,10 +254,10 @@ export default {
       enabledChatBotIds = user.ai_enabled_chat_bots.map((bot) => bot.id);
       allowDebug = user.can_debug_ai_bot_conversations;
       withPluginApi("1.6.0", attachHeaderIcon);
-      withPluginApi("1.6.0", initializeAIBotReplies);
+      withPluginApi("1.34.0", initializeAIBotReplies);
       withPluginApi("1.6.0", initializePersonaDecorator);
-      withPluginApi("1.22.0", (api) => initializeDebugButton(api, container));
-      withPluginApi("1.22.0", (api) => initializeShareButton(api, container));
+      withPluginApi("1.34.0", (api) => initializeDebugButton(api, container));
+      withPluginApi("1.34.0", (api) => initializeShareButton(api, container));
       withPluginApi("1.22.0", (api) =>
         initializeShareTopicButton(api, container)
       );
