@@ -80,6 +80,8 @@ bg:
       ai_bot:
         debug_ai_modal:
           request: "Заявка"
+          next_log: "Напред"
+          previous_log: "Предишни"
         share_modal:
           copy: "Копирай"
       summarization:

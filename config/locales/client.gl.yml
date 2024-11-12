@@ -89,5 +89,7 @@ gl:
         debug_ai_modal:
           request: "Petición"
           response: "Resposta"
+          next_log: "Seguinte"
+          previous_log: "Anterior"
         share_modal:
           copy: "Copiar"

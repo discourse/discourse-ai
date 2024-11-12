@@ -333,6 +333,8 @@ fr:
           response_tokens: "Jetons de réponse :"
           request: "Requête"
           response: "Réponse"
+          next_log: "Suivant"
+          previous_log: "Précédent"
         share_full_topic_modal:
           title: "Partager la conversation publiquement"
           share: "Partager et copier le lien"

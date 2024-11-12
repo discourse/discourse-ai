@@ -95,6 +95,8 @@ ug:
         debug_ai_modal:
           request: "ئىلتىماس"
           response: "ئىنكاس"
+          next_log: "كېيىنكى"
+          previous_log: "ئالدىنقى"
         share_modal:
           copy: "كۆچۈر"
       summarization:

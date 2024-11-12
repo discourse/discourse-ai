@@ -333,6 +333,8 @@ it:
           response_tokens: "Token risposte:"
           request: "Richiesta"
           response: "Risposta"
+          next_log: "Avanti"
+          previous_log: "Precedente"
         share_full_topic_modal:
           title: "Condividi la conversazione pubblicamente"
           share: "Condividi e copia il link"

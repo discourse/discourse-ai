@@ -87,5 +87,7 @@ hy:
         debug_ai_modal:
           request: "Հարցում"
           response: "Արձագանք"
+          next_log: "Հաջորդը"
+          previous_log: "Նախորդը"
         share_modal:
           copy: "Կրկնօրինակել"

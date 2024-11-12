@@ -333,6 +333,8 @@ ja:
           response_tokens: "レスポンストークン:"
           request: "リクエスト"
           response: "応答"
+          next_log: "次へ"
+          previous_log: "変更前"
         share_full_topic_modal:
           title: "会話の公開共有"
           share: "共有してリンクをコピー"

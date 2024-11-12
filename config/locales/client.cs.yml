@@ -92,6 +92,8 @@ cs:
         debug_ai_modal:
           request: "Požadavek"
           response: "Odpověď"
+          next_log: "Další"
+          previous_log: "Předchozí"
         share_modal:
           copy: "Kopírovat"
       summarization:

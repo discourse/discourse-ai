@@ -88,5 +88,7 @@ el:
         debug_ai_modal:
           request: "Αίτημα"
           response: "Απάντηση"
+          next_log: "Επόμενο"
+          previous_log: "Προηγούμενο"
         share_modal:
           copy: "Αντιγραφή"

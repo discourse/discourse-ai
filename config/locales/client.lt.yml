@@ -133,6 +133,8 @@ lt:
         debug_ai_modal:
           request: "Užklausa"
           response: "Atsakymas"
+          next_log: "Kitas"
+          previous_log: "Buvęs"
         ai_label: "AI"
         share_modal:
           copy: "Kopijuoti"

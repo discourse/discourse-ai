@@ -77,5 +77,6 @@ be:
       ai_bot:
         debug_ai_modal:
           request: "запыт"
+          next_log: "Далей"
         share_modal:
           copy: "капіяваць"

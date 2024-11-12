@@ -95,6 +95,8 @@ sk:
         debug_ai_modal:
           request: "Požiadavka"
           response: "Odpoveď"
+          next_log: "Ďalej"
+          previous_log: "Predchádzajúci"
         share_modal:
           copy: "Kopírovať"
       summarization:

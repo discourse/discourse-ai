@@ -89,5 +89,7 @@ ca:
         debug_ai_modal:
           request: "Sol·licita"
           response: "Reacció"
+          next_log: "Següent"
+          previous_log: "Previ"
         share_modal:
           copy: "Còpia"

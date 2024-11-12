@@ -89,5 +89,7 @@ te:
         debug_ai_modal:
           request: "అభ్యర్థన"
           response: "ప్రతిస్పందన"
+          next_log: "తదుపరి"
+          previous_log: "గత"
         share_modal:
           copy: "నకలు"

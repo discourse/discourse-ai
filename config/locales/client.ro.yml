@@ -84,6 +84,8 @@ ro:
         debug_ai_modal:
           request: "Cere"
           response: "Răspuns"
+          next_log: "Următorul"
+          previous_log: "Precedent"
         share_modal:
           copy: "Copiază"
       summarization:

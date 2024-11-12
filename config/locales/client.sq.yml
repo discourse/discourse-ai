@@ -76,5 +76,8 @@ sq:
           automatic_caption_dialog:
             confirm: "Aktivizo"
       ai_bot:
+        debug_ai_modal:
+          next_log: "Vazhdo përpara"
+          previous_log: "I kaluar"
         share_modal:
           copy: "Kopjo"
