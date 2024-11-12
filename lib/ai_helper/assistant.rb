@@ -3,6 +3,8 @@
 module DiscourseAi
   module AiHelper
     class Assistant
+      IMAGE_CAPTION_MAX_WORDS = 50
+
       def self.prompt_cache
         @prompt_cache ||= ::DiscourseAi::MultisiteHash.new("prompt_cache")
       end
@@ -164,7 +166,7 @@ module DiscourseAi
             feature_name: "image_caption",
           )
 
-        raw_caption.delete("|").squish.truncate_words(50)
+        raw_caption.delete("|").squish.truncate_words(IMAGE_CAPTION_MAX_WORDS)
       end
 
       private
