@@ -333,6 +333,8 @@ nl:
           response_tokens: "Antwoordtokens:"
           request: "Verzoek"
           response: "Antwoord"
+          next_log: "Volgende"
+          previous_log: "Vorige"
         share_full_topic_modal:
           title: "Conversatie openbaar delen"
           share: "Link delen en kopiëren"

@@ -333,6 +333,8 @@ zh_CN:
           response_tokens: "响应令牌："
           request: "请求"
           response: "响应"
+          next_log: "下一步"
+          previous_log: "上一个"
         share_full_topic_modal:
           title: "公开分享对话"
           share: "分享并复制链接"

@@ -94,6 +94,8 @@ hu:
         debug_ai_modal:
           request: "Kérés"
           response: "Válasz"
+          next_log: "Tovább"
+          previous_log: "Előző"
         share_modal:
           copy: "Másolás"
       summarization:

@@ -333,6 +333,8 @@ ru:
           response_tokens: "Токены ответа:"
           request: "Запрос"
           response: "Ответ"
+          next_log: "Далее"
+          previous_log: "Старое значение"
         share_full_topic_modal:
           title: "Поделитесь разговором публично"
           share: "Поделиться и скопировать ссылку"

@@ -333,6 +333,8 @@ ar:
           response_tokens: "رموز الرد:"
           request: "طلب"
           response: "الرد"
+          next_log: "التالي"
+          previous_log: "السابق"
         share_full_topic_modal:
           title: "مشاركة المحادثة بشكلٍ علني"
           share: "مشاركة ونسخ الرابط"

@@ -88,5 +88,7 @@ nb_NO:
         debug_ai_modal:
           request: "Forespørsel"
           response: "Svar"
+          next_log: "Neste"
+          previous_log: "Forrige"
         share_modal:
           copy: "Kopier"

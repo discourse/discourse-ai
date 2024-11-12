@@ -92,6 +92,8 @@ sv:
         debug_ai_modal:
           request: "Förfrågning"
           response: "Svar"
+          next_log: "Nästa"
+          previous_log: "Föregående"
         share_modal:
           copy: "Kopiera"
       summarization:

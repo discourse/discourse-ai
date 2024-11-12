@@ -91,5 +91,7 @@ da:
         debug_ai_modal:
           request: "Anmod om medlemskab"
           response: "Svar"
+          next_log: "Næste"
+          previous_log: "Forrige"
         share_modal:
           copy: "Kopier"

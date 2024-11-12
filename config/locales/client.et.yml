@@ -83,5 +83,7 @@ et:
         debug_ai_modal:
           request: "Päring"
           response: "Vastus"
+          next_log: "Järgmine"
+          previous_log: "Eelmine"
         share_modal:
           copy: "Kopeeri"

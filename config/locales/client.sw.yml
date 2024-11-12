@@ -82,5 +82,7 @@ sw:
         debug_ai_modal:
           request: "Ombi"
           response: "Mwitikio"
+          next_log: "Ijayo"
+          previous_log: "Uliopita"
         share_modal:
           copy: "Nakili"

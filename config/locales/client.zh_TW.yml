@@ -89,6 +89,8 @@ zh_TW:
         debug_ai_modal:
           request: "請求"
           response: "回應"
+          next_log: "下一步"
+          previous_log: "舊"
         share_modal:
           copy: "複製"
       summarization:

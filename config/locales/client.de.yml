@@ -404,6 +404,8 @@ de:
           response_tokens: "Antwort-Token:"
           request: "Anfrage"
           response: "Antwort"
+          next_log: "Nächstes"
+          previous_log: "Vorheriges"
         share_full_topic_modal:
           title: "Unterhaltung öffentlich teilen"
           share: "Link teilen und kopieren"

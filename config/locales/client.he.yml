@@ -157,6 +157,8 @@ he:
         forced_tool_strategy: אסטרטגיית כלי כפוי
         allow_chat_direct_messages: "לאפשר הודעות ישירות בצ׳אט"
         allow_chat_direct_messages_help: "אם האפשרות פעילה, משתמשים בקבוצות המורשות יכולים לשלוח הודעות ישירות לדמות הזאת."
+        allow_chat_channel_mentions: "לאפשר אזכורים בערוצי צ׳אט"
+        allow_chat_channel_mentions_help: "אם האפשרות פעילה, משתמשים בקבוצות המורשות יכולים לאזכר את הדמות הזאת בערוצי צ׳אט."
         allow_personal_messages: "לאפשר הודעות פרטיות"
         allow_personal_messages_help: "אם האפשרות פעילה, משתמשים בקבוצות המורשות יכולים לשלוח הודעות פרטיות לדמות הזאת."
         allow_topic_mentions: "לאפשר אזכורים בנושאים"
@@ -299,6 +301,7 @@ he:
           max_prompt_tokens: "מספר האסימונים המרבי לבקשה. ככלל אצבע, זה אמור להיות 50% מחלון ההקשר של המודל."
           name: "אנו מצרפים את זה לקריאת ה־API כדי לציין באיזה מודל להשתמש."
           vision_enabled: "אם האפשרות פעילה, הבינה מלאכותית תנסה להבין תמונות. כתלות בתמיכה של המודל בעיבוד תמונות. נתמך על ידי המודלים העדכניים ביותר מבית Anthropic,‏ Google ו־OpenAI."
+          enabled_chat_bot: "אם האפשרות פעילה, משתמשים יכולים לבחור את המודל הזה בעת יצירת הודעות פרטיות עם בוט הבינה המלאכותית."
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
@@ -399,6 +402,8 @@ he:
           response_tokens: "אסימוני תגובה:"
           request: "בקשה"
           response: "תשובה"
+          next_log: "הבא"
+          previous_log: "הקודם"
         share_full_topic_modal:
           title: "שיתוף שיחה באופן ציבורי"
           share: "שיתוף והעתקת קישור"

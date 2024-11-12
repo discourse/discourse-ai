@@ -74,5 +74,8 @@ sr:
           automatic_caption_dialog:
             confirm: "Omogući"
       ai_bot:
+        debug_ai_modal:
+          next_log: "Dalje"
+          previous_log: "Prethodno"
         share_modal:
           copy: "Kopija"

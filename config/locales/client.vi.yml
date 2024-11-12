@@ -91,6 +91,8 @@ vi:
         debug_ai_modal:
           request: "Yêu cầu"
           response: "Đáp ứng"
+          next_log: "Kế tiếp"
+          previous_log: "Trước"
         share_modal:
           copy: "Sao chép"
       summarization:

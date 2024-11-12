@@ -88,5 +88,7 @@ bs_BA:
         debug_ai_modal:
           request: "Zatraži"
           response: "Odgovor"
+          next_log: "Iduće"
+          previous_log: "Previous"
         share_modal:
           copy: "Copy"

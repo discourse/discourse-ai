@@ -333,6 +333,8 @@ tr_TR:
           response_tokens: "Yanıt token'ları:"
           request: "İstek"
           response: "Yanıt"
+          next_log: "İleri"
+          previous_log: "Önceki"
         share_full_topic_modal:
           title: "Konuşmayı Herkese Açık Olarak paylaşın"
           share: "Paylaş ve Bağlantıyı Kopyala"

@@ -84,5 +84,7 @@ sl:
       ai_bot:
         debug_ai_modal:
           request: "Zahteva"
+          next_log: "Naprej"
+          previous_log: "Prejšnja"
         share_modal:
           copy: "Kopiraj"

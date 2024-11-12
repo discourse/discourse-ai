@@ -81,5 +81,7 @@ th:
       ai_bot:
         debug_ai_modal:
           request: "ร้องขอ"
+          next_log: "ต่อไป"
+          previous_log: "ก่อนหน้า"
         share_modal:
           copy: "คัดลอก"

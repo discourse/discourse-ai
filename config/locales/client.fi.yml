@@ -333,6 +333,8 @@ fi:
           response_tokens: "Vastauksen tokenit:"
           request: "Pyyntö"
           response: "Vastaus"
+          next_log: "Seuraava"
+          previous_log: "Edellinen"
         share_full_topic_modal:
           title: "Jaa keskustelu julkisesti"
           share: "Jaa ja kopioi linkki"

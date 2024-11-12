@@ -83,5 +83,7 @@ lv:
         debug_ai_modal:
           request: "Pieprasījums"
           response: "Atbilde"
+          next_log: "Nākamais"
+          previous_log: "Iepriekšējais"
         share_modal:
           copy: "Kopēt"

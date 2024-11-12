@@ -84,6 +84,8 @@ pt:
         debug_ai_modal:
           request: "Pedido"
           response: "Resposta"
+          next_log: "Próximo"
+          previous_log: "Anterior"
         share_modal:
           copy: "Copiar"
       summarization:

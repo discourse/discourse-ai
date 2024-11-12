@@ -93,6 +93,8 @@ ko:
         debug_ai_modal:
           request: "요청"
           response: "응답"
+          next_log: "다음"
+          previous_log: "이전값"
         share_modal:
           copy: "복사"
       summarization:

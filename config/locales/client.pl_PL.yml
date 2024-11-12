@@ -221,6 +221,8 @@ pl_PL:
         debug_ai_modal:
           request: "Żądanie"
           response: "Odpowiedź"
+          next_log: "Następna"
+          previous_log: "Poprzedni"
         share_full_topic_modal:
           title: "Udostępnij rozmowę publicznie"
           share: "Udostępnij i skopiuj link"

@@ -132,6 +132,8 @@ fa_IR:
         debug_ai_modal:
           request: "درخواست"
           response: "پاسخ"
+          next_log: "بعدی"
+          previous_log: "پیشین"
         ai_label: "هوش مصنوعی"
         share_modal:
           copy: "کپی"
