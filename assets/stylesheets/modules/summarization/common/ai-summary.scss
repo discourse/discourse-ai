@@ -240,14 +240,10 @@
 .--topic-list-with-gist {
   .topic-list-item {
     .main-link {
-      .desktop-view & {
-        padding: 1em 1em 1em 0.67em;
-      }
-      font-size: var(--font-up-2);
       line-height: var(--line-height-medium);
     }
     .link-bottom-line {
-      font-size: var(--font-down-2);
+      font-size: var(--font-down-1);
       margin-top: 0.25em;
     }
     .ai-topic-gist {
