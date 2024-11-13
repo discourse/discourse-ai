@@ -19,8 +19,7 @@ import I18n from "discourse-i18n";
 import DMenu from "float-kit/components/d-menu";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
-
-const STREAMED_TEXT_SPEED = 15;
+import smoothStreamText from "../../modifiers/smooth-stream-text";
 
 export default class AiSummaryBox extends Component {
   @service siteSettings;
@@ -36,10 +35,7 @@ export default class AiSummaryBox extends Component {
   @tracked canRegenerate = false;
   @tracked loading = false;
   @tracked isStreaming = false;
-  @tracked streamedText = "";
-  @tracked currentIndex = 0;
-  typingTimer = null;
-  streamedTextLength = 0;
+  @tracked haltAnimation = false;
 
   get outdatedSummaryWarningText() {
     let outdatedText = I18n.t("summary.outdated");
@@ -55,8 +51,6 @@ export default class AiSummaryBox extends Component {
   }
 
   resetSummary() {
-    this.streamedText = "";
-    this.currentIndex = 0;
     this.text = "";
     this.summarizedOn = null;
     this.summarizedBy = null;
@@ -145,26 +139,6 @@ export default class AiSummaryBox extends Component {
     });
   }
 
-  typeCharacter() {
-    if (this.streamedTextLength < this.text.length) {
-      this.streamedText += this.text.charAt(this.streamedTextLength);
-      this.streamedTextLength++;
-
-      this.typingTimer = later(this, this.typeCharacter, STREAMED_TEXT_SPEED);
-    } else {
-      this.typingTimer = null;
-    }
-  }
-
-  onTextUpdate() {
-    // Reset only if there’s a new summary to process
-    if (this.typingTimer) {
-      cancel(this.typingTimer);
-    }
-
-    this.typeCharacter();
-  }
-
   @bind
   async _updateSummary(update) {
     const topicSummary = {
@@ -173,13 +147,13 @@ export default class AiSummaryBox extends Component {
       ...update.ai_topic_summary,
     };
     const newText = topicSummary.raw || "";
+    this.text = newText;
     this.loading = false;
 
     if (update.done) {
       this.text = newText;
-      this.streamedText = newText;
-      this.displayedTextLength = newText.length;
       this.isStreaming = false;
+      this.haltAnimation = true;
       this.summarizedOn = shortDateNoYear(
         moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
       );
@@ -187,16 +161,6 @@ export default class AiSummaryBox extends Component {
       this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
       this.outdated = topicSummary.outdated;
       this.canRegenerate = topicSummary.outdated && topicSummary.can_regenerate;
-
-      // Clear pending animations
-      if (this.typingTimer) {
-        cancel(this.typingTimer);
-        this.typingTimer = null;
-      }
-    } else if (newText.length > this.text.length) {
-      this.text = newText;
-      this.isStreaming = true;
-      this.onTextUpdate();
     }
   }
 
@@ -260,8 +224,13 @@ export default class AiSummaryBox extends Component {
                 {{#if this.loading}}
                   <AiSummarySkeleton />
                 {{else}}
-                  <div class="generated-summary cooked">
-                    <CookText @rawText={{this.streamedText}} />
+                  <div
+                    class="generated-summary"
+                    {{smoothStreamText this.text this.haltAnimation}}
+                  >
+                    {{#if this.haltAnimation}}
+                      <CookText @rawText={{this.text}} />
+                    {{/if}}
                   </div>
                   {{#if this.summarizedOn}}
                     <div class="summarized-on">
