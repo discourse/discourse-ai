@@ -18,19 +18,20 @@ export default class SemanticSearch extends Component {
     return siteSettings.ai_embeddings_semantic_search_enabled;
   }
 
+  @service router;
   @service appEvents;
   @service siteSettings;
   @service searchPreferencesManager;
 
   @tracked searching = false;
-  @tracked AIResults = [];
-  @tracked showingAIResults = false;
+  @tracked AiResults = [];
+  @tracked showingAiResults = false;
   initialSearchTerm = this.args.outletArgs.search;
 
   get disableToggleSwitch() {
     if (
       this.searching ||
-      this.AIResults.length === 0 ||
+      this.AiResults.length === 0 ||
       this.args.outletArgs.sortOrder !== 0
     ) {
       return true;
@@ -39,19 +40,19 @@ export default class SemanticSearch extends Component {
 
   get searchStateText() {
     // Search results:
-    if (this.AIResults.length > 0) {
-      if (this.showingAIResults) {
+    if (this.AiResults.length > 0) {
+      if (this.showingAiResults) {
         return I18n.t(
           "discourse_ai.embeddings.semantic_search_results.toggle",
           {
-            count: this.AIResults.length,
+            count: this.AiResults.length,
           }
         );
       } else {
         return I18n.t(
           "discourse_ai.embeddings.semantic_search_results.toggle_hidden",
           {
-            count: this.AIResults.length,
+            count: this.AiResults.length,
           }
         );
       }
@@ -64,14 +65,14 @@ export default class SemanticSearch extends Component {
 
     // Typing to search:
     if (
-      this.AIResults.length === 0 &&
+      this.AiResults.length === 0 &&
       this.searchTerm !== this.initialSearchTerm
     ) {
       return I18n.t("discourse_ai.embeddings.semantic_search_results.new");
     }
 
     // No results:
-    if (this.AIResults.length === 0) {
+    if (this.AiResults.length === 0) {
       return I18n.t("discourse_ai.embeddings.semantic_search_results.none");
     }
   }
@@ -93,19 +94,19 @@ export default class SemanticSearch extends Component {
   }
 
   @action
-  toggleAIResults() {
-    if (this.showingAIResults) {
+  toggleAiResults() {
+    if (this.showingAiResults) {
       this.args.outletArgs.addSearchResults([], "topic_id");
     } else {
-      this.args.outletArgs.addSearchResults(this.AIResults, "topic_id");
+      this.args.outletArgs.addSearchResults(this.AiResults, "topic_id");
     }
-    this.showingAIResults = !this.showingAIResults;
+    this.showingAiResults = !this.showingAiResults;
   }
 
   @action
-  resetAIResults() {
-    this.AIResults = [];
-    this.showingAIResults = false;
+  resetAiResults() {
+    this.AiResults = [];
+    this.showingAiResults = false;
     this.args.outletArgs.addSearchResults([], "topic_id");
   }
 
@@ -119,19 +120,12 @@ export default class SemanticSearch extends Component {
       return this.performHyDESearch();
     }
 
-    withPluginApi("1.15.0", (api) => {
-      api.onAppEvent("full-page-search:trigger-search", () => {
-        if (!this.searching) {
-          this.resetAIResults();
-          return this.performHyDESearch();
-        }
-      });
-    });
+    this.#resetAndSearchOnEvent();
   }
 
   performHyDESearch() {
     this.searching = true;
-    this.resetAIResults();
+    this.resetAiResults();
 
     ajax("/discourse-ai/embeddings/semantic-search", {
       data: { q: this.searchTerm },
@@ -145,15 +139,37 @@ export default class SemanticSearch extends Component {
         }
 
         model.posts.forEach((post) => {
-          post.generatedByAI = true;
+          post.generatedByAi = true;
         });
 
-        this.AIResults = model.posts;
+        this.AiResults = model.posts;
       })
       .finally(() => (this.searching = false));
   }
 
+  #resetAndSearchOnEvent() {
+    return withPluginApi("1.15.0", (api) => {
+      api.onAppEvent("full-page-search:trigger-search", () => {
+        if (!this.searching) {
+          this.resetAiResults();
+          return this.performHyDESearch();
+        }
+      });
+    });
+  }
+
+  @action
+  checkQueryParamsAndSearch() {
+    // This check is necessary because handleSearch() isn't called
+    // if query params are present and a new search has appended text.
+    // It ensures AiResults are reset and searched for properly
+    const searchQueryParam = this.router.currentRoute?.queryParams?.q;
+    if (searchQueryParam) {
+      this.#resetAndSearchOnEvent();
+    }
+  }
   <template>
+    <span {{didInsert this.checkQueryParamsAndSearch}}></span>
     {{#if this.searchEnabled}}
       <div class="semantic-search__container search-results" role="region">
         <div class="semantic-search__results" {{didInsert this.handleSearch}}>
@@ -163,10 +179,9 @@ export default class SemanticSearch extends Component {
           >
             <DToggleSwitch
               disabled={{this.disableToggleSwitch}}
-              @state={{this.showingAIResults}}
-              title="AI search results hidden"
+              @state={{this.showingAiResults}}
               class="semantic-search__results-toggle"
-              {{on "click" this.toggleAIResults}}
+              {{on "click" this.toggleAiResults}}
             />
 
             <div class="semantic-search__searching-text">
