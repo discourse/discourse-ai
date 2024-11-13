@@ -609,7 +609,9 @@ TEXT
             partials = []
 
             dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
-            endpoint.perform_completion!(dialect, user, partial_tool_calls: true) { |partial| partials << partial.dup }
+            endpoint.perform_completion!(dialect, user, partial_tool_calls: true) do |partial|
+              partials << partial.dup
+            end
 
             tool_call =
               DiscourseAi::Completions::ToolCall.new(

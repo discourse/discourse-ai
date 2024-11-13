@@ -63,10 +63,7 @@ module DiscourseAi::Completions
 
         @tool_arguments << arguments.to_s
         @streaming_parser << arguments.to_s if @streaming_parser && !arguments.to_s.empty?
-        if !rval
-          rval = current_tool_progress
-        end
-
+        rval = current_tool_progress if !rval
       elsif finished_tools && @tool
         parsed_args = JSON.parse(@tool_arguments, symbolize_names: true)
         @tool.parameters = parsed_args
@@ -92,7 +89,6 @@ module DiscourseAi::Completions
     end
 
     def current_tool_progress
-
       if @has_new_data
         @has_new_data = false
         @tool

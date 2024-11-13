@@ -104,17 +104,16 @@ module DiscourseAi
 
         def decode_chunk(chunk)
           @decoder ||= JsonStreamDecoder.new
-          elements = (@decoder << chunk)
-            .map { |parsed_json| processor.process_streamed_message(parsed_json) }
-            .flatten
-            .compact
+          elements =
+            (@decoder << chunk)
+              .map { |parsed_json| processor.process_streamed_message(parsed_json) }
+              .flatten
+              .compact
 
           # Remove duplicate partial tool calls
           # sometimes we stream weird chunks
           seen_tools = Set.new
-          elements.select do |item|
-            !item.is_a?(ToolCall) || seen_tools.add?(item)
-          end
+          elements.select { |item| !item.is_a?(ToolCall) || seen_tools.add?(item) }
         end
 
         def decode_chunk_finish

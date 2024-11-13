@@ -185,20 +185,23 @@ module DiscourseAi
       end
 
       def invoke_tool(tool, llm, cancel, context, &update_blk)
-        update_blk.call("", cancel, build_placeholder(tool.summary, ""))
+        show_placeholder = !context[:skip_tool_details]
+
+        update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
 
         result =
           tool.invoke do |progress|
-            placeholder = build_placeholder(tool.summary, progress)
-            update_blk.call("", cancel, placeholder)
+            if show_placeholder
+              placeholder = build_placeholder(tool.summary, progress)
+              update_blk.call("", cancel, placeholder)
+            end
           end
 
-        tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
-
-        if context[:skip_tool_details] && tool.custom_raw.present?
-          update_blk.call(tool.custom_raw, cancel, nil, :custom_raw)
-        elsif !context[:skip_tool_details]
+        if show_placeholder
+          tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
           update_blk.call(tool_details, cancel, nil, :tool_details)
+        elsif tool.custom_raw.present?
+          update_blk.call(tool.custom_raw, cancel, nil, :custom_raw)
         end
 
         result
