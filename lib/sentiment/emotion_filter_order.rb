@@ -5,34 +5,34 @@ module DiscourseAi
     class EmotionFilterOrder
       def self.register!(plugin)
         emotions = %w[
-          disappointment
-          sadness
-          annoyance
-          neutral
-          disapproval
-          realization
-          nervousness
-          approval
-          joy
-          anger
-          embarrassment
-          caring
-          remorse
-          disgust
-          grief
-          confusion
-          relief
-          desire
           admiration
-          optimism
-          fear
-          love
-          excitement
-          curiosity
           amusement
-          surprise
+          anger
+          annoyance
+          approval
+          caring
+          confusion
+          curiosity
+          desire
+          disappointment
+          disapproval
+          disgust
+          embarrassment
+          excitement
+          fear
           gratitude
+          grief
+          joy
+          love
+          nervousness
+          neutral
+          optimism
           pride
+          realization
+          relief
+          remorse
+          sadness
+          surprise
         ]
 
         emotions.each do |emotion|
@@ -65,6 +65,7 @@ module DiscourseAi
                 #{emotion_clause} AS emotion_#{emotion} 
               SQL
               .group("1")
+              .having("#{emotion_clause} > 0.05")
               .order("#{emotion_clause} #{order_direction}")
           end
           plugin.add_filter_custom_filter("order:emotion_#{emotion}", &filter_order_emotion)
