@@ -28,7 +28,8 @@ module DiscourseAi
           _user,
           _model_params,
           feature_name: nil,
-          feature_context: nil
+          feature_context: nil,
+          partial_tool_calls: false
         )
           @dialect = dialect
           response = responses[completions]

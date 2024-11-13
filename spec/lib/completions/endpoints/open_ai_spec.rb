@@ -571,7 +571,7 @@ TEXT
           end
         end
 
-        it "properly handles spaces in tools payload" do
+        it "properly handles spaces in tools payload and partial tool calls" do
           raw_data = <<~TEXT.strip
             data: {"choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"index":0,"id":"func_id","type":"function","function":{"name":"go|ogle","arg|uments":""}}]}}]}
 
@@ -609,7 +609,9 @@ TEXT
             partials = []
 
             dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
-            endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
+            endpoint.perform_completion!(dialect, user, partial_tool_calls: true) do |partial|
+              partials << partial.dup
+            end
 
             tool_call =
               DiscourseAi::Completions::ToolCall.new(
@@ -620,7 +622,10 @@ TEXT
                 },
               )
 
-            expect(partials).to eq([tool_call])
+            expect(partials.last).to eq(tool_call)
+
+            progress = partials.map { |p| p.parameters[:query] }
+            expect(progress).to eq(["Ad", "Adabas", "Adabas 9.", "Adabas 9.1"])
           end
         end
       end

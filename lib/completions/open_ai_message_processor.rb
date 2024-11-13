@@ -3,11 +3,12 @@ module DiscourseAi::Completions
   class OpenAiMessageProcessor
     attr_reader :prompt_tokens, :completion_tokens
 
-    def initialize
+    def initialize(partial_tool_calls: false)
       @tool = nil
       @tool_arguments = +""
       @prompt_tokens = nil
       @completion_tokens = nil
+      @partial_tool_calls = partial_tool_calls
     end
 
     def process_message(json)
@@ -57,12 +58,16 @@ module DiscourseAi::Completions
         if id.present? && name.present?
           @tool_arguments = +""
           @tool = ToolCall.new(id: id, name: name)
+          @streaming_parser = ToolCallProgressTracker.new(self) if @partial_tool_calls
         end
 
         @tool_arguments << arguments.to_s
+        @streaming_parser << arguments.to_s if @streaming_parser && !arguments.to_s.empty?
+        rval = current_tool_progress if !rval
       elsif finished_tools && @tool
         parsed_args = JSON.parse(@tool_arguments, symbolize_names: true)
         @tool.parameters = parsed_args
+        @tool.partial = false
         rval = @tool
         @tool = nil
       elsif !content.to_s.empty?
@@ -73,6 +78,23 @@ module DiscourseAi::Completions
       update_usage(json)
 
       rval
+    end
+
+    def notify_progress(key, value)
+      if @tool
+        @tool.partial = true
+        @tool.parameters[key.to_sym] = value
+        @has_new_data = true
+      end
+    end
+
+    def current_tool_progress
+      if @has_new_data
+        @has_new_data = false
+        @tool
+      else
+        nil
+      end
     end
 
     def finish

@@ -452,7 +452,7 @@ module DiscourseAi
           bot.reply(context) do |partial, cancel, placeholder, type|
             reply << partial
             raw = reply.dup
-            raw << "\n\n" << placeholder if placeholder.present? && !context[:skip_tool_details]
+            raw << "\n\n" << placeholder if placeholder.present?
 
             blk.call(partial) if blk && type != :tool_details
 

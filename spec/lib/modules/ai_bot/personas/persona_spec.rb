@@ -462,7 +462,6 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           expect(crafted_system_prompt).to include("fragment-n14")
           expect(crafted_system_prompt).to include("fragment-n13")
           expect(crafted_system_prompt).to include("fragment-n12")
-
           expect(crafted_system_prompt).not_to include("fragment-n4") # Fragment #11 not included
         end
       end

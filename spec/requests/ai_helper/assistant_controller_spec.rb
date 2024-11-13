@@ -253,6 +253,9 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         after { SiteSetting.provider = @original_provider }
 
         it "returns a 403 error if the user cannot access the secure upload" do
+          # hosted-site plugin edge case, it enables embeddings
+          SiteSetting.ai_embeddings_enabled = false
+
           create_post(
             title: "Secure upload post",
             raw: "This is a new post <img src=\"#{upload.url}\" />",

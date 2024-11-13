@@ -164,24 +164,18 @@ module DiscourseAi
 
       # @param generic_prompt { DiscourseAi::Completions::Prompt } - Our generic prompt object
       # @param user { User } - User requesting the summary.
+      # @param temperature { Float - Optional } - The temperature to use for the completion.
+      # @param top_p { Float - Optional } - The top_p to use for the completion.
+      # @param max_tokens { Integer - Optional } - The maximum number of tokens to generate.
+      # @param stop_sequences { Array<String> - Optional } - The stop sequences to use for the completion.
+      # @param feature_name { String - Optional } - The feature name to use for the completion.
+      # @param feature_context { Hash - Optional } - The feature context to use for the completion.
+      # @param partial_tool_calls { Boolean - Optional } - If true, the completion will return partial tool calls.
       #
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       #
-      # @returns { String } - Completion result.
-      #
-      # When the model invokes a tool, we'll wait until the endpoint finishes replying and feed you a fully-formed tool,
-      # even if you passed a partial_read_blk block. Invocations are strings that look like this:
-      #
-      # <function_calls>
-      #   <invoke>
-      #   <tool_name>get_weather</tool_name>
-      #   <tool_id>get_weather</tool_id>
-      #   <parameters>
-      #     <location>Sydney</location>
-      #     <unit>c</unit>
-      #   </parameters>
-      #  </invoke>
-      # </function_calls>
+      # @returns String | ToolCall - Completion result.
+      # if multiple tools or a tool and a message come back, the result will be an array of ToolCall / String objects.
       #
       def generate(
         prompt,
@@ -192,6 +186,7 @@ module DiscourseAi
         user:,
         feature_name: nil,
         feature_context: nil,
+        partial_tool_calls: false,
         &partial_read_blk
       )
         self.class.record_prompt(prompt)
@@ -226,6 +221,7 @@ module DiscourseAi
           model_params,
           feature_name: feature_name,
           feature_context: feature_context,
+          partial_tool_calls: partial_tool_calls,
           &partial_read_blk
         )
       end

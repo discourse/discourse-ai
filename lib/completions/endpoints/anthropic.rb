@@ -107,7 +107,10 @@ module DiscourseAi
 
         def processor
           @processor ||=
-            DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
+            DiscourseAi::Completions::AnthropicMessageProcessor.new(
+              streaming_mode: @streaming_mode,
+              partial_tool_calls: partial_tool_calls,
+            )
         end
 
         def has_tool?(_response_data)
