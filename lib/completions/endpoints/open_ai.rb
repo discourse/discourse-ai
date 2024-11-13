@@ -104,10 +104,17 @@ module DiscourseAi
 
         def decode_chunk(chunk)
           @decoder ||= JsonStreamDecoder.new
-          (@decoder << chunk)
+          elements = (@decoder << chunk)
             .map { |parsed_json| processor.process_streamed_message(parsed_json) }
             .flatten
             .compact
+
+          # Remove duplicate partial tool calls
+          # sometimes we stream weird chunks
+          seen_tools = Set.new
+          elements.select do |item|
+            !item.is_a?(ToolCall) || seen_tools.add?(item)
+          end
         end
 
         def decode_chunk_finish
@@ -121,7 +128,7 @@ module DiscourseAi
         private
 
         def processor
-          @processor ||= OpenAiMessageProcessor.new
+          @processor ||= OpenAiMessageProcessor.new(partial_tool_calls: partial_tool_calls)
         end
       end
     end

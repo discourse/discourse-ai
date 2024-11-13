@@ -40,49 +40,6 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
     end
   end
 
-  class ToolCallProgressTracker
-    attr_reader :current_key, :current_value, :tool_call
-
-    def initialize(tool_call)
-      @tool_call = tool_call
-      @current_key = nil
-      @current_value = nil
-      @parser = DiscourseAi::Completions::JsonStreamingParser.new
-
-      @parser.key do |k|
-        @current_key = k
-        @current_value = nil
-      end
-
-      @parser.value do |v|
-        tool_call.notify_progress(@current_key, v) if @current_key
-      end
-    end
-
-    def <<(json)
-      # llm could send broken json
-      # in that case just deal with it later
-      # don't stream
-      return if @broken
-
-      begin
-        @parser << json
-      rescue DiscourseAi::Utils::ParserError
-        @broken = true
-        return
-      end
-
-      if @parser.state == :start_string && @current_key
-        # this is is worth notifying
-        tool_call.notify_progress(@current_key, @parser.buf)
-      end
-
-      if @parser.state == :end_value
-        @current_key = nil
-      end
-    end
-  end
-
   attr_reader :tool_calls, :input_tokens, :output_tokens
 
   def initialize(streaming_mode:, partial_tool_calls: false)
