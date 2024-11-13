@@ -9,7 +9,8 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
       @id = id
       @raw_json = +""
       @tool_call = DiscourseAi::Completions::ToolCall.new(id: id, name: name, parameters: {})
-      @streaming_parser = DiscourseAi::Completions::ToolCallProgressTracker.new(self) if partial_tool_calls
+      @streaming_parser =
+        DiscourseAi::Completions::ToolCallProgressTracker.new(self) if partial_tool_calls
     end
 
     def append(json)
