@@ -14,6 +14,8 @@ module DiscourseAi
         plugin.on(:post_created, &sentiment_analysis_cb)
         plugin.on(:post_edited, &sentiment_analysis_cb)
 
+        EmotionFilterOrder.register!(plugin)
+
         plugin.add_report("overall_sentiment") do |report|
           report.modes = [:stacked_chart]
           threshold = 0.6
