@@ -4,38 +4,7 @@ module DiscourseAi
   module Sentiment
     class EmotionFilterOrder
       def self.register!(plugin)
-        emotions = %w[
-          admiration
-          amusement
-          anger
-          annoyance
-          approval
-          caring
-          confusion
-          curiosity
-          desire
-          disappointment
-          disapproval
-          disgust
-          embarrassment
-          excitement
-          fear
-          gratitude
-          grief
-          joy
-          love
-          nervousness
-          neutral
-          optimism
-          pride
-          realization
-          relief
-          remorse
-          sadness
-          surprise
-        ]
-
-        emotions.each do |emotion|
+        Emotions::LIST.each do |emotion|
           filter_order_emotion = ->(scope, order_direction) do
             emotion_clause = <<~SQL
               SUM(
