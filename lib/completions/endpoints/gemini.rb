@@ -173,25 +173,24 @@ module DiscourseAi
             .decode(chunk)
             .map do |parsed|
               update_usage(parsed)
-              parsed
-                .dig(:candidates, 0, :content, :parts)
-                .map do |part|
-                  if part[:text]
-                    part = part[:text]
-                    if part != ""
-                      part
-                    else
-                      nil
-                    end
-                  elsif part[:functionCall]
-                    @tool_index += 1
-                    ToolCall.new(
-                      id: "tool_#{@tool_index}",
-                      name: part[:functionCall][:name],
-                      parameters: part[:functionCall][:args],
-                    )
+              parts = parsed.dig(:candidates, 0, :content, :parts)
+              parts&.map do |part|
+                if part[:text]
+                  part = part[:text]
+                  if part != ""
+                    part
+                  else
+                    nil
                   end
+                elsif part[:functionCall]
+                  @tool_index += 1
+                  ToolCall.new(
+                    id: "tool_#{@tool_index}",
+                    name: part[:functionCall][:name],
+                    parameters: part[:functionCall][:args],
+                  )
                 end
+              end
             end
             .flatten
             .compact

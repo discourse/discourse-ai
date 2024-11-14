@@ -21,8 +21,8 @@ module DiscourseAi
                 required: true,
               },
               {
-                name: "html_content",
-                description: "The HTML content for the artifact",
+                name: "html_body",
+                description: "The HTML content for the BODY tag (do not include the BODY tag)",
                 type: "string",
                 required: true,
               },
@@ -43,7 +43,7 @@ module DiscourseAi
           post = Post.find_by(id: context[:post_id])
           return error_response("No post context found") unless post
 
-          html = parameters[:html_content].to_s
+          html = parameters[:html_body].to_s
           css = parameters[:css].to_s
           js = parameters[:js].to_s
 
