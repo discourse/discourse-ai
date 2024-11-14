@@ -37,11 +37,21 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          tools_dialect.from_raw_tool_call(msg)
+          if enable_native_tool?
+            tools_dialect.from_raw_tool_call(msg)
+          else
+            translated = tools_dialect.from_raw_tool_call(msg)
+            { role: "assistant", content: translated }
+          end
         end
 
         def tool_msg(msg)
-          tools_dialect.from_raw_tool(msg)
+          if enable_native_tool?
+            tools_dialect.from_raw_tool(msg)
+          else
+            translated = tools_dialect.from_raw_tool(msg)
+            { role: "user", content: translated }
+          end
         end
 
         def system_msg(msg)
