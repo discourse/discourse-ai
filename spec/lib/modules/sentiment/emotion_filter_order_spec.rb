@@ -181,14 +181,11 @@ RSpec.describe DiscourseAi::Sentiment::EmotionFilterOrder do
         .first
     result = filter.call(scope, order_direction)
 
-    expect(result.to_sql).to include("INNER JOIN classification_results")
+    expect(result.to_sql).to include("classification_results")
     expect(result.to_sql).to include(
       "classification_results.model_used = 'SamLowe/roberta-base-go_emotions'",
     )
-    expect(result.to_sql).to include("topics.archetype = 'regular'")
-    expect(result.to_sql).to include("ORDER BY")
-    expect(result.to_sql).to include("->'#{emotion}'")
-    expect(result.to_sql).to include("desc")
+    expect(result.to_sql).to include("ORDER BY topic_emotion.emotion_joy desc")
   end
 
   it "sorts emotion in ascending order" do
