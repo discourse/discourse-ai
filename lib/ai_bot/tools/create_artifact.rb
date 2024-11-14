@@ -39,6 +39,7 @@ module DiscourseAi
         end
 
         def invoke
+          yield parameters[:name] || "Web Artifact"
           # Get the current post from context
           post = Post.find_by(id: context[:post_id])
           return error_response("No post context found") unless post

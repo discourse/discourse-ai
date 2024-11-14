@@ -106,6 +106,8 @@ module DiscourseAi
           tool_found = false
           force_tool_if_needed(prompt, context)
 
+          tool_halted = false
+
           result =
             llm.generate(prompt, feature_name: "bot", **llm_kwargs) do |partial, cancel|
               tool = persona.find_tool(partial, bot_user: user, llm: llm, context: context)
@@ -122,7 +124,12 @@ module DiscourseAi
                 process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
                 tools_ran += 1
                 ongoing_chain &&= tool.chain_next_response?
+
+                if !tool.chain_next_response?
+                  tool_halted = true
+                end
               else
+                next if tool_halted
                 needs_newlines = true
                 if partial.is_a?(DiscourseAi::Completions::ToolCall)
                   Rails.logger.warn("DiscourseAi: Tool not found: #{partial.name}")

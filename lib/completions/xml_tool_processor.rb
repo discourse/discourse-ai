@@ -62,31 +62,14 @@ module DiscourseAi
       def finish
         return [] if @function_buffer.blank?
 
-        xml = Nokogiri::HTML5.fragment(@function_buffer)
-        normalize_function_ids!(xml)
-        last_invoke = xml.at("invoke:last")
-        if last_invoke
-          last_invoke.next_sibling.remove while last_invoke.next_sibling
-          xml.at("invoke:last").add_next_sibling("\n") if !last_invoke.next_sibling
+        idx = -1
+        parse_malformed_xml(@function_buffer).map do |tool|
+          ToolCall.new(
+            id: "tool_#{idx += 1}",
+            name: tool[:tool_name],
+            parameters: tool[:parameters]
+          )
         end
-
-        xml
-          .css("invoke")
-          .map do |invoke|
-            tool_name = invoke.at("tool_name").content.force_encoding("UTF-8")
-            tool_id = invoke.at("tool_id").content.force_encoding("UTF-8")
-            parameters = {}
-            invoke
-              .at("parameters")
-              &.children
-              &.each do |node|
-                next if node.text?
-                name = node.name
-                value = node.content.to_s
-                parameters[name.to_sym] = value.to_s.force_encoding("UTF-8")
-              end
-            ToolCall.new(id: tool_id, name: tool_name, parameters: parameters)
-          end
       end
 
       def should_cancel?
@@ -94,6 +77,40 @@ module DiscourseAi
       end
 
       private
+
+      def parse_malformed_xml(input)
+        input
+          .scan(
+            %r{
+      <invoke>
+        \s*
+        <tool_name>
+          ([^<]+)
+        </tool_name>
+        \s*
+        <parameters>
+          (.*?)
+        </parameters>
+        \s*
+      </invoke>
+    }mx,
+          )
+          .map do |tool_name, params|
+            {
+              tool_name: tool_name.strip,
+              parameters:
+                params
+                  .scan(%r{
+          <([^>]+)>
+            (.*?)
+          </\1>
+        }mx)
+                  .each_with_object({}) do |(name, value), hash|
+                    hash[name.to_sym] = value.gsub(/^<!\[CDATA\[|\]\]>$/, "")
+                  end,
+            }
+          end
+      end
 
       def normalize_function_ids!(function_buffer)
         function_buffer

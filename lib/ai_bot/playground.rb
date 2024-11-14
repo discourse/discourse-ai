@@ -399,7 +399,7 @@ module DiscourseAi
         PostCustomPrompt.none
 
         reply = +""
-        start = Time.now
+        post_streamer = nil
 
         post_type =
           post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
@@ -448,6 +448,8 @@ module DiscourseAi
 
         context[:skip_tool_details] ||= !bot.persona.class.tool_details
 
+        post_streamer = PostStreamer.new(delay: Rails.env.test? ? 0 : 0.5) if stream_reply
+
         new_custom_prompts =
           bot.reply(context) do |partial, cancel, placeholder, type|
             reply << partial
@@ -461,22 +463,20 @@ module DiscourseAi
               reply_post.update!(raw: reply, cooked: PrettyText.cook(reply))
             end
 
-            if stream_reply
-              # Minor hack to skip the delay during tests.
-              if placeholder.blank?
-                next if (Time.now - start < 0.5) && !Rails.env.test?
-                start = Time.now
-              end
-
-              Discourse.redis.expire(redis_stream_key, 60)
-
-              publish_update(reply_post, { raw: raw })
+            if post_streamer
+              post_streamer.run_later {
+                Discourse.redis.expire(redis_stream_key, 60)
+                publish_update(reply_post, { raw: raw })
+              }
             end
           end
 
         return if reply.blank?
 
         if stream_reply
+          post_streamer.finish
+          post_streamer = nil
+
           # land the final message prior to saving so we don't clash
           reply_post.cooked = PrettyText.cook(reply)
           publish_final_update(reply_post)
@@ -514,6 +514,7 @@ module DiscourseAi
 
         reply_post
       ensure
+        post_streamer&.finish(skip_callback: true)
         publish_final_update(reply_post) if stream_reply
         if reply_post && post.post_number == 1 && post.topic.private_message?
           title_playground(reply_post)

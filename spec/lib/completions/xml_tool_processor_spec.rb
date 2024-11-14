@@ -12,6 +12,26 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
     expect(processor.should_cancel?).to eq(false)
   end
 
+  it "can handle mix and match xml cause tool llms may not encode" do
+    xml = (<<~XML).strip
+      <function_calls>
+      <invoke>
+      <tool_name>hello</tool_name>
+      <parameters>
+       <hello>world <sam>sam</sam></hello>
+       <test><![CDATA[</h1>\n</div>\n]]></test>
+      </parameters>
+      </invoke>
+    XML
+
+    result = []
+    result << (processor << xml)
+    result << (processor.finish)
+
+    tool_call = result.last.first
+    expect(tool_call.parameters).to eq(hello: "world <sam>sam</sam>", test: "</h1>\n</div>\n")
+  end
+
   it "is usable for simple single message mode" do
     xml = (<<~XML).strip
       hello
@@ -149,8 +169,7 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
     result << (processor.finish)
 
     # Should just do its best to parse the XML
-    tool_call =
-      DiscourseAi::Completions::ToolCall.new(id: "tool_0", name: "test", parameters: { param: "" })
+    tool_call = DiscourseAi::Completions::ToolCall.new(id: "tool_0", name: "test", parameters: {})
     expect(result).to eq([["text"], [tool_call]])
   end
 
