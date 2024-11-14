@@ -131,6 +131,7 @@ export default class AISuggestionDropdown extends Component {
       data: { text: this.composer.model.reply },
     })
       .then((data) => {
+        console.log(data);
         this.#assignGeneratedSuggestions(data, this.args.mode);
       })
       .catch(popupAjaxError)
@@ -198,6 +199,7 @@ export default class AISuggestionDropdown extends Component {
     }
 
     const suggestions = data.assistant.map((s) => s.name);
+    // console.log("suggest", suggestions);
 
     if (mode === this.SUGGESTION_TYPES.tag) {
       if (this.#tagSelectorHasValues()) {
