@@ -129,6 +129,7 @@ module DiscourseAi
               tool = nil if tools_ran >= MAX_TOOLS
 
               if tool.present?
+                existing_tools << tool
                 tool_call = partial
                 if tool_call.partial?
                   if tool.class.allow_partial_tool_calls?
@@ -138,7 +139,6 @@ module DiscourseAi
                   next
                 end
 
-                existing_tools << tool
                 tool_found = true
                 # a bit hacky, but extra newlines do no harm
                 if needs_newlines
