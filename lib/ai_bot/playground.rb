@@ -456,7 +456,7 @@ module DiscourseAi
             raw = reply.dup
             raw << "\n\n" << placeholder if placeholder.present?
 
-            blk.call(partial) if blk && type != :tool_details
+            blk.call(partial) if blk && type != :tool_details && type != :partial_tool
 
             if stream_reply && !Discourse.redis.get(redis_stream_key)
               cancel&.call

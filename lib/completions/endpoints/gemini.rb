@@ -144,6 +144,7 @@ module DiscourseAi
 
         def decode(chunk)
           json = JSON.parse(chunk, symbolize_names: true)
+
           idx = -1
           json
             .dig(:candidates, 0, :content, :parts)
@@ -168,7 +169,6 @@ module DiscourseAi
 
         def decode_chunk(chunk)
           @tool_index ||= -1
-
           streaming_decoder
             .decode(chunk)
             .map do |parsed|
