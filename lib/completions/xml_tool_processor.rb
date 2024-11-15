@@ -7,11 +7,13 @@
 module DiscourseAi
   module Completions
     class XmlToolProcessor
-      def initialize
+      def initialize(partial_tool_calls: false)
         @buffer = +""
         @function_buffer = +""
         @should_cancel = false
         @in_tool = false
+        @partial_tool_calls = partial_tool_calls
+        @partial_tools = [] if @partial_tool_calls
       end
 
       def <<(text)
@@ -31,7 +33,7 @@ module DiscourseAi
             result << text[0..text_index - 1].strip if text_index && text_index > 0
           end
         else
-          @function_buffer << text
+          add_to_function_buffer(text)
         end
 
         if !@in_tool
@@ -41,7 +43,7 @@ module DiscourseAi
               @function_buffer = text[split_index + 1..-1] || ""
               text = text[0..split_index] || ""
             else
-              @function_buffer << text
+              add_to_function_buffer(text)
               text = ""
             end
           else
@@ -56,6 +58,11 @@ module DiscourseAi
           @should_cancel = true if text.include?("</function_calls>")
         end
 
+        if @should_notify_partial_tool
+          @should_notify_partial_tool = false
+          result << @partial_tools.last
+        end
+
         result
       end
 
@@ -67,7 +74,7 @@ module DiscourseAi
           ToolCall.new(
             id: "tool_#{idx += 1}",
             name: tool[:tool_name],
-            parameters: tool[:parameters]
+            parameters: tool[:parameters],
           )
         end
       end
@@ -77,6 +84,71 @@ module DiscourseAi
       end
 
       private
+
+      def add_to_function_buffer(text)
+        @function_buffer << text
+        detect_partial_tool_calls(@function_buffer, text) if @partial_tool_calls
+      end
+
+      def detect_partial_tool_calls(buffer, delta)
+        parse_partial_tool_call(buffer)
+      end
+
+      def parse_partial_tool_call(buffer)
+        match =
+          buffer
+            .scan(
+              %r{
+      <invoke>
+        \s*
+        <tool_name>
+          ([^<]+)
+        </tool_name>
+        \s*
+        <parameters>
+          (.*?)
+        (</parameters>|\Z)
+        }mx,
+            )
+            .to_a
+            .last
+
+        if match
+          params = partial_parse_params(match[1])
+          if params.present?
+            current_tool = @partial_tools.last
+            if !current_tool || current_tool.name != match[0].strip
+              current_tool =
+                ToolCall.new(
+                  id: "tool_#{@partial_tools.length}",
+                  name: match[0].strip,
+                  parameters: params,
+                )
+              @partial_tools << current_tool
+              current_tool.partial = true
+              @should_notify_partial_tool = true
+            end
+
+            if current_tool.parameters != params
+              current_tool.parameters = params
+              @should_notify_partial_tool = true
+            end
+          end
+        end
+      end
+
+      def partial_parse_params(params)
+        params
+          .scan(%r{
+      <([^>]+)>
+        (.*?)
+      (</\1>|\Z)
+    }mx)
+          .each_with_object({}) do |(name, value), hash|
+            next if "<![CDATA[".start_with?(value)
+            hash[name.to_sym] = value.gsub(/^<!\[CDATA\[|\]\]>$/, "")
+          end
+      end
 
       def parse_malformed_xml(input)
         input

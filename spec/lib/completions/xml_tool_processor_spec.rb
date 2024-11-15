@@ -12,6 +12,59 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
     expect(processor.should_cancel?).to eq(false)
   end
 
+  it "can handle partial tool calls" do
+    processor = DiscourseAi::Completions::XmlToolProcessor.new(partial_tool_calls: true)
+
+    xml = (<<~XML).strip
+      <function|_calls>
+      <invoke>
+      <tool_name>h|ell|o<|/tool_name>
+      <parameters>
+       <hello>wo|r|ld</hello>
+      </parameters>
+      </invoke>
+      <invoke>
+      <tool_name>tool|2</tool_name>
+      <parameters>
+        <param>v|alue</param>
+        <para|m2><![CDA|TA[va|lue2]]></param2>
+      </parame|ters>
+      </invoke>
+    XML
+
+    result = []
+
+    xml.split("|").each { |part| result << (processor << part).map(&:dup) }
+
+    result << (processor.finish)
+    result.flatten!
+
+    tool1_params =
+      result
+        .select do |r|
+          r.is_a?(DiscourseAi::Completions::ToolCall) && r.name == "hello" && r.partial
+        end
+        .map(&:parameters)
+
+    expect(tool1_params).to eq([{ hello: "wo" }, { hello: "wor" }, { hello: "world" }])
+
+    tool2_params =
+      result
+        .select do |r|
+          r.is_a?(DiscourseAi::Completions::ToolCall) && r.name == "tool2" && r.partial
+        end
+        .map(&:parameters)
+
+    expect(tool2_params).to eq(
+      [
+        { param: "v" },
+        { param: "value" },
+        { param: "value", param2: "va" },
+        { param: "value", param2: "value2" },
+      ],
+    )
+  end
+
   it "can handle mix and match xml cause tool llms may not encode" do
     xml = (<<~XML).strip
       <function_calls>
