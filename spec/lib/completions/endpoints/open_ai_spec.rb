@@ -571,6 +571,40 @@ TEXT
           end
         end
 
+        it "properly handles multiple params in partial tool calls" do
+
+          # this is not working and it is driving me nuts so I will use a sledghammer
+          # text = plugin_file_from_fixtures("openai_artifact_call.txt", "bot")
+
+          path = File.join(__dir__, "../../../fixtures/bot", "openai_artifact_call.txt")
+          text = File.read(path)
+
+          partials = []
+          open_ai_mock.with_chunk_array_support do
+            open_ai_mock.stub_raw(text.scan(/.*\n/))
+
+            dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+            endpoint.perform_completion!(dialect, user, partial_tool_calls: true) do |partial|
+              partials << partial.dup
+            end
+          end
+
+          expect(partials.compact.length).to eq(128)
+
+          params = partials.map { |p| p.parameters if p.is_a?(DiscourseAi::Completions::ToolCall) && p.partial?  }.compact
+
+          lengths = {}
+          params.each do |p|
+            p.each do |k, v|
+              if lengths[k] && lengths[k] > v.length
+                expect(lengths[k]).to be > v.length
+              else
+                lengths[k] = v.length
+              end
+            end
+          end
+        end
+
         it "properly handles spaces in tools payload and partial tool calls" do
           raw_data = <<~TEXT.strip
             data: {"choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"index":0,"id":"func_id","type":"function","function":{"name":"go|ogle","arg|uments":""}}]}}]}

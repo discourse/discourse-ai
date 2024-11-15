@@ -110,67 +110,6 @@ module DiscourseAi
           self.custom_raw = content.map { |c| c[1] }.join("\n\n")
         end
 
-        def update_custom_html_old(artifact = nil)
-          html = parameters[:html_body].to_s
-          css = parameters[:css].to_s
-          js = parameters[:js].to_s
-
-          tabs = { css: [css, "CSS"], js: [js, "JavaScript"], html: [html, "HTML"] }
-
-          if artifact
-            iframe =
-              "<iframe src=\"#{Discourse.base_url}/discourse-ai/ai-bot/artifacts/#{artifact.id}\" width=\"100%\" height=\"500\" frameborder=\"0\"></iframe>"
-            tabs[:preview] = [iframe, "Preview"]
-          end
-
-          first = true
-          html_tabs =
-            tabs.map do |tab, (content, name)|
-              selected = " data-selected" if first
-              first = false
-              (<<~HTML).strip
-                <div class="ai-artifact-tab" data-#{tab}#{selected}>
-                  <a>#{name}</a>
-                </div>
-              HTML
-            end
-
-          first = true
-          html_panels =
-            tabs.map do |tab, (content, name)|
-              selected = " data-selected" if (first || (!artifact && tab == @selected_tab))
-              first = false
-              inner_content =
-                if tab == :preview
-                  content
-                else
-                  <<~HTML
-
-                  ```#{tab}
-                  #{content}
-                  ```
-                  HTML
-                end
-              (<<~HTML).strip
-                <div class="ai-artifact-panel" data-#{tab}#{selected}>
-
-                  #{inner_content}
-                </div>
-              HTML
-            end
-
-          self.custom_raw = <<~RAW
-              <div class="ai-artifact">
-                <div class="ai-artifact-tabs">
-                  #{html_tabs.join("\n")}
-                </div>
-                <div class="ai-artifact-panels">
-                  #{html_panels.join("\n")}
-                </div>
-              </div>
-            RAW
-        end
-
         def success_response(artifact)
           @chain_next_response = false
           iframe_url = "#{Discourse.base_url}/discourse-ai/ai-bot/artifacts/#{artifact.id}"
