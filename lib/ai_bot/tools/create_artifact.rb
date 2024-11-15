@@ -43,7 +43,7 @@ module DiscourseAi
         end
 
         def partial_invoke
-          @selected_tab = :html
+          @selected_tab = :html_body
           if @prev_parameters
             @selected_tab = parameters.keys.find { |k| @prev_parameters[k] != parameters[k] }
           end
@@ -97,7 +97,7 @@ module DiscourseAi
 
           content = []
 
-          content << [:html, "### HTML\n\n```html\n#{html}\n```"] if html.present?
+          content << [:html_body, "### HTML\n\n```html\n#{html}\n```"] if html.present?
 
           content << [:css, "### CSS\n\n```css\n#{css}\n```"] if css.present?
 
@@ -105,7 +105,7 @@ module DiscourseAi
 
           content << [:preview, "### Preview\n\n#{iframe}"] if iframe
 
-          content.sort_by! { |c| c[0] === @selected_tab ? 0 : 1 } if !artifact
+          content.sort_by! { |c| c[0] === @selected_tab ? 1 : 0 } if !artifact
 
           self.custom_raw = content.map { |c| c[1] }.join("\n\n")
         end
