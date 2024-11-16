@@ -92,8 +92,7 @@ module DiscourseAi
           css = parameters[:css].to_s
           js = parameters[:js].to_s
 
-          iframe =
-            "<iframe src=\"#{Discourse.base_url}/discourse-ai/ai-bot/artifacts/#{artifact.id}\" width=\"100%\" height=\"500\" frameborder=\"0\"></iframe>" if artifact
+          artifact_div = "<div class=\"ai-artifact\" data-ai-artifact-id=#{artifact.id}></div>" if artifact
 
           content = []
 
@@ -103,7 +102,7 @@ module DiscourseAi
 
           content << [:js, "### JavaScript\n\n```javascript\n#{js}\n```"] if js.present?
 
-          content << [:preview, "### Preview\n\n#{iframe}"] if iframe
+          content << [:preview, "### Preview\n\n#{artifact_div}"] if artifact_div
 
           content.sort_by! { |c| c[0] === @selected_tab ? 1 : 0 } if !artifact
 
@@ -112,13 +111,10 @@ module DiscourseAi
 
         def success_response(artifact)
           @chain_next_response = false
-          iframe_url = "#{Discourse.base_url}/discourse-ai/ai-bot/artifacts/#{artifact.id}"
 
           {
             status: "success",
             artifact_id: artifact.id,
-            iframe_html:
-              "<iframe src=\"#{iframe_url}\" width=\"100%\" height=\"500\" frameborder=\"0\"></iframe>",
             message: "Artifact created successfully and rendered to user.",
           }
         end

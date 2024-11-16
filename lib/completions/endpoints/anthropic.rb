@@ -32,8 +32,9 @@ module DiscourseAi
               llm_model.name
             end
 
+          # Note: Anthropic requires this param
           max_tokens = 4096
-          max_tokens = 8192 if mapped_model.include?("3.5") || mapped_model.include?("3_5")
+          max_tokens = 8192 if mapped_model.match?(/3.5/)
 
           options = { model: mapped_model, max_tokens: max_tokens }
 

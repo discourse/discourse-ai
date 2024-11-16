@@ -118,8 +118,9 @@ module DiscourseAi
             If you wish to call multiple function in one reply, wrap multiple <invoke>
             block in a single <function_calls> block.
 
-            Always prefer to lead with tool calls, if you need to execute any.
-            Avoid all niceties prior to tool calls, Eg: "Let me look this up for you.." etc.
+            - Always prefer to lead with tool calls, if you need to execute any.
+            - Avoid all niceties prior to tool calls, Eg: "Let me look this up for you.." etc.
+            - DO NOT encode HTML entities in tool calls. You may use <![CDATA[...]]> for encoding if required.
             Here are the complete list of tools available:
           TEXT
         end
