@@ -572,7 +572,6 @@ TEXT
         end
 
         it "properly handles multiple params in partial tool calls" do
-
           # this is not working and it is driving me nuts so I will use a sledghammer
           # text = plugin_file_from_fixtures("openai_artifact_call.txt", "bot")
 
@@ -591,7 +590,10 @@ TEXT
 
           expect(partials.compact.length).to eq(128)
 
-          params = partials.map { |p| p.parameters if p.is_a?(DiscourseAi::Completions::ToolCall) && p.partial?  }.compact
+          params =
+            partials
+              .map { |p| p.parameters if p.is_a?(DiscourseAi::Completions::ToolCall) && p.partial? }
+              .compact
 
           lengths = {}
           params.each do |p|

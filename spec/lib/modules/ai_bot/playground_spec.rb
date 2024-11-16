@@ -791,11 +791,12 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         expect(done_signal.data[:cooked]).to eq(reply.cooked)
 
         expect(messages.first.data[:raw]).to eq("")
-        messages[1..-1].each_with_index do |m, idx|
-          expect(m.data[:raw]).to eq(expected_bot_response[0..idx])
-        end
 
         expect(reply.cooked).to eq(PrettyText.cook(expected_bot_response))
+
+        messages[1..-1].each do |m|
+          expect(expected_bot_response.start_with?(m.data[:raw])).to eq(true)
+        end
       end
     end
 

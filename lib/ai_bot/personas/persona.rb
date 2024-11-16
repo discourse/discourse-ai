@@ -202,7 +202,13 @@ module DiscourseAi
 
         def find_tool(partial, bot_user:, llm:, context:, existing_tools: [])
           return nil if !partial.is_a?(DiscourseAi::Completions::ToolCall)
-          tool_instance(partial, bot_user: bot_user, llm: llm, context: context, existing_tools: existing_tools)
+          tool_instance(
+            partial,
+            bot_user: bot_user,
+            llm: llm,
+            context: context,
+            existing_tools: existing_tools,
+          )
         end
 
         def allow_partial_tool_calls?
@@ -245,7 +251,8 @@ module DiscourseAi
             arguments[name.to_sym] = value if value
           end
 
-          tool_instance = existing_tools.find { |t| t.name == function_name && t.tool_call_id == function_id }
+          tool_instance =
+            existing_tools.find { |t| t.name == function_name && t.tool_call_id == function_id }
 
           if tool_instance
             tool_instance.parameters = arguments

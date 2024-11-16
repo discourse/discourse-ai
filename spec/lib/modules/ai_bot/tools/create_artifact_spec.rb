@@ -29,7 +29,6 @@ RSpec.describe DiscourseAi::AiBot::Tools::CreateArtifact do
       expect(tool.custom_raw).to eq(
         "### CSS\n\n```css\na { }\n```\n\n### HTML\n\n```html\nhello world\n```",
       )
-
     end
   end
 end

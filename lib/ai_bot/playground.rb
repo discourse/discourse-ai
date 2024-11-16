@@ -464,10 +464,10 @@ module DiscourseAi
             end
 
             if post_streamer
-              post_streamer.run_later {
+              post_streamer.run_later do
                 Discourse.redis.expire(redis_stream_key, 60)
                 publish_update(reply_post, { raw: raw })
-              }
+              end
             end
           end
 

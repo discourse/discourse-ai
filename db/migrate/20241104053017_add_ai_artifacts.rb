@@ -5,10 +5,10 @@ class AddAiArtifacts < ActiveRecord::Migration[7.1]
       t.integer :user_id, null: false
       t.integer :post_id, null: false
       t.string :name, null: false, limit: 255
-      t.string :html, limit: 65535  # ~64KB limit
-      t.string :css, limit: 65535   # ~64KB limit
-      t.string :js, limit: 65535    # ~64KB limit
-      t.jsonb :metadata             # For any additional properties
+      t.string :html, limit: 65_535 # ~64KB limit
+      t.string :css, limit: 65_535 # ~64KB limit
+      t.string :js, limit: 65_535 # ~64KB limit
+      t.jsonb :metadata # For any additional properties
 
       t.timestamps
     end

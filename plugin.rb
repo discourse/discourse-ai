@@ -50,7 +50,6 @@ Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::Discours
 require_relative "lib/engine"
 
 after_initialize do
-
   if defined?(Rack::MiniProfiler)
     Rack::MiniProfiler.config.skip_paths << "/discourse-ai/ai-bot/artifacts"
   end

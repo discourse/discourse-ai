@@ -92,7 +92,8 @@ module DiscourseAi
           css = parameters[:css].to_s
           js = parameters[:js].to_s
 
-          artifact_div = "<div class=\"ai-artifact\" data-ai-artifact-id=#{artifact.id}></div>" if artifact
+          artifact_div =
+            "<div class=\"ai-artifact\" data-ai-artifact-id=#{artifact.id}></div>" if artifact
 
           content = []
 
