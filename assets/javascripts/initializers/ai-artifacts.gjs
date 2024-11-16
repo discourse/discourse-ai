@@ -8,13 +8,17 @@ function initializeAiArtifacts(api) {
         return;
       }
 
-      [...element.querySelectorAll("div.ai-artifact")].forEach((artifactElement) => {
-        const artifactId = artifactElement.getAttribute("data-ai-artifact-id");
+      [...element.querySelectorAll("div.ai-artifact")].forEach(
+        (artifactElement) => {
+          const artifactId = artifactElement.getAttribute(
+            "data-ai-artifact-id"
+          );
 
-         helper.renderGlimmer(artifactElement, <template>
+          helper.renderGlimmer(artifactElement, <template>
             <AiArtifact @artifactId={{artifactId}} />
           </template>);
-      });
+        }
+      );
     },
     {
       id: "ai-artifact",

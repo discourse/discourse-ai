@@ -49,10 +49,10 @@ export default class AiArtifactComponent extends Component {
   @action
   artifactPanelHover() {
     // retrrigger animation
-    const panel = document.querySelector('.ai-artifact__panel');
-    panel.style.animation = 'none'; // Stop the animation
+    const panel = document.querySelector(".ai-artifact__panel");
+    panel.style.animation = "none"; // Stop the animation
     setTimeout(() => {
-        panel.style.animation = ''; // Re-trigger the animation by removing the none style
+      panel.style.animation = ""; // Re-trigger the animation by removing the none style
     }, 0);
   }
 
