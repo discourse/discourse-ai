@@ -27,6 +27,9 @@ class LlmModel < ActiveRecord::Base
       open_ai: {
         organization: :text,
       },
+      google: {
+        disable_native_tools: :checkbox,
+      },
       hugging_face: {
         disable_system_prompt: :checkbox,
       },

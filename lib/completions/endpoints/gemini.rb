@@ -58,7 +58,9 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
-          tools = dialect.tools
+          @native_tool_support = dialect.native_tool_support?
+
+          tools = dialect.tools if @native_tool_support
 
           payload = default_options.merge(contents: prompt[:messages])
           payload[:systemInstruction] = {
@@ -222,7 +224,7 @@ module DiscourseAi
         end
 
         def xml_tools_enabled?
-          false
+          !@native_tool_support
         end
       end
     end
