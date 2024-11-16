@@ -86,9 +86,8 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
   end
 
   it "is usable for simple single message mode" do
-    xml = (<<~XML).strip
-      hello
-      <function_calls>
+    xml = (<<~XML)
+       world <function_calls>
       <invoke>
       <tool_name>hello</tool_name>
       <parameters>
@@ -99,6 +98,7 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
     XML
 
     result = []
+    result << (processor << "hello")
     result << (processor << xml)
     result << (processor.finish)
 
@@ -111,7 +111,7 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
           test: "value",
         },
       )
-    expect(result).to eq([["hello"], [tool_call]])
+    expect(result).to eq([["hello"], [" world"], [tool_call]])
     expect(processor.should_cancel?).to eq(false)
   end
 

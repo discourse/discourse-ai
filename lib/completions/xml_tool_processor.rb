@@ -30,7 +30,7 @@ module DiscourseAi
           if @in_tool
             @function_buffer = @buffer[index..-1]
             text_index = text.rindex("<function_calls>")
-            result << text[0..text_index - 1].strip if text_index && text_index > 0
+            result << text[0..text_index - 1].rstrip if text_index && text_index > 0
           end
         else
           add_to_function_buffer(text)
