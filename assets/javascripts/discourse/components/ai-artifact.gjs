@@ -2,12 +2,15 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import htmlClass from "discourse/helpers/html-class";
 import getURL from "discourse-common/lib/get-url";
 
 export default class AiArtifactComponent extends Component {
+  @service siteSettings;
   @tracked expanded = false;
+  @tracked showingArtifact = false;
 
   constructor() {
     super(...arguments);
@@ -26,8 +29,20 @@ export default class AiArtifactComponent extends Component {
     }
   }
 
+  get requireClickToRun() {
+    if (this.showingArtifact) {
+      return false;
+    }
+    return this.siteSettings.ai_artifact_security === "strict";
+  }
+
   get artifactUrl() {
     return getURL(`/discourse-ai/ai-bot/artifacts/${this.args.artifactId}`);
+  }
+
+  @action
+  showArtifact() {
+    this.showingArtifact = true;
   }
 
   @action
@@ -74,21 +89,34 @@ export default class AiArtifactComponent extends Component {
           />
         </div>
       </div>
-      <iframe
-        title="AI Artifact"
-        src={{this.artifactUrl}}
-        width="100%"
-        frameborder="0"
-        sandbox="allow-scripts allow-forms"
-      ></iframe>
-      <div class="ai-artifact__footer">
-        <DButton
-          class="btn-flat btn-icon-text ai-artifact__expand-button"
-          @icon="discourse-expand"
-          @label="discourse_ai.ai_artifact.expand_view_label"
-          @action={{this.toggleView}}
-        />
-      </div>
+      {{#if this.requireClickToRun}}
+        <div class="ai-artifact__click-to-run">
+          <DButton
+            class="btn btn-primary"
+            @icon="play"
+            @label="discourse_ai.ai_artifact.click_to_run_label"
+            @action={{this.showArtifact}}
+          />
+        </div>
+      {{else}}
+        <iframe
+          title="AI Artifact"
+          src={{this.artifactUrl}}
+          width="100%"
+          frameborder="0"
+          sandbox="allow-scripts allow-forms"
+        ></iframe>
+      {{/if}}
+      {{#unless this.requireClickToRun}}
+        <div class="ai-artifact__footer">
+          <DButton
+            class="btn-flat btn-icon-text ai-artifact__expand-button"
+            @icon="discourse-expand"
+            @label="discourse_ai.ai_artifact.expand_view_label"
+            @action={{this.toggleView}}
+          />
+        </div>
+      {{/unless}}
     </div>
   </template>
 }

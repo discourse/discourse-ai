@@ -3,6 +3,7 @@ discourse_ai:
     default: true
     client: true
   ai_artifact_security:
+    client: true
     type: enum
     default: "strict"
     choices:

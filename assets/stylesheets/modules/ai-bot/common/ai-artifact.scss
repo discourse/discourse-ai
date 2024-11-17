@@ -7,12 +7,15 @@
   padding-bottom: 2em;
 }
 
-.ai-artifact__panel {
-  display: none;
+.ai-artifact__click-to-run {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
-.ai-artifact__expand-button {
-  //transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.ai-artifact__panel {
+  display: none;
 }
 
 html.ai-artifact-expanded {

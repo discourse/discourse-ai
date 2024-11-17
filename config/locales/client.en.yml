@@ -402,6 +402,7 @@ en:
       ai_artifact:
         expand_view_label: "Expand view"
         collapse_view_label: "Exit Fullscreen (ESC)"
+        click_to_run_label: "Run Artifact"
 
       ai_bot:
         pm_warning: "AI chatbot messages are monitored regularly by moderators."
