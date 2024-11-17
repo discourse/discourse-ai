@@ -36,6 +36,7 @@ module DiscourseAi
           partial_tool_calls: false,
           &blk
         )
+          @disable_native_tools = dialect.disable_native_tools?
           if dialect.respond_to?(:is_gpt_o?) && dialect.is_gpt_o? && block_given?
             # we need to disable streaming and simulate it
             blk.call "", lambda { |*| }
@@ -69,10 +70,17 @@ module DiscourseAi
             # We'll fallback to guess this using the tokenizer.
             payload[:stream_options] = { include_usage: true } if llm_model.provider == "open_ai"
           end
-          if dialect.tools.present?
-            payload[:tools] = dialect.tools
-            if dialect.tool_choice.present?
-              payload[:tool_choice] = { type: "function", function: { name: dialect.tool_choice } }
+          if !xml_tools_enabled?
+            if dialect.tools.present?
+              payload[:tools] = dialect.tools
+              if dialect.tool_choice.present?
+                payload[:tool_choice] = {
+                  type: "function",
+                  function: {
+                    name: dialect.tool_choice,
+                  },
+                }
+              end
             end
           end
           payload
@@ -121,7 +129,7 @@ module DiscourseAi
         end
 
         def xml_tools_enabled?
-          false
+          !!@disable_native_tools
         end
 
         private

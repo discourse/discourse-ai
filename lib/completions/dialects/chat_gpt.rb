@@ -44,17 +44,31 @@ module DiscourseAi
           llm_model.provider == "open_ai" && llm_model.name.include?("o1-")
         end
 
+        def disable_native_tools?
+          return @disable_native_tools if defined?(@disable_native_tools)
+          !!@disable_native_tools = llm_model.lookup_custom_param("disable_native_tools")
+        end
+
         private
 
         def tools_dialect
-          @tools_dialect ||= DiscourseAi::Completions::Dialects::OpenAiTools.new(prompt.tools)
+          if disable_native_tools?
+            super
+          else
+            @tools_dialect ||= DiscourseAi::Completions::Dialects::OpenAiTools.new(prompt.tools)
+          end
         end
 
         def system_msg(msg)
+          content = msg[:content]
+          if disable_native_tools? && tools_dialect.instructions.present?
+            content = content + "\n\n" + tools_dialect.instructions
+          end
+
           if is_gpt_o?
-            { role: "user", content: msg[:content] }
+            { role: "user", content: content }
           else
-            { role: "system", content: msg[:content] }
+            { role: "system", content: content }
           end
         end
 
@@ -63,11 +77,19 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          tools_dialect.from_raw_tool_call(msg)
+          if disable_native_tools?
+            super
+          else
+            tools_dialect.from_raw_tool_call(msg)
+          end
         end
 
         def tool_msg(msg)
-          tools_dialect.from_raw_tool(msg)
+          if disable_native_tools?
+            super
+          else
+            tools_dialect.from_raw_tool(msg)
+          end
         end
 
         def user_msg(msg)

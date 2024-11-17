@@ -53,11 +53,10 @@ class OpenAiMock < EndpointMock
     }.to_json
   end
 
-  def stub_raw(chunks)
-    WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
-      status: 200,
-      body: chunks,
-    )
+  def stub_raw(chunks, body_blk: nil)
+    stub = WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions")
+    stub.with(body: body_blk) if body_blk
+    stub.to_return(status: 200, body: chunks)
   end
 
   def stub_streamed_response(prompt, deltas, tool_call: false)
@@ -391,6 +390,59 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   end
 
   describe "#perform_completion!" do
+    context "when using XML tool calls format" do
+      let(:xml_tool_call_response) { <<~XML }
+        <function_calls>
+        <invoke>
+        <tool_name>get_weather</tool_name>
+        <parameters>
+        <location>Sydney</location>
+        <unit>c</unit>
+        </parameters>
+        </invoke>
+        </function_calls>
+      XML
+
+      it "parses XML tool calls" do
+        response = {
+          id: "chatcmpl-6sZfAb30Rnv9Q7ufzFwvQsMpjZh8S",
+          object: "chat.completion",
+          created: 1_678_464_820,
+          model: "gpt-3.5-turbo-0301",
+          usage: {
+            prompt_tokens: 8,
+            completion_tokens: 13,
+            total_tokens: 499,
+          },
+          choices: [
+            {
+              message: {
+                role: "assistant",
+                content: xml_tool_call_response,
+              },
+              finish_reason: "stop",
+              index: 0,
+            },
+          ],
+        }.to_json
+
+        endpoint.llm_model.update!(provider_params: { disable_native_tools: true })
+        body = nil
+        open_ai_mock.stub_raw(response, body_blk: proc { |inner_body| body = inner_body })
+
+        dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+        tool_call = endpoint.perform_completion!(dialect, user)
+
+        body_parsed = JSON.parse(body, symbolize_names: true)
+        expect(body_parsed[:tools]).to eq(nil)
+
+        expect(body_parsed[:messages][0][:content]).to include("<function_calls>")
+
+        expect(tool_call.name).to eq("get_weather")
+        expect(tool_call.parameters).to eq({ location: "Sydney", unit: "c" })
+      end
+    end
+
     context "when using regular mode" do
       context "with simple prompts" do
         it "completes a trivial prompt and logs the response" do
