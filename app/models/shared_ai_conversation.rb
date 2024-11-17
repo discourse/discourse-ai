@@ -183,16 +183,18 @@ class SharedAiConversation < ActiveRecord::Base
 
   def self.cook_artifacts(post)
     html = post.cooked
-    return html if !["lax", "strict"].include?(SiteSetting.ai_artifact_security)
+    return html if !%w[lax strict].include?(SiteSetting.ai_artifact_security)
 
     doc = Nokogiri::HTML5.fragment(html)
-    doc.css("div.ai-artifact").each do |node|
-      id = node["data-ai-artifact-id"].to_i
-      if id > 0
-        AiArtifact.share_publicly(id: id, post: post)
-        node.replace(AiArtifact.iframe_for(id))
+    doc
+      .css("div.ai-artifact")
+      .each do |node|
+        id = node["data-ai-artifact-id"].to_i
+        if id > 0
+          AiArtifact.share_publicly(id: id, post: post)
+          node.replace(AiArtifact.iframe_for(id))
+        end
       end
-    end
 
     doc.to_s
   end

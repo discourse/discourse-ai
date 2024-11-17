@@ -16,9 +16,7 @@ class AiArtifact < ActiveRecord::Base
 
   def self.share_publicly(id:, post:)
     artifact = AiArtifact.find_by(id: id)
-    if artifact&.post&.topic&.id == post.topic.id
-      artifact.update!(metadata: { public: true })
-    end
+    artifact.update!(metadata: { public: true }) if artifact&.post&.topic&.id == post.topic.id
   end
 
   def self.unshare_publicly(id:)

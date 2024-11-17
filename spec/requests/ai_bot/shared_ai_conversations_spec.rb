@@ -87,26 +87,26 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
       end
 
       context "when ai artifacts are in lax mode" do
-        before do
-          SiteSetting.ai_artifact_security = "lax"
-        end
+        before { SiteSetting.ai_artifact_security = "lax" }
 
         it "properly shares artifacts" do
           first_post = user_pm_share.posts.first
 
-          artifact_not_allowed = AiArtifact.create!(
-            user: bot_user,
-            post: Fabricate(:private_message_post),
-            name: "test",
-            html: "<div>test</div>",
-          )
+          artifact_not_allowed =
+            AiArtifact.create!(
+              user: bot_user,
+              post: Fabricate(:private_message_post),
+              name: "test",
+              html: "<div>test</div>",
+            )
 
-          artifact = AiArtifact.create!(
-            user: bot_user,
-            post: first_post,
-            name: "test",
-            html: "<div>test</div>",
-          )
+          artifact =
+            AiArtifact.create!(
+              user: bot_user,
+              post: first_post,
+              name: "test",
+              html: "<div>test</div>",
+            )
 
           # lets log out and see we can not access the artifacts
           delete "/session/#{user.id}"
@@ -133,7 +133,6 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
 
           get "#{path}/#{key}"
           expect(response).to have_http_status(:success)
-
 
           expect(response.body).to include(artifact.url)
           expect(response.body).to include(artifact_not_allowed.url)
