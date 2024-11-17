@@ -2,7 +2,13 @@ discourse_ai:
   discourse_ai_enabled:
     default: true
     client: true
-
+  ai_artifact_security:
+    type: enum
+    default: "strict"
+    choices:
+      - "disabled"
+      - "lax"
+      - "strict"
   ai_toxicity_enabled:
     default: false
     client: true

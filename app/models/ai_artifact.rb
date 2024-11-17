@@ -3,6 +3,32 @@
 class AiArtifact < ActiveRecord::Base
   belongs_to :user
   belongs_to :post
+
+  def self.iframe_for(id)
+    <<~HTML
+      <iframe sandbox="allow-scripts allow-forms" height="600px" src='#{url(id)}' frameborder="0" width="100%"></iframe>
+    HTML
+  end
+
+  def self.url(id)
+    Discourse.base_url + "/discourse-ai/ai-bot/artifacts/#{id}"
+  end
+
+  def self.share_publicly(id:, post:)
+    artifact = AiArtifact.find_by(id: id)
+    if artifact&.post&.topic&.id == post.topic.id
+      artifact.update!(metadata: { public: true })
+    end
+  end
+
+  def self.unshare_publicly(id:)
+    artifact = AiArtifact.find_by(id: id)
+    artifact&.update!(metadata: { public: false })
+  end
+
+  def url
+    self.class.url(id)
+  end
 end
 
 # == Schema Information
