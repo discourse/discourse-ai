@@ -96,29 +96,6 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
   end
 
   it "enforces enums" do
-    xml = <<~XML
-      <function_calls>
-        <invoke>
-        <tool_name>search</tool_name>
-        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
-        <parameters>
-        <max_posts>"3.2"</max_posts>
-        <status>cow</status>
-        <foo>bar</foo>
-        </parameters>
-        </invoke>
-        <invoke>
-        <tool_name>search</tool_name>
-        <tool_id>call_JtYQMful5QKqw97XFsHzPweB</tool_id>
-        <parameters>
-        <max_posts>"3.2"</max_posts>
-        <status>open</status>
-        <foo>bar</foo>
-        </parameters>
-        </invoke>
-      </function_calls>
-    XML
-
     tool_call =
       DiscourseAi::Completions::ToolCall.new(
         name: "search",
@@ -270,12 +247,14 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           DiscourseAi::AiBot::Personas::Researcher,
           DiscourseAi::AiBot::Personas::SettingsExplorer,
           DiscourseAi::AiBot::Personas::SqlHelper,
+          DiscourseAi::AiBot::Personas::WebArtifactCreator,
         ],
       )
 
       # omits personas if key is missing
       SiteSetting.ai_stability_api_key = ""
       SiteSetting.ai_google_custom_search_api_key = ""
+      SiteSetting.ai_artifact_security = "disabled"
 
       expect(DiscourseAi::AiBot::Personas::Persona.all(user: user)).to contain_exactly(
         DiscourseAi::AiBot::Personas::General,
