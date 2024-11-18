@@ -44,6 +44,7 @@ module DiscourseAi
               Personas::DallE3 => -7,
               Personas::DiscourseHelper => -8,
               Personas::GithubHelper => -9,
+              Personas::WebArtifactCreator => -10,
             }
           end
 
@@ -96,9 +97,9 @@ module DiscourseAi
               Tools::GithubSearchFiles,
               Tools::WebBrowser,
               Tools::JavascriptEvaluator,
-              Tools::CreateArtifact,
             ]
 
+            tools << Tools::CreateArtifact if SiteSetting.ai_artifact_security.in?(%w[lax strict])
             tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
 
             tools << Tools::ListTags if SiteSetting.tagging_enabled

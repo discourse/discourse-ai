@@ -200,6 +200,9 @@ en:
         discourse_helper:
           name: "Discourse Helper"
           description: "AI Bot specialized in helping with Discourse related tasks"
+        web_artifact_creator:
+          name: "Web Artifact Creator"
+          description: "AI Bot specialized in creating interactive web artifacts"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
