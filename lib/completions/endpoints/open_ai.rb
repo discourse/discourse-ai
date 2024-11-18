@@ -27,28 +27,6 @@ module DiscourseAi
           AiApiAuditLog::Provider::OpenAI
         end
 
-        def perform_completion!(
-          dialect,
-          user,
-          model_params = {},
-          feature_name: nil,
-          feature_context: nil,
-          partial_tool_calls: false,
-          &blk
-        )
-          @disable_native_tools = dialect.disable_native_tools?
-          if dialect.respond_to?(:is_gpt_o?) && dialect.is_gpt_o? && block_given?
-            # we need to disable streaming and simulate it
-            blk.call "", lambda { |*| }
-            response = super(dialect, user, model_params, feature_name: feature_name, &nil)
-
-            response = [response] if !response.is_a?(Array)
-            response.each { |item| blk.call item, lambda { |*| } }
-          else
-            super
-          end
-        end
-
         private
 
         def model_uri
