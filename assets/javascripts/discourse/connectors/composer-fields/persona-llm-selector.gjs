@@ -2,7 +2,7 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { hash } from "@ember/helper";
 import { next } from "@ember/runloop";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import KeyValueStore from "discourse/lib/key-value-store";
 import DropdownSelectBox from "select-kit/components/dropdown-select-box";
 

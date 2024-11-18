@@ -7,7 +7,7 @@ import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
 import Textarea from "discourse/components/d-textarea";

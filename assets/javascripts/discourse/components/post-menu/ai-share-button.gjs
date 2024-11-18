@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { isPostFromAiBot } from "../../lib/ai-bot-helper";
 import copyConversation from "../../lib/copy-conversation";
