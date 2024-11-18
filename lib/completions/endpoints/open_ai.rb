@@ -27,6 +27,19 @@ module DiscourseAi
           AiApiAuditLog::Provider::OpenAI
         end
 
+        def perform_completion!(
+          dialect,
+          user,
+          model_params = {},
+          feature_name: nil,
+          feature_context: nil,
+          partial_tool_calls: false,
+          &blk
+        )
+          @disable_native_tools = dialect.disable_native_tools?
+          super
+        end
+
         private
 
         def model_uri

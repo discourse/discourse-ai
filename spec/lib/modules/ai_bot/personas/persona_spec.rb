@@ -46,6 +46,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     }
   end
 
+  fab!(:admin)
   fab!(:user)
   fab!(:upload)
 
@@ -247,6 +248,20 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           DiscourseAi::AiBot::Personas::Researcher,
           DiscourseAi::AiBot::Personas::SettingsExplorer,
           DiscourseAi::AiBot::Personas::SqlHelper,
+        ],
+      )
+
+      # it should allow staff access to WebArtifactCreator
+      expect(DiscourseAi::AiBot::Personas::Persona.all(user: admin)).to eq(
+        [
+          DiscourseAi::AiBot::Personas::General,
+          DiscourseAi::AiBot::Personas::Artist,
+          DiscourseAi::AiBot::Personas::Creative,
+          DiscourseAi::AiBot::Personas::DiscourseHelper,
+          DiscourseAi::AiBot::Personas::GithubHelper,
+          DiscourseAi::AiBot::Personas::Researcher,
+          DiscourseAi::AiBot::Personas::SettingsExplorer,
+          DiscourseAi::AiBot::Personas::SqlHelper,
           DiscourseAi::AiBot::Personas::WebArtifactCreator,
         ],
       )
@@ -256,7 +271,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       SiteSetting.ai_google_custom_search_api_key = ""
       SiteSetting.ai_artifact_security = "disabled"
 
-      expect(DiscourseAi::AiBot::Personas::Persona.all(user: user)).to contain_exactly(
+      expect(DiscourseAi::AiBot::Personas::Persona.all(user: admin)).to contain_exactly(
         DiscourseAi::AiBot::Personas::General,
         DiscourseAi::AiBot::Personas::SqlHelper,
         DiscourseAi::AiBot::Personas::SettingsExplorer,
