@@ -41,7 +41,9 @@ module DiscourseAi
             # we need to disable streaming and simulate it
             blk.call "", lambda { |*| }
             response = super(dialect, user, model_params, feature_name: feature_name, &nil)
-            blk.call response, lambda { |*| }
+
+            response = [response] if !response.is_a?(Array)
+            response.each { |item| blk.call item, lambda { |*| } }
           else
             super
           end
