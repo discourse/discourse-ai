@@ -165,7 +165,7 @@ en:
         saved: "Persona saved"
         enabled: "Enabled?"
         tools: "Enabled tools"
-        forced_tools: "Forced fools"
+        forced_tools: "Forced tools"
         allowed_groups: "Allowed groups"
         confirm_delete: "Are you sure you want to delete this persona?"
         new: "New persona"
