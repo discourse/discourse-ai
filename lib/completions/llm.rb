@@ -31,11 +31,7 @@ module DiscourseAi
                       tokens: 200_000,
                       display_name: "Claude 3.5 Sonnet",
                     },
-                    {
-                      name: "claude-3-5-haiku",
-                      tokens: 200_000,
-                      display_name: "Claude 3.5 Haiku",
-                    },
+                    { name: "claude-3-5-haiku", tokens: 200_000, display_name: "Claude 3.5 Haiku" },
                     { name: "claude-3-opus", tokens: 200_000, display_name: "Claude 3 Opus" },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::AnthropicTokenizer,
@@ -79,13 +75,21 @@ module DiscourseAi
                 {
                   id: "samba_nova",
                   models: [
-                    { name: "Meta-Llama-3.1-8B-Instruct", tokens: 16384, display_name: "Llama 3.1 8B" },
-                    { name: "Meta-Llama-3.1-70B-Instruct", tokens: 65536, display_name: "Llama 3.1 70B" },
+                    {
+                      name: "Meta-Llama-3.1-8B-Instruct",
+                      tokens: 16_384,
+                      display_name: "Llama 3.1 8B",
+                    },
+                    {
+                      name: "Meta-Llama-3.1-70B-Instruct",
+                      tokens: 65_536,
+                      display_name: "Llama 3.1 70B",
+                    },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::Llama3Tokenizer,
                   endpoint: "https://api.sambanova.ai/v1/chat/completions",
                   provider: "samba_nova",
-                }
+                },
               ]
             end
         end
