@@ -14,36 +14,32 @@ module DiscourseAi
         end
 
         def self.fetch_data
-          Discourse
-            .cache
-            .fetch("emotion_dashboard", expires_in: 5.minutes) do
-              DB.query(<<~SQL, start: Time.now.midnight, end: 60.days.ago.midnight)
-                SELECT
-                    posts.created_at::DATE + 540 AS day,
-                    #{
-                  DiscourseAi::Sentiment::Emotions::LIST
-                    .map do |emotion|
-                      "COUNT(*) FILTER (WHERE (classification_results.classification::jsonb->'#{emotion}')::float > 0.1) AS #{emotion}"
-                    end
-                    .join(",\n  ")
-                }
-                FROM
-                    classification_results
-                INNER JOIN
-                    posts ON posts.id = classification_results.target_id AND
-                    posts.deleted_at IS NULL AND
-                    posts.created_at BETWEEN :start AND :end
-                INNER JOIN
-                    topics ON topics.id = posts.topic_id AND
-                    topics.archetype = 'regular' AND
-                    topics.deleted_at IS NULL
-                WHERE
-                    classification_results.target_type = 'Post' AND
-                    classification_results.model_used = 'SamLowe/roberta-base-go_emotions'
-                GROUP BY 1
-                ORDER BY 1 ASC
-              SQL
-            end
+          DB.query(<<~SQL, end: Time.now.tomorrow.midnight, start: 60.days.ago.midnight)
+            SELECT
+              posts.created_at::DATE AS day,
+              #{
+              DiscourseAi::Sentiment::Emotions::LIST
+                .map do |emotion|
+                  "COUNT(*) FILTER (WHERE (classification_results.classification::jsonb->'#{emotion}')::float > 0.1) AS #{emotion}"
+                end
+                .join(",\n  ")
+            }
+            FROM
+                classification_results
+            INNER JOIN
+                posts ON posts.id = classification_results.target_id AND
+                posts.deleted_at IS NULL AND
+                posts.created_at BETWEEN :start AND :end
+            INNER JOIN
+                topics ON topics.id = posts.topic_id AND
+                topics.archetype = 'regular' AND
+                topics.deleted_at IS NULL
+            WHERE
+                classification_results.target_type = 'Post' AND
+                classification_results.model_used = 'SamLowe/roberta-base-go_emotions'
+            GROUP BY 1
+            ORDER BY 1 ASC
+          SQL
         end
       end
     end
