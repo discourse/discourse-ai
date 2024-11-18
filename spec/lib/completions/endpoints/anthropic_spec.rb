@@ -186,7 +186,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     expected_body = {
       model: "claude-3-opus-20240229",
-      max_tokens: 3000,
+      max_tokens: 4096,
       messages: [{ role: "user", content: "user1: hello" }],
       system: "You are hello bot",
       stream: true,
@@ -278,7 +278,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     request_body = {
       model: "claude-3-opus-20240229",
-      max_tokens: 3000,
+      max_tokens: 4096,
       messages: [
         {
           role: "user",
@@ -376,7 +376,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     expected_body = {
       model: "claude-3-opus-20240229",
-      max_tokens: 3000,
+      max_tokens: 4096,
       messages: [{ role: "user", content: "user1: hello" }],
       system: "You are hello bot",
     }

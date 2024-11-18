@@ -44,6 +44,7 @@ module DiscourseAi
               Personas::DallE3 => -7,
               Personas::DiscourseHelper => -8,
               Personas::GithubHelper => -9,
+              Personas::WebArtifactCreator => -10,
             }
           end
 
@@ -98,6 +99,7 @@ module DiscourseAi
               Tools::JavascriptEvaluator,
             ]
 
+            tools << Tools::CreateArtifact if SiteSetting.ai_artifact_security.in?(%w[lax strict])
             tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
 
             tools << Tools::ListTags if SiteSetting.tagging_enabled
@@ -199,14 +201,24 @@ module DiscourseAi
           prompt
         end
 
-        def find_tool(partial, bot_user:, llm:, context:)
+        def find_tool(partial, bot_user:, llm:, context:, existing_tools: [])
           return nil if !partial.is_a?(DiscourseAi::Completions::ToolCall)
-          tool_instance(partial, bot_user: bot_user, llm: llm, context: context)
+          tool_instance(
+            partial,
+            bot_user: bot_user,
+            llm: llm,
+            context: context,
+            existing_tools: existing_tools,
+          )
+        end
+
+        def allow_partial_tool_calls?
+          available_tools.any? { |tool| tool.allow_partial_tool_calls? }
         end
 
         protected
 
-        def tool_instance(tool_call, bot_user:, llm:, context:)
+        def tool_instance(tool_call, bot_user:, llm:, context:, existing_tools:)
           function_id = tool_call.id
           function_name = tool_call.name
           return nil if function_name.nil?
@@ -240,14 +252,22 @@ module DiscourseAi
             arguments[name.to_sym] = value if value
           end
 
-          tool_klass.new(
-            arguments,
-            tool_call_id: function_id || function_name,
-            persona_options: options[tool_klass].to_h,
-            bot_user: bot_user,
-            llm: llm,
-            context: context,
-          )
+          tool_instance =
+            existing_tools.find { |t| t.name == function_name && t.tool_call_id == function_id }
+
+          if tool_instance
+            tool_instance.parameters = arguments
+            tool_instance
+          else
+            tool_klass.new(
+              arguments,
+              tool_call_id: function_id || function_name,
+              persona_options: options[tool_klass].to_h,
+              bot_user: bot_user,
+              llm: llm,
+              context: context,
+            )
+          end
         end
 
         def strip_quotes(value)

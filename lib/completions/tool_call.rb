@@ -6,6 +6,10 @@ module DiscourseAi
       attr_reader :id, :name, :parameters
       attr_accessor :partial
 
+      def partial?
+        !!@partial
+      end
+
       def initialize(id:, name:, parameters: nil)
         @id = id
         @name = name

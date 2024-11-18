@@ -58,7 +58,9 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
-          tools = dialect.tools
+          @native_tool_support = dialect.native_tool_support?
+
+          tools = dialect.tools if @native_tool_support
 
           payload = default_options.merge(contents: prompt[:messages])
           payload[:systemInstruction] = {
@@ -144,6 +146,7 @@ module DiscourseAi
 
         def decode(chunk)
           json = JSON.parse(chunk, symbolize_names: true)
+
           idx = -1
           json
             .dig(:candidates, 0, :content, :parts)
@@ -168,30 +171,28 @@ module DiscourseAi
 
         def decode_chunk(chunk)
           @tool_index ||= -1
-
           streaming_decoder
             .decode(chunk)
             .map do |parsed|
               update_usage(parsed)
-              parsed
-                .dig(:candidates, 0, :content, :parts)
-                .map do |part|
-                  if part[:text]
-                    part = part[:text]
-                    if part != ""
-                      part
-                    else
-                      nil
-                    end
-                  elsif part[:functionCall]
-                    @tool_index += 1
-                    ToolCall.new(
-                      id: "tool_#{@tool_index}",
-                      name: part[:functionCall][:name],
-                      parameters: part[:functionCall][:args],
-                    )
+              parts = parsed.dig(:candidates, 0, :content, :parts)
+              parts&.map do |part|
+                if part[:text]
+                  part = part[:text]
+                  if part != ""
+                    part
+                  else
+                    nil
                   end
+                elsif part[:functionCall]
+                  @tool_index += 1
+                  ToolCall.new(
+                    id: "tool_#{@tool_index}",
+                    name: part[:functionCall][:name],
+                    parameters: part[:functionCall][:args],
+                  )
                 end
+              end
             end
             .flatten
             .compact
@@ -223,7 +224,7 @@ module DiscourseAi
         end
 
         def xml_tools_enabled?
-          false
+          !@native_tool_support
         end
       end
     end

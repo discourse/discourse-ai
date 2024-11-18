@@ -38,10 +38,14 @@ module DiscourseAi
           def custom_system_message
             nil
           end
+
+          def allow_partial_tool_calls?
+            false
+          end
         end
 
-        attr_accessor :custom_raw
-        attr_reader :tool_call_id, :persona_options, :bot_user, :llm, :context, :parameters
+        attr_accessor :custom_raw, :parameters
+        attr_reader :tool_call_id, :persona_options, :bot_user, :llm, :context
 
         def initialize(
           parameters,

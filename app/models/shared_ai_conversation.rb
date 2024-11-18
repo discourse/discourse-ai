@@ -34,6 +34,12 @@ class SharedAiConversation < ActiveRecord::Base
 
   def self.destroy_conversation(conversation)
     conversation.destroy
+
+    maybe_topic = conversation.target
+    if maybe_topic.is_a?(Topic)
+      AiArtifact.where(post: maybe_topic.posts).update_all(metadata: { public: false })
+    end
+
     ::Jobs.enqueue(
       :shared_conversation_adjust_upload_security,
       target_id: conversation.target_id,
@@ -165,7 +171,7 @@ class SharedAiConversation < ActiveRecord::Base
             id: post.id,
             user_id: post.user_id,
             created_at: post.created_at,
-            cooked: post.cooked,
+            cooked: cook_artifacts(post),
           }
 
           mapped[:persona] = persona if ai_bot_participant&.id == post.user_id
@@ -173,6 +179,24 @@ class SharedAiConversation < ActiveRecord::Base
           mapped
         end,
     }
+  end
+
+  def self.cook_artifacts(post)
+    html = post.cooked
+    return html if !%w[lax strict].include?(SiteSetting.ai_artifact_security)
+
+    doc = Nokogiri::HTML5.fragment(html)
+    doc
+      .css("div.ai-artifact")
+      .each do |node|
+        id = node["data-ai-artifact-id"].to_i
+        if id > 0
+          AiArtifact.share_publicly(id: id, post: post)
+          node.replace(AiArtifact.iframe_for(id))
+        end
+      end
+
+    doc.to_s
   end
 
   private

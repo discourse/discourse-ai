@@ -39,6 +39,8 @@ register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/ai-tools.scss"
 
+register_asset "stylesheets/modules/ai-bot/common/ai-artifact.scss"
+
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
 end
@@ -48,6 +50,10 @@ Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::Discours
 require_relative "lib/engine"
 
 after_initialize do
+  if defined?(Rack::MiniProfiler)
+    Rack::MiniProfiler.config.skip_paths << "/discourse-ai/ai-bot/artifacts"
+  end
+
   # do not autoload this cause we may have no namespace
   require_relative "discourse_automation/llm_triage"
   require_relative "discourse_automation/llm_report"

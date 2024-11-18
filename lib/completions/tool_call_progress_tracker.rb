@@ -16,7 +16,12 @@ module DiscourseAi
           @current_value = nil
         end
 
-        @parser.value { |v| tool_call.notify_progress(@current_key, v) if @current_key }
+        @parser.value do |v|
+          if @current_key
+            tool_call.notify_progress(@current_key, v)
+            @current_key = nil
+          end
+        end
       end
 
       def <<(json)
