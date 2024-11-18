@@ -5,7 +5,12 @@ DiscourseAi::AiBot::Personas::Persona.system_personas.each do |persona_class, id
   if !persona
     persona = AiPersona.new
     persona.id = id
-    persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
+    if persona_class == DiscourseAi::AiBot::Personas::WebArtifactCreator
+      # this is somewhat sensitive, so we default it to staff
+      persona.allowed_group_ids = [Group::AUTO_GROUPS[:staff]]
+    else
+      persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
+    end
     persona.enabled = true
     persona.priority = true if persona_class == DiscourseAi::AiBot::Personas::General
   end

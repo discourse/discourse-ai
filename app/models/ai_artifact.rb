@@ -3,6 +3,9 @@
 class AiArtifact < ActiveRecord::Base
   belongs_to :user
   belongs_to :post
+  validates :html, length: { maximum: 65_535 }
+  validates :css, length: { maximum: 65_535 }
+  validates :js, length: { maximum: 65_535 }
 
   def self.iframe_for(id)
     <<~HTML
