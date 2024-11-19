@@ -20,10 +20,13 @@ module DiscourseAi
         plugin.register_modifier(:topic_query_create_list_topics) do |topics, options|
           if Discourse.filters.include?(options[:filter]) && SiteSetting.ai_summarization_enabled &&
                SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0
-            topics.includes(:ai_summaries).where(
-              "ai_summaries.id IS NULL OR ai_summaries.summary_type = ?",
-              AiSummary.summary_types[:gist],
-            )
+            topics
+              .includes(:ai_summaries)
+              .where(
+                "ai_summaries.id IS NULL OR ai_summaries.summary_type = ?",
+                AiSummary.summary_types[:gist],
+              )
+              .references(:ai_summaries)
           else
             topics
           end

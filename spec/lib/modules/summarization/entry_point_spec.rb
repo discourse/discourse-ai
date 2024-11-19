@@ -86,6 +86,43 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
 
             expect(serialized[:ai_topic_gist]).to be_nil
           end
+
+          it "works when the topic has whispers" do
+            SiteSetting.whispers_allowed_groups = "#{Group::AUTO_GROUPS[:staff]}"
+            admin = Fabricate(:admin)
+            group.add(admin)
+            # We are testing a scenario where AR could get confused if we don't use `references`.
+
+            first = create_post(raw: "this is the first post", title: "super amazing title")
+
+            _whisper =
+              create_post(
+                topic_id: first.topic.id,
+                post_type: Post.types[:whisper],
+                raw: "this is a whispered reply",
+              )
+
+            Fabricate(:topic_ai_gist, target: first.topic)
+            topic_id = first.topic.id
+            TopicUser.update_last_read(admin, topic_id, first.post_number, 1, 1)
+            TopicUser.change(
+              admin.id,
+              topic_id,
+              notification_level: TopicUser.notification_levels[:tracking],
+            )
+
+            gist_topic = TopicQuery.new(admin).list_unread.topics.find { |t| t.id == topic_id }
+
+            serialized =
+              TopicListItemSerializer.new(
+                gist_topic,
+                scope: Guardian.new(admin),
+                root: false,
+                filter: :hot,
+              ).as_json
+
+            expect(serialized[:ai_topic_gist]).to be_present
+          end
         end
       end
     end
