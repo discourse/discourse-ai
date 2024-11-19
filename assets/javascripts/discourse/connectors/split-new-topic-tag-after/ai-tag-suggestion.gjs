@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import AiSplitTopicSuggester from "../../components/ai-split-topic-suggester";
 import { showPostAIHelper } from "../../lib/show-ai-helper";
 
