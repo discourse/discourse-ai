@@ -26,6 +26,22 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     Aws::EventStream::Encoder.new.encode(aws_message)
   end
 
+  it "should provide accurate max token count" do
+    prompt = DiscourseAi::Completions::Prompt.new("hello")
+    dialect = DiscourseAi::Completions::Dialects::Claude.new(prompt, model)
+    endpoint = DiscourseAi::Completions::Endpoints::AwsBedrock.new(model)
+
+    model.name = "claude-2"
+    expect(endpoint.default_options(dialect)[:max_tokens]).to eq(4096)
+
+    model.name = "claude-3-5-sonnet"
+    expect(endpoint.default_options(dialect)[:max_tokens]).to eq(8192)
+
+    model.name = "claude-3-5-haiku"
+    options = endpoint.default_options(dialect)
+    expect(options[:max_tokens]).to eq(8192)
+  end
+
   describe "function calling" do
     it "supports old school xml function calls" do
       model.provider_params["disable_native_tools"] = true
@@ -246,7 +262,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         expect(response).to eq(expected_response)
 
         expected = {
-          "max_tokens" => 3000,
+          "max_tokens" => 4096,
           "anthropic_version" => "bedrock-2023-05-31",
           "messages" => [{ "role" => "user", "content" => "what is the weather in sydney" }],
           "tools" => [
@@ -305,7 +321,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       expect(request.headers["X-Amz-Content-Sha256"]).to be_present
 
       expected = {
-        "max_tokens" => 3000,
+        "max_tokens" => 4096,
         "anthropic_version" => "bedrock-2023-05-31",
         "messages" => [{ "role" => "user", "content" => "hello world" }],
         "system" => "You are a helpful bot",
@@ -354,7 +370,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         expect(request.headers["X-Amz-Content-Sha256"]).to be_present
 
         expected = {
-          "max_tokens" => 3000,
+          "max_tokens" => 4096,
           "anthropic_version" => "bedrock-2023-05-31",
           "messages" => [{ "role" => "user", "content" => "hello world" }],
           "system" => "You are a helpful bot",
