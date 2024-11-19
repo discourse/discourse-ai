@@ -4,33 +4,41 @@ import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import DropdownMenu from "discourse/components/dropdown-menu";
+import bodyClass from "discourse/helpers/body-class";
 import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import DMenu from "float-kit/components/d-menu";
+import eq from "truth-helpers/helpers/eq";
 
 export default class AiGistToggle extends Component {
-  @service router;
-  @service gistPreference;
-
-  get shouldShow() {
-    return this.router.currentRoute.attributes?.list?.topics?.some(
-      (topic) => topic.ai_topic_gist
-    );
-  }
+  @service gists;
 
   get buttons() {
     return [
       {
-        id: "gists_enabled",
-        label: "discourse_ai.summarization.gists_enabled_long",
-        icon: "discourse-sparkles",
+        id: "table",
+        label: "discourse_ai.summarization.topic_list_layout.button.compact",
+        icon: "discourse-table",
       },
       {
-        id: "gists_disabled",
-        label: "discourse_ai.summarization.gists_disabled",
-        icon: "far-eye-slash",
+        id: "table-ai",
+        label: "discourse_ai.summarization.topic_list_layout.button.expanded",
+        icon: "discourse-table-sparkles",
+        description:
+          "discourse_ai.summarization.topic_list_layout.button.expanded_description",
       },
     ];
+  }
+
+  get selectedOptionId() {
+    return this.gists.get("preference");
+  }
+
+  get currentButton() {
+    const buttonPreference = this.buttons.find(
+      (button) => button.id === this.selectedOptionId
+    );
+    return buttonPreference || this.buttons[0];
   }
 
   @action
@@ -40,29 +48,22 @@ export default class AiGistToggle extends Component {
 
   @action
   onSelect(optionId) {
-    this.gistPreference.setPreference(optionId);
+    this.gists.setPreference(optionId);
     this.dMenu.close();
   }
 
   <template>
-    {{#if this.shouldShow}}
-
+    {{#if this.gists.shouldShow}}
+      {{bodyClass (concat "topic-list-layout-" this.gists.preference)}}
       <DMenu
         @modalForMobile={{true}}
         @autofocus={{true}}
-        @identifier="ai-gists-dropdown"
+        @identifier="topic-list-layout"
         @onRegisterApi={{this.onRegisterApi}}
-        @triggerClass="btn-transparent"
+        @triggerClass="btn-default btn-icon"
       >
         <:trigger>
-          <span class="d-button-label">
-            {{i18n
-              (concat
-                "discourse_ai.summarization." this.gistPreference.preference
-              )
-            }}
-          </span>
-          {{icon "angle-down"}}
+          {{icon this.currentButton.icon}}
         </:trigger>
         <:content>
           <DropdownMenu as |dropdown|>
@@ -71,9 +72,17 @@ export default class AiGistToggle extends Component {
                 <DButton
                   @label={{button.label}}
                   @icon={{button.icon}}
-                  class="btn-transparent"
+                  class="btn-transparent
+                    {{if button.description '--with-description'}}
+                    {{if (eq this.currentButton.id button.id) '--active'}}"
                   @action={{fn this.onSelect button.id}}
-                />
+                >
+                  {{#if button.description}}
+                    <div class="btn__description">
+                      {{i18n button.description}}
+                    </div>
+                  {{/if}}
+                </DButton>
               </dropdown.item>
             {{/each}}
           </DropdownMenu>

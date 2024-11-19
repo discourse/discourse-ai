@@ -481,9 +481,11 @@ en:
         topic:
           title: "Topic summary"
           close: "Close summary panel"
-        gists_enabled: "with summary"
-        gists_enabled_long: "with AI-generated summary"
-        gists_disabled: "without summary"
+        topic_list_layout:
+          button:
+            compact: "Compact"
+            expanded: "Expanded"
+            expanded_description: "with AI summaries"
     review:
       types:
         reviewable_ai_post:
