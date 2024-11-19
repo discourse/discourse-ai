@@ -32,14 +32,14 @@ ug:
       modals:
         select_option: "تاللانما تاللىنىدۇ..."
       ai_persona:
-        back: كەينى
-        name: ئىسمى
-        edit: تەھرىر
-        description: چۈشەندۈرۈش
+        back: "كەينى"
+        name: "ئىسمى"
+        edit: "تەھرىر"
+        description: "چۈشەندۈرۈش"
         user: ئىشلەتكۈچى
-        save: ساقلا
+        save: "ساقلا"
         enabled: "قوزغىتىلدى؟"
-        delete: ئۆچۈر
+        delete: "ئۆچۈر"
       rag:
         uploads:
           title: "يۈكلەنمە"
@@ -53,22 +53,20 @@ ug:
         save: "ساقلا"
         parameter_required: "زۆرۈر"
         edit: "تەھرىر"
-        test: "سىناقنى ئىجرا قىل"
         delete: "ئۆچۈر"
         next:
           title: "كېيىنكى"
-        test_modal:
-          run: "سىناقنى ئىجرا قىل"
       llms:
         display_name: "ئىسمى"
         save: "ساقلا"
         edit: "تەھرىر"
         back: "كەينى"
         delete: ئۆچۈر
+        usage:
+          ai_summarization: "خۇلاسە"
         next:
           title: "كېيىنكى"
         tests:
-          title: "سىناقنى ئىجرا قىل"
           success: "مۇۋەپپەقىيەتلىك!"
         providers:
           google: "Google"

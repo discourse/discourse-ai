@@ -30,14 +30,14 @@ nb_NO:
       modals:
         select_option: "Velg et alternativ..."
       ai_persona:
-        back: Forrige
-        name: Navn
-        edit: Endre
-        description: Beskrivelse
+        back: "Forrige"
+        name: "Navn"
+        edit: "Endre"
+        description: "Beskrivelse"
         user: Bruker
-        save: Lagre
+        save: "Lagre"
         enabled: "Aktivert?"
-        delete: Slett
+        delete: "Slett"
       rag:
         uploads:
           title: "Opplastinger"
@@ -50,22 +50,20 @@ nb_NO:
         save: "Lagre"
         parameter_required: "Påkrevd"
         edit: "Endre"
-        test: "Kjør test"
         delete: "Slett"
         next:
           title: "Neste"
-        test_modal:
-          run: "Kjør test"
       llms:
         display_name: "Navn"
         save: "Lagre"
         edit: "Endre"
         back: "Forrige"
         delete: Slett
+        usage:
+          ai_summarization: "Oppsummer"
         next:
           title: "Neste"
         tests:
-          title: "Kjør test"
           success: "Suksess!"
         providers:
           google: "Google"

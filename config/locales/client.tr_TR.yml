@@ -23,7 +23,6 @@ tr_TR:
               description: "Raporu alacak kullanıcılar (e-postalara doğrudan e-posta gönderilecek, kullanıcı adlarına kişisel mesaj gönderilecek)"
             topic_id:
               label: "Konu kimliği"
-              description: "Raporun gönderileceği konu kimliği"
             title:
               label: "Başlık"
               description: "Raporun başlığı"
@@ -41,7 +40,6 @@ tr_TR:
               description: "Rapor için örneklenecek gönderi sayısı"
             tokens_per_post:
               label: "Gönderi başına token"
-              description: "Gönderi başına kullanılacak llm token sayısı"
             model:
               label: "Model"
               description: "Rapor oluşturmak için kullanılacak LLM"
@@ -71,7 +69,6 @@ tr_TR:
               description: "Raporda bu gruptan gelen içeriği önceliklendirin"
             temperature:
               label: "Sıcaklık"
-              description: "LLM için kullanılacak sıcaklık, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için 0)"
             top_p:
               label: "Üst P"
               description: "LLM için kullanılacak en iyi P, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için 0)"
@@ -82,7 +79,6 @@ tr_TR:
               description: "Triyaj için kullanılacak istem, eylemi tetiklemek için kullanabileceğiniz tek bir kelime ile yanıt verdiğinden emin olun"
             search_for_text:
               label: "Metin ara"
-              description: "llm yanıtında aşağıdaki metin görünürse bu eylemleri uygulayın"
             category:
               label: "Kategori"
               description: "Konuya uygulanacak kategori"
@@ -91,13 +87,11 @@ tr_TR:
               description: "Konuya uygulanacak etiketler"
             canned_reply:
               label: "Yanıtla"
-              description: "Konuyla ilgili gönderiye verilen hazır yanıtın ham metni"
             canned_reply_user:
               label: "Kullanıcıyı yanıtla"
               description: "Hazır yanıtı gönderecek kullanıcının kullanıcı adı"
             hide_topic:
               label: "Konuyu gizle"
-              description: "Tetiklenirse konuyu herkese görünmez hale getirin"
             model:
               label: "Model"
               description: "Triyaj için kullanılan dil modeli"
@@ -106,73 +100,41 @@ tr_TR:
       modals:
         select_option: "Seçenek belirleyin..."
       ai_persona:
-        back: Geri
-        name: Ad
-        edit: Düzenle
-        description: Açıklama
+        back: "Geri"
+        name: "Ad"
+        edit: "Düzenle"
+        description: "Açıklama"
         no_llm_selected: "Dil modeli seçilmedi"
-        max_context_posts: "Maksimum Bağlam Gönderileri"
         max_context_posts_help: "Bir kullanıcıya yanıt verirken YZ için bağlam olarak kullanılacak maksimum gönderi sayısı. (varsayılan için boş)"
-        vision_enabled: Vizyon Etkin
+        vision_enabled: Vizyon etkin
         vision_enabled_help: Etkinleştirilirse YZ, kullanıcıların konuya gönderdiği görüntüleri anlamaya çalışır; bu, vizyonu destekleyen kullanılan modele bağlıdır. Anthropic, Google ve OpenAI'ın en son modelleri tarafından desteklenir.
         vision_max_pixels: Desteklenen görüntü boyutu
-        vision_max_pixel_sizes:
-          low: Düşük Kalite - en ucuz (256x256)
-          medium: Orta Kalite (512x512)
-          high: Yüksek Kalite - en yavaş (1024x1024)
-        tool_details: Araç Detaylarını göster
         tool_details_help: Son kullanıcılara dil modelinin hangi araçları tetiklediğine ilişkin ayrıntıları gösterir.
-        mentionable: Bahsetmelere izin ver
         mentionable_help: Etkinleştirilirse izin verilen gruplardaki kullanıcılar gönderilerde bu kullanıcıdan bahsedebilir, YZ bu kişi olarak yanıt verir.
         user: Kullanıcı
-        create_user: Kullanıcı oluştur
         create_user_help: İsteğe bağlı olarak bu kişiye bir kullanıcı ekleyebilirsiniz. Bunu yaparsanız YZ isteklere yanıt vermek için bu kullanıcıyı kullanır.
-        default_llm: Varsayılan Dil Modeli
         default_llm_help: Bu kişi için kullanılacak varsayılan dil modeli. Herkese açık gönderilerde kişiden bahsetmek istiyorsanız gereklidir.
         question_consolidator_llm: Soru Konsolidatörü için Dil Modeli
         question_consolidator_llm_help: Soru birleştirici için kullanılacak dil modeli, maliyetten tasarruf etmek için daha az güçlü bir model seçebilirsiniz.
-        system_prompt: Sistem İstemi
-        save: Kaydet
-        saved: YZ Kişiliği Kaydedildi
+        save: "Kaydet"
         enabled: "Etkin mi?"
-        tools: Etkinleştirilmiş Araçlar
-        allowed_groups: İzin Verilen Gruplar
-        confirm_delete: Bu kişiliği silmek istediğinizden emin misiniz?
-        new: "Yeni Kişi"
-        title: "YZ Kişilikleri"
+        allowed_groups: "İzin verilen gruplar"
+        confirm_delete: "Bu kişiliği silmek istediğinizden emin misiniz?"
+        title: "Kişiler"
         short_title: "Kişiler"
-        delete: Sil
-        temperature: Sıcaklık
-        temperature_help: LLM için kullanılacak sıcaklık, yaratıcılığı artırmak için artırın (model varsayılanını kullanmak için boş bırakın, genellikle 0,0 ila 2,0 arasında bir değer)
-        top_p: Üst P
-        top_p_help: LLM için kullanılacak en yüksek P, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için boş bırakın, genellikle 0,0 ila 1,0 arasında bir değer)
-        priority: Öncelik
-        priority_help: Öncelikli kişilikler kullanıcılara kişilik listesinin en üstünde gösterilir. Birden fazla kişiliğin önceliği varsa bunlar alfabetik olarak sıralanır.
-        tool_options: "Araç Seçenekleri"
-        rag_conversation_chunks: "Konuşma Parçaları ara"
+        delete: "Sil"
+        temperature: "Sıcaklık"
+        top_p: "Üst P"
+        top_p_help: "LLM için kullanılacak en yüksek P, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için boş bırakın, genellikle 0,0 ila 1,0 arasında bir değer)"
+        priority: "Öncelik"
+        priority_help: "Öncelikli kişilikler kullanıcılara kişilik listesinin en üstünde gösterilir. Birden fazla kişiliğin önceliği varsa bunlar alfabetik olarak sıralanır."
         rag_conversation_chunks_help: "RAG modeli aramaları için kullanılacak parça sayısı. YZ'nin kullanabileceği bağlam miktarını artırmak için artırın."
-        what_are_personas: "YZ Kişileri nedir?"
-        no_persona_selected: |
-          YZ Kişileri, Discourse forumunuzda YZ motorunun davranışını özelleştirebilmenizi sağlayan güçlü bir özelliktir. YZ'nin yanıt ve etkileşimlerine rehberlik eden bir "sistem mesajı" görevi görerek daha kişiselleştirilmiş ve etkileşimli bir kullanıcı deneyimi oluşturmaya yardımcı olurlar.
-
-          #### YZ Kişileri neden kullanılmalı?
-
-          YZ Kişilikleri ile YZ'nin davranışını forumunuzun bağlamına ve tonuna daha iyi uyum sağlayacak şekilde ayarlayabilirsiniz. YZ'yi profesyonel bir ortam için daha resmî veya topluluk forumu için daha rahat kılabilir ve hatta rol oynama oyunları için belirli bir karaktere büründürebilirsiniz. YZ Kişileri size bunu yapma esnekliği sağlar.
-
-          #### YZ Kişilerine Gruba Özel Erişim
-
-          Dahası, belirli kullanıcı gruplarının belirli kişiliklere erişime sahip olacak şekilde de belirleyebilirsiniz. Bu, forumunuzun farklı bölümleri için farklı YZ davranışlarına sahip olabileceğiniz anlamına gelir ve böylece topluluğunuzun etkileşimlerinin çeşitliliğini ve zenginliğini geliştirebilirsiniz.
       rag:
         options:
-          rag_chunk_tokens: "Parça Token'ları yükle"
           rag_chunk_tokens_help: "RAG modelindeki her yığın için kullanılacak belirteç sayısı. YZ'nin kullanabileceği bağlam miktarını artırmak için artırın. (değiştirmek tüm yüklemeleri yeniden endeksler)"
-          rag_chunk_overlap_tokens: "Parça Örtüşme Token'ları yükle"
           rag_chunk_overlap_tokens_help: "RAG modelinde yığınlar arasında üst üste binecek token sayısı. (değiştirme tüm yüklemeleri yeniden endeksler)"
-          show_indexing_options: "Karşıya Yükleme Seçeneklerini göster"
-          hide_indexing_options: "Karşıya Yükleme Seçeneklerini gizle"
         uploads:
           title: "Yüklemeler"
-          button: "Dosya ekle"
           filter: "Yüklemeleri filtrele"
           indexed: "İndekslendi"
           indexing: "İndeksleniyor"
@@ -182,7 +144,6 @@ tr_TR:
       tools:
         back: "Geri"
         short_title: "Araçlar"
-        new: "Yeni Araç"
         name: "Ad"
         name_help: "Dil modeli tarafından kullanılan aracın benzersiz adı"
         description: "Açıklama"
@@ -195,50 +156,40 @@ tr_TR:
         add_parameter: "Parametre ekle"
         parameter_required: "Gerekli"
         parameter_enum: "Numaralandırma"
-        parameter_name: "Parametre Adı"
-        parameter_description: "Parametre Açıklaması"
         enum_value: "Numaralandırma değeri"
         add_enum_value: "Numaralandırma değeri ekle"
         edit: "Düzenle"
-        test: "Testi çalıştır"
         delete: "Sil"
         saved: "Araç kaydedildi"
         presets: "Ön ayar seçin..."
-        confirm_delete: Bu aracı silmek istediğinizden emin misiniz?
+        confirm_delete: "Bu aracı silmek istediğinizden emin misiniz?"
         next:
           title: "İleri"
-        test_modal:
-          title: "YZ Aracını test edin"
-          run: "Testi çalıştır"
-          result: "Test Sonucu"
       llms:
         short_title: "LLM'ler"
         no_llms: "Henüz LLM yok"
-        new: "Yeni Model"
         display_name: "Ad"
         tokenizer: "Token'laştırıcı"
         max_prompt_tokens: "İstem için token sayısı"
         url: "Modeli barındıran hizmetin URL'si"
         api_key: "Modeli barındıran hizmetin API Anahtarı"
         vision_enabled: "Vizyon etkin"
-        ai_bot_user: "YZ Botu Kullanıcısı"
         save: "Kaydet"
         edit: "Düzenle"
-        saved: "LLM Modeli Kaydedildi"
         back: "Geri"
         confirm_delete: Bu modeli silmek istediğinizden emin misiniz?
         delete: Sil
+        usage:
+          ai_summarization: "Özetle"
         preconfigured_llms: "LLM'nizi seçin"
         next:
           title: "İleri"
         tests:
-          title: "Testi çalıştır"
           running: "Test çalıştırılıyor..."
           success: "Başarılı!"
           failure: "Modelle iletişim kurmaya çalışmak şu hatayı döndürdü: %{error}"
         hints:
           max_prompt_tokens: "İstem için maksimum belirteç sayısı. Genel bir kural olarak bu, modelin bağlam penceresinin %50'si olmalıdır."
-          name: "Hangi modeli kullanacağımızı belirtmek için bunu API çağrısına dâhil ediyoruz."
           vision_enabled: "Etkinleştirilirse YZ görüntüleri anlamaya çalışır. Görmeyi destekleyen kullanılan modele bağlıdır. Anthropic, Google ve OpenAI'ın en son modelleri tarafından desteklenir."
         providers:
           aws_bedrock: "AWS Bedrock"
@@ -251,12 +202,7 @@ tr_TR:
           azure: "Azure"
           ollama: "Ollama"
           fake: "Özel"
-        provider_fields:
-          access_key_id: "AWS Bedrock Erişim anahtarı Kimliği"
-          region: "AWS Bedrock Bölgesi"
-          organization: "İsteğe bağlı OpenAI Organizasyon Kimliği"
       related_topics:
-        title: "İlgili Konular"
         pill: "İlgili"
       ai_helper:
         title: "YZ kullanarak değişiklik önerin"
@@ -272,9 +218,7 @@ tr_TR:
           confirm: "Onayla"
           discard: "Kapat"
           custom_prompt:
-            title: "Özel İstem"
             placeholder: "Özel bir istem girin..."
-            submit: "İstem gönder"
           translate_prompt: "%{language} diline çevir"
         post_options_menu:
           trigger: "YZ'ye sor"
@@ -286,10 +230,7 @@ tr_TR:
           cancel: "İptal et"
           insert_footnote: "Dipnot ekle"
           footnote_credits: "YZ ile açıklama"
-        fast_edit:
-          suggest_button: "Düzenleme öner"
         thumbnail_suggestions:
-          title: "Önerilen Küçük Resimler"
           select: "Seç"
           selected: "Seçili"
         image_caption:
@@ -297,10 +238,8 @@ tr_TR:
           generating: "Alt yazı oluşturuluyor..."
           credits: "Alt yazısı YZ tarafından hazırlandı"
           save_caption: "Kaydet"
-          automatic_caption_setting: "Otomatik YZ görüntü alt yazılarını etkinleştirin"
           automatic_caption_loading: "Görüntülere alt yazı ekleniyor..."
           automatic_caption_dialog:
-            prompt: "Bu gönderi altyazısız görüntüler içeriyor. Görüntü yüklemelerinde otomatik YZ alt yazılarını etkinleştirmek ister misiniz? (Bu daha sonra tercihlerinizden değiştirilebilir)"
             confirm: "Etkinleştir"
             cancel: "Bir daha sorma"
       reviewables:
@@ -312,8 +251,7 @@ tr_TR:
         semantic_search_results:
           toggle: "YZ kullanılarak bulunan %{count} sonuçları gösteriliyor"
           toggle_hidden: "YZ kullanılarak bulunan %{count} sonuç gizleniyor"
-          none: "Üzgünüz, YZ aramamız eşleşen konu bulamadı."
-          new: "YZ ile yeni sonuçlar aramaya başlamak için \"Ara\"ya basın"
+          none: "Üzgünüz, YZ aramamız eşleşen konu bulamadı"
         ai_generated_result: "YZ kullanılarak bulunan arama sonucu"
         quick_search:
           suffix: "YZ ile tüm konu ve gönderilerde"
@@ -335,13 +273,8 @@ tr_TR:
           response: "Yanıt"
           next_log: "İleri"
           previous_log: "Önceki"
-        share_full_topic_modal:
-          title: "Konuşmayı Herkese Açık Olarak paylaşın"
-          share: "Paylaş ve Bağlantıyı Kopyala"
-          update: "Güncelle ve Bağlantıyı Kopyala"
-          delete: "Paylaşımı sil"
         share_ai_conversation:
-          name: "YZ Konuşmasını paylaşın"
+          name: "YZ konuşmasını paylaş"
           title: "Bu YZ konuşmasını herkese açık olarak paylaşın"
         ai_label: "YZ"
         ai_title: "YZ ile konuşma"
@@ -349,7 +282,7 @@ tr_TR:
           title: "YZ konuşmasını kopyala"
           copy: "Kopyala"
           context: "Paylaşılacak etkileşimler:"
-          share_tip: Alternatif olarak, konuşmanın tamamını paylaşabilirsiniz.
+          share_tip: "Alternatif olarak, konuşmanın tamamını paylaşabilirsiniz"
         bot_names:
           fake: "Sahte Test Botu"
           claude-3-opus: "Claude 3 Opus"

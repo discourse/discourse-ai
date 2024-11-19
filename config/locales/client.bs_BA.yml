@@ -30,14 +30,15 @@ bs_BA:
       modals:
         select_option: "Odaberi opciju..."
       ai_persona:
-        back: Prethodno
-        name: Ime
-        edit: Edit
-        description: Opis
+        back: "Prethodno"
+        name: "Ime"
+        edit: "Edit"
+        description: "Opis"
         user: User
-        save: Save
+        save: "Save"
         enabled: "Omogućen?"
-        delete: Delete
+        allowed_groups: "Dozvoljene grupe"
+        delete: "Delete"
       rag:
         uploads:
           title: "Uploads"
@@ -50,12 +51,9 @@ bs_BA:
         save: "Save"
         parameter_required: "Required"
         edit: "Edit"
-        test: "Pokreni test"
         delete: "Delete"
         next:
           title: "Iduće"
-        test_modal:
-          run: "Pokreni test"
       llms:
         display_name: "Ime"
         save: "Save"
@@ -65,7 +63,6 @@ bs_BA:
         next:
           title: "Iduće"
         tests:
-          title: "Pokreni test"
           success: "Uspjeh!"
         providers:
           google: "Google"

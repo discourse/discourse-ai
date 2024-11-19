@@ -30,14 +30,14 @@ th:
       modals:
         select_option: "เลือกตัวเลือก..."
       ai_persona:
-        back: กลับ
-        name: ชื่อ
-        edit: แก้ไข
-        description: รายละเอียด
+        back: "กลับ"
+        name: "ชื่อ"
+        edit: "แก้ไข"
+        description: "รายละเอียด"
         user: ผู้ใช้
-        save: บันทึก
+        save: "บันทึก"
         enabled: "เปิดใช้"
-        delete: ลบ
+        delete: "ลบ"
       rag:
         uploads:
           title: "อัปโหลด"

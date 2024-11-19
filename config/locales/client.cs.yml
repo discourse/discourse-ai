@@ -30,14 +30,14 @@ cs:
       modals:
         select_option: "Zvolit možnost..."
       ai_persona:
-        back: Zpět
-        name: Jméno
-        edit: Upravit
-        description: Popis
+        back: "Zpět"
+        name: "Jméno"
+        edit: "Upravit"
+        description: "Popis"
         user: Uživatel
-        save: Uložit
+        save: "Uložit"
         enabled: "Zapnuto?"
-        delete: Smazat
+        delete: "Smazat"
       rag:
         uploads:
           title: "Nahrané soubory"
@@ -50,22 +50,20 @@ cs:
         save: "Uložit"
         parameter_required: "Nezbytnosti"
         edit: "Upravit"
-        test: "Spustit test"
         delete: "Smazat"
         next:
           title: "Další"
-        test_modal:
-          run: "Spustit test"
       llms:
         display_name: "Jméno"
         save: "Uložit"
         edit: "Upravit"
         back: "Zpět"
         delete: Smazat
+        usage:
+          ai_summarization: "Shrnout"
         next:
           title: "Další"
         tests:
-          title: "Spustit test"
           success: "Úspěch!"
         providers:
           google: "Google"

@@ -30,14 +30,15 @@ pt:
       modals:
         select_option: "Selecione uma opção..."
       ai_persona:
-        back: Retroceder
-        name: Nome
-        edit: Editar
-        description: Descrição
+        back: "Retroceder"
+        name: "Nome"
+        edit: "Editar"
+        description: "Descrição"
         user: Utilizador
-        save: Guardar
+        save: "Guardar"
         enabled: "Ativado?"
-        delete: Eliminar
+        allowed_groups: "Grupos permitidos"
+        delete: "Eliminar"
       rag:
         uploads:
           title: "Uploads"
@@ -59,6 +60,8 @@ pt:
         edit: "Editar"
         back: "Retroceder"
         delete: Eliminar
+        usage:
+          ai_summarization: "Resumir"
         next:
           title: "Próximo"
         providers:

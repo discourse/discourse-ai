@@ -5,6 +5,9 @@
 # https://translate.discourse.org/
 
 be:
+  reports:
+    emotion_neutral:
+      title: нейтральны
   discourse_ai:
     ai_bot:
       tool_summary:

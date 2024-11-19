@@ -30,14 +30,14 @@ ur:
       modals:
         select_option: "ایک آپشن منتخب کریں..."
       ai_persona:
-        back: واپس
-        name: نام
-        edit: ترمیم کریں
-        description: تفصیل
+        back: "واپس"
+        name: "نام"
+        edit: "ترمیم کریں"
+        description: "تفصیل"
         user: صارف
-        save: محفوظ کریں
+        save: "محفوظ کریں"
         enabled: "فعال؟"
-        delete: مٹائیں
+        delete: "مٹائیں"
       rag:
         uploads:
           title: "اَپ لوڈز"
@@ -50,22 +50,20 @@ ur:
         save: "محفوظ کریں"
         parameter_required: "درکار"
         edit: "ترمیم کریں"
-        test: "ٹیسٹ چلائیں"
         delete: "مٹائیں"
         next:
           title: "اگلا"
-        test_modal:
-          run: "ٹیسٹ چلائیں"
       llms:
         display_name: "نام"
         save: "محفوظ کریں"
         edit: "ترمیم کریں"
         back: "واپس"
         delete: مٹائیں
+        usage:
+          ai_summarization: "خلاصہ"
         next:
           title: "اگلا"
         tests:
-          title: "ٹیسٹ چلائیں"
           success: "کامیابی!"
         providers:
           google: "گُوگَل"

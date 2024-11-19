@@ -106,11 +106,23 @@ he:
   reports:
     overall_sentiment:
       title: "רגש כללי"
-      description: "התרשים משווה את מספר הפוסטים שמסווגים כחיוביים או שליליים. אלו מחושבים כאשר ניקוד חיובי או שלילי הוא גדול מהדף הניוקוד המוגדר. משמעות הדבר היא שפוסטים נייטרליים לא מופיעים. הודעות פרטיות מוחרגות גם כן. מסווגות עם „cardiffnlp/twitter-roberta-base-sentiment-latest”"
+      description: 'התרשים משווה את מספר הפוסטים שמסווגים כחיוביים או שליליים. אלו מחושבים כאשר ניקוד חיובי או שלילי הוא גדול מהדף הניוקוד המוגדר. משמעות הדבר היא שפוסטים נייטרליים לא מופיעים. הודעות פרטיות מוחרגות גם כן. מסווגות עם „cardiffnlp/twitter-roberta-base-sentiment-latest”'
       xaxis: "חיובי(%)"
       yaxis: "תאריך"
-    post_emotion:
-      title: "רגש הפוסט"
+    emotion_anger:
+      title: כעס
+    emotion_disgust:
+      title: גועל
+    emotion_fear:
+      title: פחד
+    emotion_joy:
+      title: הנאה
+    emotion_neutral:
+      title: נייטרלי
+    emotion_sadness:
+      title: עצב
+    emotion_surprise:
+      title: הפתעה
   discourse_ai:
     unknown_model: "דגם בינה מלאכותית לא ידוע"
     tools:

@@ -79,8 +79,20 @@ pl_PL:
       title: "Ogólny sentyment"
       xaxis: "Pozytywny(%)"
       yaxis: "Data"
-    post_emotion:
-      title: "Emocje postu"
+    emotion_anger:
+      title: Gniew
+    emotion_disgust:
+      title: Niesmak
+    emotion_fear:
+      title: Strach
+    emotion_joy:
+      title: Radość
+    emotion_neutral:
+      title: Neutralne
+    emotion_sadness:
+      title: Smutek
+    emotion_surprise:
+      title: Niespodzianka
   discourse_ai:
     unknown_model: "Nieznany model AI"
     ai_helper:

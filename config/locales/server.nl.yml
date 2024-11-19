@@ -95,8 +95,20 @@ nl:
       title: "Algemeen sentiment"
       xaxis: "Positief (%)"
       yaxis: "Datum"
-    post_emotion:
-      title: "Berichtemotie"
+    emotion_anger:
+      title: Boosheid
+    emotion_disgust:
+      title: Afschuw
+    emotion_fear:
+      title: Angst
+    emotion_joy:
+      title: Vreugde
+    emotion_neutral:
+      title: Neutraal
+    emotion_sadness:
+      title: Droefheid
+    emotion_surprise:
+      title: Verrassing
   discourse_ai:
     unknown_model: "Onbekend AI-model"
     tools:

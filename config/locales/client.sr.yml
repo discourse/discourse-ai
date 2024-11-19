@@ -26,14 +26,15 @@ sr:
       modals:
         select_option: "Izaberi jednu od opcija..."
       ai_persona:
-        back: Nazad
-        name: Ime foruma
-        edit: Izmeni
-        description: Opis
+        back: "Nazad"
+        name: "Ime foruma"
+        edit: "Izmeni"
+        description: "Opis"
         user: Korisnik
-        save: Sačuvaj
+        save: "Sačuvaj"
         enabled: "Omgućeno"
-        delete: Obriši
+        allowed_groups: "Dozvoljene grupe"
+        delete: "Obriši"
       rag:
         uploads:
           uploading: "Uploading..."

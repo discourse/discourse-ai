@@ -95,8 +95,20 @@ zh_CN:
       title: "整体情绪"
       xaxis: "积极 (%)"
       yaxis: "日期"
-    post_emotion:
-      title: "帖子情绪"
+    emotion_anger:
+      title: 愤怒
+    emotion_disgust:
+      title: 厌恶
+    emotion_fear:
+      title: 恐惧
+    emotion_joy:
+      title: 开心
+    emotion_neutral:
+      title: 中性
+    emotion_sadness:
+      title: 悲伤
+    emotion_surprise:
+      title: 惊讶
   discourse_ai:
     unknown_model: "未知 AI 模型"
     tools:

@@ -95,8 +95,20 @@ fr:
       title: "Sentiment général"
       xaxis: "Positif (%)"
       yaxis: "Date"
-    post_emotion:
-      title: "Publier une émotion"
+    emotion_anger:
+      title: Colère
+    emotion_disgust:
+      title: Dégoût
+    emotion_fear:
+      title: Peur
+    emotion_joy:
+      title: Joie
+    emotion_neutral:
+      title: Neutre
+    emotion_sadness:
+      title: Tristesse
+    emotion_surprise:
+      title: Surprise
   discourse_ai:
     unknown_model: "Modèle d'IA inconnu"
     tools:

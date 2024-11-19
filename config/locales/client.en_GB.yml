@@ -14,7 +14,7 @@ en_GB:
               label: "Categories"
     discourse_ai:
       ai_persona:
-        description: Description
+        description: "Description"
       tools:
         description: "Description"
         summary: "Summary"

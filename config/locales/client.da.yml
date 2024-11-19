@@ -30,14 +30,15 @@ da:
       modals:
         select_option: "Vælg en indstilling..."
       ai_persona:
-        back: Tilbage
-        name: Navn
-        edit: Rediger
-        description: Beskrivelse
+        back: "Tilbage"
+        name: "Navn"
+        edit: "Rediger"
+        description: "Beskrivelse"
         user: Bruger
-        save: Gem
+        save: "Gem"
         enabled: "Aktiveret?"
-        delete: Slet
+        allowed_groups: "Tilladte grupper"
+        delete: "Slet"
       rag:
         uploads:
           title: "Overførsler"
@@ -50,12 +51,9 @@ da:
         save: "Gem"
         parameter_required: "Obligatoriske"
         edit: "Rediger"
-        test: "Kør test"
         delete: "Slet"
         next:
           title: "Næste"
-        test_modal:
-          run: "Kør test"
       llms:
         display_name: "Navn"
         save: "Gem"
@@ -65,7 +63,6 @@ da:
         next:
           title: "Næste"
         tests:
-          title: "Kør test"
           success: "Succes!"
         providers:
           google: "Google"
