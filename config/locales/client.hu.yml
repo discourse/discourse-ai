@@ -30,14 +30,14 @@ hu:
       modals:
         select_option: "Válasszon egy lehetőséget..."
       ai_persona:
-        back: Vissza
-        name: Név
-        edit: Szerkesztés
-        description: Leírás
+        back: "Vissza"
+        name: "Név"
+        edit: "Szerkesztés"
+        description: "Leírás"
         user: Felhasználó
-        save: Mentés
+        save: "Mentés"
         enabled: "Engedélyezed?"
-        delete: Törlés
+        delete: "Törlés"
       rag:
         uploads:
           title: "Feltöltések"
@@ -50,28 +50,25 @@ hu:
         save: "Mentés"
         parameter_required: "Kötelező"
         edit: "Szerkesztés"
-        test: "Teszt futtatása"
         delete: "Törlés"
         next:
           title: "Tovább"
-        test_modal:
-          run: "Teszt futtatása"
       llms:
         display_name: "Név"
         save: "Mentés"
         edit: "Szerkesztés"
         back: "Vissza"
         delete: Törlés
+        usage:
+          ai_summarization: "Összefoglalás"
         next:
           title: "Tovább"
         tests:
-          title: "Teszt futtatása"
           success: "Siker!"
         providers:
           google: "Google"
           fake: "Egyéni"
       related_topics:
-        title: "Kapcsolódó témák"
         pill: "Kapcsolódó"
       ai_helper:
         context_menu:

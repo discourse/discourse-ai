@@ -28,14 +28,14 @@ te:
               label: "జవాబు"
     discourse_ai:
       ai_persona:
-        back: వెనుకకు
-        name: పేరు
-        edit: సవరించండి
-        description: వివరణ
+        back: "వెనుకకు"
+        name: "పేరు"
+        edit: "సవరించండి"
+        description: "వివరణ"
         user: సభ్యుడు
-        save: భద్రపరుచు
+        save: "భద్రపరుచు"
         enabled: "ప్రారంభించబడిందా?"
-        delete: తొలగించు
+        delete: "తొలగించు"
       rag:
         uploads:
           title: "అప్‌లోడ్‌లు"
@@ -48,12 +48,9 @@ te:
         save: "సేవ్ చేయండి"
         parameter_required: "అవసరం"
         edit: "సవరించండి"
-        test: "పరీక్షను అమలు చేయండి"
         delete: "తొలగించండి"
         next:
           title: "తదుపరి"
-        test_modal:
-          run: "పరీక్షను అమలు చేయండి"
       llms:
         display_name: "పేరు"
         save: "సేవ్ చేయండి"
@@ -62,8 +59,6 @@ te:
         delete: తొలగించండి
         next:
           title: "తదుపరి"
-        tests:
-          title: "పరీక్షను అమలు చేయండి"
         providers:
           google: "గూగుల్"
           fake: "అనుకూల"

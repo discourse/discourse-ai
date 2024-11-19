@@ -30,14 +30,14 @@ vi:
       modals:
         select_option: "Chọn một tùy Chọn..."
       ai_persona:
-        back: Quay lại
-        name: Tên
-        edit: Sửa
-        description: Mô tả
+        back: "Quay lại"
+        name: "Tên"
+        edit: "Sửa"
+        description: "Mô tả"
         user: Người dùng
-        save: Lưu lại
+        save: "Lưu lại"
         enabled: "Kích hoạt"
-        delete: Xóa
+        delete: "Xóa"
       rag:
         uploads:
           title: "Tải lên"
@@ -50,22 +50,20 @@ vi:
         save: "Lưu lại"
         parameter_required: "Bắt buộc"
         edit: "Sửa"
-        test: "Chạy thử nghiệm"
         delete: "Xóa"
         next:
           title: "Kế tiếp"
-        test_modal:
-          run: "Chạy thử nghiệm"
       llms:
         display_name: "Tên"
         save: "Lưu lại"
         edit: "Sửa"
         back: "Quay lại"
         delete: Xóa
+        usage:
+          ai_summarization: "Tóm tắt"
         next:
           title: "Kế tiếp"
         tests:
-          title: "Chạy thử nghiệm"
           success: "Thành công!"
         providers:
           google: "G"

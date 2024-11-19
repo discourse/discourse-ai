@@ -23,6 +23,7 @@ de:
         description: "Regelmäßiger Bericht auf der Grundlage eines großen Sprachmodells"
   site_settings:
     discourse_ai_enabled: "Aktiviere das Discourse-KI-Plug-in."
+    ai_artifact_security: "Das KI-Artefaktsystem erzeugt IFRAMEs mit lauffähigem Code. Der strenge Modus deaktiviert die gemeinsame Nutzung und erzwingt einen zusätzlichen Klick, um den Code auszuführen. Der lockere Modus erlaubt die gemeinsame Nutzung von Artefakten und führt den Code direkt aus. Im Modus Deaktiviert wird das Artefaktsystem ausgeschaltet."
     ai_toxicity_enabled: "Aktiviere das Toxizitätsmodul."
     ai_toxicity_inference_service_api_endpoint: "URL, unter der die API für das Toxizitätsmodul läuft"
     ai_toxicity_inference_service_api_key: "API-Schlüssel für die Toxizitäts-API"
@@ -106,12 +107,65 @@ de:
   reports:
     overall_sentiment:
       title: "Allgemeine Stimmung"
-      description: "Das Diagramm vergleicht die Anzahl der Beiträge, die entweder als positiv oder negativ eingestuft werden. Sie werden berechnet, wenn die positive oder negative Bewertung über dem festgelegten Schwellenwert liegt. Das bedeutet, dass neutrale Beiträge nicht angezeigt werden. Private Nachrichten (PMs) sind ebenfalls ausgeschlossen. Klassifiziert mit \"cardiffnlp/twitter-roberta-base-sentiment-latest\""
+      description: 'Das Diagramm vergleicht die Anzahl der Beiträge, die entweder als positiv oder negativ eingestuft werden. Sie werden berechnet, wenn die positive oder negative Bewertung über dem festgelegten Schwellenwert liegt. Das bedeutet, dass neutrale Beiträge nicht angezeigt werden. Private Nachrichten (PMs) sind ebenfalls ausgeschlossen. Klassifiziert mit "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Positiv (%)"
       yaxis: "Datum"
-    post_emotion:
-      title: "Beitragsemotion"
-      description: "Anzahl der Beiträge, die mit einer der folgenden Emotionen klassifiziert wurden, gruppiert nach dem Vertrauenslevel des Posters. Beiträge, die weder positiv noch negativ sind und als neutral gelten, werden nicht angezeigt. Private Nachrichten (PMs) sind ebenfalls ausgeschlossen. Klassifiziert mit \"j-hartmann/emotion-english-roberta-large\""
+    emotion_admiration:
+      title: Bewunderung
+    emotion_amusement:
+      title: Unterhaltung
+    emotion_anger:
+      title: Wut
+    emotion_annoyance:
+      title: Ärgernis
+    emotion_approval:
+      title: Genehmigung
+    emotion_caring:
+      title: Fürsorge
+    emotion_confusion:
+      title: Verwirrung
+    emotion_curiosity:
+      title: Neugierde
+    emotion_desire:
+      title: Wunsch
+    emotion_disappointment:
+      title: Enttäuschung
+    emotion_disapproval:
+      title: Missbilligung
+    emotion_disgust:
+      title: Ekel
+    emotion_embarrassment:
+      title: Verlegenheit
+    emotion_excitement:
+      title: Aufregung
+    emotion_fear:
+      title: Furcht
+    emotion_gratitude:
+      title: Dankbarkeit
+    emotion_grief:
+      title: Kummer
+    emotion_joy:
+      title: Freude
+    emotion_love:
+      title: Liebe
+    emotion_nervousness:
+      title: Nervosität
+    emotion_neutral:
+      title: Neutral
+    emotion_optimism:
+      title: Optimismus
+    emotion_pride:
+      title: Stolz
+    emotion_realization:
+      title: Realisierung
+    emotion_relief:
+      title: Erleichterung
+    emotion_remorse:
+      title: Gewissensbisse
+    emotion_sadness:
+      title: Traurigkeit
+    emotion_surprise:
+      title: Überraschung
   discourse_ai:
     unknown_model: "Unbekanntes KI-Modell"
     tools:
@@ -188,6 +242,9 @@ de:
         discourse_helper:
           name: "Discourse-Helfer"
           description: "KI-Bot, der auf die Unterstützung bei Discourse-bezogenen Aufgaben spezialisiert ist"
+        web_artifact_creator:
+          name: "Web-Artefakt-Ersteller"
+          description: "KI-Bot, spezialisiert auf die Erstellung interaktiver Web-Artefakte"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
@@ -211,6 +268,7 @@ de:
             name: "Basissuchanfrage"
             description: "Basisanfrage, die bei der Suche verwendet wird. Beispiel: Bei „#dringend“ wird der Suchanfrage „#dringend“ vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort „dringend“ angezeigt."
       tool_summary:
+        create_artifact: "Web-Artefakt erstellen"
         web_browser: "Web durchsuchen"
         github_search_files: "GitHub-Datei-Suche"
         github_search_code: "GitHub-Code-Suche"
@@ -232,6 +290,7 @@ de:
         search_meta_discourse: "Meta-Discourse durchsuchen"
         javascript_evaluator: "JavaScript auswerten"
       tool_help:
+        create_artifact: "Erstelle ein Web-Artefakt mit dem KI-Bot"
         web_browser: "Webseite mit dem KI-Bot durchsuchen"
         github_search_code: "Code in einem GitHub-Repository suchen"
         github_search_files: "Dateien in einem GitHub-Repository suchen"
@@ -253,6 +312,7 @@ de:
         search_meta_discourse: "Meta-Discourse durchsuchen"
         javascript_evaluator: "JavaScript auswerten"
       tool_description:
+        create_artifact: "Ein Web-Artefakt mit dem KI-Bot erstellt"
         web_browser: "<a href='%{url}'>%{url}</a> wird gelesen"
         github_search_files: "Gesucht wurde nach „%{keywords}“ in %{repo}/%{branch}"
         github_search_code: "Gesucht wurde nach „%{query}“ in %{repo}"

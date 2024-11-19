@@ -95,8 +95,20 @@ es:
       title: "Sentimiento general"
       xaxis: "Positivas(%)"
       yaxis: "Fecha"
-    post_emotion:
-      title: "Emoción de publicación"
+    emotion_anger:
+      title: Enfado
+    emotion_disgust:
+      title: Asco
+    emotion_fear:
+      title: Miedo
+    emotion_joy:
+      title: Alegría
+    emotion_neutral:
+      title: Neutro
+    emotion_sadness:
+      title: Tristeza
+    emotion_surprise:
+      title: Sorpresa
   discourse_ai:
     unknown_model: "Modelo de IA desconocido"
     tools:

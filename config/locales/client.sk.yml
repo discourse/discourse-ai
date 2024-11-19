@@ -32,14 +32,14 @@ sk:
       modals:
         select_option: "Vyberte možnosť..."
       ai_persona:
-        back: Späť
-        name: Meno
-        edit: Upraviť
-        description: Popis
+        back: "Späť"
+        name: "Meno"
+        edit: "Upraviť"
+        description: "Popis"
         user: Používateľ
-        save: Uložiť
+        save: "Uložiť"
         enabled: "Povolené?"
-        delete: Odstrániť
+        delete: "Odstrániť"
       rag:
         uploads:
           title: "Nahrávanie"
@@ -53,22 +53,20 @@ sk:
         save: "Uložiť"
         parameter_required: "Povinné"
         edit: "Upraviť"
-        test: "Spustiť test"
         delete: "Odstrániť"
         next:
           title: "Ďalej"
-        test_modal:
-          run: "Spustiť test"
       llms:
         display_name: "Meno"
         save: "Uložiť"
         edit: "Upraviť"
         back: "Späť"
         delete: Odstrániť
+        usage:
+          ai_summarization: "Zhrnúť"
         next:
           title: "Ďalej"
         tests:
-          title: "Spustiť test"
           success: "Úspech!"
         providers:
           google: "Google"

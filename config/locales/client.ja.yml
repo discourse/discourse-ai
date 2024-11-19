@@ -23,7 +23,6 @@ ja:
               description: "レポートを受け取るユーザー (メールはダイレクトメールで送信され、ユーザー名に PM が送信されます)"
             topic_id:
               label: "トピック ID"
-              description: "レポートを投稿するトピック ID"
             title:
               label: "タイトル"
               description: "レポートのタイトル"
@@ -41,7 +40,6 @@ ja:
               description: "レポート用にサンプリングする投稿の数"
             tokens_per_post:
               label: "投稿あたりのトークン"
-              description: "投稿あたりに使用する LLM トークンの数"
             model:
               label: "モデル"
               description: "レポートの生成に使用する LLM"
@@ -71,7 +69,6 @@ ja:
               description: "レポートでこのグループのコンテンツを優先します"
             temperature:
               label: "Temperature"
-              description: "LLM に使用する Temperature。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は 0)"
             top_p:
               label: "Top P"
               description: "LLM に使用する Top P。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は 0)"
@@ -82,7 +79,6 @@ ja:
               description: "トリアージに使用されるプロンプト。ユーザーがアクションのトリガーに使用できる 1 つの単語でプロンプトが応答できるようにしてください"
             search_for_text:
               label: "テキストを検索する"
-              description: "LLM の返信に後続のテキストが表示される場合は、このアクションを適用します"
             category:
               label: "カテゴリ"
               description: "トピックに適用するカテゴリ"
@@ -91,13 +87,11 @@ ja:
               description: "トピックに適用するタグ"
             canned_reply:
               label: "返信"
-              description: "トピックに投稿する定型返信の生のテキスト"
             canned_reply_user:
               label: "ユーザーに返信"
               description: "定型返信を投稿するユーザーのユーザー名"
             hide_topic:
               label: "トピックを非表示"
-              description: "トリガーされると、トピックを一般公開しないようにします"
             model:
               label: "モデル"
               description: "トリアージに使用される言語モデル"
@@ -106,73 +100,41 @@ ja:
       modals:
         select_option: "オプションを選択..."
       ai_persona:
-        back: 戻る
-        name: 名前
-        edit: 編集
-        description: 説明
+        back: "戻る"
+        name: "名前"
+        edit: "編集"
+        description: "説明"
         no_llm_selected: "言語モデルは選択されていません"
-        max_context_posts: "最大コンテキスト投稿数"
         max_context_posts_help: "AI がユーザーに返答するときにコンテキストとして使用する投稿の最大数。(デフォルトの場合は空白)"
         vision_enabled: ビジョン対応
         vision_enabled_help: 有効にすると、AI は、ビジョンのサポートに使用されているモデルに応じてユーザーがトピックに投稿する画像を理解しようとします。Anthropic、Google、および OpenAI の最新モデルでサポートされています。
         vision_max_pixels: サポートされている画像サイズ
-        vision_max_pixel_sizes:
-          low: 低品質 - 最割安 (256x256)
-          medium: 中品質 (512x512)
-          high: 高品質 - 最も遅い (1024x1024)
-        tool_details: ツールの詳細を表示
         tool_details_help: 言語モデルがトリガーしたツールの詳細をエンドユーザーに表示します。
-        mentionable: メンションを許可
         mentionable_help: 有効にすると、許可されているグループのユーザーは投稿内でこのユーザーをメンションでき、AI はこのペルソナとして返答します。
         user: ユーザー
-        create_user: ユーザーを作成
         create_user_help: オプションで、このペルソナにユーザーを関連付けられます。その場合、AI はこのユーザーを使用してリクエストに応答します。
-        default_llm: デフォルトの言語モデル
         default_llm_help: このペルソナに使用するデフォルトの言語モデル。公開投稿でペルソナをメンションする場合には必須です。
         question_consolidator_llm: 質問統合用の言語モデル
         question_consolidator_llm_help: 質問統合に使用する言語モデル。それほど強力でないモデルを選択してコストを節約することも可能です。
-        system_prompt: システムプロンプト
-        save: 保存
-        saved: AI ペルソナが保存されました
+        save: "保存"
         enabled: "有効化？"
-        tools: 有効なツール
-        allowed_groups: 許可されたグループ
-        confirm_delete: このペルソナを削除してもよろしいですか？
-        new: "新しいペルソナ"
-        title: "AI ペルソナ"
+        allowed_groups: "許可されたグループ"
+        confirm_delete: "このペルソナを削除してもよろしいですか？"
+        title: "ペルソナ"
         short_title: "ペルソナ"
-        delete: 削除
-        temperature: Temperature
-        temperature_help: LLM に使用する Temperature。値を増やすと創造性が増加します (モデルのデフォルトを使用する場合は空白にします。一般に 0.0～2.0 の値です)
-        top_p: Top P
-        top_p_help: LLM に使用する Top P。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は空白にします。一般に 0.0～1.0 の値です)
-        priority: 優先度
-        priority_help: 優先ペルソナはペルソナリストの先頭に表示されます。複数のペルソナが優先されている場合は、アルファベット順に並べ替えられます。
-        tool_options: "ツールのオプション"
-        rag_conversation_chunks: "会話チャンクを検索"
+        delete: "削除"
+        temperature: "Temperature"
+        top_p: "Top P"
+        top_p_help: "LLM に使用する Top P。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は空白にします。一般に 0.0～1.0 の値です)"
+        priority: "優先度"
+        priority_help: "優先ペルソナはペルソナリストの先頭に表示されます。複数のペルソナが優先されている場合は、アルファベット順に並べ替えられます。"
         rag_conversation_chunks_help: "RAG モデル検索に使用するチャンクの数。値を増やすと、AI が使用できるコンテキストの量が増えます。"
-        what_are_personas: "AI ペルソナとは何ですか？"
-        no_persona_selected: |
-          AI ペルソナは、Discourse フォーラムにおける AI エンジンの動作をカスタマイズできる強力な機能です。AI の返答とインタラクションを誘導する「システムメッセージ」として機能し、よりパーソナライズ化された魅力的なユーザーエクスペリエンスを作り出すのに役立ちます。
-
-          #### AI ペルソナを使用する理由
-
-          AI ペルソナを使用すると、フォーラムのコンテキストと論調に合わせて AI の動作をカスタマイズできます。仕事環境でよりフォーマルな振る舞いを望む場合もで、ロールプレイングゲームの特定のキャラを真似たい場合でも、AI ペルソナはそれを柔軟に実現できます。
-
-          #### AI ペルソナへのアクセスをグループごとに設定
-
-          さらに、特定のユーザーグループが特定のペルソナにアクセスできるようにセットアップすることができます。そのため、フォーラムのセクションごとに異なる AI の振る舞いを適用し、コミュニティーの対話の多様性と充実度をさらに強化することができます。
       rag:
         options:
-          rag_chunk_tokens: "チャンクトークンをアップロード"
           rag_chunk_tokens_help: "RAG モデルの各チャンクに使用するトークン数。値を増やすと、AI が使用できるコンテキストの数が増加します (変更するとすべてのアップロードのインデックスが再作成されます)"
-          rag_chunk_overlap_tokens: "チャンクオーバーラップトークンをアップロード"
           rag_chunk_overlap_tokens_help: "RAG モデル内のチャンク間で重複するトークンの数。(変更するとすべてのアップロードのインデックスが再作成されます)"
-          show_indexing_options: "アップロードオプションを表示"
-          hide_indexing_options: "アップロードオプションを非表示"
         uploads:
           title: "アップロード"
-          button: "ファイルを追加"
           filter: "アップロードをフィルタ"
           indexed: "インデックスを作成しました"
           indexing: "インデックス作成中"
@@ -182,7 +144,6 @@ ja:
       tools:
         back: "戻る"
         short_title: "ツール"
-        new: "新しいツール"
         name: "名前"
         name_help: "言語モデルで使用されるツールの一意の名前"
         description: "説明"
@@ -195,50 +156,40 @@ ja:
         add_parameter: "パラメーターを追加"
         parameter_required: "必須"
         parameter_enum: "列挙型"
-        parameter_name: "パラメーター名"
-        parameter_description: "パラメーターの説明"
         enum_value: "列挙型値"
         add_enum_value: "列挙型値を追加"
         edit: "編集"
-        test: "テストを実行"
         delete: "削除"
         saved: "ツールが保存されました"
         presets: "プリセットを選択..."
-        confirm_delete: このツールを削除してもよろしいですか？
+        confirm_delete: "このツールを削除してもよろしいですか？"
         next:
           title: "次へ"
-        test_modal:
-          title: "AI ツールのテスト"
-          run: "テストを実行"
-          result: "テストの結果"
       llms:
         short_title: "LLM"
         no_llms: "まだ LLM がありません"
-        new: "新しいモデル"
         display_name: "名前"
         tokenizer: "トークナイザ―"
         max_prompt_tokens: "プロンプトのトークン数"
         url: "モデルをホストするサービスの URL"
         api_key: "モデルをホストするサービスの API キー"
         vision_enabled: "ビジョン対応"
-        ai_bot_user: "AI ボットユーザー"
         save: "保存"
         edit: "編集"
-        saved: "LLM モデルが保存されました"
         back: "戻る"
         confirm_delete: このモデルを削除してもよろしいですか？
         delete: 削除
+        usage:
+          ai_summarization: "要約"
         preconfigured_llms: "LLM を選択してください"
         next:
           title: "次へ"
         tests:
-          title: "テストを実行"
           running: "テストを実行中…"
           success: "成功!"
           failure: "モデルに接続しようとした際に、次のエラーが返されました: %{error}"
         hints:
           max_prompt_tokens: "プロンプトのトークンの最大数。目安として、これはモデルのコンテキストウィンドウの 50% です。"
-          name: "これを API 呼び出しに含めて、使用するモデルを指定します。"
           vision_enabled: "有効にすると、AI は画像を理解しようとします。ビジョンのサポートに使用されているモデルに応じます。Anthropic、Google、および OpenAI の最新モデルでサポートされています。"
         providers:
           aws_bedrock: "AWS Bedrock"
@@ -251,12 +202,7 @@ ja:
           azure: "Azure"
           ollama: "Ollama"
           fake: "カスタム"
-        provider_fields:
-          access_key_id: "AWS Bedrock アクセスキー ID"
-          region: "AWS Bedrock リージョン"
-          organization: "オプションの OpenAI 組織 ID"
       related_topics:
-        title: "関連トピック"
         pill: "関連"
       ai_helper:
         title: "AI を使用して変更を提案"
@@ -272,9 +218,7 @@ ja:
           confirm: "確認"
           discard: "破棄"
           custom_prompt:
-            title: "カスタムプロンプト"
             placeholder: "カスタムプロンプトを入力してください..."
-            submit: "プロンプトを送信"
           translate_prompt: "%{language} に翻訳する"
         post_options_menu:
           trigger: "AI に尋ねる"
@@ -286,10 +230,7 @@ ja:
           cancel: "キャンセル"
           insert_footnote: "脚注を追加"
           footnote_credits: "AI による説明"
-        fast_edit:
-          suggest_button: "編集を提案"
         thumbnail_suggestions:
-          title: "提案されたサムネイル"
           select: "選択"
           selected: "選択済み"
         image_caption:
@@ -297,10 +238,8 @@ ja:
           generating: "キャプションを生成中..."
           credits: "AI によるキャプション"
           save_caption: "保存"
-          automatic_caption_setting: "自動 AI 画像キャプションを有効にする"
           automatic_caption_loading: "画像のキャプションを作成中..."
           automatic_caption_dialog:
-            prompt: "この投稿にはキャプションのない画像が含まれています。画像アップロード時に、自動 AI キャプションを有効にしますか？(これは後で設定で変更できます)"
             confirm: "有効化"
             cancel: "今後表示しない"
       reviewables:
@@ -312,8 +251,6 @@ ja:
         semantic_search_results:
           toggle: "AI で見つかった %{count} 件の結果を表示中"
           toggle_hidden: "AI で見つかった %{count} 件の結果を非表示"
-          none: "AI 検索ではどのトピックも一致しませんでした。"
-          new: "「検索」を押すと、AI が新しい結果を検索し始めるます"
         ai_generated_result: "AI で見つかった検索結果"
         quick_search:
           suffix: "AI によるすべてのトピックと投稿"
@@ -335,11 +272,6 @@ ja:
           response: "応答"
           next_log: "次へ"
           previous_log: "変更前"
-        share_full_topic_modal:
-          title: "会話の公開共有"
-          share: "共有してリンクをコピー"
-          update: "更新してリンクをコピー"
-          delete: "共有を削除"
         share_ai_conversation:
           name: "AI の会話を共有"
           title: "この AI の会話を公開共有する"
@@ -349,7 +281,6 @@ ja:
           title: "AI の会話のコピー"
           copy: "コピー"
           context: "共有する対話:"
-          share_tip: または、会話全体を共有できます。
         bot_names:
           fake: "偽のテストボット"
           claude-3-opus: "Claude 3 Opus"

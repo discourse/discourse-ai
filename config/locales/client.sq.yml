@@ -30,14 +30,14 @@ sq:
       modals:
         select_option: "Zgjidhni një opsion..."
       ai_persona:
-        back: Kthehu mbrapa
-        name: Emri
-        edit: Redakto
-        description: Përshkrimi
+        back: "Kthehu mbrapa"
+        name: "Emri"
+        edit: "Redakto"
+        description: "Përshkrimi"
         user: User
-        save: Ruaj
+        save: "Ruaj"
         enabled: "Aktivizuar?"
-        delete: Fshij
+        delete: "Fshij"
       rag:
         uploads:
           uploading: "Duke ngarkuar..."

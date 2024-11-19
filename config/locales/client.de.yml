@@ -11,11 +11,13 @@ de:
         scopes:
           descriptions:
             discourse_ai:
-              search: "Ermöglicht semantische Suche"
+              search: "Ermöglicht KI-Suche"
               stream_completion: "Ermöglicht das Streamen von KI-Persona-Vervollständigungen"
       site_settings:
         categories:
           discourse_ai: "Discourse-KI"
+      dashboard:
+        emotion: "Emotion"
   js:
     discourse_automation:
       scriptables:
@@ -100,7 +102,7 @@ de:
               description: "Schlagwörter, die auf das Thema anzuwenden sind"
             canned_reply:
               label: "Antworten"
-              description: "Rohtext einer vorgefertigten Antwort auf einen Beitrag zum Thema"
+              description: "Rohtext der vorgefertigten Antwort auf einen Beitrag zum Thema"
             canned_reply_user:
               label: "Antwortender Benutzer"
               description: "Benutzername des Benutzers, der die vorgefertigte Antwort posten soll"
@@ -126,10 +128,10 @@ de:
           replies:
             one: "Nur auf die erste Antwort anwenden"
             other: "Auf die ersten %{count} Antworten anwenden"
-        back: Zurück
-        name: Name
-        edit: Bearbeiten
-        description: Beschreibung
+        back: "Zurück"
+        name: "Name"
+        edit: "Bearbeiten"
+        description: "Beschreibung"
         no_llm_selected: "Kein Sprachmodell ausgewählt"
         max_context_posts: "Max. Kontext-Beiträge"
         max_context_posts_help: "Die maximale Anzahl von Beiträgen, die die KI als Kontext für die Antwort auf einen Nutzer verwenden soll (leer für Standardwert)."
@@ -162,33 +164,33 @@ de:
         allow_topic_mentions: "Themenerwähnungen zulassen"
         allow_topic_mentions_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen diese Person in Themen erwähnen."
         force_default_llm: "Immer das Standard-Sprachmodell verwenden"
-        save: Speichern
-        saved: KI-Persona gespeichert
+        save: "Speichern"
+        saved: "Persona gespeichert"
         enabled: "Aktiviert?"
-        tools: Aktivierte Tools
-        forced_tools: Erzwungene Werkzeuge
-        allowed_groups: Erlaubte Gruppen
-        confirm_delete: Bist du sicher, dass du diese Persona löschen willst?
+        tools: "Aktivierte Tools"
+        forced_tools: "Erzwungene Werkzeuge"
+        allowed_groups: "Zulässige Gruppen"
+        confirm_delete: "Bist du sicher, dass du diese Persona löschen willst?"
         new: "Neue Persona"
-        title: "KI-Personas"
+        title: "Personas"
         short_title: "Personas"
-        delete: Löschen
-        temperature: Temperatur
-        temperature_help: Temperatur, die für das LLM verwendet werden soll, erhöhen, um die Kreativität zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, im Allgemeinen ein Wert zwischen 0,0 und 2,0)
-        top_p: Top P
-        top_p_help: Top P für das LLM. Erhöhen, um die Zufälligkeit zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)
-        priority: Priorität
-        priority_help: Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert.
+        delete: "Löschen"
+        temperature: "Temperatur"
+        temperature_help: "Temperatur, die für das LLM verwendet werden soll, erhöhen, um die Kreativität zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, im Allgemeinen ein Wert zwischen 0,0 und 2,0)"
+        top_p: "Top P"
+        top_p_help: "Top P für das LLM. Erhöhen, um die Zufälligkeit zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)"
+        priority: "Priorität"
+        priority_help: "Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert."
         tool_options: "Tool-Optionen"
         rag_conversation_chunks: "Suchunterhaltungs-Chunks"
         rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann."
-        what_are_personas: "Was sind KI-Personas?"
+        what_are_personas: "Was sind Personas?"
         no_persona_selected: |
-          KI-Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie dienen als „Systembotschaft“, die die Reaktionen und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Nutzererlebnis zu schaffen.
+          Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie dienen als „Systembotschaft“, die die Reaktionen und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Nutzererlebnis zu schaffen.
 
           #### Warum sollte man KI-Personas verwenden?
 
-          Mit KI-Personas kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI für ein professionelles Umfeld formeller, für ein Community-Forum lockerer ist oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert: KI-Personas bieten dir die nötige Flexibilität dafür.
+          Mit Personas kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI für ein professionelles Umfeld formeller, für ein Community-Forum lockerer ist oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert: KI-Personas bieten dir die nötige Flexibilität dafür.
 
           #### Gruppenspezifischer Zugriff auf KI-Personas
 
@@ -236,7 +238,7 @@ de:
         delete: "Löschen"
         saved: "Tool gespeichert"
         presets: "Wähle eine Voreinstellung aus …"
-        confirm_delete: Bist du sicher, dass du dieses Tool löschen willst?
+        confirm_delete: "Bist du sicher, dass du dieses Tool löschen willst?"
         next:
           title: "Nächstes"
         test_modal:
@@ -266,24 +268,29 @@ de:
         seeded_warning: "Dieses Modell ist auf deiner Website vorkonfiguriert und kann nicht bearbeitet werden."
         usage:
           ai_bot: "KI-Bot"
-          ai_helper: "KI-Helfer"
+          ai_helper: "Helfer"
           ai_persona: "Persona (%{persona})"
-          ai_summarization: "Zusammenfassung"
-          ai_embeddings_semantic_search: "Semantische Suche"
+          ai_summarization: "Zusammenfassen"
+          ai_embeddings_semantic_search: "KI-Suche"
         in_use_warning:
           one: "Dieses Modell wird derzeit von %{settings}verwendet. Wenn es falsch konfiguriert ist, wird die Funktion nicht wie erwartet funktionieren."
           other: "Dieses Modell wird derzeit von den folgenden Unternehmen verwendet: %{settings}. Wenn es falsch konfiguriert ist, werden die Funktionen nicht wie erwartet funktionieren. "
         model_description:
           none: "Allgemeine Einstellungen, die für die meisten Sprachmodelle funktionieren"
           anthropic-claude-3-5-sonnet: "Das intelligenteste Modell der Anthropologie"
+          anthropic-claude-3-5-haiku: "Schnell und kosteneffizient"
           anthropic-claude-3-opus: "Hervorragend im Schreiben und bei komplexen Aufgaben"
-          anthropic-claude-3-sonnet: "Ausgewogenheit zwischen Geschwindigkeit und Intelligenz"
-          anthropic-claude-3-haiku: "Schnell und kosteneffizient"
           google-gemini-1-5-pro: "Multimodales Modell mittlerer Größe, das eine Vielzahl von Aufgaben bewältigen kann"
           google-gemini-1-5-flash: "Leicht, schnell und kosteneffizient mit multimodaler Argumentation"
           open_ai-gpt-4-turbo: "Hochintelligentes Modell der vorherigen Generation"
           open_ai-gpt-4o: "Hochintelligentes Modell für komplexe, mehrstufige Aufgaben"
           open_ai-gpt-4o-mini: "Erschwingliches und schnelles kleines Modell für leichte Aufgaben"
+          open_ai-o1-mini: "Kosteneffizientes Argumentationsmodell"
+          open_ai-o1-preview: "Das leistungsfähigste Argumentationsmodell von Open AI"
+          samba_nova-Meta-Llama-3-1-8B-Instruct: "Effizientes leichtgewichtiges mehrsprachiges Modell"
+          samba_nova-Meta-Llama-3-1-70B-Instruct": "Leistungsstarkes Mehrzweckmodell"
+          mistral-mistral-large-latest: "Das leistungsstärkste Modell von Mistral"
+          mistral-pixtral-large-latest: "Das leistungsstärkste Modell von Mistral mit Sichtfunktion"
         configured:
           title: "Konfigurierte LLMs"
         preconfigured_llms: "Wähle dein LLM"
@@ -301,9 +308,9 @@ de:
           failure: "Beim Versuch, das Modell zu kontaktieren, wurde dieser Fehler zurückgegeben: %{error}"
         hints:
           max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50 % des Kontextfensters des Modells sein sollten."
-          name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden."
+          name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden"
           vision_enabled: "Wenn diese Funktion aktiviert ist, versucht die KI, Bilder zu verstehen. Dafür wird ein Modell benötigt, das Sehen unterstützt. Verfügbar in den neuesten Modellen von Anthropic, Google und OpenAI."
-          enabled_chat_bot: "Wenn diese Option aktiviert ist, können Benutzer dieses Modell auswählen, wenn sie PMs mit dem KI-Bot erstellen."
+          enabled_chat_bot: "Wenn diese Option aktiviert ist, können Benutzer dieses Modell auswählen, wenn sie PMs mit dem KI-Bot erstellen"
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
@@ -316,6 +323,7 @@ de:
           ollama: "Ollama"
           CDCK: "CDCK"
           samba_nova: "SambaNova"
+          mistral: "Mistral"
           fake: "Benutzerdefiniert"
         provider_fields:
           access_key_id: "AWS-Bedrock-Zugangsschlüssel-ID"
@@ -367,10 +375,10 @@ de:
           generating: "Beschriftung wird generiert …"
           credits: "Beschriftet durch KI"
           save_caption: "Speichern"
-          automatic_caption_setting: "Automatische KI-Bildbeschriftungen aktivieren"
+          automatic_caption_setting: "Automatische Beschriftung einschalten"
           automatic_caption_loading: "Bilder werden beschriftet …"
           automatic_caption_dialog:
-            prompt: "Dieser Beitrag enthält nicht beschriftete Bilder. Möchtest du automatische KI-Beschriftungen für hochgeladene Bilder aktivieren? (Das kannst du später in deinen Einstellungen ändern.)"
+            prompt: "Dieser Beitrag enthält nicht beschriftete Bilder. Möchtest du automatische Beschriftungen für hochgeladene Bilder aktivieren? (Das kannst du später in deinen Einstellungen ändern.)"
             confirm: "Aktivieren"
             cancel: "Nicht noch einmal fragen"
         no_content_error: "Füge zuerst Inhalte hinzu, um KI-Aktionen darauf auszuführen"
@@ -383,11 +391,15 @@ de:
         semantic_search_results:
           toggle: "%{count} Ergebnisse, die mit KI gefunden wurden, werden angezeigt"
           toggle_hidden: "%{count} mit KI gefundene Ergebnisse werden ausgeblendet"
-          none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden."
+          none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden"
           new: "Drücke auf „Suchen“, um mit der KI nach neuen Ergebnissen zu suchen"
         ai_generated_result: "Suchergebnis mit KI gefunden"
         quick_search:
           suffix: "in allen Themen und Beiträgen mit KI"
+      ai_artifact:
+        expand_view_label: "Ansicht erweitern"
+        collapse_view_label: "Vollbild beenden (ESC)"
+        click_to_run_label: "Artefakt ausführen"
       ai_bot:
         pm_warning: "KI-Chatbot-Nachrichten werden regelmäßig von Moderatoren überwacht."
         cancel_streaming: "Antwort abbrechen"
@@ -420,7 +432,7 @@ de:
           title: "KI-Unterhaltung kopieren"
           copy: "Kopieren"
           context: "Interaktionen zum Teilen:"
-          share_tip: Alternativ kannst du auch die gesamte Unterhaltung teilen.
+          share_tip: "Alternativ kannst du auch die gesamte Unterhaltung teilen"
         bot_names:
           fake: "Fake-Test-Bot"
           claude-3-opus: "Claude 3 Opus"
@@ -451,9 +463,6 @@ de:
         topic:
           title: "Zusammenfassung des Themas"
           close: "Zusammenfassungspanel schließen"
-        gists_enabled: "mit Zusammenfassung"
-        gists_enabled_long: "mit KI-generierter Zusammenfassung"
-        gists_disabled: "ohne Zusammenfassung"
     review:
       types:
         reviewable_ai_post:

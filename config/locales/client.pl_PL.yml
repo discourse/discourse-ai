@@ -23,7 +23,6 @@ pl_PL:
               description: "Użytkownicy, którzy otrzymają raport (e-maile zostaną wysłane bezpośrednio, nazwy użytkowników zostaną wysłane w wiadomości prywatnej)"
             topic_id:
               label: "ID tematu"
-              description: "Identyfikator tematu, w którym chcesz opublikować raport"
             title:
               label: "Tytuł"
               description: "Tytuł raportu"
@@ -41,7 +40,6 @@ pl_PL:
               description: "Liczba postów do pobrania na potrzeby raportu"
             tokens_per_post:
               label: "Tokeny za post"
-              description: "Liczba tokenów llm do wykorzystania na post"
             model:
               label: "Model"
               description: "LLM do wykorzystania do generowania raportów"
@@ -71,7 +69,6 @@ pl_PL:
               description: "Nadaj priorytet treściom z tej grupy w raporcie"
             temperature:
               label: "Temperatura"
-              description: "Temperatura używana dla LLM, zwiększ, aby zwiększyć losowość (0, aby użyć domyślnego modelu)"
         llm_triage:
           fields:
             system_prompt:
@@ -79,7 +76,6 @@ pl_PL:
               description: "Wskazówka, która zostanie użyta do trializacji, upewnij się, że odpowiedziałaś jednym słowem, którego możesz użyć do uruchomienia akcji"
             search_for_text:
               label: "Wyszukaj tekst"
-              description: "Jeśli w odpowiedzi llm pojawi się następujący tekst, zastosuj te działania"
             category:
               label: "Kategoria"
               description: "Kategoria do zastosowania w temacie"
@@ -88,13 +84,11 @@ pl_PL:
               description: "Tagi do zastosowania w temacie"
             canned_reply:
               label: "Odpowiedz"
-              description: "Surowy tekst gotowej odpowiedzi na post w temacie"
             canned_reply_user:
               label: "Odpowiedz użytkownikowi"
               description: "Nazwa użytkownika, który ma opublikować odpowiedź w szablonie"
             hide_topic:
               label: "Ukryj temat"
-              description: "Spraw, by temat nie był widoczny publicznie, jeśli zostanie uruchomiony."
             model:
               label: "Model"
     discourse_ai:
@@ -102,36 +96,27 @@ pl_PL:
       modals:
         select_option: "Wybierz opcję..."
       ai_persona:
-        back: Poprzednia
-        name: Nazwa
-        edit: Edytuj
-        description: Opis
+        back: "Poprzednia"
+        name: "Nazwa"
+        edit: "Edytuj"
+        description: "Opis"
         no_llm_selected: "Nie wybrano modelu językowego"
-        max_context_posts: "Maksymalna liczba postów kontekstowych"
         max_context_posts_help: "Maksymalna liczba postów do wykorzystania jako kontekst dla sztucznej inteligencji podczas odpowiadania użytkownikowi. (domyślnie puste)"
         vision_max_pixels: Obsługiwany rozmiar obrazu
-        mentionable: Zezwalaj na wzmianki
         user: Użytkownik
-        create_user: Utwórz użytkownika
         create_user_help: Opcjonalnie możesz przypisać użytkownika do tej osoby. Jeśli to zrobisz, sztuczna inteligencja użyje tego użytkownika do odpowiedzi na żądania.
-        default_llm: Domyślny model językowy
         default_llm_help: Domyślny model językowy używany dla tej persony. Wymagane, jeśli chcesz wspomnieć o osobie w postach publicznych.
-        system_prompt: Monit systemowy
-        save: Zapisz
-        saved: Zapisano AI Persona
+        save: "Zapisz"
         enabled: "Włączona?"
-        allowed_groups: Dozwolone grupy
-        confirm_delete: Czy na pewno chcesz usunąć tę personę?
-        title: "AI Personas"
-        delete: Usuń
-        temperature: Temperatura
-        temperature_help: Temperatura do zastosowania w LLM, zwiększ, aby zwiększyć kreatywność (pozostaw puste, aby użyć domyślnego modelu, zazwyczaj wartość od 0,0 do 2,0)
-        priority: Priorytet
-        priority_help: Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie.
+        allowed_groups: "Dozwolone grupy"
+        confirm_delete: "Czy na pewno chcesz usunąć tę personę?"
+        delete: "Usuń"
+        temperature: "Temperatura"
+        priority: "Priorytet"
+        priority_help: "Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie."
       rag:
         uploads:
           title: "Pliki"
-          button: "Dodaj pliki"
           uploading: "Przesyłanie..."
       tools:
         back: "Poprzednia"
@@ -141,28 +126,25 @@ pl_PL:
         save: "Zapisz"
         parameter_required: "Wymagane"
         edit: "Edytuj"
-        test: "Przeprowadź test"
         delete: "Usuń"
         next:
           title: "Następna"
-        test_modal:
-          run: "Przeprowadź test"
       llms:
         display_name: "Nazwa"
         save: "Zapisz"
         edit: "Edytuj"
         back: "Poprzednia"
         delete: Usuń
+        usage:
+          ai_summarization: "Podsumuj"
         next:
           title: "Następna"
         tests:
-          title: "Przeprowadź test"
           success: "Sukces!"
         providers:
           google: "Google"
           fake: "Niestandardowe"
       related_topics:
-        title: "Powiązane tematy"
         pill: "Powiązane"
       ai_helper:
         title: "Zaproponuj zmiany za pomocą AI"
@@ -178,9 +160,7 @@ pl_PL:
           confirm: "Potwierdź"
           discard: "Odrzuć"
           custom_prompt:
-            title: "Niestandardowy monit"
             placeholder: "Wprowadź niestandardowy monit..."
-            submit: "Wyślij monit"
         post_options_menu:
           trigger: "Zapytaj AI"
           title: "Zapytaj AI"
@@ -189,10 +169,7 @@ pl_PL:
           copy: "Kopiuj"
           copied: "Skopiowane!"
           cancel: "Anuluj"
-        fast_edit:
-          suggest_button: "Zaproponuj edycję"
         thumbnail_suggestions:
-          title: "Sugerowane miniatury"
           select: "Wybierz"
           selected: "Wybrany"
         image_caption:
@@ -208,8 +185,7 @@ pl_PL:
         semantic_search_results:
           toggle: "Wyświetlanie %{count} wyników znalezionych przy użyciu AI"
           toggle_hidden: "Ukrywanie %{count} wyników znalezionych przy użyciu AI"
-          none: "Przepraszamy, nasze wyszukiwanie AI nie znalazło pasujących tematów."
-          new: "Naciśnij 'Szukaj', aby rozpocząć wyszukiwanie nowych wyników za pomocą sztucznej inteligencji."
+          none: "Przepraszamy, nasze wyszukiwanie AI nie znalazło pasujących tematów"
         ai_generated_result: "Wynik wyszukiwania znaleziony przy użyciu AI"
       ai_bot:
         pm_warning: "Wiadomości wysyłane przez chatboty AI są regularnie monitorowane przez moderatorów."
@@ -223,11 +199,6 @@ pl_PL:
           response: "Odpowiedź"
           next_log: "Następna"
           previous_log: "Poprzedni"
-        share_full_topic_modal:
-          title: "Udostępnij rozmowę publicznie"
-          share: "Udostępnij i skopiuj link"
-          update: "Zaktualizuj i skopiuj link"
-          delete: "Usuń udostępnienie"
         share_ai_conversation:
           name: "Udostępnij rozmowę AI"
         ai_label: "AI"
@@ -236,7 +207,7 @@ pl_PL:
           title: "Skopiuj rozmowę AI"
           copy: "Kopiuj"
           context: "Interakcje do udostępnienia:"
-          share_tip: Alternatywnie możesz udostępnić całą rozmowę.
+          share_tip: "Alternatywnie możesz udostępnić całą rozmowę"
         bot_names:
           gpt-4: "GPT-4"
           gpt-4-turbo: "GPT-4 Turbo"

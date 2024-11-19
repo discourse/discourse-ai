@@ -30,14 +30,14 @@ et:
       modals:
         select_option: "Vali võimalus..."
       ai_persona:
-        back: Tagasi
-        name: Nimi
-        edit: Muuda
-        description: Kirjeldus
+        back: "Tagasi"
+        name: "Nimi"
+        edit: "Muuda"
+        description: "Kirjeldus"
         user: Kasutaja
-        save: Salvesta
+        save: "Salvesta"
         enabled: "Sisse lülitatud?"
-        delete: Kustuta
+        delete: "Kustuta"
       rag:
         uploads:
           title: "Üleslaadimised"

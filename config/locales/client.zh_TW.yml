@@ -28,14 +28,14 @@ zh_TW:
               label: "回覆"
     discourse_ai:
       ai_persona:
-        back: 上一步
-        name: 名字
-        edit: 編輯
-        description: 簡述
+        back: "上一步"
+        name: "名字"
+        edit: "編輯"
+        description: "簡述"
         user: 使用者
-        save: 保存
+        save: "保存"
         enabled: "啟用?"
-        delete: 刪除
+        delete: "刪除"
       rag:
         uploads:
           title: "上傳檔案"
@@ -48,22 +48,20 @@ zh_TW:
         save: "保存"
         parameter_required: "必要設定"
         edit: "編輯"
-        test: "執行測試"
         delete: "刪除"
         next:
           title: "下一步"
-        test_modal:
-          run: "執行測試"
       llms:
         display_name: "名字"
         save: "保存"
         edit: "編輯"
         back: "上一步"
         delete: 刪除
+        usage:
+          ai_summarization: "總結"
         next:
           title: "下一步"
         tests:
-          title: "執行測試"
           success: "成功!"
         providers:
           google: "Google"

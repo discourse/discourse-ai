@@ -30,14 +30,14 @@ sw:
       modals:
         select_option: "Chagua chaguo moja..."
       ai_persona:
-        back: Iliyopita
-        name: Jina
-        edit: Hariri
-        description: Elezo
+        back: "Iliyopita"
+        name: "Jina"
+        edit: "Hariri"
+        description: "Elezo"
         user: Mtumiaji
-        save: Hifadhi
+        save: "Hifadhi"
         enabled: "Imeruhusiwa?"
-        delete: Futa
+        delete: "Futa"
       rag:
         uploads:
           title: "Upakiaji"

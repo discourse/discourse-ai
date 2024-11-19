@@ -95,8 +95,20 @@ ja:
       title: "全体的なセンチメント"
       xaxis: "ポジティブ(%)"
       yaxis: "日付"
-    post_emotion:
-      title: "投稿の感情"
+    emotion_anger:
+      title: 怒り
+    emotion_disgust:
+      title: 嫌悪
+    emotion_fear:
+      title: 恐怖
+    emotion_joy:
+      title: 喜び
+    emotion_neutral:
+      title: ニュートラル
+    emotion_sadness:
+      title: 悲しみ
+    emotion_surprise:
+      title: 驚き
   discourse_ai:
     unknown_model: "不明な AI モデル"
     tools:

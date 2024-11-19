@@ -95,8 +95,20 @@ it:
       title: "Sentimento generale"
       xaxis: "Positiva(%)"
       yaxis: "Data"
-    post_emotion:
-      title: "Emozione del messaggio"
+    emotion_anger:
+      title: Rabbia
+    emotion_disgust:
+      title: Disgusto
+    emotion_fear:
+      title: Paura
+    emotion_joy:
+      title: Gioia
+    emotion_neutral:
+      title: Neutro
+    emotion_sadness:
+      title: Tristezza
+    emotion_surprise:
+      title: Sorpresa
   discourse_ai:
     unknown_model: "Modello IA sconosciuto"
     tools:

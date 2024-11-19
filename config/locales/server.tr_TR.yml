@@ -95,8 +95,20 @@ tr_TR:
       title: "Genel duyarlılık"
       xaxis: "Pozitif(%)"
       yaxis: "Tarih"
-    post_emotion:
-      title: "Duygu gönder"
+    emotion_anger:
+      title: Öfke
+    emotion_disgust:
+      title: İğrenme
+    emotion_fear:
+      title: Korku
+    emotion_joy:
+      title: Neşe
+    emotion_neutral:
+      title: Nötr
+    emotion_sadness:
+      title: Üzüntü
+    emotion_surprise:
+      title: Sürpriz
   discourse_ai:
     unknown_model: "Bilinmeyen YZ modeli"
     tools:

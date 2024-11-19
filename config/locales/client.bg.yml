@@ -30,14 +30,14 @@ bg:
       modals:
         select_option: "Изберете опция..."
       ai_persona:
-        back: Назад
-        name: Име
-        edit: Редактирай
-        description: Описание
+        back: "Назад"
+        name: "Име"
+        edit: "Редактирай"
+        description: "Описание"
         user: Потребител
-        save: Запази
+        save: "Запази "
         enabled: "Да е включен?"
-        delete: Изтрий
+        delete: "Изтрий"
       rag:
         uploads:
           uploading: "Качва се..."
@@ -58,6 +58,8 @@ bg:
         edit: "Редактирай"
         back: "Назад"
         delete: Изтрий
+        usage:
+          ai_summarization: "Обобщаване"
         next:
           title: "Напред"
         providers:

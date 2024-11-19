@@ -8,6 +8,8 @@ ug:
   reports:
     overall_sentiment:
       yaxis: "چېسلا"
+    emotion_neutral:
+      title: بىتەرەپ
   discourse_ai:
     ai_bot:
       tool_summary:

@@ -95,8 +95,20 @@ ru:
       title: "Общее настроение"
       xaxis: "Позитивные(%)"
       yaxis: "Дата"
-    post_emotion:
-      title: "Эмоция публикации"
+    emotion_anger:
+      title: Гнев
+    emotion_disgust:
+      title: Отвращение
+    emotion_fear:
+      title: Страх
+    emotion_joy:
+      title: Радость
+    emotion_neutral:
+      title: Нейтральность
+    emotion_sadness:
+      title: Грусть
+    emotion_surprise:
+      title: Удивление
   discourse_ai:
     unknown_model: "Неизвестная модель AI"
     tools:

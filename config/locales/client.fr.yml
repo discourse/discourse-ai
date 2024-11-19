@@ -23,7 +23,6 @@ fr:
               description: "Les utilisateurs qui recevront le rapport (les e-mails seront envoyés directement par e-mail, les noms d'utilisateur seront envoyés par MP)"
             topic_id:
               label: "ID du sujet"
-              description: "L'identifiant du sujet dans lequel publier le rapport"
             title:
               label: "Titre"
               description: "Le titre du rapport"
@@ -41,7 +40,6 @@ fr:
               description: "Le nombre de publications à échantillonner pour le rapport"
             tokens_per_post:
               label: "Jetons par publication"
-              description: "Le nombre de jetons LLM à utiliser par publication"
             model:
               label: "Modèle"
               description: "LLM à utiliser pour la génération de rapports"
@@ -71,7 +69,6 @@ fr:
               description: "Priorisez le contenu de ce groupe dans le rapport"
             temperature:
               label: "Température"
-              description: "Température à utiliser pour le LLM, augmentez pour augmenter le caractère aléatoire (0 pour utiliser la valeur par défaut du modèle)"
             top_p:
               label: "Top P"
               description: "Top P à utiliser pour le LLM, augmentez pour augmenter le caractère aléatoire (0 pour utiliser la valeur par défaut du modèle)"
@@ -82,7 +79,6 @@ fr:
               description: "L'invite qui sera utilisée pour le tri, assurez-vous qu'elle répond avec un seul mot que vous pouvez utiliser pour déclencher l'action"
             search_for_text:
               label: "Recherche de texte"
-              description: "Si le texte suivant apparaît dans la réponse LLM, appliquez ces actions"
             category:
               label: "Catégorie"
               description: "Catégorie à appliquer au sujet"
@@ -91,13 +87,11 @@ fr:
               description: "Étiquettes à appliquer au sujet"
             canned_reply:
               label: "Réponse"
-              description: "Texte brut de la réponse prédéfinie à un message sur le sujet"
             canned_reply_user:
               label: "Répondre à l'utilisateur"
               description: "Nom d'utilisateur de l'utilisateur qui publiera la réponse prédéfinie"
             hide_topic:
               label: "Masquer le sujet"
-              description: "Rendez le sujet invisible au public si l'action est déclenchée"
             model:
               label: "Modèle"
               description: "Modèle linguistique utilisé pour le tri"
@@ -106,73 +100,41 @@ fr:
       modals:
         select_option: "Sélectionnez une option..."
       ai_persona:
-        back: Retour
-        name: Nom
-        edit: Modifier
-        description: Description
+        back: "Retour"
+        name: "Nom"
+        edit: "Modifier"
+        description: "Description"
         no_llm_selected: "Aucun modèle linguistique sélectionné"
-        max_context_posts: "Nombre maximal de publications contextuelles"
         max_context_posts_help: "Le nombre maximal de publications à utiliser comme contexte pour l'IA lorsqu'elle répond à un utilisateur. (vide par défaut)"
         vision_enabled: Vision activée
         vision_enabled_help: Si cette option est activée, l'IA tentera de comprendre les images publiées par les utilisateurs dans le sujet, en fonction du modèle utilisé prenant en charge la vision. Pris en charge par les derniers modèles d'Anthropic, Google et OpenAI.
         vision_max_pixels: Taille d'image prise en charge
-        vision_max_pixel_sizes:
-          low: Qualité faible - moins cher (256x256)
-          medium: Qualité moyenne (512x512)
-          high: Haute qualité - plus lent (1024x1024)
-        tool_details: Afficher les détails de l'outil
         tool_details_help: Affiche aux utilisateurs finaux des informations sur les outils que le modèle linguistique a déclenchés.
-        mentionable: Autoriser les mentions
         mentionable_help: Si cette option est activée, les utilisateurs des groupes autorisés peuvent mentionner cet utilisateur dans les publications, l'IA répondra en tant que personnage.
         user: Utilisateur
-        create_user: Créer un utilisateur
         create_user_help: Vous pouvez éventuellement associer un utilisateur à ce personnage. Si vous le faites, l'IA utilisera cet utilisateur pour répondre aux demandes.
-        default_llm: Modèle linguistique par défaut
         default_llm_help: Le modèle linguistique par défaut à utiliser pour ce personnage. Obligatoire si vous souhaitez mentionner un personnage sur des publications publiques.
         question_consolidator_llm: Modèle linguistique pour le consolidateur de questions
         question_consolidator_llm_help: Le modèle linguistique à utiliser pour le consolidateur de questions, vous pouvez choisir un modèle moins puissant pour réduire les coûts.
-        system_prompt: Invite du système
-        save: Enregistrer
-        saved: Personnage IA enregistré
+        save: "Enregistrer"
         enabled: "Activé ?"
-        tools: Outils activés
-        allowed_groups: Groupes autorisés
-        confirm_delete: Voulez-vous vraiment supprimer ce personnage ?
-        new: "Nouveau personnage"
-        title: "Personnages IA"
+        allowed_groups: "Groupes autorisés"
+        confirm_delete: "Voulez-vous vraiment supprimer ce personnage ?"
+        title: "Personnages"
         short_title: "Personnages"
-        delete: Supprimer
-        temperature: Température
-        temperature_help: Température à utiliser pour le LLM, augmentez pour augmenter la créativité (laissez vide pour utiliser la valeur par défaut du modèle, généralement une valeur comprise entre 0,0 et 2,0)
-        top_p: Top P
-        top_p_help: Top P à utiliser pour le LLM, augmentez pour augmenter le caractère aléatoire (laissez vide pour utiliser la valeur par défaut du modèle, généralement une valeur comprise entre 0,0 et 1,0)
-        priority: Priorité
-        priority_help: Les personnages prioritaires sont affichés aux utilisateurs en haut de la liste des personnages. Si plusieurs personnages sont prioritaires, ils seront triés par ordre alphabétique.
-        tool_options: "Options de l'outil"
-        rag_conversation_chunks: "Rechercher des morceaux de conversation"
+        delete: "Supprimer"
+        temperature: "Température"
+        top_p: "Top P"
+        top_p_help: "Top P à utiliser pour le LLM, augmentez pour augmenter le caractère aléatoire (laissez vide pour utiliser la valeur par défaut du modèle, généralement une valeur comprise entre 0,0 et 1,0)"
+        priority: "Priorité"
+        priority_help: "Les personnages prioritaires sont affichés aux utilisateurs en haut de la liste des personnages. Si plusieurs personnages sont prioritaires, ils seront triés par ordre alphabétique."
         rag_conversation_chunks_help: "Le nombre de segments à utiliser pour les recherches de modèles RAG. Augmentez pour augmenter la quantité de contexte que l'IA peut utiliser."
-        what_are_personas: "Que sont les personnages IA ?"
-        no_persona_selected: |
-          Les personnages IA sont une fonctionnalité puissante qui vous permet de personnaliser le comportement du moteur IA dans votre forum Discourse. Ils agissent comme un « message système » qui guide les réponses et les interactions de l'IA, en contribuant ainsi à créer une expérience utilisateur plus personnalisée et plus interactive.
-
-          #### Pourquoi utiliser les personnages IA ?
-
-          Avec les personnages IA, vous pouvez mieux adapter le comportement de l'IA au contexte et au ton de votre forum. Que vous souhaitiez que l'IA soit plus formelle pour un cadre professionnel, plus décontractée pour un forum communautaire, ou même incarner un personnage spécifique pour un jeu de rôle, les personnages IA vous offrent la flexibilité de le faire.
-
-          #### Accès spécifique à un groupe aux personnages IA
-
-          De plus, vous pouvez les configurer pour que certains groupes d'utilisateurs aient accès à des personnages spécifiques. Cela signifie que vous pouvez avoir différents comportements d'IA pour différentes sections de votre forum, et améliorer ainsi encore la diversité et la richesse des interactions de votre communauté.
       rag:
         options:
-          rag_chunk_tokens: "Télécharger des jetons de fragments"
           rag_chunk_tokens_help: "Le nombre de jetons à utiliser pour chaque morceau du modèle RAG. Augmentez pour augmenter la quantité de contexte que l'IA peut utiliser. (la modification indexera à nouveau tous les téléversements)"
-          rag_chunk_overlap_tokens: "Téléverser des jetons de chevauchement de morceaux"
           rag_chunk_overlap_tokens_help: "Le nombre de jetons à superposer entre les morceaux dans le modèle RAG. (la modification indexera à nouveau tous les téléversements)"
-          show_indexing_options: "Afficher les options de téléversement"
-          hide_indexing_options: "Masquer les options de téléversement"
         uploads:
           title: "Fichiers envoyés"
-          button: "Ajouter des fichiers"
           filter: "Filtrer les téléversements"
           indexed: "Indexé"
           indexing: "Indexation"
@@ -182,7 +144,6 @@ fr:
       tools:
         back: "Retour"
         short_title: "Outils"
-        new: "Nouvel outil"
         name: "Nom"
         name_help: "Le nom unique de l'outil tel qu'utilisé par le modèle linguistique"
         description: "Description"
@@ -195,50 +156,40 @@ fr:
         add_parameter: "Ajouter un paramètre"
         parameter_required: "Requis"
         parameter_enum: "Énumération"
-        parameter_name: "Nom du paramètre"
-        parameter_description: "Description du paramètre"
         enum_value: "Valeur d'énumération"
         add_enum_value: "Ajouter une valeur d'énumération"
         edit: "Modifier"
-        test: "Lancer le test"
         delete: "Supprimer"
         saved: "Outil enregistré"
         presets: "Sélectionnez un préréglage..."
-        confirm_delete: Voulez-vous vraiment supprimer cet outil ?
+        confirm_delete: "Voulez-vous vraiment supprimer cet outil ?"
         next:
           title: "Suivant"
-        test_modal:
-          title: "Tester l'outil d'IA"
-          run: "Lancer le test"
-          result: "Résultat du test"
       llms:
         short_title: "LLM"
         no_llms: "Pas encore de LLM"
-        new: "Nouveau modèle"
         display_name: "Nom"
         tokenizer: "Tokéniseur"
         max_prompt_tokens: "Nombre de jetons pour l'invite"
         url: "URL du service hébergeant le modèle"
         api_key: "Clé API du service hébergeant le modèle"
         vision_enabled: "Vision activée"
-        ai_bot_user: "Utilisateur robot IA"
         save: "Enregistrer"
         edit: "Modifier"
-        saved: "Modèle LLM enregistré"
         back: "Retour"
         confirm_delete: Voulez-vous vraiment supprimer ce modèle ?
         delete: Supprimer
+        usage:
+          ai_summarization: "Résumer"
         preconfigured_llms: "Sélectionnez votre LLM"
         next:
           title: "Suivant"
         tests:
-          title: "Lancer le test"
           running: "Exécution du test..."
           success: "Succès !"
           failure: "La tentative de contact avec le modèle a renvoyé cette erreur : %{error}"
         hints:
           max_prompt_tokens: "Nombre maximal de jetons pour l'invite. En règle générale, cela devrait représenter 50 % de la fenêtre contextuelle du modèle."
-          name: "Nous l'incluons dans l'appel d'API pour spécifier le modèle que nous allons utiliser."
           vision_enabled: "Si cette option est activée, l'IA tentera de comprendre les images. Cela dépend du modèle utilisé prenant en charge la vision. Pris en charge par les derniers modèles d'Anthropic, Google et OpenAI."
         providers:
           aws_bedrock: "AWS Bedrock"
@@ -251,12 +202,7 @@ fr:
           azure: "Azure"
           ollama: "Ollama"
           fake: "Personnalisé"
-        provider_fields:
-          access_key_id: "ID de clé d'accès AWS Bedrock"
-          region: "Région AWS Bedrock"
-          organization: "ID d'organisation OpenAI facultatif"
       related_topics:
-        title: "Sujets connexes"
         pill: "Lié"
       ai_helper:
         title: "Suggérer des modifications à l'aide de l'IA"
@@ -272,9 +218,7 @@ fr:
           confirm: "Confirmer"
           discard: "Abandonner"
           custom_prompt:
-            title: "Invite personnalisée"
             placeholder: "Saisissez une invite personnalisée..."
-            submit: "Envoyer l'invite"
           translate_prompt: "Traduire en %{language}"
         post_options_menu:
           trigger: "Demander à l'IA"
@@ -286,10 +230,7 @@ fr:
           cancel: "Annuler"
           insert_footnote: "Ajouter une note de bas de page"
           footnote_credits: "Explication par l'IA"
-        fast_edit:
-          suggest_button: "Suggérer une modification"
         thumbnail_suggestions:
-          title: "Miniatures suggérées"
           select: "Sélectionner"
           selected: "Sélectionné"
         image_caption:
@@ -297,10 +238,8 @@ fr:
           generating: "Génération de la légende..."
           credits: "Légende par l'IA"
           save_caption: "Enregistrer"
-          automatic_caption_setting: "Activer les légendes automatiques des images IA"
           automatic_caption_loading: "Ajout des légendes des images..."
           automatic_caption_dialog:
-            prompt: "Cette publication contient des images non légendées. Souhaitez-vous activer les légendes automatiques de l'IA lors du téléversement d'images ? (Cela peut être modifié ultérieurement dans vos préférences)"
             confirm: "Activer"
             cancel: "Ne plus demander"
       reviewables:
@@ -312,8 +251,7 @@ fr:
         semantic_search_results:
           toggle: "Affichage de %{count} résultats trouvés en utilisant l'IA"
           toggle_hidden: "Masquer %{count} résultats trouvés à l’aide de l'IA"
-          none: "Nous sommes désolés, notre recherche par IA n'a trouvé aucun sujet correspondant."
-          new: "Appuyez sur « Rechercher » pour commencer à rechercher de nouveaux résultats avec l'IA"
+          none: "Nous sommes désolés, notre recherche par IA n'a trouvé aucun sujet correspondant"
         ai_generated_result: "Résultat de recherche trouvé à l'aide de l'IA"
         quick_search:
           suffix: "dans tous les sujets et publications avec IA"
@@ -335,13 +273,8 @@ fr:
           response: "Réponse"
           next_log: "Suivant"
           previous_log: "Précédent"
-        share_full_topic_modal:
-          title: "Partager la conversation publiquement"
-          share: "Partager et copier le lien"
-          update: "Mettre à jour et copier le lien"
-          delete: "Supprimer le partage"
         share_ai_conversation:
-          name: "Partager la conversation avec l'IA"
+          name: "Partager une conversation IA"
           title: "Partager publiquement cette conversation avec l'IA"
         ai_label: "IA"
         ai_title: "Conversation avec l'IA"
@@ -349,7 +282,7 @@ fr:
           title: "Copier la conversation avec l'IA"
           copy: "Copie"
           context: "Interactions à partager :"
-          share_tip: Vous pouvez également partager l'intégralité de la conversation.
+          share_tip: "Vous pouvez également partager l'intégralité de la conversation"
         bot_names:
           fake: "Faux robot de test"
           claude-3-opus: "Claude 3 Opus"

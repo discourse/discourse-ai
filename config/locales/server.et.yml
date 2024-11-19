@@ -8,6 +8,8 @@ et:
   reports:
     overall_sentiment:
       yaxis: "Date"
+    emotion_neutral:
+      title: Neutraalne
   discourse_ai:
     ai_bot:
       tool_summary:

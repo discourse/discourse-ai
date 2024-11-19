@@ -52,14 +52,14 @@ fa_IR:
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
       ai_persona:
-        back: بازگشت
-        name: نام
-        edit: ویرایش
-        description: توضیح
+        back: "بازگشت"
+        name: "نام"
+        edit: "ویرایش"
+        description: "توضیح"
         user: کاربر
-        save: ذخیره
+        save: "ذخیره"
         enabled: "فعال شده؟"
-        delete: حذف
+        delete: "حذف"
       rag:
         uploads:
           title: "بارگذاری‌ها"
@@ -72,31 +72,26 @@ fa_IR:
         save: "ذخیره"
         parameter_required: "مورد نیاز"
         edit: "ویرایش"
-        test: "اجرای آزمایش"
         delete: "حذف"
         next:
           title: "بعدی"
-        test_modal:
-          run: "اجرای آزمایش"
       llms:
-        new: "مدل جدید"
         display_name: "نام"
         save: "ذخیره"
         edit: "ویرایش"
         back: "بازگشت"
         delete: حذف
+        usage:
+          ai_summarization: "خلاصه کنید"
         next:
           title: "بعدی"
         tests:
-          title: "اجرای آزمایش"
           running: "در حال اجرای آزمایش..."
           success: "موفقیت!"
           failure: "در حال ارتباط با مدل این خطا رخ داد: %{error}"
         providers:
           google: "گوگل"
           fake: "سفارشی"
-      related_topics:
-        title: "موضوعات مرتبط"
       ai_helper:
         title: "پیشنهاد تغییرات با استفاده از هوش مصنوعی"
         description: "یکی از گزینه‌های زیر را انتخاب کنید و هوش مصنوعی نسخه جدیدی از متن را به شما پیشنهاد می‌کند."
@@ -113,8 +108,6 @@ fa_IR:
           cancel: "انصراف"
           insert_footnote: "افزودن پاورقی"
           footnote_credits: "توضیح توسط هوش مصنوعی"
-        fast_edit:
-          suggest_button: "پیشنهاد ویرایش"
         thumbnail_suggestions:
           select: "انتخاب"
         image_caption:
@@ -145,6 +138,3 @@ fa_IR:
       summarization:
         chat:
           summarize: "خلاصه کنید"
-        gists_enabled: "با خلاصه"
-        gists_enabled_long: "با خلاصه تولید شده توسط هوش مصنوعی"
-        gists_disabled: "بدون خلاصه"

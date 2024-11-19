@@ -8,6 +8,8 @@ ca:
   reports:
     overall_sentiment:
       yaxis: "Data"
+    emotion_neutral:
+      title: Neutre
   discourse_ai:
     ai_bot:
       tool_summary:
