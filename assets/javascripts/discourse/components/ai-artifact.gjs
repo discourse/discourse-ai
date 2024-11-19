@@ -104,7 +104,6 @@ export default class AiArtifactComponent extends Component {
           src={{this.artifactUrl}}
           width="100%"
           frameborder="0"
-          sandbox="allow-scripts allow-forms"
         ></iframe>
       {{/if}}
       {{#unless this.requireClickToRun}}

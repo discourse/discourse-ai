@@ -173,6 +173,8 @@ en:
       title: Surprise
 
   discourse_ai:
+    ai_artifact:
+      link: "Show Artifact in new tab"
     unknown_model: "Unknown AI model"
 
     tools:
