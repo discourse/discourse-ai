@@ -18,6 +18,10 @@ RSpec.describe DiscourseAi::AiBot::ArtifactsController do
     )
   end
 
+  def parse_srcdoc(html)
+    Nokogiri.HTML5(html).at_css("iframe")["srcdoc"]
+  end
+
   before do
     SiteSetting.discourse_ai_enabled = true
     SiteSetting.ai_artifact_security = "strict"
@@ -46,9 +50,10 @@ RSpec.describe DiscourseAi::AiBot::ArtifactsController do
         sign_in(user)
         get "/discourse-ai/ai-bot/artifacts/#{artifact.id}"
         expect(response.status).to eq(200)
-        expect(response.body).to include(artifact.html)
-        expect(response.body).to include(artifact.css)
-        expect(response.body).to include(artifact.js)
+        untrusted_html = parse_srcdoc(response.body)
+        expect(untrusted_html).to include(artifact.html)
+        expect(untrusted_html).to include(artifact.css)
+        expect(untrusted_html).to include(artifact.js)
       end
     end
 
@@ -58,7 +63,7 @@ RSpec.describe DiscourseAi::AiBot::ArtifactsController do
       it "shows artifact without authentication" do
         get "/discourse-ai/ai-bot/artifacts/#{artifact.id}"
         expect(response.status).to eq(200)
-        expect(response.body).to include(artifact.html)
+        expect(parse_srcdoc(response.body)).to include(artifact.html)
       end
     end
 

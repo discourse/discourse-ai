@@ -19,8 +19,8 @@ module DiscourseAi
           raise Discourse::NotFound if !guardian.can_see?(post)
         end
 
-        # Prepare the HTML document
-        html = <<~HTML
+        # Prepare the inner (untrusted) HTML document
+        untrusted_html = <<~HTML
           <!DOCTYPE html>
           <html>
             <head>
@@ -39,11 +39,33 @@ module DiscourseAi
           </html>
         HTML
 
+        # Prepare the outer (trusted) HTML document
+        trusted_html = <<~HTML
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="UTF-8">
+              <title>#{ERB::Util.html_escape(artifact.name)}</title>
+              <style>
+                html, body, iframe {
+                  margin: 0;
+                  padding: 0;
+                  width: 100%;
+                  height: 100%;
+                }
+              </style>
+            </head>
+            <body>
+              <iframe sandbox="allow-scripts allow-forms" height="100%" width="100%" srcdoc="#{ERB::Util.html_escape(untrusted_html)}" frameborder="0"></iframe>
+            </body>
+          </html>
+        HTML
+
         response.headers.delete("X-Frame-Options")
         response.headers["Content-Security-Policy"] = "script-src 'unsafe-inline';"
 
         # Render the content
-        render html: html.html_safe, layout: false, content_type: "text/html"
+        render html: trusted_html.html_safe, layout: false, content_type: "text/html"
       end
 
       private
