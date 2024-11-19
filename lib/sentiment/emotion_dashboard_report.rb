@@ -9,7 +9,7 @@ module DiscourseAi
             query_results = DiscourseAi::Sentiment::EmotionDashboardReport.fetch_data
             report.data = query_results.pop(30).map { |row| { x: row.day, y: row.send(emotion) } }
             report.prev30Days =
-              query_results.take(30).map { |row| { x: row.day, y: row.send(emotion) } }
+              query_results.take(30).reduce(0) { |sum, row| sum + row.send(emotion) }.to_i
           end
         end
 
