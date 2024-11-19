@@ -19,7 +19,10 @@ module DiscourseAi
         end
 
         def default_options(dialect)
-          options = { max_tokens: 3_000, anthropic_version: "bedrock-2023-05-31" }
+          max_tokens = 4096
+          max_tokens = 8192 if bedrock_model_id.match?(/3.5/)
+
+          options = { max_tokens: max_tokens, anthropic_version: "bedrock-2023-05-31" }
 
           options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
             dialect.prompt.has_tools?
@@ -40,6 +43,27 @@ module DiscourseAi
 
         private
 
+        def bedrock_model_id
+          case llm_model.name
+          when "claude-2"
+            "anthropic.claude-v2:1"
+          when "claude-3-haiku"
+            "anthropic.claude-3-haiku-20240307-v1:0"
+          when "claude-3-sonnet"
+            "anthropic.claude-3-sonnet-20240229-v1:0"
+          when "claude-instant-1"
+            "anthropic.claude-instant-v1"
+          when "claude-3-opus"
+            "anthropic.claude-3-opus-20240229-v1:0"
+          when "claude-3-5-sonnet"
+            "anthropic.claude-3-5-sonnet-20241022-v2:0"
+          when "claude-3-5-haiku"
+            "anthropic.claude-3-5-haiku-20241022-v1:0"
+          else
+            llm_model.name
+          end
+        end
+
         def prompt_size(prompt)
           # approximation
           tokenizer.size(prompt.system_prompt.to_s + " " + prompt.messages.to_s)
@@ -47,24 +71,6 @@ module DiscourseAi
 
         def model_uri
           region = llm_model.lookup_custom_param("region")
-
-          bedrock_model_id =
-            case llm_model.name
-            when "claude-2"
-              "anthropic.claude-v2:1"
-            when "claude-3-haiku"
-              "anthropic.claude-3-haiku-20240307-v1:0"
-            when "claude-3-sonnet"
-              "anthropic.claude-3-sonnet-20240229-v1:0"
-            when "claude-instant-1"
-              "anthropic.claude-instant-v1"
-            when "claude-3-opus"
-              "anthropic.claude-3-opus-20240229-v1:0"
-            when "claude-3-5-sonnet"
-              "anthropic.claude-3-5-sonnet-20241022-v2:0"
-            else
-              llm_model.name
-            end
 
           if region.blank? || bedrock_model_id.blank?
             raise CompletionFailed.new(I18n.t("discourse_ai.llm_models.bedrock_invalid_url"))

@@ -28,6 +28,9 @@ class LlmModel < ActiveRecord::Base
         organization: :text,
         disable_native_tools: :checkbox,
       },
+      mistral: {
+        disable_native_tools: :checkbox,
+      },
       google: {
         disable_native_tools: :checkbox,
       },

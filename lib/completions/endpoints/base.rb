@@ -20,6 +20,7 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::Anthropic,
               DiscourseAi::Completions::Endpoints::Cohere,
               DiscourseAi::Completions::Endpoints::SambaNova,
+              DiscourseAi::Completions::Endpoints::Mistral,
             ]
 
             endpoints << DiscourseAi::Completions::Endpoints::Ollama if Rails.env.development?

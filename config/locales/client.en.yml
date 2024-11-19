@@ -290,6 +290,8 @@ en:
           open_ai-o1-preview: "Open AI's most capabale reasoning model"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficient lightweight multilingual model"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Powerful multipurpose model"
+          mistral-mistral-large-latest: "Mistral's most powerful model"
+          mistral-pixtral-large-latest: "Mistral's most powerful vision capable model"
 
         configured:
           title: "Configured LLMs"
@@ -325,6 +327,7 @@ en:
           ollama: "Ollama"
           CDCK: "CDCK"
           samba_nova: "SambaNova"
+          mistral: "Mistral"
           fake: "Custom"
 
         provider_fields:
