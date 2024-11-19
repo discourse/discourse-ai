@@ -13,6 +13,7 @@ class AiApiAuditLog < ActiveRecord::Base
     Cohere = 6
     Ollama = 7
     SambaNova = 8
+    Mistral = 9
   end
 
   def next_log_id
