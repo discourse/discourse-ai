@@ -6,7 +6,7 @@ import { on } from "@ember/modifier";
 import { action, computed } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import Avatar from "discourse/helpers/bound-avatar-template";

@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import AISuggestionDropdown from "../../components/ai-suggestion-dropdown";
 import { showComposerAiHelper } from "../../lib/show-ai-helper";
 

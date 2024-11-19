@@ -32,7 +32,11 @@ module DiscourseAi
               llm_model.name
             end
 
-          options = { model: mapped_model, max_tokens: 3_000 }
+          # Note: Anthropic requires this param
+          max_tokens = 4096
+          max_tokens = 8192 if mapped_model.match?(/3.5/)
+
+          options = { model: mapped_model, max_tokens: max_tokens }
 
           options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
             dialect.prompt.has_tools?

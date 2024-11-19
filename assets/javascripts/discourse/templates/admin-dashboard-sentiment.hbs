@@ -22,12 +22,43 @@
         @filters={{this.filters}}
         @showHeader={{true}}
       />
-
-      <AdminReport
-        @dataSourceName="post_emotion"
-        @filters={{this.filters}}
-        @showHeader={{true}}
-      />
+      <div class="admin-report activity-metrics">
+        <div class="header">
+          <ul class="breadcrumb">
+            <li class="item report">
+              <LinkTo @route="adminReports" class="report-url">
+                {{i18n "admin.dashboard.emotion"}}
+              </LinkTo>
+            </li>
+          </ul>
+        </div>
+        <div class="report-body">
+          <div class="counters-list">
+            <div class="counters-header">
+              <div class="counters-cell"></div>
+              <div class="counters-cell">{{i18n
+                  "admin.dashboard.reports.today"
+                }}</div>
+              <div class="counters-cell">{{i18n
+                  "admin.dashboard.reports.yesterday"
+                }}</div>
+              <div class="counters-cell">{{i18n
+                  "admin.dashboard.reports.last_7_days"
+                }}</div>
+              <div class="counters-cell">{{i18n
+                  "admin.dashboard.reports.last_30_days"
+                }}</div>
+            </div>
+            {{#each this.emotions as |metric|}}
+              <AdminReport
+                @showHeader={{false}}
+                @forcedModes="emotion"
+                @dataSourceName="emotion_{{metric}}"
+              />
+            {{/each}}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

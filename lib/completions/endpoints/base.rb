@@ -20,6 +20,7 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::Anthropic,
               DiscourseAi::Completions::Endpoints::Cohere,
               DiscourseAi::Completions::Endpoints::SambaNova,
+              DiscourseAi::Completions::Endpoints::Mistral,
             ]
 
             endpoints << DiscourseAi::Completions::Endpoints::Ollama if Rails.env.development?
@@ -96,8 +97,10 @@ module DiscourseAi
                 raise CompletionFailed, response.body
               end
 
-              xml_tool_processor = XmlToolProcessor.new if xml_tools_enabled? &&
-                dialect.prompt.has_tools?
+              xml_tool_processor =
+                XmlToolProcessor.new(
+                  partial_tool_calls: partial_tool_calls,
+                ) if xml_tools_enabled? && dialect.prompt.has_tools?
 
               to_strip = xml_tags_to_strip(dialect)
               xml_stripper =

@@ -324,6 +324,37 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     expect(log.response_tokens).to eq(4)
   end
 
+  it "Can correctly handle malformed responses" do
+    response = <<~TEXT
+      data: {"candidates": [{"content": {"parts": [{"text": "Certainly"}],"role": "model"}}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+      data: {"candidates": [{"content": {"parts": [{"text": "! I'll create a simple \\"Hello, World!\\" page where each letter"}],"role": "model"},"safetyRatings": [{"category": "HARM_CATEGORY_HATE_SPEECH","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_DANGEROUS_CONTENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_HARASSMENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT","probability": "NEGLIGIBLE"}]}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+      data: {"candidates": [{"content": {"parts": [{"text": " has a different color using inline styles for simplicity.  Each letter will be wrapped"}],"role": "model"},"safetyRatings": [{"category": "HARM_CATEGORY_HATE_SPEECH","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_DANGEROUS_CONTENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_HARASSMENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT","probability": "NEGLIGIBLE"}]}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+      data: {"candidates": [{"content": {"parts": [{"text": ""}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+      data: {"candidates": [{"finishReason": "MALFORMED_FUNCTION_CALL"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+    TEXT
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
+
+    output = []
+
+    stub_request(:post, url).to_return(status: 200, body: response)
+    llm.generate("Hello", user: user) { |partial| output << partial }
+
+    expect(output).to eq(
+      [
+        "Certainly",
+        "! I'll create a simple \"Hello, World!\" page where each letter",
+        " has a different color using inline styles for simplicity.  Each letter will be wrapped",
+      ],
+    )
+  end
+
   it "Can correctly handle streamed responses even if they are chunked badly" do
     data = +""
     data << "da|ta: |"

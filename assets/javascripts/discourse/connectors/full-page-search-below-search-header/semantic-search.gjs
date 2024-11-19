@@ -3,7 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
 import { ajax } from "discourse/lib/ajax";

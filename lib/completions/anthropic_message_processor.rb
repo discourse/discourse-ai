@@ -35,6 +35,8 @@ class DiscourseAi::Completions::AnthropicMessageProcessor
 
     def to_tool_call
       parameters = JSON.parse(raw_json, symbolize_names: true)
+      # we dupe to avoid poisoning the original tool call
+      @tool_call = @tool_call.dup
       @tool_call.partial = false
       @tool_call.parameters = parameters
       @tool_call

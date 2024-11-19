@@ -16,6 +16,7 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::Claude,
               DiscourseAi::Completions::Dialects::Command,
               DiscourseAi::Completions::Dialects::Ollama,
+              DiscourseAi::Completions::Dialects::Mistral,
               DiscourseAi::Completions::Dialects::OpenAiCompatible,
             ]
           end
@@ -168,7 +169,7 @@ module DiscourseAi
           raise NotImplemented
         end
 
-        def assistant_msg(msg)
+        def model_msg(msg)
           raise NotImplemented
         end
 
@@ -177,11 +178,15 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          { role: "assistant", content: tools_dialect.from_raw_tool_call(msg) }
+          new_content = tools_dialect.from_raw_tool_call(msg)
+          msg = msg.merge(content: new_content)
+          model_msg(msg)
         end
 
         def tool_msg(msg)
-          { role: "user", content: tools_dialect.from_raw_tool(msg) }
+          new_content = tools_dialect.from_raw_tool(msg)
+          msg = msg.merge(content: new_content)
+          user_msg(msg)
         end
       end
     end

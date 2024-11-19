@@ -90,6 +90,16 @@ Fabricator(:ollama_model, from: :llm_model) do
   provider_params { { enable_native_tool: true } }
 end
 
+Fabricator(:mistral_model, from: :llm_model) do
+  display_name "Mistral Large"
+  name "mistral-large-latest"
+  provider "mistral"
+  api_key "ABC"
+  tokenizer "DiscourseAi::Tokenizer::MixtralTokenizer"
+  url "https://api.mistral.ai/v1/chat/completions"
+  provider_params { { disable_native_tools: false } }
+end
+
 Fabricator(:seeded_model, from: :llm_model) do
   id "-2"
   display_name "CDCK Hosted Model"
