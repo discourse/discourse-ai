@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 RSpec.describe DiscourseAi::AiBot::ArtifactsController do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
   fab!(:topic) { Fabricate(:private_message_topic, user: user) }
   fab!(:post) { Fabricate(:post, user: user, topic: topic) }
   fab!(:artifact) do
