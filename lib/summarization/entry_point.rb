@@ -18,7 +18,7 @@ module DiscourseAi
         end
 
         plugin.register_modifier(:topic_query_create_list_topics) do |topics, options|
-          skipped_filters = %i[suggested semantic_related]
+          skipped_filters = %i[suggested semantic_related private_messages]
 
           if !skipped_filters.include?(options[:filter]) && SiteSetting.ai_summarization_enabled &&
                SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0
@@ -36,7 +36,7 @@ module DiscourseAi
           :ai_topic_gist,
           include_condition: -> { scope.can_see_gists? },
         ) do
-          return if %i[suggested semantic_related].include?(options[:filter])
+          return if %i[suggested semantic_related private_messages].include?(options[:filter])
           summaries = object.ai_summaries.to_a
 
           # Summaries should always have one or zero elements here.
