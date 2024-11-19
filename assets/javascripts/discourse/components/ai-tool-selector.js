@@ -1,4 +1,5 @@
-import { computed, observer } from "@ember/object";
+import { observer } from "@ember/object";
+import { readOnly } from "@ember/object/computed";
 import MultiSelectComponent from "select-kit/components/multi-select";
 
 export default MultiSelectComponent.extend({
@@ -6,7 +7,7 @@ export default MultiSelectComponent.extend({
     this.selectKit.options.set("disabled", this.get("attrs.disabled.value"));
   }),
 
-  content: computed.reads("tools"),
+  content: readOnly("tools"),
 
   value: "",
 
