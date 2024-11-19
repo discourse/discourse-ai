@@ -24,6 +24,8 @@ register_asset "stylesheets/modules/summarization/mobile/ai-summary.scss", :mobi
 register_asset "stylesheets/modules/summarization/common/ai-summary.scss"
 register_asset "stylesheets/modules/summarization/desktop/ai-summary.scss", :desktop
 
+register_asset "stylesheets/modules/summarization/common/ai-gists.scss"
+
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
 register_asset "stylesheets/modules/ai-bot/mobile/ai-persona.scss", :mobile
