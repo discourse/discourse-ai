@@ -77,7 +77,5 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mistral do
       },
     ]
     expect(context.multi_turn_scenario).to eq(result)
-
-    bang
   end
 end
