@@ -32,8 +32,6 @@ register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.sc
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
 
 register_asset "stylesheets/modules/sentiment/common/dashboard.scss"
-register_asset "stylesheets/modules/sentiment/desktop/dashboard.scss", :desktop
-register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
 
 register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
 

@@ -11,6 +11,8 @@ en:
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
+      dashboard:
+        emotion: "Emotion"
   js:
     discourse_automation:
       scriptables:

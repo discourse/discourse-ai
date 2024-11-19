@@ -86,7 +86,7 @@ en:
     ai_custom_summarization_allowed_groups: "Groups allowed to use create new summaries."
     ai_pm_summarization_allowed_groups: "Groups allowed to create and view summaries in PMs."
     ai_summarize_max_hot_topics_gists_per_batch: "After updating topics in the hot list, we'll generate brief summaries of the first N ones. (Disabled when 0)"
-    ai_hot_topic_gists_allowed_groups:  "Groups allowed to see gists in the hot topics list."
+    ai_hot_topic_gists_allowed_groups: "Groups allowed to see gists in the hot topics list."
     ai_summary_backfill_maximum_topics_per_hour: "Number of topic summaries to backfill per hour."
 
     ai_bot_enabled: "Enable the AI Bot module."
@@ -112,14 +112,65 @@ en:
   reports:
     overall_sentiment:
       title: "Overall sentiment"
-      description: "The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Private messages (PMs) are also excluded. Classified with \"cardiffnlp/twitter-roberta-base-sentiment-latest\""
+      description: 'The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Private messages (PMs) are also excluded. Classified with "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Positive(%)"
       yaxis: "Date"
-    post_emotion:
-      title: "Post emotion"
-      description: "Number of posts classified with one of the following emotions, grouped by poster's trust level. Posts that are not positive or negative and considered neutral, are not shown. Private messages (PMs) are also excluded. Classified with \"j-hartmann/emotion-english-roberta-large\""
-      xaxis:
-      yaxis:
+    emotion_admiration:
+      title: Admiration
+    emotion_amusement:
+      title: Amusement
+    emotion_anger:
+      title: Anger
+    emotion_annoyance:
+      title: Annoyance
+    emotion_approval:
+      title: Approval
+    emotion_caring:
+      title: Caring
+    emotion_confusion:
+      title: Confusion
+    emotion_curiosity:
+      title: Curiosity
+    emotion_desire:
+      title: Desire
+    emotion_disappointment:
+      title: Disappointment
+    emotion_disapproval:
+      title: Disapproval
+    emotion_disgust:
+      title: Disgust
+    emotion_embarrassment:
+      title: Embarrassment
+    emotion_excitement:
+      title: Excitement
+    emotion_fear:
+      title: Fear
+    emotion_gratitude:
+      title: Gratitude
+    emotion_grief:
+      title: Grief
+    emotion_joy:
+      title: Joy
+    emotion_love:
+      title: Love
+    emotion_nervousness:
+      title: Nervousness
+    emotion_neutral:
+      title: Neutral
+    emotion_optimism:
+      title: Optimism
+    emotion_pride:
+      title: Pride
+    emotion_realization:
+      title: Realization
+    emotion_relief:
+      title: Relief
+    emotion_remorse:
+      title: Remorse
+    emotion_sadness:
+      title: Sadness
+    emotion_surprise:
+      title: Surprise
 
   discourse_ai:
     unknown_model: "Unknown AI model"
