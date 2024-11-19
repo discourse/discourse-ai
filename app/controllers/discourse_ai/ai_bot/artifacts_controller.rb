@@ -40,7 +40,7 @@ module DiscourseAi
         HTML
 
         response.headers.delete("X-Frame-Options")
-        response.headers.delete("Content-Security-Policy")
+        response.headers["Content-Security-Policy"] = "script-src 'unsafe-inline';"
 
         # Render the content
         render html: html.html_safe, layout: false, content_type: "text/html"
