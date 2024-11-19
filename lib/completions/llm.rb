@@ -90,6 +90,24 @@ module DiscourseAi
                   endpoint: "https://api.sambanova.ai/v1/chat/completions",
                   provider: "samba_nova",
                 },
+                {
+                  id: "mistral",
+                  models: [
+                    {
+                      name: "mistral-large-latest",
+                      tokens: 128_000,
+                      display_name: "Mistral Large",
+                    },
+                    {
+                      name: "pixtral-large-latest",
+                      tokens: 128_000,
+                      display_name: "Pixtral Large",
+                    },
+                  ],
+                  tokenizer: DiscourseAi::Tokenizer::MixtralTokenizer,
+                  endpoint: "https://api.mistral.ai/v1/chat/completions",
+                  provider: "mistral",
+                },
               ]
             end
         end
@@ -105,6 +123,7 @@ module DiscourseAi
             google
             azure
             samba_nova
+            mistral
           ]
           if !Rails.env.production?
             providers << "fake"

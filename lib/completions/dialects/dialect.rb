@@ -16,6 +16,7 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::Claude,
               DiscourseAi::Completions::Dialects::Command,
               DiscourseAi::Completions::Dialects::Ollama,
+              DiscourseAi::Completions::Dialects::Mistral,
               DiscourseAi::Completions::Dialects::OpenAiCompatible,
             ]
           end
