@@ -68,6 +68,7 @@ module DiscourseAi
 
         response.headers.delete("X-Frame-Options")
         response.headers["Content-Security-Policy"] = "script-src 'unsafe-inline';"
+        response.headers["X-Robots-Tag"] = "noindex"
 
         # Render the content
         render html: trusted_html.html_safe, layout: false, content_type: "text/html"
