@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@discourse/lint-configs':
-        specifier: 2.0.1
-        version: 2.0.1(ember-template-lint@6.0.0)(eslint@9.14.0)(prettier@2.8.8)
+        specifier: 2.2.0
+        version: 2.2.0(ember-template-lint@6.0.0)(eslint@9.14.0)(prettier@2.8.8)
       ember-template-lint:
         specifier: 6.0.0
         version: 6.0.0
@@ -141,8 +141,8 @@ packages:
     resolution: {integrity: sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==}
     engines: {node: '>=6.9.0'}
 
-  '@discourse/lint-configs@2.0.1':
-    resolution: {integrity: sha512-4AKSzX4EYIEAtTCj+1+VKx0ziQ5XbYJZuQQ8cxhE7/amRloWyuM3YuDpa5x1r2zaLRbfEHXjlveVk+obMRLPqw==}
+  '@discourse/lint-configs@2.2.0':
+    resolution: {integrity: sha512-lj13X+3/DRV2ZBQe3eJvxOO23e87DPfUSSqm0UPfP04VJ7141BHwWn9VVF0rOr+bMe2eiirsqlg2AbMn7gMb+A==}
     peerDependencies:
       ember-template-lint: 6.0.0
       eslint: ^9.14.0
@@ -287,6 +287,12 @@ packages:
   '@sindresorhus/merge-streams@2.3.0':
     resolution: {integrity: sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==}
     engines: {node: '>=18'}
+
+  '@stylistic/eslint-plugin-js@2.11.0':
+    resolution: {integrity: sha512-btchD0P3iij6cIk5RR5QMdEhtCCV0+L6cNheGhGCd//jaHILZMTi/EOqgEDAf1s4ZoViyExoToM+S2Iwa3U9DA==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    peerDependencies:
+      eslint: '>=8.40.0'
 
   '@types/eslint@8.56.12':
     resolution: {integrity: sha512-03ruubjWyOHlmljCVoxSuNDdmfZDzsrrz0P2LeJsOXr+ZwFQ+0yQIwNCwt/GYhV7Z31fgtXJTAEs+FYlEL851g==}
@@ -1935,11 +1941,12 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@discourse/lint-configs@2.0.1(ember-template-lint@6.0.0)(eslint@9.14.0)(prettier@2.8.8)':
+  '@discourse/lint-configs@2.2.0(ember-template-lint@6.0.0)(eslint@9.14.0)(prettier@2.8.8)':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/eslint-parser': 7.25.9(@babel/core@7.26.0)(eslint@9.14.0)
       '@babel/plugin-proposal-decorators': 7.25.9(@babel/core@7.26.0)
+      '@stylistic/eslint-plugin-js': 2.11.0(eslint@9.14.0)
       ember-template-lint: 6.0.0
       eslint: 9.14.0
       eslint-plugin-decorator-position: 6.0.0(@babel/eslint-parser@7.25.9(@babel/core@7.26.0)(eslint@9.14.0))(eslint@9.14.0)
@@ -2117,6 +2124,12 @@ snapshots:
   '@simple-dom/interface@1.4.0': {}
 
   '@sindresorhus/merge-streams@2.3.0': {}
+
+  '@stylistic/eslint-plugin-js@2.11.0(eslint@9.14.0)':
+    dependencies:
+      eslint: 9.14.0
+      eslint-visitor-keys: 4.2.0
+      espree: 10.3.0
 
   '@types/eslint@8.56.12':
     dependencies:
