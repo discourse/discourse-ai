@@ -29,19 +29,16 @@ module DiscourseAi
         end
 
         def vector_from(text, asymetric: false)
-          if DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured?
-            truncated_text = tokenizer.truncate(text, max_sequence_length - 2)
-            DiscourseAi::Inference::HuggingFaceTextEmbeddings.perform!(truncated_text).first
-          elsif discourse_embeddings_endpoint.present?
-            DiscourseAi::Inference::DiscourseClassifier.perform!(
-              "#{discourse_embeddings_endpoint}/api/v1/classify",
-              self.class.name,
-              "query: #{text}",
-              SiteSetting.ai_embeddings_discourse_service_api_key,
-            )
+          client = inference_client
+
+          needs_truncation = client.class.name.include?("HuggingFaceTextEmbeddings")
+          if needs_truncation
+            text = tokenizer.truncate(text, max_sequence_length - 2)
           else
-            raise "No inference endpoint configured"
+            text = "query: #{text}"
           end
+
+          client.perform!(text)
         end
 
         def id
@@ -70,6 +67,17 @@ module DiscourseAi
 
         def tokenizer
           DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer
+        end
+
+        def inference_client
+          if DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured?
+            DiscourseAi::Inference::HuggingFaceTextEmbeddings.instance
+          elsif SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present? ||
+                SiteSetting.ai_embeddings_discourse_service_api_endpoint.present?
+            DiscourseAi::Inference::DiscourseClassifier.instance(self.class.name)
+          else
+            raise "No inference endpoint configured"
+          end
         end
       end
     end

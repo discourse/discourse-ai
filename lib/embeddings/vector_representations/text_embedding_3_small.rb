@@ -43,12 +43,15 @@ module DiscourseAi
         end
 
         def vector_from(text, asymetric: false)
-          response = DiscourseAi::Inference::OpenAiEmbeddings.perform!(text, model: self.class.name)
-          response[:data].first[:embedding]
+          inference_client.perform!(text)
         end
 
         def tokenizer
           DiscourseAi::Tokenizer::OpenAiTokenizer
+        end
+
+        def inference_client
+          DiscourseAi::Inference::OpenAiEmbeddings.instance(model: self.class.name)
         end
       end
     end
