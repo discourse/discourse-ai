@@ -93,7 +93,7 @@ module DiscourseAi
           js = parameters[:js].to_s
 
           artifact_div =
-            "<div class=\"ai-artifact\" data-ai-artifact-id=#{artifact.id}></div>" if artifact
+            "<div class=\"ai-artifact\" data-ai-artifact-id=\"#{artifact.id}\"></div>" if artifact
 
           content = []
 
@@ -103,10 +103,14 @@ module DiscourseAi
 
           content << [:js, "### JavaScript\n\n```javascript\n#{js}\n```"] if js.present?
 
-          content << [:preview, "### Preview\n\n#{artifact_div}"] if artifact_div
-
           content.sort_by! { |c| c[0] === @selected_tab ? 1 : 0 } if !artifact
 
+          if artifact
+            content.unshift([nil, "[details='#{I18n.t("discourse_ai.ai_artifact.view_source")}']"])
+            content << [nil, "[/details]"]
+          end
+
+          content << [:preview, "### Preview\n\n#{artifact_div}"] if artifact_div
           self.custom_raw = content.map { |c| c[1] }.join("\n\n")
         end
 
