@@ -41,6 +41,7 @@
       margin-bottom: 0.15em;
       &__contents {
         max-width: 70ch;
+        word-break: break-all;
       }
     }
     &:not(.visited) {
