@@ -39,7 +39,9 @@
       line-height: var(--line-height-large);
       margin-top: 0.15em;
       margin-bottom: 0.15em;
-      max-width: 70ch;
+      &__contents {
+        max-width: 70ch;
+      }
     }
     &:not(.visited) {
       .excerpt {
