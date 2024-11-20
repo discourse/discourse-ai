@@ -30,6 +30,11 @@ export default class AiPostHelperTrigger extends Component {
     options: "OPTIONS",
   };
 
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.removeHighlightedText();
+  }
+
   highlightSelectedText() {
     const postId = this.args.outletArgs.data.quoteState.postId;
     const postElement = document.querySelector(
@@ -118,11 +123,6 @@ export default class AiPostHelperTrigger extends Component {
 
     postElement.innerHTML = this.originalPostHTML;
     this.postHighlighted = false;
-  }
-
-  willDestroy() {
-    super.willDestroy(...arguments);
-    this.removeHighlightedText();
   }
 
   @action

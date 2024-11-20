@@ -168,6 +168,7 @@ export default class SemanticSearch extends Component {
       this.#resetAndSearchOnEvent();
     }
   }
+
   <template>
     <span {{didInsert this.checkQueryParamsAndSearch}}></span>
     {{#if this.searchEnabled}}

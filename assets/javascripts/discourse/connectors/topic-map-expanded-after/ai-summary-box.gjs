@@ -245,7 +245,7 @@ export default class AiSummaryBox extends Component {
                     @title="discourse_ai.summarization.topic.close"
                     @action={{this.onClose}}
                     @icon="times"
-                    @class="btn-transparent ai-summary__close"
+                    class="btn-transparent ai-summary__close"
                   />
                 {{/if}}
               </header>
