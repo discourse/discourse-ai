@@ -9,7 +9,10 @@ class AiArtifact < ActiveRecord::Base
 
   def self.iframe_for(id)
     <<~HTML
-      <iframe sandbox="allow-scripts allow-forms" height="600px" src='#{url(id)}' frameborder="0" width="100%"></iframe>
+      <div class='ai-artifact'>
+        <iframe src='#{url(id)}' frameborder="0" height="100%" width="100%"></iframe>
+        <a href='#{url(id)}' target='_blank'>#{I18n.t("discourse_ai.ai_artifact.link")}</a>
+      </div>
     HTML
   end
 
