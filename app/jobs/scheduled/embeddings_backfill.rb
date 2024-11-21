@@ -75,9 +75,9 @@ module Jobs
       # First, we'll try to backfill embeddings for posts that have none
       posts
         .where("#{table_name}.post_id IS NULL")
-        .find_each do |t|
-          vector_rep.generate_representation_from(t)
-          rebaked += 1
+        .find_in_batches do |batch|
+          vector_rep.gen_bulk_reprensentations(batch)
+          rebaked += batch.size
         end
 
       return if rebaked >= limit
@@ -90,24 +90,28 @@ module Jobs
           OR
           #{table_name}.strategy_version < #{strategy.version}
         SQL
-        .find_each do |t|
-          vector_rep.generate_representation_from(t)
-          rebaked += 1
+        .find_in_batches do |batch|
+          vector_rep.gen_bulk_reprensentations(batch)
+          rebaked += batch.size
         end
 
       return if rebaked >= limit
 
       # Finally, we'll try to backfill embeddings for posts that have outdated
       # embeddings due to edits. Here we only do 10% of the limit
-      posts
-        .where("#{table_name}.updated_at < ?", 7.days.ago)
-        .order("random()")
-        .limit((limit - rebaked) / 10)
-        .pluck(:id)
-        .each do |id|
-          vector_rep.generate_representation_from(Post.find_by(id: id))
-          rebaked += 1
-        end
+      posts_batch_size = 1000
+
+      outdated_post_ids =
+        posts
+          .where("#{table_name}.updated_at < ?", 7.days.ago)
+          .order("random()")
+          .limit((limit - rebaked) / 10)
+          .pluck(:id)
+
+      outdated_post_ids.each_slice(posts_batch_size) do |batch|
+        vector_rep.gen_bulk_reprensentations(Post.where(id: batch).order("topics.bumped_at DESC"))
+        rebaked += batch.length
+      end
 
       rebaked
     end
@@ -120,14 +124,13 @@ module Jobs
       topics = topics.where("#{vector_rep.topic_table_name}.topic_id IS NULL") if !force
 
       ids = topics.pluck("topics.id")
+      batch_size = 1000
 
-      ids.each do |id|
-        topic = Topic.find_by(id: id)
-        if topic
-          vector_rep.generate_representation_from(topic)
-          done += 1
-        end
+      ids.each_slice(batch_size) do |batch|
+        vector_rep.gen_bulk_reprensentations(Topic.where(id: batch).order("topics.bumped_at DESC"))
+        done += batch.length
       end
+
       done
     end
   end
