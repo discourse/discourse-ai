@@ -17,8 +17,7 @@ module DiscourseAi
                 end
                 &.expr
                 &.split(">=")
-                &.last if scope.arel.constraints.present? &&
-              scope.arel.constraints.any? { |c| c.is_a?(Arel::Nodes::Grouping) }
+                &.last if scope.to_sql.include?("topics.bumped_at >=")
 
             # Fallback in case we can't find the scope period
             scope_period ||= "CURRENT_DATE - INTERVAL '1 year'"
