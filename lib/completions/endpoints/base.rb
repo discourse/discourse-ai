@@ -139,15 +139,20 @@ module DiscourseAi
 
               begin
                 cancelled = false
-                cancel = -> { cancelled = true }
-                if cancelled
+                cancel = -> do
+                  cancelled = true
                   http.finish
-                  break
                 end
 
+                break if cancelled
+
                 response.read_body do |chunk|
+                  break if cancelled
+
                   response_raw << chunk
+
                   decode_chunk(chunk).each do |partial|
+                    break if cancelled
                     partials_raw << partial.to_s
                     response_data << partial if partial.is_a?(String)
                     partials = [partial]

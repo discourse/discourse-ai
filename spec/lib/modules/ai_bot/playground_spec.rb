@@ -3,7 +3,14 @@
 RSpec.describe DiscourseAi::AiBot::Playground do
   subject(:playground) { described_class.new(bot) }
 
-  fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
+  fab!(:claude_2) do
+    Fabricate(
+      :llm_model,
+      provider: "anthropic",
+      url: "https://api.anthropic.com/v1/messages",
+      name: "claude-2",
+    )
+  end
   fab!(:opus_model) { Fabricate(:anthropic_model) }
 
   fab!(:bot_user) do
@@ -945,6 +952,73 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         expect(custom_prompt.length).to eq(2)
         expect(custom_prompt.to_s).not_to include("<details>")
       end
+    end
+  end
+
+  describe "#canceling a completions" do
+    after { DiscourseAi::AiBot::PostStreamer.on_callback = nil }
+
+    it "should be able to cancel a completion halfway through" do
+      body = (<<~STRING).strip
+      event: message_start
+      data: {"type": "message_start", "message": {"id": "msg_1nZdL29xx5MUA1yADyHTEsnR8uuvGzszyY", "type": "message", "role": "assistant", "content": [], "model": "claude-3-opus-20240229", "stop_reason": null, "stop_sequence": null, "usage": {"input_tokens": 25, "output_tokens": 1}}}
+
+      event: content_block_start
+      data: {"type": "content_block_start", "index":0, "content_block": {"type": "text", "text": ""}}
+
+      event: ping
+      data: {"type": "ping"}
+
+      |event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "Hello"}}
+
+      |event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "1"}}
+
+      |event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "2"}}
+
+      |event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "3"}}
+
+      event: content_block_stop
+      data: {"type": "content_block_stop", "index": 0}
+
+      event: message_delta
+      data: {"type": "message_delta", "delta": {"stop_reason": "end_turn", "stop_sequence":null, "usage":{"output_tokens": 15}}}
+
+      event: message_stop
+      data: {"type": "message_stop"}
+    STRING
+
+      split = body.split("|")
+
+      count = 0
+      DiscourseAi::AiBot::PostStreamer.on_callback =
+        proc do |callback|
+          count += 1
+          if count == 2
+            last_post = third_post.topic.posts.order(:id).last
+            Discourse.redis.del("gpt_cancel:#{last_post.id}")
+          end
+          raise "this should not happen" if count > 2
+        end
+
+      require_relative("../../completions/endpoints/endpoint_compliance")
+      EndpointMock.with_chunk_array_support do
+        stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(
+          status: 200,
+          body: split,
+        )
+        # we are going to need to use real data here cause we want to trigger the
+        # base endpoint to cancel part way through
+        playground.reply_to(third_post)
+      end
+
+      last_post = third_post.topic.posts.order(:id).last
+
+      # not Hello123, we cancelled at 1 which means we may get 2 and then be done
+      expect(last_post.raw).to eq("Hello12")
     end
   end
 

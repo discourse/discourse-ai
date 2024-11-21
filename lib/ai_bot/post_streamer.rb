@@ -3,6 +3,15 @@
 module DiscourseAi
   module AiBot
     class PostStreamer
+      # test only
+      def self.on_callback=(on_callback)
+        @on_callback = on_callback
+      end
+
+      def self.on_callback
+        @on_callback
+      end
+
       def initialize(delay: 0.5)
         @mutex = Mutex.new
         @callback = nil
@@ -11,6 +20,7 @@ module DiscourseAi
       end
 
       def run_later(&callback)
+        self.class.on_callback.call(callback) if self.class.on_callback
         @mutex.synchronize { @callback = callback }
         ensure_worker!
       end
