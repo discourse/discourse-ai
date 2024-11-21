@@ -9,28 +9,29 @@ module DiscourseAi
             scope_period =
               scope
                 .arel
-                .constraints
-                .flat_map(&:children)
-                .find do |node|
+                &.constraints
+                &.flat_map(&:children)
+                &.find do |node|
                   node.is_a?(Arel::Nodes::Grouping) &&
                     node.expr.to_s.match?(/topics\.bumped_at\s*>=/)
                 end
                 &.expr
                 &.split(">=")
-                &.last
+                &.last if scope.arel.constraints.present? &&
+              scope.arel.constraints.any? { |c| c.is_a?(Arel::Nodes::Grouping) }
 
             # Fallback in case we can't find the scope period
             scope_period ||= "CURRENT_DATE - INTERVAL '1 year'"
 
             emotion_clause = <<~SQL
-              COUNT(*) FILTER (WHERE (classification_results.classification::jsonb->'#{emotion}')::float > 0.1) AS emotion_#{emotion}
+              COUNT(*) FILTER (WHERE (classification_results.classification::jsonb->'#{emotion}')::float > 0.1)
             SQL
 
             # TODO: This is slow, we will need to materialize this in the future
             with_clause = <<~SQL
                 SELECT
                     topics.id,
-                    #{emotion_clause}
+                    #{emotion_clause} AS emotion_#{emotion}
                 FROM
                     topics
                 INNER JOIN
@@ -48,6 +49,8 @@ module DiscourseAi
                     AND posts.created_at >= #{scope_period}
                 GROUP BY
                     1
+                HAVING
+                    #{emotion_clause} > 0
             SQL
 
             scope
