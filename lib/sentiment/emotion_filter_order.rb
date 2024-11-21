@@ -6,14 +6,25 @@ module DiscourseAi
       def self.register!(plugin)
         Emotions::LIST.each do |emotion|
           filter_order_emotion = ->(scope, order_direction) do
+            scope_period =
+              scope
+                .arel
+                &.constraints
+                &.flat_map(&:children)
+                &.find do |node|
+                  node.is_a?(Arel::Nodes::Grouping) &&
+                    node.expr.to_s.match?(/topics\.bumped_at\s*>=/)
+                end
+                &.expr
+                &.split(">=")
+                &.last if scope.arel.constraints.present? &&
+              scope.arel.constraints.any? { |c| c.is_a?(Arel::Nodes::Grouping) }
+
+            # Fallback in case we can't find the scope period
+            scope_period ||= "CURRENT_DATE - INTERVAL '1 year'"
+
             emotion_clause = <<~SQL
-              SUM(
-                CASE
-                  WHEN (classification_results.classification::jsonb->'#{emotion}')::float > 0.1
-                  THEN 1
-                  ELSE 0
-                END
-               )::float / COUNT(posts.id)
+              COUNT(*) FILTER (WHERE (classification_results.classification::jsonb->'#{emotion}')::float > 0.1)
             SQL
 
             # TODO: This is slow, we will need to materialize this in the future
@@ -35,10 +46,11 @@ module DiscourseAi
                     AND topics.deleted_at IS NULL
                     AND posts.deleted_at IS NULL
                     AND posts.post_type = 1
+                    AND posts.created_at >= #{scope_period}
                 GROUP BY
                     1
                 HAVING
-                    #{emotion_clause} > 0.05
+                    #{emotion_clause} > 0
             SQL
 
             scope
