@@ -27,8 +27,23 @@
           <ul class="breadcrumb">
             <li class="item report">
               <LinkTo @route="adminReports" class="report-url">
-                {{i18n "admin.dashboard.emotion"}}
+                {{i18n "admin.dashboard.emotion.title"}}
               </LinkTo>
+
+
+                <DTooltip
+                  @interactive=true
+                >
+                  <:trigger>
+                    {{d-icon "circle-question"}}
+                  </:trigger>
+                  <:content>
+
+                      <span>{{i18n "admin.dashboard.emotion.description"}}</span>
+
+                  </:content>
+                </DTooltip>
+
             </li>
           </ul>
         </div>

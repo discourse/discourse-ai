@@ -12,7 +12,9 @@ en:
         categories:
           discourse_ai: "Discourse AI"
       dashboard:
-        emotion: "Emotion"
+        emotion:
+          title: "Emotion"
+          description: "The table lists a count of posts classified with a determined emotion. Classified with the model 'SamLowe/roberta-base-go_emotions'."
   js:
     discourse_automation:
       scriptables:
