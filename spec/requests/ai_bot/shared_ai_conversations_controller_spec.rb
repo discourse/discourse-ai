@@ -295,12 +295,7 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
   end
 
   describe "GET asset" do
-
-    let(:helper) do
-      Class.new do
-        extend DiscourseAi::AiBot::SharedAiConversationsHelper
-      end
-    end
+    let(:helper) { Class.new { extend DiscourseAi::AiBot::SharedAiConversationsHelper } }
 
     it "renders highlight js correctly" do
       get helper.share_asset_url("highlight.js")
