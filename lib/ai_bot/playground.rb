@@ -461,7 +461,10 @@ module DiscourseAi
             if stream_reply && !Discourse.redis.get(redis_stream_key)
               cancel&.call
               reply_post.update!(raw: reply, cooked: PrettyText.cook(reply))
-              break
+              # we do not break out, cause if we do
+              # we will not get results from bot
+              # leading to broken context
+              # we need to trust it to cancel at the endpoint
             end
 
             if post_streamer
