@@ -116,61 +116,61 @@ en:
       xaxis: "Positive(%)"
       yaxis: "Date"
     emotion_admiration:
-      title: Admiration
+      title: 🤩 Admiration
     emotion_amusement:
-      title: Amusement
+      title: 😄 Amusement
     emotion_anger:
-      title: Anger
+      title: 😠 Anger
     emotion_annoyance:
-      title: Annoyance
+      title: 😒 Annoyance
     emotion_approval:
-      title: Approval
+      title: 👍 Approval
     emotion_caring:
-      title: Caring
+      title: 🤗 Caring
     emotion_confusion:
-      title: Confusion
+      title: 😕 Confusion
     emotion_curiosity:
-      title: Curiosity
+      title: 🤔 Curiosity
     emotion_desire:
-      title: Desire
+      title: 😍 Desire
     emotion_disappointment:
-      title: Disappointment
+      title: 😞 Disappointment
     emotion_disapproval:
-      title: Disapproval
+      title: 👎 Disapproval
     emotion_disgust:
-      title: Disgust
+      title: 🤢 Disgust
     emotion_embarrassment:
-      title: Embarrassment
+      title: 😳 Embarrassment
     emotion_excitement:
-      title: Excitement
+      title: 🤪 Excitement
     emotion_fear:
-      title: Fear
+      title: 😨 Fear
     emotion_gratitude:
-      title: Gratitude
+      title: 🙏 Gratitude
     emotion_grief:
-      title: Grief
+      title: 😢 Grief
     emotion_joy:
-      title: Joy
+      title: 😊 Joy
     emotion_love:
-      title: Love
+      title: ❤️ Love
     emotion_nervousness:
-      title: Nervousness
+      title: 😰 Nervousness
     emotion_neutral:
-      title: Neutral
+      title: 😐 Neutral
     emotion_optimism:
-      title: Optimism
+      title: 🌟 Optimism
     emotion_pride:
-      title: Pride
+      title: 🦁 Pride
     emotion_realization:
-      title: Realization
+      title: 💡 Realization
     emotion_relief:
-      title: Relief
+      title: 😌 Relief
     emotion_remorse:
-      title: Remorse
+      title: 😔 Remorse
     emotion_sadness:
-      title: Sadness
+      title: 😭 Sadness
     emotion_surprise:
-      title: Surprise
+      title: 😲 Surprise
 
   discourse_ai:
     ai_artifact:
