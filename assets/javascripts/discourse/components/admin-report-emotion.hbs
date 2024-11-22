@@ -6,22 +6,30 @@
 </div>
 
 <div class="cell value today-count">
-  <a
-    href="{{this.filterURL}}activity-after%3A{{this.today}}%20order%3A{{this.model.type}}"
-  >
+  {{#if this.filterEnabled}}
+    <a
+      href="{{this.filterURL}}activity-after%3A{{this.today}}%20order%3A{{this.model.type}}"
+    >
+      {{number this.model.todayCount}}
+    </a>
+  {{else}}
     {{number this.model.todayCount}}
-  </a>
+  {{/if}}
 </div>
 
 <div
   class="cell value yesterday-count {{this.model.yesterdayTrend}}"
   title={{this.model.yesterdayCountTitle}}
 >
-  <a
-    href="{{this.filterURL}}activity-after%3A{{this.yesterday}}%20order%3A{{this.model.type}}"
-  >
+  {{#if this.filterEnabled}}
+    <a
+      href="{{this.filterURL}}activity-after%3A{{this.yesterday}}%20order%3A{{this.model.type}}"
+    >
+      {{number this.model.yesterdayCount}}
+    </a>
+  {{else}}
     {{number this.model.yesterdayCount}}
-  </a>
+  {{/if}}
   {{d-icon this.model.yesterdayTrendIcon}}
 </div>
 
@@ -29,11 +37,15 @@
   class="cell value sevendays-count {{this.model.sevenDaysTrend}}"
   title={{this.model.sevenDaysCountTitle}}
 >
-  <a
-    href="{{this.filterURL}}activity-after%3A{{this.lastWeek}}%20order%3A{{this.model.type}}"
-  >
+  {{#if this.filterEnabled}}
+    <a
+      href="{{this.filterURL}}activity-after%3A{{this.lastWeek}}%20order%3A{{this.model.type}}"
+    >
+      {{number this.model.lastSevenDaysCount}}
+    </a>
+  {{else}}
     {{number this.model.lastSevenDaysCount}}
-  </a>
+  {{/if}}
   {{d-icon this.model.sevenDaysTrendIcon}}
 </div>
 
@@ -41,11 +53,15 @@
   class="cell value thirty-days-count {{this.model.thirtyDaysTrend}}"
   title={{this.model.thirtyDaysCountTitle}}
 >
-  <a
-    href="{{this.filterURL}}activity-after%3A{{this.lastMonth}}%20order%3A{{this.model.type}}"
-  >
+  {{#if this.filterEnabled}}
+    <a
+      href="{{this.filterURL}}activity-after%3A{{this.lastMonth}}%20order%3A{{this.model.type}}"
+    >
+      {{number this.model.lastThirtyDaysCount}}
+    </a>
+  {{else}}
     {{number this.model.lastThirtyDaysCount}}
-  </a>
+  {{/if}}
 
   {{#if this.model.canDisplayTrendIcon}}
     {{d-icon this.model.thirtyDaysTrendIcon}}
