@@ -4,6 +4,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
   before do
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true
+    SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100
   end
 
   fab!(:user)
@@ -11,7 +12,6 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
   describe "#inject_into" do
     describe "hot topics gist summarization" do
       fab!(:topic_ai_gist)
-      fab!(:regular_summary) { Fabricate(:ai_summary, target: topic_ai_gist.target) }
 
       before { TopicHotScore.create!(topic_id: topic_ai_gist.target_id, score: 1.0) }
 
@@ -19,13 +19,22 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
 
       describe "topic_query_create_list_topics modifier" do
         context "when hot topic summarization is enabled" do
-          before { SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100 }
+          it "doesn't duplicate records when there more than one summary type" do
+            Fabricate(:ai_summary, target: topic_ai_gist.target)
 
-          skip "preloads only gist summaries" do
-            gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
+            expect(topic_query.list_hot.topics.map(&:id)).to contain_exactly(
+              topic_ai_gist.target_id,
+            )
+          end
 
-            expect(gist_topic.ai_summaries.size).to eq(1)
-            expect(gist_topic.ai_summaries.first).to eq(topic_ai_gist)
+          it "doesn't exclude records when the topic has a single different summary" do
+            regular_summary_2 = Fabricate(:ai_summary)
+            TopicHotScore.create!(topic_id: regular_summary_2.target_id, score: 1.0)
+
+            expect(topic_query.list_hot.topics.map(&:id)).to contain_exactly(
+              regular_summary_2.target_id,
+              topic_ai_gist.target_id,
+            )
           end
 
           it "doesn't filter out hot topics without summaries" do
@@ -118,10 +127,27 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
                 gist_topic,
                 scope: Guardian.new(admin),
                 root: false,
-                filter: :hot,
+                filter: :unread,
               ).as_json
 
             expect(serialized[:ai_topic_gist]).to be_present
+          end
+
+          it "doesn't include the summary if it's not a gist" do
+            regular_summary_2 = Fabricate(:ai_summary)
+            TopicHotScore.create!(topic_id: regular_summary_2.target_id, score: 1.0)
+
+            hot_topic = topic_query.list_hot.topics.find { |t| t.id == regular_summary_2.target_id }
+
+            serialized =
+              TopicListItemSerializer.new(
+                hot_topic,
+                scope: Guardian.new(user),
+                root: false,
+                filter: :hot,
+              ).as_json
+
+            expect(serialized[:ai_topic_gist]).to be_nil
           end
         end
       end
