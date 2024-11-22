@@ -43,6 +43,10 @@ register_asset "stylesheets/modules/ai-bot/common/ai-artifact.scss"
 
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
+
+  def self.public_asset_path(name)
+    File.expand_path(File.join(__dir__, "public", name))
+  end
 end
 
 Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::DiscourseAi)

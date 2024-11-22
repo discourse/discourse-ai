@@ -294,6 +294,30 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
     end
   end
 
+  describe "GET asset" do
+    let(:helper) { Class.new { extend DiscourseAi::AiBot::SharedAiConversationsHelper } }
+
+    it "renders highlight js correctly" do
+      get helper.share_asset_url("highlight.js")
+
+      expect(response).to be_successful
+      expect(response.headers["Content-Type"]).to eq("application/javascript; charset=utf-8")
+
+      js = File.read(DiscourseAi.public_asset_path("ai-share/highlight.min.js"))
+      expect(response.body).to eq(js)
+    end
+
+    it "renders css correctly" do
+      get helper.share_asset_url("share.css")
+
+      expect(response).to be_successful
+      expect(response.headers["Content-Type"]).to eq("text/css; charset=utf-8")
+
+      css = File.read(DiscourseAi.public_asset_path("ai-share/share.css"))
+      expect(response.body).to eq(css)
+    end
+  end
+
   describe "GET preview" do
     it "denies preview from logged out users" do
       get "#{path}/preview/#{user_pm_share.id}.json"

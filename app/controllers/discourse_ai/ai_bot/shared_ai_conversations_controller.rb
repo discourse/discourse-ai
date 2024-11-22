@@ -7,7 +7,8 @@ module DiscourseAi
       requires_login only: %i[create update destroy]
       before_action :require_site_settings!
 
-      skip_before_action :preload_json, :check_xhr, only: %i[show]
+      skip_before_action :preload_json, :check_xhr, only: %i[show asset]
+      skip_before_action :verify_authenticity_token, only: ["asset"]
 
       def create
         ensure_allowed_create!
@@ -48,6 +49,30 @@ module DiscourseAi
         else
           render "show", layout: false
         end
+      end
+
+      def asset
+        no_cookies
+
+        name = params[:name]
+        path, content_type =
+          if name == "share"
+            %w[share.css text/css]
+          elsif name == "highlight"
+            %w[highlight.min.js application/javascript]
+          else
+            raise Discourse::NotFound
+          end
+
+        content = File.read(DiscourseAi.public_asset_path("ai-share/#{path}"))
+
+        # note, path contains a ":version" which automatically busts the cache
+        # based on file content, so this is safe
+        response.headers["Last-Modified"] = 10.years.ago.httpdate
+        response.headers["Content-Length"] = content.bytesize.to_s
+        immutable_for 1.year
+
+        render plain: content, disposition: :nil, content_type: content_type
       end
 
       def preview
