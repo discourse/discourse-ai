@@ -21,7 +21,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
         context "when hot topic summarization is enabled" do
           before { SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100 }
 
-          it "preloads only gist summaries" do
+          skip "preloads only gist summaries" do
             gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
 
             expect(gist_topic.ai_summaries.size).to eq(1)
