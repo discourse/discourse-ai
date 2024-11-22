@@ -1,6 +1,6 @@
-import { attributeBindings, classNames } from "@ember-decorators/component";
 import Component from "@ember/component";
 import { service } from "@ember/service";
+import { attributeBindings, classNames } from "@ember-decorators/component";
 import getURL from "discourse-common/lib/get-url";
 
 @classNames("admin-report-counters")
