@@ -622,6 +622,65 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(post.topic.posts.last.post_number).to eq(1)
     end
 
+    it "allows swapping a llm mid conversation using a mention" do
+      SiteSetting.ai_bot_enabled = true
+
+      post = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Yes I can", "Magic Title"],
+        llm: "custom:#{claude_2.id}",
+      ) do
+        post =
+          create_post(
+            title: "I just made a PM",
+            raw: "Hey there #{persona.user.username}, can you help me?",
+            target_usernames: "#{user.username},#{persona.user.username}",
+            archetype: Archetype.private_message,
+            user: admin,
+          )
+      end
+
+      post.topic.custom_fields["ai_persona_id"] = persona.id
+      post.topic.save_custom_fields
+
+      llm2 = Fabricate(:llm_model, enabled_chat_bot: true)
+
+      llm2.toggle_companion_user
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Hi from bot two"],
+        llm: "custom:#{llm2.id}",
+      ) do
+        create_post(
+          user: admin,
+          raw: "hi @#{llm2.user.username.capitalize} how are you",
+          topic_id: post.topic_id,
+        )
+      end
+
+      last_post = post.topic.reload.posts.order("id desc").first
+      expect(last_post.raw).to eq("Hi from bot two")
+      expect(last_post.user_id).to eq(persona.user_id)
+
+      # tether llm, so it can no longer be switched
+      persona.update!(force_default_llm: true, default_llm: "custom:#{claude_2.id}")
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Hi from bot one"],
+        llm: "custom:#{claude_2.id}",
+      ) do
+        create_post(
+          user: admin,
+          raw: "hi @#{llm2.user.username.capitalize} how are you",
+          topic_id: post.topic_id,
+        )
+      end
+
+      last_post = post.topic.reload.posts.order("id desc").first
+      expect(last_post.raw).to eq("Hi from bot one")
+      expect(last_post.user_id).to eq(persona.user_id)
+    end
+
     it "allows PMing a persona even when no particular bots are enabled" do
       SiteSetting.ai_bot_enabled = true
       toggle_enabled_bots(bots: [])
