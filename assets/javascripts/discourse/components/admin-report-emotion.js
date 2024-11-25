@@ -5,23 +5,35 @@ import getURL from "discourse-common/lib/get-url";
 @classNames("admin-report-counters")
 @attributeBindings("model.description:title")
 export default class AdminReportEmotion extends Component {
-  get filterURL() {
-    return getURL(`/filter?q=`);
+  get todayLink() {
+    let date = moment().format("YYYY-MM-DD");
+    return this._filterURL(date);
   }
 
-  get today() {
-    return moment().format("YYYY-MM-DD");
+  get yesterdayLink() {
+    let date = moment().subtract(1, "day").format("YYYY-MM-DD");
+    return this._filterURL(date);
   }
 
-  get yesterday() {
-    return moment().subtract(1, "day").format("YYYY-MM-DD");
+  get lastSevenDaysLink() {
+    let date = moment().subtract(1, "week").format("YYYY-MM-DD");
+    return this._filterURL(date);
   }
 
-  get lastWeek() {
-    return moment().subtract(1, "week").format("YYYY-MM-DD");
+  get lastThirtyDaysLink() {
+    let date = moment().subtract(1, "month").format("YYYY-MM-DD");
+    return this._filterURL(date);
   }
 
-  get lastMonth() {
-    return moment().subtract(1, "month").format("YYYY-MM-DD");
+  _baseFilter() {
+    return "/filter?q=activity-after%3A";
+  }
+
+  _model() {
+    return "%20order%3A" + this.model.type;
+  }
+
+  _filterURL(date) {
+    return getURL(`${this._baseFilter()}${date}${this._model()}`);
   }
 }

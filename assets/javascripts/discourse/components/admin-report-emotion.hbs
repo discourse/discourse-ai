@@ -7,7 +7,7 @@
 
 <div class="cell value today-count">
   <a
-    href="{{this.filterURL}}activity-after%3A{{this.today}}%20order%3A{{this.model.type}}"
+    href="{{this.todayLink}}"
   >
     {{number this.model.todayCount}}
   </a>
@@ -18,7 +18,7 @@
   title={{this.model.yesterdayCountTitle}}
 >
   <a
-    href="{{this.filterURL}}activity-after%3A{{this.yesterday}}%20order%3A{{this.model.type}}"
+    href="{{this.yesterdayLink}}"
   >
     {{number this.model.yesterdayCount}}
   </a>
@@ -30,7 +30,7 @@
   title={{this.model.sevenDaysCountTitle}}
 >
   <a
-    href="{{this.filterURL}}activity-after%3A{{this.lastWeek}}%20order%3A{{this.model.type}}"
+    href="{{this.lastSevenDaysLink}}"
   >
     {{number this.model.lastSevenDaysCount}}
   </a>
@@ -43,7 +43,7 @@
 >
 
   <a
-    href="{{this.filterURL}}activity-after%3A{{this.lastMonth}}%20order%3A{{this.model.type}}"
+    href="{{this.lastThirtyDaysLink}}"
   >
     {{number this.model.lastThirtyDaysCount}}
   </a>
