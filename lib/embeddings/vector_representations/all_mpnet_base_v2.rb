@@ -24,12 +24,7 @@ module DiscourseAi
         end
 
         def vector_from(text, asymetric: false)
-          DiscourseAi::Inference::DiscourseClassifier.perform!(
-            "#{discourse_embeddings_endpoint}/api/v1/classify",
-            self.class.name,
-            text,
-            SiteSetting.ai_embeddings_discourse_service_api_key,
-          )
+          inference_client.perform!(text)
         end
 
         def dimensions
@@ -58,6 +53,10 @@ module DiscourseAi
 
         def tokenizer
           DiscourseAi::Tokenizer::AllMpnetBaseV2Tokenizer
+        end
+
+        def inference_client
+          DiscourseAi::Inference::DiscourseClassifier.instance(self.class.name)
         end
       end
     end

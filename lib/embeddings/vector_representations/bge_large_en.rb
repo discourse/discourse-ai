@@ -33,24 +33,12 @@ module DiscourseAi
         def vector_from(text, asymetric: false)
           text = "#{asymmetric_query_prefix} #{text}" if asymetric
 
-          if SiteSetting.ai_cloudflare_workers_api_token.present?
-            DiscourseAi::Inference::CloudflareWorkersAi
-              .perform!(inference_model_name, { text: text })
-              .dig(:result, :data)
-              .first
-          elsif DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured?
-            truncated_text = tokenizer.truncate(text, max_sequence_length - 2)
-            DiscourseAi::Inference::HuggingFaceTextEmbeddings.perform!(truncated_text).first
-          elsif discourse_embeddings_endpoint.present?
-            DiscourseAi::Inference::DiscourseClassifier.perform!(
-              "#{discourse_embeddings_endpoint}/api/v1/classify",
-              inference_model_name.split("/").last,
-              text,
-              SiteSetting.ai_embeddings_discourse_service_api_key,
-            )
-          else
-            raise "No inference endpoint configured"
-          end
+          client = inference_client
+
+          needs_truncation = client.class.name.include?("HuggingFaceTextEmbeddings")
+          text = tokenizer.truncate(text, max_sequence_length - 2) if needs_truncation
+
+          inference_client.perform!(text)
         end
 
         def inference_model_name
@@ -87,6 +75,21 @@ module DiscourseAi
 
         def asymmetric_query_prefix
           "Represent this sentence for searching relevant passages:"
+        end
+
+        def inference_client
+          if SiteSetting.ai_cloudflare_workers_api_token.present?
+            DiscourseAi::Inference::CloudflareWorkersAi.instance(inference_model_name)
+          elsif DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured?
+            DiscourseAi::Inference::HuggingFaceTextEmbeddings.instance
+          elsif SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present? ||
+                SiteSetting.ai_embeddings_discourse_service_api_endpoint.present?
+            DiscourseAi::Inference::DiscourseClassifier.instance(
+              inference_model_name.split("/").last,
+            )
+          else
+            raise "No inference endpoint configured"
+          end
         end
       end
     end

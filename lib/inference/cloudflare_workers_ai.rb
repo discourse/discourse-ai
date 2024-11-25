@@ -3,25 +3,38 @@
 module ::DiscourseAi
   module Inference
     class CloudflareWorkersAi
-      def self.perform!(model, content)
-        headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
+      def initialize(account_id, api_token, model, referer = Discourse.base_url)
+        @account_id = account_id
+        @api_token = api_token
+        @model = model
+        @referer = referer
+      end
 
-        account_id = SiteSetting.ai_cloudflare_workers_account_id
-        token = SiteSetting.ai_cloudflare_workers_api_token
+      def self.instance(model)
+        new(
+          SiteSetting.ai_cloudflare_workers_account_id,
+          SiteSetting.ai_cloudflare_workers_api_token,
+          model,
+        )
+      end
 
-        base_url = "https://api.cloudflare.com/client/v4/accounts/#{account_id}/ai/run/@cf/"
-        headers["Authorization"] = "Bearer #{token}"
+      attr_reader :account_id, :api_token, :model, :referer
 
-        endpoint = "#{base_url}#{model}"
+      def perform!(content)
+        headers = {
+          "Referer" => Discourse.base_url,
+          "Content-Type" => "application/json",
+          "Authorization" => "Bearer #{api_token}",
+        }
+
+        endpoint = "https://api.cloudflare.com/client/v4/accounts/#{account_id}/ai/run/@cf/#{model}"
 
         conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
         response = conn.post(endpoint, content.to_json, headers)
 
-        raise Net::HTTPBadResponse if ![200].include?(response.status)
-
         case response.status
         when 200
-          JSON.parse(response.body, symbolize_names: true)
+          JSON.parse(response.body, symbolize_names: true).dig(:result, :data).first
         when 429
           # TODO add a AdminDashboard Problem?
         else

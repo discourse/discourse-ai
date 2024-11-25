@@ -54,12 +54,11 @@ module DiscourseAi
         upload_url = Discourse.store.cdn_url(upload.url)
         upload_url = "#{Discourse.base_url_no_prefix}#{upload_url}" if upload_url.starts_with?("/")
 
-        DiscourseAi::Inference::DiscourseClassifier.perform!(
+        DiscourseAi::Inference::DiscourseClassifier.new(
           "#{endpoint}/api/v1/classify",
-          model,
-          upload_url,
           SiteSetting.ai_nsfw_inference_service_api_key,
-        )
+          model,
+        ).perform!(upload_url)
       end
 
       def available_models
