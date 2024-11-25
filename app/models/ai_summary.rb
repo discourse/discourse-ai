@@ -51,5 +51,6 @@ end
 #
 # Indexes
 #
-#  index_ai_summaries_on_target_type_and_target_id  (target_type,target_id)
+#  idx_on_target_id_target_type_summary_type_3355609fbb  (target_id,target_type,summary_type) UNIQUE
+#  index_ai_summaries_on_target_type_and_target_id       (target_type,target_id)
 #
