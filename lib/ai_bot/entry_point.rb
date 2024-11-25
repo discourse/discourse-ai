@@ -167,6 +167,7 @@ module DiscourseAi
         end
 
         plugin.register_svg_icon("robot")
+        plugin.register_svg_icon("info")
 
         plugin.add_to_serializer(
           :topic_view,
