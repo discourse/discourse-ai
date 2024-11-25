@@ -368,6 +368,7 @@ discourse_ai:
     default: 0
     min: 0
     max: 1000
+    hidden: true
   ai_hot_topic_gists_allowed_groups:
     type: group_list
     list_type: compact
