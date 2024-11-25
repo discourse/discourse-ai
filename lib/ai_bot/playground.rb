@@ -78,11 +78,16 @@ module DiscourseAi
         bot_user = nil
         mentioned = nil
 
-        all_llm_user_ids = LlmModel.joins(:user).pluck("users.id")
+        all_llm_users =
+          LlmModel
+            .where(enabled_chat_bot: true)
+            .joins(:user)
+            .pluck("users.id", "users.username_lower")
 
         if post.topic.private_message?
           # this is an edge case, you started a PM with a different bot
-          bot_user = post.topic.topic_allowed_users.where(user_id: all_llm_user_ids).first&.user
+          bot_user =
+            post.topic.topic_allowed_users.where(user_id: all_llm_users.map(&:first)).first&.user
           bot_user ||=
             post
               .topic
@@ -92,14 +97,17 @@ module DiscourseAi
               &.user
         end
 
-        if mentionables.present?
+        mentions = nil
+        if mentionables.present? || (bot_user && post.topic.private_message?)
           mentions = post.mentions.map(&:downcase)
 
           # in case we are replying to a post by a bot
           if post.reply_to_post_number && post.reply_to_post&.user
             mentions << post.reply_to_post.user.username_lower
           end
+        end
 
+        if mentionables.present?
           mentioned = mentionables.find { |mentionable| mentions.include?(mentionable[:username]) }
 
           # direct PM to mentionable
@@ -117,7 +125,9 @@ module DiscourseAi
         end
 
         if bot_user
-          persona_id = mentioned&.dig(:id) || post.topic.custom_fields["ai_persona_id"]
+          topic_persona_id = post.topic.custom_fields["ai_persona_id"]
+          persona_id = mentioned&.dig(:id) || topic_persona_id
+
           persona = nil
 
           if persona_id
@@ -128,6 +138,19 @@ module DiscourseAi
           if !persona && persona_name = post.topic.custom_fields["ai_persona"]
             persona =
               DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, name: persona_name)
+          end
+
+          # edge case, llm was mentioned in an ai persona conversation
+          if persona_id == topic_persona_id.to_i && post.topic.private_message? && persona &&
+               all_llm_users.present?
+            if !persona.force_default_llm && mentions.present?
+              mentioned_llm_user_id, _ =
+                all_llm_users.find { |id, username| mentions.include?(username) }
+
+              if mentioned_llm_user_id
+                bot_user = User.find_by(id: mentioned_llm_user_id) || bot_user
+              end
+            end
           end
 
           persona ||= DiscourseAi::AiBot::Personas::General

@@ -83,7 +83,7 @@ module DiscourseAi
                 .sub("%%AUTOMATION_ID%%", automation&.id.to_s)
                 .sub("%%AUTOMATION_NAME%%", automation&.name.to_s)
 
-            if flag_type == :spam
+            if flag_type == :spam || flag_type == :spam_silence
               PostActionCreator.new(
                 Discourse.system_user,
                 post,
@@ -91,6 +91,8 @@ module DiscourseAi
                 message: score_reason,
                 queue_for_review: true,
               ).perform
+
+              SpamRule::AutoSilence.new(post.user, post).silence_user if flag_type == :spam_silence
             else
               reviewable =
                 ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user)

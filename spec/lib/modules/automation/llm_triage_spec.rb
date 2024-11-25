@@ -110,6 +110,24 @@ describe DiscourseAi::Automation::LlmTriage do
     expect(post.topic.reload.visible).to eq(false)
   end
 
+  it "can handle spam+silence flags" do
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        flag_type: :spam_silence,
+        automation: nil,
+      )
+    end
+
+    expect(post.reload).to be_hidden
+    expect(post.topic.reload.visible).to eq(false)
+    expect(post.user.silenced?).to eq(true)
+  end
+
   it "can handle garbled output from LLM" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["Bad.\n\nYo"]) do
       triage(

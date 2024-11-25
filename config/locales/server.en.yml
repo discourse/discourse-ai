@@ -4,6 +4,7 @@ en:
       flag_types:
         review: "Add post to review queue"
         spam: "Flag as spam and hide post"
+        spam_silence: "Flag as spam, hide post and silence user"
     scriptables:
       llm_triage:
         title: Triage posts using AI
