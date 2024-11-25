@@ -6,9 +6,7 @@
 </div>
 
 <div class="cell value today-count">
-  <a
-    href="{{this.todayLink}}"
-  >
+  <a href={{this.todayLink}}>
     {{number this.model.todayCount}}
   </a>
 </div>
@@ -17,9 +15,7 @@
   class="cell value yesterday-count {{this.model.yesterdayTrend}}"
   title={{this.model.yesterdayCountTitle}}
 >
-  <a
-    href="{{this.yesterdayLink}}"
-  >
+  <a href={{this.yesterdayLink}}>
     {{number this.model.yesterdayCount}}
   </a>
   {{d-icon this.model.yesterdayTrendIcon}}
@@ -29,9 +25,7 @@
   class="cell value sevendays-count {{this.model.sevenDaysTrend}}"
   title={{this.model.sevenDaysCountTitle}}
 >
-  <a
-    href="{{this.lastSevenDaysLink}}"
-  >
+  <a href={{this.lastSevenDaysLink}}>
     {{number this.model.lastSevenDaysCount}}
   </a>
   {{d-icon this.model.sevenDaysTrendIcon}}
@@ -42,9 +36,7 @@
   title={{this.model.thirtyDaysCountTitle}}
 >
 
-  <a
-    href="{{this.lastThirtyDaysLink}}"
-  >
+  <a href={{this.lastThirtyDaysLink}}>
     {{number this.model.lastThirtyDaysCount}}
   </a>
   {{#if this.model.canDisplayTrendIcon}}
