@@ -60,6 +60,7 @@
             {{#each this.emotions as |metric|}}
               <AdminReport
                 @showHeader={{false}}
+                @filters={{this.emotionFilters}}
                 @forcedModes="emotion"
                 @dataSourceName="emotion_{{metric}}"
               />

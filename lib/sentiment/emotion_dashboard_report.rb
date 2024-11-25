@@ -6,15 +6,16 @@ module DiscourseAi
       def self.register!(plugin)
         Emotions::LIST.each do |emotion|
           plugin.add_report("emotion_#{emotion}") do |report|
-            query_results = DiscourseAi::Sentiment::EmotionDashboardReport.fetch_data
-            report.data = query_results.pop(30).map { |row| { x: row.day, y: row.send(emotion) } }
-            report.prev30Days =
-              query_results.take(30).reduce(0) { |sum, row| sum + row.send(emotion) }.to_i
+            query_results = DiscourseAi::Sentiment::EmotionDashboardReport.fetch_data(report)
+            report.data = query_results.map { |row| { x: row.day, y: row.send(emotion) } }
+            if report.facets.include?(:prev_period) && query_results.length > 30
+              report.prev30Days = query_results[31..60].sum { |row| row.send(emotion) }
+            end
           end
         end
 
-        def self.fetch_data
-          DB.query(<<~SQL, end: Time.now.tomorrow.midnight, start: 60.days.ago.midnight)
+        def self.fetch_data(report)
+          DB.query(<<~SQL, end: report.end_date, start: report.start_date)
             SELECT
               posts.created_at::DATE AS day,
               #{

@@ -117,60 +117,88 @@ en:
       yaxis: "Date"
     emotion_admiration:
       title: 🤩 Admiration
+      description: "Posts classified with the emotion admiration via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_amusement:
       title: 😄 Amusement
+      description: "Posts classified with the emotion amusement via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_anger:
       title: 😠 Anger
+      description: "Posts classified with the emotion anger via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_annoyance:
       title: 😒 Annoyance
+      description: "Posts classified with the emotion annoyance via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_approval:
       title: 👍 Approval
+      description: "Posts classified with the emotion approval via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_caring:
       title: 🤗 Caring
+      description: "Posts classified with the emotion caring via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_confusion:
       title: 😕 Confusion
+      description: "Posts classified with the emotion confusion via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_curiosity:
       title: 🤔 Curiosity
+      description: "Posts classified with the emotion curiosity via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_desire:
       title: 😍 Desire
+      description: "Posts classified with the emotion desire via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_disappointment:
       title: 😞 Disappointment
+      description: "Posts classified with the emotion disappointment via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_disapproval:
       title: 👎 Disapproval
+      description: "Posts classified with the emotion disapproval via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_disgust:
       title: 🤢 Disgust
+      description: "Posts classified with the emotion disgust via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_embarrassment:
       title: 😳 Embarrassment
+      description: "Posts classified with the emotion embarrassment via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_excitement:
       title: 🤪 Excitement
+      description: "Posts classified with the emotion excitement via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_fear:
       title: 😨 Fear
+      description: "Posts classified with the emotion fear via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_gratitude:
       title: 🙏 Gratitude
+      description: "Posts classified with the emotion gratitude via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_grief:
       title: 😢 Grief
+      description: "Posts classified with the emotion grief via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_joy:
       title: 😊 Joy
+      description: "Posts classified with the emotion joy via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_love:
       title: ❤️ Love
+      description: "Posts classified with the emotion love via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_nervousness:
       title: 😰 Nervousness
+      description: "Posts classified with the emotion nervousness via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_neutral:
       title: 😐 Neutral
+      description: "Posts classified with the emotion neutral via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_optimism:
       title: 🌟 Optimism
+      description: "Posts classified with the emotion optimism via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_pride:
       title: 🦁 Pride
+      description: "Posts classified with the emotion pride via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_realization:
       title: 💡 Realization
+      description: "Posts classified with the emotion realization via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_relief:
       title: 😌 Relief
+      description: "Posts classified with the emotion relief via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_remorse:
       title: 😔 Remorse
+      description: "Posts classified with the emotion remorse via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_sadness:
       title: 😭 Sadness
+      description: "Posts classified with the emotion sadness via AI, using the model 'SamLowe/roberta-base-go_emotions'."
     emotion_surprise:
       title: 😲 Surprise
+      description: "Posts classified with the emotion surprise via AI, using the model 'SamLowe/roberta-base-go_emotions'."
 
   discourse_ai:
     ai_artifact:
