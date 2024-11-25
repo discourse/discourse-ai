@@ -38,7 +38,7 @@ module DiscourseAi
             :related_topics,
             include_condition: -> { SiteSetting.ai_embeddings_semantic_related_topics_enabled },
           ) do
-            if object.next_page.nil? && !object.topic.private_message?
+            if !object.topic.private_message?
               object.related_topics.topics.map do |t|
                 SuggestedTopicSerializer.new(t, scope: scope, root: false)
               end
