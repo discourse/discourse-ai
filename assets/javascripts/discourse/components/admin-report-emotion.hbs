@@ -6,14 +6,22 @@
 </div>
 
 <div class="cell value today-count">
-  {{number this.model.todayCount}}
+  <a
+    href="{{this.filterURL}}activity-after%3A{{this.today}}%20order%3A{{this.model.type}}"
+  >
+    {{number this.model.todayCount}}
+  </a>
 </div>
 
 <div
   class="cell value yesterday-count {{this.model.yesterdayTrend}}"
   title={{this.model.yesterdayCountTitle}}
 >
-  {{number this.model.yesterdayCount}}
+  <a
+    href="{{this.filterURL}}activity-after%3A{{this.yesterday}}%20order%3A{{this.model.type}}"
+  >
+    {{number this.model.yesterdayCount}}
+  </a>
   {{d-icon this.model.yesterdayTrendIcon}}
 </div>
 
@@ -21,7 +29,11 @@
   class="cell value sevendays-count {{this.model.sevenDaysTrend}}"
   title={{this.model.sevenDaysCountTitle}}
 >
-  {{number this.model.lastSevenDaysCount}}
+  <a
+    href="{{this.filterURL}}activity-after%3A{{this.lastWeek}}%20order%3A{{this.model.type}}"
+  >
+    {{number this.model.lastSevenDaysCount}}
+  </a>
   {{d-icon this.model.sevenDaysTrendIcon}}
 </div>
 
@@ -29,7 +41,12 @@
   class="cell value thirty-days-count {{this.model.thirtyDaysTrend}}"
   title={{this.model.thirtyDaysCountTitle}}
 >
-  {{number this.model.lastThirtyDaysCount}}
+
+  <a
+    href="{{this.filterURL}}activity-after%3A{{this.lastMonth}}%20order%3A{{this.model.type}}"
+  >
+    {{number this.model.lastThirtyDaysCount}}
+  </a>
   {{#if this.model.canDisplayTrendIcon}}
     {{d-icon this.model.thirtyDaysTrendIcon}}
   {{/if}}
