@@ -9,8 +9,8 @@ export default class AdminDashboardSentiment extends AdminDashboardTabController
 
   get emotionFilters() {
     return {
-      startDate: moment().format("YYYY-MM-DD"),
-      endDate: moment().subtract(2, "month").format("YYYY-MM-DD"),
+      startDate: moment().subtract(2, "month").format("YYYY-MM-DD"),
+      endDate: moment().format("YYYY-MM-DD"),
     };
   }
 
