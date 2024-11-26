@@ -16,6 +16,10 @@ he:
       site_settings:
         categories:
           discourse_ai: "בינה מלאכותית ב־Discourse"
+      dashboard:
+        emotion:
+          title: "רגש"
+          description: "הטבלה מפרטת את כמות הפוסטים שסווגו עם רגש שנקבע. הסיווג נעשה בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
   js:
     discourse_automation:
       scriptables:
@@ -168,6 +172,7 @@ he:
         saved: "הדמות נשמרה"
         enabled: "מאופשר?"
         tools: "כלים פעילים"
+        forced_tools: "כלים נאכפים"
         allowed_groups: "קבוצות מורשות"
         confirm_delete: "למחוק את הדמות?"
         new: "דמות חדשה"
@@ -271,6 +276,11 @@ he:
           ai_persona: "דמות (%{persona})"
           ai_summarization: "סיכום"
           ai_embeddings_semantic_search: "חיפוש בינה מלאכותית"
+        in_use_warning:
+          one: "המודל הזה משמש את %{settings}. אם לא מוגדר כראוי, היכולת לא תעבוד כמצופה."
+          two: "המודל הזה משמש את: %{settings}. אם ההגדרות שגויות היכולת לא תעבודנה כמצופה."
+          many: "המודל הזה משמש את: %{settings}. אם ההגדרות שגויות היכולת לא תעבודנה כמצופה."
+          other: "המודל הזה משמש את: %{settings}. אם ההגדרות שגויות היכולת לא תעבודנה כמצופה."
         model_description:
           none: "הגדרות כלליות שעובדות עבור רוב המודלים של השפות"
           anthropic-claude-3-5-sonnet: "המודל החכם ביותר של Anthropic"
@@ -281,6 +291,12 @@ he:
           open_ai-gpt-4-turbo: "מודל חכם מאוד מהדור הקודם"
           open_ai-gpt-4o: "מודל חכם במיוחד למשימות מורכבות, רבות שלבים"
           open_ai-gpt-4o-mini: "מודל חסכוני, קטן ומהיר למשימות קלילות"
+          open_ai-o1-mini: "מודל הגיון חסכוני"
+          open_ai-o1-preview: "מודל ההיגיון החזק ביותר מבית OpenAI"
+          samba_nova-Meta-Llama-3-1-8B-Instruct: "דגם רב־לשוני, קליל ויעיל"
+          samba_nova-Meta-Llama-3-1-70B-Instruct": "מודל רב־תכליתי חזק"
+          mistral-mistral-large-latest: "המודל החזק ביותר של Mistral"
+          mistral-pixtral-large-latest: "המודל החזק ביותר של Mistral שבנוי לעיבוד חזותי"
         configured:
           title: "LLMs (מודלי שפה גדולים) מוגדרים"
         preconfigured_llms: "בחירת ה־LLM שלך"
@@ -313,6 +329,7 @@ he:
           ollama: "Ollama"
           CDCK: "CDCK"
           samba_nova: "SambaNova"
+          mistral: "Mistral"
           fake: "מותאם"
         provider_fields:
           access_key_id: "מזהה מפתח גישה ל־AWS Bedrock"
@@ -385,6 +402,10 @@ he:
         ai_generated_result: "תוצאות חיפוש שנמצאו באמצעות בינה מלאכותית"
         quick_search:
           suffix: "בכל הנושאים והפוסטים עם בינה מלאכותית"
+      ai_artifact:
+        expand_view_label: "הרחבת תצוגה"
+        collapse_view_label: "יציאה ממסך מלא (ESC)"
+        click_to_run_label: "הרצת תוצר"
       ai_bot:
         pm_warning: "הודעות בוט שיח בינה מלאכותית לא נאכפות דרך קבע על ידי המפקחים."
         cancel_streaming: "עצירת התגובה"
@@ -450,6 +471,11 @@ he:
         topic:
           title: "תקציר הנושא"
           close: "סגירת חלונית תקציר"
+        topic_list_layout:
+          button:
+            compact: "מצומצם"
+            expanded: "מורחב"
+            expanded_description: "עם סיכוי בינה מלאכותית"
     review:
       types:
         reviewable_ai_post:

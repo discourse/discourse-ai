@@ -96,19 +96,19 @@ ar:
       xaxis: "إيجابية (%)"
       yaxis: "التاريخ"
     emotion_anger:
-      title: الغضب
+      title: "\U0001F620 الغضب"
     emotion_disgust:
-      title: الاشمئزاز
+      title: "\U0001F922 الاشمئزاز"
     emotion_fear:
-      title: الخوف
+      title: "\U0001F628 الخوف"
     emotion_joy:
-      title: المرح
+      title: "\U0001F60A المرح"
     emotion_neutral:
-      title: محايدة
+      title: "\U0001F610 محايدة"
     emotion_sadness:
-      title: الحزن
+      title: "\U0001F62D الحزن"
     emotion_surprise:
-      title: المفاجأة
+      title: "\U0001F632 المفاجأة"
   discourse_ai:
     unknown_model: "نموذج ذكاء اصطناعي غير معروف"
     tools:

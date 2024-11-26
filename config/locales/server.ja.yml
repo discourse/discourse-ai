@@ -96,19 +96,19 @@ ja:
       xaxis: "ポジティブ(%)"
       yaxis: "日付"
     emotion_anger:
-      title: 怒り
+      title: "\U0001F620 怒り"
     emotion_disgust:
-      title: 嫌悪
+      title: "\U0001F922 嫌悪"
     emotion_fear:
-      title: 恐怖
+      title: "\U0001F628 恐怖"
     emotion_joy:
-      title: 喜び
+      title: "\U0001F60A 喜び"
     emotion_neutral:
-      title: ニュートラル
+      title: "\U0001F610 ニュートラル"
     emotion_sadness:
-      title: 悲しみ
+      title: "\U0001F62D 悲しみ"
     emotion_surprise:
-      title: 驚き
+      title: "\U0001F632 驚き"
   discourse_ai:
     unknown_model: "不明な AI モデル"
     tools:

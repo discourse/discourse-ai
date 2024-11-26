@@ -9,7 +9,7 @@ te:
     overall_sentiment:
       yaxis: "తేదీ"
     emotion_neutral:
-      title: తటస్థ
+      title: "\U0001F610 తటస్థ"
   discourse_ai:
     ai_bot:
       tool_summary:

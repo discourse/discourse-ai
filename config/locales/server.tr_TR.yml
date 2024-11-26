@@ -96,19 +96,19 @@ tr_TR:
       xaxis: "Pozitif(%)"
       yaxis: "Tarih"
     emotion_anger:
-      title: Öfke
+      title: "\U0001F620 Öfke"
     emotion_disgust:
-      title: İğrenme
+      title: "\U0001F922 İğrenme"
     emotion_fear:
-      title: Korku
+      title: "\U0001F628 Korku"
     emotion_joy:
-      title: Neşe
+      title: "\U0001F60A Neşe"
     emotion_neutral:
-      title: Nötr
+      title: "\U0001F610 Nötr"
     emotion_sadness:
-      title: Üzüntü
+      title: "\U0001F62D Üzüntü"
     emotion_surprise:
-      title: Sürpriz
+      title: "\U0001F632 Sürpriz"
   discourse_ai:
     unknown_model: "Bilinmeyen YZ modeli"
     tools:

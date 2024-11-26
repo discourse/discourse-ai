@@ -9,7 +9,7 @@ ur:
     overall_sentiment:
       yaxis: "تاریخ"
     emotion_neutral:
-      title: نیوٹرل
+      title: "\U0001F610 نیوٹرل"
   discourse_ai:
     ai_bot:
       tool_summary:

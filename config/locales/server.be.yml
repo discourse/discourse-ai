@@ -7,7 +7,7 @@
 be:
   reports:
     emotion_neutral:
-      title: нейтральны
+      title: "\U0001F610 нейтральны"
   discourse_ai:
     ai_bot:
       tool_summary:
