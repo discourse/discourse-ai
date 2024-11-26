@@ -14,8 +14,7 @@ module ::Jobs
 
       summarizer = DiscourseAi::Summarization.topic_gist(topic)
       gist = summarizer.existing_summary
-      return if gist.blank?
-      return if !gist.outdated
+      return if gist.present? && !gist.outdated
 
       summarizer.force_summarize(Discourse.system_user)
     end
