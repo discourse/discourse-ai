@@ -13,7 +13,6 @@ export default class AiCategorySuggestion extends Component {
   }
 
   <template>
-    {{log @outletArgs}}
     <AiCategorySuggester
       @composer={{@outletArgs.topic.category}}
       @topic={{@outletArgs.topic}}
