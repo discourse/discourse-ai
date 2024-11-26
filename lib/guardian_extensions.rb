@@ -23,7 +23,7 @@ module DiscourseAi
 
     def can_see_gists?
       return false if !SiteSetting.ai_summarization_enabled
-      return false if SiteSetting.ai_summary_gists_enabled
+      return false if !SiteSetting.ai_summary_gists_enabled
       if SiteSetting.ai_summary_gists_allowed_groups.to_s == Group::AUTO_GROUPS[:everyone].to_s
         return true
       end
