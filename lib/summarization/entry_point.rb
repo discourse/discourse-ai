@@ -39,7 +39,7 @@ module DiscourseAi
         # jobs if the feature is disabled.
         plugin.on(:post_created) do |post|
           if SiteSetting.discourse_ai_enabled && SiteSetting.ai_summarization_enabled &&
-               SiteSetting.ai_summary_gists_enabled > 0 && post.topic
+               SiteSetting.ai_summary_gists_enabled && post.topic
             Jobs.enqueue(:fast_track_topic_gist, topic_id: post&.topic_id)
           end
         end
