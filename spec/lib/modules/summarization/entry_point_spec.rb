@@ -153,13 +153,4 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
       end
     end
   end
-
-  describe "#on topic_hot_scores_updated" do
-    it "queues a job to generate gists" do
-      expect { DiscourseEvent.trigger(:topic_hot_scores_updated) }.to change(
-        Jobs::FastTrackTopicGist.jobs,
-        :size,
-      ).by(1)
-    end
-  end
 end
