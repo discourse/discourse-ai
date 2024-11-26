@@ -96,19 +96,19 @@ nl:
       xaxis: "Positief (%)"
       yaxis: "Datum"
     emotion_anger:
-      title: Boosheid
+      title: "\U0001F620 Boosheid"
     emotion_disgust:
-      title: Afschuw
+      title: "\U0001F922 Afschuw"
     emotion_fear:
-      title: Angst
+      title: "\U0001F628 Angst"
     emotion_joy:
-      title: Vreugde
+      title: "\U0001F60A Vreugde"
     emotion_neutral:
-      title: Neutraal
+      title: "\U0001F610 Neutraal"
     emotion_sadness:
-      title: Droefheid
+      title: "\U0001F62D Droefheid"
     emotion_surprise:
-      title: Verrassing
+      title: "\U0001F632 Verrassing"
   discourse_ai:
     unknown_model: "Onbekend AI-model"
     tools:

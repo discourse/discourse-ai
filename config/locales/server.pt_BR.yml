@@ -102,19 +102,19 @@ pt_BR:
       xaxis: "Positivo (%)"
       yaxis: "Data"
     emotion_anger:
-      title: Raiva
+      title: "\U0001F620 Raiva"
     emotion_disgust:
-      title: Repulsa
+      title: "\U0001F922 Repulsa"
     emotion_fear:
-      title: Medo
+      title: "\U0001F628 Medo"
     emotion_joy:
-      title: Alegria
+      title: "\U0001F60A Alegria"
     emotion_neutral:
-      title: Neutro
+      title: "\U0001F610 Neutro"
     emotion_sadness:
-      title: Tristeza
+      title: "\U0001F62D Tristeza"
     emotion_surprise:
-      title: Surpresa
+      title: "\U0001F632 Surpresa"
   discourse_ai:
     unknown_model: "Modelo de IA desconhecido"
     tools:

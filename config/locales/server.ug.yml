@@ -9,7 +9,7 @@ ug:
     overall_sentiment:
       yaxis: "چېسلا"
     emotion_neutral:
-      title: بىتەرەپ
+      title: "\U0001F610 بىتەرەپ"
   discourse_ai:
     ai_bot:
       tool_summary:

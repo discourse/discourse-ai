@@ -84,7 +84,6 @@ uk:
     ai_summarization_model: "Модель для узагальнення."
     ai_custom_summarization_allowed_groups: "Групи, яким дозволено створювати нові зведення."
     ai_pm_summarization_allowed_groups: "Групи дозволили створювати та переглядати підсумки в особистих повідомленнях."
-    ai_summary_gists_enabled: "Після оновлення тем у гарячому списку ми згенеруємо короткі підсумки перших N. (Вимкнено, коли 0)"
     ai_summary_gists_allowed_groups: "Групи, яким дозволено бачити суть у списку гарячих тем."
     ai_summary_backfill_maximum_topics_per_hour: "Кількість підсумків тем для заповнення на годину."
     ai_bot_enabled: "Увімкніть модуль AI Bot."
@@ -106,19 +105,22 @@ uk:
   reports:
     overall_sentiment:
       title: "Загальний настрій"
-      description: 'На діаграмі порівнюється кількість публікацій, класифікованих як позитивні чи негативні. Вони обчислюються, коли позитивні або негативні бали > встановленого порогового балу. Це означає, що нейтральні публікації не відображаються. Приватні повідомлення (ПП) також виключаються. Класифіковано за "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Позитивні (%)"
       yaxis: "Дата"
     emotion_anger:
-      title: Гнів
+      title: "\U0001F620 Гнів"
     emotion_disgust:
-      title: Огида
+      title: "\U0001F922 Огида"
+    emotion_fear:
+      title: "\U0001F628 Страх"
+    emotion_joy:
+      title: "\U0001F60A Радість"
     emotion_neutral:
-      title: Нейтральна
+      title: "\U0001F610 Нейтральна"
     emotion_sadness:
-      title: Смуток
+      title: "\U0001F62D Смуток"
     emotion_surprise:
-      title: Сюрприз
+      title: "\U0001F632 Сюрприз"
   discourse_ai:
     unknown_model: "Невідома модель ШІ"
     tools:
@@ -216,7 +218,7 @@ uk:
             description: "Максимальна кількість результатів для включення в пошук – якщо порожні, будуть використані правила за замовчуванням, а кількість буде масштабовано залежно від моделі, що використовується. Найвище значення 100."
           base_query:
             name: "Базовий пошуковий запит"
-            description: 'Базовий запит для пошуку. Приклад: "#urgent" додасть "#urgent" до пошукового запиту і знайде лише теми з категорією або тегом "терміново".'
+            description: "Базовий запит для пошуку. Приклад: \"#urgent\" додасть \"#urgent\" до пошукового запиту і знайде лише теми з категорією або тегом \"терміново\"."
       tool_summary:
         web_browser: "Перегляд веб-сторінок"
         github_search_files: "Пошук файлів на GitHub"
@@ -285,17 +287,17 @@ uk:
           one: "Знайдено %{count} <a href='%{url}'>результат</a> для '%{query}'"
           few: "Знайдено %{count} <a href='%{url}'>результати</a> для '%{query}'"
           many: "Знайдено %{count} <a href='%{url}'>результатів</a> для '%{query}'"
-          other: 'Знайдено %{count} <a href=''%{url}''>результатів</a> для "%{query}"'
+          other: "Знайдено %{count} <a href='%{url}'>результатів</a> для \"%{query}\""
         search_meta_discourse:
           one: "Знайдено %{count} <a href='%{url}'>результат</a> для '%{query}'"
           few: "Знайдено %{count} <a href='%{url}'>результати</a> для '%{query}'"
           many: "Знайдено %{count} <a href='%{url}'>результатів</a> для '%{query}'"
-          other: 'Знайдено %{count} <a href=''%{url}''>результатів</a> для "%{query}"'
+          other: "Знайдено %{count} <a href='%{url}'>результатів</a> для \"%{query}\""
         google:
           one: "Знайдено %{count} <a href='%{url}'>результат</a> для '%{query}'"
           few: "Знайдено %{count} <a href='%{url}'>результати</a> для '%{query}'"
           many: "Знайдено %{count} <a href='%{url}'>результатів</a> для '%{query}'"
-          other: 'Знайдено %{count} <a href=''%{url}''>результатів</a> для "%{query}"'
+          other: "Знайдено %{count} <a href='%{url}'>результатів</a> для \"%{query}\""
         setting_context: "Читання контексту для: %{setting_name}"
         schema: "%{tables}"
         search_settings:
