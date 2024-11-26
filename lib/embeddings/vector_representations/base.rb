@@ -81,6 +81,9 @@ module DiscourseAi
             .zip(*promised_embeddings)
             .value!
             .each { |e| save_to_db(e[:target], e[:embedding], e[:digest]) }
+
+          pool.shutdown
+          pool.wait_for_termination
         end
 
         def generate_representation_from(target, persist: true)
