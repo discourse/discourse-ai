@@ -8,6 +8,8 @@ ur:
   reports:
     overall_sentiment:
       yaxis: "تاریخ"
+    emotion_neutral:
+      title: نیوٹرل
   discourse_ai:
     ai_bot:
       tool_summary:

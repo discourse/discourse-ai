@@ -30,14 +30,14 @@ ca:
       modals:
         select_option: "Trieu una opció..."
       ai_persona:
-        back: Enrere
-        name: Nom
-        edit: Edita
-        description: Descripció
+        back: "Enrere"
+        name: "Nom"
+        edit: "Edita"
+        description: "Descripció"
         user: Usuari
-        save: Desa
+        save: "Desa"
         enabled: "Activat?"
-        delete: Suprimeix
+        delete: "Suprimeix"
       rag:
         uploads:
           title: "Càrregues"
@@ -50,12 +50,9 @@ ca:
         save: "Desa"
         parameter_required: "Necessari"
         edit: "Edita"
-        test: "Executa el test"
         delete: "Suprimeix"
         next:
           title: "Següent"
-        test_modal:
-          run: "Executa el test"
       llms:
         display_name: "Nom"
         save: "Desa"
@@ -65,7 +62,6 @@ ca:
         next:
           title: "Següent"
         tests:
-          title: "Executa el test"
           success: "Èxit!"
         providers:
           google: "Google"

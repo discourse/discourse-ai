@@ -30,14 +30,15 @@ el:
       modals:
         select_option: "Διαλέξτε μία επιλογή..."
       ai_persona:
-        back: Πίσω
-        name: Όνομα
-        edit: Επεξεργασία
-        description: Περιγραφή
+        back: "Πίσω"
+        name: "Όνομα"
+        edit: "Επεξεργασία"
+        description: "Περιγραφή"
         user: Χρήστης
-        save: Αποθήκευση
+        save: "Αποθήκευση"
         enabled: "Ενεργοποιημένο;"
-        delete: Σβήσιμο
+        allowed_groups: "Επιτρεπόμενες ομάδες"
+        delete: "Σβήσιμο"
       rag:
         uploads:
           title: "Μεταφορτώσεις"
@@ -50,12 +51,9 @@ el:
         save: "Αποθήκευση"
         parameter_required: "Απαιτείται"
         edit: "Επεξεργασία"
-        test: "Εκτέλεση δοκιμής"
         delete: "Σβήσιμο"
         next:
           title: "Επόμενο"
-        test_modal:
-          run: "Εκτέλεση δοκιμής"
       llms:
         display_name: "Όνομα"
         save: "Αποθήκευση"
@@ -65,7 +63,6 @@ el:
         next:
           title: "Επόμενο"
         tests:
-          title: "Εκτέλεση δοκιμής"
           success: "Επιτυχία!"
         providers:
           google: "Google"

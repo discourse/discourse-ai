@@ -12,10 +12,82 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
     expect(processor.should_cancel?).to eq(false)
   end
 
-  it "is usable for simple single message mode" do
+  it "can handle partial tool calls" do
+    processor = DiscourseAi::Completions::XmlToolProcessor.new(partial_tool_calls: true)
+
     xml = (<<~XML).strip
-      hello
+      <function|_calls>
+      <invoke>
+      <tool_name>h|ell|o<|/tool_name>
+      <parameters>
+       <hello>wo|r|ld</hello>
+      </parameters>
+      </invoke>
+      <invoke>
+      <tool_name>tool|2</tool_name>
+      <parameters>
+        <param>v|alue</param>
+        <para|m2><![CDA|TA[va|lue2]]></param2>
+      </parame|ters>
+      </invoke>
+    XML
+
+    result = []
+
+    xml.split("|").each { |part| result << (processor << part).map(&:dup) }
+
+    result << (processor.finish)
+    result.flatten!
+
+    tool1_params =
+      result
+        .select do |r|
+          r.is_a?(DiscourseAi::Completions::ToolCall) && r.name == "hello" && r.partial
+        end
+        .map(&:parameters)
+
+    expect(tool1_params).to eq([{ hello: "wo" }, { hello: "wor" }, { hello: "world" }])
+
+    tool2_params =
+      result
+        .select do |r|
+          r.is_a?(DiscourseAi::Completions::ToolCall) && r.name == "tool2" && r.partial
+        end
+        .map(&:parameters)
+
+    expect(tool2_params).to eq(
+      [
+        { param: "v" },
+        { param: "value" },
+        { param: "value", param2: "va" },
+        { param: "value", param2: "value2" },
+      ],
+    )
+  end
+
+  it "can handle mix and match xml cause tool llms may not encode" do
+    xml = (<<~XML).strip
       <function_calls>
+      <invoke>
+      <tool_name>hello</tool_name>
+      <parameters>
+       <hello>world <sam>sam</sam></hello>
+       <test><![CDATA[</h1>\n</div>\n]]></test>
+      </parameters>
+      </invoke>
+    XML
+
+    result = []
+    result << (processor << xml)
+    result << (processor.finish)
+
+    tool_call = result.last.first
+    expect(tool_call.parameters).to eq(hello: "world <sam>sam</sam>", test: "</h1>\n</div>\n")
+  end
+
+  it "is usable for simple single message mode" do
+    xml = (<<~XML)
+       world <function_calls>
       <invoke>
       <tool_name>hello</tool_name>
       <parameters>
@@ -26,6 +98,7 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
     XML
 
     result = []
+    result << (processor << "hello")
     result << (processor << xml)
     result << (processor.finish)
 
@@ -38,7 +111,7 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
           test: "value",
         },
       )
-    expect(result).to eq([["hello"], [tool_call]])
+    expect(result).to eq([["hello"], [" world"], [tool_call]])
     expect(processor.should_cancel?).to eq(false)
   end
 
@@ -149,8 +222,7 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
     result << (processor.finish)
 
     # Should just do its best to parse the XML
-    tool_call =
-      DiscourseAi::Completions::ToolCall.new(id: "tool_0", name: "test", parameters: { param: "" })
+    tool_call = DiscourseAi::Completions::ToolCall.new(id: "tool_0", name: "test", parameters: {})
     expect(result).to eq([["text"], [tool_call]])
   end
 

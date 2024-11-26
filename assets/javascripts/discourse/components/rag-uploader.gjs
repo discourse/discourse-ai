@@ -5,7 +5,7 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { getOwner } from "@ember/owner";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
 import UppyUpload from "discourse/lib/uppy/uppy-upload";
@@ -37,6 +37,15 @@ export default class RagUploader extends Component {
     },
   });
 
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.appEvents.off(
+      `upload-mixin:${this.uppyUpload.config}:all-uploads-complete`,
+      this,
+      "_updateTargetWithUploads"
+    );
+  }
+
   didReceiveAttrs() {
     super.didReceiveAttrs(...arguments);
 
@@ -59,15 +68,6 @@ export default class RagUploader extends Component {
 
     this.appEvents.on(
       `upload-mixin:${this.uppyUpload.config.id}:all-uploads-complete`,
-      this,
-      "_updateTargetWithUploads"
-    );
-  }
-
-  willDestroy() {
-    super.willDestroy(...arguments);
-    this.appEvents.off(
-      `upload-mixin:${this.uppyUpload.config}:all-uploads-complete`,
       this,
       "_updateTargetWithUploads"
     );
@@ -152,7 +152,7 @@ export default class RagUploader extends Component {
                   @icon="times"
                   @title="discourse_ai.rag.uploads.remove"
                   @action={{fn this.removeUpload upload}}
-                  @class="btn-flat"
+                  class="btn-flat"
                 />
               </td>
             </tr>
@@ -173,7 +173,7 @@ export default class RagUploader extends Component {
                   @icon="times"
                   @title="discourse_ai.rag.uploads.remove"
                   @action={{fn this.cancelUploading upload}}
-                  @class="btn-flat"
+                  class="btn-flat"
                 />
               </td>
             </tr>

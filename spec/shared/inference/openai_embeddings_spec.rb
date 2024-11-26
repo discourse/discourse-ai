@@ -26,10 +26,11 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
     ).to_return(status: 200, body: body_json, headers: {})
 
     result =
-      DiscourseAi::Inference::OpenAiEmbeddings.perform!("hello", model: "text-embedding-ada-002")
+      DiscourseAi::Inference::OpenAiEmbeddings.instance(model: "text-embedding-ada-002").perform!(
+        "hello",
+      )
 
-    expect(result[:usage]).to eq({ prompt_tokens: 1, total_tokens: 1 })
-    expect(result[:data].first).to eq({ object: "embedding", embedding: [0.0, 0.1] })
+    expect(result).to eq([0.0, 0.1])
   end
 
   it "supports openai embeddings" do
@@ -54,13 +55,11 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
     ).to_return(status: 200, body: body_json, headers: {})
 
     result =
-      DiscourseAi::Inference::OpenAiEmbeddings.perform!(
-        "hello",
+      DiscourseAi::Inference::OpenAiEmbeddings.instance(
         model: "text-embedding-ada-002",
         dimensions: 1000,
-      )
+      ).perform!("hello")
 
-    expect(result[:usage]).to eq({ prompt_tokens: 1, total_tokens: 1 })
-    expect(result[:data].first).to eq({ object: "embedding", embedding: [0.0, 0.1] })
+    expect(result).to eq([0.0, 0.1])
   end
 end

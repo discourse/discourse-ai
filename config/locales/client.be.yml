@@ -28,13 +28,13 @@ be:
               label: "Адказаць"
     discourse_ai:
       ai_persona:
-        back: Назад
-        name: імя
-        edit: рэдагаваць
-        description: Апісанне
+        back: "Назад"
+        name: "імя"
+        edit: "рэдагаваць"
+        description: "Апісанне"
         user: карыстальнік
-        save: Захаваць
-        delete: выдаляць
+        save: "Захаваць"
+        delete: "выдаляць"
       rag:
         uploads:
           title: "Загрузкі"

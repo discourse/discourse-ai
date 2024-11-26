@@ -1,33 +1,41 @@
 import Component from "@glimmer/component";
 import { service } from "@ember/service";
-import bodyClass from "discourse/helpers/body-class";
+import { htmlSafe } from "@ember/template";
 
 export default class AiTopicGist extends Component {
-  @service router;
-  @service gistPreference;
+  @service gists;
 
-  get prefersGist() {
-    return this.gistPreference.preference === "gists_enabled";
+  get shouldShow() {
+    return this.gists.preference === "table-ai" && this.gists.shouldShow;
   }
 
-  get showGist() {
-    return (
-      this.router.currentRoute.attributes?.filterType === "hot" &&
-      this.args.topic?.ai_topic_gist &&
-      !this.args.topic?.excerpt &&
-      this.prefersGist &&
-      !this.args.topic?.excerpt
-    );
+  get hasGist() {
+    return !!this.gist;
+  }
+
+  get gist() {
+    return this.args.topic.get("ai_topic_gist");
+  }
+
+  get escapedExceprt() {
+    return this.args.topic.get("escapedExcerpt");
   }
 
   <template>
-    {{#if this.showGist}}
-      {{bodyClass "--topic-list-with-gist"}}
-      <div class="ai-topic-gist">
-        <div class="ai-topic-gist__text">
-          {{@topic.ai_topic_gist}}
+    {{#if this.shouldShow}}
+      {{#if this.hasGist}}
+        <div class="excerpt">
+          <div class="excerpt__contents">{{this.gist}}</div>
         </div>
-      </div>
+      {{else}}
+        {{#if this.esacpedExceprt}}
+          <div class="excerpt">
+            <div class="excerpt__contents">
+              {{htmlSafe this.escapedExceprt}}
+            </div>
+          </div>
+        {{/if}}
+      {{/if}}
     {{/if}}
   </template>
 }

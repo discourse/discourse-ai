@@ -18,12 +18,9 @@ module DiscourseAi
         end
 
         plugin.register_modifier(:topic_query_create_list_topics) do |topics, options|
-          if options[:filter] == :hot && SiteSetting.ai_summarization_enabled &&
+          if Discourse.filters.include?(options[:filter]) && SiteSetting.ai_summarization_enabled &&
                SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0
-            topics.includes(:ai_summaries).where(
-              "ai_summaries.id IS NULL OR ai_summaries.summary_type = ?",
-              AiSummary.summary_types[:gist],
-            )
+            topics.includes(:ai_gist_summary)
           else
             topics
           end
@@ -34,14 +31,8 @@ module DiscourseAi
           :ai_topic_gist,
           include_condition: -> { scope.can_see_gists? },
         ) do
-          # Options is defined at the instance level so we cannot run this check inside "include_condition".
-          return if options[:filter] != :hot
-
-          summaries = object.ai_summaries.to_a
-
-          # Summaries should always have one or zero elements here.
-          # This is an extra safeguard to avoid including regular summaries.
-          summaries.find { |s| s.summary_type == "gist" }&.summarized_text
+          return if !Discourse.filters.include?(options[:filter])
+          object.ai_gist_summary&.summarized_text
         end
 
         # To make sure hot topic gists are inmediately up to date, we rely on this event

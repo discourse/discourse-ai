@@ -24,6 +24,9 @@ module DiscourseAi
     def can_see_gists?
       return false if !SiteSetting.ai_summarization_enabled
       return false if SiteSetting.ai_summarize_max_hot_topics_gists_per_batch.zero?
+      if SiteSetting.ai_hot_topic_gists_allowed_groups.to_s == Group::AUTO_GROUPS[:everyone].to_s
+        return true
+      end
       return false if anonymous?
       return false if SiteSetting.ai_hot_topic_gists_allowed_groups_map.empty?
 

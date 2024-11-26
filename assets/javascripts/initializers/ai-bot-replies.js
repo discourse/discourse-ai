@@ -223,7 +223,7 @@ function initializeShareWidgetButton(api) {
 
 function initializeShareTopicButton(api) {
   const modal = api.container.lookup("service:modal");
-  const currentUser = api.container.lookup("current-user:main");
+  const currentUser = api.container.lookup("service:current-user");
 
   api.registerTopicFooterButton({
     id: "share-ai-conversation",

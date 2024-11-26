@@ -33,16 +33,11 @@ module DiscourseAi
           model_params = {},
           feature_name: nil,
           feature_context: nil,
+          partial_tool_calls: false,
           &blk
         )
-          if dialect.respond_to?(:is_gpt_o?) && dialect.is_gpt_o? && block_given?
-            # we need to disable streaming and simulate it
-            blk.call "", lambda { |*| }
-            response = super(dialect, user, model_params, feature_name: feature_name, &nil)
-            blk.call response, lambda { |*| }
-          else
-            super
-          end
+          @disable_native_tools = dialect.disable_native_tools?
+          super
         end
 
         private
@@ -68,10 +63,17 @@ module DiscourseAi
             # We'll fallback to guess this using the tokenizer.
             payload[:stream_options] = { include_usage: true } if llm_model.provider == "open_ai"
           end
-          if dialect.tools.present?
-            payload[:tools] = dialect.tools
-            if dialect.tool_choice.present?
-              payload[:tool_choice] = { type: "function", function: { name: dialect.tool_choice } }
+          if !xml_tools_enabled?
+            if dialect.tools.present?
+              payload[:tools] = dialect.tools
+              if dialect.tool_choice.present?
+                payload[:tool_choice] = {
+                  type: "function",
+                  function: {
+                    name: dialect.tool_choice,
+                  },
+                }
+              end
             end
           end
           payload
@@ -103,10 +105,16 @@ module DiscourseAi
 
         def decode_chunk(chunk)
           @decoder ||= JsonStreamDecoder.new
-          (@decoder << chunk)
-            .map { |parsed_json| processor.process_streamed_message(parsed_json) }
-            .flatten
-            .compact
+          elements =
+            (@decoder << chunk)
+              .map { |parsed_json| processor.process_streamed_message(parsed_json) }
+              .flatten
+              .compact
+
+          # Remove duplicate partial tool calls
+          # sometimes we stream weird chunks
+          seen_tools = Set.new
+          elements.select { |item| !item.is_a?(ToolCall) || seen_tools.add?(item) }
         end
 
         def decode_chunk_finish
@@ -114,13 +122,13 @@ module DiscourseAi
         end
 
         def xml_tools_enabled?
-          false
+          !!@disable_native_tools
         end
 
         private
 
         def processor
-          @processor ||= OpenAiMessageProcessor.new
+          @processor ||= OpenAiMessageProcessor.new(partial_tool_calls: partial_tool_calls)
         end
       end
     end

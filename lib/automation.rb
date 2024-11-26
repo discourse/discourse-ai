@@ -6,6 +6,10 @@ module DiscourseAi
       [
         { id: "review", translated_name: I18n.t("discourse_automation.ai.flag_types.review") },
         { id: "spam", translated_name: I18n.t("discourse_automation.ai.flag_types.spam") },
+        {
+          id: "spam_silence",
+          translated_name: I18n.t("discourse_automation.ai.flag_types.spam_silence"),
+        },
       ]
     end
     def self.available_models

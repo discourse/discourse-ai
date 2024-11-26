@@ -23,7 +23,6 @@ lt:
               description: "Vartotojai, kurie gaus ataskaitą (el. laiškai bus siunčiami tiesioginiais el. laiškais, naudotojų vardai bus išsiųsti PM)"
             topic_id:
               label: "Temos ID"
-              description: "Temos ID, kuriuo norite paskelbti ataskaitą"
             title:
               label: "Antraštė"
               description: "Pranešimo pavadinimas"
@@ -45,7 +44,6 @@ lt:
               description: "Pranešimas, kuris bus naudojamas nustatant, įsitikinkite, kad jis turi atsakyti vienu žodžiu, kurį galite naudoti veiksmui suaktyvinti"
             search_for_text:
               label: "Ieškokite teksto"
-              description: "Jei llm atsakyme rodomas šis tekstas, atlikite šiuos veiksmus"
             category:
               label: "Kategorija"
               description: "Kategorija, kuriai taikoma tema"
@@ -66,16 +64,14 @@ lt:
       modals:
         select_option: "Pasirink nustatymą..."
       ai_persona:
-        back: Atgal
-        name: Vardas
-        edit: Redaguoti
-        description: Aprašymas
+        back: "Atgal"
+        name: "Vardas"
+        edit: "Redaguoti"
+        description: "Aprašymas"
         user: Narys
-        system_prompt: Sistemos pranešimas
-        save: Išsaugoti
+        save: "Išsaugoti"
         enabled: "Galimas?"
-        allowed_groups: Leidžiamos grupės
-        delete: Pašalinti
+        delete: "Pašalinti"
       rag:
         uploads:
           title: "Įkėlimai"
@@ -88,22 +84,20 @@ lt:
         save: "Išsaugoti"
         parameter_required: "Privalomi"
         edit: "Redaguoti"
-        test: "Vykdyti testą"
         delete: "Pašalinti"
         next:
           title: "Kitas"
-        test_modal:
-          run: "Vykdyti testą"
       llms:
         display_name: "Vardas"
         save: "Išsaugoti"
         edit: "Redaguoti"
         back: "Atgal"
         delete: Pašalinti
+        usage:
+          ai_summarization: "Apibendrinti"
         next:
           title: "Kitas"
         tests:
-          title: "Vykdyti testą"
           success: "Sėkmingai!"
         providers:
           google: "Google"

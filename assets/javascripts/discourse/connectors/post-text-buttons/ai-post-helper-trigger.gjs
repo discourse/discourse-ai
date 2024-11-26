@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import virtualElementFromTextRange from "discourse/lib/virtual-element-from-text-range";
 import eq from "truth-helpers/helpers/eq";
@@ -29,6 +29,11 @@ export default class AiPostHelperTrigger extends Component {
     triggers: "TRIGGERS",
     options: "OPTIONS",
   };
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.removeHighlightedText();
+  }
 
   highlightSelectedText() {
     const postId = this.args.outletArgs.data.quoteState.postId;
@@ -118,11 +123,6 @@ export default class AiPostHelperTrigger extends Component {
 
     postElement.innerHTML = this.originalPostHTML;
     this.postHighlighted = false;
-  }
-
-  willDestroy() {
-    super.willDestroy(...arguments);
-    this.removeHighlightedText();
   }
 
   @action

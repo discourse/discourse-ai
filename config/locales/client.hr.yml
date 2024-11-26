@@ -30,14 +30,15 @@ hr:
       modals:
         select_option: "Odaberi opciju..."
       ai_persona:
-        back: Natrag
-        name: Ime
-        edit: Uredi
-        description: Opis
+        back: "Natrag"
+        name: "Ime"
+        edit: "Uredi"
+        description: "Opis"
         user: Korisnik
-        save: Spremi
+        save: "Spremi"
         enabled: "Omogućeno?"
-        delete: Pobriši
+        allowed_groups: "Dopuštene grupe"
+        delete: "Pobriši"
       rag:
         uploads:
           title: "Prijenosi"
@@ -50,22 +51,20 @@ hr:
         save: "Spremi"
         parameter_required: "Potrebno"
         edit: "Uredi"
-        test: "Pokreni test"
         delete: "Pobriši"
         next:
           title: "Sljedeći"
-        test_modal:
-          run: "Pokreni test"
       llms:
         display_name: "Ime"
         save: "Spremi"
         edit: "Uredi"
         back: "Natrag"
         delete: Pobriši
+        usage:
+          ai_summarization: "Rezimirati"
         next:
           title: "Sljedeći"
         tests:
-          title: "Pokreni test"
           success: "Uspjeh!"
         providers:
           google: "Google"

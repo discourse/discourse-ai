@@ -30,14 +30,14 @@ ro:
       modals:
         select_option: "Alege o opțiune..."
       ai_persona:
-        back: Înapoi
-        name: Nume
-        edit: Modifică
-        description: Descriere
+        back: "Înapoi"
+        name: "Nume"
+        edit: "Modifică"
+        description: "Descriere"
         user: Utilizatori
-        save: Salvare
+        save: "Salvare"
         enabled: "Activat?"
-        delete: Șterge
+        delete: "Șterge"
       rag:
         uploads:
           title: "Urcări"
@@ -59,6 +59,8 @@ ro:
         edit: "Modifică"
         back: "Înapoi"
         delete: Șterge
+        usage:
+          ai_summarization: "Rezumat"
         next:
           title: "Următorul"
         tests:

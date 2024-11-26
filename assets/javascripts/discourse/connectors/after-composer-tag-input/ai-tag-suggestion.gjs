@@ -3,7 +3,6 @@ import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
-import { inject as service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import DropdownMenu from "discourse/components/dropdown-menu";
 import discourseTag from "discourse/helpers/discourse-tag";
@@ -11,6 +10,7 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 import DMenu from "float-kit/components/d-menu";
+import { service } from "@ember/service";
 import { showComposerAiHelper } from "../../lib/show-ai-helper";
 
 export default class AiTagSuggestion extends Component {

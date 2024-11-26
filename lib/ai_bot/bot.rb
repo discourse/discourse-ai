@@ -106,12 +106,39 @@ module DiscourseAi
           tool_found = false
           force_tool_if_needed(prompt, context)
 
+          tool_halted = false
+
+          allow_partial_tool_calls = persona.allow_partial_tool_calls?
+          existing_tools = Set.new
+
           result =
-            llm.generate(prompt, feature_name: "bot", **llm_kwargs) do |partial, cancel|
-              tool = persona.find_tool(partial, bot_user: user, llm: llm, context: context)
+            llm.generate(
+              prompt,
+              feature_name: "bot",
+              partial_tool_calls: allow_partial_tool_calls,
+              **llm_kwargs,
+            ) do |partial, cancel|
+              tool =
+                persona.find_tool(
+                  partial,
+                  bot_user: user,
+                  llm: llm,
+                  context: context,
+                  existing_tools: existing_tools,
+                )
               tool = nil if tools_ran >= MAX_TOOLS
 
               if tool.present?
+                existing_tools << tool
+                tool_call = partial
+                if tool_call.partial?
+                  if tool.class.allow_partial_tool_calls?
+                    tool.partial_invoke
+                    update_blk.call("", cancel, tool.custom_raw, :partial_tool)
+                  end
+                  next
+                end
+
                 tool_found = true
                 # a bit hacky, but extra newlines do no harm
                 if needs_newlines
@@ -122,7 +149,10 @@ module DiscourseAi
                 process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
                 tools_ran += 1
                 ongoing_chain &&= tool.chain_next_response?
+
+                tool_halted = true if !tool.chain_next_response?
               else
+                next if tool_halted
                 needs_newlines = true
                 if partial.is_a?(DiscourseAi::Completions::ToolCall)
                   Rails.logger.warn("DiscourseAi: Tool not found: #{partial.name}")
@@ -185,20 +215,23 @@ module DiscourseAi
       end
 
       def invoke_tool(tool, llm, cancel, context, &update_blk)
-        update_blk.call("", cancel, build_placeholder(tool.summary, ""))
+        show_placeholder = !context[:skip_tool_details] && !tool.class.allow_partial_tool_calls?
+
+        update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
 
         result =
           tool.invoke do |progress|
-            placeholder = build_placeholder(tool.summary, progress)
-            update_blk.call("", cancel, placeholder)
+            if show_placeholder
+              placeholder = build_placeholder(tool.summary, progress)
+              update_blk.call("", cancel, placeholder)
+            end
           end
 
-        tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
-
-        if context[:skip_tool_details] && tool.custom_raw.present?
-          update_blk.call(tool.custom_raw, cancel, nil, :custom_raw)
-        elsif !context[:skip_tool_details]
+        if show_placeholder
+          tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
           update_blk.call(tool_details, cancel, nil, :tool_details)
+        elsif tool.custom_raw.present?
+          update_blk.call(tool.custom_raw, cancel, nil, :custom_raw)
         end
 
         result

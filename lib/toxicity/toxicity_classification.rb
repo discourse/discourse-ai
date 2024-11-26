@@ -42,12 +42,11 @@ module DiscourseAi
 
       def request(target_to_classify)
         data =
-          ::DiscourseAi::Inference::DiscourseClassifier.perform!(
+          ::DiscourseAi::Inference::DiscourseClassifier.new(
             "#{endpoint}/api/v1/classify",
-            SiteSetting.ai_toxicity_inference_service_api_model,
-            content_of(target_to_classify),
             SiteSetting.ai_toxicity_inference_service_api_key,
-          )
+            SiteSetting.ai_toxicity_inference_service_api_model,
+          ).perform!(content_of(target_to_classify))
 
         { available_model => data }
       end

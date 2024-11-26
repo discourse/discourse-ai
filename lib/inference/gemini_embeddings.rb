@@ -3,12 +3,17 @@
 module ::DiscourseAi
   module Inference
     class GeminiEmbeddings
-      def self.perform!(content)
-        headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
+      def initialize(api_key, referer = Discourse.base_url)
+        @api_key = api_key
+        @referer = referer
+      end
 
+      attr_reader :api_key, :referer
+
+      def perform!(content)
+        headers = { "Referer" => referer, "Content-Type" => "application/json" }
         url =
-          "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent\?key\=#{SiteSetting.ai_gemini_api_key}"
-
+          "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent\?key\=#{api_key}"
         body = { content: { parts: [{ text: content }] } }
 
         conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }

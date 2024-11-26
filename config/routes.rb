@@ -30,7 +30,12 @@ DiscourseAi::Engine.routes.draw do
     post "/" => "shared_ai_conversations#create"
     delete "/:share_key" => "shared_ai_conversations#destroy"
     get "/:share_key" => "shared_ai_conversations#show"
+    get "/asset/:version/:name" => "shared_ai_conversations#asset"
     get "/preview/:topic_id" => "shared_ai_conversations#preview"
+  end
+
+  scope module: :ai_bot, path: "/ai-bot/artifacts" do
+    get "/:id" => "artifacts#show"
   end
 
   scope module: :summarization, path: "/summarization", defaults: { format: :json } do

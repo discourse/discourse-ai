@@ -53,11 +53,10 @@ class OpenAiMock < EndpointMock
     }.to_json
   end
 
-  def stub_raw(chunks)
-    WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
-      status: 200,
-      body: chunks,
-    )
+  def stub_raw(chunks, body_blk: nil)
+    stub = WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions")
+    stub.with(body: body_blk) if body_blk
+    stub.to_return(status: 200, body: chunks)
   end
 
   def stub_streamed_response(prompt, deltas, tool_call: false)
@@ -391,6 +390,59 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   end
 
   describe "#perform_completion!" do
+    context "when using XML tool calls format" do
+      let(:xml_tool_call_response) { <<~XML }
+        <function_calls>
+        <invoke>
+        <tool_name>get_weather</tool_name>
+        <parameters>
+        <location>Sydney</location>
+        <unit>c</unit>
+        </parameters>
+        </invoke>
+        </function_calls>
+      XML
+
+      it "parses XML tool calls" do
+        response = {
+          id: "chatcmpl-6sZfAb30Rnv9Q7ufzFwvQsMpjZh8S",
+          object: "chat.completion",
+          created: 1_678_464_820,
+          model: "gpt-3.5-turbo-0301",
+          usage: {
+            prompt_tokens: 8,
+            completion_tokens: 13,
+            total_tokens: 499,
+          },
+          choices: [
+            {
+              message: {
+                role: "assistant",
+                content: xml_tool_call_response,
+              },
+              finish_reason: "stop",
+              index: 0,
+            },
+          ],
+        }.to_json
+
+        endpoint.llm_model.update!(provider_params: { disable_native_tools: true })
+        body = nil
+        open_ai_mock.stub_raw(response, body_blk: proc { |inner_body| body = inner_body })
+
+        dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+        tool_call = endpoint.perform_completion!(dialect, user)
+
+        body_parsed = JSON.parse(body, symbolize_names: true)
+        expect(body_parsed[:tools]).to eq(nil)
+
+        expect(body_parsed[:messages][0][:content]).to include("<function_calls>")
+
+        expect(tool_call.name).to eq("get_weather")
+        expect(tool_call.parameters).to eq({ location: "Sydney", unit: "c" })
+      end
+    end
+
     context "when using regular mode" do
       context "with simple prompts" do
         it "completes a trivial prompt and logs the response" do
@@ -571,7 +623,43 @@ TEXT
           end
         end
 
-        it "properly handles spaces in tools payload" do
+        it "properly handles multiple params in partial tool calls" do
+          # this is not working and it is driving me nuts so I will use a sledghammer
+          # text = plugin_file_from_fixtures("openai_artifact_call.txt", "bot")
+
+          path = File.join(__dir__, "../../../fixtures/bot", "openai_artifact_call.txt")
+          text = File.read(path)
+
+          partials = []
+          open_ai_mock.with_chunk_array_support do
+            open_ai_mock.stub_raw(text.scan(/.*\n/))
+
+            dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+            endpoint.perform_completion!(dialect, user, partial_tool_calls: true) do |partial|
+              partials << partial.dup
+            end
+          end
+
+          expect(partials.compact.length).to eq(128)
+
+          params =
+            partials
+              .map { |p| p.parameters if p.is_a?(DiscourseAi::Completions::ToolCall) && p.partial? }
+              .compact
+
+          lengths = {}
+          params.each do |p|
+            p.each do |k, v|
+              if lengths[k] && lengths[k] > v.length
+                expect(lengths[k]).to be > v.length
+              else
+                lengths[k] = v.length
+              end
+            end
+          end
+        end
+
+        it "properly handles spaces in tools payload and partial tool calls" do
           raw_data = <<~TEXT.strip
             data: {"choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"index":0,"id":"func_id","type":"function","function":{"name":"go|ogle","arg|uments":""}}]}}]}
 
@@ -609,7 +697,9 @@ TEXT
             partials = []
 
             dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
-            endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
+            endpoint.perform_completion!(dialect, user, partial_tool_calls: true) do |partial|
+              partials << partial.dup
+            end
 
             tool_call =
               DiscourseAi::Completions::ToolCall.new(
@@ -620,7 +710,10 @@ TEXT
                 },
               )
 
-            expect(partials).to eq([tool_call])
+            expect(partials.last).to eq(tool_call)
+
+            progress = partials.map { |p| p.parameters[:query] }
+            expect(progress).to eq(["Ad", "Adabas", "Adabas 9.", "Adabas 9.1"])
           end
         end
       end

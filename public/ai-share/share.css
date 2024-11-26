@@ -441,7 +441,7 @@ aside .title .avatar {
 }
 
 .lightbox-wrapper .meta .filename,
-.lightbox-wrapper .meta svg, 
+.lightbox-wrapper .meta svg,
 .lightbox-wrapper .meta .informations {
   display: none;
 }
@@ -450,10 +450,10 @@ aside .title .avatar {
   overflow-wrap: anywhere;
 }
 
-/* 
-   custom code highlighting for dark mode support... 
-   overrides highlightjs (https://highlightjs.org/) CSS colors. 
-*/ 
+/*
+   custom code highlighting for dark mode support...
+   overrides highlightjs (https://highlightjs.org/) CSS colors.
+*/
 
 .hljs{
   --hljs-red: #c63c1b;
@@ -461,9 +461,9 @@ aside .title .avatar {
   --hljs-lime: #4dff4d;
   --hljs-green: #090;
   --hljs-sky: #47c2ff;
-  
+
   @media (prefers-color-scheme: dark) {
-    --hljs-red: #af3719; 
+    --hljs-red: #af3719;
     --hljs-salmon: #c7705c;
     --hljs-lime: #3fcf3f;
     --hljs-green: #048504;
@@ -614,7 +614,7 @@ aside.onebox h3 {
   display: block;
   background-size: contain;
   background-repeat: no-repeat;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3C!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--%3E%3Cpath d='M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z'  fill='white' /%3E%3C/svg%3E"); 
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3C!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--%3E%3Cpath d='M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z'  fill='white' /%3E%3C/svg%3E");
   z-index: 2;
   width: 5em;
   height: 6.25em;
@@ -622,8 +622,13 @@ aside.onebox h3 {
   right: 0;
   top: 32%;
   pointer-events: none;
-  margin-left: auto; 
-  margin-right: auto; 
+  margin-left: auto;
+  margin-right: auto;
   opacity: 0.85;
   transition: opacity 0.25s ease-in-out;
+}
+
+.ai-artifact iframe {
+  height: 600px;
+  max-height: 600px;
 }

@@ -30,14 +30,15 @@ gl:
       modals:
         select_option: "Seleccione unha opción..."
       ai_persona:
-        back: Volver
-        name: Nome
-        edit: Editar
-        description: Descrición
+        back: "Volver"
+        name: "Nome"
+        edit: "Editar"
+        description: "Descrición"
         user: Usuario
-        save: Gardar
+        save: "Gardar"
         enabled: "Activado?"
-        delete: Eliminar
+        allowed_groups: "Grupos permitidos"
+        delete: "Eliminar"
       rag:
         uploads:
           title: "Cargas"
@@ -50,12 +51,9 @@ gl:
         save: "Gardar"
         parameter_required: "Obrigatorio"
         edit: "Editar"
-        test: "Executar proba"
         delete: "Eliminar"
         next:
           title: "Seguinte"
-        test_modal:
-          run: "Executar proba"
       llms:
         display_name: "Nome"
         save: "Gardar"
@@ -65,7 +63,6 @@ gl:
         next:
           title: "Seguinte"
         tests:
-          title: "Executar proba"
           success: "Feito!"
         providers:
           google: "Google"

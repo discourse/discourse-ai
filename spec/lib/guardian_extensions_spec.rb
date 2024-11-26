@@ -89,6 +89,14 @@ describe DiscourseAi::GuardianExtensions do
       end
     end
 
+    context "when setting is set to everyone" do
+      before { SiteSetting.ai_hot_topic_gists_allowed_groups = Group::AUTO_GROUPS[:everyone] }
+
+      it "returns true" do
+        expect(guardian.can_see_gists?).to eq(true)
+      end
+    end
+
     context "when there is a user but it's not a member of the allowed groups" do
       before { SiteSetting.ai_hot_topic_gists_allowed_groups = "" }
 

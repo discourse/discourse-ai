@@ -37,11 +37,19 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          tools_dialect.from_raw_tool_call(msg)
+          if enable_native_tool?
+            tools_dialect.from_raw_tool_call(msg)
+          else
+            super
+          end
         end
 
         def tool_msg(msg)
-          tools_dialect.from_raw_tool(msg)
+          if enable_native_tool?
+            tools_dialect.from_raw_tool(msg)
+          else
+            super
+          end
         end
 
         def system_msg(msg)

@@ -95,8 +95,20 @@ fi:
       title: "Yleinen tunne"
       xaxis: "Positiivinen (%)"
       yaxis: "Päivämäärä"
-    post_emotion:
-      title: "Viestin tunne"
+    emotion_anger:
+      title: Viha
+    emotion_disgust:
+      title: Inho
+    emotion_fear:
+      title: Pelko
+    emotion_joy:
+      title: Ilo
+    emotion_neutral:
+      title: Neutraali
+    emotion_sadness:
+      title: Suru
+    emotion_surprise:
+      title: Yllätys
   discourse_ai:
     unknown_model: "Tuntematon tekoälymalli"
     tools:

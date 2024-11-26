@@ -3,13 +3,26 @@
 module ::DiscourseAi
   module Inference
     class OpenAiEmbeddings
-      def self.perform!(content, model:, dimensions: nil)
+      def initialize(endpoint, api_key, model, dimensions)
+        @endpoint = endpoint
+        @api_key = api_key
+        @model = model
+        @dimensions = dimensions
+      end
+
+      attr_reader :endpoint, :api_key, :model, :dimensions
+
+      def self.instance(model:, dimensions: nil)
+        new(SiteSetting.ai_openai_embeddings_url, SiteSetting.ai_openai_api_key, model, dimensions)
+      end
+
+      def perform!(content)
         headers = { "Content-Type" => "application/json" }
 
-        if SiteSetting.ai_openai_embeddings_url.include?("azure")
-          headers["api-key"] = SiteSetting.ai_openai_api_key
+        if endpoint.include?("azure")
+          headers["api-key"] = api_key
         else
-          headers["Authorization"] = "Bearer #{SiteSetting.ai_openai_api_key}"
+          headers["Authorization"] = "Bearer #{api_key}"
         end
 
         payload = { model: model, input: content }
@@ -20,7 +33,7 @@ module ::DiscourseAi
 
         case response.status
         when 200
-          JSON.parse(response.body, symbolize_names: true)
+          JSON.parse(response.body, symbolize_names: true).dig(:data, 0, :embedding)
         when 429
           # TODO add a AdminDashboard Problem?
         else

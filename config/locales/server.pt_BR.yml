@@ -101,8 +101,20 @@ pt_BR:
       title: "Sentimento geral"
       xaxis: "Positivo (%)"
       yaxis: "Data"
-    post_emotion:
-      title: "Emoção da postagem"
+    emotion_anger:
+      title: Raiva
+    emotion_disgust:
+      title: Repulsa
+    emotion_fear:
+      title: Medo
+    emotion_joy:
+      title: Alegria
+    emotion_neutral:
+      title: Neutro
+    emotion_sadness:
+      title: Tristeza
+    emotion_surprise:
+      title: Surpresa
   discourse_ai:
     unknown_model: "Modelo de IA desconhecido"
     tools:

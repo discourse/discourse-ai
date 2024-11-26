@@ -20,7 +20,7 @@ module DiscourseAi
 
         def vector_from(text, asymetric: false)
           truncated_text = tokenizer.truncate(text, max_sequence_length - 2)
-          DiscourseAi::Inference::HuggingFaceTextEmbeddings.perform!(truncated_text).first
+          inference_client.perform!(truncated_text)
         end
 
         def dimensions
@@ -49,6 +49,10 @@ module DiscourseAi
 
         def tokenizer
           DiscourseAi::Tokenizer::BgeM3Tokenizer
+        end
+
+        def inference_client
+          DiscourseAi::Inference::HuggingFaceTextEmbeddings.instance
         end
       end
     end

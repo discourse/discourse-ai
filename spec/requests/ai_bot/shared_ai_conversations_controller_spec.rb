@@ -86,6 +86,77 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
         expect(response).to have_http_status(:success)
       end
 
+      context "when ai artifacts are in lax mode" do
+        before { SiteSetting.ai_artifact_security = "lax" }
+
+        it "properly shares artifacts" do
+          first_post = user_pm_share.posts.first
+
+          artifact_not_allowed =
+            AiArtifact.create!(
+              user: bot_user,
+              post: Fabricate(:private_message_post),
+              name: "test",
+              html: "<div>test</div>",
+            )
+
+          artifact =
+            AiArtifact.create!(
+              user: bot_user,
+              post: first_post,
+              name: "test",
+              html: "<div>test</div>",
+            )
+
+          # lets log out and see we can not access the artifacts
+          delete "/session/#{user.id}"
+
+          get artifact.url
+          expect(response).to have_http_status(:not_found)
+
+          get artifact_not_allowed.url
+          expect(response).to have_http_status(:not_found)
+
+          sign_in(user)
+
+          first_post.update!(raw: <<~RAW)
+            This is a post with an artifact
+
+            <div class="ai-artifact" data-ai-artifact-id="#{artifact.id}"></div>
+            <div class="ai-artifact" data-ai-artifact-id="#{artifact_not_allowed.id}"></div>
+          RAW
+
+          post "#{path}.json", params: { topic_id: user_pm_share.id }
+          expect(response).to have_http_status(:success)
+
+          key = response.parsed_body["share_key"]
+
+          get "#{path}/#{key}"
+          expect(response).to have_http_status(:success)
+
+          expect(response.body).to include(artifact.url)
+          expect(response.body).to include(artifact_not_allowed.url)
+
+          # lets log out and see we can not access the artifacts
+          delete "/session/#{user.id}"
+
+          get artifact.url
+          expect(response).to have_http_status(:success)
+
+          get artifact_not_allowed.url
+          expect(response).to have_http_status(:not_found)
+
+          sign_in(user)
+          delete "#{path}/#{key}.json"
+          expect(response).to have_http_status(:success)
+
+          # we can not longer see it...
+          delete "/session/#{user.id}"
+          get artifact.url
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
       context "when secure uploads are enabled" do
         let(:upload_1) { Fabricate(:s3_image_upload, user: bot_user, secure: true) }
         let(:upload_2) { Fabricate(:s3_image_upload, user: bot_user, secure: true) }
@@ -220,6 +291,30 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
         delete "#{path}/#{shared_conversation.share_key}.json"
         expect(response).not_to have_http_status(:success)
       end
+    end
+  end
+
+  describe "GET asset" do
+    let(:helper) { Class.new { extend DiscourseAi::AiBot::SharedAiConversationsHelper } }
+
+    it "renders highlight js correctly" do
+      get helper.share_asset_url("highlight.js")
+
+      expect(response).to be_successful
+      expect(response.headers["Content-Type"]).to eq("application/javascript; charset=utf-8")
+
+      js = File.read(DiscourseAi.public_asset_path("ai-share/highlight.min.js"))
+      expect(response.body).to eq(js)
+    end
+
+    it "renders css correctly" do
+      get helper.share_asset_url("share.css")
+
+      expect(response).to be_successful
+      expect(response.headers["Content-Type"]).to eq("text/css; charset=utf-8")
+
+      css = File.read(DiscourseAi.public_asset_path("ai-share/share.css"))
+      expect(response.body).to eq(css)
     end
   end
 

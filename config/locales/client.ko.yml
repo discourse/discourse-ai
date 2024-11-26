@@ -32,14 +32,15 @@ ko:
       modals:
         select_option: "옵션 선택..."
       ai_persona:
-        back: 뒤로
-        name: 그룹명
-        edit: 편집
-        description: 내용
+        back: "뒤로"
+        name: "그룹명"
+        edit: "편집"
+        description: "내용"
         user: 사용자
-        save: 저장
+        save: "저장"
         enabled: "활성화?"
-        delete: 삭제하기
+        allowed_groups: "허용 된 그룹"
+        delete: "삭제하기"
       rag:
         uploads:
           title: "업로드된 파일"
@@ -52,22 +53,20 @@ ko:
         save: "저장"
         parameter_required: "필수"
         edit: "편집"
-        test: "테스트 실행"
         delete: "삭제하기"
         next:
           title: "다음"
-        test_modal:
-          run: "테스트 실행"
       llms:
         display_name: "그룹명"
         save: "저장"
         edit: "편집"
         back: "뒤로"
         delete: 삭제하기
+        usage:
+          ai_summarization: "요약하기"
         next:
           title: "다음"
         tests:
-          title: "테스트 실행"
           success: "성공!"
         providers:
           google: "구글"

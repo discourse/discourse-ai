@@ -4,6 +4,7 @@ en:
       flag_types:
         review: "Add post to review queue"
         spam: "Flag as spam and hide post"
+        spam_silence: "Flag as spam, hide post and silence user"
     scriptables:
       llm_triage:
         title: Triage posts using AI
@@ -17,6 +18,7 @@ en:
         description: "Periodic report based on a large language model"
   site_settings:
     discourse_ai_enabled: "Enable the discourse AI plugin."
+    ai_artifact_security: "The AI artifact system generates IFRAMEs with runnable code. Strict mode disables sharing and forces an extra click to run code. Lax mode allows sharing of artifacts and runs code directly. Disabled mode disables the artifact system."
     ai_toxicity_enabled: "Enable the toxicity module."
     ai_toxicity_inference_service_api_endpoint: "URL where the API is running for the toxicity module"
     ai_toxicity_inference_service_api_key: "API key for the toxicity API"
@@ -79,13 +81,13 @@ en:
     ai_embeddings_semantic_related_include_closed_topics: "Include closed topics in semantic search results"
     ai_embeddings_semantic_search_hyde_model: "Model used to expand keywords to get better results during a semantic search"
     ai_embeddings_per_post_enabled: Generate embeddings for each post
-    
+
     ai_summarization_enabled: "Enable the topic summarization module."
     ai_summarization_model: "Model to use for summarization."
     ai_custom_summarization_allowed_groups: "Groups allowed to use create new summaries."
     ai_pm_summarization_allowed_groups: "Groups allowed to create and view summaries in PMs."
     ai_summarize_max_hot_topics_gists_per_batch: "After updating topics in the hot list, we'll generate brief summaries of the first N ones. (Disabled when 0)"
-    ai_hot_topic_gists_allowed_groups:  "Groups allowed to see gists in the hot topics list."
+    ai_hot_topic_gists_allowed_groups: "Groups allowed to see gists in the hot topics list."
     ai_summary_backfill_maximum_topics_per_hour: "Number of topic summaries to backfill per hour."
 
     ai_bot_enabled: "Enable the AI Bot module."
@@ -111,16 +113,98 @@ en:
   reports:
     overall_sentiment:
       title: "Overall sentiment"
-      description: "The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Private messages (PMs) are also excluded. Classified with \"cardiffnlp/twitter-roberta-base-sentiment-latest\""
+      description: 'The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Personal messages (PMs) are also excluded. Classified with "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Positive(%)"
       yaxis: "Date"
-    post_emotion:
-      title: "Post emotion"
-      description: "Number of posts classified with one of the following emotions, grouped by poster's trust level. Posts that are not positive or negative and considered neutral, are not shown. Private messages (PMs) are also excluded. Classified with \"j-hartmann/emotion-english-roberta-large\""
-      xaxis:
-      yaxis:
+    emotion_admiration:
+      title: 🤩 Admiration
+      description: "Posts classified with the emotion admiration via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_amusement:
+      title: 😄 Amusement
+      description: "Posts classified with the emotion amusement via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_anger:
+      title: 😠 Anger
+      description: "Posts classified with the emotion anger via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_annoyance:
+      title: 😒 Annoyance
+      description: "Posts classified with the emotion annoyance via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_approval:
+      title: 👍 Approval
+      description: "Posts classified with the emotion approval via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_caring:
+      title: 🤗 Caring
+      description: "Posts classified with the emotion caring via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_confusion:
+      title: 😕 Confusion
+      description: "Posts classified with the emotion confusion via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_curiosity:
+      title: 🤔 Curiosity
+      description: "Posts classified with the emotion curiosity via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_desire:
+      title: 😍 Desire
+      description: "Posts classified with the emotion desire via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_disappointment:
+      title: 😞 Disappointment
+      description: "Posts classified with the emotion disappointment via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_disapproval:
+      title: 👎 Disapproval
+      description: "Posts classified with the emotion disapproval via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_disgust:
+      title: 🤢 Disgust
+      description: "Posts classified with the emotion disgust via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_embarrassment:
+      title: 😳 Embarrassment
+      description: "Posts classified with the emotion embarrassment via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_excitement:
+      title: 🤪 Excitement
+      description: "Posts classified with the emotion excitement via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_fear:
+      title: 😨 Fear
+      description: "Posts classified with the emotion fear via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_gratitude:
+      title: 🙏 Gratitude
+      description: "Posts classified with the emotion gratitude via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_grief:
+      title: 😢 Grief
+      description: "Posts classified with the emotion grief via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_joy:
+      title: 😊 Joy
+      description: "Posts classified with the emotion joy via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_love:
+      title: ❤️ Love
+      description: "Posts classified with the emotion love via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_nervousness:
+      title: 😰 Nervousness
+      description: "Posts classified with the emotion nervousness via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_neutral:
+      title: 😐 Neutral
+      description: "Posts classified with the emotion neutral via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_optimism:
+      title: 🌟 Optimism
+      description: "Posts classified with the emotion optimism via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_pride:
+      title: 🦁 Pride
+      description: "Posts classified with the emotion pride via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_realization:
+      title: 💡 Realization
+      description: "Posts classified with the emotion realization via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_relief:
+      title: 😌 Relief
+      description: "Posts classified with the emotion relief via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_remorse:
+      title: 😔 Remorse
+      description: "Posts classified with the emotion remorse via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_sadness:
+      title: 😭 Sadness
+      description: "Posts classified with the emotion sadness via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_surprise:
+      title: 😲 Surprise
+      description: "Posts classified with the emotion surprise via AI, using the model 'SamLowe/roberta-base-go_emotions'."
 
   discourse_ai:
+    ai_artifact:
+      link: "Show Artifact in new tab"
+      view_source: "View Source"
     unknown_model: "Unknown AI model"
 
     tools:
@@ -199,6 +283,9 @@ en:
         discourse_helper:
           name: "Discourse Helper"
           description: "AI Bot specialized in helping with Discourse related tasks"
+        web_artifact_creator:
+          name: "Web Artifact Creator"
+          description: "AI Bot specialized in creating interactive web artifacts"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
@@ -222,6 +309,7 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       tool_summary:
+        create_artifact: "Create web artifact"
         web_browser: "Browse Web"
         github_search_files: "GitHub search files"
         github_search_code: "GitHub code search"
@@ -243,6 +331,7 @@ en:
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
       tool_help:
+        create_artifact: "Create a web artifact using the AI Bot"
         web_browser: "Browse web page using the AI Bot"
         github_search_code: "Search for code in a GitHub repository"
         github_search_files: "Search for files in a GitHub repository"
@@ -264,6 +353,7 @@ en:
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
       tool_description:
+        create_artifact: "Created a web artifact using the AI Bot"
         web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_files: "Searched for '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Searched for '%{query}' in %{repo}"

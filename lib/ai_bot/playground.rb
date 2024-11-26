@@ -78,11 +78,16 @@ module DiscourseAi
         bot_user = nil
         mentioned = nil
 
-        all_llm_user_ids = LlmModel.joins(:user).pluck("users.id")
+        all_llm_users =
+          LlmModel
+            .where(enabled_chat_bot: true)
+            .joins(:user)
+            .pluck("users.id", "users.username_lower")
 
         if post.topic.private_message?
           # this is an edge case, you started a PM with a different bot
-          bot_user = post.topic.topic_allowed_users.where(user_id: all_llm_user_ids).first&.user
+          bot_user =
+            post.topic.topic_allowed_users.where(user_id: all_llm_users.map(&:first)).first&.user
           bot_user ||=
             post
               .topic
@@ -92,14 +97,17 @@ module DiscourseAi
               &.user
         end
 
-        if mentionables.present?
+        mentions = nil
+        if mentionables.present? || (bot_user && post.topic.private_message?)
           mentions = post.mentions.map(&:downcase)
 
           # in case we are replying to a post by a bot
           if post.reply_to_post_number && post.reply_to_post&.user
             mentions << post.reply_to_post.user.username_lower
           end
+        end
 
+        if mentionables.present?
           mentioned = mentionables.find { |mentionable| mentions.include?(mentionable[:username]) }
 
           # direct PM to mentionable
@@ -117,7 +125,9 @@ module DiscourseAi
         end
 
         if bot_user
-          persona_id = mentioned&.dig(:id) || post.topic.custom_fields["ai_persona_id"]
+          topic_persona_id = post.topic.custom_fields["ai_persona_id"]
+          persona_id = mentioned&.dig(:id) || topic_persona_id
+
           persona = nil
 
           if persona_id
@@ -128,6 +138,19 @@ module DiscourseAi
           if !persona && persona_name = post.topic.custom_fields["ai_persona"]
             persona =
               DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, name: persona_name)
+          end
+
+          # edge case, llm was mentioned in an ai persona conversation
+          if persona_id == topic_persona_id.to_i && post.topic.private_message? && persona &&
+               all_llm_users.present?
+            if !persona.force_default_llm && mentions.present?
+              mentioned_llm_user_id, _ =
+                all_llm_users.find { |id, username| mentions.include?(username) }
+
+              if mentioned_llm_user_id
+                bot_user = User.find_by(id: mentioned_llm_user_id) || bot_user
+              end
+            end
           end
 
           persona ||= DiscourseAi::AiBot::Personas::General
@@ -399,7 +422,7 @@ module DiscourseAi
         PostCustomPrompt.none
 
         reply = +""
-        start = Time.now
+        post_streamer = nil
 
         post_type =
           post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
@@ -448,35 +471,39 @@ module DiscourseAi
 
         context[:skip_tool_details] ||= !bot.persona.class.tool_details
 
+        post_streamer = PostStreamer.new(delay: Rails.env.test? ? 0 : 0.5) if stream_reply
+
         new_custom_prompts =
           bot.reply(context) do |partial, cancel, placeholder, type|
             reply << partial
             raw = reply.dup
-            raw << "\n\n" << placeholder if placeholder.present? && !context[:skip_tool_details]
+            raw << "\n\n" << placeholder if placeholder.present?
 
-            blk.call(partial) if blk && type != :tool_details
+            blk.call(partial) if blk && type != :tool_details && type != :partial_tool
 
             if stream_reply && !Discourse.redis.get(redis_stream_key)
               cancel&.call
               reply_post.update!(raw: reply, cooked: PrettyText.cook(reply))
+              # we do not break out, cause if we do
+              # we will not get results from bot
+              # leading to broken context
+              # we need to trust it to cancel at the endpoint
             end
 
-            if stream_reply
-              # Minor hack to skip the delay during tests.
-              if placeholder.blank?
-                next if (Time.now - start < 0.5) && !Rails.env.test?
-                start = Time.now
+            if post_streamer
+              post_streamer.run_later do
+                Discourse.redis.expire(redis_stream_key, 60)
+                publish_update(reply_post, { raw: raw })
               end
-
-              Discourse.redis.expire(redis_stream_key, 60)
-
-              publish_update(reply_post, { raw: raw })
             end
           end
 
         return if reply.blank?
 
         if stream_reply
+          post_streamer.finish
+          post_streamer = nil
+
           # land the final message prior to saving so we don't clash
           reply_post.cooked = PrettyText.cook(reply)
           publish_final_update(reply_post)
@@ -514,6 +541,7 @@ module DiscourseAi
 
         reply_post
       ensure
+        post_streamer&.finish(skip_callback: true)
         publish_final_update(reply_post) if stream_reply
         if reply_post && post.post_number == 1 && post.topic.private_message?
           title_playground(reply_post)

@@ -43,8 +43,7 @@ module DiscourseAi
         end
 
         def vector_from(text, asymetric: false)
-          response = DiscourseAi::Inference::GeminiEmbeddings.perform!(text)
-          response[:embedding][:values]
+          inference_client.perform!(text).dig(:embedding, :values)
         end
 
         # There is no public tokenizer for Gemini, and from the ones we already ship in the plugin
@@ -52,6 +51,10 @@ module DiscourseAi
         # to use OpenAI tokenizer since it will overestimate the number of tokens.
         def tokenizer
           DiscourseAi::Tokenizer::OpenAiTokenizer
+        end
+
+        def inference_client
+          DiscourseAi::Inference::GeminiEmbeddings.instance
         end
       end
     end

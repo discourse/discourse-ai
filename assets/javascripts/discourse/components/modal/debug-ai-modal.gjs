@@ -39,7 +39,7 @@ export default class DebugAiModal extends Component {
       } else {
         return this.formattedResponse(this.info.raw_response_payload);
       }
-    } catch (e) {
+    } catch {
       return this.info.raw_request_payload;
     }
 

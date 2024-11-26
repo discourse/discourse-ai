@@ -4,6 +4,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Base
+        attr_reader :partial_tool_calls
+
         CompletionFailed = Class.new(StandardError)
         TIMEOUT = 60
 
@@ -18,6 +20,7 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::Anthropic,
               DiscourseAi::Completions::Endpoints::Cohere,
               DiscourseAi::Completions::Endpoints::SambaNova,
+              DiscourseAi::Completions::Endpoints::Mistral,
             ]
 
             endpoints << DiscourseAi::Completions::Endpoints::Ollama if Rails.env.development?
@@ -58,8 +61,10 @@ module DiscourseAi
           model_params = {},
           feature_name: nil,
           feature_context: nil,
+          partial_tool_calls: false,
           &blk
         )
+          @partial_tool_calls = partial_tool_calls
           model_params = normalize_model_params(model_params)
           orig_blk = blk
 
@@ -92,8 +97,10 @@ module DiscourseAi
                 raise CompletionFailed, response.body
               end
 
-              xml_tool_processor = XmlToolProcessor.new if xml_tools_enabled? &&
-                dialect.prompt.has_tools?
+              xml_tool_processor =
+                XmlToolProcessor.new(
+                  partial_tool_calls: partial_tool_calls,
+                ) if xml_tools_enabled? && dialect.prompt.has_tools?
 
               to_strip = xml_tags_to_strip(dialect)
               xml_stripper =
@@ -132,15 +139,20 @@ module DiscourseAi
 
               begin
                 cancelled = false
-                cancel = -> { cancelled = true }
-                if cancelled
+                cancel = -> do
+                  cancelled = true
                   http.finish
-                  break
                 end
 
+                break if cancelled
+
                 response.read_body do |chunk|
+                  break if cancelled
+
                   response_raw << chunk
+
                   decode_chunk(chunk).each do |partial|
+                    break if cancelled
                     partials_raw << partial.to_s
                     response_data << partial if partial.is_a?(String)
                     partials = [partial]

@@ -2,7 +2,14 @@ discourse_ai:
   discourse_ai_enabled:
     default: true
     client: true
-
+  ai_artifact_security:
+    client: true
+    type: enum
+    default: "strict"
+    choices:
+      - "disabled"
+      - "lax"
+      - "strict"
   ai_toxicity_enabled:
     default: false
     client: true
@@ -361,6 +368,7 @@ discourse_ai:
     default: 0
     min: 0
     max: 1000
+    hidden: true
   ai_hot_topic_gists_allowed_groups:
     type: group_list
     list_type: compact

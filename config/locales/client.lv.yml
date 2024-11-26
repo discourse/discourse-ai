@@ -30,14 +30,14 @@ lv:
       modals:
         select_option: "Izvēlieties opciju..."
       ai_persona:
-        back: Atpakaļ
-        name: Vārds
-        edit: Rediģēt
-        description: Apraksts
+        back: "Atpakaļ"
+        name: "Vārds"
+        edit: "Rediģēt"
+        description: "Apraksts"
         user: Lietotājs
-        save: Saglabāt
+        save: "Saglabāt"
         enabled: "Ieslēgts?"
-        delete: Dzēst
+        delete: "Dzēst"
       rag:
         uploads:
           title: "Augšupielādes"

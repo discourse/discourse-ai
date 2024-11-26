@@ -52,7 +52,7 @@ export default apiInitializer("1.25.0", (api) => {
 
         imageCaptionPopup.toggleLoadingState(true);
 
-        const site = api.container.lookup("site:main");
+        const site = api.container.lookup("service:site");
         if (!site.mobileView) {
           imageCaptionPopup.showPopup = !imageCaptionPopup.showPopup;
         }

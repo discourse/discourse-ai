@@ -30,14 +30,15 @@ sl:
       modals:
         select_option: "Izberi možnost..."
       ai_persona:
-        back: Nazaj
-        name: Ime
-        edit: Uredi
-        description: Opis
+        back: "Nazaj"
+        name: "Ime"
+        edit: "Uredi"
+        description: "Opis"
         user: Uporabnik
-        save: Shrani
+        save: "Shrani"
         enabled: "Vključeno?"
-        delete: Izbriši
+        allowed_groups: "Dovoljene skupine"
+        delete: "Izbriši"
       rag:
         uploads:
           title: "Prenosi"

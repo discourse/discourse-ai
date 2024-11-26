@@ -30,14 +30,14 @@ hy:
       modals:
         select_option: "Ընտրել..."
       ai_persona:
-        back: Ետ
-        name: Անուն
-        edit: Խմբագրել
-        description: Նկարագրությունը
+        back: "Ետ"
+        name: "Անուն"
+        edit: "Խմբագրել"
+        description: "Նկարագրությունը"
         user: Օգտատեր
-        save: Պահպանել
+        save: "Պահպանել"
         enabled: "Միացվա՞ծ է:"
-        delete: Ջնջել
+        delete: "Ջնջել"
       rag:
         uploads:
           title: "Վերբեռնումներ"
@@ -50,12 +50,9 @@ hy:
         save: "Պահպանել"
         parameter_required: "Պարտադիր"
         edit: "Խմբագրել"
-        test: "Մեկնարկել Փորձարկումը"
         delete: "Ջնջել"
         next:
           title: "Հաջորդը"
-        test_modal:
-          run: "Մեկնարկել Փորձարկումը"
       llms:
         display_name: "Անուն"
         save: "Պահպանել"
@@ -65,7 +62,6 @@ hy:
         next:
           title: "Հաջորդը"
         tests:
-          title: "Մեկնարկել Փորձարկումը"
           success: "Հաջողություն!"
         providers:
           google: "Google"
