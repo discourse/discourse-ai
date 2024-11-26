@@ -9,7 +9,7 @@ sk:
     overall_sentiment:
       yaxis: "Dátum"
     emotion_neutral:
-      title: Neutrálna
+      title: "\U0001F610 Neutrálna"
   discourse_ai:
     ai_bot:
       tool_summary:

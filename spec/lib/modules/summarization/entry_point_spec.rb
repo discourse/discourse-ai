@@ -4,7 +4,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
   before do
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true
-    SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100
+    SiteSetting.ai_summary_gists_enabled = true
   end
 
   fab!(:user)
@@ -62,8 +62,8 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
 
           before do
             group.add(user)
-            SiteSetting.ai_hot_topic_gists_allowed_groups = group.id
-            SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100
+            SiteSetting.ai_summary_gists_allowed_groups = group.id
+            SiteSetting.ai_summary_gists_enabled = true
           end
 
           it "includes the summary" do
@@ -81,7 +81,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
           end
 
           it "doesn't include the summary when the user is not a member of the opt-in group" do
-            SiteSetting.ai_hot_topic_gists_allowed_groups = ""
+            SiteSetting.ai_summary_gists_allowed_groups = ""
 
             gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
 
@@ -151,15 +151,6 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
           end
         end
       end
-    end
-  end
-
-  describe "#on topic_hot_scores_updated" do
-    it "queues a job to generate gists" do
-      expect { DiscourseEvent.trigger(:topic_hot_scores_updated) }.to change(
-        Jobs::HotTopicsGistBatch.jobs,
-        :size,
-      ).by(1)
     end
   end
 end

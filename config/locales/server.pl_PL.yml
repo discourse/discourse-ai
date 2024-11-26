@@ -80,19 +80,17 @@ pl_PL:
       xaxis: "Pozytywny(%)"
       yaxis: "Data"
     emotion_anger:
-      title: Gniew
+      title: "\U0001F620 Gniew"
     emotion_disgust:
-      title: Niesmak
+      title: "\U0001F922 Niesmak"
     emotion_fear:
-      title: Strach
-    emotion_joy:
-      title: Radość
+      title: "\U0001F628 Strach"
     emotion_neutral:
-      title: Neutralne
+      title: "\U0001F610 Neutralne"
     emotion_sadness:
-      title: Smutek
+      title: "\U0001F62D Smutek"
     emotion_surprise:
-      title: Niespodzianka
+      title: "\U0001F632 Niespodzianka"
   discourse_ai:
     unknown_model: "Nieznany model AI"
     ai_helper:

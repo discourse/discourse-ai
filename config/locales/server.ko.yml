@@ -9,7 +9,7 @@ ko:
     overall_sentiment:
       yaxis: "날짜"
     emotion_neutral:
-      title: 중립국
+      title: "\U0001F610 중립국"
   discourse_ai:
     ai_bot:
       tool_summary:

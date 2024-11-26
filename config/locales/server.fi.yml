@@ -96,19 +96,19 @@ fi:
       xaxis: "Positiivinen (%)"
       yaxis: "Päivämäärä"
     emotion_anger:
-      title: Viha
+      title: "\U0001F620 Viha"
     emotion_disgust:
-      title: Inho
+      title: "\U0001F922 Inho"
     emotion_fear:
-      title: Pelko
+      title: "\U0001F628 Pelko"
     emotion_joy:
-      title: Ilo
+      title: "\U0001F60A Ilo"
     emotion_neutral:
-      title: Neutraali
+      title: "\U0001F610 Neutraali"
     emotion_sadness:
-      title: Suru
+      title: "\U0001F62D Suru"
     emotion_surprise:
-      title: Yllätys
+      title: "\U0001F632 Yllätys"
   discourse_ai:
     unknown_model: "Tuntematon tekoälymalli"
     tools:

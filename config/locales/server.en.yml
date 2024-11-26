@@ -86,8 +86,8 @@ en:
     ai_summarization_model: "Model to use for summarization."
     ai_custom_summarization_allowed_groups: "Groups allowed to use create new summaries."
     ai_pm_summarization_allowed_groups: "Groups allowed to create and view summaries in PMs."
-    ai_summarize_max_hot_topics_gists_per_batch: "After updating topics in the hot list, we'll generate brief summaries of the first N ones. (Disabled when 0)"
-    ai_hot_topic_gists_allowed_groups: "Groups allowed to see gists in the hot topics list."
+    ai_summary_gists_enabled: "Generate brief summaries of latest replies in topics automatically."
+    ai_summary_gists_allowed_groups: "Groups allowed to see gists in the hot topics list."
     ai_summary_backfill_maximum_topics_per_hour: "Number of topic summaries to backfill per hour."
 
     ai_bot_enabled: "Enable the AI Bot module."
