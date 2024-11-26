@@ -229,7 +229,8 @@
 }
 
 .ai-category-suggester-content,
-.ai-tag-suggester-content {
+.ai-tag-suggester-content,
+.ai-title-suggester-content {
   z-index: z("composer", "dropdown");
 }
 
@@ -399,6 +400,11 @@
       background: var(--d-hover);
       cursor: pointer;
     }
+  }
+
+  .topic-count {
+    font-size: var(--font-down-2);
+    color: var(--primary-high);
   }
 }
 

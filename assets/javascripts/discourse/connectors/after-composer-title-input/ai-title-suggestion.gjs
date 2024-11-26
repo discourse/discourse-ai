@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import AISuggestionDropdown from "../../components/ai-suggestion-dropdown";
+import AiTitleSuggester from "../../components/suggestion-menus/ai-title-suggester";
 import { showComposerAiHelper } from "../../lib/show-ai-helper";
 
 export default class AiTitleSuggestion extends Component {
@@ -13,10 +13,6 @@ export default class AiTitleSuggestion extends Component {
   }
 
   <template>
-    <AISuggestionDropdown
-      @mode="suggest_title"
-      @composer={{@outletArgs.composer}}
-      class="suggest-titles-button"
-    />
+    <AiTitleSuggester @composer={{@outletArgs.composer}} />
   </template>
 }

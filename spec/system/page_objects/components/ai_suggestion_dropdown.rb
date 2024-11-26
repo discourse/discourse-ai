@@ -2,7 +2,7 @@
 
 module PageObjects
   module Components
-    class AISuggestionDropdown < PageObjects::Components::Base
+    class AiSuggestionDropdown < PageObjects::Components::Base
       SUGGESTION_BUTTON_SELECTOR = ".suggestion-button"
       TITLE_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}.suggest-titles-button"
       CATEGORY_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}.suggest-category-button"

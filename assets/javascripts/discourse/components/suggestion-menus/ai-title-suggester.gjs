@@ -6,14 +6,13 @@ import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import DropdownMenu from "discourse/components/dropdown-menu";
-import categoryBadge from "discourse/helpers/category-badge";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 import DMenu from "float-kit/components/d-menu";
 import { MIN_CHARACTER_COUNT } from "../../lib/ai-helper-suggestions";
 
-export default class AiCategorySuggester extends Component {
+export default class AiTitleSuggester extends Component {
   @service siteSettings;
   @tracked loading = false;
   @tracked suggestions = null;
@@ -45,14 +44,14 @@ export default class AiCategorySuggester extends Component {
     this.triggerIcon = "spinner";
 
     try {
-      const { assistant } = await ajax(
-        "/discourse-ai/ai-helper/suggest_category",
+      const { suggestions } = await ajax(
+        "/discourse-ai/ai-helper/suggest_title",
         {
           method: "POST",
           data: { text: this.args.composer.reply },
         }
       );
-      this.suggestions = assistant;
+      this.suggestions = suggestions;
     } catch (error) {
       popupAjaxError(error);
     } finally {
@@ -70,7 +69,7 @@ export default class AiCategorySuggester extends Component {
       return;
     }
 
-    composer.set("categoryId", suggestion.id);
+    composer.set("title", suggestion);
     this.dMenu.close();
   }
 
@@ -89,9 +88,9 @@ export default class AiCategorySuggester extends Component {
       <DMenu
         @title={{i18n "discourse_ai.ai_helper.suggest"}}
         @icon={{this.triggerIcon}}
-        @identifier="ai-category-suggester"
+        @identifier="ai-title-suggester"
         @onClose={{this.onClose}}
-        @triggerClass="suggestion-button suggest-category-button {{if
+        @triggerClass="suggestion-button suggest-titles-button {{if
           this.loading
           'is-loading'
         }}"
@@ -106,17 +105,11 @@ export default class AiCategorySuggester extends Component {
               {{#each this.suggestions as |suggestion|}}
                 <dropdown.item>
                   <DButton
-                    class="category-row"
-                    data-title={{suggestion.name}}
-                    data-value={{suggestion.id}}
-                    title={{suggestion.name}}
+                    data-title={{suggestion}}
+                    title={{suggestion}}
                     @action={{fn this.applySuggestion suggestion}}
                   >
-                    <div class="category-status">
-                      {{categoryBadge suggestion}}
-                      <span class="topic-count">x
-                        {{suggestion.topicCount}}</span>
-                    </div>
+                    {{suggestion}}
                   </DButton>
                 </dropdown.item>
               {{/each}}
