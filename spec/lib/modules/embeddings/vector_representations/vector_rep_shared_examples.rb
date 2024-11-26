@@ -79,6 +79,10 @@ RSpec.shared_examples "generates and store embedding using with vector represent
       expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
       expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
     end
+
+    it "does nothing if passed record has no content" do
+      expect { vector_rep.gen_bulk_reprensentations([Topic.new]) }.not_to raise_error
+    end
   end
 
   describe "#asymmetric_topics_similarity_search" do

@@ -81,11 +81,13 @@ module DiscourseAi
         end
 
         def prepare_text(record)
-          if inference_client.class.name.include?("DiscourseClassifier")
-            return "query: #{super(record)}"
+          prepared_text = super(record)
+
+          if prepared_text.present? && inference_client.class.name.include?("DiscourseClassifier")
+            return "query: #{prepared_text}"
           end
 
-          super(record)
+          prepared_text
         end
       end
     end
