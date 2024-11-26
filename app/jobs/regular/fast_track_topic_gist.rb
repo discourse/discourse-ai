@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ::Jobs
-  class UpdateHotTopicGist < ::Jobs::Base
+  class FastTrackTopicGist < ::Jobs::Base
     sidekiq_options retry: false
 
     def execute(args)
@@ -11,8 +11,6 @@ module ::Jobs
 
       topic = Topic.find_by(id: args[:topic_id])
       return if topic.blank?
-
-      return if !TopicHotScore.where(topic: topic).exists?
 
       summarizer = DiscourseAi::Summarization.topic_gist(topic)
       gist = summarizer.existing_summary
