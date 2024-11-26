@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Jobs::UpdateHotTopicGist do
+RSpec.describe Jobs::FastTrackTopicGist do
   describe "#execute" do
     fab!(:topic_1) { Fabricate(:topic) }
     fab!(:post_1) { Fabricate(:post, topic: topic_1, post_number: 1) }
@@ -9,11 +9,10 @@ RSpec.describe Jobs::UpdateHotTopicGist do
     before do
       assign_fake_provider_to(:ai_summarization_model)
       SiteSetting.ai_summarization_enabled = true
-      SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100
+      SiteSetting.ai_summary_gists_enabled = true
     end
 
-    context "when the hot topic has a gist" do
-      before { TopicHotScore.create!(topic_id: topic_1.id, score: 0.1) }
+    context "when the topic has a gist" do
       fab!(:ai_gist) do
         Fabricate(:topic_ai_gist, target: topic_1, original_content_sha: AiSummary.build_sha("12"))
       end
@@ -48,22 +47,22 @@ RSpec.describe Jobs::UpdateHotTopicGist do
     end
 
     context "when the topic doesn't have a hot topic score" do
-      it "does nothing" do
-        subject.execute({})
+      it "creates gist" do
+        subject.execute(topic_id: topic_1.id)
 
         gist = AiSummary.gist.find_by(target: topic_1)
-        expect(gist).to be_nil
+        expect(gist).to be_present
       end
     end
 
     context "when the topic has a hot topic score but no gist" do
       before { TopicHotScore.create!(topic_id: topic_1.id, score: 0.1) }
 
-      it "does nothing" do
-        subject.execute({})
+      it "creates gist" do
+        subject.execute(topic_id: topic_1.id)
 
         gist = AiSummary.gist.find_by(target: topic_1)
-        expect(gist).to be_nil
+        expect(gist).to be_present
       end
     end
   end

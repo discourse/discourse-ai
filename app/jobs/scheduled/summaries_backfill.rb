@@ -19,6 +19,8 @@ module ::Jobs
           DiscourseAi::Summarization.topic_summary(topic).force_summarize(system_user)
         end
 
+      return unless SiteSetting.ai_summary_gists_enabled
+
       gist_t = AiSummary.summary_types[:gist]
       backfill_candidates(gist_t)
         .limit(current_budget(gist_t))
@@ -29,9 +31,9 @@ module ::Jobs
       Topic
         .where("topics.word_count >= ?", SiteSetting.ai_summary_backfill_minimum_word_count)
         .joins(<<~SQL)
-          LEFT OUTER JOIN ai_summaries ais ON 
-                          topics.id = ais.target_id AND 
-                          ais.target_type = 'Topic' AND 
+          LEFT OUTER JOIN ai_summaries ais ON
+                          topics.id = ais.target_id AND
+                          ais.target_type = 'Topic' AND
                           ais.summary_type = '#{summary_type}'
         SQL
         .where(

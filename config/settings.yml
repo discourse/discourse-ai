@@ -364,12 +364,10 @@ discourse_ai:
     type: group_list
     list_type: compact
     default: "3|13" # 3: @staff, 13: @trust_level_3
-  ai_summarize_max_hot_topics_gists_per_batch:
-    default: 0
-    min: 0
-    max: 1000
+  ai_summary_gists_enabled:
+    default: false
     hidden: true
-  ai_hot_topic_gists_allowed_groups:
+  ai_summary_gists_allowed_groups:
     type: group_list
     list_type: compact
     default: ""
