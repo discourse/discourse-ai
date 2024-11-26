@@ -80,7 +80,7 @@ describe DiscourseAi::GuardianExtensions do
   end
 
   describe "#can_see_gists?" do
-    before { SiteSetting.ai_hot_topic_gists_allowed_groups = group.id }
+    before { SiteSetting.ai_summary_gists_allowed_groups = group.id }
     let(:guardian) { Guardian.new(user) }
 
     context "when there is no user" do
@@ -90,7 +90,7 @@ describe DiscourseAi::GuardianExtensions do
     end
 
     context "when setting is set to everyone" do
-      before { SiteSetting.ai_hot_topic_gists_allowed_groups = Group::AUTO_GROUPS[:everyone] }
+      before { SiteSetting.ai_summary_gists_allowed_groups = Group::AUTO_GROUPS[:everyone] }
 
       it "returns true" do
         expect(guardian.can_see_gists?).to eq(true)
@@ -98,7 +98,7 @@ describe DiscourseAi::GuardianExtensions do
     end
 
     context "when there is a user but it's not a member of the allowed groups" do
-      before { SiteSetting.ai_hot_topic_gists_allowed_groups = "" }
+      before { SiteSetting.ai_summary_gists_allowed_groups = "" }
 
       it "returns false" do
         expect(guardian.can_see_gists?).to eq(false)

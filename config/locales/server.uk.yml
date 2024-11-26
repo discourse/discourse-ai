@@ -85,7 +85,7 @@ uk:
     ai_custom_summarization_allowed_groups: "Групи, яким дозволено створювати нові зведення."
     ai_pm_summarization_allowed_groups: "Групи дозволили створювати та переглядати підсумки в особистих повідомленнях."
     ai_summary_gists_enabled: "Після оновлення тем у гарячому списку ми згенеруємо короткі підсумки перших N. (Вимкнено, коли 0)"
-    ai_hot_topic_gists_allowed_groups: "Групи, яким дозволено бачити суть у списку гарячих тем."
+    ai_summary_gists_allowed_groups: "Групи, яким дозволено бачити суть у списку гарячих тем."
     ai_summary_backfill_maximum_topics_per_hour: "Кількість підсумків тем для заповнення на годину."
     ai_bot_enabled: "Увімкніть модуль AI Bot."
     ai_bot_enable_chat_warning: "Відображати попередження, коли починається чат ПП. Можна змінити, відредагувавши рядок перекладу: discourse_ai.ai_bot.pm_warning"

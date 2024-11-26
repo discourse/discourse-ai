@@ -62,7 +62,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
 
           before do
             group.add(user)
-            SiteSetting.ai_hot_topic_gists_allowed_groups = group.id
+            SiteSetting.ai_summary_gists_allowed_groups = group.id
             SiteSetting.ai_summary_gists_enabled = true
           end
 
@@ -81,7 +81,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
           end
 
           it "doesn't include the summary when the user is not a member of the opt-in group" do
-            SiteSetting.ai_hot_topic_gists_allowed_groups = ""
+            SiteSetting.ai_summary_gists_allowed_groups = ""
 
             gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
 
