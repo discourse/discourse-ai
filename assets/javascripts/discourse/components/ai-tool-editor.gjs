@@ -83,6 +83,7 @@ export default class AiToolEditor extends Component {
     try {
       const data = this.editingModel.getProperties(
         "name",
+        "tool_name",
         "description",
         "parameters",
         "script",
@@ -175,6 +176,23 @@ export default class AiToolEditor extends Component {
           <DTooltip
             @icon="question-circle"
             @content={{I18n.t "discourse_ai.tools.name_help"}}
+          />
+        </div>
+
+        <div class="control-group">
+          <label>{{I18n.t "discourse_ai.tools.tool_name"}}</label>
+          <input
+            {{on
+              "input"
+              (withEventValue (fn (mut this.editingModel.tool_name)))
+            }}
+            value={{this.editingModel.tool_name}}
+            type="text"
+            class="ai-tool-editor__tool_name"
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{I18n.t "discourse_ai.tools.tool_name_help"}}
           />
         </div>
 

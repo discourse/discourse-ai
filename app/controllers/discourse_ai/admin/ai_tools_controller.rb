@@ -81,6 +81,7 @@ module DiscourseAi
           .require(:ai_tool)
           .permit(
             :name,
+            :tool_name,
             :description,
             :script,
             :summary,
