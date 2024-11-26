@@ -8,7 +8,7 @@ RSpec.describe Jobs::HotTopicsGistBatch do
   before do
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true
-    SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 100
+    SiteSetting.ai_summarize_max_topic_gists_per_batch = 100
   end
 
   describe "#execute" do
@@ -34,7 +34,7 @@ RSpec.describe Jobs::HotTopicsGistBatch do
       end
 
       it "does nothing if hot topics summarization is disabled" do
-        SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 0
+        SiteSetting.ai_summarize_max_topic_gists_per_batch = 0
 
         subject.execute({})
 

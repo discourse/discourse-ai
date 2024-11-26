@@ -84,7 +84,7 @@ uk:
     ai_summarization_model: "Модель для узагальнення."
     ai_custom_summarization_allowed_groups: "Групи, яким дозволено створювати нові зведення."
     ai_pm_summarization_allowed_groups: "Групи дозволили створювати та переглядати підсумки в особистих повідомленнях."
-    ai_summarize_max_hot_topics_gists_per_batch: "Після оновлення тем у гарячому списку ми згенеруємо короткі підсумки перших N. (Вимкнено, коли 0)"
+    ai_summarize_max_topic_gists_per_batch: "Після оновлення тем у гарячому списку ми згенеруємо короткі підсумки перших N. (Вимкнено, коли 0)"
     ai_hot_topic_gists_allowed_groups: "Групи, яким дозволено бачити суть у списку гарячих тем."
     ai_summary_backfill_maximum_topics_per_hour: "Кількість підсумків тем для заповнення на годину."
     ai_bot_enabled: "Увімкніть модуль AI Bot."
@@ -216,7 +216,7 @@ uk:
             description: "Максимальна кількість результатів для включення в пошук – якщо порожні, будуть використані правила за замовчуванням, а кількість буде масштабовано залежно від моделі, що використовується. Найвище значення 100."
           base_query:
             name: "Базовий пошуковий запит"
-            description: "Базовий запит для пошуку. Приклад: \"#urgent\" додасть \"#urgent\" до пошукового запиту і знайде лише теми з категорією або тегом \"терміново\"."
+            description: 'Базовий запит для пошуку. Приклад: "#urgent" додасть "#urgent" до пошукового запиту і знайде лише теми з категорією або тегом "терміново".'
       tool_summary:
         web_browser: "Перегляд веб-сторінок"
         github_search_files: "Пошук файлів на GitHub"
@@ -285,17 +285,17 @@ uk:
           one: "Знайдено %{count} <a href='%{url}'>результат</a> для '%{query}'"
           few: "Знайдено %{count} <a href='%{url}'>результати</a> для '%{query}'"
           many: "Знайдено %{count} <a href='%{url}'>результатів</a> для '%{query}'"
-          other: "Знайдено %{count} <a href='%{url}'>результатів</a> для \"%{query}\""
+          other: 'Знайдено %{count} <a href=''%{url}''>результатів</a> для "%{query}"'
         search_meta_discourse:
           one: "Знайдено %{count} <a href='%{url}'>результат</a> для '%{query}'"
           few: "Знайдено %{count} <a href='%{url}'>результати</a> для '%{query}'"
           many: "Знайдено %{count} <a href='%{url}'>результатів</a> для '%{query}'"
-          other: "Знайдено %{count} <a href='%{url}'>результатів</a> для \"%{query}\""
+          other: 'Знайдено %{count} <a href=''%{url}''>результатів</a> для "%{query}"'
         google:
           one: "Знайдено %{count} <a href='%{url}'>результат</a> для '%{query}'"
           few: "Знайдено %{count} <a href='%{url}'>результати</a> для '%{query}'"
           many: "Знайдено %{count} <a href='%{url}'>результатів</a> для '%{query}'"
-          other: "Знайдено %{count} <a href='%{url}'>результатів</a> для \"%{query}\""
+          other: 'Знайдено %{count} <a href=''%{url}''>результатів</a> для "%{query}"'
         setting_context: "Читання контексту для: %{setting_name}"
         schema: "%{tables}"
         search_settings:

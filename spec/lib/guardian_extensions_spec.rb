@@ -9,7 +9,7 @@ describe DiscourseAi::GuardianExtensions do
     group.add(user)
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true
-    SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 1
+    SiteSetting.ai_summarize_max_topic_gists_per_batch = 1
   end
 
   let(:anon_guardian) { Guardian.new }

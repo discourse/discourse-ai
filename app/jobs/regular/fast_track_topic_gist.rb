@@ -7,7 +7,7 @@ module ::Jobs
     def execute(args)
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_summarization_enabled
-      return if SiteSetting.ai_summarize_max_hot_topics_gists_per_batch.zero?
+      return if SiteSetting.ai_summarize_max_topic_gists_per_batch.zero?
 
       topic = Topic.find_by(id: args[:topic_id])
       return if topic.blank?
