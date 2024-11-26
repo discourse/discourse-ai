@@ -50,8 +50,38 @@ module DiscourseAi
           raise NotImplementedError
         end
 
+        def gen_bulk_reprensentations(relation)
+          http_pool_size = 100
+          pool =
+            Concurrent::CachedThreadPool.new(
+              min_threads: 0,
+              max_threads: http_pool_size,
+              idletime: 30,
+            )
+
+          embedding_gen = inference_client
+          promised_embeddings =
+            relation.map do |record|
+              materials = { target: record, text: prepare_text(record) }
+
+              Concurrent::Promises
+                .fulfilled_future(materials, pool)
+                .then_on(pool) do |w_prepared_text|
+                  w_prepared_text.merge(
+                    embedding: embedding_gen.perform!(w_prepared_text[:text]),
+                    digest: OpenSSL::Digest::SHA1.hexdigest(w_prepared_text[:text]),
+                  )
+                end
+            end
+
+          Concurrent::Promises
+            .zip(*promised_embeddings)
+            .value!
+            .each { |e| save_to_db(e[:target], e[:embedding], e[:digest]) }
+        end
+
         def generate_representation_from(target, persist: true)
-          text = @strategy.prepare_text_from(target, tokenizer, max_sequence_length - 2)
+          text = prepare_text(target)
           return if text.blank?
 
           target_column =
@@ -428,6 +458,10 @@ module DiscourseAi
 
         def inference_client
           raise NotImplementedError
+        end
+
+        def prepare_text(record)
+          @strategy.prepare_text_from(record, tokenizer, max_sequence_length - 2)
         end
       end
     end
