@@ -85,7 +85,7 @@ de:
     ai_summarization_model: "Modell, das für die Zusammenfassung verwendet werden soll."
     ai_custom_summarization_allowed_groups: "Gruppen, die neue Zusammenfassungen erstellen dürfen."
     ai_pm_summarization_allowed_groups: "Gruppen können Zusammenfassungen in PMs erstellen und ansehen."
-    ai_summarize_max_topic_gists_per_batch: "Nach der Aktualisierung der Themen in der angesagten Liste erstellen wir kurze Zusammenfassungen der ersten N Themen. (Deaktiviert, wenn 0)"
+    ai_summary_gists_enabled: "Nach der Aktualisierung der Themen in der angesagten Liste erstellen wir kurze Zusammenfassungen der ersten N Themen. (Deaktiviert, wenn 0)"
     ai_hot_topic_gists_allowed_groups: "Gruppen, die die wichtigsten Themen in der Liste der aktuellen Themen sehen dürfen."
     ai_summary_backfill_maximum_topics_per_hour: "Anzahl der Themenzusammenfassungen, die pro Stunde aufgefüllt werden müssen."
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."

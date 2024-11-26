@@ -4,7 +4,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
   before do
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true
-    SiteSetting.ai_summarize_max_topic_gists_per_batch = 100
+    SiteSetting.ai_summary_gists_enabled = true
   end
 
   fab!(:user)
@@ -63,7 +63,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
           before do
             group.add(user)
             SiteSetting.ai_hot_topic_gists_allowed_groups = group.id
-            SiteSetting.ai_summarize_max_topic_gists_per_batch = 100
+            SiteSetting.ai_summary_gists_enabled = true
           end
 
           it "includes the summary" do

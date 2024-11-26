@@ -9,7 +9,7 @@ RSpec.describe Jobs::FastTrackTopicGist do
     before do
       assign_fake_provider_to(:ai_summarization_model)
       SiteSetting.ai_summarization_enabled = true
-      SiteSetting.ai_summarize_max_topic_gists_per_batch = 100
+      SiteSetting.ai_summary_gists_enabled = true
     end
 
     context "when the topic has a gist" do

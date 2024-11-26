@@ -84,7 +84,7 @@ he:
     ai_summarization_model: "מודל לשימוש לסיכום."
     ai_custom_summarization_allowed_groups: "קבוצות שמורשות להשתמש ליצירת סיכומים חדשים."
     ai_pm_summarization_allowed_groups: "קבוצות שמורשות ליצור ולצפות בתקצירים בהודעות פרטיות."
-    ai_summarize_max_topic_gists_per_batch: "לאחר עדכון הנושאים ברשימה החמה, נייצר תקצירים של N הראשונים. (0 להשבתה)"
+    ai_summary_gists_enabled: "לאחר עדכון הנושאים ברשימה החמה, נייצר תקצירים של N הראשונים. (0 להשבתה)"
     ai_hot_topic_gists_allowed_groups: "קבוצות שמורשות לראות gists ברשימת הנושאים החמים."
     ai_summary_backfill_maximum_topics_per_hour: "מספר תקצירי הנושאים למילוי חוזר בשעה."
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."

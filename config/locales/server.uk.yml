@@ -84,7 +84,7 @@ uk:
     ai_summarization_model: "Модель для узагальнення."
     ai_custom_summarization_allowed_groups: "Групи, яким дозволено створювати нові зведення."
     ai_pm_summarization_allowed_groups: "Групи дозволили створювати та переглядати підсумки в особистих повідомленнях."
-    ai_summarize_max_topic_gists_per_batch: "Після оновлення тем у гарячому списку ми згенеруємо короткі підсумки перших N. (Вимкнено, коли 0)"
+    ai_summary_gists_enabled: "Після оновлення тем у гарячому списку ми згенеруємо короткі підсумки перших N. (Вимкнено, коли 0)"
     ai_hot_topic_gists_allowed_groups: "Групи, яким дозволено бачити суть у списку гарячих тем."
     ai_summary_backfill_maximum_topics_per_hour: "Кількість підсумків тем для заповнення на годину."
     ai_bot_enabled: "Увімкніть модуль AI Bot."

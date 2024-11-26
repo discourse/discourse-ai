@@ -19,7 +19,7 @@ module DiscourseAi
 
         plugin.register_modifier(:topic_query_create_list_topics) do |topics, options|
           if Discourse.filters.include?(options[:filter]) && SiteSetting.ai_summarization_enabled &&
-               SiteSetting.ai_summarize_max_topic_gists_per_batch > 0
+               SiteSetting.ai_summary_gists_enabled
             topics.includes(:ai_gist_summary)
           else
             topics
@@ -39,7 +39,7 @@ module DiscourseAi
         # jobs if the feature is disabled.
         plugin.on(:post_created) do |post|
           if SiteSetting.discourse_ai_enabled && SiteSetting.ai_summarization_enabled &&
-               SiteSetting.ai_summarize_max_topic_gists_per_batch > 0 && post.topic
+               SiteSetting.ai_summary_gists_enabled > 0 && post.topic
             Jobs.enqueue(:fast_track_topic_gist, topic_id: post&.topic_id)
           end
         end
