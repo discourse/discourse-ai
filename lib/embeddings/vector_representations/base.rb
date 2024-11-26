@@ -61,18 +61,21 @@ module DiscourseAi
 
           embedding_gen = inference_client
           promised_embeddings =
-            relation.map do |record|
-              materials = { target: record, text: prepare_text(record) }
+            relation
+              .map do |record|
+                prepared_text = prepare_text(record)
+                next if prepared_text.blank?
 
-              Concurrent::Promises
-                .fulfilled_future(materials, pool)
-                .then_on(pool) do |w_prepared_text|
-                  w_prepared_text.merge(
-                    embedding: embedding_gen.perform!(w_prepared_text[:text]),
-                    digest: OpenSSL::Digest::SHA1.hexdigest(w_prepared_text[:text]),
-                  )
-                end
-            end
+                Concurrent::Promises
+                  .fulfilled_future({ target: record, text: prepared_text }, pool)
+                  .then_on(pool) do |w_prepared_text|
+                    w_prepared_text.merge(
+                      embedding: embedding_gen.perform!(w_prepared_text[:text]),
+                      digest: OpenSSL::Digest::SHA1.hexdigest(w_prepared_text[:text]),
+                    )
+                  end
+              end
+              .compact
 
           Concurrent::Promises
             .zip(*promised_embeddings)

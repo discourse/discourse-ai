@@ -70,6 +70,7 @@ module Jobs
         Post
           .joins("LEFT JOIN #{table_name} ON #{table_name}.post_id = posts.id")
           .where(deleted_at: nil)
+          .where(post_type: Post.types[:regular])
           .limit(limit - rebaked)
 
       # First, we'll try to backfill embeddings for posts that have none
