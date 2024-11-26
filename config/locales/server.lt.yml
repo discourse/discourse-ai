@@ -11,7 +11,7 @@ lt:
     overall_sentiment:
       yaxis: "Data"
     emotion_neutral:
-      title: Neutrali
+      title: "\U0001F610 Neutrali"
   discourse_ai:
     ai_helper:
       image_caption:

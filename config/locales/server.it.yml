@@ -96,19 +96,19 @@ it:
       xaxis: "Positiva(%)"
       yaxis: "Data"
     emotion_anger:
-      title: Rabbia
+      title: "\U0001F620 Rabbia"
     emotion_disgust:
-      title: Disgusto
+      title: "\U0001F922 Disgusto"
     emotion_fear:
-      title: Paura
+      title: "\U0001F628 Paura"
     emotion_joy:
-      title: Gioia
+      title: "\U0001F60A Gioia"
     emotion_neutral:
-      title: Neutro
+      title: "\U0001F610 Neutro"
     emotion_sadness:
-      title: Tristezza
+      title: "\U0001F62D Tristezza"
     emotion_surprise:
-      title: Sorpresa
+      title: "\U0001F632 Sorpresa"
   discourse_ai:
     unknown_model: "Modello IA sconosciuto"
     tools:

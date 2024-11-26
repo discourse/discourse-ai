@@ -17,7 +17,9 @@ de:
         categories:
           discourse_ai: "Discourse-KI"
       dashboard:
-        emotion: "Emotion"
+        emotion:
+          title: "Emotion"
+          description: "Die Tabelle listet die Anzahl der Beiträge auf, die mit einer bestimmten Emotion klassifiziert wurden. Klassifiziert mit dem Modell 'SamLowe/roberta-base-go_emotions'."
   js:
     discourse_automation:
       scriptables:
@@ -463,6 +465,11 @@ de:
         topic:
           title: "Zusammenfassung des Themas"
           close: "Zusammenfassungspanel schließen"
+        topic_list_layout:
+          button:
+            compact: "Kompakt"
+            expanded: "Erweitert"
+            expanded_description: "mit KI-Zusammenfassungen"
     review:
       types:
         reviewable_ai_post:

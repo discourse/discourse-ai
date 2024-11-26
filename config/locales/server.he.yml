@@ -10,6 +10,7 @@ he:
       flag_types:
         review: "הוספת פוסט לתור הביקורת"
         spam: "סימון כזבל והסתרת הפוסט"
+        spam_silence: "סימון כזבל, הסתרת הפוסט והשתקת המשתמש"
     scriptables:
       llm_triage:
         title: מיון ראשוני של פוסטים באמצעות בינה מלאכותית
@@ -23,6 +24,7 @@ he:
         description: "דוח תקופתי שמבוסס על דגם שפה גדול"
   site_settings:
     discourse_ai_enabled: "הפעלת תוסף הבינה המלאכותית של Discourse."
+    ai_artifact_security: "מערכת התוצרים של הבינה המלאכותית מייצרת חלוניות (IFRAME) עם קוד שניתן להריץ. מצב נוקשה משבית שיתוף ומאלץ לחיצה נוספת כדי להריץ קוד. מצב Lax מאפשר לשתף תוצרים ולהריץ קוד ישירות. מצב מושבת משבית את מערכת התוצרים."
     ai_toxicity_enabled: "הפעלת מודול הרעילות."
     ai_toxicity_inference_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול הרעילות"
     ai_toxicity_inference_service_api_key: "מפתח API ל־API של הרעילות"
@@ -106,24 +108,97 @@ he:
   reports:
     overall_sentiment:
       title: "רגש כללי"
-      description: 'התרשים משווה את מספר הפוסטים שמסווגים כחיוביים או שליליים. אלו מחושבים כאשר ניקוד חיובי או שלילי הוא גדול מהדף הניוקוד המוגדר. משמעות הדבר היא שפוסטים נייטרליים לא מופיעים. הודעות פרטיות מוחרגות גם כן. מסווגות עם „cardiffnlp/twitter-roberta-base-sentiment-latest”'
+      description: 'התרשים משווה את מספר הפוסטים שמסווגים כחיוביים או שליליים. אלו מחושבים כאשר ניקוד חיובי או שלילי הוא גדול מסף הניקוד המוגדר. משמעות הדבר היא שפוסטים נייטרליים לא מופיעים. הודעות אישיות מוחרגות גם כן. מסווגות באמצעות „cardiffnlp/twitter-roberta-base-sentiment-latest”'
       xaxis: "חיובי(%)"
       yaxis: "תאריך"
+    emotion_admiration:
+      title: "\U0001F929 הערצה"
+      description: "פוסטים שסווגו עם הרגש הערצה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_amusement:
+      title: "\U0001F604 שעשוע"
+      description: "פוסטים שסווגו עם הרגש שעשוע באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
     emotion_anger:
-      title: כעס
+      title: "\U0001F620 כעס"
+      description: "פוסטים שסווגו עם הרגש כעס באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_annoyance:
+      title: "\U0001F612 מורת רוח"
+      description: "פוסטים שסווגו עם הרגש מורת רוח באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_approval:
+      title: "\U0001F44D הסכמה"
+      description: "פוסטים שסווגו עם הרגש הסכמה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_caring:
+      title: "\U0001F917 אכפתיות"
+      description: "פוסטים שסווגו עם הרגש אכפתיות באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_confusion:
+      title: "\U0001F615 בלבול"
+      description: "פוסטים שסווגו עם הרגש בלבול באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_curiosity:
+      title: "\U0001F914 סקרנות"
+      description: "פוסטים שסווגו עם הרגש סקרנות באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_desire:
+      title: "\U0001F60D תשוקה"
+      description: "פוסטים שסווגו עם הרגש תשוקה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_disappointment:
+      title: "\U0001F61E אכזבה"
+      description: "פוסטים שסווגו עם הרגש אכזבה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_disapproval:
+      title: "\U0001F44E אי־הסכמה"
+      description: "פוסטים שסווגו עם הרגש אי־הסכמה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
     emotion_disgust:
-      title: גועל
+      title: "\U0001F922 גועל"
+      description: "פוסטים שסווגו עם הרגש גועל באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_embarrassment:
+      title: "\U0001F633 מבוכה"
+      description: "פוסטים שסווגו עם הרגש מבוכה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_excitement:
+      title: "\U0001F92A התרגשות"
+      description: "פוסטים שסווגו עם הרגש התרגשות באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
     emotion_fear:
-      title: פחד
+      title: "\U0001F628 פחד"
+      description: "פוסטים שסווגו עם הרגש פחד באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_gratitude:
+      title: "\U0001F64F הכרת תודה"
+      description: "פוסטים שסווגו עם הרגש הכרת תודה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_grief:
+      title: "\U0001F622 צער"
+      description: "פוסטים שסווגו עם הרגש צער באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
     emotion_joy:
-      title: הנאה
+      title: "\U0001F60A הנאה"
+      description: "פוסטים שסווגו עם הרגש הנאה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_love:
+      title: '❤️ אהבה'
+      description: "פוסטים שסווגו עם הרגש אהבה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_nervousness:
+      title: "\U0001F630 עצבנות"
+      description: "פוסטים שסווגו עם הרגש עצבנות באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
     emotion_neutral:
-      title: נייטרלי
+      title: "\U0001F610 נייטרלי"
+      description: "פוסטים שסווגו עם הרגש נייטרלי באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_optimism:
+      title: "\U0001F31F אופטימיות"
+      description: "פוסטים שסווגו עם הרגש אופטימיות באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_pride:
+      title: "\U0001F981 גאווה"
+      description: "פוסטים שסווגו עם הרגש גאווה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_realization:
+      title: "\U0001F4A1 תובנה"
+      description: "פוסטים שסווגו עם הרגש תובנה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_relief:
+      title: "\U0001F60C הקלה"
+      description: "פוסטים שסווגו עם הרגש הקלה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+    emotion_remorse:
+      title: "\U0001F614 חרטה"
+      description: "פוסטים שסווגו עם הרגש חרטה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
     emotion_sadness:
-      title: עצב
+      title: "\U0001F62D עצב"
+      description: "פוסטים שסווגו עם הרגש עצב באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
     emotion_surprise:
-      title: הפתעה
+      title: "\U0001F632 הפתעה"
+      description: "פוסטים שסווגו עם הרגש הפתעה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
   discourse_ai:
+    ai_artifact:
+      link: "הצגת תוצר בלשונית חדשה"
+      view_source: "הצגת המקור"
     unknown_model: "דגם בינה מלאכותית לא ידוע"
     tools:
       custom_name: "%{name} (מותאם אישית)"
@@ -199,6 +274,9 @@ he:
         discourse_helper:
           name: "מסייע Discourse"
           description: "בוט בינה מלאכותית שמתמחה בסיוע במשימות שקשורות ב־Discourse"
+        web_artifact_creator:
+          name: "יוצר תוצרים דפדפניים"
+          description: "בוט בינה מלאכותית שמתמחה ביצירת תוצרים אינטרנטיים אינטראקטיביים"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
@@ -222,6 +300,7 @@ he:
             name: "שאילתת חיפוש בסיסית"
             description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‚‎#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
       tool_summary:
+        create_artifact: "יצירת תוצר דפדפני"
         web_browser: "גלישה באינטרנט"
         github_search_files: "חיפוש קבצים ב־GitHub"
         github_search_code: "חיפוש קוד ב־GitHub"
@@ -243,6 +322,7 @@ he:
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
       tool_help:
+        create_artifact: "יצירת תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         web_browser: "גלישה באינטרנט באמצעות בוט בינה מלאכותית"
         github_search_code: "חיפוש אחר קוד במאגר GitHub"
         github_search_files: "חיפוש אחר קבצים במאגר GitHub"
@@ -264,6 +344,7 @@ he:
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
       tool_description:
+        create_artifact: "נוצר תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         web_browser: "קורא את <a href='%{url}'>%{url}</a>"
         github_search_files: "בוצע חיפוש אחר ‚%{keywords}’ בתוך %{repo}/%{branch}"
         github_search_code: "בוצע חיפוש אחר ‚%{query}’ בתוך %{repo}"

@@ -96,19 +96,17 @@ zh_CN:
       xaxis: "积极 (%)"
       yaxis: "日期"
     emotion_anger:
-      title: 愤怒
+      title: "\U0001F620 愤怒"
     emotion_disgust:
-      title: 厌恶
+      title: "\U0001F922 厌恶"
     emotion_fear:
-      title: 恐惧
-    emotion_joy:
-      title: 开心
+      title: "\U0001F628 恐惧"
     emotion_neutral:
-      title: 中性
+      title: "\U0001F610 中性"
     emotion_sadness:
-      title: 悲伤
+      title: "\U0001F62D 悲伤"
     emotion_surprise:
-      title: 惊讶
+      title: "\U0001F632 惊讶"
   discourse_ai:
     unknown_model: "未知 AI 模型"
     tools:

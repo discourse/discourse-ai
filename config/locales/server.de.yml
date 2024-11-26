@@ -10,6 +10,7 @@ de:
       flag_types:
         review: "Beitrag zur Überprüfungswarteschlange hinzufügen"
         spam: "Als Spam markieren und Beitrag verbergen"
+        spam_silence: "Als Spam kennzeichnen, Beitrag ausblenden und Benutzer stummschalten"
     scriptables:
       llm_triage:
         title: Beiträge mithilfe von KI sortieren
@@ -107,66 +108,97 @@ de:
   reports:
     overall_sentiment:
       title: "Allgemeine Stimmung"
-      description: 'Das Diagramm vergleicht die Anzahl der Beiträge, die entweder als positiv oder negativ eingestuft werden. Sie werden berechnet, wenn die positive oder negative Bewertung über dem festgelegten Schwellenwert liegt. Das bedeutet, dass neutrale Beiträge nicht angezeigt werden. Private Nachrichten (PMs) sind ebenfalls ausgeschlossen. Klassifiziert mit "cardiffnlp/twitter-roberta-base-sentiment-latest"'
+      description: 'Das Diagramm vergleicht die Anzahl der Beiträge, die entweder als positiv oder negativ eingestuft werden. Sie werden berechnet, wenn die positive oder negative Bewertung über dem festgelegten Schwellenwert liegt. Das bedeutet, dass neutrale Beiträge nicht angezeigt werden. Persönliche Nachrichten (PMs) sind ebenfalls ausgeschlossen. Klassifiziert mit "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Positiv (%)"
       yaxis: "Datum"
     emotion_admiration:
-      title: Bewunderung
+      title: "\U0001F929 Bewunderung"
+      description: "Beiträge, die mithilfe der KI mit der Emotion „Bewunderung“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_amusement:
-      title: Unterhaltung
+      title: "\U0001F604 Unterhaltung"
+      description: "Beiträge, die mithilfe von KI mit der Emotion „Unterhaltung“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_anger:
-      title: Wut
+      title: "\U0001F620 Wut"
+      description: "Beiträge, die per KI mit der Emotion Wut klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_annoyance:
-      title: Ärgernis
+      title: "\U0001F612 Ärgernis"
+      description: "Beiträge, die per KI mit der Emotion „Ärger“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_approval:
-      title: Genehmigung
+      title: "\U0001F44D Genehmigung"
+      description: "Beiträge, die mithilfe der Emotionsfreigabe per KI klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_caring:
-      title: Fürsorge
+      title: "\U0001F917 Fürsorge"
+      description: "Beiträge werden mithilfe der KI und dem Modell „SamLowe/roberta-base-go_emotions“ mit der Emotion „Caring“ klassifiziert."
     emotion_confusion:
-      title: Verwirrung
+      title: "\U0001F615 Verwirrung"
+      description: "Beiträge, die mithilfe von KI mit der Emotionsverwirrung klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_curiosity:
-      title: Neugierde
+      title: "\U0001F914 Neugierde"
+      description: "Beiträge, die mithilfe von KI nach der Emotion Neugier klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_desire:
-      title: Wunsch
+      title: "\U0001F60D Wunsch"
+      description: "Beiträge, die per KI mit der Emotion „Desire“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_disappointment:
-      title: Enttäuschung
+      title: "\U0001F61E Enttäuschung"
+      description: "Beiträge, die per KI mit der Emotion „Enttäuschung“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_disapproval:
-      title: Missbilligung
+      title: "\U0001F44E Missbilligung"
+      description: "Beiträge, die per KI mit der Emotion „Missbilligung“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_disgust:
-      title: Ekel
+      title: "\U0001F922 Ekel"
+      description: "Beiträge, die per KI mit der Emotion Ekel klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_embarrassment:
-      title: Verlegenheit
+      title: "\U0001F633 Verlegenheit"
+      description: "Beiträge, die per KI mit der Emotion „Peinlichkeit“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_excitement:
-      title: Aufregung
+      title: "\U0001F92A Aufregung"
+      description: "Beiträge werden per KI nach der Emotion „Erregung“ klassifiziert, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_fear:
-      title: Furcht
+      title: "\U0001F628 Furcht"
+      description: "Beiträge, die per KI mit der Emotion Angst klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_gratitude:
-      title: Dankbarkeit
+      title: "\U0001F64F Dankbarkeit"
+      description: "Beiträge, die per KI mit der Emotion Dankbarkeit klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_grief:
-      title: Kummer
+      title: "\U0001F622 Kummer"
+      description: "Beiträge, die per KI mit der Emotion Trauer klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_joy:
-      title: Freude
+      title: "\U0001F60A Freude"
+      description: "Beiträge, die per KI mit der Emotion Freude klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_love:
-      title: Liebe
+      title: '❤️ Liebe'
+      description: "Beiträge, die per KI mit der Emotion „Liebe“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_nervousness:
-      title: Nervosität
+      title: "\U0001F630 Nervosität"
+      description: "Beiträge, die per KI mit der Emotion Nervosität klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_neutral:
-      title: Neutral
+      title: "\U0001F610 Neutral"
+      description: "Beiträge werden per KI mit der Emotion „neutral“ klassifiziert, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_optimism:
-      title: Optimismus
+      title: "\U0001F31F Optimismus"
+      description: "Beiträge, die per KI mit der Emotion Optimismus klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_pride:
-      title: Stolz
+      title: "\U0001F981 Stolz"
+      description: "Beiträge, die per KI mit der Emotion „Stolz“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_realization:
-      title: Realisierung
+      title: "\U0001F4A1 Realisierung"
+      description: "Beiträge, die mit der Emotionsrealisierung per KI klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_relief:
-      title: Erleichterung
+      title: "\U0001F60C Erleichterung"
+      description: "Beiträge, die mithilfe von KI anhand der Emotionslinderung klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_remorse:
-      title: Gewissensbisse
+      title: "\U0001F614 Gewissensbisse"
+      description: "Beiträge, die per KI mit der Emotion Reue klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_sadness:
-      title: Traurigkeit
+      title: "\U0001F62D Traurigkeit"
+      description: "Beiträge, die per KI mit der Emotion Traurigkeit klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
     emotion_surprise:
-      title: Überraschung
+      title: "\U0001F632 Überraschung"
+      description: "Beiträge, die per KI mit der Emotion „Überraschung“ klassifiziert wurden, unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“."
   discourse_ai:
+    ai_artifact:
+      link: "Artefakt in neuem Tab anzeigen"
+      view_source: "Quelle anzeigen"
     unknown_model: "Unbekanntes KI-Modell"
     tools:
       custom_name: "%{name} (benutzerdefiniert)"
