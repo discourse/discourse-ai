@@ -1,14 +1,37 @@
 .ai-usage {
   padding: 1em;
 
-  &__filters {
-    margin-bottom: 2em;
-  }
-
   &__filters-dates {
     display: flex;
+    flex-direction: column;
     gap: 1em;
     margin-bottom: 1em;
+  }
+
+  &__period-buttons {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+
+    .btn {
+      padding: 0.5em 1em;
+
+      &.btn-primary {
+        background: var(--tertiary);
+        color: var(--secondary);
+      }
+    }
+  }
+
+  &__custom-date-pickers {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    margin-top: 0.5em;
+  }
+
+  &__filters {
+    margin-bottom: 2em;
   }
 
   &__filters-period {

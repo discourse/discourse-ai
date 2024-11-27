@@ -1,8 +1,10 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { hash } from "@ember/helper";
+import { fn, hash } from "@ember/helper";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
+import { eq } from "truth-helpers";
 import DatePicker from "discourse/components/date-picker";
 import { ajax } from "discourse/lib/ajax";
 import i18n from "discourse-common/helpers/i18n";
@@ -16,7 +18,8 @@ export default class AiUsage extends Component {
   @tracked data = this.args.model;
   @tracked selectedFeature;
   @tracked selectedModel;
-  @tracked period = "day";
+  @tracked selectedPeriod = "month";
+  @tracked isCustomDateActive = false;
 
   @action
   async fetchData() {
@@ -26,15 +29,9 @@ export default class AiUsage extends Component {
         end_date: moment(this.endDate).format("YYYY-MM-DD"),
         feature: this.selectedFeature,
         model: this.selectedModel,
-        period: this.period,
       },
     });
     this.data = response;
-  }
-
-  @action
-  async onDateChange() {
-    await this.fetchData();
   }
 
   @action
@@ -108,39 +105,117 @@ export default class AiUsage extends Component {
     return this._cachedModels;
   }
 
+  get periodOptions() {
+    return [
+      { id: "day", name: "Last 24 Hours" },
+      { id: "week", name: "Last Week" },
+      { id: "month", name: "Last Month" },
+    ];
+  }
+
+  @action
+  setPeriodDates(period) {
+    const now = moment();
+
+    switch (period) {
+      case "day":
+        this.startDate = now.clone().subtract(1, "day").toDate();
+        this.endDate = now.toDate();
+        break;
+      case "week":
+        this.startDate = now.clone().subtract(7, "days").toDate();
+        this.endDate = now.toDate();
+        break;
+      case "month":
+        this.startDate = now.clone().subtract(30, "days").toDate();
+        this.endDate = now.toDate();
+        break;
+    }
+  }
+
+  @action
+  onPeriodSelect(period) {
+    this.selectedPeriod = period;
+    this.isCustomDateActive = false;
+    this.setPeriodDates(period);
+    this.fetchData();
+  }
+
+  @action
+  onCustomDateClick() {
+    this.isCustomDateActive = true;
+    this.selectedPeriod = null;
+  }
+
+  @action
+  onDateChange() {
+    this.isCustomDateActive = true;
+    this.selectedPeriod = null;
+    this.fetchData();
+  }
+
   <template>
     <div class="ai-usage">
       <div class="ai-usage__filters">
+
         <div class="ai-usage__filters-dates">
-          <DatePicker
-            @value={{this.startDate}}
-            @onChange={{this.onDateChange}}
-            class="ai-usage__date-picker"
-          />
-          <DatePicker
-            @value={{this.endDate}}
-            @onChange={{this.onDateChange}}
-            class="ai-usage__date-picker"
-          />
-
-          <div class="ai-usage__filters-row">
-            <ComboBox
-              @value={{this.selectedFeature}}
-              @content={{this.availableFeatures}}
-              @onChange={{this.onFeatureChanged}}
-              @options={{hash none="discourse_ai.usage.all_features"}}
-              class="ai-usage__feature-selector"
-            />
-
-            <ComboBox
-              @value={{this.selectedModel}}
-              @content={{this.availableModels}}
-              @onChange={{this.onModelChanged}}
-              @options={{hash none="discourse_ai.usage.all_models"}}
-              class="ai-usage__model-selector"
-            />
+          <div class="ai-usage__period-buttons">
+            {{#each this.periodOptions as |option|}}
+              <button
+                type="button"
+                class="btn
+                  {{if
+                    (eq this.selectedPeriod option.id)
+                    'btn-primary'
+                    'btn-default'
+                  }}"
+                {{on "click" (fn this.onPeriodSelect option.id)}}
+              >
+                {{option.name}}
+              </button>
+            {{/each}}
+            <button
+              type="button"
+              class="btn
+                {{if this.isCustomDateActive 'btn-primary' 'btn-default'}}"
+              {{on "click" this.onCustomDateClick}}
+            >
+              Custom...
+            </button>
           </div>
 
+          {{#if this.isCustomDateActive}}
+            <div class="ai-usage__custom-date-pickers">
+              <DatePicker
+                @value={{this.startDate}}
+                @onChange={{this.onDateChange}}
+                class="ai-usage__date-picker"
+              />
+              <DatePicker
+                @value={{this.endDate}}
+                @onChange={{this.onDateChange}}
+                class="ai-usage__date-picker"
+              />
+            </div>
+          {{/if}}
+        </div>
+
+        <div class="ai-usage__filters-row">
+          <ComboBox
+            @value={{this.selectedFeature}}
+            @content={{this.availableFeatures}}
+            @onChange={{this.onFeatureChanged}}
+            @options={{hash none="discourse_ai.usage.all_features"}}
+            class="ai-usage__feature-selector"
+          />
+
+          <ComboBox
+            @value={{this.selectedModel}}
+            @content={{this.availableModels}}
+            @onChange={{this.onModelChanged}}
+            @options={{hash none="discourse_ai.usage.all_models"}}
+            class="ai-usage__model-selector"
+          />
         </div>
 
         {{#if this.data}}
