@@ -34,7 +34,7 @@ module DiscourseAi
           needs_truncation = client.class.name.include?("HuggingFaceTextEmbeddings")
           if needs_truncation
             text = tokenizer.truncate(text, max_sequence_length - 2)
-          else
+          elsif !text.starts_with?("query:")
             text = "query: #{text}"
           end
 
@@ -78,6 +78,16 @@ module DiscourseAi
           else
             raise "No inference endpoint configured"
           end
+        end
+
+        def prepare_text(record)
+          prepared_text = super(record)
+
+          if prepared_text.present? && inference_client.class.name.include?("DiscourseClassifier")
+            return "query: #{prepared_text}"
+          end
+
+          prepared_text
         end
       end
     end

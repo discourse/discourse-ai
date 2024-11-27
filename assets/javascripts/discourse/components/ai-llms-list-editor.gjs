@@ -4,7 +4,6 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
-import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 import AdminPageSubheader from "admin/components/admin-page-subheader";
@@ -124,8 +123,10 @@ export default class AiLlmsListEditor extends Component {
           <section class="ai-llms-list-editor__configured">
             <AdminPageSubheader
               @titleLabel="discourse_ai.llms.configured.title"
+              @descriptionLabel="discourse_ai.llms.preconfigured.description"
+              @learnMoreUrl="https://meta.discourse.org/t/discourse-ai-large-language-model-llm-settings-page/319903"
             />
-            <table>
+            <table class="d-admin-table">
               <thead>
                 <tr>
                   <th>{{i18n "discourse_ai.llms.display_name"}}</th>
@@ -135,12 +136,19 @@ export default class AiLlmsListEditor extends Component {
               </thead>
               <tbody>
                 {{#each @llms as |llm|}}
-                  <tr data-llm-id={{llm.name}} class="ai-llm-list__row">
-                    <td class="column-name">
-                      <h3>{{llm.display_name}}</h3>
-                      <p>
+                  <tr
+                    data-llm-id={{llm.name}}
+                    class="ai-llm-list__row d-admin-row__content"
+                  >
+                    <td class="d-admin-row__overview">
+                      <div class="ai-llm-list__name">
+                        <strong>
+                          {{llm.display_name}}
+                        </strong>
+                      </div>
+                      <div class="ai-llm-list__description">
                         {{this.modelDescription llm}}
-                      </p>
+                      </div>
                       {{#if llm.used_by}}
                         <ul class="ai-llm-list-editor__usages">
                           {{#each llm.used_by as |usage|}}
@@ -149,18 +157,20 @@ export default class AiLlmsListEditor extends Component {
                         </ul>
                       {{/if}}
                     </td>
-                    <td class="column-provider">
+                    <td class="d-admin-row__detail">
+                      <div class="d-admin-row__mobile-label">
+                        {{i18n "discourse_ai.llms.provider"}}
+                      </div>
                       {{i18n
                         (concat "discourse_ai.llms.providers." llm.provider)
                       }}
                     </td>
-                    <td class="column-edit">
+                    <td class="d-admin-row__controls">
                       <LinkTo
                         @route="adminPlugins.show.discourse-ai-llms.show"
-                        class="btn btn-default"
+                        class="btn btn-default btn-small ai-llm-list__edit-button"
                         @model={{llm.id}}
                       >
-                        {{icon "wrench"}}
                         <div class="d-button-label">
                           {{i18n "discourse_ai.llms.edit"}}
                         </div>
@@ -173,7 +183,17 @@ export default class AiLlmsListEditor extends Component {
           </section>
         {{/if}}
         <section class="ai-llms-list-editor__templates">
-          <AdminPageSubheader @titleLabel={{this.preconfiguredTitle}} />
+          <AdminPageSubheader
+            @titleLabel={{this.preconfiguredTitle}}
+            @descriptionLabel={{unless
+              this.hasLlmElements
+              "discourse_ai.llms.preconfigured.description"
+            }}
+            @learnMoreUrl={{unless
+              this.hasLlmElements
+              "https://meta.discourse.org/t/discourse-ai-large-language-model-llm-settings-page/319903"
+            }}
+          />
 
           <AdminSectionLandingWrapper
             class="ai-llms-list-editor__templates-list"

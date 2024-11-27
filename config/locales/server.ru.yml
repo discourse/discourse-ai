@@ -96,19 +96,19 @@ ru:
       xaxis: "Позитивные(%)"
       yaxis: "Дата"
     emotion_anger:
-      title: Гнев
+      title: "\U0001F620 Гнев"
     emotion_disgust:
-      title: Отвращение
+      title: "\U0001F922 Отвращение"
     emotion_fear:
-      title: Страх
+      title: "\U0001F628 Страх"
     emotion_joy:
-      title: Радость
+      title: "\U0001F60A Радость"
     emotion_neutral:
-      title: Нейтральность
+      title: "\U0001F610 Нейтральность"
     emotion_sadness:
-      title: Грусть
+      title: "\U0001F62D Грусть"
     emotion_surprise:
-      title: Удивление
+      title: "\U0001F632 Удивление"
   discourse_ai:
     unknown_model: "Неизвестная модель AI"
     tools:

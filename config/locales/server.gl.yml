@@ -9,7 +9,7 @@ gl:
     overall_sentiment:
       yaxis: "Data"
     emotion_neutral:
-      title: Neutro
+      title: "\U0001F610 Neutro"
   discourse_ai:
     ai_bot:
       tool_summary:

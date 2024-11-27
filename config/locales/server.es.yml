@@ -96,19 +96,19 @@ es:
       xaxis: "Positivas(%)"
       yaxis: "Fecha"
     emotion_anger:
-      title: Enfado
+      title: "\U0001F620 Enfado"
     emotion_disgust:
-      title: Asco
+      title: "\U0001F922 Asco"
     emotion_fear:
-      title: Miedo
+      title: "\U0001F628 Miedo"
     emotion_joy:
-      title: Alegría
+      title: "\U0001F60A Alegría"
     emotion_neutral:
-      title: Neutro
+      title: "\U0001F610 Neutro"
     emotion_sadness:
-      title: Tristeza
+      title: "\U0001F62D Tristeza"
     emotion_surprise:
-      title: Sorpresa
+      title: "\U0001F632 Sorpresa"
   discourse_ai:
     unknown_model: "Modelo de IA desconocido"
     tools:
