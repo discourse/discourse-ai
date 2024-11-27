@@ -128,6 +128,15 @@ en:
 
       usage:
         short_title: "Usage"
+        summary: "Summary"
+        total_tokens: "Total tokens"
+        tokens_over_time: "Tokens over time"
+        features_breakdown: "Usage per feature"
+        feature: "Feature"
+        usage_count: "Usage Count"
+        model: "Model"
+        models_breakdown: "Usage per model"
+        period: "Period"
 
       ai_persona:
         tool_strategies:

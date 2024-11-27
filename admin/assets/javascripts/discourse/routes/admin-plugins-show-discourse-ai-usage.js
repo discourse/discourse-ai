@@ -6,6 +6,6 @@ export default class DiscourseAiUsageRoute extends DiscourseRoute {
   @service store;
 
   model() {
-    ajax("/admin/plugins/discourse-ai/ai-usage.json");
+    return ajax("/admin/plugins/discourse-ai/ai-usage.json");
   }
 }

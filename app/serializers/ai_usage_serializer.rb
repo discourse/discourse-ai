@@ -4,7 +4,7 @@ class AiUsageSerializer < ApplicationSerializer
   attributes :data, :features, :models, :summary
 
   def data
-    object.tokens_by_period.to_json
+    object.tokens_by_period.map {|key, value| [key, value]}
   end
 
   def features
