@@ -101,6 +101,20 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         end
       end
 
+      it "prevents double render when mode is ILLUSTRATE_POST" do
+        DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
+          expect {
+            post "/discourse-ai/ai-helper/suggest",
+                 params: {
+                   mode: CompletionPrompt::ILLUSTRATE_POST,
+                   text: text_to_proofread,
+                   force_default_locale: true,
+                 }
+          }.not_to raise_error
+          expect(response.status).to eq(200)
+        end
+      end
+
       context "when performing numerous requests" do
         it "rate limits" do
           RateLimiter.enable
