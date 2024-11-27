@@ -16,16 +16,43 @@ export default class AiTitleSuggester extends Component {
   @tracked suggestions = null;
   @tracked untriggers = [];
   @tracked triggerIcon = "discourse-sparkles";
+  @tracked content = null;
+  @tracked topicContent = null;
+
+  constructor() {
+    super(...arguments);
+
+    if (!this.topicContent && this.args.composer?.reply === undefined) {
+      this.fetchTopicContent();
+    }
+  }
+
+  async fetchTopicContent() {
+    await ajax(`/t/${this.args.buffered.content.id}.json`).then(({post_stream}) => {
+      this.topicContent = post_stream.posts[0].cooked;
+    });
+  }
 
   get showSuggestionButton() {
     const composerFields = document.querySelector(".composer-fields");
-    const showTrigger = this.args.composer.reply?.length > MIN_CHARACTER_COUNT;
+    const editTopicTitleField = document.querySelector(".edit-topic-title");
+
+    this.content = this.args.composer?.reply || this.topicContent;
+    const showTrigger = this.content?.length > MIN_CHARACTER_COUNT;
 
     if (composerFields) {
       if (showTrigger) {
         composerFields.classList.add("showing-ai-suggestions");
       } else {
         composerFields.classList.remove("showing-ai-suggestions");
+      }
+    }
+
+    if (editTopicTitleField) {
+      if (showTrigger) {
+        editTopicTitleField.classList.add("showing-ai-suggestions");
+      } else {
+        editTopicTitleField.classList.remove("showing-ai-suggestions");
       }
     }
 
@@ -46,7 +73,7 @@ export default class AiTitleSuggester extends Component {
         "/discourse-ai/ai-helper/suggest_title",
         {
           method: "POST",
-          data: { text: this.args.composer.reply },
+          data: { text: this.content },
         }
       );
       this.suggestions = suggestions;
@@ -62,12 +89,12 @@ export default class AiTitleSuggester extends Component {
 
   @action
   applySuggestion(suggestion) {
-    const composer = this.args.composer;
-    if (!composer) {
+    const model = this.args.composer ? this.args.composer : this.args.buffered;
+    if (!model) {
       return;
     }
 
-    composer.set("title", suggestion);
+    model.set("title", suggestion);
     this.dMenu.close();
   }
 

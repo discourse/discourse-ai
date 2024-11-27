@@ -20,10 +20,26 @@ export default class AiTagSuggester extends Component {
   @tracked suggestions = null;
   @tracked untriggers = [];
   @tracked triggerIcon = "discourse-sparkles";
+  @tracked content = null;
+  @tracked topicContent = null;
+
+  constructor() {
+    super(...arguments);
+    if (!this.topicContent && this.args.composer?.reply === undefined) {
+      this.fetchTopicContent();
+    }
+  }
+
+  async fetchTopicContent() {
+    await ajax(`/t/${this.args.buffered.content.id}.json`).then(({post_stream}) => {
+      this.topicContent = post_stream.posts[0].cooked;
+    });
+  }
 
   get showSuggestionButton() {
     const composerFields = document.querySelector(".composer-fields");
-    const showTrigger = this.args.composer.reply?.length > MIN_CHARACTER_COUNT;
+    this.content = this.args.composer?.reply || this.topicContent;
+    const showTrigger = this.content?.length > MIN_CHARACTER_COUNT;
 
     if (composerFields) {
       if (showTrigger) {
@@ -59,13 +75,13 @@ export default class AiTagSuggester extends Component {
     try {
       const { assistant } = await ajax("/discourse-ai/ai-helper/suggest_tags", {
         method: "POST",
-        data: { text: this.args.composer.reply },
+        data: { text: this.content},
       });
       this.suggestions = assistant;
-
+      const model = this.args.composer ? this.args.composer : this.args.buffered;
       if (this.#tagSelectorHasValues()) {
         this.suggestions = this.suggestions.filter(
-          (s) => !this.args.composer.tags.includes(s.name)
+          (s) => !mode.get("tags").includes(s.name)
         );
       }
 
@@ -104,18 +120,18 @@ export default class AiTagSuggester extends Component {
   @action
   applySuggestion(suggestion) {
     const maxTags = this.siteSettings.max_tags_per_topic;
-    const composer = this.args.composer;
-    if (!composer) {
+    const model = this.args.composer ? this.args.composer : this.args.buffered;
+    if (!model) {
       return;
     }
 
-    if (!composer.tags) {
-      composer.set("tags", [suggestion.name]);
+    const tags = model.get("tags");
+
+    if (!tags) {
+      model.set("tags", [suggestion.name]);
       this.#removedAppliedTag(suggestion);
       return;
     }
-
-    const tags = composer.tags;
 
     if (tags?.length >= maxTags) {
       return this.toasts.error({
@@ -130,7 +146,7 @@ export default class AiTagSuggester extends Component {
     }
 
     tags.push(suggestion.name);
-    composer.set("tags", [...tags]);
+    model.set("tags", [...tags]);
     suggestion.disabled = true;
     this.#removedAppliedTag(suggestion);
   }

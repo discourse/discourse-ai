@@ -257,6 +257,23 @@
   }
 }
 
+.edit-topic-title {
+  .suggestion-button {
+    margin: 0;
+    padding: 0.45rem;
+  }
+}
+
+#topic-title .edit-topic-title.showing-ai-suggestions {
+  #edit-title {
+    flex: 1 1 90%;
+  }
+
+  .suggest-titles-button {
+    padding: 0.5rem;
+  }
+}
+
 // Prevent suggestion button from wrapping
 #reply-control {
   .with-category .showing-ai-suggestions .category-input {

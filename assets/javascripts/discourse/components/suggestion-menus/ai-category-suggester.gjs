@@ -19,10 +19,26 @@ export default class AiCategorySuggester extends Component {
   @tracked suggestions = null;
   @tracked untriggers = [];
   @tracked triggerIcon = "discourse-sparkles";
+  @tracked content = null;
+  @tracked topicContent = null;
+
+  constructor() {
+    super(...arguments);
+    if (!this.topicContent && this.args.composer?.reply === undefined) {
+      this.fetchTopicContent();
+    }
+  }
+
+  async fetchTopicContent() {
+    await ajax(`/t/${this.args.buffered.content.id}.json`).then(({post_stream}) => {
+      this.topicContent = post_stream.posts[0].cooked;
+    });
+  }
 
   get showSuggestionButton() {
     const composerFields = document.querySelector(".composer-fields");
-    const showTrigger = this.args.composer.reply?.length > MIN_CHARACTER_COUNT;
+    this.content = this.args.composer?.reply || this.topicContent;
+    const showTrigger = this.content?.length > MIN_CHARACTER_COUNT;
 
     if (composerFields) {
       if (showTrigger) {
@@ -49,7 +65,7 @@ export default class AiCategorySuggester extends Component {
         "/discourse-ai/ai-helper/suggest_category",
         {
           method: "POST",
-          data: { text: this.args.composer.reply },
+          data: { text: this.content },
         }
       );
       this.suggestions = assistant;
@@ -66,12 +82,17 @@ export default class AiCategorySuggester extends Component {
   @action
   applySuggestion(suggestion) {
     const composer = this.args.composer;
-    if (!composer) {
-      return;
+    const buffered = this.args.buffered;
+    
+    if (composer) {
+      composer.set("categoryId", suggestion.id);
     }
 
-    composer.set("categoryId", suggestion.id);
-    this.dMenu.close();
+    if (buffered) {
+      this.args.buffered.set("category_id", suggestion.id);
+    }
+
+    return this.dMenu.close();
   }
 
   @action
