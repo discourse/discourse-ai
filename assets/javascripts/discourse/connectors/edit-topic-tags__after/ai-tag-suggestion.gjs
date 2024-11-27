@@ -13,8 +13,6 @@ export default class AiCategorySuggestion extends Component {
   }
 
   <template>
-    <AiTagSuggester
-      @buffered={{@outletArgs.buffered}}
-    />
+    <AiTagSuggester @buffered={{@outletArgs.buffered}} />
   </template>
 }

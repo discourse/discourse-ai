@@ -28,9 +28,11 @@ export default class AiTitleSuggester extends Component {
   }
 
   async fetchTopicContent() {
-    await ajax(`/t/${this.args.buffered.content.id}.json`).then(({post_stream}) => {
-      this.topicContent = post_stream.posts[0].cooked;
-    });
+    await ajax(`/t/${this.args.buffered.content.id}.json`).then(
+      ({ post_stream }) => {
+        this.topicContent = post_stream.posts[0].cooked;
+      }
+    );
   }
 
   get showSuggestionButton() {

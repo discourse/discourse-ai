@@ -31,9 +31,11 @@ export default class AiTagSuggester extends Component {
   }
 
   async fetchTopicContent() {
-    await ajax(`/t/${this.args.buffered.content.id}.json`).then(({post_stream}) => {
-      this.topicContent = post_stream.posts[0].cooked;
-    });
+    await ajax(`/t/${this.args.buffered.content.id}.json`).then(
+      ({ post_stream }) => {
+        this.topicContent = post_stream.posts[0].cooked;
+      }
+    );
   }
 
   get showSuggestionButton() {
@@ -75,13 +77,15 @@ export default class AiTagSuggester extends Component {
     try {
       const { assistant } = await ajax("/discourse-ai/ai-helper/suggest_tags", {
         method: "POST",
-        data: { text: this.content},
+        data: { text: this.content },
       });
       this.suggestions = assistant;
-      const model = this.args.composer ? this.args.composer : this.args.buffered;
+      const model = this.args.composer
+        ? this.args.composer
+        : this.args.buffered;
       if (this.#tagSelectorHasValues()) {
         this.suggestions = this.suggestions.filter(
-          (s) => !mode.get("tags").includes(s.name)
+          (s) => !model.get("tags").includes(s.name)
         );
       }
 

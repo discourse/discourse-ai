@@ -30,9 +30,11 @@ export default class AiCategorySuggester extends Component {
   }
 
   async fetchTopicContent() {
-    await ajax(`/t/${this.args.buffered.content.id}.json`).then(({post_stream}) => {
-      this.topicContent = post_stream.posts[0].cooked;
-    });
+    await ajax(`/t/${this.args.buffered.content.id}.json`).then(
+      ({ post_stream }) => {
+        this.topicContent = post_stream.posts[0].cooked;
+      }
+    );
   }
 
   get showSuggestionButton() {
@@ -83,7 +85,7 @@ export default class AiCategorySuggester extends Component {
   applySuggestion(suggestion) {
     const composer = this.args.composer;
     const buffered = this.args.buffered;
-    
+
     if (composer) {
       composer.set("categoryId", suggestion.id);
     }
