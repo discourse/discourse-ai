@@ -60,6 +60,31 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       )
     end
 
+    it "returns all prompts to be shown in the composer" do
+      prompts = subject.available_prompts(user)
+      filtered_prompts = prompts.select { |prompt| prompt[:location].include?("composer") }
+      expect(filtered_prompts.length).to eq(5)
+      expect(filtered_prompts.map { |p| p[:name] }).to contain_exactly(
+        "translate",
+        "generate_titles",
+        "proofread",
+        "markdown_table",
+        "custom_prompt",
+      )
+    end
+
+    it "returns all prompts to be shown in the post menu" do
+      prompts = subject.available_prompts(user)
+      filtered_prompts = prompts.select { |prompt| prompt[:location].include?("post") }
+      expect(filtered_prompts.length).to eq(4)
+      expect(filtered_prompts.map { |p| p[:name] }).to contain_exactly(
+        "translate",
+        "explain",
+        "proofread",
+        "custom_prompt",
+      )
+    end
+
     it "does not raise an error when effective_locale does not exactly match keys in LocaleSiteSetting" do
       SiteSetting.default_locale = "zh_CN"
       expect { subject.available_prompts(user) }.not_to raise_error
