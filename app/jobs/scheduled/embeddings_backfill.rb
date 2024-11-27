@@ -110,7 +110,7 @@ module Jobs
           .pluck(:id)
 
       outdated_post_ids.each_slice(posts_batch_size) do |batch|
-        vector_rep.gen_bulk_reprensentations(Post.where(id: batch).order("topics.bumped_at DESC"))
+        vector_rep.gen_bulk_reprensentations(Post.where(id: batch))
         rebaked += batch.length
       end
 
