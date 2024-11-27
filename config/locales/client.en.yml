@@ -133,10 +133,12 @@ en:
         tokens_over_time: "Tokens over time"
         features_breakdown: "Usage per feature"
         feature: "Feature"
-        usage_count: "Usage Count"
+        usage_count: "Usage count"
         model: "Model"
         models_breakdown: "Usage per model"
-        period: "Period"
+        all_features: "All features"
+        all_models: "All models"
+
 
       ai_persona:
         tool_strategies:

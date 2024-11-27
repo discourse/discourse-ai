@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { array } from "@ember/helper";
+import { hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DatePicker from "discourse/components/date-picker";
@@ -17,12 +17,6 @@ export default class AiUsage extends Component {
   @tracked selectedFeature;
   @tracked selectedModel;
   @tracked period = "day";
-
-  constructor() {
-    super(...arguments);
-    console.log(this.args.model);
-    console.log(this.data);
-  }
 
   @action
   async fetchData() {
@@ -48,20 +42,31 @@ export default class AiUsage extends Component {
     await this.fetchData();
   }
 
+  @action
+  onFeatureChanged(value) {
+    this.selectedFeature = value;
+    this.onFilterChange();
+  }
+
+  @action
+  onModelChanged(value) {
+    this.selectedModel = value;
+    this.onFilterChange();
+  }
+
   get chartConfig() {
-    console.log("here");
     if (!this.data?.data) {
       return;
     }
 
-    const x = {
+    return {
       type: "line",
       data: {
-        labels: this.data.data.map(pair => pair[0]),
+        labels: this.data.data.map((pair) => pair[0]),
         datasets: [
           {
             label: "Tokens",
-            data: this.data.data.map(pair => pair[1]),
+            data: this.data.data.map((pair) => pair[1]),
             fill: false,
             borderColor: "rgb(75, 192, 192)",
             tension: 0.1,
@@ -77,9 +82,20 @@ export default class AiUsage extends Component {
         },
       },
     };
+  }
 
-    console.log(x);
-    return x;
+  get availableFeatures() {
+    return (this.data?.features || []).map((f) => ({
+      id: f.feature_name,
+      name: f.feature_name,
+    }));
+  }
+
+  get availableModels() {
+    return (this.data?.models || []).map((m) => ({
+      id: m.llm,
+      name: m.llm,
+    }));
   }
 
   <template>
@@ -96,18 +112,25 @@ export default class AiUsage extends Component {
             @onChange={{this.onDateChange}}
             class="ai-usage__date-picker"
           />
-        </div>
 
-        <div class="ai-usage__filters-period">
-          <label class="ai-usage__period-label">
-            {{i18n "discourse_ai.usage.period"}}
-          </label>
-          <ComboBox
-            @value={{this.period}}
-            @content={{array "hour" "day" "month"}}
-            @onChange={{this.onFilterChange}}
-            class="ai-usage__period-selector"
-          />
+          <div class="ai-usage__filters-row">
+            <ComboBox
+              @value={{this.selectedFeature}}
+              @content={{this.availableFeatures}}
+              @onChange={{this.onFeatureChanged}}
+              @options={{hash none="discourse_ai.usage.all_features"}}
+              class="ai-usage__feature-selector"
+            />
+
+            <ComboBox
+              @value={{this.selectedModel}}
+              @content={{this.availableModels}}
+              @onChange={{this.onModelChanged}}
+              @options={{hash none="discourse_ai.usage.all_models"}}
+              class="ai-usage__model-selector"
+            />
+          </div>
+
         </div>
 
         {{#if this.data}}
@@ -126,7 +149,10 @@ export default class AiUsage extends Component {
               <h3 class="ai-usage__chart-title">
                 {{i18n "discourse_ai.usage.tokens_over_time"}}
               </h3>
-              <Chart @chartConfig={{this.chartConfig}} class="ai-usage__chart" />
+              <Chart
+                @chartConfig={{this.chartConfig}}
+                class="ai-usage__chart"
+              />
             </div>
 
             <div class="ai-usage__breakdowns">
