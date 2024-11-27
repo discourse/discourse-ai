@@ -85,6 +85,8 @@ export default class AiUsage extends Component {
   }
 
   get availableFeatures() {
+    // when you switch we don't want the list to change
+    // only when you switch durations
     this._cachedFeatures =
       this._cachedFeatures ||
       (this.data?.features || []).map((f) => ({
@@ -96,10 +98,14 @@ export default class AiUsage extends Component {
   }
 
   get availableModels() {
-    return (this.data?.models || []).map((m) => ({
-      id: m.llm,
-      name: m.llm,
-    }));
+    this._cachedModels =
+      this._cachedModels ||
+      (this.data?.models || []).map((m) => ({
+        id: m.llm,
+        name: m.llm,
+      }));
+
+    return this._cachedModels;
   }
 
   <template>
