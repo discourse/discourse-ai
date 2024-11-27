@@ -3,7 +3,6 @@ import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
-import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import DropdownMenu from "discourse/components/dropdown-menu";
 import { ajax } from "discourse/lib/ajax";
@@ -13,7 +12,6 @@ import DMenu from "float-kit/components/d-menu";
 import { MIN_CHARACTER_COUNT } from "../../lib/ai-helper-suggestions";
 
 export default class AiTitleSuggester extends Component {
-  @service siteSettings;
   @tracked loading = false;
   @tracked suggestions = null;
   @tracked untriggers = [];
@@ -31,7 +29,7 @@ export default class AiTitleSuggester extends Component {
       }
     }
 
-    return this.siteSettings.ai_embeddings_enabled && showTrigger;
+    return showTrigger;
   }
 
   @action
