@@ -83,6 +83,12 @@ export default class AiCategorySuggester extends Component {
 
   @action
   applySuggestion(suggestion) {
+    console.log(
+      "apply suggestion called",
+      suggestion,
+      this.args.composer,
+      this.args.buffered
+    );
     const composer = this.args.composer;
     const buffered = this.args.buffered;
 
@@ -118,6 +124,7 @@ export default class AiCategorySuggester extends Component {
           this.loading
           'is-loading'
         }}"
+        @contentClass="ai-suggestions-menu"
         @onRegisterApi={{this.onRegisterApi}}
         @modalForMobile={{true}}
         @untriggers={{this.untriggers}}
@@ -126,12 +133,12 @@ export default class AiCategorySuggester extends Component {
         <:content>
           {{#unless this.loading}}
             <DropdownMenu as |dropdown|>
-              {{#each this.suggestions as |suggestion|}}
+              {{#each this.suggestions as |suggestion index|}}
                 <dropdown.item>
                   <DButton
                     class="category-row"
-                    data-title={{suggestion.name}}
-                    data-value={{suggestion.id}}
+                    data-name={{suggestion.name}}
+                    data-value={{index}}
                     title={{suggestion.name}}
                     @action={{fn this.applySuggestion suggestion}}
                   >

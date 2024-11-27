@@ -182,6 +182,7 @@ export default class AiTagSuggester extends Component {
           this.loading
           'is-loading'
         }}"
+        @contentClass="ai-suggestions-menu"
         @onRegisterApi={{this.onRegisterApi}}
         @modalForMobile={{true}}
         @untriggers={{this.untriggers}}
@@ -190,12 +191,12 @@ export default class AiTagSuggester extends Component {
         <:content>
           {{#if this.showDropdown}}
             <DropdownMenu as |dropdown|>
-              {{#each this.suggestions as |suggestion|}}
+              {{#each this.suggestions as |suggestion index|}}
                 <dropdown.item>
                   <DButton
                     class="tag-row"
-                    data-title={{suggestion.name}}
-                    data-value={{suggestion.id}}
+                    data-name={{suggestion.name}}
+                    data-value={{index}}
                     title={{suggestion.name}}
                     @disabled={{this.isDisabled suggestion}}
                     @action={{fn this.applySuggestion suggestion}}

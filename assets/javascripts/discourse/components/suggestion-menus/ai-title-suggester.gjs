@@ -121,6 +121,7 @@ export default class AiTitleSuggester extends Component {
           this.loading
           'is-loading'
         }}"
+        @contentClass="ai-suggestions-menu"
         @onRegisterApi={{this.onRegisterApi}}
         @modalForMobile={{true}}
         @untriggers={{this.untriggers}}
@@ -129,10 +130,11 @@ export default class AiTitleSuggester extends Component {
         <:content>
           {{#unless this.loading}}
             <DropdownMenu as |dropdown|>
-              {{#each this.suggestions as |suggestion|}}
+              {{#each this.suggestions as |suggestion index|}}
                 <dropdown.item>
                   <DButton
-                    data-title={{suggestion}}
+                    data-name={{suggestion}}
+                    data-value={{index}}
                     title={{suggestion}}
                     @action={{fn this.applySuggestion suggestion}}
                   >
