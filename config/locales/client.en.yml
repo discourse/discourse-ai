@@ -113,6 +113,9 @@ en:
             flag_post:
               label: "Flag post"
               description: "Flags post (either as spam or for review)"
+            include_personal_messages:
+              label: "Include personal messages"
+              description: "Also scan and triage personal messages"
             model:
               label: "Model"
               description: "Language model used for triage"
