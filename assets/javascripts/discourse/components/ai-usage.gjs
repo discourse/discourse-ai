@@ -85,10 +85,14 @@ export default class AiUsage extends Component {
   }
 
   get availableFeatures() {
-    return (this.data?.features || []).map((f) => ({
-      id: f.feature_name,
-      name: f.feature_name,
-    }));
+    this._cachedFeatures =
+      this._cachedFeatures ||
+      (this.data?.features || []).map((f) => ({
+        id: f.feature_name,
+        name: f.feature_name,
+      }));
+
+    return this._cachedFeatures;
   }
 
   get availableModels() {
