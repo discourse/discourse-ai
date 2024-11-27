@@ -22,6 +22,7 @@ if defined?(DiscourseAutomation)
     field :tags, component: :tags
     field :hide_topic, component: :boolean
     field :flag_post, component: :boolean
+    field :include_personal_messages, component: :boolean
     field :flag_type,
           component: :choices,
           required: false,
@@ -53,6 +54,11 @@ if defined?(DiscourseAutomation)
       max_post_tokens = fields.dig("max_post_tokens", "value").to_i
 
       max_post_tokens = nil if max_post_tokens <= 0
+
+      if post.topic.private_message?
+        include_personal_messages = fields.dig("include_personal_messages", "value")
+        next if !include_personal_messages
+      end
 
       begin
         RateLimiter.new(

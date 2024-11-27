@@ -5,6 +5,8 @@ return if !defined?(DiscourseAutomation)
 describe DiscourseAi::Automation::LlmTriage do
   fab!(:category)
   fab!(:reply_user) { Fabricate(:user) }
+  fab!(:personal_message) { Fabricate(:private_message_topic) }
+  let(:canned_reply_text) { "Hello, this is a reply" }
 
   let(:automation) { Fabricate(:automation, script: "llm_triage", enabled: true) }
 
@@ -30,7 +32,7 @@ describe DiscourseAi::Automation::LlmTriage do
     add_automation_field("tags", %w[aaa bbb], type: "tags")
     add_automation_field("hide_topic", true, type: "boolean")
     add_automation_field("flag_post", true, type: "boolean")
-    add_automation_field("canned_reply", "Yo this is a reply")
+    add_automation_field("canned_reply", canned_reply_text)
     add_automation_field("canned_reply_user", reply_user.username, type: "user")
     add_automation_field("max_post_tokens", 100)
   end
@@ -63,7 +65,7 @@ describe DiscourseAi::Automation::LlmTriage do
     expect(topic.tags.pluck(:name)).to contain_exactly("aaa", "bbb")
     expect(topic.visible).to eq(false)
     reply = topic.posts.order(:post_number).last
-    expect(reply.raw).to eq("Yo this is a reply")
+    expect(reply.raw).to eq(canned_reply_text)
     expect(reply.user.id).to eq(reply_user.id)
 
     ai_log = AiApiAuditLog.order("id desc").first
@@ -77,6 +79,30 @@ describe DiscourseAi::Automation::LlmTriage do
     # as we change tokenizers, this will give us reasonable confidence
     expect(count).to be <= (100)
     expect(count).to be > (50)
+  end
+
+  it "does not triage PMs by default" do
+    post = Fabricate(:post, topic: personal_message)
+    automation.running_in_background!
+    automation.trigger!({ "post" => post })
+
+    # nothing should happen, no classification, its a PM
+  end
+
+  it "will triage PMs if automation allows it" do
+    # needs to be admin or it will not be able to just step in to
+    # PM
+    reply_user.update!(admin: true)
+    add_automation_field("include_personal_messages", true, type: :boolean)
+    post = Fabricate(:post, topic: personal_message)
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      automation.running_in_background!
+      automation.trigger!({ "post" => post })
+    end
+
+    last_post = post.topic.reload.posts.order(:post_number).last
+    expect(last_post.raw).to eq(canned_reply_text)
   end
 
   it "does not reply to the canned_reply_user" do
