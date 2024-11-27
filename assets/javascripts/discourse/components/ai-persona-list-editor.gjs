@@ -1,6 +1,4 @@
 import Component from "@glimmer/component";
-import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
-import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
@@ -10,9 +8,8 @@ import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import concatClass from "discourse/helpers/concat-class";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { cook } from "discourse/lib/text";
 import i18n from "discourse-common/helpers/i18n";
-import I18n from "discourse-i18n";
+import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
 import AdminPageSubheader from "admin/components/admin-page-subheader";
 import AiPersonaEditor from "./ai-persona-editor";
 
@@ -108,7 +105,7 @@ export default class AiPersonaListEditor extends Component {
           <AdminConfigAreaEmptyList
             @ctaLabel="discourse_ai.ai_persona.new"
             @ctaRoute="adminPlugins.show.discourse-ai-personas.new"
-            @ctaClass="ai-persona-list-editor__new-button"
+            @ctaClass="ai-persona-list-editor__empty-new-button"
             @emptyLabel="discourse_ai.ai_persona.no_personas"
           />
         {{/if}}

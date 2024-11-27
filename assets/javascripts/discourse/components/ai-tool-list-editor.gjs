@@ -1,10 +1,10 @@
 import Component from "@glimmer/component";
-import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
+import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
 import AdminPageSubheader from "admin/components/admin-page-subheader";
 
 export default class AiToolListEditor extends Component {
@@ -45,9 +45,6 @@ export default class AiToolListEditor extends Component {
               >
                 <td class="d-admin-row__overview">
                   <div class="ai-tool-list__name-with-description">
-                    <div class="d-admin-row__mobile-label">
-                      {{i18n "discourse_ai.tools.name"}}
-                    </div>
                     <div class="ai-tool-list__name">
                       <strong>
                         {{tool.name}}
@@ -73,7 +70,7 @@ export default class AiToolListEditor extends Component {
         <AdminConfigAreaEmptyList
           @ctaLabel="discourse_ai.tools.new"
           @ctaRoute="adminPlugins.show.discourse-ai-tools.new"
-          @ctaClass="ai-tool-list-editor__new-button"
+          @ctaClass="ai-tool-list-editor__empty-new-button"
           @emptyLabel="discourse_ai.tools.no_tools"
         />
       {{/if}}

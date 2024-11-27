@@ -11,7 +11,7 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
 
   it "allows creation of a persona" do
     visit "/admin/plugins/discourse-ai/ai-personas"
-    find(".ai-persona-list-editor__header .btn-primary").click()
+    find(".ai-persona-list-editor__new-button").click()
     find(".ai-persona-editor__name").set("Test Persona")
     find(".ai-persona-editor__description").fill_in(with: "I am a test persona")
     find(".ai-persona-editor__system_prompt").fill_in(with: "You are a helpful bot")

@@ -4,7 +4,6 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
-import icon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 import AdminPageSubheader from "admin/components/admin-page-subheader";
@@ -142,9 +141,6 @@ export default class AiLlmsListEditor extends Component {
                     class="ai-llm-list__row d-admin-row__content"
                   >
                     <td class="d-admin-row__overview">
-                      <div class="d-admin-row__mobile-label">
-                        {{i18n "discourse_ai.llms.display_name"}}
-                      </div>
                       <h3>{{llm.display_name}}</h3>
                       <p>
                         {{this.modelDescription llm}}
@@ -168,7 +164,7 @@ export default class AiLlmsListEditor extends Component {
                     <td class="d-admin-row__controls">
                       <LinkTo
                         @route="adminPlugins.show.discourse-ai-llms.show"
-                        class="btn btn-default btn-small"
+                        class="btn btn-default btn-small ai-llm-list__edit-button"
                         @model={{llm.id}}
                       >
                         <div class="d-button-label">

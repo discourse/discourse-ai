@@ -76,14 +76,14 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     it "shows the provider as CDCK in the UI" do
       visit "/admin/plugins/discourse-ai/ai-llms"
       expect(page).to have_css(
-        "[data-llm-id='cdck-hosted'] .column-provider",
+        "[data-llm-id='cdck-hosted']",
         text: I18n.t("js.discourse_ai.llms.providers.CDCK"),
       )
     end
 
     it "shows an info alert to the user about the seeded LLM" do
       visit "/admin/plugins/discourse-ai/ai-llms"
-      find("[data-llm-id='#{llm_model.name}'] .column-edit .btn").click()
+      find("[data-llm-id='#{llm_model.name}'] .ai-llm-list__edit-button").click()
       expect(page).to have_css(
         ".alert.alert-info",
         text: I18n.t("js.discourse_ai.llms.seeded_warning"),
@@ -92,7 +92,7 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
 
     it "limits and shows disabled inputs for the seeded LLM" do
       visit "/admin/plugins/discourse-ai/ai-llms"
-      find("[data-llm-id='cdck-hosted'] .column-edit .btn").click()
+      find("[data-llm-id='cdck-hosted'] .ai-llm-list__edit-button").click()
       expect(page).to have_css(".ai-llm-editor__display-name[disabled]")
       expect(page).to have_css(".ai-llm-editor__name[disabled]")
       expect(page).to have_css(".ai-llm-editor__provider.is-disabled")
