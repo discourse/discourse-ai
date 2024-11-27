@@ -141,10 +141,14 @@ export default class AiLlmsListEditor extends Component {
                     class="ai-llm-list__row d-admin-row__content"
                   >
                     <td class="d-admin-row__overview">
-                      <h3>{{llm.display_name}}</h3>
-                      <p>
+                      <div class="ai-llm-list__name">
+                        <strong>
+                          {{llm.display_name}}
+                        </strong>
+                      </div>
+                      <div class="ai-llm-list__description">
                         {{this.modelDescription llm}}
-                      </p>
+                      </div>
                       {{#if llm.used_by}}
                         <ul class="ai-llm-list-editor__usages">
                           {{#each llm.used_by as |usage|}}
