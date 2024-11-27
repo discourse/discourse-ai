@@ -83,17 +83,12 @@ export default class AiCategorySuggester extends Component {
 
   @action
   applySuggestion(suggestion) {
-    console.log(
-      "apply suggestion called",
-      suggestion,
-      this.args.composer,
-      this.args.buffered
-    );
     const composer = this.args.composer;
     const buffered = this.args.buffered;
 
     if (composer) {
       composer.set("categoryId", suggestion.id);
+      composer.get("categoryId");
     }
 
     if (buffered) {
