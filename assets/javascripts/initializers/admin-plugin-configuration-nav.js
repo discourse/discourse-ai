@@ -24,6 +24,10 @@ export default {
           label: "discourse_ai.tools.short_title",
           route: "adminPlugins.show.discourse-ai-tools",
         },
+        {
+          label: "discourse_ai.usage.short_title",
+          route: "adminPlugins.show.discourse-ai-usage",
+        },
       ]);
     });
   },

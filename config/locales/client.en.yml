@@ -126,6 +126,9 @@ en:
       modals:
         select_option: "Select an option..."
 
+      usage:
+        short_title: "Usage"
+
       ai_persona:
         tool_strategies:
           all: "Apply to all replies"
