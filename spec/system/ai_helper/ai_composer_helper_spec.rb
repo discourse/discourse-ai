@@ -15,7 +15,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:composer) { PageObjects::Components::Composer.new }
   let(:ai_helper_menu) { PageObjects::Components::AiComposerHelperMenu.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
-  let(:ai_suggestion_dropdown) { PageObjects::Components::AISuggestionDropdown.new }
+  let(:ai_suggestion_dropdown) { PageObjects::Components::AiSuggestionDropdown.new }
   let(:toasts) { PageObjects::Components::Toasts.new }
 
   fab!(:category)
@@ -236,20 +236,26 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       response =
         Category
           .take(3)
-          .pluck(:slug)
-          .map { |s| { name: s, score: rand(0.0...45.0) } }
-          .sort { |h| h[:score] }
+          .map do |category|
+            {
+              id: category.id,
+              name: category.name,
+              slug: category.slug,
+              color: category.color,
+              score: rand(0.0...45.0),
+              topicCount: rand(1..3),
+            }
+          end
+          .sort_by { |h| h[:score] }
       DiscourseAi::AiHelper::SemanticCategorizer.any_instance.stubs(:categories).returns(response)
       visit("/latest")
       page.find("#create-topic").click
       composer.fill_content(input)
       ai_suggestion_dropdown.click_suggest_category_button
       wait_for { ai_suggestion_dropdown.has_dropdown? }
-
       suggestion = category_2.name
-      ai_suggestion_dropdown.select_suggestion_by_name(category_2.slug)
+      ai_suggestion_dropdown.select_suggestion_by_name(suggestion)
       category_selector = page.find(".category-chooser summary")
-
       expect(category_selector["data-name"]).to eq(suggestion)
     end
   end

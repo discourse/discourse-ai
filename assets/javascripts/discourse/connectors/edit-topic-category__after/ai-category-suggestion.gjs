@@ -1,8 +1,8 @@
 import Component from "@glimmer/component";
-import AiTitleSuggester from "../../components/suggestion-menus/ai-title-suggester";
+import AiCategorySuggester from "../../components/suggestion-menus/ai-category-suggester";
 import { showComposerAiHelper } from "../../lib/show-ai-helper";
 
-export default class AiTitleSuggestion extends Component {
+export default class AiCategorySuggestion extends Component {
   static shouldRender(outletArgs, helper) {
     return showComposerAiHelper(
       outletArgs?.composer,
@@ -13,6 +13,6 @@ export default class AiTitleSuggestion extends Component {
   }
 
   <template>
-    <AiTitleSuggester @composer={{@outletArgs.composer}} />
+    <AiCategorySuggester @buffered={{@outletArgs.buffered}} />
   </template>
 }

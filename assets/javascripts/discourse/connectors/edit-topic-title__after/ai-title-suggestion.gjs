@@ -13,6 +13,6 @@ export default class AiTitleSuggestion extends Component {
   }
 
   <template>
-    <AiTitleSuggester @composer={{@outletArgs.composer}} />
+    <AiTitleSuggester @buffered={{@outletArgs.buffered}} />
   </template>
 }
