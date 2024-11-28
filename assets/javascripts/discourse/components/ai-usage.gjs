@@ -51,29 +51,84 @@ export default class AiUsage extends Component {
     this.onFilterChange();
   }
 
+  normalizeTimeSeriesData(data) {
+    if (!data?.length) {
+      return [];
+    }
+
+    const startDate = moment(this.startDate).startOf("day");
+    const endDate = moment(this.endDate).endOf("day");
+    const normalized = [];
+
+    // Create a map of existing data points
+    const dataMap = new Map(
+      data.map((d) => [moment(d.period).format("YYYY-MM-DD"), d])
+    );
+
+    // Fill in all days
+    for (
+      let m = moment(startDate);
+      m.isSameOrBefore(endDate);
+      m.add(1, "days")
+    ) {
+      const dateKey = m.format("YYYY-MM-DD");
+      const existingData = dataMap.get(dateKey);
+
+      normalized.push(
+        existingData || {
+          period: m.format(),
+          total_tokens: 0,
+          total_cached_tokens: 0,
+          total_request_tokens: 0,
+          total_response_tokens: 0,
+        }
+      );
+    }
+
+    return normalized;
+  }
+
+  // Then modify the chartConfig getter to use this normalized data:
   get chartConfig() {
     if (!this.data?.data) {
       return;
     }
 
+    const normalizedData = this.normalizeTimeSeriesData(this.data.data);
+
     return {
-      type: "line",
+      type: "bar",
       data: {
-        labels: this.data.data.map((row) => row.period),
+        labels: normalizedData.map((row) => {
+          const date = moment(row.period);
+          return date.format("DD-MMM");
+        }),
         datasets: [
           {
-            label: "Tokens",
-            data: this.data.data.map((row) => row.total_tokens),
-            fill: false,
-            borderColor: "rgb(75, 192, 192)",
-            tension: 0.1,
+            label: "Response Tokens",
+            data: normalizedData.map((row) => row.total_response_tokens),
+            backgroundColor: "rgba(75, 192, 192, 0.8)",
+          },
+          {
+            label: "Request Tokens",
+            data: normalizedData.map((row) => row.total_request_tokens),
+            backgroundColor: "rgba(153, 102, 255, 0.8)",
+          },
+          {
+            label: "Cached Tokens",
+            data: normalizedData.map((row) => row.total_cached_tokens),
+            backgroundColor: "rgba(255, 159, 64, 0.8)",
           },
         ],
       },
       options: {
         responsive: true,
         scales: {
+          x: {
+            stacked: true,
+          },
           y: {
+            stacked: true,
             beginAtZero: true,
           },
         },

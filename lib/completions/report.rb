@@ -28,35 +28,44 @@ module DiscourseAi
 
       def tokens_by_period(period = nil)
         period = guess_period(period)
-        base_query.group("DATE_TRUNC('#{period}', created_at)").select(
-          "DATE_TRUNC('#{period}', created_at) as period",
-          "SUM(request_tokens + response_tokens) as total_tokens",
-          "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
-          "SUM(request_tokens) as total_request_tokens",
-          "SUM(response_tokens) as total_response_tokens",
-        )
+        base_query
+          .group("DATE_TRUNC('#{period}', created_at)")
+          .order("DATE_TRUNC('#{period}', created_at)")
+          .select(
+            "DATE_TRUNC('#{period}', created_at) as period",
+            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
+            "SUM(request_tokens) as total_request_tokens",
+            "SUM(response_tokens) as total_response_tokens",
+          )
       end
 
       def feature_breakdown
-        base_query.group(:feature_name).select(
-          "feature_name",
-          "COUNT(*) as usage_count",
-          "SUM(request_tokens + response_tokens) as total_tokens",
-          "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
-          "SUM(request_tokens) as total_request_tokens",
-          "SUM(response_tokens) as total_response_tokens",
-        )
+        base_query
+          .group(:feature_name)
+          .order("usage_count DESC")
+          .select(
+            "feature_name",
+            "COUNT(*) as usage_count",
+            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
+            "SUM(request_tokens) as total_request_tokens",
+            "SUM(response_tokens) as total_response_tokens",
+          )
       end
 
       def model_breakdown
-        base_query.group(:language_model).select(
-          "language_model as llm",
-          "COUNT(*) as usage_count",
-          "SUM(request_tokens + response_tokens) as total_tokens",
-          "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
-          "SUM(request_tokens) as total_request_tokens",
-          "SUM(response_tokens) as total_response_tokens",
-        )
+        base_query
+          .group(:language_model)
+          .order("usage_count DESC")
+          .select(
+            "language_model as llm",
+            "COUNT(*) as usage_count",
+            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
+            "SUM(request_tokens) as total_request_tokens",
+            "SUM(response_tokens) as total_response_tokens",
+          )
       end
 
       def tokens_per_hour
