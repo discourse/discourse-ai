@@ -11,7 +11,7 @@ RSpec.describe DiscourseAi::AiHelper::SemanticCategorizer do
     )
   end
   fab!(:muted_topic) { Fabricate(:topic, category: muted_category) }
-  fab!(:category) { Fabricate(:category) }
+  fab!(:category)
   fab!(:topic) { Fabricate(:topic, category: category) }
 
   let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
