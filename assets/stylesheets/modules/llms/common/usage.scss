@@ -44,6 +44,16 @@
     gap: 1em;
   }
 
+  .d-date-time-input-range {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+  }
+
+  .d-date-time-input-range .from {
+    margin: 0;
+  }
+
   &__period-label {
     font-weight: bold;
   }

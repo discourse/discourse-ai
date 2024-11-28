@@ -5,7 +5,7 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { eq } from "truth-helpers";
-import DatePicker from "discourse/components/date-picker";
+import DateTimeInputRange from "discourse/components/date-time-input-range";
 import { ajax } from "discourse/lib/ajax";
 import i18n from "discourse-common/helpers/i18n";
 import Chart from "admin/components/chart";
@@ -224,14 +224,29 @@ export default class AiUsage extends Component {
 
   @action
   onCustomDateClick() {
-    this.isCustomDateActive = true;
-    this.selectedPeriod = null;
+    this.isCustomDateActive = !this.isCustomDateActive;
+    if (this.isCustomDateActive) {
+      this.selectedPeriod = null;
+    }
   }
 
   @action
   onDateChange() {
     this.isCustomDateActive = true;
     this.selectedPeriod = null;
+    this.fetchData();
+  }
+
+  @action
+  onChangeDateRange({ from, to }) {
+    this._startDate = from;
+    this._endDate = to;
+  }
+
+  @action
+  onRefreshDateRange() {
+    this.startDate = this._startDate;
+    this.endDate = this._endDate;
     this.fetchData();
   }
 
@@ -267,16 +282,22 @@ export default class AiUsage extends Component {
 
           {{#if this.isCustomDateActive}}
             <div class="ai-usage__custom-date-pickers">
-              <DatePicker
-                @value={{this.startDate}}
-                @onChange={{this.onDateChange}}
-                class="ai-usage__date-picker"
+
+              <DateTimeInputRange
+                @from={{this.startDate}}
+                @to={{this.endDate}}
+                @onChange={{this.onChangeDateRange}}
+                @showFromTime={{false}}
+                @showToTime={{false}}
               />
-              <DatePicker
-                @value={{this.endDate}}
-                @onChange={{this.onDateChange}}
-                class="ai-usage__date-picker"
-              />
+
+              <button
+                type="button"
+                class="btn btn-default"
+                {{on "click" this.onRefreshDateRange}}
+              >
+                {{i18n "refresh"}}
+              </button>
             </div>
           {{/if}}
         </div>
