@@ -23,10 +23,9 @@ class AiSummary < ActiveRecord::Base
         },
         unique_by: %i[target_id target_type summary_type],
         update_only: %i[summarized_text original_content_sha algorithm origin content_range],
-        returning: AiSummary.column_names,
       )
       .first
-      .then { OpenStruct.new(_1) }
+      .then { AiSummary.find_by(id: _1["id"]) }
   end
 
   def self.build_sha(joined_ids)
