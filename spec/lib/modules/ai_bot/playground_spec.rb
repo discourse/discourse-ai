@@ -829,8 +829,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "updates the title using bot suggestions" do
       DiscourseAi::Completions::Llm.with_prepared_responses([expected_response]) do
-        playground.title_playground(third_post)
-
+        playground.title_playground(third_post, user)
         expect(pm.reload.title).to eq(expected_response)
       end
     end

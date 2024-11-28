@@ -22,7 +22,7 @@ module DiscourseAi
       attr_reader :bot_user
       attr_accessor :persona
 
-      def get_updated_title(conversation_context, post)
+      def get_updated_title(conversation_context, post, user)
         system_insts = <<~TEXT.strip
         You are titlebot. Given a conversation, you will suggest a title.
 
@@ -61,7 +61,7 @@ module DiscourseAi
 
         DiscourseAi::Completions::Llm
           .proxy(model)
-          .generate(title_prompt, user: post.user, feature_name: "bot_title")
+          .generate(title_prompt, user: user, feature_name: "bot_title")
           .strip
           .split("\n")
           .last
