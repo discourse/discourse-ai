@@ -50,18 +50,41 @@
 
   &__summary {
     margin: 2em 0;
-    padding: 1em;
+    padding: 1.5em;
     background: var(--primary-very-low);
     border-radius: 0.5em;
   }
 
   &__summary-title {
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
+    color: var(--primary);
+    font-size: 1.2em;
   }
 
-  &__summary-tokens {
-    font-size: 1.2em;
-    font-weight: bold;
+  &__summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1em;
+  }
+
+  &__summary-stat {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    background: var(--secondary);
+    border-radius: 0.25em;
+
+    .label {
+      color: var(--primary-medium);
+      font-size: 0.875em;
+      margin-bottom: 0.5em;
+    }
+
+    .value {
+      color: var(--primary);
+      font-size: 1.5em;
+      font-weight: bold;
+    }
   }
 
   &__charts {

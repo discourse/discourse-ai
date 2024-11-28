@@ -56,22 +56,32 @@ export default class AiUsage extends Component {
       return [];
     }
 
-    const startDate = moment(this.startDate).startOf("day");
-    const endDate = moment(this.endDate).endOf("day");
+    const startDate = moment(this.startDate);
+    const endDate = moment(this.endDate);
     const normalized = [];
+    let interval;
+    let format;
 
-    // Create a map of existing data points
+    if (this.data.period === "hour") {
+      interval = "hour";
+      format = "YYYY-MM-DD HH:00:00";
+    } else if (this.data.period === "day") {
+      interval = "day";
+      format = "YYYY-MM-DD";
+    } else {
+      interval = "month";
+      format = "YYYY-MM";
+    }
     const dataMap = new Map(
-      data.map((d) => [moment(d.period).format("YYYY-MM-DD"), d])
+      data.map((d) => [moment(d.period).format(format), d])
     );
 
-    // Fill in all days
     for (
       let m = moment(startDate);
       m.isSameOrBefore(endDate);
-      m.add(1, "days")
+      m.add(1, interval)
     ) {
-      const dateKey = m.format("YYYY-MM-DD");
+      const dateKey = m.format(format);
       const existingData = dataMap.get(dateKey);
 
       normalized.push(
@@ -109,7 +119,13 @@ export default class AiUsage extends Component {
       data: {
         labels: normalizedData.map((row) => {
           const date = moment(row.period);
-          return date.format("DD-MMM");
+          if (this.data.period === "hour") {
+            return date.format("HH:00");
+          } else if (this.data.period === "day") {
+            return date.format("DD-MMM");
+          } else {
+            return date.format("MMM-YY");
+          }
         }),
         datasets: [
           {
@@ -288,9 +304,43 @@ export default class AiUsage extends Component {
             <h3 class="ai-usage__summary-title">
               {{i18n "discourse_ai.usage.summary"}}
             </h3>
-            <div class="ai-usage__summary-tokens">
-              {{i18n "discourse_ai.usage.total_tokens"}}:
-              {{this.data.summary.total_tokens}}
+            <div class="ai-usage__summary-stats">
+              <div class="ai-usage__summary-stat">
+                <span class="label">{{i18n
+                    "discourse_ai.usage.total_requests"
+                  }}</span>
+                <span class="value">{{this.data.summary.total_requests}}</span>
+              </div>
+              <div class="ai-usage__summary-stat">
+                <span class="label">{{i18n
+                    "discourse_ai.usage.total_tokens"
+                  }}</span>
+                <span class="value">{{this.data.summary.total_tokens}}</span>
+              </div>
+              <div class="ai-usage__summary-stat">
+                <span class="label">{{i18n
+                    "discourse_ai.usage.request_tokens"
+                  }}</span>
+                <span
+                  class="value"
+                >{{this.data.summary.total_request_tokens}}</span>
+              </div>
+              <div class="ai-usage__summary-stat">
+                <span class="label">{{i18n
+                    "discourse_ai.usage.response_tokens"
+                  }}</span>
+                <span
+                  class="value"
+                >{{this.data.summary.total_response_tokens}}</span>
+              </div>
+              <div class="ai-usage__summary-stat">
+                <span class="label">{{i18n
+                    "discourse_ai.usage.cached_tokens"
+                  }}</span>
+                <span
+                  class="value"
+                >{{this.data.summary.total_cached_tokens}}</span>
+              </div>
             </div>
           </div>
 
@@ -322,9 +372,7 @@ export default class AiUsage extends Component {
                   <tbody>
                     {{#each this.data.users as |user|}}
                       <tr class="ai-usage__users-row">
-                        <td
-                          class="ai-usage__users-cell"
-                        >{{user.username}}</td>
+                        <td class="ai-usage__users-cell">{{user.username}}</td>
                         <td
                           class="ai-usage__users-cell"
                         >{{user.usage_count}}</td>

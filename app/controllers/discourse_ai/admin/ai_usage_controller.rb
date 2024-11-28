@@ -22,17 +22,6 @@ module DiscourseAi
         report = report.filter_by_model(params[:model]) if params[:model].present?
         report
       end
-
-      def time_series_data(report)
-        case params[:period]
-        when "hour"
-          report.tokens_per_hour
-        when "month"
-          report.tokens_per_month
-        else
-          report.tokens_per_day
-        end
-      end
     end
   end
 end

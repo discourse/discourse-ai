@@ -13,16 +13,45 @@ module DiscourseAi
       end
 
       def total_tokens
-        base_query.sum("request_tokens + response_tokens")
+        stats.total_tokens
       end
 
-      def guess_period(period)
+      def total_cached_tokens
+        stats.total_cached_tokens
+      end
+
+      def total_request_tokens
+        stats.total_request_tokens
+      end
+
+      def total_response_tokens
+        stats.total_response_tokens
+      end
+
+      def total_requests
+        stats.total_requests
+      end
+
+      def stats
+        @stats ||=
+          base_query.select(
+            "COUNT(*) as total_requests",
+            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
+            "SUM(request_tokens) as total_request_tokens",
+            "SUM(response_tokens) as total_response_tokens",
+          )[
+            0
+          ]
+      end
+
+      def guess_period(period = nil)
         period = nil if %i[day month hour].include?(period)
         period ||
           case @end_date - @start_date
-          when 0..7.days
+          when 0..3.days
             :hour
-          when 7.days..90.days
+          when 3.days..90.days
             :day
           else
             :month

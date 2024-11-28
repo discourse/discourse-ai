@@ -140,6 +140,10 @@ en:
         all_features: "All features"
         all_models: "All models"
         username: "Username"
+        total_requests: "Total requests"
+        request_tokens: "Request tokens"
+        response_tokens: "Response tokens"
+        cached_tokens: "Cached tokens"
 
 
       ai_persona:

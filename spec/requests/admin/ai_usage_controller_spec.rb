@@ -48,11 +48,7 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
       end
 
       it "respects date filters" do
-        get usage_path,
-            params: {
-              start_date: 3.days.ago.to_date,
-              end_date: 1.day.ago.to_date,
-            }
+        get usage_path, params: { start_date: 3.days.ago.to_date, end_date: 1.day.ago.to_date }
 
         json = response.parsed_body
         expect(json["summary"]["total_tokens"]).to eq(450) # sum of all tokens
@@ -85,6 +81,38 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
 
         get usage_path, params: { period: "month" }
         expect(response.status).to eq(200)
+      end
+    end
+
+    # spec/requests/admin/ai_usage_controller_spec.rb
+    context "with hourly data" do
+      before do
+        freeze_time Time.parse("2021-02-01 00:00:00")
+        # Create data points across different hours
+        [23.hours.ago, 22.hours.ago, 21.hours.ago, 20.hours.ago].each do |time|
+          AiApiAuditLog.create!(
+            provider_id: 1,
+            feature_name: "summarize",
+            language_model: "gpt-4",
+            request_tokens: 100,
+            response_tokens: 50,
+            created_at: time,
+          )
+        end
+      end
+
+      it "returns hourly data when period is day" do
+        get usage_path, params: { start_date: 1.day.ago.to_date, end_date: Time.current.to_date }
+
+        expect(response.status).to eq(200)
+        json = response.parsed_body
+
+        expect(json["data"].length).to eq(4)
+
+        data_by_hour = json["data"].index_by { |d| Time.parse(d["period"]).hour }
+
+        expect(data_by_hour.keys.length).to eq(4)
+        expect(data_by_hour.first[1]["total_tokens"]).to eq(150)
       end
     end
   end
