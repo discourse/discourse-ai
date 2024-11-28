@@ -9,8 +9,8 @@ class AiSummary < ActiveRecord::Base
   def self.store!(strategy, llm_model, summary, og_content, human:)
     content_ids = og_content.map { |c| c[:id] }
 
-    result =
-      AiSummary.upsert(
+    AiSummary
+      .upsert(
         {
           target_id: strategy.target.id,
           target_type: strategy.target.class.name,
@@ -25,8 +25,8 @@ class AiSummary < ActiveRecord::Base
         update_only: %i[summarized_text original_content_sha algorithm origin content_range],
         returning: AiSummary.column_names,
       )
-
-    OpenStruct.new(result.first)
+      .first
+      .then { OpenStruct.new(_1) }
   end
 
   def self.build_sha(joined_ids)
