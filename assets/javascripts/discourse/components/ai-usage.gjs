@@ -59,11 +59,11 @@ export default class AiUsage extends Component {
     return {
       type: "line",
       data: {
-        labels: this.data.data.map((pair) => pair[0]),
+        labels: this.data.data.map((row) => row.period),
         datasets: [
           {
             label: "Tokens",
-            data: this.data.data.map((pair) => pair[1]),
+            data: this.data.data.map((row) => row.total_tokens),
             fill: false,
             borderColor: "rgb(75, 192, 192)",
             tension: 0.1,

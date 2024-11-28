@@ -28,8 +28,12 @@ module DiscourseAi
 
       def tokens_by_period(period = nil)
         period = guess_period(period)
-        base_query.group("DATE_TRUNC('#{period}', created_at)").sum(
-          "request_tokens + response_tokens",
+        base_query.group("DATE_TRUNC('#{period}', created_at)").select(
+          "DATE_TRUNC('#{period}', created_at) as period",
+          "SUM(request_tokens + response_tokens) as total_tokens",
+          "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
+          "SUM(request_tokens) as total_request_tokens",
+          "SUM(response_tokens) as total_response_tokens",
         )
       end
 
@@ -38,6 +42,9 @@ module DiscourseAi
           "feature_name",
           "COUNT(*) as usage_count",
           "SUM(request_tokens + response_tokens) as total_tokens",
+          "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
+          "SUM(request_tokens) as total_request_tokens",
+          "SUM(response_tokens) as total_response_tokens",
         )
       end
 
@@ -46,6 +53,9 @@ module DiscourseAi
           "language_model as llm",
           "COUNT(*) as usage_count",
           "SUM(request_tokens + response_tokens) as total_tokens",
+          "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
+          "SUM(request_tokens) as total_request_tokens",
+          "SUM(response_tokens) as total_response_tokens",
         )
       end
 

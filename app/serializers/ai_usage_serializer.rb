@@ -4,15 +4,35 @@ class AiUsageSerializer < ApplicationSerializer
   attributes :data, :features, :models, :summary
 
   def data
-    object.tokens_by_period.map {|key, value| [key, value]}
+    object.tokens_by_period.as_json(
+      only: %i[period total_tokens total_cached_tokens total_request_tokens total_response_tokens],
+    )
   end
 
   def features
-    object.feature_breakdown.as_json(only: %i[feature_name usage_count total_tokens])
+    object.feature_breakdown.as_json(
+      only: %i[
+        feature_name
+        usage_count
+        total_tokens
+        total_cached_tokens
+        total_request_tokens
+        total_response_tokens
+      ],
+    )
   end
 
   def models
-    object.model_breakdown.as_json(only: %i[llm usage_count total_tokens])
+    object.model_breakdown.as_json(
+      only: %i[
+        llm
+        usage_count
+        total_tokens
+        total_cached_tokens
+        total_request_tokens
+        total_response_tokens
+      ],
+    )
   end
 
   def summary
