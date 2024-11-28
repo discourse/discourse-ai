@@ -3,8 +3,8 @@
 require "rails_helper"
 
 RSpec.describe DiscourseAi::Admin::AiUsageController do
-  fab!(:admin) { Fabricate(:admin) }
-  fab!(:user) { Fabricate(:user) }
+  fab!(:admin)
+  fab!(:user)
   let(:usage_path) { "/admin/plugins/discourse-ai/ai-usage.json" }
 
   before { SiteSetting.discourse_ai_enabled = true }
