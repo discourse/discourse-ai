@@ -54,7 +54,7 @@ export default {
               // Used to keep related topics when a user scrolls up from the
               // bottom of the topic and then scrolls back down
               if (this.related_topics) {
-                  this.relatedTopicsCache = this.related_topics;
+                this.relatedTopicsCache = this.related_topics;
               }
               return this.relatedTopicsCache?.map((topic) =>
                 this.store.createRecord("topic", topic)
