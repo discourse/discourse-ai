@@ -69,7 +69,7 @@ module DiscourseAi
       end
 
       def force_summarize(user, &on_partial_blk)
-        delete_cached_summaries!
+        @persist_summaries = true
         summarize(user, &on_partial_blk)
       end
 
