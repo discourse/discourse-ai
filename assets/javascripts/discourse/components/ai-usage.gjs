@@ -88,13 +88,21 @@ export default class AiUsage extends Component {
     return normalized;
   }
 
-  // Then modify the chartConfig getter to use this normalized data:
   get chartConfig() {
     if (!this.data?.data) {
       return;
     }
 
     const normalizedData = this.normalizeTimeSeriesData(this.data.data);
+
+    const chartEl = document.querySelector(".ai-usage__chart");
+    const computedStyle = getComputedStyle(chartEl);
+
+    const colors = {
+      response: computedStyle.getPropertyValue("--chart-response-color").trim(),
+      request: computedStyle.getPropertyValue("--chart-request-color").trim(),
+      cached: computedStyle.getPropertyValue("--chart-cached-color").trim(),
+    };
 
     return {
       type: "bar",
@@ -107,17 +115,19 @@ export default class AiUsage extends Component {
           {
             label: "Response Tokens",
             data: normalizedData.map((row) => row.total_response_tokens),
-            backgroundColor: "rgba(75, 192, 192, 0.8)",
+            backgroundColor: colors.response,
           },
           {
-            label: "Request Tokens",
-            data: normalizedData.map((row) => row.total_request_tokens),
-            backgroundColor: "rgba(153, 102, 255, 0.8)",
+            label: "Net Request Tokens",
+            data: normalizedData.map(
+              (row) => row.total_request_tokens - row.total_cached_tokens
+            ),
+            backgroundColor: colors.request,
           },
           {
-            label: "Cached Tokens",
+            label: "Cached Request Tokens",
             data: normalizedData.map((row) => row.total_cached_tokens),
-            backgroundColor: "rgba(255, 159, 64, 0.8)",
+            backgroundColor: colors.cached,
           },
         ],
       },
@@ -296,6 +306,37 @@ export default class AiUsage extends Component {
             </div>
 
             <div class="ai-usage__breakdowns">
+
+              <div class="ai-usage__users">
+                <h3 class="ai-usage__users-title">
+                  {{i18n "discourse_ai.usage.users_breakdown"}}
+                </h3>
+                <table class="ai-usage__users-table">
+                  <thead>
+                    <tr>
+                      <th>{{i18n "discourse_ai.usage.username"}}</th>
+                      <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
+                      <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {{#each this.data.users as |user|}}
+                      <tr class="ai-usage__users-row">
+                        <td
+                          class="ai-usage__users-cell"
+                        >{{user.username}}</td>
+                        <td
+                          class="ai-usage__users-cell"
+                        >{{user.usage_count}}</td>
+                        <td
+                          class="ai-usage__users-cell"
+                        >{{user.total_tokens}}</td>
+                      </tr>
+                    {{/each}}
+                  </tbody>
+                </table>
+              </div>
+
               <div class="ai-usage__features">
                 <h3 class="ai-usage__features-title">
                   {{i18n "discourse_ai.usage.features_breakdown"}}

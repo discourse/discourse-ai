@@ -3,6 +3,7 @@
 class AiApiAuditLog < ActiveRecord::Base
   belongs_to :post
   belongs_to :topic
+  belongs_to :user
 
   module Provider
     OpenAI = 1

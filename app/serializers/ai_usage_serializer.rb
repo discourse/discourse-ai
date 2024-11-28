@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AiUsageSerializer < ApplicationSerializer
-  attributes :data, :features, :models, :summary
+  attributes :data, :features, :models, :users, :summary
 
   def data
     object.tokens_by_period.as_json(
@@ -26,6 +26,19 @@ class AiUsageSerializer < ApplicationSerializer
     object.model_breakdown.as_json(
       only: %i[
         llm
+        usage_count
+        total_tokens
+        total_cached_tokens
+        total_request_tokens
+        total_response_tokens
+      ],
+    )
+  end
+
+  def users
+    object.user_breakdown.as_json(
+      only: %i[
+        username
         usage_count
         total_tokens
         total_cached_tokens

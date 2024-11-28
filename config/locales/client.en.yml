@@ -136,8 +136,10 @@ en:
         usage_count: "Usage count"
         model: "Model"
         models_breakdown: "Usage per model"
+        users_breakdown: "Usage per user"
         all_features: "All features"
         all_models: "All models"
+        username: "Username"
 
 
       ai_persona:

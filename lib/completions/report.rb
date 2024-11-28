@@ -1,6 +1,9 @@
 module DiscourseAi
   module Completions
     class Report
+      UNKNOWN_FEATURE = "unknown"
+      USER_LIMIT = 50
+
       attr_reader :start_date, :end_date, :base_query
 
       def initialize(start_date: 30.days.ago, end_date: Time.current)
@@ -40,12 +43,28 @@ module DiscourseAi
           )
       end
 
+      def user_breakdown
+        base_query
+          .joins(:user)
+          .group(:user_id, "users.username")
+          .order("usage_count DESC")
+          .limit(USER_LIMIT)
+          .select(
+            "users.username",
+            "COUNT(*) as usage_count",
+            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
+            "SUM(request_tokens) as total_request_tokens",
+            "SUM(response_tokens) as total_response_tokens",
+          )
+      end
+
       def feature_breakdown
         base_query
           .group(:feature_name)
           .order("usage_count DESC")
           .select(
-            "feature_name",
+            "case when coalesce(feature_name, '') = '' then '#{UNKNOWN_FEATURE}' else feature_name end as feature_name",
             "COUNT(*) as usage_count",
             "SUM(request_tokens + response_tokens) as total_tokens",
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
@@ -81,7 +100,11 @@ module DiscourseAi
       end
 
       def filter_by_feature(feature_name)
-        @base_query = base_query.where(feature_name: feature_name)
+        if feature_name == UNKNOWN_FEATURE
+          @base_query = base_query.where("coalesce(feature_name, '') = ''")
+        else
+          @base_query = base_query.where(feature_name: feature_name)
+        end
         self
       end
 
