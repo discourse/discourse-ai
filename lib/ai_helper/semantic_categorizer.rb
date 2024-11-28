@@ -60,30 +60,29 @@ module DiscourseAi
           .joins(:topic_tags, :tags)
           .where(id: candidate_ids)
           .where("tags.id IN (?)", DiscourseTagging.visible_tags(@user.guardian).pluck(:id))
-          .group("topics.id, tags.id, tags.name") # Group by topics.id and tags.id
+          .group("topics.id")
           .order("array_position(ARRAY#{candidate_ids}, topics.id)")
-          .pluck(
-            "tags.id",
-            "tags.name",
-            "tags.#{count_column}",
-            "MIN(array_position(ARRAY#{candidate_ids}, topics.id))", # Get minimum index for ordering
-          )
-          .uniq # Ensure unique tags per topic
+          .pluck("array_agg(tags.name)")
+          .map(&:uniq)
           .map
-          .with_index do |(id, name, count, index), idx|
-            {
-              id: id,
-              name: name,
-              count: count,
-              score: 1 / (candidates[idx].last + 1), # Inverse of the distance for score
-            }
+          .with_index { |tag_list, index| { tags: tag_list, score: candidates[index].last } }
+          .flat_map { |c| c[:tags].map { |t| { name: t, score: c[:score] } } }
+          .map do |c|
+            c[:score] = 1 / (c[:score] + 1) # inverse of the distance
+            c
           end
-          .group_by { |tag| tag[:name] }
-          .map do |name, tags|
-            tags.first.merge(score: tags.sum { |t| t[:score] })
-          end # Aggregate scores per tag
-          .sort_by { |tag| -tag[:score] }
+          .group_by { |c| c[:name] }
+          .map { |name, scores| { name: name, score: scores.sum { |s| s[:score] } } }
+          .sort_by { |c| -c[:score] }
           .take(5)
+          .then do |tags|
+            models = Tag.where(name: tags.map { _1[:name] }).index_by(&:name)
+            tags.map do |tag|
+              tag[:id] = models.dig(tag[:name])&.id
+              tag[:count] = models.dig(tag[:name])&.public_send(count_column) || 0
+              tag
+            end
+          end
       end
 
       private
