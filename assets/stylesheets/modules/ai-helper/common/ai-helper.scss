@@ -272,13 +272,15 @@
 .edit-topic-title {
   .suggestion-button {
     margin: 0;
-    padding: 0.45rem;
+    padding: 0.465rem;
   }
 }
 
 #topic-title .edit-topic-title.showing-ai-suggestions {
   #edit-title {
     flex: 1 1 90%;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 
   .suggest-titles-button {
