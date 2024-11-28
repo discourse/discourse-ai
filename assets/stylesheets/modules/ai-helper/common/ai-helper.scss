@@ -234,6 +234,10 @@
   z-index: z("composer", "dropdown");
 }
 
+.ai-suggestions-menu .btn {
+  text-align: left;
+}
+
 .mobile-view {
   .ai-category-suggester-content,
   .ai-tag-suggester-content,
