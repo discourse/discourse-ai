@@ -12,6 +12,8 @@ module DiscourseAi
         return [] unless SiteSetting.ai_embeddings_enabled
 
         candidates = nearest_neighbors(limit: 100)
+        return [] if candidates.empty?
+
         candidate_ids = candidates.map(&:first)
 
         ::Topic
@@ -52,6 +54,8 @@ module DiscourseAi
         return [] unless SiteSetting.ai_embeddings_enabled
 
         candidates = nearest_neighbors(limit: 100)
+        return [] if candidates.empty?
+
         candidate_ids = candidates.map(&:first)
 
         count_column = Tag.topic_count_column(@user.guardian) # Determine the count column
@@ -94,11 +98,21 @@ module DiscourseAi
 
         raw_vector = vector_rep.vector_from(@text)
 
+        muted_category_ids = nil
+        if @user.present?
+          muted_category_ids =
+            CategoryUser.where(
+              user: @user,
+              notification_level: CategoryUser.notification_levels[:muted],
+            ).pluck(:category_id)
+        end
+
         vector_rep.asymmetric_topics_similarity_search(
           raw_vector,
           limit: limit,
           offset: 0,
           return_distance: true,
+          exclude_category_ids: muted_category_ids,
         )
       end
     end

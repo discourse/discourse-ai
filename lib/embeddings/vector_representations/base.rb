@@ -151,16 +151,22 @@ module DiscourseAi
           SQL
         end
 
-        def asymmetric_topics_similarity_search(raw_vector, limit:, offset:, return_distance: false)
-          results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
+        def asymmetric_topics_similarity_search(
+          raw_vector,
+          limit:,
+          offset:,
+          return_distance: false,
+          exclude_category_ids: nil
+        )
+          builder = DB.build(<<~SQL)
             WITH candidates AS (
               SELECT
                 topic_id,
                 embeddings::halfvec(#{dimensions}) AS embeddings
               FROM
                 #{topic_table_name}
-              WHERE
-                model_id = #{id} AND strategy_id = #{@strategy.id}
+              /*join*/
+              /*where*/
               ORDER BY
                 binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
               LIMIT :limit * 2
@@ -175,6 +181,22 @@ module DiscourseAi
             LIMIT :limit
             OFFSET :offset
           SQL
+
+          builder.where(
+            "model_id = :model_id AND strategy_id = :strategy_id",
+            model_id: id,
+            strategy_id: @strategy.id,
+          )
+
+          if exclude_category_ids.present?
+            builder.join("topics t on t.id = topic_id")
+            builder.where(<<~SQL, exclude_category_ids: exclude_category_ids.map(&:to_i))
+                t.category_id NOT IN (:exclude_category_ids) AND
+                t.category_id NOT IN (SELECT categories.id FROM categories WHERE categories.parent_category_id IN (:exclude_category_ids))
+            SQL
+          end
+
+          results = builder.query(query_embedding: raw_vector, limit: limit, offset: offset)
 
           if return_distance
             results.map { |r| [r.topic_id, r.distance] }
