@@ -234,6 +234,14 @@
   z-index: z("composer", "dropdown");
 }
 
+.mobile-view {
+  .ai-category-suggester-content,
+  .ai-tag-suggester-content,
+  .ai-title-suggester-content {
+    z-index: z("modal", "dropdown");
+  }
+}
+
 .ai-category-suggester-content {
   .category-row {
     padding: 0.25em 0.5em;
