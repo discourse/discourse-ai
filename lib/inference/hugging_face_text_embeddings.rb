@@ -64,8 +64,8 @@ module ::DiscourseAi
           JSON.parse(response.body, symbolize_names: true)
         end
 
-        def classify(content, model_config)
-          headers = { "Referer" => Discourse.base_url, "Content-Type" => "application/json" }
+        def classify(content, model_config, base_url = Discourse.base_url)
+          headers = { "Referer" => base_url, "Content-Type" => "application/json" }
           headers["X-API-KEY"] = model_config.api_key
           headers["Authorization"] = "Bearer #{model_config.api_key}"
 
