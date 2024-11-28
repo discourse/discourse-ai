@@ -200,20 +200,3 @@ CompletionPrompt.seed do |cp|
   cp.prompt_type = CompletionPrompt.prompt_types[:list]
   cp.messages = {}
 end
-
-CompletionPrompt.seed do |cp|
-  cp.id = -309
-  cp.name = "detect_text_locale"
-  cp.prompt_type = CompletionPrompt.prompt_types[:text]
-  cp.messages = {
-    insts: <<~TEXT,
-      I want you to act as a language expert, determining the locale for a set of text.
-      The locale is a language identifier, such as "en" for English, "de" for German, etc,
-      and can also include a region identifier, such as "en-GB" for British English, or "zh-Hans" for Simplified Chinese.
-      I will provide you with text, and you will determine the locale of the text.
-      You will find the text between <input></input> XML tags.
-      Include your locale between <output></output> XML tags.
-    TEXT
-    examples: [["<input>Hello my favourite colour is red</input>", "<output>en-GB</output>"]],
-  }
-end

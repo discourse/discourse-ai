@@ -8,7 +8,6 @@ class CompletionPrompt < ActiveRecord::Base
   CUSTOM_PROMPT = -305
   EXPLAIN = -306
   ILLUSTRATE_POST = -308
-  DETECT_TEXT_LOCALE = -309
 
   enum :prompt_type, { text: 0, list: 1, diff: 2 }
 
