@@ -245,11 +245,11 @@ module DiscourseAi
         builder.to_a
       end
 
-      def title_playground(post)
+      def title_playground(post, user)
         context = conversation_context(post)
 
         bot
-          .get_updated_title(context, post)
+          .get_updated_title(context, post, user)
           .tap do |new_title|
             PostRevisor.new(post.topic.first_post, post.topic).revise!(
               bot.bot_user,
@@ -544,7 +544,7 @@ module DiscourseAi
         post_streamer&.finish(skip_callback: true)
         publish_final_update(reply_post) if stream_reply
         if reply_post && post.post_number == 1 && post.topic.private_message?
-          title_playground(reply_post)
+          title_playground(reply_post, post.user)
         end
       end
 

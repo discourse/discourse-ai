@@ -3,6 +3,7 @@
 class AiApiAuditLog < ActiveRecord::Base
   belongs_to :post
   belongs_to :topic
+  belongs_to :user
 
   module Provider
     OpenAI = 1
@@ -43,3 +44,10 @@ end
 #  feature_name         :string(255)
 #  language_model       :string(255)
 #  feature_context      :jsonb
+#  cached_tokens        :integer
+#
+# Indexes
+#
+#  index_ai_api_audit_logs_on_created_at_and_feature_name    (created_at,feature_name)
+#  index_ai_api_audit_logs_on_created_at_and_language_model  (created_at,language_model)
+#

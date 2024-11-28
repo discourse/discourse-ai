@@ -657,6 +657,9 @@ TEXT
               end
             end
           end
+
+          audit_log = AiApiAuditLog.order("id desc").first
+          expect(audit_log.cached_tokens).to eq(33)
         end
 
         it "properly handles spaces in tools payload and partial tool calls" do

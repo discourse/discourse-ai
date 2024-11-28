@@ -126,6 +126,26 @@ en:
       modals:
         select_option: "Select an option..."
 
+      usage:
+        short_title: "Usage"
+        summary: "Summary"
+        total_tokens: "Total tokens"
+        tokens_over_time: "Tokens over time"
+        features_breakdown: "Usage per feature"
+        feature: "Feature"
+        usage_count: "Usage count"
+        model: "Model"
+        models_breakdown: "Usage per model"
+        users_breakdown: "Usage per user"
+        all_features: "All features"
+        all_models: "All models"
+        username: "Username"
+        total_requests: "Total requests"
+        request_tokens: "Request tokens"
+        response_tokens: "Response tokens"
+        cached_tokens: "Cached tokens"
+
+
       ai_persona:
         tool_strategies:
           all: "Apply to all replies"
