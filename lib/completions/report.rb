@@ -75,11 +75,12 @@ module DiscourseAi
       def user_breakdown
         base_query
           .joins(:user)
-          .group(:user_id, "users.username")
+          .group(:user_id, "users.username", "users.uploaded_avatar_id")
           .order("usage_count DESC")
           .limit(USER_LIMIT)
           .select(
             "users.username",
+            "users.uploaded_avatar_id",
             "COUNT(*) as usage_count",
             "SUM(request_tokens + response_tokens) as total_tokens",
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",

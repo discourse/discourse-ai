@@ -40,16 +40,17 @@ class AiUsageSerializer < ApplicationSerializer
   end
 
   def users
-    object.user_breakdown.as_json(
-      only: %i[
-        username
-        usage_count
-        total_tokens
-        total_cached_tokens
-        total_request_tokens
-        total_response_tokens
-      ],
-    )
+    object.user_breakdown.map do |user|
+      {
+        avatar_template: User.avatar_template(user.username, user.uploaded_avatar_id),
+        username: user.username,
+        usage_count: user.usage_count,
+        total_tokens: user.total_tokens,
+        total_cached_tokens: user.total_cached_tokens,
+        total_request_tokens: user.total_request_tokens,
+        total_response_tokens: user.total_response_tokens,
+      }
+    end
   end
 
   def summary

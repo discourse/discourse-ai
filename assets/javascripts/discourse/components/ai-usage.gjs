@@ -3,9 +3,11 @@ import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import { eq } from "truth-helpers";
 import DateTimeInputRange from "discourse/components/date-time-input-range";
+import avatar from "discourse/helpers/avatar";
 import { ajax } from "discourse/lib/ajax";
 import i18n from "discourse-common/helpers/i18n";
 import Chart from "admin/components/chart";
@@ -393,7 +395,17 @@ export default class AiUsage extends Component {
                   <tbody>
                     {{#each this.data.users as |user|}}
                       <tr class="ai-usage__users-row">
-                        <td class="ai-usage__users-cell">{{user.username}}</td>
+                        <td class="ai-usage__users-cell">
+                          <div class="user-info">
+                            <LinkTo
+                              @route="user"
+                              @model={{user.username}}
+                              class="username"
+                            >
+                              {{avatar user imageSize="tiny"}}
+                              {{user.username}}
+                            </LinkTo>
+                          </div></td>
                         <td
                           class="ai-usage__users-cell"
                         >{{user.usage_count}}</td>
