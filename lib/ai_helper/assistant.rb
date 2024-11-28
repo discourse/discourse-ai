@@ -233,10 +233,8 @@ module DiscourseAi
           %w[post]
         when "illustrate_post"
           %w[composer]
-        when "detect_text_locale"
-          %w[]
         else
-          %w[composer post]
+          %w[]
         end
       end
 
