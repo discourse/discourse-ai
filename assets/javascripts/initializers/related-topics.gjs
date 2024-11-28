@@ -47,10 +47,16 @@ export default {
         (Superclass) =>
           class extends Superclass {
             @tracked related_topics;
+            relatedTopicsCache = [];
 
             @cached
             get relatedTopics() {
-              return this.related_topics?.map((topic) =>
+              // Used to keep related topics when a user scrolls up from the
+              // bottom of the topic and then scrolls back down
+              if (this.related_topics) {
+                this.relatedTopicsCache = this.related_topics;
+              }
+              return this.relatedTopicsCache?.map((topic) =>
                 this.store.createRecord("topic", topic)
               );
             }
