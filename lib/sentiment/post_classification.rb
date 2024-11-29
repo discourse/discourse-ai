@@ -3,6 +3,42 @@
 module DiscourseAi
   module Sentiment
     class PostClassification
+      def self.backfill_query(from_post_id: nil, max_age_days: nil)
+        available_classifier_names =
+          DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema.values.map(&:model_name).sort
+
+        base_query =
+          Post
+            .includes(:sentiment_classifications)
+            .joins("INNER JOIN topics ON topics.id = posts.topic_id")
+            .where(post_type: Post.types[:regular])
+            .where.not(topics: { archetype: Archetype.private_message })
+            .where(posts: { deleted_at: nil })
+            .where(topics: { deleted_at: nil })
+            .joins(<<~SQL)
+              LEFT JOIN classification_results crs
+                ON crs.target_id = posts.id 
+                AND crs.target_type = 'Post'
+                AND crs.classification_type = 'sentiment'
+            SQL
+            .group("posts.id")
+            .having(<<~SQL, available_classifier_names)
+              COUNT(crs.model_used) = 0
+              OR array_agg(DISTINCT crs.model_used ORDER BY crs.model_used)::text[] IS DISTINCT FROM array[?]
+            SQL
+
+        base_query = base_query.where("posts.id >= ?", from_post_id.to_i) if from_post_id.present?
+
+        if max_age_days.present?
+          base_query =
+            base_query.where(
+              "posts.created_at > current_date - INTERVAL '#{max_age_days.to_i} DAY'",
+            )
+        end
+
+        base_query
+      end
+
       def bulk_classify!(relation)
         http_pool_size = 100
         pool =
@@ -13,6 +49,7 @@ module DiscourseAi
           )
 
         available_classifiers = classifiers
+        return if available_classifiers.blank?
         base_url = Discourse.base_url
 
         promised_classifications =
@@ -25,9 +62,13 @@ module DiscourseAi
                 .fulfilled_future({ target: record, text: text }, pool)
                 .then_on(pool) do |w_text|
                   results = Concurrent::Hash.new
+                  already_classified = w_text[:target].sentiment_classifications.map(&:model_used)
+
+                  classifiers_for_target =
+                    available_classifiers.reject { |ac| already_classified.include?(ac.model_name) }
 
                   promised_target_results =
-                    available_classifiers.map do |c|
+                    classifiers_for_target.map do |c|
                       Concurrent::Promises.future_on(pool) do
                         results[c.model_name] = request_with(w_text[:text], c, base_url)
                       end
@@ -52,12 +93,17 @@ module DiscourseAi
 
       def classify!(target)
         return if target.blank?
+        return if classifiers.blank?
 
         to_classify = prepare_text(target)
         return if to_classify.blank?
 
+        already_classified = target.sentiment_classifications.map(&:model_used)
+        classifiers_for_target =
+          classifiers.reject { |ac| already_classified.include?(ac.model_name) }
+
         results =
-          classifiers.reduce({}) do |memo, model|
+          classifiers_for_target.reduce({}) do |memo, model|
             memo[model.model_name] = request_with(to_classify, model)
             memo
           end
@@ -67,6 +113,10 @@ module DiscourseAi
 
       def classifiers
         DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema.values
+      end
+
+      def has_classifiers?
+        classifiers.present?
       end
 
       private

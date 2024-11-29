@@ -89,6 +89,7 @@ after_initialize do
   reloadable_patch do |plugin|
     Guardian.prepend DiscourseAi::GuardianExtensions
     Topic.prepend DiscourseAi::TopicExtensions
+    Post.prepend DiscourseAi::PostExtensions
   end
 
   register_modifier(:post_should_secure_uploads?) do |_, _, topic|
