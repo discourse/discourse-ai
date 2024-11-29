@@ -40,18 +40,6 @@ discourse_ai:
       - "stable-diffusion-xl-1024-v1-0"
       - "stable-diffusion-768-v2-1"
       - "stable-diffusion-v1-5"
-  ai_hugging_face_api_url:
-    default: ""
-    hidden: true
-  ai_hugging_face_api_key:
-    default: ""
-    hidden: true
-  ai_hugging_face_token_limit:
-    default: 4096
-    hidden: true
-  ai_hugging_face_model_display_name:
-    default: ""
-    hidden: true
   ai_hugging_face_tei_endpoint:
     default: ""
   ai_hugging_face_tei_endpoint_srv:
