@@ -218,7 +218,7 @@ module DiscourseAi
                     for_private_message: @context[:private_message],
                   ).create_for(@bot_user.id)
 
-                { id: upload.id, short_url: upload.short_url }
+                { id: upload.id, short_url: upload.short_url, url: upload.url }
               end
             ensure
               self.running_attached_function = false
