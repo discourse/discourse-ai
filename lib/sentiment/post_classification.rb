@@ -83,7 +83,15 @@ module DiscourseAi
       end
 
       def request_with(content, config, base_url = Discourse.base_url)
-        DiscourseAi::Inference::HuggingFaceTextEmbeddings.classify(content, config, base_url)
+        result =
+          DiscourseAi::Inference::HuggingFaceTextEmbeddings.classify(content, config, base_url)
+        transform_result(result)
+      end
+
+      def transform_result(result)
+        hash_result = {}
+        result.each { |r| hash_result[r[:label]] = r[:score] }
+        hash_result
       end
 
       def store_classification(target, classification)

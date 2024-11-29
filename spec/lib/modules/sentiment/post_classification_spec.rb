@@ -11,6 +11,16 @@ RSpec.describe DiscourseAi::Sentiment::PostClassification do
       "[{\"model_name\":\"SamLowe/roberta-base-go_emotions\",\"endpoint\":\"http://samlowe-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"j-hartmann/emotion-english-distilroberta-base\",\"endpoint\":\"http://jhartmann-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"cardiffnlp/twitter-roberta-base-sentiment-latest\",\"endpoint\":\"http://cardiffnlp-sentiment.com\",\"api_key\":\"123\"}]"
   end
 
+  def check_classification_for(post)
+    result =
+      ClassificationResult.find_by(
+        model_used: "cardiffnlp/twitter-roberta-base-sentiment-latest",
+        target: post,
+      )
+
+    expect(result.classification.keys).to contain_exactly("negative", "neutral", "positive")
+  end
+
   describe "#classify!" do
     it "does nothing if the post content is blank" do
       post_1.update_columns(raw: "")
@@ -28,6 +38,13 @@ RSpec.describe DiscourseAi::Sentiment::PostClassification do
 
       expect(ClassificationResult.where(target: post_1).count).to eq(expected_analysis)
     end
+
+    it "classification results must be { emotion => score }" do
+      SentimentInferenceStubs.stub_classification(post_1)
+
+      subject.classify!(post_1)
+      check_classification_for(post_1)
+    end
   end
 
   describe "#classify_bulk!" do
@@ -42,6 +59,16 @@ RSpec.describe DiscourseAi::Sentiment::PostClassification do
 
       expect(ClassificationResult.where(target: post_1).count).to eq(expected_analysis)
       expect(ClassificationResult.where(target: post_2).count).to eq(expected_analysis)
+    end
+
+    it "classification results must be { emotion => score }" do
+      SentimentInferenceStubs.stub_classification(post_1)
+      SentimentInferenceStubs.stub_classification(post_2)
+
+      subject.bulk_classify!(Post.where(id: [post_1.id, post_2.id]))
+
+      check_classification_for(post_1)
+      check_classification_for(post_2)
     end
   end
 end
