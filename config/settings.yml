@@ -308,6 +308,7 @@ discourse_ai:
       - text-embedding-3-small
       - text-embedding-3-large
       - multilingual-e5-large
+      - mxbai-embed-xsmall-v1
       - bge-large-en
       - gemini
       - bge-m3

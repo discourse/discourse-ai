@@ -14,6 +14,7 @@ module DiscourseAi
               DiscourseAi::Embeddings::VectorRepresentations::BgeM3,
               DiscourseAi::Embeddings::VectorRepresentations::Gemini,
               DiscourseAi::Embeddings::VectorRepresentations::MultilingualE5Large,
+              DiscourseAi::Embeddings::VectorRepresentations::MxbaiEmbedXsmallV1,
               DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Large,
               DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Small,
               DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002,
