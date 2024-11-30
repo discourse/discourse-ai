@@ -31,7 +31,18 @@ module DiscourseAi
               <p>Some new text</p>
             </div>
 
-            If you need to supply multiple hunks for a diff use the @@@ separator between hunks.
+            If you need to supply multiple hunks for a diff use a @@ separator, for example:
+
+            @@ -1,3 +1,3 @@
+            - <p>Some text</p>
+            + <p>Some new text</p>
+            @@ -5,3 +5,3 @@
+            - </div>
+            + <p>more text</p>
+            </div>
+
+            If you supply text without @@ seperators or + and - prefixes, the entire text will be appended to the artifact section.
+
           TIP
         end
 
@@ -74,6 +85,10 @@ module DiscourseAi
 
         def self.allow_partial_tool_calls?
           true
+        end
+
+        def chain_next_response?
+          @chain_next_response
         end
 
         def partial_invoke
@@ -166,7 +181,8 @@ module DiscourseAi
         end
 
         def error_response(message)
-          @chain_next_response = false
+          @chain_next_response = true
+          self.custom_raw = ""
 
           { status: "error", error: message }
         end

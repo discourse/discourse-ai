@@ -85,6 +85,19 @@ module DiscourseAi
       end
 
       def self.apply_hunk(text, diff)
+
+        # we need to handle multiple hunks just in case
+        if diff.match?(/^\@\@.*\@\@$\n/)
+          hunks = diff.split(/^\@\@.*\@\@$\n/)
+          if hunks.present?
+            hunks.each do |hunk|
+              next if hunk.blank?
+              text = apply_hunk(text, hunk)
+            end
+            return text
+          end
+        end
+
         text = text.encode(universal_newline: true)
         diff = diff.encode(universal_newline: true)
         # we need this for matching
@@ -93,6 +106,10 @@ module DiscourseAi
         diff_lines = parse_diff_lines(diff, text)
 
         validate_diff_format!(text, diff, diff_lines)
+
+        if diff_lines.all? { |marker, _| marker == " " }
+          return text.strip + "\n" + diff.strip
+        end
 
         lines_to_match = diff_lines.select { |marker, _| ["-", " "].include?(marker) }.map(&:last)
         match_start, match_end = find_unique_match(text, lines_to_match, diff)
@@ -145,14 +162,6 @@ module DiscourseAi
       private_class_method def self.validate_diff_format!(text, diff, diff_lines)
         if diff_lines.empty?
           raise MalformedDiffError.new(original_text: text, diff_text: diff, issue: "Diff is empty")
-        end
-
-        unless diff_lines.any? { |marker, _| %w[- +].include?(marker) }
-          raise MalformedDiffError.new(
-                  original_text: text,
-                  diff_text: diff,
-                  issue: "Diff must contain at least one change (+ or -)",
-                )
         end
       end
 

@@ -175,22 +175,14 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
             end
           end
         end
+      end
+    end
 
-        context "when missing changes" do
-          let(:diff) { <<~DIFF }
-               <div>
-                 <h1>Title</h1>
-               </div>
-            DIFF
-
-          it "raises a MalformedDiffError" do
-            expect { apply_hunk }.to raise_error(
-              DiscourseAi::Utils::DiffUtils::MalformedDiffError,
-            ) do |error|
-              expect(error.context["Issue"]).to match(/must contain at least one change/)
-            end
-          end
-        end
+    context "without markers" do
+      let(:original_text) { "hello" }
+      let(:diff) { "world" }
+      it "will append to the end" do
+        expect(apply_hunk).to eq("hello\nworld")
       end
     end
 
@@ -202,9 +194,47 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
           +123
         DIFF
 
-      it "can append to file" do
+      it "can append to end" do
         expect(apply_hunk).to eq("hello\nworld\n123")
       end
+    end
+
+    context "it can apply multiple hunks to a file" do
+      let(:original_text) do
+        <<~TEXT
+          1
+          2
+          3
+          4
+          5
+          6
+          7
+          8
+        TEXT
+      end
+
+      let(:diff) do
+        <<~DIFF
+          @@ -1,4 +1,4 @@
+          2
+          - 3
+          @@ -6,4 +6,4 @@
+          - 7
+        DIFF
+      end
+
+      it "can apply multiple hunks" do
+        expected = <<~TEXT
+          1
+          2
+          4
+          5
+          6
+          8
+        TEXT
+        expect(apply_hunk).to eq(expected.strip)
+      end
+
     end
 
     context "with line ending variations" do
