@@ -10,7 +10,7 @@ module DiscourseAi
 
         def self.unified_diff_tip
           <<~TIP
-            When updating and artifact provied unified diffs, for example:
+            When updating and artifact in diff mode unified diffs can be applied:
 
             If editing:
 
@@ -50,7 +50,7 @@ module DiscourseAi
           {
             name: "update_artifact",
             description:
-            "Updates an existing web artifact with new HTML, CSS, or JavaScript content.\n#{unified_diff_tip}",
+              "Updates an existing web artifact with new HTML, CSS, or JavaScript content.\n#{unified_diff_tip}",
             parameters: [
               {
                 name: "artifact_id",
@@ -78,6 +78,14 @@ module DiscourseAi
                 description: "A brief description of the changes being made",
                 type: "string",
                 required: true,
+              },
+              {
+                name: "diff_mode",
+                description:
+                  "How would you like to apply the diff? (replace, append or diff) default is diff",
+                type: "string",
+                required: false,
+                enum: %w[replace append diff],
               },
             ],
           }
@@ -114,12 +122,28 @@ module DiscourseAi
           end
 
           begin
-            artifact.apply_diff(
-              html_diff: parameters[:html_diff],
-              css_diff: parameters[:css_diff],
-              js_diff: parameters[:js_diff],
-              change_description: parameters[:change_description],
-            )
+            if parameters[:diff_mode] == "diff"
+              artifact.apply_diff(
+                html_diff: parameters[:html_diff],
+                css_diff: parameters[:css_diff],
+                js_diff: parameters[:js_diff],
+                change_description: parameters[:change_description],
+              )
+            elsif parameters[:diff_mode] == "replace"
+              artifact.create_new_version(
+                html: parameters[:html_diff] || artifact.html,
+                css: parameters[:css_diff] || artifact.css,
+                js: parameters[:js_diff] || artifact.js,
+                change_description: parameters[:change_description],
+              )
+            else
+              artifact.create_new_version(
+                html: (artifact.html + "\n" + parameters[:html_diff].to_s).strip,
+                css: (artifact.css + "\n" + parameters[:css_diff].to_s).strip,
+                js: (artifact.js + "\n" + parameters[:js_diff].to_s).strip,
+                change_description: parameters[:change_description],
+              )
+            end
 
             update_custom_html(artifact)
             success_response(artifact)
@@ -172,12 +196,26 @@ module DiscourseAi
         def success_response(artifact)
           @chain_next_response = false
 
-          {
+          hash = {
             status: "success",
             artifact_id: artifact.id,
             version: artifact.versions.last.version_number,
             message: "Artifact updated successfully and rendered to user.",
           }
+
+          if parameters[:html_diff].present?
+            hash[:new_artifact_html] = artifact.html
+          end
+
+          if parameters[:css_diff].present?
+            hash[:new_artifact_css] = artifact.css
+          end
+
+          if parameters[:js_diff].present?
+            hash[:new_artifact_js] = artifact.js
+          end
+
+          hash
         end
 
         def error_response(message)
