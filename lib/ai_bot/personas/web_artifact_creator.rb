@@ -5,11 +5,11 @@ module DiscourseAi
     module Personas
       class WebArtifactCreator < Persona
         def tools
-          [Tools::CreateArtifact]
+          [Tools::CreateArtifact, Tools::UpdateArtifact]
         end
 
         def required_tools
-          [Tools::CreateArtifact]
+          [Tools::CreateArtifact, Tools::UpdateArtifact]
         end
 
         def system_prompt
