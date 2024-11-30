@@ -19,7 +19,7 @@ module DiscourseAi
 
       def self.dns_srv_lookup_for_domain(domain)
         resolver = Resolv::DNS.new
-        resources = resolver.getresources(domain, Resolv::DNS::Resource::IN::SRV)
+        resolver.getresources(domain, Resolv::DNS::Resource::IN::SRV)
       end
 
       def self.select_server(resources)

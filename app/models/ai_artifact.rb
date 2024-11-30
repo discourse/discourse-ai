@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class AiArtifact < ActiveRecord::Base
+  has_many :versions, class_name: "AiArtifactVersion", dependent: :destroy
   belongs_to :user
   belongs_to :post
   validates :html, length: { maximum: 65_535 }
@@ -32,6 +33,38 @@ class AiArtifact < ActiveRecord::Base
 
   def url
     self.class.url(id)
+  end
+
+  def apply_diff(html_diff: nil, css_diff: nil, js_diff: nil, change_description: nil)
+    differ = DiscourseAi::Utils::DiffUtils
+
+    html = html_diff ? differ.apply_hunk(self.html, html_diff) : self.html
+    css = css_diff ? differ.apply_hunk(self.css, css_diff) : self.css
+    js = js_diff ? differ.apply_hunk(self.js, js_diff) : self.js
+
+    create_new_version(html: html, css: css, js: js, change_description: change_description)
+  end
+
+  def create_new_version(html: nil, css: nil, js: nil, change_description: nil)
+    latest_version = versions.order(version_number: :desc).first
+    new_version_number = latest_version ? latest_version.version_number + 1 : 1
+
+    transaction do
+      # Create the version record
+      versions.create!(
+        version_number: new_version_number,
+        html: self.html,
+        css: self.css,
+        js: self.js,
+        change_description: change_description,
+      )
+
+      # Update the main artifact
+      self.html = html if html.present?
+      self.css = css if css.present?
+      self.js = js if js.present?
+      save!
+    end
   end
 end
 
