@@ -149,6 +149,8 @@ module DiscourseAi
             ]
           end
 
+          content.unshift("\n\n")
+
           self.custom_raw = content.map { |c| c[1] }.join("\n\n")
         end
 
