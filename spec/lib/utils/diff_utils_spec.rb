@@ -186,7 +186,7 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
       end
     end
 
-    context "it can append text to the end of a document" do
+    context "when appending text to the end of a document" do
       let(:original_text) { "hello\nworld" }
 
       let(:diff) { <<~DIFF }
@@ -199,7 +199,7 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
       end
     end
 
-    context "it can apply multiple hunks to a file" do
+    context "when applying multiple hunks to a file" do
       let(:original_text) { <<~TEXT }
           1
           2
