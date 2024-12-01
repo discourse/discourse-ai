@@ -114,12 +114,14 @@ module DiscourseAi
             return error_response("Attempting to update an artifact you are not allowed to")
           end
 
+          last_version = artifact.versions.order(version_number: :desc).first
+
           begin
             version =
               artifact.create_new_version(
-                html: parameters[:html] || artifact.html,
-                css: parameters[:css] || artifact.css,
-                js: parameters[:js] || artifact.js,
+                html: parameters[:html] || last_version&.html || artifact.html,
+                css: parameters[:css] || last_version&.css || artifact.css,
+                js: parameters[:js] || last_version&.js || artifact.js,
                 change_description: parameters[:change_description],
               )
 

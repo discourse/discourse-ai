@@ -8,6 +8,33 @@ module DiscourseAi
           "create_artifact"
         end
 
+        def self.js_dependency_tip
+          <<~TIP
+            If you need to include a JavaScript library, you may include assets from:
+            - unpkg.com
+            - cdnjs.com
+            - jsdelivr.com
+            - ajax.googleapis.com
+
+            To include them ensure they are the last tag in your HTML body.
+            Example: <script crossorigin src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+          TIP
+        end
+
+        def self.js_script_tag_tip
+          <<~TIP
+            if you need a custom script tag, you can use the following format:
+
+            <script type="module">
+              // your script here
+            </script>
+
+            If you only need a regular script tag, you can use the following format:
+
+            // your script here
+          TIP
+        end
+
         def self.signature
           {
             name: "create_artifact",
@@ -22,7 +49,7 @@ module DiscourseAi
               },
               {
                 name: "html_body",
-                description: "The HTML content for the BODY tag (do not include the BODY tag)",
+                description: "The HTML content for the BODY tag (do not include the BODY tag). #{js_dependency_tip}",
                 type: "string",
                 required: true,
               },
@@ -31,7 +58,7 @@ module DiscourseAi
                 name: "js",
                 description:
                   "Optional
-              JavaScript code for the artifact",
+              JavaScript code for the artifact, this will be the last <script> tag in the BODY. #{js_script_tag_tip}",
                 type: "string",
               },
             ],

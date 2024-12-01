@@ -84,7 +84,7 @@ RSpec.describe DiscourseAi::AiBot::ArtifactsController do
       sign_in(user)
       get "/discourse-ai/ai-bot/artifacts/#{artifact.id}"
       expect(response.headers["X-Frame-Options"]).to eq(nil)
-      expect(response.headers["Content-Security-Policy"]).to eq("script-src 'unsafe-inline';")
+      expect(response.headers["Content-Security-Policy"]).to include("unsafe-inline")
       expect(response.headers["X-Robots-Tag"]).to eq("noindex")
     end
   end

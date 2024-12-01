@@ -64,6 +64,26 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
       expect(version.js).to include("'world'")
       expect(artifact.versions.count).to eq(1)
       expect(version.change_description).to eq("Updated colors and text")
+
+      # updating again should update the correct version
+      tool.parameters = {
+        artifact_id: artifact.id,
+        html: nil,
+        css: nil,
+        js: "updated",
+        change_description: "Updated colors and text again",
+      }
+
+      result = tool.invoke {}
+
+      version = artifact.versions.find_by(version_number: 2)
+
+      expect(result[:status]).to eq("success")
+      expect(result[:version]).to eq(2)
+
+      expect(version.html).to include("Updated")
+      expect(version.css).to include("color: red")
+      expect(version.js).to include("updated")
     end
 
     it "handles partial updates correctly" do

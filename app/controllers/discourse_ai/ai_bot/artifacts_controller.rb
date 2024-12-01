@@ -26,6 +26,12 @@ module DiscourseAi
           raise Discourse::NotFound if !artifact
         end
 
+        js = artifact.js
+        if !artifact.js.match?(%r{\A\s*<script.*</script>}mi)
+          mod = ""
+          mod = " type=\"module\"" if js.match?(/\A\s*import.*/)
+          js = "<script#{mod}>\n#{js}\n</script>"
+        end
         # Prepare the inner (untrusted) HTML document
         untrusted_html = <<~HTML
           <!DOCTYPE html>
@@ -39,9 +45,7 @@ module DiscourseAi
             </head>
             <body>
               #{artifact.html}
-              <script>
-                #{artifact.js}
-              </script>
+              #{js}
             </body>
           </html>
         HTML
@@ -74,7 +78,9 @@ module DiscourseAi
         HTML
 
         response.headers.delete("X-Frame-Options")
-        response.headers["Content-Security-Policy"] = "script-src 'unsafe-inline';"
+        response.headers[
+          "Content-Security-Policy"
+        ] = "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://unpkg.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://cdn.jsdelivr.net;"
         response.headers["X-Robots-Tag"] = "noindex"
 
         # Render the content
