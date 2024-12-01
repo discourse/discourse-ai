@@ -49,7 +49,8 @@ module DiscourseAi
               },
               {
                 name: "html_body",
-                description: "The HTML content for the BODY tag (do not include the BODY tag). #{js_dependency_tip}",
+                description:
+                  "The HTML content for the BODY tag (do not include the BODY tag). #{js_dependency_tip}",
                 type: "string",
                 required: true,
               },
