@@ -200,8 +200,7 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
     end
 
     context "it can apply multiple hunks to a file" do
-      let(:original_text) do
-        <<~TEXT
+      let(:original_text) { <<~TEXT }
           1
           2
           3
@@ -211,17 +210,14 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
           7
           8
         TEXT
-      end
 
-      let(:diff) do
-        <<~DIFF
+      let(:diff) { <<~DIFF }
           @@ -1,4 +1,4 @@
           2
           - 3
           @@ -6,4 +6,4 @@
           - 7
         DIFF
-      end
 
       it "can apply multiple hunks" do
         expected = <<~TEXT
@@ -234,7 +230,6 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
         TEXT
         expect(apply_hunk).to eq(expected.strip)
       end
-
     end
 
     context "with line ending variations" do

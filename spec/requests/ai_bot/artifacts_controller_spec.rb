@@ -55,6 +55,19 @@ RSpec.describe DiscourseAi::AiBot::ArtifactsController do
         expect(untrusted_html).to include(artifact.css)
         expect(untrusted_html).to include(artifact.js)
       end
+
+      it "can also find an artifact by its version" do
+        sign_in(user)
+
+        version = artifact.create_new_version(html: "<div>Was Updated</div>")
+
+        get "/discourse-ai/ai-bot/artifacts/#{artifact.id}/#{version.version_number}"
+        expect(response.status).to eq(200)
+        untrusted_html = parse_srcdoc(response.body)
+        expect(untrusted_html).to include("Was Updated")
+        expect(untrusted_html).to include(artifact.css)
+        expect(untrusted_html).to include(artifact.js)
+      end
     end
 
     context "with public artifact" do

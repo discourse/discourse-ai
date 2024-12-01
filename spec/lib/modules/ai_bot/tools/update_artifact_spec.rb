@@ -20,33 +20,30 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
-    let(:html_diff) { <<~DIFF }
+    let(:html) { <<~DIFF }
          <div>
-        -Original
-        +Updated
+           Updated
          </div>
       DIFF
 
-    let(:css_diff) { <<~DIFF }
+    let(:css) { <<~DIFF }
          div {
-        -  color: blue;
-        +  color: red;
+          color: red;
          }
       DIFF
 
-    let(:js_diff) { <<~DIFF }
-        -console.log('hello');
-        +console.log('world');
+    let(:js) { <<~DIFF }
+        console.log('world');
       DIFF
 
-    it "updates artifact content with diffs" do
+    it "updates artifact content when supplied" do
       tool =
         described_class.new(
           {
             artifact_id: artifact.id,
-            html_diff: html_diff,
-            css_diff: css_diff,
-            js_diff: js_diff,
+            html: html,
+            css: css,
+            js: js,
             change_description: "Updated colors and text",
           },
           bot_user: bot_user,
@@ -61,22 +58,18 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
       expect(result[:status]).to eq("success")
       expect(result[:version]).to eq(1)
 
-      artifact.reload
-      expect(artifact.html).to include("Updated")
-      expect(artifact.css).to include("color: red")
-      expect(artifact.js).to include("'world'")
+      version = artifact.versions.find_by(version_number: 1)
+      expect(version.html).to include("Updated")
+      expect(version.css).to include("color: red")
+      expect(version.js).to include("'world'")
       expect(artifact.versions.count).to eq(1)
-      expect(artifact.versions.last.change_description).to eq("Updated colors and text")
+      expect(version.change_description).to eq("Updated colors and text")
     end
 
     it "handles partial updates correctly" do
       tool = described_class.new({}, bot_user: bot_user, llm: llm)
 
-      tool.parameters = {
-        artifact_id: artifact.id,
-        html_diff: html_diff,
-        change_description: "Changed HTML",
-      }
+      tool.parameters = { artifact_id: artifact.id, html: html, change_description: "Changed HTML" }
       tool.partial_invoke
 
       expect(tool.custom_raw).to include("### HTML Changes")
@@ -87,7 +80,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
     it "handles invalid artifact ID" do
       tool =
         described_class.new(
-          { artifact_id: -1, html_diff: html_diff, change_description: "Test change" },
+          { artifact_id: -1, html: html, change_description: "Test change" },
           bot_user: bot_user,
           llm: llm,
           context: {
@@ -100,27 +93,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
       expect(result[:error]).to eq("Artifact not found")
     end
 
-    it "handles invalid diffs" do
-      tool =
-        described_class.new(
-          {
-            artifact_id: artifact.id,
-            html_diff: "invalid diff",
-            change_description: "Test change",
-          },
-          bot_user: bot_user,
-          llm: llm,
-          context: {
-            post_id: post.id,
-          },
-        )
-
-      result = tool.invoke {}
-      expect(result[:status]).to eq("error")
-      expect(result[:error]).to include("The diff format is invalid")
-    end
-
-    it "requires at least one diff" do
+    it "requires at least one change" do
       tool =
         described_class.new(
           { artifact_id: artifact.id, change_description: "No changes" },
@@ -139,7 +112,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
     it "correctly renders changes in message" do
       tool =
         described_class.new(
-          { artifact_id: artifact.id, html_diff: html_diff, change_description: "Updated content" },
+          { artifact_id: artifact.id, html: html, change_description: "Updated content" },
           bot_user: bot_user,
           llm: llm,
           context: {
@@ -149,7 +122,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
 
       tool.invoke {}
 
-      expect(tool.custom_raw.strip).to include(html_diff.strip)
+      expect(tool.custom_raw.strip).to include(html.strip)
     end
   end
 end

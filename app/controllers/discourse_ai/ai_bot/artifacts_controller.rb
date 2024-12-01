@@ -19,13 +19,20 @@ module DiscourseAi
           raise Discourse::NotFound if !guardian.can_see?(post)
         end
 
+        name = artifact.name
+
+        if params[:version].present?
+          artifact = artifact.versions.find_by(version_number: params[:version])
+          raise Discourse::NotFound if !artifact
+        end
+
         # Prepare the inner (untrusted) HTML document
         untrusted_html = <<~HTML
           <!DOCTYPE html>
           <html>
             <head>
               <meta charset="UTF-8">
-              <title>#{ERB::Util.html_escape(artifact.name)}</title>
+              <title>#{ERB::Util.html_escape(name)}</title>
               <style>
                 #{artifact.css}
               </style>
@@ -45,7 +52,7 @@ module DiscourseAi
           <html>
             <head>
               <meta charset="UTF-8">
-              <title>#{ERB::Util.html_escape(artifact.name)}</title>
+              <title>#{ERB::Util.html_escape(name)}</title>
               <style>
                 html, body, iframe {
                   margin: 0;

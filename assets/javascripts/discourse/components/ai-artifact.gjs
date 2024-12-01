@@ -37,7 +37,13 @@ export default class AiArtifactComponent extends Component {
   }
 
   get artifactUrl() {
-    return getURL(`/discourse-ai/ai-bot/artifacts/${this.args.artifactId}`);
+    const url = getURL(`/discourse-ai/ai-bot/artifacts/${this.args.artifactId}`);
+
+    if (this.args.artifactVersion) {
+      return `${url}?version=${this.args.artifactVersion}`;
+    } else {
+      return url;
+    }
   }
 
   @action

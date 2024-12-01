@@ -8,6 +8,7 @@ module DiscourseAi
           "update_artifact"
         end
 
+        # this is not working that well, we support it, but I am leaving it dormant for now
         def self.unified_diff_tip
           <<~TIP
             When updating and artifact in diff mode unified diffs can be applied:
@@ -50,7 +51,7 @@ module DiscourseAi
           {
             name: "update_artifact",
             description:
-              "Updates an existing web artifact with new HTML, CSS, or JavaScript content.\n#{unified_diff_tip}",
+              "Updates an existing web artifact with new HTML, CSS, or JavaScript content.",
             parameters: [
               {
                 name: "artifact_id",
@@ -59,18 +60,18 @@ module DiscourseAi
                 required: true,
               },
               {
-                name: "html_diff",
-                description: "A unified diff of HTML changes to apply",
+                name: "html",
+                description: "(Optional) new HTML content for the artifact",
                 type: "string",
               },
               {
-                name: "css_diff",
-                description: "A unified diff of CSS changes to apply",
+                name: "css",
+                description: "(Optional) new CSS content for the artifact",
                 type: "string",
               },
               {
-                name: "js_diff",
-                description: "A unified diff of JavaScript changes to apply",
+                name: "js",
+                description: "(Optional) new JavaScript content for the artifact",
                 type: "string",
               },
               {
@@ -78,14 +79,6 @@ module DiscourseAi
                 description: "A brief description of the changes being made",
                 type: "string",
                 required: true,
-              },
-              {
-                name: "diff_mode",
-                description:
-                  "How would you like to apply the diff? (replace, append or diff) default is diff",
-                type: "string",
-                required: false,
-                enum: %w[replace append diff],
               },
             ],
           }
@@ -100,7 +93,7 @@ module DiscourseAi
         end
 
         def partial_invoke
-          @selected_tab = :html_diff
+          @selected_tab = :html
           if @prev_parameters
             @selected_tab = parameters.keys.find { |k| @prev_parameters[k] != parameters[k] }
           end
@@ -122,31 +115,16 @@ module DiscourseAi
           end
 
           begin
-            if parameters[:diff_mode] == "diff"
-              artifact.apply_diff(
-                html_diff: parameters[:html_diff],
-                css_diff: parameters[:css_diff],
-                js_diff: parameters[:js_diff],
-                change_description: parameters[:change_description],
-              )
-            elsif parameters[:diff_mode] == "replace"
+            version =
               artifact.create_new_version(
-                html: parameters[:html_diff] || artifact.html,
-                css: parameters[:css_diff] || artifact.css,
-                js: parameters[:js_diff] || artifact.js,
+                html: parameters[:html] || artifact.html,
+                css: parameters[:css] || artifact.css,
+                js: parameters[:js] || artifact.js,
                 change_description: parameters[:change_description],
               )
-            else
-              artifact.create_new_version(
-                html: (artifact.html + "\n" + parameters[:html_diff].to_s).strip,
-                css: (artifact.css + "\n" + parameters[:css_diff].to_s).strip,
-                js: (artifact.js + "\n" + parameters[:js_diff].to_s).strip,
-                change_description: parameters[:change_description],
-              )
-            end
 
-            update_custom_html(artifact)
-            success_response(artifact)
+            update_custom_html(artifact, version)
+            success_response(artifact, version)
           rescue DiscourseAi::Utils::DiffUtils::DiffError => e
             error_response(e.to_llm_message)
           rescue => e
@@ -156,19 +134,19 @@ module DiscourseAi
 
         private
 
-        def update_custom_html(artifact = nil)
+        def update_custom_html(artifact = nil, version = nil)
           content = []
 
-          if parameters[:html_diff].present?
-            content << [:html_diff, "### HTML Changes\n\n```diff\n#{parameters[:html_diff]}\n```"]
+          if parameters[:html].present?
+            content << [:html, "### HTML Changes\n\n```html\n#{parameters[:html]}\n```"]
           end
 
-          if parameters[:css_diff].present?
-            content << [:css_diff, "### CSS Changes\n\n```diff\n#{parameters[:css_diff]}\n```"]
+          if parameters[:css].present?
+            content << [:css, "### CSS Changes\n\n```css\n#{parameters[:css]}\n```"]
           end
 
-          if parameters[:js_diff].present?
-            content << [:js_diff, "### JavaScript Changes\n\n```diff\n#{parameters[:js_diff]}\n```"]
+          if parameters[:js].present?
+            content << [:js, "### JavaScript Changes\n\n```javascript\n#{parameters[:js]}\n```"]
           end
 
           if parameters[:change_description].present?
@@ -184,7 +162,7 @@ module DiscourseAi
             content << [nil, "[/details]"]
             content << [
               :preview,
-              "### Preview\n\n<div class=\"ai-artifact\" data-ai-artifact-id=\"#{artifact.id}\"></div>",
+              "### Preview\n\n<div class=\"ai-artifact\" data-ai-artifact-version=\"#{version.version_number}\" data-ai-artifact-id=\"#{artifact.id}\"></div>",
             ]
           end
 
@@ -193,27 +171,15 @@ module DiscourseAi
           self.custom_raw = content.map { |c| c[1] }.join("\n\n")
         end
 
-        def success_response(artifact)
+        def success_response(artifact, version)
           @chain_next_response = false
 
           hash = {
             status: "success",
             artifact_id: artifact.id,
-            version: artifact.versions.last.version_number,
+            version: version.version_number,
             message: "Artifact updated successfully and rendered to user.",
           }
-
-          if parameters[:html_diff].present?
-            hash[:new_artifact_html] = artifact.html
-          end
-
-          if parameters[:css_diff].present?
-            hash[:new_artifact_css] = artifact.css
-          end
-
-          if parameters[:js_diff].present?
-            hash[:new_artifact_js] = artifact.js
-          end
 
           hash
         end

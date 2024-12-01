@@ -8,17 +8,22 @@ class AiArtifact < ActiveRecord::Base
   validates :css, length: { maximum: 65_535 }
   validates :js, length: { maximum: 65_535 }
 
-  def self.iframe_for(id)
+  def self.iframe_for(id, version = nil)
     <<~HTML
       <div class='ai-artifact'>
-        <iframe src='#{url(id)}' frameborder="0" height="100%" width="100%"></iframe>
-        <a href='#{url(id)}' target='_blank'>#{I18n.t("discourse_ai.ai_artifact.link")}</a>
+        <iframe src='#{url(id, version)}' frameborder="0" height="100%" width="100%"></iframe>
+        <a href='#{url(id, version)}' target='_blank'>#{I18n.t("discourse_ai.ai_artifact.link")}</a>
       </div>
     HTML
   end
 
-  def self.url(id)
-    Discourse.base_url + "/discourse-ai/ai-bot/artifacts/#{id}"
+  def self.url(id, version = nil)
+    url = Discourse.base_url + "/discourse-ai/ai-bot/artifacts/#{id}"
+    if version
+      "#{url}/#{version}"
+    else
+      url
+    end
   end
 
   def self.share_publicly(id:, post:)
@@ -48,23 +53,22 @@ class AiArtifact < ActiveRecord::Base
   def create_new_version(html: nil, css: nil, js: nil, change_description: nil)
     latest_version = versions.order(version_number: :desc).first
     new_version_number = latest_version ? latest_version.version_number + 1 : 1
+    version = nil
 
     transaction do
       # Create the version record
-      versions.create!(
-        version_number: new_version_number,
-        html: self.html,
-        css: self.css,
-        js: self.js,
-        change_description: change_description,
-      )
-
-      # Update the main artifact
-      self.html = html if html.present?
-      self.css = css if css.present?
-      self.js = js if js.present?
+      version =
+        versions.create!(
+          version_number: new_version_number,
+          html: html || self.html,
+          css: css || self.css,
+          js: js || self.js,
+          change_description: change_description,
+        )
       save!
     end
+
+    version
   end
 end
 

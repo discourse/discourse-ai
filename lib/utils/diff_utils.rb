@@ -17,9 +17,7 @@ module DiscourseAi
 
         def to_llm_message
           original_text = @original_text
-          if @original_text.length > 1000
-            original_text = @original_text[0..1000] + "..."
-          end
+          original_text = @original_text[0..1000] + "..." if @original_text.length > 1000
 
           <<~MESSAGE
             #{message}
@@ -85,7 +83,6 @@ module DiscourseAi
       end
 
       def self.apply_hunk(text, diff)
-
         # we need to handle multiple hunks just in case
         if diff.match?(/^\@\@.*\@\@$\n/)
           hunks = diff.split(/^\@\@.*\@\@$\n/)
@@ -107,9 +104,7 @@ module DiscourseAi
 
         validate_diff_format!(text, diff, diff_lines)
 
-        if diff_lines.all? { |marker, _| marker == " " }
-          return text.strip + "\n" + diff.strip
-        end
+        return text.strip + "\n" + diff.strip if diff_lines.all? { |marker, _| marker == " " }
 
         lines_to_match = diff_lines.select { |marker, _| ["-", " "].include?(marker) }.map(&:last)
         match_start, match_end = find_unique_match(text, lines_to_match, diff)
@@ -127,9 +122,7 @@ module DiscourseAi
             diff_marker, diff_content = diff_lines[diff_lines_index]
           end
 
-          if diff_marker == " "
-            new_hunk << line
-          end
+          new_hunk << line if diff_marker == " "
 
           diff_lines_index += 1
         end
@@ -183,10 +176,7 @@ module DiscourseAi
         when 1
           matches.first
         else
-          raise AmbiguousMatchError.new(
-                  original_text: text,
-                  diff_text: diff,
-                )
+          raise AmbiguousMatchError.new(original_text: text, diff_text: diff)
         end
       end
     end

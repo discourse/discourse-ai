@@ -190,9 +190,11 @@ class SharedAiConversation < ActiveRecord::Base
       .css("div.ai-artifact")
       .each do |node|
         id = node["data-ai-artifact-id"].to_i
+        version = node["data-ai-artifact-version"]
+        version_number = version.to_i if version
         if id > 0
           AiArtifact.share_publicly(id: id, post: post)
-          node.replace(AiArtifact.iframe_for(id))
+          node.replace(AiArtifact.iframe_for(id, version_number))
         end
       end
 
