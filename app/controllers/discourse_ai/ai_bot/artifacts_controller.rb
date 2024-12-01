@@ -26,8 +26,8 @@ module DiscourseAi
           raise Discourse::NotFound if !artifact
         end
 
-        js = artifact.js
-        if !artifact.js.match?(%r{\A\s*<script.*</script>}mi)
+        js = artifact.js || ""
+        if !js.match?(%r{\A\s*<script.*</script>}mi)
           mod = ""
           mod = " type=\"module\"" if js.match?(/\A\s*import.*/)
           js = "<script#{mod}>\n#{js}\n</script>"
