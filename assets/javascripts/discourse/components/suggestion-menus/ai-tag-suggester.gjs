@@ -112,7 +112,9 @@ export default class AiTagSuggester extends Component {
   }
 
   #tagSelectorHasValues() {
-    return this.args.composer?.tags && this.args.composer?.tags.length > 0;
+    const model = this.args.composer ? this.args.composer : this.args.buffered;
+
+    return model.get("tags") && model.get("tags").length > 0;
   }
 
   #removedAppliedTag(suggestion) {
