@@ -64,6 +64,13 @@ RSpec.describe Jobs::SummariesBackfill do
 
       expect(subject.backfill_candidates(type).map(&:id)).to contain_exactly(topic_2.id, topic.id)
     end
+
+    it "respects max age setting" do
+      SiteSetting.ai_summary_backfill_topic_max_age_days = 1
+      topic.update!(created_at: 2.days.ago)
+
+      expect(subject.backfill_candidates(type)).to be_empty
+    end
   end
 
   describe "#execute" do

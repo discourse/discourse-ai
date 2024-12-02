@@ -12,22 +12,26 @@ module ::Jobs
 
       system_user = Discourse.system_user
 
+      if SiteSetting.ai_summary_gists_enabled
+        gist_t = AiSummary.summary_types[:gist]
+        backfill_candidates(gist_t)
+          .limit(current_budget(gist_t))
+          .each do |topic|
+            DiscourseAi::Summarization.topic_gist(topic).force_summarize(system_user)
+          end
+      end
+
       complete_t = AiSummary.summary_types[:complete]
       backfill_candidates(complete_t)
         .limit(current_budget(complete_t))
         .each do |topic|
           DiscourseAi::Summarization.topic_summary(topic).force_summarize(system_user)
         end
-
-      return unless SiteSetting.ai_summary_gists_enabled
-
-      gist_t = AiSummary.summary_types[:gist]
-      backfill_candidates(gist_t)
-        .limit(current_budget(gist_t))
-        .each { |topic| DiscourseAi::Summarization.topic_gist(topic).force_summarize(system_user) }
     end
 
     def backfill_candidates(summary_type)
+      max_age_days = SiteSetting.ai_summary_backfill_topic_max_age_days
+
       Topic
         .where("topics.word_count >= ?", SiteSetting.ai_summary_backfill_minimum_word_count)
         .joins(<<~SQL)
@@ -36,6 +40,7 @@ module ::Jobs
                           ais.target_type = 'Topic' AND
                           ais.summary_type = '#{summary_type}'
         SQL
+        .where("topics.created_at > current_timestamp - INTERVAL '#{max_age_days.to_i} DAY'")
         .where(
           "ais.id IS NULL OR UPPER(ais.content_range) < topics.highest_post_number + 1",
         ) # (1..1) gets stored ad (1..2).
