@@ -51,7 +51,7 @@ module DiscourseAi
           {
             name: "update_artifact",
             description:
-            "Updates an existing web artifact with new HTML, CSS, or JavaScript content. Note either html, css, or js MUST be provided. You may provide all three if desired.",
+              "Updates an existing web artifact with new HTML, CSS, or JavaScript content. Note either html, css, or js MUST be provided. You may provide all three if desired.",
             parameters: [
               {
                 name: "artifact_id",
