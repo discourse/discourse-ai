@@ -7,26 +7,29 @@ import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { cancel, later } from "@ember/runloop";
 import { service } from "@ember/service";
+import { not } from "truth-helpers";
 import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
+import DModal from "discourse/components/d-modal";
 import concatClass from "discourse/helpers/concat-class";
+import htmlClass from "discourse/helpers/html-class";
 import { ajax } from "discourse/lib/ajax";
 import { shortDateNoYear } from "discourse/lib/formatter";
 import dIcon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import { bind } from "discourse-common/utils/decorators";
 import I18n from "discourse-i18n";
-import DMenu from "float-kit/components/d-menu";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
 
 const STREAMED_TEXT_SPEED = 15;
 
-export default class AiSummaryBox extends Component {
+export default class AiSummaryModal extends Component {
   @service siteSettings;
   @service messageBus;
   @service currentUser;
   @service site;
+  @service modal;
 
   @tracked text = "";
   @tracked summarizedOn = null;
@@ -68,11 +71,11 @@ export default class AiSummaryBox extends Component {
   }
 
   get topRepliesSummaryEnabled() {
-    return this.args.outletArgs.postStream.summary;
+    return this.args.model.postStream.summary;
   }
 
   get topicId() {
-    return this.args.outletArgs.topic.id;
+    return this.args.model.topic.id;
   }
 
   get baseSummarizationURL() {
@@ -80,13 +83,8 @@ export default class AiSummaryBox extends Component {
   }
 
   @bind
-  subscribe(unsubscribe, [topicId]) {
-    const sameTopicId = this.args.outletArgs.topic.id === topicId;
-
-    if (unsubscribe && this._channel && !sameTopicId) {
-      this.unsubscribe();
-    }
-    const channel = `/discourse-ai/summaries/topic/${this.args.outletArgs.topic.id}`;
+  subscribe() {
+    const channel = `/discourse-ai/summaries/topic/${this.args.model.topic.id}`;
     this._channel = channel;
     this.messageBus.subscribe(channel, this._updateSummary);
   }
@@ -206,100 +204,72 @@ export default class AiSummaryBox extends Component {
   }
 
   @action
-  async onClose() {
-    await this.dMenu.close();
-    this.unsubscribe();
+  handleDidInsert() {
+    this.subscribe();
+    this.generateSummary();
+  }
+
+  @action
+  handleClose() {
+    this.modal.triggerElement = null; // prevent refocus of trigger, which changes scroll position
+    this.args.closeModal();
   }
 
   <template>
-    {{#if @outletArgs.topic.summarizable}}
-      <div
-        class="ai-summarization-button"
-        {{didInsert this.subscribe}}
-        {{didUpdate this.subscribe @outletArgs.topic.id}}
-        {{willDestroy this.unsubscribe}}
-      >
-        <DMenu
-          @onShow={{this.generateSummary}}
-          @arrow={{false}}
-          @identifier="topic-map__ai-summary"
-          @onRegisterApi={{this.onRegisterApi}}
-          @interactive={{true}}
-          @triggers="click"
-          @placement="left"
-          @modalForMobile={{true}}
-          @groupIdentifier="topic-map"
-          @inline={{true}}
-          @label={{i18n "summary.buttons.generate"}}
-          @title={{i18n "summary.buttons.generate"}}
-          @icon="discourse-sparkles"
-          @triggerClass="ai-topic-summarization"
-          @closeOnClickOutside={{false}}
-        >
-          <:content>
-            <div class="ai-summary-container">
-              <header class="ai-summary__header">
-                <h3>{{i18n "discourse_ai.summarization.topic.title"}}</h3>
-                {{#if this.site.desktopView}}
-                  <DButton
-                    @title="discourse_ai.summarization.topic.close"
-                    @action={{this.onClose}}
-                    @icon="times"
-                    class="btn-transparent ai-summary__close"
-                  />
-                {{/if}}
-              </header>
-
-              <article
-                class={{concatClass
-                  "ai-summary-box"
-                  "streamable-content"
-                  (if this.isStreaming "streaming")
-                }}
-              >
-                {{#if this.loading}}
-                  <AiSummarySkeleton />
-                {{else}}
-                  <div class="generated-summary cooked">
-                    <CookText @rawText={{this.streamedText}} />
-                  </div>
-                  {{#if this.summarizedOn}}
-                    <div class="summarized-on">
-                      <p>
-                        {{i18n "summary.summarized_on" date=this.summarizedOn}}
-                        <DTooltip @placements={{array "top-end"}}>
-                          <:trigger>
-                            {{dIcon "info-circle"}}
-                          </:trigger>
-                          <:content>
-                            {{i18n
-                              "summary.model_used"
-                              model=this.summarizedBy
-                            }}
-                          </:content>
-                        </DTooltip>
-                      </p>
-                      <div class="outdated-summary">
-                        {{#if this.outdated}}
-                          <p>{{this.outdatedSummaryWarningText}}</p>
-                        {{/if}}
-                        {{#if this.canRegenerate}}
-                          <DButton
-                            @label="summary.buttons.regenerate"
-                            @title="summary.buttons.regenerate"
-                            @action={{this.regenerateSummary}}
-                            @icon="sync"
-                          />
-                        {{/if}}
-                      </div>
-                    </div>
-                  {{/if}}
-                {{/if}}
-              </article>
-            </div>
-          </:content>
-        </DMenu>
-      </div>
-    {{/if}}
+    <DModal
+      @title={{i18n "discourse_ai.summarization.topic.title"}}
+      @closeModal={{this.handleClose}}
+      @bodyClass="ai-summary-modal__body"
+      class="ai-summary-modal"
+      {{didInsert this.handleDidInsert}}
+      {{didUpdate this.subscribe @model.topic.id}}
+      {{willDestroy this.unsubscribe}}
+      @hideFooter={{not this.summarizedOn}}
+    >
+      <:body>
+        {{htmlClass "scrollable-modal"}}
+        <div class="ai-summary-container">
+          <article
+            class={{concatClass
+              "ai-summary-box"
+              "streamable-content"
+              (if this.isStreaming "streaming")
+            }}
+          >
+            {{#if this.loading}}
+              <AiSummarySkeleton />
+            {{else}}
+              <div class="generated-summary cooked">
+                <CookText @rawText={{this.streamedText}} />
+              </div>
+            {{/if}}
+          </article>
+        </div>
+      </:body>
+      <:footer>
+        <p class="summarized-on">
+          {{i18n "summary.summarized_on" date=this.summarizedOn}}
+          <DTooltip @placements={{array "top-end"}}>
+            <:trigger>
+              {{dIcon "info-circle"}}
+            </:trigger>
+            <:content>
+              {{i18n "summary.model_used" model=this.summarizedBy}}
+            </:content>
+          </DTooltip>
+        </p>
+        {{#if this.outdated}}
+          <p class="summary-outdated">{{this.outdatedSummaryWarningText}}</p>
+        {{/if}}
+        {{#if this.canRegenerate}}
+          <DButton
+            @label="summary.buttons.regenerate"
+            @title="summary.buttons.regenerate"
+            @action={{this.regenerateSummary}}
+            @icon="sync"
+          />
+        {{/if}}
+      </:footer>
+    </DModal>
   </template>
 }

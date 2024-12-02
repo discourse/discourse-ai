@@ -2,7 +2,7 @@
 
 module PageObjects
   module Components
-    class AiSummaryBox < PageObjects::Components::Base
+    class AiSummaryTrigger < PageObjects::Components::Base
       SUMMARY_BUTTON_SELECTOR = ".ai-summarization-button button"
       SUMMARY_CONTAINER_SELECTOR = ".ai-summary-container"
 

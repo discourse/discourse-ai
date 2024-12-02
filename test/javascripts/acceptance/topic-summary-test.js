@@ -39,7 +39,7 @@ acceptance("Topic - Summary", function (needs) {
       ai_topic_summary: { summarized_text: partialSummary },
     });
 
-    await click(".ai-topic-summarization");
+    await click(".ai-summarization-button");
 
     assert
       .dom(".ai-summary-box .generated-summary p")
@@ -76,7 +76,7 @@ acceptance("Topic - Summary", function (needs) {
       ai_topic_summary: { summarized_text: partialSummary },
     });
 
-    await click(".ai-topic-summarization");
+    await click(".ai-summarization-button");
     const finalSummaryCooked =
       "In this post,  <a href='/t/-/1/1'>bianca</a> said some stuff.";
     const finalSummaryResult = "In this post, bianca said some stuff.";
@@ -128,7 +128,7 @@ acceptance("Topic - Summary - Anon", function (needs) {
   test("displays cached summary immediately", async function (assert) {
     await visit("/t/-/1");
 
-    await click(".ai-topic-summarization");
+    await click(".ai-summarization-button");
 
     assert
       .dom(".ai-summary-box .generated-summary p")
@@ -141,7 +141,7 @@ acceptance("Topic - Summary - Anon", function (needs) {
 
   test("clicking outside of summary should not close the summary box", async function (assert) {
     await visit("/t/-/1");
-    await click(".ai-topic-summarization");
+    await click(".ai-summarization-button");
     await click("#main-outlet-wrapper");
     assert.dom(".ai-summary-box").exists();
   });

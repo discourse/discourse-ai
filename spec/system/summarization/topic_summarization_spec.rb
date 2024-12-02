@@ -14,7 +14,7 @@ RSpec.describe "Summarize a topic ", type: :system do
   end
   let(:summarization_result) { "This is a summary" }
   let(:topic_page) { PageObjects::Pages::Topic.new }
-  let(:summary_box) { PageObjects::Components::AiSummaryBox.new }
+  let(:summary_box) { PageObjects::Components::AiSummaryTrigger.new }
 
   before do
     group.add(current_user)
