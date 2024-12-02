@@ -17,6 +17,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
   let(:ai_suggestion_dropdown) { PageObjects::Components::AiSuggestionDropdown.new }
   let(:toasts) { PageObjects::Components::Toasts.new }
+  let(:topic_page) { PageObjects::Pages::Topic.new }
 
   fab!(:category)
   fab!(:category_2) { Fabricate(:category) }
@@ -25,6 +26,18 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   fab!(:cloud) { Fabricate(:tag) }
   fab!(:feedback) { Fabricate(:tag) }
   fab!(:review) { Fabricate(:tag) }
+  fab!(:topic) { Fabricate(:topic, category: category, tags: [video, music]) }
+  fab!(:post) do
+    Fabricate(
+      :post,
+      topic: topic,
+      raw:
+        "I like to eat pie. It is a very good dessert. Some people are wasteful by throwing pie at others but I do not do that. I always eat the pie.",
+    )
+  end
+  fab!(:post_2) do
+    Fabricate(:post, topic: topic, raw: "La lluvia en España se queda principalmente en el avión.")
+  end
 
   def trigger_composer_helper(content)
     visit("/latest")
@@ -266,7 +279,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     it "updates the tag with the suggested tag" do
       response =
         Tag
-          .take(5)
+          .take(7)
           .pluck(:name)
           .map { |s| { name: s, score: rand(0.0...45.0) } }
           .sort { |h| h[:score] }
@@ -285,6 +298,25 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       tag_selector = page.find(".mini-tag-chooser summary")
 
       expect(tag_selector["data-name"]).to eq(suggestion)
+    end
+
+    it "does not suggest tags that already exist" do
+      response =
+        Tag
+          .take(7)
+          .pluck(:name)
+          .map { |s| { name: s, score: rand(0.0...45.0) } }
+          .sort { |h| h[:score] }
+      DiscourseAi::AiHelper::SemanticCategorizer.any_instance.stubs(:tags).returns(response)
+
+      topic_page.visit_topic(topic)
+      page.find(".edit-topic").click
+      page.find(".ai-tag-suggester-trigger").click
+      tag1_css = ".ai-tag-suggester-content btn[data-name='#{video.name}']"
+      tag2_css = ".ai-tag-suggester-content btn[data-name='#{music.name}']"
+
+      expect(page).to have_no_css(tag1_css)
+      expect(page).to have_no_css(tag2_css)
     end
   end
 

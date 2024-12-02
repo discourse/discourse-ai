@@ -78,7 +78,7 @@ module DiscourseAi
           .group_by { |c| c[:name] }
           .map { |name, scores| { name: name, score: scores.sum { |s| s[:score] } } }
           .sort_by { |c| -c[:score] }
-          .take(5)
+          .take(7)
           .then do |tags|
             models = Tag.where(name: tags.map { _1[:name] }).index_by(&:name)
             tags.map do |tag|
