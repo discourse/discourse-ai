@@ -64,6 +64,13 @@ RSpec.describe Jobs::SummariesBackfill do
 
       expect(subject.backfill_candidates(type).map(&:id)).to contain_exactly(topic_2.id, topic.id)
     end
+
+    it "respects max age setting" do
+      SiteSetting.ai_summary_backfill_topic_max_age_days = 1
+      topic.update!(created_at: 2.days.ago)
+
+      expect(subject.backfill_candidates(type)).to be_empty
+    end
   end
 
   describe "#execute" do
@@ -80,7 +87,7 @@ RSpec.describe Jobs::SummariesBackfill do
       gist_2 = "Gist of topic"
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
-        [summary_1, summary_2, gist_1, gist_2],
+        [gist_1, gist_2, summary_1, summary_2],
       ) { subject.execute({}) }
 
       expect(AiSummary.complete.find_by(target: topic_2).summarized_text).to eq(summary_1)
