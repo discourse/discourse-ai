@@ -68,8 +68,6 @@ after_initialize do
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,
-    DiscourseAi::Nsfw::EntryPoint.new,
-    DiscourseAi::Toxicity::EntryPoint.new,
     DiscourseAi::Sentiment::EntryPoint.new,
     DiscourseAi::AiHelper::EntryPoint.new,
     DiscourseAi::Summarization::EntryPoint.new,

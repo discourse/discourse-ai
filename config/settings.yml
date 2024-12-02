@@ -10,55 +10,6 @@ discourse_ai:
       - "disabled"
       - "lax"
       - "strict"
-  ai_toxicity_enabled:
-    default: false
-    client: true
-    hidden: true
-  ai_toxicity_inference_service_api_endpoint:
-    default: ""
-  ai_toxicity_inference_service_api_endpoint_srv:
-    default: ""
-    hidden: true
-  ai_toxicity_inference_service_api_key:
-    default: ""
-    secret: true
-  ai_toxicity_inference_service_api_model:
-    type: enum
-    default: unbiased
-    choices:
-      - unbiased
-      - multilingual
-      - original
-  ai_toxicity_flag_automatically:
-    default: false
-    client: false
-  ai_toxicity_flag_threshold_toxicity:
-    default: 80
-    client: false
-  ai_toxicity_flag_threshold_severe_toxicity:
-    default: 30
-    client: false
-  ai_toxicity_flag_threshold_obscene:
-    default: 80
-    client: false
-  ai_toxicity_flag_threshold_identity_attack:
-    default: 60
-    client: false
-  ai_toxicity_flag_threshold_insult:
-    default: 60
-    client: false
-  ai_toxicity_flag_threshold_threat:
-    default: 60
-    client: false
-  ai_toxicity_flag_threshold_sexual_explicit:
-    default: 60
-    client: false
-  ai_toxicity_groups_bypass:
-    type: group_list
-    list_type: compact
-    default: "3" # 3: @staff
-    allow_any: false
-    refresh: true
 
   ai_sentiment_enabled:
     default: false
@@ -67,50 +18,6 @@ discourse_ai:
     default: ""
     json_schema: DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema
 
-  ai_nsfw_detection_enabled:
-    default: false
-    hidden: true
-  ai_nsfw_inference_service_api_endpoint:
-    default: ""
-  ai_nsfw_inference_service_api_endpoint_srv:
-    default: ""
-    hidden: true
-  ai_nsfw_inference_service_api_key:
-    default: ""
-    secret: true
-  ai_nsfw_flag_automatically: true
-  ai_nsfw_flag_threshold_general: 60
-  ai_nsfw_flag_threshold_drawings: 60
-  ai_nsfw_flag_threshold_hentai: 60
-  ai_nsfw_flag_threshold_porn: 60
-  ai_nsfw_flag_threshold_sexy: 70
-  ai_nsfw_models:
-    type: list
-    list_type: compact
-    default: "opennsfw2"
-    allow_any: false
-    choices:
-      - opennsfw2
-      - nsfw_detector
-
-  ai_openai_gpt35_url:
-    default: "https://api.openai.com/v1/chat/completions"
-    hidden: true
-  ai_openai_gpt35_16k_url:
-    default: "https://api.openai.com/v1/chat/completions"
-    hidden: true
-  ai_openai_gpt4o_url:
-    default: "https://api.openai.com/v1/chat/completions"
-    hidden: true
-  ai_openai_gpt4_url:
-    default: "https://api.openai.com/v1/chat/completions"
-    hidden: true
-  ai_openai_gpt4_32k_url:
-    default: "https://api.openai.com/v1/chat/completions"
-    hidden: true
-  ai_openai_gpt4_turbo_url:
-    default: "https://api.openai.com/v1/chat/completions"
-    hidden: true
   ai_openai_dall_e_3_url: "https://api.openai.com/v1/images/generations"
   ai_openai_embeddings_url: "https://api.openai.com/v1/embeddings"
   ai_openai_organization:
@@ -119,12 +26,6 @@ discourse_ai:
   ai_openai_api_key:
     default: ""
     secret: true
-  ai_anthropic_api_key:
-    default: ""
-    hidden: true
-  ai_cohere_api_key:
-    default: ""
-    hidden: true
   ai_stability_api_key:
     default: ""
     secret: true
@@ -139,18 +40,6 @@ discourse_ai:
       - "stable-diffusion-xl-1024-v1-0"
       - "stable-diffusion-768-v2-1"
       - "stable-diffusion-v1-5"
-  ai_hugging_face_api_url:
-    default: ""
-    hidden: true
-  ai_hugging_face_api_key:
-    default: ""
-    hidden: true
-  ai_hugging_face_token_limit:
-    default: 4096
-    hidden: true
-  ai_hugging_face_model_display_name:
-    default: ""
-    hidden: true
   ai_hugging_face_tei_endpoint:
     default: ""
   ai_hugging_face_tei_endpoint_srv:
@@ -168,16 +57,6 @@ discourse_ai:
     secret: true
   ai_google_custom_search_cx:
     default: ""
-  ai_bedrock_access_key_id:
-    default: ""
-    secret: true
-    hidden: true
-  ai_bedrock_secret_access_key:
-    default: ""
-    hidden: true
-  ai_bedrock_region:
-    default: "us-east-1"
-    hidden: true
   ai_cloudflare_workers_account_id:
     default: ""
     secret: true
@@ -187,30 +66,9 @@ discourse_ai:
   ai_gemini_api_key:
     default: ""
     hidden: false
-  ai_vllm_endpoint:
-    default: ""
-    hidden: true
-  ai_vllm_endpoint_srv:
-    default: ""
-    hidden: true
-  ai_vllm_api_key:
-    default: ""
-    hidden: true
-  ai_llava_endpoint:
-    default: ""
-    hidden: true
-  ai_llava_endpoint_srv:
-    default: ""
-    hidden: true
-  ai_llava_api_key:
-    default: ""
-    hidden: true
   ai_strict_token_counting:
     default: false
     hidden: true
-  ai_ollama_endpoint:
-    hidden: true
-    default: ""
 
   ai_helper_enabled:
     default: false

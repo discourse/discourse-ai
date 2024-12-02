@@ -65,6 +65,10 @@ module DiscourseAi
         store_classification(target, results)
       end
 
+      def classifiers
+        DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema.values
+      end
+
       private
 
       def prepare_text(target)
@@ -76,10 +80,6 @@ module DiscourseAi
           end
 
         Tokenizer::BertTokenizer.truncate(content, 512)
-      end
-
-      def classifiers
-        DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema.values
       end
 
       def request_with(content, config, base_url = Discourse.base_url)
