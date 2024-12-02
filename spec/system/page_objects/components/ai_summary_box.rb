@@ -3,7 +3,7 @@
 module PageObjects
   module Components
     class AiSummaryTrigger < PageObjects::Components::Base
-      SUMMARY_BUTTON_SELECTOR = ".ai-summarization-button button"
+      SUMMARY_BUTTON_SELECTOR = ".ai-summarization-button"
       SUMMARY_CONTAINER_SELECTOR = ".ai-summary-container"
 
       def click_summarize
@@ -11,7 +11,7 @@ module PageObjects
       end
 
       def click_regenerate_summary
-        find("#{SUMMARY_CONTAINER_SELECTOR} .outdated-summary button").click
+        find("#{SUMMARY_CONTAINER_SELECTOR} .ai-summary-modal .d-modal__footer button").click
       end
 
       def has_summary?(summary)
