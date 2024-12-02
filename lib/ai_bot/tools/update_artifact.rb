@@ -51,7 +51,7 @@ module DiscourseAi
           {
             name: "update_artifact",
             description:
-              "Updates an existing web artifact with new HTML, CSS, or JavaScript content.",
+            "Updates an existing web artifact with new HTML, CSS, or JavaScript content. Note either html, css, or js MUST be provided. You may provide all three if desired.",
             parameters: [
               {
                 name: "artifact_id",
@@ -59,26 +59,18 @@ module DiscourseAi
                 type: "integer",
                 required: true,
               },
-              {
-                name: "html",
-                description: "(Optional) new HTML content for the artifact",
-                type: "string",
-              },
-              {
-                name: "css",
-                description: "(Optional) new CSS content for the artifact",
-                type: "string",
-              },
+              { name: "html", description: "new HTML content for the artifact", type: "string" },
+              { name: "css", description: "new CSS content for the artifact", type: "string" },
               {
                 name: "js",
-                description: "(Optional) new JavaScript content for the artifact",
+                description: "new JavaScript content for the artifact",
                 type: "string",
               },
               {
                 name: "change_description",
-                description: "A brief description of the changes being made",
+                description:
+                  "A brief description of the changes being made. Note: This only documents the change - you must provide the actual content in html/css/js parameters to make changes.",
                 type: "string",
-                required: true,
               },
             ],
           }
@@ -122,7 +114,7 @@ module DiscourseAi
                 html: parameters[:html] || last_version&.html || artifact.html,
                 css: parameters[:css] || last_version&.css || artifact.css,
                 js: parameters[:js] || last_version&.js || artifact.js,
-                change_description: parameters[:change_description],
+                change_description: parameters[:change_description].to_s,
               )
 
             update_custom_html(artifact, version)
