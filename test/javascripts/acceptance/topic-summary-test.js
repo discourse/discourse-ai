@@ -63,7 +63,7 @@ acceptance("Topic - Summary", function (needs) {
       .hasText(finalSummary, "Updates the summary with a final result");
 
     assert
-      .dom(".ai-summary-box .summarized-on")
+      .dom(".ai-summary-modal .summarized-on")
       .exists("summary metadata exists");
   });
 
@@ -135,7 +135,7 @@ acceptance("Topic - Summary - Anon", function (needs) {
       .hasText(finalSummary, "Updates the summary with the result");
 
     assert
-      .dom(".ai-summary-box .summarized-on")
+      .dom(".ai-summary-modal .summarized-on")
       .exists("summary metadata exists");
   });
 
