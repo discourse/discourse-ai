@@ -26,34 +26,38 @@ function attachHeaderIcon(api) {
 function initializeAIBotReplies(api) {
   initializePauseButton(api);
 
-  api.modifyClass("controller:topic", {
-    pluginId: "discourse-ai",
+  api.modifyClass(
+    "controller:topic",
+    (Superclass) =>
+      class extends Superclass {
+        onAIBotStreamedReply(data) {
+          streamPostText(this.model.postStream, data);
+        }
 
-    onAIBotStreamedReply: function (data) {
-      streamPostText(this.model.postStream, data);
-    },
-    subscribe: function () {
-      this._super();
+        subscribe() {
+          super.subscribe();
 
-      if (
-        this.model.isPrivateMessage &&
-        this.model.details.allowed_users &&
-        this.model.details.allowed_users.filter(isGPTBot).length >= 1
-      ) {
-        // we attempt to recover the last message in the bus
-        // so we subscribe at -2
-        this.messageBus.subscribe(
-          `discourse-ai/ai-bot/topic/${this.model.id}`,
-          this.onAIBotStreamedReply.bind(this),
-          -2
-        );
+          if (
+            this.model.isPrivateMessage &&
+            this.model.details.allowed_users &&
+            this.model.details.allowed_users.filter(isGPTBot).length >= 1
+          ) {
+            // we attempt to recover the last message in the bus
+            // so we subscribe at -2
+            this.messageBus.subscribe(
+              `discourse-ai/ai-bot/topic/${this.model.id}`,
+              this.onAIBotStreamedReply.bind(this),
+              -2
+            );
+          }
+        }
+
+        unsubscribe() {
+          this.messageBus.unsubscribe("discourse-ai/ai-bot/topic/*");
+          super.unsubscribe();
+        }
       }
-    },
-    unsubscribe: function () {
-      this.messageBus.unsubscribe("discourse-ai/ai-bot/topic/*");
-      this._super();
-    },
-  });
+  );
 }
 
 function initializePersonaDecorator(api) {
