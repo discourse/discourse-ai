@@ -439,7 +439,7 @@ en:
 
     llm_models:
       missing_provider_param: "%{param} can't be blank"
-      bedrock_invalid_url: "Please complete all the fields to contact this model."
+      bedrock_invalid_url: "Please complete all the fields to use this model."
 
     errors:
       no_query_specified: The query parameter is required, please specify it.
