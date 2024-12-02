@@ -22,7 +22,7 @@ module DiscourseAi
         values
           .filter do |value_h|
             value_h["id"] > 0 ||
-              SiteSetting.ai_automation_allowed_seeded_models_map.includes?(value_h["id"].to_s)
+              SiteSetting.ai_automation_allowed_seeded_models_map.include?(value_h["id"].to_s)
           end
           .each { |value_h| value_h["id"] = "custom:#{value_h["id"]}" }
 
