@@ -87,7 +87,7 @@ RSpec.describe Jobs::SummariesBackfill do
       gist_2 = "Gist of topic"
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
-        [summary_1, summary_2, gist_1, gist_2],
+        [gist_1, gist_2, summary_1, summary_2],
       ) { subject.execute({}) }
 
       expect(AiSummary.complete.find_by(target: topic_2).summarized_text).to eq(summary_1)
