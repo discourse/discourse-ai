@@ -99,7 +99,11 @@ module DiscourseAi
               Tools::JavascriptEvaluator,
             ]
 
-            tools << Tools::CreateArtifact if SiteSetting.ai_artifact_security.in?(%w[lax strict])
+            if SiteSetting.ai_artifact_security.in?(%w[lax strict])
+              tools << Tools::CreateArtifact
+              tools << Tools::UpdateArtifact
+            end
+
             tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
 
             tools << Tools::ListTags if SiteSetting.tagging_enabled

@@ -36,6 +36,7 @@ DiscourseAi::Engine.routes.draw do
 
   scope module: :ai_bot, path: "/ai-bot/artifacts" do
     get "/:id" => "artifacts#show"
+    get "/:id/:version" => "artifacts#show"
   end
 
   scope module: :summarization, path: "/summarization", defaults: { format: :json } do

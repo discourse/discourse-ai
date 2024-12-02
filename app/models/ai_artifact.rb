@@ -1,23 +1,29 @@
 # frozen_string_literal: true
 
 class AiArtifact < ActiveRecord::Base
+  has_many :versions, class_name: "AiArtifactVersion", dependent: :destroy
   belongs_to :user
   belongs_to :post
   validates :html, length: { maximum: 65_535 }
   validates :css, length: { maximum: 65_535 }
   validates :js, length: { maximum: 65_535 }
 
-  def self.iframe_for(id)
+  def self.iframe_for(id, version = nil)
     <<~HTML
       <div class='ai-artifact'>
-        <iframe src='#{url(id)}' frameborder="0" height="100%" width="100%"></iframe>
-        <a href='#{url(id)}' target='_blank'>#{I18n.t("discourse_ai.ai_artifact.link")}</a>
+        <iframe src='#{url(id, version)}' frameborder="0" height="100%" width="100%"></iframe>
+        <a href='#{url(id, version)}' target='_blank'>#{I18n.t("discourse_ai.ai_artifact.link")}</a>
       </div>
     HTML
   end
 
-  def self.url(id)
-    Discourse.base_url + "/discourse-ai/ai-bot/artifacts/#{id}"
+  def self.url(id, version = nil)
+    url = Discourse.base_url + "/discourse-ai/ai-bot/artifacts/#{id}"
+    if version
+      "#{url}/#{version}"
+    else
+      url
+    end
   end
 
   def self.share_publicly(id:, post:)
@@ -32,6 +38,37 @@ class AiArtifact < ActiveRecord::Base
 
   def url
     self.class.url(id)
+  end
+
+  def apply_diff(html_diff: nil, css_diff: nil, js_diff: nil, change_description: nil)
+    differ = DiscourseAi::Utils::DiffUtils
+
+    html = html_diff ? differ.apply_hunk(self.html, html_diff) : self.html
+    css = css_diff ? differ.apply_hunk(self.css, css_diff) : self.css
+    js = js_diff ? differ.apply_hunk(self.js, js_diff) : self.js
+
+    create_new_version(html: html, css: css, js: js, change_description: change_description)
+  end
+
+  def create_new_version(html: nil, css: nil, js: nil, change_description: nil)
+    latest_version = versions.order(version_number: :desc).first
+    new_version_number = latest_version ? latest_version.version_number + 1 : 1
+    version = nil
+
+    transaction do
+      # Create the version record
+      version =
+        versions.create!(
+          version_number: new_version_number,
+          html: html || self.html,
+          css: css || self.css,
+          js: js || self.js,
+          change_description: change_description,
+        )
+      save!
+    end
+
+    version
   end
 end
 
