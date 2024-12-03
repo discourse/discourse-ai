@@ -51,13 +51,19 @@ class SentimentInferenceStubs
           { score: 0.0023369535, label: "surprise" },
           { score: 0.001663634, label: "joy" },
         ]
+      else
+        [
+          { score: 0.1, label: "label 1" },
+          { score: 0.2, label: "label 2" },
+          { score: 0.3, label: "label 3" },
+        ]
       end
     end
 
     def stub_classification(post)
       content = post.post_number == 1 ? "#{post.topic.title}\n#{post.raw}" : post.raw
 
-      DiscourseAi::Sentiment::PostClassification.new.classifiers.each do |model_config|
+      DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema.values.each do |model_config|
         WebMock
           .stub_request(:post, model_config.endpoint)
           .with(body: JSON.dump(inputs: content, truncate: true))

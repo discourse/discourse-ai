@@ -27,6 +27,7 @@ module DiscourseAi
       end
 
       def self.values
+        return {} if SiteSetting.ai_sentiment_model_configs.blank?
         JSON.parse(SiteSetting.ai_sentiment_model_configs, object_class: OpenStruct)
       end
     end
