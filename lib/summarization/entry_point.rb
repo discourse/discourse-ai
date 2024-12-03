@@ -17,9 +17,12 @@ module DiscourseAi
           scope.can_see_summary?(object.topic)
         end
 
+        # Don't add gists to the following topic lists.
+        gist_skipped_lists = %i[suggested semantic_related]
+
         plugin.register_modifier(:topic_query_create_list_topics) do |topics, options|
-          if Discourse.filters.include?(options[:filter]) && SiteSetting.ai_summarization_enabled &&
-               SiteSetting.ai_summary_gists_enabled
+          if SiteSetting.ai_summarization_enabled && SiteSetting.ai_summary_gists_enabled &&
+               !gist_skipped_lists.include?(options[:filter])
             topics.includes(:ai_gist_summary)
           else
             topics
@@ -31,7 +34,7 @@ module DiscourseAi
           :ai_topic_gist,
           include_condition: -> { scope.can_see_gists? },
         ) do
-          return if !Discourse.filters.include?(options[:filter])
+          return if gist_skipped_lists.include?(options[:filter])
           object.ai_gist_summary&.summarized_text
         end
 
