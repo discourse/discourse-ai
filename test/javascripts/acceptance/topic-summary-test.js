@@ -22,7 +22,12 @@ acceptance("Topic - Summary", function (needs) {
     });
 
     server.get("/discourse-ai/summarization/t/1", () => {
-      return helper.response({});
+      return helper.response({
+        ai_topic_summary: {
+          summarized_text: "This a",
+        },
+        done: false,
+      });
     });
   });
 

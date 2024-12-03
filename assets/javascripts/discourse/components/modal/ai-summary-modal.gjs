@@ -204,12 +204,6 @@ export default class AiSummaryModal extends Component {
   }
 
   @action
-  handleDidInsert() {
-    this.subscribe();
-    this.generateSummary();
-  }
-
-  @action
   handleClose() {
     this.modal.triggerElement = null; // prevent refocus of trigger, which changes scroll position
     this.args.closeModal();
@@ -221,14 +215,14 @@ export default class AiSummaryModal extends Component {
       @closeModal={{this.handleClose}}
       @bodyClass="ai-summary-modal__body"
       class="ai-summary-modal"
-      {{didInsert this.handleDidInsert}}
+      {{didInsert this.subscribe @model.topic.id}}
       {{didUpdate this.subscribe @model.topic.id}}
       {{willDestroy this.unsubscribe}}
       @hideFooter={{not this.summarizedOn}}
     >
       <:body>
         {{htmlClass "scrollable-modal"}}
-        <div class="ai-summary-container">
+        <div class="ai-summary-container" {{didInsert this.generateSummary}}>
           <article
             class={{concatClass
               "ai-summary-box"
@@ -251,7 +245,7 @@ export default class AiSummaryModal extends Component {
           {{i18n "summary.summarized_on" date=this.summarizedOn}}
           <DTooltip @placements={{array "top-end"}}>
             <:trigger>
-              {{dIcon "info-circle"}}
+              {{dIcon "circle-info"}}
             </:trigger>
             <:content>
               {{i18n "summary.model_used" model=this.summarizedBy}}
