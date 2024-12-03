@@ -5,7 +5,10 @@ module DiscourseAi
     class PostClassification
       def self.backfill_query(from_post_id: nil, max_age_days: nil)
         available_classifier_names =
-          DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema.values.map(&:model_name).sort
+          DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema
+            .values
+            .map { |mc| mc.model_name.downcase }
+            .sort
 
         base_query =
           Post
@@ -24,7 +27,9 @@ module DiscourseAi
             .group("posts.id")
             .having(<<~SQL, available_classifier_names)
               COUNT(crs.model_used) = 0
-              OR array_agg(DISTINCT crs.model_used ORDER BY crs.model_used)::text[] IS DISTINCT FROM array[?]
+              OR array_agg(
+                  DISTINCT LOWER(crs.model_used) ORDER BY LOWER(crs.model_used)
+                )::text[] IS DISTINCT FROM array[?]
             SQL
 
         base_query = base_query.where("posts.id >= ?", from_post_id.to_i) if from_post_id.present?
