@@ -37,7 +37,7 @@ class CompletionPrompt < ActiveRecord::Base
 
     prompt = DiscourseAi::Completions::Prompt.new(instructions)
 
-    messages_hash[:examples].to_a do |example_pair|
+    messages_hash[:examples].to_a.each do |example_pair|
       prompt.push(type: :user, content: example_pair.first)
       prompt.push(type: :model, content: example_pair.second)
     end
