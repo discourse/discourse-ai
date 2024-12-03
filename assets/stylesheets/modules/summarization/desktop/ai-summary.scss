@@ -1,39 +1,27 @@
-.topic-map {
-  .ai-summarization-button {
-    .fk-d-menu {
-      position: fixed;
-      top: calc(var(--header-offset) + 1rem) !important;
-      left: unset !important;
-      right: 1rem !important;
-      width: 470px;
-      max-width: 470px !important; //overruling JS
-      max-height: calc(
-        100vh - var(--header-offset) - 3rem - var(--composer-height, 0px)
-      );
+html.scrollable-modal {
+  overflow: auto; // overrides core .modal-open class scroll lock
+}
 
-      .ai-summary__header,
-      .ai-summary-box {
-        padding: 0.75em 1rem;
-        box-sizing: border-box;
-      }
+.ai-summary-modal {
+  .d-modal__container {
+    position: fixed;
+    top: var(--header-offset);
+    margin-top: 1em;
+    right: 1em;
+    width: 100vw;
+    max-width: 30em;
+    max-height: calc(
+      100vh - var(--header-offset) - 3rem - var(--composer-height, 0px)
+    );
 
-      .ai-summary {
-        &__header {
-          position: sticky;
-          top: 0;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-block: 0.5rem;
-          padding-right: 0.5rem;
-          background: var(--secondary);
-          border-bottom: 1px solid var(--primary-low);
-
-          h3 {
-            margin: 0;
-          }
-        }
-      }
-    }
+    box-shadow: var(--shadow-menu-panel);
   }
+
+  .fullscreen-composer & {
+    display: none;
+  }
+}
+
+.ai-summary-modal + .d-modal__backdrop {
+  display: none;
 }

@@ -24,25 +24,9 @@
       }
     }
   }
-
-  .topic-map__additional-contents {
-    .ai-summarization-button {
-      padding-block: 0.5em;
-      display: flex;
-      gap: 0.5em;
-
-      button span {
-        white-space: nowrap;
-      }
-    }
-  }
 }
 
-.topic-map__ai-summary-content {
-  .ai-summary-container {
-    width: 100vw;
-  }
-
+.ai-summary-modal {
   .ai-summary {
     &__list {
       list-style: none;
@@ -174,14 +158,6 @@
     margin: 0;
   }
 
-  .summarized-on p {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.25em;
-    margin-bottom: 0;
-  }
-
   .outdated-summary {
     display: flex;
     flex-direction: column;
@@ -191,6 +167,40 @@
     }
     p {
       color: var(--primary-medium);
+    }
+  }
+
+  .d-modal__footer {
+    display: grid;
+    gap: 0;
+    grid-template-areas: "summarized regenerate" " outdated regenerate";
+    grid-template-columns: 1fr auto;
+    @include breakpoint(mobile-large) {
+      gap: 0.25em 0.5em;
+      grid-template-areas: "summarized summarized" "regenerate outdated";
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .fk-d-tooltip__trigger {
+      vertical-align: text-top;
+    }
+
+    .summary-outdated {
+      color: var(--primary-high);
+      font-size: var(--font-down-1);
+      line-height: var(--line-height-medium);
+    }
+
+    .summarized-on {
+      grid-area: summarized;
+    }
+
+    button {
+      grid-area: regenerate;
+      justify-self: start;
     }
   }
 }

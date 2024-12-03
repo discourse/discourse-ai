@@ -20,7 +20,6 @@ register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 register_asset "stylesheets/modules/ai-helper/desktop/ai-helper-fk-modals.scss", :desktop
 register_asset "stylesheets/modules/ai-helper/mobile/ai-helper.scss", :mobile
 
-register_asset "stylesheets/modules/summarization/mobile/ai-summary.scss", :mobile
 register_asset "stylesheets/modules/summarization/common/ai-summary.scss"
 register_asset "stylesheets/modules/summarization/desktop/ai-summary.scss", :desktop
 
