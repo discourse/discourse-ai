@@ -135,6 +135,7 @@ export default class AiPostHelperTrigger extends Component {
         identifier: "ai-post-helper-menu",
         component: AiPostHelperMenu,
         inline: true,
+        interactive: true,
         placement: this.shouldRenderUnder ? "bottom-start" : "top-start",
         fallbackPlacements: this.shouldRenderUnder
           ? ["bottom-end", "top-start"]
