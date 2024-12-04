@@ -5,43 +5,43 @@ module DiscourseAi
     class PostClassification
       def self.backfill_query(from_post_id: nil, max_age_days: nil)
         available_classifier_names =
-          DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema
-            .values
-            .map { |mc| mc.model_name.downcase }
-            .sort
+          DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema.values.map { _1.model_name }
 
-        base_query =
-          Post
-            .includes(:sentiment_classifications)
-            .joins("INNER JOIN topics ON topics.id = posts.topic_id")
-            .where(post_type: Post.types[:regular])
-            .where.not(topics: { archetype: Archetype.private_message })
-            .where(posts: { deleted_at: nil })
-            .where(topics: { deleted_at: nil })
-            .joins(<<~SQL)
-              LEFT JOIN classification_results crs
-                ON crs.target_id = posts.id 
-                AND crs.target_type = 'Post'
-                AND crs.classification_type = 'sentiment'
-            SQL
-            .group("posts.id")
-            .having(<<~SQL, available_classifier_names)
-              COUNT(crs.model_used) = 0
-              OR array_agg(
-                  DISTINCT LOWER(crs.model_used) ORDER BY LOWER(crs.model_used)
-                )::text[] IS DISTINCT FROM array[?]
-            SQL
+        queries =
+          available_classifier_names.map do |classifier_name|
+            base_query =
+              Post
+                .includes(:sentiment_classifications)
+                .joins("INNER JOIN topics ON topics.id = posts.topic_id")
+                .where(post_type: Post.types[:regular])
+                .where.not(topics: { archetype: Archetype.private_message })
+                .where(posts: { deleted_at: nil })
+                .where(topics: { deleted_at: nil })
+                .joins(<<~SQL)
+                LEFT JOIN classification_results crs
+                  ON crs.target_id = posts.id
+                  AND crs.target_type = 'Post'
+                  AND crs.classification_type = 'sentiment'
+                  AND crs.model_used = '#{classifier_name}'
+              SQL
+                .where("crs.id IS NULL")
 
-        base_query = base_query.where("posts.id >= ?", from_post_id.to_i) if from_post_id.present?
+            base_query =
+              base_query.where("posts.id >= ?", from_post_id.to_i) if from_post_id.present?
 
-        if max_age_days.present?
-          base_query =
-            base_query.where(
-              "posts.created_at > current_date - INTERVAL '#{max_age_days.to_i} DAY'",
-            )
-        end
+            if max_age_days.present?
+              base_query =
+                base_query.where(
+                  "posts.created_at > current_date - INTERVAL '#{max_age_days.to_i} DAY'",
+                )
+            end
 
-        base_query
+            base_query
+          end
+
+        unioned_queries = queries.map(&:to_sql).join(" UNION ")
+
+        Post.from(Arel.sql("(#{unioned_queries}) as posts"))
       end
 
       def bulk_classify!(relation)
