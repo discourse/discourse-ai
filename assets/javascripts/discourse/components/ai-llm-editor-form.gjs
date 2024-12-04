@@ -172,13 +172,13 @@ export default class AiLlmEditorForm extends Component {
   <template>
     {{#if this.seeded}}
       <div class="alert alert-info">
-        {{icon "exclamation-circle"}}
+        {{icon "circle-exclamation"}}
         {{i18n "discourse_ai.llms.seeded_warning"}}
       </div>
     {{/if}}
     {{#if this.modulesUsingModel}}
       <div class="alert alert-info">
-        {{icon "exclamation-circle"}}
+        {{icon "circle-exclamation"}}
         {{this.inUseWarning}}
       </div>
     {{/if}}
@@ -354,7 +354,7 @@ export default class AiLlmEditorForm extends Component {
               </div>
             {{else}}
               <div class="ai-llm-editor-tests__failure">
-                {{icon "times"}}
+                {{icon "xmark"}}
                 {{this.testErrorMessage}}
               </div>
             {{/if}}
