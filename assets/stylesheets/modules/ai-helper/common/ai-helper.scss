@@ -263,7 +263,7 @@
 .ai-category-suggester-content,
 .ai-tag-suggester-content,
 .ai-title-suggester-content {
-  z-index: z("header");
+  z-index: z("composer", "dropdown");
 }
 
 .ai-suggestions-menu .btn {
