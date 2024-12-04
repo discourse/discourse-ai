@@ -115,7 +115,7 @@ export default class AiCategorySuggester extends Component {
         @icon={{this.triggerIcon}}
         @identifier="ai-category-suggester"
         @onClose={{this.onClose}}
-        @triggerClass="suggestion-button suggest-category-button {{if
+        @triggerClass="btn-transparent suggestion-button suggest-category-button {{if
           this.loading
           'is-loading'
         }}"
