@@ -1,15 +1,13 @@
-import { click, visit } from "@ember/test-helpers";
+import { click, settled, visit } from "@ember/test-helpers";
 import { test } from "qunit";
+import { AUTO_GROUPS } from "discourse/lib/constants";
 import topicFixtures from "discourse/tests/fixtures/topic";
-import { settled, focus } from "@ember/test-helpers";
 import {
   acceptance,
   publishToMessageBus,
-  updateCurrentUser,
-  selectText,
   query,
+  selectText,
 } from "discourse/tests/helpers/qunit-helpers";
-import { AUTO_GROUPS } from "discourse/lib/constants";
 import { cloneJSON } from "discourse-common/lib/object";
 import aiHelperPrompts from "../fixtures/ai-helper-prompts";
 
@@ -46,7 +44,7 @@ acceptance("AI Helper - Post Helper Menu", function (needs) {
       return helper.response(json);
     });
 
-    server.post(`/discourse-ai/ai-helper/stream_suggestion/`, (request) => {
+    server.post(`/discourse-ai/ai-helper/stream_suggestion/`, () => {
       return helper.response({
         result: "This is a suggestio",
         done: false,

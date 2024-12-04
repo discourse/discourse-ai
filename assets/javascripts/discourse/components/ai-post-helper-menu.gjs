@@ -4,6 +4,7 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
+import { modifier } from "ember-modifier";
 import { and } from "truth-helpers";
 import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
@@ -18,8 +19,6 @@ import I18n from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperLoading from "../components/ai-helper-loading";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
-import { modifier } from "ember-modifier";
-import { htmlSafe } from "@ember/template";
 
 export default class AiPostHelperMenu extends Component {
   @service messageBus;
@@ -49,8 +48,6 @@ export default class AiPostHelperMenu extends Component {
     result: "RESULT",
   };
 
-  @tracked _activeAiRequest = null;
-
   showFootnoteTooltip = modifier((element) => {
     if (this.supportsAddFootnote || this.streaming) {
       return;
@@ -69,6 +66,8 @@ export default class AiPostHelperMenu extends Component {
       instance.destroy();
     };
   });
+
+  @tracked _activeAiRequest = null;
 
   get footnoteDisabled() {
     return this.streaming || !this.supportsAddFootnote;
