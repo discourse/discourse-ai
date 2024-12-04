@@ -18,6 +18,8 @@ import I18n from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperLoading from "../components/ai-helper-loading";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
+import { modifier } from "ember-modifier";
+import { htmlSafe } from "@ember/template";
 
 export default class AiPostHelperMenu extends Component {
   @service messageBus;
@@ -26,6 +28,7 @@ export default class AiPostHelperMenu extends Component {
   @service siteSettings;
   @service currentUser;
   @service menu;
+  @service tooltip;
 
   @tracked menuState = this.MENU_STATES.options;
   @tracked loading = false;
@@ -38,6 +41,7 @@ export default class AiPostHelperMenu extends Component {
   @tracked streaming = false;
   @tracked lastSelectedOption = null;
   @tracked isSavingFootnote = false;
+  @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
 
   MENU_STATES = {
     options: "OPTIONS",
@@ -46,6 +50,29 @@ export default class AiPostHelperMenu extends Component {
   };
 
   @tracked _activeAiRequest = null;
+
+  showFootnoteTooltip = modifier((element) => {
+    if (this.supportsAddFootnote || this.streaming) {
+      return;
+    }
+
+    const instance = this.tooltip.register(element, {
+      identifier: "cannot-add-footnote-tooltip",
+      content: I18n.t(
+        "discourse_ai.ai_helper.post_options_menu.footnote_disabled"
+      ),
+      placement: "top",
+      triggers: this.site.mobileView ? ["hold"] : ["hover"],
+    });
+
+    return () => {
+      instance.destroy();
+    };
+  });
+
+  get footnoteDisabled() {
+    return this.streaming || !this.supportsAddFootnote;
+  }
 
   get helperOptions() {
     let prompts = this.currentUser?.ai_helper_prompts;
@@ -329,8 +356,9 @@ export default class AiPostHelperMenu extends Component {
                     @label="discourse_ai.ai_helper.post_options_menu.insert_footnote"
                     @action={{this.insertFootnote}}
                     @isLoading={{this.isSavingFootnote}}
-                    @disabled={{this.streaming}}
+                    @disabled={{this.footnoteDisabled}}
                     class="btn-flat ai-post-helper__suggestion__insert-footnote"
+                    {{this.showFootnoteTooltip}}
                   />
                 {{/if}}
               </div>

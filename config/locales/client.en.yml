@@ -145,7 +145,6 @@ en:
         response_tokens: "Response tokens"
         cached_tokens: "Cached tokens"
 
-
       ai_persona:
         tool_strategies:
           all: "Apply to all replies"
@@ -395,6 +394,7 @@ en:
           copied: "Copied!"
           cancel: "Cancel"
           insert_footnote: "Add footnote"
+          footnote_disabled: "Automatic insertion disabled, click copy button and edit it in manually"
           footnote_credits: "Explanation by AI"
         fast_edit:
           suggest_button: "Suggest edit"
