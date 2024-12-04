@@ -29,6 +29,9 @@ sl:
     discourse_ai:
       modals:
         select_option: "Izberi možnost..."
+      usage:
+        summary: "Povzetek"
+        username: "Uporabniško ime"
       ai_persona:
         back: "Nazaj"
         name: "Ime"

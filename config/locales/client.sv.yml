@@ -29,6 +29,10 @@ sv:
     discourse_ai:
       modals:
         select_option: "Välj ett alternativ..."
+      usage:
+        summary: "Sammanfattning"
+        username: "Användarnamn"
+        total_requests: "Totalt antal efterfrågningar"
       ai_persona:
         back: "Tillbaka"
         name: "Namn"

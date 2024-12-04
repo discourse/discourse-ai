@@ -86,6 +86,7 @@ he:
     ai_summarization_model: "מודל לשימוש לסיכום."
     ai_custom_summarization_allowed_groups: "קבוצות שמורשות להשתמש ליצירת סיכומים חדשים."
     ai_pm_summarization_allowed_groups: "קבוצות שמורשות ליצור ולצפות בתקצירים בהודעות פרטיות."
+    ai_summary_gists_enabled: "יצירת תקצירים של התגובות האחרונות בנושאים אוטומטית."
     ai_summary_gists_allowed_groups: "קבוצות שמורשות לראות gists ברשימת הנושאים החמים."
     ai_summary_backfill_maximum_topics_per_hour: "מספר תקצירי הנושאים למילוי חוזר בשעה."
     ai_bot_enabled: "הפעלת מודול בוט הבינה המלאכותית."
@@ -198,6 +199,7 @@ he:
     ai_artifact:
       link: "הצגת תוצר בלשונית חדשה"
       view_source: "הצגת המקור"
+      view_changes: "הצגת שינויים"
     unknown_model: "דגם בינה מלאכותית לא ידוע"
     tools:
       custom_name: "%{name} (מותאם אישית)"
@@ -299,6 +301,7 @@ he:
             name: "שאילתת חיפוש בסיסית"
             description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‚‎#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
       tool_summary:
+        update_artifact: "עדכון תוצר דפדפני"
         create_artifact: "יצירת תוצר דפדפני"
         web_browser: "גלישה באינטרנט"
         github_search_files: "חיפוש קבצים ב־GitHub"
@@ -321,6 +324,7 @@ he:
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
       tool_help:
+        update_artifact: "עדכון תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         create_artifact: "יצירת תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         web_browser: "גלישה באינטרנט באמצעות בוט בינה מלאכותית"
         github_search_code: "חיפוש אחר קוד במאגר GitHub"
@@ -343,6 +347,7 @@ he:
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
       tool_description:
+        update_artifact: "עודכן תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         create_artifact: "נוצר תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         web_browser: "קורא את <a href='%{url}'>%{url}</a>"
         github_search_files: "בוצע חיפוש אחר ‚%{keywords}’ בתוך %{repo}/%{branch}"
@@ -439,7 +444,7 @@ he:
           other: "נא לוודא שהגדרות הספק הדרוש לך הוגדרות. האפשרויות הן: %{settings}"
     llm_models:
       missing_provider_param: "%{param} לא יכול להישאר ריק"
-      bedrock_invalid_url: "נא למלא את כל השדות די ליצור קשר עם המודל הזה."
+      bedrock_invalid_url: "נא למלא את כל השדות די להשתמש במודל הזה."
     errors:
       no_query_specified: משתנה השאילתה נחוץ, נא לציין אותו.
       no_user_for_persona: לדמות שצוינה אין משתמש שמשויך אליה.

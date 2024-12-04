@@ -29,6 +29,10 @@ ur:
     discourse_ai:
       modals:
         select_option: "ایک آپشن منتخب کریں..."
+      usage:
+        summary: "Summary"
+        username: "صارف نام"
+        total_requests: "کُل درخواستیں"
       ai_persona:
         back: "واپس"
         name: "نام"

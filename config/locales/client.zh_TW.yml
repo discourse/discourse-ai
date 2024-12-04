@@ -27,6 +27,10 @@ zh_TW:
             canned_reply:
               label: "回覆"
     discourse_ai:
+      usage:
+        summary: "摘要"
+        username: "使用者名稱"
+        total_requests: "請求總數"
       ai_persona:
         back: "上一步"
         name: "名字"

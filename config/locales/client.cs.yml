@@ -29,6 +29,10 @@ cs:
     discourse_ai:
       modals:
         select_option: "Zvolit možnost..."
+      usage:
+        summary: "Souhrn"
+        username: "Uživatelské jméno"
+        total_requests: "Celkem požadavků"
       ai_persona:
         back: "Zpět"
         name: "Jméno"

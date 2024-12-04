@@ -29,6 +29,10 @@ sw:
     discourse_ai:
       modals:
         select_option: "Chagua chaguo moja..."
+      usage:
+        summary: "Muhtasari"
+        username: "Jina la mtumiaji"
+        total_requests: "Jumla ya Maombi"
       ai_persona:
         back: "Iliyopita"
         name: "Jina"

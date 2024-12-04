@@ -29,6 +29,10 @@ hr:
     discourse_ai:
       modals:
         select_option: "Odaberi opciju..."
+      usage:
+        summary: "Sažetak"
+        username: "Korisničko ime"
+        total_requests: "Ukupno zahtjeva"
       ai_persona:
         back: "Natrag"
         name: "Ime"

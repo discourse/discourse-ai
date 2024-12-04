@@ -99,6 +99,13 @@ ar:
       title: "الذكاء الاصطناعي"
       modals:
         select_option: "حدِّد خيارًا..."
+      usage:
+        summary: "الملخص"
+        model: "النموذج"
+        username: "اسم المستخدم"
+        total_requests: "إجمالي الطلبات"
+        request_tokens: "رموز الطلب"
+        response_tokens: "رموز الرد"
       ai_persona:
         back: "رجوع"
         name: "الاسم"

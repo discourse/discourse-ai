@@ -31,6 +31,10 @@ sk:
     discourse_ai:
       modals:
         select_option: "Vyberte možnosť..."
+      usage:
+        summary: "Zhrnutie"
+        username: "Používateľské meno"
+        total_requests: "celkový počet žiadostí"
       ai_persona:
         back: "Späť"
         name: "Meno"

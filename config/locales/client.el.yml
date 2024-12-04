@@ -29,6 +29,10 @@ el:
     discourse_ai:
       modals:
         select_option: "Διαλέξτε μία επιλογή..."
+      usage:
+        summary: "Περίληψη"
+        username: "Όνομα Χρήστη"
+        total_requests: "Σύνολο αιτήσεων"
       ai_persona:
         back: "Πίσω"
         name: "Όνομα"

@@ -29,6 +29,9 @@ th:
     discourse_ai:
       modals:
         select_option: "เลือกตัวเลือก..."
+      usage:
+        summary: "สรุป"
+        username: "ชื่อผู้ใช้"
       ai_persona:
         back: "กลับ"
         name: "ชื่อ"

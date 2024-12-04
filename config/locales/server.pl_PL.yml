@@ -92,6 +92,8 @@ pl_PL:
     emotion_surprise:
       title: "\U0001F632 Niespodzianka"
   discourse_ai:
+    ai_artifact:
+      view_changes: "Zobacz zmiany"
     unknown_model: "Nieznany model AI"
     ai_helper:
       errors:

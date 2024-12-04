@@ -31,6 +31,10 @@ ko:
     discourse_ai:
       modals:
         select_option: "옵션 선택..."
+      usage:
+        summary: "요약"
+        username: "아이디"
+        total_requests: "총 요청횟수"
       ai_persona:
         back: "뒤로"
         name: "그룹명"

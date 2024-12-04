@@ -29,6 +29,10 @@ ro:
     discourse_ai:
       modals:
         select_option: "Alege o opțiune..."
+      usage:
+        summary: "Rezumat"
+        username: "Nume utilizator"
+        total_requests: "Total cereri"
       ai_persona:
         back: "Înapoi"
         name: "Nume"

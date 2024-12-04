@@ -29,6 +29,10 @@ bg:
     discourse_ai:
       modals:
         select_option: "Изберете опция..."
+      usage:
+        summary: "Сумарно"
+        username: "Потребителско име"
+        total_requests: "Общо заявки"
       ai_persona:
         back: "Назад"
         name: "Име"

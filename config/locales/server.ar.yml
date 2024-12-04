@@ -110,6 +110,8 @@ ar:
     emotion_surprise:
       title: "\U0001F632 المفاجأة"
   discourse_ai:
+    ai_artifact:
+      view_changes: "عرض التغييرات"
     unknown_model: "نموذج ذكاء اصطناعي غير معروف"
     tools:
       custom_name: "%{name} (custom)"

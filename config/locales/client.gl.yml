@@ -29,6 +29,10 @@ gl:
     discourse_ai:
       modals:
         select_option: "Seleccione unha opción..."
+      usage:
+        summary: "Resumo"
+        username: "Nome de usuario"
+        total_requests: "Solicitudes totais"
       ai_persona:
         back: "Volver"
         name: "Nome"

@@ -27,6 +27,10 @@ be:
             canned_reply:
               label: "Адказаць"
     discourse_ai:
+      usage:
+        summary: "вынік"
+        username: "Імя карыстальніка"
+        total_requests: "Усяго запытаў"
       ai_persona:
         back: "Назад"
         name: "імя"

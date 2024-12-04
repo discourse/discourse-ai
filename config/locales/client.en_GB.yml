@@ -13,6 +13,8 @@ en_GB:
             categories:
               label: "Categories"
     discourse_ai:
+      usage:
+        summary: "Summary"
       ai_persona:
         description: "Description"
       tools:

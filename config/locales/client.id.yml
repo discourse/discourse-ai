@@ -92,6 +92,10 @@ id:
       title: "AI"
       modals:
         select_option: "Memilih sebuah pilihan..."
+      usage:
+        summary: "Ringkasan"
+        model: "Model"
+        username: "Nama Pengguna"
       ai_persona:
         back: "Kembali"
         name: "Nama"

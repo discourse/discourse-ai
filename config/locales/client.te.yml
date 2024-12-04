@@ -27,6 +27,10 @@ te:
             canned_reply:
               label: "జవాబు"
     discourse_ai:
+      usage:
+        summary: "సారాంశం"
+        username: "సభ్యనామం"
+        total_requests: "మొత్తం అభ్యర్థనలు"
       ai_persona:
         back: "వెనుకకు"
         name: "పేరు"

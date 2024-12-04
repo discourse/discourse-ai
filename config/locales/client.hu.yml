@@ -29,6 +29,10 @@ hu:
     discourse_ai:
       modals:
         select_option: "Válasszon egy lehetőséget..."
+      usage:
+        summary: "Összefoglaló"
+        username: "Felhasználónév"
+        total_requests: "Összes kérés"
       ai_persona:
         back: "Vissza"
         name: "Név"

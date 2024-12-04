@@ -25,6 +25,9 @@ sr:
     discourse_ai:
       modals:
         select_option: "Izaberi jednu od opcija..."
+      usage:
+        summary: "Rezime"
+        username: "Korisničko Ime"
       ai_persona:
         back: "Nazad"
         name: "Ime foruma"
