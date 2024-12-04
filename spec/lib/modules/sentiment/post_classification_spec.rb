@@ -132,6 +132,8 @@ RSpec.describe DiscourseAi::Sentiment::PostClassification do
 
       posts = described_class.backfill_query
 
+      debugger
+
       expect(posts).to be_empty
     end
 
