@@ -83,6 +83,32 @@ RSpec.shared_examples "generates and store embedding using with vector represent
     it "does nothing if passed record has no content" do
       expect { vector_rep.gen_bulk_reprensentations([Topic.new]) }.not_to raise_error
     end
+
+    it "doesn't ask for a new embedding if digest is the same" do
+      text =
+        truncation.prepare_text_from(
+          topic,
+          vector_rep.tokenizer,
+          vector_rep.max_sequence_length - 2,
+        )
+      stub_vector_mapping(text, expected_embedding_1)
+
+      original_vector_gen = Time.zone.parse("2021-06-04 10:00")
+
+      freeze_time(original_vector_gen) do
+        vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id]))
+      end
+      # check vector exists
+      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
+
+      vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id]))
+      last_update =
+        DB.query_single(
+          "SELECT updated_at FROM #{vector_rep.topic_table_name} WHERE topic_id = #{topic.id} LIMIT 1",
+        ).first
+
+      expect(last_update).to eq(original_vector_gen)
+    end
   end
 
   describe "#asymmetric_topics_similarity_search" do

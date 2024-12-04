@@ -66,13 +66,16 @@ module DiscourseAi
                 prepared_text = prepare_text(record)
                 next if prepared_text.blank?
 
+                new_digest = OpenSSL::Digest::SHA1.hexdigest(prepared_text)
+                next if find_digest_of(record) == new_digest
+
                 Concurrent::Promises
-                  .fulfilled_future({ target: record, text: prepared_text }, pool)
+                  .fulfilled_future(
+                    { target: record, text: prepared_text, digest: new_digest },
+                    pool,
+                  )
                   .then_on(pool) do |w_prepared_text|
-                    w_prepared_text.merge(
-                      embedding: embedding_gen.perform!(w_prepared_text[:text]),
-                      digest: OpenSSL::Digest::SHA1.hexdigest(w_prepared_text[:text]),
-                    )
+                    w_prepared_text.merge(embedding: embedding_gen.perform!(w_prepared_text[:text]))
                   end
               end
               .compact
@@ -90,31 +93,8 @@ module DiscourseAi
           text = prepare_text(target)
           return if text.blank?
 
-          target_column =
-            case target
-            when Topic
-              "topic_id"
-            when Post
-              "post_id"
-            when RagDocumentFragment
-              "rag_document_fragment_id"
-            else
-              raise ArgumentError, "Invalid target type"
-            end
-
           new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
-          current_digest = DB.query_single(<<~SQL, target_id: target.id).first
-            SELECT
-              digest
-            FROM
-              #{table_name(target)}
-            WHERE
-              model_id = #{id} AND
-              strategy_id = #{@strategy.id} AND
-              #{target_column} = :target_id
-            LIMIT 1
-          SQL
-          return if current_digest == new_digest
+          return if find_digest_of(target) == new_digest
 
           vector = vector_from(text)
 
@@ -411,6 +391,32 @@ module DiscourseAi
         end
 
         protected
+
+        def find_digest_of(target)
+          target_column =
+            case target
+            when Topic
+              "topic_id"
+            when Post
+              "post_id"
+            when RagDocumentFragment
+              "rag_document_fragment_id"
+            else
+              raise ArgumentError, "Invalid target type"
+            end
+
+          DB.query_single(<<~SQL, target_id: target.id).first
+            SELECT
+              digest
+            FROM
+              #{table_name(target)}
+            WHERE
+              model_id = #{id} AND
+              strategy_id = #{@strategy.id} AND
+              #{target_column} = :target_id
+            LIMIT 1
+          SQL
+        end
 
         def save_to_db(target, vector, digest)
           if target.is_a?(Topic)
