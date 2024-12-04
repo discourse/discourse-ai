@@ -180,7 +180,7 @@ export default class AiTagSuggester extends Component {
         @icon={{this.triggerIcon}}
         @identifier="ai-tag-suggester"
         @onClose={{this.onClose}}
-        @triggerClass="suggestion-button suggest-tags-button {{if
+        @triggerClass="btn-transparent suggestion-button suggest-tags-button {{if
           this.loading
           'is-loading'
         }}"

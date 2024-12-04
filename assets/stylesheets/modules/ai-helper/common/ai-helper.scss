@@ -209,6 +209,30 @@
       border-bottom-right-radius: 0;
     }
   }
+
+  #edit-title {
+    padding-right: 2em;
+  }
+
+  .category-chooser {
+    .select-kit-header-wrapper {
+      padding-right: 1.5em;
+    }
+  }
+
+  .mini-tag-chooser {
+    .multi-select-header {
+      padding-right: 2em;
+    }
+  }
+
+  .select-kit.is-expanded {
+    // need to raise the z-index so the sibling input buttons don't cover the dropdown
+    z-index: z("dropdown") + 1;
+    + button {
+      z-index: z("dropdown") + 1;
+    }
+  }
 }
 
 .suggestion-button {
@@ -217,15 +241,23 @@
   }
 }
 
+.edit-title__wrapper,
+.edit-category__wrapper,
+.edit-tags__wrapper {
+  position: relative;
+}
+
 .suggest-titles-button,
 .suggest-tags-button,
 .suggest-category-button {
-  align-self: baseline;
-  border: 1px solid var(--primary-400);
-  border-left: none;
-  background: none;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  position: absolute;
+  right: 0;
+  top: 1px; // container border width
+  z-index: z("dropdown");
+
+  #reply-control & {
+    z-index: z("composer", "dropdown") + 1;
+  }
 }
 
 .ai-category-suggester-content,
@@ -317,6 +349,12 @@
       .mini-tag-chooser {
         min-width: 0;
       }
+    }
+  }
+
+  .showing-ai-suggestions {
+    #reply-title {
+      padding-right: 2em;
     }
   }
 }
