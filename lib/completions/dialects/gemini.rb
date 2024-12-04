@@ -80,7 +80,7 @@ module DiscourseAi
         end
 
         def beta_api?
-          @beta_api ||= llm_model.name.start_with?("gemini-1.5")
+          @beta_api ||= !llm_model.name.start_with?("gemini-1.0")
         end
 
         def system_msg(msg)
