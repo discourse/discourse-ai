@@ -17,7 +17,7 @@ export default class AiTopicGist extends Component {
     return this.args.topic.get("ai_topic_gist");
   }
 
-  get escapedExceprt() {
+  get escapedExcerpt() {
     return this.args.topic.get("escapedExcerpt");
   }
 
