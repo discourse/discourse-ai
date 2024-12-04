@@ -62,7 +62,7 @@ export default class AiPostHelperMenu extends Component {
         "discourse_ai.ai_helper.post_options_menu.footnote_disabled"
       ),
       placement: "top",
-      triggers: this.site.mobileView ? ["hold"] : ["hover"],
+      triggers: "hover",
     });
 
     return () => {
