@@ -225,6 +225,14 @@
       padding-right: 2em;
     }
   }
+
+  .select-kit.is-expanded {
+    // need to raise the z-index so the sibling input buttons don't cover the dropdown
+    z-index: z("dropdown") + 1;
+    + button {
+      z-index: z("dropdown") + 1;
+    }
+  }
 }
 
 .suggestion-button {
