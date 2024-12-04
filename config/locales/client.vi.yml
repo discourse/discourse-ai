@@ -29,6 +29,10 @@ vi:
     discourse_ai:
       modals:
         select_option: "Chọn một tùy Chọn..."
+      usage:
+        summary: "Tóm tắt"
+        username: "Tên tài khoản"
+        total_requests: "Tổng số yêu cầu"
       ai_persona:
         back: "Quay lại"
         name: "Tên"

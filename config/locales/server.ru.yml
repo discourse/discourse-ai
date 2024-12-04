@@ -6,15 +6,25 @@
 
 ru:
   discourse_automation:
+    ai:
+      flag_types:
+        review: "Добавить публикацию в очередь проверки"
+        spam: "Пометить как спам и скрыть публикацию"
+        spam_silence: "Пометить как спам, скрыть публикацию и заморозить пользователя"
     scriptables:
       llm_triage:
         title: Сортировка публикаций с помощью AI
         description: "Сортировка публикаций с использованием большой языковой модели"
+        flagged_post: |
+          <div>Ответ модели:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Срабатывает по правилу: <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Периодический отчет с использованием AI
         description: "Периодический отчет на основе большой языковой модели"
   site_settings:
     discourse_ai_enabled: "Включить плагин AI для Discourse."
+    ai_artifact_security: "Система артефактов AI генерирует IFRAME с исполняемым кодом. Строгий режим отключает совместное использование и требует дополнительного клика для запуска кода. Нестрогий режим позволяет совместно использовать артефакты и запускает код напрямую. Отключенный режим полностью отключает систему артефактов."
     ai_toxicity_enabled: "Включить модуль проверки на токсичность."
     ai_toxicity_inference_service_api_endpoint: "URL-адрес, по которому работает API для модуля проверки на токсичность"
     ai_toxicity_inference_service_api_key: "API-ключ для API проверки на токсичность"
@@ -46,6 +56,7 @@ ru:
     ai_openai_api_key: "API-ключ для API OpenAI. Используется ТОЛЬКО для эмбеддингов и Dall-E. Для GPT используйте вкладку конфигурации LLM"
     ai_hugging_face_tei_endpoint: URL-адрес, по которому работает API для вывода текстовых эмбеддингов Hugging Face
     ai_hugging_face_tei_api_key: Ключ API для вывода текстовых эмбеддингов Hugging Face
+    ai_helper_enabled: "Включить AI-помощника"
     composer_ai_helper_allowed_groups: "Для пользователей в этих группах будет отображаться кнопка AI-помощника в редакторе."
     ai_helper_allowed_in_pm: "Включить AI-помощник для редактора в личных сообщениях."
     ai_helper_model: "Модели, используемые для AI-помощника."
@@ -74,6 +85,10 @@ ru:
     ai_summarization_enabled: "Включить модуль сводки по теме."
     ai_summarization_model: "Модель, используемая для формирования сводки."
     ai_custom_summarization_allowed_groups: "Группы, которым разрешено делать новые сводки."
+    ai_pm_summarization_allowed_groups: "Группам разрешено создавать и просматривать сводки в личных сообщениях."
+    ai_summary_gists_enabled: "Автоматически создает краткие сводки последних ответов в темах."
+    ai_summary_gists_allowed_groups: "Группы, которые могут просматривать краткие сводки в списке горячих тем."
+    ai_summary_backfill_maximum_topics_per_hour: "Число сводок по теме для заполнения за час."
     ai_bot_enabled: "Включить модуль AI-бота."
     ai_bot_enable_chat_warning: "Показывать предупреждение при запуске личного чата. Можно переопределить путем редактирования строки перевода: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Если у GPT-бота есть доступ к личным сообщениям, он будет отвечать участникам указанных групп."
@@ -93,31 +108,110 @@ ru:
   reports:
     overall_sentiment:
       title: "Общее настроение"
+      description: 'На диаграмме сравнивается количество публикаций, классифицированных как позитивные или негативные на основе того, превышают ли их оценки установленные пороговые значения. Нейтральные публикации и личные сообщения (ЛС) в расчет не включаются. Классификация выполнена с помощью модели "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Позитивные(%)"
       yaxis: "Дата"
+    emotion_admiration:
+      title: "\U0001F929 Восхищение"
+      description: "Публикации, классифицированные AI по эмоции «восхищение» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_amusement:
+      title: "\U0001F604 Веселье"
+      description: "Публикации, классифицированные AI по эмоции «веселье» с помощью модели 'SamLowe/roberta-base-go_emotions'."
     emotion_anger:
       title: "\U0001F620 Гнев"
+      description: "Публикации, классифицированные AI по эмоции «гнев» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_annoyance:
+      title: "\U0001F612 Недовольство"
+      description: "Публикации, классифицированные AI по эмоции «недовольство» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_approval:
+      title: "\U0001F44D Одобрение"
+      description: "Публикации, классифицированные AI по эмоции «одобрение» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_caring:
+      title: "\U0001F917 Забота"
+      description: "Публикации, классифицированные AI по эмоции «забота» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_confusion:
+      title: "\U0001F615 Замешательство"
+      description: "Публикации, классифицированные AI по эмоции «замешательство» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_curiosity:
+      title: "\U0001F914 Любопытство"
+      description: "Публикации, классифицированные AI по эмоции «любопытство» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_desire:
+      title: "\U0001F60D Восторг"
+      description: "Публикации, классифицированные AI по эмоции «восторг» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_disappointment:
+      title: "\U0001F61E Разочарование"
+      description: "Публикации, классифицированные AI по эмоции «разочарование» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_disapproval:
+      title: "\U0001F44E Неодобрение"
+      description: "Публикации, классифицированные AI по эмоции «неодобрение» с помощью модели 'SamLowe/roberta-base-go_emotions'."
     emotion_disgust:
       title: "\U0001F922 Отвращение"
+      description: "Публикации, классифицированные AI по эмоции «отвращение» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_embarrassment:
+      title: "\U0001F633 Смущение"
+      description: "Публикации, классифицированные AI по эмоции «смущение» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_excitement:
+      title: "\U0001F92A Волнение"
+      description: "Публикации, классифицированные AI по эмоции «волнение» с помощью модели 'SamLowe/roberta-base-go_emotions'."
     emotion_fear:
       title: "\U0001F628 Страх"
+      description: "Публикации, классифицированные AI по эмоции «страх» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_gratitude:
+      title: "\U0001F64F Благодарность"
+      description: "Публикации, классифицированные AI по эмоции «благодарность» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_grief:
+      title: "\U0001F622 Печаль"
+      description: "Публикации, классифицированные AI по эмоции «печаль» с помощью модели 'SamLowe/roberta-base-go_emotions'."
     emotion_joy:
       title: "\U0001F60A Радость"
+      description: "Публикации, классифицированные AI по эмоции «радость» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_love:
+      title: '❤️ Любовь'
+      description: "Публикации, классифицированные AI по эмоции «любовь» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_nervousness:
+      title: "\U0001F630 Тревога"
+      description: "Публикации, классифицированные AI по эмоции «тревога» с помощью модели 'SamLowe/roberta-base-go_emotions'."
     emotion_neutral:
       title: "\U0001F610 Нейтральность"
+      description: "Публикации, классифицированные AI по эмоции «нейтральность» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_optimism:
+      title: "\U0001F31F Оптимизм"
+      description: "Публикации, классифицированные AI по эмоции «оптимизм» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_pride:
+      title: "\U0001F981 Гордость"
+      description: "Публикации, классифицированные AI по эмоции «гордость» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_realization:
+      title: "\U0001F4A1 Озарение"
+      description: "Публикации, классифицированные AI по эмоции «озарение» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_relief:
+      title: "\U0001F60C Облегчение"
+      description: "Публикации, классифицированные AI по эмоции «облегчение» с помощью модели 'SamLowe/roberta-base-go_emotions'."
+    emotion_remorse:
+      title: "\U0001F614 Сожаление"
+      description: "Публикации, классифицированные AI по эмоции «сожаление» с помощью модели 'SamLowe/roberta-base-go_emotions'."
     emotion_sadness:
       title: "\U0001F62D Грусть"
+      description: "Публикации, классифицированные AI по эмоции «грусть» с помощью модели 'SamLowe/roberta-base-go_emotions'."
     emotion_surprise:
       title: "\U0001F632 Удивление"
+      description: "Публикации, классифицированные AI по эмоции «удивление» с помощью модели 'SamLowe/roberta-base-go_emotions'."
   discourse_ai:
+    ai_artifact:
+      link: "Показать артефакт в новой вкладке"
+      view_source: "Посмотреть источник"
+      view_changes: "Просмотреть изменения"
     unknown_model: "Неизвестная модель AI"
     tools:
       custom_name: "%{name} (пользовательский)"
       presets:
+        browse_web_jina:
+          name: "Просмотр веб-страниц (jina.ai)"
         exchange_rate:
           name: "Обменный курс"
         stock_quote:
           name: "Котировка акций (AlphaVantage)"
+        image_generation:
+          name: "Генератор изображений Flux (Together.ai)"
         empty_tool:
           name: "Начать с нуля..."
     ai_helper:
@@ -181,6 +275,9 @@ ru:
         discourse_helper:
           name: "Помощник по Discourse"
           description: "AI-бот, специализирующийся на решении задач, связанных с Discourse"
+        web_artifact_creator:
+          name: "Создатель веб-артефактов"
+          description: "AI-бот, специализирующийся на создании интерактивных веб-артефактов"
       topic_not_found: "Сводка недоступна: тема не найдена!"
       summarizing: "Аналитик темы"
       searching: "Поиск: '%{query}'"
@@ -188,6 +285,7 @@ ru:
         google:
           base_query:
             name: "Базовый поисковый запрос"
+            description: "Базовый запрос для использования при поиске. Примеры: 'site:example.com' будет включать только результаты с example.com, 'before:2022-01-01' будет включать только результаты с 2021 года и ранее. Этот текст добавляется к поисковому запросу."
         read:
           read_private:
             name: "Читать приватные темы"
@@ -203,6 +301,7 @@ ru:
             name: "Базовый поисковый запрос"
             description: "Базовый запрос, используемый при поиске. Пример: '#urgent' добавит '#urgent' к поисковому запросу и будет включать только темы со срочной категорией или тегом."
       tool_summary:
+        create_artifact: "Создать веб-артефакт"
         web_browser: "Просмотр веб-страниц"
         github_search_files: "Поиск файлов на GitHub"
         github_search_code: "Поиск кода на GitHub"
@@ -224,6 +323,7 @@ ru:
         search_meta_discourse: "Поиск на Meta Discourse"
         javascript_evaluator: "Оценить JavaScript"
       tool_help:
+        create_artifact: "Создать веб-артефакт с помощью AI-бота"
         web_browser: "Просмотр веб-страницы с помощью AI-бота"
         github_search_code: "Поиск кода в репозитории GitHub"
         github_search_files: "Поиск файлов в репозитории GitHub"
@@ -245,6 +345,7 @@ ru:
         search_meta_discourse: "Поиск на Meta Discourse"
         javascript_evaluator: "Оценить JavaScript"
       tool_description:
+        create_artifact: "Создан веб-артефакт с использованием AI-бота"
         web_browser: "Чтение: <a href='%{url}'>%{url}</a>"
         github_search_files: "Выполнен поиск «%{keywords}» в %{repo}/%{branch}"
         github_search_code: "Выполнен поиск «%{query}» в %{repo}"
@@ -314,6 +415,7 @@ ru:
         disable_module_first: "Сначала вам нужно отключить %{setting}."
         set_llm_first: "Сначала задайте %{setting}."
         model_unreachable: "Мы не смогли получить ответ от этой модели. Проверьте настройки."
+        invalid_seeded_model: "Эту модель нельзя использовать с этой функцией."
       endpoints:
         not_configured: "%{display_name} (не настроено)"
         configuration_hint:
@@ -326,6 +428,7 @@ ru:
         few: "Мы не смогли удалить эту модель, потому что ее используют %{settings}. Обновите настройки и попробуйте еще раз."
         many: "Мы не смогли удалить эту модель, потому что ее используют %{settings}. Обновите настройки и попробуйте еще раз."
         other: "Мы не смогли удалить эту модель, потому что ее используют %{settings}. Обновите настройки и попробуйте еще раз."
+      cannot_edit_builtin: "Встроенную модель редактировать нельзя."
     embeddings:
       configuration:
         disable_embeddings: "Сначала вам необходимо отключить настройку 'ai embeddings enabled'."
@@ -338,6 +441,13 @@ ru:
           other: "Убедитесь, что параметры нужного вам поставщика настроены. Варианты: %{settings}"
     llm_models:
       missing_provider_param: "Параметр %{param} не может быть пустым"
-      bedrock_invalid_url: "Заполните все поля, чтобы установить связь с этой моделью."
     errors:
+      no_query_specified: Параметр запроса обязателен, укажите его.
+      no_user_for_persona: Указанная персона не имеет связанного с ней пользователя.
+      persona_not_found: Указанная персона не существует. Проверьте параметры persona_name или persona_id.
+      no_user_specified: Параметры user_unique_id или username обязательны, укажите нужное.
+      user_not_found: Указанный пользователь не существует. Проверьте параметр username.
+      persona_disabled: Указанная персона отключена. Проверьте параметры persona_name или persona_id.
+      no_default_llm: У персоны должен быть определен параметр default_llm.
+      user_not_allowed: Пользователю не разрешено участвовать в теме.
       prompt_message_length: Сообщение %{idx} превышает ограничение в 1000 символов.

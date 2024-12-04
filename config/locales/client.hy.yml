@@ -29,6 +29,10 @@ hy:
     discourse_ai:
       modals:
         select_option: "Ընտրել..."
+      usage:
+        summary: "Ամփոփումը"
+        username: "Օգտանուն"
+        total_requests: "Ընդհանուր հարցումներ"
       ai_persona:
         back: "Ետ"
         name: "Անուն"

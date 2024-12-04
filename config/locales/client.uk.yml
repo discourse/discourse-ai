@@ -108,6 +108,13 @@ uk:
       title: "ШІ"
       modals:
         select_option: "Вибрати опцію..."
+      usage:
+        summary: "Підсумок"
+        model: "Модель"
+        username: "Імʼя користувача"
+        total_requests: "Всього"
+        request_tokens: "Токени запиту"
+        response_tokens: "Токени відповіді"
       ai_persona:
         tool_strategies:
           all: "Застосувати до всіх відповідей"

@@ -29,6 +29,10 @@ et:
     discourse_ai:
       modals:
         select_option: "Vali võimalus..."
+      usage:
+        summary: "Kokkuvõte"
+        username: "Kasutajanimi"
+        total_requests: "Kokku päringuid"
       ai_persona:
         back: "Tagasi"
         name: "Nimi"

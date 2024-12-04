@@ -19,7 +19,7 @@ de:
       dashboard:
         emotion:
           title: "Emotion"
-          description: "Die Tabelle listet die Anzahl der Beiträge auf, die mit einer bestimmten Emotion klassifiziert wurden. Klassifiziert mit dem Modell 'SamLowe/roberta-base-go_emotions'."
+          description: "Die Tabelle listet die Anzahl der Beiträge auf, die mit einer bestimmten Emotion klassifiziert wurden. Klassifiziert mit dem Modell „SamLowe/roberta-base-go_emotions“."
   js:
     discourse_automation:
       scriptables:
@@ -91,8 +91,8 @@ de:
               label: "System-Eingabeaufforderung"
               description: "Die Eingabeaufforderung, die für die Triage verwendet wird. Achte darauf, dass sie mit einem einzigen Wort antwortet, das du zum Auslösen der Aktion verwenden kannst"
             max_post_tokens:
-              label: "Max Post Token"
-              description: "Die maximale Anzahl von Token, die mit LLM Triage gescannt werden"
+              label: "Max. Beitrags-Token"
+              description: "Die maximale Anzahl von Token, die mit LLM-Triage gescannt werden"
             search_for_text:
               label: "Suche nach Text"
               description: "Wenn der folgende Text in der LLM-Antwort erscheint, wende diese Maßnahmen an"
@@ -112,11 +112,14 @@ de:
               label: "Thema ausblenden"
               description: "Thema nicht für die Öffentlichkeit sichtbar machen, wenn ausgelöst"
             flag_type:
-              label: "Markierungs-Typ"
-              description: "Art der Meldung, die auf den Beitrag angewendet werden soll (Spam oder einfach zur Überprüfung anheben)"
+              label: "Meldungs-Typ"
+              description: "Art der Meldung, die auf den Beitrag angewendet werden soll (Spam oder einfach zur Überprüfung anzeigen)"
             flag_post:
               label: "Beitrag melden"
-              description: "Meldet Beiträge (entweder als Spam oder zur Überprüfung)"
+              description: "Meldet den Beitrag (entweder als Spam oder zur Überprüfung)"
+            include_personal_messages:
+              label: "Persönliche Nachrichten einbeziehen"
+              description: "Auch persönliche Nachrichten scannen und sortieren"
             model:
               label: "Modell"
               description: "Für die Triage verwendetes Sprachmodell"
@@ -124,6 +127,24 @@ de:
       title: "KI"
       modals:
         select_option: "Wähle eine Option aus..."
+      usage:
+        short_title: "Verwendung"
+        summary: "Zusammenfassung"
+        total_tokens: "Token gesamt"
+        tokens_over_time: "Token im Laufe der Zeit"
+        features_breakdown: "Nutzung pro Funktion"
+        feature: "Funktion"
+        usage_count: "Nutzungsanzahl"
+        model: "Modell"
+        models_breakdown: "Nutzung pro Modell"
+        users_breakdown: "Nutzung pro Benutzer"
+        all_features: "Alle Funktionen"
+        all_models: "Alle Modelle"
+        username: "Benutzername"
+        total_requests: "Gesamte Anfragen"
+        request_tokens: "Anfrage-Token"
+        response_tokens: "Antwort-Token"
+        cached_tokens: "Zwischengespeicherte Token"
       ai_persona:
         tool_strategies:
           all: "Auf alle Antworten anwenden"
@@ -149,54 +170,45 @@ de:
         mentionable: Erwähnungen zulassen
         mentionable_help: Wenn diese Funktion aktiviert ist, können Nutzer in erlaubten Gruppen diesen Nutzer in Beiträgen erwähnen und die KI wird als diese Persona antworten.
         user: Nutzer
-        create_user: Nutzer erstellen
+        create_user: Benutzer erstellen
         create_user_help: Du kannst dieser Persona optional einen Nutzer zuordnen. Wenn du das tust, wird die KI diesen Nutzer verwenden, um auf Anfragen zu antworten.
         default_llm: Standard-Sprachmodell
         default_llm_help: Das Standard-Sprachmodell, das für diese Persona verwendet werden soll. Erforderlich, wenn du die Persona in öffentlichen Beiträgen erwähnen möchtest.
         question_consolidator_llm: Sprachmodell für Fragenkonsolidierer
         question_consolidator_llm_help: Das Sprachmodell, das für den Fragenkonsolidierer verwendet werden soll. Du kannst ein weniger leistungsfähiges Modell wählen, um Kosten zu sparen.
         system_prompt: System-Eingabeaufforderung
-        forced_tool_strategy: Erzwungene Werkzeugstrategie
+        forced_tool_strategy: Erzwungene Tool-Strategie
         allow_chat_direct_messages: "Chat-Direktnachrichten zulassen"
-        allow_chat_direct_messages_help: "Wenn aktiviert, können Benutzer in erlaubten Gruppen Direktnachrichten an diese Person senden."
+        allow_chat_direct_messages_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen Direktnachrichten an diese Person senden."
         allow_chat_channel_mentions: "Chat-Kanal-Erwähnungen zulassen"
-        allow_chat_channel_mentions_help: "Wenn aktiviert, können Benutzer in erlaubten Gruppen diese Person in Chatkanälen erwähnen."
+        allow_chat_channel_mentions_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen diese Persona in Chatkanälen erwähnen."
         allow_personal_messages: "Persönliche Nachrichten zulassen"
-        allow_personal_messages_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen persönliche Nachrichten an diese Person senden."
+        allow_personal_messages_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen persönliche Nachrichten an diese Persona senden."
         allow_topic_mentions: "Themenerwähnungen zulassen"
-        allow_topic_mentions_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen diese Person in Themen erwähnen."
+        allow_topic_mentions_help: "Wenn aktiviert, können Benutzer in zulässigen Gruppen diese Persona in Themen erwähnen."
         force_default_llm: "Immer das Standard-Sprachmodell verwenden"
         save: "Speichern"
         saved: "Persona gespeichert"
         enabled: "Aktiviert?"
         tools: "Aktivierte Tools"
-        forced_tools: "Erzwungene Werkzeuge"
+        forced_tools: "Erzwungene Tools"
         allowed_groups: "Zulässige Gruppen"
         confirm_delete: "Bist du sicher, dass du diese Persona löschen willst?"
         new: "Neue Persona"
+        no_personas: "Du hast noch keine Personas erstellt"
         title: "Personas"
         short_title: "Personas"
         delete: "Löschen"
         temperature: "Temperatur"
-        temperature_help: "Temperatur, die für das LLM verwendet werden soll, erhöhen, um die Kreativität zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, im Allgemeinen ein Wert zwischen 0,0 und 2,0)"
+        temperature_help: "Temperatur, die für das LLM verwendet werden soll. Erhöhen, um die Kreativität zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, im Allgemeinen ein Wert zwischen 0,0 und 2,0)"
         top_p: "Top P"
         top_p_help: "Top P für das LLM. Erhöhen, um die Zufälligkeit zu steigern (leer lassen, um den Standardwert des Modells zu verwenden, in der Regel ein Wert zwischen 0,0 und 1,0)"
         priority: "Priorität"
         priority_help: "Personas mit Priorität werden den Benutzern am Anfang der Persona-Liste angezeigt. Wenn mehrere Personas Priorität haben, werden sie alphabetisch sortiert."
         tool_options: "Tool-Optionen"
-        rag_conversation_chunks: "Suchunterhaltungs-Chunks"
+        rag_conversation_chunks: "Unterhaltungs-Chunks durchsuchen"
         rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann."
-        what_are_personas: "Was sind Personas?"
-        no_persona_selected: |
-          Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie dienen als „Systembotschaft“, die die Reaktionen und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Nutzererlebnis zu schaffen.
-
-          #### Warum sollte man KI-Personas verwenden?
-
-          Mit Personas kannst du das Verhalten der KI so anpassen, dass es besser zum Kontext und zum Ton deines Forums passt. Egal, ob du möchtest, dass die KI für ein professionelles Umfeld formeller, für ein Community-Forum lockerer ist oder sogar einen bestimmten Charakter für ein Rollenspiel verkörpert: KI-Personas bieten dir die nötige Flexibilität dafür.
-
-          #### Gruppenspezifischer Zugriff auf KI-Personas
-
-          Außerdem kannst du die Funktion so einrichten, dass bestimmte Nutzergruppen Zugriff auf gewisse Personas haben. Das bedeutet, dass du für verschiedene Bereiche deines Forums unterschiedliche KI-Verhaltensweisen verwenden kannst, was die Vielfalt und Fülle der Interaktionen deiner Community weiter verbessert.
+        persona_description: "Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als „Systemnachricht“, welche die Antworten und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Erlebnis für Benutzer zu schaffen."
       rag:
         options:
           rag_chunk_tokens: "Chunk-Token hochladen"
@@ -218,8 +230,10 @@ de:
       tools:
         back: "Zurück"
         short_title: "Tools"
-        new: "Neues Tool"
+        no_tools: "Du hast noch keine Tools erstellt"
         name: "Name"
+        subheader_description: "Tools erweitern die Fähigkeiten von KI-Bots mit benutzerdefinierten JavaScript-Funktionen."
+        new: "Neues Tool"
         name_help: "Der eindeutige Name des Tools (wie vom Sprachmodell verwendet)"
         description: "Beschreibung"
         description_help: "Eine klare Beschreibung des Zwecks des Tools für das Sprachmodell"
@@ -258,9 +272,9 @@ de:
         max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung"
         url: "URL des Dienstes, der das Modell hostet"
         api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
-        enabled_chat_bot: "KI Bot-Auswahl zulassen"
+        enabled_chat_bot: "KI-Bot-Auswahl zulassen"
         vision_enabled: "Sehen aktiviert"
-        ai_bot_user: "KI-Bot-Nutzer"
+        ai_bot_user: "KI-Bot-Benutzer"
         save: "Speichern"
         edit: "Bearbeiten"
         saved: "LLM-Modell gespeichert"
@@ -275,11 +289,11 @@ de:
           ai_summarization: "Zusammenfassen"
           ai_embeddings_semantic_search: "KI-Suche"
         in_use_warning:
-          one: "Dieses Modell wird derzeit von %{settings}verwendet. Wenn es falsch konfiguriert ist, wird die Funktion nicht wie erwartet funktionieren."
-          other: "Dieses Modell wird derzeit von den folgenden Unternehmen verwendet: %{settings}. Wenn es falsch konfiguriert ist, werden die Funktionen nicht wie erwartet funktionieren. "
+          one: "Dieses Modell wird derzeit von %{settings} verwendet. Wenn es falsch konfiguriert ist, wird die Funktion nicht wie erwartet funktionieren."
+          other: "Dieses Modell wird derzeit verwendet von: %{settings}. Wenn es falsch konfiguriert ist, werden die Funktionen nicht wie erwartet funktionieren. "
         model_description:
           none: "Allgemeine Einstellungen, die für die meisten Sprachmodelle funktionieren"
-          anthropic-claude-3-5-sonnet: "Das intelligenteste Modell der Anthropologie"
+          anthropic-claude-3-5-sonnet: "Das intelligenteste Modell von Anthropic"
           anthropic-claude-3-5-haiku: "Schnell und kosteneffizient"
           anthropic-claude-3-opus: "Hervorragend im Schreiben und bei komplexen Aufgaben"
           google-gemini-1-5-pro: "Multimodales Modell mittlerer Größe, das eine Vielzahl von Aufgaben bewältigen kann"
@@ -299,6 +313,7 @@ de:
         preconfigured:
           title_no_llms: "Wähle eine Vorlage aus, um loszulegen"
           title: "Unkonfigurierte LLM-Vorlagen"
+          description: "LLMs (Large Language Models) sind KI-Tools, die für Aufgaben wie die Zusammenfassung von Inhalten, die Erstellung von Berichten, die Automatisierung von Kundeninteraktionen und die Erleichterung der Forenmoderation und -einsicht optimiert sind."
           fake: "Manuelle Konfiguration"
           button: "Einrichten"
         next:
@@ -312,7 +327,7 @@ de:
           max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50 % des Kontextfensters des Modells sein sollten."
           name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden"
           vision_enabled: "Wenn diese Funktion aktiviert ist, versucht die KI, Bilder zu verstehen. Dafür wird ein Modell benötigt, das Sehen unterstützt. Verfügbar in den neuesten Modellen von Anthropic, Google und OpenAI."
-          enabled_chat_bot: "Wenn diese Option aktiviert ist, können Benutzer dieses Modell auswählen, wenn sie PMs mit dem KI-Bot erstellen"
+          enabled_chat_bot: "Wenn diese Option aktiviert ist, können Benutzer dieses Modell auswählen, wenn sie PN mit dem KI-Bot erstellen"
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
@@ -342,6 +357,11 @@ de:
         description: "Wähle eine der folgenden Optionen und die KI schlägt dir eine neue Version des Textes vor."
         selection_hint: "Tipp: Du kannst auch einen Teil des Textes auswählen, bevor du den Assistenten öffnest, um nur diesen Teil neu zu schreiben."
         suggest: "Mit KI vorschlagen"
+        suggest_errors:
+          too_many_tags:
+            one: "Du kannst höchstens %{count} Schlagwort haben."
+            other: "Du kannst höchstens %{count} Schlagwörter haben."
+          no_suggestions: "Keine Vorschläge verfügbar"
         missing_content: "Bitte gib einige Inhalte ein, um Vorschläge zu generieren."
         context_menu:
           trigger: "KI fragen"
@@ -367,7 +387,7 @@ de:
           insert_footnote: "Fußnote hinzufügen"
           footnote_credits: "Erklärung durch KI"
         fast_edit:
-          suggest_button: "Bearbeiten vorschlagen"
+          suggest_button: "Bearbeitung vorschlagen"
         thumbnail_suggestions:
           title: "Vorgeschlagene Miniaturansichten"
           select: "Auswählen"
@@ -383,7 +403,7 @@ de:
             prompt: "Dieser Beitrag enthält nicht beschriftete Bilder. Möchtest du automatische Beschriftungen für hochgeladene Bilder aktivieren? (Das kannst du später in deinen Einstellungen ändern.)"
             confirm: "Aktivieren"
             cancel: "Nicht noch einmal fragen"
-        no_content_error: "Füge zuerst Inhalte hinzu, um KI-Aktionen darauf auszuführen"
+        no_content_error: "Füge zuerst Inhalte hinzu, um KI-Aktionen darauf anzuwenden"
       reviewables:
         model_used: "Verwendetes Modell:"
         accuracy: "Genauigkeit:"
@@ -418,8 +438,8 @@ de:
           response_tokens: "Antwort-Token:"
           request: "Anfrage"
           response: "Antwort"
-          next_log: "Nächstes"
-          previous_log: "Vorheriges"
+          next_log: "Weiter"
+          previous_log: "Zurück"
         share_full_topic_modal:
           title: "Unterhaltung öffentlich teilen"
           share: "Link teilen und kopieren"

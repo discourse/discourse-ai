@@ -51,6 +51,11 @@ fa_IR:
       title: "هوش مصنوعی"
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
+      usage:
+        summary: "خلاصه"
+        model: "مدل"
+        username: "نام‌کاربری"
+        total_requests: "مجموع درخواست‌ها"
       ai_persona:
         back: "بازگشت"
         name: "نام"

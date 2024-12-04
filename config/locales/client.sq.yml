@@ -29,6 +29,10 @@ sq:
     discourse_ai:
       modals:
         select_option: "Zgjidhni një opsion..."
+      usage:
+        summary: "Përmbledhja"
+        username: "Emri i përdoruesit"
+        total_requests: "Total requests"
       ai_persona:
         back: "Kthehu mbrapa"
         name: "Emri"

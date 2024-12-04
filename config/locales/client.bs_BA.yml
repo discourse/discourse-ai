@@ -29,6 +29,9 @@ bs_BA:
     discourse_ai:
       modals:
         select_option: "Odaberi opciju..."
+      usage:
+        summary: "Sažetak"
+        username: "Nadimak"
       ai_persona:
         back: "Prethodno"
         name: "Ime"

@@ -47,6 +47,8 @@ id:
     overall_sentiment:
       yaxis: "Tanggal"
   discourse_ai:
+    ai_artifact:
+      view_changes: "Lihat Perubahan"
     ai_helper:
       prompts:
         custom_prompt: "Perintah Khusus"

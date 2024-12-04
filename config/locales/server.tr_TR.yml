@@ -6,15 +6,25 @@
 
 tr_TR:
   discourse_automation:
+    ai:
+      flag_types:
+        review: "Gönderiyi inceleme kuyruğuna ekleyin"
+        spam: "Spam olarak işaretleyin ve gönderiyi gizleyin"
+        spam_silence: "Spam olarak işaretleyin, gönderiyi gizleyin ve kullanıcıyı susturun"
     scriptables:
       llm_triage:
         title: AI kullanarak gönderileri triyajla
         description: "Büyük bir dil modeli kullanarak gönderileri triyajla"
+        flagged_post: |
+          <div>Modelden gelen yanıt:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b><a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> kuralıyla tetiklendi.</b>
       llm_report:
         title: AI kullanarak periyodik raporla
         description: "Geniş bir dil modeline dayalı periyodik raporla"
   site_settings:
     discourse_ai_enabled: "Discourse YZ eklentisini etkinleştirin."
+    ai_artifact_security: "AI artifact sistemi, çalıştırılabilir kod içeren IFRAME'ler oluşturur. Katı mod paylaşımı devre dışı bırakır ve kodu çalıştırmak için ekstra bir tıklamaya zorlar. Gevşek mod, eserlerin paylaşılmasına izin verir ve kodu doğrudan çalıştırır. Devre dışı modu eser sistemini devre dışı bırakır."
     ai_toxicity_enabled: "Toksiklik modülünü etkinleştirin."
     ai_toxicity_inference_service_api_endpoint: "API'nin toksiklik modülü için çalıştığı URL"
     ai_toxicity_inference_service_api_key: "Toksiklik API'si için API anahtarı"
@@ -46,6 +56,7 @@ tr_TR:
     ai_openai_api_key: "OpenAI API'si için API anahtarı. SADECE gömmeler ve Dall-E için kullanılır. GPT için LLM yapılandırma sekmesini kullanın"
     ai_hugging_face_tei_endpoint: Hugging Face metni yerleştirme çıkarımı için API'nin çalıştığı URL
     ai_hugging_face_tei_api_key: Hugging Face metni yerleştirme çıkarımı için API anahtarı
+    ai_helper_enabled: "YZ yardımcısını etkinleştirin."
     composer_ai_helper_allowed_groups: "Bu gruplardaki kullanıcılar, bestecide YZ yardımcı düğmesini görür."
     ai_helper_allowed_in_pm: "Kişisel mesajlarda bestecinin YZ yardımcıyı etkinleştirin."
     ai_helper_model: "YZ yardımcı için kullanılacak model."
@@ -74,6 +85,10 @@ tr_TR:
     ai_summarization_enabled: "Konu özetleme modülünü etkinleştirin."
     ai_summarization_model: "Özetleme için kullanılacak model."
     ai_custom_summarization_allowed_groups: "Grupların yeni özetler oluşturmasına izin verilir."
+    ai_pm_summarization_allowed_groups: "Kişisel mesajlarda özet oluşturma ve görüntüleme yetkisi olan gruplar."
+    ai_summary_gists_enabled: "Konulardaki son yanıtların kısa özetlerini otomatik olarak oluşturun."
+    ai_summary_gists_allowed_groups: "Popüler konular listesindeki özetleri görme yetkisine sahip gruplar."
+    ai_summary_backfill_maximum_topics_per_hour: "Saat başına doldurulacak konu özeti sayısı."
     ai_bot_enabled: "YZ Botu modülünü etkinleştirin."
     ai_bot_enable_chat_warning: "Kişisel mesaj sohbeti başlatıldığında bir uyarı görüntüleyin. Çeviri dizesi düzenlenerek geçersiz kılınabilir: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "GPT Botunun Kişisel Mesaja erişimi olduğunda, bu grupların üyelerine yanıt verir."
@@ -93,31 +108,110 @@ tr_TR:
   reports:
     overall_sentiment:
       title: "Genel duyarlılık"
+      description: 'Grafik, olumlu veya olumsuz olarak sınıflandırılan gönderilerin sayısını karşılaştırır. Bunlar, pozitif veya negatif puanlar belirlenen eşik puanından fazla olduğunda hesaplanır. Bu, nötr gönderilerin gösterilmediği anlamına gelir. Kişisel mesajlar da hariç tutulmuştur. "cardiffnlp/twitter-roberta-base-sentiment-latest" ile sınıflandırılır'
       xaxis: "Pozitif(%)"
       yaxis: "Tarih"
+    emotion_admiration:
+      title: "\U0001F929 Hayranlık"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla hayranlık duygusu ile sınıflandırılan gönderiler."
+    emotion_amusement:
+      title: "\U0001F604 Eğlenme"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla eğlenme duygusu ile sınıflandırılan gönderiler."
     emotion_anger:
       title: "\U0001F620 Öfke"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla öfke duygusu ile sınıflandırılan gönderiler."
+    emotion_annoyance:
+      title: "\U0001F612 Rahatsız olma"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla rahatsız olma duygusu ile sınıflandırılan gönderiler."
+    emotion_approval:
+      title: "\U0001F44D Onaylama"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla onaylama duygusu ile sınıflandırılan gönderiler."
+    emotion_caring:
+      title: "\U0001F917 Önemseme"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla önemseme duygusu ile sınıflandırılan gönderiler."
+    emotion_confusion:
+      title: "\U0001F615 Kafa karışıklığı"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla kafa karışıklığı duygusu ile sınıflandırılan gönderiler."
+    emotion_curiosity:
+      title: "\U0001F914 Merak"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla merak duygusu ile sınıflandırılan gönderiler."
+    emotion_desire:
+      title: "\U0001F60D Arzu"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla arzu duygusu ile sınıflandırılan gönderiler."
+    emotion_disappointment:
+      title: "\U0001F61E Hayal kırıklığı"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla hayal kırıklığı duygusu ile sınıflandırılan gönderiler."
+    emotion_disapproval:
+      title: "\U0001F44E Onaylamama"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla onaylamama duygusu ile sınıflandırılan gönderiler."
     emotion_disgust:
       title: "\U0001F922 İğrenme"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla iğrenme duygusu ile sınıflandırılan gönderiler."
+    emotion_embarrassment:
+      title: "\U0001F633 Utanma"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla utanma duygusu ile sınıflandırılan gönderiler."
+    emotion_excitement:
+      title: "\U0001F92A Heyecan"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla heyecan duygusu ile sınıflandırılan gönderiler."
     emotion_fear:
       title: "\U0001F628 Korku"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla korku duygusu ile sınıflandırılan gönderiler."
+    emotion_gratitude:
+      title: "\U0001F64F Minnettarlık"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla minnettarlık duygusu ile sınıflandırılan gönderiler."
+    emotion_grief:
+      title: "\U0001F622 Keder"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla keder duygusu ile sınıflandırılan gönderiler."
     emotion_joy:
       title: "\U0001F60A Neşe"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla neşe duygusu ile sınıflandırılan gönderiler."
+    emotion_love:
+      title: '❤️ Sevgi'
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla sevgi duygusu ile sınıflandırılan gönderiler."
+    emotion_nervousness:
+      title: "\U0001F630 Gerginlik"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla gerginlik duygusu ile sınıflandırılan gönderiler."
     emotion_neutral:
       title: "\U0001F610 Nötr"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla nötr duygusu ile sınıflandırılan gönderiler."
+    emotion_optimism:
+      title: "\U0001F31F İyimserlik"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla iyimserlik duygusu ile sınıflandırılan gönderiler."
+    emotion_pride:
+      title: "\U0001F981 Gurur"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla gurur duygusu ile sınıflandırılan gönderiler."
+    emotion_realization:
+      title: "\U0001F4A1 Farkına varma"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla farkına varma duygusu ile sınıflandırılan gönderiler."
+    emotion_relief:
+      title: "\U0001F60C Rahatlama"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla rahatlama duygusu ile sınıflandırılan gönderiler."
+    emotion_remorse:
+      title: "\U0001F614 Pişmanlık"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla pişmanlık duygusu ile sınıflandırılan gönderiler."
     emotion_sadness:
       title: "\U0001F62D Üzüntü"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla üzüntü duygusu ile sınıflandırılan gönderiler."
     emotion_surprise:
-      title: "\U0001F632 Sürpriz"
+      title: "\U0001F632 Şaşırma"
+      description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla şaşırma duygusu ile sınıflandırılan gönderiler."
   discourse_ai:
+    ai_artifact:
+      link: "Artifact'i yeni sekmede göster"
+      view_source: "Kaynağı görüntüle"
+      view_changes: "Değişiklikleri görüntüle"
     unknown_model: "Bilinmeyen YZ modeli"
     tools:
       custom_name: "%{name} (özel)"
       presets:
+        browse_web_jina:
+          name: "Web'de gezinin (jina.ai)"
         exchange_rate:
           name: "Döviz kuru"
         stock_quote:
           name: "Hisse senedi fiyat teklifi (AlphaVantage)"
+        image_generation:
+          name: "Flux görüntü oluşturucu (Together.ai)"
         empty_tool:
           name: "Boştan başla..."
     ai_helper:
@@ -181,6 +275,9 @@ tr_TR:
         discourse_helper:
           name: "Discourse Yardımcısı"
           description: "Discourse ile ilgili görevlere yardımcı olma konusunda uzmanlaşmış YZ Botu"
+        web_artifact_creator:
+          name: "Web Artifact'i Oluşturucu"
+          description: "Etkileşimli web artifact'leri oluşturma konusunda uzmanlaşmış YZ Botu"
       topic_not_found: "Özet mevcut değil, konu bulunamadı!"
       summarizing: "Konu özetleniyor"
       searching: "Aranıyor: '%{query}'"
@@ -188,6 +285,7 @@ tr_TR:
         google:
           base_query:
             name: "Temel Arama Sorgusu"
+            description: "Arama yaparken kullanılacak temel sorgu. Örnekler: \"site:example.com\" yalnızca example.com adresindeki sonuçları içerir, before:2022-01-01 yalnızca 2021 ve öncesindeki sonuçları içerir. Bu metin, arama sorgusuna eklenir."
         read:
           read_private:
             name: "Özel oku"
@@ -203,6 +301,7 @@ tr_TR:
             name: "Temel Arama Sorgusu"
             description: "Arama yaparken kullanılacak temel sorgu. Örnek: \"#acil\" arama sorgusuna \"#acil\" iadesini ekler ve yalnızca acil kategorisine veya etiketine sahip konuları içerir."
       tool_summary:
+        create_artifact: "Web artifact'i oluştur"
         web_browser: "Web'de gezinin"
         github_search_files: "GitHub arama dosyaları"
         github_search_code: "GitHub kodu arama"
@@ -224,6 +323,7 @@ tr_TR:
         search_meta_discourse: "Meta Discourse'ta arama yapın"
         javascript_evaluator: "JavaScript'i değerlendirin"
       tool_help:
+        create_artifact: "YZ Botunu kullanarak bir web artifact'i oluştur"
         web_browser: "YZ Botunu kullanarak web sayfasına göz atın"
         github_search_code: "GitHub deposunda kod arayın"
         github_search_files: "GitHub deposunda dosya arayın"
@@ -245,6 +345,7 @@ tr_TR:
         search_meta_discourse: "Meta Discourse'ta arama yapın"
         javascript_evaluator: "JavaScript'i değerlendirin"
       tool_description:
+        create_artifact: "YZ Botunu kullanarak bir web artifact'i oluşturuldu"
         web_browser: "Okunuyor: <a href='%{url}'>%{url}</a>"
         github_search_files: "%{repo}/%{branch} içinde \"%{keywords}\" arandı"
         github_search_code: "%{repo} içinde \"%{query}\" arandı"
@@ -300,6 +401,7 @@ tr_TR:
         disable_module_first: "Önce %{setting} devre dışı bırakılmalı."
         set_llm_first: "Önce %{setting} ayarlanmalı."
         model_unreachable: "Bu modelden yanıt alamadık. Önce ayarlarınızı kontrol edin."
+        invalid_seeded_model: "Bu modeli bu özellikle kullanamazsınız."
       endpoints:
         not_configured: "%{display_name} (yapılandırılmadı)"
         configuration_hint:
@@ -308,6 +410,7 @@ tr_TR:
       delete_failed:
         one: "%{settings} kullandığı için bu modeli silemedik. Ayarı güncelleyin ve tekrar deneyin."
         other: "%{settings} kullandığı için bu modeli silemedik. Ayarları güncelleyip tekrar deneyin."
+      cannot_edit_builtin: "Yerleşik bir modeli düzenleyemezsiniz."
     embeddings:
       configuration:
         disable_embeddings: "Önce \"yz yerleştirmeleri etkin\" seçeneğini devre dışı bırakmanız gerekiyor."
@@ -316,5 +419,15 @@ tr_TR:
         hint:
           one: "`%{settings}` ayarının yapılandırıldığından emin olun."
           other: "İstediğiniz sağlayıcının ayarlarının yapılandırıldığından emin olun. Seçenekler şunlardır: %{settings}"
+    llm_models:
+      missing_provider_param: "%{param} boş olamaz"
     errors:
-      prompt_message_length: '%{idx} mesajı 1000 karakter sınırının üzerinde.'
+      no_query_specified: Sorgu parametresi gerekli, lütfen belirtin.
+      no_user_for_persona: Belirtilen kişilik ile ilişkilendirilmiş bir kullanıcı yok.
+      persona_not_found: Belirtilen kişilik mevcut değil. persona_name veya persona_id parametrelerini kontrol edin.
+      no_user_specified: Kullanıcı adı veya user_unique_id parametresi gerekli, lütfen belirtin.
+      user_not_found: Belirtilen kullanıcı mevcut değil. Kullanıcı adı parametresini kontrol edin.
+      persona_disabled: Belirtilen kişilik devre dışı. persona_name veya persona_id parametrelerini kontrol edin.
+      no_default_llm: Kişiliğin tanımlanmış bir default_llm'si olmalıdır.
+      user_not_allowed: Kullanıcının konuya katılmasına izin verilmiyor.
+      prompt_message_length: '%{idx} mesajı 1000 karakter limitinin üzerinde.'

@@ -29,6 +29,10 @@ pt:
     discourse_ai:
       modals:
         select_option: "Selecione uma opção..."
+      usage:
+        summary: "Resumo"
+        username: "Nome de Utilizador"
+        total_requests: "Total de pedidos"
       ai_persona:
         back: "Retroceder"
         name: "Nome"

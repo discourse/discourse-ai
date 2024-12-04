@@ -95,6 +95,11 @@ pl_PL:
       title: "AI"
       modals:
         select_option: "Wybierz opcję..."
+      usage:
+        summary: "Podsumowanie"
+        model: "Model"
+        username: "Nazwa użytkownika"
+        total_requests: "Razem zapytań"
       ai_persona:
         back: "Poprzednia"
         name: "Nazwa"

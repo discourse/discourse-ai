@@ -29,6 +29,10 @@ nb_NO:
     discourse_ai:
       modals:
         select_option: "Velg et alternativ..."
+      usage:
+        summary: "Sammendrag"
+        username: "Brukernavn"
+        total_requests: "Totalt forespørsler"
       ai_persona:
         back: "Forrige"
         name: "Navn"

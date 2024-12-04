@@ -6,15 +6,25 @@
 
 nl:
   discourse_automation:
+    ai:
+      flag_types:
+        review: "Bericht toevoegen aan beoordelingswachtrij"
+        spam: "Als spam markeren en bericht verbergen"
+        spam_silence: "Als spam markeren, bericht verbergen en gebruiker dempen"
     scriptables:
       llm_triage:
         title: Berichten triageren met AI
         description: "Triageer berichten met behulp van een groot taalmodel"
+        flagged_post: |
+          <div>Reactie van het model:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Getriggerd door de regel <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Periodiek rapport met AI
         description: "Periodiek rapport op basis van een groot taalmodel"
   site_settings:
     discourse_ai_enabled: "Schakel de Discours-AI-plug-in in."
+    ai_artifact_security: "Het AI-artefactsysteem genereert IFRAME's met uitvoerbare code. De strikte modus schakelt delen uit en forceert een extra klik om code uit te voeren. In de lakse modus kun je artefacten delen en code direct uitvoeren. De modus Uitgeschakeld schakelt het artefactsysteem uit."
     ai_toxicity_enabled: "Schakel de toxiciteitsmodule in."
     ai_toxicity_inference_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de toxiciteitsmodule"
     ai_toxicity_inference_service_api_key: "API-sleutel voor de toxiciteits-API"
@@ -46,6 +56,7 @@ nl:
     ai_openai_api_key: "API-sleutel voor OpenAI-API. ALLEEN gebruikt voor insluitingen en Dall-E. Gebruik voor GPT het tabblad LLM-configuratie"
     ai_hugging_face_tei_endpoint: URL waar de API wordt uitgevoerd voor inferentie van Hugging Face-tekstinsluitingen
     ai_hugging_face_tei_api_key: API-sleutel voor inferentie van Hugging Face-tekstinsluitingen
+    ai_helper_enabled: "Schakel de AI-helper in."
     composer_ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
     ai_helper_allowed_in_pm: "Schakel de AI-hulp van de editor in in PB's."
     ai_helper_model: "Te gebruiken model voor de AI-hulp."
@@ -74,6 +85,10 @@ nl:
     ai_summarization_enabled: "Schakel de module voor het samenvatten van topics in."
     ai_summarization_model: "Te gebruiken model voor samenvattingen."
     ai_custom_summarization_allowed_groups: "Groepen die nieuwe samenvattingen mogen maken."
+    ai_pm_summarization_allowed_groups: "Groepen mogen samenvattingen maken en bekijken in PB's."
+    ai_summary_gists_enabled: "Genereer automatisch korte samenvattingen van de nieuwste reacties in topics."
+    ai_summary_gists_allowed_groups: "Groepen kunnen samenvattingen zien in de lijst van populaire topics."
+    ai_summary_backfill_maximum_topics_per_hour: "Aantal topicsamenvattingen om aan te vullen per uur."
     ai_bot_enabled: "Schakel de AI-botmodule in."
     ai_bot_enable_chat_warning: "Geef een waarschuwing weer wanneer een privéchat wordt gestart. Kan worden genegeerd door de vertaling te bewerken: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Wanneer de GPT-bot toegang heeft tot het privébericht, zal deze reageren op leden van deze groepen."
@@ -93,31 +108,110 @@ nl:
   reports:
     overall_sentiment:
       title: "Algemeen sentiment"
+      description: 'De grafiek vergelijkt het aantal berichten dat als positief of negatief is geclassificeerd. Deze worden berekend wanneer positieve of negatieve scores groter zijn dan de ingestelde drempelscore. Dit betekent dat neutrale berichten niet worden weergegeven. Persoonlijke berichten (PB''s) zijn ook uitgesloten. Geclassificeerd met "cardiffnlp/twitter-roberta-base-sentiment-latest".'
       xaxis: "Positief (%)"
       yaxis: "Datum"
+    emotion_admiration:
+      title: "\U0001F929 Bewondering"
+      description: "Berichten geclassificeerd met de emotie bewondering via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_amusement:
+      title: "\U0001F604 Geamuseerd"
+      description: "Berichten geclassificeerd met de emotie geamuseerd via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
     emotion_anger:
       title: "\U0001F620 Boosheid"
+      description: "Berichten geclassificeerd met de emotie woede via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_annoyance:
+      title: "\U0001F612 Ergernis"
+      description: "Berichten geclassificeerd met de emotie ergernis via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_approval:
+      title: "\U0001F44D Goedkeuring"
+      description: "Berichten geclassificeerd met de emotie goedkeuring via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_caring:
+      title: "\U0001F917 Zorgzaam"
+      description: "Berichten geclassificeerd met de emotie zorgzaam via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_confusion:
+      title: "\U0001F615 Verwarring"
+      description: "Berichten geclassificeerd met de emotie verwarring via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_curiosity:
+      title: "\U0001F914 Nieuwsgierigheid"
+      description: "Berichten geclassificeerd met de emotie nieuwsgierigheid via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_desire:
+      title: "\U0001F60D Verlangen"
+      description: "Berichten geclassificeerd met de emotie verlangen via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_disappointment:
+      title: "\U0001F61E Teleurstelling"
+      description: "Berichten geclassificeerd met de emotie teleurstelling via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_disapproval:
+      title: "\U0001F44E Afkeuring"
+      description: "Berichten geclassificeerd met de emotie afkeuring via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
     emotion_disgust:
       title: "\U0001F922 Afschuw"
+      description: "Berichten geclassificeerd met de emotie afschuw via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_embarrassment:
+      title: "\U0001F633 Schaamte"
+      description: "Berichten geclassificeerd met de emotie schaamte via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_excitement:
+      title: "\U0001F92A Opwinding"
+      description: "Berichten geclassificeerd met de emotie opwinding via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
     emotion_fear:
       title: "\U0001F628 Angst"
+      description: "Berichten geclassificeerd met de emotie angst via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_gratitude:
+      title: "\U0001F64F Dankbaarheid"
+      description: "Berichten geclassificeerd met de emotie dankbaarheid via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_grief:
+      title: "\U0001F622 Verdriet"
+      description: "Berichten geclassificeerd met de emotie verdriet via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
     emotion_joy:
       title: "\U0001F60A Vreugde"
+      description: "Berichten geclassificeerd met de emotie vreugde via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_love:
+      title: '❤️ Liefde'
+      description: "Berichten geclassificeerd met de emotie liefde via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_nervousness:
+      title: "\U0001F630 Nervositeit"
+      description: "Berichten geclassificeerd met de emotie nervositeit via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
     emotion_neutral:
       title: "\U0001F610 Neutraal"
+      description: "Berichten geclassificeerd met de emotie neutraal via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_optimism:
+      title: "\U0001F31F Optimisme"
+      description: "Berichten geclassificeerd met de emotie optimisme via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_pride:
+      title: "\U0001F981 Trots"
+      description: "Berichten geclassificeerd met de emotie trots via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_realization:
+      title: "\U0001F4A1 Besef"
+      description: "Berichten geclassificeerd met de emotie besef via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_relief:
+      title: "\U0001F60C Opluchting"
+      description: "Berichten geclassificeerd met de emotie oplichting via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
+    emotion_remorse:
+      title: "\U0001F614 Spijt"
+      description: "Berichten geclassificeerd met de emotie spijt via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
     emotion_sadness:
       title: "\U0001F62D Droefheid"
+      description: "Berichten geclassificeerd met de emotie droefheid via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
     emotion_surprise:
       title: "\U0001F632 Verrassing"
+      description: "Berichten geclassificeerd met de emotie verrassing via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
   discourse_ai:
+    ai_artifact:
+      link: "Artefact weergeven op nieuw tabblad"
+      view_source: "Bron weergeven"
+      view_changes: "Wijzigingen weergeven"
     unknown_model: "Onbekend AI-model"
     tools:
       custom_name: "%{name} (aangepast)"
       presets:
+        browse_web_jina:
+          name: "Web surfen (jina.ai)"
         exchange_rate:
           name: "Wisselkoers"
         stock_quote:
           name: "Aandelenkoers (AlphaVantage)"
+        image_generation:
+          name: "Flux-afbeeldingsgenerator (Together.ai)"
         empty_tool:
           name: "Vanaf blanco beginnen..."
     ai_helper:
@@ -181,6 +275,9 @@ nl:
         discourse_helper:
           name: "Discourse Helper"
           description: "AI-bot gespecialiseerd in het helpen bij Discourse-gerelateerde taken"
+        web_artifact_creator:
+          name: "Webartefactmaker"
+          description: "AI-bot gespecialiseerd in het maken van interactieve webartefacten"
       topic_not_found: "Samenvatting niet beschikbaar, topic niet gevonden!"
       summarizing: "Topic samenvatten"
       searching: "Zoeken naar: '%{query}'"
@@ -188,6 +285,7 @@ nl:
         google:
           base_query:
             name: "Basiszoekquery"
+            description: "Basisquery om te gebruiken bij het zoeken. Voorbeelden: 'site:example.com' levert alleen resultaten op van example.com, before:2022-01-01 levert alleen resultaten op van 2021 en eerder. Deze tekst wordt toegevoegd voorafgaand aan de zoekopdracht."
         read:
           read_private:
             name: "Privé lezen"
@@ -203,6 +301,7 @@ nl:
             name: "Basiszoekquery"
             description: "Basisquery om te gebruiken bij het zoeken. Voorbeeld: '#urgent' voegt '#urgent' toe aan de zoekquery en neemt alleen topics mee met de categorie of tag 'urgent'."
       tool_summary:
+        create_artifact: "Webartefact maken"
         web_browser: "Web surfen"
         github_search_files: "GitHub-zoekbestanden"
         github_search_code: "GitHub-code zoeken"
@@ -224,6 +323,7 @@ nl:
         search_meta_discourse: "Zoeken in Meta Discourse"
         javascript_evaluator: "JavaScript evalueren"
       tool_help:
+        create_artifact: "Maak een webartefact met behulp van de AI-bot"
         web_browser: "Webpagina bekijken met behulp van de AI-bot"
         github_search_code: "Zoek code in een GitHub-repository"
         github_search_files: "Zoek bestanden in een GitHub-repository"
@@ -245,6 +345,7 @@ nl:
         search_meta_discourse: "Zoeken in Meta Discourse"
         javascript_evaluator: "JavaScript evalueren"
       tool_description:
+        create_artifact: "Webartefact gemaakt met behulp van de AI-bot"
         web_browser: "Lezen: <a href='%{url}'>%{url}</a>"
         github_search_files: "Gezocht naar '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Gezocht naar '%{query}' in %{repo}"
@@ -300,6 +401,7 @@ nl:
         disable_module_first: "Je moet eerst %{setting} uitschakelen."
         set_llm_first: "Stel eerst %{setting} in."
         model_unreachable: "We konden geen antwoord krijgen van dit model. Controleer eerst je instellingen."
+        invalid_seeded_model: "Je kunt dit model niet gebruiken met deze functie."
       endpoints:
         not_configured: "%{display_name} (niet geconfigureerd)"
         configuration_hint:
@@ -308,6 +410,7 @@ nl:
       delete_failed:
         one: "We kunnen dit model niet verwijderen omdat %{settings} het gebruikt. Werk de instelling bij en probeer het opnieuw."
         other: "We kunnen dit model niet verwijderen omdat %{settings} het gebruiken. Werk de instellingen bij en probeer het opnieuw."
+      cannot_edit_builtin: "Je kunt een ingebouwd model niet bewerken."
     embeddings:
       configuration:
         disable_embeddings: "Je moet 'ai embeddings enabled' eerst uitschakelen."
@@ -316,5 +419,15 @@ nl:
         hint:
           one: "Zorg dat de instelling `%{settings}` is geconfigureerd."
           other: "Zorg dat de instellingen van de gewenste provider zijn geconfigureerd. Opties zijn: %{settings}"
+    llm_models:
+      missing_provider_param: "%{param} mag niet leeg zijn"
     errors:
+      no_query_specified: De queryparameter is verplicht. Geef deze op.
+      no_user_for_persona: Er is geen gebruiker gekoppeld aan de opgegeven persona.
+      persona_not_found: De opgegeven persona bestaat niet. Controleer de parameters persona_name en persona_id.
+      no_user_specified: De gebruikersnaam of de parameter user_unique_id is vereist. Geef deze op.
+      user_not_found: De opgegeven gebruiker bestaat niet. Controleer de gebruikersnaamparameter.
+      persona_disabled: De opgegeven persona is uitgeschakeld. Controleer de parameters persona_name en persona_id.
+      no_default_llm: Er moet een default_llm zijn gedefinieerd voor de persona.
+      user_not_allowed: De gebruiker mag niet deelnemen aan het topic.
       prompt_message_length: Het bericht %{idx} is langer dan de limiet van 1000 tekens.

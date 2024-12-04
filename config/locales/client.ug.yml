@@ -31,6 +31,10 @@ ug:
     discourse_ai:
       modals:
         select_option: "تاللانما تاللىنىدۇ..."
+      usage:
+        summary: "خۇلاسە"
+        username: "ئىشلەتكۈچى ئاتى"
+        total_requests: "جەمئىي ئىلتىماس"
       ai_persona:
         back: "كەينى"
         name: "ئىسمى"

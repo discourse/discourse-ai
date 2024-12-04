@@ -29,6 +29,10 @@ ca:
     discourse_ai:
       modals:
         select_option: "Trieu una opció..."
+      usage:
+        summary: "Resum"
+        username: "Nom d'usuari "
+        total_requests: "Total de peticions"
       ai_persona:
         back: "Enrere"
         name: "Nom"

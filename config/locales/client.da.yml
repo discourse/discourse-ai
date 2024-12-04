@@ -29,6 +29,10 @@ da:
     discourse_ai:
       modals:
         select_option: "Vælg en indstilling..."
+      usage:
+        summary: "Statistik"
+        username: "Brugernavn"
+        total_requests: "Total antal anmodninger"
       ai_persona:
         back: "Tilbage"
         name: "Navn"
