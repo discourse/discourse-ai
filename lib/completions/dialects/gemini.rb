@@ -5,8 +5,8 @@ module DiscourseAi
     module Dialects
       class Gemini < Dialect
         class << self
-          def can_translate?(model_provider)
-            model_provider == "google"
+          def can_translate?(llm_model)
+            llm_model.provider == "google"
           end
         end
 

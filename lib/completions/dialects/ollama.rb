@@ -5,8 +5,8 @@ module DiscourseAi
     module Dialects
       class Ollama < Dialect
         class << self
-          def can_translate?(model_provider)
-            model_provider == "ollama"
+          def can_translate?(llm_model)
+            llm_model.provider == "ollama"
           end
         end
 

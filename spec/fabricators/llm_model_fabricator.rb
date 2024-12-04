@@ -64,6 +64,17 @@ Fabricator(:bedrock_model, from: :anthropic_model) do
   provider_params { { region: "us-east-1", access_key_id: "123456" } }
 end
 
+Fabricator(:nova_model, from: :llm_model) do
+  display_name "Amazon Nova pro"
+  name "amazon.nova-pro-v1:0"
+  provider "aws_bedrock"
+  tokenizer "DiscourseAi::Tokenizer::OpenAiTokenizer"
+  max_prompt_tokens 300_000
+  api_key "fake"
+  url ""
+  provider_params { { region: "us-east-1", access_key_id: "123456" } }
+end
+
 Fabricator(:cohere_model, from: :llm_model) do
   display_name "Cohere Command R+"
   name "command-r-plus"
