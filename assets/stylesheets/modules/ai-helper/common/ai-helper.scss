@@ -339,6 +339,12 @@
       }
     }
   }
+
+  .showing-ai-suggestions {
+    #reply-title {
+      padding-right: 2em;
+    }
+  }
 }
 
 .suggest-tags-button + .ai-suggestions-menu {
