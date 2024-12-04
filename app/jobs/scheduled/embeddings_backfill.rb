@@ -31,15 +31,14 @@ module Jobs
           .where(archetype: Archetype.default)
           .where(deleted_at: nil)
           .order("topics.bumped_at DESC")
-          .limit(limit - rebaked)
 
-      rebaked += populate_topic_embeddings(vector_rep, topics)
+      rebaked += populate_topic_embeddings(vector_rep, topics.limit(limit - rebaked))
 
       return if rebaked >= limit
 
       # Then, we'll try to backfill embeddings for topics that have outdated
       # embeddings, be it model or strategy version
-      relation = topics.where(<<~SQL)
+      relation = topics.where(<<~SQL).limit(limit - rebaked)
           #{table_name}.model_version < #{vector_rep.version}
           OR
           #{table_name}.strategy_version < #{strategy.version}
@@ -65,20 +64,22 @@ module Jobs
 
       # Now for posts
       table_name = vector_rep.post_table_name
+      posts_batch_size = 1000
 
       posts =
         Post
           .joins("LEFT JOIN #{table_name} ON #{table_name}.post_id = posts.id")
           .where(deleted_at: nil)
           .where(post_type: Post.types[:regular])
-          .limit(limit - rebaked)
 
       # First, we'll try to backfill embeddings for posts that have none
       posts
         .where("#{table_name}.post_id IS NULL")
-        .find_in_batches do |batch|
-          vector_rep.gen_bulk_reprensentations(batch)
-          rebaked += batch.size
+        .limit(limit - rebaked)
+        .pluck(:id)
+        .each_slice(posts_batch_size) do |batch|
+          vector_rep.gen_bulk_reprensentations(Post.where(id: batch))
+          rebaked += batch.length
         end
 
       return if rebaked >= limit
@@ -91,28 +92,26 @@ module Jobs
           OR
           #{table_name}.strategy_version < #{strategy.version}
         SQL
-        .find_in_batches do |batch|
-          vector_rep.gen_bulk_reprensentations(batch)
-          rebaked += batch.size
+        .limit(limit - rebaked)
+        .pluck(:id)
+        .each_slice(posts_batch_size) do |batch|
+          vector_rep.gen_bulk_reprensentations(Post.where(id: batch))
+          rebaked += batch.length
         end
 
       return if rebaked >= limit
 
       # Finally, we'll try to backfill embeddings for posts that have outdated
       # embeddings due to edits. Here we only do 10% of the limit
-      posts_batch_size = 1000
-
-      outdated_post_ids =
-        posts
-          .where("#{table_name}.updated_at < ?", 7.days.ago)
-          .order("random()")
-          .limit((limit - rebaked) / 10)
-          .pluck(:id)
-
-      outdated_post_ids.each_slice(posts_batch_size) do |batch|
-        vector_rep.gen_bulk_reprensentations(Post.where(id: batch))
-        rebaked += batch.length
-      end
+      posts
+        .where("#{table_name}.updated_at < ?", 7.days.ago)
+        .order("random()")
+        .limit((limit - rebaked) / 10)
+        .pluck(:id)
+        .each_slice(posts_batch_size) do |batch|
+          vector_rep.gen_bulk_reprensentations(Post.where(id: batch))
+          rebaked += batch.length
+        end
 
       rebaked
     end
