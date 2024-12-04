@@ -166,6 +166,13 @@ module DiscourseAi
           i = 0
           while decoded
             parsed = JSON.parse(decoded.payload.string)
+            if exception = decoded.headers[":exception-type"]
+              Rails.logger.error(
+                "#{self.class.name}: #{exception}: #{parsed}",
+              )
+              # TODO based on how often this happens, we may want to raise so we
+              # can retry, this may catch rate limits for example
+            end
             # perhaps some control message we can just ignore
             messages << Base64.decode64(parsed["bytes"]) if parsed && parsed["bytes"]
 
