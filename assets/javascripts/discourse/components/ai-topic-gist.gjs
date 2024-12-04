@@ -28,7 +28,7 @@ export default class AiTopicGist extends Component {
           <div class="excerpt__contents">{{this.gist}}</div>
         </div>
       {{else}}
-        {{#if this.escapedExceprt}}
+        {{#if this.escapedExcerpt}}
           <div class="excerpt">
             <div class="excerpt__contents">
               {{htmlSafe this.escapedExceprt}}
