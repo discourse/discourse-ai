@@ -52,21 +52,6 @@ acceptance("AI Helper - Post Helper Menu", function (needs) {
         done: false,
       });
     });
-
-    // server.post("/posts/398", (request) => {
-    //   return helper.response({
-    //     post: {
-    //       id: 398,
-    //       name: "Uwe Keim",
-    //       username: "uwe_keim",
-    //       cooked:
-    //         "<p>Any THIS IS A FOOTNOTE plans to support localization of UI elements, so that I (for example) could set up a completely German speaking forum?</p>",
-    //       topic_id: 280,
-    //       post_number: 1,
-    //       raw: "Any THIS IS A FOOTNOTE plans to support localization of UI elements, so that I (for example) could set up a completely German speaking forum?",
-    //     },
-    //   });
-    // });
   });
 
   test("displays streamed explanation", async function (assert) {
