@@ -55,17 +55,11 @@ module DiscourseAi
         def translate
           messages = super
 
-          # Extract system message if present
           system = messages.shift[:content] if messages.first&.dig(:role) == "system"
-
-          # Convert messages to Nova format
           nova_messages = messages.map { |msg| { role: msg[:role], content: build_content(msg) } }
 
-          # Build inference config if specified in options
           inference_config = build_inference_config
-
-          # Build tool config if tools are present
-          tool_config = build_tool_config if prompt.tools.present?
+          tool_config = tools_dialect.translated_tools if native_tool_support?
 
           NovaPrompt.new(
             system.presence && [{ text: system }],
@@ -79,15 +73,31 @@ module DiscourseAi
           llm_model.max_prompt_tokens
         end
 
+        def native_tool_support?
+          !llm_model.lookup_custom_param("disable_native_tools")
+        end
+
+        def tools_dialect
+          if native_tool_support?
+            @tools_dialect ||= DiscourseAi::Completions::Dialects::NovaTools.new(prompt.tools)
+          else
+            super
+          end
+        end
+
         private
 
         def build_content(msg)
           content = []
 
-          # Add text content
-          content << { text: msg[:content] } if msg[:content].present?
+          existing_content = msg[:content]
 
-          # Add images if present
+          if existing_content.is_a?(Hash)
+            content << existing_content
+          elsif existing_content.is_a?(String)
+            content << { text: existing_content }
+          end
+
           msg[:images]&.each { |image| content << image }
 
           content
@@ -106,30 +116,6 @@ module DiscourseAi
           config[:stopSequences] = ic[:stop_sequences] if ic[:stop_sequences]
 
           config.present? ? config : nil
-        end
-
-        def build_tool_config
-          return if !native_tool_support?
-          return if !prompt.tools.present?
-
-          {
-            tools:
-              prompt.tools.map do |tool|
-                {
-                  toolSpec: {
-                    name: tool[:name],
-                    description: tool[:description],
-                    inputSchema: {
-                      json: tool[:input_schema],
-                    },
-                  },
-                }
-              end,
-            toolChoice: {
-              auto: {
-              },
-            },
-          }
         end
 
         def detect_format(mime_type)

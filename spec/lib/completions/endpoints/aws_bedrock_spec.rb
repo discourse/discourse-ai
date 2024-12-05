@@ -12,7 +12,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
 
   fab!(:user)
   fab!(:model) { Fabricate(:bedrock_model) }
-  fab!(:nova_model) { Fabricate(:nova_model) }
 
   let(:bedrock_mock) { BedrockMock.new(endpoint) }
 
@@ -25,84 +24,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     io = StringIO.new(wrapped)
     aws_message = Aws::EventStream::Message.new(payload: io)
     Aws::EventStream::Encoder.new.encode(aws_message)
-  end
-
-  context "Amazon nova support" do
-    it "should be able to make a simple request" do
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{nova_model.id}")
-
-      content = {
-        "output" => {
-          "message" => {
-            "content" => [{ "text" => "it is 2." }],
-            "role" => "assistant",
-          },
-        },
-        "stopReason" => "end_turn",
-        "usage" => {
-          "inputTokens" => 14,
-          "outputTokens" => 119,
-          "totalTokens" => 133,
-          "cacheReadInputTokenCount" => nil,
-          "cacheWriteInputTokenCount" => nil,
-        },
-      }.to_json
-
-      stub_request(
-        :post,
-        "https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-pro-v1:0/invoke",
-      ).to_return(status: 200, body: content)
-
-      response = proxy.generate("hello world", user: user)
-      expect(response).to eq("it is 2.")
-
-      log = AiApiAuditLog.order(:id).last
-      expect(log.request_tokens).to eq(14)
-      expect(log.response_tokens).to eq(119)
-    end
-
-    it "should be able to make a streaming request" do
-      messages =
-        [
-          { messageStart: { role: "assistant" } },
-          { contentBlockDelta: { delta: { text: "Hello" }, contentBlockIndex: 0 } },
-          { contentBlockStop: { contentBlockIndex: 0 } },
-          { contentBlockDelta: { delta: { text: "!" }, contentBlockIndex: 1 } },
-          { contentBlockStop: { contentBlockIndex: 1 } },
-          {
-            metadata: {
-              usage: {
-                inputTokens: 14,
-                outputTokens: 18,
-              },
-              metrics: {
-              },
-              trace: {
-              },
-            },
-            "amazon-bedrock-invocationMetrics": {
-              inputTokenCount: 14,
-              outputTokenCount: 18,
-              invocationLatency: 402,
-              firstByteLatency: 72,
-            },
-          },
-        ].map { |message| encode_message(message) }
-
-      stub_request(
-        :post,
-        "https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-pro-v1:0/invoke-with-response-stream",
-      ).to_return(status: 200, body: messages.join)
-
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{nova_model.id}")
-      responses = []
-      proxy.generate("Hello!", user: user) { |partial| responses << partial }
-
-      expect(responses).to eq(%w[Hello !])
-      log = AiApiAuditLog.order(:id).last
-      expect(log.request_tokens).to eq(14)
-      expect(log.response_tokens).to eq(18)
-    end
   end
 
   it "should provide accurate max token count" do

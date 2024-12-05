@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class DiscourseAi::Completions::NovaMessageProcessor
-  class AnthropicToolCall
+  class NovaToolCall
     attr_reader :name, :raw_json, :id
 
     def initialize(name, id, partial_tool_calls: false)
@@ -59,12 +59,26 @@ class DiscourseAi::Completions::NovaMessageProcessor
   def process_streamed_message(parsed)
     return if !parsed
 
+    result = nil
+
+    if tool_start = parsed.dig(:contentBlockStart, :start, :toolUse)
+      @current_tool_call = NovaToolCall.new(tool_start[:name], tool_start[:toolUseId])
+    end
+
+    if tool_progress = parsed.dig(:contentBlockDelta, :delta, :toolUse, :input)
+      @current_tool_call.append(tool_progress)
+    end
+
+    if parsed[:contentBlockStop] && @current_tool_call
+      result = @current_tool_call.to_tool_call
+    end
+
     if metadata = parsed[:metadata]
       @input_tokens = metadata.dig(:usage,:inputTokens)
       @output_tokens = metadata.dig(:usage, :outputTokens)
     end
 
-    parsed.dig(:contentBlockDelta, :delta, :text)
+    result || parsed.dig(:contentBlockDelta, :delta, :text)
   end
 
   def process_message(payload)
