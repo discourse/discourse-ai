@@ -69,12 +69,10 @@ class DiscourseAi::Completions::NovaMessageProcessor
       @current_tool_call.append(tool_progress)
     end
 
-    if parsed[:contentBlockStop] && @current_tool_call
-      result = @current_tool_call.to_tool_call
-    end
+    result = @current_tool_call.to_tool_call if parsed[:contentBlockStop] && @current_tool_call
 
     if metadata = parsed[:metadata]
-      @input_tokens = metadata.dig(:usage,:inputTokens)
+      @input_tokens = metadata.dig(:usage, :inputTokens)
       @output_tokens = metadata.dig(:usage, :outputTokens)
     end
 

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Completions::Dialects::Claude do
-
   fab!(:llm_model) { Fabricate(:anthropic_model, name: "claude-3-opus") }
 
   let :opus_dialect_klass do

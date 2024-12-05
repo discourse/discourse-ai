@@ -33,16 +33,11 @@ module DiscourseAi
             stop_sequences = options[:stop_sequences]
             max_tokens = options[:max_tokens]
 
-            inference_config =
-              options&.slice(:temperature, :top_p, :top_k)
+            inference_config = options&.slice(:temperature, :top_p, :top_k)
 
-            if stop_sequences.present?
-              inference_config[:stopSequences] = stop_sequences
-            end
+            inference_config[:stopSequences] = stop_sequences if stop_sequences.present?
 
-            if max_tokens.present?
-              inference_config[:max_new_tokens] = max_tokens
-            end
+            inference_config[:max_new_tokens] = max_tokens if max_tokens.present?
 
             result = { system: system, messages: messages }
             result[:inferenceConfig] = inference_config if inference_config.present?

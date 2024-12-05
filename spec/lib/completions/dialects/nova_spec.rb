@@ -62,16 +62,9 @@ RSpec.describe DiscourseAi::Completions::Dialects::Nova do
           {
             name: "get_weather",
             description: "Get the weather in a city",
-            input_schema: {
-              type: "object",
-              properties: {
-                location: {
-                  type: "string",
-                  description: "the city name",
-                },
-              },
-              required: ["location"],
-            },
+            parameters: [
+              { name: "location", type: "string", description: "the city name", required: true },
+            ],
           },
         ]
 
@@ -98,21 +91,16 @@ RSpec.describe DiscourseAi::Completions::Dialects::Nova do
                     json: {
                       type: "object",
                       properties: {
-                        location: {
+                        "location" => {
                           type: "string",
-                          description: "the city name",
+                          required: true,
                         },
                       },
-                      required: ["location"],
                     },
                   },
                 },
               },
             ],
-            toolChoice: {
-              auto: {
-              },
-            },
           },
         )
       end
@@ -126,18 +114,18 @@ RSpec.describe DiscourseAi::Completions::Dialects::Nova do
 
         dialect = nova_dialect_klass.new(prompt, llm_model)
 
-        options = { temperature: 0.7, top_p: 0.9, max_new_tokens: 100, stop_sequences: ["STOP"] }
+        options = { temperature: 0.7, top_p: 0.9, max_tokens: 100, stop_sequences: ["STOP"] }
 
         translated = dialect.translate
 
         expected = {
-          system: { text: "You are a helpful bot" },
+          system: [{ text: "You are a helpful bot" }],
           messages: [{ role: "user", content: [{ text: "Hello" }] }],
           inferenceConfig: {
             temperature: 0.7,
             top_p: 0.9,
+            stopSequences: ["STOP"],
             max_new_tokens: 100,
-            stop_sequences: ["STOP"],
           },
         }
 

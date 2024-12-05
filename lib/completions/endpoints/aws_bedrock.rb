@@ -167,9 +167,7 @@ module DiscourseAi
           while decoded
             parsed = JSON.parse(decoded.payload.string)
             if exception = decoded.headers[":exception-type"]
-              Rails.logger.error(
-                "#{self.class.name}: #{exception}: #{parsed}",
-              )
+              Rails.logger.error("#{self.class.name}: #{exception}: #{parsed}")
               # TODO based on how often this happens, we may want to raise so we
               # can retry, this may catch rate limits for example
             end
@@ -203,8 +201,10 @@ module DiscourseAi
 
         def processor
           if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
-          @processor ||=
-            DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
+            @processor ||=
+              DiscourseAi::Completions::AnthropicMessageProcessor.new(
+                streaming_mode: @streaming_mode,
+              )
           else
             @processor ||=
               DiscourseAi::Completions::NovaMessageProcessor.new(streaming_mode: @streaming_mode)

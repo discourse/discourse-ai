@@ -223,7 +223,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     )
 
     # lets continue and ensure all messages are mapped correctly
-    prompt.push(type: :tool_call, name: "time", content: {timezone: "EST"}.to_json, id: "111")
+    prompt.push(type: :tool_call, name: "time", content: { timezone: "EST" }.to_json, id: "111")
     prompt.push(type: :tool, name: "time", content: "1pm".to_json, id: "111")
 
     # lets just return the tool call again, this is about ensuring we encode the prompt right
@@ -239,9 +239,45 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       proxy.generate(prompt, user: user, max_tokens: 200) { |partial| response << partial }
     end
 
-    expected = {:system=>[{:text=>"You are a helpful assistant."}], :messages=>[{:role=>"user", :content=>[{:text=>"what is the time in EST"}]}, {:role=>"assistant", :content=>[{:toolUse=>{:toolUseId=>"111", :name=>"time", :input=>nil}}]}, {:role=>"user", :content=>[{:toolResult=>{:toolUseId=>"111", :content=>[{:json=>"1pm"}]}}]}], :inferenceConfig=>{:max_new_tokens=>200}, :toolConfig=>{:tools=>[{:toolSpec=>{:name=>"time", :description=>"Will look up the current time", :inputSchema=>{:json=>{:type=>"object", :properties=>{:timezone=>{:type=>"string", :required=>true}}}}}}]}}
+    expected = {
+      system: [{ text: "You are a helpful assistant." }],
+      messages: [
+        { role: "user", content: [{ text: "what is the time in EST" }] },
+        {
+          role: "assistant",
+          content: [{ toolUse: { toolUseId: "111", name: "time", input: nil } }],
+        },
+        {
+          role: "user",
+          content: [{ toolResult: { toolUseId: "111", content: [{ json: "1pm" }] } }],
+        },
+      ],
+      inferenceConfig: {
+        max_new_tokens: 200,
+      },
+      toolConfig: {
+        tools: [
+          {
+            toolSpec: {
+              name: "time",
+              description: "Will look up the current time",
+              inputSchema: {
+                json: {
+                  type: "object",
+                  properties: {
+                    timezone: {
+                      type: "string",
+                      required: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+    }
 
     expect(JSON.parse(request.body, symbolize_names: true)).to eq(expected)
-
   end
 end
