@@ -8,7 +8,7 @@ const AiHelperLoading = <template>
       {{i18n "discourse_ai.ai_helper.context_menu.loading"}}
     </span>
     <DButton
-      @icon="times"
+      @icon="xmark"
       @title="discourse_ai.ai_helper.context_menu.cancel"
       @action={{@cancel}}
       class="btn-flat cancel-request"

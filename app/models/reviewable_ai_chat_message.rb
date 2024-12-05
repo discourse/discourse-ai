@@ -69,7 +69,7 @@ class ReviewableAiChatMessage < Reviewable
 
     build_action(actions, :ignore, icon: "external-link-alt")
 
-    build_action(actions, :delete_and_agree, icon: "far-trash-alt") unless chat_message.deleted_at?
+    build_action(actions, :delete_and_agree, icon: "far-trash-can") unless chat_message.deleted_at?
   end
 
   def perform_agree_and_keep_message(performed_by, args)

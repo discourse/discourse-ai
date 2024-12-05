@@ -315,7 +315,7 @@ export default class PersonaEditor extends Component {
           {{on "click" this.togglePriority}}
         />
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{I18n.t "discourse_ai.ai_persona.priority_help"}}
         />
       </div>
@@ -345,7 +345,7 @@ export default class PersonaEditor extends Component {
             @llms={{@personas.resultSetMeta.llms}}
           />
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{I18n.t "discourse_ai.ai_persona.default_llm_help"}}
           />
         </div>
@@ -382,7 +382,7 @@ export default class PersonaEditor extends Component {
               {{I18n.t "discourse_ai.ai_persona.create_user"}}
             </DButton>
             <DTooltip
-              @icon="question-circle"
+              @icon="circle-question"
               @content={{I18n.t "discourse_ai.ai_persona.create_user_help"}}
             />
           {{/if}}
@@ -453,7 +453,7 @@ export default class PersonaEditor extends Component {
           />
           {{I18n.t "discourse_ai.ai_persona.allow_personal_messages"}}</label>
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{I18n.t
             "discourse_ai.ai_persona.allow_personal_messages_help"
           }}
@@ -468,7 +468,7 @@ export default class PersonaEditor extends Component {
             />
             {{I18n.t "discourse_ai.ai_persona.allow_topic_mentions"}}</label>
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{I18n.t
               "discourse_ai.ai_persona.allow_topic_mentions_help"
             }}
@@ -487,7 +487,7 @@ export default class PersonaEditor extends Component {
                 "discourse_ai.ai_persona.allow_chat_direct_messages"
               }}</label>
             <DTooltip
-              @icon="question-circle"
+              @icon="circle-question"
               @content={{I18n.t
                 "discourse_ai.ai_persona.allow_chat_direct_messages_help"
               }}
@@ -505,7 +505,7 @@ export default class PersonaEditor extends Component {
                 "discourse_ai.ai_persona.allow_chat_channel_mentions"
               }}</label>
             <DTooltip
-              @icon="question-circle"
+              @icon="circle-question"
               @content={{I18n.t
                 "discourse_ai.ai_persona.allow_chat_channel_mentions_help"
               }}
@@ -518,7 +518,7 @@ export default class PersonaEditor extends Component {
           <Input @type="checkbox" @checked={{this.editingModel.tool_details}} />
           {{I18n.t "discourse_ai.ai_persona.tool_details"}}</label>
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{I18n.t "discourse_ai.ai_persona.tool_details_help"}}
         />
       </div>
@@ -530,7 +530,7 @@ export default class PersonaEditor extends Component {
           />
           {{I18n.t "discourse_ai.ai_persona.vision_enabled"}}</label>
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{I18n.t "discourse_ai.ai_persona.vision_enabled_help"}}
         />
       </div>
@@ -553,7 +553,7 @@ export default class PersonaEditor extends Component {
           @value={{this.editingModel.max_context_posts}}
         />
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{I18n.t "discourse_ai.ai_persona.max_context_posts_help"}}
         />
       </div>
@@ -569,7 +569,7 @@ export default class PersonaEditor extends Component {
             disabled={{this.editingModel.system}}
           />
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{I18n.t "discourse_ai.ai_persona.temperature_help"}}
           />
         </div>
@@ -586,7 +586,7 @@ export default class PersonaEditor extends Component {
             disabled={{this.editingModel.system}}
           />
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{I18n.t "discourse_ai.ai_persona.top_p_help"}}
           />
         </div>
@@ -612,7 +612,7 @@ export default class PersonaEditor extends Component {
               @value={{this.editingModel.rag_conversation_chunks}}
             />
             <DTooltip
-              @icon="question-circle"
+              @icon="circle-question"
               @content={{I18n.t
                 "discourse_ai.ai_persona.rag_conversation_chunks_help"
               }}
@@ -629,7 +629,7 @@ export default class PersonaEditor extends Component {
             />
 
             <DTooltip
-              @icon="question-circle"
+              @icon="circle-question"
               @content={{I18n.t
                 "discourse_ai.ai_persona.question_consolidator_llm_help"
               }}
