@@ -6,7 +6,7 @@ module DiscourseAi
       class Nova < Dialect
         class << self
           def can_translate?(llm_model)
-            return llm_model.provider == "aws_bedrock" && llm_model.name.include?("amazon.nova")
+            llm_model.provider == "aws_bedrock" && llm_model.name.include?("amazon.nova")
           end
         end
 

@@ -10,9 +10,10 @@ end
 # nova is all implemented in bedrock endpoint, split out here
 RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
   fab!(:user)
-  fab!(:nova_model) { Fabricate(:nova_model) }
+  fab!(:nova_model)
 
   subject(:endpoint) { described_class.new(nova_model) }
+
   let(:bedrock_mock) { BedrockMock.new(endpoint) }
 
   let(:stream_url) do
