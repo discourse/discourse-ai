@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Completions::Dialects::Claude do
-  let :opus_dialect_klass do
-    DiscourseAi::Completions::Dialects::Dialect.dialect_for("anthropic")
-  end
-
   fab!(:llm_model) { Fabricate(:anthropic_model, name: "claude-3-opus") }
+
+  let :opus_dialect_klass do
+    DiscourseAi::Completions::Dialects::Dialect.dialect_for(llm_model)
+  end
 
   describe "#translate" do
     it "can insert OKs to make stuff interleve properly" do

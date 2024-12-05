@@ -7,8 +7,8 @@ module DiscourseAi
     module Dialects
       class Mistral < ChatGpt
         class << self
-          def can_translate?(model_provider)
-            model_provider == "mistral"
+          def can_translate?(llm_model)
+            llm_model.provider == "mistral"
           end
         end
 

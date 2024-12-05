@@ -176,8 +176,7 @@ module DiscourseAi
 
           raise UNKNOWN_MODEL if llm_model.nil?
 
-          model_provider = llm_model.provider
-          dialect_klass = DiscourseAi::Completions::Dialects::Dialect.dialect_for(model_provider)
+          dialect_klass = DiscourseAi::Completions::Dialects::Dialect.dialect_for(llm_model)
 
           if @canned_response
             if @canned_llm && @canned_llm != model
@@ -187,6 +186,7 @@ module DiscourseAi
             return new(dialect_klass, nil, llm_model, gateway: @canned_response)
           end
 
+          model_provider = llm_model.provider
           gateway_klass = DiscourseAi::Completions::Endpoints::Base.endpoint_for(model_provider)
 
           new(dialect_klass, gateway_klass, llm_model)

@@ -5,8 +5,8 @@ module DiscourseAi
     module Dialects
       class ChatGpt < Dialect
         class << self
-          def can_translate?(model_provider)
-            model_provider == "open_ai" || model_provider == "azure"
+          def can_translate?(llm_model)
+            llm_model.provider == "open_ai" || llm_model.provider == "azure"
           end
         end
 

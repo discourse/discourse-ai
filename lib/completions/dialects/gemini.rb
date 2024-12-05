@@ -5,8 +5,8 @@ module DiscourseAi
     module Dialects
       class Gemini < Dialect
         class << self
-          def can_translate?(model_provider)
-            model_provider == "google"
+          def can_translate?(llm_model)
+            llm_model.provider == "google"
           end
         end
 
@@ -80,7 +80,7 @@ module DiscourseAi
         end
 
         def beta_api?
-          @beta_api ||= llm_model.name.start_with?("gemini-1.5")
+          @beta_api ||= !llm_model.name.start_with?("gemini-1.0")
         end
 
         def system_msg(msg)

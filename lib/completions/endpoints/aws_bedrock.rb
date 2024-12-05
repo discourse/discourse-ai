@@ -6,6 +6,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class AwsBedrock < Base
+        attr_reader :dialect
+
         def self.can_contact?(model_provider)
           model_provider == "aws_bedrock"
         end
@@ -19,10 +21,15 @@ module DiscourseAi
         end
 
         def default_options(dialect)
-          max_tokens = 4096
-          max_tokens = 8192 if bedrock_model_id.match?(/3.5/)
+          options =
+            if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
+              max_tokens = 4096
+              max_tokens = 8192 if bedrock_model_id.match?(/3.5/)
 
-          options = { max_tokens: max_tokens, anthropic_version: "bedrock-2023-05-31" }
+              { max_tokens: max_tokens, anthropic_version: "bedrock-2023-05-31" }
+            else
+              {}
+            end
 
           options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
             dialect.prompt.has_tools?
@@ -86,17 +93,25 @@ module DiscourseAi
 
         def prepare_payload(prompt, model_params, dialect)
           @native_tool_support = dialect.native_tool_support?
+          @dialect = dialect
 
-          payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
-          payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
+          payload = nil
 
-          if prompt.has_tools?
-            payload[:tools] = prompt.tools
-            if dialect.tool_choice.present?
-              payload[:tool_choice] = { type: "tool", name: dialect.tool_choice }
+          if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
+            payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
+            payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
+
+            if prompt.has_tools?
+              payload[:tools] = prompt.tools
+              if dialect.tool_choice.present?
+                payload[:tool_choice] = { type: "tool", name: dialect.tool_choice }
+              end
             end
+          elsif dialect.is_a?(DiscourseAi::Completions::Dialects::Nova)
+            payload = prompt.to_payload(default_options(dialect).merge(model_params))
+          else
+            raise "Unsupported dialect"
           end
-
           payload
         end
 
@@ -151,6 +166,11 @@ module DiscourseAi
           i = 0
           while decoded
             parsed = JSON.parse(decoded.payload.string)
+            if exception = decoded.headers[":exception-type"]
+              Rails.logger.error("#{self.class.name}: #{exception}: #{parsed}")
+              # TODO based on how often this happens, we may want to raise so we
+              # can retry, this may catch rate limits for example
+            end
             # perhaps some control message we can just ignore
             messages << Base64.decode64(parsed["bytes"]) if parsed && parsed["bytes"]
 
@@ -180,8 +200,15 @@ module DiscourseAi
         end
 
         def processor
-          @processor ||=
-            DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
+          if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
+            @processor ||=
+              DiscourseAi::Completions::AnthropicMessageProcessor.new(
+                streaming_mode: @streaming_mode,
+              )
+          else
+            @processor ||=
+              DiscourseAi::Completions::NovaMessageProcessor.new(streaming_mode: @streaming_mode)
+          end
         end
 
         def xml_tools_enabled?

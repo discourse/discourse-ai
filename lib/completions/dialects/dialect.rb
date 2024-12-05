@@ -5,7 +5,7 @@ module DiscourseAi
     module Dialects
       class Dialect
         class << self
-          def can_translate?(model_provider)
+          def can_translate?(llm_model)
             raise NotImplemented
           end
 
@@ -17,11 +17,12 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::Command,
               DiscourseAi::Completions::Dialects::Ollama,
               DiscourseAi::Completions::Dialects::Mistral,
+              DiscourseAi::Completions::Dialects::Nova,
               DiscourseAi::Completions::Dialects::OpenAiCompatible,
             ]
           end
 
-          def dialect_for(model_provider)
+          def dialect_for(llm_model)
             dialects = []
 
             if Rails.env.test? || Rails.env.development?
@@ -30,7 +31,7 @@ module DiscourseAi
 
             dialects = dialects.concat(all_dialects)
 
-            dialect = dialects.find { |d| d.can_translate?(model_provider) }
+            dialect = dialects.find { |d| d.can_translate?(llm_model) }
             raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL if !dialect
 
             dialect
