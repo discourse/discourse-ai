@@ -58,7 +58,7 @@ class ReviewableAiPost < Reviewable
       delete =
         actions.add_bundle(
           "#{id}-delete",
-          icon: "far-trash-alt",
+          icon: "far-trash-can",
           label: "reviewables.actions.delete.title",
         )
       build_action(actions, :delete_and_ignore, icon: "external-link-alt", bundle: delete)
