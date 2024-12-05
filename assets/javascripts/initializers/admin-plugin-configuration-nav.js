@@ -25,6 +25,10 @@ export default {
           route: "adminPlugins.show.discourse-ai-tools",
         },
         {
+          label: "discourse_ai.spam.short_title",
+          route: "adminPlugins.show.discourse-ai-spam",
+        },
+        {
           label: "discourse_ai.usage.short_title",
           route: "adminPlugins.show.discourse-ai-usage",
         },
