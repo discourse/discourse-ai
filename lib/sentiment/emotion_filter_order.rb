@@ -12,15 +12,18 @@ module DiscourseAi
                 &.constraints
                 &.flat_map(&:children)
                 &.find do |node|
-                  node.is_a?(Arel::Nodes::Grouping) &&
-                    node.expr.to_s.match?(/topics\.bumped_at\s*>=/)
+                  node.is_a?(Arel::Nodes::BoundSqlLiteral) &&
+                    node.to_sql.match?(/topics\.bumped_at\s*>=/)
                 end
-                &.expr
-                &.split(">=")
-                &.last if scope.to_sql.include?("topics.bumped_at >=")
+                &.positional_binds
+                &.first if scope.to_sql.include?("topics.bumped_at >=")
 
-            # Fallback in case we can't find the scope period
-            scope_period ||= "CURRENT_DATE - INTERVAL '1 year'"
+            if scope_period.is_a?(ActiveSupport::TimeWithZone)
+              scope_period = "'#{scope_period.to_date}'"
+            else
+              # Fallback in case we can't find the scope period
+              scope_period = "CURRENT_DATE - INTERVAL '1 year'"
+            end
 
             emotion_clause = <<~SQL
               COUNT(*) FILTER (WHERE (classification_results.classification::jsonb->'#{emotion}')::float > 0.1)
