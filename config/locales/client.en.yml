@@ -131,6 +131,18 @@ en:
 
       spam:
         short_title: "Spam"
+        title: "Configure AI Spam handling"
+        select_llm: "Select LLM"
+        custom_instructions: "Custom instructions"
+        custom_instructions_help: "Custom instructions specific to your site to help guide the AI in identifying spam, e.g. 'Be more aggressive about scanning posts not in English'."
+        last_seven_days: "Last 7 days"
+        scanned_count: "Posts scanned"
+        false_positives: "Incorrectly flagged"
+        false_negatives: "Missed spam"
+        spam_detected: "Spam detected"
+        reports: "Reports"
+        view_false_positives: "View false positives"
+        view_missed_spam: "View missed spam"
 
       usage:
         short_title: "Usage"
