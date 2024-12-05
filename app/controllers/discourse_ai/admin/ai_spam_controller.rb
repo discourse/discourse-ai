@@ -6,9 +6,8 @@ module DiscourseAi
       requires_plugin "discourse-ai"
 
       def show
-        render json: { work: "in progress" }
+        render json: AiSpamSerializer.new({}, root: false)
       end
-
     end
   end
 end

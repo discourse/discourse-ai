@@ -143,6 +143,9 @@ en:
         reports: "Reports"
         view_false_positives: "View false positives"
         view_missed_spam: "View missed spam"
+        custom_instructions_placeholder: "Site-specific instructions for the AI to help identify spam more accurately."
+        enable: "Enable"
+        spam_tip: "AI spam detection will scan the first 3 posts by all new users on public topics. It will flag them for review and block users if they are likely spam."
 
       usage:
         short_title: "Usage"

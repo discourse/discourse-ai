@@ -1,10 +1,9 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { fn, hash } from "@ember/helper";
+import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { not } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import DTooltip from "discourse/components/d-tooltip";
@@ -26,10 +25,19 @@ export default class AiSpam extends Component {
   @tracked isEnabled = false;
   @tracked selectedLLM = null;
   @tracked customInstructions = "";
-  @tracked isLoadingStats = false;
 
   constructor() {
     super(...arguments);
+    this.initializeFromModel();
+  }
+
+  @action
+  initializeFromModel() {
+    const model = this.args.model;
+    this.isEnabled = model.is_enabled;
+    this.selectedLLM = model.selected_llm;
+    this.customInstructions = model.custom_instructions;
+    this.stats = model.stats;
   }
 
   get availableLLMs() {
@@ -37,22 +45,6 @@ export default class AiSpam extends Component {
       id: llm.id,
       name: llm.name,
     }));
-  }
-
-  @action
-  async loadStats() {
-    this.isLoadingStats = true;
-    try {
-      const response = await ajax("/admin/plugins/discourse-ai/ai-spam.json");
-      this.stats = response.stats;
-      this.isEnabled = response.is_enabled;
-      this.selectedLLM = response.selected_llm;
-      this.customInstructions = response.custom_instructions;
-    } catch (error) {
-      popupAjaxError(error);
-    } finally {
-      this.isLoadingStats = false;
-    }
   }
 
   @action
@@ -73,15 +65,7 @@ export default class AiSpam extends Component {
 
   @action
   async updateLLM(value) {
-    try {
-      await ajax("/admin/plugins/discourse-ai/ai-spam/llm", {
-        type: "PUT",
-        data: { llm: value },
-      });
-      this.selectedLLM = value;
-    } catch (error) {
-      popupAjaxError(error);
-    }
+    this.selectedLLM = value;
   }
 
   @action
@@ -103,10 +87,16 @@ export default class AiSpam extends Component {
             "discourse_ai.spam.title"
           }}</h3>
 
-        <div class="ai-spam__toggle">
+        <div class="control-group ai-persona-editor__priority">
           <DToggleSwitch
+            class="ai-spam__toggle"
             @state={{this.enabled}}
+            @label="discourse_ai.spam.enable"
             {{on "click" this.toggleEnabled}}
+          />
+          <DTooltip
+            @icon="question-circle"
+            @content={{i18n "discourse_ai.spam.spam_tip"}}
           />
         </div>
 
@@ -118,7 +108,6 @@ export default class AiSpam extends Component {
             @value={{this.selectedLLM}}
             @content={{this.availableLLMs}}
             @onChange={{this.updateLLM}}
-            @options={{hash disabled=(not this.isEnabled)}}
             class="ai-spam__llm-selector"
           />
         </div>
@@ -133,17 +122,17 @@ export default class AiSpam extends Component {
           </label>
           <textarea
             class="ai-spam__instructions-input"
+            placeholder={{i18n
+              "discourse_ai.spam.custom_instructions_placeholder"
+            }}
             {{on
               "input"
               (fn (mut this.customInstructions) value="target.value")
             }}
-            disabled={{not this.isEnabled}}
           >{{this.customInstructions}}</textarea>
           <DButton
             @action={{this.saveInstructions}}
-            @icon="save"
             @label="save"
-            @disabled={{not this.isEnabled}}
             class="ai-spam__instructions-save btn-primary"
           />
         </div>
