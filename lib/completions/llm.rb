@@ -164,6 +164,10 @@ module DiscourseAi
           @prompts << prompt.dup if @prompts
         end
 
+        def prompts
+          @prompts
+        end
+
         def proxy(model)
           llm_model =
             if model.is_a?(LlmModel)
