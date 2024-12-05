@@ -17,7 +17,7 @@ export default class AiTopicGist extends Component {
     return this.args.topic.get("ai_topic_gist");
   }
 
-  get escapedExceprt() {
+  get escapedExcerpt() {
     return this.args.topic.get("escapedExcerpt");
   }
 
@@ -28,10 +28,10 @@ export default class AiTopicGist extends Component {
           <div class="excerpt__contents">{{this.gist}}</div>
         </div>
       {{else}}
-        {{#if this.esacpedExceprt}}
+        {{#if this.escapedExcerpt}}
           <div class="excerpt">
             <div class="excerpt__contents">
-              {{htmlSafe this.escapedExceprt}}
+              {{htmlSafe this.escapedExcerpt}}
             </div>
           </div>
         {{/if}}
