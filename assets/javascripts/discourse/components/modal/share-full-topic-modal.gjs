@@ -110,7 +110,7 @@ export default class ShareModal extends Component {
         {{#if this.shareKey}}
           <DButton
             class="btn-danger"
-            @icon="far-trash-alt"
+            @icon="far-trash-can"
             @action={{this.deleteLink}}
             @label="discourse_ai.ai_bot.share_full_topic_modal.delete"
           />

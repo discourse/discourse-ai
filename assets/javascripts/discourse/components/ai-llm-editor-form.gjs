@@ -201,7 +201,7 @@ export default class AiLlmEditorForm extends Component {
           disabled={{this.seeded}}
         />
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{i18n "discourse_ai.llms.hints.name"}}
         />
       </div>
@@ -280,7 +280,7 @@ export default class AiLlmEditorForm extends Component {
             required="true"
           />
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
           />
         </div>
@@ -288,7 +288,7 @@ export default class AiLlmEditorForm extends Component {
           <Input @type="checkbox" @checked={{@model.vision_enabled}} />
           <label>{{i18n "discourse_ai.llms.vision_enabled"}}</label>
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{i18n "discourse_ai.llms.hints.vision_enabled"}}
           />
         </div>
@@ -296,7 +296,7 @@ export default class AiLlmEditorForm extends Component {
           <Input @type="checkbox" @checked={{@model.enabled_chat_bot}} />
           <label>{{i18n "discourse_ai.llms.enabled_chat_bot"}}</label>
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{i18n "discourse_ai.llms.hints.enabled_chat_bot"}}
           />
         </div>

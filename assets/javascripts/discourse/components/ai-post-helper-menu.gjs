@@ -337,7 +337,7 @@ export default class AiPostHelperMenu extends Component {
               </div>
               <div class="ai-post-helper__suggestion__buttons">
                 <DButton
-                  @icon="times"
+                  @icon="xmark"
                   @label="discourse_ai.ai_helper.post_options_menu.cancel"
                   @action={{this.cancelAiAction}}
                   class="btn-flat ai-post-helper__suggestion__cancel"

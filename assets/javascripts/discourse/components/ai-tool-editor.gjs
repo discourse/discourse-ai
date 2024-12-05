@@ -173,7 +173,7 @@ export default class AiToolEditor extends Component {
             class="ai-tool-editor__name"
           />
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{I18n.t "discourse_ai.tools.name_help"}}
           />
         </div>
@@ -199,7 +199,7 @@ export default class AiToolEditor extends Component {
             class="ai-tool-editor__summary input-xxlarge"
           />
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{I18n.t "discourse_ai.tools.summary_help"}}
           />
         </div>

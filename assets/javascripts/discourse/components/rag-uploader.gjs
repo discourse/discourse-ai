@@ -149,7 +149,7 @@ export default class RagUploader extends Component {
               />
               <td class="rag-uploader__remove-file">
                 <DButton
-                  @icon="times"
+                  @icon="xmark"
                   @title="discourse_ai.rag.uploads.remove"
                   @action={{fn this.removeUpload upload}}
                   class="btn-flat"
@@ -170,7 +170,7 @@ export default class RagUploader extends Component {
               </td>
               <td class="rag-uploader__remove-file">
                 <DButton
-                  @icon="times"
+                  @icon="xmark"
                   @title="discourse_ai.rag.uploads.remove"
                   @action={{fn this.cancelUploading upload}}
                   class="btn-flat"

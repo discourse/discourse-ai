@@ -42,7 +42,7 @@ export default class RagOptions extends Component {
           @value={{@model.rag_chunk_tokens}}
         />
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{I18n.t "discourse_ai.rag.options.rag_chunk_tokens_help"}}
         />
       </div>
@@ -58,7 +58,7 @@ export default class RagOptions extends Component {
           @value={{@model.rag_chunk_overlap_tokens}}
         />
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{I18n.t
             "discourse_ai.rag.options.rag_chunk_overlap_tokens_help"
           }}

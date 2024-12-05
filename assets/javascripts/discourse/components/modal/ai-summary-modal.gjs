@@ -260,7 +260,7 @@ export default class AiSummaryModal extends Component {
             @label="summary.buttons.regenerate"
             @title="summary.buttons.regenerate"
             @action={{this.regenerateSummary}}
-            @icon="sync"
+            @icon="arrows-rotate"
           />
         {{/if}}
       </:footer>

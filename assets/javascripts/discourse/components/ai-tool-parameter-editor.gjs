@@ -113,7 +113,7 @@ export default class AiToolParameterEditor extends Component {
 
           <DButton
             @action={{fn this.removeParameter parameter}}
-            @icon="trash-alt"
+            @icon="trash-can"
             class="btn-danger"
           />
         </div>
@@ -130,7 +130,7 @@ export default class AiToolParameterEditor extends Component {
                 />
                 <DButton
                   @action={{fn this.removeEnumValue parameter enumIndex}}
-                  @icon="trash-alt"
+                  @icon="trash-can"
                   class="btn-danger"
                 />
               </div>
