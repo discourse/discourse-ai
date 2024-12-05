@@ -103,7 +103,7 @@ class SharedAiConversation < ActiveRecord::Base
         break
       end
     end
-    html << "<a href='#{url}'>#{I18n.t("discourse_ai.share_ai.read_more")}<a>"
+    html << "<a href='#{url}'>#{I18n.t("discourse_ai.share_ai.read_more")}</a>"
     html
   end
 
