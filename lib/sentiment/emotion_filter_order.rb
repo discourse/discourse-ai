@@ -19,7 +19,7 @@ module DiscourseAi
                 &.first if scope.to_sql.include?("topics.bumped_at >=")
 
             if scope_period.is_a?(ActiveSupport::TimeWithZone)
-              scope_period = "'#{scope_period.to_date.to_s}'"
+              scope_period = "'#{scope_period.to_date}'"
             else
               # Fallback in case we can't find the scope period
               scope_period = "CURRENT_DATE - INTERVAL '1 year'"
