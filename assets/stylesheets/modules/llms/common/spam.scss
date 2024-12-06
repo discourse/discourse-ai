@@ -8,6 +8,18 @@
     margin-bottom: 2em;
   }
 
+  &__enabled {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-bottom: 1em;
+
+    .fk-d-tooltip__trigger {
+      color: var(--primary-high);
+
+    }
+  }
+
   &__settings-title {
     margin-bottom: 1em;
   }
@@ -40,16 +52,6 @@
     margin-bottom: 1em;
   }
 
-  &__loading {
-    width: 32px;
-    height: 32px;
-    margin: 2em auto;
-    border: 3px solid var(--primary-low);
-    border-top-color: var(--tertiary);
-    border-radius: 50%;
-    animation: ai-spam-loading 1s infinite linear;
-  }
-
   &__metrics {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -72,31 +74,5 @@
 
   &__metrics-value {
     font-size: var(--font-up-2);
-  }
-
-  &__reports {
-    margin-top: 2em;
-  }
-
-  &__reports-title {
-    margin-bottom: 1em;
-  }
-
-  &__reports-links {
-    display: flex;
-    gap: 1em;
-  }
-
-  &__reports-link {
-    @extend .btn;
-  }
-}
-
-@keyframes ai-spam-loading {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
   }
 }

@@ -7,6 +7,7 @@ import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import DTooltip from "discourse/components/d-tooltip";
+import withEventValue from "discourse/helpers/with-event-value";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
@@ -14,6 +15,8 @@ import ComboBox from "select-kit/components/combo-box";
 
 export default class AiSpam extends Component {
   @service siteSettings;
+  @service toasts;
+
   @tracked
   stats = {
     scanned_count: 0,
@@ -35,7 +38,7 @@ export default class AiSpam extends Component {
   initializeFromModel() {
     const model = this.args.model;
     this.isEnabled = model.is_enabled;
-    this.selectedLLM = model.selected_llm;
+    this.selectedLLM = "custom:" + model.llm_id;
     this.customInstructions = model.custom_instructions;
     this.stats = model.stats;
   }
@@ -50,13 +53,12 @@ export default class AiSpam extends Component {
   @action
   async toggleEnabled() {
     try {
-      const response = await ajax(
-        "/admin/plugins/discourse-ai/ai-spam/toggle",
-        {
-          type: "PUT",
-          data: { enabled: !this.isEnabled },
-        }
-      );
+      // so UI responds immediately
+      this.isEnabled = !this.isEnabled;
+      const response = await ajax("/admin/plugins/discourse-ai/ai-spam.json", {
+        type: "PUT",
+        data: { is_enabled: this.isEnabled },
+      });
       this.isEnabled = response.is_enabled;
     } catch (error) {
       popupAjaxError(error);
@@ -69,11 +71,19 @@ export default class AiSpam extends Component {
   }
 
   @action
-  async saveInstructions() {
+  async save() {
+    const llmId = this.selectedLLM.toString().split(":")[1];
     try {
-      await ajax("/admin/plugins/discourse-ai/ai-spam/instructions", {
+      await ajax("/admin/plugins/discourse-ai/ai-spam.json", {
         type: "PUT",
-        data: { instructions: this.customInstructions },
+        data: {
+          llm_model_id: llmId,
+          custom_instructions: this.customInstructions,
+        },
+      });
+      this.toasts.success({
+        data: { message: i18n("discourse_ai.spam.settings_saved") },
+        duration: 2000,
       });
     } catch (error) {
       popupAjaxError(error);
@@ -87,10 +97,10 @@ export default class AiSpam extends Component {
             "discourse_ai.spam.title"
           }}</h3>
 
-        <div class="control-group ai-persona-editor__priority">
+        <div class="control-group ai-spam__enabled">
           <DToggleSwitch
             class="ai-spam__toggle"
-            @state={{this.enabled}}
+            @state={{this.isEnabled}}
             @label="discourse_ai.spam.enable"
             {{on "click" this.toggleEnabled}}
           />
@@ -125,13 +135,10 @@ export default class AiSpam extends Component {
             placeholder={{i18n
               "discourse_ai.spam.custom_instructions_placeholder"
             }}
-            {{on
-              "input"
-              (fn (mut this.customInstructions) value="target.value")
-            }}
+            {{on "input" (withEventValue (fn (mut this.customInstructions)))}}
           >{{this.customInstructions}}</textarea>
           <DButton
-            @action={{this.saveInstructions}}
+            @action={{this.save}}
             @label="save"
             class="ai-spam__instructions-save btn-primary"
           />
@@ -178,26 +185,6 @@ export default class AiSpam extends Component {
               <span
                 class="ai-spam__metrics-value"
               >{{this.stats.false_negatives}}</span>
-            </div>
-          </div>
-
-          <div class="ai-spam__reports">
-            <h3 class="ai-spam__reports-title">{{i18n
-                "discourse_ai.spam.reports"
-              }}</h3>
-            <div class="ai-spam__reports-links">
-              <a
-                href="/review?status=false_positive"
-                class="ai-spam__reports-link"
-              >
-                {{i18n "discourse_ai.spam.view_false_positives"}}
-              </a>
-              <a
-                href="/review?status=missed_spam"
-                class="ai-spam__reports-link"
-              >
-                {{i18n "discourse_ai.spam.view_missed_spam"}}
-              </a>
             </div>
           </div>
         {{/if}}
