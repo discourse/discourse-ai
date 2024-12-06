@@ -1,19 +1,18 @@
 # frozen_string_literal: true
 
 class AiSpamSerializer < ApplicationSerializer
-  attributes :is_enabled, :selected_llm, :custom_instructions, :available_llms, :stats
+  attributes :is_enabled, :llm_id, :custom_instructions, :available_llms, :stats
 
   def is_enabled
-    # Read from your hidden setting
-    SiteSetting.ai_spam_detection_enabled
+    object[:enabled]
   end
 
-  def selected_llm
-    SiteSetting.ai_spam_detection_model
+  def llm_id
+    settings&.llm_model&.id
   end
 
   def custom_instructions
-    SiteSetting.ai_spam_detection_custom_instructions
+    settings&.custom_instructions
   end
 
   def available_llms
@@ -29,5 +28,9 @@ class AiSpamSerializer < ApplicationSerializer
       false_positives: 3,
       false_negatives: 4,
     }
+  end
+
+  def settings
+    object[:settings]
   end
 end
