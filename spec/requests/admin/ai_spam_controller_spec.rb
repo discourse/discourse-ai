@@ -12,9 +12,6 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
     context "when logged in as admin" do
       before { sign_in(admin) }
 
-      it "allows properly for partial updates" do
-      end
-
       it "can update settings from scratch" do
         put "/admin/plugins/discourse-ai/ai-spam.json",
             params: {
