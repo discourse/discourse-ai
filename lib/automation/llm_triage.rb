@@ -16,7 +16,8 @@ module DiscourseAi
         flag_post: nil,
         flag_type: nil,
         automation: nil,
-        max_post_tokens: nil
+        max_post_tokens: nil,
+        stop_sequences: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
              flag_post.blank?
@@ -42,6 +43,7 @@ module DiscourseAi
             temperature: 0,
             max_tokens: 700, # ~500 words
             user: Discourse.system_user,
+            stop_sequences: stop_sequences,
             feature_name: "llm_triage",
             feature_context: {
               automation_id: automation&.id,

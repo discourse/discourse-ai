@@ -89,6 +89,9 @@ en:
             max_post_tokens:
               label: "Max Post Tokens"
               description: "The maximum number of tokens to scan using LLM triage"
+            stop_sequences:
+              label: "Stop Sequences"
+              description: "Instruct the model to halt token generation when arriving at one of these values"
             search_for_text:
               label: "Search for text"
               description: "If the following text appears in the LLM reply, apply these actions"

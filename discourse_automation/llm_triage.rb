@@ -12,6 +12,7 @@ if defined?(DiscourseAutomation)
     field :system_prompt, component: :message, required: false
     field :search_for_text, component: :text, required: true
     field :max_post_tokens, component: :text
+    field :stop_sequences, component: :text_list, required: false
     field :model,
           component: :choices,
           required: true,
@@ -55,6 +56,8 @@ if defined?(DiscourseAutomation)
 
       max_post_tokens = nil if max_post_tokens <= 0
 
+      stop_sequences = fields.dig("stop_sequences", "value")
+
       if post.topic.private_message?
         include_personal_messages = fields.dig("include_personal_messages", "value")
         next if !include_personal_messages
@@ -88,6 +91,7 @@ if defined?(DiscourseAutomation)
           flag_post: flag_post,
           flag_type: flag_type.to_s.to_sym,
           max_post_tokens: max_post_tokens,
+          stop_sequences: stop_sequences,
           automation: self.automation,
         )
       rescue => e
