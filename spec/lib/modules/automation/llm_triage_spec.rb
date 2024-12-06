@@ -180,4 +180,22 @@ describe DiscourseAi::Automation::LlmTriage do
       expect(triage_prompt.messages.last[:upload_ids]).to contain_exactly(post_upload.id)
     end
   end
+
+  it "includes stop_sequences in the completion call" do
+    sequences = %w[GOOD BAD]
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do |spy|
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        automation: nil,
+        stop_sequences: sequences,
+      )
+
+      expect(spy.model_params[:stop_sequences]).to contain_exactly(*sequences)
+    end
+  end
 end
