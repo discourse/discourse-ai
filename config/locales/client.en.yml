@@ -129,6 +129,22 @@ en:
       modals:
         select_option: "Select an option..."
 
+      spam:
+        short_title: "Spam"
+        title: "Configure AI Spam handling"
+        select_llm: "Select LLM"
+        custom_instructions: "Custom instructions"
+        custom_instructions_help: "Custom instructions specific to your site to help guide the AI in identifying spam, e.g. 'Be more aggressive about scanning posts not in English'."
+        last_seven_days: "Last 7 days"
+        scanned_count: "Posts scanned"
+        false_positives: "Incorrectly flagged"
+        false_negatives: "Missed spam"
+        spam_detected: "Spam detected"
+        custom_instructions_placeholder: "Site-specific instructions for the AI to help identify spam more accurately."
+        enable: "Enable"
+        spam_tip: "AI spam detection will scan the first 3 posts by all new users on public topics. It will flag them for review and block users if they are likely spam."
+        settings_saved: "Settings saved"
+
       usage:
         short_title: "Usage"
         summary: "Summary"
