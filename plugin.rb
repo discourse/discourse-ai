@@ -72,6 +72,7 @@ after_initialize do
     DiscourseAi::AiHelper::EntryPoint.new,
     DiscourseAi::Summarization::EntryPoint.new,
     DiscourseAi::AiBot::EntryPoint.new,
+    DiscourseAi::AiModeration::EntryPoint.new,
   ].each { |a_module| a_module.inject_into(self) }
 
   register_reviewable_type ReviewableAiChatMessage

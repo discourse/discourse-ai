@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+class AddAiSpamLogs < ActiveRecord::Migration[7.2]
+  def change
+    create_table :ai_spam_logs do |t|
+      t.bigint :post_id, null: false
+      t.bigint :llm_model_id, null: false
+      t.bigint :last_ai_api_audit_log_id, null: false
+      t.integer :scan_count, null: false, default: 1
+      t.boolean :is_spam, null: false
+    end
+  end
+end
