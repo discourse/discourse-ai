@@ -93,6 +93,9 @@ de:
             max_post_tokens:
               label: "Max. Beitrags-Token"
               description: "Die maximale Anzahl von Token, die mit LLM-Triage gescannt werden"
+            stop_sequences:
+              label: "Sequenzen stoppen"
+              description: "Weise das Modell an, die Token-Generierung anzuhalten, wenn einer dieser Werte erreicht wird"
             search_for_text:
               label: "Suche nach Text"
               description: "Wenn der folgende Text in der LLM-Antwort erscheint, wende diese Maßnahmen an"
@@ -385,6 +388,7 @@ de:
           copied: "Kopiert!"
           cancel: "Abbrechen"
           insert_footnote: "Fußnote hinzufügen"
+          footnote_disabled: "Automatisches Einfügen deaktiviert. Klicke auf die Schaltfläche „Kopieren“ und bearbeite es manuell."
           footnote_credits: "Erklärung durch KI"
         fast_edit:
           suggest_button: "Bearbeitung vorschlagen"
