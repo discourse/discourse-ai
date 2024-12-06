@@ -324,19 +324,6 @@ discourse_ai:
 
   ai_spam_detection_enabled:
     default: false
-    #validator: "DiscourseAi::Configuration::LlmDependencyValidator"
-    hidden: true
-
-  ai_spam_detection_model:
-    default: ""
-    type: enum
-    allow_any: false
-    enum: "DiscourseAi::Configuration::LlmEnumerator"
-    #validator: "DiscourseAi::Configuration::LlmValidator"
-    hidden: true
-
-  ai_spam_detection_custom_instructions:
-    default: ""
     hidden: true
 
   ai_spam_detection_model_allowed_seeded_models:
