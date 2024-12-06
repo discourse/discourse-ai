@@ -161,4 +161,23 @@ describe DiscourseAi::Automation::LlmTriage do
 
     expect(reviewable.target).to eq(post)
   end
+
+  it "includes post uploads when triaging" do
+    post_upload = Fabricate(:image_upload, posts: [post])
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        automation: nil,
+      )
+
+      triage_prompt = DiscourseAi::Completions::Llm.prompts.last
+
+      expect(triage_prompt.messages.last[:upload_ids]).to contain_exactly(post_upload.id)
+    end
+  end
 end
