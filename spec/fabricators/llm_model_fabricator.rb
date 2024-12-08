@@ -28,6 +28,15 @@ Fabricator(:hf_model, from: :llm_model) do
   provider "hugging_face"
 end
 
+Fabricator(:open_router_model, from: :llm_model) do
+  display_name "OpenRouter"
+  name "openrouter-1.0"
+  provider "open_router"
+  tokenizer "DiscourseAi::Tokenizer::OpenAiTokenizer"
+  max_prompt_tokens 64_000
+  url "https://openrouter.ai/api/v1/chat/completions"
+end
+
 Fabricator(:vllm_model, from: :llm_model) do
   display_name "Llama 3.1 vLLM"
   name "meta-llama/Meta-Llama-3.1-70B-Instruct"
