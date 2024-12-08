@@ -1,11 +1,15 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import htmlClass from "discourse/helpers/html-class";
 import getURL from "discourse-common/lib/get-url";
+
+// note the panel for artifact full screen can not be at position 0,0
+// otherwise this hack will not activate.
+// https://github.com/discourse/discourse/blob/b8325f2190a8c0a9022405c219faeac6f0f98ca5/app/assets/javascripts/discourse/app/components/scrolling-post-stream.js#L77-L77
+// this will cause post stream to navigate to a different post
 
 export default class AiArtifactComponent extends Component {
   @service siteSettings;
@@ -15,17 +19,29 @@ export default class AiArtifactComponent extends Component {
   constructor() {
     super(...arguments);
     this.keydownHandler = this.handleKeydown.bind(this);
+    this.popStateHandler = this.handlePopState.bind(this);
+    window.addEventListener("popstate", this.popStateHandler);
   }
 
   willDestroy() {
     super.willDestroy(...arguments);
     window.removeEventListener("keydown", this.keydownHandler);
+    window.removeEventListener("popstate", this.popStateHandler);
   }
 
   @action
   handleKeydown(event) {
     if (event.key === "Escape" || event.key === "Esc") {
-      this.expanded = false;
+      history.back();
+    }
+  }
+
+  @action
+  handlePopState(event) {
+    const state = event.state;
+    this.expanded = state?.artifactId === this.args.artifactId;
+    if (!this.expanded) {
+      window.removeEventListener("keydown", this.keydownHandler);
     }
   }
 
@@ -52,12 +68,17 @@ export default class AiArtifactComponent extends Component {
 
   @action
   toggleView() {
-    this.expanded = !this.expanded;
-    if (this.expanded) {
+    if (!this.expanded) {
+      window.history.pushState(
+        { artifactId: this.args.artifactId },
+        "",
+        window.location.href + "#artifact-fullscreen"
+      );
       window.addEventListener("keydown", this.keydownHandler);
     } else {
-      window.removeEventListener("keydown", this.keydownHandler);
+      history.back();
     }
+    this.expanded = !this.expanded;
   }
 
   get wrapperClasses() {
@@ -66,25 +87,12 @@ export default class AiArtifactComponent extends Component {
     }`;
   }
 
-  @action
-  artifactPanelHover() {
-    // retrrigger animation
-    const panel = document.querySelector(".ai-artifact__panel");
-    panel.style.animation = "none"; // Stop the animation
-    setTimeout(() => {
-      panel.style.animation = ""; // Re-trigger the animation by removing the none style
-    }, 0);
-  }
-
   <template>
     {{#if this.expanded}}
       {{htmlClass "ai-artifact-expanded"}}
     {{/if}}
     <div class={{this.wrapperClasses}}>
-      <div
-        class="ai-artifact__panel--wrapper"
-        {{on "mouseleave" this.artifactPanelHover}}
-      >
+      <div class="ai-artifact__panel--wrapper">
         <div class="ai-artifact__panel">
           <DButton
             class="btn-flat btn-icon-text"

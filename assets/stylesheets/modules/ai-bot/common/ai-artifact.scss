@@ -37,27 +37,21 @@ html.ai-artifact-expanded {
   }
 
   .ai-artifact__panel--wrapper {
-    display: block;
     position: fixed;
     top: 0;
-    left: 0;
-    right: 0;
-    height: 4em;
+    left: 2em;
+    right: 2em;
+    height: 2em;
     z-index: 1000000;
-    &:hover {
-      .ai-artifact__panel {
-        transform: translateY(0) !important;
-        animation: none;
-      }
-    }
+    animation: vanishing 0.5s 3s forwards;
   }
 
   .ai-artifact__panel {
     display: block;
     position: fixed;
     top: 0;
-    left: 0;
-    right: 0;
+    left: 2em;
+    right: 2em;
     height: 2em;
     transition: transform 0.5s ease-in-out;
     animation: slideUp 0.5s 3s forwards;
@@ -75,13 +69,18 @@ html.ai-artifact-expanded {
         .d-icon {
           color: var(--secondary-high);
         }
-        //color: var(--secondary-vary-low);
       }
     }
   }
   @keyframes slideUp {
     to {
       transform: translateY(-100%);
+    }
+  }
+
+  @keyframes vanishing {
+    to {
+      display: none;
     }
   }
 

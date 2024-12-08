@@ -439,7 +439,7 @@ en:
 
       ai_artifact:
         expand_view_label: "Expand view"
-        collapse_view_label: "Exit Fullscreen (ESC)"
+        collapse_view_label: "Exit Fullscreen (ESC or Back button)"
         click_to_run_label: "Run Artifact"
 
       ai_bot:
