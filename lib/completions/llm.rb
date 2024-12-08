@@ -108,6 +108,24 @@ module DiscourseAi
                   endpoint: "https://api.mistral.ai/v1/chat/completions",
                   provider: "mistral",
                 },
+                {
+                  id: "open_router",
+                  models: [
+                    {
+                      name: "meta-llama/llama-3.3-70b-instruct",
+                      tokens: 128_000,
+                      display_name: "Llama 3.3 70B",
+                    },
+                    {
+                      name: "google/gemini-flash-1.5-exp",
+                      tokens: 1_000_000,
+                      display_name: "Gemini Flash 1.5 Exp",
+                    },
+                  ],
+                  tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
+                  endpoint: "https://openrouter.ai/api/v1/chat/completions",
+                  provider: "open_router",
+                },
               ]
             end
         end
@@ -124,6 +142,7 @@ module DiscourseAi
             azure
             samba_nova
             mistral
+            open_router
           ]
           if !Rails.env.production?
             providers << "fake"

@@ -47,6 +47,11 @@ class LlmModel < ActiveRecord::Base
         disable_system_prompt: :checkbox,
         enable_native_tool: :checkbox,
       },
+      open_router: {
+        disable_native_tools: :checkbox,
+        provider_order: :text,
+        provider_quantizations: :text,
+      },
     }
   end
 

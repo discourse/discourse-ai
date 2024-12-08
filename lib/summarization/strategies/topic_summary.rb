@@ -33,7 +33,7 @@ module DiscourseAi
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]})" }.join
 
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT)
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT, topic_id: target.id)
             You are an advanced summarization bot tasked with enhancing an existing summary by incorporating additional posts.
 
             ### Guidelines:
@@ -76,7 +76,7 @@ module DiscourseAi
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }.join
 
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip, topic_id: target.id)
             You are an advanced summarization bot that generates concise, coherent summaries of provided text.
 
             - Only include the summary, without any additional commentary.

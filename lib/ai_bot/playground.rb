@@ -533,14 +533,26 @@ module DiscourseAi
           reply_post.post_custom_prompt.update!(custom_prompt: prompt)
         end
 
+        reply_post
+      rescue => e
+        if reply_post
+          details = e.message.to_s
+          reply = "#{reply}\n\n#{I18n.t("discourse_ai.ai_bot.reply_error", details: details)}"
+          reply_post.revise(
+            bot.bot_user,
+            { raw: reply },
+            skip_validations: true,
+            skip_revision: true,
+          )
+        end
+        raise e
+      ensure
         # since we are skipping validations and jobs we
         # may need to fix participant count
-        if reply_post.topic.private_message? && reply_post.topic.participant_count < 2
+        if reply_post && reply_post.topic && reply_post.topic.private_message? &&
+             reply_post.topic.participant_count < 2
           reply_post.topic.update!(participant_count: 2)
         end
-
-        reply_post
-      ensure
         post_streamer&.finish(skip_callback: true)
         publish_final_update(reply_post) if stream_reply
         if reply_post && post.post_number == 1 && post.topic.private_message?
