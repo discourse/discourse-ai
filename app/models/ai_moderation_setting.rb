@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class AiModerationSetting < ActiveRecord::Base
   belongs_to :llm_model
 
@@ -12,3 +13,19 @@ class AiModerationSetting < ActiveRecord::Base
     data["custom_instructions"]
   end
 end
+
+# == Schema Information
+#
+# Table name: ai_moderation_settings
+#
+#  id           :bigint           not null, primary key
+#  setting_type :enum             not null
+#  data         :jsonb
+#  llm_model_id :bigint           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+# Indexes
+#
+#  index_ai_moderation_settings_on_setting_type  (setting_type) UNIQUE
+#
