@@ -252,7 +252,7 @@ en:
         failed_to_share: "Failed to share the conversation"
         conversation_deleted: "Conversation share deleted successfully"
     spam_detection:
-      flag_reason: "Flagged as spam by Discourse AI"
+      flag_reason: "Flagged as spam by <a href='%{url}'>Discourse AI</a>"
     ai_bot:
       default_pm_prefix: "[Untitled AI bot PM]"
       personas:

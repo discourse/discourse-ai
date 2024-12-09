@@ -111,13 +111,10 @@ module DiscourseAi
               is_spam: is_spam,
               payload: context,
             )
-            handle_spam(post, result) if is_spam
+            handle_spam(post) if is_spam
           end
-
         rescue StandardError => e
-          if Rails.env.test?
-            raise e
-          end
+          raise e if Rails.env.test?
           Discourse.warn_exception(e, message: "Error in SpamScanner for post #{post.id}")
         end
       end
@@ -158,7 +155,7 @@ module DiscourseAi
       end
 
       def self.build_system_prompt(custom_instructions)
-        base_prompt = <<~PROMPT
+        base_prompt = +<<~PROMPT
           You are a spam detection system. Analyze the following post content and context.
           Respond with "SPAM" if the post is spam, or "NOT_SPAM" if it's legitimate.
 
@@ -186,25 +183,35 @@ module DiscourseAi
           - Topic-relevant product mentions in appropriate contexts
         PROMPT
 
+        base_prompt << "\n\n"
+        base_promt << <<~SITE_SPECIFIC
+          Site Specific Information:
+          - Site name: #{SiteSetting.title}
+          - Site URL: #{Discourse.base_url}
+          - Site description: #{SiteSetting.site_description}
+          - Site top 10 categories: #{Category.where(read_restricted: false).order(posts_year: :desc).limit(10).pluck(:name).join(", ")}
+        SITE_SPECIFIC
+
         if custom_instructions.present?
-          base_prompt += "\n\nAdditional site-specific instructions:\n#{custom_instructions}"
+          base_prompt << "\n\nAdditional site-specific instructions provided by Staff:\n#{custom_instructions}"
         end
 
         base_prompt
       end
 
-      def self.handle_spam(post, result)
-        SpamRule::AutoSilence.new(post.user, post).silence_user
-
-        reason = I18n.t("discourse_ai.spam_detection.flag_reason", result: result)
+      def self.handle_spam(post)
+        url = "#{Discourse.base_url}/admin/plugins/discourse-ai/ai-spam"
+        reason = I18n.t("discourse_ai.spam_detection.flag_reason", url: url)
 
         PostActionCreator.new(
           Discourse.system_user,
           post,
           PostActionType.types[:spam],
-          message: reason,
+          reason: reason,
           queue_for_review: true,
         ).perform
+
+        SpamRule::AutoSilence.new(post.user, post).silence_user
       end
     end
   end
