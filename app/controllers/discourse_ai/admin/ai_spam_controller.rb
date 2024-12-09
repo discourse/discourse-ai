@@ -39,7 +39,10 @@ module DiscourseAi
       end
 
       def spam_config
-        spam_config = { enabled: SiteSetting.ai_spam_detection_enabled, settings: AiModerationSetting.spam }
+        spam_config = {
+          enabled: SiteSetting.ai_spam_detection_enabled,
+          settings: AiModerationSetting.spam,
+        }
 
         spam_status = [Reviewable.statuses[:approved], Reviewable.statuses[:deleted]]
         ham_status = [Reviewable.statuses[:rejected], Reviewable.statuses[:ignored]]
@@ -82,7 +85,6 @@ module DiscourseAi
 
         spam_config[:stats] = stats
         spam_config
-
       end
     end
   end

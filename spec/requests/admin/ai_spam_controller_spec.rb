@@ -40,16 +40,12 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
         end
 
         it "can partially update settings" do
-          put "/admin/plugins/discourse-ai/ai-spam.json",
-              params: {
-                is_enabled: false,
-              }
+          put "/admin/plugins/discourse-ai/ai-spam.json", params: { is_enabled: false }
 
           expect(response.status).to eq(200)
           expect(SiteSetting.ai_spam_detection_enabled).to eq(false)
           expect(AiModerationSetting.spam.llm_model_id).to eq(llm_model.id)
           expect(AiModerationSetting.spam.data["custom_instructions"]).to eq("custom instructions")
-
         end
 
         it "can update pre existing settings" do
@@ -63,7 +59,9 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
           expect(response.status).to eq(200)
           expect(SiteSetting.ai_spam_detection_enabled).to eq(true)
           expect(AiModerationSetting.spam.llm_model_id).to eq(llm_model.id)
-          expect(AiModerationSetting.spam.data["custom_instructions"]).to eq("custom instructions new")
+          expect(AiModerationSetting.spam.data["custom_instructions"]).to eq(
+            "custom instructions new",
+          )
         end
       end
     end
