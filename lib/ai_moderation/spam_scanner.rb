@@ -104,13 +104,14 @@ module DiscourseAi
           log = AiApiAuditLog.order(id: :desc).where(feature_name: "spam_detection").first
 
           AiSpamLog.transaction do
-            log = AiSpamLog.create!(
-              post: post,
-              llm_model: settings.llm_model,
-              ai_api_audit_log: log,
-              is_spam: is_spam,
-              payload: context,
-            )
+            log =
+              AiSpamLog.create!(
+                post: post,
+                llm_model: settings.llm_model,
+                ai_api_audit_log: log,
+                is_spam: is_spam,
+                payload: context,
+              )
             handle_spam(post, log) if is_spam
           end
         rescue StandardError => e
@@ -203,14 +204,14 @@ module DiscourseAi
         url = "#{Discourse.base_url}/admin/plugins/discourse-ai/ai-spam"
         reason = I18n.t("discourse_ai.spam_detection.flag_reason", url: url)
 
-        result = PostActionCreator.new(
-          Discourse.system_user,
-          post,
-          PostActionType.types[:spam],
-          reason: reason,
-          queue_for_review: true,
-        ).perform
-
+        result =
+          PostActionCreator.new(
+            Discourse.system_user,
+            post,
+            PostActionType.types[:spam],
+            reason: reason,
+            queue_for_review: true,
+          ).perform
 
         log.update!(reviewable: result.reviewable)
         SpamRule::AutoSilence.new(post.user, post).silence_user

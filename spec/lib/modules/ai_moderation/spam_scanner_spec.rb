@@ -11,7 +11,9 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     AiModerationSetting.create!(
       setting_type: :spam,
       llm_model: llm_model,
-      data: { custom_instructions: "test instructions" }
+      data: {
+        custom_instructions: "test instructions",
+      },
     )
   end
 
@@ -76,12 +78,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
   describe ".scanned_max_times?" do
     it "returns true when post has been scanned 3 times" do
       3.times do
-        AiSpamLog.create!(
-          post: post,
-          llm_model: llm_model,
-          ai_api_audit_log_id: 1,
-          is_spam: false
-        )
+        AiSpamLog.create!(post: post, llm_model: llm_model, ai_api_audit_log_id: 1, is_spam: false)
       end
 
       expect(described_class.scanned_max_times?(post)).to eq(true)
@@ -127,7 +124,9 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     it "enqueues spam scan job for eligible edited posts" do
       PostRevision.create!(
         post: post,
-        modifications: { raw: ["old content", "completely new content"] }
+        modifications: {
+          raw: ["old content", "completely new content"],
+        },
       )
 
       Jobs.expects(:enqueue).with(:ai_spam_scan, post_id: post.id)
@@ -140,7 +139,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
         llm_model: llm_model,
         ai_api_audit_log_id: 1,
         is_spam: false,
-        created_at: 5.minutes.ago
+        created_at: 5.minutes.ago,
       )
 
       Jobs.expects(:enqueue_in)
@@ -152,14 +151,12 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     fab!(:llm_model) { Fabricate(:llm_model) }
     let(:api_audit_log) { Fabricate(:api_audit_log) }
 
-    before do
-      Jobs.run_immediately!
-    end
+    before { Jobs.run_immediately! }
 
     it "Correctly handles spam scanning" do
       # we need a proper audit log so
       prompt = nil
-      DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do |_,_,_prompts|
+      DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do |_, _, _prompts|
         described_class.new_post(post)
         prompt = _prompts.first
       end
