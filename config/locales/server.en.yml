@@ -251,6 +251,8 @@ en:
         other_content_in_pm: "Personal messages containing posts from other people cannot be shared publicly"
         failed_to_share: "Failed to share the conversation"
         conversation_deleted: "Conversation share deleted successfully"
+    spam_detection:
+      flag_reason: "Flagged as spam by Discourse AI"
     ai_bot:
       reply_error: "Sorry, it looks like our system encountered an unexpected issue while trying to reply.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Untitled AI bot PM]"

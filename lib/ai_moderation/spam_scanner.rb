@@ -44,13 +44,20 @@ module DiscourseAi
       def self.should_scan_post?(post)
         return false if !post.present?
         return false if post.user.trust_level > TrustLevel[1]
-        return false if post.user.post_count > POSTS_TO_SCAN
         return false if post.topic.private_message?
+        if Post
+             .where(user_id: post.user_id)
+             .joins(:topic)
+             .where(topic: { archetype: Archetype.default })
+             .limit(4)
+             .count > 3
+          return false
+        end
         true
       end
 
       def self.scanned_max_times?(post)
-        AiSpamLog.where(post_id: post.id).sum(:scan_count) >= 3
+        AiSpamLog.where(post_id: post.id).count >= 3
       end
 
       def self.significant_change?(previous_version, current_version)
@@ -92,13 +99,26 @@ module DiscourseAi
               },
             )&.strip
 
-          is_spam = result.present? && result.downcase.include?("spam")
+          is_spam = (result.present? && result.downcase.include?("spam"))
 
-          create_log_entry(post, settings.llm_model, result, is_spam)
+          log = AiApiAuditLog.order(id: :desc).where(feature_name: "spam_detection").first
 
-          handle_spam(post, result) if is_spam
+          AiSpamLog.transaction do
+            AiSpamLog.create!(
+              post: post,
+              llm_model: settings.llm_model,
+              ai_api_audit_log: log,
+              is_spam: is_spam,
+              payload: context,
+            )
+            handle_spam(post, result) if is_spam
+          end
+
         rescue StandardError => e
-          Rails.logger.error("Error in SpamScanner for post #{post.id}: #{e.message}")
+          if Rails.env.test?
+            raise e
+          end
+          Discourse.warn_exception(e, message: "Error in SpamScanner for post #{post.id}")
         end
       end
 
@@ -134,12 +154,6 @@ module DiscourseAi
 
         context << "\nPost Content:"
         context << post.raw
-
-        if post.linked_urls.present?
-          context << "\nLinks in post:"
-          context << post.linked_urls.join(", ")
-        end
-
         context.join("\n")
       end
 
@@ -177,23 +191,6 @@ module DiscourseAi
         end
 
         base_prompt
-      end
-
-      def self.create_log_entry(post, llm_model, result, is_spam)
-        log = AiSpamLog.find_or_initialize_by(post_id: post.id)
-
-        if log.new_record?
-          log.llm_model = llm_model
-          log.is_spam = is_spam
-          log.scan_count = 1
-        else
-          log.scan_count += 1
-        end
-
-        last_audit = DiscourseAi::ApiAuditLog.last
-        log.last_ai_api_audit_log_id = last_audit.id if last_audit
-
-        log.save!
       end
 
       def self.handle_spam(post, result)
