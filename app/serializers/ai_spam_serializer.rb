@@ -23,10 +23,10 @@ class AiSpamSerializer < ApplicationSerializer
 
   def stats
     {
-      scanned_count: 1, # Replace with actual stats
-      spam_detected: 2,
-      false_positives: 3,
-      false_negatives: 4,
+      scanned_count: object[:stats].scanned_count.to_i,
+      spam_detected: object[:stats].spam_detected.to_i,
+      false_positives: object[:stats].false_positives.to_i,
+      false_negatives: object[:stats].false_negatives.to_i,
     }
   end
 

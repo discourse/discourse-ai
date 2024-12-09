@@ -174,6 +174,8 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       expect(log.is_spam).to eq(true)
       expect(post.user.reload.silenced_till).to be_present
       expect(post.topic.reload.visible).to eq(false)
+
+      expect(log.reviewable).to be_present
     end
   end
 end

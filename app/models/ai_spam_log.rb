@@ -3,6 +3,7 @@ class AiSpamLog < ActiveRecord::Base
   belongs_to :post
   belongs_to :llm_model
   belongs_to :ai_api_audit_log
+  belongs_to :reviewable
 end
 
 # == Schema Information
@@ -12,9 +13,14 @@ end
 #  id                  :bigint           not null, primary key
 #  post_id             :bigint           not null
 #  llm_model_id        :bigint           not null
-#  ai_api_audit_log_id :bigint           not null
+#  ai_api_audit_log_id :bigint
+#  reviewable_id       :bigint
 #  is_spam             :boolean          not null
 #  payload             :text             default(""), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#
+# Indexes
+#
+#  index_ai_spam_logs_on_post_id  (post_id)
 #

@@ -104,14 +104,14 @@ module DiscourseAi
           log = AiApiAuditLog.order(id: :desc).where(feature_name: "spam_detection").first
 
           AiSpamLog.transaction do
-            AiSpamLog.create!(
+            log = AiSpamLog.create!(
               post: post,
               llm_model: settings.llm_model,
               ai_api_audit_log: log,
               is_spam: is_spam,
               payload: context,
             )
-            handle_spam(post) if is_spam
+            handle_spam(post, log) if is_spam
           end
         rescue StandardError => e
           raise e if Rails.env.test?
@@ -184,7 +184,7 @@ module DiscourseAi
         PROMPT
 
         base_prompt << "\n\n"
-        base_promt << <<~SITE_SPECIFIC
+        base_prompt << <<~SITE_SPECIFIC
           Site Specific Information:
           - Site name: #{SiteSetting.title}
           - Site URL: #{Discourse.base_url}
@@ -199,11 +199,11 @@ module DiscourseAi
         base_prompt
       end
 
-      def self.handle_spam(post)
+      def self.handle_spam(post, log)
         url = "#{Discourse.base_url}/admin/plugins/discourse-ai/ai-spam"
         reason = I18n.t("discourse_ai.spam_detection.flag_reason", url: url)
 
-        PostActionCreator.new(
+        result = PostActionCreator.new(
           Discourse.system_user,
           post,
           PostActionType.types[:spam],
@@ -211,6 +211,8 @@ module DiscourseAi
           queue_for_review: true,
         ).perform
 
+
+        log.update!(reviewable: result.reviewable)
         SpamRule::AutoSilence.new(post.user, post).silence_user
       end
     end
