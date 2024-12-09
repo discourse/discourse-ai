@@ -148,7 +148,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
   end
 
   describe "integration test" do
-    fab!(:llm_model) { Fabricate(:llm_model) }
+    fab!(:llm_model)
     let(:api_audit_log) { Fabricate(:api_audit_log) }
 
     before { Jobs.run_immediately! }
