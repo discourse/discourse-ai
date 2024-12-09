@@ -4,9 +4,9 @@ require "rails_helper"
 
 RSpec.describe DiscourseAi::AiModeration::SpamScanner do
   fab!(:user) { Fabricate(:user, trust_level: TrustLevel[0]) }
-  fab!(:topic) { Fabricate(:topic) }
+  fab!(:topic)
   fab!(:post) { Fabricate(:post, user: user, topic: topic) }
-  fab!(:llm_model) { Fabricate(:llm_model) }
+  fab!(:llm_model)
   fab!(:spam_setting) do
     AiModerationSetting.create!(
       setting_type: :spam,

@@ -3,9 +3,8 @@
 require "rails_helper"
 
 RSpec.describe DiscourseAi::Admin::AiSpamController do
-  fab!(:admin) { Fabricate(:admin) }
-  fab!(:user) { Fabricate(:user) }
-
+  fab!(:admin)
+  fab!(:user)
   fab!(:llm_model)
 
   describe "#update" do
