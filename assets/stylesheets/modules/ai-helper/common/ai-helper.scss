@@ -260,6 +260,15 @@
   }
 }
 
+#reply-control {
+  .composer-popup {
+    // need to raise the z-index here
+    // because we need another layer to put the AI icon above dropdowns
+    // while also keeping them below the composer tips
+    z-index: z("composer", "dropdown") + 2;
+  }
+}
+
 .ai-category-suggester-content,
 .ai-tag-suggester-content,
 .ai-title-suggester-content {
