@@ -351,6 +351,7 @@ en:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "Custom"
 
         provider_fields:
@@ -360,6 +361,8 @@ en:
           disable_system_prompt: "Disable system message in prompts"
           enable_native_tool: "Enable native tool support"
           disable_native_tools: "Disable native tool support (use XML based tools)"
+          provider_order: "Provider order (comma delimited list)"
+          provider_quantizations: "Order of provider quantizations (comma delimited list eg: fp16,fp8)"
 
       related_topics:
         title: "Related topics"
@@ -436,7 +439,7 @@ en:
 
       ai_artifact:
         expand_view_label: "Expand view"
-        collapse_view_label: "Exit Fullscreen (ESC)"
+        collapse_view_label: "Exit Fullscreen (ESC or Back button)"
         click_to_run_label: "Run Artifact"
 
       ai_bot:

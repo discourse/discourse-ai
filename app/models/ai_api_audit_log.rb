@@ -15,6 +15,7 @@ class AiApiAuditLog < ActiveRecord::Base
     Ollama = 7
     SambaNova = 8
     Mistral = 9
+    OpenRouter = 10
   end
 
   def next_log_id
