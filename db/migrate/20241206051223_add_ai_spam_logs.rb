@@ -7,6 +7,8 @@ class AddAiSpamLogs < ActiveRecord::Migration[7.2]
       t.bigint :last_ai_api_audit_log_id, null: false
       t.integer :scan_count, null: false, default: 1
       t.boolean :is_spam, null: false
+      t.text :last_scan_payload, null: false, default: "", limit: 20_000
+      t.timestamps
     end
   end
 end
