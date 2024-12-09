@@ -109,14 +109,12 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
   describe ".new_post" do
     it "enqueues spam scan job for eligible posts" do
-      Jobs.expects(:enqueue).with(:ai_spam_scan, post_id: post.id)
-      described_class.new_post(post)
+      expect { described_class.new_post(post) }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
     end
 
     it "doesn't enqueue jobs when disabled" do
       SiteSetting.ai_spam_detection_enabled = false
-      Jobs.expects(:enqueue).never
-      described_class.new_post(post)
+      expect { described_class.new_post(post) }.not_to change(Jobs::AiSpamScan.jobs, :size)
     end
   end
 
@@ -129,8 +127,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
         },
       )
 
-      Jobs.expects(:enqueue).with(:ai_spam_scan, post_id: post.id)
-      described_class.edited_post(post)
+      expect { described_class.edited_post(post) }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
     end
 
     it "schedules delayed job when edited too soon after last scan" do
@@ -142,8 +139,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
         created_at: 5.minutes.ago,
       )
 
-      Jobs.expects(:enqueue_in)
-      described_class.edited_post(post)
+      expect { described_class.edited_post(post) }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
     end
   end
 
