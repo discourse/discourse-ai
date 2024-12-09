@@ -173,9 +173,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       expect(log.payload).to eq(content)
       expect(log.is_spam).to eq(true)
       expect(post.user.reload.silenced_till).to be_present
-
-      # hmm maybe it should be?
-      #expect(post.topic.visible).to eq(false)
+      expect(post.topic.reload.visible).to eq(false)
     end
   end
 end
