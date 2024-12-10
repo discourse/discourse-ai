@@ -5,6 +5,7 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import { eq } from "truth-helpers";
+import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
 import DateTimeInputRange from "discourse/components/date-time-input-range";
 import avatar from "discourse/helpers/avatar";
@@ -24,18 +25,30 @@ export default class AiUsage extends Component {
   @tracked selectedModel;
   @tracked selectedPeriod = "month";
   @tracked isCustomDateActive = false;
+  @tracked loadingData = true;
+  @tracked _cachedFeatures = null;
+  @tracked _cachedModels = null;
+
+  constructor() {
+    super(...arguments);
+    this.fetchData();
+  }
 
   @action
   async fetchData() {
-    const response = await ajax("/admin/plugins/discourse-ai/ai-usage.json", {
-      data: {
-        start_date: moment(this.startDate).format("YYYY-MM-DD"),
-        end_date: moment(this.endDate).format("YYYY-MM-DD"),
-        feature: this.selectedFeature,
-        model: this.selectedModel,
-      },
-    });
+    const response = await ajax(
+      "/admin/plugins/discourse-ai/ai-usage-report.json",
+      {
+        data: {
+          start_date: moment(this.startDate).format("YYYY-MM-DD"),
+          end_date: moment(this.endDate).format("YYYY-MM-DD"),
+          feature: this.selectedFeature,
+          model: this.selectedModel,
+        },
+      }
+    );
     this.data = response;
+    this.loadingData = false;
   }
 
   @action
@@ -262,17 +275,17 @@ export default class AiUsage extends Component {
           <div class="ai-usage__period-buttons">
             {{#each this.periodOptions as |option|}}
               <DButton
-                class="{{if
-                    (eq this.selectedPeriod option.id)
-                    'btn-primary'
-                    'btn-default'
-                  }}"
+                class={{if
+                  (eq this.selectedPeriod option.id)
+                  "btn-primary"
+                  "btn-default"
+                }}
                 @action={{fn this.onPeriodSelect option.id}}
                 @translatedLabel={{option.name}}
               />
             {{/each}}
             <DButton
-              class="{{if this.isCustomDateActive 'btn-primary' 'btn-default'}}"
+              class={{if this.isCustomDateActive "btn-primary" "btn-default"}}
               @action={{this.onCustomDateClick}}
               @label="discourse_ai.usage.periods.custom"
             />
@@ -312,7 +325,7 @@ export default class AiUsage extends Component {
           />
         </div>
 
-        {{#if this.data}}
+        <ConditionalLoadingSpinner @condition={{this.loadingData}}>
           <AdminConfigAreaCard
             @heading="discourse_ai.usage.summary"
             class="ai-usage__summary"
@@ -492,7 +505,7 @@ export default class AiUsage extends Component {
               </:content>
             </AdminConfigAreaCard>
           </div>
-        {{/if}}
+        </ConditionalLoadingSpinner>
       </div>
     </div>
   </template>
