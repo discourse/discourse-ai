@@ -6,12 +6,30 @@ module DiscourseAi
       POSTS_TO_SCAN = 3
       MINIMUM_EDIT_DIFFERENCE = 10
       EDIT_DELAY_MINUTES = 10
+      MAX_AGE_TO_SCAN = 1.day
+
+      SHOULD_SCAN_POST_CUSTOM_FIELD = "discourse_ai_should_scan_post"
 
       def self.new_post(post)
         return if !enabled?
         return if !should_scan_post?(post)
 
-        Jobs.enqueue(:ai_spam_scan, post_id: post.id)
+        flag_post_for_scanning(post)
+      end
+
+      def self.after_cooked_post(post)
+        return if !post.custom_fields[SHOULD_SCAN_POST_CUSTOM_FIELD]
+        return if post.updated_at < MAX_AGE_TO_SCAN.ago
+
+        last_scan = AiSpamLog.where(post_id: post.id).order(created_at: :desc).first
+
+        if last_scan && last_scan.created_at > EDIT_DELAY_MINUTES.minutes.ago
+          delay_minutes =
+            ((last_scan.created_at + EDIT_DELAY_MINUTES.minutes) - Time.current).to_i / 60
+          Jobs.enqueue_in(delay_minutes.minutes, :ai_spam_scan, post_id: post.id)
+        else
+          Jobs.enqueue(:ai_spam_scan, post_id: post.id)
+        end
       end
 
       def self.edited_post(post)
@@ -22,19 +40,14 @@ module DiscourseAi
         previous_version = post.revisions.last&.modifications&.dig("raw", 0)
         current_version = post.raw
 
-        # Skip if we can't determine the difference or if change is too small
         return if !significant_change?(previous_version, current_version)
 
-        last_scan = AiSpamLog.where(post_id: post.id).order(created_at: :desc).first
+        flag_post_for_scanning(post)
+      end
 
-        if last_scan && last_scan.created_at > EDIT_DELAY_MINUTES.minutes.ago
-          # Schedule delayed job if too soon after last scan
-          delay_minutes =
-            ((last_scan.created_at + EDIT_DELAY_MINUTES.minutes) - Time.current).to_i / 60
-          Jobs.enqueue_in(delay_minutes.minutes, :ai_spam_scan, post_id: post.id)
-        else
-          Jobs.enqueue(:ai_spam_scan, post_id: post.id)
-        end
+      def self.flag_post_for_scanning(post)
+        post.custom_fields[SHOULD_SCAN_POST_CUSTOM_FIELD] = "true"
+        post.save_custom_fields
       end
 
       def self.enabled?
@@ -84,7 +97,14 @@ module DiscourseAi
         prompt = DiscourseAi::Completions::Prompt.new(system_prompt)
 
         context = build_context(post)
-        prompt.push(type: :user, content: context)
+
+        args = {type: :user, content: context}
+        upload_ids = post.upload_ids
+        if upload_ids.present?
+          args[:upload_ids] = upload_ids.take(3)
+        end
+
+        prompt.push(**args)
 
         begin
           result =
@@ -155,6 +175,7 @@ module DiscourseAi
         context << post.raw
         context.join("\n")
       end
+
 
       def self.build_system_prompt(custom_instructions)
         base_prompt = +<<~PROMPT
