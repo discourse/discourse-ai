@@ -3,6 +3,10 @@
 module ::DiscourseAi
   module Inference
     class GeminiEmbeddings
+      def self.instance
+        new(SiteSetting.ai_gemini_api_key)
+      end
+
       def initialize(api_key, referer = Discourse.base_url)
         @api_key = api_key
         @referer = referer
@@ -21,7 +25,7 @@ module ::DiscourseAi
 
         case response.status
         when 200
-          JSON.parse(response.body, symbolize_names: true)
+          JSON.parse(response.body, symbolize_names: true).dig(:embedding, :values)
         when 429
           # TODO add a AdminDashboard Problem?
         else

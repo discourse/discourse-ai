@@ -43,7 +43,7 @@ module DiscourseAi
         end
 
         def vector_from(text, asymetric: false)
-          inference_client.perform!(text).dig(:embedding, :values)
+          inference_client.perform!(text)
         end
 
         # There is no public tokenizer for Gemini, and from the ones we already ship in the plugin
