@@ -109,7 +109,10 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
   describe ".new_post" do
     it "enqueues spam scan job for eligible posts" do
-      expect { described_class.new_post(post) }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
+      expect {
+        described_class.new_post(post)
+        described_class.after_cooked_post(post)
+      }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
     end
 
     it "doesn't enqueue jobs when disabled" do
@@ -127,7 +130,10 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
         },
       )
 
-      expect { described_class.edited_post(post) }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
+      expect {
+        described_class.edited_post(post)
+        described_class.after_cooked_post(post)
+      }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
     end
 
     it "schedules delayed job when edited too soon after last scan" do
@@ -139,27 +145,40 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
         created_at: 5.minutes.ago,
       )
 
-      expect { described_class.edited_post(post) }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
+      expect {
+        described_class.edited_post(post)
+        described_class.after_cooked_post(post)
+      }.to change(Jobs::AiSpamScan.jobs, :size).by(1)
     end
   end
 
   describe "integration test" do
     fab!(:llm_model)
     let(:api_audit_log) { Fabricate(:api_audit_log) }
+    fab!(:post_with_uploaded_image)
 
     before { Jobs.run_immediately! }
 
     it "Correctly handles spam scanning" do
-      # we need a proper audit log so
+      # flag post for scanning
+      post = post_with_uploaded_image
+
+      described_class.new_post(post)
+
       prompt = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do |_, _, _prompts|
-        described_class.new_post(post)
+        # force a rebake so we actually scan
+        post.rebake!
         prompt = _prompts.first
       end
 
       content = prompt.messages[1][:content]
       expect(content).to include(post.topic.title)
       expect(content).to include(post.raw)
+
+      upload_ids = prompt.messages[1][:upload_ids]
+      expect(upload_ids).to be_present
+      expect(upload_ids).to eq(post.upload_ids)
 
       log = AiSpamLog.find_by(post: post)
 
