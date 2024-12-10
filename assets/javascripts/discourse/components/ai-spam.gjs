@@ -102,7 +102,7 @@ get availableLLMs() {
             {{on "click" this.toggleEnabled}}
           />
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{i18n "discourse_ai.spam.spam_tip"}}
           />
         </div>
