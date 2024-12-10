@@ -43,12 +43,9 @@ export default class AiSpam extends Component {
     this.stats = model.stats;
   }
 
-  get availableLLMs() {
-    return (this.args.model?.available_llms || []).map((llm) => ({
-      id: llm.id,
-      name: llm.name,
-    }));
-  }
+get availableLLMs() {
+  return this.args.model?.available_llms || [];
+}
 
   @action
   async toggleEnabled() {
