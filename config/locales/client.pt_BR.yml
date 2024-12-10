@@ -419,7 +419,6 @@ pt_BR:
           suffix: "em todos os tópicos e postagens com IA"
       ai_artifact:
         expand_view_label: "Expandir visualização"
-        collapse_view_label: "Sair da tela cheia (ESC)"
         click_to_run_label: "Rodar artefato"
       ai_bot:
         pm_warning: "Todas as mensagens do chatbot de IA são monitoradas regularmente por moderadores(as)."

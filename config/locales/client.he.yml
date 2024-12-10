@@ -93,6 +93,9 @@ he:
             max_post_tokens:
               label: "כמות אסימונים מרבית לפוסט"
               description: "מספר האסימונים המרבי לסריקה בעזרת מיון ראשוני עם LLM"
+            stop_sequences:
+              label: "עצירת רצפים"
+              description: "הנחיית המודל לעצור יצירת אסימונים בהגעה לערכים האלה"
             search_for_text:
               label: "חיפוש טקסט"
               description: "אם הטקסט הבא מופיע בתגובה של ה־LLM (מודל שפה גדול), להחיל את הפעולות האלה"
@@ -391,6 +394,7 @@ he:
           copied: "הועתק!"
           cancel: "ביטול"
           insert_footnote: "הוספת הערת שוליים"
+          footnote_disabled: "הכנסה אוטומטית מושבתת, יש ללחוץ על כפתור ההעתקה ולערוך אותו ידנית"
           footnote_credits: "הסבר של בינה מלאכותית"
         fast_edit:
           suggest_button: "הצעת עריכה"
@@ -426,7 +430,6 @@ he:
           suffix: "בכל הנושאים והפוסטים עם בינה מלאכותית"
       ai_artifact:
         expand_view_label: "הרחבת תצוגה"
-        collapse_view_label: "יציאה ממסך מלא (ESC)"
         click_to_run_label: "הרצת תוצר"
       ai_bot:
         pm_warning: "הודעות בוט שיח בינה מלאכותית לא נאכפות דרך קבע על ידי המפקחים."

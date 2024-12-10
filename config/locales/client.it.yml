@@ -419,7 +419,6 @@ it:
           suffix: "in tutti gli argomenti e i post con IA"
       ai_artifact:
         expand_view_label: "Espandi vista"
-        collapse_view_label: "Esci da schermo intero (ESC)"
         click_to_run_label: "Esegui artefatto"
       ai_bot:
         pm_warning: "I messaggi del chatbot IA vengono controllati regolarmente dai moderatori."

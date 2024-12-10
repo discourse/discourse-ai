@@ -419,7 +419,6 @@ fi:
           suffix: "kaikissa ketjuissa ja viesteissä tekoälyllä"
       ai_artifact:
         expand_view_label: "Laajenna näkymä"
-        collapse_view_label: "Poistu koko näytön tilasta (ESC)"
         click_to_run_label: "Suorita artefakti"
       ai_bot:
         pm_warning: "Valvojat tarkkailevat säännöllisesti tekoälychatbotin viestejä"

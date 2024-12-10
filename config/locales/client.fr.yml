@@ -419,7 +419,6 @@ fr:
           suffix: "dans tous les sujets et publications avec IA"
       ai_artifact:
         expand_view_label: "Agrandir la vue"
-        collapse_view_label: "Quitter le mode plein écran (ESC)"
         click_to_run_label: "Exécuter l'artefact"
       ai_bot:
         pm_warning: "Les messages du chatbot IA sont surveillés régulièrement par les modérateurs."

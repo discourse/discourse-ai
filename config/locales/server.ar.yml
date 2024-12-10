@@ -6,15 +6,25 @@
 
 ar:
   discourse_automation:
+    ai:
+      flag_types:
+        review: "إضافة المنشور إلى قائمة انتظار المراجعة"
+        spam: "وضع علامة \"عشوائي\" على المنشور وإخفاؤه"
+        spam_silence: "وضع علامة عشوائي على المنشور وإخفاؤه وكتم المستخدم"
     scriptables:
       llm_triage:
         title: فرز المنشورات باستخدام الذكاء الاصطناعي
         description: "فرز المنشورات باستخدام نموذج لغوي كبير"
+        flagged_post: |
+          <div>استجابة من النموذج:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>تم تشغيله بواسطة <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> القاعدة.</b>
       llm_report:
         title: التقرير الدوري باستخدام الذكاء الاصطناعي
         description: "تقرير دوري قائم على نموذج لغوي كبير"
   site_settings:
     discourse_ai_enabled: "تفعيل المكوِّن الإضافي للذكاء الاصطناعي على Discourse."
+    ai_artifact_security: "يقوم نظام المنتجات الثانوية القائم على الذكاء الاصطناعي بإنشاء أطر IFRAME باستخدام التعليمات البرمجية القابلة للتشغيل. يعمل الوضع المقيَّد على إيقاف المشاركة وإجبار المستخدم على النقر مرة أخرى لتشغيل التعليمات البرمجية. يسمح الوضع المتساهل بمشاركة الملفات الثانوية وتشغيل التعليمات البرمجية مباشرةً. يعمل الوضع المتوقف على إيقاف نظام الملفات الثانوية."
     ai_toxicity_enabled: "تفعيل وحدة السلبية."
     ai_toxicity_inference_service_api_endpoint: "عنوان URL حيث تعمل واجهة API لوحدة السلبية"
     ai_toxicity_inference_service_api_key: "مفتاح API لواجهة API الخاصة بنموذج السلبية"
@@ -46,6 +56,7 @@ ar:
     ai_openai_api_key: "مفتاح API لواجهة OpenAI API. لا يُستخدَم إلا للتضمينات وDall-E. بالنسبة إلى GPT، استخدم علامة التبويب تكوين نموذج اللغة الكبير"
     ai_hugging_face_tei_endpoint: عنوان URL حيث يتم تشغيل واجهة برمجة التطبيقات (API) لاستنتاج تضمينات نصوص Hugging Face
     ai_hugging_face_tei_api_key: مفتاح API لاستنتاج تضمينات نصوص Hugging Face
+    ai_helper_enabled: "تفعيل مساعد الذكاء الاصطناعي"
     composer_ai_helper_allowed_groups: "سيرى المستخدمون في هذه المجموعات زر مساعد الذكاء الاصطناعي في أداة الإنشاء."
     ai_helper_allowed_in_pm: "تفعيل مساعد الذكاء الاصطناعي في الرسائل الخاصة."
     ai_helper_model: "النموذج المراد استخدامه لمساعد الذكاء الاصطناعي."
@@ -74,6 +85,10 @@ ar:
     ai_summarization_enabled: "تفعيل وحدة تلخيص الموضوعات"
     ai_summarization_model: "النموذج الذي سيتم استخدامه في التلخيص."
     ai_custom_summarization_allowed_groups: "المجموعات المسموح لها بإنشاء ملخصات جديدة."
+    ai_pm_summarization_allowed_groups: "المجموعات المسموح لها بإنشاء الملخصات وعرضها في الرسائل الخاصة"
+    ai_summary_gists_enabled: "إنشاء ملخصات موجزة لأحدث الردود في الموضوعات تلقائيًا"
+    ai_summary_gists_allowed_groups: "المجموعات المسموح لها برؤية ملخصات الموضوعات في قائمة الموضوعات الساخنة"
+    ai_summary_backfill_maximum_topics_per_hour: "عدد ملخصات الموضوعات المطلوب ملؤها في الساعة."
     ai_bot_enabled: "تفعيل وحدة روبوت الذكاء الاصطناعي"
     ai_bot_enable_chat_warning: "عرض تحذير عند بدء الدردشة في رسالة خاصة. يمكن تجاوزه عن طريق تعديل سلسلة الترجمة: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "عندما يتمكن GPT Bot من الوصول إلى الرسالة الخاصة، فإنه سيرد على أعضاء هذه المجموعات."
@@ -93,33 +108,110 @@ ar:
   reports:
     overall_sentiment:
       title: "المشاعر العامة"
+      description: 'يقارن الرسم البياني عدد المنشورات المصنَّفة على أنها إما إيجابية أو سلبية. يتم حساب هذه النتائج عندما تكون الدرجات الإيجابية أو السلبية > درجة الحد المحدَّدة. وهذا يعني عدم عرض المنشورات المحايدة. يتم أيضًا استبعاد الرسائل الخاصة (PM). يتم تصنيفها باستخدام "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "إيجابية (%)"
       yaxis: "التاريخ"
+    emotion_admiration:
+      title: "\U0001F929 الإعجاب"
+      description: "المنشورات المصنَّفة برمز الإعجاب عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_amusement:
+      title: "\U0001F604 التسلية"
+      description: "المنشورات المصنَّفة برمز التسلية عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
     emotion_anger:
       title: "\U0001F620 الغضب"
+      description: "المنشورات المصنَّفة برمز الغضب عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_annoyance:
+      title: "\U0001F612 الإزعاج"
+      description: "المنشورات المصنَّفة برمز الإزعاج عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_approval:
+      title: "\U0001F44D الموافقة"
+      description: "المنشورات المصنَّفة برمز الموافقة عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_caring:
+      title: "\U0001F917 الاهتمام"
+      description: "المنشورات المصنَّفة برمز الاهتمام عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_confusion:
+      title: "\U0001F615 الارتباك"
+      description: "المنشورات المصنَّفة برمز الارتباك عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_curiosity:
+      title: "\U0001F914 الفضول"
+      description: "المنشورات المصنَّفة برمز الفضول عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_desire:
+      title: "\U0001F60D الرغبة"
+      description: "المنشورات المصنَّفة برمز الرغبة عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_disappointment:
+      title: "\U0001F61E خيبة الأمل"
+      description: "المنشورات المصنَّفة برمز خيبة الأمل عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_disapproval:
+      title: "\U0001F44E عدم الموافقة"
+      description: "المنشورات المصنَّفة برمز عدم الموافقة عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
     emotion_disgust:
       title: "\U0001F922 الاشمئزاز"
+      description: "المنشورات المصنَّفة برمز الاشمئزاز عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_embarrassment:
+      title: "\U0001F633 الإحراج"
+      description: "المنشورات المصنَّفة برمز الإحراج عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_excitement:
+      title: "\U0001F92A الإثارة"
+      description: "المنشورات المصنَّفة برمز الإثارة عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
     emotion_fear:
       title: "\U0001F628 الخوف"
+      description: "المنشورات المصنَّفة برمز الخوف عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_gratitude:
+      title: "\U0001F64F الامتنان"
+      description: "المنشورات المصنَّفة برمز الامتنان عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_grief:
+      title: "\U0001F622 الكآبة"
+      description: "المنشورات المصنَّفة برمز الكآبة عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
     emotion_joy:
       title: "\U0001F60A المرح"
+      description: "المنشورات المصنَّفة برمز الفرح عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_love:
+      title: '❤️ الحب'
+      description: "المنشورات المصنَّفة برمز الحب عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_nervousness:
+      title: "\U0001F630 التوتر"
+      description: "المنشورات المصنَّفة برمز التوتر عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
     emotion_neutral:
       title: "\U0001F610 محايدة"
+      description: "المنشورات المصنَّفة برمز الحياد عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_optimism:
+      title: "\U0001F31F التفاؤل"
+      description: "المنشورات المصنَّفة برمز التفاؤل عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_pride:
+      title: "\U0001F981 الفخر"
+      description: "المنشورات المصنَّفة برمز الفخر عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_realization:
+      title: "\U0001F4A1 الإدراك"
+      description: "المنشورات المصنَّفة برمز الإدراك عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_relief:
+      title: "\U0001F60C الراحة"
+      description: "المنشورات المصنَّفة برمز الراحة عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
+    emotion_remorse:
+      title: "\U0001F614 الندم"
+      description: "المنشورات المصنَّفة برمز الندم عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
     emotion_sadness:
       title: "\U0001F62D الحزن"
+      description: "المنشورات المصنَّفة برمز الحزن عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
     emotion_surprise:
       title: "\U0001F632 المفاجأة"
+      description: "المنشورات المصنَّفة برمز المفاجأة عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
   discourse_ai:
     ai_artifact:
+      link: "عرض الملف الثانوي في علامة تبويب جديدة"
+      view_source: "عرض المصدر"
       view_changes: "عرض التغييرات"
     unknown_model: "نموذج ذكاء اصطناعي غير معروف"
     tools:
       custom_name: "%{name} (custom)"
       presets:
+        browse_web_jina:
+          name: "تصفح الويب (jina.ai)"
         exchange_rate:
           name: "سعر الصرف"
         stock_quote:
           name: "أسعار الأسهم (AlphaVantage)"
+        image_generation:
+          name: "مولِّد صور Flux (Together.ai)"
         empty_tool:
           name: "ابدأ من لا شيء..."
     ai_helper:
@@ -183,6 +275,9 @@ ar:
         discourse_helper:
           name: "مساعد Discourse"
           description: "روبوت ذكاء اصطناعي متخصص في المساعدة في المهام المتعلقة بمنصة Discourse"
+        web_artifact_creator:
+          name: "مُنشئ الملفات الثانوية على الويب"
+          description: "روبوت الذكاء الاصطناعي المتخصص في إنشاء ملفات ثانوية تفاعلية على الويب"
       topic_not_found: "الملخص غير متوفر، الموضوع غير موجود!"
       summarizing: "جارٍ تلخيص الموضوع"
       searching: "جارٍ البحث عن: '%{query}'"
@@ -190,6 +285,7 @@ ar:
         google:
           base_query:
             name: "استعلام البحث الأساسي"
+            description: "الاستعلام الأساسي الذي سيتم استخدامه عند البحث. الأمثلة: سيتضمَّن \"site:example.com\" النتائج من example.com فقط، بينما سيتضمَّن before:2022-01-01 النتائج من عام 2021 وما قبله فقط. تتم إضافة هذا النص إلى استعلام البحث."
         read:
           read_private:
             name: "قراءة خاصة"
@@ -205,6 +301,8 @@ ar:
             name: "استعلام البحث الأساسي"
             description: "استعلام البحث الأساسي الذي سيتم استخدامه عند البحث. على سبيل المثال: سيسبق \"#urgent\" \"#urgent\" في استعلام البحث وسيتضمن الموضوعات ذات الفئة أو الوسم العاجل فقط."
       tool_summary:
+        update_artifact: "تحديث ملف ثانوي على الويب"
+        create_artifact: "إنشاء ملف ثانوي على الويب"
         web_browser: "تصفح الويب"
         github_search_files: "ملفات بحث GitHub"
         github_search_code: "البحث عن رمز برمجي على GitHub"
@@ -226,6 +324,8 @@ ar:
         search_meta_discourse: "البحث في Meta Discourse"
         javascript_evaluator: "تقييم JavaScript"
       tool_help:
+        update_artifact: "تحديث ملف ثانوي على الويب باستخدام روبوت الذكاء الاصطناعي"
+        create_artifact: "إنشاء ملف ثانوي على الويب باستخدام روبوت الذكاء الاصطناعي"
         web_browser: "تصفح صفحة الويب باستخدام روبوت ذكاء اصطناعي"
         github_search_code: "البحث عن رمز برمجي في مستودع GitHub"
         github_search_files: "البحث عن ملفات في مستودع GitHub"
@@ -247,6 +347,8 @@ ar:
         search_meta_discourse: "البحث في Meta Discourse"
         javascript_evaluator: "تقييم JavaScript"
       tool_description:
+        update_artifact: "تم تحديث ملف ثانوي على الويب باستخدام روبوت الذكاء الاصطناعي"
+        create_artifact: "تم إنشاء ملف ثانوي على الويب باستخدام روبوت الذكاء الاصطناعي"
         web_browser: "قراءة <a href='%{url}'>%{url}</a>"
         github_search_files: "تم البحث عن '%{keywords}' في %{repo}/%{branch}"
         github_search_code: "تم البحث عن '%{query}' في %{repo}"
@@ -330,6 +432,7 @@ ar:
         disable_module_first: "يجب عليك إيقاف %{setting} أولًا."
         set_llm_first: "اضبط %{setting} أولًا."
         model_unreachable: "لم نتمكن من الحصول على رد من هذا النموذج. تحقَّق من إعداداتك أولًا."
+        invalid_seeded_model: "لا يمكنك استخدام هذا النموذج مع هذه الميزة."
       endpoints:
         not_configured: "%{display_name} (not configured)"
         configuration_hint:
@@ -346,6 +449,7 @@ ar:
         few: "لم نتمكن من حذف هذا النموذج لأن %{settings} تستخدمه. قم بتحديث الإعدادات وحاول مرة أخرى."
         many: "لم نتمكن من حذف هذا النموذج لأن %{settings} تستخدمه. قم بتحديث الإعدادات وحاول مرة أخرى."
         other: "لم نتمكن من حذف هذا النموذج لأن %{settings} تستخدمه. قم بتحديث الإعدادات وحاول مرة أخرى."
+      cannot_edit_builtin: "لا يمكنك تعديل نموذج مُدمَج."
     embeddings:
       configuration:
         disable_embeddings: "يجب عليك إيقاف 'ai embeddings enabled' أولًا."
@@ -358,5 +462,16 @@ ar:
           few: "تأكد من تكوين الإعدادات `%{settings}`."
           many: "تأكد من تكوين الإعدادات `%{settings}`."
           other: "تأكد من تكوين الإعدادات `%{settings}`."
+    llm_models:
+      missing_provider_param: "لا يمكن ترك %{param} فارغة"
+      bedrock_invalid_url: "يُرجى ملء جميع الحقول لاستخدام هذا النموذج."
     errors:
+      no_query_specified: معلمة الاستعلام مطلوبة، يُرجى تحديدها.
+      no_user_for_persona: لا تملك الشخصية المحدَّدة مستخدمًا مرتبطًا بها.
+      persona_not_found: الشخصية المحدَّدة غير موجودة. تحقَّق من معلمتَي persona_name أو persona_id.
+      no_user_specified: اسم المستخدم أو معلمة user_unique_id مطلوبة، يُرجى تحديدها.
+      user_not_found: المستخدم المحدَّد غير موجود. تحقَّق من معلمة username.
+      persona_disabled: الشخصية المحدَّدة متوقفة. تحقَّق من معلمتَي persona_name أو persona_id.
+      no_default_llm: يجب أن يكون للشخصية معلمة default_llm محدَّدة.
+      user_not_allowed: غير مسموح للمستخدم بالمشاركة في الموضوع.
       prompt_message_length: تتجاوز الرسالة الحد الأقصى لعدد الحروف، والبالغ 1000 حرف، بمقدار %{idx}.
