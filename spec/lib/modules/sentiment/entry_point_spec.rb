@@ -77,8 +77,11 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
         sentiment_classification(pm, positive_classification)
 
         report = Report.find("overall_sentiment")
-        overall_sentiment = report.data[0][:data][:y].to_i
-        expect(overall_sentiment).to eq(2)
+        positive_data_point = report.data[0][:data].first[:y].to_i
+        negative_data_point = report.data[1][:data].first[:y].to_i
+
+        expect(positive_data_point).to eq(1)
+        expect(negative_data_point).to eq(-1)
       end
     end
 
