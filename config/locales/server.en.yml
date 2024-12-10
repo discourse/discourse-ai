@@ -400,7 +400,9 @@ en:
 
     sentiment:
       reports:
-        overall_sentiment: "Overall sentiment (Positive - Negative)"
+        overall_sentiment:
+          positive: "Positive"
+          negative: "Negative"
         post_emotion:
           sadness: "Sadness 😢"
           surprise: "Surprise 😱"

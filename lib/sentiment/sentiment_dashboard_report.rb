@@ -5,7 +5,7 @@ module DiscourseAi
     class SentimentDashboardReport
       def self.register!(plugin)
         plugin.add_report("overall_sentiment") do |report|
-          report.modes = [:chart]
+          report.modes = [:stacked_chart]
           threshold = 0.6
 
           sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
@@ -38,17 +38,20 @@ module DiscourseAi
               threshold: threshold,
             )
 
+          data_points = %w[positive negative]
+
           return report if grouped_sentiments.empty?
 
           report.data =
-            grouped_sentiments.map do |gs|
+            data_points.map do |point|
               {
-                color: report.colors[:lime],
-                label: I18n.t("discourse_ai.sentiment.reports.overall_sentiment"),
-                data: {
-                  x: gs.posted_at,
-                  y: gs.public_send("positive_count") - gs.public_send("negative_count"),
-                },
+                req: "sentiment_#{point}",
+                color: point == "positive" ? report.colors[:lime] : report.colors[:purple],
+                label: I18n.t("discourse_ai.sentiment.reports.overall_sentiment.#{point}"),
+                data:
+                  grouped_sentiments.map do |gs|
+                    { x: gs.posted_at, y: gs.public_send("#{point}_count") }
+                  end,
               }
             end
         end
