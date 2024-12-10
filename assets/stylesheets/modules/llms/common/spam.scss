@@ -1,0 +1,76 @@
+.ai-spam {
+  --chart-scanned-color: var(--success);
+  --chart-spam-color: var(--danger);
+  padding-top: 15px;
+
+  &__settings {
+    margin-bottom: 2em;
+  }
+
+  &__enabled {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-bottom: 1em;
+
+    .fk-d-tooltip__trigger {
+      color: var(--primary-high);
+    }
+  }
+
+  &__settings-title {
+    margin-bottom: 1em;
+  }
+
+  &__toggle,
+  &__llm,
+  &__instructions {
+    margin-bottom: 1em;
+  }
+
+  &__toggle-label,
+  &__llm-label,
+  &__instructions-label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+  }
+
+  &__instructions-input {
+    width: 100%;
+    min-height: 100px;
+    margin-bottom: 0.5em;
+  }
+
+  &__stats {
+    margin-top: 2em;
+  }
+
+  &__stats-title {
+    margin-bottom: 1em;
+  }
+
+  &__metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1em;
+    margin-bottom: 2em;
+  }
+
+  &__metrics-item {
+    background: var(--primary-very-low);
+    padding: 1em;
+    border-radius: 0.25em;
+    text-align: center;
+  }
+
+  &__metrics-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+  }
+
+  &__metrics-value {
+    font-size: var(--font-up-2);
+  }
+}

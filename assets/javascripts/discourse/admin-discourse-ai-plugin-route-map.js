@@ -18,6 +18,7 @@ export default {
       this.route("new");
       this.route("show", { path: "/:id" });
     });
+    this.route("discourse-ai-spam", { path: "ai-spam" });
     this.route("discourse-ai-usage", { path: "ai-usage" });
   },
 };
