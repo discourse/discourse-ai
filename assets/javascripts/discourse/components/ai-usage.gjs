@@ -1,15 +1,17 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
-import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import { eq } from "truth-helpers";
+import DButton from "discourse/components/d-button";
 import DateTimeInputRange from "discourse/components/date-time-input-range";
 import avatar from "discourse/helpers/avatar";
 import { ajax } from "discourse/lib/ajax";
+import { number } from "discourse/lib/formatter";
 import i18n from "discourse-common/helpers/i18n";
+import AdminConfigAreaCard from "admin/components/admin-config-area-card";
 import Chart from "admin/components/chart";
 import ComboBox from "select-kit/components/combo-box";
 
@@ -79,16 +81,16 @@ export default class AiUsage extends Component {
     );
 
     for (
-      let m = moment(startDate);
-      m.isSameOrBefore(endDate);
-      m.add(1, interval)
+      let currentMoment = moment(startDate);
+      currentMoment.isSameOrBefore(endDate);
+      currentMoment.add(1, interval)
     ) {
-      const dateKey = m.format(format);
+      const dateKey = currentMoment.format(format);
       const existingData = dataMap.get(dateKey);
 
       normalized.push(
         existingData || {
-          period: m.format(),
+          period: currentMoment.format(),
           total_tokens: 0,
           total_cached_tokens: 0,
           total_request_tokens: 0,
@@ -131,19 +133,19 @@ export default class AiUsage extends Component {
         }),
         datasets: [
           {
-            label: "Response Tokens",
+            label: i18n("discourse_ai.usage.response_tokens"),
             data: normalizedData.map((row) => row.total_response_tokens),
             backgroundColor: colors.response,
           },
           {
-            label: "Net Request Tokens",
+            label: i18n("discourse_ai.usage.net_request_tokens"),
             data: normalizedData.map(
               (row) => row.total_request_tokens - row.total_cached_tokens
             ),
             backgroundColor: colors.request,
           },
           {
-            label: "Cached Request Tokens",
+            label: i18n("discourse_ai.usage.cached_request_tokens"),
             data: normalizedData.map((row) => row.total_cached_tokens),
             backgroundColor: colors.cached,
           },
@@ -190,9 +192,9 @@ export default class AiUsage extends Component {
 
   get periodOptions() {
     return [
-      { id: "day", name: "Last 24 Hours" },
-      { id: "week", name: "Last Week" },
-      { id: "month", name: "Last Month" },
+      { id: "day", name: i18n("discourse_ai.usage.periods.last_day") },
+      { id: "week", name: i18n("discourse_ai.usage.periods.last_week") },
+      { id: "month", name: i18n("discourse_ai.usage.periods.last_month") },
     ];
   }
 
@@ -259,27 +261,21 @@ export default class AiUsage extends Component {
         <div class="ai-usage__filters-dates">
           <div class="ai-usage__period-buttons">
             {{#each this.periodOptions as |option|}}
-              <button
-                type="button"
-                class="btn
-                  {{if
+              <DButton
+                class="{{if
                     (eq this.selectedPeriod option.id)
                     'btn-primary'
                     'btn-default'
                   }}"
-                {{on "click" (fn this.onPeriodSelect option.id)}}
-              >
-                {{option.name}}
-              </button>
+                @action={{fn this.onPeriodSelect option.id}}
+                @translatedLabel={{option.name}}
+              />
             {{/each}}
-            <button
-              type="button"
-              class="btn
-                {{if this.isCustomDateActive 'btn-primary' 'btn-default'}}"
-              {{on "click" this.onCustomDateClick}}
-            >
-              Custom...
-            </button>
+            <DButton
+              class="{{if this.isCustomDateActive 'btn-primary' 'btn-default'}}"
+              @action={{this.onCustomDateClick}}
+              @label="discourse_ai.usage.periods.custom"
+            />
           </div>
 
           {{#if this.isCustomDateActive}}
@@ -293,13 +289,7 @@ export default class AiUsage extends Component {
                 @showToTime={{false}}
               />
 
-              <button
-                type="button"
-                class="btn btn-default"
-                {{on "click" this.onRefreshDateRange}}
-              >
-                {{i18n "refresh"}}
-              </button>
+              <DButton @action={{this.onRefreshDateRange}} @label="refresh" />
             </div>
           {{/if}}
         </div>
@@ -323,67 +313,81 @@ export default class AiUsage extends Component {
         </div>
 
         {{#if this.data}}
-          <div class="ai-usage__summary">
-            <h3 class="ai-usage__summary-title">
-              {{i18n "discourse_ai.usage.summary"}}
-            </h3>
-            <div class="ai-usage__summary-stats">
-              <div class="ai-usage__summary-stat">
-                <span class="label">{{i18n
-                    "discourse_ai.usage.total_requests"
-                  }}</span>
-                <span class="value">{{this.data.summary.total_requests}}</span>
+          <AdminConfigAreaCard
+            @heading="discourse_ai.usage.summary"
+            class="ai-usage__summary"
+          >
+            <:content>
+              <div class="ai-usage__summary-stats">
+                <div class="ai-usage__summary-stat">
+                  <span class="label">{{i18n
+                      "discourse_ai.usage.total_requests"
+                    }}</span>
+                  <span
+                    class="value"
+                    title={{this.data.summary.total_requests}}
+                  >{{number this.data.summary.total_requests}}</span>
+                </div>
+                <div class="ai-usage__summary-stat">
+                  <span class="label">{{i18n
+                      "discourse_ai.usage.total_tokens"
+                    }}</span>
+                  <span
+                    class="value"
+                    title={{this.data.summary.total_tokens}}
+                  >{{number this.data.summary.total_tokens}}</span>
+                </div>
+                <div class="ai-usage__summary-stat">
+                  <span class="label">{{i18n
+                      "discourse_ai.usage.request_tokens"
+                    }}</span>
+                  <span
+                    class="value"
+                    title={{this.data.summary.total_request_tokens}}
+                  >{{number this.data.summary.total_request_tokens}}</span>
+                </div>
+                <div class="ai-usage__summary-stat">
+                  <span class="label">{{i18n
+                      "discourse_ai.usage.response_tokens"
+                    }}</span>
+                  <span
+                    class="value"
+                    title={{this.data.summary.total_response_tokens}}
+                  >{{number this.data.summary.total_response_tokens}}</span>
+                </div>
+                <div class="ai-usage__summary-stat">
+                  <span class="label">{{i18n
+                      "discourse_ai.usage.cached_tokens"
+                    }}</span>
+                  <span
+                    class="value"
+                    title={{this.data.summary.total_cached_tokens}}
+                  >{{number this.data.summary.total_cached_tokens}}</span>
+                </div>
               </div>
-              <div class="ai-usage__summary-stat">
-                <span class="label">{{i18n
-                    "discourse_ai.usage.total_tokens"
-                  }}</span>
-                <span class="value">{{this.data.summary.total_tokens}}</span>
-              </div>
-              <div class="ai-usage__summary-stat">
-                <span class="label">{{i18n
-                    "discourse_ai.usage.request_tokens"
-                  }}</span>
-                <span
-                  class="value"
-                >{{this.data.summary.total_request_tokens}}</span>
-              </div>
-              <div class="ai-usage__summary-stat">
-                <span class="label">{{i18n
-                    "discourse_ai.usage.response_tokens"
-                  }}</span>
-                <span
-                  class="value"
-                >{{this.data.summary.total_response_tokens}}</span>
-              </div>
-              <div class="ai-usage__summary-stat">
-                <span class="label">{{i18n
-                    "discourse_ai.usage.cached_tokens"
-                  }}</span>
-                <span
-                  class="value"
-                >{{this.data.summary.total_cached_tokens}}</span>
-              </div>
-            </div>
-          </div>
+            </:content>
+          </AdminConfigAreaCard>
 
-          <div class="ai-usage__charts">
-            <div class="ai-usage__chart-container">
-              <h3 class="ai-usage__chart-title">
-                {{i18n "discourse_ai.usage.tokens_over_time"}}
-              </h3>
-              <Chart
-                @chartConfig={{this.chartConfig}}
-                class="ai-usage__chart"
-              />
-            </div>
+          <AdminConfigAreaCard
+            class="ai-usage__charts"
+            @heading="discourse_ai.usage.tokens_over_time"
+          >
+            <:content>
+              <div class="ai-usage__chart-container">
+                <Chart
+                  @chartConfig={{this.chartConfig}}
+                  class="ai-usage__chart"
+                />
+              </div>
+            </:content>
+          </AdminConfigAreaCard>
 
-            <div class="ai-usage__breakdowns">
-
-              <div class="ai-usage__users">
-                <h3 class="ai-usage__users-title">
-                  {{i18n "discourse_ai.usage.users_breakdown"}}
-                </h3>
+          <div class="ai-usage__breakdowns">
+            <AdminConfigAreaCard
+              class="ai-usage__users"
+              @heading="discourse_ai.usage.users_breakdown"
+            >
+              <:content>
                 <table class="ai-usage__users-table">
                   <thead>
                     <tr>
@@ -408,20 +412,25 @@ export default class AiUsage extends Component {
                           </div></td>
                         <td
                           class="ai-usage__users-cell"
-                        >{{user.usage_count}}</td>
+                          title={{user.usage_count}}
+                        >{{number user.usage_count}}</td>
                         <td
                           class="ai-usage__users-cell"
-                        >{{user.total_tokens}}</td>
+                          title={{user.total_tokens}}
+                        >{{number user.total_tokens}}</td>
                       </tr>
                     {{/each}}
                   </tbody>
                 </table>
-              </div>
 
-              <div class="ai-usage__features">
-                <h3 class="ai-usage__features-title">
-                  {{i18n "discourse_ai.usage.features_breakdown"}}
-                </h3>
+              </:content>
+            </AdminConfigAreaCard>
+
+            <AdminConfigAreaCard
+              class="ai-usage__features"
+              @heading="discourse_ai.usage.features_breakdown"
+            >
+              <:content>
                 <table class="ai-usage__features-table">
                   <thead>
                     <tr>
@@ -438,20 +447,24 @@ export default class AiUsage extends Component {
                         >{{feature.feature_name}}</td>
                         <td
                           class="ai-usage__features-cell"
-                        >{{feature.usage_count}}</td>
+                          title={{feature.usage_count}}
+                        >{{number feature.usage_count}}</td>
                         <td
                           class="ai-usage__features-cell"
-                        >{{feature.total_tokens}}</td>
+                          title={{feature.total_tokens}}
+                        >{{number feature.total_tokens}}</td>
                       </tr>
                     {{/each}}
                   </tbody>
                 </table>
-              </div>
+              </:content>
+            </AdminConfigAreaCard>
 
-              <div class="ai-usage__models">
-                <h3 class="ai-usage__models-title">
-                  {{i18n "discourse_ai.usage.models_breakdown"}}
-                </h3>
+            <AdminConfigAreaCard
+              class="ai-usage__models"
+              @heading="discourse_ai.usage.models_breakdown"
+            >
+              <:content>
                 <table class="ai-usage__models-table">
                   <thead>
                     <tr>
@@ -466,16 +479,18 @@ export default class AiUsage extends Component {
                         <td class="ai-usage__models-cell">{{model.llm}}</td>
                         <td
                           class="ai-usage__models-cell"
-                        >{{model.usage_count}}</td>
+                          title={{model.usage_count}}
+                        >{{number model.usage_count}}</td>
                         <td
                           class="ai-usage__models-cell"
-                        >{{model.total_tokens}}</td>
+                          title={{model.total_tokens}}
+                        >{{number model.total_tokens}}</td>
                       </tr>
                     {{/each}}
                   </tbody>
                 </table>
-              </div>
-            </div>
+              </:content>
+            </AdminConfigAreaCard>
           </div>
         {{/if}}
       </div>
