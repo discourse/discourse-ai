@@ -16,7 +16,7 @@ end
 #  ai_api_audit_log_id :bigint
 #  reviewable_id       :bigint
 #  is_spam             :boolean          not null
-#  payload             :text             default(""), not null
+#  payload             :string(20000)    default(""), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #
