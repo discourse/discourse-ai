@@ -160,6 +160,9 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     before { Jobs.run_immediately! }
 
     it "Correctly handles spam scanning" do
+
+      expect(described_class.flagging_user.id).not_to eq(Discourse.system_user.id)
+
       # flag post for scanning
       post = post_with_uploaded_image
 
@@ -188,6 +191,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       expect(post.topic.reload.visible).to eq(false)
 
       expect(log.reviewable).to be_present
+      expect(log.reviewable.created_by_id).to eq(described_class.flagging_user.id)
     end
   end
 end

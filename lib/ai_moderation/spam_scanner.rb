@@ -7,6 +7,7 @@ module DiscourseAi
       MINIMUM_EDIT_DIFFERENCE = 10
       EDIT_DELAY_MINUTES = 10
       MAX_AGE_TO_SCAN = 1.day
+      MAX_RAW_SCAN_LENGTH = 5000
 
       SHOULD_SCAN_POST_CUSTOM_FIELD = "discourse_ai_should_scan_post"
 
@@ -15,6 +16,39 @@ module DiscourseAi
         return if !should_scan_post?(post)
 
         flag_post_for_scanning(post)
+      end
+
+      def self.ensure_flagging_user!
+        if !SiteSetting.ai_spam_detection_user_id.present?
+          User.transaction do
+            # prefer a "high" id for this bot
+            id = User.where("id > -20").minimum(:id) - 1
+            id = User.minimum(:id) - 1 if id == -100
+
+            user =
+              User.create!(
+                id: id,
+                username: UserNameSuggester.suggest("discourse_ai_spam"),
+                name: "Discourse AI Spam Scanner",
+                email: "#{SecureRandom.hex(10)}@invalid.invalid",
+                active: true,
+                approved: true,
+                trust_level: TrustLevel[4],
+                admin: true,
+              )
+            Group.user_trust_level_change!(user.id, user.trust_level)
+
+            SiteSetting.ai_spam_detection_user_id = user.id
+          end
+        end
+      end
+
+      def self.flagging_user
+        user = nil
+        if SiteSetting.ai_spam_detection_user_id.present?
+          user = User.find_by(id: SiteSetting.ai_spam_detection_user_id)
+        end
+        user || Discourse.system_user
       end
 
       def self.after_cooked_post(post)
@@ -98,11 +132,9 @@ module DiscourseAi
 
         context = build_context(post)
 
-        args = {type: :user, content: context}
+        args = { type: :user, content: context }
         upload_ids = post.upload_ids
-        if upload_ids.present?
-          args[:upload_ids] = upload_ids.take(3)
-        end
+        args[:upload_ids] = upload_ids.take(3) if upload_ids.present?
 
         prompt.push(**args)
 
@@ -171,11 +203,10 @@ module DiscourseAi
         context << "- Total posts: #{post.user.post_count}"
         context << "- Trust level: #{post.user.trust_level}"
 
-        context << "\nPost Content:"
-        context << post.raw
+        context << "\nPost Content (first #{MAX_RAW_SCAN_LENGTH} chars):\n"
+        context << post.raw[0..MAX_RAW_SCAN_LENGTH]
         context.join("\n")
       end
-
 
       def self.build_system_prompt(custom_instructions)
         base_prompt = +<<~PROMPT
@@ -228,7 +259,7 @@ module DiscourseAi
 
         result =
           PostActionCreator.new(
-            Discourse.system_user,
+            flagging_user,
             post,
             PostActionType.types[:spam],
             reason: reason,
@@ -237,6 +268,30 @@ module DiscourseAi
 
         log.update!(reviewable: result.reviewable)
         SpamRule::AutoSilence.new(post.user, post).silence_user
+        # this is required cause tl1 is not auto hidden
+        # we want to also handle tl1
+        hide_posts_and_topics(post.user)
+      end
+
+      def self.hide_posts_and_topics(user)
+        Post
+          .where(user_id: user.id)
+          .where("created_at > ?", 24.hours.ago)
+          .update_all(
+            [
+              "hidden = true, hidden_reason_id = COALESCE(hidden_reason_id, ?)",
+              Post.hidden_reasons[:new_user_spam_threshold_reached],
+            ],
+          )
+        topic_ids = Post
+          .where(user_id: user.id, post_number: 1)
+          .where("created_at > ?", 24.hours.ago)
+          .select(:topic_id)
+
+        Topic
+          .where(id: topic_ids)
+          .update_all(visible: false)
+
       end
     end
   end
