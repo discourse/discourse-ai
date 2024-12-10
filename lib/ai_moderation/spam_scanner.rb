@@ -133,6 +133,7 @@ module DiscourseAi
         else
           context << "REPLY POST ANALYSIS"
           context << "- In topic: #{post.topic.title}"
+          context << "- Category: #{post.topic.category&.name}"
           context << "- Topic started by: #{post.topic.user.username}"
 
           # Include parent post context for replies

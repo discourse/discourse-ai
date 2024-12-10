@@ -43,9 +43,9 @@ export default class AiSpam extends Component {
     this.stats = model.stats;
   }
 
-get availableLLMs() {
-  return this.args.model?.available_llms || [];
-}
+  get availableLLMs() {
+    return this.args.model?.available_llms || [];
+  }
 
   @action
   async toggleEnabled() {
@@ -85,6 +85,27 @@ get availableLLMs() {
     } catch (error) {
       popupAjaxError(error);
     }
+  }
+
+  get metrics() {
+    return [
+      {
+        label: "discourse_ai.spam.scanned_count",
+        value: this.stats.scanned_count,
+      },
+      {
+        label: "discourse_ai.spam.spam_detected",
+        value: this.stats.spam_detected,
+      },
+      {
+        label: "discourse_ai.spam.false_positives",
+        value: this.stats.false_positives,
+      },
+      {
+        label: "discourse_ai.spam.false_negatives",
+        value: this.stats.false_negatives,
+      },
+    ];
   }
 
   <template>
@@ -147,44 +168,14 @@ get availableLLMs() {
             "discourse_ai.spam.last_seven_days"
           }}</h3>
 
-        {{#if this.isLoadingStats}}
-          <div class="ai-spam__loading"></div>
-        {{else}}
-          <div class="ai-spam__metrics">
+        <div class="ai-spam__metrics">
+          {{#each this.metrics as |metric|}}
             <div class="ai-spam__metrics-item">
-              <span class="ai-spam__metrics-label">{{i18n
-                  "discourse_ai.spam.scanned_count"
-                }}</span>
-              <span
-                class="ai-spam__metrics-value"
-              >{{this.stats.scanned_count}}</span>
+              <span class="ai-spam__metrics-label">{{i18n metric.label}}</span>
+              <span class="ai-spam__metrics-value">{{metric.value}}</span>
             </div>
-            <div class="ai-spam__metrics-item">
-              <span class="ai-spam__metrics-label">{{i18n
-                  "discourse_ai.spam.spam_detected"
-                }}</span>
-              <span
-                class="ai-spam__metrics-value"
-              >{{this.stats.spam_detected}}</span>
-            </div>
-            <div class="ai-spam__metrics-item">
-              <span class="ai-spam__metrics-label">{{i18n
-                  "discourse_ai.spam.false_positives"
-                }}</span>
-              <span
-                class="ai-spam__metrics-value"
-              >{{this.stats.false_positives}}</span>
-            </div>
-            <div class="ai-spam__metrics-item">
-              <span class="ai-spam__metrics-label">{{i18n
-                  "discourse_ai.spam.false_negatives"
-                }}</span>
-              <span
-                class="ai-spam__metrics-value"
-              >{{this.stats.false_negatives}}</span>
-            </div>
-          </div>
-        {{/if}}
+          {{/each}}
+        </div>
       </section>
     </div>
   </template>
