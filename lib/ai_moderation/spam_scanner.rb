@@ -283,15 +283,13 @@ module DiscourseAi
               Post.hidden_reasons[:new_user_spam_threshold_reached],
             ],
           )
-        topic_ids = Post
-          .where(user_id: user.id, post_number: 1)
-          .where("created_at > ?", 24.hours.ago)
-          .select(:topic_id)
+        topic_ids =
+          Post
+            .where(user_id: user.id, post_number: 1)
+            .where("created_at > ?", 24.hours.ago)
+            .select(:topic_id)
 
-        Topic
-          .where(id: topic_ids)
-          .update_all(visible: false)
-
+        Topic.where(id: topic_ids).update_all(visible: false)
       end
     end
   end

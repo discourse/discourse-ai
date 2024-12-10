@@ -160,7 +160,6 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     before { Jobs.run_immediately! }
 
     it "Correctly handles spam scanning" do
-
       expect(described_class.flagging_user.id).not_to eq(Discourse.system_user.id)
 
       # flag post for scanning
