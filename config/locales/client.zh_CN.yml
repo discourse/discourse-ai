@@ -416,7 +416,6 @@ zh_CN:
           suffix: "在所有话题和帖子中使用 AI 搜索"
       ai_artifact:
         expand_view_label: "扩展视图"
-        collapse_view_label: "退出全屏 (ESC)"
         click_to_run_label: "运行工件"
       ai_bot:
         pm_warning: "版主会定期监控 AI 聊天机器人消息。"

@@ -419,7 +419,6 @@ nl:
           suffix: "in alle topics en berichten met AI"
       ai_artifact:
         expand_view_label: "Weergave uitvouwen"
-        collapse_view_label: "Volledig scherm verlaten (ESC)"
         click_to_run_label: "Artefact uitvoeren"
       ai_bot:
         pm_warning: "AI-chatbotberichten worden regelmatig gecontroleerd door moderators."

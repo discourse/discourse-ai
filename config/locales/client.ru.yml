@@ -425,7 +425,6 @@ ru:
           suffix: "во всех темах и публикациях с ИИ"
       ai_artifact:
         expand_view_label: "Расширить вид"
-        collapse_view_label: "Выйти из полноэкранного режима (ESC)"
         click_to_run_label: "Запустить артефакт"
       ai_bot:
         pm_warning: "Сообщения чат-бота с AI регулярно отслеживаются модераторами."

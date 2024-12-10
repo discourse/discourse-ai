@@ -419,7 +419,6 @@ tr_TR:
           suffix: "YZ ile tüm konu ve gönderilerde"
       ai_artifact:
         expand_view_label: "Görünümü genişlet"
-        collapse_view_label: "Tam Ekrandan çık (ESC)"
         click_to_run_label: "Artifact'i çalıştır"
       ai_bot:
         pm_warning: "YZ sohbet robotu mesajları moderatörler tarafından düzenli olarak izlenir."

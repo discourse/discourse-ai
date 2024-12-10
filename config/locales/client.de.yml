@@ -344,6 +344,7 @@ de:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "Benutzerdefiniert"
         provider_fields:
           access_key_id: "AWS-Bedrock-Zugangsschlüssel-ID"
@@ -352,6 +353,8 @@ de:
           disable_system_prompt: "Systemmeldung in Eingabeaufforderungen deaktivieren"
           enable_native_tool: "Aktiviere native Tool-Unterstützung"
           disable_native_tools: "Native Tool-Unterstützung deaktivieren (XML-basierte Tools verwenden)"
+          provider_order: "Anbieterreihenfolge (kommagetrennte Liste)"
+          provider_quantizations: "Reihenfolge der Provider-Quantisierungen (kommagetrennte Liste, z. B.: fp16, fp8)"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -424,7 +427,7 @@ de:
           suffix: "in allen Themen und Beiträgen mit KI"
       ai_artifact:
         expand_view_label: "Ansicht erweitern"
-        collapse_view_label: "Vollbild beenden (ESC)"
+        collapse_view_label: "Vollbild verlassen (ESC- oder Zurück-Taste)"
         click_to_run_label: "Artefakt ausführen"
       ai_bot:
         pm_warning: "KI-Chatbot-Nachrichten werden regelmäßig von Moderatoren überwacht."

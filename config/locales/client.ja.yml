@@ -416,7 +416,6 @@ ja:
           suffix: "AI によるすべてのトピックと投稿"
       ai_artifact:
         expand_view_label: "表示を拡大"
-        collapse_view_label: "全画面表示を終了 (ESC)"
         click_to_run_label: "アーティファクトを実行"
       ai_bot:
         pm_warning: "AI チャットボットのメッセージは、モデレーターによって定期的に監視されます。"
