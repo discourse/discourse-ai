@@ -123,7 +123,7 @@ get availableLLMs() {
           <label class="ai-spam__instructions-label">
             {{i18n "discourse_ai.spam.custom_instructions"}}
             <DTooltip
-              @icon="question-circle"
+              @icon="circle-question"
               @content={{i18n "discourse_ai.spam.custom_instructions_help"}}
             />
           </label>
