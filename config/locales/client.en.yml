@@ -129,6 +129,9 @@ en:
       modals:
         select_option: "Select an option..."
 
+      spam:
+        short_title: "Spam"
+
       usage:
         short_title: "Usage"
         summary: "Summary"
