@@ -141,9 +141,7 @@ module DiscourseAi
 
         return [] if upload_refs.empty?
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
         query_vector = vector_rep.vector_from(query)
         fragment_ids =
           vector_rep.asymmetric_rag_fragment_similarity_search(

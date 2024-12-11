@@ -326,9 +326,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       fab!(:llm_model) { Fabricate(:fake_model) }
 
       it "will run the question consolidator" do
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
         context_embedding = vector_rep.dimensions.times.map { rand(-1.0...1.0) }
         EmbeddingsGenerationStubs.discourse_service(
           SiteSetting.ai_embeddings_model,

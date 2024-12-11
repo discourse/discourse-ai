@@ -19,9 +19,7 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
     fab!(:post_in_subcategory) { Fabricate(:post, topic: topic_in_subcategory) }
 
     def index(topic)
-      strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-      vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
 
       stub_request(:post, "https://api.openai.com/v1/embeddings").to_return(
         status: 200,

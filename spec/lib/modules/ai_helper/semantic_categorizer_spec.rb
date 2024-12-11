@@ -14,10 +14,7 @@ RSpec.describe DiscourseAi::AiHelper::SemanticCategorizer do
   fab!(:category)
   fab!(:topic) { Fabricate(:topic, category: category) }
 
-  let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
-  let(:vector_rep) do
-    DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
-  end
+  let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
   let(:categorizer) { DiscourseAi::AiHelper::SemanticCategorizer.new({ text: "hello" }, user) }
   let(:expected_embedding) { [0.0038493] * vector_rep.dimensions }
 

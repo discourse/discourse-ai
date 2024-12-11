@@ -13,9 +13,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
     fab!(:post) { Fabricate(:post, post_number: 1, topic: topic) }
 
     let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
-    let(:vector_rep) do
-      DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
-    end
+    let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
 
     it "works for topics" do
       expected_embedding = [0.0038493] * vector_rep.dimensions

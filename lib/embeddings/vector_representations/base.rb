@@ -20,8 +20,9 @@ module DiscourseAi
             ].find { _1.name == model_name }
           end
 
-          def current_representation(strategy)
-            find_representation(SiteSetting.ai_embeddings_model).new(strategy)
+          def current_representation
+            truncation = DiscourseAi::Embeddings::Strategies::Truncation.new
+            find_representation(SiteSetting.ai_embeddings_model).new(truncation)
           end
 
           def correctly_configured?
@@ -388,6 +389,14 @@ module DiscourseAi
 
         def asymmetric_query_prefix
           raise NotImplementedError
+        end
+
+        def strategy_id
+          @strategy.id
+        end
+
+        def strategy_version
+          @strategy.version
         end
 
         protected

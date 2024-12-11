@@ -20,9 +20,7 @@ module Jobs
 
       rebaked = 0
 
-      strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-      vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
       table_name = vector_rep.topic_table_name
 
       topics =
@@ -41,7 +39,7 @@ module Jobs
       relation = topics.where(<<~SQL).limit(limit - rebaked)
           #{table_name}.model_version < #{vector_rep.version}
           OR
-          #{table_name}.strategy_version < #{strategy.version}
+          #{table_name}.strategy_version < #{vector_rep.strategy_version}
         SQL
 
       rebaked += populate_topic_embeddings(vector_rep, relation)

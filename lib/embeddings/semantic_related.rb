@@ -13,9 +13,7 @@ module DiscourseAi
       def related_topic_ids_for(topic)
         return [] if SiteSetting.ai_embeddings_semantic_related_topics < 1
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
         cache_for = results_ttl(topic)
 
         Discourse

@@ -25,9 +25,7 @@ describe DiscourseAi::Embeddings::SemanticRelated do
       end
 
       let(:vector_rep) do
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
       end
 
       it "properly generates embeddings if missing" do

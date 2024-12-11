@@ -19,10 +19,7 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     topic
   end
 
-  let(:vector_rep) do
-    strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-    DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-  end
+  let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
 
   before do
     SiteSetting.ai_embeddings_enabled = true

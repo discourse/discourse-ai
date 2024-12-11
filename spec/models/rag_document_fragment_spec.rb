@@ -74,10 +74,7 @@ RSpec.describe RagDocumentFragment do
   end
 
   describe ".indexing_status" do
-    let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
-    let(:vector_rep) do
-      DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
-    end
+    let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
 
     fab!(:rag_document_fragment_1) do
       Fabricate(:rag_document_fragment, upload: upload_1, target: persona)

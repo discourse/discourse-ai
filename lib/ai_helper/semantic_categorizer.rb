@@ -92,9 +92,7 @@ module DiscourseAi
       private
 
       def nearest_neighbors(limit: 100)
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
 
         raw_vector = vector_rep.vector_from(@text)
 

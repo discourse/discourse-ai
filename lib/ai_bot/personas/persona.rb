@@ -314,9 +314,7 @@ module DiscourseAi
 
           return nil if !consolidated_question
 
-          strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-          vector_rep =
-            DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+          vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
           reranker = DiscourseAi::Inference::HuggingFaceTextEmbeddings
 
           interactions_vector = vector_rep.vector_from(consolidated_question)

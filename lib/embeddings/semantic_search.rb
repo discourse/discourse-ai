@@ -31,10 +31,7 @@ module DiscourseAi
       end
 
       def vector_rep
-        @vector_rep ||=
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(
-            DiscourseAi::Embeddings::Strategies::Truncation.new,
-          )
+        @vector_rep ||= DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
       end
 
       def hyde_embedding(search_term)
@@ -115,9 +112,7 @@ module DiscourseAi
 
         return [] if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
 
         digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
 

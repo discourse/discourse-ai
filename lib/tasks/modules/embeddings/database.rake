@@ -4,15 +4,14 @@ desc "Backfill embeddings for all topics and posts"
 task "ai:embeddings:backfill", %i[model concurrency] => [:environment] do |_, args|
   public_categories = Category.where(read_restricted: false).pluck(:id)
 
-  strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
   if args[:model].present?
+    strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
     vector_rep =
       DiscourseAi::Embeddings::VectorRepresentations::Base.find_representation(args[:model]).new(
         strategy,
       )
   else
-    vector_rep =
-      DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+    vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
   end
   table_name = vector_rep.topic_table_name
 

@@ -39,9 +39,7 @@ class RagDocumentFragment < ActiveRecord::Base
     end
 
     def indexing_status(persona, uploads)
-      truncation = DiscourseAi::Embeddings::Strategies::Truncation.new
-      vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
+      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
 
       embeddings_table = vector_rep.rag_fragments_table_name
 
