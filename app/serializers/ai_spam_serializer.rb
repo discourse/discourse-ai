@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AiSpamSerializer < ApplicationSerializer
-  attributes :is_enabled, :llm_id, :custom_instructions, :available_llms, :stats
+  attributes :is_enabled, :llm_id, :custom_instructions, :available_llms, :stats, :flagging_username
 
   def is_enabled
     object[:enabled]
@@ -19,6 +19,10 @@ class AiSpamSerializer < ApplicationSerializer
     DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
       { id: hash[:value], name: hash[:name] }
     end
+  end
+
+  def flagging_username
+    object[:flagging_username]
   end
 
   def stats
