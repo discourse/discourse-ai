@@ -3,7 +3,6 @@ import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
-import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import withEventValue from "discourse/helpers/with-event-value";
@@ -27,18 +26,24 @@ export default class SpamTestModal extends Component {
           type: "POST",
           data: {
             post_url: this.postUrl,
-            custom_instructions: this.args.model.customInstructions
+            custom_instructions: this.args.model.customInstructions,
           },
         }
       );
 
-      this.testResult = response.is_spam ? "Spam" : "Not Spam";
+      this.testResult = response.is_spam
+        ? I18n.t("discourse_ai.usage.test_modal.spam")
+        : I18n.t("discourse_ai.usage.test_modal.not_spam");
       this.scanLog = response.log;
     } catch (error) {
       popupAjaxError(error);
     } finally {
       this.isLoading = false;
     }
+  }
+
+  get isSpam() {
+    return this.testResult === I18n.t("discourse_ai.usage.test_modal.spam");
   }
 
   <template>
@@ -67,7 +72,7 @@ export default class SpamTestModal extends Component {
             <h3>{{I18n.t "discourse_ai.spam.test_modal.result"}}</h3>
             <div
               class="spam-test-modal__verdict
-                {{if (eq this.testResult 'Spam') 'is-spam' 'not-spam'}}"
+                {{if this.isSpam 'is-spam' 'not-spam'}}"
             >
               {{this.testResult}}
             </div>
