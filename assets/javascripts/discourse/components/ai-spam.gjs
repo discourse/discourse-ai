@@ -66,7 +66,7 @@ export default class AiSpam extends Component {
     this.isEnabled = !this.isEnabled;
     const data = { is_enabled: this.isEnabled };
     if (this.autoSelectedLLM) {
-      data.llm_model_id = this.selectedLLM.toString().split(":")[1];
+      data.llm_model_id = this.llmId;
     }
     try {
       const response = await ajax("/admin/plugins/discourse-ai/ai-spam.json", {
@@ -81,6 +81,10 @@ export default class AiSpam extends Component {
     }
   }
 
+  get llmId() {
+    return this.selectedLLM.toString().split(":")[1];
+  }
+
   @action
   async updateLLM(value) {
     this.selectedLLM = value;
@@ -88,12 +92,11 @@ export default class AiSpam extends Component {
 
   @action
   async save() {
-    const llmId = this.selectedLLM.toString().split(":")[1];
     try {
       await ajax("/admin/plugins/discourse-ai/ai-spam.json", {
         type: "PUT",
         data: {
-          llm_model_id: llmId,
+          llm_model_id: this.llmId,
           custom_instructions: this.customInstructions,
         },
       });
@@ -111,6 +114,7 @@ export default class AiSpam extends Component {
     this.modal.show(SpamTestModal, {
       model: {
         customInstructions: this.customInstructions,
+        llmId: this.llmId,
       },
     });
   }

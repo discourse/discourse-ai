@@ -119,9 +119,10 @@ module DiscourseAi
         distance >= MINIMUM_EDIT_DIFFERENCE
       end
 
-      def self.test_post(post, custom_instructions: nil)
+      def self.test_post(post, custom_instructions: nil, llm_id: nil)
         settings = AiModerationSetting.spam
-        llm = settings.llm_model.to_llm
+        llm_model = llm_id ? LlmModel.find(llm_id) : settings.llm_model
+        llm = llm_model.to_llm
         custom_instructions = custom_instructions || settings.custom_instructions.presence
         context = build_context(post)
         prompt = completion_prompt(post, context: context, custom_instructions: custom_instructions)
@@ -155,7 +156,7 @@ module DiscourseAi
           log << "\n"
         end
 
-        log << "LLM: #{settings.llm_model.name}\n\n"
+        log << "LLM: #{llm_model.name}\n\n"
         log << "System Prompt: #{build_system_prompt(custom_instructions)}\n\n"
         log << "Context: #{context}\n\n"
 

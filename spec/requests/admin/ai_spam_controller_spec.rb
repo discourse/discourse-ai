@@ -97,14 +97,21 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
     before { sign_in(admin) }
 
     it "can scan using post url" do
+      llm2 = Fabricate(:llm_model, name: "DiffLLM")
+
       DiscourseAi::Completions::Llm.with_prepared_responses(["spam", "just because"]) do
-        post "/admin/plugins/discourse-ai/ai-spam/test.json", params: { post_url: spam_post2.url }
+        post "/admin/plugins/discourse-ai/ai-spam/test.json",
+             params: {
+               post_url: spam_post2.url,
+               llm_id: llm2.id,
+             }
       end
 
       expect(response.status).to eq(200)
 
       parsed = response.parsed_body
       expect(parsed["log"]).to include(spam_post2.raw)
+      expect(parsed["log"]).to include("DiffLLM")
     end
 
     it "can scan using post id" do

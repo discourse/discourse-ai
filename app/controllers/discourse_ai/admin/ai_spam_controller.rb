@@ -71,6 +71,7 @@ module DiscourseAi
           DiscourseAi::AiModeration::SpamScanner.test_post(
             post,
             custom_instructions: params[:custom_instructions],
+            llm_id: params[:llm_id],
           )
 
         render json: result
