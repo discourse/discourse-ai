@@ -33,7 +33,12 @@ module DiscourseAi
 
         if allowed_params.key?(:is_enabled)
           if is_enabled && !AiModerationSetting.spam&.llm_model_id
-            return render_json_error(I18n.t("discourse_ai.llm.configuration.must_select_model"), status: 422)
+            return(
+              render_json_error(
+                I18n.t("discourse_ai.llm.configuration.must_select_model"),
+                status: 422,
+              )
+            )
           end
 
           SiteSetting.ai_spam_detection_enabled = is_enabled
@@ -55,6 +60,12 @@ module DiscourseAi
         }
 
         spam_config[:stats] = DiscourseAi::AiModeration::SpamReport.generate(min_date: 1.week.ago)
+
+        if spam_config[:stats].scanned_count > 0
+          spam_config[
+            :flagging_username
+          ] = DiscourseAi::AiModeration::SpamScanner.flagging_user&.username
+        end
         spam_config
       end
     end

@@ -12,6 +12,7 @@ import withEventValue from "discourse/helpers/with-event-value";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
+import getURL from "discourse-common/lib/get-url";
 import ComboBox from "select-kit/components/combo-box";
 
 export default class AiSpam extends Component {
@@ -102,15 +103,21 @@ export default class AiSpam extends Component {
   }
 
   get metrics() {
+    const detected = {
+      label: "discourse_ai.spam.spam_detected",
+      value: this.stats.spam_detected,
+    };
+    if (this.args.model.flagging_username) {
+      detected.href = getURL(
+        "/review?flagged_by=" + this.args.model.flagging_username
+      );
+    }
     return [
       {
         label: "discourse_ai.spam.scanned_count",
         value: this.stats.scanned_count,
       },
-      {
-        label: "discourse_ai.spam.spam_detected",
-        value: this.stats.spam_detected,
-      },
+      detected,
       {
         label: "discourse_ai.spam.false_positives",
         value: this.stats.false_positives,
@@ -194,7 +201,13 @@ export default class AiSpam extends Component {
           {{#each this.metrics as |metric|}}
             <div class="ai-spam__metrics-item">
               <span class="ai-spam__metrics-label">{{i18n metric.label}}</span>
-              <span class="ai-spam__metrics-value">{{metric.value}}</span>
+              {{#if metric.href}}
+                <a href={{metric.href}} class="ai-spam__metrics-value">
+                  {{metric.value}}
+                </a>
+              {{else}}
+                <span class="ai-spam__metrics-value">{{metric.value}}</span>
+              {{/if}}
             </div>
           {{/each}}
         </div>

@@ -26,12 +26,15 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
       end
 
       it "can not enable spam detection without a model selected" do
-        put "/admin/plugins/discourse-ai/ai-spam.json", params: { custom_instructions: "custom instructions" }
+        put "/admin/plugins/discourse-ai/ai-spam.json",
+            params: {
+              custom_instructions: "custom instructions",
+            }
         expect(response.status).to eq(422)
       end
 
       it "can not fiddle with custom instructions without an llm" do
-        put "/admin/plugins/discourse-ai/ai-spam.json", params: { is_enabled: true}
+        put "/admin/plugins/discourse-ai/ai-spam.json", params: { is_enabled: true }
         expect(response.status).to eq(422)
       end
 
@@ -97,6 +100,7 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
 
       it "return proper settings when spam detection is enabled" do
         SiteSetting.ai_spam_detection_enabled = true
+
         AiModerationSetting.create(
           {
             setting_type: :spam,
@@ -107,15 +111,30 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
           },
         )
 
+        flagging_user = DiscourseAi::AiModeration::SpamScanner.flagging_user
+        expect(flagging_user.id).not_to eq(Discourse.system_user.id)
+
+        AiSpamLog.create!(post_id: 1, llm_model_id: llm_model.id, is_spam: true, payload: "test")
+
         get "/admin/plugins/discourse-ai/ai-spam.json"
 
         json = response.parsed_body
         expect(json["is_enabled"]).to eq(true)
         expect(json["llm_id"]).to eq(llm_model.id)
         expect(json["custom_instructions"]).to eq("custom instructions")
+
+        expect(json["stats"].to_h).to eq(
+          "scanned_count" => 1,
+          "spam_detected" => 1,
+          "false_positives" => 0,
+          "false_negatives" => 0,
+        )
+
+        expect(json["flagging_username"]).to eq(flagging_user.username)
       end
 
-      it "includes the correct stats structure" do
+      it "includes the stats" do
+        expect(SpamScanner.flagging_user.id).not_to eq(SystemUser.id)
         get "/admin/plugins/discourse-ai/ai-spam.json"
 
         json = response.parsed_body
