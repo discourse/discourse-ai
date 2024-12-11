@@ -47,6 +47,35 @@ module DiscourseAi
         render json: AiSpamSerializer.new(spam_config, root: false)
       end
 
+      def test
+        url = params[:post_url].to_s
+        post = nil
+
+        if url.match?(/^\d+$/)
+          post_id = url.to_i
+          post = Post.find_by(id: post_id)
+        end
+
+        route = UrlHelper.rails_route_from_url(url) if !post
+
+        if route
+          if route[:controller] == "topics"
+            post_number = route[:post_number] || 1
+            post = Post.with_deleted.find_by(post_number: post_number, topic_id: route[:topic_id])
+          end
+        end
+
+        raise Discourse::NotFound if !post
+
+        result =
+          DiscourseAi::AiModeration::SpamScanner.test_post(
+            post,
+            custom_instructions: params[:custom_instructions],
+          )
+
+        render json: result
+      end
+
       private
 
       def allowed_params
