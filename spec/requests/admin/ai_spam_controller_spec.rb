@@ -120,7 +120,11 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
 
     before { sign_in(admin) }
 
-    it "can scan using post url" do
+    it "can scan using post url (even when trashed and user deleted)" do
+      User.where(id: spam_post2.user_id).delete_all
+      spam_post2.topic.trash!
+      spam_post2.trash!
+
       llm2 = Fabricate(:llm_model, name: "DiffLLM")
 
       DiscourseAi::Completions::Llm.with_prepared_responses(["spam", "just because"]) do
