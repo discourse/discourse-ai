@@ -130,7 +130,7 @@ module DiscourseAi
           llm.generate(
             prompt,
             temperature: 0.1,
-            max_tokens: 100,
+            max_tokens: 5,
             user: Discourse.system_user,
             feature_name: "spam_detection_test",
             feature_context: {
@@ -158,9 +158,27 @@ module DiscourseAi
         log << "LLM: #{settings.llm_model.name}\n\n"
         log << "System Prompt: #{build_system_prompt(custom_instructions)}\n\n"
         log << "Context: #{context}\n\n"
-        log << "Result: #{result}"
+        log << "Result: #{result}\n\n"
 
         is_spam = check_if_spam(result)
+
+        prompt.push(type: :model, content: result)
+        prompt.push(type: :user, content: "Explain your reasoning")
+
+        reasoning =
+          llm.generate(
+            prompt,
+            temperature: 0.1,
+            max_tokens: 100,
+            user: Discourse.system_user,
+            feature_name: "spam_detection_test",
+            feature_context: {
+              post_id: post.id,
+            },
+          )&.strip
+
+        log << "Reasoning: #{reasoning}"
+
         { is_spam: is_spam, log: log }
       end
 
@@ -191,7 +209,7 @@ module DiscourseAi
             llm.generate(
               prompt,
               temperature: 0.1,
-              max_tokens: 100,
+              max_tokens: 5,
               user: Discourse.system_user,
               feature_name: "spam_detection",
               feature_context: {
@@ -214,8 +232,12 @@ module DiscourseAi
             handle_spam(post, log) if is_spam
           end
         rescue StandardError => e
-          raise e if Rails.env.test?
-          Discourse.warn_exception(e, message: "Error in SpamScanner for post #{post.id}")
+          # we need retries otherwise stuff will not be handled
+          Discourse.warn_exception(
+            e,
+            message: "Discourse AI: Error in SpamScanner for post #{post.id}",
+          )
+          raise e
         end
       end
 

@@ -159,6 +159,32 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
     before { Jobs.run_immediately! }
 
+    it "Can correctly run tests" do
+      prompts = nil
+      result =
+        DiscourseAi::Completions::Llm.with_prepared_responses(
+          ["spam", "the reason is just because"],
+        ) do |_, _, _prompts|
+          prompts = _prompts
+          described_class.test_post(post, custom_instructions: "123")
+        end
+
+      expect(prompts.length).to eq(2)
+      expect(result[:is_spam]).to eq(true)
+      expect(result[:log]).to include("123")
+      expect(result[:log]).to include("just because")
+
+      result =
+        DiscourseAi::Completions::Llm.with_prepared_responses(
+          ["not_spam", "the reason is just because"],
+        ) do |_, _, _prompts|
+          prompts = _prompts
+          described_class.test_post(post, custom_instructions: "123")
+        end
+
+      expect(result[:is_spam]).to eq(false)
+    end
+
     it "Correctly handles spam scanning" do
       expect(described_class.flagging_user.id).not_to eq(Discourse.system_user.id)
 
