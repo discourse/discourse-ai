@@ -74,3 +74,48 @@
     font-size: var(--font-up-2);
   }
 }
+
+.spam-test-modal {
+  &__body {
+    min-width: 500px;
+  }
+
+  &__test-result {
+    margin-top: 1.5em;
+    padding-top: 1.5em;
+    border-top: 1px solid var(--primary-low);
+  }
+
+  &__verdict {
+    font-size: var(--font-up-2);
+    font-weight: bold;
+    padding: 0.5em;
+    border-radius: 0.25em;
+    text-align: center;
+    margin: 1em 0;
+
+    &.is-spam {
+      background: var(--danger-low);
+      color: var(--danger);
+    }
+
+    &.not-spam {
+      background: var(--success-low);
+      color: var(--success);
+    }
+  }
+
+  &__log {
+    margin-top: 1em;
+
+    pre {
+      max-height: 300px;
+      overflow-y: auto;
+      background: var(--primary-very-low);
+      padding: 1em;
+      margin: 0.5em 0;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+  }
+}

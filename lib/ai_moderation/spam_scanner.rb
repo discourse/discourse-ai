@@ -139,10 +139,14 @@ module DiscourseAi
           )&.strip
 
         history = nil
-        AiSpamLog.where(post: post).order(:created_at).limit(100).each do |log|
-          history ||= +"Scan History:\n"
-          history << "date: #{log.created_at} is_spam: #{log.is_spam}\n"
-        end
+        AiSpamLog
+          .where(post: post)
+          .order(:created_at)
+          .limit(100)
+          .each do |log|
+            history ||= +"Scan History:\n"
+            history << "date: #{log.created_at} is_spam: #{log.is_spam}\n"
+          end
 
         log = +"Scanning #{post.url}\n\n"
 
@@ -156,7 +160,7 @@ module DiscourseAi
         log << "Context: #{context}\n\n"
         log << "Result: #{result}"
 
-        is_spam = (result.present? && result.downcase.include?("spam"))
+        is_spam = check_if_spam(result)
         { is_spam: is_spam, log: log }
       end
 
@@ -195,7 +199,7 @@ module DiscourseAi
               },
             )&.strip
 
-          is_spam = (result.present? && result.downcase.include?("spam"))
+          is_spam = check_if_spam(result)
 
           log = AiApiAuditLog.order(id: :desc).where(feature_name: "spam_detection").first
           AiSpamLog.transaction do
@@ -216,6 +220,10 @@ module DiscourseAi
       end
 
       private
+
+      def self.check_if_spam(result)
+        (result.present? && result.strip.downcase.start_with?("spam"))
+      end
 
       def self.build_context(post)
         context = []
@@ -255,6 +263,8 @@ module DiscourseAi
         base_prompt = +<<~PROMPT
           You are a spam detection system. Analyze the following post content and context.
           Respond with "SPAM" if the post is spam, or "NOT_SPAM" if it's legitimate.
+
+          - ALWAYS lead your reply with the word SPAM or NOT_SPAM - you are consumed via an API
 
           Consider the post type carefully:
           - For REPLY posts: Check if the response is relevant and topical to the thread

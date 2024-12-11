@@ -145,6 +145,14 @@ en:
         spam_tip: "AI spam detection will scan the first 3 posts by all new users on public topics. It will flag them for review and block users if they are likely spam."
         settings_saved: "Settings saved"
         no_llms: "No LLMs available"
+        test_button: "Test..."
+        test_modal:
+          title: "Test Spam Detection"
+          post_url_label: "Post URL or ID"
+          post_url_placeholder: "https://your-forum.com/t/topic/123/4 or post ID"
+          result: "Result"
+          scan_log: "Scan Log"
+          run: "Run Test"
 
       usage:
         short_title: "Usage"
