@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe DiscourseAi::Admin::AiUsageController do
   fab!(:admin)
   fab!(:user)
-  let(:usage_path) { "/admin/plugins/discourse-ai/ai-usage.json" }
+  let(:usage_report_path) { "/admin/plugins/discourse-ai/ai-usage-report.json" }
 
   before { SiteSetting.discourse_ai_enabled = true }
 
@@ -36,7 +36,7 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
       end
 
       it "returns correct data structure" do
-        get usage_path
+        get usage_report_path
 
         expect(response.status).to eq(200)
 
@@ -48,14 +48,18 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
       end
 
       it "respects date filters" do
-        get usage_path, params: { start_date: 3.days.ago.to_date, end_date: 1.day.ago.to_date }
+        get usage_report_path,
+            params: {
+              start_date: 3.days.ago.to_date,
+              end_date: 1.day.ago.to_date,
+            }
 
         json = response.parsed_body
         expect(json["summary"]["total_tokens"]).to eq(450) # sum of all tokens
       end
 
       it "filters by feature" do
-        get usage_path, params: { feature: "summarize" }
+        get usage_report_path, params: { feature: "summarize" }
 
         json = response.parsed_body
 
@@ -66,7 +70,7 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
       end
 
       it "filters by model" do
-        get usage_path, params: { model: "gpt-3.5" }
+        get usage_report_path, params: { model: "gpt-3.5" }
 
         json = response.parsed_body
         models = json["models"]
@@ -76,10 +80,10 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
       end
 
       it "handles different period groupings" do
-        get usage_path, params: { period: "hour" }
+        get usage_report_path, params: { period: "hour" }
         expect(response.status).to eq(200)
 
-        get usage_path, params: { period: "month" }
+        get usage_report_path, params: { period: "month" }
         expect(response.status).to eq(200)
       end
     end
@@ -102,7 +106,11 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
       end
 
       it "returns hourly data when period is day" do
-        get usage_path, params: { start_date: 1.day.ago.to_date, end_date: Time.current.to_date }
+        get usage_report_path,
+            params: {
+              start_date: 1.day.ago.to_date,
+              end_date: Time.current.to_date,
+            }
 
         expect(response.status).to eq(200)
         json = response.parsed_body
@@ -121,7 +129,7 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
     before { sign_in(user) }
 
     it "blocks access" do
-      get usage_path
+      get usage_report_path
       expect(response.status).to eq(404)
     end
   end
@@ -133,7 +141,7 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
     end
 
     it "returns error" do
-      get usage_path
+      get usage_report_path
       expect(response.status).to eq(404)
     end
   end

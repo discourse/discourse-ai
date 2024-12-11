@@ -117,7 +117,9 @@
     margin-top: 2em;
 
     @media (max-width: 768px) {
-      grid-template-columns: 1fr;
+      grid-template-columns: none;
+      display: flex;
+      flex-direction: column;
     }
   }
 
@@ -133,15 +135,17 @@
 
           &.-double-width {
             margin-right: 0;
-
-            .ai-usage__users-username {
-              width: auto;
-            }
           }
+        }
 
+        &.-double-width {
           .ai-usage__users-username {
-            width: 50px;
+            width: auto;
           }
+        }
+
+        .ai-usage__users-username {
+          width: 50px;
         }
       }
     }
