@@ -2,6 +2,7 @@
 
 RSpec.describe "Managing LLM configurations", type: :system, js: true do
   fab!(:admin)
+  let(:admin_header) { PageObjects::Components::AdminHeader.new }
 
   before do
     SiteSetting.ai_bot_enabled = true
@@ -36,8 +37,10 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
 
   it "manually configures an LLM" do
     visit "/admin/plugins/discourse-ai/ai-llms"
+    expect(admin_header).to be_visible
 
     find("[data-llm-id='none'] button").click()
+    expect(admin_header).to be_hidden
 
     find("input.ai-llm-editor__display-name").fill_in(with: "Self-hosted LLM")
     find("input.ai-llm-editor__name").fill_in(with: "llava-hf/llava-v1.6-mistral-7b-hf")

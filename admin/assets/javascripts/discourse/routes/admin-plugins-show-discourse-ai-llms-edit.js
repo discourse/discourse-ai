@@ -1,6 +1,6 @@
 import DiscourseRoute from "discourse/routes/discourse";
 
-export default class AdminPluginsShowDiscourseAiLlmsShow extends DiscourseRoute {
+export default class AdminPluginsShowDiscourseAiLlmsEdit extends DiscourseRoute {
   async model(params) {
     const allLlms = this.modelFor("adminPlugins.show.discourse-ai-llms");
     const id = parseInt(params.id, 10);

@@ -2,6 +2,7 @@
 
 RSpec.describe "Admin AI persona configuration", type: :system, js: true do
   fab!(:admin)
+  let(:admin_header) { PageObjects::Components::AdminHeader.new }
 
   before do
     SiteSetting.ai_bot_enabled = true
@@ -11,7 +12,13 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
 
   it "allows creation of a persona" do
     visit "/admin/plugins/discourse-ai/ai-personas"
+
+    expect(admin_header).to be_visible
+
     find(".ai-persona-list-editor__new-button").click()
+
+    expect(admin_header).to be_hidden
+
     find(".ai-persona-editor__name").set("Test Persona")
     find(".ai-persona-editor__description").fill_in(with: "I am a test persona")
     find(".ai-persona-editor__system_prompt").fill_in(with: "You are a helpful bot")
