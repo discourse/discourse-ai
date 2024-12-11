@@ -9,6 +9,7 @@ import withEventValue from "discourse/helpers/with-event-value";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import I18n from "discourse-i18n";
+import AiIndicatorWave from "../ai-indicator-wave";
 
 export default class SpamTestModal extends Component {
   @tracked testResult;
@@ -90,7 +91,9 @@ export default class SpamTestModal extends Component {
           @label="discourse_ai.spam.test_modal.run"
           @disabled={{this.isLoading}}
           class="btn-primary spam-test-modal__run-button"
-        />
+        >
+          <AiIndicatorWave @loading={{this.isLoading}} />
+        </DButton>
       </:footer>
     </DModal>
   </template>
