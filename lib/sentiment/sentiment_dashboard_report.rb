@@ -11,7 +11,7 @@ module DiscourseAi
           sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
             COUNT(
               CASE WHEN (cr.classification::jsonb->'#{sentiment}')::float > :threshold THEN 1 ELSE NULL END
-            ) AS #{sentiment}_count
+            )
           SQL
 
           grouped_sentiments =
@@ -19,8 +19,7 @@ module DiscourseAi
               <<~SQL,
             SELECT
               DATE_TRUNC('day', p.created_at)::DATE AS posted_at,
-              #{sentiment_count_sql.call("positive")},
-              -#{sentiment_count_sql.call("negative")}
+              #{sentiment_count_sql.call("positive")} - #{sentiment_count_sql.call("negative")} AS sentiment_count
             FROM
               classification_results AS cr
             INNER JOIN posts p ON p.id = cr.target_id AND cr.target_type = 'Post'
@@ -32,28 +31,24 @@ module DiscourseAi
               cr.model_used = 'cardiffnlp/twitter-roberta-base-sentiment-latest' AND
               (p.created_at > :report_start AND p.created_at < :report_end)
             GROUP BY DATE_TRUNC('day', p.created_at)
+            ORDER BY 1 ASC
           SQL
               report_start: report.start_date,
               report_end: report.end_date,
               threshold: threshold,
             )
 
-          data_points = %w[positive negative]
-
           return report if grouped_sentiments.empty?
 
-          report.data =
-            data_points.map do |point|
-              {
-                req: "sentiment_#{point}",
-                color: point == "positive" ? report.colors[:lime] : report.colors[:purple],
-                label: I18n.t("discourse_ai.sentiment.reports.overall_sentiment.#{point}"),
-                data:
-                  grouped_sentiments.map do |gs|
-                    { x: gs.posted_at, y: gs.public_send("#{point}_count") }
-                  end,
-              }
-            end
+          report.data = {
+            req: "overall_sentiment",
+            color: report.colors[:lime],
+            label: I18n.t("discourse_ai.sentiment.reports.overall_sentiment"),
+            data:
+              grouped_sentiments.map do |gs|
+                { x: gs.posted_at, y: gs.public_send("sentiment_count") }
+              end,
+          }
         end
       end
     end
