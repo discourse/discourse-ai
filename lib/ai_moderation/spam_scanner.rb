@@ -53,7 +53,7 @@ module DiscourseAi
 
       def self.after_cooked_post(post)
         return if !enabled?
-        return if !should_scan_post(post)
+        return if !should_scan_post?(post)
         return if !post.custom_fields[SHOULD_SCAN_POST_CUSTOM_FIELD]
         return if post.updated_at < MAX_AGE_TO_SCAN.ago
 
