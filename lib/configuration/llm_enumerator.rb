@@ -38,6 +38,11 @@ module DiscourseAi
           rval[model_id] << { type: :ai_embeddings_semantic_search }
         end
 
+        if SiteSetting.ai_spam_detection_enabled
+          model_id = AiModerationSetting.spam[:llm_model_id]
+          rval[model_id] << { type: :ai_spam }
+        end
+
         rval
       end
 

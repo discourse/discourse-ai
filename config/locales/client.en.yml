@@ -321,6 +321,7 @@ en:
           ai_persona: "Persona (%{persona})"
           ai_summarization: "Summarize"
           ai_embeddings_semantic_search: "AI search"
+          ai_spam: "Spam"
         in_use_warning:
           one: "This model is currently used by %{settings}. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following: %{settings}. If misconfigured, features won't work as expected. "
