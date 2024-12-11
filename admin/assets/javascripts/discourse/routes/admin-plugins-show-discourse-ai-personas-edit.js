@@ -1,6 +1,6 @@
 import DiscourseRoute from "discourse/routes/discourse";
 
-export default class AdminPluginsShowDiscourseAiPersonasShow extends DiscourseRoute {
+export default class AdminPluginsShowDiscourseAiPersonasEdit extends DiscourseRoute {
   async model(params) {
     const allPersonas = this.modelFor(
       "adminPlugins.show.discourse-ai-personas"

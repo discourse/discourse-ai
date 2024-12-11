@@ -141,9 +141,9 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
   end
 
-  describe "GET #show" do
+  describe "GET #edit" do
     it "returns a success response" do
-      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
+      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}/edit.json"
       expect(response).to be_successful
       expect(response.parsed_body["ai_persona"]["name"]).to eq(ai_persona.name)
     end
@@ -152,7 +152,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       upload = Fabricate(:upload)
       RagDocumentFragment.link_target_and_uploads(ai_persona, [upload.id])
 
-      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
+      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}/edit.json"
       expect(response).to be_successful
 
       serialized_persona = response.parsed_body["ai_persona"]

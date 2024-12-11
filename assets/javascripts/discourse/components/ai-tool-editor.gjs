@@ -103,7 +103,7 @@ export default class AiToolEditor extends Component {
       }
 
       this.router.transitionTo(
-        "adminPlugins.show.discourse-ai-tools.show",
+        "adminPlugins.show.discourse-ai-tools.edit",
         this.args.model
       );
     } catch (e) {

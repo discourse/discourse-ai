@@ -5,7 +5,7 @@ module DiscourseAi
     class AiPersonasController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      before_action :find_ai_persona, only: %i[show update destroy create_user]
+      before_action :find_ai_persona, only: %i[edit update destroy create_user]
 
       def index
         ai_personas =
@@ -33,7 +33,10 @@ module DiscourseAi
         render json: { ai_personas: ai_personas, meta: { tools: tools, llms: llms } }
       end
 
-      def show
+      def new
+      end
+
+      def edit
         render json: LocalizedAiPersonaSerializer.new(@ai_persona)
       end
 

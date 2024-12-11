@@ -1,6 +1,6 @@
 import DiscourseRoute from "discourse/routes/discourse";
 
-export default class DiscourseAiToolsShowRoute extends DiscourseRoute {
+export default class DiscourseAiToolsEditRoute extends DiscourseRoute {
   async model(params) {
     const allTools = this.modelFor("adminPlugins.show.discourse-ai-tools");
     const id = parseInt(params.id, 10);

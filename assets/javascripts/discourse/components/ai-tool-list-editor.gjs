@@ -57,7 +57,7 @@ export default class AiToolListEditor extends Component {
                 </td>
                 <td class="d-admin-row__controls">
                   <LinkTo
-                    @route="adminPlugins.show.discourse-ai-tools.show"
+                    @route="adminPlugins.show.discourse-ai-tools.edit"
                     @model={{tool}}
                     class="btn btn-text btn-small"
                   >{{I18n.t "discourse_ai.tools.edit"}}</LinkTo>
