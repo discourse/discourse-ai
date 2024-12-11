@@ -158,7 +158,6 @@ module DiscourseAi
         log << "LLM: #{settings.llm_model.name}\n\n"
         log << "System Prompt: #{build_system_prompt(custom_instructions)}\n\n"
         log << "Context: #{context}\n\n"
-        log << "Result: #{result}\n\n"
 
         is_spam = check_if_spam(result)
 
@@ -177,7 +176,7 @@ module DiscourseAi
             },
           )&.strip
 
-        log << "Reasoning: #{reasoning}"
+        log << "#{reasoning}"
 
         { is_spam: is_spam, log: log }
       end

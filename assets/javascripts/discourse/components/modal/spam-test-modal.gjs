@@ -15,6 +15,7 @@ export default class SpamTestModal extends Component {
   @tracked isLoading = false;
   @tracked postUrl = "";
   @tracked scanLog = "";
+  @tracked isSpam;
 
   @action
   async runTest() {
@@ -31,19 +32,16 @@ export default class SpamTestModal extends Component {
         }
       );
 
+      this.isSpam = response.is_spam;
       this.testResult = response.is_spam
-        ? I18n.t("discourse_ai.usage.test_modal.spam")
-        : I18n.t("discourse_ai.usage.test_modal.not_spam");
+        ? I18n.t("discourse_ai.spam.test_modal.spam")
+        : I18n.t("discourse_ai.spam.test_modal.not_spam");
       this.scanLog = response.log;
     } catch (error) {
       popupAjaxError(error);
     } finally {
       this.isLoading = false;
     }
-  }
-
-  get isSpam() {
-    return this.testResult === I18n.t("discourse_ai.usage.test_modal.spam");
   }
 
   <template>
