@@ -66,7 +66,9 @@ module DiscourseAi
 
           changes = {}
           changes[:category_id] = category_id if category_id.present?
-          changes[:tags] = tags if SiteSetting.tagging_enabled? && tags.present?
+          if SiteSetting.tagging_enabled? && tags.present?
+            changes[:tags] = post.topic.tags.map(&:name).concat(tags)
+          end
 
           if changes.present?
             first_post = post.topic.posts.where(post_number: 1).first
