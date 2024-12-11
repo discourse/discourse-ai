@@ -25,6 +25,30 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
         expect(AiModerationSetting.spam.data["custom_instructions"]).to eq("custom instructions")
       end
 
+      it "denies update for disallowed seeded llm" do
+        seeded_llm = Fabricate(:llm_model, id: -1)
+
+        put "/admin/plugins/discourse-ai/ai-spam.json",
+            params: {
+              is_enabled: true,
+              llm_model_id: seeded_llm.id,
+              custom_instructions: "custom instructions",
+            }
+
+        expect(response.status).to eq(422)
+
+        SiteSetting.ai_spam_detection_model_allowed_seeded_models = seeded_llm.identifier
+
+        put "/admin/plugins/discourse-ai/ai-spam.json",
+            params: {
+              is_enabled: true,
+              llm_model_id: seeded_llm.id,
+              custom_instructions: "custom instructions",
+            }
+
+        expect(response.status).to eq(200)
+      end
+
       it "can not enable spam detection without a model selected" do
         put "/admin/plugins/discourse-ai/ai-spam.json",
             params: {
@@ -163,13 +187,32 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
     context "when logged in as admin" do
       before { sign_in(admin) }
 
+      it "correctly filters seeded llms" do
+        SiteSetting.ai_spam_detection_enabled = true
+        seeded_llm = Fabricate(:llm_model, id: -1, name: "seeded")
+
+        get "/admin/plugins/discourse-ai/ai-spam.json"
+        expect(response.status).to eq(200)
+        json = response.parsed_body
+
+        # only includes fabricated model
+        expect(json["available_llms"].length).to eq(1)
+
+        SiteSetting.ai_spam_detection_model_allowed_seeded_models = seeded_llm.identifier
+
+        get "/admin/plugins/discourse-ai/ai-spam.json"
+        expect(response.status).to eq(200)
+        json = response.parsed_body
+
+        expect(json["available_llms"].length).to eq(2)
+      end
+
       it "returns the serialized spam settings" do
         SiteSetting.ai_spam_detection_enabled = true
 
         get "/admin/plugins/discourse-ai/ai-spam.json"
 
         expect(response.status).to eq(200)
-
         json = response.parsed_body
         expect(json["is_enabled"]).to eq(true)
         expect(json["selected_llm"]).to eq(nil)

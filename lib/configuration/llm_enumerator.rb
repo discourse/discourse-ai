@@ -50,14 +50,19 @@ module DiscourseAi
         true
       end
 
-      def self.values
+      def self.values(allowed_seeded_llms: nil)
         values = DB.query_hash(<<~SQL).map(&:symbolize_keys)
           SELECT display_name AS name, id AS value
           FROM llm_models
         SQL
 
-        values.each { |value_h| value_h[:value] = "custom:#{value_h[:value]}" }
+        if allowed_seeded_llms.is_a?(Array)
+          values = values.filter do |value_h|
+            value_h[:value] > 0 || allowed_seeded_llms.include?("custom:#{value_h[:value]}")
+          end
+        end
 
+        values.each { |value_h| value_h[:value] = "custom:#{value_h[:value]}" }
         values
       end
 

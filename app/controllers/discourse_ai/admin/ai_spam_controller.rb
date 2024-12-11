@@ -11,11 +11,20 @@ module DiscourseAi
 
       def update
         updated_params = {}
-
-        updated_params[:llm_model_id] = allowed_params[:llm_model_id] if allowed_params.key?(
-          :llm_model_id,
-        )
-
+        if allowed_params.key?(:llm_model_id)
+          llm_model_id = updated_params[:llm_model_id] = allowed_params[:llm_model_id]
+          if llm_model_id.to_i < 0 &&
+               !SiteSetting.ai_spam_detection_model_allowed_seeded_models_map.include?(
+                 "custom:#{llm_model_id}",
+               )
+            return(
+              render_json_error(
+                I18n.t("discourse_ai.llm.configuration.invalid_seeded_model"),
+                status: 422,
+              )
+            )
+          end
+        end
         updated_params[:data] = {
           custom_instructions: allowed_params[:custom_instructions],
         } if allowed_params.key?(:custom_instructions)
