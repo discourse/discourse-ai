@@ -35,9 +35,9 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
     end
   end
 
-  describe "GET #show" do
+  describe "GET #edit" do
     it "returns a success response" do
-      get "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json"
+      get "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}/edit.json"
       expect(response).to be_successful
       expect(response.parsed_body["ai_tool"]["name"]).to eq(ai_tool.name)
     end

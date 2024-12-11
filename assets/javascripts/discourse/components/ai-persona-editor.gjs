@@ -135,7 +135,7 @@ export default class PersonaEditor extends Component {
       if (isNew && this.args.model.rag_uploads.length === 0) {
         this.args.personas.addObject(this.args.model);
         this.router.transitionTo(
-          "adminPlugins.show.discourse-ai-personas.show",
+          "adminPlugins.show.discourse-ai-personas.edit",
           this.args.model
         );
       } else {

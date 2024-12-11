@@ -167,7 +167,7 @@ export default class AiLlmsListEditor extends Component {
                     </td>
                     <td class="d-admin-row__controls">
                       <LinkTo
-                        @route="adminPlugins.show.discourse-ai-llms.show"
+                        @route="adminPlugins.show.discourse-ai-llms.edit"
                         class="btn btn-default btn-small ai-llm-list__edit-button"
                         @model={{llm.id}}
                       >

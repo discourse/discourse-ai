@@ -53,7 +53,7 @@ Discourse::Application.routes.draw do
 
   scope "/admin/plugins/discourse-ai", constraints: AdminConstraint.new do
     resources :ai_personas,
-              only: %i[index create show update destroy],
+              only: %i[index new create edit update destroy],
               path: "ai-personas",
               controller: "discourse_ai/admin/ai_personas"
 
@@ -61,7 +61,7 @@ Discourse::Application.routes.draw do
 
     resources(
       :ai_tools,
-      only: %i[index create show update destroy],
+      only: %i[index new create edit update destroy],
       path: "ai-tools",
       controller: "discourse_ai/admin/ai_tools",
     )
@@ -85,7 +85,7 @@ Discourse::Application.routes.draw do
     post "/ai-spam/test", to: "discourse_ai/admin/ai_spam#test"
 
     resources :ai_llms,
-              only: %i[index create show update destroy],
+              only: %i[index new create edit update destroy],
               path: "ai-llms",
               controller: "discourse_ai/admin/ai_llms" do
       collection { get :test }

@@ -30,7 +30,10 @@ module DiscourseAi
                }
       end
 
-      def show
+      def new
+      end
+
+      def edit
         llm_model = LlmModel.find(params[:id])
         render json: LlmModelSerializer.new(llm_model)
       end
