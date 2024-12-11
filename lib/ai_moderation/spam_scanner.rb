@@ -119,6 +119,57 @@ module DiscourseAi
         distance >= MINIMUM_EDIT_DIFFERENCE
       end
 
+      def self.test_post(post, custom_instructions: nil)
+        settings = AiModerationSetting.spam
+        llm = settings.llm_model.to_llm
+        custom_instructions = custom_instructions || settings.custom_instructions.presence
+        context = build_context(post)
+        prompt = completion_prompt(post, context: context, custom_instructions: custom_instructions)
+
+        result =
+          llm.generate(
+            prompt,
+            temperature: 0.1,
+            max_tokens: 100,
+            user: Discourse.system_user,
+            feature_name: "spam_detection_test",
+            feature_context: {
+              post_id: post.id,
+            },
+          )&.strip
+
+        history = nil
+        AiSpamLog.where(post: post).order(:created_at).limit(100).each do |log|
+          history ||= +"Scan History:\n"
+          history << "date: #{log.created_at} is_spam: #{log.is_spam}\n"
+        end
+
+        log = +"Scanning #{post.url}\n\n"
+
+        if history
+          log << history
+          log << "\n"
+        end
+
+        log << "LLM: #{settings.llm_model.name}\n\n"
+        log << "System Prompt: #{build_system_prompt(custom_instructions)}\n\n"
+        log << "Context: #{context}\n\n"
+        log << "Result: #{result}"
+
+        is_spam = (result.present? && result.downcase.include?("spam"))
+        { is_spam: is_spam, log: log }
+      end
+
+      def self.completion_prompt(post, context:, custom_instructions:)
+        system_prompt = build_system_prompt(custom_instructions)
+        prompt = DiscourseAi::Completions::Prompt.new(system_prompt)
+        args = { type: :user, content: context }
+        upload_ids = post.upload_ids
+        args[:upload_ids] = upload_ids.take(3) if upload_ids.present?
+        prompt.push(**args)
+        prompt
+      end
+
       def self.perform_scan(post)
         return if !enabled?
         return if !should_scan_post?(post)
@@ -126,19 +177,10 @@ module DiscourseAi
         settings = AiModerationSetting.spam
         return if !settings || !settings.llm_model
 
+        context = build_context(post)
         llm = settings.llm_model.to_llm
         custom_instructions = settings.custom_instructions.presence
-
-        system_prompt = build_system_prompt(custom_instructions)
-        prompt = DiscourseAi::Completions::Prompt.new(system_prompt)
-
-        context = build_context(post)
-
-        args = { type: :user, content: context }
-        upload_ids = post.upload_ids
-        args[:upload_ids] = upload_ids.take(3) if upload_ids.present?
-
-        prompt.push(**args)
+        prompt = completion_prompt(post, context: context, custom_instructions: custom_instructions)
 
         begin
           result =
@@ -156,7 +198,6 @@ module DiscourseAi
           is_spam = (result.present? && result.downcase.include?("spam"))
 
           log = AiApiAuditLog.order(id: :desc).where(feature_name: "spam_detection").first
-
           AiSpamLog.transaction do
             log =
               AiSpamLog.create!(

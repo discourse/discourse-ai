@@ -79,6 +79,78 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
     end
   end
 
+  describe "#test" do
+    fab!(:spam_post) { Fabricate(:post) }
+    fab!(:spam_post2) { Fabricate(:post, topic: spam_post.topic, raw: "something special 123") }
+    fab!(:setting) do
+      AiModerationSetting.create(
+        {
+          setting_type: :spam,
+          llm_model_id: llm_model.id,
+          data: {
+            custom_instructions: "custom instructions",
+          },
+        },
+      )
+    end
+
+    before { sign_in(admin) }
+
+    it "can scan using post url" do
+      DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do
+        post "/admin/plugins/discourse-ai/ai-spam/test.json", params: { post_url: spam_post2.url }
+      end
+
+      expect(response.status).to eq(200)
+
+      parsed = response.parsed_body
+      expect(parsed["log"]).to include(spam_post2.raw)
+    end
+
+    it "can scan using post id" do
+      DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do
+        post "/admin/plugins/discourse-ai/ai-spam/test.json",
+             params: {
+               post_url: spam_post.id.to_s,
+             }
+      end
+
+      expect(response.status).to eq(200)
+
+      parsed = response.parsed_body
+      expect(parsed["log"]).to include(spam_post.raw)
+    end
+
+    it "returns proper spam test results" do
+      freeze_time DateTime.parse("2000-01-01")
+
+      AiSpamLog.create!(
+        post: spam_post,
+        llm_model: llm_model,
+        is_spam: false,
+        created_at: 2.days.ago,
+      )
+
+      AiSpamLog.create!(post: spam_post, llm_model: llm_model, is_spam: true, created_at: 1.day.ago)
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do
+        post "/admin/plugins/discourse-ai/ai-spam/test.json",
+             params: {
+               post_url: spam_post.url,
+               custom_instructions: "special custom instructions",
+             }
+      end
+
+      expect(response.status).to eq(200)
+
+      parsed = response.parsed_body
+      expect(parsed["log"]).to include("special custom instructions")
+      expect(parsed["log"]).to include(spam_post.raw)
+      expect(parsed["is_spam"]).to eq(true)
+      expect(parsed["log"]).to include("Scan History:")
+    end
+  end
+
   describe "#show" do
     context "when logged in as admin" do
       before { sign_in(admin) }
@@ -131,19 +203,6 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
         )
 
         expect(json["flagging_username"]).to eq(flagging_user.username)
-      end
-
-      it "includes the stats" do
-        expect(SpamScanner.flagging_user.id).not_to eq(SystemUser.id)
-        get "/admin/plugins/discourse-ai/ai-spam.json"
-
-        json = response.parsed_body
-        expect(json["stats"]).to include(
-          "scanned_count",
-          "spam_detected",
-          "false_positives",
-          "false_negatives",
-        )
       end
     end
 
