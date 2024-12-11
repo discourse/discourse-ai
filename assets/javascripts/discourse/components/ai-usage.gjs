@@ -4,15 +4,19 @@ import { fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
-import { eq } from "truth-helpers";
+import { eq, gt, lt } from "truth-helpers";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
 import DateTimeInputRange from "discourse/components/date-time-input-range";
 import avatar from "discourse/helpers/avatar";
+import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { number } from "discourse/lib/formatter";
 import i18n from "discourse-common/helpers/i18n";
+import { bind } from "discourse-common/utils/decorators";
 import AdminConfigAreaCard from "admin/components/admin-config-area-card";
+import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
+import AdminPageSubheader from "admin/components/admin-page-subheader";
 import Chart from "admin/components/chart";
 import ComboBox from "select-kit/components/combo-box";
 
@@ -26,8 +30,6 @@ export default class AiUsage extends Component {
   @tracked selectedPeriod = "month";
   @tracked isCustomDateActive = false;
   @tracked loadingData = true;
-  @tracked _cachedFeatures = null;
-  @tracked _cachedModels = null;
 
   constructor() {
     super(...arguments);
@@ -49,6 +51,8 @@ export default class AiUsage extends Component {
     );
     this.data = response;
     this.loadingData = false;
+    this._cachedFeatures = null;
+    this._cachedModels = null;
   }
 
   @action
@@ -66,6 +70,11 @@ export default class AiUsage extends Component {
   onModelChanged(value) {
     this.selectedModel = value;
     this.onFilterChange();
+  }
+
+  @bind
+  takeUsers(start, end) {
+    return this.data.users.slice(start, end);
   }
 
   normalizeTimeSeriesData(data) {
@@ -268,9 +277,13 @@ export default class AiUsage extends Component {
   }
 
   <template>
-    <div class="ai-usage">
+    <div class="ai-usage admin-detail">
+      <AdminPageSubheader
+        @titleLabel="discourse_ai.usage.short_title"
+        @learnMoreUrl="https://meta.discourse.org/t/estimating-costs-of-using-llms-for-discourse-ai/307243"
+        @descriptionLabel="discourse_ai.usage.subheader_description"
+      />
       <div class="ai-usage__filters">
-
         <div class="ai-usage__filters-dates">
           <div class="ai-usage__period-buttons">
             {{#each this.periodOptions as |option|}}
@@ -397,79 +410,44 @@ export default class AiUsage extends Component {
 
           <div class="ai-usage__breakdowns">
             <AdminConfigAreaCard
-              class="ai-usage__users"
-              @heading="discourse_ai.usage.users_breakdown"
-            >
-              <:content>
-                <table class="ai-usage__users-table">
-                  <thead>
-                    <tr>
-                      <th>{{i18n "discourse_ai.usage.username"}}</th>
-                      <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
-                      <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {{#each this.data.users as |user|}}
-                      <tr class="ai-usage__users-row">
-                        <td class="ai-usage__users-cell">
-                          <div class="user-info">
-                            <LinkTo
-                              @route="user"
-                              @model={{user.username}}
-                              class="username"
-                            >
-                              {{avatar user imageSize="tiny"}}
-                              {{user.username}}
-                            </LinkTo>
-                          </div></td>
-                        <td
-                          class="ai-usage__users-cell"
-                          title={{user.usage_count}}
-                        >{{number user.usage_count}}</td>
-                        <td
-                          class="ai-usage__users-cell"
-                          title={{user.total_tokens}}
-                        >{{number user.total_tokens}}</td>
-                      </tr>
-                    {{/each}}
-                  </tbody>
-                </table>
-
-              </:content>
-            </AdminConfigAreaCard>
-
-            <AdminConfigAreaCard
               class="ai-usage__features"
               @heading="discourse_ai.usage.features_breakdown"
             >
               <:content>
-                <table class="ai-usage__features-table">
-                  <thead>
-                    <tr>
-                      <th>{{i18n "discourse_ai.usage.feature"}}</th>
-                      <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
-                      <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {{#each this.data.features as |feature|}}
-                      <tr class="ai-usage__features-row">
-                        <td
-                          class="ai-usage__features-cell"
-                        >{{feature.feature_name}}</td>
-                        <td
-                          class="ai-usage__features-cell"
-                          title={{feature.usage_count}}
-                        >{{number feature.usage_count}}</td>
-                        <td
-                          class="ai-usage__features-cell"
-                          title={{feature.total_tokens}}
-                        >{{number feature.total_tokens}}</td>
+                {{#unless this.data.features.length}}
+                  <AdminConfigAreaEmptyList
+                    @emptyLabel="discourse_ai.usage.no_features"
+                  />
+                {{/unless}}
+
+                {{#if this.data.features.length}}
+                  <table class="ai-usage__features-table">
+                    <thead>
+                      <tr>
+                        <th>{{i18n "discourse_ai.usage.feature"}}</th>
+                        <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
                       </tr>
-                    {{/each}}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {{#each this.data.features as |feature|}}
+                        <tr class="ai-usage__features-row">
+                          <td
+                            class="ai-usage__features-cell"
+                          >{{feature.feature_name}}</td>
+                          <td
+                            class="ai-usage__features-cell"
+                            title={{feature.usage_count}}
+                          >{{number feature.usage_count}}</td>
+                          <td
+                            class="ai-usage__features-cell"
+                            title={{feature.total_tokens}}
+                          >{{number feature.total_tokens}}</td>
+                        </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                {{/if}}
               </:content>
             </AdminConfigAreaCard>
 
@@ -478,30 +456,134 @@ export default class AiUsage extends Component {
               @heading="discourse_ai.usage.models_breakdown"
             >
               <:content>
-                <table class="ai-usage__models-table">
-                  <thead>
-                    <tr>
-                      <th>{{i18n "discourse_ai.usage.model"}}</th>
-                      <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
-                      <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {{#each this.data.models as |model|}}
-                      <tr class="ai-usage__models-row">
-                        <td class="ai-usage__models-cell">{{model.llm}}</td>
-                        <td
-                          class="ai-usage__models-cell"
-                          title={{model.usage_count}}
-                        >{{number model.usage_count}}</td>
-                        <td
-                          class="ai-usage__models-cell"
-                          title={{model.total_tokens}}
-                        >{{number model.total_tokens}}</td>
+                {{#unless this.data.models.length}}
+                  <AdminConfigAreaEmptyList
+                    @emptyLabel="discourse_ai.usage.no_models"
+                  />
+                {{/unless}}
+
+                {{#if this.data.models.length}}
+                  <table class="ai-usage__models-table">
+                    <thead>
+                      <tr>
+                        <th>{{i18n "discourse_ai.usage.model"}}</th>
+                        <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
                       </tr>
-                    {{/each}}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {{#each this.data.models as |model|}}
+                        <tr class="ai-usage__models-row">
+                          <td class="ai-usage__models-cell">{{model.llm}}</td>
+                          <td
+                            class="ai-usage__models-cell"
+                            title={{model.usage_count}}
+                          >{{number model.usage_count}}</td>
+                          <td
+                            class="ai-usage__models-cell"
+                            title={{model.total_tokens}}
+                          >{{number model.total_tokens}}</td>
+                        </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                {{/if}}
+              </:content>
+            </AdminConfigAreaCard>
+
+            <AdminConfigAreaCard
+              class="ai-usage__users"
+              @heading="discourse_ai.usage.users_breakdown"
+            >
+              <:content>
+                {{#unless this.data.users.length}}
+                  <AdminConfigAreaEmptyList
+                    @emptyLabel="discourse_ai.usage.no_users"
+                  />
+                {{/unless}}
+
+                {{#if this.data.users.length}}
+                  <table
+                    class={{concatClass
+                      "ai-usage__users-table"
+                      (if (lt this.data.users.length 25) "-double-width")
+                    }}
+                  >
+                    <thead>
+                      <tr>
+                        <th class="ai-usage__users-username">{{i18n
+                            "discourse_ai.usage.username"
+                          }}</th>
+                        <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#each (this.takeUsers 0 24) as |user|}}
+                        <tr class="ai-usage__users-row">
+                          <td class="ai-usage__users-cell">
+                            <div class="user-info">
+                              <LinkTo
+                                @route="user"
+                                @model={{user.username}}
+                                class="username"
+                              >
+                                {{avatar user imageSize="tiny"}}
+                                {{user.username}}
+                              </LinkTo>
+                            </div></td>
+                          <td
+                            class="ai-usage__users-cell"
+                            title={{user.usage_count}}
+                          >{{number user.usage_count}}</td>
+                          <td
+                            class="ai-usage__users-cell"
+                            title={{user.total_tokens}}
+                          >{{number user.total_tokens}}</td>
+                        </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+
+                  {{#if (gt this.data.users.length 25)}}
+                    <table class="ai-usage__users-table">
+                      <thead>
+                        <tr>
+                          <th class="ai-usage__users-username">{{i18n
+                              "discourse_ai.usage.username"
+                            }}</th>
+                          <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
+                          <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {{#each (this.takeUsers 25 49) as |user|}}
+                          <tr class="ai-usage__users-row">
+                            <td class="ai-usage__users-cell">
+                              <div class="user-info">
+                                <LinkTo
+                                  @route="user"
+                                  @model={{user.username}}
+                                  class="username"
+                                >
+                                  {{avatar user imageSize="tiny"}}
+                                  {{user.username}}
+                                </LinkTo>
+                              </div></td>
+                            <td
+                              class="ai-usage__users-cell"
+                              title={{user.usage_count}}
+                            >{{number user.usage_count}}</td>
+                            <td
+                              class="ai-usage__users-cell"
+                              title={{user.total_tokens}}
+                            >{{number user.total_tokens}}</td>
+                          </tr>
+                        {{/each}}
+                      </tbody>
+                    </table>
+                  {{/if}}
+                {{/if}}
               </:content>
             </AdminConfigAreaCard>
           </div>
