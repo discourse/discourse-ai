@@ -124,7 +124,7 @@ module DiscourseAi
         llm_model = llm_id ? LlmModel.find(llm_id) : settings.llm_model
         llm = llm_model.to_llm
         custom_instructions = custom_instructions || settings.custom_instructions.presence
-        context = build_context(post)
+        context = build_context(post, post.topic || Topic.with_deleted.find_by(id: post.topic_id))
         prompt = completion_prompt(post, context: context, custom_instructions: custom_instructions)
 
         result =
@@ -247,34 +247,39 @@ module DiscourseAi
         (result.present? && result.strip.downcase.start_with?("spam"))
       end
 
-      def self.build_context(post)
+      def self.build_context(post, topic = nil)
+        topic ||= post.topic
         context = []
 
         # Clear distinction between reply and new topic
         if post.is_first_post?
           context << "NEW TOPIC POST ANALYSIS"
-          context << "- Topic title: #{post.topic.title}"
-          context << "- Category: #{post.topic.category&.name}"
+          context << "- Topic title: #{topic.title}"
+          context << "- Category: #{topic.category&.name}"
         else
           context << "REPLY POST ANALYSIS"
-          context << "- In topic: #{post.topic.title}"
-          context << "- Category: #{post.topic.category&.name}"
-          context << "- Topic started by: #{post.topic.user.username}"
+          context << "- In topic: #{topic.title}"
+          context << "- Category: #{topic.category&.name}"
+          context << "- Topic started by: #{topic.user&.username}"
 
-          # Include parent post context for replies
-          if post.reply_to_post.present?
-            parent = post.reply_to_post
-            context << "\nReplying to #{parent.user.username}'s post:"
-            context << "#{parent.raw[0..500]}..." if parent.raw.length > 500
-            context << parent.raw if parent.raw.length <= 500
+          if post.reply_to_post_number.present?
+            parent =
+              Post.with_deleted.find_by(topic_id: topic.id, post_number: post.reply_to_post_number)
+            if parent
+              context << "\nReplying to #{parent.user&.username}'s post:"
+              context << "#{parent.raw[0..500]}..." if parent.raw.length > 500
+              context << parent.raw if parent.raw.length <= 500
+            end
           end
         end
 
         context << "\nPost Author Information:"
-        context << "- Username: #{post.user.username}"
-        context << "- Account age: #{(Time.current - post.user.created_at).to_i / 86_400} days"
-        context << "- Total posts: #{post.user.post_count}"
-        context << "- Trust level: #{post.user.trust_level}"
+        if post.user # during test we may not have a user
+          context << "- Username: #{post.user.username}"
+          context << "- Account age: #{(Time.current - post.user.created_at).to_i / 86_400} days"
+          context << "- Total posts: #{post.user.post_count}"
+          context << "- Trust level: #{post.user.trust_level}"
+        end
 
         context << "\nPost Content (first #{MAX_RAW_SCAN_LENGTH} chars):\n"
         context << post.raw[0..MAX_RAW_SCAN_LENGTH]
