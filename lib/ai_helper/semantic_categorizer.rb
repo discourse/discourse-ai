@@ -93,6 +93,7 @@ module DiscourseAi
 
       def nearest_neighbors(limit: 100)
         vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+        schema = DiscourseAi::Embeddings::Schema.for(Topic, vector: vector_rep)
 
         raw_vector = vector_rep.vector_from(@text)
 
@@ -105,13 +106,15 @@ module DiscourseAi
             ).pluck(:category_id)
         end
 
-        vector_rep.asymmetric_topics_similarity_search(
-          raw_vector,
-          limit: limit,
-          offset: 0,
-          return_distance: true,
-          exclude_category_ids: muted_category_ids,
-        )
+        schema
+          .asymmetric_similarity_search(raw_vector, limit: limit, offset: 0) do |builder|
+            builder.join("topics t on t.id = topic_id")
+            builder.where(<<~SQL, exclude_category_ids: muted_category_ids.map(&:to_i))
+            t.category_id NOT IN (:exclude_category_ids) AND
+            t.category_id NOT IN (SELECT categories.id FROM categories WHERE categories.parent_category_id IN (:exclude_category_ids))
+          SQL
+          end
+          .map { |r| [r.topic_id, r.distance] }
       end
     end
   end

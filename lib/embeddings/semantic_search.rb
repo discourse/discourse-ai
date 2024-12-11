@@ -84,12 +84,14 @@ module DiscourseAi
 
         over_selection_limit = limit * OVER_SELECTION_FACTOR
 
+        schema = DiscourseAi::Embeddings::Schema.for(Topic, vector: vector_rep)
+
         candidate_topic_ids =
-          vector_rep.asymmetric_topics_similarity_search(
+          schema.asymmetric_similarity_search(
             search_embedding,
             limit: over_selection_limit,
             offset: offset,
-          )
+          ).map(&:topic_id)
 
         semantic_results =
           ::Post

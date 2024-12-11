@@ -5,7 +5,7 @@ RSpec.describe DiscourseAi::Embeddings::Schema do
 
   let(:embeddings) { [0.0038490295] * vector.dimensions }
   fab!(:post) { Fabricate(:post, post_number: 1) }
-  let(:digest) { OpenSSL::Digest.hexdigest("test") }
+  let(:digest) { OpenSSL::Digest.hexdigest("SHA1", "test") }
   let(:vector) do
     DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2.new(
       DiscourseAi::Embeddings::Strategies::Truncation.new,

@@ -132,63 +132,6 @@ module DiscourseAi
           SQL
         end
 
-        def asymmetric_topics_similarity_search(
-          raw_vector,
-          limit:,
-          offset:,
-          return_distance: false,
-          exclude_category_ids: nil
-        )
-          builder = DB.build(<<~SQL)
-            WITH candidates AS (
-              SELECT
-                topic_id,
-                embeddings::halfvec(#{dimensions}) AS embeddings
-              FROM
-                #{topic_table_name}
-              /*join*/
-              /*where*/
-              ORDER BY
-                binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
-              LIMIT :limit * 2
-            )
-            SELECT
-              topic_id,
-              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
-            FROM
-              candidates
-            ORDER BY
-              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
-            LIMIT :limit
-            OFFSET :offset
-          SQL
-
-          builder.where(
-            "model_id = :model_id AND strategy_id = :strategy_id",
-            model_id: id,
-            strategy_id: @strategy.id,
-          )
-
-          if exclude_category_ids.present?
-            builder.join("topics t on t.id = topic_id")
-            builder.where(<<~SQL, exclude_category_ids: exclude_category_ids.map(&:to_i))
-                t.category_id NOT IN (:exclude_category_ids) AND
-                t.category_id NOT IN (SELECT categories.id FROM categories WHERE categories.parent_category_id IN (:exclude_category_ids))
-            SQL
-          end
-
-          results = builder.query(query_embedding: raw_vector, limit: limit, offset: offset)
-
-          if return_distance
-            results.map { |r| [r.topic_id, r.distance] }
-          else
-            results.map(&:topic_id)
-          end
-        rescue PG::Error => e
-          Rails.logger.error("Error #{e} querying embeddings for model #{name}")
-          raise MissingEmbeddingError
-        end
-
         def asymmetric_posts_similarity_search(raw_vector, limit:, offset:, return_distance: false)
           results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
             WITH candidates AS (

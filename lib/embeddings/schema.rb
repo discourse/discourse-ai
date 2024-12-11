@@ -155,7 +155,7 @@ module DiscourseAi
           <<~SQL,
           INSERT INTO #{table} (#{target_column}, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
           VALUES (:target_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', :now, :now)
-          ON CONFLICT (model_id, strategy_id, post_id)
+          ON CONFLICT (model_id, strategy_id, #{target_column})
           DO UPDATE SET
             model_version = :model_version,
             strategy_version = :strategy_version,
