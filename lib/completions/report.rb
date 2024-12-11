@@ -14,33 +14,33 @@ module DiscourseAi
       end
 
       def total_tokens
-        stats.total_tokens
+        stats.total_tokens || 0
       end
 
       def total_cached_tokens
-        stats.total_cached_tokens
+        stats.total_cached_tokens || 0
       end
 
       def total_request_tokens
-        stats.total_request_tokens
+        stats.total_request_tokens || 0
       end
 
       def total_response_tokens
-        stats.total_response_tokens
+        stats.total_response_tokens || 0
       end
 
       def total_requests
-        stats.total_requests
+        stats.total_requests || 0
       end
 
       def stats
         @stats ||=
           base_query.select(
             "COUNT(*) as total_requests",
-            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(request_tokens + response_tokens, 0)) as total_tokens",
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
-            "SUM(request_tokens) as total_request_tokens",
-            "SUM(response_tokens) as total_response_tokens",
+            "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
+            "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
           )[
             0
           ]
@@ -66,10 +66,10 @@ module DiscourseAi
           .order("DATE_TRUNC('#{period}', created_at)")
           .select(
             "DATE_TRUNC('#{period}', created_at) as period",
-            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(request_tokens + response_tokens, 0)) as total_tokens",
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
-            "SUM(request_tokens) as total_request_tokens",
-            "SUM(response_tokens) as total_response_tokens",
+            "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
+            "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
           )
       end
 
@@ -83,10 +83,10 @@ module DiscourseAi
             "users.username",
             "users.uploaded_avatar_id",
             "COUNT(*) as usage_count",
-            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(request_tokens + response_tokens, 0)) as total_tokens",
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
-            "SUM(request_tokens) as total_request_tokens",
-            "SUM(response_tokens) as total_response_tokens",
+            "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
+            "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
           )
       end
 
@@ -97,10 +97,10 @@ module DiscourseAi
           .select(
             "case when coalesce(feature_name, '') = '' then '#{UNKNOWN_FEATURE}' else feature_name end as feature_name",
             "COUNT(*) as usage_count",
-            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(request_tokens + response_tokens, 0)) as total_tokens",
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
-            "SUM(request_tokens) as total_request_tokens",
-            "SUM(response_tokens) as total_response_tokens",
+            "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
+            "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
           )
       end
 
@@ -111,10 +111,10 @@ module DiscourseAi
           .select(
             "language_model as llm",
             "COUNT(*) as usage_count",
-            "SUM(request_tokens + response_tokens) as total_tokens",
+            "SUM(COALESCE(request_tokens + response_tokens, 0)) as total_tokens",
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
-            "SUM(request_tokens) as total_request_tokens",
-            "SUM(response_tokens) as total_response_tokens",
+            "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
+            "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
           )
       end
 

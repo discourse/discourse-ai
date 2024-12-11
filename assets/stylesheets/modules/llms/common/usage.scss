@@ -60,9 +60,6 @@
 
   &__summary {
     margin: 2em 0;
-    padding: 1.5em;
-    background: var(--primary-very-low);
-    border-radius: 0.5em;
   }
 
   &__summary-title {
@@ -81,7 +78,7 @@
     display: flex;
     flex-direction: column;
     padding: 1em;
-    background: var(--secondary);
+    background: var(--primary-very-low);
     border-radius: 0.25em;
 
     .label {
@@ -120,22 +117,38 @@
     margin-top: 2em;
 
     @media (max-width: 768px) {
-      grid-template-columns: 1fr;
+      grid-template-columns: none;
+      display: flex;
+      flex-direction: column;
     }
   }
 
-  &__features,
-  &__users,
-  &__models {
-    background: var(--primary-very-low);
-    padding: 1em;
-    border-radius: 0.5em;
-  }
+  &__users {
+    grid-column: span 2;
 
-  &__features-title,
-  &__users-title,
-  &__models-title {
-    margin-bottom: 1em;
+    .admin-config-area-card__content {
+      display: flex;
+
+      .ai-usage__users-table {
+        &:first-child {
+          margin-right: 2em;
+
+          &.-double-width {
+            margin-right: 0;
+          }
+        }
+
+        &.-double-width {
+          .ai-usage__users-username {
+            width: auto;
+          }
+        }
+
+        .ai-usage__users-username {
+          width: 50px;
+        }
+      }
+    }
   }
 
   &__features-table,

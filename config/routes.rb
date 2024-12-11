@@ -79,6 +79,7 @@ Discourse::Application.routes.draw do
         to: "discourse_ai/admin/rag_document_fragments#indexing_status_check"
 
     get "/ai-usage", to: "discourse_ai/admin/ai_usage#show"
+    get "/ai-usage-report", to: "discourse_ai/admin/ai_usage#report"
 
     resources :ai_llms,
               only: %i[index create show update destroy],

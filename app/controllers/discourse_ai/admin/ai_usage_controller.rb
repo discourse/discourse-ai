@@ -6,6 +6,9 @@ module DiscourseAi
       requires_plugin "discourse-ai"
 
       def show
+      end
+
+      def report
         render json: AiUsageSerializer.new(create_report, root: false)
       end
 

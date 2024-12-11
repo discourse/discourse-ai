@@ -146,7 +146,18 @@ en:
         total_requests: "Total requests"
         request_tokens: "Request tokens"
         response_tokens: "Response tokens"
+        net_request_tokens: "Net request tokens"
         cached_tokens: "Cached tokens"
+        cached_request_tokens: "Cached request tokens"
+        no_users: "No user usage data found"
+        no_models: "No model usage data found"
+        no_features: "No feature usage data found"
+        subheader_description: "Tokens are the basic units that LLMs use to understand and generate text, usage data may affect costs."
+        periods:
+          last_day: "Last 24 hours"
+          last_week: "Last week"
+          last_month: "Last month"
+          custom: "Custom..."
 
       ai_persona:
         tool_strategies:
