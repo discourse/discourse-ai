@@ -29,7 +29,7 @@ export default class SpamTestModal extends Component {
           data: {
             post_url: this.postUrl,
             custom_instructions: this.args.model.customInstructions,
-            llm_id: this.args.model.llmId
+            llm_id: this.args.model.llmId,
           },
         }
       );
