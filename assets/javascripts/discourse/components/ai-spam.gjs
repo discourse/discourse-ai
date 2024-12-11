@@ -14,10 +14,12 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 import getURL from "discourse-common/lib/get-url";
 import ComboBox from "select-kit/components/combo-box";
+import SpamTestModal from "./modal/spam-test-modal";
 
 export default class AiSpam extends Component {
   @service siteSettings;
   @service toasts;
+  @service modal;
 
   @tracked
   stats = {
@@ -100,6 +102,15 @@ export default class AiSpam extends Component {
     } catch (error) {
       popupAjaxError(error);
     }
+  }
+
+  @action
+  showTestModal() {
+    this.modal.show(SpamTestModal, {
+      model: {
+        customInstructions: this.customInstructions,
+      }
+    });
   }
 
   get metrics() {
@@ -188,6 +199,11 @@ export default class AiSpam extends Component {
             @action={{this.save}}
             @label="save"
             class="ai-spam__instructions-save btn-primary"
+          />
+          <DButton
+            @action={{this.showTestModal}}
+            @label="discourse_ai.spam.test_button"
+            class="btn-default"
           />
         </div>
       </section>
