@@ -5,14 +5,17 @@ module DiscourseAi
     class AiToolsController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      before_action :find_ai_tool, only: %i[test show update destroy]
+      before_action :find_ai_tool, only: %i[test edit update destroy]
 
       def index
         ai_tools = AiTool.all
         render_serialized({ ai_tools: ai_tools }, AiCustomToolListSerializer, root: false)
       end
 
-      def show
+      def new
+      end
+
+      def edit
         render_serialized(@ai_tool, AiCustomToolSerializer)
       end
 

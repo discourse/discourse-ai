@@ -61,7 +61,7 @@ describe "AI Tool Management", type: :system do
     expect(page).to have_content("Tool saved")
 
     last_tool = AiTool.order("id desc").limit(1).first
-    visit "/admin/plugins/discourse-ai/ai-tools/#{last_tool.id}"
+    visit "/admin/plugins/discourse-ai/ai-tools/#{last_tool.id}/edit"
 
     ensure_can_run_test
 
