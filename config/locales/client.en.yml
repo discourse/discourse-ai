@@ -144,6 +144,7 @@ en:
         enable: "Enable"
         spam_tip: "AI spam detection will scan the first 3 posts by all new users on public topics. It will flag them for review and block users if they are likely spam."
         settings_saved: "Settings saved"
+        no_llms: "No LLMs available"
 
       usage:
         short_title: "Usage"

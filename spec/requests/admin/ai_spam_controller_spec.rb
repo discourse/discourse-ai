@@ -25,6 +25,16 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
         expect(AiModerationSetting.spam.data["custom_instructions"]).to eq("custom instructions")
       end
 
+      it "can not enable spam detection without a model selected" do
+        put "/admin/plugins/discourse-ai/ai-spam.json", params: { custom_instructions: "custom instructions" }
+        expect(response.status).to eq(422)
+      end
+
+      it "can not fiddle with custom instructions without an llm" do
+        put "/admin/plugins/discourse-ai/ai-spam.json", params: { is_enabled: true}
+        expect(response.status).to eq(422)
+      end
+
       context "when spam detection was already set" do
         fab!(:setting) do
           AiModerationSetting.create(
