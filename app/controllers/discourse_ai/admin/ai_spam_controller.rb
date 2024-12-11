@@ -21,13 +21,23 @@ module DiscourseAi
         } if allowed_params.key?(:custom_instructions)
 
         if updated_params.present?
-          updated_params[:setting_type] = :spam
-          AiModerationSetting.upsert(updated_params, unique_by: :setting_type)
+          # not using upsert cause we will not get the correct validation errors
+          if AiModerationSetting.spam
+            AiModerationSetting.spam.update!(updated_params)
+          else
+            AiModerationSetting.create!(updated_params.merge(setting_type: :spam))
+          end
         end
 
         is_enabled = ActiveModel::Type::Boolean.new.cast(allowed_params[:is_enabled])
 
-        SiteSetting.ai_spam_detection_enabled = is_enabled if allowed_params.key?(:is_enabled)
+        if allowed_params.key?(:is_enabled)
+          if is_enabled && !AiModerationSetting.spam&.llm_model_id
+            return render_json_error(I18n.t("discourse_ai.llm.configuration.must_select_model"), status: 422)
+          end
+
+          SiteSetting.ai_spam_detection_enabled = is_enabled
+        end
 
         render json: AiSpamSerializer.new(spam_config, root: false)
       end

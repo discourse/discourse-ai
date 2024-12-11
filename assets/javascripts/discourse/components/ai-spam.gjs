@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
@@ -38,7 +39,15 @@ export default class AiSpam extends Component {
   initializeFromModel() {
     const model = this.args.model;
     this.isEnabled = model.is_enabled;
-    this.selectedLLM = "custom:" + model.llm_id;
+
+    if (model.llm_id) {
+      this.selectedLLM = "custom:" + model.llm_id;
+    } else {
+      if (this.availableLLMs.length) {
+        this.selectedLLM = this.availableLLMs[0].id;
+        this.autoSelectedLLM = true;
+      }
+    }
     this.customInstructions = model.custom_instructions;
     this.stats = model.stats;
   }
@@ -49,15 +58,20 @@ export default class AiSpam extends Component {
 
   @action
   async toggleEnabled() {
+    this.isEnabled = !this.isEnabled;
+    const data = { is_enabled: this.isEnabled };
+    if (this.autoSelectedLLM) {
+      data.llm_model_id = this.selectedLLM.toString().split(":")[1];
+    }
     try {
-      // so UI responds immediately
-      this.isEnabled = !this.isEnabled;
       const response = await ajax("/admin/plugins/discourse-ai/ai-spam.json", {
         type: "PUT",
-        data: { is_enabled: this.isEnabled },
+        data,
       });
+      this.autoSelectedLLM = false;
       this.isEnabled = response.is_enabled;
     } catch (error) {
+      this.isEnabled = !this.isEnabled;
       popupAjaxError(error);
     }
   }
@@ -132,12 +146,20 @@ export default class AiSpam extends Component {
           <label class="ai-spam__llm-label">{{i18n
               "discourse_ai.spam.select_llm"
             }}</label>
-          <ComboBox
-            @value={{this.selectedLLM}}
-            @content={{this.availableLLMs}}
-            @onChange={{this.updateLLM}}
-            class="ai-spam__llm-selector"
-          />
+          {{#if this.availableLLMs.length}}
+            <ComboBox
+              @value={{this.selectedLLM}}
+              @content={{this.availableLLMs}}
+              @onChange={{this.updateLLM}}
+              class="ai-spam__llm-selector"
+            />
+          {{else}}
+            <span class="ai-spam__llm-placeholder">
+              <LinkTo @route="adminPlugins.show.discourse-ai-llms.index">
+                {{i18n "discourse_ai.spam.no_llms"}}
+              </LinkTo>
+            </span>
+          {{/if}}
         </div>
 
         <div class="ai-spam__instructions">

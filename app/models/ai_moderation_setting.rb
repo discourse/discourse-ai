@@ -2,6 +2,7 @@
 class AiModerationSetting < ActiveRecord::Base
   belongs_to :llm_model
 
+  validates :llm_model_id, presence: true
   validates :setting_type, presence: true
   validates :setting_type, uniqueness: true
 
