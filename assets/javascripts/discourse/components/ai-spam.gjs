@@ -13,6 +13,8 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 import getURL from "discourse-common/lib/get-url";
+import AdminConfigAreaCard from "admin/components/admin-config-area-card";
+import AdminPageSubheader from "admin/components/admin-page-subheader";
 import ComboBox from "select-kit/components/combo-box";
 import SpamTestModal from "./modal/spam-test-modal";
 
@@ -109,7 +111,7 @@ export default class AiSpam extends Component {
     this.modal.show(SpamTestModal, {
       model: {
         customInstructions: this.customInstructions,
-      }
+      },
     });
   }
 
@@ -143,9 +145,10 @@ export default class AiSpam extends Component {
   <template>
     <div class="ai-spam">
       <section class="ai-spam__settings">
-        <h3 class="ai-spam__settings-title">{{i18n
-            "discourse_ai.spam.title"
-          }}</h3>
+        <AdminPageSubheader
+          @titleLabel="discourse_ai.spam.title"
+          @descriptionLabel="discourse_ai.spam.spam_description"
+        />
 
         <div class="control-group ai-spam__enabled">
           <DToggleSwitch
@@ -197,7 +200,7 @@ export default class AiSpam extends Component {
           >{{this.customInstructions}}</textarea>
           <DButton
             @action={{this.save}}
-            @label="save"
+            @label="discourse_ai.spam.save_button"
             class="ai-spam__instructions-save btn-primary"
           />
           <DButton
@@ -208,26 +211,29 @@ export default class AiSpam extends Component {
         </div>
       </section>
 
-      <section class="ai-spam__stats">
-        <h3 class="ai-spam__stats-title">{{i18n
-            "discourse_ai.spam.last_seven_days"
-          }}</h3>
-
-        <div class="ai-spam__metrics">
-          {{#each this.metrics as |metric|}}
-            <div class="ai-spam__metrics-item">
-              <span class="ai-spam__metrics-label">{{i18n metric.label}}</span>
-              {{#if metric.href}}
-                <a href={{metric.href}} class="ai-spam__metrics-value">
-                  {{metric.value}}
-                </a>
-              {{else}}
-                <span class="ai-spam__metrics-value">{{metric.value}}</span>
-              {{/if}}
-            </div>
-          {{/each}}
-        </div>
-      </section>
+      <AdminConfigAreaCard
+        @heading="discourse_ai.spam.last_seven_days"
+        class="ai-spam__stats"
+      >
+        <:content>
+          <div class="ai-spam__metrics">
+            {{#each this.metrics as |metric|}}
+              <div class="ai-spam__metrics-item">
+                <span class="ai-spam__metrics-label">{{i18n
+                    metric.label
+                  }}</span>
+                {{#if metric.href}}
+                  <a href={{metric.href}} class="ai-spam__metrics-value">
+                    {{metric.value}}
+                  </a>
+                {{else}}
+                  <span class="ai-spam__metrics-value">{{metric.value}}</span>
+                {{/if}}
+              </div>
+            {{/each}}
+          </div>
+        </:content>
+      </AdminConfigAreaCard>
     </div>
   </template>
 }
