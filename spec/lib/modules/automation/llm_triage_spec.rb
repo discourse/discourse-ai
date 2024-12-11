@@ -198,4 +198,24 @@ describe DiscourseAi::Automation::LlmTriage do
       expect(spy.model_params[:stop_sequences]).to contain_exactly(*sequences)
     end
   end
+
+  it "append rule tags instead of replacing them" do
+    tag_1 = Fabricate(:tag)
+    tag_2 = Fabricate(:tag)
+    post.topic.update!(tags: [tag_1])
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        tags: [tag_2.name],
+        automation: nil,
+      )
+    end
+
+    expect(post.topic.reload.tags).to contain_exactly(tag_1, tag_2)
+  end
 end
