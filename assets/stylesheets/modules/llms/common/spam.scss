@@ -1,0 +1,124 @@
+.ai-spam {
+  --chart-scanned-color: var(--success);
+  --chart-spam-color: var(--danger);
+  padding-top: 15px;
+
+  &__settings {
+    margin-bottom: 2em;
+  }
+
+  &__enabled {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-bottom: 1em;
+
+    .fk-d-tooltip__trigger {
+      color: var(--primary-high);
+    }
+  }
+
+  &__settings-title {
+    margin-bottom: 1em;
+  }
+
+  &__toggle,
+  &__llm,
+  &__instructions {
+    margin-bottom: 1em;
+  }
+
+  &__toggle-label,
+  &__llm-label,
+  &__instructions-label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+  }
+
+  &__instructions-input {
+    width: 100%;
+    min-height: 100px;
+    margin-bottom: 0.5em;
+  }
+
+  &__stats {
+    margin-top: 2em;
+  }
+
+  &__stats-title {
+    margin-bottom: 1em;
+  }
+
+  &__metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1em;
+    margin-bottom: 2em;
+  }
+
+  &__metrics-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    background: var(--primary-very-low);
+    border-radius: 0.25em;
+  }
+
+  &__metrics-label {
+    color: var(--primary-medium);
+    font-size: 0.875em;
+    margin-bottom: 0.5em;
+  }
+
+  &__metrics-value {
+    color: var(--primary);
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+}
+
+.spam-test-modal {
+  &__body {
+    min-width: 500px;
+  }
+
+  &__test-result {
+    margin-top: 1.5em;
+    padding-top: 1.5em;
+    border-top: 1px solid var(--primary-low);
+  }
+
+  &__verdict {
+    font-size: var(--font-up-2);
+    font-weight: bold;
+    padding: 0.5em;
+    border-radius: 0.25em;
+    text-align: center;
+    margin: 1em 0;
+
+    &.is-spam {
+      background: var(--danger-low);
+      color: var(--danger);
+    }
+
+    &.not-spam {
+      background: var(--success-low);
+      color: var(--success);
+    }
+  }
+
+  &__log {
+    margin-top: 1em;
+
+    pre {
+      max-height: 300px;
+      overflow-y: auto;
+      background: var(--primary-very-low);
+      padding: 1em;
+      margin: 0.5em 0;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+  }
+}

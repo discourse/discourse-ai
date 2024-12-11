@@ -251,6 +251,8 @@ en:
         other_content_in_pm: "Personal messages containing posts from other people cannot be shared publicly"
         failed_to_share: "Failed to share the conversation"
         conversation_deleted: "Conversation share deleted successfully"
+    spam_detection:
+      flag_reason: "Flagged as spam by <a href='%{url}'>Discourse AI</a>"
     ai_bot:
       reply_error: "Sorry, it looks like our system encountered an unexpected issue while trying to reply.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Untitled AI bot PM]"
@@ -413,9 +415,10 @@ en:
     llm:
       configuration:
         disable_module_first: "You have to disable %{setting} first."
-        set_llm_first: "Set %{setting} first."
+        set_llm_first: "Set %{setting} first"
         model_unreachable: "We couldn't get a response from this model. Check your settings first."
-        invalid_seeded_model: "You can't use this model with this feature."
+        invalid_seeded_model: "You can't use this model with this feature"
+        must_select_model: "You must select a LLM first"
       endpoints:
         not_configured: "%{display_name} (not configured)"
         configuration_hint:

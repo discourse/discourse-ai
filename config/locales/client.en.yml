@@ -129,6 +129,35 @@ en:
       modals:
         select_option: "Select an option..."
 
+      spam:
+        short_title: "Spam"
+        title: "Configure spam handling"
+        select_llm: "Select LLM"
+        custom_instructions: "Custom instructions"
+        custom_instructions_help: "Custom instructions specific to your site to help guide the AI in identifying spam, e.g. 'Be more aggressive about scanning posts not in English'."
+        last_seven_days: "Last 7 days"
+        scanned_count: "Posts scanned"
+        false_positives: "Incorrectly flagged"
+        false_negatives: "Missed spam"
+        spam_detected: "Spam detected"
+        custom_instructions_placeholder: "Site-specific instructions for the AI to help identify spam more accurately"
+        enable: "Enable"
+        spam_tip: "AI spam detection will scan the first 3 posts by all new users on public topics. It will flag them for review and block users if they are likely spam."
+        settings_saved: "Settings saved"
+        spam_description: "Identifies potential spam using the selected LLM and flags it for site moderators to inspect in the review queue"
+        no_llms: "No LLMs available"
+        test_button: "Test..."
+        save_button: "Save changes"
+        test_modal:
+          title: "Test spam detection"
+          post_url_label: "Post URL or ID"
+          post_url_placeholder: "https://your-forum.com/t/topic/123/4 or post ID"
+          result: "Result"
+          scan_log: "Scan log"
+          run: "Run test"
+          spam: "Spam"
+          not_spam: "Not spam"
+
       usage:
         short_title: "Usage"
         summary: "Summary"
@@ -305,6 +334,7 @@ en:
           ai_persona: "Persona (%{persona})"
           ai_summarization: "Summarize"
           ai_embeddings_semantic_search: "AI search"
+          ai_spam: "Spam"
         in_use_warning:
           one: "This model is currently used by %{settings}. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following: %{settings}. If misconfigured, features won't work as expected. "
