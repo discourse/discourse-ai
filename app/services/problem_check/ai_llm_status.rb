@@ -2,17 +2,13 @@
 
 class ProblemCheck::AiLlmStatus < ProblemCheck
   self.priority = "high"
-  self.perform_every = 1.hour
+  self.perform_every = 6.hours
 
   def call
-    [*llm_errors]
+    llm_errors
   end
 
   private
-
-  def targets
-    [*LlmModel.in_use.pluck(:id)]
-  end
 
   def llm_errors
     return [] if !SiteSetting.discourse_ai_enabled
@@ -28,7 +24,7 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
       blk.call
       nil
     rescue => e
-      error_message = JSON.parse(e.message)["message"]
+      error_message = parse_error_message(e.message)
       message =
         "#{I18n.t("dashboard.problem.ai_llm_status", { model_name: model.display_name, model_id: model.id })}"
 
@@ -48,5 +44,13 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
 
   def validator
     @validator ||= DiscourseAi::Configuration::LlmValidator.new
+  end
+
+  def parse_error_message(message)
+    begin
+      JSON.parse(message)["message"]
+    rescue JSON::ParserError
+      message.to_s
+    end
   end
 end
