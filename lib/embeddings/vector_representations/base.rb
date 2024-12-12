@@ -132,41 +132,6 @@ module DiscourseAi
           SQL
         end
 
-        def asymmetric_posts_similarity_search(raw_vector, limit:, offset:, return_distance: false)
-          results = DB.query(<<~SQL, query_embedding: raw_vector, limit: limit, offset: offset)
-            WITH candidates AS (
-              SELECT
-                post_id,
-                embeddings::halfvec(#{dimensions}) AS embeddings
-              FROM
-                #{post_table_name}
-              WHERE
-                model_id = #{id} AND strategy_id = #{@strategy.id}
-              ORDER BY
-                binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
-              LIMIT :limit * 2
-            )
-            SELECT
-              post_id,
-              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
-            FROM
-              candidates
-            ORDER BY
-              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
-            LIMIT :limit
-            OFFSET :offset
-          SQL
-
-          if return_distance
-            results.map { |r| [r.post_id, r.distance] }
-          else
-            results.map(&:post_id)
-          end
-        rescue PG::Error => e
-          Rails.logger.error("Error #{e} querying embeddings for model #{name}")
-          raise MissingEmbeddingError
-        end
-
         def asymmetric_rag_fragment_similarity_search(
           raw_vector,
           target_id:,

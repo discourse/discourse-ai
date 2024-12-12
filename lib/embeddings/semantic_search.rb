@@ -133,11 +133,14 @@ module DiscourseAi
             end
 
         candidate_post_ids =
-          vector_rep.asymmetric_posts_similarity_search(
-            search_term_embedding,
-            limit: max_semantic_results_per_page,
-            offset: 0,
-          )
+          DiscourseAi::Embeddings::Schema
+            .for(Post, vector: vector_rep)
+            .asymmetric_similarity_search(
+              search_term_embedding,
+              limit: max_semantic_results_per_page,
+              offset: 0,
+            )
+            .map(&:post_id)
 
         semantic_results =
           ::Post
