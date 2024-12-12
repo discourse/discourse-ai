@@ -106,7 +106,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
       vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id]))
       last_update =
         DB.query_single(
-          "SELECT updated_at FROM #{vector_rep.topic_table_name} WHERE topic_id = #{topic.id} LIMIT 1",
+          "SELECT updated_at FROM #{DiscourseAi::Embeddings::Schema::TOPICS_TABLE} WHERE topic_id = #{topic.id} LIMIT 1",
         ).first
 
       expect(last_update).to eq(original_vector_gen)

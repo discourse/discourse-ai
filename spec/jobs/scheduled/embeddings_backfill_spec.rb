@@ -38,7 +38,8 @@ RSpec.describe Jobs::EmbeddingsBackfill do
 
     Jobs::EmbeddingsBackfill.new.execute({})
 
-    topic_ids = DB.query_single("SELECT topic_id from #{vector_rep.topic_table_name}")
+    topic_ids =
+      DB.query_single("SELECT topic_id from #{DiscourseAi::Embeddings::Schema::TOPICS_TABLE}")
 
     expect(topic_ids).to eq([first_topic.id])
 
@@ -46,7 +47,8 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     SiteSetting.ai_embeddings_backfill_batch_size = 100
     Jobs::EmbeddingsBackfill.new.execute({})
 
-    topic_ids = DB.query_single("SELECT topic_id from #{vector_rep.topic_table_name}")
+    topic_ids =
+      DB.query_single("SELECT topic_id from #{DiscourseAi::Embeddings::Schema::TOPICS_TABLE}")
 
     expect(topic_ids).to contain_exactly(first_topic.id, second_topic.id, third_topic.id)
 
@@ -59,7 +61,7 @@ RSpec.describe Jobs::EmbeddingsBackfill do
 
     index_date =
       DB.query_single(
-        "SELECT updated_at from #{vector_rep.topic_table_name} WHERE topic_id = ?",
+        "SELECT updated_at from #{DiscourseAi::Embeddings::Schema::TOPICS_TABLE} WHERE topic_id = ?",
         third_topic.id,
       ).first
 

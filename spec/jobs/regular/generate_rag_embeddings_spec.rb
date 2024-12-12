@@ -27,7 +27,9 @@ RSpec.describe Jobs::GenerateRagEmbeddings do
       subject.execute(fragment_ids: [rag_document_fragment_1.id, rag_document_fragment_2.id])
 
       embeddings_count =
-        DB.query_single("SELECT COUNT(*) from #{vector_rep.rag_fragments_table_name}").first
+        DB.query_single(
+          "SELECT COUNT(*) from #{DiscourseAi::Embeddings::Schema::RAG_DOCS_TABLE}",
+        ).first
 
       expect(embeddings_count).to eq(expected_embeddings)
     end

@@ -13,7 +13,7 @@ task "ai:embeddings:backfill", %i[model concurrency] => [:environment] do |_, ar
   else
     vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
   end
-  table_name = vector_rep.topic_table_name
+  table_name = DiscourseAi::Embeddings::Schema::TOPICS_TABLE
 
   topics =
     Topic

@@ -60,6 +60,8 @@ module DiscourseAi
               idletime: 30,
             )
 
+          schema = DiscourseAi::Embeddings::Schema.for(relation.first.class, vector: self)
+
           embedding_gen = inference_client
           promised_embeddings =
             relation
@@ -68,7 +70,7 @@ module DiscourseAi
                 next if prepared_text.blank?
 
                 new_digest = OpenSSL::Digest::SHA1.hexdigest(prepared_text)
-                next if find_digest_of(record) == new_digest
+                next if schema.find_by_target(record)&.digest == new_digest
 
                 Concurrent::Promises
                   .fulfilled_future(
@@ -84,7 +86,7 @@ module DiscourseAi
           Concurrent::Promises
             .zip(*promised_embeddings)
             .value!
-            .each { |e| save_to_db(e[:target], e[:embedding], e[:digest]) }
+            .each { |e| schema.store(e[:target], e[:embedding], e[:digest]) }
 
           pool.shutdown
           pool.wait_for_termination
@@ -94,37 +96,14 @@ module DiscourseAi
           text = prepare_text(target)
           return if text.blank?
 
+          schema = DiscourseAi::Embeddings::Schema.for(target.class, vector: self)
+
           new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
-          return if find_digest_of(target) == new_digest
+          return if schema.find_by_target(target)&.digest == new_digest
 
           vector = vector_from(text)
 
-          save_to_db(target, vector, new_digest) if persist
-        end
-
-        def topic_table_name
-          "ai_topic_embeddings"
-        end
-
-        def post_table_name
-          "ai_post_embeddings"
-        end
-
-        def rag_fragments_table_name
-          "ai_document_fragment_embeddings"
-        end
-
-        def table_name(target)
-          case target
-          when Topic
-            topic_table_name
-          when Post
-            post_table_name
-          when RagDocumentFragment
-            rag_fragments_table_name
-          else
-            raise ArgumentError, "Invalid target type"
-          end
+          schema.store(target, vector, new_digest) if persist
         end
 
         def index_name(table_name)
@@ -172,104 +151,6 @@ module DiscourseAi
         end
 
         protected
-
-        def find_digest_of(target)
-          target_column =
-            case target
-            when Topic
-              "topic_id"
-            when Post
-              "post_id"
-            when RagDocumentFragment
-              "rag_document_fragment_id"
-            else
-              raise ArgumentError, "Invalid target type"
-            end
-
-          DB.query_single(<<~SQL, target_id: target.id).first
-            SELECT
-              digest
-            FROM
-              #{table_name(target)}
-            WHERE
-              model_id = #{id} AND
-              strategy_id = #{@strategy.id} AND
-              #{target_column} = :target_id
-            LIMIT 1
-          SQL
-        end
-
-        def save_to_db(target, vector, digest)
-          if target.is_a?(Topic)
-            DB.exec(
-              <<~SQL,
-              INSERT INTO #{topic_table_name} (topic_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:topic_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', :now, :now)
-              ON CONFLICT (strategy_id, model_id, topic_id)
-              DO UPDATE SET
-                model_version = :model_version,
-                strategy_version = :strategy_version,
-                digest = :digest,
-                embeddings = '[:embeddings]',
-                updated_at = :now
-              SQL
-              topic_id: target.id,
-              model_id: id,
-              model_version: version,
-              strategy_id: @strategy.id,
-              strategy_version: @strategy.version,
-              digest: digest,
-              embeddings: vector,
-              now: Time.zone.now,
-            )
-          elsif target.is_a?(Post)
-            DB.exec(
-              <<~SQL,
-              INSERT INTO #{post_table_name} (post_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:post_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', :now, :now)
-              ON CONFLICT (model_id, strategy_id, post_id)
-              DO UPDATE SET
-                model_version = :model_version,
-                strategy_version = :strategy_version,
-                digest = :digest,
-                embeddings = '[:embeddings]',
-                updated_at = :now
-              SQL
-              post_id: target.id,
-              model_id: id,
-              model_version: version,
-              strategy_id: @strategy.id,
-              strategy_version: @strategy.version,
-              digest: digest,
-              embeddings: vector,
-              now: Time.zone.now,
-            )
-          elsif target.is_a?(RagDocumentFragment)
-            DB.exec(
-              <<~SQL,
-              INSERT INTO #{rag_fragments_table_name} (rag_document_fragment_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
-              VALUES (:fragment_id, :model_id, :model_version, :strategy_id, :strategy_version, :digest, '[:embeddings]', :now, :now)
-              ON CONFLICT (model_id, strategy_id, rag_document_fragment_id)
-              DO UPDATE SET
-                model_version = :model_version,
-                strategy_version = :strategy_version,
-                digest = :digest,
-                embeddings = '[:embeddings]',
-                updated_at = :now
-              SQL
-              fragment_id: target.id,
-              model_id: id,
-              model_version: version,
-              strategy_id: @strategy.id,
-              strategy_version: @strategy.version,
-              digest: digest,
-              embeddings: vector,
-              now: Time.zone.now,
-            )
-          else
-            raise ArgumentError, "Invalid target type"
-          end
-        end
 
         def inference_client
           raise NotImplementedError
