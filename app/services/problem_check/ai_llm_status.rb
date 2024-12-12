@@ -2,7 +2,7 @@
 
 class ProblemCheck::AiLlmStatus < ProblemCheck
   self.priority = "high"
-  # self.perform_every = 1.hour
+  self.perform_every = 1.hour
 
   def call
     [*llm_errors]
@@ -24,6 +24,7 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
 
   def try_validate(model, &blk)
     begin
+      raise({ message: "Forced error for testing" }.to_json) if Rails.env.test?
       blk.call
       nil
     rescue => e
@@ -34,7 +35,7 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
       Problem.new(
         message,
         priority: "high",
-        identifier: "ai_llm_checker",
+        identifier: "ai_llm_status",
         target: model.id,
         details: {
           model_id: model.id,
