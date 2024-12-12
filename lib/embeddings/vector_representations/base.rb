@@ -102,36 +102,6 @@ module DiscourseAi
           save_to_db(target, vector, new_digest) if persist
         end
 
-        def topic_id_from_representation(raw_vector)
-          DB.query_single(<<~SQL, query_embedding: raw_vector).first
-            SELECT
-              topic_id
-            FROM
-              #{topic_table_name}
-            WHERE
-              model_id = #{id} AND
-              strategy_id = #{@strategy.id}
-            ORDER BY
-              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
-            LIMIT 1
-          SQL
-        end
-
-        def post_id_from_representation(raw_vector)
-          DB.query_single(<<~SQL, query_embedding: raw_vector).first
-            SELECT
-              post_id
-            FROM
-              #{post_table_name}
-            WHERE
-              model_id = #{id} AND
-              strategy_id = #{@strategy.id}
-            ORDER BY
-              embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
-            LIMIT 1
-          SQL
-        end
-
         def topic_table_name
           "ai_topic_embeddings"
         end

@@ -14,6 +14,8 @@ RSpec.describe Jobs::GenerateEmbeddings do
 
     let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
     let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
+    let(:topics_schema) { DiscourseAi::Embeddings::Schema.for(Topic, vector: vector_rep) }
+    let(:posts_schema) { DiscourseAi::Embeddings::Schema.for(Post, vector: vector_rep) }
 
     it "works for topics" do
       expected_embedding = [0.0038493] * vector_rep.dimensions
@@ -28,7 +30,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
 
       job.execute(target_id: topic.id, target_type: "Topic")
 
-      expect(vector_rep.topic_id_from_representation(expected_embedding)).to eq(topic.id)
+      expect(topics_schema.find_by_embedding(expected_embedding).topic_id).to eq(topic.id)
     end
 
     it "works for posts" do
@@ -40,7 +42,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
 
       job.execute(target_id: post.id, target_type: "Post")
 
-      expect(vector_rep.post_id_from_representation(expected_embedding)).to eq(post.id)
+      expect(posts_schema.find_by_embedding(expected_embedding).post_id).to eq(post.id)
     end
   end
 end

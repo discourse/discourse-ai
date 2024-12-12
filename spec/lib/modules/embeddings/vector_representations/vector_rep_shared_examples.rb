@@ -4,6 +4,9 @@ RSpec.shared_examples "generates and store embedding using with vector represent
   let(:expected_embedding_1) { [0.0038493] * vector_rep.dimensions }
   let(:expected_embedding_2) { [0.0037684] * vector_rep.dimensions }
 
+  let(:topics_schema) { DiscourseAi::Embeddings::Schema.for(Topic, vector: vector_rep) }
+  let(:posts_schema) { DiscourseAi::Embeddings::Schema.for(Post, vector: vector_rep) }
+
   describe "#vector_from" do
     it "creates a vector from a given string" do
       text = "This is a piece of text"
@@ -29,7 +32,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
 
       vector_rep.generate_representation_from(topic)
 
-      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
+      expect(topics_schema.find_by_embedding(expected_embedding_1).topic_id).to eq(topic.id)
     end
 
     it "creates a vector from a post and stores it in the database" do
@@ -43,7 +46,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
 
       vector_rep.generate_representation_from(post)
 
-      expect(vector_rep.post_id_from_representation(expected_embedding_1)).to eq(post.id)
+      expect(posts_schema.find_by_embedding(expected_embedding_1).post_id).to eq(post.id)
     end
   end
 
@@ -76,8 +79,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
 
       vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id, topic_2.id]))
 
-      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
-      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
+      expect(topics_schema.find_by_embedding(expected_embedding_1).topic_id).to eq(topic.id)
     end
 
     it "does nothing if passed record has no content" do
@@ -99,7 +101,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
         vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id]))
       end
       # check vector exists
-      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
+      expect(topics_schema.find_by_embedding(expected_embedding_1).topic_id).to eq(topic.id)
 
       vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id]))
       last_update =
