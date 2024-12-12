@@ -445,7 +445,9 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         end
 
         it "uses the re-ranker to reorder the fragments and pick the top 10 candidates" do
-          expected_reranked = (0..14).to_a.reverse.map { |idx| { index: idx } }
+          # The re-ranker reverses the similarity search, but return less results
+          # to act as a limit for test-purposes.
+          expected_reranked = (4..14).to_a.reverse.map { |idx| { index: idx } }
 
           WebMock.stub_request(:post, "https://test.reranker.com/rerank").to_return(
             status: 200,

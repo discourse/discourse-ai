@@ -19,8 +19,10 @@ module DiscourseAi
         Discourse
           .cache
           .fetch(semantic_suggested_key(topic.id), expires_in: cache_for) do
-            vector_rep
-              .symmetric_topics_similarity_search(topic)
+            DiscourseAi::Embeddings::Schema
+              .for(Topic, vector: vector_rep)
+              .symmetric_similarity_search(topic)
+              .map(&:topic_id)
               .tap do |candidate_ids|
                 # Happens when the topic doesn't have any embeddings
                 # I'd rather not use Exceptions to control the flow, so this should be refactored soon

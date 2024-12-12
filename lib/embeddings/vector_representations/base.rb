@@ -132,54 +132,6 @@ module DiscourseAi
           SQL
         end
 
-        def symmetric_topics_similarity_search(topic)
-          DB.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
-            WITH le_target AS (
-              SELECT
-                  embeddings
-                FROM
-                  #{topic_table_name}
-                WHERE
-                  model_id = #{id} AND
-                  strategy_id = #{@strategy.id} AND
-                  topic_id = :topic_id
-                LIMIT 1
-            )
-            SELECT topic_id FROM (
-              SELECT
-                topic_id, embeddings
-              FROM
-                #{topic_table_name}
-              WHERE
-                model_id = #{id} AND
-                strategy_id = #{@strategy.id}
-              ORDER BY
-                binary_quantize(embeddings)::bit(#{dimensions}) <~> (
-                  SELECT
-                    binary_quantize(embeddings)::bit(#{dimensions})
-                  FROM
-                    le_target
-                  LIMIT 1
-                )
-              LIMIT 200
-            ) AS widenet
-            ORDER BY
-              embeddings::halfvec(#{dimensions}) #{pg_function} (
-                SELECT
-                  embeddings::halfvec(#{dimensions})
-                FROM
-                  le_target
-                LIMIT 1
-              )
-            LIMIT 100;
-          SQL
-        rescue PG::Error => e
-          Rails.logger.error(
-            "Error #{e} querying embeddings for topic #{topic.id} and model #{name}",
-          )
-          raise MissingEmbeddingError
-        end
-
         def topic_table_name
           "ai_topic_embeddings"
         end
