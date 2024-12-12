@@ -132,64 +132,6 @@ module DiscourseAi
           SQL
         end
 
-        def asymmetric_rag_fragment_similarity_search(
-          raw_vector,
-          target_id:,
-          target_type:,
-          limit:,
-          offset:,
-          return_distance: false
-        )
-          # A too low limit exacerbates the the recall loss of binary quantization
-          binary_search_limit = [limit * 2, 100].max
-          results =
-            DB.query(
-              <<~SQL,
-                WITH candidates AS (
-                  SELECT
-                    rag_document_fragment_id,
-                    embeddings::halfvec(#{dimensions}) AS embeddings
-                  FROM
-                    #{rag_fragments_table_name}
-                  INNER JOIN
-                    rag_document_fragments ON
-                      rag_document_fragments.id = rag_document_fragment_id AND
-                      rag_document_fragments.target_id = :target_id AND
-                      rag_document_fragments.target_type = :target_type
-                  WHERE
-                    model_id = #{id} AND strategy_id = #{@strategy.id}
-                  ORDER BY
-                    binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
-                  LIMIT :binary_search_limit
-                )
-                SELECT
-                  rag_document_fragment_id,
-                  embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions}) AS distance
-                FROM
-                  candidates
-                ORDER BY
-                  embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
-                LIMIT :limit
-                OFFSET :offset
-              SQL
-              query_embedding: raw_vector,
-              target_id: target_id,
-              target_type: target_type,
-              limit: limit,
-              offset: offset,
-              binary_search_limit: binary_search_limit,
-            )
-
-          if return_distance
-            results.map { |r| [r.rag_document_fragment_id, r.distance] }
-          else
-            results.map(&:rag_document_fragment_id)
-          end
-        rescue PG::Error => e
-          Rails.logger.error("Error #{e} querying embeddings for model #{name}")
-          raise MissingEmbeddingError
-        end
-
         def symmetric_topics_similarity_search(topic)
           DB.query(<<~SQL, topic_id: topic.id).map(&:topic_id)
             WITH le_target AS (

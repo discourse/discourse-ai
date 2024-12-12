@@ -39,9 +39,7 @@ class RagDocumentFragment < ActiveRecord::Base
     end
 
     def indexing_status(persona, uploads)
-      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
-
-      embeddings_table = vector_rep.rag_fragments_table_name
+      embeddings_table = DiscourseAi::Embeddings::Schema.for(self).table
 
       results =
         DB.query(

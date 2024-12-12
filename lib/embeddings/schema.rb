@@ -72,7 +72,7 @@ module DiscourseAi
             /*where*/
             ORDER BY
               binary_quantize(embeddings)::bit(#{dimensions}) <~> binary_quantize('[:query_embedding]'::halfvec(#{dimensions}))
-            LIMIT :limit * 2
+            LIMIT :candidates_limit
           )
           SELECT
             #{target_column},
@@ -93,7 +93,19 @@ module DiscourseAi
 
         yield(builder) if block_given?
 
-        builder.query(query_embedding: embedding, limit: limit, offset: offset)
+        if table == RAG_DOCS_TABLE
+          # A too low limit exacerbates the the recall loss of binary quantization
+          candidates_limit = [limit * 2, 100].max
+        else
+          candidates_limit = limit * 2
+        end
+
+        builder.query(
+          query_embedding: embedding,
+          candidates_limit: candidates_limit,
+          limit: limit,
+          offset: offset,
+        )
       rescue PG::Error => e
         Rails.logger.error("Error #{e} querying embeddings for model #{name}")
         raise MissingEmbeddingError
