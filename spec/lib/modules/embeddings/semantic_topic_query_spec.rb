@@ -9,11 +9,17 @@ describe DiscourseAi::Embeddings::EntryPoint do
 
       fab!(:target) { Fabricate(:topic) }
 
+      # The Distance gap to target increases for each element of topics.
       def seed_embeddings(topics)
         schema = DiscourseAi::Embeddings::Schema.for(Topic)
+        base_value = 1
 
-        embeddings = [1] * 1024
-        (topics << target).each { |t| schema.store(t, embeddings, "digest") }
+        schema.store(target, [base_value] * 1024, "disgest")
+
+        topics.each do |t|
+          base_value -= 0.01
+          schema.store(t, [base_value] * 1024, "digest")
+        end
       end
 
       after { DiscourseAi::Embeddings::SemanticRelated.clear_cache_for(target) }
