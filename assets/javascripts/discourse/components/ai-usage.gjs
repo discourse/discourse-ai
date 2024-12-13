@@ -1,4 +1,5 @@
 import Component from "@glimmer/component";
+import DStatTiles from "discourse/components/d-stat-tiles";
 import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
@@ -122,6 +123,32 @@ export default class AiUsage extends Component {
     }
 
     return normalized;
+  }
+
+  get metrics() {
+    return [
+      {
+        label: i18n("discourse_ai.usage.total_requests"),
+        value: this.data.summary.total_requests,
+        tooltip: i18n("discourse_ai.usage.stat_tooltips.total_requests"),
+      },
+      {
+        label: i18n("discourse_ai.usage.total_tokens"),
+        value: this.data.summary.total_tokens,
+      },
+      {
+        label: i18n("discourse_ai.usage.request_tokens"),
+        value: this.data.summary.total_request_tokens,
+      },
+      {
+        label: i18n("discourse_ai.usage.response_tokens"),
+        value: this.data.summary.total_response_tokens,
+      },
+      {
+        label: i18n("discourse_ai.usage.cached_tokens"),
+        value: this.data.summary.total_cached_tokens,
+      },
+    ];
   }
 
   get chartConfig() {
@@ -344,53 +371,16 @@ export default class AiUsage extends Component {
             class="ai-usage__summary"
           >
             <:content>
-              <div class="ai-usage__summary-stats">
-                <div class="ai-usage__summary-stat">
-                  <span class="label">{{i18n
-                      "discourse_ai.usage.total_requests"
-                    }}</span>
-                  <span
-                    class="value"
-                    title={{this.data.summary.total_requests}}
-                  >{{number this.data.summary.total_requests}}</span>
-                </div>
-                <div class="ai-usage__summary-stat">
-                  <span class="label">{{i18n
-                      "discourse_ai.usage.total_tokens"
-                    }}</span>
-                  <span
-                    class="value"
-                    title={{this.data.summary.total_tokens}}
-                  >{{number this.data.summary.total_tokens}}</span>
-                </div>
-                <div class="ai-usage__summary-stat">
-                  <span class="label">{{i18n
-                      "discourse_ai.usage.request_tokens"
-                    }}</span>
-                  <span
-                    class="value"
-                    title={{this.data.summary.total_request_tokens}}
-                  >{{number this.data.summary.total_request_tokens}}</span>
-                </div>
-                <div class="ai-usage__summary-stat">
-                  <span class="label">{{i18n
-                      "discourse_ai.usage.response_tokens"
-                    }}</span>
-                  <span
-                    class="value"
-                    title={{this.data.summary.total_response_tokens}}
-                  >{{number this.data.summary.total_response_tokens}}</span>
-                </div>
-                <div class="ai-usage__summary-stat">
-                  <span class="label">{{i18n
-                      "discourse_ai.usage.cached_tokens"
-                    }}</span>
-                  <span
-                    class="value"
-                    title={{this.data.summary.total_cached_tokens}}
-                  >{{number this.data.summary.total_cached_tokens}}</span>
-                </div>
-              </div>
+              <DStatTiles as |tiles|>
+                {{#each this.metrics as |metric|}}
+                  <tiles.Tile
+                    @label={{metric.label}}
+                    @href={{metric.href}}
+                    @value={{metric.value}}
+                    @tooltip={{metric.tooltip}}
+                  />
+                {{/each}}
+              </DStatTiles>
             </:content>
           </AdminConfigAreaCard>
 

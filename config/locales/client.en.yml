@@ -182,6 +182,8 @@ en:
         no_models: "No model usage data found"
         no_features: "No feature usage data found"
         subheader_description: "Tokens are the basic units that LLMs use to understand and generate text, usage data may affect costs."
+        stat_tooltips:
+          total_requests: "These are all requests made to LLMs through Discourse"
         periods:
           last_day: "Last 24 hours"
           last_week: "Last week"

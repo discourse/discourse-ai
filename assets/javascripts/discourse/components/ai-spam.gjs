@@ -17,6 +17,7 @@ import AdminConfigAreaCard from "admin/components/admin-config-area-card";
 import AdminPageSubheader from "admin/components/admin-page-subheader";
 import ComboBox from "select-kit/components/combo-box";
 import SpamTestModal from "./modal/spam-test-modal";
+import DStatTiles from "discourse/components/d-stat-tiles";
 
 export default class AiSpam extends Component {
   @service siteSettings;
@@ -121,7 +122,7 @@ export default class AiSpam extends Component {
 
   get metrics() {
     const detected = {
-      label: "discourse_ai.spam.spam_detected",
+      label: i18n("discourse_ai.spam.spam_detected"),
       value: this.stats.spam_detected,
     };
     if (this.args.model.flagging_username) {
@@ -131,16 +132,16 @@ export default class AiSpam extends Component {
     }
     return [
       {
-        label: "discourse_ai.spam.scanned_count",
+        label: i18n("discourse_ai.spam.scanned_count"),
         value: this.stats.scanned_count,
       },
       detected,
       {
-        label: "discourse_ai.spam.false_positives",
+        label: i18n("discourse_ai.spam.false_positives"),
         value: this.stats.false_positives,
       },
       {
-        label: "discourse_ai.spam.false_negatives",
+        label: i18n("discourse_ai.spam.false_negatives"),
         value: this.stats.false_negatives,
       },
     ];
@@ -220,22 +221,15 @@ export default class AiSpam extends Component {
         class="ai-spam__stats"
       >
         <:content>
-          <div class="ai-spam__metrics">
+          <DStatTiles as |tiles|>
             {{#each this.metrics as |metric|}}
-              <div class="ai-spam__metrics-item">
-                <span class="ai-spam__metrics-label">{{i18n
-                    metric.label
-                  }}</span>
-                {{#if metric.href}}
-                  <a href={{metric.href}} class="ai-spam__metrics-value">
-                    {{metric.value}}
-                  </a>
-                {{else}}
-                  <span class="ai-spam__metrics-value">{{metric.value}}</span>
-                {{/if}}
-              </div>
+              <tiles.Tile
+                @label={{metric.label}}
+                @url={{metric.href}}
+                @value={{metric.value}}
+              />
             {{/each}}
-          </div>
+          </DStatTiles>
         </:content>
       </AdminConfigAreaCard>
     </div>
