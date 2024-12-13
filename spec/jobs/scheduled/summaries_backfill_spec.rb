@@ -49,6 +49,12 @@ RSpec.describe Jobs::SummariesBackfill do
       expect(subject.backfill_candidates(type)).to be_empty
     end
 
+    it "ignores outdated summaries created less than five minutes ago" do
+      Fabricate(:ai_summary, target: topic, content_range: (1..1), created_at: 4.minutes.ago)
+
+      expect(subject.backfill_candidates(type)).to be_empty
+    end
+
     it "orders candidates by topic#last_posted_at" do
       topic.update!(last_posted_at: 1.minute.ago)
       topic_2 = Fabricate(:topic, word_count: 200, last_posted_at: 2.minutes.ago)
@@ -60,7 +66,7 @@ RSpec.describe Jobs::SummariesBackfill do
       topic_2 =
         Fabricate(:topic, word_count: 200, last_posted_at: 2.minutes.ago, highest_post_number: 1)
       topic.update!(last_posted_at: 1.minute.ago)
-      Fabricate(:ai_summary, target: topic, content_range: (1..1))
+      Fabricate(:ai_summary, target: topic, created_at: 1.hour.ago, content_range: (1..1))
 
       expect(subject.backfill_candidates(type).map(&:id)).to contain_exactly(topic_2.id, topic.id)
     end

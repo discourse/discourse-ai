@@ -14,6 +14,7 @@ module ::Jobs
 
       if SiteSetting.ai_summary_gists_enabled
         gist_t = AiSummary.summary_types[:gist]
+
         backfill_candidates(gist_t)
           .limit(current_budget(gist_t))
           .each do |topic|
@@ -42,8 +43,13 @@ module ::Jobs
         SQL
         .where("topics.created_at > current_timestamp - INTERVAL '#{max_age_days.to_i} DAY'")
         .where(
-          "ais.id IS NULL OR UPPER(ais.content_range) < topics.highest_post_number + 1",
-        ) # (1..1) gets stored ad (1..2).
+          <<~SQL, # (1..1) gets stored ad (1..2).
+          ais.id IS NULL OR (
+            UPPER(ais.content_range) < topics.highest_post_number + 1 
+            AND ais.created_at < (current_timestamp - INTERVAL '5 minutes')
+          )
+        SQL
+        )
         .order("ais.created_at DESC NULLS FIRST, topics.last_posted_at DESC")
     end
 
