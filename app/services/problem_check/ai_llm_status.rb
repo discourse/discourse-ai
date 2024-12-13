@@ -19,7 +19,6 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
 
   def try_validate(model, &blk)
     begin
-      # raise({ message: "Forced error for testing" }.to_json) if Rails.env.test?
       blk.call
       nil
     rescue => e
