@@ -12,7 +12,7 @@ en:
         flagged_post: |
           <div>Response from the model:</div>
           <p>%%LLM_RESPONSE%%</p>
-          <b>Triggered by the <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> rule.</b>
+          <b>Triggered by the <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> rule.</b>
       llm_report:
         title: Periodic report using AI
         description: "Periodic report based on a large language model"
