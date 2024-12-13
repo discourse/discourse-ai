@@ -12,7 +12,6 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
 
   def llm_errors
     return [] if !SiteSetting.discourse_ai_enabled
-
     LlmModel.in_use.find_each.filter_map do |model|
       try_validate(model) { validator.run_test(model) }
     end
@@ -20,7 +19,7 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
 
   def try_validate(model, &blk)
     begin
-      raise({ message: "Forced error for testing" }.to_json) if Rails.env.test?
+      # raise({ message: "Forced error for testing" }.to_json) if Rails.env.test?
       blk.call
       nil
     rescue => e
