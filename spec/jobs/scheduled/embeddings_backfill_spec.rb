@@ -25,6 +25,7 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     SiteSetting.ai_embeddings_enabled = true
     SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
     SiteSetting.ai_embeddings_backfill_batch_size = 1
+    SiteSetting.ai_embeddings_per_post_enabled = true
     Jobs.run_immediately!
   end
 
