@@ -42,7 +42,7 @@ RSpec.describe ProblemCheck::AiLlmStatus do
       it "returns a problem with an LLM model" do
         stub_request(:post, post_url).to_return(status: 403, body: error_response, headers: {})
         message =
-          "#{I18n.t("dashboard.problem.ai_llm_status", { model_name: llm_model.display_name, model_id: llm_model.id })}"
+          "#{I18n.t("dashboard.problem.ai_llm_status", { base_path: Discourse.base_path, model_name: llm_model.display_name, model_id: llm_model.id })}"
 
         expect(described_class.new.call).to contain_exactly(
           have_attributes(

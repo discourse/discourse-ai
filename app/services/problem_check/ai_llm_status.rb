@@ -8,6 +8,10 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
     llm_errors
   end
 
+  def base_path
+    Discourse.base_path
+  end
+
   private
 
   def llm_errors
@@ -24,7 +28,7 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
     rescue => e
       error_message = parse_error_message(e.message)
       message =
-        "#{I18n.t("dashboard.problem.ai_llm_status", { model_name: model.display_name, model_id: model.id })}"
+        "#{I18n.t("dashboard.problem.ai_llm_status", { base_path: base_path, model_name: model.display_name, model_id: model.id })}"
 
       Problem.new(
         message,
