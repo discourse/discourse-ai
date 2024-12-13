@@ -141,18 +141,20 @@ module DiscourseAi
 
         return [] if upload_refs.empty?
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
         query_vector = vector_rep.vector_from(query)
         fragment_ids =
-          vector_rep.asymmetric_rag_fragment_similarity_search(
-            query_vector,
-            target_type: "AiTool",
-            target_id: tool.id,
-            limit: limit,
-            offset: 0,
-          )
+          DiscourseAi::Embeddings::Schema
+            .for(RagDocumentFragment, vector: vector_rep)
+            .asymmetric_similarity_search(query_vector, limit: limit, offset: 0) do |builder|
+              builder.join(<<~SQL, target_id: tool.id, target_type: "AiTool")
+                rag_document_fragments ON
+                  rag_document_fragments.id = rag_document_fragment_id AND
+                  rag_document_fragments.target_id = :target_id AND
+                  rag_document_fragments.target_type = :target_type
+              SQL
+            end
+            .map(&:rag_document_fragment_id)
 
         fragments =
           RagDocumentFragment.where(id: fragment_ids, upload_id: upload_refs).pluck(

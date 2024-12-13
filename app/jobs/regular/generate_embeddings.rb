@@ -16,9 +16,7 @@ module Jobs
       return if topic.private_message? && !SiteSetting.ai_embeddings_generate_for_pms
       return if post.raw.blank?
 
-      strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-      vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
 
       vector_rep.generate_representation_from(target)
     end

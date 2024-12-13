@@ -13,16 +13,16 @@ module DiscourseAi
       def related_topic_ids_for(topic)
         return [] if SiteSetting.ai_embeddings_semantic_related_topics < 1
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
         cache_for = results_ttl(topic)
 
         Discourse
           .cache
           .fetch(semantic_suggested_key(topic.id), expires_in: cache_for) do
-            vector_rep
-              .symmetric_topics_similarity_search(topic)
+            DiscourseAi::Embeddings::Schema
+              .for(Topic, vector: vector_rep)
+              .symmetric_similarity_search(topic)
+              .map(&:topic_id)
               .tap do |candidate_ids|
                 # Happens when the topic doesn't have any embeddings
                 # I'd rather not use Exceptions to control the flow, so this should be refactored soon

@@ -31,10 +31,7 @@ module DiscourseAi
       end
 
       def vector_rep
-        @vector_rep ||=
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(
-            DiscourseAi::Embeddings::Strategies::Truncation.new,
-          )
+        @vector_rep ||= DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
       end
 
       def hyde_embedding(search_term)
@@ -87,12 +84,14 @@ module DiscourseAi
 
         over_selection_limit = limit * OVER_SELECTION_FACTOR
 
+        schema = DiscourseAi::Embeddings::Schema.for(Topic, vector: vector_rep)
+
         candidate_topic_ids =
-          vector_rep.asymmetric_topics_similarity_search(
+          schema.asymmetric_similarity_search(
             search_embedding,
             limit: over_selection_limit,
             offset: offset,
-          )
+          ).map(&:topic_id)
 
         semantic_results =
           ::Post
@@ -115,9 +114,7 @@ module DiscourseAi
 
         return [] if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
 
         digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
 
@@ -136,11 +133,14 @@ module DiscourseAi
             end
 
         candidate_post_ids =
-          vector_rep.asymmetric_posts_similarity_search(
-            search_term_embedding,
-            limit: max_semantic_results_per_page,
-            offset: 0,
-          )
+          DiscourseAi::Embeddings::Schema
+            .for(Post, vector: vector_rep)
+            .asymmetric_similarity_search(
+              search_term_embedding,
+              limit: max_semantic_results_per_page,
+              offset: 0,
+            )
+            .map(&:post_id)
 
         semantic_results =
           ::Post

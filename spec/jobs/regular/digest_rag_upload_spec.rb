@@ -6,10 +6,7 @@ RSpec.describe Jobs::DigestRagUpload do
 
   let(:document_file) { StringIO.new("some text" * 200) }
 
-  let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
-  let(:vector_rep) do
-    DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
-  end
+  let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
 
   let(:expected_embedding) { [0.0038493] * vector_rep.dimensions }
 

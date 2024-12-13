@@ -326,9 +326,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       fab!(:llm_model) { Fabricate(:fake_model) }
 
       it "will run the question consolidator" do
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
         context_embedding = vector_rep.dimensions.times.map { rand(-1.0...1.0) }
         EmbeddingsGenerationStubs.discourse_service(
           SiteSetting.ai_embeddings_model,
@@ -375,41 +373,44 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     end
 
     context "when a persona has RAG uploads" do
-      def stub_fragments(limit, expected_limit: nil)
-        candidate_ids = []
+      let(:vector_rep) do
+        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+      end
+      let(:embedding_value) { 0.04381 }
+      let(:prompt_cc_embeddings) { [embedding_value] * vector_rep.dimensions }
 
-        limit.times do |i|
-          candidate_ids << Fabricate(
-            :rag_document_fragment,
-            fragment: "fragment-n#{i}",
-            target_id: ai_persona.id,
-            target_type: "AiPersona",
-            upload: upload,
-          ).id
+      def stub_fragments(fragment_count, persona: ai_persona)
+        schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment, vector: vector_rep)
+
+        fragment_count.times do |i|
+          fragment =
+            Fabricate(
+              :rag_document_fragment,
+              fragment: "fragment-n#{i}",
+              target_id: persona.id,
+              target_type: "AiPersona",
+              upload: upload,
+            )
+
+          # Similarity is determined left-to-right.
+          embeddings = [embedding_value + "0.000#{i}".to_f] * vector_rep.dimensions
+
+          schema.store(fragment, embeddings, "test")
         end
-
-        DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
-          .any_instance
-          .expects(:asymmetric_rag_fragment_similarity_search)
-          .with { |args, kwargs| kwargs[:limit] == (expected_limit || limit) }
-          .returns(candidate_ids)
       end
 
       before do
         stored_ai_persona = AiPersona.find(ai_persona.id)
         UploadReference.ensure_exist!(target: stored_ai_persona, upload_ids: [upload.id])
 
-        context_embedding = [0.049382, 0.9999]
         EmbeddingsGenerationStubs.discourse_service(
           SiteSetting.ai_embeddings_model,
           with_cc.dig(:conversation_context, 0, :content),
-          context_embedding,
+          prompt_cc_embeddings,
         )
       end
 
       context "when persona allows for less fragments" do
-        before { stub_fragments(3) }
-
         it "will only pick 3 fragments" do
           custom_ai_persona =
             Fabricate(
@@ -418,6 +419,8 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
               rag_conversation_chunks: 3,
               allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
             )
+
+          stub_fragments(3, persona: custom_ai_persona)
 
           UploadReference.ensure_exist!(target: custom_ai_persona, upload_ids: [upload.id])
 
@@ -438,14 +441,13 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       context "when the reranker is available" do
         before do
           SiteSetting.ai_hugging_face_tei_reranker_endpoint = "https://test.reranker.com"
-
-          # hard coded internal implementation, reranker takes x5 number of chunks
-          stub_fragments(15, expected_limit: 50) # Mimic limit being more than 10 results
+          stub_fragments(15)
         end
 
         it "uses the re-ranker to reorder the fragments and pick the top 10 candidates" do
-          skip "This test is flaky needs to be investigated ordering does not come back as expected"
-          expected_reranked = (0..14).to_a.reverse.map { |idx| { index: idx } }
+          # The re-ranker reverses the similarity search, but return less results
+          # to act as a limit for test-purposes.
+          expected_reranked = (4..14).to_a.reverse.map { |idx| { index: idx } }
 
           WebMock.stub_request(:post, "https://test.reranker.com/rerank").to_return(
             status: 200,
