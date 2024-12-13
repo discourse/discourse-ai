@@ -314,10 +314,10 @@ module DiscourseAi
 
           return nil if !consolidated_question
 
-          vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+          vector = DiscourseAi::Embeddings::Vector.instance
           reranker = DiscourseAi::Inference::HuggingFaceTextEmbeddings
 
-          interactions_vector = vector_rep.vector_from(consolidated_question)
+          interactions_vector = vector.vector_from(consolidated_question)
 
           rag_conversation_chunks = self.class.rag_conversation_chunks
           search_limit =
@@ -327,7 +327,7 @@ module DiscourseAi
               rag_conversation_chunks
             end
 
-          schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment, vector: vector_rep)
+          schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment, vector_def: vector.vdef)
 
           candidate_fragment_ids =
             schema

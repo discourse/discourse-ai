@@ -326,8 +326,8 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       fab!(:llm_model) { Fabricate(:fake_model) }
 
       it "will run the question consolidator" do
-        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
-        context_embedding = vector_rep.dimensions.times.map { rand(-1.0...1.0) }
+        vector_def = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+        context_embedding = vector_def.dimensions.times.map { rand(-1.0...1.0) }
         EmbeddingsGenerationStubs.discourse_service(
           SiteSetting.ai_embeddings_model,
           consolidated_question,
@@ -373,14 +373,14 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     end
 
     context "when a persona has RAG uploads" do
-      let(:vector_rep) do
+      let(:vector_def) do
         DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
       end
       let(:embedding_value) { 0.04381 }
-      let(:prompt_cc_embeddings) { [embedding_value] * vector_rep.dimensions }
+      let(:prompt_cc_embeddings) { [embedding_value] * vector_def.dimensions }
 
       def stub_fragments(fragment_count, persona: ai_persona)
-        schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment, vector: vector_rep)
+        schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment, vector_def: vector_def)
 
         fragment_count.times do |i|
           fragment =
@@ -393,7 +393,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
             )
 
           # Similarity is determined left-to-right.
-          embeddings = [embedding_value + "0.000#{i}".to_f] * vector_rep.dimensions
+          embeddings = [embedding_value + "0.000#{i}".to_f] * vector_def.dimensions
 
           schema.store(fragment, embeddings, "test")
         end

@@ -11,8 +11,8 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
 
   describe "#search_for_topics" do
     let(:hypothetical_post) { "This is an hypothetical post generated from the keyword test_query" }
-    let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
-    let(:hyde_embedding) { [0.049382] * vector_rep.dimensions }
+    let(:vector_def) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
+    let(:hyde_embedding) { [0.049382] * vector_def.dimensions }
 
     before do
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"

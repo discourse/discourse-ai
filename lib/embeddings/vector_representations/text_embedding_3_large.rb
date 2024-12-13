@@ -40,14 +40,6 @@ module DiscourseAi
           "<=>"
         end
 
-        def pg_index_type
-          "halfvec_cosine_ops"
-        end
-
-        def vector_from(text, asymetric: false)
-          inference_client.perform!(text)
-        end
-
         def tokenizer
           DiscourseAi::Tokenizer::OpenAiTokenizer
         end

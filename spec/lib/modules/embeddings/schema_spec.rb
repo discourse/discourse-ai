@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Embeddings::Schema do
-  subject(:posts_schema) { described_class.for(Post, vector: vector) }
+  subject(:posts_schema) { described_class.for(Post, vector_def: vector_def) }
 
-  let(:embeddings) { [0.0038490295] * vector.dimensions }
+  let(:embeddings) { [0.0038490295] * vector_def.dimensions }
   fab!(:post) { Fabricate(:post, post_number: 1) }
   let(:digest) { OpenSSL::Digest.hexdigest("SHA1", "test") }
-  let(:vector) do
-    DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2.new(
-      DiscourseAi::Embeddings::Strategies::Truncation.new,
-    )
-  end
+  let(:vector_def) { DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2.new }
 
   before { posts_schema.store(post, embeddings, digest) }
 
@@ -34,7 +30,7 @@ RSpec.describe DiscourseAi::Embeddings::Schema do
 
   describe "similarity searches" do
     fab!(:post_2) { Fabricate(:post) }
-    let(:similar_embeddings) { [0.0038490294] * vector.dimensions }
+    let(:similar_embeddings) { [0.0038490294] * vector_def.dimensions }
 
     describe "#symmetric_similarity_search" do
       before { posts_schema.store(post_2, similar_embeddings, digest) }

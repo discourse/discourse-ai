@@ -14,30 +14,31 @@ module DiscourseAi
 
       def self.for(
         target_klass,
-        vector: DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+        vector_def: DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
       )
         case target_klass&.name
         when "Topic"
-          new(TOPICS_TABLE, "topic_id", vector)
+          new(TOPICS_TABLE, "topic_id", vector_def)
         when "Post"
-          new(POSTS_TABLE, "post_id", vector)
+          new(POSTS_TABLE, "post_id", vector_def)
         when "RagDocumentFragment"
-          new(RAG_DOCS_TABLE, "rag_document_fragment_id", vector)
+          new(RAG_DOCS_TABLE, "rag_document_fragment_id", vector_def)
         else
           raise ArgumentError, "Invalid target type for embeddings"
         end
       end
 
-      def initialize(table, target_column, vector)
+      def initialize(table, target_column, vector_def)
         @table = table
         @target_column = target_column
-        @vector = vector
+        @vector_def = vector_def
       end
 
-      attr_reader :table, :target_column, :vector
+      attr_reader :table, :target_column, :vector_def
 
       def find_by_embedding(embedding)
-        DB.query(<<~SQL, query_embedding: embedding, vid: vector.id, vsid: vector.strategy_id).first
+        DB.query(
+          <<~SQL,
           SELECT *
           FROM #{table}
           WHERE
@@ -46,10 +47,15 @@ module DiscourseAi
             embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
           LIMIT 1
         SQL
+          query_embedding: embedding,
+          vid: vector_def.id,
+          vsid: vector_def.strategy_id,
+        ).first
       end
 
       def find_by_target(target)
-        DB.query(<<~SQL, target_id: target.id, vid: vector.id, vsid: vector.strategy_id).first
+        DB.query(
+          <<~SQL,
           SELECT *
           FROM #{table}
           WHERE
@@ -58,6 +64,10 @@ module DiscourseAi
             #{target_column} = :target_id
           LIMIT 1
         SQL
+          target_id: target.id,
+          vid: vector_def.id,
+          vsid: vector_def.strategy_id,
+        ).first
       end
 
       def asymmetric_similarity_search(embedding, limit:, offset:)
@@ -87,8 +97,8 @@ module DiscourseAi
 
         builder.where(
           "model_id = :model_id AND strategy_id = :strategy_id",
-          model_id: vector.id,
-          strategy_id: vector.strategy_id,
+          model_id: vector_def.id,
+          strategy_id: vector_def.strategy_id,
         )
 
         yield(builder) if block_given?
@@ -156,7 +166,7 @@ module DiscourseAi
 
         yield(builder) if block_given?
 
-        builder.query(vid: vector.id, vsid: vector.strategy_id, target_id: record.id)
+        builder.query(vid: vector_def.id, vsid: vector_def.strategy_id, target_id: record.id)
       rescue PG::Error => e
         Rails.logger.error("Error #{e} querying embeddings for model #{name}")
         raise MissingEmbeddingError
@@ -176,10 +186,10 @@ module DiscourseAi
             updated_at = :now
           SQL
           target_id: record.id,
-          model_id: vector.id,
-          model_version: vector.version,
-          strategy_id: vector.strategy_id,
-          strategy_version: vector.strategy_version,
+          model_id: vector_def.id,
+          model_version: vector_def.version,
+          strategy_id: vector_def.strategy_id,
+          strategy_version: vector_def.strategy_version,
           digest: digest,
           embeddings: embedding,
           now: Time.zone.now,
@@ -188,7 +198,7 @@ module DiscourseAi
 
       private
 
-      delegate :dimensions, :pg_function, to: :vector
+      delegate :dimensions, :pg_function, to: :vector_def
     end
   end
 end

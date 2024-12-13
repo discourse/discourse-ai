@@ -30,21 +30,6 @@ module DiscourseAi
           end
         end
 
-        def vector_from(text, asymetric: false)
-          text = "#{asymmetric_query_prefix} #{text}" if asymetric
-
-          client = inference_client
-
-          needs_truncation = client.class.name.include?("HuggingFaceTextEmbeddings")
-          text = tokenizer.truncate(text, max_sequence_length - 2) if needs_truncation
-
-          inference_client.perform!(text)
-        end
-
-        def inference_model_name
-          "baai/bge-large-en-v1.5"
-        end
-
         def dimensions
           1024
         end
@@ -65,10 +50,6 @@ module DiscourseAi
           "<#>"
         end
 
-        def pg_index_type
-          "halfvec_ip_ops"
-        end
-
         def tokenizer
           DiscourseAi::Tokenizer::BgeLargeEnTokenizer
         end
@@ -78,6 +59,8 @@ module DiscourseAi
         end
 
         def inference_client
+          inference_model_name = "baai/bge-large-en-v1.5"
+
           if SiteSetting.ai_cloudflare_workers_api_token.present?
             DiscourseAi::Inference::CloudflareWorkersAi.instance(inference_model_name)
           elsif DiscourseAi::Inference::HuggingFaceTextEmbeddings.configured?

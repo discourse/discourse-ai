@@ -74,7 +74,7 @@ RSpec.describe RagDocumentFragment do
   end
 
   describe ".indexing_status" do
-    let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
+    let(:vector) { DiscourseAi::Embeddings::Vector.instance }
 
     fab!(:rag_document_fragment_1) do
       Fabricate(:rag_document_fragment, upload: upload_1, target: persona)
@@ -84,7 +84,7 @@ RSpec.describe RagDocumentFragment do
       Fabricate(:rag_document_fragment, upload: upload_1, target: persona)
     end
 
-    let(:expected_embedding) { [0.0038493] * vector_rep.dimensions }
+    let(:expected_embedding) { [0.0038493] * vector.vdef.dimensions }
 
     before do
       SiteSetting.ai_embeddings_enabled = true
@@ -96,7 +96,7 @@ RSpec.describe RagDocumentFragment do
         "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
       ).to_return(status: 200, body: JSON.dump(expected_embedding))
 
-      vector_rep.generate_representation_from(rag_document_fragment_1)
+      vector.generate_representation_from(rag_document_fragment_1)
     end
 
     it "regenerates all embeddings if ai_embeddings_model changes" do

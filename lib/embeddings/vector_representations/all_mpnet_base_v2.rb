@@ -23,10 +23,6 @@ module DiscourseAi
           end
         end
 
-        def vector_from(text, asymetric: false)
-          inference_client.perform!(text)
-        end
-
         def dimensions
           768
         end
@@ -45,10 +41,6 @@ module DiscourseAi
 
         def pg_function
           "<#>"
-        end
-
-        def pg_index_type
-          "halfvec_ip_ops"
         end
 
         def tokenizer
