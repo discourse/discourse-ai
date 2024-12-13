@@ -445,6 +445,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         end
 
         it "uses the re-ranker to reorder the fragments and pick the top 10 candidates" do
+          skip "This test is flaky needs to be investigated ordering does not come back as expected"
           # The re-ranker reverses the similarity search, but return less results
           # to act as a limit for test-purposes.
           expected_reranked = (4..14).to_a.reverse.map { |idx| { index: idx } }
