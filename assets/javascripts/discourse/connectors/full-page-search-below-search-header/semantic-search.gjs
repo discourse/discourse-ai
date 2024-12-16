@@ -4,7 +4,6 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { service } from "@ember/service";
-import { not } from "truth-helpers";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
 import { ajax } from "discourse/lib/ajax";
@@ -212,7 +211,7 @@ export default class SemanticSearch extends Component {
 
           <AiIndicatorWave @loading={{this.searching}} />
 
-          {{#if (not this.validSearchOrder)}}
+          {{#unless this.validSearchOrder}}
 
             <DTooltip
               @identifier="semantic-search-unavailable-tooltip"
@@ -228,7 +227,7 @@ export default class SemanticSearch extends Component {
                 }}
               </:content>
             </DTooltip>
-          {{/if}}
+          {{/unless}}
         </div>
       </div>
     </div>
