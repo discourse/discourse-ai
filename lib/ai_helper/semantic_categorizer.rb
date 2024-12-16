@@ -92,10 +92,10 @@ module DiscourseAi
       private
 
       def nearest_neighbors(limit: 100)
-        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
-        schema = DiscourseAi::Embeddings::Schema.for(Topic, vector: vector_rep)
+        vector = DiscourseAi::Embeddings::Vector.instance
+        schema = DiscourseAi::Embeddings::Schema.for(Topic, vector_def: vector.vdef)
 
-        raw_vector = vector_rep.vector_from(@text)
+        raw_vector = vector.vector_from(@text)
 
         muted_category_ids = nil
         if @user.present?

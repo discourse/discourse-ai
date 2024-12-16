@@ -38,14 +38,6 @@ module DiscourseAi
           "<=>"
         end
 
-        def pg_index_type
-          "halfvec_cosine_ops"
-        end
-
-        def vector_from(text, asymetric: false)
-          inference_client.perform!(text)
-        end
-
         # There is no public tokenizer for Gemini, and from the ones we already ship in the plugin
         # OpenAI gets the closest results. Gemini Tokenizer results in ~10% less tokens, so it's safe
         # to use OpenAI tokenizer since it will overestimate the number of tokens.

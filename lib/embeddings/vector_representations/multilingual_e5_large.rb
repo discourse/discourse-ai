@@ -28,19 +28,6 @@ module DiscourseAi
           end
         end
 
-        def vector_from(text, asymetric: false)
-          client = inference_client
-
-          needs_truncation = client.class.name.include?("HuggingFaceTextEmbeddings")
-          if needs_truncation
-            text = tokenizer.truncate(text, max_sequence_length - 2)
-          elsif !text.starts_with?("query:")
-            text = "query: #{text}"
-          end
-
-          client.perform!(text)
-        end
-
         def id
           3
         end
@@ -61,10 +48,6 @@ module DiscourseAi
           "<=>"
         end
 
-        def pg_index_type
-          "halfvec_cosine_ops"
-        end
-
         def tokenizer
           DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer
         end
@@ -80,8 +63,18 @@ module DiscourseAi
           end
         end
 
-        def prepare_text(record)
-          prepared_text = super(record)
+        def prepare_text(text, asymetric: false)
+          prepared_text = super(text, asymetric: asymetric)
+
+          if prepared_text.present? && inference_client.class.name.include?("DiscourseClassifier")
+            return "query: #{prepared_text}"
+          end
+
+          prepared_text
+        end
+
+        def prepare_target_text(target)
+          prepared_text = super(target)
 
           if prepared_text.present? && inference_client.class.name.include?("DiscourseClassifier")
             return "query: #{prepared_text}"

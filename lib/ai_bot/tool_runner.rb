@@ -141,11 +141,10 @@ module DiscourseAi
 
         return [] if upload_refs.empty?
 
-        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
-        query_vector = vector_rep.vector_from(query)
+        query_vector = DiscourseAi::Embeddings::Vector.instance.vector_from(query)
         fragment_ids =
           DiscourseAi::Embeddings::Schema
-            .for(RagDocumentFragment, vector: vector_rep)
+            .for(RagDocumentFragment)
             .asymmetric_similarity_search(query_vector, limit: limit, offset: 0) do |builder|
               builder.join(<<~SQL, target_id: tool.id, target_type: "AiTool")
                 rag_document_fragments ON

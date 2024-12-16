@@ -19,14 +19,14 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
     fab!(:post_in_subcategory) { Fabricate(:post, topic: topic_in_subcategory) }
 
     def index(topic)
-      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+      vector = DiscourseAi::Embeddings::Vector.instance
 
       stub_request(:post, "https://api.openai.com/v1/embeddings").to_return(
         status: 200,
         body: JSON.dump({ data: [{ embedding: [0.1] * 1536 }] }),
       )
 
-      vector_rep.generate_representation_from(topic)
+      vector.generate_representation_from(topic)
     end
 
     def stub_embedding(query)

@@ -20,7 +20,8 @@ module Jobs
 
       rebaked = 0
 
-      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+      vector = DiscourseAi::Embeddings::Vector.instance
+      vector_def = vector.vdef
       table_name = DiscourseAi::Embeddings::Schema::TOPICS_TABLE
 
       topics =
@@ -30,19 +31,19 @@ module Jobs
           .where(deleted_at: nil)
           .order("topics.bumped_at DESC")
 
-      rebaked += populate_topic_embeddings(vector_rep, topics.limit(limit - rebaked))
+      rebaked += populate_topic_embeddings(vector, topics.limit(limit - rebaked))
 
       return if rebaked >= limit
 
       # Then, we'll try to backfill embeddings for topics that have outdated
       # embeddings, be it model or strategy version
       relation = topics.where(<<~SQL).limit(limit - rebaked)
-          #{table_name}.model_version < #{vector_rep.version}
+          #{table_name}.model_version < #{vector_def.version}
           OR
-          #{table_name}.strategy_version < #{vector_rep.strategy_version}
+          #{table_name}.strategy_version < #{vector_def.strategy_version}
         SQL
 
-      rebaked += populate_topic_embeddings(vector_rep, relation)
+      rebaked += populate_topic_embeddings(vector, relation)
 
       return if rebaked >= limit
 
@@ -54,7 +55,7 @@ module Jobs
           .where("#{table_name}.updated_at < topics.updated_at")
           .limit((limit - rebaked) / 10)
 
-      populate_topic_embeddings(vector_rep, relation, force: true)
+      populate_topic_embeddings(vector, relation, force: true)
 
       return if rebaked >= limit
 
@@ -76,7 +77,7 @@ module Jobs
         .limit(limit - rebaked)
         .pluck(:id)
         .each_slice(posts_batch_size) do |batch|
-          vector_rep.gen_bulk_reprensentations(Post.where(id: batch))
+          vector.gen_bulk_reprensentations(Post.where(id: batch))
           rebaked += batch.length
         end
 
@@ -86,14 +87,14 @@ module Jobs
       # embeddings, be it model or strategy version
       posts
         .where(<<~SQL)
-          #{table_name}.model_version < #{vector_rep.version}
+          #{table_name}.model_version < #{vector_def.version}
           OR
-          #{table_name}.strategy_version < #{vector_rep.strategy_version}
+          #{table_name}.strategy_version < #{vector_def.strategy_version}
         SQL
         .limit(limit - rebaked)
         .pluck(:id)
         .each_slice(posts_batch_size) do |batch|
-          vector_rep.gen_bulk_reprensentations(Post.where(id: batch))
+          vector.gen_bulk_reprensentations(Post.where(id: batch))
           rebaked += batch.length
         end
 
@@ -107,7 +108,7 @@ module Jobs
         .limit((limit - rebaked) / 10)
         .pluck(:id)
         .each_slice(posts_batch_size) do |batch|
-          vector_rep.gen_bulk_reprensentations(Post.where(id: batch))
+          vector.gen_bulk_reprensentations(Post.where(id: batch))
           rebaked += batch.length
         end
 
@@ -116,7 +117,7 @@ module Jobs
 
     private
 
-    def populate_topic_embeddings(vector_rep, topics, force: false)
+    def populate_topic_embeddings(vector, topics, force: false)
       done = 0
 
       topics =
@@ -126,7 +127,7 @@ module Jobs
       batch_size = 1000
 
       ids.each_slice(batch_size) do |batch|
-        vector_rep.gen_bulk_reprensentations(Topic.where(id: batch).order("topics.bumped_at DESC"))
+        vector.gen_bulk_reprensentations(Topic.where(id: batch).order("topics.bumped_at DESC"))
         done += batch.length
       end
 

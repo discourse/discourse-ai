@@ -18,11 +18,6 @@ module DiscourseAi
           end
         end
 
-        def vector_from(text, asymetric: false)
-          truncated_text = tokenizer.truncate(text, max_sequence_length - 2)
-          inference_client.perform!(truncated_text)
-        end
-
         def dimensions
           1024
         end
@@ -41,10 +36,6 @@ module DiscourseAi
 
         def pg_function
           "<#>"
-        end
-
-        def pg_index_type
-          "halfvec_ip_ops"
         end
 
         def tokenizer

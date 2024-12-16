@@ -12,21 +12,16 @@ RSpec.describe Jobs::GenerateEmbeddings do
     fab!(:topic)
     fab!(:post) { Fabricate(:post, post_number: 1, topic: topic) }
 
-    let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
-    let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
-    let(:topics_schema) { DiscourseAi::Embeddings::Schema.for(Topic, vector: vector_rep) }
-    let(:posts_schema) { DiscourseAi::Embeddings::Schema.for(Post, vector: vector_rep) }
+    let(:vector_def) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
+    let(:topics_schema) { DiscourseAi::Embeddings::Schema.for(Topic, vector_def: vector_def) }
+    let(:posts_schema) { DiscourseAi::Embeddings::Schema.for(Post, vector_def: vector_def) }
 
     it "works for topics" do
-      expected_embedding = [0.0038493] * vector_rep.dimensions
+      expected_embedding = [0.0038493] * vector_def.dimensions
 
-      text =
-        truncation.prepare_text_from(
-          topic,
-          vector_rep.tokenizer,
-          vector_rep.max_sequence_length - 2,
-        )
-      EmbeddingsGenerationStubs.discourse_service(vector_rep.class.name, text, expected_embedding)
+      text = vector_def.prepare_target_text(topic)
+
+      EmbeddingsGenerationStubs.discourse_service(vector_def.class.name, text, expected_embedding)
 
       job.execute(target_id: topic.id, target_type: "Topic")
 
@@ -34,11 +29,10 @@ RSpec.describe Jobs::GenerateEmbeddings do
     end
 
     it "works for posts" do
-      expected_embedding = [0.0038493] * vector_rep.dimensions
+      expected_embedding = [0.0038493] * vector_def.dimensions
 
-      text =
-        truncation.prepare_text_from(post, vector_rep.tokenizer, vector_rep.max_sequence_length - 2)
-      EmbeddingsGenerationStubs.discourse_service(vector_rep.class.name, text, expected_embedding)
+      text = vector_def.prepare_target_text(post)
+      EmbeddingsGenerationStubs.discourse_service(vector_def.class.name, text, expected_embedding)
 
       job.execute(target_id: post.id, target_type: "Post")
 
