@@ -453,3 +453,6 @@ en:
       no_default_llm: The persona must have a default_llm defined.
       user_not_allowed: The user is not allowed to participate in the topic.
       prompt_message_length: The message %{idx} is over the 1000 character limit.
+  dashboard:
+    problem:
+      ai_llm_status: "The LLM model: %{model_name} is encountering issues. Please check the <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>model's configuration page</a>."

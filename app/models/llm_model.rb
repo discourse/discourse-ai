@@ -13,6 +13,11 @@ class LlmModel < ActiveRecord::Base
   validates_presence_of :name, :api_key
   validates :max_prompt_tokens, numericality: { greater_than: 0 }
   validate :required_provider_params
+  scope :in_use,
+        -> do
+          model_ids = DiscourseAi::Configuration::LlmEnumerator.global_usage.keys
+          where(id: model_ids)
+        end
 
   def self.provider_params
     {
