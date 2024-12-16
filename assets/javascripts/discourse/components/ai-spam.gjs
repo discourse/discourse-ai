@@ -140,20 +140,15 @@ export default class AiSpam extends Component {
 
     if (this.args.model.flagging_username) {
       detected.href = getURL(
-        "/review?flagged_by=" +
-          this.args.model.flagging_username +
-          "&status=all&sort_order=created_at"
+        `/review?flagged_by=${this.args.model.flagging_username}&status=all&sort_order=created_at`
       );
 
       falsePositives.href = getURL(
-        "/review?flagged_by=" +
-          this.args.model.flagging_username +
-          "&status=rejected&sort_order=created_at"
+        `/review?flagged_by=${this.args.model.flagging_username}&status=rejected&sort_order=created_at`
       );
 
       falseNegatives.href = getURL(
-        '/review?status=approved&sort_order=created_at&additional_filters={"ai_spam_false_negative":true}&order=created&score_type=' +
-          this.args.model.spam_score_type
+        `/review?status=approved&sort_order=created_at&additional_filters={"ai_spam_false_negative":true}&order=created&score_type=${this.args.model.spam_score_type}`
       );
     }
     return [
