@@ -43,6 +43,8 @@ register_asset "stylesheets/modules/ai-bot/common/ai-tools.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/ai-artifact.scss"
 
+register_svg_icon "far-circle-question" if respond_to?(:register_svg_icon)
+
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
 

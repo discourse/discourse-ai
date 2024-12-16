@@ -483,6 +483,8 @@ en:
           toggle_hidden: "Hiding %{count} results found using AI"
           none: "Sorry, our AI search found no matching topics"
           new: "Press 'search' to begin looking for new results with AI"
+          unavailable: "AI results unavailable"
+        semantic_search_unavailable_tooltip: "Search results must be sorted by Relevance to display AI results."
         ai_generated_result: "Search result found using AI"
         quick_search:
           suffix: "in all topics and posts with AI"
