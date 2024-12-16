@@ -16,7 +16,8 @@
         display: flex;
         align-items: center;
 
-        &.in-progress {
+        &.in-progress,
+        &.unavailable {
           .semantic-search__searching-text {
             color: var(--primary-medium);
           }

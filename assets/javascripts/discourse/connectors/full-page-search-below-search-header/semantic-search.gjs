@@ -32,7 +32,7 @@ export default class SemanticSearch extends Component {
   constructor() {
     super(...arguments);
     this.appEvents.on("full-page-search:trigger-search", this, this.onSearch);
-    this.handleSearch();
+    this.onSearch();
   }
 
   willDestroy() {
@@ -42,10 +42,14 @@ export default class SemanticSearch extends Component {
 
   @action
   onSearch() {
-    if (!this.searching) {
-      this.resetAiResults();
-      return this.performHyDESearch();
+    if (!this.searchEnabled) {
+      return;
     }
+
+    this.initialSearchTerm = this.args.outletArgs.search;
+    this.searching = true;
+    this.resetAiResults();
+    return this.performHyDESearch();
   }
 
   get disableToggleSwitch() {
@@ -69,28 +73,26 @@ export default class SemanticSearch extends Component {
       );
     }
 
-    // Search results:
-    if (this.AiResults.length > 0) {
-      if (this.showingAiResults) {
-        return I18n.t(
-          "discourse_ai.embeddings.semantic_search_results.toggle",
-          {
-            count: this.AiResults.length,
-          }
-        );
-      } else {
-        return I18n.t(
-          "discourse_ai.embeddings.semantic_search_results.toggle_hidden",
-          {
-            count: this.AiResults.length,
-          }
-        );
-      }
-    }
-
     // Search loading:
     if (this.searching) {
       return I18n.t("discourse_ai.embeddings.semantic_search_loading");
+    }
+
+    // We have results and we are showing them
+    if (this.AiResults.length && this.showingAiResults) {
+      return I18n.t("discourse_ai.embeddings.semantic_search_results.toggle", {
+        count: this.AiResults.length,
+      });
+    }
+
+    // We have results but are hiding them
+    if (this.AiResults.length && !this.showingAiResults) {
+      return I18n.t(
+        "discourse_ai.embeddings.semantic_search_results.toggle_hidden",
+        {
+          count: this.AiResults.length,
+        }
+      );
     }
 
     // Typing to search:
@@ -140,18 +142,6 @@ export default class SemanticSearch extends Component {
     this.args.outletArgs.addSearchResults([], "topic_id");
   }
 
-  @action
-  handleSearch() {
-    if (!this.searchEnabled) {
-      return;
-    }
-
-    if (this.initialSearchTerm) {
-      this.searching = true;
-      return this.performHyDESearch();
-    }
-  }
-
   performHyDESearch() {
     this.resetAiResults();
 
@@ -182,7 +172,7 @@ export default class SemanticSearch extends Component {
       this.sortOrder = this.args.outletArgs.sortOrder;
 
       if (this.validSearchOrder) {
-        this.handleSearch();
+        this.onSearch();
       } else {
         this.showingAiResults = false;
         this.resetAiResults();
@@ -195,7 +185,9 @@ export default class SemanticSearch extends Component {
     <div class="semantic-search__container search-results" role="region">
       <div class="semantic-search__results">
         <div
-          class="semantic-search__searching {{if this.searching 'in-progress'}}"
+          class="semantic-search__searching
+            {{if this.searching 'in-progress'}}
+            {{unless this.validSearchOrder 'unavailable'}}"
         >
           <DToggleSwitch
             disabled={{this.disableToggleSwitch}}
@@ -209,14 +201,15 @@ export default class SemanticSearch extends Component {
             {{this.searchStateText}}
           </div>
 
-          <AiIndicatorWave @loading={{this.searching}} />
+          {{#if this.validSearchOrder}}
+            <AiIndicatorWave @loading={{this.searching}} />
+          {{/if}}
 
           {{#unless this.validSearchOrder}}
 
             <DTooltip
               @identifier="semantic-search-unavailable-tooltip"
               class="semantic-search__unavailable-tooltip"
-              ...attributes
             >
               <:trigger>
                 {{icon "far-circle-question"}}
