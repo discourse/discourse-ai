@@ -16,7 +16,8 @@
         display: flex;
         align-items: center;
 
-        &.in-progress {
+        &.in-progress,
+        &.unavailable {
           .semantic-search__searching-text {
             color: var(--primary-medium);
           }
@@ -25,7 +26,11 @@
 
       &__searching-text {
         display: inline-block;
-        margin-left: 3px;
+        margin-left: 8px;
+      }
+
+      &__unavailable-tooltip {
+        margin-left: 4px;
       }
     }
 
