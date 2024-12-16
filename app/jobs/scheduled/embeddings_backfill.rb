@@ -20,10 +20,8 @@ module Jobs
 
       rebaked = 0
 
-      strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-      vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-      table_name = vector_rep.topic_table_name
+      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+      table_name = DiscourseAi::Embeddings::Schema::TOPICS_TABLE
 
       topics =
         Topic
@@ -41,7 +39,7 @@ module Jobs
       relation = topics.where(<<~SQL).limit(limit - rebaked)
           #{table_name}.model_version < #{vector_rep.version}
           OR
-          #{table_name}.strategy_version < #{strategy.version}
+          #{table_name}.strategy_version < #{vector_rep.strategy_version}
         SQL
 
       rebaked += populate_topic_embeddings(vector_rep, relation)
@@ -63,7 +61,7 @@ module Jobs
       return unless SiteSetting.ai_embeddings_per_post_enabled
 
       # Now for posts
-      table_name = vector_rep.post_table_name
+      table_name = DiscourseAi::Embeddings::Schema::POSTS_TABLE
       posts_batch_size = 1000
 
       posts =
@@ -90,7 +88,7 @@ module Jobs
         .where(<<~SQL)
           #{table_name}.model_version < #{vector_rep.version}
           OR
-          #{table_name}.strategy_version < #{strategy.version}
+          #{table_name}.strategy_version < #{vector_rep.strategy_version}
         SQL
         .limit(limit - rebaked)
         .pluck(:id)
@@ -121,7 +119,8 @@ module Jobs
     def populate_topic_embeddings(vector_rep, topics, force: false)
       done = 0
 
-      topics = topics.where("#{vector_rep.topic_table_name}.topic_id IS NULL") if !force
+      topics =
+        topics.where("#{DiscourseAi::Embeddings::Schema::TOPICS_TABLE}.topic_id IS NULL") if !force
 
       ids = topics.pluck("topics.id")
       batch_size = 1000

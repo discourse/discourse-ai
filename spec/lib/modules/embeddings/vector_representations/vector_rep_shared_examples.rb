@@ -4,6 +4,9 @@ RSpec.shared_examples "generates and store embedding using with vector represent
   let(:expected_embedding_1) { [0.0038493] * vector_rep.dimensions }
   let(:expected_embedding_2) { [0.0037684] * vector_rep.dimensions }
 
+  let(:topics_schema) { DiscourseAi::Embeddings::Schema.for(Topic, vector: vector_rep) }
+  let(:posts_schema) { DiscourseAi::Embeddings::Schema.for(Post, vector: vector_rep) }
+
   describe "#vector_from" do
     it "creates a vector from a given string" do
       text = "This is a piece of text"
@@ -29,7 +32,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
 
       vector_rep.generate_representation_from(topic)
 
-      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
+      expect(topics_schema.find_by_embedding(expected_embedding_1).topic_id).to eq(topic.id)
     end
 
     it "creates a vector from a post and stores it in the database" do
@@ -43,7 +46,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
 
       vector_rep.generate_representation_from(post)
 
-      expect(vector_rep.post_id_from_representation(expected_embedding_1)).to eq(post.id)
+      expect(posts_schema.find_by_embedding(expected_embedding_1).post_id).to eq(post.id)
     end
   end
 
@@ -76,8 +79,7 @@ RSpec.shared_examples "generates and store embedding using with vector represent
 
       vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id, topic_2.id]))
 
-      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
-      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
+      expect(topics_schema.find_by_embedding(expected_embedding_1).topic_id).to eq(topic.id)
     end
 
     it "does nothing if passed record has no content" do
@@ -99,69 +101,15 @@ RSpec.shared_examples "generates and store embedding using with vector represent
         vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id]))
       end
       # check vector exists
-      expect(vector_rep.topic_id_from_representation(expected_embedding_1)).to eq(topic.id)
+      expect(topics_schema.find_by_embedding(expected_embedding_1).topic_id).to eq(topic.id)
 
       vector_rep.gen_bulk_reprensentations(Topic.where(id: [topic.id]))
       last_update =
         DB.query_single(
-          "SELECT updated_at FROM #{vector_rep.topic_table_name} WHERE topic_id = #{topic.id} LIMIT 1",
+          "SELECT updated_at FROM #{DiscourseAi::Embeddings::Schema::TOPICS_TABLE} WHERE topic_id = #{topic.id} LIMIT 1",
         ).first
 
       expect(last_update).to eq(original_vector_gen)
-    end
-  end
-
-  describe "#asymmetric_topics_similarity_search" do
-    fab!(:topic) { Fabricate(:topic) }
-    fab!(:post) { Fabricate(:post, post_number: 1, topic: topic) }
-
-    it "finds IDs of similar topics with a given embedding" do
-      similar_vector = [0.0038494] * vector_rep.dimensions
-      text =
-        truncation.prepare_text_from(
-          topic,
-          vector_rep.tokenizer,
-          vector_rep.max_sequence_length - 2,
-        )
-      stub_vector_mapping(text, expected_embedding_1)
-      vector_rep.generate_representation_from(topic)
-
-      expect(
-        vector_rep.asymmetric_topics_similarity_search(similar_vector, limit: 1, offset: 0),
-      ).to contain_exactly(topic.id)
-    end
-
-    it "can exclude categories" do
-      similar_vector = [0.0038494] * vector_rep.dimensions
-      text =
-        truncation.prepare_text_from(
-          topic,
-          vector_rep.tokenizer,
-          vector_rep.max_sequence_length - 2,
-        )
-      stub_vector_mapping(text, expected_embedding_1)
-      vector_rep.generate_representation_from(topic)
-
-      expect(
-        vector_rep.asymmetric_topics_similarity_search(
-          similar_vector,
-          limit: 1,
-          offset: 0,
-          exclude_category_ids: [topic.category_id],
-        ),
-      ).to be_empty
-
-      child_category = Fabricate(:category, parent_category_id: topic.category_id)
-      topic.update!(category_id: child_category.id)
-
-      expect(
-        vector_rep.asymmetric_topics_similarity_search(
-          similar_vector,
-          limit: 1,
-          offset: 0,
-          exclude_category_ids: [topic.category_id],
-        ),
-      ).to be_empty
     end
   end
 end

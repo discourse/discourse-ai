@@ -314,30 +314,34 @@ module DiscourseAi
 
           return nil if !consolidated_question
 
-          strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-          vector_rep =
-            DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+          vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
           reranker = DiscourseAi::Inference::HuggingFaceTextEmbeddings
 
           interactions_vector = vector_rep.vector_from(consolidated_question)
 
           rag_conversation_chunks = self.class.rag_conversation_chunks
+          search_limit =
+            if reranker.reranker_configured?
+              rag_conversation_chunks * 5
+            else
+              rag_conversation_chunks
+            end
+
+          schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment, vector: vector_rep)
 
           candidate_fragment_ids =
-            vector_rep.asymmetric_rag_fragment_similarity_search(
-              interactions_vector,
-              target_type: "AiPersona",
-              target_id: id,
-              limit:
-                (
-                  if reranker.reranker_configured?
-                    rag_conversation_chunks * 5
-                  else
-                    rag_conversation_chunks
-                  end
-                ),
-              offset: 0,
-            )
+            schema
+              .asymmetric_similarity_search(
+                interactions_vector,
+                limit: search_limit,
+                offset: 0,
+              ) { |builder| builder.join(<<~SQL, target_id: id, target_type: "AiPersona") }
+                  rag_document_fragments ON
+                  rag_document_fragments.id = rag_document_fragment_id AND
+                  rag_document_fragments.target_id = :target_id AND
+                  rag_document_fragments.target_type = :target_type
+                SQL
+              .map(&:rag_document_fragment_id)
 
           fragments =
             RagDocumentFragment.where(upload_id: upload_refs, id: candidate_fragment_ids).pluck(
