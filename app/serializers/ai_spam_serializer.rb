@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AiSpamSerializer < ApplicationSerializer
-  attributes :is_enabled, :llm_id, :custom_instructions, :available_llms, :stats, :flagging_username
+  attributes :is_enabled, :llm_id, :custom_instructions, :available_llms, :stats, :flagging_username, :spam_score_type
 
   def is_enabled
     object[:enabled]
@@ -23,6 +23,10 @@ class AiSpamSerializer < ApplicationSerializer
 
   def flagging_username
     object[:flagging_username]
+  end
+
+  def spam_score_type
+    ReviewableScore.types[:spam]
   end
 
   def stats
