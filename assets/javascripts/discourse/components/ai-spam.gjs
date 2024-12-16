@@ -6,6 +6,7 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
+import DStatTiles from "discourse/components/d-stat-tiles";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import DTooltip from "discourse/components/d-tooltip";
 import withEventValue from "discourse/helpers/with-event-value";
@@ -17,7 +18,6 @@ import AdminConfigAreaCard from "admin/components/admin-config-area-card";
 import AdminPageSubheader from "admin/components/admin-page-subheader";
 import ComboBox from "select-kit/components/combo-box";
 import SpamTestModal from "./modal/spam-test-modal";
-import DStatTiles from "discourse/components/d-stat-tiles";
 
 export default class AiSpam extends Component {
   @service siteSettings;
@@ -139,10 +139,12 @@ export default class AiSpam extends Component {
       {
         label: i18n("discourse_ai.spam.false_positives"),
         value: this.stats.false_positives,
+        tooltip: i18n("discourse_ai.spam.stat_tooltips.incorrectly_flagged"),
       },
       {
         label: i18n("discourse_ai.spam.false_negatives"),
         value: this.stats.false_negatives,
+        tooltip: i18n("discourse_ai.spam.stat_tooltips.missed_spam"),
       },
     ];
   }
@@ -227,6 +229,7 @@ export default class AiSpam extends Component {
                 @label={{metric.label}}
                 @url={{metric.href}}
                 @value={{metric.value}}
+                @tooltip={{metric.tooltip}}
               />
             {{/each}}
           </DStatTiles>

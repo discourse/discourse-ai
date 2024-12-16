@@ -1,5 +1,4 @@
 import Component from "@glimmer/component";
-import DStatTiles from "discourse/components/d-stat-tiles";
 import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
@@ -8,6 +7,7 @@ import { service } from "@ember/service";
 import { eq, gt, lt } from "truth-helpers";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
+import DStatTiles from "discourse/components/d-stat-tiles";
 import DateTimeInputRange from "discourse/components/date-time-input-range";
 import avatar from "discourse/helpers/avatar";
 import concatClass from "discourse/helpers/concat-class";
@@ -135,18 +135,22 @@ export default class AiUsage extends Component {
       {
         label: i18n("discourse_ai.usage.total_tokens"),
         value: this.data.summary.total_tokens,
+        tooltip: i18n("discourse_ai.usage.stat_tooltips.total_tokens"),
       },
       {
         label: i18n("discourse_ai.usage.request_tokens"),
         value: this.data.summary.total_request_tokens,
+        tooltip: i18n("discourse_ai.usage.stat_tooltips.request_tokens"),
       },
       {
         label: i18n("discourse_ai.usage.response_tokens"),
         value: this.data.summary.total_response_tokens,
+        tooltip: i18n("discourse_ai.usage.stat_tooltips.response_tokens"),
       },
       {
         label: i18n("discourse_ai.usage.cached_tokens"),
         value: this.data.summary.total_cached_tokens,
+        tooltip: i18n("discourse_ai.usage.stat_tooltips.cached_tokens"),
       },
     ];
   }
