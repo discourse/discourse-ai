@@ -6,6 +6,7 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
+import DStatTiles from "discourse/components/d-stat-tiles";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import DTooltip from "discourse/components/d-tooltip";
 import withEventValue from "discourse/helpers/with-event-value";
@@ -121,7 +122,7 @@ export default class AiSpam extends Component {
 
   get metrics() {
     const detected = {
-      label: "discourse_ai.spam.spam_detected",
+      label: i18n("discourse_ai.spam.spam_detected"),
       value: this.stats.spam_detected,
     };
     if (this.args.model.flagging_username) {
@@ -131,17 +132,19 @@ export default class AiSpam extends Component {
     }
     return [
       {
-        label: "discourse_ai.spam.scanned_count",
+        label: i18n("discourse_ai.spam.scanned_count"),
         value: this.stats.scanned_count,
       },
       detected,
       {
-        label: "discourse_ai.spam.false_positives",
+        label: i18n("discourse_ai.spam.false_positives"),
         value: this.stats.false_positives,
+        tooltip: i18n("discourse_ai.spam.stat_tooltips.incorrectly_flagged"),
       },
       {
-        label: "discourse_ai.spam.false_negatives",
+        label: i18n("discourse_ai.spam.false_negatives"),
         value: this.stats.false_negatives,
+        tooltip: i18n("discourse_ai.spam.stat_tooltips.missed_spam"),
       },
     ];
   }
@@ -220,22 +223,16 @@ export default class AiSpam extends Component {
         class="ai-spam__stats"
       >
         <:content>
-          <div class="ai-spam__metrics">
+          <DStatTiles as |tiles|>
             {{#each this.metrics as |metric|}}
-              <div class="ai-spam__metrics-item">
-                <span class="ai-spam__metrics-label">{{i18n
-                    metric.label
-                  }}</span>
-                {{#if metric.href}}
-                  <a href={{metric.href}} class="ai-spam__metrics-value">
-                    {{metric.value}}
-                  </a>
-                {{else}}
-                  <span class="ai-spam__metrics-value">{{metric.value}}</span>
-                {{/if}}
-              </div>
+              <tiles.Tile
+                @label={{metric.label}}
+                @url={{metric.href}}
+                @value={{metric.value}}
+                @tooltip={{metric.tooltip}}
+              />
             {{/each}}
-          </div>
+          </DStatTiles>
         </:content>
       </AdminConfigAreaCard>
     </div>

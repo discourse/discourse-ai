@@ -157,6 +157,9 @@ en:
           run: "Run test"
           spam: "Spam"
           not_spam: "Not spam"
+        stat_tooltips:
+          incorrectly_flagged: "Items that the AI bot flagged as spam where moderators disagreed"
+          missed_spam: "Items flagged by the community as spam that were not detected by the AI bot, which moderators agreed with"
 
       usage:
         short_title: "Usage"
@@ -182,6 +185,12 @@ en:
         no_models: "No model usage data found"
         no_features: "No feature usage data found"
         subheader_description: "Tokens are the basic units that LLMs use to understand and generate text, usage data may affect costs."
+        stat_tooltips:
+          total_requests: "All requests made to LLMs through Discourse"
+          total_tokens: "All the tokens used when prompting an LLM"
+          request_tokens: "Tokens used when the LLM tries to understand what you are saying"
+          response_tokens: "Tokens used when the LLM responds to your prompt"
+          cached_tokens: "Previously processed request tokens that the LLM reuses to optimize performance and cost"
         periods:
           last_day: "Last 24 hours"
           last_week: "Last week"
