@@ -92,10 +92,18 @@ id:
       title: "AI"
       modals:
         select_option: "Memilih sebuah pilihan..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "7 hari terakhir"
+        enable: "Aktifkan"
+        test_modal:
+          spam: "Spam"
       usage:
         summary: "Ringkasan"
         model: "Model"
         username: "Nama Pengguna"
+        periods:
+          last_day: "24 jam terakhir"
       ai_persona:
         back: "Kembali"
         name: "Nama"
@@ -130,6 +138,7 @@ id:
         delete: Hapus
         usage:
           ai_summarization: "Meringkas"
+          ai_spam: "Spam"
         tests:
           running: "Tes berlangsung..."
           success: "Sukses!"

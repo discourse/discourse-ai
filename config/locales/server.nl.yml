@@ -15,10 +15,6 @@ nl:
       llm_triage:
         title: Berichten triageren met AI
         description: "Triageer berichten met behulp van een groot taalmodel"
-        flagged_post: |
-          <div>Reactie van het model:</div>
-          <p>%%LLM_RESPONSE%%</p>
-          <b>Getriggerd door de regel <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Periodiek rapport met AI
         description: "Periodiek rapport op basis van een groot taalmodel"
@@ -385,9 +381,6 @@ nl:
         no_targets: "Er waren geen berichten tijdens de geselecteerde periode."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Positief"
-          negative: "Negatief"
         post_emotion:
           sadness: "Droefheid \U0001F622"
           surprise: "Verrassing \U0001F631"
@@ -399,9 +392,9 @@ nl:
     llm:
       configuration:
         disable_module_first: "Je moet eerst %{setting} uitschakelen."
-        set_llm_first: "Stel eerst %{setting} in."
+        set_llm_first: "Stel eerst %{setting} in"
         model_unreachable: "We konden geen antwoord krijgen van dit model. Controleer eerst je instellingen."
-        invalid_seeded_model: "Je kunt dit model niet gebruiken met deze functie."
+        invalid_seeded_model: "Je kunt dit model niet gebruiken met deze functie"
       endpoints:
         not_configured: "%{display_name} (niet geconfigureerd)"
         configuration_hint:

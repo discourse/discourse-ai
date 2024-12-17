@@ -27,6 +27,11 @@ be:
             canned_reply:
               label: "Адказаць"
     discourse_ai:
+      spam:
+        short_title: "Спам"
+        enable: "Уключыць"
+        test_modal:
+          spam: "Спам"
       usage:
         summary: "вынік"
         username: "Імя карыстальніка"
@@ -60,6 +65,8 @@ be:
         edit: "рэдагаваць"
         back: "Назад"
         delete: выдаляць
+        usage:
+          ai_spam: "Спам"
         next:
           title: "Далей"
         tests:

@@ -29,10 +29,19 @@ cs:
     discourse_ai:
       modals:
         select_option: "Zvolit možnost..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Posledních 7 dní"
+        enable: "Zapnout"
+        test_modal:
+          spam: "Spam"
       usage:
         summary: "Souhrn"
         username: "Uživatelské jméno"
         total_requests: "Celkem požadavků"
+        periods:
+          last_day: "Posledních 24 hodin"
+          custom: "Vlastní…"
       ai_persona:
         back: "Zpět"
         name: "Jméno"
@@ -65,6 +74,7 @@ cs:
         delete: Smazat
         usage:
           ai_summarization: "Shrnout"
+          ai_spam: "Spam"
         next:
           title: "Další"
         tests:

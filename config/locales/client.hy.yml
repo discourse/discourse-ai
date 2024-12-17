@@ -29,6 +29,11 @@ hy:
     discourse_ai:
       modals:
         select_option: "Ընտրել..."
+      spam:
+        short_title: "Սպամ"
+        enable: "Միացնել"
+        test_modal:
+          spam: "Սպամ"
       usage:
         summary: "Ամփոփումը"
         username: "Օգտանուն"
@@ -63,6 +68,8 @@ hy:
         edit: "Խմբագրել"
         back: "Ետ"
         delete: Ջնջել
+        usage:
+          ai_spam: "Սպամ"
         next:
           title: "Հաջորդը"
         tests:

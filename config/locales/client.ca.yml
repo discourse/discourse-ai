@@ -29,10 +29,18 @@ ca:
     discourse_ai:
       modals:
         select_option: "Trieu una opció..."
+      spam:
+        short_title: "Brossa"
+        last_seven_days: "Els darrers 7 dies"
+        enable: "Activa"
+        test_modal:
+          spam: "Brossa"
       usage:
         summary: "Resum"
         username: "Nom d'usuari "
         total_requests: "Total de peticions"
+        periods:
+          last_day: "Últimes 24 hores"
       ai_persona:
         back: "Enrere"
         name: "Nom"
@@ -63,6 +71,8 @@ ca:
         edit: "Edita"
         back: "Enrere"
         delete: Suprimeix
+        usage:
+          ai_spam: "Brossa"
         next:
           title: "Següent"
         tests:

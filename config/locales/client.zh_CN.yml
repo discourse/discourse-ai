@@ -127,6 +127,14 @@ zh_CN:
       title: "AI"
       modals:
         select_option: "选择一个选项…"
+      spam:
+        short_title: "垃圾内容"
+        last_seven_days: "过去 7 天"
+        enable: "启用"
+        test_modal:
+          result: "结果"
+          run: "运行测试"
+          spam: "垃圾内容"
       usage:
         short_title: "使用量"
         summary: "摘要"
@@ -145,6 +153,9 @@ zh_CN:
         request_tokens: "请求词元"
         response_tokens: "响应词元"
         cached_tokens: "缓存的词元"
+        periods:
+          last_day: "过去 24 小时"
+          custom: "自定义…"
       ai_persona:
         tool_strategies:
           all: "应用于所有回复"
@@ -287,6 +298,7 @@ zh_CN:
           ai_persona: "角色 (%{persona})"
           ai_summarization: "总结"
           ai_embeddings_semantic_search: "AI 搜索"
+          ai_spam: "垃圾内容"
         in_use_warning:
           other: "此模型目前的使用者为 %{settings}。如果配置错误，功能将无法按预期运行。"
         model_description:

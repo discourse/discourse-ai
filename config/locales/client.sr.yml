@@ -25,9 +25,17 @@ sr:
     discourse_ai:
       modals:
         select_option: "Izaberi jednu od opcija..."
+      spam:
+        short_title: "Nepoželjno"
+        last_seven_days: "Последњих 7 дана"
+        enable: "Omogući"
+        test_modal:
+          spam: "Nepoželjno"
       usage:
         summary: "Rezime"
         username: "Korisničko Ime"
+        periods:
+          last_day: "Последња 24 сата"
       ai_persona:
         back: "Nazad"
         name: "Ime foruma"
@@ -58,6 +66,8 @@ sr:
         edit: "Izmeni"
         back: "Nazad"
         delete: Obriši
+        usage:
+          ai_spam: "Nepoželjno"
         next:
           title: "Dalje"
         providers:

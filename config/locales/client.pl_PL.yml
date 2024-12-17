@@ -95,11 +95,21 @@ pl_PL:
       title: "AI"
       modals:
         select_option: "Wybierz opcję..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Ostatnie 7 dni"
+        enable: "Włącz"
+        test_modal:
+          result: "Wynik"
+          spam: "Spam"
       usage:
         summary: "Podsumowanie"
         model: "Model"
         username: "Nazwa użytkownika"
         total_requests: "Razem zapytań"
+        periods:
+          last_day: "Ostatnie 24 godziny"
+          custom: "Niestandardowy..."
       ai_persona:
         back: "Poprzednia"
         name: "Nazwa"
@@ -142,6 +152,7 @@ pl_PL:
         delete: Usuń
         usage:
           ai_summarization: "Podsumuj"
+          ai_spam: "Spam"
         next:
           title: "Następna"
         tests:

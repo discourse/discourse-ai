@@ -27,6 +27,11 @@ te:
             canned_reply:
               label: "జవాబు"
     discourse_ai:
+      spam:
+        short_title: "స్పామ్"
+        enable: "ప్రారంభించండి"
+        test_modal:
+          spam: "స్పామ్"
       usage:
         summary: "సారాంశం"
         username: "సభ్యనామం"
@@ -61,6 +66,8 @@ te:
         edit: "సవరించండి"
         back: "వెనుకకు"
         delete: తొలగించండి
+        usage:
+          ai_spam: "స్పామ్"
         next:
           title: "తదుపరి"
         providers:

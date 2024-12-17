@@ -127,6 +127,14 @@ fi:
       title: "Tekoäly"
       modals:
         select_option: "Valitse vaihtoehto..."
+      spam:
+        short_title: "Roskaposti"
+        last_seven_days: "Viimeiset 7 päivää"
+        enable: "Ota käyttöön"
+        test_modal:
+          result: "Tulos"
+          run: "Suorita testi"
+          spam: "Roskaposti"
       usage:
         short_title: "Käyttö"
         summary: "Yhteenveto"
@@ -145,6 +153,9 @@ fi:
         request_tokens: "Pyynnön tokenit"
         response_tokens: "Vastauksen tokenit"
         cached_tokens: "Välimuistissa olevat saneet"
+        periods:
+          last_day: "Viimeiset 24 tuntia"
+          custom: "Mukautettu..."
       ai_persona:
         tool_strategies:
           all: "Käytä kaikkiin vastauksiin"
@@ -288,6 +299,7 @@ fi:
           ai_persona: "Persoona (%{persona})"
           ai_summarization: "Tee yhteenveto"
           ai_embeddings_semantic_search: "Tekoälyhaku"
+          ai_spam: "Roskaposti"
         in_use_warning:
           one: "Tätä mallia käyttää tällä hetkellä %{settings}. Jos se on määritetty väärin, ominaisuus ei toimi odotetulla tavalla."
           other: "Tätä mallia käyttää tällä hetkellä seuraavat: %{settings}. Jos se on määritetty väärin, ominaisuus ei toimi odotetulla tavalla. "

@@ -15,10 +15,6 @@ ru:
       llm_triage:
         title: Сортировка публикаций с помощью AI
         description: "Сортировка публикаций с использованием большой языковой модели"
-        flagged_post: |
-          <div>Ответ модели:</div>
-          <p>%%LLM_RESPONSE%%</p>
-          <b>Срабатывает по правилу: <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Периодический отчет с использованием AI
         description: "Периодический отчет на основе большой языковой модели"
@@ -399,9 +395,6 @@ ru:
         no_targets: "За выбранный период сообщений не было."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Позитивное"
-          negative: "Негативное"
         post_emotion:
           sadness: "Грусть \U0001F622"
           surprise: "Удивление \U0001F631"
@@ -413,9 +406,9 @@ ru:
     llm:
       configuration:
         disable_module_first: "Сначала вам нужно отключить %{setting}."
-        set_llm_first: "Сначала задайте %{setting}."
+        set_llm_first: "Сначала задайте %{setting}"
         model_unreachable: "Мы не смогли получить ответ от этой модели. Проверьте настройки."
-        invalid_seeded_model: "Эту модель нельзя использовать с этой функцией."
+        invalid_seeded_model: "Эту модель нельзя использовать с этой функцией"
       endpoints:
         not_configured: "%{display_name} (не настроено)"
         configuration_hint:

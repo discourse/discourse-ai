@@ -29,10 +29,20 @@ el:
     discourse_ai:
       modals:
         select_option: "Διαλέξτε μία επιλογή..."
+      spam:
+        short_title: "Ανεπιθύμητα"
+        last_seven_days: "Τελευταίες 7 ημέρες"
+        enable: "Ενεργοποίηση"
+        test_modal:
+          result: "Αποτέλεσμα"
+          spam: "Ανεπιθύμητα"
       usage:
         summary: "Περίληψη"
         username: "Όνομα Χρήστη"
         total_requests: "Σύνολο αιτήσεων"
+        periods:
+          last_day: "Τελευταίες 24 ώρες"
+          custom: "Προσαρμοσμένο..."
       ai_persona:
         back: "Πίσω"
         name: "Όνομα"
@@ -64,6 +74,8 @@ el:
         edit: "Επεξεργασία"
         back: "Πίσω"
         delete: Σβήσιμο
+        usage:
+          ai_spam: "Ανεπιθύμητα"
         next:
           title: "Επόμενο"
         tests:

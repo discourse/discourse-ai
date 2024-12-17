@@ -29,10 +29,18 @@ nb_NO:
     discourse_ai:
       modals:
         select_option: "Velg et alternativ..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Siste 7 dager"
+        enable: "Aktiver"
+        test_modal:
+          spam: "Spam"
       usage:
         summary: "Sammendrag"
         username: "Brukernavn"
         total_requests: "Totalt forespørsler"
+        periods:
+          last_day: "Siste 24 timer"
       ai_persona:
         back: "Forrige"
         name: "Navn"
@@ -65,6 +73,7 @@ nb_NO:
         delete: Slett
         usage:
           ai_summarization: "Oppsummer"
+          ai_spam: "Spam"
         next:
           title: "Neste"
         tests:

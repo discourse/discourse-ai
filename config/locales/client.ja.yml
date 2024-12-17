@@ -127,6 +127,14 @@ ja:
       title: "AI"
       modals:
         select_option: "オプションを選択..."
+      spam:
+        short_title: "迷惑"
+        last_seven_days: "過去 7 日間"
+        enable: "有効化"
+        test_modal:
+          result: "結果"
+          run: "テストの実行"
+          spam: "迷惑"
       usage:
         short_title: "使用状況"
         summary: "要約"
@@ -145,6 +153,9 @@ ja:
         request_tokens: "リクエストトークン"
         response_tokens: "レスポンストークン"
         cached_tokens: "キャッシュされたトークン"
+        periods:
+          last_day: "過去 24 時間"
+          custom: "カスタム..."
       ai_persona:
         tool_strategies:
           all: "すべての返信に適用"
@@ -287,6 +298,7 @@ ja:
           ai_persona: "ペルソナ (%{persona})"
           ai_summarization: "要約"
           ai_embeddings_semantic_search: "AI 検索"
+          ai_spam: "迷惑"
         in_use_warning:
           other: "このモデルは現在次によって使用されています: %{settings}。誤って構成されると、機能は期待どおりに動作しなくなります。"
         model_description:

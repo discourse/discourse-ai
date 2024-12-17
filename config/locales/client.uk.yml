@@ -108,6 +108,13 @@ uk:
       title: "ШІ"
       modals:
         select_option: "Вибрати опцію..."
+      spam:
+        short_title: "Спам"
+        last_seven_days: "Останні 7 днів"
+        enable: "Увімкнути"
+        test_modal:
+          result: "Результат"
+          spam: "Спам"
       usage:
         summary: "Підсумок"
         model: "Модель"
@@ -115,6 +122,9 @@ uk:
         total_requests: "Всього"
         request_tokens: "Токени запиту"
         response_tokens: "Токени відповіді"
+        periods:
+          last_day: "Останні 24 години"
+          custom: "Власний…"
       ai_persona:
         tool_strategies:
           all: "Застосувати до всіх відповідей"
@@ -213,6 +223,7 @@ uk:
         usage:
           ai_persona: "Персона (%{persona})"
           ai_summarization: "Підсумок"
+          ai_spam: "Спам"
         in_use_warning:
           one: "Ця модель зараз використовується %{settings}. У разі неправильного налаштування функція не працюватиме належним чином."
           few: "Ця модель зараз використовується: %{settings}. У разі неправильного налаштування функція не працюватиме належним чином. "

@@ -27,10 +27,19 @@ zh_TW:
             canned_reply:
               label: "回覆"
     discourse_ai:
+      spam:
+        short_title: "垃圾內容"
+        last_seven_days: "過去 7 天"
+        enable: "啟用"
+        test_modal:
+          spam: "垃圾內容"
       usage:
         summary: "摘要"
         username: "使用者名稱"
         total_requests: "請求總數"
+        periods:
+          last_day: "過去 24 小時"
+          custom: "自訂..."
       ai_persona:
         back: "上一步"
         name: "名字"
@@ -63,6 +72,7 @@ zh_TW:
         delete: 刪除
         usage:
           ai_summarization: "總結"
+          ai_spam: "垃圾內容"
         next:
           title: "下一步"
         tests:

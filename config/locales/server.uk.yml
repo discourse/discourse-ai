@@ -14,10 +14,6 @@ uk:
       llm_triage:
         title: Сортування повідомлень за допомогою ШІ
         description: "Сортування повідомлень за допомогою великої мовної моделі"
-        flagged_post: |
-          <div>Відповідь від моделі:</div>
-          <p>%%LLM_RESPONSE%%</p>
-          <b>Спрацьовує за правилом <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Періодичний звіт з використанням ШІ
         description: "Періодичний звіт на основі великої мовної моделі"
@@ -315,9 +311,6 @@ uk:
         no_targets: "За вибраний період повідомлень не було."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Позитивний"
-          negative: "Негативний"
         post_emotion:
           sadness: "Смуток \U0001F622"
           surprise: "Сюрприз \U0001F631"
@@ -329,9 +322,8 @@ uk:
     llm:
       configuration:
         disable_module_first: "Спочатку потрібно вимкнути %{setting} ."
-        set_llm_first: "Спочатку встановіть %{setting} ."
         model_unreachable: "Нам не вдалося отримати відповідь від цієї моделі. Спочатку перевірте свої налаштування."
-        invalid_seeded_model: "Ви не можете використовувати цю модель із цією функцією."
+        invalid_seeded_model: "Ви не можете використовувати цю модель із цією функцією"
       endpoints:
         not_configured: "%{display_name} (не налаштовано)"
         configuration_hint:

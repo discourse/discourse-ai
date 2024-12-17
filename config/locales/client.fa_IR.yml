@@ -51,11 +51,20 @@ fa_IR:
       title: "هوش مصنوعی"
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
+      spam:
+        short_title: "هرز‌نامه"
+        last_seven_days: "۷ روز گذشته"
+        enable: "فعال کردن"
+        test_modal:
+          spam: "هرز‌نامه"
       usage:
         summary: "خلاصه"
         model: "مدل"
         username: "نام‌کاربری"
         total_requests: "مجموع درخواست‌ها"
+        periods:
+          last_day: "۲۴ ساعت گذشته"
+          custom: "سفارشی..."
       ai_persona:
         back: "بازگشت"
         name: "نام"
@@ -88,6 +97,7 @@ fa_IR:
         delete: حذف
         usage:
           ai_summarization: "خلاصه کنید"
+          ai_spam: "هرز‌نامه"
         next:
           title: "بعدی"
         tests:

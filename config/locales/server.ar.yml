@@ -15,10 +15,6 @@ ar:
       llm_triage:
         title: فرز المنشورات باستخدام الذكاء الاصطناعي
         description: "فرز المنشورات باستخدام نموذج لغوي كبير"
-        flagged_post: |
-          <div>استجابة من النموذج:</div>
-          <p>%%LLM_RESPONSE%%</p>
-          <b>تم تشغيله بواسطة <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> القاعدة.</b>
       llm_report:
         title: التقرير الدوري باستخدام الذكاء الاصطناعي
         description: "تقرير دوري قائم على نموذج لغوي كبير"
@@ -416,9 +412,6 @@ ar:
         no_targets: "لم تكن هناك رسائل خلال الفترة المحدَّدة."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "إيجابية"
-          negative: "سلبية"
         post_emotion:
           sadness: "الحزن \U0001F622"
           surprise: "المفاجأة \U0001F631"
@@ -430,9 +423,9 @@ ar:
     llm:
       configuration:
         disable_module_first: "يجب عليك إيقاف %{setting} أولًا."
-        set_llm_first: "اضبط %{setting} أولًا."
+        set_llm_first: "اضبط %{setting} أولًا"
         model_unreachable: "لم نتمكن من الحصول على رد من هذا النموذج. تحقَّق من إعداداتك أولًا."
-        invalid_seeded_model: "لا يمكنك استخدام هذا النموذج مع هذه الميزة."
+        invalid_seeded_model: "لا يمكنك استخدام هذا النموذج مع هذه الميزة"
       endpoints:
         not_configured: "%{display_name} (not configured)"
         configuration_hint:

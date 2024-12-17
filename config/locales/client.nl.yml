@@ -127,6 +127,14 @@ nl:
       title: "AI"
       modals:
         select_option: "Selecteer een optie..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Afgelopen 7 dagen"
+        enable: "Inschakelen"
+        test_modal:
+          result: "Resultaat"
+          run: "Test uitvoeren"
+          spam: "Spam"
       usage:
         short_title: "Gebruik"
         summary: "Samenvatting"
@@ -145,6 +153,9 @@ nl:
         request_tokens: "Verzoektokens"
         response_tokens: "Antwoordtokens"
         cached_tokens: "Gecachete tokens"
+        periods:
+          last_day: "Afgelopen 24 uur"
+          custom: "Aangepast..."
       ai_persona:
         tool_strategies:
           all: "Toepassen op alle antwoorden"
@@ -288,6 +299,7 @@ nl:
           ai_persona: "Persona (%{persona})"
           ai_summarization: "Samenvatten"
           ai_embeddings_semantic_search: "AI zoeken"
+          ai_spam: "Spam"
         in_use_warning:
           one: "Dit model wordt momenteel gebruikt door %{settings}. Als het onjuist is geconfigureerd, werkt de functie niet zoals verwacht."
           other: "Dit model wordt momenteel gebruikt door de volgende: %{settings}. Als het onjuist is geconfigureerd, werken functies niet zoals verwacht. "

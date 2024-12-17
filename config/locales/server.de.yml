@@ -18,7 +18,7 @@ de:
         flagged_post: |
           <div>Antwort des Modells:</div>
           <p>%%LLM_RESPONSE%%</p>
-          <b>Ausgelöst durch die Regel <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
+          <b>Ausgelöst durch die Regel <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> .</b>
       llm_report:
         title: Regelmäßiger Bericht mit KI
         description: "Regelmäßiger Bericht auf der Grundlage eines großen Sprachmodells"
@@ -242,6 +242,8 @@ de:
         other_content_in_pm: "Persönliche Nachrichten, die Beiträge von anderen Personen enthalten, können nicht öffentlich geteilt werden"
         failed_to_share: "Die Unterhaltung konnte nicht geteilt werden"
         conversation_deleted: "Unterhaltungsfreigabe erfolgreich gelöscht"
+    spam_detection:
+      flag_reason: "Als Spam markiert von <a href='%{url}'>Discourse KI</a>"
     ai_bot:
       reply_error: "Entschuldigung, es sieht so aus, als ob unser System beim Versuch, zu antworten, auf ein unerwartetes Problem gestoßen ist.\n\n[details='Fehlerdetails']\n%{details}\n[/details]"
       default_pm_prefix: "[KI-Bot-PN ohne Titel]"
@@ -389,9 +391,7 @@ de:
         no_targets: "Im ausgewählten Zeitraum gab es keine Nachrichten."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Positiv"
-          negative: "Negativ"
+        overall_sentiment: "Gesamtstimmung (positiv — negativ)"
         post_emotion:
           sadness: "Traurigkeit \U0001F622"
           surprise: "Überraschung \U0001F631"
@@ -403,9 +403,10 @@ de:
     llm:
       configuration:
         disable_module_first: "Du musst zuerst %{setting} deaktivieren."
-        set_llm_first: "Stelle zuerst %{setting} ein."
+        set_llm_first: "Stelle zuerst %{setting} ein"
         model_unreachable: "Wir konnten keine Antwort von diesem Modell abrufen. Überprüfe zuerst deine Einstellungen."
-        invalid_seeded_model: "Du kannst dieses Modell nicht mit dieser Funktion verwenden."
+        invalid_seeded_model: "Du kannst dieses Modell nicht mit dieser Funktion verwenden"
+        must_select_model: "Du musst zuerst einen LLM auswählen"
       endpoints:
         not_configured: "%{display_name} (nicht konfiguriert)"
         configuration_hint:
@@ -436,3 +437,6 @@ de:
       no_default_llm: Die Persona muss eine default_llm definiert haben.
       user_not_allowed: Der Benutzer darf nicht am Thema teilnehmen.
       prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.
+  dashboard:
+    problem:
+      ai_llm_status: "Beim LLM-Modell: %{model_name} treten Probleme auf. Bitte überprüfe die Konfigurationsseite des Modells <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'></a>."

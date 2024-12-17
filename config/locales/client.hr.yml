@@ -29,10 +29,19 @@ hr:
     discourse_ai:
       modals:
         select_option: "Odaberi opciju..."
+      spam:
+        short_title: "Nepoželjno"
+        last_seven_days: "Zadnjih 7 dana"
+        enable: "Omogućiti"
+        test_modal:
+          spam: "Nepoželjno"
       usage:
         summary: "Sažetak"
         username: "Korisničko ime"
         total_requests: "Ukupno zahtjeva"
+        periods:
+          last_day: "Posljednja 24 sata"
+          custom: "Prilagođeno..."
       ai_persona:
         back: "Natrag"
         name: "Ime"
@@ -66,6 +75,7 @@ hr:
         delete: Pobriši
         usage:
           ai_summarization: "Rezimirati"
+          ai_spam: "Nepoželjno"
         next:
           title: "Sljedeći"
         tests:

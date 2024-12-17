@@ -31,10 +31,19 @@ ko:
     discourse_ai:
       modals:
         select_option: "옵션 선택..."
+      spam:
+        short_title: "스팸"
+        last_seven_days: "지난 7일"
+        enable: "활성화"
+        test_modal:
+          spam: "스팸"
       usage:
         summary: "요약"
         username: "아이디"
         total_requests: "총 요청횟수"
+        periods:
+          last_day: "지난 24시간"
+          custom: "사용자 지정..."
       ai_persona:
         back: "뒤로"
         name: "그룹명"
@@ -68,6 +77,7 @@ ko:
         delete: 삭제하기
         usage:
           ai_summarization: "요약하기"
+          ai_spam: "스팸"
         next:
           title: "다음"
         tests:

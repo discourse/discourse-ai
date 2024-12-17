@@ -29,10 +29,19 @@ ro:
     discourse_ai:
       modals:
         select_option: "Alege o opțiune..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Ultimele 7 zile"
+        enable: "Activează"
+        test_modal:
+          spam: "Spam"
       usage:
         summary: "Rezumat"
         username: "Nume utilizator"
         total_requests: "Total cereri"
+        periods:
+          last_day: "Ultimele 24 de ore"
+          custom: "Personalizat..."
       ai_persona:
         back: "Înapoi"
         name: "Nume"
@@ -65,6 +74,7 @@ ro:
         delete: Șterge
         usage:
           ai_summarization: "Rezumat"
+          ai_spam: "Spam"
         next:
           title: "Următorul"
         tests:
