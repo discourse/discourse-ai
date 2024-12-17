@@ -125,9 +125,30 @@ export default class AiSpam extends Component {
       label: i18n("discourse_ai.spam.spam_detected"),
       value: this.stats.spam_detected,
     };
+
+    const falsePositives = {
+      label: i18n("discourse_ai.spam.false_positives"),
+      value: this.stats.false_positives,
+      tooltip: i18n("discourse_ai.spam.stat_tooltips.incorrectly_flagged"),
+    };
+
+    const falseNegatives = {
+      label: i18n("discourse_ai.spam.false_negatives"),
+      value: this.stats.false_negatives,
+      tooltip: i18n("discourse_ai.spam.stat_tooltips.missed_spam"),
+    };
+
     if (this.args.model.flagging_username) {
       detected.href = getURL(
-        "/review?flagged_by=" + this.args.model.flagging_username
+        `/review?flagged_by=${this.args.model.flagging_username}&status=all&sort_order=created_at`
+      );
+
+      falsePositives.href = getURL(
+        `/review?flagged_by=${this.args.model.flagging_username}&status=rejected&sort_order=created_at`
+      );
+
+      falseNegatives.href = getURL(
+        `/review?status=approved&sort_order=created_at&additional_filters={"ai_spam_false_negative":true}&order=created&score_type=${this.args.model.spam_score_type}`
       );
     }
     return [
@@ -136,16 +157,8 @@ export default class AiSpam extends Component {
         value: this.stats.scanned_count,
       },
       detected,
-      {
-        label: i18n("discourse_ai.spam.false_positives"),
-        value: this.stats.false_positives,
-        tooltip: i18n("discourse_ai.spam.stat_tooltips.incorrectly_flagged"),
-      },
-      {
-        label: i18n("discourse_ai.spam.false_negatives"),
-        value: this.stats.false_negatives,
-        tooltip: i18n("discourse_ai.spam.stat_tooltips.missed_spam"),
-      },
+      falsePositives,
+      falseNegatives,
     ];
   }
 
