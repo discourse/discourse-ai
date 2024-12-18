@@ -130,6 +130,14 @@ ar:
       title: "الذكاء الاصطناعي"
       modals:
         select_option: "حدِّد خيارًا..."
+      spam:
+        short_title: "غير مرغوب فيه"
+        last_seven_days: "آخر 7 أيام"
+        enable: "تفعيل"
+        test_modal:
+          result: "النتيجة"
+          run: "تشغيل الاختبار"
+          spam: "غير مرغوب فيه"
       usage:
         short_title: "الاستخدام"
         summary: "الملخص"
@@ -148,6 +156,9 @@ ar:
         request_tokens: "رموز الطلب"
         response_tokens: "رموز الرد"
         cached_tokens: "الرموز المخزَّنة مؤقتًا"
+        periods:
+          last_day: "آخر 24 ساعة"
+          custom: "مخصَّص..."
       ai_persona:
         tool_strategies:
           all: "التطبيق على كل الردود"
@@ -295,6 +306,7 @@ ar:
           ai_persona: "الشخصية (%{persona})"
           ai_summarization: "تلخيص"
           ai_embeddings_semantic_search: "البحث باستخدام الذكاء الاصطناعي"
+          ai_spam: "غير مرغوب فيه"
         in_use_warning:
           zero: "هذا النموذج مُستخدَم حاليًا من قِبل %{settings}. إذا تم تكوينه بشكلٍ خاطئ، فلن تعمل الميزة كما هو متوقَّع. "
           one: "هذا النموذج مُستخدَم حاليًا من قِبل %{settings}. إذا تم تكوينه بشكلٍ خاطئ، فلن تعمل الميزة كما هو متوقَّع."

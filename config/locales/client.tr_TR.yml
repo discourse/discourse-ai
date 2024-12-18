@@ -127,6 +127,14 @@ tr_TR:
       title: "YZ"
       modals:
         select_option: "Seçenek belirleyin..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Son 7 gün"
+        enable: "Etkinleştir"
+        test_modal:
+          result: "Sonuç"
+          run: "Testi çalıştır"
+          spam: "Spam"
       usage:
         short_title: "Kullanım"
         summary: "Özet"
@@ -145,6 +153,9 @@ tr_TR:
         request_tokens: "Talep token'ları"
         response_tokens: "Karşılık token'ları"
         cached_tokens: "Önbelleğe alınan token'lar"
+        periods:
+          last_day: "Son 24 saat"
+          custom: "Özel..."
       ai_persona:
         tool_strategies:
           all: "Tüm yanıtlara uygula"
@@ -288,6 +299,7 @@ tr_TR:
           ai_persona: "Kişilik (%{persona})"
           ai_summarization: "Özetle"
           ai_embeddings_semantic_search: "YZ araması"
+          ai_spam: "Spam"
         in_use_warning:
           one: "Bu model şu anda %{settings} tarafından kullanılıyor. Yanlış yapılandırılırsa özellik beklendiği gibi çalışmaz."
           other: "Bu model şu anda şunlar tarafından kullanılıyor: %{settings}. Yanlış yapılandırılırsa özellikler beklendiği gibi çalışmaz. "

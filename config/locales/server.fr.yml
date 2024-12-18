@@ -15,10 +15,6 @@ fr:
       llm_triage:
         title: Trier les publications à l'aide de l'IA
         description: "Triez les publications à l'aide d'un grand modèle linguistique"
-        flagged_post: |
-          <div>Réponse du modèle :</div>
-          <p>%%LLM_RESPONSE%%</p>
-          <b>Déclenché par la <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>règle.</b>
       llm_report:
         title: Rapport périodique utilisant l'IA
         description: "Rapport périodique basé sur un grand modèle linguistique"
@@ -385,9 +381,6 @@ fr:
         no_targets: "Il n'y a eu aucun message pendant la période sélectionnée."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Positif"
-          negative: "Négatif"
         post_emotion:
           sadness: "Tristesse \U0001F622"
           surprise: "Surprise \U0001F631"
@@ -399,9 +392,9 @@ fr:
     llm:
       configuration:
         disable_module_first: "Vous devez d'abord désactiver %{setting}."
-        set_llm_first: "Réglez %{setting} en premier."
+        set_llm_first: "Réglez %{setting} en premier"
         model_unreachable: "Nous n'avons pas pu obtenir de réponse de ce modèle. Vérifiez d'abord vos paramètres."
-        invalid_seeded_model: "Vous ne pouvez pas utiliser ce modèle avec cette fonctionnalité."
+        invalid_seeded_model: "Vous ne pouvez pas utiliser ce modèle avec cette fonctionnalité"
       endpoints:
         not_configured: "%{display_name} (non configuré)"
         configuration_hint:

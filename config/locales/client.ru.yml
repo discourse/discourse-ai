@@ -127,6 +127,14 @@ ru:
       title: "AI"
       modals:
         select_option: "Выберите вариант..."
+      spam:
+        short_title: "Спам"
+        last_seven_days: "За последние 7 дней"
+        enable: "Включить"
+        test_modal:
+          result: "Результат"
+          run: "Запустить тест"
+          spam: "Спам"
       usage:
         short_title: "Использование"
         summary: "Сводка"
@@ -145,6 +153,9 @@ ru:
         request_tokens: "Токены запроса"
         response_tokens: "Токены ответа"
         cached_tokens: "Кешированные токены"
+        periods:
+          last_day: "За последние 24 часа"
+          custom: "Другое…"
       ai_persona:
         tool_strategies:
           all: "Применить ко всем ответам"
@@ -290,6 +301,7 @@ ru:
           ai_persona: "Персона (%{persona})"
           ai_summarization: "Сводка"
           ai_embeddings_semantic_search: "AI-поиск"
+          ai_spam: "Спам"
         in_use_warning:
           one: "Эта модель сейчас используется в параметре «%{settings}». В случае неправильной настройки функция не будет работать должным образом."
           few: "Эта модель сейчас используется в следующих параметрах: %{settings}. В случае неправильной настройки функции не будут работать должным образом. "

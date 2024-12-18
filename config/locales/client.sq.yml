@@ -29,6 +29,11 @@ sq:
     discourse_ai:
       modals:
         select_option: "Zgjidhni një opsion..."
+      spam:
+        short_title: "Spam"
+        enable: "Aktivizo"
+        test_modal:
+          spam: "Spam"
       usage:
         summary: "Përmbledhja"
         username: "Emri i përdoruesit"
@@ -62,6 +67,8 @@ sq:
         edit: "Redakto"
         back: "Kthehu mbrapa"
         delete: Fshij
+        usage:
+          ai_spam: "Spam"
         next:
           title: "Vazhdo përpara"
         providers:

@@ -29,10 +29,19 @@ vi:
     discourse_ai:
       modals:
         select_option: "Chọn một tùy Chọn..."
+      spam:
+        short_title: "Rác"
+        last_seven_days: "7 ngày qua"
+        enable: "Bật"
+        test_modal:
+          spam: "Rác"
       usage:
         summary: "Tóm tắt"
         username: "Tên tài khoản"
         total_requests: "Tổng số yêu cầu"
+        periods:
+          last_day: "24 giờ qua"
+          custom: "Tùy chỉnh..."
       ai_persona:
         back: "Quay lại"
         name: "Tên"
@@ -65,6 +74,7 @@ vi:
         delete: Xóa
         usage:
           ai_summarization: "Tóm tắt"
+          ai_spam: "Rác"
         next:
           title: "Kế tiếp"
         tests:

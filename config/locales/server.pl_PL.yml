@@ -223,9 +223,6 @@ pl_PL:
         no_targets: "W wybranym okresie nie było żadnych wiadomości."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Pozytywne"
-          negative: "Negatywne"
         post_emotion:
           sadness: "Smutek \U0001F622"
           surprise: "Niespodzianka \U0001F631"
@@ -236,7 +233,7 @@ pl_PL:
     llm:
       configuration:
         disable_module_first: "Najpierw musisz wyłączyć %{setting}."
-        set_llm_first: "Najpierw ustaw %{setting}."
+        set_llm_first: "Najpierw ustaw %{setting}"
         model_unreachable: "Nie mogliśmy uzyskać odpowiedzi od tego modelu. Sprawdź najpierw swoje ustawienia."
     errors:
       prompt_message_length: Wiadomość %{idx} przekracza limit 1000 znaków.

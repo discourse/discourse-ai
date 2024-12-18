@@ -29,10 +29,20 @@ da:
     discourse_ai:
       modals:
         select_option: "Vælg en indstilling..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Seneste 7 dage"
+        enable: "Aktiver"
+        test_modal:
+          result: "Resultat"
+          spam: "Spam"
       usage:
         summary: "Statistik"
         username: "Brugernavn"
         total_requests: "Total antal anmodninger"
+        periods:
+          last_day: "Seneste 24 timer"
+          custom: "Tilpasset..."
       ai_persona:
         back: "Tilbage"
         name: "Navn"
@@ -64,6 +74,8 @@ da:
         edit: "Rediger"
         back: "Tilbage"
         delete: Slet
+        usage:
+          ai_spam: "Spam"
         next:
           title: "Næste"
         tests:

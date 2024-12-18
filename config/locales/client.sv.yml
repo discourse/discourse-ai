@@ -29,10 +29,19 @@ sv:
     discourse_ai:
       modals:
         select_option: "Välj ett alternativ..."
+      spam:
+        short_title: "Skräppost"
+        last_seven_days: "Senaste 7 dagarna"
+        enable: "Aktivera"
+        test_modal:
+          spam: "Skräppost"
       usage:
         summary: "Sammanfattning"
         username: "Användarnamn"
         total_requests: "Totalt antal efterfrågningar"
+        periods:
+          last_day: "Senaste 24 timmarna"
+          custom: "Anpassad..."
       ai_persona:
         back: "Tillbaka"
         name: "Namn"
@@ -66,6 +75,7 @@ sv:
         delete: Radera
         usage:
           ai_summarization: "Sammanfatta"
+          ai_spam: "Skräppost"
         next:
           title: "Nästa"
         tests:

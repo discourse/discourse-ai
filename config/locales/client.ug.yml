@@ -31,10 +31,18 @@ ug:
     discourse_ai:
       modals:
         select_option: "تاللانما تاللىنىدۇ..."
+      spam:
+        short_title: "ئەخلەت خەت"
+        enable: "قوزغات"
+        test_modal:
+          result: "نەتىجە"
+          spam: "ئەخلەت خەت"
       usage:
         summary: "خۇلاسە"
         username: "ئىشلەتكۈچى ئاتى"
         total_requests: "جەمئىي ئىلتىماس"
+        periods:
+          custom: "ئىختىيارى..."
       ai_persona:
         back: "كەينى"
         name: "ئىسمى"
@@ -68,6 +76,7 @@ ug:
         delete: ئۆچۈر
         usage:
           ai_summarization: "خۇلاسە"
+          ai_spam: "ئەخلەت خەت"
         next:
           title: "كېيىنكى"
         tests:

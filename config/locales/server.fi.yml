@@ -15,10 +15,6 @@ fi:
       llm_triage:
         title: Luokittele viestit tekoälyllä
         description: "Luokittele viestit suurella kielimallilla"
-        flagged_post: |
-          <div>Mallin vastaus:</div>
-          <p>%%LLM_RESPONSE%%</p>
-          <b>Säännön <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> käynnistämä.</b>
       llm_report:
         title: Säännöllinen raportti tekoälyllä
         description: "Säännöllinen raportti laajan kielimallin perusteella"
@@ -385,9 +381,6 @@ fi:
         no_targets: "Valitun ajanjakson aikana ei ollut viestejä."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Positiivinen"
-          negative: "Negatiivinen"
         post_emotion:
           sadness: "Suru \U0001F622"
           surprise: "Yllätys \U0001F631"
@@ -399,9 +392,9 @@ fi:
     llm:
       configuration:
         disable_module_first: "Sinun täytyy ensin poistaa %{setting} käytöstä."
-        set_llm_first: "Aseta %{setting} ensin."
+        set_llm_first: "Aseta %{setting} ensin"
         model_unreachable: "Emme saaneet vastausta tästä mallista. Tarkista ensin asetuksesi."
-        invalid_seeded_model: "Et voi käyttää tätä mallia tämän ominaisuuden kanssa."
+        invalid_seeded_model: "Et voi käyttää tätä mallia tämän ominaisuuden kanssa"
       endpoints:
         not_configured: "%{display_name} (ei määritetty)"
         configuration_hint:

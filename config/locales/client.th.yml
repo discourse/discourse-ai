@@ -29,9 +29,17 @@ th:
     discourse_ai:
       modals:
         select_option: "เลือกตัวเลือก..."
+      spam:
+        short_title: "ขยะ"
+        last_seven_days: "7 วันที่ผ่านมา"
+        enable: "เปิดใช้งาน"
+        test_modal:
+          spam: "ขยะ"
       usage:
         summary: "สรุป"
         username: "ชื่อผู้ใช้"
+        periods:
+          last_day: "24 ชั่วโมงที่ผ่านมา"
       ai_persona:
         back: "กลับ"
         name: "ชื่อ"
@@ -62,6 +70,8 @@ th:
         edit: "แก้ไข"
         back: "กลับ"
         delete: ลบ
+        usage:
+          ai_spam: "ขยะ"
         next:
           title: "ต่อไป"
         tests:

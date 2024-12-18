@@ -63,11 +63,20 @@ lt:
       title: "AI"
       modals:
         select_option: "Pasirink nustatymą..."
+      spam:
+        short_title: "Šlamštas"
+        last_seven_days: "Paskutinės 7 dienos"
+        enable: "Įgalinti"
+        test_modal:
+          spam: "Šlamštas"
       usage:
         summary: "Santrauka"
         model: "Modelis"
         username: "Vartotojo vardas"
         total_requests: "Visos užklausos"
+        periods:
+          last_day: "Paskutinės 24 valandos"
+          custom: "Pasirinktinis..."
       ai_persona:
         back: "Atgal"
         name: "Vardas"
@@ -100,6 +109,7 @@ lt:
         delete: Pašalinti
         usage:
           ai_summarization: "Apibendrinti"
+          ai_spam: "Šlamštas"
         next:
           title: "Kitas"
         tests:

@@ -29,10 +29,20 @@ hu:
     discourse_ai:
       modals:
         select_option: "Válasszon egy lehetőséget..."
+      spam:
+        short_title: "Szemét"
+        last_seven_days: "Elmúlt 7 nap"
+        enable: "Engedélyez"
+        test_modal:
+          result: "Eredmény"
+          spam: "Szemét"
       usage:
         summary: "Összefoglaló"
         username: "Felhasználónév"
         total_requests: "Összes kérés"
+        periods:
+          last_day: "Elmúlt 24 óra"
+          custom: "Egyéb..."
       ai_persona:
         back: "Vissza"
         name: "Név"
@@ -65,6 +75,7 @@ hu:
         delete: Törlés
         usage:
           ai_summarization: "Összefoglalás"
+          ai_spam: "Szemét"
         next:
           title: "Tovább"
         tests:

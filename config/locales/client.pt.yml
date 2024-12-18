@@ -29,10 +29,19 @@ pt:
     discourse_ai:
       modals:
         select_option: "Selecione uma opção..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Últimos 7 Dias"
+        enable: "Ativar"
+        test_modal:
+          spam: "Spam"
       usage:
         summary: "Resumo"
         username: "Nome de Utilizador"
         total_requests: "Total de pedidos"
+        periods:
+          last_day: "Últimas 24 horas"
+          custom: "Personalizar..."
       ai_persona:
         back: "Retroceder"
         name: "Nome"
@@ -66,6 +75,7 @@ pt:
         delete: Eliminar
         usage:
           ai_summarization: "Resumir"
+          ai_spam: "Spam"
         next:
           title: "Próximo"
         providers:

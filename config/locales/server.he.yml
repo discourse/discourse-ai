@@ -18,7 +18,7 @@ he:
         flagged_post: |
           <div>תגובה מהמודל:</div>
           <p>%%LLM_RESPONSE%%</p>
-          <b>הוזנקה על ידי הכלל <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
+          <b>הוזנקה על ידי הכלל <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: דוח תקופתי בעזרת בינה מלאכותית
         description: "דוח תקופתי שמבוסס על דגם שפה גדול"
@@ -242,7 +242,10 @@ he:
         other_content_in_pm: "אי אפשר לשתף הודעות שמכילות פוסטים של אנשים אחרים באופן ציבורי"
         failed_to_share: "שיתוף השיחה נכשל"
         conversation_deleted: "שיתוף השיחה נמחק בהצלחה"
+    spam_detection:
+      flag_reason: "סומן כספאם ע״י <a href='%{url}'>בינה מלאכותית של Discourse</a>"
     ai_bot:
+      reply_error: "נראה שהמערכת שלך נתקלה בקשיים לא צפויים בעת הניסיון להשיב, עמך הסליחה.\n\n[details='פרטי השגיאה']\n%{details}\n[/details]"
       default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
       personas:
         default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
@@ -402,9 +405,7 @@ he:
         no_targets: "לא היו הודעות במהלך התקופה הנבחרת."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "חיובי"
-          negative: "שלילי"
+        overall_sentiment: "חוויה כוללת (חיובית - שלילית)"
         post_emotion:
           sadness: "עצב \U0001F622"
           surprise: "הפתעה \U0001F631"
@@ -416,9 +417,10 @@ he:
     llm:
       configuration:
         disable_module_first: "קודם צריך להשבית את %{setting}."
-        set_llm_first: "קודם יש להגדיר את %{setting}."
+        set_llm_first: "קודם יש להגדיר את %{setting}"
         model_unreachable: "לא הצלחנו לקבל תגובה מהמודל הזה. נא לוודא שההגדרות שלך נכונות קודם."
-        invalid_seeded_model: "אי אפשר להשתמש במודל הזה עם היכולת הזאת."
+        invalid_seeded_model: "אי אפשר להשתמש במודל הזה עם היכולת הזאת"
+        must_select_model: "קודם יש לבחור LLM"
       endpoints:
         not_configured: "%{display_name} (לא מוגדר)"
         configuration_hint:
@@ -455,3 +457,6 @@ he:
       no_default_llm: לדמות חייב להיות מוגדר default_llm (מודל ברירת מחדל).
       user_not_allowed: המשתמש לא מורשה להשתתף בנושא.
       prompt_message_length: ההודעה %{idx} חורגת ממגבלת 1000 התווים.
+  dashboard:
+    problem:
+      ai_llm_status: "מודל ה־LLM:‏ %{model_name} חווה קשיים. נא לבקר ב<a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>עמוד ההגדרות של המודל</a>."

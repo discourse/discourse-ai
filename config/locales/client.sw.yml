@@ -29,6 +29,11 @@ sw:
     discourse_ai:
       modals:
         select_option: "Chagua chaguo moja..."
+      spam:
+        short_title: "Barua Taka"
+        enable: "Wezesha"
+        test_modal:
+          spam: "Barua Taka"
       usage:
         summary: "Muhtasari"
         username: "Jina la mtumiaji"
@@ -63,6 +68,8 @@ sw:
         edit: "Hariri"
         back: "Iliyopita"
         delete: Futa
+        usage:
+          ai_spam: "Barua Taka"
         next:
           title: "Ijayo"
         tests:

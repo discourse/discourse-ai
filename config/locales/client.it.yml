@@ -127,6 +127,14 @@ it:
       title: "IA"
       modals:
         select_option: "Scegli un'opzione..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Ultimi 7 giorni"
+        enable: "Abilita"
+        test_modal:
+          result: "Risultato"
+          run: "Esegui test"
+          spam: "Spam"
       usage:
         short_title: "Utilizzo"
         summary: "Riepilogo"
@@ -145,6 +153,9 @@ it:
         request_tokens: "Token di richiesta"
         response_tokens: "Token di risposta"
         cached_tokens: "Token in cache"
+        periods:
+          last_day: "Ultime 24 ore"
+          custom: "Personalizza..."
       ai_persona:
         tool_strategies:
           all: "Applica a tutte le risposte"
@@ -288,6 +299,7 @@ it:
           ai_persona: "Personaggio (%{persona})"
           ai_summarization: "Riassumi"
           ai_embeddings_semantic_search: "Ricerca IA"
+          ai_spam: "Spam"
         in_use_warning:
           one: "Questo modello è attualmente utilizzato da %{settings}. Se configurato in modo errato, la funzionalità non funzionerà come previsto."
           other: "Questo modello è attualmente utilizzato da quanto segue: %{settings}. Se configurato in modo errato, le funzionalità non funzioneranno come previsto. "

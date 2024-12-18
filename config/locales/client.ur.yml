@@ -29,10 +29,19 @@ ur:
     discourse_ai:
       modals:
         select_option: "ایک آپشن منتخب کریں..."
+      spam:
+        short_title: "سپَیم"
+        last_seven_days: "پچھلے 7 دن"
+        enable: "فعال کریں"
+        test_modal:
+          spam: "سپَیم"
       usage:
         summary: "Summary"
         username: "صارف نام"
         total_requests: "کُل درخواستیں"
+        periods:
+          last_day: "پچھلے 24 گھنٹے"
+          custom: "ترمیم..."
       ai_persona:
         back: "واپس"
         name: "نام"
@@ -65,6 +74,7 @@ ur:
         delete: مٹائیں
         usage:
           ai_summarization: "خلاصہ"
+          ai_spam: "سپَیم"
         next:
           title: "اگلا"
         tests:

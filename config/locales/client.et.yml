@@ -29,6 +29,11 @@ et:
     discourse_ai:
       modals:
         select_option: "Vali võimalus..."
+      spam:
+        short_title: "Spämm"
+        enable: "Lülita sisse"
+        test_modal:
+          spam: "Spämm"
       usage:
         summary: "Kokkuvõte"
         username: "Kasutajanimi"
@@ -63,6 +68,8 @@ et:
         edit: "Muuda"
         back: "Tagasi"
         delete: Kustuta
+        usage:
+          ai_spam: "Spämm"
         next:
           title: "Järgmine"
         tests:

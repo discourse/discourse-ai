@@ -29,6 +29,11 @@ bs_BA:
     discourse_ai:
       modals:
         select_option: "Odaberi opciju..."
+      spam:
+        short_title: "Spam"
+        enable: "Omogući"
+        test_modal:
+          spam: "Spam"
       usage:
         summary: "Sažetak"
         username: "Nadimak"
@@ -63,6 +68,8 @@ bs_BA:
         edit: "Edit"
         back: "Prethodno"
         delete: Delete
+        usage:
+          ai_spam: "Spam"
         next:
           title: "Iduće"
         tests:

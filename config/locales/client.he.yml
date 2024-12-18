@@ -130,6 +130,26 @@ he:
       title: "בינה מלאכותית"
       modals:
         select_option: "בחירת אפשרות…"
+      spam:
+        short_title: "ספאם"
+        title: "הגדרת טיפול בספאם"
+        select_llm: "בחירת LLM"
+        custom_instructions: "הנחיות מותאמות אישית"
+        last_seven_days: "7 הימים האחרונים"
+        scanned_count: "פוסטים נסרקו"
+        enable: "הפעלה"
+        settings_saved: "הגדרות נשמרו"
+        no_llms: "אין LLMים זמינים"
+        test_button: "בדיקה…"
+        save_button: "שמירת השינויים"
+        test_modal:
+          title: "בדיקת זיהוי ספאם"
+          post_url_label: "כתובת או מזהה של הפוסט"
+          post_url_placeholder: "https://your-forum.com/t/topic/123/4 או מזהה פוסט"
+          result: "תוצאה"
+          run: "הרצת בדיקה"
+          spam: "ספאם"
+          not_spam: "לא ספאם"
       usage:
         short_title: "שימוש"
         summary: "תקציר"
@@ -148,6 +168,21 @@ he:
         request_tokens: "אסימוני בקשה"
         response_tokens: "אסימוני תגובה"
         cached_tokens: "אסימונים שמורים במטמון"
+        no_users: "לא נמצאו נתוני שימוש של משתמשים"
+        no_models: "לא נמצאו נתוני שימוש במודל"
+        no_features: "לא נמצאו נתוני שימוש ביכולת"
+        subheader_description: "אסימונים הם היחידות הבסיסיות שבהם משתמשים LLMים כדי להבין וליצור טקסט, נתוני שימוש עשויים להשפיע על העלויות."
+        stat_tooltips:
+          total_requests: "כל הבקשות שהוגשו ל־LLMים דרך Discourse"
+          total_tokens: "כל האסימונים שבהם נעשה שימוש בעת שליחת בקשות ל־LLM"
+          request_tokens: "אסימונים שנעשה בהם שימוש כאשר ה־LLM מנסה להבין מה נאמר"
+          response_tokens: "אסימונים בשימוש כשה־LLM מגיב לבקשה שלך"
+          cached_tokens: "אסימוני בקשה שעובדו בעבר שה־LLM משתמש בהם כדי לייעל את הביצועים והעלות"
+        periods:
+          last_day: "24 השעות האחרונות"
+          last_week: "בשבוע שעבר"
+          last_month: "בחודש שעבר"
+          custom: "התאמה אישית…"
       ai_persona:
         tool_strategies:
           all: "החלה על כל התגובות"
@@ -293,6 +328,7 @@ he:
           ai_persona: "דמות (%{persona})"
           ai_summarization: "סיכום"
           ai_embeddings_semantic_search: "חיפוש בינה מלאכותית"
+          ai_spam: "ספאם"
         in_use_warning:
           one: "המודל הזה משמש את %{settings}. אם לא מוגדר כראוי, היכולת לא תעבוד כמצופה."
           two: "המודל הזה משמש את: %{settings}. אם ההגדרות שגויות היכולת לא תעבודנה כמצופה."
@@ -348,6 +384,7 @@ he:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "מותאם"
         provider_fields:
           access_key_id: "מזהה מפתח גישה ל־AWS Bedrock"
@@ -356,6 +393,8 @@ he:
           disable_system_prompt: "השבתת הודעת מערכת בבקשות"
           enable_native_tool: "הפעלת תמיכה בכלים מובנים"
           disable_native_tools: "השבתת תמיכה בבלי מובנה (להשתמש בכלים מבוססי XML)"
+          provider_order: "סדר ספקים (רשימה מופרדת בפסיקים)"
+          provider_quantizations: "סדר כימות הספקים (רשימה מופרדת בפסיקים, למשל: fp16,fp8)"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
@@ -425,11 +464,14 @@ he:
           toggle_hidden: "מוסתרות %{count} תוצאות שנמצאו באמצעות בינה מלאכותית"
           none: "חיפוש הבינה המלאכותית שלנו לא מצא נושאים, עמך הסליחה"
           new: "יש ללחוץ על ‚חיפוש’ כדי להתחיל לחפש תוצאות חדשות עם בינה מלאכותית"
+          unavailable: "תוצאות בינה מלאכותית לא זמינות"
+        semantic_search_unavailable_tooltip: "יש לסדר את תוצאות החיפוש לפי רלוונטיות להצגת תוצאות בינה מלאכותית"
         ai_generated_result: "תוצאות חיפוש שנמצאו באמצעות בינה מלאכותית"
         quick_search:
           suffix: "בכל הנושאים והפוסטים עם בינה מלאכותית"
       ai_artifact:
         expand_view_label: "הרחבת תצוגה"
+        collapse_view_label: "יציאה ממסך מלא (כפתורי ESC או Back)"
         click_to_run_label: "הרצת תוצר"
       ai_bot:
         pm_warning: "הודעות בוט שיח בינה מלאכותית לא נאכפות דרך קבע על ידי המפקחים."

@@ -29,10 +29,17 @@ gl:
     discourse_ai:
       modals:
         select_option: "Seleccione unha opción..."
+      spam:
+        short_title: "Lixo"
+        enable: "Activar"
+        test_modal:
+          spam: "Lixo"
       usage:
         summary: "Resumo"
         username: "Nome de usuario"
         total_requests: "Solicitudes totais"
+        periods:
+          custom: "Personalizar..."
       ai_persona:
         back: "Volver"
         name: "Nome"
@@ -64,6 +71,8 @@ gl:
         edit: "Editar"
         back: "Volver"
         delete: Eliminar
+        usage:
+          ai_spam: "Lixo"
         next:
           title: "Seguinte"
         tests:
