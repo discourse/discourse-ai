@@ -5,12 +5,12 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
+import DPageSubheader from "discourse/components/d-page-subheader";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import concatClass from "discourse/helpers/concat-class";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
-import AdminPageSubheader from "admin/components/admin-page-subheader";
 import AiPersonaEditor from "./ai-persona-editor";
 
 export default class AiPersonaListEditor extends Component {
@@ -39,9 +39,11 @@ export default class AiPersonaListEditor extends Component {
       {{#if @currentPersona}}
         <AiPersonaEditor @model={{@currentPersona}} @personas={{@personas}} />
       {{else}}
-        <AdminPageSubheader
-          @titleLabel="discourse_ai.ai_persona.short_title"
-          @descriptionLabel="discourse_ai.ai_persona.persona_description"
+        <DPageSubheader
+          @titleLabel={{i18n "discourse_ai.ai_persona.short_title"}}
+          @descriptionLabel={{i18n
+            "discourse_ai.ai_persona.persona_description"
+          }}
           @learnMoreUrl="https://meta.discourse.org/t/ai-bot-personas/306099"
         >
           <:actions as |actions|>
@@ -52,7 +54,7 @@ export default class AiPersonaListEditor extends Component {
               class="ai-persona-list-editor__new-button"
             />
           </:actions>
-        </AdminPageSubheader>
+        </DPageSubheader>
 
         {{#if @personas}}
           <table class="content-list ai-persona-list-editor d-admin-table">
