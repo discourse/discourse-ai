@@ -7,6 +7,7 @@ import { service } from "@ember/service";
 import { eq, gt, lt } from "truth-helpers";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
+import DPageSubheader from "discourse/components/d-page-subheader";
 import DStatTiles from "discourse/components/d-stat-tiles";
 import DateTimeInputRange from "discourse/components/date-time-input-range";
 import avatar from "discourse/helpers/avatar";
@@ -17,7 +18,6 @@ import i18n from "discourse-common/helpers/i18n";
 import { bind } from "discourse-common/utils/decorators";
 import AdminConfigAreaCard from "admin/components/admin-config-area-card";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
-import AdminPageSubheader from "admin/components/admin-page-subheader";
 import Chart from "admin/components/chart";
 import ComboBox from "select-kit/components/combo-box";
 
@@ -309,10 +309,10 @@ export default class AiUsage extends Component {
 
   <template>
     <div class="ai-usage admin-detail">
-      <AdminPageSubheader
-        @titleLabel="discourse_ai.usage.short_title"
+      <DPageSubheader
+        @titleLabel={{i18n "discourse_ai.usage.short_title"}}
         @learnMoreUrl="https://meta.discourse.org/t/estimating-costs-of-using-llms-for-discourse-ai/307243"
-        @descriptionLabel="discourse_ai.usage.subheader_description"
+        @descriptionLabel={{i18n "discourse_ai.usage.subheader_description"}}
       />
       <div class="ai-usage__filters">
         <div class="ai-usage__filters-dates">

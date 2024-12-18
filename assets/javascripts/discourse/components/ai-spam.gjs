@@ -6,6 +6,7 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
+import DPageSubheader from "discourse/components/d-page-subheader";
 import DStatTiles from "discourse/components/d-stat-tiles";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import DTooltip from "discourse/components/d-tooltip";
@@ -15,7 +16,6 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import i18n from "discourse-common/helpers/i18n";
 import getURL from "discourse-common/lib/get-url";
 import AdminConfigAreaCard from "admin/components/admin-config-area-card";
-import AdminPageSubheader from "admin/components/admin-page-subheader";
 import ComboBox from "select-kit/components/combo-box";
 import SpamTestModal from "./modal/spam-test-modal";
 
@@ -165,9 +165,9 @@ export default class AiSpam extends Component {
   <template>
     <div class="ai-spam">
       <section class="ai-spam__settings">
-        <AdminPageSubheader
-          @titleLabel="discourse_ai.spam.title"
-          @descriptionLabel="discourse_ai.spam.spam_description"
+        <DPageSubheader
+          @titleLabel={{i18n "discourse_ai.spam.title"}}
+          @descriptionLabel={{i18n "discourse_ai.spam.spam_description"}}
         />
 
         <div class="control-group ai-spam__enabled">

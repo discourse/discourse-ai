@@ -2,10 +2,10 @@ import Component from "@glimmer/component";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
+import DPageSubheader from "discourse/components/d-page-subheader";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
-import AdminPageSubheader from "admin/components/admin-page-subheader";
 
 export default class AiToolListEditor extends Component {
   @service adminPluginNavManager;
@@ -16,10 +16,10 @@ export default class AiToolListEditor extends Component {
       @label={{i18n "discourse_ai.tools.short_title"}}
     />
     <section class="ai-tool-list-editor__current admin-detail pull-left">
-      <AdminPageSubheader
-        @titleLabel="discourse_ai.tools.short_title"
+      <DPageSubheader
+        @titleLabel={{i18n "discourse_ai.tools.short_title"}}
         @learnMoreUrl="https://meta.discourse.org/t/ai-bot-custom-tools/314103"
-        @descriptionLabel="discourse_ai.tools.subheader_description"
+        @descriptionLabel={{i18n "discourse_ai.tools.subheader_description"}}
       >
         <:actions as |actions|>
           <actions.Primary
@@ -29,7 +29,7 @@ export default class AiToolListEditor extends Component {
             class="ai-tool-list-editor__new-button"
           />
         </:actions>
-      </AdminPageSubheader>
+      </DPageSubheader>
 
       {{#if @tools}}
         <table class="d-admin-table ai-tool-list-editor">

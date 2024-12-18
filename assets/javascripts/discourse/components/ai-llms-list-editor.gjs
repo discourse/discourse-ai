@@ -4,9 +4,9 @@ import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
+import DPageSubheader from "discourse/components/d-page-subheader";
 import i18n from "discourse-common/helpers/i18n";
 import I18n from "discourse-i18n";
-import AdminPageSubheader from "admin/components/admin-page-subheader";
 import AdminSectionLandingItem from "admin/components/admin-section-landing-item";
 import AdminSectionLandingWrapper from "admin/components/admin-section-landing-wrapper";
 import AiLlmEditor from "./ai-llm-editor";
@@ -121,9 +121,11 @@ export default class AiLlmsListEditor extends Component {
       {{else}}
         {{#if this.hasLlmElements}}
           <section class="ai-llms-list-editor__configured">
-            <AdminPageSubheader
-              @titleLabel="discourse_ai.llms.configured.title"
-              @descriptionLabel="discourse_ai.llms.preconfigured.description"
+            <DPageSubheader
+              @titleLabel={{i18n "discourse_ai.llms.configured.title"}}
+              @descriptionLabel={{i18n
+                "discourse_ai.llms.preconfigured.description"
+              }}
               @learnMoreUrl="https://meta.discourse.org/t/discourse-ai-large-language-model-llm-settings-page/319903"
             />
             <table class="d-admin-table">
@@ -183,11 +185,11 @@ export default class AiLlmsListEditor extends Component {
           </section>
         {{/if}}
         <section class="ai-llms-list-editor__templates">
-          <AdminPageSubheader
-            @titleLabel={{this.preconfiguredTitle}}
+          <DPageSubheader
+            @titleLabel={{i18n this.preconfiguredTitle}}
             @descriptionLabel={{unless
               this.hasLlmElements
-              "discourse_ai.llms.preconfigured.description"
+              (i18n "discourse_ai.llms.preconfigured.description")
             }}
             @learnMoreUrl={{unless
               this.hasLlmElements
