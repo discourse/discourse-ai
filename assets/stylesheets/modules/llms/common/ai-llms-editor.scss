@@ -6,8 +6,9 @@
     margin: 0 0 1em 0;
   }
 
-  &__configured + &__templates {
-    margin-top: 3em;
+  &__configured,
+  &__templates {
+    margin-top: 2em;
   }
 }
 
@@ -66,9 +67,38 @@
   }
 }
 
+.ai-llms-list-editor__configured,
+.ai-llms-list-editor__templates {
+  h2 {
+    font-size: var(--font-up-1);
+  }
+}
+
 .ai-llms-list-editor__configured {
   .d-toggle-switch {
     justify-content: center;
+  }
+}
+
+.ai-tool-list-editor__current,
+.ai-persona-list-editor__current,
+.ai-llms-list-editor__configured {
+  .d-admin-table {
+    tr:hover {
+      background: inherit;
+    }
+    th,
+    td {
+      &:first-child {
+        padding-left: 0;
+      }
+    }
+    th,
+    td {
+      &:last-child {
+        padding-right: 0;
+      }
+    }
   }
 }
 
