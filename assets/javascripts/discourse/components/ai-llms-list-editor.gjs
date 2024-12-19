@@ -119,14 +119,17 @@ export default class AiLlmsListEditor extends Component {
           @llmTemplate={{@llmTemplate}}
         />
       {{else}}
+        <DPageSubheader
+          @titleLabel={{i18n "discourse_ai.llms.short_title"}}
+          @descriptionLabel={{i18n
+            "discourse_ai.llms.preconfigured.description"
+          }}
+          @learnMoreUrl="https://meta.discourse.org/t/discourse-ai-large-language-model-llm-settings-page/319903"
+        />
         {{#if this.hasLlmElements}}
           <section class="ai-llms-list-editor__configured">
             <DPageSubheader
               @titleLabel={{i18n "discourse_ai.llms.configured.title"}}
-              @descriptionLabel={{i18n
-                "discourse_ai.llms.preconfigured.description"
-              }}
-              @learnMoreUrl="https://meta.discourse.org/t/discourse-ai-large-language-model-llm-settings-page/319903"
             />
             <table class="d-admin-table">
               <thead>
@@ -185,18 +188,7 @@ export default class AiLlmsListEditor extends Component {
           </section>
         {{/if}}
         <section class="ai-llms-list-editor__templates">
-          <DPageSubheader
-            @titleLabel={{i18n this.preconfiguredTitle}}
-            @descriptionLabel={{unless
-              this.hasLlmElements
-              (i18n "discourse_ai.llms.preconfigured.description")
-            }}
-            @learnMoreUrl={{unless
-              this.hasLlmElements
-              "https://meta.discourse.org/t/discourse-ai-large-language-model-llm-settings-page/319903"
-            }}
-          />
-
+          <DPageSubheader @titleLabel={{i18n this.preconfiguredTitle}} />
           <AdminSectionLandingWrapper
             class="ai-llms-list-editor__templates-list"
           >
