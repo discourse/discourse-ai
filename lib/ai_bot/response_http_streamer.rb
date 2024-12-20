@@ -8,21 +8,19 @@ module DiscourseAi
 
       class << self
         def thread_pool
+          # we use our thread pool implementation here for a few reasons:
+          #
+          # 1. Free multisite support
+          # 2. Unlike Concurrent::CachedThreadPool, we spin back down to 0 threads automatiaclly see: https://github.com/ruby-concurrency/concurrent-ruby/issues/1075
+          # 3. Better internal error handling
           @thread_pool ||=
-            Concurrent::CachedThreadPool.new(min_threads: 0, max_threads: POOL_SIZE, idletime: 30)
+            Scheduler::ThreadPool.new(min_threads: 0, max_threads: POOL_SIZE, idle_time: 30)
         end
 
         def schedule_block(&block)
-          # think about a better way to handle cross thread connections
-          if Rails.env.test?
-            block.call
-            return
-          end
-
-          db = RailsMultisite::ConnectionManagement.current_db
           thread_pool.post do
             begin
-              RailsMultisite::ConnectionManagement.with_connection(db) { block.call }
+              block.call
             rescue StandardError => e
               Discourse.warn_exception(e, message: "Discourse AI: Unable to stream reply")
             end
