@@ -84,21 +84,22 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
       )
     end
 
-    it "shows an info alert to the user about the seeded LLM" do
+    it "seeded LLM has a description" do
       visit "/admin/plugins/discourse-ai/ai-llms"
-      find("[data-llm-id='#{llm_model.name}'] .ai-llm-list__edit-button").click()
+
+      description = I18n.t("discourse_ai.llms.preseeded_model_description", model: llm_model.name)
+
       expect(page).to have_css(
-        ".alert.alert-info",
-        text: I18n.t("js.discourse_ai.llms.seeded_warning"),
+        "[data-llm-id='#{llm_model.name}'] .ai-llm-list__description",
+        text: description,
       )
     end
 
-    it "limits and shows disabled inputs for the seeded LLM" do
+    it "seeded LLM has a disabled edit button" do
       visit "/admin/plugins/discourse-ai/ai-llms"
-      find("[data-llm-id='cdck-hosted'] .ai-llm-list__edit-button").click()
-      expect(page).to have_css(".ai-llm-editor__display-name[disabled]")
-      expect(page).to have_css(".ai-llm-editor__name[disabled]")
-      expect(page).to have_css(".ai-llm-editor__provider.is-disabled")
+      expect(page).to have_css(
+        "[data-llm-id='#{llm_model.name}'] .ai-llm-list__edit-button.disabled",
+      )
     end
   end
 end

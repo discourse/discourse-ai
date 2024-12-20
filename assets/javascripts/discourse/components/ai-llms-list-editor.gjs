@@ -193,7 +193,7 @@ export default class AiLlmsListEditor extends Component {
                         <DTooltip class="ai-llm-list__edit-disabled-tooltip">
                           <:trigger>
                             <DButton
-                              class="btn btn.default btn-small disabled"
+                              class="btn btn-default btn-small disabled"
                               @label="discourse_ai.llms.edit"
                             />
                           </:trigger>
