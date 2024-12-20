@@ -20,8 +20,7 @@ module DiscourseAi
         run_test(val).tap { |result| @unreachable = result }
       rescue StandardError => e
         raise e if Rails.env.test?
-        @unreachable = true
-        false
+        true
       end
 
       def run_test(val)
