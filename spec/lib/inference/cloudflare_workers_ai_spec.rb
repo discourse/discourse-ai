@@ -4,6 +4,8 @@ require "rails_helper"
 require "webmock/rspec"
 
 RSpec.describe DiscourseAi::Inference::CloudflareWorkersAi do
+  subject { described_class.new(account_id, api_token, model) }
+
   let(:account_id) { "test_account_id" }
   let(:api_token) { "test_api_token" }
   let(:model) { "test_model" }
@@ -19,8 +21,6 @@ RSpec.describe DiscourseAi::Inference::CloudflareWorkersAi do
     }
   end
   let(:payload) { { text: [content] }.to_json }
-
-  subject { described_class.new(account_id, api_token, model) }
 
   before do
     stub_request(:post, endpoint).with(body: payload, headers: headers).to_return(
@@ -54,10 +54,11 @@ RSpec.describe DiscourseAi::Inference::CloudflareWorkersAi do
       let(:response_body) { "Internal Server Error" }
 
       it "raises a Net::HTTPBadResponse error" do
-        expect(Rails.logger).to receive(:warn).with(
+        allow(Rails.logger).to receive(:warn)
+        expect { subject.perform!(content) }.to raise_error(Net::HTTPBadResponse)
+        expect(Rails.logger).to have_received(:warn).with(
           "Cloudflare Workers AI Embeddings failed with status: #{response_status} body: #{response_body}",
         )
-        expect { subject.perform!(content) }.to raise_error(Net::HTTPBadResponse)
       end
     end
   end
