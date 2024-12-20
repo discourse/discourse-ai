@@ -365,7 +365,7 @@ en:
           mistral-mistral-large-latest: "Mistral's most powerful model"
           mistral-pixtral-large-latest: "Mistral's most powerful vision capable model"
 
-        preseeded_model_description: "Preconfigured open-source model utilizing %{model}"
+        preseeded_model_description: "Pre-configured open-source model utilizing %{model}"
 
         configured:
           title: "Configured LLMs"
