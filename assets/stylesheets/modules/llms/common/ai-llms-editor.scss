@@ -87,16 +87,18 @@
     tr:hover {
       background: inherit;
     }
-    th,
-    td {
-      &:first-child {
-        padding-left: 0;
+    @include breakpoint("tablet", min-width) {
+      th,
+      td {
+        &:first-child {
+          padding-left: 0;
+        }
       }
-    }
-    th,
-    td {
-      &:last-child {
-        padding-right: 0;
+      th,
+      td {
+        &:last-child {
+          padding-right: 0;
+        }
       }
     }
   }
@@ -156,5 +158,16 @@
     border: 1px solid var(--primary-low);
     padding: 1px 3px;
     margin-right: 0.5em;
+  }
+}
+
+.ai-llm-list__seeded-model {
+  color: var(--primary-high);
+  font-size: var(--font-down-1);
+}
+
+@include breakpoint("tablet") {
+  .ai-llm-list__description {
+    max-width: 80%;
   }
 }
