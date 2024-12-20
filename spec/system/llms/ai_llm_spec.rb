@@ -87,12 +87,11 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     it "seeded LLM has a description" do
       visit "/admin/plugins/discourse-ai/ai-llms"
 
-      description =
-        I18n.t("js.discourse_ai.llms.preseeded_model_description", model: llm_model.name)
+      desc = I18n.t("js.discourse_ai.llms.preseeded_model_description", model: llm_model.name)
 
       expect(page).to have_css(
         "[data-llm-id='#{llm_model.name}'] .ai-llm-list__description",
-        text: description,
+        text: desc,
       )
     end
 
