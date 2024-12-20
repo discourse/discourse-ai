@@ -27,10 +27,12 @@ module ::DiscourseAi
           "Authorization" => "Bearer #{api_token}",
         }
 
+        payload = { text: [content] }
+
         endpoint = "https://api.cloudflare.com/client/v4/accounts/#{account_id}/ai/run/@cf/#{model}"
 
         conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
-        response = conn.post(endpoint, content.to_json, headers)
+        response = conn.post(endpoint, payload.to_json, headers)
 
         case response.status
         when 200
