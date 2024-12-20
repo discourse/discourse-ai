@@ -21,7 +21,7 @@ module DiscourseAi
       rescue StandardError => e
         raise e if Rails.env.test?
         @unreachable = true
-        false
+        true
       end
 
       def run_test(val)
