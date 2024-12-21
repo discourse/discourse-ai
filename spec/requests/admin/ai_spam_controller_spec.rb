@@ -202,7 +202,7 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
         # only includes fabricated model
         expect(json["available_llms"].length).to eq(1)
 
-        SiteSetting.ai_spam_detection_model_allowed_seeded_models = [seeded_llm.id.to_s]
+        SiteSetting.ai_spam_detection_model_allowed_seeded_models = seeded_llm.id.to_s
 
         get "/admin/plugins/discourse-ai/ai-spam.json"
         expect(response.status).to eq(200)
