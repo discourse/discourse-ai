@@ -109,10 +109,12 @@ module DiscourseAi
         schema
           .asymmetric_similarity_search(raw_vector, limit: limit, offset: 0) do |builder|
             builder.join("topics t on t.id = topic_id")
-            builder.where(<<~SQL, exclude_category_ids: muted_category_ids.map(&:to_i))
-            t.category_id NOT IN (:exclude_category_ids) AND
-            t.category_id NOT IN (SELECT categories.id FROM categories WHERE categories.parent_category_id IN (:exclude_category_ids))
-          SQL
+            unless muted_category_ids.empty?
+              builder.where(<<~SQL, exclude_category_ids: muted_category_ids.map(&:to_i))
+                t.category_id NOT IN (:exclude_category_ids) AND
+                t.category_id NOT IN (SELECT categories.id FROM categories WHERE categories.parent_category_id IN (:exclude_category_ids))
+              SQL
+            end
           end
           .map { |r| [r.topic_id, r.distance] }
       end
