@@ -59,7 +59,7 @@ module DiscourseAi
         if allowed_seeded_llms.is_a?(Array)
           values =
             values.filter do |value_h|
-              value_h[:value] > 0 || allowed_seeded_llms.include?("custom:#{value_h[:value]}")
+              value_h[:value] > 0 || allowed_seeded_llms.include?("#{value_h[:value]}")
             end
         end
 
