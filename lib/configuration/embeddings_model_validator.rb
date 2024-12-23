@@ -35,11 +35,8 @@ module DiscourseAi
       end
 
       def can_generate_embeddings?(val)
-        DiscourseAi::Embeddings::VectorRepresentations::Base
-          .find_representation(val)
-          .new(DiscourseAi::Embeddings::Strategies::Truncation.new)
-          .vector_from("this is a test")
-          .present?
+        vdef = DiscourseAi::Embeddings::VectorRepresentations::Base.find_representation(val).new
+        DiscourseAi::Embeddings::Vector.new(vdef).vector_from("this is a test").present?
       end
     end
   end
