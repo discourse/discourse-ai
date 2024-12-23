@@ -42,8 +42,9 @@ module DiscourseAi
       def can_generate_embeddings?(val)
         DiscourseAi::Embeddings::VectorRepresentations::Base
           .find_representation(val)
-          .new(DiscourseAi::Embeddings::Strategies::Truncation.new)
-          .vector_from("this is a test")
+          .new
+          .inference_client
+          .perform!("this is a test")
           .present?
       end
     end
