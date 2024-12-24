@@ -57,7 +57,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
         "custom_prompt",
         "explain",
         "detect_text_locale",
-        "replace_dates"
+        "replace_dates",
       )
     end
 
@@ -71,7 +71,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
         "proofread",
         "markdown_table",
         "custom_prompt",
-        "replace_dates"
+        "replace_dates",
       )
     end
 
@@ -111,7 +111,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
           "explain",
           "illustrate_post",
           "detect_text_locale",
-          "replace_dates"
+          "replace_dates",
         )
       end
     end
