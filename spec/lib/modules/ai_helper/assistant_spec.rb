@@ -48,7 +48,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     it "returns all available prompts" do
       prompts = subject.available_prompts(user)
 
-      expect(prompts.length).to eq(7)
+      expect(prompts.length).to eq(8)
       expect(prompts.map { |p| p[:name] }).to contain_exactly(
         "translate",
         "generate_titles",
@@ -57,19 +57,21 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
         "custom_prompt",
         "explain",
         "detect_text_locale",
+        "replace_dates"
       )
     end
 
     it "returns all prompts to be shown in the composer" do
       prompts = subject.available_prompts(user)
       filtered_prompts = prompts.select { |prompt| prompt[:location].include?("composer") }
-      expect(filtered_prompts.length).to eq(5)
+      expect(filtered_prompts.length).to eq(6)
       expect(filtered_prompts.map { |p| p[:name] }).to contain_exactly(
         "translate",
         "generate_titles",
         "proofread",
         "markdown_table",
         "custom_prompt",
+        "replace_dates"
       )
     end
 
@@ -99,7 +101,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       it "returns the illustrate_post prompt in the list of all prompts" do
         prompts = subject.available_prompts(user)
 
-        expect(prompts.length).to eq(8)
+        expect(prompts.length).to eq(9)
         expect(prompts.map { |p| p[:name] }).to contain_exactly(
           "translate",
           "generate_titles",
@@ -109,6 +111,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
           "explain",
           "illustrate_post",
           "detect_text_locale",
+          "replace_dates"
         )
       end
     end

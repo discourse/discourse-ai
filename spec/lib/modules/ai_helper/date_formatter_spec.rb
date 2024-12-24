@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::DateFormatter do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   # Reference time is Tuesday Jan 16th, 2024 at 2:30 PM Sydney time
   let(:sydney_reference) { DateTime.parse("2024-01-16 14:30:00 +11:00") }

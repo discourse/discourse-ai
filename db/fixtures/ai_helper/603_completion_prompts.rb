@@ -241,19 +241,16 @@ CompletionPrompt.seed do |cp|
     examples: [
       [
         "<input>The meeting is at 2pm tomorrow</input>",
-        "<output>The meeting is at {{datetime:2pm+1}}</output>"
+        "<output>The meeting is at {{datetime:2pm+1}}</output>",
       ],
-      [
-        "<input>Due in 3 days</input>",
-        "<output>Due {{date:3}}</output>"
-      ],
+      ["<input>Due in 3 days</input>", "<output>Due {{date:3}}</output>"],
       [
         "<input>Meeting next Tuesday at 2pm</input>",
-        "<output>Meeting {{next_week:tuesday-2pm}}</output>"
+        "<output>Meeting {{next_week:tuesday-2pm}}</output>",
       ],
       [
         "<input>Meeting from 2pm to 4pm tomorrow</input>",
-        "<output>Meeting {{datetime:2pm+1:4pm+1}}</output>"
+        "<output>Meeting {{datetime:2pm+1:4pm+1}}</output>",
       ],
       [
         "<input>Meeting notes for tomorrow:
@@ -265,8 +262,8 @@ CompletionPrompt.seed do |cp|
 * Action items in `config.rb`
 * Review PR #1234
 * Deadline is {{datetime:5pm+1}}
-* Check [this link](https://example.com)</output>"
+* Check [this link](https://example.com)</output>",
       ],
-    ]
+    ],
   }
 end

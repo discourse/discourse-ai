@@ -19,7 +19,7 @@ describe Plugin::Instance do
 
     it "returns the available prompts" do
       expect(serializer.ai_helper_prompts).to be_present
-      expect(serializer.ai_helper_prompts.object.count).to eq(7)
+      expect(serializer.ai_helper_prompts.object.count).to eq(8)
     end
   end
 end
