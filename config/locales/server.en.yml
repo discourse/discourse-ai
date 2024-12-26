@@ -233,7 +233,7 @@ en:
         custom_prompt: "Custom Prompt"
         explain: "Explain"
         illustrate_post: "Illustrate Post"
-        replace_dates: "Smart Dates"
+        replace_dates: "Smart dates"
       painter:
         attribution:
           stable_diffusion_xl: "Image by Stable Diffusion XL"

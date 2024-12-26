@@ -230,7 +230,7 @@ module DiscourseAi
         when "illustrate_post"
           "images"
         when "replace_dates"
-          "address-book"
+          "calendar-days"
         else
           nil
         end
