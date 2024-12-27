@@ -141,6 +141,45 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
 
       expect(prompt.messages[0][:content].strip).to eq("This is a English (US) test")
     end
+
+    context "with temporal context" do
+      let(:prompt) do
+        CompletionPrompt.new(
+          messages: {
+            insts: "Current context: {{temporal_context}}",
+          },
+        ).messages_with_input("test")
+      end
+
+      it "replaces temporal context with timezone information" do
+        timezone = "America/New_York"
+        user.user_option.update!(timezone: timezone)
+        freeze_time "2024-01-01 12:00:00"
+
+        subject.localize_prompt!(prompt, user)
+
+        content = prompt.messages[0][:content]
+
+        expect(content).to include(%("timezone":"America/New_York"))
+      end
+
+      it "uses UTC as default timezone when user timezone is not set" do
+        user.user_option.update!(timezone: nil)
+
+        freeze_time "2024-01-01 12:00:00" do
+          subject.localize_prompt!(prompt, user)
+
+          parsed_context = JSON.parse(prompt.messages[0][:content].match(/context: (.+)$/)[1])
+          expect(parsed_context["user"]["timezone"]).to eq("UTC")
+        end
+      end
+
+      it "does not replace temporal context when user is nil" do
+        prompt_content = prompt.messages[0][:content].dup
+        subject.localize_prompt!(prompt, nil)
+        expect(prompt.messages[0][:content]).to eq(prompt_content)
+      end
+    end
   end
 
   describe "#generate_and_send_prompt" do

@@ -60,7 +60,7 @@ module DiscourseAi
 
       def custom_locale_instructions(user = nil, force_default_locale)
         locale = SiteSetting.default_locale
-        locale = user.effective_locale if !force_default_locale
+        locale = user.effective_locale if !force_default_locale && user
         locale_hash = LocaleSiteSetting.language_names[locale]
 
         if locale != "en" && locale_hash
@@ -71,7 +71,7 @@ module DiscourseAi
         end
       end
 
-      def localize_prompt!(prompt, user = nil, force_default_locale)
+      def localize_prompt!(prompt, user = nil, force_default_locale = false)
         locale_instructions = custom_locale_instructions(user, force_default_locale)
         if locale_instructions
           prompt.messages[0][:content] = prompt.messages[0][:content] + locale_instructions
