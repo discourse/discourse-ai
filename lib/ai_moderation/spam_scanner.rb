@@ -337,6 +337,8 @@ module DiscourseAi
         url = "#{Discourse.base_url}/admin/plugins/discourse-ai/ai-spam"
         reason = I18n.t("discourse_ai.spam_detection.flag_reason", url: url)
 
+        flagging_user = self.flagging_user
+
         result =
           PostActionCreator.new(
             flagging_user,
@@ -347,9 +349,20 @@ module DiscourseAi
           ).perform
 
         log.update!(reviewable: result.reviewable)
-        SpamRule::AutoSilence.new(post.user, post).silence_user
-        # this is required cause tl1 is not auto hidden
-        # we want to also handle tl1
+
+        reason = I18n.t("discourse_ai.spam_detection.silence_reason", url: url)
+        silencer =
+          UserSilencer.new(
+            post.user,
+            flagging_user,
+            message: :too_many_spam_flags,
+            post_id: post.id,
+            reason: reason,
+            keep_posts: true,
+          )
+        silencer.silence
+
+        # silencer will not hide tl1 posts, so we do this here
         hide_posts_and_topics(post.user)
       end
 

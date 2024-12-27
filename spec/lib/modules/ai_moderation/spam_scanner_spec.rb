@@ -215,6 +215,15 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       expect(post.user.reload.silenced_till).to be_present
       expect(post.topic.reload.visible).to eq(false)
 
+      history = UserHistory.where(action: UserHistory.actions[:silence_user]).order(:id).last
+
+      url = "#{Discourse.base_url}/admin/plugins/discourse-ai/ai-spam"
+
+      expect(history.target_user_id).to eq(post.user_id)
+      expect(history.details).to include(
+        I18n.t("discourse_ai.spam_detection.silence_reason", url: url),
+      )
+
       expect(log.reviewable).to be_present
       expect(log.reviewable.created_by_id).to eq(described_class.flagging_user.id)
     end
