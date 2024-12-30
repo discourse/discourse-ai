@@ -60,7 +60,7 @@ module DiscourseAi
 
       def custom_locale_instructions(user = nil, force_default_locale)
         locale = SiteSetting.default_locale
-        locale = user.effective_locale if !force_default_locale
+        locale = user.effective_locale if !force_default_locale && user
         locale_hash = LocaleSiteSetting.language_names[locale]
 
         if locale != "en" && locale_hash
@@ -71,7 +71,7 @@ module DiscourseAi
         end
       end
 
-      def localize_prompt!(prompt, user = nil, force_default_locale)
+      def localize_prompt!(prompt, user = nil, force_default_locale = false)
         locale_instructions = custom_locale_instructions(user, force_default_locale)
         if locale_instructions
           prompt.messages[0][:content] = prompt.messages[0][:content] + locale_instructions
@@ -88,6 +88,29 @@ module DiscourseAi
             "%LANGUAGE%",
             "#{locale_hash["name"]}",
           )
+        end
+
+        if user && prompt.messages[0][:content].include?("{{temporal_context}}")
+          timezone = user.user_option.timezone || "UTC"
+          current_time = Time.now.in_time_zone(timezone)
+
+          temporal_context = {
+            utc_date_time: current_time.iso8601,
+            local_time: current_time.strftime("%H:%M"),
+            user: {
+              timezone: timezone,
+              weekday: current_time.strftime("%A"),
+            },
+          }
+
+          prompt.messages[0][:content] = prompt.messages[0][:content].gsub(
+            "{{temporal_context}}",
+            temporal_context.to_json,
+          )
+
+          prompt.messages.each do |message|
+            message[:content] = DateFormatter.process_date_placeholders(message[:content], user)
+          end
         end
       end
 
@@ -206,6 +229,8 @@ module DiscourseAi
           "question"
         when "illustrate_post"
           "images"
+        when "replace_dates"
+          "calendar-days"
         else
           nil
         end
@@ -232,6 +257,8 @@ module DiscourseAi
         when "summarize"
           %w[post]
         when "illustrate_post"
+          %w[composer]
+        when "replace_dates"
           %w[composer]
         else
           %w[]
