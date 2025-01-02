@@ -13,7 +13,7 @@ import I18n, { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiIndicatorWave from "./ai-indicator-wave";
 
-export default class AiSemanticSearch extends Component {
+export default class AiFullPageSearch extends Component {
   @service appEvents;
   @service router;
   @service siteSettings;
