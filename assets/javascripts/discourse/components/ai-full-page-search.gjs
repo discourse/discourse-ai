@@ -11,13 +11,9 @@ import { isValidSearchTerm, translateResults } from "discourse/lib/search";
 import icon from "discourse-common/helpers/d-icon";
 import I18n, { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
-import AiIndicatorWave from "../../components/ai-indicator-wave";
+import AiIndicatorWave from "./ai-indicator-wave";
 
-export default class SemanticSearch extends Component {
-  static shouldRender(_args, { siteSettings }) {
-    return siteSettings.ai_embeddings_semantic_search_enabled;
-  }
-
+export default class AiFullPageSearch extends Component {
   @service appEvents;
   @service router;
   @service siteSettings;
@@ -26,8 +22,8 @@ export default class SemanticSearch extends Component {
   @tracked searching;
   @tracked AiResults = [];
   @tracked showingAiResults = false;
-  @tracked sortOrder = this.args.outletArgs.sortOrder;
-  initialSearchTerm = this.args.outletArgs.search;
+  @tracked sortOrder = this.args.sortOrder;
+  initialSearchTerm = this.args.searchTerm;
 
   constructor() {
     super(...arguments);
@@ -46,7 +42,7 @@ export default class SemanticSearch extends Component {
       return;
     }
 
-    this.initialSearchTerm = this.args.outletArgs.search;
+    this.initialSearchTerm = this.args.searchTerm;
     this.searching = true;
     this.resetAiResults();
     return this.performHyDESearch();
@@ -110,16 +106,16 @@ export default class SemanticSearch extends Component {
   }
 
   get searchTerm() {
-    if (this.initialSearchTerm !== this.args.outletArgs.search) {
+    if (this.initialSearchTerm !== this.args.searchTerm) {
       this.initialSearchTerm = undefined;
     }
 
-    return this.args.outletArgs.search;
+    return this.args.searchTerm;
   }
 
   get searchEnabled() {
     return (
-      this.args.outletArgs.type === SEARCH_TYPE_DEFAULT &&
+      this.args.searchType === SEARCH_TYPE_DEFAULT &&
       isValidSearchTerm(this.searchTerm, this.siteSettings) &&
       this.validSearchOrder
     );
@@ -128,9 +124,9 @@ export default class SemanticSearch extends Component {
   @action
   toggleAiResults() {
     if (this.showingAiResults) {
-      this.args.outletArgs.addSearchResults([], "topic_id");
+      this.args.addSearchResults([], "topic_id");
     } else {
-      this.args.outletArgs.addSearchResults(this.AiResults, "topic_id");
+      this.args.addSearchResults(this.AiResults, "topic_id");
     }
     this.showingAiResults = !this.showingAiResults;
   }
@@ -139,7 +135,7 @@ export default class SemanticSearch extends Component {
   resetAiResults() {
     this.AiResults = [];
     this.showingAiResults = false;
-    this.args.outletArgs.addSearchResults([], "topic_id");
+    this.args.addSearchResults([], "topic_id");
   }
 
   performHyDESearch() {
@@ -168,8 +164,8 @@ export default class SemanticSearch extends Component {
 
   @action
   sortChanged() {
-    if (this.sortOrder !== this.args.outletArgs.sortOrder) {
-      this.sortOrder = this.args.outletArgs.sortOrder;
+    if (this.sortOrder !== this.args.sortOrder) {
+      this.sortOrder = this.args.sortOrder;
 
       if (this.validSearchOrder) {
         this.onSearch();
@@ -181,7 +177,7 @@ export default class SemanticSearch extends Component {
   }
 
   <template>
-    <span {{didUpdate this.sortChanged @outletArgs.sortOrder}}></span>
+    <span {{didUpdate this.sortChanged @sortOrder}}></span>
     <div class="semantic-search__container search-results" role="region">
       <div class="semantic-search__results">
         <div
