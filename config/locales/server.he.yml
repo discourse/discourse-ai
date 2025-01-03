@@ -225,6 +225,7 @@ he:
         custom_prompt: "בקשה מותאמת אישית"
         explain: "הסבר"
         illustrate_post: "איור פוסט"
+        replace_dates: "תאריכים חכמים"
       painter:
         attribution:
           stable_diffusion_xl: "תמונה מאת Stable Diffusion XL"
@@ -244,6 +245,7 @@ he:
         conversation_deleted: "שיתוף השיחה נמחק בהצלחה"
     spam_detection:
       flag_reason: "סומן כספאם ע״י <a href='%{url}'>בינה מלאכותית של Discourse</a>"
+      silence_reason: "המשתמש הושתק אוטומטית על ידי <a href='%{url}'>בינה מלאכותית של Discourse</a>"
     ai_bot:
       reply_error: "נראה שהמערכת שלך נתקלה בקשיים לא צפויים בעת הניסיון להשיב, עמך הסליחה.\n\n[details='פרטי השגיאה']\n%{details}\n[/details]"
       default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
