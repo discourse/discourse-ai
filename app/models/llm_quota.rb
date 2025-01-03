@@ -16,9 +16,31 @@ class LlmQuota < ActiveRecord::Base
   validate :at_least_one_limit
 
   def self.within_quota?(llm, user)
+    return true if user.blank?
+    quotas = joins(:group).where(llm_model: llm).where(group: user.groups)
+
+    return true if quotas.empty?
+    quotas.each do |quota|
+      usage = LlmQuotaUsage.find_or_create_for(user: user, llm_quota: quota)
+      begin
+        usage.check_quota!
+      rescue LlmQuotaUsage::QuotaExceededError
+        return false
+      end
+    end
+
+    true
   end
 
   def self.log_usage(llm, user, input_tokens, output_tokens)
+    return if user.blank?
+
+    quotas = joins(:group).where(llm_model: llm).where(group: user.groups)
+
+    quotas.each do |quota|
+      usage = LlmQuotaUsage.find_or_create_for(user: user, llm_quota: quota)
+      usage.increment_usage!(input_tokens: input_tokens, output_tokens: output_tokens)
+    end
   end
 
   def available_tokens
@@ -50,4 +72,9 @@ end
 #  duration_seconds :integer          not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#
+# Indexes
+#
+#  index_llm_quotas_on_group_id_and_llm_model_id  (group_id,llm_model_id) UNIQUE
+#  index_llm_quotas_on_llm_model_id               (llm_model_id)
 #
