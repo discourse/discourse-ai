@@ -65,6 +65,12 @@ module DiscourseAi
           partial_tool_calls: false,
           &blk
         )
+          if !LlmQuota.within_quota?(@llm_model, user)
+            raise LlmQuotaUsage::QuotaExceededError.new(
+                    I18n.t("discourse_ai.errors.quota_exceeded"),
+                  )
+          end
+
           @partial_tool_calls = partial_tool_calls
           model_params = normalize_model_params(model_params)
           orig_blk = blk
@@ -188,10 +194,9 @@ module DiscourseAi
               if log
                 log.raw_response_payload = response_raw
                 final_log_update(log)
-
                 log.response_tokens = tokenizer.size(partials_raw) if log.response_tokens.blank?
                 log.save!
-
+                LlmQuota.log_usage(@llm_model, user, log.request_tokens, log.response_tokens)
                 if Rails.env.development?
                   puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
                 end

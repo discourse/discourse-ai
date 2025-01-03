@@ -103,14 +103,19 @@ end
 #
 # Table name: llm_quota_usages
 #
-#  id                :bigint           not null, primary key
-#  user_id          :bigint           not null
-#  llm_quota_id     :bigint           not null
-#  input_tokens_used :integer          not null
-#  output_tokens_used:integer          not null
-#  usages           :integer          not null
-#  started_at       :datetime         not null
-#  reset_at         :datetime         not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
+#  id                 :bigint           not null, primary key
+#  user_id            :bigint           not null
+#  llm_quota_id       :bigint           not null
+#  input_tokens_used  :integer          not null
+#  output_tokens_used :integer          not null
+#  usages             :integer          not null
+#  started_at         :datetime         not null
+#  reset_at           :datetime         not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#
+# Indexes
+#
+#  index_llm_quota_usages_on_llm_quota_id              (llm_quota_id)
+#  index_llm_quota_usages_on_user_id_and_llm_quota_id  (user_id,llm_quota_id) UNIQUE
 #
