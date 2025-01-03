@@ -359,6 +359,7 @@ de:
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Leistungsstarkes Mehrzweckmodell"
           mistral-mistral-large-latest: "Das leistungsstärkste Modell von Mistral"
           mistral-pixtral-large-latest: "Das leistungsstärkste Modell von Mistral mit Sichtfunktion"
+        preseeded_model_description: "Vorkonfiguriertes Open-Source-Modell unter Verwendung von %{model}"
         configured:
           title: "Konfigurierte LLMs"
         preconfigured_llms: "Wähle dein LLM"
