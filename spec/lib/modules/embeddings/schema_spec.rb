@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Embeddings::Schema do
-  subject(:posts_schema) { described_class.for(Post, vector_def: vector_def) }
+  subject(:posts_schema) { described_class.for(Post) }
 
+  fab!(:vector_def) { Fabricate(:cloudflare_embedding_def) }
   let(:embeddings) { [0.0038490295] * vector_def.dimensions }
   fab!(:post) { Fabricate(:post, post_number: 1) }
   let(:digest) { OpenSSL::Digest.hexdigest("SHA1", "test") }
-  let(:vector_def) { DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2.new }
+
+  before { SiteSetting.ai_embeddings_selected_model = vector_def.id }
 
   before { posts_schema.store(post, embeddings, digest) }
 

@@ -7,18 +7,22 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   let(:query) { "test_query" }
   let(:subject) { described_class.new(Guardian.new(user)) }
 
-  before { assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model) }
+  fab!(:vector_def) { Fabricate(:embedding_definition) }
+
+  before do
+    SiteSetting.ai_embeddings_selected_model = vector_def.id
+    assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model)
+  end
 
   describe "#search_for_topics" do
     let(:hypothetical_post) { "This is an hypothetical post generated from the keyword test_query" }
-    let(:vector_def) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
     let(:hyde_embedding) { [0.049382] * vector_def.dimensions }
 
     before do
       SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
 
       EmbeddingsGenerationStubs.discourse_service(
-        SiteSetting.ai_embeddings_model,
+        vector_def.lookup_custom_param("model_name"),
         hypothetical_post,
         hyde_embedding,
       )

@@ -68,14 +68,11 @@ en:
     ai_auto_image_caption_allowed_groups: "Users on these groups can toggle automatic image captioning."
 
     ai_embeddings_enabled: "Enable the embeddings module."
-    ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"
-    ai_embeddings_discourse_service_api_key: "API key for the embeddings API"
-    ai_embeddings_model: "Use all-mpnet-base-v2 for local and fast inference in english, text-embedding-ada-002 to use OpenAI API (need API key) and multilingual-e5-large for local multilingual embeddings"
+    ai_embeddings_selected_model: "Use the selected model for generating embeddings."
     ai_embeddings_generate_for_pms: "Generate embeddings for personal messages."
     ai_embeddings_semantic_related_topics_enabled: "Use Semantic Search for related topics."
     ai_embeddings_semantic_related_topics: "Maximum number of topics to show in related topic section."
     ai_embeddings_backfill_batch_size: "Number of embeddings to backfill every 15 minutes."
-    ai_embeddings_pg_connection_string: "PostgreSQL connection string for the embeddings module. Needs pgvector extension enabled and a series of tables created. See docs for more info."
     ai_embeddings_semantic_search_enabled: "Enable full-page semantic search."
     ai_embeddings_semantic_quick_search_enabled: "Enable semantic search option in search menu popup."
     ai_embeddings_semantic_related_include_closed_topics: "Include closed topics in semantic search results"
@@ -439,11 +436,7 @@ en:
     embeddings:
       configuration:
         disable_embeddings: "You have to disable 'ai embeddings enabled' first."
-        choose_model: "Set 'ai embeddings model' first."
-        model_unreachable: "We failed to generate a test embedding with this model. Check your settings are correct."
-        hint:
-          one: "Make sure the `%{settings}` setting was configured."
-          other: "Make sure the settings of the provider you want were configured. Options are: %{settings}"
+        choose_model: "Set 'ai embeddings selected model' first."
 
     llm_models:
       missing_provider_param: "%{param} can't be blank"
