@@ -6,7 +6,7 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
       def index
-        llms = LlmModel.all.order(:display_name)
+        llms = LlmModel.all.includes(:llm_quotas).order(:display_name)
 
         render json: {
                  ai_llms:

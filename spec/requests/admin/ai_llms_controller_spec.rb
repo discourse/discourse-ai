@@ -20,6 +20,24 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
       )
     end
 
+    fab!(:group)
+    fab!(:quota) { Fabricate(:llm_quota, llm_model: llm_model, group: group) }
+    fab!(:quota2) { Fabricate(:llm_quota, llm_model: llm_model, group: Fabricate(:group)) }
+
+    it "includes quotas in serialized response" do
+      get "/admin/plugins/discourse-ai/ai-llms.json"
+
+      expect(response.status).to eq(200)
+
+      llms = response.parsed_body["ai_llms"]
+      expect(llms.length).to eq(2)
+
+      model = llms.find { |m| m["id"] == llm_model.id }
+      expect(model["llm_quotas"]).to be_present
+      expect(model["llm_quotas"].length).to eq(2)
+      expect(model["llm_quotas"].map { |q| q["id"] }).to contain_exactly(quota.id, quota2.id)
+    end
+
     it "includes all available providers metadata" do
       get "/admin/plugins/discourse-ai/ai-llms.json"
       expect(response).to be_successful
