@@ -91,6 +91,11 @@ Discourse::Application.routes.draw do
               controller: "discourse_ai/admin/ai_llms" do
       collection { get :test }
     end
+
+    resources :ai_llm_quotas,
+              controller: "discourse_ai/admin/ai_llm_quotas",
+              path: "quotas",
+              only: %i[index create update destroy]
   end
 end
 
