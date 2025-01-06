@@ -3,10 +3,9 @@
 module ::DiscourseAi
   module Inference
     class CloudflareWorkersAi
-      def initialize(account_id, api_token, model, referer = Discourse.base_url)
-        @account_id = account_id
+      def initialize(endpoint, api_token, referer = Discourse.base_url)
+        @endpoint = endpoint
         @api_token = api_token
-        @model = model
         @referer = referer
       end
 
@@ -18,7 +17,7 @@ module ::DiscourseAi
         )
       end
 
-      attr_reader :account_id, :api_token, :model, :referer
+      attr_reader :endpoint, :api_token, :referer
 
       def perform!(content)
         headers = {
@@ -28,8 +27,6 @@ module ::DiscourseAi
         }
 
         payload = { text: [content] }
-
-        endpoint = "https://api.cloudflare.com/client/v4/accounts/#{account_id}/ai/run/@cf/#{model}"
 
         conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
         response = conn.post(endpoint, payload.to_json, headers)

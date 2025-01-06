@@ -4,7 +4,7 @@ require "rails_helper"
 require "webmock/rspec"
 
 RSpec.describe DiscourseAi::Inference::CloudflareWorkersAi do
-  subject { described_class.new(account_id, api_token, model) }
+  subject { described_class.new(endpoint, api_token) }
 
   let(:account_id) { "test_account_id" }
   let(:api_token) { "test_api_token" }

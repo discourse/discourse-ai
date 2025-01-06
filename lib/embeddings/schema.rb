@@ -12,10 +12,12 @@ module DiscourseAi
       POSTS_TABLE = "ai_posts_embeddings"
       RAG_DOCS_TABLE = "ai_document_fragments_embeddings"
 
-      def self.for(
-        target_klass,
-        vector_def: DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
-      )
+      MissingEmbeddingError = Class.new(StandardError)
+
+      def self.for(target_klass)
+        vector_def = EmbeddingDefinition.find_by(id: SiteSetting.ai_embeddings_selected_model)
+        raise "Invalid embeddings selected model" if vector_def.nil?
+
         case target_klass&.name
         when "Topic"
           new(TOPICS_TABLE, "topic_id", vector_def)
@@ -117,7 +119,7 @@ module DiscourseAi
           offset: offset,
         )
       rescue PG::Error => e
-        Rails.logger.error("Error #{e} querying embeddings for model #{name}")
+        Rails.logger.error("Error #{e} querying embeddings for model #{vector_def.display_name}")
         raise MissingEmbeddingError
       end
 

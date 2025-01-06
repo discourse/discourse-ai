@@ -9,6 +9,10 @@ describe DiscourseAi::Embeddings::EntryPoint do
 
       fab!(:target) { Fabricate(:topic) }
 
+      fab!(:vector_def) { Fabricate(:cloudflare_embedding_def) }
+
+      before { SiteSetting.ai_embeddings_selected_model = vector_def.id }
+
       # The Distance gap to target increases for each element of topics.
       def seed_embeddings(topics)
         schema = DiscourseAi::Embeddings::Schema.for(Topic)

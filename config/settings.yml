@@ -158,27 +158,12 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::EmbeddingsModuleValidator"
-  ai_embeddings_discourse_service_api_endpoint: ""
-  ai_embeddings_discourse_service_api_endpoint_srv:
-    default: ""
-    hidden: true
-  ai_embeddings_discourse_service_api_key:
-    default: ""
-    secret: true
-  ai_embeddings_model:
+  ai_embeddings_selected_model:
     type: enum
-    default: "bge-large-en"
+    default: ""
     allow_any: false
-    choices:
-      - all-mpnet-base-v2
-      - text-embedding-ada-002
-      - text-embedding-3-small
-      - text-embedding-3-large
-      - multilingual-e5-large
-      - bge-large-en
-      - gemini
-      - bge-m3
-    validator: "DiscourseAi::Configuration::EmbeddingsModelValidator"
+    enum: "DiscourseAi::Configuration::EmbeddingDefsEnumerator"
+    validator: "DiscourseAi::Configuration::EmbeddingDefsValidator"
   ai_embeddings_per_post_enabled:
     default: false
     hidden: true
@@ -190,9 +175,6 @@ discourse_ai:
   ai_embeddings_semantic_related_include_closed_topics: true
   ai_embeddings_backfill_batch_size:
     default: 250
-    hidden: true
-  ai_embeddings_pg_connection_string:
-    default: ""
     hidden: true
   ai_embeddings_semantic_search_enabled:
     default: false
@@ -213,6 +195,35 @@ discourse_ai:
     default: false
     client: true
     hidden: true
+
+  ai_embeddings_discourse_service_api_endpoint: 
+    default: ""
+    hidden: true
+  ai_embeddings_discourse_service_api_endpoint_srv:
+    default: ""
+    hidden: true
+  ai_embeddings_discourse_service_api_key:
+    hidden: true
+    default: ""
+    secret: true
+  ai_embeddings_model:
+    hidden: true
+    type: enum
+    default: "bge-large-en"
+    allow_any: false
+    choices:
+      - all-mpnet-base-v2
+      - text-embedding-ada-002
+      - text-embedding-3-small
+      - text-embedding-3-large
+      - multilingual-e5-large
+      - bge-large-en
+      - gemini
+      - bge-m3
+  ai_embeddings_pg_connection_string:
+    default: ""
+    hidden: true
+
   ai_summarization_enabled:
     default: false
     client: true
