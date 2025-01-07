@@ -342,6 +342,13 @@ en:
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
         seeded_warning: "This model is pre-configured on your site and cannot be edited."
+        quotas:
+          title: "Usage Quotas"
+          group: "Group"
+          max_tokens: "Max Tokens"
+          max_usages: "Max Uses"
+          duration: "Duration (seconds)"
+          confirm_delete: "Are you sure you want to delete this quota?"
         usage:
           ai_bot: "AI bot"
           ai_helper: "Helper"

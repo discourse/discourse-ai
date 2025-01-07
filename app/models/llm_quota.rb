@@ -8,7 +8,8 @@ class LlmQuota < ActiveRecord::Base
   has_many :llm_quota_usages
 
   validates :group_id, presence: true
-  validates :llm_model_id, presence: true
+  # we can not validate on create cause it breaks build
+  validates :llm_model_id, presence: true, on: :update
   validates :duration_seconds, presence: true, numericality: { greater_than: 0 }
   validates :max_tokens, numericality: { greater_than: 0, allow_nil: true }
   validates :max_usages, numericality: { greater_than: 0, allow_nil: true }

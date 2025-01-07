@@ -4,8 +4,8 @@ class LlmModel < ActiveRecord::Base
   FIRST_BOT_USER_ID = -1200
   BEDROCK_PROVIDER_NAME = "aws_bedrock"
 
-  belongs_to :user
   has_many :llm_quotas, dependent: :destroy
+  belongs_to :user
 
   validates :display_name, presence: true, length: { maximum: 100 }
   validates :tokenizer, presence: true, inclusion: DiscourseAi::Completions::Llm.tokenizer_names

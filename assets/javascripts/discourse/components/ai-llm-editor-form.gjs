@@ -17,6 +17,7 @@ import I18n from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import DTooltip from "float-kit/components/d-tooltip";
+import AiLlmQuotaEditor from "./ai-llm-quota-editor";
 
 export default class AiLlmEditorForm extends Component {
   @service toasts;
@@ -316,6 +317,13 @@ export default class AiLlmEditorForm extends Component {
             </LinkTo>
           </div>
         {{/if}}
+
+        {{#unless @model.isNew}}
+          <div class="control-group">
+            <label>{{i18n "discourse_ai.llms.quotas.title"}}</label>
+            <AiLlmQuotaEditor @model={{@model}} @groups={{@groups}} />
+          </div>
+        {{/unless}}
 
         <div class="control-group ai-llm-editor__action_panel">
           <DButton

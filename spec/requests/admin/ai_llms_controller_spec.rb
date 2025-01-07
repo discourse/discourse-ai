@@ -99,6 +99,28 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
       }
     end
 
+    context "with quotas" do
+      let(:group) { Fabricate(:group) }
+      let(:quota_params) do
+        [{ group_id: group.id, max_tokens: 1000, max_usages: 10, duration_seconds: 86_400 }]
+      end
+
+      it "creates model with quotas" do
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm: valid_attrs.merge(llm_quotas: quota_params),
+             }
+
+        puts response.body
+        expect(response.status).to eq(201)
+        created_model = LlmModel.last
+        expect(created_model.llm_quotas.count).to eq(1)
+        quota = created_model.llm_quotas.first
+        expect(quota.max_tokens).to eq(1000)
+        expect(quota.group_id).to eq(group.id)
+      end
+    end
+
     context "with valid attributes" do
       it "creates a new LLM model" do
         post "/admin/plugins/discourse-ai/ai-llms.json", params: { ai_llm: valid_attrs }

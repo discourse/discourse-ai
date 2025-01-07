@@ -21,7 +21,7 @@ export default class AiLlm extends RestModel {
   updateProperties() {
     const attrs = this.createProperties();
     attrs.id = this.id;
-
+    attrs.llm_quotas = this.llm_quotas;
     return attrs;
   }
 
