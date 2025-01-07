@@ -121,6 +121,14 @@ export default class AiFullPageSearch extends Component {
     );
   }
 
+  get tooltipText() {
+    return i18n(
+      `discourse_ai.embeddings.semantic_search_tooltips.${
+        this.validSearchOrder ? "results_explanation" : "invalid_sort"
+      }`
+    );
+  }
+
   @action
   toggleAiResults() {
     if (this.showingAiResults) {
@@ -201,22 +209,17 @@ export default class AiFullPageSearch extends Component {
             <AiIndicatorWave @loading={{this.searching}} />
           {{/if}}
 
-          {{#unless this.validSearchOrder}}
-
-            <DTooltip
-              @identifier="semantic-search-unavailable-tooltip"
-              class="semantic-search__unavailable-tooltip"
-            >
-              <:trigger>
-                {{icon "far-circle-question"}}
-              </:trigger>
-              <:content>
-                {{i18n
-                  "discourse_ai.embeddings.semantic_search_unavailable_tooltip"
-                }}
-              </:content>
-            </DTooltip>
-          {{/unless}}
+          <DTooltip
+            @identifier="semantic-search-tooltip"
+            class="semantic-search__tooltip"
+          >
+            <:trigger>
+              {{icon "far-circle-question"}}
+            </:trigger>
+            <:content>
+              {{this.tooltipText}}
+            </:content>
+          </DTooltip>
         </div>
       </div>
     </div>
