@@ -96,6 +96,13 @@ Discourse::Application.routes.draw do
               controller: "discourse_ai/admin/ai_llm_quotas",
               path: "quotas",
               only: %i[index create update destroy]
+
+    resources :ai_embeddings,
+              only: %i[index new create edit update destroy],
+              path: "ai-embeddings",
+              controller: "discourse_ai/admin/ai_embeddings" do
+      collection { get :test }
+    end
   end
 end
 

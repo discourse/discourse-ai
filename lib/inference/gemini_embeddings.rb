@@ -3,13 +3,6 @@
 module ::DiscourseAi
   module Inference
     class GeminiEmbeddings
-      def self.instance
-        new(
-          "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent",
-          SiteSetting.ai_gemini_api_key,
-        )
-      end
-
       def initialize(embedding_url, api_key, referer = Discourse.base_url)
         @api_key = api_key
         @embedding_url = embedding_url
@@ -35,7 +28,7 @@ module ::DiscourseAi
           Rails.logger.warn(
             "Google Gemini Embeddings failed with status: #{response.status} body: #{response.body}",
           )
-          raise Net::HTTPBadResponse
+          raise Net::HTTPBadResponse.new(response.body.to_s)
         end
       end
     end

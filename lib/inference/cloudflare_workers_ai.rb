@@ -9,14 +9,6 @@ module ::DiscourseAi
         @referer = referer
       end
 
-      def self.instance(model)
-        new(
-          SiteSetting.ai_cloudflare_workers_account_id,
-          SiteSetting.ai_cloudflare_workers_api_token,
-          model,
-        )
-      end
-
       attr_reader :endpoint, :api_token, :referer
 
       def perform!(content)
@@ -40,7 +32,7 @@ module ::DiscourseAi
           Rails.logger.warn(
             "Cloudflare Workers AI Embeddings failed with status: #{response.status} body: #{response.body}",
           )
-          raise Net::HTTPBadResponse
+          raise Net::HTTPBadResponse.new(response.body.to_s)
         end
       end
     end

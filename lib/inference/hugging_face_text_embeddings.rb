@@ -12,19 +12,6 @@ module ::DiscourseAi
       attr_reader :endpoint, :key, :referer
 
       class << self
-        def instance
-          endpoint =
-            if SiteSetting.ai_hugging_face_tei_endpoint_srv.present?
-              service =
-                DiscourseAi::Utils::DnsSrv.lookup(SiteSetting.ai_hugging_face_tei_endpoint_srv)
-              "https://#{service.target}:#{service.port}"
-            else
-              SiteSetting.ai_hugging_face_tei_endpoint
-            end
-
-          new(endpoint, SiteSetting.ai_hugging_face_tei_api_key)
-        end
-
         def configured?
           SiteSetting.ai_hugging_face_tei_endpoint.present? ||
             SiteSetting.ai_hugging_face_tei_endpoint_srv.present?
@@ -100,7 +87,7 @@ module ::DiscourseAi
         conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
         response = conn.post(endpoint, body, headers)
 
-        raise Net::HTTPBadResponse if ![200].include?(response.status)
+        raise Net::HTTPBadResponse.new(response.body.to_s) if ![200].include?(response.status)
 
         JSON.parse(response.body, symbolize_names: true).first
       end
