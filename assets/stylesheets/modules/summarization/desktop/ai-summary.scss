@@ -23,5 +23,5 @@ html.scrollable-modal {
 }
 
 .ai-summary-modal + .d-modal__backdrop {
-  display: none;
+  opacity: 0; // allows for reading, but still triggers clickoutside event
 }
