@@ -23,7 +23,7 @@ class EmbeddingDefinition < ActiveRecord::Base
       ].map(&:name)
     end
 
-    def self.provider_params
+    def provider_params
       { discourse: { model_name: :text }, open_ai: { model_name: :text } }
     end
   end
@@ -31,6 +31,7 @@ class EmbeddingDefinition < ActiveRecord::Base
   validates :provider, presence: true, inclusion: provider_names
   validates :display_name, presence: true, length: { maximum: 100 }
   validates :tokenizer_class, presence: true, inclusion: tokenizer_names
+  validates_presence_of :url, :api_key, :dimensions, :max_sequence_length, :pg_function
 
   def tokenizer
     tokenizer_class.constantize
@@ -60,7 +61,7 @@ class EmbeddingDefinition < ActiveRecord::Base
   def endpoint_url
     return url if !url.starts_with?("srv://")
 
-    service = DiscourseAi::Utils::DnsSrv.lookup(url)
+    service = DiscourseAi::Utils::DnsSrv.lookup(url.sub("srv://", ""))
     "https://#{service.target}:#{service.port}"
   end
 

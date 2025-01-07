@@ -10,25 +10,6 @@ module ::DiscourseAi
         @referer = referer
       end
 
-      def self.instance(model)
-        endpoint =
-          if SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv.present?
-            service =
-              DiscourseAi::Utils::DnsSrv.lookup(
-                SiteSetting.ai_embeddings_discourse_service_api_endpoint_srv,
-              )
-            "https://#{service.target}:#{service.port}"
-          else
-            SiteSetting.ai_embeddings_discourse_service_api_endpoint
-          end
-
-        new(
-          "#{endpoint}/api/v1/classify",
-          SiteSetting.ai_embeddings_discourse_service_api_key,
-          model,
-        )
-      end
-
       attr_reader :endpoint, :api_key, :model, :referer
 
       def perform!(content)
@@ -38,7 +19,9 @@ module ::DiscourseAi
         conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
         response = conn.post(endpoint, { model: model, content: content }.to_json, headers)
 
-        raise Net::HTTPBadResponse if ![200, 415].include?(response.status)
+        if ![200, 415].include?(response.status)
+          raise raise Net::HTTPBadResponse.new(response.body.to_s)
+        end
 
         JSON.parse(response.body, symbolize_names: true)
       end
