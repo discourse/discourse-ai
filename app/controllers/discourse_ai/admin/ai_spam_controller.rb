@@ -15,7 +15,7 @@ module DiscourseAi
           llm_model_id = updated_params[:llm_model_id] = allowed_params[:llm_model_id]
           if llm_model_id.to_i < 0 &&
                !SiteSetting.ai_spam_detection_model_allowed_seeded_models_map.include?(
-                 "custom:#{llm_model_id}",
+                 llm_model_id.to_s,
                )
             return(
               render_json_error(
