@@ -9,7 +9,7 @@ import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
 import { ajax } from "discourse/lib/ajax";
 import { isValidSearchTerm, translateResults } from "discourse/lib/search";
 import icon from "discourse-common/helpers/d-icon";
-import I18n, { i18n } from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiIndicatorWave from "./ai-indicator-wave";
 
@@ -64,26 +64,26 @@ export default class AiFullPageSearch extends Component {
 
   get searchStateText() {
     if (!this.validSearchOrder) {
-      return I18n.t(
+      return i18n(
         "discourse_ai.embeddings.semantic_search_results.unavailable"
       );
     }
 
     // Search loading:
     if (this.searching) {
-      return I18n.t("discourse_ai.embeddings.semantic_search_loading");
+      return i18n("discourse_ai.embeddings.semantic_search_loading");
     }
 
     // We have results and we are showing them
     if (this.AiResults.length && this.showingAiResults) {
-      return I18n.t("discourse_ai.embeddings.semantic_search_results.toggle", {
+      return i18n("discourse_ai.embeddings.semantic_search_results.toggle", {
         count: this.AiResults.length,
       });
     }
 
     // We have results but are hiding them
     if (this.AiResults.length && !this.showingAiResults) {
-      return I18n.t(
+      return i18n(
         "discourse_ai.embeddings.semantic_search_results.toggle_hidden",
         {
           count: this.AiResults.length,
@@ -96,12 +96,12 @@ export default class AiFullPageSearch extends Component {
       this.AiResults.length === 0 &&
       this.searchTerm !== this.initialSearchTerm
     ) {
-      return I18n.t("discourse_ai.embeddings.semantic_search_results.new");
+      return i18n("discourse_ai.embeddings.semantic_search_results.new");
     }
 
     // No results:
     if (this.AiResults.length === 0) {
-      return I18n.t("discourse_ai.embeddings.semantic_search_results.none");
+      return i18n("discourse_ai.embeddings.semantic_search_results.none");
     }
   }
 
@@ -118,6 +118,14 @@ export default class AiFullPageSearch extends Component {
       this.args.searchType === SEARCH_TYPE_DEFAULT &&
       isValidSearchTerm(this.searchTerm, this.siteSettings) &&
       this.validSearchOrder
+    );
+  }
+
+  get tooltipText() {
+    return i18n(
+      `discourse_ai.embeddings.semantic_search_tooltips.${
+        this.validSearchOrder ? "results_explanation" : "invalid_sort"
+      }`
     );
   }
 
@@ -201,22 +209,17 @@ export default class AiFullPageSearch extends Component {
             <AiIndicatorWave @loading={{this.searching}} />
           {{/if}}
 
-          {{#unless this.validSearchOrder}}
-
-            <DTooltip
-              @identifier="semantic-search-unavailable-tooltip"
-              class="semantic-search__unavailable-tooltip"
-            >
-              <:trigger>
-                {{icon "far-circle-question"}}
-              </:trigger>
-              <:content>
-                {{i18n
-                  "discourse_ai.embeddings.semantic_search_unavailable_tooltip"
-                }}
-              </:content>
-            </DTooltip>
-          {{/unless}}
+          <DTooltip
+            @identifier="semantic-search-tooltip"
+            class="semantic-search__tooltip"
+          >
+            <:trigger>
+              {{icon "far-circle-question"}}
+            </:trigger>
+            <:content>
+              {{this.tooltipText}}
+            </:content>
+          </DTooltip>
         </div>
       </div>
     </div>

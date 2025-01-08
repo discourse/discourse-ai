@@ -486,6 +486,10 @@ en:
           none: "Sorry, our AI search found no matching topics"
           new: "Press 'search' to begin looking for new results with AI"
           unavailable: "AI results unavailable"
+        semantic_search_tooltips:
+          results_explanation: "When enabled, additional AI search results will be added below."
+          invalid_sort: "Search results must be sorted by Relevance to display AI results"
+        semantic_search_unavailable_tooltip:
         semantic_search_unavailable_tooltip: "Search results must be sorted by Relevance to display AI results"
         ai_generated_result: "Search result found using AI"
         quick_search:
