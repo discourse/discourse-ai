@@ -13,6 +13,8 @@ import I18n, { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiIndicatorWave from "./ai-indicator-wave";
 
+const AI_RESULTS_TOGGLED = "full-page-search:ai-results-toggled";
+
 export default class AiFullPageSearch extends Component {
   @service appEvents;
   @service router;
@@ -123,15 +125,12 @@ export default class AiFullPageSearch extends Component {
 
   @action
   toggleAiResults() {
+    this.appEvents.trigger(AI_RESULTS_TOGGLED, {
+      enabled: !this.showingAiResults,
+    });
     if (this.showingAiResults) {
-      this.appEvents.trigger("full-page-search:ai-results-toggled", {
-        enabled: false,
-      });
       this.args.addSearchResults([], "topic_id");
     } else {
-      this.appEvents.trigger("full-page-search:ai-results-toggled", {
-        enabled: true,
-      });
       this.args.addSearchResults(this.AiResults, "topic_id");
     }
     this.showingAiResults = !this.showingAiResults;
@@ -142,7 +141,7 @@ export default class AiFullPageSearch extends Component {
     this.AiResults = [];
     this.showingAiResults = false;
     this.args.addSearchResults([], "topic_id");
-    this.appEvents.trigger("full-page-search:ai-results-toggled", {
+    this.appEvents.trigger(AI_RESULTS_TOGGLED, {
       enabled: false,
     });
   }
