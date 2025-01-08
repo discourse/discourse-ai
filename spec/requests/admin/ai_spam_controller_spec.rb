@@ -37,7 +37,7 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
 
         expect(response.status).to eq(422)
 
-        SiteSetting.ai_spam_detection_model_allowed_seeded_models = seeded_llm.identifier
+        SiteSetting.ai_spam_detection_model_allowed_seeded_models = seeded_llm.id.to_s
 
         put "/admin/plugins/discourse-ai/ai-spam.json",
             params: {
