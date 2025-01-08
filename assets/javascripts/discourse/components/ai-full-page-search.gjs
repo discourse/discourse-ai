@@ -125,12 +125,12 @@ export default class AiFullPageSearch extends Component {
   toggleAiResults() {
     if (this.showingAiResults) {
       this.appEvents.trigger("full-page-search:ai-results-toggled", {
-        toggled: false,
+        enabled: false,
       });
       this.args.addSearchResults([], "topic_id");
     } else {
       this.appEvents.trigger("full-page-search:ai-results-toggled", {
-        toggled: true,
+        enabled: true,
       });
       this.args.addSearchResults(this.AiResults, "topic_id");
     }
