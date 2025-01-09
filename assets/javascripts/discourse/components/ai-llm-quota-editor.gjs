@@ -18,6 +18,21 @@ export default class AiLlmQuotaEditor extends Component {
   @tracked newQuotaUsages = null;
   @tracked newQuotaDuration = 86400; // 1 day default
 
+  @action
+  updateExistingQuotaTokens(quota, event) {
+    quota.max_tokens = event.target.value;
+  }
+
+  @action
+  updateExistingQuotaUsages(quota, event) {
+    quota.max_usages = event.target.value;
+  }
+
+  @action
+  updateExistingQuotaDuration(quota, event) {
+    quota.duration_seconds = event.target.value;
+  }
+
   get canAddQuota() {
     return (
       this.newQuotaGroupId &&
@@ -96,6 +111,7 @@ export default class AiLlmQuotaEditor extends Component {
                   value={{quota.max_tokens}}
                   class="ai-llm-quotas__input"
                   min="1"
+                  {{on "input" (fn this.updateExistingQuotaTokens quota)}}
                 />
               </td>
               <td class="ai-llm-quotas__cell">
@@ -104,6 +120,7 @@ export default class AiLlmQuotaEditor extends Component {
                   value={{quota.max_usages}}
                   class="ai-llm-quotas__input"
                   min="1"
+                  {{on "input" (fn this.updateExistingQuotaUsages quota)}}
                 />
               </td>
               <td class="ai-llm-quotas__cell">
@@ -112,6 +129,7 @@ export default class AiLlmQuotaEditor extends Component {
                   value={{quota.duration_seconds}}
                   class="ai-llm-quotas__input"
                   min="1"
+                  {{on "input" (fn this.updateExistingQuotaDuration quota)}}
                 />
               </td>
               <td class="ai-llm-quotas__cell ai-llm-quotas__cell--actions">
