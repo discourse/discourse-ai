@@ -2,7 +2,9 @@ import DiscourseRoute from "discourse/routes/discourse";
 
 export default class AdminPluginsShowDiscourseAiEmbeddingsEdit extends DiscourseRoute {
   async model(params) {
-    const allEmbeddings = this.modelFor("adminPlugins.show.discourse-ai-embeddings");
+    const allEmbeddings = this.modelFor(
+      "adminPlugins.show.discourse-ai-embeddings"
+    );
     const id = parseInt(params.id, 10);
     const record = allEmbeddings.findBy("id", id);
     record.provider_params = record.provider_params || {};

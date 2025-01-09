@@ -4,7 +4,7 @@ import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
-import I18n, { i18n } from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
 import AiEmbeddingEditor from "./ai-embedding-editor";
 
@@ -53,10 +53,7 @@ export default class AiEmbeddingsListEditor extends Component {
             </thead>
             <tbody>
               {{#each @embeddings as |embedding|}}
-                <tr
-                  data-embedding-name={{embedding.display_name}}
-                  class="ai-embeddings-list__row d-admin-row__content"
-                >
+                <tr class="ai-embeddings-list__row d-admin-row__content">
                   <td class="d-admin-row__overview">
                     <div class="ai-embeddings-list__name">
                       <strong>
