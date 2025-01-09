@@ -7,6 +7,7 @@ import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import I18n from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
+import DurationSelector from "./ai-quota-duration-selector";
 
 export default class AiLlmQuotaEditor extends Component {
   @service store;
@@ -29,8 +30,8 @@ export default class AiLlmQuotaEditor extends Component {
   }
 
   @action
-  updateExistingQuotaDuration(quota, event) {
-    quota.duration_seconds = event.target.value;
+  updateExistingQuotaDuration(quota, value) {
+    quota.duration_seconds = value;
   }
 
   get canAddQuota() {
@@ -124,12 +125,9 @@ export default class AiLlmQuotaEditor extends Component {
                 />
               </td>
               <td class="ai-llm-quotas__cell">
-                <input
-                  type="number"
-                  value={{quota.duration_seconds}}
-                  class="ai-llm-quotas__input"
-                  min="1"
-                  {{on "input" (fn this.updateExistingQuotaDuration quota)}}
+                <DurationSelector
+                  @value={{quota.duration_seconds}}
+                  @onChange={{fn this.updateExistingQuotaDuration quota}}
                 />
               </td>
               <td class="ai-llm-quotas__cell ai-llm-quotas__cell--actions">

@@ -347,8 +347,15 @@ en:
           group: "Group"
           max_tokens: "Max Tokens"
           max_usages: "Max Uses"
-          duration: "Duration (seconds)"
+          duration: "Duration"
           confirm_delete: "Are you sure you want to delete this quota?"
+          durations:
+            hour: "1 hour"
+            six_hours: "6 hours"
+            day: "24 hours"
+            week: "7 days"
+            custom: "Custom..."
+          hours: "hours"
         usage:
           ai_bot: "AI bot"
           ai_helper: "Helper"
