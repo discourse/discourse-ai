@@ -13,6 +13,10 @@ export default {
     withPluginApi("1.1.0", (api) => {
       api.addAdminPluginConfigurationNav("discourse-ai", PLUGIN_NAV_MODE_TOP, [
         {
+          label: "discourse_ai.embeddings.short_title",
+          route: "adminPlugins.show.discourse-ai-embeddings",
+        },
+        {
           label: "discourse_ai.llms.short_title",
           route: "adminPlugins.show.discourse-ai-llms",
         },

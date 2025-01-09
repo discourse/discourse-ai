@@ -2,23 +2,14 @@
 
 Fabricator(:embedding_definition) do
   display_name "Multilingual E5 Large"
-  provider "discourse"
+  provider "hugging_face"
   tokenizer_class "DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer"
   api_key "123"
   url "https://test.com/embeddings"
-  provider_params { { model_name: "multilingual-e5-large" } }
+  provider_params nil
   pg_function "<=>"
   max_sequence_length 512
   dimensions 1024
-end
-
-Fabricator(:hugging_face_embedding_def, from: :embedding_definition) do
-  display_name "BGE M3"
-  provider "hugging_face"
-  tokenizer_class "DiscourseAi::Tokenizer::BgeM3Tokenizer"
-  max_sequence_length 8192
-  pg_function "<#>"
-  provider_params nil
 end
 
 Fabricator(:cloudflare_embedding_def, from: :embedding_definition) do
@@ -41,7 +32,7 @@ end
 
 Fabricator(:gemini_embedding_def, from: :embedding_definition) do
   display_name "Gemini's embedding-001"
-  provider "gemini"
+  provider "google"
   dimensions 768
   max_sequence_length 1536
   tokenizer_class "DiscourseAi::Tokenizer::OpenAiTokenizer"

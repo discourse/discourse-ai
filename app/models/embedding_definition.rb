@@ -2,14 +2,17 @@
 
 class EmbeddingDefinition < ActiveRecord::Base
   CLOUDFLARE = "cloudflare"
-  DISCOURSE = "discourse"
   HUGGING_FACE = "hugging_face"
   OPEN_AI = "open_ai"
-  GEMINI = "gemini"
+  GOOGLE = "google"
 
   class << self
     def provider_names
-      [CLOUDFLARE, DISCOURSE, HUGGING_FACE, OPEN_AI, GEMINI]
+      [CLOUDFLARE, HUGGING_FACE, OPEN_AI, GOOGLE]
+    end
+
+    def distance_functions
+      %w[<#> <=>]
     end
 
     def tokenizer_names
@@ -24,7 +27,7 @@ class EmbeddingDefinition < ActiveRecord::Base
     end
 
     def provider_params
-      { discourse: { model_name: :text }, open_ai: { model_name: :text } }
+      { open_ai: { model_name: :text } }
     end
   end
 
@@ -41,13 +44,11 @@ class EmbeddingDefinition < ActiveRecord::Base
     case provider
     when CLOUDFLARE
       cloudflare_client
-    when DISCOURSE
-      discourse_client
     when HUGGING_FACE
       hugging_face_client
     when OPEN_AI
       open_ai_client
-    when GEMINI
+    when GOOGLE
       gemini_client
     else
       raise "Uknown embeddings provider"
@@ -89,17 +90,6 @@ class EmbeddingDefinition < ActiveRecord::Base
 
   def cloudflare_client
     DiscourseAi::Inference::CloudflareWorkersAi.new(endpoint_url, api_key)
-  end
-
-  def discourse_client
-    client_url = endpoint_url
-    client_url = "#{client_url}/api/v1/classify" if url.starts_with?("srv://")
-
-    DiscourseAi::Inference::DiscourseClassifier.new(
-      client_url,
-      api_key,
-      lookup_custom_param("model_name"),
-    )
   end
 
   def hugging_face_client

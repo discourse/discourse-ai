@@ -502,6 +502,35 @@ en:
         accuracy: "Accuracy:"
 
       embeddings:
+        short_title: "Embeddings"
+        description: "Embeddings are a crucial component of the Discourse AI plugin, enabling features like related topics and semantic search."
+        new: "New embedding"
+        back: "Back"
+        save: "Save"
+        saved: "Embedding configuration saved"
+        delete: "Delete"
+        confirm_delete: Are you sure you want to remove this embedding configuration?
+        tests: 
+          title: "Run test"
+          running: "Running test..."
+          success: "Success!"
+          failure: "Attempting to generate an embedding resulted in: %{error}"
+
+        display_name: "Name"
+        provider: "Provider"
+        url: "Embeddings service URL"
+        api_key: "Embeddings service API Key"
+        tokenizer: "Tokenizer"
+        dimensions: "Embedding dimensions"
+        max_sequence_length: "Sequence length"
+        distance_function: "Distance function"
+        providers:
+          hugging_face: "Hugging Face"
+          open_ai: "OpenAI"
+          google: "Google"
+          cloudflare: "Cloudflare"
+
+
         semantic_search: "Topics (Semantic)"
         semantic_search_loading: "Searching for more results using AI"
         semantic_search_results:

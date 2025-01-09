@@ -20,5 +20,14 @@ export default {
     });
     this.route("discourse-ai-spam", { path: "ai-spam" });
     this.route("discourse-ai-usage", { path: "ai-usage" });
+
+    this.route(
+      "discourse-ai-embeddings",
+      { path: "ai-embeddings" },
+      function () {
+        this.route("new");
+        this.route("edit", { path: "/:id/edit" });
+      }
+    );
   },
 };
