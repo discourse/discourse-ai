@@ -114,11 +114,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
         hyde_embedding = [0.049382] * vector_def.dimensions
 
-        EmbeddingsGenerationStubs.discourse_service(
-          vector_def.lookup_custom_param("model_name"),
-          query,
-          hyde_embedding,
-        )
+        EmbeddingsGenerationStubs.hugging_face_service(query, hyde_embedding)
 
         post1 = Fabricate(:post, topic: topic_with_tags)
         search =

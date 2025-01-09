@@ -23,6 +23,7 @@ module DiscourseAi
                      EmbeddingDefinition.tokenizer_names.map { |tn|
                        { id: tn, name: tn.split("::").last }
                      },
+                   presets: EmbeddingDefinition.presets,
                  },
                }
       end

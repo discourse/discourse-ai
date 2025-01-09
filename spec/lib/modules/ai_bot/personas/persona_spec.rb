@@ -329,11 +329,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
 
       it "will run the question consolidator" do
         context_embedding = vector_def.dimensions.times.map { rand(-1.0...1.0) }
-        EmbeddingsGenerationStubs.discourse_service(
-          vector_def.lookup_custom_param("model_name"),
-          consolidated_question,
-          context_embedding,
-        )
+        EmbeddingsGenerationStubs.hugging_face_service(consolidated_question, context_embedding)
 
         custom_ai_persona =
           Fabricate(
@@ -401,8 +397,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         stored_ai_persona = AiPersona.find(ai_persona.id)
         UploadReference.ensure_exist!(target: stored_ai_persona, upload_ids: [upload.id])
 
-        EmbeddingsGenerationStubs.discourse_service(
-          vector_def.lookup_custom_param("model_name"),
+        EmbeddingsGenerationStubs.hugging_face_service(
           with_cc.dig(:conversation_context, 0, :content),
           prompt_cc_embeddings,
         )

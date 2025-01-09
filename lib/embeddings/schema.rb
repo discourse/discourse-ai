@@ -170,7 +170,7 @@ module DiscourseAi
 
         builder.query(vid: vector_def.id, vsid: vector_def.strategy_id, target_id: record.id)
       rescue PG::Error => e
-        Rails.logger.error("Error #{e} querying embeddings for model #{name}")
+        Rails.logger.error("Error #{e} querying embeddings for model #{vector_def.display_name}")
         raise MissingEmbeddingError
       end
 

@@ -510,6 +510,9 @@ en:
         saved: "Embedding configuration saved"
         delete: "Delete"
         confirm_delete: Are you sure you want to remove this embedding configuration?
+        empty: "You haven't setup embeddings yet"
+        presets: "Select a preset..."
+        edit: "Edit"
         tests: 
           title: "Run test"
           running: "Running test..."
@@ -523,12 +526,18 @@ en:
         tokenizer: "Tokenizer"
         dimensions: "Embedding dimensions"
         max_sequence_length: "Sequence length"
+        
         distance_function: "Distance function"
+        distance_functions:
+          <#>: "Negative inner product (<#>)"
+          <=>: "Cosine distance (<=>)"
         providers:
           hugging_face: "Hugging Face"
           open_ai: "OpenAI"
           google: "Google"
           cloudflare: "Cloudflare"
+        provider_fields:
+          model_name: "Model name"
 
 
         semantic_search: "Topics (Semantic)"
