@@ -104,6 +104,13 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
   end
 
   context "with hugging_face as the provider" do
+    fab!(:vdef) { Fabricate(:embedding_definition) }
+
+    def stub_vector_mapping(text, expected_embedding)
+      EmbeddingsGenerationStubs.hugging_face_service(text, expected_embedding)
+    end
+
+    it_behaves_like "generates and store embeddings using a vector definition"
   end
 
   context "with google as the provider" do
@@ -117,5 +124,12 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
   end
 
   context "with cloudflare as the provider" do
+    fab!(:vdef) { Fabricate(:cloudflare_embedding_def) }
+
+    def stub_vector_mapping(text, expected_embedding)
+      EmbeddingsGenerationStubs.cloudflare_service(text, expected_embedding)
+    end
+
+    it_behaves_like "generates and store embeddings using a vector definition"
   end
 end

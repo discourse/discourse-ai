@@ -29,6 +29,91 @@ class EmbeddingDefinition < ActiveRecord::Base
     def provider_params
       { open_ai: { model_name: :text } }
     end
+
+    def presets
+      @presets ||=
+        begin
+          [
+            {
+              preset_id: "bge-large-en",
+              display_name: "bge-large-en",
+              dimensions: 1024,
+              max_sequence_length: 512,
+              pg_function: "<#>",
+              tokenizer_class: "DiscourseAi::Tokenizer::BgeLargeEnTokenizer",
+              provider: HUGGING_FACE,
+            },
+            {
+              preset_id: "bge-m3",
+              display_name: "bge-m3",
+              dimensions: 1024,
+              max_sequence_length: 8192,
+              pg_function: "<#>",
+              tokenizer_class: "DiscourseAi::Tokenizer::BgeM3Tokenizer",
+              provider: HUGGING_FACE,
+            },
+            {
+              preset_id: "gemini-embedding-001",
+              display_name: "Gemini's embedding-001",
+              dimensions: 768,
+              max_sequence_length: 1536,
+              pg_function: "<=>",
+              url:
+                "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent",
+              tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
+              provider: GOOGLE,
+            },
+            {
+              preset_id: "multilingual-e5-large",
+              display_name: "multilingual-e5-large",
+              dimensions: 1024,
+              max_sequence_length: 512,
+              pg_function: "<=>",
+              tokenizer_class: "DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer",
+              provider: HUGGING_FACE,
+            },
+            {
+              preset_id: "text-embedding-3-large",
+              display_name: "OpenAI's text-embedding-3-large",
+              dimensions: 2000,
+              max_sequence_length: 8191,
+              pg_function: "<=>",
+              tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
+              url: "https://api.openai.com/v1/embeddings",
+              provider: OPEN_AI,
+              provider_params: {
+                model_name: "text-embedding-3-large",
+              },
+            },
+            {
+              preset_id: "text-embedding-3-small",
+              display_name: "OpenAI's text-embedding-3-small",
+              dimensions: 1536,
+              max_sequence_length: 8191,
+              pg_function: "<=>",
+              tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
+              url: "https://api.openai.com/v1/embeddings",
+              provider: OPEN_AI,
+              provider_params: {
+                model_name: "text-embedding-3-small",
+              },
+            },
+            {
+              preset_id: "text-embedding-ada-002",
+              display_name: "OpenAI's text-embedding-ada-002",
+              dimensions: 1536,
+              max_sequence_length: 8191,
+              pg_function: "<=>",
+              tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
+              url: "https://api.openai.com/v1/embeddings",
+              provider: OPEN_AI,
+              provider_params: {
+                model_name: "text-embedding-ada-002",
+              },
+            },
+          ]
+        end
+    end
   end
 
   validates :provider, presence: true, inclusion: provider_names

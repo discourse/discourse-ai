@@ -3,7 +3,8 @@
 class AiEmbeddingDefinitionSerializer < ApplicationSerializer
   root "ai_embedding"
 
-  attributes :display_name,
+  attributes :id,
+             :display_name,
              :dimensions,
              :max_sequence_length,
              :pg_function,

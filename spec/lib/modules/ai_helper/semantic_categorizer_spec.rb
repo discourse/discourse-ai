@@ -25,7 +25,7 @@ RSpec.describe DiscourseAi::AiHelper::SemanticCategorizer do
 
     WebMock.stub_request(:post, vector_def.url).to_return(
       status: 200,
-      body: JSON.dump(expected_embedding),
+      body: JSON.dump([expected_embedding]),
     )
 
     vector.generate_representation_from(topic)

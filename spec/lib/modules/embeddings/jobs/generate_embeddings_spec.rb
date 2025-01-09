@@ -22,11 +22,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
 
       text = vector_def.prepare_target_text(topic)
 
-      EmbeddingsGenerationStubs.discourse_service(
-        vector_def.lookup_custom_param("model_name"),
-        text,
-        expected_embedding,
-      )
+      EmbeddingsGenerationStubs.hugging_face_service(text, expected_embedding)
 
       job.execute(target_id: topic.id, target_type: "Topic")
 
@@ -37,11 +33,7 @@ RSpec.describe Jobs::GenerateEmbeddings do
       expected_embedding = [0.0038493] * vector_def.dimensions
 
       text = vector_def.prepare_target_text(post)
-      EmbeddingsGenerationStubs.discourse_service(
-        vector_def.lookup_custom_param("model_name"),
-        text,
-        expected_embedding,
-      )
+      EmbeddingsGenerationStubs.hugging_face_service(text, expected_embedding)
 
       job.execute(target_id: post.id, target_type: "Post")
 

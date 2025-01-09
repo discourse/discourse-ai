@@ -28,11 +28,14 @@ discourse_ai:
 
 
   ai_openai_dall_e_3_url: "https://api.openai.com/v1/images/generations"
-  ai_openai_embeddings_url: "https://api.openai.com/v1/embeddings"
+  ai_openai_embeddings_url: 
+    hidden: true
+    default: "https://api.openai.com/v1/embeddings"
   ai_openai_organization:
     default: ""
     hidden: true
   ai_openai_api_key:
+    hidden: true
     default: ""
     secret: true
   ai_stability_api_key:
@@ -50,11 +53,14 @@ discourse_ai:
       - "stable-diffusion-768-v2-1"
       - "stable-diffusion-v1-5"
   ai_hugging_face_tei_endpoint:
+    hidden: true
     default: ""
   ai_hugging_face_tei_endpoint_srv:
     default: ""
     hidden: true
-  ai_hugging_face_tei_api_key: ""
+  ai_hugging_face_tei_api_key: 
+    default: ""
+    hidden: true
   ai_hugging_face_tei_reranker_endpoint:
     default: ""
   ai_hugging_face_tei_reranker_endpoint_srv:
@@ -69,12 +75,14 @@ discourse_ai:
   ai_cloudflare_workers_account_id:
     default: ""
     secret: true
+    hidden: true
   ai_cloudflare_workers_api_token:
     default: ""
     secret: true
+    hidden: true
   ai_gemini_api_key:
     default: ""
-    hidden: false
+    hidden: true
   ai_strict_token_counting:
     default: false
     hidden: true

@@ -35,9 +35,9 @@ describe DiscourseAi::Embeddings::SemanticRelated do
 
         embedding = Array.new(1024) { 1 }
 
-        WebMock.stub_request(:post, "https://test.com/embeddings").to_return(
+        WebMock.stub_request(:post, vector_def.url).to_return(
           status: 200,
-          body: JSON.dump(embedding),
+          body: JSON.dump([embedding]),
         )
 
         # miss first

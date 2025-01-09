@@ -30,4 +30,9 @@ export default class AiEmbedding extends RestModel {
       data: { ai_embedding: this.createProperties() },
     });
   }
+
+  workingCopy() {
+    const attrs = this.createProperties();
+    return this.store.createRecord("ai-embedding", attrs);
+  }
 }

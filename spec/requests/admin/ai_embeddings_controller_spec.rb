@@ -34,7 +34,7 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
              params: {
                ai_embedding:
                  valid_attrs.merge(
-                   provider: "discourse",
+                   provider: "open_ai",
                    provider_params: {
                      model_name: "embeddings-v1",
                    },

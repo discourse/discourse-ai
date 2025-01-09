@@ -18,15 +18,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
     let(:hypothetical_post) { "This is an hypothetical post generated from the keyword test_query" }
     let(:hyde_embedding) { [0.049382] * vector_def.dimensions }
 
-    before do
-      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-
-      EmbeddingsGenerationStubs.discourse_service(
-        vector_def.lookup_custom_param("model_name"),
-        hypothetical_post,
-        hyde_embedding,
-      )
-    end
+    before { EmbeddingsGenerationStubs.hugging_face_service(hypothetical_post, hyde_embedding) }
 
     after { described_class.clear_cache_for(query) }
 
