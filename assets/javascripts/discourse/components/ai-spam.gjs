@@ -13,6 +13,7 @@ import DTooltip from "discourse/components/d-tooltip";
 import withEventValue from "discourse/helpers/with-event-value";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import dIcon from "discourse-common/helpers/d-icon";
 import i18n from "discourse-common/helpers/i18n";
 import getURL from "discourse-common/lib/get-url";
 import AdminConfigAreaCard from "admin/components/admin-config-area-card";
@@ -35,10 +36,51 @@ export default class AiSpam extends Component {
   @tracked isEnabled = false;
   @tracked selectedLLM = null;
   @tracked customInstructions = "";
+  @tracked errors = [];
 
   constructor() {
     super(...arguments);
     this.initializeFromModel();
+
+    if (this.args.model?.spam_scanning_user?.admin === false) {
+      this.errors.push({
+        message: i18n("discourse_ai.spam.errors.scan_not_admin.message"),
+        button: {
+          label: i18n("discourse_ai.spam.errors.scan_not_admin.action"),
+          action: this.fixScanUserNotAdmin,
+        },
+      });
+    }
+  }
+
+  @action
+  async fixScanUserNotAdmin() {
+    const spamScanningUser = this.args.model.spam_scanning_user;
+    if (!spamScanningUser || spamScanningUser.admin) {
+      return;
+    }
+    try {
+      const response = await ajax(
+        `/admin/plugins/discourse-ai/ai-spam/fix-errors`,
+        {
+          type: "POST",
+          data: {
+            error: "spam_scanner_not_admin",
+          },
+        }
+      );
+
+      if (response.success) {
+        this.toasts.success({
+          data: { message: i18n("discourse_ai.spam.errors.resolved") },
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      popupAjaxError(error);
+    } finally {
+      window.location.reload();
+    }
   }
 
   @action
@@ -165,11 +207,22 @@ export default class AiSpam extends Component {
   <template>
     <div class="ai-spam">
       <section class="ai-spam__settings">
+        <div class="ai-spam__errors">
+          {{#each this.errors as |e|}}
+            <div class="alert alert-error">
+              {{dIcon "triangle-exclamation"}}
+              <p>{{e.message}}</p>
+              <DButton
+                @action={{e.button.action}}
+                @translatedLabel={{e.button.label}}
+              />
+            </div>
+          {{/each}}
+        </div>
         <DPageSubheader
           @titleLabel={{i18n "discourse_ai.spam.title"}}
           @descriptionLabel={{i18n "discourse_ai.spam.spam_description"}}
         />
-
         <div class="control-group ai-spam__enabled">
           <DToggleSwitch
             class="ai-spam__toggle"

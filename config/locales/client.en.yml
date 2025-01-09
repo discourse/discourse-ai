@@ -160,6 +160,11 @@ en:
         stat_tooltips:
           incorrectly_flagged: "Items that the AI bot flagged as spam where moderators disagreed"
           missed_spam: "Items flagged by the community as spam that were not detected by the AI bot, which moderators agreed with"
+        errors:
+          scan_not_admin:
+            message: "Warning: spam scanning will not work correctly because the spam scan account is not an admin"
+            action: "Fix"
+          resolved: "The error has been resolved!"
 
       usage:
         short_title: "Usage"

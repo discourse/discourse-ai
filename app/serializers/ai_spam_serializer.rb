@@ -7,7 +7,8 @@ class AiSpamSerializer < ApplicationSerializer
              :available_llms,
              :stats,
              :flagging_username,
-             :spam_score_type
+             :spam_score_type,
+             :spam_scanning_user
 
   def is_enabled
     object[:enabled]
@@ -46,5 +47,11 @@ class AiSpamSerializer < ApplicationSerializer
 
   def settings
     object[:settings]
+  end
+
+  def spam_scanning_user
+    user = DiscourseAi::AiModeration::SpamScanner.flagging_user
+
+    user.serializable_hash(only: %i[id username name admin]) if user.present?
   end
 end

@@ -255,6 +255,10 @@ en:
     spam_detection:
       flag_reason: "Flagged as spam by <a href='%{url}'>Discourse AI</a>"
       silence_reason: "User silenced automatically by <a href='%{url}'>Discourse AI</a>"
+      invalid_error_type: "Invalid error type provided"
+      unexpected: "An unexpected error occured"
+      bot_user_update_failed: "Failed to update the spam scanning bot user"
+
     ai_bot:
       reply_error: "Sorry, it looks like our system encountered an unexpected issue while trying to reply.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Untitled AI bot PM]"

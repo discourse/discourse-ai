@@ -86,6 +86,31 @@ module DiscourseAi
         render json: result
       end
 
+      def fix_errors
+        case params[:error]
+        when "spam_scanner_not_admin"
+          begin
+            DiscourseAi::AiModeration::SpamScanner.fix_spam_scanner_not_admin
+            render json: success_json
+          rescue ActiveRecord::RecordInvalid
+            render_json_error(
+              I18n.t("discourse_ai.spam_detection.bot_user_update_failed"),
+              status: :unprocessable_entity,
+            )
+          rescue StandardError
+            render_json_error(
+              I18n.t("discourse_ai.spam_detection.unexpected"),
+              status: :internal_server_error,
+            )
+          end
+        else
+          render_json_error(
+            I18n.t("discourse_ai.spam_detection.invalid_error_type"),
+            status: :bad_request,
+          )
+        end
+      end
+
       private
 
       def allowed_params
