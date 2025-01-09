@@ -243,7 +243,12 @@ module DiscourseAi
 
       def self.fix_spam_scanner_not_admin
         user = DiscourseAi::AiModeration::SpamScanner.flagging_user
-        user.update!(admin: true) if user.present?
+
+        if user.present?
+          user.update!(admin: true)
+        else
+          raise Discourse::NotFound
+        end
       end
 
       private

@@ -306,4 +306,49 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
       end
     end
   end
+
+  describe "#fix_errors" do
+    fab!(:setting) do
+      AiModerationSetting.create(
+        {
+          setting_type: :spam,
+          llm_model_id: llm_model.id,
+          data: {
+            custom_instructions: "custom instructions",
+          },
+        },
+      )
+      fab!(:llm_model)
+
+      before do
+        sign_in(admin)
+        DiscourseAi::AiModeration::SpamScanner.flagging_user.update!(admin: false)
+      end
+
+      it "resolves spam scanner not admin error" do
+        post "/admin/plugins/discourse-ai/ai-spam/fix-errors",
+             params: {
+               error: "spam_scanner_not_admin",
+             }
+
+        expect(response.status).to eq(200)
+        expect(DiscourseAi::AiModeration::SpamScanner.flagging_user.reload.admin).to eq(true)
+      end
+
+      it "returns an error when it can't update the user" do
+        DiscourseAi::AiModeration::SpamScanner.flagging_user.destroy
+
+        post "/admin/plugins/discourse-ai/ai-spam/fix-errors",
+             params: {
+               error: "spam_scanner_not_admin",
+             }
+
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to be_present
+        expect(response.parsed_body["errors"].first).to eq(
+          I18n.t("discourse_ai.spam_detection.bot_user_update_failed"),
+        )
+      end
+    end
+  end
 end
