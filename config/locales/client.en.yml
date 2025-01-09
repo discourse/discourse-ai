@@ -512,6 +512,7 @@ en:
         confirm_delete: Are you sure you want to remove this embedding configuration?
         empty: "You haven't setup embeddings yet"
         presets: "Select a preset..."
+        configure_manually: "Configure manually"
         edit: "Edit"
         tests: 
           title: "Run test"

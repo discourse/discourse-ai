@@ -51,23 +51,30 @@ export default class AiEmbeddingEditor extends Component {
   }
 
   get presets() {
-    return this.args.embeddings.resultSetMeta.presets.map((preset) => {
+    const presets = this.args.embeddings.resultSetMeta.presets.map((preset) => {
       return {
         name: preset.display_name,
         id: preset.preset_id,
       };
     });
+
+    presets.pushObject({
+      name: i18n("discourse_ai.embeddings.configure_manually"),
+      id: "manual",
+    });
+
+    return presets;
   }
 
   get showPresets() {
     return !this.selectedPreset && this.args.model.isNew;
   }
 
-  @computed("args.model.provider")
+  @computed("editingModel.provider")
   get metaProviderParams() {
     return (
       this.args.embeddings.resultSetMeta.provider_params[
-        this.args?.model?.provider
+        this.editingModel?.provider
       ] || {}
     );
   }
@@ -82,10 +89,11 @@ export default class AiEmbeddingEditor extends Component {
 
   @action
   configurePreset() {
-    this.selectedPreset = this.args.embeddings.resultSetMeta.presets.findBy(
-      "preset_id",
-      this.presetId
-    );
+    this.selectedPreset =
+      this.args.embeddings.resultSetMeta.presets.findBy(
+        "preset_id",
+        this.presetId
+      ) || {};
 
     this.editingModel = this.store
       .createRecord("ai-embedding", this.selectedPreset)
@@ -192,7 +200,7 @@ export default class AiEmbeddingEditor extends Component {
           <ComboBox
             @value={{this.presetId}}
             @content={{this.presets}}
-            class="ai-tool-editor__presets"
+            class="ai-embedding-editor__presets"
           />
         </div>
 
@@ -200,7 +208,7 @@ export default class AiEmbeddingEditor extends Component {
           <DButton
             @action={{this.configurePreset}}
             @label="discourse_ai.tools.next.title"
-            class="ai-tool-editor__next"
+            class="ai-embedding-editor__next"
           />
         </div>
       {{else}}
@@ -253,7 +261,7 @@ export default class AiEmbeddingEditor extends Component {
           <label>{{i18n "discourse_ai.embeddings.tokenizer"}}</label>
           <ComboBox
             @value={{this.editingModel.tokenizer_class}}
-            @content={{this.editingModel.resultSetMeta.tokenizers}}
+            @content={{@embeddings.resultSetMeta.tokenizers}}
             @class="ai-embedding-editor__tokenizer"
           />
         </div>
@@ -302,6 +310,7 @@ export default class AiEmbeddingEditor extends Component {
             </label>
             <Input
               @type="text"
+              class="ai-embedding-editor-input ai-embedding-editor__{{field}}"
               @value={{mut (get this.editingModel.provider_params field)}}
             />
           </div>
