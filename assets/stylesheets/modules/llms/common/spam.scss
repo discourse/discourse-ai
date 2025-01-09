@@ -45,6 +45,18 @@
   &__stats {
     margin-top: 2em;
   }
+
+  &__errors {
+    .alert {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .btn {
+        margin-left: auto;
+      }
+    }
+  }
 }
 
 .spam-test-modal {

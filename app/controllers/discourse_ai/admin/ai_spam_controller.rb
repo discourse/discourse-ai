@@ -86,6 +86,14 @@ module DiscourseAi
         render json: result
       end
 
+      def fix_errors
+        if params[:error] == "spam_scanner_not_admin"
+          DiscourseAi::AiModeration::SpamScanner.fix_spam_scanner_not_admin
+        end
+
+        render json: success_json
+      end
+
       private
 
       def allowed_params
