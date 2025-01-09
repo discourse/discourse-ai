@@ -106,21 +106,7 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
   context "with hugging_face as the provider" do
   end
 
-  context "with discourse as the provider" do
-    fab!(:vdef) { Fabricate(:embedding_definition) }
-
-    def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.discourse_service(
-        vdef.lookup_custom_param("model_name"),
-        text,
-        expected_embedding,
-      )
-    end
-
-    it_behaves_like "generates and store embeddings using a vector definition"
-  end
-
-  context "with gemini as the provider" do
+  context "with google as the provider" do
     fab!(:vdef) { Fabricate(:gemini_embedding_def) }
 
     def stub_vector_mapping(text, expected_embedding)

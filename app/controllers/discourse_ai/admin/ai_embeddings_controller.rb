@@ -18,6 +18,7 @@ module DiscourseAi
                  meta: {
                    provider_params: EmbeddingDefinition.provider_params,
                    providers: EmbeddingDefinition.provider_names,
+                   distance_functions: EmbeddingDefinition.distance_functions,
                    tokenizers:
                      EmbeddingDefinition.tokenizer_names.map { |tn|
                        { id: tn, name: tn.split("::").last }
