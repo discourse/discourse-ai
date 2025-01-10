@@ -60,8 +60,7 @@ class LlmQuotaUsage < ActiveRecord::Base
       raise QuotaExceededError.new(
               I18n.t(
                 "discourse_ai.errors.quota_exceeded",
-                group: llm_quota.group.name,
-                reset_at: reset_at,
+                relative_time: AgeWords.distance_of_time_in_words(reset_at, Time.now),
               ),
             )
     end

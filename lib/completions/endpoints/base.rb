@@ -65,11 +65,7 @@ module DiscourseAi
           partial_tool_calls: false,
           &blk
         )
-          if !LlmQuota.within_quota?(@llm_model, user)
-            raise LlmQuotaUsage::QuotaExceededError.new(
-                    I18n.t("discourse_ai.errors.quota_exceeded"),
-                  )
-          end
+          LlmQuota.check_quotas!(@llm_model, user)
 
           @partial_tool_calls = partial_tool_calls
           model_params = normalize_model_params(model_params)

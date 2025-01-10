@@ -16,21 +16,25 @@ class LlmQuota < ActiveRecord::Base
 
   validate :at_least_one_limit
 
-  def self.within_quota?(llm, user)
+  def self.check_quotas!(llm, user)
     return true if user.blank?
     quotas = joins(:group).where(llm_model: llm).where(group: user.groups)
 
     return true if quotas.empty?
-    quotas.each do |quota|
-      usage = LlmQuotaUsage.find_or_create_for(user: user, llm_quota: quota)
-      begin
-        usage.check_quota!
-      rescue LlmQuotaUsage::QuotaExceededError
-        return false
+    errors =
+      quotas.map do |quota|
+        usage = LlmQuotaUsage.find_or_create_for(user: user, llm_quota: quota)
+        begin
+          usage.check_quota!
+          nil
+        rescue LlmQuotaUsage::QuotaExceededError => e
+          e
+        end
       end
-    end
 
-    true
+    return if errors.include?(nil)
+
+    raise errors.first
   end
 
   def self.log_usage(llm, user, input_tokens, output_tokens)
