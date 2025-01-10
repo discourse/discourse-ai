@@ -11,6 +11,16 @@
     background-color: var(--primary-very-low);
   }
 
+  .duration-selector {
+    .select-kit {
+      width: 150px;
+    }
+  }
+
+  .duration-selector__custom {
+    margin-top: 8px;
+  }
+
   &__header {
     text-align: left;
     padding: 0.5em;
@@ -24,26 +34,21 @@
 
   &__row {
     border-bottom: 1px solid var(--primary-low);
-
-    &--new {
-      background-color: var(--primary-very-low);
-    }
   }
 
   &__cell {
-    padding: 0.5em;
     vertical-align: middle;
+    align-items: center;
 
     &--actions {
       text-align: center;
     }
   }
 
-  &__input {
-    width: 100px;
+  &__input[type=number] {
+    width: 200px;
     padding: 0.5em;
-    border: 1px solid var(--primary-low);
-    border-radius: 3px;
+    margin-bottom: 0;
   }
 
   &__group-select {

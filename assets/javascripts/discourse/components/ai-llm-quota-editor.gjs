@@ -1,18 +1,19 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { fn, hash } from "@ember/helper";
+import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import I18n from "discourse-i18n";
-import GroupChooser from "select-kit/components/group-chooser";
 import DurationSelector from "./ai-quota-duration-selector";
+import AiLlmQuotaModal from "./modal/ai-llm-quota-modal";
 
 export default class AiLlmQuotaEditor extends Component {
   @service store;
   @service dialog;
   @service site;
+  @service modal;
 
   @tracked newQuotaGroupIds = null;
   @tracked newQuotaTokens = null;
@@ -32,6 +33,13 @@ export default class AiLlmQuotaEditor extends Component {
   @action
   updateExistingQuotaDuration(quota, value) {
     quota.duration_seconds = value;
+  }
+
+  @action
+  openAddQuotaModal() {
+    this.modal.show(AiLlmQuotaModal, {
+      model: { llm: this.args.model },
+    });
   }
 
   get canAddQuota() {
@@ -73,11 +81,17 @@ export default class AiLlmQuotaEditor extends Component {
       duration_seconds: this.newQuotaDuration,
     };
     this.args.model.llm_quotas.pushObject(quota);
+    if (this.args.didUpdate) {
+      this.args.didUpdate();
+    }
   }
 
   @action
   async deleteQuota(quota) {
     this.args.model.llm_quotas.removeObject(quota);
+    if (this.args.didUpdate) {
+      this.args.didUpdate();
+    }
   }
 
   <template>
@@ -139,52 +153,16 @@ export default class AiLlmQuotaEditor extends Component {
               </td>
             </tr>
           {{/each}}
-          <tr class="ai-llm-quotas__row ai-llm-quotas__row--new">
-            <td class="ai-llm-quotas__cell">
-              <GroupChooser
-                @value={{this.newQuotaGroupIds}}
-                @content={{this.site.groups}}
-                @onChange={{this.updateGroups}}
-                @options={{hash maximum=1}}
-              />
-            </td>
-            <td class="ai-llm-quotas__cell">
-              <input
-                type="number"
-                value={{this.newQuotaTokens}}
-                class="ai-llm-quotas__input"
-                {{on "input" this.updateQuotaTokens}}
-                min="1"
-              />
-            </td>
-            <td class="ai-llm-quotas__cell">
-              <input
-                type="number"
-                value={{this.newQuotaUsages}}
-                class="ai-llm-quotas__input"
-                {{on "input" this.updateQuotaUsages}}
-                min="1"
-              />
-            </td>
-            <td class="ai-llm-quotas__cell">
-              <input
-                type="number"
-                value={{this.newQuotaDuration}}
-                class="ai-llm-quotas__input"
-                {{on "input" this.updateQuotaDuration}}
-                min="1"
-              />
-            </td>
-            <td class="ai-llm-quotas__cell ai-llm-quotas__cell--actions">
-              <DButton
-                @action={{this.addQuota}}
-                @icon="plus"
-                class="btn-primary ai-llm-quotas__add-btn"
-              />
-            </td>
-          </tr>
         </tbody>
       </table>
+      <div class="ai-llm-quotas__actions">
+        <DButton
+          @action={{this.openAddQuotaModal}}
+          @icon="plus"
+          @label="discourse_ai.llms.quotas.add"
+          class="btn"
+        />
+      </div>
     </div>
   </template>
 }

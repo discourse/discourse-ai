@@ -344,11 +344,13 @@ en:
         seeded_warning: "This model is pre-configured on your site and cannot be edited."
         quotas:
           title: "Usage Quotas"
+          add_title: "Create New Quota"
           group: "Group"
           max_tokens: "Max Tokens"
           max_usages: "Max Uses"
           duration: "Duration"
           confirm_delete: "Are you sure you want to delete this quota?"
+          add: "Add Quota"
           durations:
             hour: "1 hour"
             six_hours: "6 hours"

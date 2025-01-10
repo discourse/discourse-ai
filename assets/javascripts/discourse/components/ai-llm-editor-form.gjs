@@ -18,11 +18,13 @@ import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiLlmQuotaEditor from "./ai-llm-quota-editor";
+import AiLlmQuotaModal from "./modal/ai-llm-quota-modal";
 
 export default class AiLlmEditorForm extends Component {
   @service toasts;
   @service router;
   @service dialog;
+  @service modal;
 
   @tracked isSaving = false;
 
@@ -30,6 +32,12 @@ export default class AiLlmEditorForm extends Component {
   @tracked testResult = null;
   @tracked testError = null;
   @tracked apiKeySecret = true;
+  @tracked quotaCount = 0;
+
+  constructor() {
+    super(...arguments);
+    this.updateQuotaCount();
+  }
 
   get selectedProviders() {
     const t = (provName) => {
@@ -83,6 +91,26 @@ export default class AiLlmEditorForm extends Component {
     return I18n.t("discourse_ai.llms.in_use_warning", {
       settings: this.modulesUsingModel,
       count: this.args.model.used_by.length,
+    });
+  }
+
+  get showQuotas() {
+    return this.quotaCount > 0;
+  }
+
+  get showAddQuotaButton() {
+    return !this.showQuotas && !this.args.model.isNew;
+  }
+
+  @action
+  updateQuotaCount() {
+    this.quotaCount = this.args.model.llm_quotas.length;
+  }
+
+  @action
+  openAddQuotaModal() {
+    this.modal.show(AiLlmQuotaModal, {
+      model: { llm: this.args.model, onSave: this.updateQuotaCount },
     });
   }
 
@@ -318,12 +346,16 @@ export default class AiLlmEditorForm extends Component {
           </div>
         {{/if}}
 
-        {{#unless @model.isNew}}
+        {{#if this.showQuotas}}
           <div class="control-group">
             <label>{{i18n "discourse_ai.llms.quotas.title"}}</label>
-            <AiLlmQuotaEditor @model={{@model}} @groups={{@groups}} />
+            <AiLlmQuotaEditor
+              @model={{@model}}
+              @groups={{@groups}}
+              @didUpdate={{this.updateQuotaCount}}
+            />
           </div>
-        {{/unless}}
+        {{/if}}
 
         <div class="control-group ai-llm-editor__action_panel">
           <DButton
@@ -332,7 +364,13 @@ export default class AiLlmEditorForm extends Component {
             @disabled={{this.testRunning}}
             @label="discourse_ai.llms.tests.title"
           />
-
+          {{#if this.showAddQuotaButton}}
+            <DButton
+              @action={{this.openAddQuotaModal}}
+              @label="discourse_ai.llms.quotas.add"
+              class="btn"
+            />
+          {{/if}}
           <DButton
             class="btn-primary ai-llm-editor__save"
             @action={{this.save}}
