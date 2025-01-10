@@ -104,7 +104,7 @@ export default class AiLlmEditorForm extends Component {
 
   @action
   updateQuotaCount() {
-    this.quotaCount = this.args.model.llm_quotas.length;
+    this.quotaCount = this.args.model?.llm_quotas?.length || 0;
   }
 
   @action
