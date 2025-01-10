@@ -107,6 +107,18 @@ export default class AiFullPageSearch extends Component {
     }
   }
 
+  get settled() {
+    return (
+      this.validSearchOrder &&
+      !this.searching &&
+      this.searchTerm === this.initialSearchTerm
+    );
+  }
+
+  get noResults() {
+    return this.settled && this.AiResults.length === 0;
+  }
+
   get searchTerm() {
     if (this.initialSearchTerm !== this.args.searchTerm) {
       this.initialSearchTerm = undefined;
@@ -199,6 +211,7 @@ export default class AiFullPageSearch extends Component {
         <div
           class="semantic-search__searching
             {{if this.searching 'in-progress'}}
+            {{if this.noResults 'no-results'}}
             {{unless this.validSearchOrder 'unavailable'}}"
         >
           <DToggleSwitch
