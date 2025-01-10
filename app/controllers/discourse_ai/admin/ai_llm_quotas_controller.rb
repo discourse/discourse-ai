@@ -6,7 +6,6 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
       def index
-        puts "here"
         quotas = LlmQuota.includes(:group)
 
         render json: {
