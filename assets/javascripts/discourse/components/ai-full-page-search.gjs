@@ -6,6 +6,7 @@ import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
+import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { isValidSearchTerm, translateResults } from "discourse/lib/search";
 import icon from "discourse-common/helpers/d-icon";
@@ -107,6 +108,18 @@ export default class AiFullPageSearch extends Component {
     }
   }
 
+  get settled() {
+    return (
+      this.validSearchOrder &&
+      !this.searching &&
+      this.searchTerm === this.initialSearchTerm
+    );
+  }
+
+  get noResults() {
+    return this.settled && this.AiResults.length === 0;
+  }
+
   get searchTerm() {
     if (this.initialSearchTerm !== this.args.searchTerm) {
       this.initialSearchTerm = undefined;
@@ -121,6 +134,16 @@ export default class AiFullPageSearch extends Component {
       isValidSearchTerm(this.searchTerm, this.siteSettings) &&
       this.validSearchOrder
     );
+  }
+
+  get searchClass() {
+    if (!this.validSearchOrder) {
+      return "unavailable";
+    } else if (this.searching) {
+      return "in-progress";
+    } else if (this.noResults) {
+      return "no-results";
+    }
   }
 
   get tooltipText() {
@@ -197,9 +220,7 @@ export default class AiFullPageSearch extends Component {
     <div class="semantic-search__container search-results" role="region">
       <div class="semantic-search__results">
         <div
-          class="semantic-search__searching
-            {{if this.searching 'in-progress'}}
-            {{unless this.validSearchOrder 'unavailable'}}"
+          class={{concatClass "semantic-search__searching" this.searchClass}}
         >
           <DToggleSwitch
             disabled={{this.disableToggleSwitch}}
