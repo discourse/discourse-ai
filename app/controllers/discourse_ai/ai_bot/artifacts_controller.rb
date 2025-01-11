@@ -57,6 +57,7 @@ module DiscourseAi
             <head>
               <meta charset="UTF-8">
               <title>#{ERB::Util.html_escape(name)}</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=yes, viewport-fit=cover, interactive-widget=resizes-content">
               <style>
                 html, body, iframe {
                   margin: 0;
