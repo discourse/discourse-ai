@@ -7,16 +7,16 @@ RSpec.describe LlmQuota do
 
   before { group.add(user) }
 
-  describe ".within_quota?" do
+  describe ".check_quotas!" do
     it "returns true when user is nil" do
-      expect(described_class.within_quota?(llm_model, nil)).to be true
+      expect(described_class.check_quotas!(llm_model, nil)).to be true
     end
 
     it "returns true when no quotas exist for the user's groups" do
-      expect(described_class.within_quota?(llm_model, user)).to be true
+      expect(described_class.check_quotas!(llm_model, user)).to be true
     end
 
-    it "returns true when usage is within limits" do
+    it "raises no error when within quota" do
       quota = Fabricate(:llm_quota, group: group, llm_model: llm_model)
       _usage =
         Fabricate(
@@ -26,21 +26,25 @@ RSpec.describe LlmQuota do
           input_tokens_used: quota.max_tokens - 100,
         )
 
-      expect(described_class.within_quota?(llm_model, user)).to be true
+      expect { described_class.check_quotas!(llm_model, user) }.not_to raise_error
     end
 
-    it "returns false when usage exceeds token limit" do
+    it "raises error when usage exceeds token limit" do
       quota = Fabricate(:llm_quota, group: group, llm_model: llm_model, max_tokens: 1000)
       _usage = Fabricate(:llm_quota_usage, user: user, llm_quota: quota, input_tokens_used: 1100)
 
-      expect(described_class.within_quota?(llm_model, user)).to be false
+      expect { described_class.check_quotas!(llm_model, user) }.to raise_error(
+        LlmQuotaUsage::QuotaExceededError,
+      )
     end
 
-    it "returns false when usage exceeds usage limit" do
+    it "raises error when usage exceeds usage limit" do
       quota = Fabricate(:llm_quota, group: group, llm_model: llm_model, max_usages: 10)
       _usage = Fabricate(:llm_quota_usage, user: user, llm_quota: quota, usages: 11)
 
-      expect(described_class.within_quota?(llm_model, user)).to be false
+      expect { described_class.check_quotas!(llm_model, user) }.to raise_error(
+        LlmQuotaUsage::QuotaExceededError,
+      )
     end
 
     it "checks all quotas from user's groups" do
@@ -50,10 +54,19 @@ RSpec.describe LlmQuota do
       quota1 = Fabricate(:llm_quota, group: group, llm_model: llm_model, max_tokens: 1000)
       quota2 = Fabricate(:llm_quota, group: group2, llm_model: llm_model, max_tokens: 500)
 
-      Fabricate(:llm_quota_usage, user: user, llm_quota: quota1, input_tokens_used: 900)
-      Fabricate(:llm_quota_usage, user: user, llm_quota: quota2, input_tokens_used: 600)
+      described_class.log_usage(llm_model, user, 900, 0) # Should create usages for both quotas
 
-      expect(described_class.within_quota?(llm_model, user)).to be false
+      expect { described_class.check_quotas!(llm_model, user) }.not_to raise_error
+
+      described_class.log_usage(llm_model, user, 101, 0) # This should push quota2 over its limit
+
+      expect { described_class.check_quotas!(llm_model, user) }.to raise_error(
+        LlmQuotaUsage::QuotaExceededError,
+      )
+
+      # Verify the usage was logged for both quotas
+      expect(LlmQuotaUsage.find_by(llm_quota: quota1).total_tokens_used).to eq(1001)
+      expect(LlmQuotaUsage.find_by(llm_quota: quota2).total_tokens_used).to eq(1001)
     end
   end
 
