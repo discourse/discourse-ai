@@ -124,7 +124,7 @@ export default class AiEmbeddingEditor extends Component {
       await this.editingModel.save();
 
       if (isNew) {
-        this.args.embeddings.addObject(this.args.model);
+        this.args.embeddings.addObject(this.editingModel);
         this.router.transitionTo(
           "adminPlugins.show.discourse-ai-embeddings.index"
         );
