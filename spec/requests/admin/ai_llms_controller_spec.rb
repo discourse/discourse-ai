@@ -111,7 +111,6 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
                ai_llm: valid_attrs.merge(llm_quotas: quota_params),
              }
 
-        puts response.body
         expect(response.status).to eq(201)
         created_model = LlmModel.last
         expect(created_model.llm_quotas.count).to eq(1)
