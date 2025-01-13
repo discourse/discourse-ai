@@ -451,7 +451,7 @@ en:
 
     errors:
       quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."
-      quota_required: "You must specify maximum tokens or usages for this model."
+      quota_required: "You must specify maximum tokens or usages for this model"
       no_query_specified: The query parameter is required, please specify it.
       no_user_for_persona: The persona specified does not have a user associated with it.
       persona_not_found: The persona specified does not exist. Check the persona_name or persona_id params.
