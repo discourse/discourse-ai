@@ -11,7 +11,7 @@ class LlmQuota < ActiveRecord::Base
   # we can not validate on create cause it breaks build
   validates :llm_model_id, presence: true, on: :update
   validates :duration_seconds, presence: true, numericality: { greater_than: 0 }
-  validates :max_tokens, numericality: { greater_than: 0, allow_nil: true }
+  validates :max_tokens, numericality: { only_integer: true, greater_than: 0, allow_nil: true }
   validates :max_usages, numericality: { greater_than: 0, allow_nil: true }
 
   validate :at_least_one_limit
