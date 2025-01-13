@@ -69,6 +69,27 @@ module DiscourseAi
           model_params = normalize_model_params(model_params)
           orig_blk = blk
 
+          if block_given? && disable_streaming?
+            result =
+              perform_completion!(
+                dialect,
+                user,
+                model_params,
+                feature_name: feature_name,
+                feature_context: feature_context,
+                partial_tool_calls: partial_tool_calls,
+              )
+
+            result = [result] if !result.is_a?(Array)
+            cancelled_by_caller = false
+            cancel_proc = -> { cancelled_by_caller = true }
+            result.each do |partial|
+              blk.call(partial, cancel_proc)
+              break if cancelled_by_caller
+            end
+            return result
+          end
+
           @streaming_mode = block_given?
 
           prompt = dialect.translate
@@ -259,6 +280,10 @@ module DiscourseAi
 
         def xml_tools_enabled?
           raise NotImplementedError
+        end
+
+        def disable_streaming?
+          @disable_streaming = llm_model.lookup_custom_param("disable_streaming")
         end
 
         private

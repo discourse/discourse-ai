@@ -32,6 +32,7 @@ class LlmModel < ActiveRecord::Base
       open_ai: {
         organization: :text,
         disable_native_tools: :checkbox,
+        disable_streaming: :checkbox,
       },
       mistral: {
         disable_native_tools: :checkbox,
@@ -51,11 +52,13 @@ class LlmModel < ActiveRecord::Base
       ollama: {
         disable_system_prompt: :checkbox,
         enable_native_tool: :checkbox,
+        disable_streaming: :checkbox,
       },
       open_router: {
         disable_native_tools: :checkbox,
         provider_order: :text,
         provider_quantizations: :text,
+        disable_streaming: :checkbox,
       },
     }
   end
