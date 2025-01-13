@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { fn } from "@ember/helper";
+import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
@@ -13,12 +13,12 @@ export default class AiLlmQuotaEditor extends Component {
   @service store;
   @service dialog;
   @service site;
-  @service modal;
 
   @tracked newQuotaGroupIds = null;
   @tracked newQuotaTokens = null;
   @tracked newQuotaUsages = null;
   @tracked newQuotaDuration = 86400; // 1 day default
+  @tracked modalIsVisible = false;
 
   @action
   updateExistingQuotaTokens(quota, event) {
@@ -37,9 +37,7 @@ export default class AiLlmQuotaEditor extends Component {
 
   @action
   openAddQuotaModal() {
-    this.modal.show(AiLlmQuotaModal, {
-      model: { llm: this.args.model },
-    });
+    this.modalIsVisible = true;
   }
 
   get canAddQuota() {
@@ -92,6 +90,11 @@ export default class AiLlmQuotaEditor extends Component {
     if (this.args.didUpdate) {
       this.args.didUpdate();
     }
+  }
+
+  @action
+  closeAddQuotaModal() {
+    this.modalIsVisible = false;
   }
 
   <template>
@@ -162,6 +165,13 @@ export default class AiLlmQuotaEditor extends Component {
           @label="discourse_ai.llms.quotas.add"
           class="btn"
         />
+
+        {{#if this.modalIsVisible}}
+          <AiLlmQuotaModal
+            @model={{(hash llm=@model)}}
+            @closeModal={{this.closeAddQuotaModal}}
+          />
+        {{/if}}
       </div>
     </div>
   </template>

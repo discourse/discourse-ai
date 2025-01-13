@@ -23,7 +23,6 @@ export default class AiLlmEditorForm extends Component {
   @service toasts;
   @service router;
   @service dialog;
-  @service modal;
 
   @tracked isSaving = false;
 
@@ -32,6 +31,8 @@ export default class AiLlmEditorForm extends Component {
   @tracked testError = null;
   @tracked apiKeySecret = true;
   @tracked quotaCount = 0;
+
+  @tracked modalIsVisible = false;
 
   constructor() {
     super(...arguments);
@@ -108,9 +109,7 @@ export default class AiLlmEditorForm extends Component {
 
   @action
   openAddQuotaModal() {
-    this.modal.show(AiLlmQuotaModal, {
-      model: { llm: this.args.model, onSave: this.updateQuotaCount },
-    });
+    this.modalIsVisible = true;
   }
 
   @computed("args.model.provider")
@@ -195,6 +194,12 @@ export default class AiLlmEditorForm extends Component {
           .catch(popupAjaxError);
       },
     });
+  }
+
+  @action
+  closeAddQuotaModal() {
+    this.modalIsVisible = false;
+    this.updateQuotaCount();
   }
 
   <template>
@@ -369,6 +374,12 @@ export default class AiLlmEditorForm extends Component {
               @label="discourse_ai.llms.quotas.add"
               class="btn"
             />
+            {{#if this.modalIsVisible}}
+              <AiLlmQuotaModal
+                @model={{(hash llm=@model)}}
+                @closeModal={{this.closeAddQuotaModal}}
+              />
+            {{/if}}
           {{/if}}
           <DButton
             class="btn-primary ai-llm-editor__save"
