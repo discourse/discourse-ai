@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 Fabricator(:llm_quota_usage) do
   user
   llm_quota
