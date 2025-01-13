@@ -283,7 +283,7 @@ module DiscourseAi
         end
 
         def disable_streaming?
-          @disable_streaming = llm_model.lookup_custom_param("disable_streaming")
+          @disable_streaming = !!llm_model.lookup_custom_param("disable_streaming")
         end
 
         private
