@@ -457,6 +457,43 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
       end
     end
 
+    it "falls back to non-streaming mode when streaming is disabled" do
+      model.update!(provider_params: { disable_streaming: true })
+
+      response = {
+        id: "chatcmpl-123",
+        object: "chat.completion",
+        created: 1_677_652_288,
+        choices: [
+          {
+            message: {
+              role: "assistant",
+              content: "Hello there",
+            },
+            index: 0,
+            finish_reason: "stop",
+          },
+        ],
+      }
+
+      parsed_body = nil
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+      ).to_return(status: 200, body: response.to_json)
+
+      chunks = []
+      dialect = compliance.dialect(prompt: compliance.generic_prompt)
+      endpoint.perform_completion!(dialect, user) { |chunk| chunks << chunk }
+
+      expect(parsed_body).not_to have_key(:stream)
+
+      expect(chunks).to eq(["Hello there"])
+    end
+
     describe "when using streaming mode" do
       context "with simple prompts" do
         it "completes a trivial prompt and logs the response" do

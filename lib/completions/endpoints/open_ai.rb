@@ -42,6 +42,10 @@ module DiscourseAi
 
         private
 
+        def disable_streaming?
+          @disable_streaming = llm_model.lookup_custom_param("disable_streaming")
+        end
+
         def model_uri
           if llm_model.url.to_s.starts_with?("srv://")
             service = DiscourseAi::Utils::DnsSrv.lookup(llm_model.url.sub("srv://", ""))
