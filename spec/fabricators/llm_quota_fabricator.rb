@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 Fabricator(:llm_quota) do
   group
   llm_model
