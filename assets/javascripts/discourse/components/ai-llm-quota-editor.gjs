@@ -74,7 +74,7 @@ export default class AiLlmQuotaEditor extends Component {
   async addQuota() {
     const quota = {
       group_id: this.newQuotaGroupIds[0],
-      group_name: this.site.groups.findBy("id", this.newQuotaGroupIds[0]).name,
+      group_name: this.site.groups.findBy("id", this.newQuotaGroupIds[0])?.name,
       llm_model_id: this.args.model.id,
       max_tokens: this.newQuotaTokens,
       max_usages: this.newQuotaUsages,
