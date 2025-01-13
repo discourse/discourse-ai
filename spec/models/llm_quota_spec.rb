@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-#
 RSpec.describe LlmQuota do
   fab!(:group)
   fab!(:user)
