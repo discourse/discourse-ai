@@ -1,6 +1,6 @@
 import { ajax } from "discourse/lib/ajax";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 
 export default async function (topic, fromPostNumber, toPostNumber) {
   await clipboardCopyAsync(async () => {
@@ -39,7 +39,7 @@ async function generateClipboard(topic, fromPostNumber, toPostNumber) {
   buffer.push("<summary>");
   buffer.push(`<span>${topic.title}</span>`);
   buffer.push(
-    `<span title='${I18n.t("discourse_ai.ai_bot.ai_title")}'>${I18n.t(
+    `<span title='${i18n("discourse_ai.ai_bot.ai_title")}'>${i18n(
       "discourse_ai.ai_bot.ai_label"
     )}</span>`
   );

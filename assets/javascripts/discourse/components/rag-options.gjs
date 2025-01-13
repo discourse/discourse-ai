@@ -4,7 +4,7 @@ import { Input } from "@ember/component";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import DTooltip from "discourse/components/d-tooltip";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 
 export default class RagOptions extends Component {
   @tracked showIndexingOptions = false;
@@ -18,8 +18,8 @@ export default class RagOptions extends Component {
 
   get indexingOptionsText() {
     return this.showIndexingOptions
-      ? I18n.t("discourse_ai.rag.options.hide_indexing_options")
-      : I18n.t("discourse_ai.rag.options.show_indexing_options");
+      ? i18n("discourse_ai.rag.options.hide_indexing_options")
+      : i18n("discourse_ai.rag.options.show_indexing_options");
   }
 
   <template>
@@ -33,7 +33,7 @@ export default class RagOptions extends Component {
 
     {{#if this.showIndexingOptions}}
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.rag.options.rag_chunk_tokens"}}</label>
+        <label>{{i18n "discourse_ai.rag.options.rag_chunk_tokens"}}</label>
         <Input
           @type="number"
           step="any"
@@ -43,11 +43,11 @@ export default class RagOptions extends Component {
         />
         <DTooltip
           @icon="circle-question"
-          @content={{I18n.t "discourse_ai.rag.options.rag_chunk_tokens_help"}}
+          @content={{i18n "discourse_ai.rag.options.rag_chunk_tokens_help"}}
         />
       </div>
       <div class="control-group">
-        <label>{{I18n.t
+        <label>{{i18n
             "discourse_ai.rag.options.rag_chunk_overlap_tokens"
           }}</label>
         <Input
@@ -59,7 +59,7 @@ export default class RagOptions extends Component {
         />
         <DTooltip
           @icon="circle-question"
-          @content={{I18n.t
+          @content={{i18n
             "discourse_ai.rag.options.rag_chunk_overlap_tokens_help"
           }}
         />

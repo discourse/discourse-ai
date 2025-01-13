@@ -1,6 +1,6 @@
 import { computed } from "@ember/object";
 import { observes } from "@ember-decorators/object";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
 import { selectKitOptions } from "select-kit/components/select-kit";
 
@@ -18,7 +18,7 @@ export default class AiLlmSelector extends ComboBox {
     return [
       {
         id: "blank",
-        name: I18n.t("discourse_ai.ai_persona.no_llm_selected"),
+        name: i18n("discourse_ai.ai_persona.no_llm_selected"),
       },
     ].concat(this.llms);
   }

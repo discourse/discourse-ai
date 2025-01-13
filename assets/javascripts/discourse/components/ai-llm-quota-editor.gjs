@@ -5,7 +5,7 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import DurationSelector from "./ai-quota-duration-selector";
 import AiLlmQuotaModal from "./modal/ai-llm-quota-modal";
 
@@ -99,16 +99,16 @@ export default class AiLlmQuotaEditor extends Component {
       <table class="ai-llm-quotas__table">
         <thead class="ai-llm-quotas__table-head">
           <tr class="ai-llm-quotas__header-row">
-            <th class="ai-llm-quotas__header">{{I18n.t
+            <th class="ai-llm-quotas__header">{{i18n
                 "discourse_ai.llms.quotas.group"
               }}</th>
-            <th class="ai-llm-quotas__header">{{I18n.t
+            <th class="ai-llm-quotas__header">{{i18n
                 "discourse_ai.llms.quotas.max_tokens"
               }}</th>
-            <th class="ai-llm-quotas__header">{{I18n.t
+            <th class="ai-llm-quotas__header">{{i18n
                 "discourse_ai.llms.quotas.max_usages"
               }}</th>
-            <th class="ai-llm-quotas__header">{{I18n.t
+            <th class="ai-llm-quotas__header">{{i18n
                 "discourse_ai.llms.quotas.duration"
               }}</th>
             <th

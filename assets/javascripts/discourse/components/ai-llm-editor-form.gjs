@@ -12,8 +12,7 @@ import DButton from "discourse/components/d-button";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import DTooltip from "float-kit/components/d-tooltip";
@@ -41,7 +40,7 @@ export default class AiLlmEditorForm extends Component {
 
   get selectedProviders() {
     const t = (provName) => {
-      return I18n.t(`discourse_ai.llms.providers.${provName}`);
+      return i18n(`discourse_ai.llms.providers.${provName}`);
     };
 
     return this.args.llms.resultSetMeta.providers.map((prov) => {
@@ -54,7 +53,7 @@ export default class AiLlmEditorForm extends Component {
   }
 
   get testErrorMessage() {
-    return I18n.t("discourse_ai.llms.tests.failure", { error: this.testError });
+    return i18n("discourse_ai.llms.tests.failure", { error: this.testError });
   }
 
   get displayTestResult() {
@@ -74,7 +73,7 @@ export default class AiLlmEditorForm extends Component {
     }
 
     const localized = usedBy.map((m) => {
-      return I18n.t(`discourse_ai.llms.usage.${m.type}`, {
+      return i18n(`discourse_ai.llms.usage.${m.type}`, {
         persona: m.name,
       });
     });
@@ -88,7 +87,7 @@ export default class AiLlmEditorForm extends Component {
   }
 
   get inUseWarning() {
-    return I18n.t("discourse_ai.llms.in_use_warning", {
+    return i18n("discourse_ai.llms.in_use_warning", {
       settings: this.modulesUsingModel,
       count: this.args.model.used_by.length,
     });
@@ -135,7 +134,7 @@ export default class AiLlmEditorForm extends Component {
         this.router.transitionTo("adminPlugins.show.discourse-ai-llms.index");
       } else {
         this.toasts.success({
-          data: { message: I18n.t("discourse_ai.llms.saved") },
+          data: { message: i18n("discourse_ai.llms.saved") },
           duration: 2000,
         });
       }
@@ -183,7 +182,7 @@ export default class AiLlmEditorForm extends Component {
   @action
   delete() {
     return this.dialog.confirm({
-      message: I18n.t("discourse_ai.llms.confirm_delete"),
+      message: i18n("discourse_ai.llms.confirm_delete"),
       didConfirm: () => {
         return this.args.model
           .destroyRecord()

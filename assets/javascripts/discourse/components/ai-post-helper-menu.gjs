@@ -15,7 +15,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { sanitize } from "discourse/lib/text";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { bind } from "discourse-common/utils/decorators";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperLoading from "../components/ai-helper-loading";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
@@ -55,7 +55,7 @@ export default class AiPostHelperMenu extends Component {
 
     const instance = this.tooltip.register(element, {
       identifier: "cannot-add-footnote-tooltip",
-      content: I18n.t(
+      content: i18n(
         "discourse_ai.ai_helper.post_options_menu.footnote_disabled"
       ),
       placement: "top",
@@ -286,7 +286,7 @@ export default class AiPostHelperMenu extends Component {
       try {
         const result = await ajax(`/posts/${this.args.data.post.id}`);
         const sanitizedSuggestion = this._sanitizeForFootnote(this.suggestion);
-        const credits = I18n.t(
+        const credits = i18n(
           "discourse_ai.ai_helper.post_options_menu.footnote_credits"
         );
         const withFootnote = `${this.args.data.selectedText} ^[${sanitizedSuggestion} (${credits})]`;

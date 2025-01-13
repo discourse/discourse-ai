@@ -7,7 +7,7 @@ import { service } from "@ember/service";
 import { not } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
 import DurationSelector from "../ai-quota-duration-selector";
 
@@ -76,12 +76,12 @@ export default class AiLlmQuotaModal extends Component {
 
   <template>
     <DModal
-      @title={{I18n.t "discourse_ai.llms.quotas.add_title"}}
+      @title={{i18n "discourse_ai.llms.quotas.add_title"}}
       @closeModal={{@closeModal}}
     >
       <:body>
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.llms.quotas.group"}}</label>
+          <label>{{i18n "discourse_ai.llms.quotas.group"}}</label>
           <GroupChooser
             @value={{this.groupIds}}
             @content={{this.availableGroups}}
@@ -91,7 +91,7 @@ export default class AiLlmQuotaModal extends Component {
         </div>
 
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.llms.quotas.max_tokens"}}</label>
+          <label>{{i18n "discourse_ai.llms.quotas.max_tokens"}}</label>
           <input
             type="number"
             value={{this.maxTokens}}
@@ -102,7 +102,7 @@ export default class AiLlmQuotaModal extends Component {
         </div>
 
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.llms.quotas.max_usages"}}</label>
+          <label>{{i18n "discourse_ai.llms.quotas.max_usages"}}</label>
           <input
             type="number"
             value={{this.maxUsages}}
@@ -113,7 +113,7 @@ export default class AiLlmQuotaModal extends Component {
         </div>
 
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.llms.quotas.duration"}}</label>
+          <label>{{i18n "discourse_ai.llms.quotas.duration"}}</label>
           <DurationSelector
             @value={{this.duration}}
             @onChange={{this.updateDuration}}

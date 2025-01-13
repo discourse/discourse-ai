@@ -5,7 +5,7 @@ import { action } from "@ember/object";
 import { TrackedArray, TrackedObject } from "@ember-compat/tracked-built-ins";
 import DButton from "discourse/components/d-button";
 import withEventValue from "discourse/helpers/with-event-value";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
 
 const PARAMETER_TYPES = [
@@ -76,7 +76,7 @@ export default class AiToolParameterEditor extends Component {
             {{on "input" (withEventValue (fn (mut parameter.name)))}}
             value={{parameter.name}}
             type="text"
-            placeholder={{I18n.t "discourse_ai.tools.parameter_name"}}
+            placeholder={{i18n "discourse_ai.tools.parameter_name"}}
           />
           <ComboBox @value={{parameter.type}} @content={{PARAMETER_TYPES}} />
         </div>
@@ -86,7 +86,7 @@ export default class AiToolParameterEditor extends Component {
             {{on "input" (withEventValue (fn (mut parameter.description)))}}
             value={{parameter.description}}
             type="text"
-            placeholder={{I18n.t "discourse_ai.tools.parameter_description"}}
+            placeholder={{i18n "discourse_ai.tools.parameter_description"}}
           />
         </div>
 
@@ -98,7 +98,7 @@ export default class AiToolParameterEditor extends Component {
               type="checkbox"
               class="parameter-row__required-toggle"
             />
-            {{I18n.t "discourse_ai.tools.parameter_required"}}
+            {{i18n "discourse_ai.tools.parameter_required"}}
           </label>
 
           <label>
@@ -108,7 +108,7 @@ export default class AiToolParameterEditor extends Component {
               type="checkbox"
               class="parameter-row__enum-toggle"
             />
-            {{I18n.t "discourse_ai.tools.parameter_enum"}}
+            {{i18n "discourse_ai.tools.parameter_enum"}}
           </label>
 
           <DButton
@@ -126,7 +126,7 @@ export default class AiToolParameterEditor extends Component {
                   {{on "change" (fn this.updateEnumValue parameter enumIndex)}}
                   value={{enumValue}}
                   type="text"
-                  placeholder={{I18n.t "discourse_ai.tools.enum_value"}}
+                  placeholder={{i18n "discourse_ai.tools.enum_value"}}
                 />
                 <DButton
                   @action={{fn this.removeEnumValue parameter enumIndex}}

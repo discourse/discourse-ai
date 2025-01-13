@@ -8,9 +8,8 @@ import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
-import i18n from "discourse-common/helpers/i18n";
 import { getAbsoluteURL } from "discourse-common/lib/get-url";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 
 export default class ShareModal extends Component {
   @service toasts;
@@ -83,7 +82,7 @@ export default class ShareModal extends Component {
     this.toasts.success({
       duration: 3000,
       data: {
-        message: I18n.t("discourse_ai.ai_bot.conversation_shared"),
+        message: i18n("discourse_ai.ai_bot.conversation_shared"),
       },
     });
   }

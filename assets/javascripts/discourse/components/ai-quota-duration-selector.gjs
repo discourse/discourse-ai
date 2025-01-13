@@ -2,7 +2,7 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
 
 const DURATION_PRESETS = [
@@ -48,7 +48,7 @@ export default class DurationSelector extends Component {
   get presetOptions() {
     return DURATION_PRESETS.map((preset) => ({
       id: preset.id,
-      name: I18n.t(preset.nameKey),
+      name: i18n(preset.nameKey),
       seconds: preset.seconds,
     }));
   }
@@ -102,7 +102,7 @@ export default class DurationSelector extends Component {
             {{on "input" this.onCustomHoursChange}}
           />
           <span class="duration-selector__hours-label">
-            {{I18n.t "discourse_ai.llms.quotas.hours"}}
+            {{i18n "discourse_ai.llms.quotas.hours"}}
           </span>
         </div>
       {{/if}}
