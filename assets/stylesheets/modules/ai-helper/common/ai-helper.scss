@@ -693,7 +693,7 @@
 }
 
 .fk-d-menu[data-identifier="ai-composer-helper-menu"] {
-  z-index: z("composer", "dropdown") + 1;
+  z-index: z("modal", "dialog");
 
   .fullscreen-composer & {
     z-index: z("header") + 1;
