@@ -42,9 +42,10 @@ class DropOldEmbeddingTables2 < ActiveRecord::Migration[7.2]
         DROP INDEX IF EXISTS ai_document_fragment_embeddings_7_1_search_bit;
         DROP INDEX IF EXISTS ai_document_fragment_embeddings_8_1_search_bit;
       SQL
-    drop_table :ai_topic_embeddings
-    drop_table :ai_post_embeddings
-    drop_table :ai_document_fragment_embeddings
+
+    drop_table :ai_topic_embeddings, if_exists: true
+    drop_table :ai_post_embeddings, if_exists: true
+    drop_table :ai_document_fragment_embeddings, if_exists: true
   end
 
   def down
