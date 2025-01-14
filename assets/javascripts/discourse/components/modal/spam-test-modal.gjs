@@ -8,7 +8,7 @@ import DModal from "discourse/components/d-modal";
 import withEventValue from "discourse/helpers/with-event-value";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import AiIndicatorWave from "../ai-indicator-wave";
 
 export default class SpamTestModal extends Component {
@@ -36,8 +36,8 @@ export default class SpamTestModal extends Component {
 
       this.isSpam = response.is_spam;
       this.testResult = response.is_spam
-        ? I18n.t("discourse_ai.spam.test_modal.spam")
-        : I18n.t("discourse_ai.spam.test_modal.not_spam");
+        ? i18n("discourse_ai.spam.test_modal.spam")
+        : i18n("discourse_ai.spam.test_modal.not_spam");
       this.scanLog = response.log;
     } catch (error) {
       popupAjaxError(error);
@@ -48,20 +48,18 @@ export default class SpamTestModal extends Component {
 
   <template>
     <DModal
-      @title={{I18n.t "discourse_ai.spam.test_modal.title"}}
+      @title={{i18n "discourse_ai.spam.test_modal.title"}}
       @closeModal={{@closeModal}}
       @bodyClass="spam-test-modal__body"
       class="spam-test-modal"
     >
       <:body>
         <div class="control-group">
-          <label>{{I18n.t
-              "discourse_ai.spam.test_modal.post_url_label"
-            }}</label>
+          <label>{{i18n "discourse_ai.spam.test_modal.post_url_label"}}</label>
           <input
             {{on "input" (withEventValue (fn (mut this.postUrl)))}}
             type="text"
-            placeholder={{I18n.t
+            placeholder={{i18n
               "discourse_ai.spam.test_modal.post_url_placeholder"
             }}
           />
@@ -69,7 +67,7 @@ export default class SpamTestModal extends Component {
 
         {{#if this.testResult}}
           <div class="spam-test-modal__test-result">
-            <h3>{{I18n.t "discourse_ai.spam.test_modal.result"}}</h3>
+            <h3>{{i18n "discourse_ai.spam.test_modal.result"}}</h3>
             <div
               class="spam-test-modal__verdict
                 {{if this.isSpam 'is-spam' 'not-spam'}}"
@@ -78,7 +76,7 @@ export default class SpamTestModal extends Component {
             </div>
             {{#if this.scanLog}}
               <div class="spam-test-modal__log">
-                <h4>{{I18n.t "discourse_ai.spam.test_modal.scan_log"}}</h4>
+                <h4>{{i18n "discourse_ai.spam.test_modal.scan_log"}}</h4>
                 <pre>{{this.scanLog}}</pre>
               </div>
             {{/if}}

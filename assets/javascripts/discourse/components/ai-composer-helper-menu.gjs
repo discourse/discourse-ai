@@ -3,7 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { getOwner } from "@ember/owner";
 import { service } from "@ember/service";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import DToast from "float-kit/components/d-toast";
 import DToastInstance from "float-kit/lib/d-toast-instance";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
@@ -45,7 +45,7 @@ export default class AiComposerHelperMenu extends Component {
           this.siteSettings.available_locales
         );
         const locale = availableLocales.find((l) => l.value === siteLocale);
-        const translatedName = I18n.t(
+        const translatedName = i18n(
           "discourse_ai.ai_helper.context_menu.translate_prompt",
           {
             language: locale.name,
@@ -90,7 +90,7 @@ export default class AiComposerHelperMenu extends Component {
       data: {
         theme: "error",
         icon: "triangle-exclamation",
-        message: I18n.t("discourse_ai.ai_helper.no_content_error"),
+        message: i18n("discourse_ai.ai_helper.no_content_error"),
       },
     };
 

@@ -3,8 +3,7 @@ import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DPageSubheader from "discourse/components/d-page-subheader";
-import i18n from "discourse-common/helpers/i18n";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
 
 export default class AiToolListEditor extends Component {
@@ -60,7 +59,7 @@ export default class AiToolListEditor extends Component {
                     @route="adminPlugins.show.discourse-ai-tools.edit"
                     @model={{tool}}
                     class="btn btn-text btn-small"
-                  >{{I18n.t "discourse_ai.tools.edit"}}</LinkTo>
+                  >{{i18n "discourse_ai.tools.edit"}}</LinkTo>
                 </td>
               </tr>
             {{/each}}

@@ -11,7 +11,7 @@ import { ajax } from "discourse/lib/ajax";
 import UppyUpload from "discourse/lib/uppy/uppy-upload";
 import icon from "discourse-common/helpers/d-icon";
 import discourseDebounce from "discourse-common/lib/debounce";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import RagUploadProgress from "./rag-upload-progress";
 
 export default class RagUploader extends Component {
@@ -31,7 +31,7 @@ export default class RagUploader extends Component {
     uploadDone: (uploadedFile) => {
       const newUpload = uploadedFile.upload;
       newUpload.status = "uploaded";
-      newUpload.statusText = I18n.t("discourse_ai.rag.uploads.uploaded");
+      newUpload.statusText = i18n("discourse_ai.rag.uploads.uploaded");
       this.ragUploads.pushObject(newUpload);
       this.debouncedSearch();
     },
@@ -118,8 +118,8 @@ export default class RagUploader extends Component {
 
   <template>
     <div class="rag-uploader">
-      <h3>{{I18n.t "discourse_ai.rag.uploads.title"}}</h3>
-      <p>{{I18n.t "discourse_ai.rag.uploads.description"}}</p>
+      <h3>{{i18n "discourse_ai.rag.uploads.title"}}</h3>
+      <p>{{i18n "discourse_ai.rag.uploads.description"}}</p>
 
       {{#if this.ragUploads}}
         <div class="rag-uploader__search-input-container">
@@ -127,7 +127,7 @@ export default class RagUploader extends Component {
             {{icon "search" class="rag-uploader__search-input__search-icon"}}
             <Input
               class="rag-uploader__search-input__input"
-              placeholder={{I18n.t "discourse_ai.rag.uploads.filter"}}
+              placeholder={{i18n "discourse_ai.rag.uploads.filter"}}
               @value={{this.term}}
               {{on "keyup" this.debouncedSearch}}
             />
@@ -165,7 +165,7 @@ export default class RagUploader extends Component {
                 {{upload.original_filename}}</td>
               <td class="rag-uploader__upload-status">
                 <div class="spinner small"></div>
-                <span>{{I18n.t "discourse_ai.rag.uploads.uploading"}}
+                <span>{{i18n "discourse_ai.rag.uploads.uploading"}}
                   {{upload.uploadProgress}}%</span>
               </td>
               <td class="rag-uploader__remove-file">

@@ -65,6 +65,8 @@ module DiscourseAi
           partial_tool_calls: false,
           &blk
         )
+          LlmQuota.check_quotas!(@llm_model, user)
+
           @partial_tool_calls = partial_tool_calls
           model_params = normalize_model_params(model_params)
           orig_blk = blk
@@ -209,10 +211,9 @@ module DiscourseAi
               if log
                 log.raw_response_payload = response_raw
                 final_log_update(log)
-
                 log.response_tokens = tokenizer.size(partials_raw) if log.response_tokens.blank?
                 log.save!
-
+                LlmQuota.log_usage(@llm_model, user, log.request_tokens, log.response_tokens)
                 if Rails.env.development?
                   puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
                 end

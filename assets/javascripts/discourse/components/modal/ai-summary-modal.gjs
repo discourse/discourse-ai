@@ -16,9 +16,8 @@ import htmlClass from "discourse/helpers/html-class";
 import { ajax } from "discourse/lib/ajax";
 import { shortDateNoYear } from "discourse/lib/formatter";
 import dIcon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
 import { bind } from "discourse-common/utils/decorators";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
 
@@ -45,11 +44,11 @@ export default class AiSummaryModal extends Component {
   streamedTextLength = 0;
 
   get outdatedSummaryWarningText() {
-    let outdatedText = I18n.t("summary.outdated");
+    let outdatedText = i18n("summary.outdated");
 
     if (!this.topRepliesSummaryEnabled && this.newPostsSinceSummary > 0) {
       outdatedText += " ";
-      outdatedText += I18n.t("summary.outdated_posts", {
+      outdatedText += i18n("summary.outdated_posts", {
         count: this.newPostsSinceSummary,
       });
     }

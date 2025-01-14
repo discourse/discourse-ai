@@ -12,7 +12,7 @@ import DButton from "discourse/components/d-button";
 import DTooltip from "discourse/components/d-tooltip";
 import withEventValue from "discourse/helpers/with-event-value";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
@@ -95,7 +95,7 @@ export default class AiToolEditor extends Component {
       await this.args.model.save(data);
 
       this.toasts.success({
-        data: { message: I18n.t("discourse_ai.tools.saved") },
+        data: { message: i18n("discourse_ai.tools.saved") },
         duration: 2000,
       });
       if (!this.args.tools.any((tool) => tool.id === this.args.model.id)) {
@@ -116,7 +116,7 @@ export default class AiToolEditor extends Component {
   @action
   delete() {
     return this.dialog.confirm({
-      message: I18n.t("discourse_ai.tools.confirm_delete"),
+      message: i18n("discourse_ai.tools.confirm_delete"),
       didConfirm: async () => {
         await this.args.model.destroyRecord();
 
@@ -148,7 +148,7 @@ export default class AiToolEditor extends Component {
     >
       {{#if this.showPresets}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.tools.presets"}}</label>
+          <label>{{i18n "discourse_ai.tools.presets"}}</label>
           <ComboBox
             @value={{this.presetId}}
             @content={{this.presets}}
@@ -165,7 +165,7 @@ export default class AiToolEditor extends Component {
         </div>
       {{else}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.tools.name"}}</label>
+          <label>{{i18n "discourse_ai.tools.name"}}</label>
           <input
             {{on "input" (withEventValue (fn (mut this.editingModel.name)))}}
             value={{this.editingModel.name}}
@@ -174,24 +174,24 @@ export default class AiToolEditor extends Component {
           />
           <DTooltip
             @icon="circle-question"
-            @content={{I18n.t "discourse_ai.tools.name_help"}}
+            @content={{i18n "discourse_ai.tools.name_help"}}
           />
         </div>
 
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.tools.description"}}</label>
+          <label>{{i18n "discourse_ai.tools.description"}}</label>
           <textarea
             {{on
               "input"
               (withEventValue (fn (mut this.editingModel.description)))
             }}
-            placeholder={{I18n.t "discourse_ai.tools.description_help"}}
+            placeholder={{i18n "discourse_ai.tools.description_help"}}
             class="ai-tool-editor__description input-xxlarge"
           >{{this.editingModel.description}}</textarea>
         </div>
 
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.tools.summary"}}</label>
+          <label>{{i18n "discourse_ai.tools.summary"}}</label>
           <input
             {{on "input" (withEventValue (fn (mut this.editingModel.summary)))}}
             value={{this.editingModel.summary}}
@@ -200,17 +200,17 @@ export default class AiToolEditor extends Component {
           />
           <DTooltip
             @icon="circle-question"
-            @content={{I18n.t "discourse_ai.tools.summary_help"}}
+            @content={{i18n "discourse_ai.tools.summary_help"}}
           />
         </div>
 
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.tools.parameters"}}</label>
+          <label>{{i18n "discourse_ai.tools.parameters"}}</label>
           <AiToolParameterEditor @parameters={{this.editingModel.parameters}} />
         </div>
 
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.tools.script"}}</label>
+          <label>{{i18n "discourse_ai.tools.script"}}</label>
           <AceEditor
             @content={{this.editingModel.script}}
             @onChange={{fn (mut this.editingModel.script)}}

@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { computed } from "@ember/object";
 import { service } from "@ember/service";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 
 export default class extends Component {
   @service currentUser;
@@ -19,7 +19,7 @@ export default class extends Component {
   get aiBotClasses() {
     if (
       this.composerModel?.title ===
-      I18n.t("discourse_ai.ai_bot.default_pm_prefix")
+      i18n("discourse_ai.ai_bot.default_pm_prefix")
     ) {
       return "ai-bot-chat";
     } else {

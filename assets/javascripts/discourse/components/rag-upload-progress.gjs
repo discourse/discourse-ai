@@ -5,7 +5,7 @@ import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { service } from "@ember/service";
 import icon from "discourse-common/helpers/d-icon";
 import { bind } from "discourse-common/utils/decorators";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 
 export default class RagUploadProgress extends Component {
   @service messageBus;
@@ -67,17 +67,17 @@ export default class RagUploadProgress extends Component {
         {{#if this.fullyIndexed}}
           <span class="indexed">
             {{icon "check"}}
-            {{I18n.t "discourse_ai.rag.uploads.indexed"}}
+            {{i18n "discourse_ai.rag.uploads.indexed"}}
           </span>
         {{else}}
           <span class="indexing">
             {{icon "robot"}}
-            {{I18n.t "discourse_ai.rag.uploads.indexing"}}
+            {{i18n "discourse_ai.rag.uploads.indexing"}}
             {{this.calculateProgress}}%
           </span>
         {{/if}}
       {{else}}
-        <span class="uploaded">{{I18n.t
+        <span class="uploaded">{{i18n
             "discourse_ai.rag.uploads.uploaded"
           }}</span>
       {{/if}}

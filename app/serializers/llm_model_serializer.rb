@@ -20,6 +20,7 @@ class LlmModelSerializer < ApplicationSerializer
              :used_by
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
+  has_many :llm_quotas, serializer: LlmQuotaSerializer, embed: :objects
 
   def used_by
     llm_usage =

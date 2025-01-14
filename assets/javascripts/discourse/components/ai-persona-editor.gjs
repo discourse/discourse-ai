@@ -15,7 +15,7 @@ import DToggleSwitch from "discourse/components/d-toggle-switch";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import GroupChooser from "select-kit/components/group-chooser";
@@ -108,7 +108,7 @@ export default class PersonaEditor extends Component {
   @cached
   get maxPixelValues() {
     const l = (key) =>
-      I18n.t(`discourse_ai.ai_persona.vision_max_pixel_sizes.${key}`);
+      i18n(`discourse_ai.ai_persona.vision_max_pixel_sizes.${key}`);
     return [
       { id: "low", name: l("low"), pixels: 65536 },
       { id: "medium", name: l("medium"), pixels: 262144 },
@@ -140,7 +140,7 @@ export default class PersonaEditor extends Component {
         );
       } else {
         this.toasts.success({
-          data: { message: I18n.t("discourse_ai.ai_persona.saved") },
+          data: { message: i18n("discourse_ai.ai_persona.saved") },
           duration: 2000,
         });
       }
@@ -205,7 +205,7 @@ export default class PersonaEditor extends Component {
   @action
   delete() {
     return this.dialog.confirm({
-      message: I18n.t("discourse_ai.ai_persona.confirm_delete"),
+      message: i18n("discourse_ai.ai_persona.confirm_delete"),
       didConfirm: () => {
         return this.args.model.destroyRecord().then(() => {
           this.args.personas.removeObject(this.args.model);
@@ -316,11 +316,11 @@ export default class PersonaEditor extends Component {
         />
         <DTooltip
           @icon="circle-question"
-          @content={{I18n.t "discourse_ai.ai_persona.priority_help"}}
+          @content={{i18n "discourse_ai.ai_persona.priority_help"}}
         />
       </div>
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai_persona.name"}}</label>
+        <label>{{i18n "discourse_ai.ai_persona.name"}}</label>
         <Input
           class="ai-persona-editor__name"
           @type="text"
@@ -329,7 +329,7 @@ export default class PersonaEditor extends Component {
         />
       </div>
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai_persona.description"}}</label>
+        <label>{{i18n "discourse_ai.ai_persona.description"}}</label>
         <Textarea
           class="ai-persona-editor__description"
           @value={{this.editingModel.description}}
@@ -338,7 +338,7 @@ export default class PersonaEditor extends Component {
       </div>
       {{#if this.editingModel.user}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.ai_persona.default_llm"}}</label>
+          <label>{{i18n "discourse_ai.ai_persona.default_llm"}}</label>
           <AiLlmSelector
             class="ai-persona-editor__llms"
             @value={{this.mappedDefaultLlm}}
@@ -346,7 +346,7 @@ export default class PersonaEditor extends Component {
           />
           <DTooltip
             @icon="circle-question"
-            @content={{I18n.t "discourse_ai.ai_persona.default_llm_help"}}
+            @content={{i18n "discourse_ai.ai_persona.default_llm_help"}}
           />
         </div>
         {{#if this.hasDefaultLlm}}
@@ -356,13 +356,13 @@ export default class PersonaEditor extends Component {
                 @type="checkbox"
                 @checked={{this.editingModel.force_default_llm}}
               />
-              {{I18n.t "discourse_ai.ai_persona.force_default_llm"}}</label>
+              {{i18n "discourse_ai.ai_persona.force_default_llm"}}</label>
           </div>
         {{/if}}
       {{/if}}
       {{#unless @model.isNew}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.ai_persona.user"}}</label>
+          <label>{{i18n "discourse_ai.ai_persona.user"}}</label>
           {{#if this.editingModel.user}}
             <a
               class="avatar"
@@ -379,17 +379,17 @@ export default class PersonaEditor extends Component {
               @action={{this.createUser}}
               class="ai-persona-editor__create-user"
             >
-              {{I18n.t "discourse_ai.ai_persona.create_user"}}
+              {{i18n "discourse_ai.ai_persona.create_user"}}
             </DButton>
             <DTooltip
               @icon="circle-question"
-              @content={{I18n.t "discourse_ai.ai_persona.create_user_help"}}
+              @content={{i18n "discourse_ai.ai_persona.create_user_help"}}
             />
           {{/if}}
         </div>
       {{/unless}}
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai_persona.tools"}}</label>
+        <label>{{i18n "discourse_ai.ai_persona.tools"}}</label>
         <AiToolSelector
           class="ai-persona-editor__tools"
           @value={{this.selectedToolNames}}
@@ -400,7 +400,7 @@ export default class PersonaEditor extends Component {
       </div>
       {{#if this.allowForceTools}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.ai_persona.forced_tools"}}</label>
+          <label>{{i18n "discourse_ai.ai_persona.forced_tools"}}</label>
           <AiToolSelector
             class="ai-persona-editor__forced_tools"
             @value={{this.forcedToolNames}}
@@ -410,7 +410,7 @@ export default class PersonaEditor extends Component {
         </div>
         {{#if this.hasForcedTools}}
           <div class="control-group">
-            <label>{{I18n.t
+            <label>{{i18n
                 "discourse_ai.ai_persona.forced_tool_strategy"
               }}</label>
             <AiForcedToolStrategySelector
@@ -428,7 +428,7 @@ export default class PersonaEditor extends Component {
         />
       {{/unless}}
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai_persona.allowed_groups"}}</label>
+        <label>{{i18n "discourse_ai.ai_persona.allowed_groups"}}</label>
         <GroupChooser
           @value={{this.editingModel.allowed_group_ids}}
           @content={{this.allGroups}}
@@ -436,7 +436,7 @@ export default class PersonaEditor extends Component {
         />
       </div>
       <div class="control-group">
-        <label for="ai-persona-editor__system_prompt">{{I18n.t
+        <label for="ai-persona-editor__system_prompt">{{i18n
             "discourse_ai.ai_persona.system_prompt"
           }}</label>
         <Textarea
@@ -451,10 +451,10 @@ export default class PersonaEditor extends Component {
             @type="checkbox"
             @checked={{this.editingModel.allow_personal_messages}}
           />
-          {{I18n.t "discourse_ai.ai_persona.allow_personal_messages"}}</label>
+          {{i18n "discourse_ai.ai_persona.allow_personal_messages"}}</label>
         <DTooltip
           @icon="circle-question"
-          @content={{I18n.t
+          @content={{i18n
             "discourse_ai.ai_persona.allow_personal_messages_help"
           }}
         />
@@ -466,10 +466,10 @@ export default class PersonaEditor extends Component {
               @type="checkbox"
               @checked={{this.editingModel.allow_topic_mentions}}
             />
-            {{I18n.t "discourse_ai.ai_persona.allow_topic_mentions"}}</label>
+            {{i18n "discourse_ai.ai_persona.allow_topic_mentions"}}</label>
           <DTooltip
             @icon="circle-question"
-            @content={{I18n.t
+            @content={{i18n
               "discourse_ai.ai_persona.allow_topic_mentions_help"
             }}
           />
@@ -483,12 +483,12 @@ export default class PersonaEditor extends Component {
                 @type="checkbox"
                 @checked={{this.editingModel.allow_chat_direct_messages}}
               />
-              {{I18n.t
+              {{i18n
                 "discourse_ai.ai_persona.allow_chat_direct_messages"
               }}</label>
             <DTooltip
               @icon="circle-question"
-              @content={{I18n.t
+              @content={{i18n
                 "discourse_ai.ai_persona.allow_chat_direct_messages_help"
               }}
             />
@@ -501,12 +501,12 @@ export default class PersonaEditor extends Component {
                 @type="checkbox"
                 @checked={{this.editingModel.allow_chat_channel_mentions}}
               />
-              {{I18n.t
+              {{i18n
                 "discourse_ai.ai_persona.allow_chat_channel_mentions"
               }}</label>
             <DTooltip
               @icon="circle-question"
-              @content={{I18n.t
+              @content={{i18n
                 "discourse_ai.ai_persona.allow_chat_channel_mentions_help"
               }}
             />
@@ -516,10 +516,10 @@ export default class PersonaEditor extends Component {
       <div class="control-group ai-persona-editor__tool-details">
         <label>
           <Input @type="checkbox" @checked={{this.editingModel.tool_details}} />
-          {{I18n.t "discourse_ai.ai_persona.tool_details"}}</label>
+          {{i18n "discourse_ai.ai_persona.tool_details"}}</label>
         <DTooltip
           @icon="circle-question"
-          @content={{I18n.t "discourse_ai.ai_persona.tool_details_help"}}
+          @content={{i18n "discourse_ai.ai_persona.tool_details_help"}}
         />
       </div>
       <div class="control-group ai-persona-editor__vision_enabled">
@@ -528,15 +528,15 @@ export default class PersonaEditor extends Component {
             @type="checkbox"
             @checked={{this.editingModel.vision_enabled}}
           />
-          {{I18n.t "discourse_ai.ai_persona.vision_enabled"}}</label>
+          {{i18n "discourse_ai.ai_persona.vision_enabled"}}</label>
         <DTooltip
           @icon="circle-question"
-          @content={{I18n.t "discourse_ai.ai_persona.vision_enabled_help"}}
+          @content={{i18n "discourse_ai.ai_persona.vision_enabled_help"}}
         />
       </div>
       {{#if this.editingModel.vision_enabled}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.ai_persona.vision_max_pixels"}}</label>
+          <label>{{i18n "discourse_ai.ai_persona.vision_max_pixels"}}</label>
           <ComboBox
             @value={{this.maxPixelsValue}}
             @content={{this.maxPixelValues}}
@@ -545,7 +545,7 @@ export default class PersonaEditor extends Component {
         </div>
       {{/if}}
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai_persona.max_context_posts"}}</label>
+        <label>{{i18n "discourse_ai.ai_persona.max_context_posts"}}</label>
         <Input
           @type="number"
           lang="en"
@@ -554,12 +554,12 @@ export default class PersonaEditor extends Component {
         />
         <DTooltip
           @icon="circle-question"
-          @content={{I18n.t "discourse_ai.ai_persona.max_context_posts_help"}}
+          @content={{i18n "discourse_ai.ai_persona.max_context_posts_help"}}
         />
       </div>
       {{#if this.showTemperature}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.ai_persona.temperature"}}</label>
+          <label>{{i18n "discourse_ai.ai_persona.temperature"}}</label>
           <Input
             @type="number"
             class="ai-persona-editor__temperature"
@@ -570,13 +570,13 @@ export default class PersonaEditor extends Component {
           />
           <DTooltip
             @icon="circle-question"
-            @content={{I18n.t "discourse_ai.ai_persona.temperature_help"}}
+            @content={{i18n "discourse_ai.ai_persona.temperature_help"}}
           />
         </div>
       {{/if}}
       {{#if this.showTopP}}
         <div class="control-group">
-          <label>{{I18n.t "discourse_ai.ai_persona.top_p"}}</label>
+          <label>{{i18n "discourse_ai.ai_persona.top_p"}}</label>
           <Input
             @type="number"
             step="any"
@@ -587,7 +587,7 @@ export default class PersonaEditor extends Component {
           />
           <DTooltip
             @icon="circle-question"
-            @content={{I18n.t "discourse_ai.ai_persona.top_p_help"}}
+            @content={{i18n "discourse_ai.ai_persona.top_p_help"}}
           />
         </div>
       {{/if}}
@@ -601,7 +601,7 @@ export default class PersonaEditor extends Component {
         </div>
         <RagOptions @model={{this.editingModel}}>
           <div class="control-group">
-            <label>{{I18n.t
+            <label>{{i18n
                 "discourse_ai.ai_persona.rag_conversation_chunks"
               }}</label>
             <Input
@@ -613,13 +613,13 @@ export default class PersonaEditor extends Component {
             />
             <DTooltip
               @icon="circle-question"
-              @content={{I18n.t
+              @content={{i18n
                 "discourse_ai.ai_persona.rag_conversation_chunks_help"
               }}
             />
           </div>
           <div class="control-group">
-            <label>{{I18n.t
+            <label>{{i18n
                 "discourse_ai.ai_persona.question_consolidator_llm"
               }}</label>
             <AiLlmSelector
@@ -630,7 +630,7 @@ export default class PersonaEditor extends Component {
 
             <DTooltip
               @icon="circle-question"
-              @content={{I18n.t
+              @content={{i18n
                 "discourse_ai.ai_persona.question_consolidator_llm_help"
               }}
             />
@@ -642,13 +642,13 @@ export default class PersonaEditor extends Component {
           class="btn-primary ai-persona-editor__save"
           @action={{this.save}}
           @disabled={{this.isSaving}}
-        >{{I18n.t "discourse_ai.ai_persona.save"}}</DButton>
+        >{{i18n "discourse_ai.ai_persona.save"}}</DButton>
         {{#if this.showDelete}}
           <DButton
             @action={{this.delete}}
             class="btn-danger ai-persona-editor__delete"
           >
-            {{I18n.t "discourse_ai.ai_persona.delete"}}
+            {{i18n "discourse_ai.ai_persona.delete"}}
           </DButton>
         {{/if}}
       </div>

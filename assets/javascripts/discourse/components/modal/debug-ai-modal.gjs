@@ -9,9 +9,8 @@ import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { clipboardCopy, escapeExpression } from "discourse/lib/utilities";
-import i18n from "discourse-common/helpers/i18n";
 import discourseLater from "discourse-common/lib/later";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import { jsonToHtml } from "../../lib/utilities";
 
 export default class DebugAiModal extends Component {
@@ -88,7 +87,7 @@ export default class DebugAiModal extends Component {
 
   copy(text) {
     clipboardCopy(text);
-    this.justCopiedText = I18n.t("discourse_ai.ai_bot.conversation_shared");
+    this.justCopiedText = i18n("discourse_ai.ai_bot.conversation_shared");
 
     discourseLater(() => {
       this.justCopiedText = "";

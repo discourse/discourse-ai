@@ -342,6 +342,24 @@ en:
         confirm_delete: Are you sure you want to delete this model?
         delete: Delete
         seeded_warning: "This model is pre-configured on your site and cannot be edited."
+        quotas:
+          title: "Usage quotas"
+          add_title: "Create new quota"
+          group: "Group"
+          max_tokens: "Max tokens"
+          max_usages: "Max uses"
+          duration: "Duration"
+          confirm_delete: "Are you sure you want to delete this quota?"
+          add: "Add quota"
+          durations:
+            hour: "1 hour"
+            six_hours: "6 hours"
+            day: "24 hours"
+            week: "7 days"
+            custom: "Custom..."
+          hours: "hours"
+          max_tokens_help: "Maximum number of tokens (words and characters) that each user in this group can use within the specified duration. Tokens are the units used by AI models to process text - roughly 1 token = 4 characters or 3/4 of a word."
+          max_usages_help: "Maximum number of times each user in this group can use the AI model within the specified duration. This quota is tracked per individual user, not shared across the group."
         usage:
           ai_bot: "AI bot"
           ai_helper: "Helper"

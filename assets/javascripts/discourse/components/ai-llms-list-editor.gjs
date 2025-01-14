@@ -5,8 +5,7 @@ import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
-import i18n from "discourse-common/helpers/i18n";
-import I18n from "discourse-i18n";
+import I18n, { i18n } from "discourse-i18n";
 import AdminSectionLandingItem from "admin/components/admin-section-landing-item";
 import AdminSectionLandingWrapper from "admin/components/admin-section-landing-wrapper";
 import DTooltip from "float-kit/components/d-tooltip";
@@ -38,7 +37,7 @@ export default class AiLlmsListEditor extends Component {
 
     key = `discourse_ai.llms.model_description.${key}`;
     if (I18n.lookup(key, { ignoreMissing: true })) {
-      return I18n.t(key);
+      return i18n(key);
     }
     return "";
   }
@@ -72,7 +71,7 @@ export default class AiLlmsListEditor extends Component {
     const options = [
       {
         id: "none",
-        name: I18n.t("discourse_ai.llms.preconfigured.fake"),
+        name: i18n("discourse_ai.llms.preconfigured.fake"),
         provider: "fake",
       },
     ];
@@ -114,11 +113,11 @@ export default class AiLlmsListEditor extends Component {
 
   localizeUsage(usage) {
     if (usage.type === "ai_persona") {
-      return I18n.t("discourse_ai.llms.usage.ai_persona", {
+      return i18n("discourse_ai.llms.usage.ai_persona", {
         persona: usage.name,
       });
     } else {
-      return I18n.t("discourse_ai.llms.usage." + usage.type);
+      return i18n("discourse_ai.llms.usage." + usage.type);
     }
   }
 

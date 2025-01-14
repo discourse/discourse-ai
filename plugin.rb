@@ -38,6 +38,7 @@ register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
 
 register_asset "stylesheets/modules/llms/common/usage.scss"
 register_asset "stylesheets/modules/llms/common/spam.scss"
+register_asset "stylesheets/modules/llms/common/ai-llm-quotas.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/ai-tools.scss"
 

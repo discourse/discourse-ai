@@ -20,6 +20,24 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
       )
     end
 
+    fab!(:group)
+    fab!(:quota) { Fabricate(:llm_quota, llm_model: llm_model, group: group) }
+    fab!(:quota2) { Fabricate(:llm_quota, llm_model: llm_model, group: Fabricate(:group)) }
+
+    it "includes quotas in serialized response" do
+      get "/admin/plugins/discourse-ai/ai-llms.json"
+
+      expect(response.status).to eq(200)
+
+      llms = response.parsed_body["ai_llms"]
+      expect(llms.length).to eq(2)
+
+      model = llms.find { |m| m["id"] == llm_model.id }
+      expect(model["llm_quotas"]).to be_present
+      expect(model["llm_quotas"].length).to eq(2)
+      expect(model["llm_quotas"].map { |q| q["id"] }).to contain_exactly(quota.id, quota2.id)
+    end
+
     it "includes all available providers metadata" do
       get "/admin/plugins/discourse-ai/ai-llms.json"
       expect(response).to be_successful
@@ -79,6 +97,27 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         tokenizer: "DiscourseAi::Tokenizer::OpenAiTokenizer",
         max_prompt_tokens: 16_000,
       }
+    end
+
+    context "with quotas" do
+      let(:group) { Fabricate(:group) }
+      let(:quota_params) do
+        [{ group_id: group.id, max_tokens: 1000, max_usages: 10, duration_seconds: 86_400 }]
+      end
+
+      it "creates model with quotas" do
+        post "/admin/plugins/discourse-ai/ai-llms.json",
+             params: {
+               ai_llm: valid_attrs.merge(llm_quotas: quota_params),
+             }
+
+        expect(response.status).to eq(201)
+        created_model = LlmModel.last
+        expect(created_model.llm_quotas.count).to eq(1)
+        quota = created_model.llm_quotas.first
+        expect(quota.max_tokens).to eq(1000)
+        expect(quota.group_id).to eq(group.id)
+      end
     end
 
     context "with valid attributes" do
@@ -215,6 +254,71 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
 
     context "with valid update params" do
       let(:update_attrs) { { provider: "anthropic" } }
+
+      context "with quotas" do
+        it "updates quotas correctly" do
+          group1 = Fabricate(:group)
+          group2 = Fabricate(:group)
+          group3 = Fabricate(:group)
+
+          _quota1 =
+            Fabricate(
+              :llm_quota,
+              llm_model: llm_model,
+              group: group1,
+              max_tokens: 1000,
+              max_usages: 10,
+              duration_seconds: 86_400,
+            )
+          _quota2 =
+            Fabricate(
+              :llm_quota,
+              llm_model: llm_model,
+              group: group2,
+              max_tokens: 2000,
+              max_usages: 20,
+              duration_seconds: 86_400,
+            )
+
+          put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",
+              params: {
+                ai_llm: {
+                  llm_quotas: [
+                    {
+                      group_id: group1.id,
+                      max_tokens: 1500,
+                      max_usages: 15,
+                      duration_seconds: 43_200,
+                    },
+                    {
+                      group_id: group3.id,
+                      max_tokens: 3000,
+                      max_usages: 30,
+                      duration_seconds: 86_400,
+                    },
+                  ],
+                },
+              }
+
+          expect(response.status).to eq(200)
+
+          llm_model.reload
+          expect(llm_model.llm_quotas.count).to eq(2)
+
+          updated_quota1 = llm_model.llm_quotas.find_by(group: group1)
+          expect(updated_quota1.max_tokens).to eq(1500)
+          expect(updated_quota1.max_usages).to eq(15)
+          expect(updated_quota1.duration_seconds).to eq(43_200)
+
+          expect(llm_model.llm_quotas.find_by(group: group2)).to be_nil
+
+          new_quota = llm_model.llm_quotas.find_by(group: group3)
+          expect(new_quota).to be_present
+          expect(new_quota.max_tokens).to eq(3000)
+          expect(new_quota.max_usages).to eq(30)
+          expect(new_quota.duration_seconds).to eq(86_400)
+        end
+      end
 
       it "updates the model" do
         put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",

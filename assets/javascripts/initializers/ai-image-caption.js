@@ -6,11 +6,11 @@ import {
   IMAGE_MARKDOWN_REGEX,
   isImage,
 } from "discourse/lib/uploads";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 
 export default apiInitializer("1.25.0", (api) => {
   const buttonAttrs = {
-    label: I18n.t("discourse_ai.ai_helper.image_caption.button_label"),
+    label: i18n("discourse_ai.ai_helper.image_caption.button_label"),
     icon: "discourse-sparkles",
     class: "generate-caption",
   };
@@ -206,7 +206,7 @@ export default apiInitializer("1.25.0", (api) => {
       keyValueStore.setItem(autoCaptionPromptKey, true);
 
       dialog.confirm({
-        message: I18n.t(`${localePrefix}.prompt`),
+        message: i18n(`${localePrefix}.prompt`),
         confirmButtonLabel: `${localePrefix}.confirm`,
         cancelButtonLabel: `${localePrefix}.cancel`,
         class: "ai-image-caption-prompt-dialog",
