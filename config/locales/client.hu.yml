@@ -73,6 +73,17 @@ hu:
         edit: "Szerkesztés"
         back: "Vissza"
         delete: Törlés
+        quotas:
+          group: "Csoport:"
+          max_usages: "Maximális használat"
+          duration: "Időtartam"
+          durations:
+            hour: "1 óráig"
+            six_hours: "6 óráig"
+            day: "24 óráig"
+            week: "7 nap"
+            custom: "Egyéb..."
+          hours: "óra"
         usage:
           ai_summarization: "Összefoglalás"
           ai_spam: "Szemét"

@@ -70,6 +70,15 @@ zh_TW:
         edit: "編輯"
         back: "上一步"
         delete: 刪除
+        quotas:
+          group: "群組"
+          duration: "持續時間"
+          durations:
+            hour: "1 小時"
+            six_hours: "6 小時"
+            day: "24 小時"
+            custom: "自訂..."
+          hours: "小時"
         usage:
           ai_summarization: "總結"
           ai_spam: "垃圾內容"

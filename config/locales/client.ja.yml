@@ -292,6 +292,17 @@ ja:
         confirm_delete: このモデルを削除してもよろしいですか？
         delete: 削除
         seeded_warning: "このモデルはサイト上で事前設定されているため、編集できません。"
+        quotas:
+          group: "グループ"
+          max_usages: "最大使用回数"
+          duration: "期間"
+          durations:
+            hour: "１時間"
+            six_hours: "6 時間"
+            day: "24 時間"
+            week: "7 日間"
+            custom: "カスタム..."
+          hours: "時間"
         usage:
           ai_bot: "AI ボット"
           ai_helper: "ヘルパー"

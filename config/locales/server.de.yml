@@ -246,6 +246,9 @@ de:
     spam_detection:
       flag_reason: "Als Spam markiert von <a href='%{url}'>Discourse KI</a>"
       silence_reason: "Benutzer automatisch stummgeschaltet durch <a href='%{url}'>Discourse AI</a>"
+      invalid_error_type: "Ungültiger Fehlertyp angegeben"
+      unexpected: "Ein unerwarteter Fehler ist aufgetreten"
+      bot_user_update_failed: "Aktualisierung des Spam-Scan-Bot-Benutzers fehlgeschlagen"
     ai_bot:
       reply_error: "Entschuldigung, es sieht so aus, als ob unser System beim Versuch, zu antworten, auf ein unerwartetes Problem gestoßen ist.\n\n[details='Fehlerdetails']\n%{details}\n[/details]"
       default_pm_prefix: "[KI-Bot-PN ohne Titel]"

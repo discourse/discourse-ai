@@ -329,6 +329,17 @@ he:
         confirm_delete: למחוק את המודל הזה?
         delete: מחיקה
         seeded_warning: "המודל הזה מוגדר מראש באתר שלך ואי אפשר לערוך אותו."
+        quotas:
+          group: "קבוצה"
+          max_usages: "כמות שימושים מרבית"
+          duration: "משך"
+          durations:
+            hour: "שעה"
+            six_hours: "6 שעות"
+            day: "24 שעות"
+            week: "7 ימים"
+            custom: "התאמה אישית…"
+          hours: "שעתיים"
         usage:
           ai_bot: "בוט בינה מלאכותית"
           ai_helper: "מסייע"
@@ -473,6 +484,8 @@ he:
           none: "חיפוש הבינה המלאכותית שלנו לא מצא נושאים, עמך הסליחה"
           new: "יש ללחוץ על ‚חיפוש’ כדי להתחיל לחפש תוצאות חדשות עם בינה מלאכותית"
           unavailable: "תוצאות בינה מלאכותית לא זמינות"
+        semantic_search_tooltips:
+          invalid_sort: "יש לסדר את תוצאות החיפוש לפי רלוונטיות להצגת תוצאות בינה מלאכותית"
         semantic_search_unavailable_tooltip: "יש לסדר את תוצאות החיפוש לפי רלוונטיות להצגת תוצאות בינה מלאכותית"
         ai_generated_result: "תוצאות חיפוש שנמצאו באמצעות בינה מלאכותית"
         quick_search:

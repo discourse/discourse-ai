@@ -95,6 +95,16 @@ fa_IR:
         edit: "ویرایش"
         back: "بازگشت"
         delete: حذف
+        quotas:
+          group: "گروه"
+          max_usages: "حداکثر استفاده"
+          duration: "مدت زمان"
+          durations:
+            hour: "۱ ساعت"
+            day: "۲۴ ساعت"
+            week: "۷ روزه"
+            custom: "سفارشی..."
+          hours: "ساعت"
         usage:
           ai_summarization: "خلاصه کنید"
           ai_spam: "هرز‌نامه"

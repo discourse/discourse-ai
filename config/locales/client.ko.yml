@@ -75,6 +75,16 @@ ko:
         edit: "편집"
         back: "뒤로"
         delete: 삭제하기
+        quotas:
+          group: "그룹"
+          max_usages: "최대 사용"
+          duration: "기간"
+          durations:
+            hour: "1시간"
+            six_hours: "6시간"
+            day: "24시간"
+            custom: "사용자 지정..."
+          hours: "시간"
         usage:
           ai_summarization: "요약하기"
           ai_spam: "스팸"

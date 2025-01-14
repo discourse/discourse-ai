@@ -73,6 +73,17 @@ hr:
         edit: "Uredi"
         back: "Natrag"
         delete: Pobriši
+        quotas:
+          group: "Grupa"
+          max_usages: "Max korisnika"
+          duration: "Trajanje"
+          durations:
+            hour: "1 sat"
+            six_hours: "6 sata"
+            day: "24 sata"
+            week: "7 dana"
+            custom: "Prilagođeno..."
+          hours: "sata"
         usage:
           ai_summarization: "Rezimirati"
           ai_spam: "Nepoželjno"

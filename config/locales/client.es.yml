@@ -293,6 +293,17 @@ es:
         confirm_delete: '¿Seguro que quieres eliminar este modelo?'
         delete: Eliminar
         seeded_warning: "Este modelo está preconfigurado en tu web y no se puede editar."
+        quotas:
+          group: "Grupo"
+          max_usages: "Máximo de usos"
+          duration: "Duración"
+          durations:
+            hour: "1 hora"
+            six_hours: "6 horas"
+            day: "24 horas"
+            week: "7 días"
+            custom: "Personalizado..."
+          hours: "horas"
         usage:
           ai_bot: "Bot de IA"
           ai_helper: "Ayudante"

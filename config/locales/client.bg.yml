@@ -71,6 +71,16 @@ bg:
         edit: "Редактирай"
         back: "Назад"
         delete: Изтрий
+        quotas:
+          group: "Група"
+          max_usages: "Максимум използвания"
+          duration: "Продължителност"
+          durations:
+            hour: "1 час"
+            six_hours: "6 часа"
+            day: "24 часа"
+            custom: "Ръчно задаване..."
+          hours: "часа"
         usage:
           ai_summarization: "Обобщаване"
           ai_spam: "Спам"

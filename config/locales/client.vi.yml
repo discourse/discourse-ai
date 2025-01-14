@@ -72,6 +72,17 @@ vi:
         edit: "Sửa"
         back: "Quay lại"
         delete: Xóa
+        quotas:
+          group: "Nhóm"
+          max_usages: "Sử dụng tối đa"
+          duration: "Thời lượng"
+          durations:
+            hour: "1 tiếng"
+            six_hours: "6 tiếng"
+            day: "24 tiếng"
+            week: "7 ngày"
+            custom: "Tùy chỉnh..."
+          hours: "tiếng"
         usage:
           ai_summarization: "Tóm tắt"
           ai_spam: "Rác"

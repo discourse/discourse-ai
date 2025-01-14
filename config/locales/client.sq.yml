@@ -67,6 +67,17 @@ sq:
         edit: "Redakto"
         back: "Kthehu mbrapa"
         delete: Fshij
+        quotas:
+          group: "Grupi"
+          max_usages: "Përdorimet maksimale"
+          duration: "Kohëzgjatja"
+          durations:
+            hour: "1 orë"
+            six_hours: "6 orë"
+            day: "24 orë"
+            week: "7 ditë"
+            custom: "Me porosi..."
+          hours: "orë"
         usage:
           ai_spam: "Spam"
         next:

@@ -73,6 +73,17 @@ sv:
         edit: "Redigera"
         back: "Tillbaka"
         delete: Radera
+        quotas:
+          group: "Grupp"
+          max_usages: "Max antal användningar"
+          duration: "Varaktighet"
+          durations:
+            hour: "1 timme"
+            six_hours: "6 timmar"
+            day: "24 timmar"
+            week: "7 dagar"
+            custom: "Anpassad..."
+          hours: "timmar"
         usage:
           ai_summarization: "Sammanfatta"
           ai_spam: "Skräppost"

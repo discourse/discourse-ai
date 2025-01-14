@@ -107,6 +107,16 @@ lt:
         edit: "Redaguoti"
         back: "Atgal"
         delete: Pašalinti
+        quotas:
+          group: "Grupė"
+          max_usages: "Maksimaliai naudoja"
+          duration: "Trukmė"
+          durations:
+            hour: "1 valanda"
+            six_hours: "6 valandos"
+            day: "24 valandos"
+            custom: "Pasirinktinis..."
+          hours: "valandos"
         usage:
           ai_summarization: "Apibendrinti"
           ai_spam: "Šlamštas"

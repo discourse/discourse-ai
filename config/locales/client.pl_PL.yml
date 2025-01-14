@@ -150,6 +150,17 @@ pl_PL:
         edit: "Edytuj"
         back: "Poprzednia"
         delete: Usuń
+        quotas:
+          group: "Grupa"
+          max_usages: "Maksymalna liczba użyć"
+          duration: "Czas trwania"
+          durations:
+            hour: "1 godzina"
+            six_hours: "6 godzin"
+            day: "24 godziny"
+            week: "7 dni"
+            custom: "Niestandardowy..."
+          hours: "godzin"
         usage:
           ai_summarization: "Podsumuj"
           ai_spam: "Spam"

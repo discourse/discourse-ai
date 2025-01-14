@@ -66,6 +66,8 @@ sr:
         edit: "Izmeni"
         back: "Nazad"
         delete: Obriši
+        quotas:
+          group: "Grupa"
         usage:
           ai_spam: "Nepoželjno"
         next:

@@ -74,6 +74,17 @@ da:
         edit: "Rediger"
         back: "Tilbage"
         delete: Slet
+        quotas:
+          group: "Gruppe"
+          max_usages: "Maks. anvendelser"
+          duration: "Varighed"
+          durations:
+            hour: "1 time"
+            six_hours: "6 timer"
+            day: "24 timer"
+            week: "7 dage"
+            custom: "Tilpasset..."
+          hours: "timer"
         usage:
           ai_spam: "Spam"
         next:

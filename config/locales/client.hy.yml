@@ -68,6 +68,15 @@ hy:
         edit: "Խմբագրել"
         back: "Ետ"
         delete: Ջնջել
+        quotas:
+          group: "Խմբավորել"
+          max_usages: "Առավելագույն օգտագործման քանակը"
+          durations:
+            hour: "1 ժամով"
+            six_hours: "6 ժամով"
+            day: "Վերջին 24 ժամվա"
+            week: "Վերջին 7 օրվա"
+          hours: "ժամ"
         usage:
           ai_spam: "Սպամ"
         next:

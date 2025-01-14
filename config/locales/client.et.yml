@@ -68,6 +68,14 @@ et:
         edit: "Muuda"
         back: "Tagasi"
         delete: Kustuta
+        quotas:
+          group: "Grupp"
+          durations:
+            hour: "1 tund"
+            six_hours: "6 tundi"
+            day: "24 tundi"
+            week: "7 päeva"
+          hours: "tundi"
         usage:
           ai_spam: "Spämm"
         next:

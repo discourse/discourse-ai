@@ -74,6 +74,17 @@ el:
         edit: "Επεξεργασία"
         back: "Πίσω"
         delete: Σβήσιμο
+        quotas:
+          group: "Ομάδα"
+          max_usages: "Μέγιστες χρήσεις"
+          duration: "Διάρκεια"
+          durations:
+            hour: "1 ώρα"
+            six_hours: "6 ώρες"
+            day: "24 ώρες"
+            week: "7 ημέρες"
+            custom: "Προσαρμοσμένο..."
+          hours: "ώρες"
         usage:
           ai_spam: "Ανεπιθύμητα"
         next:

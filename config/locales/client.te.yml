@@ -66,6 +66,16 @@ te:
         edit: "సవరించండి"
         back: "వెనుకకు"
         delete: తొలగించండి
+        quotas:
+          group: "సమూహం"
+          max_usages: "గరిష్ట ఉపయోగాలు"
+          duration: "వ్యవధి"
+          durations:
+            hour: "1 గంట"
+            six_hours: "6 గంటలు"
+            day: "24 గంటలు"
+            week: "7 రోజులు"
+          hours: "గంటలు"
         usage:
           ai_spam: "స్పామ్"
         next:

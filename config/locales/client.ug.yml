@@ -74,6 +74,17 @@ ug:
         edit: "تەھرىر"
         back: "كەينى"
         delete: ئۆچۈر
+        quotas:
+          group: "گۇرۇپپا"
+          max_usages: "ئەڭ كۆپ ئىشلىتىلىشى"
+          duration: "داۋاملىشىش ۋاقتى"
+          durations:
+            hour: "1 سائەت"
+            six_hours: "6 سائەت"
+            day: "24 سائەت"
+            week: "7 كۈن"
+            custom: "ئىختىيارى..."
+          hours: "سائەت"
         usage:
           ai_summarization: "خۇلاسە"
           ai_spam: "ئەخلەت خەت"

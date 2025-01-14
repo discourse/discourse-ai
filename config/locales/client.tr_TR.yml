@@ -293,6 +293,17 @@ tr_TR:
         confirm_delete: Bu modeli silmek istediğinizden emin misiniz?
         delete: Sil
         seeded_warning: "Bu model sitenizde önceden yapılandırılmış ve düzenlenemez."
+        quotas:
+          group: "Grup"
+          max_usages: "Maksimum kullanım"
+          duration: "Süre"
+          durations:
+            hour: "1 saat"
+            six_hours: "6 saat"
+            day: "24 saat"
+            week: "7 gün"
+            custom: "Özel..."
+          hours: "saat"
         usage:
           ai_bot: "YZ botu"
           ai_helper: "Yardımcı"

@@ -293,6 +293,17 @@ fi:
         confirm_delete: Oletko varma, että haluat poistaa tämän mallin?
         delete: Poista
         seeded_warning: "Tämä malli on valmiiksi määritetty sivustollesi, eikä sitä voi muokata."
+        quotas:
+          group: "Ryhmä"
+          max_usages: "Käyttökertoja enintään"
+          duration: "Kesto"
+          durations:
+            hour: "1 tuntiin"
+            six_hours: "6 tuntia"
+            day: "24 tuntia"
+            week: "7 päivää"
+            custom: "Mukautettu..."
+          hours: "tuntia"
         usage:
           ai_bot: "Tekoälyrobotti"
           ai_helper: "Apuri"
