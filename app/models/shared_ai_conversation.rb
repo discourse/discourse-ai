@@ -88,14 +88,7 @@ class SharedAiConversation < ActiveRecord::Base
   def html_excerpt
     html = +""
     populated_context.each do |post|
-      text =
-        PrettyText.excerpt(
-          post.cooked,
-          400,
-          text_entities: true,
-          strip_links: true,
-          strip_details: true,
-        )
+      text = PrettyText.excerpt(post.cooked, 400, strip_links: true, strip_details: true)
 
       html << "<p><b>#{post.user.username}</b>: #{text}</p>"
       if html.length > 1000
