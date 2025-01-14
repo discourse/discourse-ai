@@ -9,6 +9,7 @@ import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { i18n } from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
+import DTooltip from "float-kit/components/d-tooltip";
 import DurationSelector from "../ai-quota-duration-selector";
 
 export default class AiLlmQuotaModal extends Component {
@@ -78,6 +79,7 @@ export default class AiLlmQuotaModal extends Component {
     <DModal
       @title={{i18n "discourse_ai.llms.quotas.add_title"}}
       @closeModal={{@closeModal}}
+      class="ai-llm-quota-modal"
     >
       <:body>
         <div class="control-group">
@@ -99,6 +101,10 @@ export default class AiLlmQuotaModal extends Component {
             min="1"
             {{on "input" this.updateMaxTokens}}
           />
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n "discourse_ai.llms.quotas.max_tokens_help"}}
+          />
         </div>
 
         <div class="control-group">
@@ -109,6 +115,10 @@ export default class AiLlmQuotaModal extends Component {
             class="input-large"
             min="1"
             {{on "input" this.updateMaxUsages}}
+          />
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n "discourse_ai.llms.quotas.max_usages_help"}}
           />
         </div>
 

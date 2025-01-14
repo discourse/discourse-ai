@@ -63,3 +63,9 @@
     padding: 0.3em 0.5em;
   }
 }
+
+.ai-llm-quota-modal {
+  .fk-d-tooltip__icon {
+    color: var(--primary-medium);
+  }
+}
