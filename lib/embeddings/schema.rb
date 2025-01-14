@@ -8,9 +8,9 @@
 module DiscourseAi
   module Embeddings
     class Schema
-      TOPICS_TABLE = "ai_topic_embeddings"
-      POSTS_TABLE = "ai_post_embeddings"
-      RAG_DOCS_TABLE = "ai_document_fragment_embeddings"
+      TOPICS_TABLE = "ai_topics_embeddings"
+      POSTS_TABLE = "ai_posts_embeddings"
+      RAG_DOCS_TABLE = "ai_document_fragments_embeddings"
 
       def self.for(
         target_klass,
