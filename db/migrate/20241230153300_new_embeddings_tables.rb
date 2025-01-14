@@ -67,13 +67,17 @@ class NewEmbeddingsTables < ActiveRecord::Migration[7.2]
     end
 
     # Copy data from old tables to new tables
-    execute <<-SQL
+    execute <<~SQL
       INSERT INTO ai_topics_embeddings (topic_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
       SELECT * FROM ai_topic_embeddings;
+    SQL
 
+    execute <<~SQL
       INSERT INTO ai_posts_embeddings (post_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
       SELECT * FROM ai_post_embeddings;
+    SQL
 
+    execute <<~SQL
       INSERT INTO ai_document_fragments_embeddings (rag_document_fragment_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
       SELECT * FROM ai_document_fragment_embeddings;
     SQL
