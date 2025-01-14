@@ -376,7 +376,7 @@ export default class AiLlmEditorForm extends Component {
             />
             {{#if this.modalIsVisible}}
               <AiLlmQuotaModal
-                @model={{(hash llm=@model)}}
+                @model={{hash llm=@model}}
                 @closeModal={{this.closeAddQuotaModal}}
               />
             {{/if}}
