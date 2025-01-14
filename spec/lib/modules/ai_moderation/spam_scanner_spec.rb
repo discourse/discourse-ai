@@ -75,6 +75,37 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     end
   end
 
+  describe ".perform_scan" do
+    it "does nothing if post should not be scanned" do
+      post.user.trust_level = TrustLevel[2]
+
+      expect { described_class.perform_scan(post) }.not_to change { AiSpamLog.count }
+    end
+
+    it "scans when post should be scanned" do
+      expect do
+        DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do
+          described_class.perform_scan!(post)
+        end
+      end.to change { AiSpamLog.count }.by(1)
+    end
+  end
+
+  describe ".perform_scan!" do
+    it "creates spam log entry when scanning post" do
+      expect do
+        DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do
+          described_class.perform_scan!(post)
+        end
+      end.to change { AiSpamLog.count }.by(1)
+    end
+
+    it "does nothing when disabled" do
+      SiteSetting.ai_spam_detection_enabled = false
+      expect { described_class.perform_scan!(post) }.not_to change { AiSpamLog.count }
+    end
+  end
+
   describe ".scanned_max_times?" do
     it "returns true when post has been scanned 3 times" do
       3.times do

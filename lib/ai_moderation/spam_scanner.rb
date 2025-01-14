@@ -193,9 +193,13 @@ module DiscourseAi
       end
 
       def self.perform_scan(post)
-        return if !enabled?
         return if !should_scan_post?(post)
 
+        perform_scan!(post)
+      end
+
+      def self.perform_scan!(post)
+        return if !enabled?
         settings = AiModerationSetting.spam
         return if !settings || !settings.llm_model
 
