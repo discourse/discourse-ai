@@ -7,17 +7,19 @@ class BackfillPostEmbeddings < ActiveRecord::Migration[7.2]
 
     loop do
       count = execute(<<~SQL).cmd_tuples
-        INSERT INTO ai_posts_embeddings (post_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
-        SELECT source.*
-        FROM ai_post_embeddings source
-        WHERE NOT EXISTS (
-          SELECT 1 
-          FROM ai_posts_embeddings target 
-          WHERE target.model_id = source.model_id
-            AND target.strategy_id = source.strategy_id
-            AND target.post_id = source.post_id
+      INSERT INTO ai_posts_embeddings (post_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
+      SELECT source.*
+      FROM (
+        SELECT old_table.*
+        FROM ai_post_embeddings old_table
+        LEFT JOIN ai_posts_embeddings target ON (
+          target.model_id = old_table.model_id AND
+          target.strategy_id = old_table.strategy_id AND
+          target.post_id = old_table.post_id
         )
+        WHERE target.post_id IS NULL
         LIMIT 10000
+      ) source
       SQL
 
       break if count == 0
