@@ -72,6 +72,16 @@ ur:
         edit: "ترمیم کریں"
         back: "واپس"
         delete: مٹائیں
+        quotas:
+          group: "گروپ"
+          max_usages: "زیادہ سے زیادہ استعمال"
+          duration: "دورانیہ"
+          durations:
+            hour: "1 گھنٹہ"
+            six_hours: "6 گھنٹے"
+            day: "24 گھنٹے"
+            custom: "ترمیم..."
+          hours: "گھنٹے"
         usage:
           ai_summarization: "خلاصہ"
           ai_spam: "سپَیم"

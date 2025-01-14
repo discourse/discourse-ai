@@ -71,6 +71,15 @@ gl:
         edit: "Editar"
         back: "Volver"
         delete: Eliminar
+        quotas:
+          group: "Grupo"
+          duration: "Duración"
+          durations:
+            hour: "1 hora"
+            six_hours: "6 horas"
+            day: "24 horas"
+            custom: "Personalizar..."
+          hours: "horas"
         usage:
           ai_spam: "Lixo"
         next:

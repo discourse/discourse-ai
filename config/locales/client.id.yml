@@ -136,6 +136,13 @@ id:
         edit: "Ubah"
         back: "Kembali"
         delete: Hapus
+        quotas:
+          duration: "Durasi"
+          durations:
+            six_hours: "6 jam"
+            day: "24 jam"
+            week: "7 hari"
+          hours: "jam"
         usage:
           ai_summarization: "Meringkas"
           ai_spam: "Spam"

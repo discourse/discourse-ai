@@ -76,6 +76,17 @@ sk:
         edit: "Upraviť"
         back: "Späť"
         delete: Odstrániť
+        quotas:
+          group: "Skupina"
+          max_usages: "Maximálne využitie"
+          duration: "Trvanie"
+          durations:
+            hour: "1 hodina"
+            six_hours: "6 hodiny"
+            day: "24 hodín"
+            week: "7 dní"
+            custom: "Vlastné..."
+          hours: "hodiny"
         usage:
           ai_summarization: "Zhrnúť"
           ai_spam: "Spam"

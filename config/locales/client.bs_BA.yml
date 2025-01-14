@@ -68,6 +68,9 @@ bs_BA:
         edit: "Edit"
         back: "Prethodno"
         delete: Delete
+        quotas:
+          group: "Grupa"
+          duration: "Trajanje"
         usage:
           ai_spam: "Spam"
         next:

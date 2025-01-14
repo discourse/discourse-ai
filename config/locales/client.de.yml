@@ -161,6 +161,11 @@ de:
         stat_tooltips:
           incorrectly_flagged: "Artikel, die der KI-Bot als Spam gekennzeichnet hat und bei denen die Moderatoren anderer Meinung waren"
           missed_spam: "Von der Community als Spam markierte Artikel, die vom KI-Bot nicht erkannt wurden. Dem stimmten die Moderatoren zu"
+        errors:
+          scan_not_admin:
+            message: "Warnung: Spam-Scannen wird nicht korrekt funktionieren, da das Spam-Scan-Konto kein Administrator ist"
+            action: "Beheben"
+          resolved: "Der Fehler wurde behoben!"
       usage:
         short_title: "Verwendung"
         summary: "Zusammenfassung"
@@ -333,6 +338,17 @@ de:
         confirm_delete: Bist du sicher, dass du dieses Modell löschen willst?
         delete: Löschen
         seeded_warning: "Dieses Modell ist auf deiner Website vorkonfiguriert und kann nicht bearbeitet werden."
+        quotas:
+          group: "Gruppe"
+          max_usages: "Max. Verwendungen"
+          duration: "Dauer"
+          durations:
+            hour: "1 Stunde"
+            six_hours: "6 stunden"
+            day: "24 Stunden"
+            week: "7 Tage"
+            custom: "Benutzerdefiniert …"
+          hours: "Stunden"
         usage:
           ai_bot: "KI-Bot"
           ai_helper: "Helfer"
@@ -405,6 +421,7 @@ de:
           disable_native_tools: "Native Tool-Unterstützung deaktivieren (XML-basierte Tools verwenden)"
           provider_order: "Anbieterreihenfolge (kommagetrennte Liste)"
           provider_quantizations: "Reihenfolge der Provider-Quantisierungen (kommagetrennte Liste, z. B.: fp16, fp8)"
+          disable_streaming: "Streaming-Abschlüsse deaktivieren (Streaming-Anfragen in Nicht-Streaming-Anfragen umwandeln)"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -473,6 +490,9 @@ de:
           none: "Entschuldigung, unsere KI-Suche hat keine passenden Themen gefunden"
           new: "Drücke auf „Suchen“, um mit der KI nach neuen Ergebnissen zu suchen"
           unavailable: "KI-Ergebnisse nicht verfügbar"
+        semantic_search_tooltips:
+          results_explanation: "Wenn diese Funktion aktiviert ist, werden zusätzliche KI-Suchergebnisse unten hinzugefügt."
+          invalid_sort: "Die Suchergebnisse müssen nach Relevanz sortiert werden, um KI-Ergebnisse anzuzeigen"
         semantic_search_unavailable_tooltip: "Die Suchergebnisse müssen nach Relevanz sortiert werden, um KI-Ergebnisse anzuzeigen"
         ai_generated_result: "Suchergebnis mit KI gefunden"
         quick_search:

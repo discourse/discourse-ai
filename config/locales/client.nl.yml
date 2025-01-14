@@ -293,6 +293,17 @@ nl:
         confirm_delete: Weet je zeker dat je dit model wilt verwijderen?
         delete: Verwijderen
         seeded_warning: "Dit model is vooraf geconfigureerd op je site en kan niet worden bewerkt."
+        quotas:
+          group: "Groep"
+          max_usages: "Max. gebruiken"
+          duration: "Duur"
+          durations:
+            hour: "1 uur"
+            six_hours: "6 uur"
+            day: "24 uur"
+            week: "7 dagen"
+            custom: "Aangepast..."
+          hours: "uur"
         usage:
           ai_bot: "AI-bot"
           ai_helper: "Helper"

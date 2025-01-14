@@ -71,6 +71,16 @@ nb_NO:
         edit: "Endre"
         back: "Forrige"
         delete: Slett
+        quotas:
+          group: "Gruppe"
+          max_usages: "Maks antall bruk"
+          duration: "Varighet"
+          durations:
+            hour: "1 time"
+            six_hours: "6 timer"
+            day: "24 timer"
+            week: "7 dager"
+          hours: "timer"
         usage:
           ai_summarization: "Oppsummer"
           ai_spam: "Spam"

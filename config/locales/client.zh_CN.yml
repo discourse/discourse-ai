@@ -292,6 +292,17 @@ zh_CN:
         confirm_delete: 确定要删除此模型吗？
         delete: 删除
         seeded_warning: "此模型已在您的网站上预先配置，无法编辑。"
+        quotas:
+          group: "群组"
+          max_usages: "最大使用次数"
+          duration: "持续时间"
+          durations:
+            hour: "1 小时"
+            six_hours: "6 小时"
+            day: "24 小时"
+            week: "7 天"
+            custom: "自定义…"
+          hours: "小时"
         usage:
           ai_bot: "AI 机器人"
           ai_helper: "助手"

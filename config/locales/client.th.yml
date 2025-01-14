@@ -70,6 +70,9 @@ th:
         edit: "แก้ไข"
         back: "กลับ"
         delete: ลบ
+        quotas:
+          group: "กลุ่ม"
+          duration: "ช่วงเวลา"
         usage:
           ai_spam: "ขยะ"
         next:

@@ -72,6 +72,15 @@ ro:
         edit: "Modifică"
         back: "Înapoi"
         delete: Șterge
+        quotas:
+          group: "Grup"
+          duration: "Durată"
+          durations:
+            hour: "o oră"
+            six_hours: "6 de ore"
+            day: "24 de ore"
+            custom: "Personalizat..."
+          hours: "de ore"
         usage:
           ai_summarization: "Rezumat"
           ai_spam: "Spam"

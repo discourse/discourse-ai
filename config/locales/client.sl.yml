@@ -72,6 +72,16 @@ sl:
         edit: "Uredi"
         back: "Nazaj"
         delete: Izbriši
+        quotas:
+          group: "Skupina"
+          duration: "Trajanje"
+          durations:
+            hour: "1 ura"
+            six_hours: "6 uri"
+            day: "24 uri"
+            week: "7 dni"
+            custom: "Po meri..."
+          hours: "ur"
         usage:
           ai_spam: "Neželeno"
         next:

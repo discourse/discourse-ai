@@ -73,6 +73,17 @@ pt:
         edit: "Editar"
         back: "Retroceder"
         delete: Eliminar
+        quotas:
+          group: "Grupo"
+          max_usages: "Máximo de utilizações"
+          duration: "Duração"
+          durations:
+            hour: "1 hora"
+            six_hours: "6 horas"
+            day: "24 horas"
+            week: "7 dias"
+            custom: "Personalizar..."
+          hours: "horas"
         usage:
           ai_summarization: "Resumir"
           ai_spam: "Spam"

@@ -68,6 +68,8 @@ sw:
         edit: "Hariri"
         back: "Iliyopita"
         delete: Futa
+        quotas:
+          group: "Kikundi"
         usage:
           ai_spam: "Barua Taka"
         next:

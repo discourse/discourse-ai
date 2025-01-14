@@ -300,6 +300,17 @@ ar:
         confirm_delete: هل تريد بالتأكيد حذف هذا النموذج؟
         delete: حذف
         seeded_warning: "تم تكوين هذا النموذج مسبقًا على موقعك ولا يمكن تعديله."
+        quotas:
+          group: "المجموعة"
+          max_usages: "الحد الأقصى لمرات الاستخدام"
+          duration: "المدة"
+          durations:
+            hour: "ساعة واحدة"
+            six_hours: "6 ساعة"
+            day: "24 ساعة"
+            week: "7 أيام"
+            custom: "مخصَّص..."
+          hours: "الساعات"
         usage:
           ai_bot: "روبوت الذكاء الاصطناعي"
           ai_helper: "المساعد"

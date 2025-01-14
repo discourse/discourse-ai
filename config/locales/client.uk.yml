@@ -220,6 +220,17 @@ uk:
         confirm_delete: Ви впевнені, що хочете видалити цей тип?
         delete: Видалити
         seeded_warning: "Ця модель попередньо налаштована на вашому сайті і її неможливо редагувати."
+        quotas:
+          group: "Група"
+          max_usages: "Максимальна кількість використань"
+          duration: "Тривалість"
+          durations:
+            hour: "1 година"
+            six_hours: "6 годин"
+            day: "24 години"
+            week: "7 днів"
+            custom: "Власний…"
+          hours: "годин"
         usage:
           ai_persona: "Персона (%{persona})"
           ai_summarization: "Підсумок"

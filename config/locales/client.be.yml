@@ -65,6 +65,8 @@ be:
         edit: "рэдагаваць"
         back: "Назад"
         delete: выдаляць
+        quotas:
+          group: "група"
         usage:
           ai_spam: "Спам"
         next:

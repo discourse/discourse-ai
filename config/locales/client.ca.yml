@@ -71,6 +71,10 @@ ca:
         edit: "Edita"
         back: "Enrere"
         delete: Suprimeix
+        quotas:
+          group: "Grup"
+          duration: "Duració"
+          hours: "hores"
         usage:
           ai_spam: "Brossa"
         next:
