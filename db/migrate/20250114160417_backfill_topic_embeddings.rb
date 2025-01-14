@@ -1,14 +1,24 @@
 # frozen_string_literal: true
 class BackfillTopicEmbeddings < ActiveRecord::Migration[7.2]
-  def up
-    not_backfilled = DB.query_single("SELECT COUNT(*) FROM ai_topics_embeddings").first.to_i == 0
+  disable_ddl_transaction!
 
-    if not_backfilled
-      # Copy data from old tables to new tables
-      execute <<~SQL
-        INSERT INTO ai_topics_embeddings (topic_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
-        SELECT * FROM ai_topic_embeddings;
+  def up
+    loop do
+      count = execute(<<~SQL).cmd_tuples
+      INSERT INTO ai_topics_embeddings (topic_id, model_id, model_version, strategy_id, strategy_version, digest, embeddings, created_at, updated_at)
+        SELECT source.*
+        FROM ai_topic_embeddings source
+        WHERE NOT EXISTS (
+          SELECT 1 
+          FROM ai_topics_embeddings target 
+          WHERE target.model_id = source.model_id
+            AND target.strategy_id = source.strategy_id
+            AND target.topic_id = source.topic_id
+        )
+        LIMIT 10000
       SQL
+
+      break if count == 0
     end
   end
 
