@@ -3,6 +3,7 @@
 require "rails_helper"
 
 RSpec.describe DiscourseAi::AiModeration::SpamScanner do
+  fab!(:moderator)
   fab!(:user) { Fabricate(:user, trust_level: TrustLevel[0]) }
   fab!(:topic)
   fab!(:post) { Fabricate(:post, user: user, topic: topic) }
@@ -183,6 +184,29 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     end
   end
 
+  describe ".hide_post" do
+    fab!(:spam_post) { Fabricate(:post, user: user) }
+    fab!(:second_spam_post) { Fabricate(:post, topic: spam_post.topic, user: user) }
+
+    it "hides spam post and topic for first post" do
+      described_class.hide_post(spam_post)
+
+      expect(spam_post.reload.hidden).to eq(true)
+      expect(second_spam_post.reload.hidden).to eq(false)
+      expect(spam_post.reload.hidden_reason_id).to eq(
+        Post.hidden_reasons[:new_user_spam_threshold_reached],
+      )
+    end
+
+    it "doesn't hide the topic for non-first posts" do
+      described_class.hide_post(second_spam_post)
+
+      expect(spam_post.reload.hidden).to eq(false)
+      expect(second_spam_post.reload.hidden).to eq(true)
+      expect(spam_post.topic.reload.visible).to eq(true)
+    end
+  end
+
   describe "integration test" do
     fab!(:llm_model)
     let(:api_audit_log) { Fabricate(:api_audit_log) }
@@ -257,6 +281,12 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
       expect(log.reviewable).to be_present
       expect(log.reviewable.created_by_id).to eq(described_class.flagging_user.id)
+
+      log.reviewable.perform(moderator, :disagree_and_restore)
+
+      expect(post.reload.hidden?).to eq(false)
+      expect(post.topic.reload.visible).to eq(true)
+      expect(post.user.reload.silenced?).to eq(false)
     end
   end
 end

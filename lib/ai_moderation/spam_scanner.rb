@@ -377,26 +377,18 @@ module DiscourseAi
         silencer.silence
 
         # silencer will not hide tl1 posts, so we do this here
-        hide_posts_and_topics(post.user)
+        hide_post(post)
       end
 
-      def self.hide_posts_and_topics(user)
-        Post
-          .where(user_id: user.id)
-          .where("created_at > ?", 24.hours.ago)
-          .update_all(
-            [
-              "hidden = true, hidden_reason_id = COALESCE(hidden_reason_id, ?)",
-              Post.hidden_reasons[:new_user_spam_threshold_reached],
-            ],
-          )
-        topic_ids =
-          Post
-            .where(user_id: user.id, post_number: 1)
-            .where("created_at > ?", 24.hours.ago)
-            .select(:topic_id)
+      def self.hide_post(post)
+        Post.where(id: post.id).update_all(
+          [
+            "hidden = true, hidden_reason_id = COALESCE(hidden_reason_id, ?)",
+            Post.hidden_reasons[:new_user_spam_threshold_reached],
+          ],
+        )
 
-        Topic.where(id: topic_ids).update_all(visible: false)
+        Topic.where(id: post.topic_id).update_all(visible: false) if post.post_number == 1
       end
     end
   end
