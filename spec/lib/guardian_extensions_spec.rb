@@ -26,13 +26,7 @@ describe DiscourseAi::GuardianExtensions do
       end
 
       it "returns true if there is a cached summary" do
-        AiSummary.create!(
-          target: topic,
-          summarized_text: "test",
-          original_content_sha: "123",
-          algorithm: "test",
-          summary_type: AiSummary.summary_types[:complete],
-        )
+        Fabricate(:ai_summary, target: topic)
 
         expect(guardian.can_see_summary?(topic)).to eq(true)
       end
@@ -66,13 +60,7 @@ describe DiscourseAi::GuardianExtensions do
       end
 
       it "returns true for anons when there is a cached summary" do
-        AiSummary.create!(
-          target: topic,
-          summarized_text: "test",
-          original_content_sha: "123",
-          algorithm: "test",
-          summary_type: AiSummary.summary_types[:complete],
-        )
+        Fabricate(:ai_summary, target: topic)
 
         expect(guardian.can_see_summary?(topic)).to eq(true)
       end

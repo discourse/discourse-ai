@@ -13,15 +13,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
 
     context "when streaming" do
       it "return a cached summary with json payload and does not trigger job if it exists" do
-        section =
-          AiSummary.create!(
-            target: topic,
-            summarized_text: "test",
-            algorithm: "test",
-            original_content_sha: "test",
-            summary_type: AiSummary.summary_types[:complete],
-          )
-
+        summary = Fabricate(:ai_summary, target: topic)
         sign_in(Fabricate(:admin))
 
         get "/discourse-ai/summarization/t/#{topic.id}.json?stream=true"
@@ -29,8 +21,10 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
         expect(response.status).to eq(200)
         expect(Jobs::StreamTopicAiSummary.jobs.size).to eq(0)
 
-        summary = response.parsed_body
-        expect(summary.dig("ai_topic_summary", "summarized_text")).to eq(section.summarized_text)
+        response_summary = response.parsed_body
+        expect(response_summary.dig("ai_topic_summary", "summarized_text")).to eq(
+          summary.summarized_text,
+        )
       end
     end
 
@@ -42,21 +36,15 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
       end
 
       it "returns a cached summary" do
-        section =
-          AiSummary.create!(
-            target: topic,
-            summarized_text: "test",
-            algorithm: "test",
-            original_content_sha: "test",
-            summary_type: AiSummary.summary_types[:complete],
-          )
-
+        summary = Fabricate(:ai_summary, target: topic)
         get "/discourse-ai/summarization/t/#{topic.id}.json"
 
         expect(response.status).to eq(200)
 
-        summary = response.parsed_body
-        expect(summary.dig("ai_topic_summary", "summarized_text")).to eq(section.summarized_text)
+        response_summary = response.parsed_body
+        expect(response_summary.dig("ai_topic_summary", "summarized_text")).to eq(
+          summary.summarized_text,
+        )
       end
     end
 
@@ -90,15 +78,15 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
           get "/discourse-ai/summarization/t/#{topic.id}.json"
 
           expect(response.status).to eq(200)
-          summary = response.parsed_body["ai_topic_summary"]
-          section = AiSummary.last
+          response_summary = response.parsed_body["ai_topic_summary"]
+          summary = AiSummary.last
 
-          expect(section.summarized_text).to eq(summary_text)
-          expect(summary["summarized_text"]).to eq(section.summarized_text)
-          expect(summary["algorithm"]).to eq("fake")
-          expect(summary["outdated"]).to eq(false)
-          expect(summary["can_regenerate"]).to eq(true)
-          expect(summary["new_posts_since_summary"]).to be_zero
+          expect(summary.summarized_text).to eq(summary_text)
+          expect(response_summary["summarized_text"]).to eq(summary.summarized_text)
+          expect(response_summary["algorithm"]).to eq("fake")
+          expect(response_summary["outdated"]).to eq(false)
+          expect(response_summary["can_regenerate"]).to eq(true)
+          expect(response_summary["new_posts_since_summary"]).to be_zero
         end
       end
 
@@ -129,21 +117,16 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
       end
 
       it "returns a cached summary" do
-        section =
-          AiSummary.create!(
-            target: topic,
-            summarized_text: "test",
-            algorithm: "test",
-            original_content_sha: "test",
-            summary_type: AiSummary.summary_types[:complete],
-          )
+        summary = Fabricate(:ai_summary, target: topic)
 
         get "/discourse-ai/summarization/t/#{topic.id}.json"
 
         expect(response.status).to eq(200)
 
-        summary = response.parsed_body
-        expect(summary.dig("ai_topic_summary", "summarized_text")).to eq(section.summarized_text)
+        response_summary = response.parsed_body
+        expect(response_summary.dig("ai_topic_summary", "summarized_text")).to eq(
+          summary.summarized_text,
+        )
       end
     end
   end

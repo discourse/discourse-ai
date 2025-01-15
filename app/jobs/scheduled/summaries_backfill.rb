@@ -18,7 +18,8 @@ module ::Jobs
         backfill_candidates(gist_t)
           .limit(current_budget(gist_t))
           .each do |topic|
-            DiscourseAi::Summarization.topic_gist(topic).force_summarize(system_user)
+            strategy = DiscourseAi::Summarization.topic_gist(topic)
+            try_summarize(strategy, system_user, topic)
           end
       end
 
@@ -26,8 +27,23 @@ module ::Jobs
       backfill_candidates(complete_t)
         .limit(current_budget(complete_t))
         .each do |topic|
-          DiscourseAi::Summarization.topic_summary(topic).force_summarize(system_user)
+          strategy = DiscourseAi::Summarization.topic_summary(topic)
+          try_summarize(strategy, system_user, topic)
         end
+    end
+
+    def try_summarize(strategy, user, topic)
+      existing_summary = strategy.existing_summary
+
+      if existing_summary.blank? || existing_summary.outdated
+        strategy.summarize(user)
+      else
+        # Hiding or deleting a post, and creating a small action alters the Topic#highest_post_number.
+        # We use this as a quick way to select potential backfill candidates without relying on original_content_sha.
+        # At this point, we are confident the summary doesn't need to be regenerated so something other than a regular reply
+        # caused the number to change in the topic.
+        existing_summary.update!(highest_target_number: topic.highest_post_number)
+      end
     end
 
     def backfill_candidates(summary_type)
@@ -45,12 +61,12 @@ module ::Jobs
         .where(
           <<~SQL, # (1..1) gets stored ad (1..2).
           ais.id IS NULL OR (
-            UPPER(ais.content_range) < topics.highest_post_number + 1 
-            AND ais.created_at < (current_timestamp - INTERVAL '5 minutes')
+            ais.highest_target_number < topics.highest_post_number
+            AND ais.updated_at < (current_timestamp - INTERVAL '5 minutes')
           )
         SQL
         )
-        .order("ais.created_at DESC NULLS FIRST, topics.last_posted_at DESC")
+        .order("ais.updated_at DESC NULLS FIRST, topics.last_posted_at DESC")
     end
 
     def current_budget(type)

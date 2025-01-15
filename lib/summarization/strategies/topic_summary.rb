@@ -8,6 +8,10 @@ module DiscourseAi
           AiSummary.summary_types[:complete]
         end
 
+        def highest_target_number
+          target.highest_post_number
+        end
+
         def targets_data
           posts_data =
             (target.has_summary? ? best_replies : pick_selection).pluck(

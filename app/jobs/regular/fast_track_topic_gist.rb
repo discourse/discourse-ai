@@ -16,7 +16,7 @@ module ::Jobs
       gist = summarizer.existing_summary
       return if gist.present? && (!gist.outdated || gist.created_at >= 5.minutes.ago)
 
-      summarizer.force_summarize(Discourse.system_user)
+      summarizer.summarize(Discourse.system_user)
     end
   end
 end
