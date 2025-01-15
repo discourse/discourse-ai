@@ -196,7 +196,7 @@ module DiscourseAi
         def final_log_update(log)
           log.request_tokens = processor.input_tokens if processor.input_tokens
           log.response_tokens = processor.output_tokens if processor.output_tokens
-          log.raw_response_payload = @raw_response
+          log.raw_response_payload = @raw_response if @raw_response
         end
 
         def processor
