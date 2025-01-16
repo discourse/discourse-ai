@@ -21,6 +21,8 @@ module DiscourseAi
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       # Note: The block is only called with results of the final summary, not intermediate summaries.
       #
+      # This method doesn't care if we already have an up to date summary. It always regenerate.
+      #
       # @returns { AiSummary } - Resulting summary.
       def summarize(user, &on_partial_blk)
         base_summary = ""
@@ -66,11 +68,6 @@ module DiscourseAi
 
       def delete_cached_summaries!
         AiSummary.where(target: strategy.target, summary_type: strategy.type).destroy_all
-      end
-
-      def force_summarize(user, &on_partial_blk)
-        @persist_summaries = true
-        summarize(user, &on_partial_blk)
       end
 
       private

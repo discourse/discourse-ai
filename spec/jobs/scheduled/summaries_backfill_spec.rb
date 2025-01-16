@@ -44,13 +44,13 @@ RSpec.describe Jobs::SummariesBackfill do
     end
 
     it "ignores up to date summaries" do
-      Fabricate(:ai_summary, target: topic, content_range: (1..2))
+      Fabricate(:ai_summary, target: topic, highest_target_number: 2, updated_at: 10.minutes.ago)
 
       expect(subject.backfill_candidates(type)).to be_empty
     end
 
-    it "ignores outdated summaries created less than five minutes ago" do
-      Fabricate(:ai_summary, target: topic, content_range: (1..1), created_at: 4.minutes.ago)
+    it "ignores outdated summaries updated less than five minutes ago" do
+      Fabricate(:ai_summary, target: topic, highest_target_number: 1, updated_at: 4.minutes.ago)
 
       expect(subject.backfill_candidates(type)).to be_empty
     end
@@ -66,7 +66,7 @@ RSpec.describe Jobs::SummariesBackfill do
       topic_2 =
         Fabricate(:topic, word_count: 200, last_posted_at: 2.minutes.ago, highest_post_number: 1)
       topic.update!(last_posted_at: 1.minute.ago)
-      Fabricate(:ai_summary, target: topic, created_at: 1.hour.ago, content_range: (1..1))
+      Fabricate(:ai_summary, target: topic, updated_at: 1.hour.ago, highest_target_number: 1)
 
       expect(subject.backfill_candidates(type).map(&:id)).to contain_exactly(topic_2.id, topic.id)
     end
@@ -84,13 +84,13 @@ RSpec.describe Jobs::SummariesBackfill do
       topic_2 =
         Fabricate(:topic, word_count: 200, last_posted_at: 2.minutes.ago, highest_post_number: 1)
       topic.update!(last_posted_at: 1.minute.ago)
-      Fabricate(:ai_summary, target: topic, created_at: 3.hours.ago, content_range: (1..1))
-      Fabricate(:topic_ai_gist, target: topic, created_at: 3.hours.ago, content_range: (1..1))
+      Fabricate(:ai_summary, target: topic, updated_at: 3.hours.ago, highest_target_number: 1)
+      Fabricate(:topic_ai_gist, target: topic, updated_at: 3.hours.ago, highest_target_number: 1)
 
       summary_1 = "Summary of topic_2"
       gist_1 = "Gist of topic_2"
-      summary_2 = "Summary of topic"
-      gist_2 = "Gist of topic"
+      summary_2 = "Updated summary of topic"
+      gist_2 = "Updated gist of topic"
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
         [gist_1, gist_2, summary_1, summary_2],
@@ -100,6 +100,32 @@ RSpec.describe Jobs::SummariesBackfill do
       expect(AiSummary.gist.find_by(target: topic_2).summarized_text).to eq(gist_1)
       expect(AiSummary.complete.find_by(target: topic).summarized_text).to eq(summary_2)
       expect(AiSummary.gist.find_by(target: topic).summarized_text).to eq(gist_2)
+
+      # Queue has to be empty if we just generated all summaries
+      expect(subject.backfill_candidates(AiSummary.summary_types[:complete])).to be_empty
+      expect(subject.backfill_candidates(AiSummary.summary_types[:gist])).to be_empty
+
+      # Queue still empty when they are up to date and time passes.
+      AiSummary.update_all(updated_at: 20.minutes.ago)
+      expect(subject.backfill_candidates(AiSummary.summary_types[:complete])).to be_empty
+      expect(subject.backfill_candidates(AiSummary.summary_types[:gist])).to be_empty
+    end
+
+    it "updates the highest_target_number if the summary turned to be up to date" do
+      existing_summary =
+        Fabricate(
+          :ai_summary,
+          target: topic,
+          updated_at: 3.hours.ago,
+          highest_target_number: topic.highest_post_number,
+        )
+      og_highest_post_number = topic.highest_post_number
+      topic.update!(highest_post_number: og_highest_post_number + 1)
+
+      # No prepared responses here. We don't perform a completion call.
+      subject.execute({})
+
+      expect(existing_summary.reload.highest_target_number).to eq(og_highest_post_number + 1)
     end
   end
 end

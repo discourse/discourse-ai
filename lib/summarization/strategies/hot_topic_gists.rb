@@ -12,6 +12,10 @@ module DiscourseAi
           "gists"
         end
 
+        def highest_target_number
+          target.highest_post_number
+        end
+
         def targets_data
           op_post_number = 1
 
@@ -38,6 +42,7 @@ module DiscourseAi
                 .limit(20)
                 .pluck(:post_number)
           end
+
           posts_data =
             Post
               .where(topic_id: target.id)

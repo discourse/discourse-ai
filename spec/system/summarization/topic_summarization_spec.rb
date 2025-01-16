@@ -16,6 +16,8 @@ RSpec.describe "Summarize a topic ", type: :system do
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:summary_box) { PageObjects::Components::AiSummaryTrigger.new }
 
+  fab!(:ai_summary) { Fabricate(:ai_summary, target: topic, summarized_text: "This is a summary") }
+
   before do
     group.add(current_user)
 
@@ -27,16 +29,6 @@ RSpec.describe "Summarize a topic ", type: :system do
   end
 
   context "when a summary is cached" do
-    before do
-      AiSummary.create!(
-        target: topic,
-        summarized_text: summarization_result,
-        algorithm: "test",
-        original_content_sha: "test",
-        summary_type: AiSummary.summary_types[:complete],
-      )
-    end
-
     it "displays it" do
       topic_page.visit_topic(topic)
       summary_box.click_summarize
@@ -45,15 +37,6 @@ RSpec.describe "Summarize a topic ", type: :system do
   end
 
   context "when a summary is outdated" do
-    before do
-      AiSummary.create!(
-        target: topic,
-        summarized_text: summarization_result,
-        algorithm: "test",
-        original_content_sha: "test",
-        summary_type: AiSummary.summary_types[:complete],
-      )
-    end
     fab!(:new_post) do
       Fabricate(
         :post,

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class AiSummary < ActiveRecord::Base
+  # TODO remove this line 01-3-2025
+  self.ignored_columns = %i[content_range]
+
   belongs_to :target, polymorphic: true
 
   enum :summary_type, { complete: 0, gist: 1 }
@@ -15,14 +18,20 @@ class AiSummary < ActiveRecord::Base
           target_id: strategy.target.id,
           target_type: strategy.target.class.name,
           algorithm: llm_model.name,
-          content_range: (content_ids.first..content_ids.last),
+          highest_target_number: strategy.highest_target_number,
           summarized_text: summary,
           original_content_sha: build_sha(content_ids.join),
           summary_type: strategy.type,
           origin: !!human ? origins[:human] : origins[:system],
         },
         unique_by: %i[target_id target_type summary_type],
-        update_only: %i[summarized_text original_content_sha algorithm origin content_range],
+        update_only: %i[
+          summarized_text
+          original_content_sha
+          algorithm
+          origin
+          highest_target_number
+        ],
       )
       .first
       .then { AiSummary.find_by(id: _1["id"]) }
@@ -45,17 +54,17 @@ end
 #
 # Table name: ai_summaries
 #
-#  id                   :bigint           not null, primary key
-#  target_id            :integer          not null
-#  target_type          :string           not null
-#  content_range        :int4range
-#  summarized_text      :string           not null
-#  original_content_sha :string           not null
-#  algorithm            :string           not null
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  summary_type         :integer          default("complete"), not null
-#  origin               :integer
+#  id                    :bigint           not null, primary key
+#  target_id             :integer          not null
+#  target_type           :string           not null
+#  summarized_text       :string           not null
+#  original_content_sha  :string           not null
+#  algorithm             :string           not null
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  summary_type          :integer          default("complete"), not null
+#  origin                :integer
+#  highest_target_number :integer          not null
 #
 # Indexes
 #
