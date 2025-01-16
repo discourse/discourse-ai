@@ -64,7 +64,7 @@ end
 #  updated_at            :datetime         not null
 #  summary_type          :integer          default("complete"), not null
 #  origin                :integer
-#  highest_target_number :integer          not null
+#  highest_target_number :integer          default(1), not null
 #
 # Indexes
 #
