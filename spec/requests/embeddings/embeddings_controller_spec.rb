@@ -2,9 +2,11 @@
 
 describe DiscourseAi::Embeddings::EmbeddingsController do
   context "when performing a topic search" do
+    fab!(:vector_def) { Fabricate(:open_ai_embedding_def) }
+
     before do
       SiteSetting.min_search_term_length = 3
-      SiteSetting.ai_embeddings_model = "text-embedding-3-small"
+      SiteSetting.ai_embeddings_selected_model = vector_def.id
       DiscourseAi::Embeddings::SemanticSearch.clear_cache_for("test")
       SearchIndexer.enable
     end
@@ -31,7 +33,15 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
 
     def stub_embedding(query)
       embedding = [0.049382] * 1536
-      EmbeddingsGenerationStubs.openai_service(SiteSetting.ai_embeddings_model, query, embedding)
+
+      EmbeddingsGenerationStubs.openai_service(
+        vector_def.lookup_custom_param("model_name"),
+        query,
+        embedding,
+        extra_args: {
+          dimensions: vector_def.dimensions,
+        },
+      )
     end
 
     def create_api_key(user)

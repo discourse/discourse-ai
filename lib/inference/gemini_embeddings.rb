@@ -3,21 +3,17 @@
 module ::DiscourseAi
   module Inference
     class GeminiEmbeddings
-      def self.instance
-        new(SiteSetting.ai_gemini_api_key)
-      end
-
-      def initialize(api_key, referer = Discourse.base_url)
+      def initialize(embedding_url, api_key, referer = Discourse.base_url)
         @api_key = api_key
+        @embedding_url = embedding_url
         @referer = referer
       end
 
-      attr_reader :api_key, :referer
+      attr_reader :embedding_url, :api_key, :referer
 
       def perform!(content)
         headers = { "Referer" => referer, "Content-Type" => "application/json" }
-        url =
-          "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent\?key\=#{api_key}"
+        url = "#{embedding_url}\?key\=#{api_key}"
         body = { content: { parts: [{ text: content }] } }
 
         conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
@@ -32,7 +28,7 @@ module ::DiscourseAi
           Rails.logger.warn(
             "Google Gemini Embeddings failed with status: #{response.status} body: #{response.body}",
           )
-          raise Net::HTTPBadResponse
+          raise Net::HTTPBadResponse.new(response.body.to_s)
         end
       end
     end

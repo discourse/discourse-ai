@@ -19,13 +19,13 @@ RSpec.describe DiscourseAi::Embeddings::Strategies::Truncation do
         )
       end
       fab!(:post) { Fabricate(:post, topic: topic, raw: "Surfin' bird\n" * 800) }
-
-      let(:vector_def) { DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002.new }
+      fab!(:open_ai_embedding_def)
 
       it "truncates a topic" do
-        prepared_text = truncation.prepare_target_text(topic, vector_def)
+        prepared_text = truncation.prepare_target_text(topic, open_ai_embedding_def)
 
-        expect(vector_def.tokenizer.size(prepared_text)).to be <= vector_def.max_sequence_length
+        expect(open_ai_embedding_def.tokenizer.size(prepared_text)).to be <=
+          open_ai_embedding_def.max_sequence_length
       end
     end
   end

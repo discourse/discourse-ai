@@ -19,11 +19,11 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     topic
   end
 
-  let(:vector_rep) { DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation }
+  fab!(:vector_def) { Fabricate(:embedding_definition) }
 
   before do
+    SiteSetting.ai_embeddings_selected_model = vector_def.id
     SiteSetting.ai_embeddings_enabled = true
-    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
     SiteSetting.ai_embeddings_backfill_batch_size = 1
     SiteSetting.ai_embeddings_per_post_enabled = true
     Jobs.run_immediately!
@@ -32,10 +32,10 @@ RSpec.describe Jobs::EmbeddingsBackfill do
   it "backfills topics based on bumped_at date" do
     embedding = Array.new(1024) { 1 }
 
-    WebMock.stub_request(
-      :post,
-      "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
-    ).to_return(status: 200, body: JSON.dump(embedding))
+    WebMock.stub_request(:post, "https://test.com/embeddings").to_return(
+      status: 200,
+      body: JSON.dump(embedding),
+    )
 
     Jobs::EmbeddingsBackfill.new.execute({})
 

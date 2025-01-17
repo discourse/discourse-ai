@@ -12,10 +12,6 @@ module ::DiscourseAi
 
       attr_reader :endpoint, :api_key, :model, :dimensions
 
-      def self.instance(model:, dimensions: nil)
-        new(SiteSetting.ai_openai_embeddings_url, SiteSetting.ai_openai_api_key, model, dimensions)
-      end
-
       def perform!(content)
         headers = { "Content-Type" => "application/json" }
 
@@ -29,7 +25,7 @@ module ::DiscourseAi
         payload[:dimensions] = dimensions if dimensions.present?
 
         conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
-        response = conn.post(SiteSetting.ai_openai_embeddings_url, payload.to_json, headers)
+        response = conn.post(endpoint, payload.to_json, headers)
 
         case response.status
         when 200
@@ -40,7 +36,7 @@ module ::DiscourseAi
           Rails.logger.warn(
             "OpenAI Embeddings failed with status: #{response.status} body: #{response.body}",
           )
-          raise Net::HTTPBadResponse
+          raise Net::HTTPBadResponse.new(response.body.to_s)
         end
       end
     end

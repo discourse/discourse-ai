@@ -10,7 +10,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   fab!(:post) { Fabricate(:post, topic: topic, raw: "Apple pie is a delicious dessert to eat") }
 
   before do
-    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
     prompt = DiscourseAi::Embeddings::HydeGenerators::OpenAi.new.prompt(query)
     OpenAiCompletionsInferenceStubs.stub_response(
       prompt,
@@ -21,11 +20,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     )
 
     hyde_embedding = [0.049382, 0.9999]
-    EmbeddingsGenerationStubs.discourse_service(
-      SiteSetting.ai_embeddings_model,
-      hypothetical_post,
-      hyde_embedding,
-    )
+    EmbeddingsGenerationStubs.hugging_face_service(hypothetical_post, hyde_embedding)
 
     SearchIndexer.enable
     SearchIndexer.index(topic, force: true)

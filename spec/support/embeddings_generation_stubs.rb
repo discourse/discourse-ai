@@ -2,15 +2,11 @@
 
 class EmbeddingsGenerationStubs
   class << self
-    def discourse_service(model, string, embedding)
-      model = "bge-large-en-v1.5" if model == "bge-large-en"
+    def hugging_face_service(string, embedding)
       WebMock
-        .stub_request(
-          :post,
-          "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
-        )
-        .with(body: JSON.dump({ model: model, content: string }))
-        .to_return(status: 200, body: JSON.dump(embedding))
+        .stub_request(:post, "https://test.com/embeddings")
+        .with(body: JSON.dump({ inputs: string, truncate: true }))
+        .to_return(status: 200, body: JSON.dump([embedding]))
     end
 
     def openai_service(model, string, embedding, extra_args: {})
@@ -28,6 +24,13 @@ class EmbeddingsGenerationStubs
         )
         .with(body: JSON.dump({ content: { parts: [{ text: string }] } }))
         .to_return(status: 200, body: JSON.dump({ embedding: { values: embedding } }))
+    end
+
+    def cloudflare_service(string, embedding)
+      WebMock
+        .stub_request(:post, "https://test.com/embeddings")
+        .with(body: JSON.dump({ text: [string] }))
+        .to_return(status: 200, body: JSON.dump({ result: { data: [embedding] } }))
     end
   end
 end

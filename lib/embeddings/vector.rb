@@ -4,12 +4,17 @@ module DiscourseAi
   module Embeddings
     class Vector
       def self.instance
-        new(DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation)
+        vector_def = EmbeddingDefinition.find_by(id: SiteSetting.ai_embeddings_selected_model)
+        raise "Invalid embeddings selected model" if vector_def.nil?
+
+        new(vector_def)
       end
 
       def initialize(vector_definition)
         @vdef = vector_definition
       end
+
+      delegate :tokenizer, to: :vdef
 
       def gen_bulk_reprensentations(relation)
         http_pool_size = 100
@@ -20,7 +25,7 @@ module DiscourseAi
             idletime: 30,
           )
 
-        schema = DiscourseAi::Embeddings::Schema.for(relation.first.class, vector_def: vdef)
+        schema = DiscourseAi::Embeddings::Schema.for(relation.first.class)
 
         embedding_gen = vdef.inference_client
         promised_embeddings =
@@ -53,7 +58,7 @@ module DiscourseAi
         text = vdef.prepare_target_text(target)
         return if text.blank?
 
-        schema = DiscourseAi::Embeddings::Schema.for(target.class, vector_def: vdef)
+        schema = DiscourseAi::Embeddings::Schema.for(target.class)
 
         new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
         return if schema.find_by_target(target)&.digest == new_digest

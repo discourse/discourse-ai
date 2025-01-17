@@ -4,11 +4,12 @@ RSpec.describe DiscourseAi::Admin::RagDocumentFragmentsController do
   fab!(:admin)
   fab!(:ai_persona)
 
+  fab!(:vector_def) { Fabricate(:embedding_definition) }
+
   before do
     sign_in(admin)
-
+    SiteSetting.ai_embeddings_selected_model = vector_def.id
     SiteSetting.ai_embeddings_enabled = true
-    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
   end
 
   describe "GET #indexing_status_check" do
