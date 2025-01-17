@@ -75,7 +75,7 @@ export default class AiCategorySuggester extends Component {
       popupAjaxError(error);
     } finally {
       this.loading = false;
-      this.triggerIcon = "sync-alt";
+      this.triggerIcon = "rotate";
     }
 
     return this.suggestions;
