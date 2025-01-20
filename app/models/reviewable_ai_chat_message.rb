@@ -35,7 +35,7 @@ class ReviewableAiChatMessage < Reviewable
   def build_actions(actions, guardian, args)
     return unless pending?
 
-    return build_action(actions, :ignore, icon: "external-link-alt") if chat_message.blank?
+    return build_action(actions, :ignore, icon: "up-right-from-square") if chat_message.blank?
 
     agree =
       actions.add_bundle("#{id}-agree", icon: "thumbs-up", label: "reviewables.actions.agree.title")
@@ -67,7 +67,7 @@ class ReviewableAiChatMessage < Reviewable
       )
     end
 
-    build_action(actions, :ignore, icon: "external-link-alt")
+    build_action(actions, :ignore, icon: "up-right-from-square")
 
     build_action(actions, :delete_and_agree, icon: "far-trash-can") unless chat_message.deleted_at?
   end
