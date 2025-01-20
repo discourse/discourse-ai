@@ -61,12 +61,12 @@ class ReviewableAiPost < Reviewable
           icon: "far-trash-can",
           label: "reviewables.actions.delete.title",
         )
-      build_action(actions, :delete_and_ignore, icon: "external-link-alt", bundle: delete)
+      build_action(actions, :delete_and_ignore, icon: "up-right-from-square", bundle: delete)
       if post.reply_count > 0
         build_action(
           actions,
           :delete_and_ignore_replies,
-          icon: "external-link-alt",
+          icon: "up-right-from-square",
           confirm: true,
           bundle: delete,
         )
@@ -76,7 +76,7 @@ class ReviewableAiPost < Reviewable
         build_action(
           actions,
           :delete_and_agree_replies,
-          icon: "external-link-alt",
+          icon: "up-right-from-square",
           bundle: delete,
           confirm: true,
         )
@@ -85,7 +85,7 @@ class ReviewableAiPost < Reviewable
 
     delete_user_actions(actions) if guardian.can_delete_user?(target_created_by)
 
-    build_action(actions, :ignore, icon: "external-link-alt")
+    build_action(actions, :ignore, icon: "up-right-from-square")
   end
 
   def perform_agree_and_hide(performed_by, args)

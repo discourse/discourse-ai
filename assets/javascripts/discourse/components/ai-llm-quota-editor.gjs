@@ -149,7 +149,7 @@ export default class AiLlmQuotaEditor extends Component {
               </td>
               <td class="ai-llm-quotas__cell ai-llm-quotas__cell--actions">
                 <DButton
-                  @icon="trash-alt"
+                  @icon="trash-can"
                   class="btn-danger ai-llm-quotas__delete-btn"
                   @action={{fn this.deleteQuota quota}}
                 />

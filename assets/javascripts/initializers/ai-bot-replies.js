@@ -227,7 +227,7 @@ function initializeShareTopicButton(api) {
 
   api.registerTopicFooterButton({
     id: "share-ai-conversation",
-    icon: "share-alt",
+    icon: "share-nodes",
     label: "discourse_ai.ai_bot.share_ai_conversation.name",
     title: "discourse_ai.ai_bot.share_ai_conversation.title",
     action() {
