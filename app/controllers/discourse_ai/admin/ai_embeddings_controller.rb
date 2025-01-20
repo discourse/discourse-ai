@@ -49,7 +49,7 @@ module DiscourseAi
       def update
         embedding_def = EmbeddingDefinition.find(params[:id])
 
-        if embedding_def.update(ai_embeddings_params)
+        if embedding_def.update(ai_embeddings_params.except(:dimensions))
           render json: AiEmbeddingDefinitionSerializer.new(embedding_def)
         else
           render_json_error embedding_def

@@ -121,6 +121,12 @@ class EmbeddingDefinition < ActiveRecord::Base
   validates :tokenizer_class, presence: true, inclusion: tokenizer_names
   validates_presence_of :url, :api_key, :dimensions, :max_sequence_length, :pg_function
 
+  after_create :create_indexes
+
+  def create_indexes
+    Jobs.enqueue(:manage_embedding_def_search_index, id: self.id)
+  end
+
   def tokenizer
     tokenizer_class.constantize
   end

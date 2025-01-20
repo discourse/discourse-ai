@@ -10,10 +10,12 @@ import { later } from "@ember/runloop";
 import { service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
 import DButton from "discourse/components/d-button";
+import icon from "discourse/helpers/d-icon";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import icon from "discourse-common/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
+import DTooltip from "float-kit/components/d-tooltip";
+import not from "truth-helpers/helpers/not";
 
 export default class AiEmbeddingEditor extends Component {
   @service toasts;
@@ -276,7 +278,16 @@ export default class AiEmbeddingEditor extends Component {
             lang="en"
             @value={{this.editingModel.dimensions}}
             required="true"
+            disabled={{not this.editingModel.isNew}}
           />
+          {{#if this.editingModel.isNew}}
+            <DTooltip
+              @icon="circle-exclamation"
+              @content={{i18n
+                "discourse_ai.embeddings.hints.dimensions_warning"
+              }}
+            />
+          {{/if}}
         </div>
 
         <div class="control-group">

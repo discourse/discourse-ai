@@ -519,6 +519,8 @@ en:
           running: "Running test..."
           success: "Success!"
           failure: "Attempting to generate an embedding resulted in: %{error}"
+        hints:
+          dimensions_warning: "Once saved, this value can't be changed."
 
         display_name: "Name"
         provider: "Provider"

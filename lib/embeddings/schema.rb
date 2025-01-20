@@ -12,21 +12,80 @@ module DiscourseAi
       POSTS_TABLE = "ai_posts_embeddings"
       RAG_DOCS_TABLE = "ai_document_fragments_embeddings"
 
+      EMBEDDING_TARGETS = %w[topics posts document_fragments]
+      EMBEDDING_TABLES = [TOPICS_TABLE, POSTS_TABLE, RAG_DOCS_TABLE]
+
       MissingEmbeddingError = Class.new(StandardError)
 
-      def self.for(target_klass)
-        vector_def = EmbeddingDefinition.find_by(id: SiteSetting.ai_embeddings_selected_model)
-        raise "Invalid embeddings selected model" if vector_def.nil?
+      class << self
+        def for(target_klass)
+          vector_def = EmbeddingDefinition.find_by(id: SiteSetting.ai_embeddings_selected_model)
+          raise "Invalid embeddings selected model" if vector_def.nil?
 
-        case target_klass&.name
-        when "Topic"
-          new(TOPICS_TABLE, "topic_id", vector_def)
-        when "Post"
-          new(POSTS_TABLE, "post_id", vector_def)
-        when "RagDocumentFragment"
-          new(RAG_DOCS_TABLE, "rag_document_fragment_id", vector_def)
-        else
-          raise ArgumentError, "Invalid target type for embeddings"
+          case target_klass&.name
+          when "Topic"
+            new(TOPICS_TABLE, "topic_id", vector_def)
+          when "Post"
+            new(POSTS_TABLE, "post_id", vector_def)
+          when "RagDocumentFragment"
+            new(RAG_DOCS_TABLE, "rag_document_fragment_id", vector_def)
+          else
+            raise ArgumentError, "Invalid target type for embeddings"
+          end
+        end
+
+        def search_index_name(table, def_id)
+          "ai_#{table}_embeddings_#{def_id}_1_search_bit"
+        end
+
+        def prepare_search_indexes(vector_def)
+          EMBEDDING_TARGETS.each { |target| DB.exec <<~SQL }
+              CREATE INDEX IF NOT EXISTS #{search_index_name(target, vector_def.id)} ON ai_#{target}_embeddings
+              USING hnsw ((binary_quantize(embeddings)::bit(#{vector_def.dimensions})) bit_hamming_ops)
+              WHERE model_id = #{vector_def.id} AND strategy_id = 1;
+            SQL
+        end
+
+        def correctly_indexed?(vector_def)
+          index_names = EMBEDDING_TARGETS.map { |t| search_index_name(t, vector_def.id) }
+          indexdefs =
+            DB.query_single(
+              "SELECT indexdef FROM pg_indexes WHERE indexname IN (:names)",
+              names: index_names,
+            )
+
+          return false if indexdefs.length < index_names.length
+
+          indexdefs.all? do |defs|
+            defs.include? "(binary_quantize(embeddings))::bit(#{vector_def.dimensions})"
+          end
+        end
+
+        def remove_orphaned_data
+          removed_defs_ids =
+            DB.query_single(
+              "SELECT DISTINCT(model_id) FROM #{TOPICS_TABLE} te LEFT JOIN embedding_definitions ed ON te.model_id = ed.id WHERE ed.id IS NULL",
+            )
+
+          EMBEDDING_TABLES.each do |t|
+            DB.exec(
+              "DELETE FROM #{t} WHERE model_id IN (:removed_defs)",
+              removed_defs: removed_defs_ids,
+            )
+          end
+
+          drop_index_statement =
+            EMBEDDING_TARGETS
+              .reduce([]) do |memo, et|
+                removed_defs_ids.each do |rdi|
+                  memo << "DROP INDEX IF EXISTS #{search_index_name(et, rdi)};"
+                end
+
+                memo
+              end
+              .join("\n")
+
+          DB.exec(drop_index_statement)
         end
       end
 

@@ -95,6 +95,20 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
 
         expect(response.status).to eq(404)
       end
+
+      it "doesn't allow dimenstions to be updated" do
+        new_dimensions = 200
+
+        put "/admin/plugins/discourse-ai/ai-embeddings/#{embedding_definition.id}.json",
+            params: {
+              ai_embedding: {
+                dimensions: new_dimensions,
+              },
+            }
+
+        expect(response.status).to eq(200)
+        expect(embedding_definition.reload.dimensions).not_to eq(new_dimensions)
+      end
     end
 
     context "with invalid update params" do
