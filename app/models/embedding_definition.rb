@@ -173,6 +173,15 @@ class EmbeddingDefinition < ActiveRecord::Base
     strategy.version
   end
 
+  def api_key
+    if seeded?
+      env_key = "DISCOURSE_AI_SEEDED_EMBEDDING_API_KEY"
+      ENV[env_key] || self[:api_key]
+    else
+      self[:api_key]
+    end
+  end
+
   private
 
   def strategy
@@ -215,6 +224,7 @@ end
 #  tokenizer_class     :string           not null
 #  url                 :string           not null
 #  api_key             :string
+#  seeded              :boolean          default(FALSE), not null
 #  provider_params     :jsonb
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null

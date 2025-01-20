@@ -431,6 +431,7 @@ en:
 
     embeddings:
       delete_failed: "This model is currently in use. Update the `ai embeddings selected model` first."
+      cannot_edit_builtin: "You can't edit a built-in model."
       configuration:
         disable_embeddings: "You have to disable 'ai embeddings enabled' first."
         choose_model: "Set 'ai embeddings selected model' first."

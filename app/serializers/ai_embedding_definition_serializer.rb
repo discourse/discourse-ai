@@ -11,6 +11,19 @@ class AiEmbeddingDefinitionSerializer < ApplicationSerializer
              :provider,
              :url,
              :api_key,
+             :seeded,
              :tokenizer_class,
              :provider_params
+
+  def api_key
+    object.seeded? ? "********" : object.api_key
+  end
+
+  def url
+    object.seeded? ? "********" : object.url
+  end
+
+  def provider
+    object.seeded? ? "CDCK" : object.provider
+  end
 end

@@ -6,6 +6,7 @@ import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
 import { i18n } from "discourse-i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
+import DTooltip from "float-kit/components/d-tooltip";
 import AiEmbeddingEditor from "./ai-embedding-editor";
 
 export default class AiEmbeddingsListEditor extends Component {
@@ -72,12 +73,28 @@ export default class AiEmbeddingsListEditor extends Component {
                     }}
                   </td>
                   <td class="d-admin-row__controls">
-                    <DButton
-                      class="btn btn-default btn-small ai-embeddings-list__edit-button"
-                      @label="discourse_ai.embeddings.edit"
-                      @route="adminPlugins.show.discourse-ai-embeddings.edit"
-                      @routeModels={{embedding.id}}
-                    />
+                    {{#if embedding.seeded}}
+                      <DTooltip
+                        class="ai-embeddings-list__edit-disabled-tooltip"
+                      >
+                        <:trigger>
+                          <DButton
+                            class="btn btn-default btn-small disabled"
+                            @label="discourse_ai.embeddings.edit"
+                          />
+                        </:trigger>
+                        <:content>
+                          {{i18n "discourse_ai.embeddings.seeded_warning"}}
+                        </:content>
+                      </DTooltip>
+                    {{else}}
+                      <DButton
+                        class="btn btn-default btn-small ai-embeddings-list__edit-button"
+                        @label="discourse_ai.embeddings.edit"
+                        @route="adminPlugins.show.discourse-ai-embeddings.edit"
+                        @routeModels={{embedding.id}}
+                      />
+                    {{/if}}
                   </td>
                 </tr>
               {{/each}}

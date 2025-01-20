@@ -61,18 +61,22 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
       }
       # TEI
     elsif provider == "hugging_face"
+      seeded = false
       endpoint = fetch_setting("ai_hugging_face_tei_endpoint")
 
       if endpoint.blank?
         endpoint = fetch_setting("ai_hugging_face_tei_endpoint_srv")
-        endpoint = "srv://#{endpoint}" if endpoint.present?
+        if endpoint.present?
+          endpoint = "srv://#{endpoint}"
+          seeded = true
+        end
       end
 
       api_key = fetch_setting("ai_hugging_face_tei_api_key")
 
       return if endpoint.blank? || api_key.blank?
 
-      { url: endpoint, api_key: api_key }
+      { url: endpoint, api_key: api_key, seeded: seeded }
       # Gemini
     elsif provider == "google"
       api_key = fetch_setting("ai_gemini_api_key")

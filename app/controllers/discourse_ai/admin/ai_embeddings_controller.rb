@@ -49,6 +49,12 @@ module DiscourseAi
       def update
         embedding_def = EmbeddingDefinition.find(params[:id])
 
+        if embedding_def.seeded?
+          return(
+            render_json_error(I18n.t("discourse_ai.embeddings.cannot_edit_builtin"), status: 403)
+          )
+        end
+
         if embedding_def.update(ai_embeddings_params.except(:dimensions))
           render json: AiEmbeddingDefinitionSerializer.new(embedding_def)
         else
@@ -58,6 +64,12 @@ module DiscourseAi
 
       def destroy
         embedding_def = EmbeddingDefinition.find(params[:id])
+
+        if embedding_def.seeded?
+          return(
+            render_json_error(I18n.t("discourse_ai.embeddings.cannot_edit_builtin"), status: 403)
+          )
+        end
 
         if embedding_def.id == SiteSetting.ai_embeddings_selected_model.to_i
           return render_json_error(I18n.t("discourse_ai.embeddings.delete_failed"), status: 409)

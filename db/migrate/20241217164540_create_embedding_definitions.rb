@@ -11,6 +11,7 @@ class CreateEmbeddingDefinitions < ActiveRecord::Migration[7.2]
       t.string :tokenizer_class, null: false
       t.string :url, null: false
       t.string :api_key
+      t.boolean :seeded, null: false, default: false
       t.jsonb :provider_params
       t.timestamps
     end

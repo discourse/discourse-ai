@@ -514,6 +514,7 @@ en:
         presets: "Select a preset..."
         configure_manually: "Configure manually"
         edit: "Edit"
+        seeded_warning: "This is pre-configured on your site and cannot be edited."
         tests: 
           title: "Run test"
           running: "Running test..."
@@ -539,6 +540,7 @@ en:
           open_ai: "OpenAI"
           google: "Google"
           cloudflare: "Cloudflare"
+          CDCK: "CDCK"
         provider_fields:
           model_name: "Model name"
 
