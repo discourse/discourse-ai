@@ -73,6 +73,8 @@ class EmbeddingDefinition < ActiveRecord::Base
               tokenizer_class: "DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer",
               provider: HUGGING_FACE,
             },
+            # "text-embedding-3-large" real dimentions are 3072, but we only support up to 2000 in the
+            # indexes, so we downsample to 2000 via API.
             {
               preset_id: "text-embedding-3-large",
               display_name: "OpenAI's text-embedding-3-large",
@@ -198,11 +200,15 @@ class EmbeddingDefinition < ActiveRecord::Base
   end
 
   def open_ai_client
+    model_name = lookup_custom_param("model_name")
+    can_shorten_dimensions = %w[text-embedding-3-small text-embedding-3-large].include?(model_name)
+    client_dimensions = can_shorten_dimensions ? dimensions : nil
+
     DiscourseAi::Inference::OpenAiEmbeddings.new(
       endpoint_url,
       api_key,
       lookup_custom_param("model_name"),
-      dimensions,
+      client_dimensions,
     )
   end
 
