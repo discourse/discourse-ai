@@ -93,6 +93,9 @@ pt_BR:
             max_post_tokens:
               label: "Máximo de Tokens de Postagem"
               description: "A quantidade máxima de tokens para ler usando triagem LLM"
+            stop_sequences:
+              label: "Parar sequências"
+              description: "Ordene ao modelo que interrompa a geração de tokens ao atingir um destes valores"
             search_for_text:
               label: "Pesquisar texto"
               description: "Se o texto a seguir aparecer na resposta do LLM, aplicar estas ações"
@@ -129,12 +132,40 @@ pt_BR:
         select_option: "Selecione uma opção..."
       spam:
         short_title: "Spam"
+        title: "Configurar tratamento de spam"
+        select_llm: "Selecionar LLM"
+        custom_instructions: "Instruções personalizadas"
+        custom_instructions_help: "Instruções específicas para seu site para ajudar a orientar a IA na identificação de spam, por exemplo: \"Verificar com mais agressividade postagens que não estão em inglês\"."
         last_seven_days: "Últimos sete dias"
+        scanned_count: "Postagens verificadas"
+        false_positives: "Sinalização incorreta"
+        false_negatives: "Spam perdido"
+        spam_detected: "Spam detectado"
+        custom_instructions_placeholder: "Instruções específicas para o site para ajudar a IA a identificar spam com mais precisão"
         enable: "Ativar"
+        spam_tip: "As três primeiras postagens dos(as) novos(as) usuários(as) nos tópicos públicos serão verificadas pela detecção de spam por IA. Serão sinalizadas para análise e, se forem spam, os(as) usuários(as) serão bloqueados(as)."
+        settings_saved: "Configurações salvas"
+        spam_description: "Identifica possíveis spams usando o LLM selecionado e os sinaliza para inspeção pela moderação do site na fila de revisão"
+        no_llms: "Nenhum LLM disponível"
+        test_button: "Testar..."
+        save_button: "Salvar alterações"
         test_modal:
+          title: "Testar detecção de spam"
+          post_url_label: "Postar URL ou ID"
+          post_url_placeholder: "https://your-forum.com/t/topic/123/4 ou ID da postagem"
           result: "Resultado"
+          scan_log: "Registro de verificação"
           run: "Rodar teste"
           spam: "Spam"
+          not_spam: "Não é spam"
+        stat_tooltips:
+          incorrectly_flagged: "Itens que o bot de IA sinalizou como spam, mas a moderação discordou"
+          missed_spam: "Itens sinalizados como spam pela comunidade, mas que não foram detectados pelo bot de IA, e a moderação concordou"
+        errors:
+          scan_not_admin:
+            message: "Aviso: a verificação de spam não funcionará corretamente porque a conta de verificação de spam não é administrador(a)"
+            action: "Corrigir"
+          resolved: "O erro foi solucionado!"
       usage:
         short_title: "Uso"
         summary: "Resumo"
@@ -152,9 +183,23 @@ pt_BR:
         total_requests: "Pedidos totais"
         request_tokens: "Tokens de pedido"
         response_tokens: "Tokens de resposta"
+        net_request_tokens: "Tokens de pedido de rede"
         cached_tokens: "Tokens em cache"
+        cached_request_tokens: "Tokens de pedido em cache"
+        no_users: "Sem dados de uso do(a) usuário(a) encontrados"
+        no_models: "Sem dados de uso de modelo encontrados"
+        no_features: "Sem dados de uso de recurso encontrados"
+        subheader_description: "Tokens são unidades básicas usadas por LLMs para compreender e gerar texto. Os dados de uso podem afetar o custo."
+        stat_tooltips:
+          total_requests: "Todos os pedidos feitos para LLMs através do Discourse"
+          total_tokens: "Todos os tokens usados ao enviar comandos para um LLM"
+          request_tokens: "Tokens usados quando o LLM tentar compreender o que você está dizendo"
+          response_tokens: "Tokens usados quando o LLM responder ao seu comando"
+          cached_tokens: "Tokens de pedido processados anteriormente reutilizados pelo LLM para otimizar o desempenho e reduzir custo"
         periods:
           last_day: "Últimas 24 horas"
+          last_week: "Semana passada"
+          last_month: "Mês passado"
           custom: "Personalizado..."
       ai_persona:
         tool_strategies:
@@ -294,9 +339,14 @@ pt_BR:
         delete: Excluir
         seeded_warning: "Este modelo foi pré-configurado no seu site e não pode ser editado."
         quotas:
+          title: "Cotas de uso"
+          add_title: "Criar nova cota"
           group: "Grupo"
+          max_tokens: "Máx. de tokens"
           max_usages: "Máximo de usos"
           duration: "Duração"
+          confirm_delete: "Tem certeza de que deseja excluir esta cota?"
+          add: "Adicionar cota"
           durations:
             hour: "1 hora"
             six_hours: "6 horas"
@@ -304,6 +354,8 @@ pt_BR:
             week: "Sete dias"
             custom: "Personalizado..."
           hours: "horas"
+          max_tokens_help: "Quantidade máxima de tokens (palavras e caracteres) que podem ser usados por cada usuário(a) neste grupo durante o período especificado. Tokens são unidades usadas para modelos de IA processarem texto: 1 token equivale a aproximadamente 4 caracteres ou 3/4 de uma palavra."
+          max_usages_help: "A quantidade máxima de vezes que cada usuário(a) neste grupo pode usar o modelo de IA durante o período especificado. Essa cota é rastreada por cada usuário(a) individual e não é compartilhada no grupo."
         usage:
           ai_bot: "Bot de IA"
           ai_helper: "Ajudante"
@@ -330,6 +382,7 @@ pt_BR:
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Modelo multifinalidade poderoso"
           mistral-mistral-large-latest: "Modelo mais poderoso da Mistral"
           mistral-pixtral-large-latest: "Modelo mais poderoso com capacidade de visão da Mistral"
+        preseeded_model_description: "Modelo de código aberto pré-configurado que utiliza %{model}"
         configured:
           title: "LLMs configuradas"
         preconfigured_llms: "Selecione sua LLM"
@@ -364,6 +417,7 @@ pt_BR:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "Personalizados(as)"
         provider_fields:
           access_key_id: "ID da chave de acesso do AWS Bedrock"
@@ -372,6 +426,9 @@ pt_BR:
           disable_system_prompt: "Desativar mensagens de sistema nos prompts"
           enable_native_tool: "Ativar suporte para ferramenta nativa"
           disable_native_tools: "Desativar suporte para ferramenta nativa (usar ferramentas baseadas em XML)"
+          provider_order: "Ordem de provedores (lista separada por vírgula)"
+          provider_quantizations: "Ordem de quantizações de provedores (lista separada por vírgula, por exemplo: fp16,fp8)"
+          disable_streaming: "Desativar conclusões de transmissão (converter transmissão em pedidos que não forem desse tipo)"
       related_topics:
         title: "Tópicos relacionados"
         pill: "Relacionado(a)"
@@ -408,6 +465,7 @@ pt_BR:
           copied: "Copiou!"
           cancel: "Cancelar"
           insert_footnote: "Adicionar nota de rodapé"
+          footnote_disabled: "Inserção automática desativada, clique no botão de copiar e edite-a manualmente"
           footnote_credits: "Explicação da IA"
         fast_edit:
           suggest_button: "Sugerir edição"
@@ -423,6 +481,7 @@ pt_BR:
           automatic_caption_setting: "Ativar legenda automática"
           automatic_caption_loading: "Legendando imagens..."
           automatic_caption_dialog:
+            prompt: "Esta postagem contém imagens sem legendas. Gostaria de ativar legendas automáticas em envios de imagem? (Altere nas preferências mais tarde)"
             confirm: "Ativar"
             cancel: "Não perguntar novamente"
         no_content_error: "Primeiro adicione conteúdo para realizar ações de IA nele"
@@ -437,11 +496,17 @@ pt_BR:
           toggle_hidden: "Ocultando %{count} resultados encontrados usando IA"
           none: "Desculpe, nossa Pesquisa com IA não achou tópicos correspondentes"
           new: "Aperte \"Pesquisar\"' para começar a procurar resultados novos com a IA"
+          unavailable: "Resultados de IA indisponíveis"
+        semantic_search_tooltips:
+          results_explanation: "Ao ativar esta opção, os resultados de pesquisa com IA são adicionados abaixo."
+          invalid_sort: "Os resultados das pesquisas devem ser classificados por ordem de relevância para exibir resultados com IA"
+        semantic_search_unavailable_tooltip: "Os resultados das pesquisas devem ser classificados por ordem de relevância para exibir resultados com IA"
         ai_generated_result: "Resultado de pesquisa encontrado usando IA"
         quick_search:
           suffix: "em todos os tópicos e postagens com IA"
       ai_artifact:
         expand_view_label: "Expandir visualização"
+        collapse_view_label: "Sair de tela cheia (ESC ou botão de voltar)"
         click_to_run_label: "Rodar artefato"
       ai_bot:
         pm_warning: "Todas as mensagens do chatbot de IA são monitoradas regularmente por moderadores(as)."

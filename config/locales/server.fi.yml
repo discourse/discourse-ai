@@ -15,6 +15,10 @@ fi:
       llm_triage:
         title: Luokittele viestit tekoälyllä
         description: "Luokittele viestit suurella kielimallilla"
+        flagged_post: |
+          <div>Mallin vastaus::</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Säännön <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> käynnistämä.</b>
       llm_report:
         title: Säännöllinen raportti tekoälyllä
         description: "Säännöllinen raportti laajan kielimallin perusteella"
@@ -34,9 +38,9 @@ fi:
     ai_toxicity_flag_threshold_threat: "Uhkaus"
     ai_toxicity_flag_threshold_sexual_explicit: "Seksuaalinen"
     ai_toxicity_groups_bypass: "Toksisuusmoduuli ei luokittele näiden ryhmien käyttäjien viestejä."
-    ai_sentiment_enabled: "Ota asennemoduuli käyttöön."
-    ai_sentiment_inference_service_api_endpoint: "URL-osoite, jossa asennemoduulin API on käynnissä"
-    ai_sentiment_inference_service_api_key: "Asenne-APIn API-avain"
+    ai_sentiment_enabled: "Ota tunnemoduuli käyttöön."
+    ai_sentiment_inference_service_api_endpoint: "URL-osoite, jossa tunnemoduulin API on käynnissä"
+    ai_sentiment_inference_service_api_key: "Tunne-APIn API-avain"
     ai_sentiment_models: "Päätelmien tekemiseen käytettävät mallit. Tunne luokittelee viestin positiivinen/neutraali/negatiivinen-skaalalla. Tunne luokittelee viha/inho/pelko/ilo/neutraali/suru/yllätys-skaalalla."
     ai_nsfw_detection_enabled: "Ota NSFW-moduuli käyttöön."
     ai_nsfw_inference_service_api_endpoint: "URL-osoite, jossa NSFW-moduulin API on käynnissä"
@@ -221,6 +225,7 @@ fi:
         custom_prompt: "Mukautettu kehote"
         explain: "Selitä"
         illustrate_post: "Havainnollista viestiä"
+        replace_dates: "Älykkäät päivämäärät"
       painter:
         attribution:
           stable_diffusion_xl: "Kuvan tarjoaa Stable Diffusion XL"
@@ -238,7 +243,14 @@ fi:
         other_content_in_pm: "Yksityisviestejä, jotka sisältävät muiden ihmisten viestejä, ei voi jakaa julkisesti"
         failed_to_share: "Keskustelun jakaminen epäonnistui"
         conversation_deleted: "Keskustelun jaon poistaminen onnistui"
+    spam_detection:
+      flag_reason: "<a href='%{url}'>Discourse AI</a> liputti roskapostiksi"
+      silence_reason: "<a href='%{url}'>Discourse AI</a> hiljensi käyttäjän automaattisesti"
+      invalid_error_type: "Virheellinen virhetyyppi annettu"
+      unexpected: "Tapahtui odottamaton virhe"
+      bot_user_update_failed: "Roskapostin skannausbottikäyttäjän päivittäminen epäonnistui"
     ai_bot:
+      reply_error: "Näyttää siltä, että järjestelmässä tapahtui odottamaton ongelma, kun se yritti vastata.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
       personas:
         default_llm_required: "Oletus-LLM-malli vaaditaan ennen chatin käyttöönottoa"
@@ -297,6 +309,7 @@ fi:
             name: "Perushakukysely"
             description: "Peruskysely, jota käytetään haussa. Esimerkki: \"#kiireellinen\" lisää hakukyselyn alkuun \"#kiireellinen\" ja sisältää vain ketjut, joissa on kiireellinen alue tai tunniste."
       tool_summary:
+        update_artifact: "Päivitä verkkoartefakti"
         create_artifact: "Luo verkkoartefakti"
         web_browser: "Selaa verkkoa"
         github_search_files: "GitHub-hakutiedostot"
@@ -319,6 +332,7 @@ fi:
         search_meta_discourse: "Haku Metasta Discoursessa"
         javascript_evaluator: "Arvioi JavaScript"
       tool_help:
+        update_artifact: "Päivitä verkkoartefakti tekoälybotilla"
         create_artifact: "Luo verkkoartefakti tekoälybotilla"
         web_browser: "Selaa verkkosivua tekoälybotilla"
         github_search_code: "Etsi koodia GitHub-tietovarastosta"
@@ -341,6 +355,7 @@ fi:
         search_meta_discourse: "Haku Metasta Discoursessa"
         javascript_evaluator: "Arvioi JavaScript"
       tool_description:
+        update_artifact: "Verkkoartefakti päivitettiin tekoälybotilla"
         create_artifact: "Luotu verkkoartefakti tekoälybotilla"
         web_browser: "Luetaan: <a href='%{url}'>%{url}</a>"
         github_search_files: "Haettiin avainsanoilla \"%{keywords}\" tietovarastosta %{repo}/%{branch}"
@@ -381,6 +396,7 @@ fi:
         no_targets: "Valitun ajanjakson aikana ei ollut viestejä."
     sentiment:
       reports:
+        overall_sentiment: "Yleinen tunne (positiivinen–negatiivinen)"
         post_emotion:
           sadness: "Suru \U0001F622"
           surprise: "Yllätys \U0001F631"
@@ -395,6 +411,7 @@ fi:
         set_llm_first: "Aseta %{setting} ensin"
         model_unreachable: "Emme saaneet vastausta tästä mallista. Tarkista ensin asetuksesi."
         invalid_seeded_model: "Et voi käyttää tätä mallia tämän ominaisuuden kanssa"
+        must_select_model: "Sinun täytyy valita suuri kielimalli ensin"
       endpoints:
         not_configured: "%{display_name} (ei määritetty)"
         configuration_hint:
@@ -414,7 +431,10 @@ fi:
           other: "Varmista, että haluamasi palveluntarjoajan asetukset on määritetty. Vaihtoehdot ovat: %{settings}"
     llm_models:
       missing_provider_param: "%{param} ei voi olla tyhjä"
+      bedrock_invalid_url: "Täytä kaikki kentät, jotta voit käyttää tätä mallia."
     errors:
+      quota_exceeded: "Olet ylittänyt tämän mallin kiintiön. Odota %{relative_time} ja yritä sitten uudelleen."
+      quota_required: "Sinun on määritettävä tälle mallille saneiden tai käyttökertojen enimmäismäärä"
       no_query_specified: Kyselyparametri on pakollinen, määritä se.
       no_user_for_persona: Määritetyllä persoonalle ei ole siihen liitettyä käyttäjää.
       persona_not_found: Määritettyä persoonaa ei ole olemassa. Tarkista parametrit persona_name tai persona_id.
@@ -424,3 +444,6 @@ fi:
       no_default_llm: Persoonalla täytyy olla default_llm määritelty.
       user_not_allowed: Käyttäjä ei saa osallistua ketjuun.
       prompt_message_length: Viesti %{idx} ylittää 1 000 merkin rajan.
+  dashboard:
+    problem:
+      ai_llm_status: "Suuressa kielimallissa %{model_name} on ongelmia. Tarkista <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>mallin määrityssivu</a>."

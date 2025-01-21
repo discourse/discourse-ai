@@ -93,6 +93,9 @@ fr:
             max_post_tokens:
               label: "Nombre maximum de jetons de publication"
               description: "Le nombre maximal de jetons à analyser à l'aide du triage LLM"
+            stop_sequences:
+              label: "Arrêter les séquences"
+              description: "Demandez au modèle d'arrêter la génération de jetons lorsqu'il atteint l'une de ces valeurs"
             search_for_text:
               label: "Recherche de texte"
               description: "Si le texte suivant apparaît dans la réponse LLM, appliquez ces actions"
@@ -129,12 +132,40 @@ fr:
         select_option: "Sélectionnez une option..."
       spam:
         short_title: "Spam"
+        title: "Configurer la gestion du spam"
+        select_llm: "Sélectionner LLM"
+        custom_instructions: "Instructions personnalisées"
+        custom_instructions_help: "Des instructions personnalisées spécifiques à votre site pour aider l'IA à identifier le spam, par exemple « Faites preuve d'agressivité dans l'analyse des messages qui ne sont pas en anglais »."
         last_seven_days: "Ces 7 derniers jours"
+        scanned_count: "Publications analysées"
+        false_positives: "Signalé incorrectement"
+        false_negatives: "Spam manqué"
+        spam_detected: "Spam détecté"
+        custom_instructions_placeholder: "Instructions spécifiques au site pour que l'IA puisse identifier les spams avec plus de précision"
         enable: "Activer"
+        spam_tip: "La détection de spams par l'IA analysera les 3 premiers messages de tous les nouveaux utilisateurs sur les sujets publics. Elle les signalera pour examen et bloquera les utilisateurs s'ils sont susceptibles d'envoyer du spam."
+        settings_saved: "Paramètres enregistrés"
+        spam_description: "Identifie les spams potentiels à l'aide du LLM sélectionné et les signale aux modérateurs du site afin qu'ils les inspectent dans la file d'attente de révision"
+        no_llms: "Aucun LLM disponible"
+        test_button: "Test..."
+        save_button: "Enregistrer les modifications"
         test_modal:
+          title: "Tester la détection du spam"
+          post_url_label: "URL ou ID de la publication"
+          post_url_placeholder: "https://your-forum.com/t/topic/123/4 ou ID de la publication"
           result: "Résultat"
+          scan_log: "Journal d'analyse"
           run: "Lancer le test"
           spam: "Spam"
+          not_spam: "Non spam"
+        stat_tooltips:
+          incorrectly_flagged: "Éléments que le robot IA a signalés comme spam et pour lesquels les modérateurs n'étaient pas d'accord"
+          missed_spam: "Éléments signalés par la communauté comme spam qui n'ont pas été détectés par le robot IA, et sur lesquels les modérateurs ont été d'accord"
+        errors:
+          scan_not_admin:
+            message: "Avertissement : l'analyse anti-spam ne fonctionnera pas correctement, car le compte d'analyse anti-spam n'est pas un compte administrateur"
+            action: "Corriger"
+          resolved: "L'erreur a été résolue !"
       usage:
         short_title: "Utilisation"
         summary: "Résumé"
@@ -152,9 +183,23 @@ fr:
         total_requests: "Total des requêtes"
         request_tokens: "Jetons de requête"
         response_tokens: "Jetons de réponse"
+        net_request_tokens: "Jetons de requête nets"
         cached_tokens: "Jetons mis en cache"
+        cached_request_tokens: "Jetons de requête en cache"
+        no_users: "Aucune donnée d'utilisation de l'utilisateur n'a été trouvée"
+        no_models: "Aucune donnée d'utilisation du modèle n'a été trouvée"
+        no_features: "Aucune donnée d'utilisation de la fonctionnalité n'a été trouvée"
+        subheader_description: "Les jetons sont les unités de base que les LLM utilisent pour comprendre et générer du texte. Les données d'utilisation peuvent affecter les coûts."
+        stat_tooltips:
+          total_requests: "Toutes les requêtes adressées aux LLM via Discourse"
+          total_tokens: "Tous les jetons utilisés lors de la consultation d'un LLM"
+          request_tokens: "Jetons utilisés lorsque le LLM essaie de comprendre ce que vous dites"
+          response_tokens: "Jetons utilisés lorsque le LLM répond à votre invite"
+          cached_tokens: "Jetons de requête précédemment traités que le LLM réutilise pour optimiser les performances et les coûts"
         periods:
           last_day: "Ces dernières 24 heures"
+          last_week: "La semaine dernière"
+          last_month: "Le mois dernier"
           custom: "Personnalisé…"
       ai_persona:
         tool_strategies:
@@ -294,9 +339,14 @@ fr:
         delete: Supprimer
         seeded_warning: "Ce modèle est préconfiguré sur votre site et ne peut pas être modifié."
         quotas:
+          title: "Quotas d'utilisation"
+          add_title: "Créer un nouveau quota"
           group: "Groupe"
+          max_tokens: "Nombre maximum de jetons"
           max_usages: "Nombre max. d'utilisations"
           duration: "Durée "
+          confirm_delete: "Voulez-vous vraiment supprimer ce quota ?"
+          add: "Ajouter un quota"
           durations:
             hour: "1 heure"
             six_hours: "6 heures"
@@ -304,6 +354,8 @@ fr:
             week: "7 jours"
             custom: "Personnalisé…"
           hours: "heures"
+          max_tokens_help: "Nombre maximal de jetons (mots et caractères) que chaque utilisateur de ce groupe peut utiliser dans la durée spécifiée. Les jetons sont les unités utilisées par les modèles d'IA pour traiter le texte : environ 1 jeton = 4 caractères ou 3/4 d'un mot."
+          max_usages_help: "Nombre maximal de fois que chaque utilisateur de ce groupe peut utiliser le modèle d'IA dans la durée spécifiée. Ce quota est suivi par utilisateur individuel et n'est pas partagé au sein du groupe."
         usage:
           ai_bot: "Robot IA"
           ai_helper: "Assistant"
@@ -330,6 +382,7 @@ fr:
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Modèle polyvalent et puissant"
           mistral-mistral-large-latest: "Le modèle le plus puissant de Mistral"
           mistral-pixtral-large-latest: "Le modèle de Mistral le plus performant en matière de vision"
+        preseeded_model_description: "Modèle open source préconfiguré utilisant %{model}"
         configured:
           title: "LLM configurés"
         preconfigured_llms: "Sélectionnez votre LLM"
@@ -364,6 +417,7 @@ fr:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "Personnalisé"
         provider_fields:
           access_key_id: "ID de clé d'accès AWS Bedrock"
@@ -372,6 +426,9 @@ fr:
           disable_system_prompt: "Désactiver le message système dans les invites"
           enable_native_tool: "Activer la prise en charge des outils natifs"
           disable_native_tools: "Désactiver la prise en charge des outils natifs (utiliser des outils basés sur XML)"
+          provider_order: "Ordre des fournisseurs (liste délimitée par des virgules)"
+          provider_quantizations: "Ordre de quantification des fournisseurs (liste délimitée par des virgules, par exemple : fp16,fp8)"
+          disable_streaming: "Désactiver les complétions de streaming (convertir les requêtes de streaming en requêtes non-streaming)"
       related_topics:
         title: "Sujets connexes"
         pill: "Lié"
@@ -408,6 +465,7 @@ fr:
           copied: "Copié !"
           cancel: "Annuler"
           insert_footnote: "Ajouter une note de bas de page"
+          footnote_disabled: "Insertion automatique désactivée. Cliquez sur le bouton Copier et modifiez-le manuellement"
           footnote_credits: "Explication par l'IA"
         fast_edit:
           suggest_button: "Suggérer une modification"
@@ -423,6 +481,7 @@ fr:
           automatic_caption_setting: "Activer le sous-titrage automatique"
           automatic_caption_loading: "Ajout des légendes des images..."
           automatic_caption_dialog:
+            prompt: "Cette publication contient des images non légendées. Souhaitez-vous activer les légendes automatiques lors du téléversement d'images ? (Cela peut être modifié ultérieurement dans vos préférences)"
             confirm: "Activer"
             cancel: "Ne plus demander"
         no_content_error: "Ajoutez d'abord du contenu pour y effectuer des actions d'IA"
@@ -437,11 +496,17 @@ fr:
           toggle_hidden: "Masquer %{count} résultats trouvés à l’aide de l'IA"
           none: "Nous sommes désolés, notre recherche par IA n'a trouvé aucun sujet correspondant"
           new: "Appuyez sur « Rechercher » pour commencer à rechercher de nouveaux résultats avec l'IA"
+          unavailable: "Résultats de l'IA indisponibles"
+        semantic_search_tooltips:
+          results_explanation: "Lorsque cette option est activée, des résultats de recherche IA supplémentaires seront ajoutés ci-dessous."
+          invalid_sort: "Les résultats de la recherche doivent être triés par pertinence pour afficher les résultats de l'IA"
+        semantic_search_unavailable_tooltip: "Les résultats de la recherche doivent être triés par pertinence pour afficher les résultats de l'IA"
         ai_generated_result: "Résultat de recherche trouvé à l'aide de l'IA"
         quick_search:
           suffix: "dans tous les sujets et publications avec IA"
       ai_artifact:
         expand_view_label: "Agrandir la vue"
+        collapse_view_label: "Quitter le mode plein écran (bouton ESC ou Retour)"
         click_to_run_label: "Exécuter l'artefact"
       ai_bot:
         pm_warning: "Les messages du chatbot IA sont surveillés régulièrement par les modérateurs."

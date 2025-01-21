@@ -93,6 +93,9 @@ tr_TR:
             max_post_tokens:
               label: "Maksimum Gönderi Token'ı Sayısı"
               description: "LLM triyajı kullanılarak taranacak maksimum token sayısı"
+            stop_sequences:
+              label: "Durdurma Dizileri"
+              description: "Modele, bu değerlerden birine ulaşıldığında token oluşturmayı durdurması talimatını verin"
             search_for_text:
               label: "Metin ara"
               description: "LLM yanıtında aşağıdaki metin görünürse bu eylemleri uygulayın"
@@ -128,13 +131,41 @@ tr_TR:
       modals:
         select_option: "Seçenek belirleyin..."
       spam:
-        short_title: "Spam"
+        short_title: "İstenmeyen içerik"
+        title: "İstenmeyen içerik işlemeyi yapılandırın"
+        select_llm: "LLM seç"
+        custom_instructions: "Özel talimatlar"
+        custom_instructions_help: "YZ'nin istenmeyen içerikleri tespit etmesine yardımcı olmak için sitenize özel talimatlar, ör. \"İngilizce olmayan gönderileri tarama konusunda daha agresif ol\"."
         last_seven_days: "Son 7 gün"
+        scanned_count: "Taranan gönderiler"
+        false_positives: "Yanlış bayrak eklenmiş"
+        false_negatives: "Kaçırılan istenmeyen içerik"
+        spam_detected: "İstenmeyen içerik algılandı"
+        custom_instructions_placeholder: "YZ'nin istenmeyen içerikleri daha doğru bir şekilde belirlemesine yardımcı olmak için siteye özel talimatlar"
         enable: "Etkinleştir"
+        spam_tip: "YZ istenmeyen içerik tespiti, herkese açık konulardaki tüm yeni kullanıcıların ilk 3 gönderisini tarar. Bunları inceleme için işaretler ve spam olma ihtimalleri varsa kullanıcıları engeller."
+        settings_saved: "Ayarlar kaydedildi"
+        spam_description: "Seçili LLM'i kullanarak potansiyel istenmeyen içerikleri belirler ve inceleme kuyruğunda site moderatörlerinin incelemesi için işaretler"
+        no_llms: "LLM mevcut değil"
+        test_button: "Test..."
+        save_button: "Değişiklikleri kaydet"
         test_modal:
+          title: "İstenmeyen içerik algılamayı test edin"
+          post_url_label: "Gönderi URL'si veya kimliği"
+          post_url_placeholder: "https://your-forum.com/t/topic/123/4 veya gönderi kimliği"
           result: "Sonuç"
+          scan_log: "Tarama günlüğü"
           run: "Testi çalıştır"
-          spam: "Spam"
+          spam: "İstenmeyen içerik"
+          not_spam: "İstenmeyen içerik değil"
+        stat_tooltips:
+          incorrectly_flagged: "YZ botunun spam olarak bayrak eklediği ve moderatörlerin aynı fikirde olmadığı ögeler"
+          missed_spam: "YZ botu tarafından tespit edilemeyen ve moderatörlerin de onayladığı, topluluk tarafından istenmeyen içerik olarak bayrak eklenen ögeler"
+        errors:
+          scan_not_admin:
+            message: "Uyarı: İstenmeyen içerik tarama hesabı bir yönetici olmadığından istenmeyen içerik tarama düzgün çalışmaz"
+            action: "Düzelt"
+          resolved: "Hata çözüldü!"
       usage:
         short_title: "Kullanım"
         summary: "Özet"
@@ -152,9 +183,23 @@ tr_TR:
         total_requests: "Toplam talep sayısı"
         request_tokens: "Talep token'ları"
         response_tokens: "Karşılık token'ları"
+        net_request_tokens: "Net talep token'ları"
         cached_tokens: "Önbelleğe alınan token'lar"
+        cached_request_tokens: "Önbelleğe alınmış talep token'ları"
+        no_users: "Kullanıcı kullanım verisi bulunamadı"
+        no_models: "Model kullanım verisi bulunamadı"
+        no_features: "Özellik kullanım verisi bulunamadı"
+        subheader_description: "Token'lar, LLM'lerin metinleri anlamak ve üretmek için kullandıkları temel birimlerdir, kullanım verileri maliyetleri etkileyebilir."
+        stat_tooltips:
+          total_requests: "Discourse aracılığıyla LLM'lere yapılan tüm talepler"
+          total_tokens: "LLM istenirken kullanılan tüm token'lar"
+          request_tokens: "LLM'in söylediklerinizi anlamaya çalışırken kullandığı token'lar"
+          response_tokens: "LLM'in isteminize yanıt verdiğinde kullanılan token'lar"
+          cached_tokens: "LLM'in performansı ve maliyeti optimize etmek için yeniden kullandığı daha önce işlenmiş talep token'ları"
         periods:
           last_day: "Son 24 saat"
+          last_week: "Geçen hafta"
+          last_month: "Geçen ay"
           custom: "Özel..."
       ai_persona:
         tool_strategies:
@@ -294,9 +339,14 @@ tr_TR:
         delete: Sil
         seeded_warning: "Bu model sitenizde önceden yapılandırılmış ve düzenlenemez."
         quotas:
+          title: "Kullanım kotaları"
+          add_title: "Yeni kota oluşturun"
           group: "Grup"
+          max_tokens: "Maks. token sayısı"
           max_usages: "Maksimum kullanım"
           duration: "Süre"
+          confirm_delete: "Bu kotayı silmek istediğinizden emin misiniz?"
+          add: "Kota ekle"
           durations:
             hour: "1 saat"
             six_hours: "6 saat"
@@ -304,13 +354,15 @@ tr_TR:
             week: "7 gün"
             custom: "Özel..."
           hours: "saat"
+          max_tokens_help: "Bu gruptaki her kullanıcının belirtilen süre içinde kullanabileceği maksimum token (kelime ve karakter) sayısı. Token'lar, YZ modelleri tarafından metni işlemek için kullanılan birimlerdir; kabaca 1 token = 4 karakter veya bir kelimenin 3/4'ü."
+          max_usages_help: "Bu gruptaki her kullanıcının belirtilen süre içinde yapay zekâ modelini kullanabileceği maksimum sayı. Bu kota, grup genelinde paylaşılmaz, bireysel kullanıcı başına izlenir."
         usage:
           ai_bot: "YZ botu"
           ai_helper: "Yardımcı"
           ai_persona: "Kişilik (%{persona})"
           ai_summarization: "Özetle"
           ai_embeddings_semantic_search: "YZ araması"
-          ai_spam: "Spam"
+          ai_spam: "İstenmeyen içerik"
         in_use_warning:
           one: "Bu model şu anda %{settings} tarafından kullanılıyor. Yanlış yapılandırılırsa özellik beklendiği gibi çalışmaz."
           other: "Bu model şu anda şunlar tarafından kullanılıyor: %{settings}. Yanlış yapılandırılırsa özellikler beklendiği gibi çalışmaz. "
@@ -330,6 +382,7 @@ tr_TR:
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Güçlü çok amaçlı model"
           mistral-mistral-large-latest: "Mistral'in en güçlü modeli"
           mistral-pixtral-large-latest: "Mistral'in en güçlü görüş yeteneğine sahip modeli"
+        preseeded_model_description: "%{model} kullanan önceden yapılandırılmış açık kaynaklı model"
         configured:
           title: "Yapılandırılmış LLM'ler"
         preconfigured_llms: "LLM'nizi seçin"
@@ -364,6 +417,7 @@ tr_TR:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "Özel"
         provider_fields:
           access_key_id: "AWS Bedrock erişim anahtarı kimliği"
@@ -372,6 +426,9 @@ tr_TR:
           disable_system_prompt: "İstemlerde sistem mesajını devre dışı bırakın"
           enable_native_tool: "Yerel araç desteğini etkinleştirin"
           disable_native_tools: "Yerel araç desteğini devre dışı bırakın (XML tabanlı araçlar kullanın)"
+          provider_order: "Sağlayıcı sırası (virgülle ayrılmış liste)"
+          provider_quantizations: "Sağlayıcı nicelleştirmelerinin sırası (virgülle ayrılmış liste, ör.: fp16,fp8)"
+          disable_streaming: "Akış tamamlamalarını devre dışı bırak (akışı akış dışı taleplere dönüştür)"
       related_topics:
         title: "İlgili konular"
         pill: "İlgili"
@@ -408,6 +465,7 @@ tr_TR:
           copied: "Kopyalandı!"
           cancel: "İptal et"
           insert_footnote: "Dipnot ekle"
+          footnote_disabled: "Otomatik ekleme devre dışı bırakıldı, kopyala düğmesine tıklayın ve manuel olarak düzenleyin"
           footnote_credits: "YZ ile açıklama"
         fast_edit:
           suggest_button: "Düzenleme öner"
@@ -423,6 +481,7 @@ tr_TR:
           automatic_caption_setting: "Otomatik alt yazıyı etkinleştirin"
           automatic_caption_loading: "Görüntülere alt yazı ekleniyor..."
           automatic_caption_dialog:
+            prompt: "Bu gönderide alt yazısız görüntüler bulunuyor. Görüntü yüklemelerinde otomatik alt yazıları etkinleştirmek ister misiniz? (Bu daha sonra tercihlerinizden değiştirilebilir)"
             confirm: "Etkinleştir"
             cancel: "Bir daha sorma"
         no_content_error: "Üzerinde YZ eylemleri gerçekleştirmek için önce içerik ekleyin"
@@ -437,11 +496,17 @@ tr_TR:
           toggle_hidden: "YZ kullanılarak bulunan %{count} sonuç gizleniyor"
           none: "Üzgünüz, YZ aramamız eşleşen konu bulamadı"
           new: "YZ ile yeni sonuçlar aramaya başlamak için \"ara\" seçeneğine basın"
+          unavailable: "YZ sonuçları kullanılamıyor"
+        semantic_search_tooltips:
+          results_explanation: "Etkinleştirildiğinde, ek YZ arama sonuçları aşağıya eklenir."
+          invalid_sort: "YZ sonuçlarını göstermek için arama sonuçları Alaka Düzeyine göre sıralanmalıdır"
+        semantic_search_unavailable_tooltip: "YZ sonuçlarını göstermek için arama sonuçları Alaka Düzeyine göre sıralanmalıdır"
         ai_generated_result: "YZ kullanılarak bulunan arama sonucu"
         quick_search:
           suffix: "YZ ile tüm konu ve gönderilerde"
       ai_artifact:
         expand_view_label: "Görünümü genişlet"
+        collapse_view_label: "Tam Ekrandan Çık (ESC veya Geri tuşu)"
         click_to_run_label: "Artifact'i çalıştır"
       ai_bot:
         pm_warning: "YZ sohbet robotu mesajları moderatörler tarafından düzenli olarak izlenir."

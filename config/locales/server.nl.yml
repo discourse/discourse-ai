@@ -15,6 +15,10 @@ nl:
       llm_triage:
         title: Berichten triageren met AI
         description: "Triageer berichten met behulp van een groot taalmodel"
+        flagged_post: |
+          <div>Reactie van het model:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Getriggerd door de regel <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Periodiek rapport met AI
         description: "Periodiek rapport op basis van een groot taalmodel"
@@ -221,6 +225,7 @@ nl:
         custom_prompt: "Aangepaste prompt"
         explain: "Uitleggen"
         illustrate_post: "Bericht illustreren"
+        replace_dates: "Slimme datums"
       painter:
         attribution:
           stable_diffusion_xl: "Afbeelding door Stable Diffusion XL"
@@ -238,7 +243,14 @@ nl:
         other_content_in_pm: "Persoonlijke berichten met berichten van andere mensen kunnen niet openbaar worden gedeeld"
         failed_to_share: "Delen van de conversatie mislukt"
         conversation_deleted: "Conversatiedeling verwijderd"
+    spam_detection:
+      flag_reason: "Gemarkeerd als spam door <a href='%{url}'>Discourse-AI</a>"
+      silence_reason: "Gebruiker automatisch gedempt door <a href='%{url}'>Discourse-AI</a>"
+      invalid_error_type: "Ongeldig fouttype opgegeven"
+      unexpected: "Er is een onverwachte fout opgetreden"
+      bot_user_update_failed: "Bijwerken van gebruiker voor spamscanbot mislukt"
     ai_bot:
+      reply_error: "Het lijkt erop dat ons systeem een onverwacht probleem heeft ondervonden terwijl het probeerde te antwoorden.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Ongetitelde PB van AI-bot]"
       personas:
         default_llm_required: "Standaard LLM-model is vereist voordat Chat wordt ingeschakeld"
@@ -297,6 +309,7 @@ nl:
             name: "Basiszoekquery"
             description: "Basisquery om te gebruiken bij het zoeken. Voorbeeld: '#urgent' voegt '#urgent' toe aan de zoekquery en neemt alleen topics mee met de categorie of tag 'urgent'."
       tool_summary:
+        update_artifact: "Werk een webartefact bij"
         create_artifact: "Webartefact maken"
         web_browser: "Web surfen"
         github_search_files: "GitHub-zoekbestanden"
@@ -319,6 +332,7 @@ nl:
         search_meta_discourse: "Zoeken in Meta Discourse"
         javascript_evaluator: "JavaScript evalueren"
       tool_help:
+        update_artifact: "Werk een webartefact bij met behulp van de AI-bot"
         create_artifact: "Maak een webartefact met behulp van de AI-bot"
         web_browser: "Webpagina bekijken met behulp van de AI-bot"
         github_search_code: "Zoek code in een GitHub-repository"
@@ -341,6 +355,7 @@ nl:
         search_meta_discourse: "Zoeken in Meta Discourse"
         javascript_evaluator: "JavaScript evalueren"
       tool_description:
+        update_artifact: "Webartefact bijgewerkt met behulp van de AI-bot"
         create_artifact: "Webartefact gemaakt met behulp van de AI-bot"
         web_browser: "Lezen: <a href='%{url}'>%{url}</a>"
         github_search_files: "Gezocht naar '%{keywords}' in %{repo}/%{branch}"
@@ -381,6 +396,7 @@ nl:
         no_targets: "Er waren geen berichten tijdens de geselecteerde periode."
     sentiment:
       reports:
+        overall_sentiment: "Algeheel sentiment (positief - negatief)"
         post_emotion:
           sadness: "Droefheid \U0001F622"
           surprise: "Verrassing \U0001F631"
@@ -395,6 +411,7 @@ nl:
         set_llm_first: "Stel eerst %{setting} in"
         model_unreachable: "We konden geen antwoord krijgen van dit model. Controleer eerst je instellingen."
         invalid_seeded_model: "Je kunt dit model niet gebruiken met deze functie"
+        must_select_model: "Je moet eerst een LLM selecteren"
       endpoints:
         not_configured: "%{display_name} (niet geconfigureerd)"
         configuration_hint:
@@ -414,7 +431,10 @@ nl:
           other: "Zorg dat de instellingen van de gewenste provider zijn geconfigureerd. Opties zijn: %{settings}"
     llm_models:
       missing_provider_param: "%{param} mag niet leeg zijn"
+      bedrock_invalid_url: "Vul alle velden in om dit model te gebruiken."
     errors:
+      quota_exceeded: "Je hebt het quotum voor dit model overschreden. Probeer het opnieuw over %{relative_time}."
+      quota_required: "Je moet het maximale aantal tokens of gebruiken opgeven voor dit model"
       no_query_specified: De queryparameter is verplicht. Geef deze op.
       no_user_for_persona: Er is geen gebruiker gekoppeld aan de opgegeven persona.
       persona_not_found: De opgegeven persona bestaat niet. Controleer de parameters persona_name en persona_id.
@@ -424,3 +444,6 @@ nl:
       no_default_llm: Er moet een default_llm zijn gedefinieerd voor de persona.
       user_not_allowed: De gebruiker mag niet deelnemen aan het topic.
       prompt_message_length: Het bericht %{idx} is langer dan de limiet van 1000 tekens.
+  dashboard:
+    problem:
+      ai_llm_status: "Het LLM-model %{model_name} ondervindt problemen. Controleer de <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>configuratiepagina van het model</a>."

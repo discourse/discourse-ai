@@ -93,6 +93,9 @@ es:
             max_post_tokens:
               label: "Máximo de tokens de publicación"
               description: "El número máximo de tokens a escanear utilizando el triaje LLM"
+            stop_sequences:
+              label: "Detener secuencias"
+              description: "Ordena al modelo que detenga la generación de tokens cuando llegue a uno de estos valores"
             search_for_text:
               label: "Buscar texto"
               description: "Si aparece el siguiente texto en la respuesta LLM, aplicar estas acciones"
@@ -129,12 +132,40 @@ es:
         select_option: "Selecciona una opción..."
       spam:
         short_title: "Spam"
+        title: "Configurar el manejo de correo no deseado"
+        select_llm: "Seleccionar LLM"
+        custom_instructions: "Instrucciones personalizadas"
+        custom_instructions_help: "Instrucciones personalizadas específicas de tu sitio para ayudar a guiar a la IA en la identificación del correo no deseado, por ejemplo: «Sé más agresivo a la hora de escanear los mensajes que no estén en inglés»."
         last_seven_days: "Últimos 7 días"
+        scanned_count: "Publicaciones escaneadas"
+        false_positives: "Denunciado incorrectamente"
+        false_negatives: "Correo no deseado perdido"
+        spam_detected: "Correo no deseado detectado"
+        custom_instructions_placeholder: "Instrucciones específicas del sitio para que la IA ayude a identificar el correo no deseado con mayor precisión"
         enable: "Activar"
+        spam_tip: "La detección de correo no deseado mediante IA escaneará los 3 primeros mensajes de todos los usuarios nuevos en temas públicos. Los marcará para su revisión y bloqueará a los usuarios si es probable que sean correo no deseado."
+        settings_saved: "Ajustes guardados"
+        spam_description: "Identifica el correo no deseado potencial utilizando el LLM seleccionado y lo marca para que los moderadores del sitio lo inspeccionen en la cola de revisión"
+        no_llms: "No hay LLM disponibles"
+        test_button: "Prueba..."
+        save_button: "Guardar cambios"
         test_modal:
+          title: "Probar la detección de correo no deseado"
+          post_url_label: "URL o ID de la publicación"
+          post_url_placeholder: "https://tu-foro.com/t/topic/123/4 o ID de publicación"
           result: "Resultado"
+          scan_log: "Registro de escaneo"
           run: "Realizar prueba"
           spam: "Spam"
+          not_spam: "No es correo no deseado"
+        stat_tooltips:
+          incorrectly_flagged: "Elementos que el bot de IA marcó como correo no deseado en los que los moderadores no estaban de acuerdo"
+          missed_spam: "Elementos denunciados por la comunidad como correo no deseado que no fueron detectados por el bot de IA, con los que los moderadores estaban de acuerdo"
+        errors:
+          scan_not_admin:
+            message: "Advertencia: el escaneo de correo no deseado no funcionará correctamente porque la cuenta de escaneo de correo no deseado no es un administrador"
+            action: "Corregir"
+          resolved: "¡Se ha resuelto el error!"
       usage:
         short_title: "Uso"
         summary: "Resumen"
@@ -152,9 +183,23 @@ es:
         total_requests: "Peticiones totales"
         request_tokens: "Tokens de solicitud"
         response_tokens: "Tokens de respuesta"
+        net_request_tokens: "Tokens de solicitud de red"
         cached_tokens: "Tokens almacenados en caché"
+        cached_request_tokens: "Tokens de solicitud almacenados en caché"
+        no_users: "No se han encontrado datos de uso del usuario"
+        no_models: "No se han encontrado datos de uso del modelo"
+        no_features: "No se han encontrado datos de uso de características"
+        subheader_description: "Los tokens son las unidades básicas que utilizan los LLM para comprender y generar texto, los datos de uso pueden afectar a los costes."
+        stat_tooltips:
+          total_requests: "Todas las solicitudes realizadas a los LLM a través de Discourse"
+          total_tokens: "Todos los tokens utilizados al solicitar un LLM"
+          request_tokens: "Tokens utilizados cuando el LLM intenta comprender lo que dices"
+          response_tokens: "Tokens utilizados cuando el LLM responde a tu consulta"
+          cached_tokens: "Tokens de solicitud previamente procesados que el LLM reutiliza para optimizar el rendimiento y el coste"
         periods:
           last_day: "Últimas 24 horas"
+          last_week: "Última semana"
+          last_month: "Último mes"
           custom: "Personalizado..."
       ai_persona:
         tool_strategies:
@@ -294,9 +339,14 @@ es:
         delete: Eliminar
         seeded_warning: "Este modelo está preconfigurado en tu web y no se puede editar."
         quotas:
+          title: "Cuotas de uso"
+          add_title: "Crear nueva cuota"
           group: "Grupo"
+          max_tokens: "Máximo de tokens"
           max_usages: "Máximo de usos"
           duration: "Duración"
+          confirm_delete: "¿Seguro que quieres eliminar esta cuota?"
+          add: "Añadir cuota"
           durations:
             hour: "1 hora"
             six_hours: "6 horas"
@@ -304,6 +354,8 @@ es:
             week: "7 días"
             custom: "Personalizado..."
           hours: "horas"
+          max_tokens_help: "Número máximo de tokens (palabras y caracteres) que cada usuario de este grupo puede utilizar dentro de la duración especificada. Los tokens son las unidades que utilizan los modelos de IA para procesar texto: aproximadamente 1 token = 4 caracteres o 3/4 de una palabra."
+          max_usages_help: "Número máximo de veces que cada usuario de este grupo puede utilizar el modelo de IA dentro de la duración especificada. Esta cuota se controla por usuario individual, no se comparte con todo el grupo."
         usage:
           ai_bot: "Bot de IA"
           ai_helper: "Ayudante"
@@ -330,6 +382,7 @@ es:
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Potente modelo polivalente"
           mistral-mistral-large-latest: "El modelo más potente de Mistral"
           mistral-pixtral-large-latest: "El modelo más potente de Mistral con capacidad de visión"
+        preseeded_model_description: "Modelo de código abierto preconfigurado que utiliza %{model}"
         configured:
           title: "LLM configurados"
         preconfigured_llms: "Selecciona tu LLM"
@@ -364,6 +417,7 @@ es:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "Personalizado"
         provider_fields:
           access_key_id: "ID de la clave de acceso a AWS Bedrock"
@@ -372,6 +426,9 @@ es:
           disable_system_prompt: "Desactivar el mensaje del sistema en las instrucciones"
           enable_native_tool: "Activar la compatibilidad con herramientas nativas"
           disable_native_tools: "Desactivar el soporte de herramientas nativas (usar herramientas basadas en XML)"
+          provider_order: "Orden de proveedores (lista delimitada por comas)"
+          provider_quantizations: "Orden de las cuantificaciones de los proveedores (lista delimitada por comas, por ejemplo: fp16, fp8)"
+          disable_streaming: "Desactiva las finalizaciones de streaming (convierte las peticiones de streaming en no streaming)"
       related_topics:
         title: "Temas relacionados"
         pill: "Relacionados"
@@ -408,6 +465,7 @@ es:
           copied: "¡Copiado!"
           cancel: "Cancelar"
           insert_footnote: "Añadir nota al pie de página"
+          footnote_disabled: "Inserción automática desactivada, pulsa el botón copiar y edítalo manualmente"
           footnote_credits: "Explicación por IA"
         fast_edit:
           suggest_button: "Sugerir edición"
@@ -423,6 +481,7 @@ es:
           automatic_caption_setting: "Activar subtítulos automáticos"
           automatic_caption_loading: "Subtitulando imágenes..."
           automatic_caption_dialog:
+            prompt: "Esta publicación contiene imágenes sin subtítulos. ¿Te gustaría activar los subtítulos automáticos en las imágenes subidas? (Puedes cambiarlo en tus preferencias más adelante)"
             confirm: "Activar"
             cancel: "No volver a preguntar"
         no_content_error: "Añade contenido primero para realizar acciones de IA sobre él"
@@ -437,11 +496,17 @@ es:
           toggle_hidden: "Ocultando %{count} resultados encontrados usando IA"
           none: "Lo sentimos, nuestra búsqueda mediante IA no ha encontrado temas coincidentes"
           new: "Pulsa «Buscar» para empezar a buscar nuevos resultados con IA"
+          unavailable: "Resultados de IA no disponibles"
+        semantic_search_tooltips:
+          results_explanation: "Cuando esté activada, se añadirán resultados de búsqueda de IA adicionales a continuación."
+          invalid_sort: "Los resultados de la búsqueda deben ordenarse por Relevancia para mostrar resultados de IA"
+        semantic_search_unavailable_tooltip: "Los resultados de la búsqueda deben ordenarse por Relevancia para mostrar resultados de IA"
         ai_generated_result: "Resultado de búsqueda encontrado mediante IA"
         quick_search:
           suffix: "en todos los temas y publicaciones con IA"
       ai_artifact:
         expand_view_label: "Ampliar vista"
+        collapse_view_label: "Salir de la pantalla completa (ESC o botón Atrás)"
         click_to_run_label: "Ejecutar Artefacto"
       ai_bot:
         pm_warning: "Los moderadores supervisan periódicamente los mensajes del chatbot de IA."
