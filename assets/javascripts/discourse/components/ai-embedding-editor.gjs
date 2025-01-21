@@ -291,6 +291,24 @@ export default class AiEmbeddingEditor extends Component {
         </div>
 
         <div class="control-group">
+          <label>{{i18n "discourse_ai.embeddings.embed_prompt"}}</label>
+          <Input
+            @type="text"
+            class="ai-embedding-editor-input ai-embedding-editor__embed_prompt"
+            @value={{this.editingModel.embed_prompt}}
+          />
+        </div>
+
+        <div class="control-group">
+          <label>{{i18n "discourse_ai.embeddings.search_prompt"}}</label>
+          <Input
+            @type="text"
+            class="ai-embedding-editor-input ai-embedding-editor__search_prompt"
+            @value={{this.editingModel.search_prompt}}
+          />
+        </div>
+
+        <div class="control-group">
           <label>{{i18n "discourse_ai.embeddings.max_sequence_length"}}</label>
           <Input
             @type="number"

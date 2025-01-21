@@ -15,6 +15,8 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
       url: "https://test.com/api/v1/embeddings",
       api_key: "test",
       tokenizer_class: "DiscourseAi::Tokenizer::BgeM3Tokenizer",
+      embed_prompt: "I come first:",
+      search_prompt: "prefix for search",
     }
   end
 
@@ -27,6 +29,8 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
 
         expect(response.status).to eq(201)
         expect(created_def.display_name).to eq(valid_attrs[:display_name])
+        expect(created_def.embed_prompt).to eq(valid_attrs[:embed_prompt])
+        expect(created_def.search_prompt).to eq(valid_attrs[:search_prompt])
       end
 
       it "stores provider-specific config params" do

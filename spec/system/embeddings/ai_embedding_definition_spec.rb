@@ -61,6 +61,11 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
     select_kit.expand
     select_kit.select_row_by_value("DiscourseAi::Tokenizer::OpenAiTokenizer")
 
+    embed_prefix = "On creation:"
+    search_prefix = "On search:"
+    find("input.ai-embedding-editor__embed_prompt").fill_in(with: embed_prefix)
+    find("input.ai-embedding-editor__search_prompt").fill_in(with: search_prefix)
+
     find("input.ai-embedding-editor__dimensions").fill_in(with: 1536)
     find("input.ai-embedding-editor__max_sequence_length").fill_in(with: 8191)
 
@@ -83,5 +88,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
     expect(embedding_def.max_sequence_length).to eq(preset[:max_sequence_length])
     expect(embedding_def.pg_function).to eq(preset[:pg_function])
     expect(embedding_def.provider).to eq(preset[:provider])
+    expect(embedding_def.embed_prompt).to eq(embed_prefix)
+    expect(embedding_def.search_prompt).to eq(search_prefix)
   end
 end

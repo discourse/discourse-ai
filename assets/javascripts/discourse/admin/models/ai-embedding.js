@@ -14,7 +14,9 @@ export default class AiEmbedding extends RestModel {
       "api_key",
       "max_sequence_length",
       "provider_params",
-      "pg_function"
+      "pg_function",
+      "embed_prompt",
+      "search_prompt"
     );
   }
 

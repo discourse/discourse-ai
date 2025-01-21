@@ -13,6 +13,8 @@ class AiEmbeddingDefinitionSerializer < ApplicationSerializer
              :api_key,
              :seeded,
              :tokenizer_class,
+             :embed_prompt,
+             :search_prompt,
              :provider_params
 
   def api_key

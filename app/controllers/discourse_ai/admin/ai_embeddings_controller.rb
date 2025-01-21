@@ -111,6 +111,8 @@ module DiscourseAi
             :url,
             :api_key,
             :tokenizer_class,
+            :embed_prompt,
+            :search_prompt,
           )
 
         extra_field_names = EmbeddingDefinition.provider_params.dig(permitted[:provider]&.to_sym)
