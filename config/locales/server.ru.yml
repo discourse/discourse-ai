@@ -15,6 +15,10 @@ ru:
       llm_triage:
         title: Сортировка публикаций с помощью AI
         description: "Сортировка публикаций с использованием большой языковой модели"
+        flagged_post: |
+          <div>Ответ модели:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Срабатывает по правилу: <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Периодический отчет с использованием AI
         description: "Периодический отчет на основе большой языковой модели"
@@ -221,6 +225,7 @@ ru:
         custom_prompt: "Пользовательский запрос"
         explain: "Объяснить"
         illustrate_post: "Проиллюстрировать публикацию"
+        replace_dates: "Умные даты"
       painter:
         attribution:
           stable_diffusion_xl: "Изображение от Stable Diffusion XL"
@@ -238,7 +243,14 @@ ru:
         other_content_in_pm: "Личные сообщения, содержащие публикации других людей, нельзя делать общедоступными"
         failed_to_share: "Не удалось поделиться разговором"
         conversation_deleted: "Общий доступ к разговору успешно удален"
+    spam_detection:
+      flag_reason: "Помечено как спам <a href='%{url}'>AI для Discourse</a>"
+      silence_reason: "Пользователь автоматически заморожен <a href='%{url}'>AI для Discourse</a>"
+      invalid_error_type: "Указан неверный тип ошибки"
+      unexpected: "Возникла непредвиденная ошибка"
+      bot_user_update_failed: "Не удалось обновить пользователя-бота для проверки спама"
     ai_bot:
+      reply_error: "Извините, похоже, наша система столкнулась с неожиданной проблемой при попытке ответить.\n\n[details='Сведения об ошибке']\n%{details}\n[/details]"
       default_pm_prefix: "[Личное сообщение от AI-бота без названия]"
       personas:
         default_llm_required: "Для включения чата требуется модель LLM по умолчанию"
@@ -297,6 +309,7 @@ ru:
             name: "Базовый поисковый запрос"
             description: "Базовый запрос, используемый при поиске. Пример: '#urgent' добавит '#urgent' к поисковому запросу и будет включать только темы со срочной категорией или тегом."
       tool_summary:
+        update_artifact: "Обновить веб-артефакт"
         create_artifact: "Создать веб-артефакт"
         web_browser: "Просмотр веб-страниц"
         github_search_files: "Поиск файлов на GitHub"
@@ -319,6 +332,7 @@ ru:
         search_meta_discourse: "Поиск на Meta Discourse"
         javascript_evaluator: "Оценить JavaScript"
       tool_help:
+        update_artifact: "Обновить веб-артефакт с помощью AI-бота"
         create_artifact: "Создать веб-артефакт с помощью AI-бота"
         web_browser: "Просмотр веб-страницы с помощью AI-бота"
         github_search_code: "Поиск кода в репозитории GitHub"
@@ -341,6 +355,7 @@ ru:
         search_meta_discourse: "Поиск на Meta Discourse"
         javascript_evaluator: "Оценить JavaScript"
       tool_description:
+        update_artifact: "Обновлен веб-артефакт с помощью AI-бота"
         create_artifact: "Создан веб-артефакт с использованием AI-бота"
         web_browser: "Чтение: <a href='%{url}'>%{url}</a>"
         github_search_files: "Выполнен поиск «%{keywords}» в %{repo}/%{branch}"
@@ -395,6 +410,7 @@ ru:
         no_targets: "За выбранный период сообщений не было."
     sentiment:
       reports:
+        overall_sentiment: "Общее настроение (позитивное — негативное)"
         post_emotion:
           sadness: "Грусть \U0001F622"
           surprise: "Удивление \U0001F631"
@@ -409,6 +425,7 @@ ru:
         set_llm_first: "Сначала задайте %{setting}"
         model_unreachable: "Мы не смогли получить ответ от этой модели. Проверьте настройки."
         invalid_seeded_model: "Эту модель нельзя использовать с этой функцией"
+        must_select_model: "Сначала вам нужно выбрать LLM"
       endpoints:
         not_configured: "%{display_name} (не настроено)"
         configuration_hint:
@@ -434,7 +451,10 @@ ru:
           other: "Убедитесь, что параметры нужного вам поставщика настроены. Варианты: %{settings}"
     llm_models:
       missing_provider_param: "Параметр %{param} не может быть пустым"
+      bedrock_invalid_url: "Чтобы использовать эту модель, заполните все поля."
     errors:
+      quota_exceeded: "Вы превысили квоту для этой модели. Повторите попытку через %{relative_time}."
+      quota_required: "Необходимо указать максимальное количество токенов или использований для этой модели"
       no_query_specified: Параметр запроса обязателен, укажите его.
       no_user_for_persona: Указанная персона не имеет связанного с ней пользователя.
       persona_not_found: Указанная персона не существует. Проверьте параметры persona_name или persona_id.
@@ -444,3 +464,6 @@ ru:
       no_default_llm: У персоны должен быть определен параметр default_llm.
       user_not_allowed: Пользователю не разрешено участвовать в теме.
       prompt_message_length: Сообщение %{idx} превышает ограничение в 1000 символов.
+  dashboard:
+    problem:
+      ai_llm_status: "У модели LLM (%{model_name}) возникли проблемы. Проверьте <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>страницу настройки модели</a>."

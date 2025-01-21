@@ -93,6 +93,9 @@ nl:
             max_post_tokens:
               label: "Maximaal aantal plaatsingstokens"
               description: "Het maximale aantal tokens om te scannen met LLM-triage"
+            stop_sequences:
+              label: "Stopsequenties"
+              description: "Instrueer het model om het genereren van tokens te stoppen als een van deze waarden wordt bereikt"
             search_for_text:
               label: "Tekst zoeken"
               description: "Pas deze acties toe als de volgende tekst voorkomt in het LLM-antwoord"
@@ -129,12 +132,40 @@ nl:
         select_option: "Selecteer een optie..."
       spam:
         short_title: "Spam"
+        title: "Spamafhandeling configureren"
+        select_llm: "Selecteer LLM"
+        custom_instructions: "Aangepaste instructies"
+        custom_instructions_help: "Aangepaste instructies specifiek voor jouw site om de AI te helpen bij het identificeren van spam, bijvoorbeeld 'Wees agressiever bij het scannen van berichten die niet in het Engels zijn'."
         last_seven_days: "Afgelopen 7 dagen"
+        scanned_count: "Gescande berichten"
+        false_positives: "Onjuist gemarkeerd"
+        false_negatives: "Gemiste spam"
+        spam_detected: "Gedetecteerde spam"
+        custom_instructions_placeholder: "Sitespecifieke instructies voor de AI om spam nauwkeuriger te identificeren"
         enable: "Inschakelen"
+        spam_tip: "AI-spamdetectie scant de eerste 3 berichten van alle nieuwe gebruikers bij openbare topics. De AI markeert ze voor beoordeling en blokkeert gebruikers als ze waarschijnlijk spam zijn."
+        settings_saved: "Instellingen opgeslagen"
+        spam_description: "Identificeert potentiële spam met behulp van de geselecteerde LLM en markeert deze voor sitemoderators om te inspecteren in de beoordelingswachtrij"
+        no_llms: "Geen LLM's beschikbaar"
+        test_button: "Testen..."
+        save_button: "Wijzigingen opslaan"
         test_modal:
+          title: "Spamdetectie testen"
+          post_url_label: "Bericht-URL of -ID"
+          post_url_placeholder: "https://jouw-forum.com/t/topic/123/4 of bericht-ID"
           result: "Resultaat"
+          scan_log: "Scanlog"
           run: "Test uitvoeren"
           spam: "Spam"
+          not_spam: "Geen spam"
+        stat_tooltips:
+          incorrectly_flagged: "Items die de AI-bot als spam heeft gemarkeerd en waar de moderators het niet mee eens waren"
+          missed_spam: "Door de community als spam gemarkeerde items die niet door de AI-bot zijn gedetecteerd en waar de moderators het mee eens waren"
+        errors:
+          scan_not_admin:
+            message: "Waarschuwing: het scannen van spam werkt niet goed omdat het account voor het scannen van spam geen beheerder is."
+            action: "Oplossen"
+          resolved: "De fout is opgelost!"
       usage:
         short_title: "Gebruik"
         summary: "Samenvatting"
@@ -152,9 +183,23 @@ nl:
         total_requests: "Totaal aantal verzoeken"
         request_tokens: "Verzoektokens"
         response_tokens: "Antwoordtokens"
+        net_request_tokens: "Netto verzoektokens"
         cached_tokens: "Gecachete tokens"
+        cached_request_tokens: "Gecachete verzoektokens"
+        no_users: "Geen gebruikergebruiksgegevens gevonden"
+        no_models: "Geen modelgebruiksgegevens gevonden"
+        no_features: "Geen functiegebruiksgegevens gevonden"
+        subheader_description: "Tokens zijn de basiseenheden die LLM's gebruiken om tekst te begrijpen en te genereren. Gebruiksgegevens kunnen de kosten beïnvloeden."
+        stat_tooltips:
+          total_requests: "Alle verzoeken aan LLM's via Discourse"
+          total_tokens: "Alle tokens die zijn gebruikt bij het prompten van een LLM"
+          request_tokens: "Tokens die zijn gebruikt wanneer de LLM probeert te begrijpen wat je zegt"
+          response_tokens: "Tokens die zijn gebruikt wanneer de LLM antwoordt op je prompt"
+          cached_tokens: "Eerder verwerkte verzoektokens die de LLM hergebruikt om prestaties en kosten te optimaliseren"
         periods:
           last_day: "Afgelopen 24 uur"
+          last_week: "Vorige week"
+          last_month: "Vorige maand"
           custom: "Aangepast..."
       ai_persona:
         tool_strategies:
@@ -294,9 +339,14 @@ nl:
         delete: Verwijderen
         seeded_warning: "Dit model is vooraf geconfigureerd op je site en kan niet worden bewerkt."
         quotas:
+          title: "Gebruiksquota's"
+          add_title: "Nieuw quotum maken"
           group: "Groep"
+          max_tokens: "Maximaal aantal tokens"
           max_usages: "Max. gebruiken"
           duration: "Duur"
+          confirm_delete: "Weet je zeker dat je dit quotum wilt verwijderen?"
+          add: "Quotum toevoegen"
           durations:
             hour: "1 uur"
             six_hours: "6 uur"
@@ -304,6 +354,8 @@ nl:
             week: "7 dagen"
             custom: "Aangepast..."
           hours: "uur"
+          max_tokens_help: "Maximum aantal tokens (woorden en tekens) dat elke gebruiker in deze groep kan gebruiken binnen de opgegeven tijdsduur. Tokens zijn de eenheden die door AI-modellen worden gebruikt om tekst te verwerken. Ruwweg 1 token = 4 tekens of 3/4 van een woord."
+          max_usages_help: "Maximum aantal keren dat elke gebruiker in deze groep het AI-model kan gebruiken binnen de opgegeven tijdsduur. Dit quotum wordt bijgehouden per individuele gebruiker, niet gedeeld door de groep."
         usage:
           ai_bot: "AI-bot"
           ai_helper: "Helper"
@@ -330,6 +382,7 @@ nl:
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Krachtig multifunctioneel model"
           mistral-mistral-large-latest: "Het krachtigste model van Mistral"
           mistral-pixtral-large-latest: "Het krachtigste model met zichtcapaciteit van Mistral"
+        preseeded_model_description: "Voorgeconfigureerd open-source model met %{model}"
         configured:
           title: "Geconfigureerde LLM's"
         preconfigured_llms: "Selecteer je LLM"
@@ -364,6 +417,7 @@ nl:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "Aangepast"
         provider_fields:
           access_key_id: "Toegangssleutel-ID AWS Bedrock"
@@ -372,6 +426,9 @@ nl:
           disable_system_prompt: "Systeembericht uitschakelen in prompts"
           enable_native_tool: "Ondersteuning voor native tools inschakelen"
           disable_native_tools: "Ondersteuning voor native tool uitschakelen (gebruik tools op XML-basis)"
+          provider_order: "Volgorde van providers (door komma's gescheiden lijst)"
+          provider_quantizations: "Volgorde van providerkwantificeringen (door komma's gescheiden lijst, bijvoorbeeld: fp16, fp8)"
+          disable_streaming: "Streamingvoltooiingen uitschakelen (streaming- naar niet-streaming-verzoeken converteren)"
       related_topics:
         title: "Gerelateerde topics"
         pill: "Gerelateerd"
@@ -408,6 +465,7 @@ nl:
           copied: "Gekopieerd!"
           cancel: "Annuleren"
           insert_footnote: "Voetnoot toevoegen"
+          footnote_disabled: "Automatisch invoegen uitgeschakeld, klik op de knop Kopiëren en bewerk het handmatig"
           footnote_credits: "Uitleg door AI"
         fast_edit:
           suggest_button: "Bewerking voorstellen"
@@ -423,6 +481,7 @@ nl:
           automatic_caption_setting: "Automatische bijschriften inschakelen"
           automatic_caption_loading: "Afbeeldingsbijschriften genereren..."
           automatic_caption_dialog:
+            prompt: "Dit bericht bevat afbeeldingen zonder bijschrift. Wil je automatische bijschriften inschakelen bij het uploaden van afbeeldingen? (Je kunt dit later wijzigen in je voorkeuren)"
             confirm: "Inschakelen"
             cancel: "Niet meer vragen"
         no_content_error: "Voeg eerst inhoud toe om er AI-acties op uit te voeren"
@@ -437,11 +496,17 @@ nl:
           toggle_hidden: "%{count} resultaten gevonden met AI zijn verborgen"
           none: "Sorry, AI zoeken heeft geen overeenkomende topics gevonden"
           new: "Druk op 'Zoeken' om nieuwe resultaten te zoeken met AI"
+          unavailable: "AI-resultaten niet beschikbaar"
+        semantic_search_tooltips:
+          results_explanation: "Als dit is ingeschakeld, worden hieronder extra AI-zoekresultaten toegevoegd."
+          invalid_sort: "Zoekresultaten moeten worden gesorteerd op Relevantie om AI-resultaten weer te geven"
+        semantic_search_unavailable_tooltip: "Zoekresultaten moeten worden gesorteerd op Relevantie om AI-resultaten weer te geven"
         ai_generated_result: "Zoekresultaat gevonden met AI"
         quick_search:
           suffix: "in alle topics en berichten met AI"
       ai_artifact:
         expand_view_label: "Weergave uitvouwen"
+        collapse_view_label: "Volledig scherm verlaten (ESC of knop Terug)"
         click_to_run_label: "Artefact uitvoeren"
       ai_bot:
         pm_warning: "AI-chatbotberichten worden regelmatig gecontroleerd door moderators."

@@ -93,6 +93,9 @@ fi:
             max_post_tokens:
               label: "Viestin saneiden enimmäismäärä"
               description: "Skannattavien saneiden enimmäismäärä LLM-luokittelulla"
+            stop_sequences:
+              label: "Pysäytysjaksot"
+              description: "Ohjeista mallia keskeyttämään saneiden luominen, kun jokin näistä arvoista saavutetaan"
             search_for_text:
               label: "Hae tekstiä"
               description: "Jos suuren kielimallin vastauksessa näkyy seuraava teksti, tee nämä toimet"
@@ -129,12 +132,40 @@ fi:
         select_option: "Valitse vaihtoehto..."
       spam:
         short_title: "Roskaposti"
+        title: "Määritä roskapostin käsittely"
+        select_llm: "Valitse LLM"
+        custom_instructions: "Mukautetut ohjeet"
+        custom_instructions_help: "Sivustoasi koskevat mukautetut ohjeet, jotka auttavat tekoälyä tunnistamaan roskapostia, esim. \"ole aggressiivisempi skannattaessa viestejä, jotka eivät ole englanninkielisiä\"."
         last_seven_days: "Viimeiset 7 päivää"
+        scanned_count: "Skannatut viestit"
+        false_positives: "Liputettu väärin"
+        false_negatives: "Huomaamatta jäänyt roskaposti"
+        spam_detected: "Havaittu roskaposti"
+        custom_instructions_placeholder: "Sivustokohtaiset ohjeet, jotka auttavat tekoälyä tunnistamaan roskapostin tarkemmin"
         enable: "Ota käyttöön"
+        spam_tip: "Tekoälyyn perustuva roskapostin tunnistus skannaa kaikkien uusien käyttäjien kolme ensimmäistä viestiä julkisissa ketjuissa. Se liputtaa ne käsiteltäväksi ja estää käyttäjät, jos ne ovat todennäköisesti roskapostia."
+        settings_saved: "Asetukset tallennettu"
+        spam_description: "Tunnistaa mahdollisen roskapostin valitun suuren kielimallin avulla ja liputtaa sen sivuston valvojien tarkastettavaksi tarkastusjonoon"
+        no_llms: "Suuria kielimalleja ei ole saatavilla"
+        test_button: "Testaa..."
+        save_button: "Tallenna muutokset"
         test_modal:
+          title: "Testaa roskapostin tunnistusta"
+          post_url_label: "Vistin URL tai tunnus"
+          post_url_placeholder: "https://foorumisi.com/t/topic/123/4 tai viestin tunnus"
           result: "Tulos"
+          scan_log: "Skannausloki"
           run: "Suorita testi"
           spam: "Roskaposti"
+          not_spam: "Ei roskapostia"
+        stat_tooltips:
+          incorrectly_flagged: "Kohteet, jotka tekoälybotti liputti roskapostiksi, mutta joista valvojat olivat eri mieltä"
+          missed_spam: "Yhteisön roskapostiksi liputtamaton kohteet, joita tekoälybotti ei havainnut ja joista valvojat olivat samaa mieltä"
+        errors:
+          scan_not_admin:
+            message: "Varoitus: roskapostin skannaus ei toimi oikein, koska roskapostin skannaustili ei ole ylläpitäjä"
+            action: "Korjaa"
+          resolved: "Virhe on korjattu!"
       usage:
         short_title: "Käyttö"
         summary: "Yhteenveto"
@@ -152,9 +183,23 @@ fi:
         total_requests: "Pyyntöjä yhteensä"
         request_tokens: "Pyynnön tokenit"
         response_tokens: "Vastauksen tokenit"
+        net_request_tokens: "Nettopyyntösaneet"
         cached_tokens: "Välimuistissa olevat saneet"
+        cached_request_tokens: "Välimuistiin tallennetut pyyntösaneet"
+        no_users: "Käyttäjien käyttötietoja ei löytynyt"
+        no_models: "Mallin käyttötietoja ei löytynyt"
+        no_features: "Ominaisuuden käyttötietoja ei löytynyt"
+        subheader_description: "Saneet ovat perusyksiköitä, joita suuret kielimallit käyttävät tekstin ymmärtämiseen ja luomiseen. Käyttötiedot voivat vaikuttaa kustannuksiin."
+        stat_tooltips:
+          total_requests: "Kaikki suurille kielimalleille Discoursen kautta tehdyt pyynnöt"
+          total_tokens: "Kaikki käytetyt saneet kehotteissa suurille kielimalleille"
+          request_tokens: "Käytetyt saneet, kun suuri kielimalli yrittää ymmärtää, mitä sanot"
+          response_tokens: "Käytetyt saneet, kun suuri kielimalli vastaa kehotteeseesi"
+          cached_tokens: "Aiemmin käsitellyt pyyntösaneet, joita suuri kielimalli käyttää uudelleen suorituskyvyn ja kustannusten optimoimiseksi"
         periods:
           last_day: "Viimeiset 24 tuntia"
+          last_week: "Viime viikko"
+          last_month: "Viime kuukausi"
           custom: "Mukautettu..."
       ai_persona:
         tool_strategies:
@@ -294,16 +339,23 @@ fi:
         delete: Poista
         seeded_warning: "Tämä malli on valmiiksi määritetty sivustollesi, eikä sitä voi muokata."
         quotas:
+          title: "Käyttökiintiöt"
+          add_title: "Luo uusi kiintiö"
           group: "Ryhmä"
+          max_tokens: "Saneiden enimmäismäärä"
           max_usages: "Käyttökertoja enintään"
           duration: "Kesto"
+          confirm_delete: "Oletko varma, että haluat poistaa tämän kiintiön?"
+          add: "Lisää kiintiö"
           durations:
-            hour: "1 tuntiin"
+            hour: "1 tunti"
             six_hours: "6 tuntia"
             day: "24 tuntia"
             week: "7 päivää"
             custom: "Mukautettu..."
           hours: "tuntia"
+          max_tokens_help: "Saneiden (sanojen ja merkkien) enimmäismäärä, jonka kukin tämän ryhmän käyttäjä voi käyttää määritetyn keston aikana. Saneet ovat yksiköitä, joita tekoälymallit käyttävät tekstin käsittelyyn – noin 1 merkki = 4 merkkiä tai 3/4 sanasta."
+          max_usages_help: "Enimmäismäärä kertoja, jonka kukin tämän ryhmän käyttäjä voi käyttää tekoälymallia määritetyn ajan kuluessa. Tätä kiintiötä seurataan yksittäistä käyttäjää kohti, eikä sitä jaeta ryhmän kesken."
         usage:
           ai_bot: "Tekoälyrobotti"
           ai_helper: "Apuri"
@@ -330,6 +382,7 @@ fi:
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Tehokas monikäyttöinen malli"
           mistral-mistral-large-latest: "Mistralin tehokkain malli"
           mistral-pixtral-large-latest: "Mistralin tehokkain näkökykyinen malli"
+        preseeded_model_description: "Ennalta määritetty avoimen lähdekoodin malli, joka käyttää mallia %{model}"
         configured:
           title: "Määritetyt LLM:t"
         preconfigured_llms: "Valitse LLM"
@@ -364,6 +417,7 @@ fi:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "Mukautettu"
         provider_fields:
           access_key_id: "AWS Bedrockin käyttöavaintunnus"
@@ -372,6 +426,9 @@ fi:
           disable_system_prompt: "Poista järjestelmäviesti käytöstä kehotteissa"
           enable_native_tool: "Ota käyttöön natiivityökalujen tuki"
           disable_native_tools: "Poista natiivityökalujen tuki käytöstä (käytä XML-pohjaisia työkaluja)"
+          provider_order: "Palveluntarjoajien järjestys (pilkuilla eroteltu luettelo)"
+          provider_quantizations: "Palveluntarjoajien kvantisointien järjestys (pilkuilla eroteltu luettelo esim.: fp16,fp8)"
+          disable_streaming: "Poista suoratoistovalmistumiset käytöstä (muunna suoratoistopyynnöt ei-suoratoistopyynnöiksi)"
       related_topics:
         title: "Liittyvät ketjut"
         pill: "Liittyy aiheeseen"
@@ -408,6 +465,7 @@ fi:
           copied: "Kopioitiin!"
           cancel: "Peruuta"
           insert_footnote: "Lisää alaviite"
+          footnote_disabled: "Automaattinen lisäys poistettu käytöstä, napsauta kopiointipainiketta ja lisää se manuaalisesti"
           footnote_credits: "Tekoälyn selitys"
         fast_edit:
           suggest_button: "Ehdota muokkausta"
@@ -423,6 +481,7 @@ fi:
           automatic_caption_setting: "Ota automaattinen kuvateksti käyttöön"
           automatic_caption_loading: "Luodaan kuvatekstejä kuville..."
           automatic_caption_dialog:
+            prompt: "Tämä viesti sisältää kuvia, joilla ei ole kuvatekstiä. Haluatko ottaa automaattiset kuvatekstit käyttöön ladattaessa kuvia verkkoon? (Voit muuttaa tätä myöhemmin asetuksissasi)"
             confirm: "Ota käyttöön"
             cancel: "Älä kysy uudelleen"
         no_content_error: "Lisää ensin sisältöä tehdäksesi tekoälytoimia sille"
@@ -437,11 +496,17 @@ fi:
           toggle_hidden: "Piilotetaan %{count} tulosta, jotka löydettiin tekoälyllä"
           none: "Tekoälyhakumme ei valitettavasti löytänyt vastaavia aiheita"
           new: "Aloita uusien tulosten etsiminen tekoälyllä painamalla hakupainiketta"
+          unavailable: "Tekoälytuloksia ei ole saatavilla"
+        semantic_search_tooltips:
+          results_explanation: "Kun tämä on käytössä, alle lisätään ylimääräisiä tekoälyhakutuloksia."
+          invalid_sort: "Hakutulokset täytyy olla järjestetty osuvuuden mukaan, jotta tekoälytuloksia voidaan näyttää"
+        semantic_search_unavailable_tooltip: "Hakutulokset täytyy olla järjestetty osuvuuden mukaan, jotta tekoälytuloksia voidaan näyttää"
         ai_generated_result: "Tekoälyllä löydetty hakutulos"
         quick_search:
           suffix: "kaikissa ketjuissa ja viesteissä tekoälyllä"
       ai_artifact:
         expand_view_label: "Laajenna näkymä"
+        collapse_view_label: "Poistu koko näytön tilasta (Esc- tai Takaisin-painike)"
         click_to_run_label: "Suorita artefakti"
       ai_bot:
         pm_warning: "Valvojat tarkkailevat säännöllisesti tekoälychatbotin viestejä"

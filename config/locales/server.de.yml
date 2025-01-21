@@ -18,7 +18,7 @@ de:
         flagged_post: |
           <div>Antwort des Modells:</div>
           <p>%%LLM_RESPONSE%%</p>
-          <b>Ausgelöst durch die Regel <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> .</b>
+          <b>Ausgelöst durch die Regel <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Regelmäßiger Bericht mit KI
         description: "Regelmäßiger Bericht auf der Grundlage eines großen Sprachmodells"
@@ -244,8 +244,8 @@ de:
         failed_to_share: "Die Unterhaltung konnte nicht geteilt werden"
         conversation_deleted: "Unterhaltungsfreigabe erfolgreich gelöscht"
     spam_detection:
-      flag_reason: "Als Spam markiert von <a href='%{url}'>Discourse KI</a>"
-      silence_reason: "Benutzer automatisch stummgeschaltet durch <a href='%{url}'>Discourse AI</a>"
+      flag_reason: "Als Spam gemeldet von <a href='%{url}'>Discourse KI</a>"
+      silence_reason: "Benutzer automatisch stummgeschaltet durch <a href='%{url}'>Discourse KI</a>"
       invalid_error_type: "Ungültiger Fehlertyp angegeben"
       unexpected: "Ein unerwarteter Fehler ist aufgetreten"
       bot_user_update_failed: "Aktualisierung des Spam-Scan-Bot-Benutzers fehlgeschlagen"
@@ -396,7 +396,7 @@ de:
         no_targets: "Im ausgewählten Zeitraum gab es keine Nachrichten."
     sentiment:
       reports:
-        overall_sentiment: "Gesamtstimmung (positiv — negativ)"
+        overall_sentiment: "Gesamtstimmung (positiv–negativ)"
         post_emotion:
           sadness: "Traurigkeit \U0001F622"
           surprise: "Überraschung \U0001F631"
@@ -411,7 +411,7 @@ de:
         set_llm_first: "Stelle zuerst %{setting} ein"
         model_unreachable: "Wir konnten keine Antwort von diesem Modell abrufen. Überprüfe zuerst deine Einstellungen."
         invalid_seeded_model: "Du kannst dieses Modell nicht mit dieser Funktion verwenden"
-        must_select_model: "Du musst zuerst einen LLM auswählen"
+        must_select_model: "Du musst zuerst ein LLM auswählen"
       endpoints:
         not_configured: "%{display_name} (nicht konfiguriert)"
         configuration_hint:
@@ -433,6 +433,8 @@ de:
       missing_provider_param: "%{param} darf nicht leer sein"
       bedrock_invalid_url: "Bitte fülle alle Felder aus, um dieses Modell zu verwenden."
     errors:
+      quota_exceeded: "Du hast das Kontingent für dieses Modell überschritten. Bitte versuche es erneut in %{relative_time}."
+      quota_required: "Du musst die maximale Anzahl an Token oder Verwendungen für dieses Modell angeben"
       no_query_specified: Der Abfrageparameter ist erforderlich, bitte gib ihn an.
       no_user_for_persona: Die angegebene Persona hat keinen Benutzer, der mit ihr verbunden ist.
       persona_not_found: Die angegebene Persona existiert nicht. Überprüfe die Parameter persona_name oder persona_id.
@@ -444,4 +446,4 @@ de:
       prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.
   dashboard:
     problem:
-      ai_llm_status: "Beim LLM-Modell: %{model_name} treten Probleme auf. Bitte überprüfe die Konfigurationsseite des Modells <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'></a>."
+      ai_llm_status: "Beim LLM-Modell %{model_name} treten Probleme auf. Bitte überprüfe die <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>Konfigurationsseite des Modells</a>."

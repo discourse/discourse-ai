@@ -15,6 +15,10 @@ it:
       llm_triage:
         title: Triage dei messaggi con IA
         description: "Triage dei messaggi con LLM"
+        flagged_post: |
+          <div>Risposta dal modello:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Innescato dalla regola <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Report periodico con IA
         description: "Report periodico basato su LLM"
@@ -221,6 +225,7 @@ it:
         custom_prompt: "Comando personalizzato"
         explain: "Spiega"
         illustrate_post: "Illustra messaggio"
+        replace_dates: "Date smart"
       painter:
         attribution:
           stable_diffusion_xl: "Immagine di Stable Diffusion XL"
@@ -238,7 +243,14 @@ it:
         other_content_in_pm: "I messaggi personali contenenti post di altre persone non possono essere condivisi pubblicamente"
         failed_to_share: "Condivisione della conversazione non riuscita"
         conversation_deleted: "Condivisione di conversazione eliminata correttamente"
+    spam_detection:
+      flag_reason: "Segnalato come spam da <a href='%{url}'>Discourse AI</a>"
+      silence_reason: "Utente silenziato automaticamente da <a href='%{url}'>Discourse AI</a>"
+      invalid_error_type: "Tipo di errore non valido fornito"
+      unexpected: "Si è verificato un errore imprevisto"
+      bot_user_update_failed: "Impossibile aggiornare l'utente del bot di scansione antispam"
     ai_bot:
+      reply_error: "Spiacenti, il nostro sistema ha riscontrato un problema imprevisto durante il tentativo di risposta.\n\n[details='Dettagli errore']\n%{details}\n[/details]"
       default_pm_prefix: "[Bot IA senza titolo MP]"
       personas:
         default_llm_required: "Il modello LLM predefinito è obbligatorio prima di abilitare la chat"
@@ -297,6 +309,7 @@ it:
             name: "Query di ricerca di base"
             description: "Query di base da utilizzare durante la ricerca. Esempio: \"#urgente\" anteporrà \"#urgente\" alla query di ricerca e includerà solo gli argomenti con la categoria o l'etichetta urgente."
       tool_summary:
+        update_artifact: "Aggiorna un artefatto web"
         create_artifact: "Crea artefatto web"
         web_browser: "Naviga sul web"
         github_search_files: "File di ricerca GitHub"
@@ -319,6 +332,7 @@ it:
         search_meta_discourse: "Cerca Meta Discourse"
         javascript_evaluator: "Valuta JavaScript"
       tool_help:
+        update_artifact: "Aggiorna un artefatto web utilizzando il bot IA"
         create_artifact: "Crea un artefatto web utilizzando il bot IA"
         web_browser: "Sfoglia la pagina web utilizzando il Bot IA"
         github_search_code: "Cerca il codice in un repository GitHub"
@@ -341,6 +355,7 @@ it:
         search_meta_discourse: "Cerca Meta Discourse"
         javascript_evaluator: "Valuta JavaScript"
       tool_description:
+        update_artifact: "Aggiornato un artefatto web utilizzando il bot IA"
         create_artifact: "Creato un artefatto web utilizzando il bot IA"
         web_browser: "Lettura <a href='%{url}'>%{url}</a>"
         github_search_files: "Hai cercato \"%{keywords}\" in %{repo}/%{branch}"
@@ -381,6 +396,7 @@ it:
         no_targets: "Non ci sono stati messaggi durante il periodo selezionato."
     sentiment:
       reports:
+        overall_sentiment: "Sentimento generale (positivo - negativo)"
         post_emotion:
           sadness: "Tristezza \U0001F622"
           surprise: "Sorpresa \U0001F631"
@@ -395,6 +411,7 @@ it:
         set_llm_first: "Imposta prima %{setting}"
         model_unreachable: "Non è stato possibile ottenere una risposta da questo modello. Controlla prima le tue impostazioni."
         invalid_seeded_model: "Non è possibile utilizzare questo modello con questa funzionalità"
+        must_select_model: "Devi prima selezionare un LLM"
       endpoints:
         not_configured: "%{display_name} (non configurato)"
         configuration_hint:
@@ -414,7 +431,10 @@ it:
           other: "Assicurati che le impostazioni del fornitore che desideri siano state configurate. Le opzioni sono: %{settings}"
     llm_models:
       missing_provider_param: "%{param} non può essere vuoto"
+      bedrock_invalid_url: "Compila tutti i campi per utilizzare questo modello."
     errors:
+      quota_exceeded: "Hai superato la quota per questo modello. Riprova tra %{relative_time}."
+      quota_required: "È necessario specificare il numero massimo di token o utilizzi per questo modello"
       no_query_specified: Il parametro di query è obbligatorio, specificalo.
       no_user_for_persona: Il personaggio specificato non ha alcun utente associato.
       persona_not_found: Il personaggio specificato non esiste. Controlla i parametri persona_name o persona_id.
@@ -424,3 +444,6 @@ it:
       no_default_llm: Il personaggio deve avere un default_llm definito.
       user_not_allowed: All'utente non è consentito partecipare all'argomento.
       prompt_message_length: Il messaggio %{idx} supera il limite di 1000 caratteri.
+  dashboard:
+    problem:
+      ai_llm_status: "Il modello LLM %{model_name} sta riscontrando problemi. Controlla la pagina di configurazione del modello <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'></a>."

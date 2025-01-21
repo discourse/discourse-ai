@@ -93,6 +93,9 @@ ja:
             max_post_tokens:
               label: "最大投稿トークン"
               description: "LLM トリアージを使用してスキャンするトークンの最大数"
+            stop_sequences:
+              label: "シーケンスを停止"
+              description: "これらの値のいずれかに到達したらトークンの生成を停止するようにモデルに指示します"
             search_for_text:
               label: "テキストを検索する"
               description: "LLM の返信に後続のテキストが表示される場合は、これらのアクションを適用します"
@@ -129,12 +132,35 @@ ja:
         select_option: "オプションを選択..."
       spam:
         short_title: "迷惑"
+        title: "迷惑処理の構成"
+        select_llm: "LLM を選択してください"
+        custom_instructions: "カスタム命令"
+        custom_instructions_help: "AI による迷惑行為の識別を誘導しやすくするサイトに固有のカスタム命令。例: 「英語以外の投稿をより積極的にスキャンする」。"
         last_seven_days: "過去 7 日間"
+        scanned_count: "スキャンされた投稿数"
+        false_positives: "誤った通報"
+        false_negatives: "取り逃した迷惑行為"
+        spam_detected: "迷惑行為が検出されました"
+        custom_instructions_placeholder: "AI が迷惑行為をより正確に識別できるようにするためのサイト固有の命令"
         enable: "有効化"
+        spam_tip: "AI 迷惑検出機能は、公開トピックのすべての新規ユーザーによる最初の 3 件の投稿をスキャンします。レビューを行うために通報し、迷惑の可能性がある場合はユーザーをブロックします。"
+        settings_saved: "設定が保存されました"
+        spam_description: "選択された LLM を使って潜在的な迷惑を識別し、歳とモデレーターがレビューキューで検査できるように通報します"
+        no_llms: "使用できる LLM はありません"
+        test_button: "テスト..."
+        save_button: "変更を保存"
         test_modal:
+          title: "迷惑検出のテスト"
+          post_url_label: "投稿の URL または ID"
+          post_url_placeholder: "https://your-forum.com/t/topic/123/4 または投稿 ID"
           result: "結果"
+          scan_log: "スキャンログ"
           run: "テストの実行"
           spam: "迷惑"
+          not_spam: "迷惑ではない"
+        stat_tooltips:
+          incorrectly_flagged: "AI ボットが迷惑として通報し、モデレーターがそれに同意しなかった項目"
+          missed_spam: "AI ボットによって迷惑として検出されなかったが、コミュニティーは迷惑として通報し、モデレーターもそれに同意した項目"
       usage:
         short_title: "使用状況"
         summary: "要約"
