@@ -196,9 +196,9 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
       new_seq: attrs[:id].to_i + 1,
     )
 
-    DB.exec(
-      "UPDATE site_settings SET value=:id WHERE name = 'ai_embeddings_selected_model'",
-      id: attrs[:id],
-    )
+    DB.exec(<<~SQL, new_value: attrs[:id])
+      INSERT INTO site_settings(name, data_type, value, created_at, updated_at)
+      VALUES ('ai_embeddings_selected_model', 3, :new_value, NOW(), NOW())
+    SQL
   end
 end
