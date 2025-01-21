@@ -42,6 +42,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               pg_function: "<#>",
               tokenizer_class: "DiscourseAi::Tokenizer::BgeLargeEnTokenizer",
               provider: HUGGING_FACE,
+              search_prompt: "Represent this sentence for searching relevant passages:",
             },
             {
               preset_id: "bge-m3",
@@ -228,4 +229,6 @@ end
 #  provider_params     :jsonb
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  embed_prompt        :string           default(""), not null
+#  search_prompt       :string           default(""), not null
 #
