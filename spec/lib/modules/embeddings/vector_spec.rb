@@ -94,13 +94,35 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
         vdef.lookup_custom_param("model_name"),
         text,
         expected_embedding,
-        extra_args: {
-          dimensions: vdef.dimensions,
-        },
       )
     end
 
     it_behaves_like "generates and store embeddings using a vector definition"
+
+    context "when working with models that support shortening embeddings" do
+      it "passes the dimensions param" do
+        shorter_dimensions = 10
+        vdef.update!(
+          dimensions: shorter_dimensions,
+          provider_params: {
+            model_name: "text-embedding-3-small",
+          },
+        )
+        text = "This is a piece of text"
+        short_expected_embedding = [0.0038493] * shorter_dimensions
+
+        EmbeddingsGenerationStubs.openai_service(
+          vdef.lookup_custom_param("model_name"),
+          text,
+          short_expected_embedding,
+          extra_args: {
+            dimensions: shorter_dimensions,
+          },
+        )
+
+        expect(described_class.new(vdef).vector_from(text)).to eq(short_expected_embedding)
+      end
+    end
   end
 
   context "with hugging_face as the provider" do

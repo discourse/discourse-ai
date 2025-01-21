@@ -38,9 +38,6 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
         vector_def.lookup_custom_param("model_name"),
         query,
         embedding,
-        extra_args: {
-          dimensions: vector_def.dimensions,
-        },
       )
     end
 
