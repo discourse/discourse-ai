@@ -173,8 +173,8 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
   def persist_config(attrs)
     DB.exec(
       <<~SQL,
-      INSERT INTO embedding_definitions (id, display_name, dimensions, max_sequence_length, version, pg_function, provider, tokenizer_class, url, api_key, provider_params, created_at, updated_at)
-      VALUES (:id, :display_name, :dimensions, :max_sequence_length, 1, :pg_function, :provider, :tokenizer_class, :url, :api_key, :provider_params, :now, :now)
+      INSERT INTO embedding_definitions (id, display_name, dimensions, max_sequence_length, version, pg_function, provider, tokenizer_class, url, api_key, provider_params, seeded, created_at, updated_at)
+      VALUES (:id, :display_name, :dimensions, :max_sequence_length, 1, :pg_function, :provider, :tokenizer_class, :url, :api_key, :provider_params, :seeded, :now, :now)
       SQL
       id: attrs[:id],
       display_name: attrs[:display_name],
@@ -186,6 +186,7 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
       url: attrs[:url],
       api_key: attrs[:api_key],
       provider_params: attrs[:provider_params],
+      seeded: !!attrs[:seeded],
       now: Time.zone.now,
     )
 

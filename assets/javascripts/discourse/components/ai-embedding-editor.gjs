@@ -150,7 +150,7 @@ export default class AiEmbeddingEditor extends Component {
     this.testRunning = true;
 
     try {
-      const configTestResult = await this.args.model.testConfig();
+      const configTestResult = await this.editingModel.testConfig();
       this.testResult = configTestResult.success;
 
       if (this.testResult) {
