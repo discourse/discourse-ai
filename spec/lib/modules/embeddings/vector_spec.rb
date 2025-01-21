@@ -7,8 +7,10 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
     let(:expected_embedding_1) { [0.0038493] * vdef.dimensions }
     let(:expected_embedding_2) { [0.0037684] * vdef.dimensions }
 
-    let(:topics_schema) { DiscourseAi::Embeddings::Schema.for(Topic, vector_def: vdef) }
-    let(:posts_schema) { DiscourseAi::Embeddings::Schema.for(Post, vector_def: vdef) }
+    before { SiteSetting.ai_embeddings_selected_model = vdef.id }
+
+    let(:topics_schema) { DiscourseAi::Embeddings::Schema.for(Topic) }
+    let(:posts_schema) { DiscourseAi::Embeddings::Schema.for(Post) }
 
     fab!(:topic)
     fab!(:post) { Fabricate(:post, post_number: 1, topic: topic) }
@@ -84,63 +86,16 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
     end
   end
 
-  context "with text-embedding-ada-002" do
-    let(:vdef) { DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002.new }
-
-    def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.openai_service(vdef.class.name, text, expected_embedding)
-    end
-
-    it_behaves_like "generates and store embeddings using a vector definition"
-  end
-
-  context "with all all-mpnet-base-v2" do
-    let(:vdef) { DiscourseAi::Embeddings::VectorRepresentations::AllMpnetBaseV2.new }
-
-    before { SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com" }
-
-    def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.discourse_service(vdef.class.name, text, expected_embedding)
-    end
-
-    it_behaves_like "generates and store embeddings using a vector definition"
-  end
-
-  context "with gemini" do
-    let(:vdef) { DiscourseAi::Embeddings::VectorRepresentations::Gemini.new }
-    let(:api_key) { "test-123" }
-
-    before { SiteSetting.ai_gemini_api_key = api_key }
-
-    def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.gemini_service(api_key, text, expected_embedding)
-    end
-
-    it_behaves_like "generates and store embeddings using a vector definition"
-  end
-
-  context "with multilingual-e5-large" do
-    let(:vdef) { DiscourseAi::Embeddings::VectorRepresentations::MultilingualE5Large.new }
-
-    before { SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com" }
-
-    def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.discourse_service(vdef.class.name, text, expected_embedding)
-    end
-
-    it_behaves_like "generates and store embeddings using a vector definition"
-  end
-
-  context "with text-embedding-3-large" do
-    let(:vdef) { DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Large.new }
+  context "with open_ai as the provider" do
+    fab!(:vdef) { Fabricate(:open_ai_embedding_def) }
 
     def stub_vector_mapping(text, expected_embedding)
       EmbeddingsGenerationStubs.openai_service(
-        vdef.class.name,
+        vdef.lookup_custom_param("model_name"),
         text,
         expected_embedding,
         extra_args: {
-          dimensions: 2000,
+          dimensions: vdef.dimensions,
         },
       )
     end
@@ -148,11 +103,31 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
     it_behaves_like "generates and store embeddings using a vector definition"
   end
 
-  context "with text-embedding-3-small" do
-    let(:vdef) { DiscourseAi::Embeddings::VectorRepresentations::TextEmbedding3Small.new }
+  context "with hugging_face as the provider" do
+    fab!(:vdef) { Fabricate(:embedding_definition) }
 
     def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.openai_service(vdef.class.name, text, expected_embedding)
+      EmbeddingsGenerationStubs.hugging_face_service(text, expected_embedding)
+    end
+
+    it_behaves_like "generates and store embeddings using a vector definition"
+  end
+
+  context "with google as the provider" do
+    fab!(:vdef) { Fabricate(:gemini_embedding_def) }
+
+    def stub_vector_mapping(text, expected_embedding)
+      EmbeddingsGenerationStubs.gemini_service(vdef.api_key, text, expected_embedding)
+    end
+
+    it_behaves_like "generates and store embeddings using a vector definition"
+  end
+
+  context "with cloudflare as the provider" do
+    fab!(:vdef) { Fabricate(:cloudflare_embedding_def) }
+
+    def stub_vector_mapping(text, expected_embedding)
+      EmbeddingsGenerationStubs.cloudflare_service(text, expected_embedding)
     end
 
     it_behaves_like "generates and store embeddings using a vector definition"

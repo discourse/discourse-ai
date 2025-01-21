@@ -297,9 +297,11 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
   end
 
   describe "#craft_prompt" do
+    fab!(:vector_def) { Fabricate(:embedding_definition) }
+
     before do
       Group.refresh_automatic_groups!
-      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
+      SiteSetting.ai_embeddings_selected_model = vector_def.id
       SiteSetting.ai_embeddings_enabled = true
     end
 
@@ -326,13 +328,8 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
       fab!(:llm_model) { Fabricate(:fake_model) }
 
       it "will run the question consolidator" do
-        vector_def = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
         context_embedding = vector_def.dimensions.times.map { rand(-1.0...1.0) }
-        EmbeddingsGenerationStubs.discourse_service(
-          SiteSetting.ai_embeddings_model,
-          consolidated_question,
-          context_embedding,
-        )
+        EmbeddingsGenerationStubs.hugging_face_service(consolidated_question, context_embedding)
 
         custom_ai_persona =
           Fabricate(
@@ -373,14 +370,11 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     end
 
     context "when a persona has RAG uploads" do
-      let(:vector_def) do
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
-      end
       let(:embedding_value) { 0.04381 }
       let(:prompt_cc_embeddings) { [embedding_value] * vector_def.dimensions }
 
       def stub_fragments(fragment_count, persona: ai_persona)
-        schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment, vector_def: vector_def)
+        schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment)
 
         fragment_count.times do |i|
           fragment =
@@ -403,8 +397,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         stored_ai_persona = AiPersona.find(ai_persona.id)
         UploadReference.ensure_exist!(target: stored_ai_persona, upload_ids: [upload.id])
 
-        EmbeddingsGenerationStubs.discourse_service(
-          SiteSetting.ai_embeddings_model,
+        EmbeddingsGenerationStubs.hugging_face_service(
           with_cc.dig(:conversation_context, 0, :content),
           prompt_cc_embeddings,
         )

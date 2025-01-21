@@ -108,16 +108,13 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
       it "supports semantic search when enabled" do
         assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model)
+        vector_def = Fabricate(:embedding_definition)
+        SiteSetting.ai_embeddings_selected_model = vector_def.id
         SiteSetting.ai_embeddings_semantic_search_enabled = true
-        SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-        vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
-        hyde_embedding = [0.049382] * vector_rep.dimensions
 
-        EmbeddingsGenerationStubs.discourse_service(
-          SiteSetting.ai_embeddings_model,
-          query,
-          hyde_embedding,
-        )
+        hyde_embedding = [0.049382] * vector_def.dimensions
+
+        EmbeddingsGenerationStubs.hugging_face_service(query, hyde_embedding)
 
         post1 = Fabricate(:post, topic: topic_with_tags)
         search =

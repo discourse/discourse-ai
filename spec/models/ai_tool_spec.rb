@@ -204,12 +204,12 @@ RSpec.describe AiTool do
   end
 
   context "when defining RAG fragments" do
+    fab!(:cloudflare_embedding_def)
+
     before do
       SiteSetting.authorized_extensions = "txt"
+      SiteSetting.ai_embeddings_selected_model = cloudflare_embedding_def.id
       SiteSetting.ai_embeddings_enabled = true
-      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-      SiteSetting.ai_embeddings_model = "bge-large-en"
-
       Jobs.run_immediately!
     end
 
@@ -228,9 +228,9 @@ RSpec.describe AiTool do
       # this is a trick, we get ever increasing embeddings, this gives us in turn
       # 100% consistent search results
       @counter = 0
-      stub_request(:post, "http://test.com/api/v1/classify").to_return(
+      stub_request(:post, cloudflare_embedding_def.url).to_return(
         status: 200,
-        body: lambda { |req| ([@counter += 1] * 1024).to_json },
+        body: lambda { |req| { result: { data: [([@counter += 1] * 1024)] } }.to_json },
         headers: {
         },
       )

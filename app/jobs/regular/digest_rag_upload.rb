@@ -18,7 +18,7 @@ module ::Jobs
       target = target_type.constantize.find_by(id: target_id)
       return if !target
 
-      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
+      vector_rep = DiscourseAi::Embeddings::Vector.instance
 
       tokenizer = vector_rep.tokenizer
       chunk_tokens = target.rag_chunk_tokens

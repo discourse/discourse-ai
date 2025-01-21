@@ -1,0 +1,26 @@
+.ai-embedding-editor {
+  padding-left: 0.5em;
+
+  .ai-embedding-editor-input {
+    width: 350px;
+  }
+
+  .ai-embedding-editor-tests {
+    &__failure {
+      color: var(--danger);
+    }
+
+    &__success {
+      color: var(--success);
+    }
+  }
+
+  &__api-key {
+    margin-right: 0.5em;
+  }
+
+  &__secret-api-key-group {
+    display: flex;
+    align-items: center;
+  }
+}

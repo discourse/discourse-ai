@@ -327,7 +327,7 @@ module DiscourseAi
               rag_conversation_chunks
             end
 
-          schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment, vector_def: vector.vdef)
+          schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment)
 
           candidate_fragment_ids =
             schema

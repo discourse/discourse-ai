@@ -93,7 +93,7 @@ module DiscourseAi
 
       def nearest_neighbors(limit: 100)
         vector = DiscourseAi::Embeddings::Vector.instance
-        schema = DiscourseAi::Embeddings::Schema.for(Topic, vector_def: vector.vdef)
+        schema = DiscourseAi::Embeddings::Schema.for(Topic)
 
         raw_vector = vector.vector_from(@text)
 

@@ -4,11 +4,9 @@ RSpec.describe RagDocumentFragment do
   fab!(:persona) { Fabricate(:ai_persona) }
   fab!(:upload_1) { Fabricate(:upload) }
   fab!(:upload_2) { Fabricate(:upload) }
+  fab!(:vector_def) { Fabricate(:embedding_definition) }
 
-  before do
-    SiteSetting.ai_embeddings_enabled = true
-    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-  end
+  before { SiteSetting.ai_embeddings_enabled = true }
 
   describe ".link_uploads_and_persona" do
     it "does nothing if there is no persona" do
@@ -76,25 +74,25 @@ RSpec.describe RagDocumentFragment do
   describe ".indexing_status" do
     let(:vector) { DiscourseAi::Embeddings::Vector.instance }
 
-    fab!(:rag_document_fragment_1) do
+    let(:rag_document_fragment_1) do
       Fabricate(:rag_document_fragment, upload: upload_1, target: persona)
     end
 
-    fab!(:rag_document_fragment_2) do
+    let(:rag_document_fragment_2) do
       Fabricate(:rag_document_fragment, upload: upload_1, target: persona)
     end
 
-    let(:expected_embedding) { [0.0038493] * vector.vdef.dimensions }
+    let(:expected_embedding) { [0.0038493] * vector_def.dimensions }
 
     before do
-      SiteSetting.ai_embeddings_enabled = true
-      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-      SiteSetting.ai_embeddings_model = "bge-large-en"
+      SiteSetting.ai_embeddings_selected_model = vector_def.id
+      rag_document_fragment_1
+      rag_document_fragment_2
 
-      WebMock.stub_request(
-        :post,
-        "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
-      ).to_return(status: 200, body: JSON.dump(expected_embedding))
+      WebMock.stub_request(:post, "https://test.com/embeddings").to_return(
+        status: 200,
+        body: JSON.dump(expected_embedding),
+      )
 
       vector.generate_representation_from(rag_document_fragment_1)
     end
@@ -106,7 +104,7 @@ RSpec.describe RagDocumentFragment do
       UploadReference.create!(upload_id: upload_2.id, target: persona)
 
       Sidekiq::Testing.fake! do
-        SiteSetting.ai_embeddings_model = "all-mpnet-base-v2"
+        SiteSetting.ai_embeddings_selected_model = Fabricate(:open_ai_embedding_def).id
         expect(RagDocumentFragment.exists?(old_id)).to eq(false)
         expect(Jobs::DigestRagUpload.jobs.size).to eq(2)
       end
