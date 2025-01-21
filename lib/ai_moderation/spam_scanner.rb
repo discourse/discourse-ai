@@ -288,16 +288,48 @@ module DiscourseAi
         end
 
         context << "\nPost Author Information:"
-        if post.user # during test we may not have a user
-          context << "- Username: #{post.user.username}"
-          context << "- Account age: #{(Time.current - post.user.created_at).to_i / 86_400} days"
-          context << "- Total posts: #{post.user.post_count}"
-          context << "- Trust level: #{post.user.trust_level}"
+        if user = post.user # during test we may not have a user
+          context << "- Username: #{user.username}\n"
+          context << "- Email: #{user.email}\n"
+          context << "- Account age: #{(Time.current - user.created_at).to_i / 86_400} days\n"
+          context << "- Total posts: #{user.post_count}\n"
+          context << "- Trust level: #{user.trust_level}\n"
+          if info = location_info(user)
+            context << "- Registration Location: #{info[:registration]}\n" if info[:registration]
+            context << "- Last Location: #{info[:last]}\n" if info[:last]
+          end
         end
 
         context << "\nPost Content (first #{MAX_RAW_SCAN_LENGTH} chars):\n"
         context << post.raw[0..MAX_RAW_SCAN_LENGTH]
         context.join("\n")
+      end
+
+      def self.location_info(user)
+        registration, last = nil
+        if user.ip_address.present?
+          info = DiscourseIpInfo.get(user.ip_address, resolve_hostname: true)
+          last = "#{info[:location]} (#{info[:organization]})" if info && info[:location].present?
+        end
+        if user.registration_ip_address.present?
+          info = DiscourseIpInfo.get(user.registration_ip_address, resolve_hostname: true)
+          registration = "#{info[:location]} (#{info[:organization]})" if info &&
+            info[:location].present?
+        end
+
+        rval = nil
+        if registration || last
+          rval = { registration: registration } if registration
+          if last && last != registration
+            rval ||= {}
+            rval[:last] = last
+          end
+        end
+
+        rval
+      rescue => e
+        Discourse.warn_exception(e, message: "Failed to lookup location info")
+        nil
       end
 
       def self.build_system_prompt(custom_instructions)

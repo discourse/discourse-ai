@@ -289,4 +289,30 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       expect(post.user.reload.silenced?).to eq(false)
     end
   end
+
+  it "includes location information and email in context" do
+    user.update!(ip_address: "1.2.3.4", registration_ip_address: "5.6.7.8")
+
+    ip_info_registration = { location: "New York", organization: "ISP1" }
+    ip_info_last = { location: "London", organization: "ISP2" }
+
+    DiscourseIpInfo
+      .stubs(:get)
+      .with("5.6.7.8", resolve_hostname: true)
+      .returns(ip_info_registration)
+    DiscourseIpInfo.stubs(:get).with("1.2.3.4", resolve_hostname: true).returns(ip_info_last)
+
+    prompts = nil
+    DiscourseAi::Completions::Llm.with_prepared_responses(
+      ["spam", "just because"],
+    ) do |_, _, _prompts|
+      prompts = _prompts
+      described_class.test_post(post)
+    end
+
+    context = prompts.first.messages[1][:content]
+    expect(context).to include("Registration Location: New York (ISP1)")
+    expect(context).to include("Last Location: London (ISP2)")
+    expect(context).to include(user.email)
+  end
 end
