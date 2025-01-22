@@ -171,8 +171,6 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
   end
 
   def persist_config(attrs)
-    provider_params_json = attrs[:provider_params].to_json if attrs[:provider_params].present?
-
     DB.exec(
       <<~SQL,
       INSERT INTO embedding_definitions (id, display_name, dimensions, max_sequence_length, version, pg_function, provider, tokenizer_class, url, api_key, provider_params, seeded, created_at, updated_at)
@@ -187,7 +185,7 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
       tokenizer_class: attrs[:tokenizer_class],
       url: attrs[:url],
       api_key: attrs[:api_key],
-      provider_params: provider_params_json,
+      provider_params: attrs[:provider_params]&.to_json,
       seeded: !!attrs[:seeded],
       now: Time.zone.now,
     )
