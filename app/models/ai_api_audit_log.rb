@@ -46,6 +46,7 @@ end
 #  language_model       :string(255)
 #  feature_context      :jsonb
 #  cached_tokens        :integer
+#  duration_msecs       :integer
 #
 # Indexes
 #
