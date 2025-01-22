@@ -185,7 +185,7 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
       tokenizer_class: attrs[:tokenizer_class],
       url: attrs[:url],
       api_key: attrs[:api_key],
-      provider_params: attrs[:provider_params],
+      provider_params: attrs[:provider_params]&.to_json,
       seeded: !!attrs[:seeded],
       now: Time.zone.now,
     )
