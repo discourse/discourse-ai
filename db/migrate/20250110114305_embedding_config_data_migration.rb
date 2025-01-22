@@ -171,11 +171,7 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
   end
 
   def persist_config(attrs)
-    provider_params_json = if attrs[:provider_params].present?
-      attrs[:provider_params].to_json
-    else
-      nil
-    end
+    provider_params_json = attrs[:provider_params].to_json if attrs[:provider_params].present?
 
     DB.exec(
       <<~SQL,
