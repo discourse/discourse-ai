@@ -515,14 +515,18 @@ en:
         configure_manually: "Configure manually"
         edit: "Edit"
         seeded_warning: "This is pre-configured on your site and cannot be edited."
-        tests: 
+        tests:
           title: "Run test"
           running: "Running test..."
           success: "Success!"
           failure: "Attempting to generate an embedding resulted in: %{error}"
         hints:
           dimensions_warning: "Once saved, this value can't be changed."
-
+          matryoshka_dimensions: "Defines the size of nested embeddings used for hierarchical or multi-layered representation of data, similar to how nested dolls fit within each other."
+          embed_prompt: "Explains how to process text to create its numerical summary (embedding) for analysis or comparison."
+          search_prompt: "Explains how to process a search query to compare it with existing embeddings and find the best matches."
+          sequence_length: "The maximum number of words or tokens the system can process at once when creating embeddings or handling a query."
+          distance_function: "Determines how similarity between embeddings is calculated, using either cosine distance (measuring the angle between vectors) or negative inner product (measuring overlap of vector values)."
         display_name: "Name"
         provider: "Provider"
         url: "Embeddings service URL"
@@ -536,17 +540,17 @@ en:
 
         distance_function: "Distance function"
         distance_functions:
-          <#>: "Negative inner product (<#>)"
-          <=>: "Cosine distance (<=>)"
+          <#>: "Negative inner product"
+          <=>: "Cosine distance"
         providers:
           hugging_face: "Hugging Face"
           open_ai: "OpenAI"
           google: "Google"
           cloudflare: "Cloudflare"
           CDCK: "CDCK"
+          fake: "Custom"
         provider_fields:
           model_name: "Model name"
-
 
         semantic_search: "Topics (Semantic)"
         semantic_search_loading: "Searching for more results using AI"

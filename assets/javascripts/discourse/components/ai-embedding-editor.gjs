@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { Input } from "@ember/component";
-import { concat, get } from "@ember/helper";
+import { concat, fn, get } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action, computed } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
@@ -13,6 +13,8 @@ import DButton from "discourse/components/d-button";
 import icon from "discourse/helpers/d-icon";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
+import AdminSectionLandingItem from "admin/components/admin-section-landing-item";
+import AdminSectionLandingWrapper from "admin/components/admin-section-landing-wrapper";
 import ComboBox from "select-kit/components/combo-box";
 import DTooltip from "float-kit/components/d-tooltip";
 import not from "truth-helpers/helpers/not";
@@ -48,7 +50,19 @@ export default class AiEmbeddingEditor extends Component {
     };
 
     return this.args.embeddings.resultSetMeta.distance_functions.map((df) => {
-      return { id: df, name: t(df) };
+      let iconName;
+
+      if (df === "<=>") {
+        iconName = "discourse-spaceship-operator";
+      } else if (df === "<#>") {
+        iconName = "discourse-negative-inner-product";
+      }
+
+      return {
+        id: df,
+        name: t(df),
+        icon: iconName, // Generate the icon helper output
+      };
     });
   }
 
@@ -57,12 +71,14 @@ export default class AiEmbeddingEditor extends Component {
       return {
         name: preset.display_name,
         id: preset.preset_id,
+        provider: preset.provider,
       };
     });
 
-    presets.pushObject({
+    presets.unshiftObject({
       name: i18n("discourse_ai.embeddings.configure_manually"),
       id: "manual",
+      provider: "fake",
     });
 
     return presets;
@@ -90,11 +106,11 @@ export default class AiEmbeddingEditor extends Component {
   }
 
   @action
-  configurePreset() {
+  configurePreset(preset) {
     this.selectedPreset =
       this.args.embeddings.resultSetMeta.presets.findBy(
         "preset_id",
-        this.presetId
+        preset.id
       ) || {};
 
     this.editingModel = this.store
@@ -185,35 +201,56 @@ export default class AiEmbeddingEditor extends Component {
     });
   }
 
-  <template>
-    <BackButton
-      @route="adminPlugins.show.discourse-ai-embeddings"
-      @label="discourse_ai.embeddings.back"
-    />
+  @action
+  resetForm() {
+    this.selectedPreset = null;
+    this.editingModel = null;
+  }
 
+  <template>
     <form
       {{didInsert this.updateModel @model.id}}
       {{didUpdate this.updateModel @model.id}}
       class="form-horizontal ai-embedding-editor"
     >
       {{#if this.showPresets}}
+        <BackButton
+          @route="adminPlugins.show.discourse-ai-embeddings"
+          @label="discourse_ai.embeddings.back"
+        />
         <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.presets"}}</label>
-          <ComboBox
-            @value={{this.presetId}}
-            @content={{this.presets}}
-            class="ai-embedding-editor__presets"
-          />
+          <h2>{{i18n "discourse_ai.embeddings.presets"}}</h2>
+          <AdminSectionLandingWrapper>
+            {{#each this.presets as |preset|}}
+              {{log preset}}
+              <AdminSectionLandingItem
+                @titleLabelTranslated={{preset.name}}
+                @taglineLabel={{concat
+                  "discourse_ai.embeddings.providers."
+                  preset.provider
+                }}
+                data-preset-id={{preset.id}}
+                class="ai-llms-list-editor__templates-list-item"
+              >
+                <:buttons as |buttons|>
+                  <buttons.Default
+                    @action={{fn this.configurePreset preset}}
+                    @icon="gear"
+                    @label="discourse_ai.llms.preconfigured.button"
+                  />
+                </:buttons>
+              </AdminSectionLandingItem>
+
+            {{/each}}
+          </AdminSectionLandingWrapper>
+
         </div>
 
-        <div class="control-group ai-llm-editor__action_panel">
-          <DButton
-            @action={{this.configurePreset}}
-            @label="discourse_ai.tools.next.title"
-            class="ai-embedding-editor__next"
-          />
-        </div>
       {{else}}
+        <div class="btn btn-flat back-button" {{on "click" this.resetForm}}>
+          {{icon "chevron-left"}}
+          {{i18n "back_button"}}
+        </div>
         <div class="control-group">
           <label>{{i18n "discourse_ai.embeddings.display_name"}}</label>
           <Input
@@ -298,14 +335,24 @@ export default class AiEmbeddingEditor extends Component {
           <label>{{i18n
               "discourse_ai.embeddings.matryoshka_dimensions"
             }}</label>
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n
+              "discourse_ai.embeddings.hints.matryoshka_dimensions"
+            }}
+          />
         </div>
 
         <div class="control-group">
           <label>{{i18n "discourse_ai.embeddings.embed_prompt"}}</label>
           <Input
             @type="text"
-            class="ai-embedding-editor-input ai-embedding-editor__embed_prompt"
             @value={{this.editingModel.embed_prompt}}
+            class="ai-embedding-editor-input ai-embedding-editor__embed_prompt"
+          />
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n "discourse_ai.embeddings.hints.embed_prompt"}}
           />
         </div>
 
@@ -315,6 +362,10 @@ export default class AiEmbeddingEditor extends Component {
             @type="text"
             class="ai-embedding-editor-input ai-embedding-editor__search_prompt"
             @value={{this.editingModel.search_prompt}}
+          />
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n "discourse_ai.embeddings.hints.search_prompt"}}
           />
         </div>
 
@@ -329,6 +380,10 @@ export default class AiEmbeddingEditor extends Component {
             @value={{this.editingModel.max_sequence_length}}
             required="true"
           />
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n "discourse_ai.embeddings.hints.sequence_length"}}
+          />
         </div>
 
         <div class="control-group">
@@ -337,6 +392,10 @@ export default class AiEmbeddingEditor extends Component {
             @value={{this.editingModel.pg_function}}
             @content={{this.distanceFunctions}}
             @class="ai-embedding-editor__distance_functions"
+          />
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n "discourse_ai.embeddings.hints.distance_function"}}
           />
         </div>
 
