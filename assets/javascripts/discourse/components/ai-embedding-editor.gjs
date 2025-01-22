@@ -290,6 +290,16 @@ export default class AiEmbeddingEditor extends Component {
           {{/if}}
         </div>
 
+        <div class="control-group ai-embedding-editor__matryoshka_dimensions">
+          <Input
+            @type="checkbox"
+            @checked={{this.editingModel.matryoshka_dimensions}}
+          />
+          <label>{{i18n
+              "discourse_ai.embeddings.matryoshka_dimensions"
+            }}</label>
+        </div>
+
         <div class="control-group">
           <label>{{i18n "discourse_ai.embeddings.embed_prompt"}}</label>
           <Input

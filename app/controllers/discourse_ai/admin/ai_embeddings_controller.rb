@@ -113,6 +113,7 @@ module DiscourseAi
             :tokenizer_class,
             :embed_prompt,
             :search_prompt,
+            :matryoshka_dimensions,
           )
 
         extra_field_names = EmbeddingDefinition.provider_params.dig(permitted[:provider]&.to_sym)

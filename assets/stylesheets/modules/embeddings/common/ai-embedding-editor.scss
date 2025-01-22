@@ -23,4 +23,9 @@
     display: flex;
     align-items: center;
   }
+
+  &__matryoshka_dimensions {
+    display: flex;
+    align-items: flex-start;
+  }
 }

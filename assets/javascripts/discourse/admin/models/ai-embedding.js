@@ -16,7 +16,8 @@ export default class AiEmbedding extends RestModel {
       "provider_params",
       "pg_function",
       "embed_prompt",
-      "search_prompt"
+      "search_prompt",
+      "matryoshka_dimensions"
     );
   }
 
