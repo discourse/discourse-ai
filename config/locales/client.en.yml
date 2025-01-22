@@ -532,6 +532,7 @@ en:
         max_sequence_length: "Sequence length"
         embed_prompt: "Embed prompt"
         search_prompt: "Search prompt"
+        matryoshka_dimensions: "Matryoshka dimensions"
 
         distance_function: "Distance function"
         distance_functions:

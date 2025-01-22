@@ -15,6 +15,7 @@ class AiEmbeddingDefinitionSerializer < ApplicationSerializer
              :tokenizer_class,
              :embed_prompt,
              :search_prompt,
+             :matryoshka_dimensions,
              :provider_params
 
   def api_key

@@ -84,6 +84,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
               url: "https://api.openai.com/v1/embeddings",
               provider: OPEN_AI,
+              matryoshka_dimensions: true,
               provider_params: {
                 model_name: "text-embedding-3-large",
               },
@@ -97,6 +98,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
               url: "https://api.openai.com/v1/embeddings",
               provider: OPEN_AI,
+              matryoshka_dimensions: true,
               provider_params: {
                 model_name: "text-embedding-3-small",
               },
@@ -200,9 +202,7 @@ class EmbeddingDefinition < ActiveRecord::Base
   end
 
   def open_ai_client
-    model_name = lookup_custom_param("model_name")
-    can_shorten_dimensions = %w[text-embedding-3-small text-embedding-3-large].include?(model_name)
-    client_dimensions = can_shorten_dimensions ? dimensions : nil
+    client_dimensions = matryoshka_dimensions ? dimensions : nil
 
     DiscourseAi::Inference::OpenAiEmbeddings.new(
       endpoint_url,
@@ -221,20 +221,21 @@ end
 #
 # Table name: embedding_definitions
 #
-#  id                  :bigint           not null, primary key
-#  display_name        :string           not null
-#  dimensions          :integer          not null
-#  max_sequence_length :integer          not null
-#  version             :integer          default(1), not null
-#  pg_function         :string           not null
-#  provider            :string           not null
-#  tokenizer_class     :string           not null
-#  url                 :string           not null
-#  api_key             :string
-#  seeded              :boolean          default(FALSE), not null
-#  provider_params     :jsonb
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  embed_prompt        :string           default(""), not null
-#  search_prompt       :string           default(""), not null
+#  id                    :bigint           not null, primary key
+#  display_name          :string           not null
+#  dimensions            :integer          not null
+#  max_sequence_length   :integer          not null
+#  version               :integer          default(1), not null
+#  pg_function           :string           not null
+#  provider              :string           not null
+#  tokenizer_class       :string           not null
+#  url                   :string           not null
+#  api_key               :string
+#  seeded                :boolean          default(FALSE), not null
+#  provider_params       :jsonb
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  embed_prompt          :string           default(""), not null
+#  search_prompt         :string           default(""), not null
+#  matryoshka_dimensions :boolean          default(FALSE), not null
 #
