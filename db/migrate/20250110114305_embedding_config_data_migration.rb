@@ -90,7 +90,7 @@ class EmbeddingConfigDataMigration < ActiveRecord::Migration[7.0]
 
       # Open AI
     elsif provider == "open_ai"
-      endpoint = fetch_setting("ai_openai_embeddings_url")
+      endpoint = fetch_setting("ai_openai_embeddings_url") || "https://api.openai.com/v1/embeddings"
       api_key = fetch_setting("ai_openai_api_key")
 
       return if endpoint.blank? || api_key.blank?
