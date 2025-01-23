@@ -45,7 +45,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     find("[data-preset-id='manual'] button").click()
 
-    find("input.ai-embedding-editor__display-name").fill_in(with: "OpenAI's text-embedding-3-small")
+    find("input.ai-embedding-editor__display-name").fill_in(with: "text-embedding-3-small")
 
     select_kit = PageObjects::Components::SelectKit.new(".ai-embedding-editor__provider")
     select_kit.expand
