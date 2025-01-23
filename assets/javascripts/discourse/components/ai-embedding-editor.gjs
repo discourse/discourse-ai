@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { Input } from "@ember/component";
+import { Input, Textarea } from "@ember/component";
 import { concat, fn, get } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action, computed } from "@ember/object";
@@ -247,10 +247,17 @@ export default class AiEmbeddingEditor extends Component {
         </div>
 
       {{else}}
-        <div class="btn btn-flat back-button" {{on "click" this.resetForm}}>
-          {{icon "chevron-left"}}
-          {{i18n "back_button"}}
-        </div>
+        {{#if this.editingModel.isNew}}
+          <div class="btn btn-flat back-button" {{on "click" this.resetForm}}>
+            {{icon "chevron-left"}}
+            {{i18n "back_button"}}
+          </div>
+        {{else}}
+          <BackButton
+            @route="adminPlugins.show.discourse-ai-embeddings"
+            @label="discourse_ai.embeddings.back"
+          />
+        {{/if}}
         <div class="control-group">
           <label>{{i18n "discourse_ai.embeddings.display_name"}}</label>
           <Input
@@ -332,9 +339,8 @@ export default class AiEmbeddingEditor extends Component {
             @type="checkbox"
             @checked={{this.editingModel.matryoshka_dimensions}}
           />
-          <label>{{i18n
-              "discourse_ai.embeddings.matryoshka_dimensions"
-            }}</label>
+          <label>{{i18n "discourse_ai.embeddings.matryoshka_dimensions"}}
+          </label>
           <DTooltip
             @icon="circle-question"
             @content={{i18n
@@ -345,10 +351,9 @@ export default class AiEmbeddingEditor extends Component {
 
         <div class="control-group">
           <label>{{i18n "discourse_ai.embeddings.embed_prompt"}}</label>
-          <Input
-            @type="text"
-            @value={{this.editingModel.embed_prompt}}
+          <Textarea
             class="ai-embedding-editor-input ai-embedding-editor__embed_prompt"
+            @value={{this.editingModel.embed_prompt}}
           />
           <DTooltip
             @icon="circle-question"
@@ -358,8 +363,7 @@ export default class AiEmbeddingEditor extends Component {
 
         <div class="control-group">
           <label>{{i18n "discourse_ai.embeddings.search_prompt"}}</label>
-          <Input
-            @type="text"
+          <Textarea
             class="ai-embedding-editor-input ai-embedding-editor__search_prompt"
             @value={{this.editingModel.search_prompt}}
           />

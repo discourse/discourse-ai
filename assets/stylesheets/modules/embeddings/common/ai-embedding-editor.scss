@@ -58,4 +58,17 @@
   .btn-flat.back-button {
     padding-left: 0;
   }
+
+  .fk-d-tooltip__icon {
+    margin-left: 0.25em;
+    color: var(--primary-medium);
+  }
+
+  textarea + .fk-d-tooltip__trigger {
+    vertical-align: top;
+  }
+
+  .d-icon-circle-exclamation {
+    color: var(--danger);
+  }
 }
