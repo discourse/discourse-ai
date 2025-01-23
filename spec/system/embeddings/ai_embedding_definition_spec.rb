@@ -60,8 +60,8 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     embed_prefix = "On creation:"
     search_prefix = "On search:"
-    find("input.ai-embedding-editor__embed_prompt").fill_in(with: embed_prefix)
-    find("input.ai-embedding-editor__search_prompt").fill_in(with: search_prefix)
+    find(".ai-embedding-editor__embed_prompt").fill_in(with: embed_prefix)
+    find(".ai-embedding-editor__search_prompt").fill_in(with: search_prefix)
 
     find("input.ai-embedding-editor__dimensions").fill_in(with: 1536)
     find("input.ai-embedding-editor__max_sequence_length").fill_in(with: 8191)
