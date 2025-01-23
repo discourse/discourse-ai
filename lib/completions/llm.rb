@@ -56,7 +56,7 @@ module DiscourseAi
                       display_name: "Gemini 1.5 Flash",
                     },
                   ],
-                  tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
+                  tokenizer: DiscourseAi::Tokenizer::GeminiTokenizer,
                   provider: "google",
                 },
                 {
