@@ -222,7 +222,6 @@ export default class AiEmbeddingEditor extends Component {
           <h2>{{i18n "discourse_ai.embeddings.presets"}}</h2>
           <AdminSectionLandingWrapper>
             {{#each this.presets as |preset|}}
-              {{log preset}}
               <AdminSectionLandingItem
                 @titleLabelTranslated={{preset.name}}
                 @taglineLabel={{concat
@@ -248,10 +247,12 @@ export default class AiEmbeddingEditor extends Component {
 
       {{else}}
         {{#if this.editingModel.isNew}}
-          <div class="btn btn-flat back-button" {{on "click" this.resetForm}}>
-            {{icon "chevron-left"}}
-            {{i18n "back_button"}}
-          </div>
+          <DButton
+            @action={{this.resetForm}}
+            @label="back_button"
+            @icon="chevron-left"
+            class="btn-flat back-button"
+          />
         {{else}}
           <BackButton
             @route="adminPlugins.show.discourse-ai-embeddings"

@@ -523,9 +523,9 @@ en:
         hints:
           dimensions_warning: "Once saved, this value can't be changed."
           matryoshka_dimensions: "Defines the size of nested embeddings used for hierarchical or multi-layered representation of data, similar to how nested dolls fit within each other."
-          embed_prompt: "Explains how to process text to create its numerical summary (embedding) for analysis or comparison."
-          search_prompt: "Explains how to process a search query to compare it with existing embeddings and find the best matches."
-          sequence_length: "The maximum number of words or tokens the system can process at once when creating embeddings or handling a query."
+          embed_prompt: "Tells the LLM how to process text to create its numerical summary (embedding) for analysis or comparison."
+          search_prompt: "Tells the LLM how to compare a search query with existing embeddings and find the best matches."
+          sequence_length: "The maximum number of tokens that can be processed at once when creating embeddings or handling a query."
           distance_function: "Determines how similarity between embeddings is calculated, using either cosine distance (measuring the angle between vectors) or negative inner product (measuring overlap of vector values)."
         display_name: "Name"
         provider: "Provider"
