@@ -7,6 +7,7 @@ module DiscourseAi
         def available_llm_tokenizers
           [
             DiscourseAi::Tokenizer::AnthropicTokenizer,
+            DiscourseAi::Tokenizer::GeminiTokenizer,
             DiscourseAi::Tokenizer::Llama3Tokenizer,
             DiscourseAi::Tokenizer::MixtralTokenizer,
             DiscourseAi::Tokenizer::OpenAiTokenizer,

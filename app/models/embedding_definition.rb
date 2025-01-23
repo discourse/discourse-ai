@@ -20,7 +20,7 @@ class EmbeddingDefinition < ActiveRecord::Base
         DiscourseAi::Tokenizer::AllMpnetBaseV2Tokenizer,
         DiscourseAi::Tokenizer::BgeLargeEnTokenizer,
         DiscourseAi::Tokenizer::BgeM3Tokenizer,
-        DiscourseAi::Tokenizer::OpenAiTokenizer,
+        DiscourseAi::Tokenizer::GeminiTokenizer,
         DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer,
         DiscourseAi::Tokenizer::OpenAiTokenizer,
       ].map(&:name)
@@ -61,7 +61,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               pg_function: "<=>",
               url:
                 "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent",
-              tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
+              tokenizer_class: "DiscourseAi::Tokenizer::GeminiTokenizer",
               provider: GOOGLE,
             },
             {
