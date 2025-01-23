@@ -61,7 +61,7 @@ export default class AiEmbeddingEditor extends Component {
       return {
         id: df,
         name: t(df),
-        icon: iconName, // Generate the icon helper output
+        icon: iconName,
       };
     });
   }
