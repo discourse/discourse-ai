@@ -319,6 +319,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
       log = AiApiAuditLog.order(:id).last
       expect(log.request_tokens).to eq(55)
       expect(log.response_tokens).to eq(13)
+      expect(log.duration_msecs).not_to be_nil
 
       expected =
         DiscourseAi::Completions::ToolCall.new(
