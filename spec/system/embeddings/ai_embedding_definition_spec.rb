@@ -13,7 +13,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
     visit "/admin/plugins/discourse-ai/ai-embeddings"
 
     find(".ai-embeddings-list-editor__new-button").click()
-   
+
     find("[data-preset-id='text-embedding-3-small'] button").click()
 
     find("input.ai-embedding-editor__api-key").fill_in(with: api_key)
@@ -42,7 +42,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
     visit "/admin/plugins/discourse-ai/ai-embeddings"
 
     find(".ai-embeddings-list-editor__new-button").click()
-    
+
     find("[data-preset-id='manual'] button").click()
 
     find("input.ai-embedding-editor__display-name").fill_in(with: "OpenAI's text-embedding-3-small")
