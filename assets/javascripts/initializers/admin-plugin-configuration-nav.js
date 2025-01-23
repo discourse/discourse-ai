@@ -13,8 +13,8 @@ export default {
     withPluginApi("1.1.0", (api) => {
       api.addAdminPluginConfigurationNav("discourse-ai", PLUGIN_NAV_MODE_TOP, [
         {
-          label: "discourse_ai.embeddings.short_title",
-          route: "adminPlugins.show.discourse-ai-embeddings",
+          label: "discourse_ai.usage.short_title",
+          route: "adminPlugins.show.discourse-ai-usage",
         },
         {
           label: "discourse_ai.llms.short_title",
@@ -25,16 +25,16 @@ export default {
           route: "adminPlugins.show.discourse-ai-personas",
         },
         {
+          label: "discourse_ai.embeddings.short_title",
+          route: "adminPlugins.show.discourse-ai-embeddings",
+        },
+        {
           label: "discourse_ai.tools.short_title",
           route: "adminPlugins.show.discourse-ai-tools",
         },
         {
           label: "discourse_ai.spam.short_title",
           route: "adminPlugins.show.discourse-ai-spam",
-        },
-        {
-          label: "discourse_ai.usage.short_title",
-          route: "adminPlugins.show.discourse-ai-usage",
         },
       ]);
     });
