@@ -3,8 +3,6 @@
 module DiscourseAi
   module Embeddings
     class SemanticRelated
-      MissingEmbeddingError = Class.new(StandardError)
-
       def self.clear_cache_for(topic)
         Discourse.cache.delete("semantic-suggested-topic-#{topic.id}")
         Discourse.redis.del("build-semantic-suggested-topic-#{topic.id}")
@@ -26,11 +24,12 @@ module DiscourseAi
                 # Happens when the topic doesn't have any embeddings
                 # I'd rather not use Exceptions to control the flow, so this should be refactored soon
                 if candidate_ids.empty? || !candidate_ids.include?(topic.id)
-                  raise MissingEmbeddingError, "No embeddings found for topic #{topic.id}"
+                  raise ::DiscourseAi::Embeddings::Schema::MissingEmbeddingError,
+                        "No embeddings found for topic #{topic.id}"
                 end
               end
           end
-      rescue MissingEmbeddingError
+      rescue ::DiscourseAi::Embeddings::Schema::MissingEmbeddingError
         # avoid a flood of jobs when visiting topic
         if Discourse.redis.set(
              build_semantic_suggested_key(topic.id),
