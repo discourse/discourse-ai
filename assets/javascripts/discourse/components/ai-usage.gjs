@@ -311,7 +311,7 @@ export default class AiUsage extends Component {
     <div class="ai-usage admin-detail">
       <DPageSubheader
         @titleLabel={{i18n "discourse_ai.usage.short_title"}}
-        @learnMoreUrl="https://meta.discourse.org/t/estimating-costs-of-using-llms-for-discourse-ai/307243"
+        @learnMoreUrl="https://meta.discourse.org/t/-/348677"
         @descriptionLabel={{i18n "discourse_ai.usage.subheader_description"}}
       />
       <div class="ai-usage__filters">
