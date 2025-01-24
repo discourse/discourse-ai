@@ -77,7 +77,7 @@ class EmbeddingDefinition < ActiveRecord::Base
             # indexes, so we downsample to 2000 via API.
             {
               preset_id: "text-embedding-3-large",
-              display_name: "OpenAI's text-embedding-3-large",
+              display_name: "text-embedding-3-large",
               dimensions: 2000,
               max_sequence_length: 8191,
               pg_function: "<=>",
@@ -91,7 +91,7 @@ class EmbeddingDefinition < ActiveRecord::Base
             },
             {
               preset_id: "text-embedding-3-small",
-              display_name: "OpenAI's text-embedding-3-small",
+              display_name: "text-embedding-3-small",
               dimensions: 1536,
               max_sequence_length: 8191,
               pg_function: "<=>",
@@ -105,7 +105,7 @@ class EmbeddingDefinition < ActiveRecord::Base
             },
             {
               preset_id: "text-embedding-ada-002",
-              display_name: "OpenAI's text-embedding-ada-002",
+              display_name: "text-embedding-ada-002",
               dimensions: 1536,
               max_sequence_length: 8191,
               pg_function: "<=>",
