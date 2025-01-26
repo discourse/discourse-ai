@@ -10,61 +10,67 @@ RSpec.describe DiscourseAi::AiBot::Tools::CreateArtifact do
 
   describe "#process" do
     it "correctly adds details block on final invoke" do
-      tool =
-        described_class.new(
-          { html_body: "hello" },
-          bot_user: Fabricate(:user),
-          llm: llm,
-          context: {
-            post_id: post.id,
-          },
-        )
+      responses = [<<~TXT.strip]
+          --- HTML ---
+          <div>
+            hello
+          </div>
+          --- CSS ---
+          .hello {
+            color: red;
+          }
+          --- JavaScript ---
+          console.log("hello");
+          console.log("world");
+        TXT
 
-      tool.parameters = { html_body: "hello" }
+      tool = nil
 
-      tool.invoke {}
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        tool =
+          described_class.new(
+            { html_body: "hello" },
+            bot_user: Fabricate(:user),
+            llm: llm,
+            context: {
+              post_id: post.id,
+            },
+          )
+
+        tool.parameters = { name: "hello", specification: "hello spec" }
+
+        tool.invoke {}
+      end
 
       artifact_id = AiArtifact.order("id desc").limit(1).pluck(:id).first
 
       expected = <<~MD
-        [details='View Source']
-
+        [details="View Source"]
         ### HTML
-
         ```html
-        hello
+        <div>
+          hello
+        </div>
         ```
 
+        ### CSS
+        ```css
+        .hello {
+          color: red;
+        }
+        ```
+
+        ### JavaScript
+        ```javascript
+        console.log("hello");
+        console.log("world");
+        ```
         [/details]
 
         ### Preview
-
         <div class="ai-artifact" data-ai-artifact-id="#{artifact_id}"></div>
       MD
       expect(tool.custom_raw.strip).to eq(expected.strip)
-    end
-
-    it "can correctly handle partial updates" do
-      tool = described_class.new({}, bot_user: bot_user, llm: llm)
-
-      tool.parameters = { css: "a { }" }
-      tool.partial_invoke
-
-      expect(tool.custom_raw).to eq("### CSS\n\n```css\na { }\n```")
-
-      tool.parameters = { css: "a { }", html_body: "hello" }
-      tool.partial_invoke
-
-      expect(tool.custom_raw).to eq(
-        "### CSS\n\n```css\na { }\n```\n\n### HTML\n\n```html\nhello\n```",
-      )
-
-      tool.parameters = { css: "a { }", html_body: "hello world" }
-      tool.partial_invoke
-
-      expect(tool.custom_raw).to eq(
-        "### CSS\n\n```css\na { }\n```\n\n### HTML\n\n```html\nhello world\n```",
-      )
     end
   end
 end

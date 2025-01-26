@@ -359,7 +359,7 @@ en:
         javascript_evaluator: "Evaluate JavaScript"
       tool_description:
         update_artifact: "Updated a web artifact using the AI Bot"
-        create_artifact: "Created a web artifact using the AI Bot"
+        create_artifact: "Created a web artifact: %{name} - %{specification}"
         web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_files: "Searched for '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Searched for '%{query}' in %{repo}"

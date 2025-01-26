@@ -8,38 +8,47 @@ module DiscourseAi
           "create_artifact"
         end
 
-        def self.js_dependency_tip
-          <<~TIP
-            If you need to include a JavaScript library, you may include assets from:
-            - unpkg.com
-            - cdnjs.com
-            - jsdelivr.com
-            - ajax.googleapis.com
+        def self.specification_description
+          <<~DESC
+            A detailed description of the web artifact you want to create. Your specification should include:
 
-            To include them ensure they are the last tag in your HTML body.
-            Example: <script crossorigin src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
-          TIP
-        end
+            1. Purpose and functionality
+            2. Visual design requirements
+            3. Interactive elements and behavior
+            4. Data handling (if applicable)
+            5. Specific requirements or constraints
 
-        def self.js_script_tag_tip
-          <<~TIP
-            if you need a custom script tag, you can use the following format:
+            Good specification examples:
 
-            <script type="module">
-              // your script here
-            </script>
+            Example: (Calculator):
+            "Create a modern calculator with a dark theme. It should:
+            - Have a large display area showing current and previous calculations
+            - Include buttons for numbers 0-9, basic operations (+,-,*,/), and clear
+            - Use a grid layout with subtle hover effects on buttons
+            - Show button press animations
+            - Keep calculation history visible above current input
+            - Use a monospace font for numbers
+            - Support keyboard input for numbers and operations"
 
-            If you only need a regular script tag, you can use the following format:
+            Poor specification example:
+            "Make a website that looks nice and does cool stuff"
+            (Too vague, lacks specific requirements and functionality details)
 
-            // your script here
-          TIP
+            Tips for good specifications:
+            - Be specific about layout and design preferences
+            - Describe all interactive elements and their behavior
+            - Include any specific visual effects or animations
+            - Mention responsive design requirements if needed
+            - List any specific libraries or frameworks to use/avoid
+            - Describe error states and edge cases
+            - Include accessibility requirements
+          DESC
         end
 
         def self.signature
           {
             name: "create_artifact",
-            description:
-              "Creates a web artifact with HTML, CSS, and JavaScript that can be displayed in an iframe",
+            description: "Creates a web artifact based on a specification",
             parameters: [
               {
                 name: "name",
@@ -48,58 +57,25 @@ module DiscourseAi
                 required: true,
               },
               {
-                name: "html_body",
-                description:
-                  "The HTML content for the BODY tag (do not include the BODY tag). #{js_dependency_tip}",
+                name: "specification",
                 type: "string",
+                description: specification_description,
                 required: true,
-              },
-              { name: "css", description: "Optional CSS styles for the artifact", type: "string" },
-              {
-                name: "js",
-                description:
-                  "Optional
-              JavaScript code for the artifact, this will be the last <script> tag in the BODY. #{js_script_tag_tip}",
-                type: "string",
               },
             ],
           }
         end
 
-        def self.allow_partial_tool_calls?
-          true
-        end
-
-        def partial_invoke
-          @selected_tab = :html_body
-          if @prev_parameters
-            @selected_tab = parameters.keys.find { |k| @prev_parameters[k] != parameters[k] }
-          end
-          update_custom_html
-          @prev_parameters = parameters.dup
-        end
-
         def invoke
-          yield parameters[:name] || "Web Artifact"
-          # Get the current post from context
+          yield parameters[:name] || "New Artifact"
+
           post = Post.find_by(id: context[:post_id])
           return error_response("No post context found") unless post
 
-          html = parameters[:html_body].to_s
-          css = parameters[:css].to_s
-          js = parameters[:js].to_s
+          artifact_code = generate_artifact_code(post: post, user: post.user)
+          return error_response(artifact_code[:error]) if artifact_code[:error]
 
-          # Create the artifact
-          artifact =
-            AiArtifact.new(
-              user_id: bot_user.id,
-              post_id: post.id,
-              name: parameters[:name].to_s[0...255],
-              html: html,
-              css: css,
-              js: js,
-              metadata: parameters[:metadata],
-            )
+          artifact = create_artifact(post, artifact_code)
 
           if artifact.save
             update_custom_html(artifact)
@@ -109,59 +85,156 @@ module DiscourseAi
           end
         end
 
-        def chain_next_response?
-          @chain_next_response
+        def description_args
+          { name: parameters[:name], specification: parameters[:specification] }
         end
 
         private
 
-        def update_custom_html(artifact = nil)
-          html = parameters[:html_body].to_s
-          css = parameters[:css].to_s
-          js = parameters[:js].to_s
-
-          artifact_div =
-            "<div class=\"ai-artifact\" data-ai-artifact-id=\"#{artifact.id}\"></div>" if artifact
-
-          content = []
-
-          content << [:html_body, "### HTML\n\n```html\n#{html}\n```"] if html.present?
-
-          content << [:css, "### CSS\n\n```css\n#{css}\n```"] if css.present?
-
-          content << [:js, "### JavaScript\n\n```javascript\n#{js}\n```"] if js.present?
-
-          content.sort_by! { |c| c[0] === @selected_tab ? 1 : 0 } if !artifact
-
-          if artifact
-            content.unshift([nil, "[details='#{I18n.t("discourse_ai.ai_artifact.view_source")}']"])
-            content << [nil, "[/details]"]
+        def generate_artifact_code(post:, user:)
+          prompt = build_artifact_prompt(post: post)
+          response = +""
+          llm.generate(prompt, user: user, feature_name: "create_artifact") do |partial_response|
+            response << partial_response
           end
 
-          content << [:preview, "### Preview\n\n#{artifact_div}"] if artifact_div
-          self.custom_raw = content.map { |c| c[1] }.join("\n\n")
+          sections = parse_sections(response)
+
+          if valid_sections?(sections)
+            html, css, js = sections
+            { html: html, css: css, js: js }
+          else
+            { error: "Failed to generate valid artifact code", response: response }
+          end
+        end
+
+        def build_artifact_prompt(post:)
+          DiscourseAi::Completions::Prompt.new(
+            artifact_system_prompt,
+            messages: [{ type: :user, content: parameters[:specification] }],
+            post_id: post.id,
+            topic_id: post.topic_id,
+          )
+        end
+
+        def parse_sections(response)
+          html = +""
+          css = +""
+          javascript = +""
+          current_section = nil
+
+          response.each_line do |line|
+            case line
+            when /--- (HTML|CSS|JavaScript) ---/
+              current_section = Regexp.last_match(1)
+            else
+              case current_section
+              when "HTML"
+                html << line
+              when "CSS"
+                css << line
+              when "JavaScript"
+                javascript << line
+              end
+            end
+          end
+
+          [html.strip, css.strip, javascript.strip]
+        end
+
+        def valid_sections?(sections)
+          return false if sections.empty?
+
+          # Basic validation of sections
+          has_html = sections[0].include?("<") && sections[0].include?(">")
+          has_css = sections[1].include?("{") && sections[1].include?("}")
+          has_js = sections[2].present?
+
+          has_html || has_css || has_js
+        end
+
+        def create_artifact(post, code)
+          AiArtifact.new(
+            user_id: bot_user.id,
+            post_id: post.id,
+            name: parameters[:name].to_s[0...255],
+            html: code[:html],
+            css: code[:css],
+            js: code[:js],
+            metadata: {
+              specification: parameters[:specification],
+            },
+          )
+        end
+
+        def artifact_system_prompt
+          <<~PROMPT
+            You are a web development expert creating HTML, CSS, and JavaScript code.
+            Follow these instructions precisely:
+
+            1. Output exactly three sections separated by section delimiters
+            2. Section order must be: HTML, CSS, JavaScript
+            3. Format requirements:
+               - HTML: No <html>, <head>, or <body> tags
+               - CSS: Valid CSS rules
+               - JavaScript: Clean, working code
+            4. TAKE NO SHORTCUTS - generate all of the code needed for a complete web artifact. Do not leave any placeholders in the code.
+
+            External libraries allowed only from:
+            - unpkg.com
+            - cdnjs.com
+            - jsdelivr.net
+            - ajax.googleapis.com
+
+            Example format:
+            --- HTML ---
+            <div id="app"><!-- Your HTML here --></div>
+            --- CSS ---
+            #app { /* Your CSS here */ }
+            --- JavaScript ---
+            // Your JavaScript here
+
+            Important:
+            - Adhere striclty to the format (--- HTML ---, --- CSS ---, --- JavaScript ---)
+            - Focus on simplicity and reliability
+            - Include basic error handling
+            - Follow accessibility guidelines
+            - No explanatory text, only code
+          PROMPT
+        end
+
+        def update_custom_html(artifact)
+          html_preview = <<~MD
+            [details="View Source"]
+            ### HTML
+            ```html
+            #{artifact.html}
+            ```
+
+            ### CSS
+            ```css
+            #{artifact.css}
+            ```
+
+            ### JavaScript
+            ```javascript
+            #{artifact.js}
+            ```
+            [/details]
+
+            ### Preview
+            <div class="ai-artifact" data-ai-artifact-id="#{artifact.id}"></div>
+          MD
+
+          self.custom_raw = html_preview
         end
 
         def success_response(artifact)
-          @chain_next_response = false
-
-          {
-            status: "success",
-            artifact_id: artifact.id,
-            message: "Artifact created successfully and rendered to user.",
-          }
+          { status: "success", artifact_id: artifact.id, message: "Artifact created successfully." }
         end
 
         def error_response(message)
-          @chain_next_response = false
-
           { status: "error", error: message }
-        end
-
-        def help
-          "Creates a web artifact with HTML, CSS, and JavaScript that can be displayed in an iframe. " \
-            "Requires a name and HTML content. CSS and JavaScript are optional. " \
-            "The artifact will be associated with the current post and can be displayed using an iframe."
         end
       end
     end
