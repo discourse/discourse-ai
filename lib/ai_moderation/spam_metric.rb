@@ -16,7 +16,7 @@ module DiscourseAi
       private
 
       def self.increment(type, value = 1)
-        metric = DiscoursePrometheus::InternalMetric::Custom.new
+        metric = ::DiscoursePrometheus::InternalMetric::Custom.new
         metric.name = "discourse_ai_spam_detection"
         metric.type = "Counter"
         metric.description = "AI spam scanning statistics"
