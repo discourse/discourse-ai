@@ -10,52 +10,39 @@ module DiscourseAi
 
         def self.diff_examples
           <<~EXAMPLES
-            Example 1 - Adding a new button:
-            Original HTML:
-            <div class="calculator">
-              <div class="display">0</div>
-              <button>1</button>
-            </div>
+            Example - Multiple changes in one file:
+            --- JavaScript ---
+            <<<<<<< SEARCH
+            console.log('old1');
+            =======
+            console.log('new1');
+            >>>>>>> REPLACE
+            <<<<<<< SEARCH
+            console.log('old2');
+            =======
+            console.log('new2');
+            >>>>>>> REPLACE
 
-            Diff to add a new button:
-              <button>1</button>
-            + <button>2</button>
-
-            Example 2 - Modifying styles:
-            Original CSS:
-            .button {
-              background: blue;
-              color: white;
-            }
-
-            Diff to change colors:
-            .button {
-            - background: blue;
-            - color: white;
-            + background: #333;
-            + color: #fff;
-
-            Example 3 - Updating JavaScript:
-            Original JavaScript:
-            function ignore() {
-              // some function that is not part of diff
-            }
-            function calculate() {
-              return a + b;
-            }
-
-            Diff to add multiplication:
-            function calculate() {
-            - return a + b;
-            + return operation === 'multiply' ? a * b : a + b;
-            }
+            Example - CSS with multiple blocks:
+            --- CSS ---
+            <<<<<<< SEARCH
+            .button { color: blue; }
+            =======
+            .button { color: red; }
+            >>>>>>> REPLACE
+            <<<<<<< SEARCH
+            .text { font-size: 12px; }
+            =======
+            .text { font-size: 16px; }
+            >>>>>>> REPLACE
           EXAMPLES
         end
 
         def self.signature
           {
             name: "update_artifact",
-            description: "Updates an existing web artifact by generating precise diffs",
+            description:
+              "Updates an existing web artifact using search/replace operations. Supports multiple changes per section.",
             parameters: [
               {
                 name: "artifact_id",
@@ -86,69 +73,121 @@ module DiscourseAi
             return error_response("Attempting to update an artifact you are not allowed to")
           end
 
-          diffs = generate_diffs(post: post, user: post.user, artifact: artifact)
-          return error_response(diffs[:error]) if diffs[:error]
-
-          p "here"
+          changes = generate_changes(post: post, user: post.user, artifact: artifact)
+          return error_response(changes[:error]) if changes[:error]
 
           begin
-            version =
-              artifact.apply_diff(
-                html_diff: diffs[:html_diff],
-                css_diff: diffs[:css_diff],
-                js_diff: diffs[:js_diff],
-                change_description: parameters[:instructions],
-              )
-
-            p "good"
+            version = apply_changes(artifact, changes)
             update_custom_html(artifact, version)
             success_response(artifact, version)
-          rescue DiscourseAi::Utils::DiffUtils::DiffError => e
-            p e
-            error_response(e.to_llm_message)
           rescue => e
-            p e
             error_response(e.message)
           end
         end
 
         private
 
-        def generate_diffs(post:, user:, artifact:)
-          prompt = build_diff_prompt(post: post, artifact: artifact)
+        def generate_changes(post:, user:, artifact:)
+          prompt = build_changes_prompt(post: post, artifact: artifact)
           response = +""
 
-          llm.generate(prompt, user: user, feature_name: "update_artifact") do |partial_response|
-            response << partial_response
+          llm.generate(prompt, user: user, feature_name: "update_artifact") do |partial|
+            response << partial
           end
 
-          sections = parse_diff_sections(response)
+          parse_changes(response)
+        end
 
-          if valid_diff_sections?(sections)
-            html_diff, css_diff, js_diff = sections
-            {
-              html_diff: html_diff.presence,
-              css_diff: css_diff.presence,
-              js_diff: js_diff.presence,
-            }
-          else
-            { error: "Failed to generate valid diffs", response: response }
+        def parse_changes(response)
+          sections = { html: nil, css: nil, javascript: nil }
+          current_section = nil
+          lines = []
+
+          response.each_line do |line|
+            case line
+            when /^--- (HTML|CSS|JavaScript) ---$/
+              sections[current_section] = lines.join if current_section && !lines.empty?
+              current_section = line.match(/^--- (.+) ---$/)[1].downcase.to_sym
+              lines = []
+            else
+              lines << line if current_section
+            end
+          end
+
+          sections[current_section] = lines.join if current_section && !lines.empty?
+
+          # Validate and extract all search/replace blocks
+          sections.transform_values do |content|
+            next nil if content.nil?
+
+            puts content
+
+            blocks = extract_search_replace_blocks(content)
+            return { error: "Invalid format in #{current_section} section" } if blocks.nil?
+
+            puts "GOOD"
+            blocks
           end
         end
 
-        def build_diff_prompt(post:, artifact:)
+        def extract_search_replace_blocks(content)
+          return nil if content.blank?
+
+          blocks = []
+          remaining = content
+
+          while remaining =~ /<<<<<<< SEARCH\n(.*?)\n=======\n(.*?)\n>>>>>>> REPLACE/m
+            blocks << { search: $1, replace: $2 }
+            remaining = $'
+          end
+
+          blocks.empty? ? nil : blocks
+        end
+
+        def apply_changes(artifact, changes)
+          updated_content = {}
+
+          %i[html css javascript].each do |section|
+            blocks = changes[section]
+            next unless blocks
+
+            content = artifact.send(section == :javascript ? :js : section)
+            blocks.each do |block|
+              content =
+                DiscourseAi::Utils::DiffUtils::SimpleDiff.apply(
+                  content,
+                  block[:search],
+                  block[:replace],
+                )
+            end
+            updated_content[section == :javascript ? :js : section] = content
+          end
+
+          artifact.create_new_version(
+            html: updated_content[:html],
+            css: updated_content[:css],
+            js: updated_content[:js],
+            change_description: parameters[:instructions],
+          )
+        end
+
+        def build_changes_prompt(post:, artifact:)
           DiscourseAi::Completions::Prompt.new(
-            diff_system_prompt,
+            changes_system_prompt,
             messages: [
-              {
-                type: :user,
-                content:
-                  "Current artifact code:\n\n" \
-                    "--- HTML ---\n#{artifact.html}\n" \
-                    "--- CSS ---\n#{artifact.css}\n" \
-                    "--- JavaScript ---\n#{artifact.js}\n",
-              },
-              { type: :model, content: "Please explain the diffs you would like to generate:" },
+              { type: :user, content: <<~CONTENT },
+                Current artifact code:
+
+                --- HTML ---
+                #{artifact.html}
+
+                --- CSS ---
+                #{artifact.css}
+
+                --- JavaScript ---
+                #{artifact.js}
+              CONTENT
+              { type: :model, content: "Please explain the changes you would like to generate:" },
               { type: :user, content: parameters[:instructions] },
             ],
             post_id: post.id,
@@ -156,65 +195,29 @@ module DiscourseAi
           )
         end
 
-        def diff_system_prompt
+        def changes_system_prompt
           <<~PROMPT
-            You are a web development expert generating precise diffs for updating HTML, CSS, and JavaScript code.
+            You are a web development expert generating precise search/replace changes for updating HTML, CSS, and JavaScript code.
 
             Important rules:
-            1. Only output changes using - for removals and + for additions
-            2. Include 1-2 lines of context around changes
-            3. Generate three sections: HTML_DIFF, CSS_DIFF, and JS_DIFF
+            1. Use the format <<<<<<< SEARCH / ======= / >>>>>>> REPLACE for each change
+            2. You can specify multiple search/replace blocks per section
+            3. Generate three sections: HTML, CSS, and JavaScript
             4. Only include sections that have changes
-            5. Use exact line matches for context
-            6. Keep diffs minimal and focused
+            5. Keep changes minimal and focused
+            6. Use exact matches for the search content
 
             Format:
-            --- HTML_DIFF ---
-            (diff or empty if no changes)
-            --- CSS_DIFF ---
-            (diff or empty if no changes)
-            --- JS_DIFF ---
-            (diff or empty if no changes)
+            --- HTML ---
+            (changes or empty if no changes)
+            --- CSS ---
+            (changes or empty if no changes)
+            --- JavaScript ---
+            (changes or empty if no changes)
 
-            --------------
-            When supplying diffs, use a unified diff format. For example:
-
+            Example changes:
             #{self.class.diff_examples}
           PROMPT
-        end
-
-        def parse_diff_sections(response)
-          html = +""
-          css = +""
-          javascript = +""
-          current_section = nil
-
-          response.each_line do |line|
-            case line
-            when /--- (HTML_DIFF|CSS_DIFF|JS_DIFF) ---/
-              current_section = Regexp.last_match(1)
-            else
-              case current_section
-              when "HTML_DIFF"
-                html << line
-              when "CSS_DIFF"
-                css << line
-              when "JS_DIFF"
-                javascript << line
-              end
-            end
-          end
-
-          [html.strip, css.strip, javascript.strip]
-        end
-
-        def valid_diff_sections?(sections)
-          return false if sections.empty?
-
-          sections.any? do |section|
-            next true if section.blank?
-            section.include?("-") || section.include?("+")
-          end
         end
 
         def update_custom_html(artifact, version)
@@ -223,33 +226,25 @@ module DiscourseAi
           if version.change_description.present?
             content << [:description, "### Change Description\n\n#{version.change_description}"]
           end
-
-          diffs = []
-          diffs << ["HTML Changes", version.html] if version.html != artifact.html
-          diffs << ["CSS Changes", version.css] if version.css != artifact.css
-          diffs << ["JavaScript Changes", version.js] if version.js != artifact.js
-
           content << [nil, "[details='#{I18n.t("discourse_ai.ai_artifact.view_changes")}']"]
 
-          diffs.each do |title, new_content|
-            old_content = artifact.send(title.downcase.split.first)
-            #diff = generate_readable_diff(old_content, new_content)
-            diff = "TODO"
-            content << [nil, "### #{title}\n```diff\n#{diff}\n```"]
+          %w[html css js].each do |type|
+            old_content = artifact.public_send(type)
+            new_content = version.public_send(type)
+
+            if old_content != new_content
+              diff = "xxx" # Placeholder for actual diff implementation
+              content << [nil, "### #{type.upcase} Changes\n```diff\n#{diff}\n```"]
+            end
           end
 
           content << [nil, "[/details]"]
-
           content << [
             :preview,
             "### Preview\n\n<div class=\"ai-artifact\" data-ai-artifact-version=\"#{version.version_number}\" data-ai-artifact-id=\"#{artifact.id}\"></div>",
           ]
 
           self.custom_raw = content.map { |c| c[1] }.join("\n\n")
-        end
-
-        def generate_readable_diff(old_content, new_content)
-          #Diffy::Diff.new(old_content, new_content, context: 2).to_s(:text)
         end
 
         def success_response(artifact, version)
