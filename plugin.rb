@@ -84,6 +84,9 @@ after_initialize do
 
   on(:reviewable_transitioned_to) do |new_status, reviewable|
     ModelAccuracy.adjust_model_accuracy(new_status, reviewable)
+    if DiscourseAi::AiModeration::SpamScanner.enabled?
+      DiscourseAi::AiModeration::SpamMetric.update(new_status, reviewable)
+    end
   end
 
   if Rails.env.test?
