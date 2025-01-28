@@ -23,7 +23,7 @@ export default class AiSummaryTrigger extends Component {
         @label="summary.buttons.generate"
         @icon="discourse-sparkles"
         @action={{this.openAiSummaryModal}}
-        class="ai-summarization-button"
+        class="btn-default ai-summarization-button"
       />
     {{/if}}
   </template>
