@@ -66,6 +66,41 @@ module DiscourseAi
           }
         end
 
+        def self.inject_prompt(prompt:, context:)
+          # we inject the current artifact content into the last user message
+          if topic_id = context[:topic_id]
+            posts = Post.where(topic_id: topic_id)
+            artifact = AiArtifact.order("id desc").where(post: posts).first
+            if artifact
+              latest_version = artifact.versions.order(version_number: :desc).first
+              current = latest_version || artifact
+
+              artifact_source = <<~MSG
+                Current Artifact:
+
+                ### HTML
+                ```html
+                #{current.html}
+                ```
+
+                ### CSS
+                ```css
+                #{current.css}
+                ```
+
+                ### JavaScript
+                ```javascript
+                #{current.js}
+                ```
+
+              MSG
+
+              last_message = prompt.messages.last
+              last_message[:content] = "#{artifact_source}\n\n#{last_message[:content]}"
+            end
+          end
+        end
+
         def invoke
           yield parameters[:name] || "New Artifact"
 

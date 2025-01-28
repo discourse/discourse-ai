@@ -42,6 +42,9 @@ module DiscourseAi
           def allow_partial_tool_calls?
             false
           end
+
+          def inject_prompt(prompt:, context:)
+          end
         end
 
         attr_accessor :custom_raw, :parameters
