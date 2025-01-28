@@ -85,6 +85,10 @@ module DiscourseAi
           end
         end
 
+        def chain_next_response?
+          false
+        end
+
         def description_args
           { name: parameters[:name], specification: parameters[:specification] }
         end

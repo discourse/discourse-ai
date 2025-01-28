@@ -3,7 +3,6 @@
 RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
   fab!(:llm_model)
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   fab!(:post)
   fab!(:artifact) do
     AiArtifact.create!(
@@ -56,7 +55,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
               instructions: "Change the text to Updated and color to red",
             },
             bot_user: bot_user,
-            llm: llm,
+            llm: llm_model.to_llm,
             context: {
               post_id: post.id,
             },
@@ -66,7 +65,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
         expect(result[:status]).to eq("success")
       end
 
-      version = artifact.versions.last
+      version = artifact.versions.order(:version_number).last
       expect(version.html).to eq("<div>Updated</div>")
       expect(version.css).to eq(".test { color: red; }")
       expect(version.js).to eq(<<~JS.strip)
@@ -81,6 +80,40 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
       expect(tool.custom_raw).to include("### CSS Changes")
       expect(tool.custom_raw).to include("### JS Changes")
       expect(tool.custom_raw).to include("<div class=\"ai-artifact\"")
+
+      # lets make sure edits on revisions also work
+      responses = [<<~TXT.strip]
+        --- JavaScript ---
+        <<<<<<< SEARCH
+        console.log('world');
+        =======
+        console.log('replaced world');
+        >>>>>>> REPLACE
+      TXT
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        tool =
+          described_class.new(
+            { artifact_id: artifact.id, instructions: "Change second line of JS" },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            context: {
+              post_id: post.id,
+            },
+          )
+
+        result = tool.invoke {}
+        expect(result[:status]).to eq("success")
+
+        version = artifact.versions.order(:version_number).last
+        expect(version.html).to eq("<div>Updated</div>")
+        expect(version.css).to eq(".test { color: red; }")
+        expect(version.js).to eq(<<~JS.strip)
+          console.log('updated');
+          console.log('replaced world');
+          console.log('updated2');
+        JS
+      end
     end
 
     it "handles invalid search/replace format" do
@@ -91,7 +124,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
           described_class.new(
             { artifact_id: artifact.id, instructions: "Invalid update" },
             bot_user: bot_user,
-            llm: llm,
+            llm: llm_model.to_llm,
             context: {
               post_id: post.id,
             },
@@ -108,7 +141,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
         described_class.new(
           { artifact_id: -1, instructions: "Update something" },
           bot_user: bot_user,
-          llm: llm,
+          llm: llm_model.to_llm,
           context: {
             post_id: post.id,
           },
@@ -136,7 +169,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
           described_class.new(
             { artifact_id: artifact.id, instructions: "Just update the HTML" },
             bot_user: bot_user,
-            llm: llm,
+            llm: llm_model.to_llm,
             context: {
               post_id: post.id,
             },
