@@ -281,6 +281,7 @@ class AiPersona < ActiveRecord::Base
     return if default_llm.blank?
 
     llm = LlmModel.find_by(id: default_llm.split(":").last.to_i)
+    return if llm.nil?
     return if !llm.seeded?
 
     return if SiteSetting.ai_bot_allowed_seeded_models.include?(llm.id.to_s)
