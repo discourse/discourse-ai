@@ -102,7 +102,8 @@ module DiscourseAi
         end
 
         def invoke
-          yield parameters[:name] || "New Artifact"
+          name = parameters[:name] || "New Artifact"
+          yield "#{name}\n\n" + parameters[:specification].to_s
 
           post = Post.find_by(id: context[:post_id])
           return error_response("No post context found") unless post
