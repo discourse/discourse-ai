@@ -157,28 +157,25 @@ module DiscourseAi
         end
 
         def parse_sections(response)
-          html = +""
-          css = +""
-          javascript = +""
+          sections = { html: nil, css: nil, javascript: nil }
           current_section = nil
+          lines = []
 
           response.each_line do |line|
             case line
-            when /--- (HTML|CSS|JavaScript) ---/
-              current_section = Regexp.last_match(1)
+            when /^\[(HTML|CSS|JavaScript)\]$/
+              current_section = line.match(/^\[(.+)\]$/)[1].downcase.to_sym
+              lines = []
+            when %r{^\[/(HTML|CSS|JavaScript)\]$}
+              sections[current_section] = lines.join if current_section
+              current_section = nil
+              lines = []
             else
-              case current_section
-              when "HTML"
-                html << line
-              when "CSS"
-                css << line
-              when "JavaScript"
-                javascript << line
-              end
+              lines << line if current_section
             end
           end
 
-          [html.strip, css.strip, javascript.strip]
+          [sections[:html].to_s.strip, sections[:css].to_s.strip, sections[:javascript].to_s.strip]
         end
 
         def valid_sections?(sections)
@@ -211,13 +208,13 @@ module DiscourseAi
             You are a web development expert creating HTML, CSS, and JavaScript code.
             Follow these instructions precisely:
 
-            1. Output exactly three sections separated by section delimiters
-            2. Section order must be: HTML, CSS, JavaScript
+            1. Provide complete source code for all three required sections: HTML, CSS, and JavaScript
+            2. Use exact section tags: [HTML]/[/HTML], [CSS]/[/CSS], [JavaScript]/[/JavaScript]
             3. Format requirements:
                - HTML: No <html>, <head>, or <body> tags
                - CSS: Valid CSS rules
                - JavaScript: Clean, working code
-            4. TAKE NO SHORTCUTS - generate all of the code needed for a complete web artifact. Do not leave any placeholders in the code.
+            4. NEVER USE SHORTCUTS - generate complete code for each section. No placeholders.
 
             External libraries allowed only from:
             - unpkg.com
@@ -225,16 +222,23 @@ module DiscourseAi
             - jsdelivr.net
             - ajax.googleapis.com
 
-            Example format:
-            --- HTML ---
-            <div id="app"><!-- Your HTML here --></div>
-            --- CSS ---
-            #app { /* Your CSS here */ }
-            --- JavaScript ---
-            // Your JavaScript here
+            Required response format:
+
+            [HTML]
+            <div id="app"><!-- Your complete HTML here --></div>
+            [/HTML]
+
+            [CSS]
+            #app { /* Your complete CSS here */ }
+            [/CSS]
+
+            [JavaScript]
+            // Your complete JavaScript here
+            [/JavaScript]
 
             Important:
-            - Adhere striclty to the format (--- HTML ---, --- CSS ---, --- JavaScript ---)
+            - All three sections are required
+            - Sections must use exact tags shown above
             - Focus on simplicity and reliability
             - Include basic error handling
             - Follow accessibility guidelines

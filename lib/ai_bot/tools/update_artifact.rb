@@ -82,6 +82,32 @@ module DiscourseAi
 
         private
 
+        def line_based_markdown_diff(before, after)
+          # Split into lines
+          before_lines = before.split("\n")
+          after_lines = after.split("\n")
+
+          # Use ONPDiff for line-level comparison
+          diff = ONPDiff.new(before_lines, after_lines).diff
+
+          # Build markdown output
+          result = ["```diff"]
+
+          diff.each do |line, status|
+            case status
+            when :common
+              result << " #{line}"
+            when :delete
+              result << "-#{line}"
+            when :add
+              result << "+#{line}"
+            end
+          end
+
+          result << "```"
+          result.join("\n")
+        end
+
         def update_custom_html(artifact, version)
           content = []
 
@@ -95,8 +121,8 @@ module DiscourseAi
             new_content = version.public_send(type)
 
             if old_content != new_content
-              diff = "xxx" # Placeholder for actual diff implementation
-              content << [nil, "### #{type.upcase} Changes\n```diff\n#{diff}\n```"]
+              diff = line_based_markdown_diff(old_content, new_content)
+              content << [nil, "### #{type.upcase} Changes\n#{diff}"]
             end
           end
 
