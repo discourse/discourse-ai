@@ -10,17 +10,20 @@ RSpec.describe DiscourseAi::AiBot::Tools::CreateArtifact do
   describe "#process" do
     it "correctly adds details block on final invoke" do
       responses = [<<~TXT.strip]
-          --- HTML ---
+          [HTML]
           <div>
             hello
           </div>
-          --- CSS ---
+          [/HTML]
+          [CSS]
           .hello {
             color: red;
           }
-          --- JavaScript ---
+          [/CSS]
+          [JavaScript]
           console.log("hello");
           console.log("world");
+          [/JavaScript]
         TXT
 
       tool = nil
