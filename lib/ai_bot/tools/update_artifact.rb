@@ -38,7 +38,7 @@ module DiscourseAi
         end
 
         def invoke
-          yield "Updating Artifact\n#{parameters[:instructions]}"
+          yield "Updating Artifact\n#{parameters[:instructions]}\n\n"
 
           post = Post.find_by(id: context[:post_id])
           return error_response("No post context found") unless post
@@ -69,7 +69,11 @@ module DiscourseAi
                 instructions: parameters[:instructions],
               ).apply
 
-            update_custom_html(artifact, new_version)
+            update_custom_html(
+              artifact: artifact,
+              artifact_version: artifact_version,
+              new_version: new_version,
+            )
             success_response(artifact, new_version)
           rescue StandardError => e
             error_response(e.message)
@@ -108,17 +112,18 @@ module DiscourseAi
           result.join("\n")
         end
 
-        def update_custom_html(artifact, version)
+        def update_custom_html(artifact:, artifact_version:, new_version:)
           content = []
 
-          if version.change_description.present?
-            content << [:description, "### Change Description\n\n#{version.change_description}"]
+          if new_version.change_description.present?
+            content << [:description, "### Change Description\n\n#{new_version.change_description}"]
           end
           content << [nil, "[details='#{I18n.t("discourse_ai.ai_artifact.view_changes")}']"]
 
           %w[html css js].each do |type|
-            old_content = artifact.public_send(type)
-            new_content = version.public_send(type)
+            source = artifact_version || artifact
+            old_content = source.public_send(type)
+            new_content = new_version.public_send(type)
 
             if old_content != new_content
               diff = line_based_markdown_diff(old_content, new_content)
@@ -129,7 +134,7 @@ module DiscourseAi
           content << [nil, "[/details]"]
           content << [
             :preview,
-            "### Preview\n\n<div class=\"ai-artifact\" data-ai-artifact-version=\"#{version.version_number}\" data-ai-artifact-id=\"#{artifact.id}\"></div>",
+            "### Preview\n\n<div class=\"ai-artifact\" data-ai-artifact-version=\"#{new_version.version_number}\" data-ai-artifact-id=\"#{artifact.id}\"></div>",
           ]
 
           self.custom_raw = content.map { |c| c[1] }.join("\n\n")
