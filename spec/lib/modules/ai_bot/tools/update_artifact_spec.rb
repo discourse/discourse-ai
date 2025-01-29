@@ -18,31 +18,19 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
-    it "correctly updates artifact using search/replace markers" do
+    it "correctly updates artifact using section markers" do
       responses = [<<~TXT.strip]
-        --- HTML ---
-        <<<<<<< SEARCH
-        <div>Original</div>
-        =======
+        [HTML]
         <div>Updated</div>
-        >>>>>>> REPLACE
-        --- CSS ---
-        <<<<<<< SEARCH
-        .test { color: blue; }
-        =======
+        [/HTML]
+        [CSS]
         .test { color: red; }
-        >>>>>>> REPLACE
-        --- JavaScript ---
-        <<<<<<< SEARCH
-        console.log('original');
-        =======
+        [/CSS]
+        [JavaScript]
         console.log('updated');
-        >>>>>>> REPLACE
-        <<<<<<< SEARCH
-        console.log('hello');
-        =======
+        console.log('world');
         console.log('updated2');
-        >>>>>>> REPLACE
+        [/JavaScript]
       TXT
 
       tool = nil
@@ -80,21 +68,23 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
       expect(tool.custom_raw).to include("### CSS Changes")
       expect(tool.custom_raw).to include("### JS Changes")
       expect(tool.custom_raw).to include("<div class=\"ai-artifact\"")
+    end
 
-      # lets make sure edits on revisions also work
+    it "handles partial updates with only some sections" do
       responses = [<<~TXT.strip]
-        --- JavaScript ---
-        <<<<<<< SEARCH
+        [JavaScript]
+        console.log('updated');
         console.log('world');
-        =======
-        console.log('replaced world');
-        >>>>>>> REPLACE
+        console.log('hello');
+        [/JavaScript]
       TXT
+
+      tool = nil
 
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
         tool =
           described_class.new(
-            { artifact_id: artifact.id, instructions: "Change second line of JS" },
+            { artifact_id: artifact.id, instructions: "Update only JavaScript" },
             bot_user: bot_user,
             llm: llm_model.to_llm,
             context: {
@@ -104,20 +94,18 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
 
         result = tool.invoke {}
         expect(result[:status]).to eq("success")
-
-        version = artifact.versions.order(:version_number).last
-        expect(version.html).to eq("<div>Updated</div>")
-        expect(version.css).to eq(".test { color: red; }")
-        expect(version.js).to eq(<<~JS.strip)
-          console.log('updated');
-          console.log('replaced world');
-          console.log('updated2');
-        JS
       end
+
+      version = artifact.versions.order(:version_number).last
+      expect(version.html).to eq("<div>Original</div>")
+      expect(version.css).to eq(".test { color: blue; }")
+      expect(version.js).to eq(
+        "console.log('updated');\nconsole.log('world');\nconsole.log('hello');",
+      )
     end
 
-    it "handles invalid search/replace format" do
-      responses = ["--- HTML ---\nInvalid format without markers"]
+    it "handles invalid section format" do
+      responses = ["Invalid format without proper section markers"]
 
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
         tool =
@@ -131,8 +119,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
           )
 
         result = tool.invoke {}
-        expect(result[:status]).to eq("error")
-        expect(result[:error]).to eq("Invalid format in html section")
+        expect(result[:status]).to eq("success") # The strategy will just keep original content
       end
     end
 
@@ -152,14 +139,11 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
       expect(result[:error]).to eq("Artifact not found")
     end
 
-    it "only includes sections with changes" do
+    it "preserves unchanged sections in the diff output" do
       responses = [<<~TXT.strip]
-        --- HTML ---
-        <<<<<<< SEARCH
-        <div>Original</div>
-        =======
+        [HTML]
         <div>Updated</div>
-        >>>>>>> REPLACE
+        [/HTML]
       TXT
 
       tool = nil
@@ -178,9 +162,64 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
         tool.invoke {}
       end
 
+      version = artifact.versions.order(:version_number).last
+      expect(version.css).to eq(artifact.css)
+      expect(version.js).to eq(artifact.js)
       expect(tool.custom_raw).to include("### HTML Changes")
       expect(tool.custom_raw).not_to include("### CSS Changes")
       expect(tool.custom_raw).not_to include("### JavaScript Changes")
+    end
+
+    it "handles updates to specific versions" do
+      # Create first version
+      responses = [<<~TXT.strip]
+        [HTML]
+        <div>Version 1</div>
+        [/HTML]
+      TXT
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        described_class
+          .new(
+            { artifact_id: artifact.id, instructions: "Update to version 1" },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            context: {
+              post_id: post.id,
+            },
+          )
+          .invoke {}
+      end
+
+      first_version = artifact.versions.order(:version_number).last
+
+      responses = [<<~TXT.strip]
+        [HTML]
+        <div>Updated from version 1</div>
+        [/HTML]
+      TXT
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        tool =
+          described_class.new(
+            {
+              artifact_id: artifact.id,
+              version: first_version.version_number,
+              instructions: "Update from version 1",
+            },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            context: {
+              post_id: post.id,
+            },
+          )
+
+        result = tool.invoke {}
+        expect(result[:status]).to eq("success")
+      end
+
+      latest_version = artifact.versions.order(:version_number).last
+      expect(latest_version.html).to eq("<div>Updated from version 1</div>")
     end
   end
 end
