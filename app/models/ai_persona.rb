@@ -12,6 +12,7 @@ class AiPersona < ActiveRecord::Base
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
   validate :chat_preconditions
+  validate :allowed_seeded_model, if: :default_llm
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
   # leaves some room for growth but sets a maximum to avoid memory issues
   # we may want to revisit this in the future
@@ -274,6 +275,18 @@ class AiPersona < ActiveRecord::Base
       errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_delete_system_persona"))
       throw :abort
     end
+  end
+
+  def allowed_seeded_model
+    return if default_llm.blank?
+
+    llm = LlmModel.find_by(id: default_llm.split(":").last.to_i)
+    return if llm.nil?
+    return if !llm.seeded?
+
+    return if SiteSetting.ai_bot_allowed_seeded_models.include?(llm.id.to_s)
+
+    errors.add(:default_llm, I18n.t("discourse_ai.llm.configuration.invalid_seeded_model"))
   end
 end
 

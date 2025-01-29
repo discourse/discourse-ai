@@ -27,9 +27,9 @@ module DiscourseAi
             }
           end
         llms =
-          DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
-            { id: hash[:value], name: hash[:name] }
-          end
+          DiscourseAi::Configuration::LlmEnumerator
+            .values(allowed_seeded_llms: SiteSetting.ai_bot_allowed_seeded_models)
+            .map { |hash| { id: hash[:value], name: hash[:name] } }
         render json: { ai_personas: ai_personas, meta: { tools: tools, llms: llms } }
       end
 
