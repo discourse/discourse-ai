@@ -172,6 +172,29 @@ RSpec.describe AiPersona do
     )
   end
 
+  it "validates allowed seeded model" do
+    persona =
+      AiPersona.new(
+        name: "test",
+        description: "test",
+        system_prompt: "test",
+        tools: [],
+        allowed_group_ids: [],
+        default_llm: "seeded_model:-1",
+      )
+
+    llm_model = Fabricate(:llm_model, id: -1)
+    SiteSetting.ai_bot_allowed_seeded_models = ""
+
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:default_llm]).to include(
+      I18n.t("discourse_ai.llm.configuration.invalid_seeded_model"),
+    )
+
+    SiteSetting.ai_bot_allowed_seeded_models = "-1"
+    expect(persona.valid?).to eq(true)
+  end
+
   it "does not leak caches between sites" do
     AiPersona.create!(
       name: "pun_bot",
