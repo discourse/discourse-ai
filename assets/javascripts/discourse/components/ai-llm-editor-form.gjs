@@ -80,9 +80,17 @@ export default class AiLlmEditorForm extends Component {
       return i18n(`discourse_ai.llms.providers.${provName}`);
     };
 
-    return this.args.llms.resultSetMeta.providers.map((prov) => {
-      return { id: prov, name: t(prov) };
-    });
+    return this.args.llms.resultSetMeta.providers
+      .map((prov) => {
+        return { id: prov, name: t(prov) };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  get tokenizers() {
+    return this.args.llms.resultSetMeta.tokenizers.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
   }
 
   get adminUser() {
@@ -341,7 +349,7 @@ export default class AiLlmEditorForm extends Component {
           as |field|
         >
           <field.Select as |select|>
-            {{#each @llms.resultSetMeta.tokenizers as |tokenizer|}}
+            {{#each this.tokenizers as |tokenizer|}}
               <select.Option
                 @value={{tokenizer.id}}
               >{{tokenizer.name}}</select.Option>
@@ -423,12 +431,10 @@ export default class AiLlmEditorForm extends Component {
                   class="ai-llm-quotas__row"
                   as |collection index collectionData|
                 >
-
                   <td
                     class="ai-llm-quotas__cell"
                   >{{collectionData.group_name}}</td>
                   <td class="ai-llm-quotas__cell">
-
                     <collection.Field
                       @name="max_tokens"
                       @title="max_tokens"
