@@ -29,16 +29,14 @@ export default class AiLlmEditorForm extends Component {
 
   @cached
   get formData() {
-    const { model } = this.args;
-
     if (this.args.llmTemplate) {
-      let [id, model] = this.args.llmTemplate.split(/-(.*)/);
+      let [id, modelName] = this.args.llmTemplate.split(/-(.*)/);
       if (id === "none") {
         return { provider_params: {} };
       }
 
       const info = this.args.llms.resultSetMeta.presets.findBy("id", id);
-      const modelInfo = info.models.findBy("name", model);
+      const modelInfo = info.models.findBy("name", modelName);
       const params =
         this.args.llms.resultSetMeta.provider_params[info.provider] ?? {};
 
@@ -54,6 +52,8 @@ export default class AiLlmEditorForm extends Component {
         ),
       };
     }
+
+    const { model } = this.args;
 
     return {
       max_prompt_tokens: model.max_prompt_tokens,
