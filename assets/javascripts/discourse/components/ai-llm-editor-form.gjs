@@ -1,23 +1,18 @@
 import Component from "@glimmer/component";
 import { cached, tracked } from "@glimmer/tracking";
-import { Input } from "@ember/component";
-import { concat, fn, get, hash } from "@ember/helper";
-import { on } from "@ember/modifier";
+import { concat, fn, get } from "@ember/helper";
 import { action, computed } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { service } from "@ember/service";
 import { eq, gt } from "truth-helpers";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
-import DButton from "discourse/components/d-button";
 import Form from "discourse/components/form";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
-import ComboBox from "select-kit/components/combo-box";
-import DTooltip from "float-kit/components/d-tooltip";
 import DurationSelector from "./ai-quota-duration-selector";
 import AiLlmQuotaModal from "./modal/ai-llm-quota-modal";
 

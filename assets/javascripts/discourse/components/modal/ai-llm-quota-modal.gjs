@@ -1,16 +1,12 @@
-import Form from "discourse/components/form";
 import Component from "@glimmer/component";
-import { cached, tracked } from "@glimmer/tracking";
+import { cached } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
-import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { not } from "truth-helpers";
-import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
+import Form from "discourse/components/form";
 import { i18n } from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
-import DTooltip from "float-kit/components/d-tooltip";
 import DurationSelector from "../ai-quota-duration-selector";
 
 export default class AiLlmQuotaModal extends Component {
