@@ -15,24 +15,6 @@
 .ai-llm-editor {
   padding-left: 0.5em;
 
-  .ai-llm-editor-input {
-    width: 350px;
-  }
-
-  .ai-llm-editor-provider-param {
-    &__checkbox {
-      display: flex;
-      align-items: flex-start;
-      flex-direction: row-reverse;
-      justify-content: left;
-    }
-  }
-
-  .fk-d-tooltip__icon {
-    padding-left: 0.25em;
-    color: var(--primary-medium);
-  }
-
   .ai-llm-editor-tests {
     &__failure {
       color: var(--danger);
@@ -41,21 +23,6 @@
     &__success {
       color: var(--success);
     }
-  }
-
-  &__api-key {
-    margin-right: 0.5em;
-  }
-
-  &__secret-api-key-group {
-    display: flex;
-    align-items: center;
-  }
-
-  &__vision-enabled,
-  &__enabled-chat-bot {
-    display: flex;
-    align-items: flex-start;
   }
 }
 
@@ -110,8 +77,8 @@
     grid-template-columns: repeat(auto-fill, minmax(16em, 1fr));
     gap: 1em 2em;
     margin-top: 1em;
-    border-top: 3px solid var(--primary-low); // matches tbody border
     padding-top: 1em;
+    border-top: 3px solid var(--primary-low);
   }
   &-list-item {
     display: grid;
