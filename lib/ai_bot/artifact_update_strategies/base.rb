@@ -27,6 +27,7 @@ module DiscourseAi
         def generate_changes
           response = +""
           llm.generate(build_prompt, user: user) { |partial| response << partial }
+          response
         end
 
         def build_prompt

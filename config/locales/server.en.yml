@@ -199,6 +199,7 @@ en:
       link: "Show Artifact in new tab"
       view_source: "View Source"
       view_changes: "View Changes"
+      change_description: "Change Description"
     unknown_model: "Unknown AI model"
 
     tools:

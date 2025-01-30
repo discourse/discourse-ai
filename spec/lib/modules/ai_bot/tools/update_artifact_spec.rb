@@ -62,7 +62,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
         console.log('updated2');
       JS
 
-      expect(tool.custom_raw).to include("### Change Description")
+      expect(tool.custom_raw).to include("Change Description")
       expect(tool.custom_raw).to include("[details='View Changes']")
       expect(tool.custom_raw).to include("### HTML Changes")
       expect(tool.custom_raw).to include("### CSS Changes")
@@ -223,6 +223,72 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
     end
   end
 
+  it "correctly updates artifact using diff strategy (partial diff)" do
+    responses = [<<~TXT.strip]
+
+    [HTML]
+    nonsense
+    <<<<<<< SEARCH
+    <div>Original</div>
+    =======
+    <div>Updated</div>
+    >>>>>>> REPLACE
+    garbage llm injects
+    [/HTML]
+
+    [CSS]
+    garbage llm injects
+    <<<<<<< SEARCH
+    .test { color: blue; }
+    =======
+    .test { color: red; }
+    >>>>>>> REPLACE
+    nonsense
+    [/CSS]
+
+    [JavaScript]
+    nothing to do
+    [/JavaScript]
+
+    LLMs like to say nonsense that we can ignore here as well
+  TXT
+
+    tool = nil
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+      tool =
+        described_class.new(
+          { artifact_id: artifact.id, instructions: "Change the text to Updated and color to red" },
+          bot_user: bot_user,
+          llm: llm_model.to_llm,
+          context: {
+            post_id: post.id,
+          },
+          persona_options: {
+            "update_algorithm" => "diff",
+          },
+        )
+
+      result = tool.invoke {}
+      expect(result[:status]).to eq("success")
+    end
+
+    version = artifact.versions.order(:version_number).last
+    expect(version.html).to eq("<div>Updated</div>")
+    expect(version.css).to eq(".test { color: red; }")
+    expect(version.js).to eq(<<~JS.strip)
+    console.log('original');
+    console.log('world');
+    console.log('hello');
+  JS
+
+    expect(tool.custom_raw).to include("Change Description")
+    expect(tool.custom_raw).to include("[details='View Changes']")
+    expect(tool.custom_raw).to include("### HTML Changes")
+    expect(tool.custom_raw).to include("### CSS Changes")
+    expect(tool.custom_raw).to include("<div class=\"ai-artifact\"")
+  end
+
   it "correctly updates artifact using diff strategy" do
     responses = [<<~TXT.strip]
 
@@ -286,7 +352,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
     console.log('updated sam');
   JS
 
-    expect(tool.custom_raw).to include("### Change Description")
+    expect(tool.custom_raw).to include("Change Description")
     expect(tool.custom_raw).to include("[details='View Changes']")
     expect(tool.custom_raw).to include("### HTML Changes")
     expect(tool.custom_raw).to include("### CSS Changes")

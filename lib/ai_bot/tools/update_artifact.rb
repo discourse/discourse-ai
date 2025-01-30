@@ -138,7 +138,10 @@ module DiscourseAi
           content = []
 
           if new_version.change_description.present?
-            content << [:description, "### Change Description\n\n#{new_version.change_description}"]
+            content << [
+              :description,
+              "[details='#{I18n.t("discourse_ai.ai_artifact.change_description")}']\n\n````\n#{new_version.change_description}\n````\n\n[/details]",
+            ]
           end
           content << [nil, "[details='#{I18n.t("discourse_ai.ai_artifact.view_changes")}']"]
 

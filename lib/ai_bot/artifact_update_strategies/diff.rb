@@ -33,12 +33,11 @@ module DiscourseAi
             end
           end
 
-          sections.transform_values do |content|
-            next nil if content.nil?
-            blocks = extract_search_replace_blocks(content)
-            raise InvalidFormatError, "Invalid format in #{current_section} section" if blocks.nil?
-            blocks
+          sections.each do |section, content|
+            sections[section] = extract_search_replace_blocks(content)
           end
+
+          sections
         end
 
         def apply_changes(changes)
