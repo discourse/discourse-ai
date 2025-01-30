@@ -692,16 +692,17 @@
   }
 }
 
-.fk-d-menu[data-identifier="ai-composer-helper-menu"] {
+.fk-d-menu[data-identifier="ai-composer-helper-menu"],
+.fk-d-menu[data-identifier="ai-title-suggester"] {
   z-index: z("modal", "dialog");
 
   .fullscreen-composer & {
     z-index: z("header") + 1;
   }
-}
 
-.mobile-view .fk-d-menu[data-identifier="ai-composer-helper-menu"] {
-  z-index: z("mobile-composer");
+  .mobile-view & {
+    z-index: z("mobile-composer");
+  }
 }
 
 .fk-d-toasts:has(.ai-proofread-error-toast) {
