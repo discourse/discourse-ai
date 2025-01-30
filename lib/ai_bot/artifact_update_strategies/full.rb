@@ -71,6 +71,13 @@ module DiscourseAi
             5. NEVER EVER BE LAZY, always include ALL the source code with any update you make. If you are lazy you will break the artifact.
             6. Do not print out any reasoning, just the changed code, you will be parsed via a program.
             7. Sections must start and end with exact tags: [HTML] [/HTML], [CSS] [/CSS], [JavaScript] [/JavaScript]
+            8. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
+
+            External libraries allowed only from:
+            - unpkg.com
+            - cdnjs.com
+            - jsdelivr.net
+            - ajax.googleapis.com
 
             Always adhere to the format when replying:
 

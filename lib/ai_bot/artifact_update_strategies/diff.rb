@@ -102,6 +102,13 @@ module DiscourseAi
             4. ONLY include [HTML], [CSS], and [JavaScript] sections if they have changes
             5. Ensure search text matches EXACTLY - partial matches will fail
             6. Keep changes minimal and focused
+            7. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
+
+            External libraries allowed only from:
+            - unpkg.com
+            - cdnjs.com
+            - jsdelivr.net
+            - ajax.googleapis.com
 
             Reply Format:
             [HTML]
