@@ -10,8 +10,8 @@ module DiscourseAi
           "semantic-search-#{digest}-#{SiteSetting.ai_embeddings_semantic_search_hyde_model}"
 
         Discourse.cache.delete(hyde_key)
-        Discourse.cache.delete("#{hyde_key}-#{SiteSetting.ai_embeddings_model}")
-        Discourse.cache.delete("-#{SiteSetting.ai_embeddings_model}")
+        Discourse.cache.delete("#{hyde_key}-#{SiteSetting.ai_embeddings_selected_model}")
+        Discourse.cache.delete("-#{SiteSetting.ai_embeddings_selected_model}")
       end
 
       def initialize(guardian)
@@ -24,7 +24,7 @@ module DiscourseAi
           build_embedding_key(
             digest,
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
-            SiteSetting.ai_embeddings_model,
+            SiteSetting.ai_embeddings_selected_model,
           )
 
         Discourse.cache.read(embedding_key).present?
@@ -42,7 +42,7 @@ module DiscourseAi
           build_embedding_key(
             digest,
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
-            SiteSetting.ai_embeddings_model,
+            SiteSetting.ai_embeddings_selected_model,
           )
 
         hypothetical_post =
@@ -57,7 +57,7 @@ module DiscourseAi
 
       def embedding(search_term)
         digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
-        embedding_key = build_embedding_key(digest, "", SiteSetting.ai_embeddings_model)
+        embedding_key = build_embedding_key(digest, "", SiteSetting.ai_embeddings_selected_model)
 
         Discourse.cache.fetch(embedding_key, expires_in: 1.week) { vector.vector_from(search_term) }
       end
@@ -120,7 +120,7 @@ module DiscourseAi
           build_embedding_key(
             digest,
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
-            SiteSetting.ai_embeddings_model,
+            SiteSetting.ai_embeddings_selected_model,
           )
 
         search_term_embedding =

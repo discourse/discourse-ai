@@ -10,6 +10,7 @@ module DiscourseAi
 
       def related_topic_ids_for(topic)
         return [] if SiteSetting.ai_embeddings_semantic_related_topics < 1
+        return [] if SiteSetting.ai_embeddings_selected_model.blank? # fail-safe in case something end up in a broken state.
 
         cache_for = results_ttl(topic)
 
