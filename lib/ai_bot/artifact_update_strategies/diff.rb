@@ -8,11 +8,7 @@ module DiscourseAi
         def build_prompt
           DiscourseAi::Completions::Prompt.new(
             system_prompt,
-            messages: [
-              { type: :user, content: current_artifact_content },
-              { type: :model, content: "Please explain the changes you would like to generate:" },
-              { type: :user, content: instructions },
-            ],
+            messages: [{ type: :user, content: user_prompt }],
             post_id: post.id,
             topic_id: post.topic_id,
           )
@@ -25,16 +21,17 @@ module DiscourseAi
 
           response.each_line do |line|
             case line
-            when /^--- (HTML|CSS|JavaScript) ---$/
+            when /^\[(HTML|CSS|JavaScript)\]$/
               sections[current_section] = lines.join if current_section && !lines.empty?
-              current_section = line.match(/^--- (.+) ---$/)[1].downcase.to_sym
+              current_section = line.match(/^\[(.+)\]$/)[1].downcase.to_sym
               lines = []
+            when %r{^\[/(?:HTML|CSS|JavaScript)\]$}
+              sections[current_section] = lines.join if current_section && !lines.empty?
+              current_section = nil
             else
               lines << line if current_section
             end
           end
-
-          sections[current_section] = lines.join if current_section && !lines.empty?
 
           sections.transform_values do |content|
             next nil if content.nil?
@@ -80,8 +77,9 @@ module DiscourseAi
           blocks = []
           remaining = content
 
-          while remaining =~ /<<<<<<< SEARCH\n(.*?)\n=======\n(.*?)\n>>>>>>> REPLACE/m
-            blocks << { search: $1, replace: $2 }
+          pattern = /<<+\s*SEARCH\s*\n(.*?)\n=+\s*\n(.*?)\n>>+\s*REPLACE/m
+          while remaining =~ pattern
+            blocks << { search: $1.strip, replace: $2.strip }
             remaining = $'
           end
 
@@ -93,24 +91,33 @@ module DiscourseAi
             You are a web development expert generating precise search/replace changes for updating HTML, CSS, and JavaScript code.
 
             Important rules:
-            1. Use the format <<<<<<< SEARCH / ======= / >>>>>>> REPLACE for each change
-            2. You can specify multiple search/replace blocks per section
-            3. Generate three sections: HTML, CSS, and JavaScript
-            4. Only include sections that have changes
-            5. Keep changes minimal and focused
-            6. Use exact matches for the search content
 
-            Format:
-            --- HTML ---
-            (changes or empty if no changes)
-            --- CSS ---
-            (changes or empty if no changes)
-            --- JavaScript ---
-            (changes or empty if no changes)
+            1. Use EXACTLY this format for changes:
+               <<<<<<< SEARCH
+               (exact code to find)
+               =======
+               (replacement code)
+               >>>>>>> REPLACE
+            2. DO NOT modify the markers or add spaces around them
+            3. DO NOT add explanations or comments within sections
+            4. ONLY include [HTML], [CSS], and [JavaScript] sections if they have changes
+            5. Ensure search text matches EXACTLY - partial matches will fail
+            6. Keep changes minimal and focused
 
+            Reply Format:
+            [HTML]
+            (changes or empty if no changes)
+            [/HTML]
+            [CSS]
+            (changes or empty if no changes)
+            [/CSS]
+            [JavaScript]
+            (changes or empty if no changes)
+            [/JavaScript]
 
             Example - Multiple changes in one file:
-            --- JavaScript ---
+
+            [JavaScript]
             <<<<<<< SEARCH
             console.log('old1');
             =======
@@ -121,9 +128,11 @@ module DiscourseAi
             =======
             console.log('new2');
             >>>>>>> REPLACE
+            [/JavaScript]
 
             Example - CSS with multiple blocks:
-            --- CSS ---
+
+            [CSS]
             <<<<<<< SEARCH
             .button { color: blue; }
             =======
@@ -134,22 +143,30 @@ module DiscourseAi
             =======
             .text { font-size: 16px; }
             >>>>>>> REPLACE
+            [/CSS]
           PROMPT
         end
 
-        def current_artifact_content
+        def user_prompt
           source = artifact_version || artifact
           <<~CONTENT
-            Current artifact code:
+            Artifact code:
 
-            --- HTML ---
+            [HTML]
             #{source.html}
+            [/HTML]
 
-            --- CSS ---
+            [CSS]
             #{source.css}
+            [/CSS]
 
-            --- JavaScript ---
+            [JavaScript]
             #{source.js}
+            [/JavaScript]
+
+            Instructions:
+
+            #{instructions}
           CONTENT
         end
       end
