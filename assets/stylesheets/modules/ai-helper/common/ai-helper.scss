@@ -272,7 +272,7 @@
 .ai-category-suggester-content,
 .ai-tag-suggester-content,
 .ai-title-suggester-content {
-  z-index: z("modal", "dropdown");
+  z-index: z("composer", "dropdown");
 }
 
 .ai-suggestions-menu .btn {
@@ -693,7 +693,7 @@
 }
 
 .fk-d-menu[data-identifier="ai-composer-helper-menu"],
-.fk-d-menu[data-identifier="ai-suggester-menu"] {
+.fk-d-menu[data-identifier="ai-title-suggester"] {
   z-index: z("modal", "dialog");
 
   .fullscreen-composer & {
