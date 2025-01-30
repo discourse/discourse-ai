@@ -97,7 +97,7 @@ RSpec.describe RagDocumentFragment do
       vector.generate_representation_from(rag_document_fragment_1)
     end
 
-    it "regenerates all embeddings if ai_embeddings_model changes" do
+    it "regenerates all embeddings if ai_embeddings_selected_model changes" do
       old_id = rag_document_fragment_1.id
 
       UploadReference.create!(upload_id: upload_1.id, target: persona)
