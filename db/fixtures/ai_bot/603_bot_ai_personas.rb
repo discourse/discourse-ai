@@ -37,7 +37,19 @@ DiscourseAi::AiBot::Personas::Persona.system_personas.each do |persona_class, id
 
   persona.system = true
   instance = persona_class.new
-  persona.tools = instance.tools.map { |tool| tool.to_s.split("::").last }
+  tools = {}
+  instance.tools.map { |tool| tool.to_s.split("::").last }.each { |name| tools[name] = nil }
+  existing_tools = persona.tools || []
+
+  existing_tools.each do |tool|
+    if tool.is_a?(Array)
+      name, value = tool
+      tools[name] = value if tools.key?(name)
+    end
+  end
+
+  persona.tools = tools.map { |name, value| [name, value] }
+
   persona.system_prompt = instance.system_prompt
   persona.top_p = instance.top_p
   persona.temperature = instance.temperature

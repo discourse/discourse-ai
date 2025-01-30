@@ -210,4 +210,32 @@ RSpec.describe AiPersona do
     RailsMultisite::ConnectionManagement.stubs(:current_db) { "abc" }
     expect(AiPersona.persona_cache[:value]).to eq(nil)
   end
+
+  describe "system persona validations" do
+    let(:system_persona) do
+      AiPersona.create!(
+        name: "system_persona",
+        description: "system persona",
+        system_prompt: "system persona",
+        tools: %w[Search Time],
+        system: true,
+      )
+    end
+
+    context "when modifying a system persona" do
+      it "allows changing tool options without allowing tool additions/removals" do
+        tools = [["Search", { "base_query" => "abc" }], ["Time"]]
+        system_persona.update!(tools: tools)
+
+        system_persona.reload
+        expect(system_persona.tools).to eq(tools)
+
+        invalid_tools = ["Time"]
+        system_persona.update(tools: invalid_tools)
+        expect(system_persona.errors[:base]).to include(
+          I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"),
+        )
+      end
+    end
+  end
 end

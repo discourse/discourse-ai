@@ -26,6 +26,8 @@ class AiToolSerializer < ApplicationSerializer
         name: option.localized_name,
         description: option.localized_description,
         type: option.type,
+        values: option.values,
+        default: option.default,
       }
     end
     options

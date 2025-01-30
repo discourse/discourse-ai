@@ -37,6 +37,13 @@ module DiscourseAi
           }
         end
 
+        def self.accepted_options
+          [
+            option(:editor_llm, type: :llm),
+            option(:update_algorithm, type: :enum, values: %w[full diff], default: "full"),
+          ]
+        end
+
         def invoke
           yield "Updating Artifact\n#{parameters[:instructions]}\n\n"
 

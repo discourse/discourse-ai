@@ -27,8 +27,8 @@ module DiscourseAi
             []
           end
 
-          def option(name, type:)
-            Option.new(tool: self, name: name, type: type)
+          def option(name, type:, values: nil, default: nil)
+            Option.new(tool: self, name: name, type: type, values: values, default: default)
           end
 
           def help
@@ -92,8 +92,13 @@ module DiscourseAi
                 val = (val.to_s == "true")
               when :integer
                 val = val.to_i
+              when :enum
+                val = val.to_s
+                val = option.default if option.values && !option.values.include?(val)
               end
               result[option.name] = val
+            elsif val.nil?
+              result[option.name] = option.default
             end
           end
           result

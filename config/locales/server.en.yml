@@ -293,6 +293,20 @@ en:
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
       tool_options:
+        create_artifact:
+          creator_llm:
+            name: "LLM"
+            description: "Language model to use for artifact creation"
+          echo_artifact:
+            name: "Echo Artifact"
+            description: "Include full artifact source in subsequent replies"
+        update_artifact:
+          editor_llm:
+            name: "LLM"
+            description: "Language model to use for artifact edits"
+          update_algorithm:
+            name: "Update Algorithm"
+            description: "Algorithm used for artifact updates (full vs diff)"
         google:
           base_query:
             name: "Base Search Query"

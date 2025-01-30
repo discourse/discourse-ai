@@ -101,6 +101,10 @@ module DiscourseAi
           end
         end
 
+        def self.accepted_options
+          [option(:creator_llm, type: :llm), option(:echo_artifact, type: :boolean)]
+        end
+
         def invoke
           name = parameters[:name] || "New Artifact"
           yield "#{name}\n\n" + parameters[:specification].to_s

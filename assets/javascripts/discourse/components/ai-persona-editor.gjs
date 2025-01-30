@@ -420,13 +420,12 @@ export default class PersonaEditor extends Component {
           </div>
         {{/if}}
       {{/if}}
-      {{#unless this.editingModel.system}}
-        <AiPersonaToolOptions
-          @persona={{this.editingModel}}
-          @tools={{this.selectedToolNames}}
-          @allTools={{@personas.resultSetMeta.tools}}
-        />
-      {{/unless}}
+      <AiPersonaToolOptions
+        @persona={{this.editingModel}}
+        @tools={{this.selectedToolNames}}
+        @llms={{@personas.resultSetMeta.llms}}
+        @allTools={{@personas.resultSetMeta.tools}}
+      />
       <div class="control-group">
         <label>{{i18n "discourse_ai.ai_persona.allowed_groups"}}</label>
         <GroupChooser

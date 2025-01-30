@@ -15,10 +15,12 @@ export default class AiLlmSelector extends ComboBox {
 
   @computed
   get content() {
+    const blankName =
+      this.attrs.blankName || i18n("discourse_ai.ai_persona.no_llm_selected");
     return [
       {
         id: "blank",
-        name: i18n("discourse_ai.ai_persona.no_llm_selected"),
+        name: blankName,
       },
     ].concat(this.llms);
   }
