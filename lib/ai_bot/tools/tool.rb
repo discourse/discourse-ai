@@ -43,7 +43,7 @@ module DiscourseAi
             false
           end
 
-          def inject_prompt(prompt:, context:)
+          def inject_prompt(prompt:, context:, persona:)
           end
         end
 

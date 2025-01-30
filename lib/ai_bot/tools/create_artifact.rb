@@ -66,7 +66,8 @@ module DiscourseAi
           }
         end
 
-        def self.inject_prompt(prompt:, context:)
+        def self.inject_prompt(prompt:, context:, persona:)
+          return if persona.options["echo_artifact"] != "true"
           # we inject the current artifact content into the last user message
           if topic_id = context[:topic_id]
             posts = Post.where(topic_id: topic_id)
@@ -138,6 +139,13 @@ module DiscourseAi
         def generate_artifact_code(post:, user:)
           prompt = build_artifact_prompt(post: post)
           response = +""
+
+          llm =
+            (
+              options[:creator_llm].present? &&
+                LlmModel.find_by(id: options[:creator_llm].to_i)&.to_llm
+            ) || self.llm
+
           llm.generate(prompt, user: user, feature_name: "create_artifact") do |partial_response|
             response << partial_response
           end
