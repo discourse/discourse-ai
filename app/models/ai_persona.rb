@@ -130,8 +130,6 @@ class AiPersona < ActiveRecord::Base
       tool_details
     ]
 
-    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
-
     instance_attributes = {}
     attributes.each do |attr|
       value = self.read_attribute(attr)
@@ -139,14 +137,6 @@ class AiPersona < ActiveRecord::Base
     end
 
     instance_attributes[:username] = user&.username_lower
-
-    if persona_class
-      instance_attributes.each do |key, value|
-        # description/name are localized
-        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
-      end
-      return persona_class
-    end
 
     options = {}
     force_tool_use = []
@@ -179,6 +169,16 @@ class AiPersona < ActiveRecord::Base
         force_tool_use << klass if should_force_tool_use
         klass
       end
+
+    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
+    if persona_class
+      instance_attributes.each do |key, value|
+        # description/name are localized
+        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
+      end
+      persona_class.define_method(:options) { options }
+      return persona_class
+    end
 
     ai_persona_id = self.id
 

@@ -65,9 +65,24 @@ module DiscourseAi
             return error_response("Attempting to update an artifact you are not allowed to")
           end
 
+          llm =
+            (
+              options[:editor_llm].present? &&
+                LlmModel.find_by(id: options[:editor_llm].to_i)&.to_llm
+            ) || self.llm
+
+          strategy =
+            (
+              if options[:update_algorithm] == "diff"
+                ArtifactUpdateStrategies::Diff
+              else
+                ArtifactUpdateStrategies::Full
+              end
+            )
+
           begin
             new_version =
-              ArtifactUpdateStrategies::Full.new(
+              strategy.new(
                 llm: llm,
                 post: post,
                 user: post.user,

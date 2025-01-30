@@ -306,7 +306,7 @@ en:
             description: "Language model to use for artifact edits"
           update_algorithm:
             name: "Update Algorithm"
-            description: "Algorithm used for artifact updates (full vs diff)"
+            description: "Ask LLM to fully replace, or use diff to update"
         google:
           base_query:
             name: "Base Search Query"
