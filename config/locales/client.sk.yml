@@ -115,6 +115,18 @@ sk:
           save_caption: "Uložiť"
           automatic_caption_dialog:
             confirm: "Povoliť"
+      embeddings:
+        back: "Späť"
+        save: "Uložiť"
+        delete: "Odstrániť"
+        edit: "Upraviť"
+        tests:
+          title: "Spustiť test"
+          success: "Úspech!"
+        display_name: "Meno"
+        providers:
+          google: "Google"
+          fake: "Vlastné"
       ai_bot:
         debug_ai_modal:
           request: "Požiadavka"

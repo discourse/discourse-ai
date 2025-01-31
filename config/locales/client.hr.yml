@@ -111,6 +111,17 @@ hr:
           save_caption: "Spremi"
           automatic_caption_dialog:
             confirm: "Omogućiti"
+      embeddings:
+        back: "Natrag"
+        save: "Spremi"
+        delete: "Pobriši"
+        edit: "Uredi"
+        tests:
+          success: "Uspjeh!"
+        display_name: "Ime"
+        providers:
+          google: "Google"
+          fake: "Posebna"
       ai_bot:
         debug_ai_modal:
           request: "Zahtjev"

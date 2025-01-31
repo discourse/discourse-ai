@@ -164,6 +164,20 @@ cs:
             cancel: "Již se neptat"
         no_content_error: "Nejprve přidejte obsah, abyste na něm mohli provádět akce AI"
       embeddings:
+        back: "Zpět"
+        save: "Uložit"
+        delete: "Smazat"
+        edit: "Upravit"
+        tests:
+          title: "Spustit test"
+          success: "Úspěch!"
+        display_name: "Název"
+        providers:
+          hugging_face: "Hugging Face"
+          open_ai: "OpenAI"
+          google: "Google"
+          CDCK: "CDCK"
+          fake: "Přizpůsobené"
         semantic_search_results:
           toggle: "Zobrazeno %{count} výsledků nalezených pomocí AI"
           toggle_hidden: "Skryto %{count} výsledků nalezených pomocí AI"

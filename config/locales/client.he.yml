@@ -476,6 +476,26 @@ he:
         model_used: "דגם בשימוש:"
         accuracy: "דיוק:"
       embeddings:
+        back: "חזרה"
+        save: "שמירה"
+        delete: "מחיקה"
+        presets: "בחירת ערכה…"
+        edit: "עריכה"
+        tests:
+          title: "הרצת בדיקה"
+          running: "הבדיקה רצה…"
+          success: "הצליח!"
+        display_name: "שם"
+        provider: "ספק"
+        tokenizer: "מפרק לאסימונים"
+        providers:
+          hugging_face: "Hugging Face"
+          open_ai: "OpenAI"
+          google: "Google"
+          CDCK: "CDCK"
+          fake: "מותאם"
+        provider_fields:
+          model_name: "שם המודל"
         semantic_search: "נושאים (סמנטיקה)"
         semantic_search_loading: "מתבצע חיפוש אחר תוצאות נוספות עם בינה מלאכותית"
         semantic_search_results:

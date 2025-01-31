@@ -148,6 +148,17 @@ lt:
           save_caption: "Išsaugoti"
           automatic_caption_dialog:
             confirm: "Įgalinti"
+      embeddings:
+        back: "Atgal"
+        save: "Išsaugoti"
+        delete: "Pašalinti"
+        edit: "Redaguoti"
+        tests:
+          success: "Sėkmingai!"
+        display_name: "Vardas"
+        providers:
+          google: "Google"
+          fake: "Išskirtinės"
       ai_bot:
         debug_ai_modal:
           request: "Užklausa"

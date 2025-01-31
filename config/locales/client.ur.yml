@@ -107,6 +107,17 @@ ur:
           save_caption: "محفوظ کریں"
           automatic_caption_dialog:
             confirm: "فعال کریں"
+      embeddings:
+        back: "واپس"
+        save: "محفوظ کریں"
+        delete: "مٹائیں"
+        edit: "ترمیم کریں"
+        tests:
+          success: "کامیابی!"
+        display_name: "نام"
+        providers:
+          google: "گُوگَل"
+          fake: "اپنی مرضی کا"
       ai_bot:
         debug_ai_modal:
           request: "ریکویسٹ"

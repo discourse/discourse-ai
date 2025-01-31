@@ -113,6 +113,18 @@ hu:
           save_caption: "Mentés"
           automatic_caption_dialog:
             confirm: "Engedélyez"
+      embeddings:
+        back: "Vissza"
+        save: "Mentés"
+        delete: "Törlés"
+        edit: "Szerkesztés"
+        tests:
+          title: "Teszt futtatása"
+          success: "Siker!"
+        display_name: "Név"
+        providers:
+          google: "Google"
+          fake: "Egyéni"
       ai_bot:
         debug_ai_modal:
           request: "Kérés"

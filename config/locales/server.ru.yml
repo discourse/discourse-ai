@@ -52,10 +52,7 @@ ru:
     ai_nsfw_flag_threshold_porn: "Пороговое значение, при котором изображение, отнесенное к категории «порно», определяется как NSFW-контент."
     ai_nsfw_flag_threshold_sexy: "Пороговое значение, при котором изображение, отнесенное к категории «сексуальное», определяется как NSFW-контент."
     ai_nsfw_models: "Модели, используемые для оценки NSFW-контента."
-    ai_openai_embeddings_url: "Специальный URL-адрес для API векторных представлений OpenAI (в случае с Azure это может быть https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
-    ai_openai_api_key: "API-ключ для API OpenAI. Используется ТОЛЬКО для эмбеддингов и Dall-E. Для GPT используйте вкладку конфигурации LLM"
-    ai_hugging_face_tei_endpoint: URL-адрес, по которому работает API для вывода текстовых эмбеддингов Hugging Face
-    ai_hugging_face_tei_api_key: Ключ API для вывода текстовых эмбеддингов Hugging Face
+    ai_openai_api_key: "API-ключ для API OpenAI. Используется ТОЛЬКО для Dall-E. Для GPT используйте вкладку конфигурации LLM"
     ai_helper_enabled: "Включить AI-помощника"
     composer_ai_helper_allowed_groups: "Для пользователей в этих группах будет отображаться кнопка AI-помощника в редакторе."
     ai_helper_allowed_in_pm: "Включить AI-помощник для редактора в личных сообщениях."
@@ -68,15 +65,11 @@ ru:
     post_ai_helper_allowed_groups: "Группы пользователей, которым разрешен доступ к функциям AI-помощника в публикациях"
     ai_helper_image_caption_model: "Выберите модель, которая будет использоваться для создания подписей к изображениям"
     ai_auto_image_caption_allowed_groups: "Пользователи в этих группах могут включать автоматическое добавление подписей к изображениям."
-    ai_embeddings_enabled: "Включить модуль векторных представлений."
-    ai_embeddings_discourse_service_api_endpoint: "URL-адрес, по которому работает API для модуля векторных представлений"
-    ai_embeddings_discourse_service_api_key: "API-ключ для API векторных представлений"
-    ai_embeddings_model: "Для быстрых локальных результатов на английском используйте all-mpnet-base-v2, для API OpenAI (понадобится API-ключ) — text-embedding-ada-002, для локальных многоязычных векторных представлений — multilingual-e5-large"
+    ai_embeddings_selected_model: "Использовать выбранную модель для создания встраиваний."
     ai_embeddings_generate_for_pms: "Генерировать векторные представления для личных сообщений."
     ai_embeddings_semantic_related_topics_enabled: "Использовать семантический поиск для связанных тем."
     ai_embeddings_semantic_related_topics: "Максимальное количество тем для показа в разделе связанных тем."
     ai_embeddings_backfill_batch_size: "Количество векторных представлений для обратного заполнения каждые 15 минут."
-    ai_embeddings_pg_connection_string: "Строка подключения PostgreSQL для модуля векторных представлений. Необходимо включить расширение «pgvector» и создать таблицы. Подробнее см. в документации."
     ai_embeddings_semantic_search_enabled: "Включить полностраничный семантический поиск."
     ai_embeddings_semantic_quick_search_enabled: "Включить опцию семантического поиска во всплывающем меню поиска."
     ai_embeddings_semantic_related_include_closed_topics: "Включать в результаты семантического поиска закрытые темы"
@@ -440,15 +433,11 @@ ru:
         other: "Мы не смогли удалить эту модель, потому что ее используют %{settings}. Обновите настройки и попробуйте еще раз."
       cannot_edit_builtin: "Встроенную модель редактировать нельзя."
     embeddings:
+      delete_failed: "Эта модель сейчас используется. Сначала обновите параметр `ai embeddings selected model`."
+      cannot_edit_builtin: "Встроенную модель редактировать нельзя."
       configuration:
         disable_embeddings: "Сначала вам необходимо отключить настройку 'ai embeddings enabled'."
-        choose_model: "Сначала задайте 'ai embeddings model'."
-        model_unreachable: "Не удалось создать тестовый эмбеддинг с этой моделью. Проверьте правильность настроек."
-        hint:
-          one: "Убедитесь, что настроен параметр `%{settings}`."
-          few: "Убедитесь, что параметры нужного вам поставщика настроены. Варианты: %{settings}"
-          many: "Убедитесь, что параметры нужного вам поставщика настроены. Варианты: %{settings}"
-          other: "Убедитесь, что параметры нужного вам поставщика настроены. Варианты: %{settings}"
+        choose_model: "Сначала задайте 'ai embeddings selected model'."
     llm_models:
       missing_provider_param: "Параметр %{param} не может быть пустым"
       bedrock_invalid_url: "Чтобы использовать эту модель, заполните все поля."

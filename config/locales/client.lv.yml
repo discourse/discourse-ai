@@ -97,6 +97,16 @@ lv:
           save_caption: "Saglabāt"
           automatic_caption_dialog:
             confirm: "Ieslēgt"
+      embeddings:
+        back: "Atpakaļ"
+        save: "Saglabāt"
+        delete: "Dzēst"
+        edit: "Rediģēt"
+        tests:
+          success: "Veiksmīgi!"
+        display_name: "Vārds"
+        providers:
+          google: "Google"
       ai_bot:
         debug_ai_modal:
           request: "Pieprasījums"

@@ -52,10 +52,7 @@ nl:
     ai_nsfw_flag_threshold_porn: "Drempelwaarde voor een als porno geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_flag_threshold_sexy: "Drempelwaarde voor een als sexy geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_models: "Te gebruiken modellen voor NVWW-inferentie."
-    ai_openai_embeddings_url: "Aangepaste URL voor de OpenAI-insluitings-API. (in het geval van Azure kan dit zijn: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "API-sleutel voor OpenAI-API. ALLEEN gebruikt voor insluitingen en Dall-E. Gebruik voor GPT het tabblad LLM-configuratie"
-    ai_hugging_face_tei_endpoint: URL waar de API wordt uitgevoerd voor inferentie van Hugging Face-tekstinsluitingen
-    ai_hugging_face_tei_api_key: API-sleutel voor inferentie van Hugging Face-tekstinsluitingen
+    ai_openai_api_key: "API-sleutel voor OpenAI-API. ALLEEN gebruikt Dall-E. Gebruik voor GPT het tabblad LLM-configuratie"
     ai_helper_enabled: "Schakel de AI-helper in."
     composer_ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
     ai_helper_allowed_in_pm: "Schakel de AI-hulp van de editor in in PB's."
@@ -68,15 +65,11 @@ nl:
     post_ai_helper_allowed_groups: "Gebruikersgroepen die toegang hebben tot AI-helperfuncties in berichten"
     ai_helper_image_caption_model: "Selecteer het te gebruiken model voor het genereren van afbeeldingsbijschriften"
     ai_auto_image_caption_allowed_groups: "Gebruikers in deze groepen kunnen automatische afbeeldingsbijschriften in- en uitschakelen."
-    ai_embeddings_enabled: "Schakel de insluitingsmodule in."
-    ai_embeddings_discourse_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de insluitingsmodule"
-    ai_embeddings_discourse_service_api_key: "API-sleutel voor de insluitings-API"
-    ai_embeddings_model: "Gebruik all-mpnet-base-v2 voor lokale en snelle inferentie in het Engels, text-embedding-ada-002 om de OpenAI-API te gebruiken (API-sleutel nodig) en multilingual-e5-large voor lokale meertalige insluiting"
+    ai_embeddings_selected_model: "Gebruik het geselecteerde model voor het genereren van insluitingen."
     ai_embeddings_generate_for_pms: "Genereer insluitingen voor persoonlijke berichten."
     ai_embeddings_semantic_related_topics_enabled: "Gebruik semantisch zoeken voor gerelateerde topics."
     ai_embeddings_semantic_related_topics: "Maximaal aantal topics om weer te geven in de sectie met gerelateerde topics."
     ai_embeddings_backfill_batch_size: "Aantal insluitingen dat elke 15 minuten moet worden aangevuld."
-    ai_embeddings_pg_connection_string: "PostgreSQL-verbindingsreeks voor de insluitingsmodule. Vereist dat de pgvector-extensie is ingeschakeld en dat een reeks tabellen is gemaakt. Zie de documentatie voor meer informatie."
     ai_embeddings_semantic_search_enabled: "Schakel semantisch zoeken op volledige pagina's in."
     ai_embeddings_semantic_quick_search_enabled: "Schakel de semantische zoekoptie in de zoekmenupop-up in."
     ai_embeddings_semantic_related_include_closed_topics: "Neem gesloten topics op in semantische zoekresultaten"
@@ -422,13 +415,11 @@ nl:
         other: "We kunnen dit model niet verwijderen omdat %{settings} het gebruiken. Werk de instellingen bij en probeer het opnieuw."
       cannot_edit_builtin: "Je kunt een ingebouwd model niet bewerken."
     embeddings:
+      delete_failed: "Dit model is momenteel in gebruik. Werk eerst 'ai embeddings selected model' bij."
+      cannot_edit_builtin: "Je kunt een ingebouwd model niet bewerken."
       configuration:
         disable_embeddings: "Je moet 'ai embeddings enabled' eerst uitschakelen."
-        choose_model: "Stel eerst 'ai embeddings model' in."
-        model_unreachable: "We konden geen testinsluiting genereren met dit model. Controleer of je instellingen juist zijn."
-        hint:
-          one: "Zorg dat de instelling `%{settings}` is geconfigureerd."
-          other: "Zorg dat de instellingen van de gewenste provider zijn geconfigureerd. Opties zijn: %{settings}"
+        choose_model: "Stel eerst 'ai embeddings selected model' in."
     llm_models:
       missing_provider_param: "%{param} mag niet leeg zijn"
       bedrock_invalid_url: "Vul alle velden in om dit model te gebruiken."

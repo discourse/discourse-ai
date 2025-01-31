@@ -52,10 +52,7 @@ tr_TR:
     ai_nsfw_flag_threshold_porn: "Porno olarak sınıflandırılan bir görüntünün NSFW olarak değerlendirilmesi için eşik."
     ai_nsfw_flag_threshold_sexy: "Seksi olarak sınıflandırılan bir görüntünün NSFW olarak değerlendirilmesi için eşik."
     ai_nsfw_models: "NSFW çıkarımı için kullanılacak modeller."
-    ai_openai_embeddings_url: "OpenAI gömme API'si için kullanılan özel URL. (Azure söz konusu olduğunda şu olabilir: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "OpenAI API'si için API anahtarı. SADECE gömmeler ve Dall-E için kullanılır. GPT için LLM yapılandırma sekmesini kullanın"
-    ai_hugging_face_tei_endpoint: Hugging Face metni yerleştirme çıkarımı için API'nin çalıştığı URL
-    ai_hugging_face_tei_api_key: Hugging Face metni yerleştirme çıkarımı için API anahtarı
+    ai_openai_api_key: "OpenAI API için API anahtarı. SADECE Dall-E için kullanılır. GPT için LLM yapılandırma sekmesini kullanın"
     ai_helper_enabled: "YZ yardımcısını etkinleştirin."
     composer_ai_helper_allowed_groups: "Bu gruplardaki kullanıcılar, bestecide YZ yardımcı düğmesini görür."
     ai_helper_allowed_in_pm: "Kişisel mesajlarda bestecinin YZ yardımcıyı etkinleştirin."
@@ -68,15 +65,11 @@ tr_TR:
     post_ai_helper_allowed_groups: "Gönderilerde YZ Yardımcısı özelliklerine erişmesine izin verilen kullanıcı grupları"
     ai_helper_image_caption_model: "Görüntü alt yazıları oluşturmak için kullanılacak modeli seçin"
     ai_auto_image_caption_allowed_groups: "Bu gruplardaki kullanıcılar otomatik görüntü alt yazısı eklemeyi değiştirebilir."
-    ai_embeddings_enabled: "Gömme modülünü etkinleştirin."
-    ai_embeddings_discourse_service_api_endpoint: "Gömme modülü için API'nin çalıştığı URL"
-    ai_embeddings_discourse_service_api_key: "Gömme API'si için API anahtarı"
-    ai_embeddings_model: "İngilizcede yerel ve hızlı çıkarım için all-mpnet-base-v2'yi, OpenAI API'sini (API anahtarı gerekir) kullanmak için text-embedding-ada-002'yi ve yerel çok dilli yerleştirmeler için multilingual-e5-large'ı kullanın"
+    ai_embeddings_selected_model: "Gömme oluşturmak için seçili modeli kullanın."
     ai_embeddings_generate_for_pms: "Kişisel mesajlar için gömmeler oluşturun."
     ai_embeddings_semantic_related_topics_enabled: "İlgili konular için Semantik Arama'yı kullanın."
     ai_embeddings_semantic_related_topics: "İlgili konu bölümünde gösterilecek maksimum konu sayısı."
     ai_embeddings_backfill_batch_size: "Her 15 dakikada bir geri doldurulacak gömme sayısı."
-    ai_embeddings_pg_connection_string: "Gömme modülü için PostgreSQL bağlantı dizesi. pgvector uzantısının etkinleştirilmesi ve bir dizi tablonun oluşturulması gerekir. Daha fazla bilgi için belgelere bakın."
     ai_embeddings_semantic_search_enabled: "Tam sayfa semantik aramayı etkinleştirin."
     ai_embeddings_semantic_quick_search_enabled: "Arama menüsü açılır penceresinde semantik arama seçeneğini etkinleştirin."
     ai_embeddings_semantic_related_include_closed_topics: "Kapalı konuları semantik arama sonuçlarına dâhil edin"
@@ -422,13 +415,11 @@ tr_TR:
         other: "%{settings} kullandığı için bu modeli silemedik. Ayarları güncelleyip tekrar deneyin."
       cannot_edit_builtin: "Yerleşik bir modeli düzenleyemezsiniz."
     embeddings:
+      delete_failed: "Bu model şu anda kullanımda. Öncelikle `ai embeddings selected model`i güncelleyin."
+      cannot_edit_builtin: "Yerleşik bir modeli düzenleyemezsiniz."
       configuration:
         disable_embeddings: "Önce \"yz yerleştirmeleri etkin\" seçeneğini devre dışı bırakmanız gerekiyor."
-        choose_model: "Önce \"yz yerleştirme modelini\" ayarlayın."
-        model_unreachable: "Bu modelle test yerleştirmesi oluşturamadık. Ayarlarınızın doğru olup olmadığını kontrol edin."
-        hint:
-          one: "`%{settings}` ayarının yapılandırıldığından emin olun."
-          other: "İstediğiniz sağlayıcının ayarlarının yapılandırıldığından emin olun. Seçenekler şunlardır: %{settings}"
+        choose_model: "Önce 'ai embeddings selected model'i ayarlayın."
     llm_models:
       missing_provider_param: "%{param} boş olamaz"
       bedrock_invalid_url: "Bu modeli kullanmak için lütfen tüm alanları doldurun."

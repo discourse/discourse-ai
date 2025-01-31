@@ -52,10 +52,7 @@ zh_CN:
     ai_nsfw_flag_threshold_porn: "分类为色情作品的图片被视为 NSFW 的阈值。"
     ai_nsfw_flag_threshold_sexy: "分类为性感的图片被视为 NSFW 的阈值。"
     ai_nsfw_models: "用于 NSFW 推断的模型。"
-    ai_openai_embeddings_url: "用于 OpenAI 嵌入向量 API 的自定义 URL。（对于 Azure，可以是：https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15）"
-    ai_openai_api_key: "OpenAI API 的 API 密钥。仅用于嵌入向量和 Dall-E。对于 GPT，请使用 LLM 配置标签页"
-    ai_hugging_face_tei_endpoint: 运行 Hugging Face 文本嵌入向量推断 API 的 URL
-    ai_hugging_face_tei_api_key: Hugging Face 文本嵌入向量推断的 API 密钥
+    ai_openai_api_key: "OpenAI API 的 API 密钥。仅用于 Dall-E。对于 GPT，请使用 LLM 配置标签页"
     ai_helper_enabled: "启用 AI 助手。"
     composer_ai_helper_allowed_groups: "这些群组中的用户将在编辑器中看到 AI 助手按钮。"
     ai_helper_allowed_in_pm: "在私信中启用编辑器的 AI 助手。"
@@ -68,15 +65,11 @@ zh_CN:
     post_ai_helper_allowed_groups: "能够在帖子中访问 AI 助手功能的用户群组"
     ai_helper_image_caption_model: "选择用于生成图片标题的模型"
     ai_auto_image_caption_allowed_groups: "这些群组中的用户可以切换自动生成图片标题。"
-    ai_embeddings_enabled: "启用嵌入向量模块。"
-    ai_embeddings_discourse_service_api_endpoint: "为嵌入向量模块运行 API 的 URL"
-    ai_embeddings_discourse_service_api_key: "嵌入向量 API 的 API 密钥"
-    ai_embeddings_model: "将 all-mpnet-base-v2 用于本地快速英语推断，将 text-embedding-ada-002 用于 OpenAI API（需要 API 密钥），将 multilingual-e5-large 用于本地多语言嵌入向量"
+    ai_embeddings_selected_model: "使用所选模型生成嵌入向量。"
     ai_embeddings_generate_for_pms: "为个人消息生成嵌入向量。"
     ai_embeddings_semantic_related_topics_enabled: "将语义搜索用于相关话题。"
     ai_embeddings_semantic_related_topics: "相关话题部分中显示的最大话题数。"
     ai_embeddings_backfill_batch_size: "每 15 分钟回填的嵌入向量数。"
-    ai_embeddings_pg_connection_string: "嵌入向量模块的 PostgreSQL 连接字符串。需要启用 pgvector 扩展并创建一系列表。请参阅文档来获取更多信息。"
     ai_embeddings_semantic_search_enabled: "启用全页语义搜索。"
     ai_embeddings_semantic_quick_search_enabled: "在搜索菜单弹出窗口中启用语义搜索选项。"
     ai_embeddings_semantic_related_include_closed_topics: "在语义搜索结果中包含已关闭话题"
@@ -413,12 +406,11 @@ zh_CN:
         other: "由于 %{settings} 正在使用此模型，无法将其删除。请更新设置并重试。"
       cannot_edit_builtin: "您无法编辑内置模型。"
     embeddings:
+      delete_failed: "此模型目前正在使用中。请先更新 `ai embeddings selected model`。"
+      cannot_edit_builtin: "您无法编辑内置模型。"
       configuration:
         disable_embeddings: "您必须先禁用 'ai embeddings enabled'。"
-        choose_model: "首先设置 'ai embeddings model'。"
-        model_unreachable: "我们无法使用此模型生成测试嵌入向量。请检查设置是否正确。"
-        hint:
-          other: "确保已配置 `%{settings}` 设置。"
+        choose_model: "首先设置 'ai embeddings selected model'。"
     llm_models:
       missing_provider_param: "%{param} 不能为空"
       bedrock_invalid_url: "请填写所有字段以使用此模型。"

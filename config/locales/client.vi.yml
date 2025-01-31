@@ -110,6 +110,17 @@ vi:
           save_caption: "Lưu lại"
           automatic_caption_dialog:
             confirm: "Bật"
+      embeddings:
+        back: "Quay lại"
+        save: "Lưu lại"
+        delete: "Xóa"
+        edit: "Sửa"
+        tests:
+          success: "Thành công!"
+        display_name: "Tên"
+        providers:
+          google: "G"
+          fake: "Tùy biến"
       ai_bot:
         debug_ai_modal:
           request: "Yêu cầu"

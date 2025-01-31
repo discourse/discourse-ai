@@ -87,6 +87,16 @@ be:
           save_caption: "захаваць"
           automatic_caption_dialog:
             confirm: "Уключыць"
+      embeddings:
+        back: "Назад"
+        save: "захаваць"
+        delete: "Выдаліць"
+        edit: "Рэдагаваць"
+        tests:
+          success: "поспех!"
+        display_name: "Імя"
+        providers:
+          google: "Google"
       ai_bot:
         debug_ai_modal:
           request: "запыт"

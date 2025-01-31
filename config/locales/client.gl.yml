@@ -104,6 +104,17 @@ gl:
           save_caption: "Gardar"
           automatic_caption_dialog:
             confirm: "Activar"
+      embeddings:
+        back: "Volver"
+        save: "Gardar"
+        delete: "Eliminar"
+        edit: "Editar"
+        tests:
+          success: "Feito!"
+        display_name: "Nome"
+        providers:
+          google: "Google"
+          fake: "Personalizado"
       ai_bot:
         debug_ai_modal:
           request: "Petición"

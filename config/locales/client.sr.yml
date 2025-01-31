@@ -89,6 +89,15 @@ sr:
           save_caption: "Sačuvaj"
           automatic_caption_dialog:
             confirm: "Omogući"
+      embeddings:
+        back: "Nazad"
+        save: "Sačuvaj"
+        delete: "Obriši"
+        edit: "Izmeni"
+        display_name: "Ime foruma"
+        providers:
+          google: "Google"
+          fake: "Posebna"
       ai_bot:
         debug_ai_modal:
           next_log: "Dalje"

@@ -106,6 +106,17 @@ sl:
           save_caption: "Shrani"
           automatic_caption_dialog:
             confirm: "Omogoči"
+      embeddings:
+        back: "Nazaj"
+        save: "Shrani"
+        delete: "Izbriši"
+        edit: "Uredi"
+        tests:
+          success: "Uspeh!"
+        display_name: "Ime"
+        providers:
+          google: "Google"
+          fake: "Po meri"
       ai_bot:
         debug_ai_modal:
           request: "Zahteva"
