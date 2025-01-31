@@ -42,7 +42,7 @@ export default class AiLlmQuotaModal extends Component {
       llm_model_id: null,
       max_tokens: null,
       max_usages: null,
-      duration_seconds: 86400, // 1 day default,
+      duration_seconds: moment.duration(1, "day").asSeconds(),
     };
   }
 
