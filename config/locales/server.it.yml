@@ -52,10 +52,7 @@ it:
     ai_nsfw_flag_threshold_porn: "Soglia per un'immagine classificata come pornografica per essere considerata NSFW."
     ai_nsfw_flag_threshold_sexy: "Soglia per un'immagine classificata come sexy per essere considerata NSFW."
     ai_nsfw_models: "Modelli da utilizzare per l'inferenza NSFW."
-    ai_openai_embeddings_url: "URL personalizzato utilizzato per l'API di integrazione OpenAI. (nel caso di Azure può essere: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "Chiave API per l'API OpenAI. Utilizzato SOLO per integrazioni e Dall-E. Per GPT utilizzare la scheda di configurazione LLM"
-    ai_hugging_face_tei_endpoint: URL in cui è in esecuzione l'API per l'inferenza delle integrazioni testuali di Hugging Face
-    ai_hugging_face_tei_api_key: Chiave API per l'inferenza delle integrazioni testuali di Hugging Face
+    ai_openai_api_key: "Chiave API per l'API OpenAI. Utilizzata SOLO per Dall-E. Per GPT utilizzare la scheda di configurazione LLM"
     ai_helper_enabled: "Abilita l'assistente IA."
     composer_ai_helper_allowed_groups: "Gli utenti di questi gruppi vedranno il pulsante dell'assistente IA nella sezione di scrittura."
     ai_helper_allowed_in_pm: "Abilita l'assistente IA nei MP."
@@ -68,15 +65,11 @@ it:
     post_ai_helper_allowed_groups: "Gruppi di utenti autorizzati ad accedere alle funzionalità dell'assistente IA nei post"
     ai_helper_image_caption_model: "Seleziona il modello da utilizzare per generare le didascalie delle immagini"
     ai_auto_image_caption_allowed_groups: "Gli utenti di questi gruppi possono attivare/disattivare i sottotitoli automatici delle immagini."
-    ai_embeddings_enabled: "Abilita il modulo di integrazioni."
-    ai_embeddings_discourse_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo di integrazioni"
-    ai_embeddings_discourse_service_api_key: "Chiave API per l'API di integrazioni"
-    ai_embeddings_model: "Usa all-mpnet-base-v2 per l'inferenza locale e veloce in inglese, text-embedding-ada-002 per usare l'API OpenAI (richiede la chiave API) e multilingue-e5-large per le integrazioni multilingue locali"
+    ai_embeddings_selected_model: "Usa il modello selezionato per generare le integrazioni."
     ai_embeddings_generate_for_pms: "Genera integrazioni per messaggi personali."
     ai_embeddings_semantic_related_topics_enabled: "Usa la ricerca semantica per argomenti correlati."
     ai_embeddings_semantic_related_topics: "Numero massimo di argomenti da mostrare nella sezione degli argomenti correlati."
     ai_embeddings_backfill_batch_size: "Numero di incorporamenti da riempire ogni 15 minuti."
-    ai_embeddings_pg_connection_string: "Stringa di connessione PostgreSQL per il modulo di integrazioni. Richiede l'estensione pgvector abilitata e la creazione di una serie di tabelle. Consulta i documenti per maggiori informazioni."
     ai_embeddings_semantic_search_enabled: "Abilita la ricerca semantica a pagina intera."
     ai_embeddings_semantic_quick_search_enabled: "Abilita l'opzione di ricerca semantica nel popup del menu di ricerca."
     ai_embeddings_semantic_related_include_closed_topics: "Includi argomenti chiusi nei risultati della ricerca semantica"
@@ -422,13 +415,11 @@ it:
         other: "Non è stato possibile eliminare questo modello perché lo stanno utilizzando %{settings}. Aggiorna le impostazioni e riprova."
       cannot_edit_builtin: "Non è possibile modificare un modello incorporato."
     embeddings:
+      delete_failed: "Questo modello è attualmente in uso. Aggiorna prima `ai embeddings selected model`."
+      cannot_edit_builtin: "Non è possibile modificare un modello incorporato."
       configuration:
         disable_embeddings: "Devi prima disabilitare \"integrazioni ia abilitate\"."
-        choose_model: "Imposta prima il \"modello integrazioni ia\"."
-        model_unreachable: "Non siamo riusciti a generare un test di integrazione con questo modello. Controlla che le tue impostazioni siano corrette."
-        hint:
-          one: "Assicurati che l'impostazione `%{settings}` sia stata configurata."
-          other: "Assicurati che le impostazioni del fornitore che desideri siano state configurate. Le opzioni sono: %{settings}"
+        choose_model: "Imposta prima \"ai embeddings selected model\"."
     llm_models:
       missing_provider_param: "%{param} non può essere vuoto"
       bedrock_invalid_url: "Compila tutti i campi per utilizzare questo modello."

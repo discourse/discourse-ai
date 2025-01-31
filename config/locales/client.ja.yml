@@ -145,7 +145,7 @@ ja:
         enable: "有効化"
         spam_tip: "AI 迷惑検出機能は、公開トピックのすべての新規ユーザーによる最初の 3 件の投稿をスキャンします。レビューを行うために通報し、迷惑の可能性がある場合はユーザーをブロックします。"
         settings_saved: "設定が保存されました"
-        spam_description: "選択された LLM を使って潜在的な迷惑を識別し、歳とモデレーターがレビューキューで検査できるように通報します"
+        spam_description: "選択された LLM を使って潜在的な迷惑行為を識別し、サイトモデレーターがレビューキューで検査できるように通報します"
         no_llms: "使用できる LLM はありません"
         test_button: "テスト..."
         save_button: "変更を保存"
@@ -161,6 +161,11 @@ ja:
         stat_tooltips:
           incorrectly_flagged: "AI ボットが迷惑として通報し、モデレーターがそれに同意しなかった項目"
           missed_spam: "AI ボットによって迷惑として検出されなかったが、コミュニティーは迷惑として通報し、モデレーターもそれに同意した項目"
+        errors:
+          scan_not_admin:
+            message: "警告: 迷惑スキャンアカウントが管理者ではないため、迷惑スキャンは正しく機能しません"
+            action: "修正"
+          resolved: "エラーは解決されました！"
       usage:
         short_title: "使用状況"
         summary: "要約"
@@ -178,9 +183,23 @@ ja:
         total_requests: "合計リクエスト"
         request_tokens: "リクエストトークン"
         response_tokens: "レスポンストークン"
+        net_request_tokens: "ネットリクエストトークン"
         cached_tokens: "キャッシュされたトークン"
+        cached_request_tokens: "キャッシュされたリクエストトークン"
+        no_users: "ユーザー使用状況データが見つかりません"
+        no_models: "モデル使用状況データが見つかりません"
+        no_features: "機能使用状況データが見つかりません"
+        subheader_description: "トークンは、LLM がテキストを理解して生成するために使用する基本単位であり、使用状況データがコストに影響する可能性があります。"
+        stat_tooltips:
+          total_requests: "Discourse を通じて LLM に行われたすべてのリクエスト"
+          total_tokens: "LLM のプロンプトに使用されるすべてのトークン"
+          request_tokens: "ユーザーが述べることを LLM が理解しようとする際に使用されるトークン"
+          response_tokens: "LLM がプロンプトに応答する際に使用されるトークン"
+          cached_tokens: "LLM がパフォーマンスとコストを最適化するために再利用する、過去に処理されたリクエストトークン"
         periods:
           last_day: "過去 24 時間"
+          last_week: "先週"
+          last_month: "先月"
           custom: "カスタム..."
       ai_persona:
         tool_strategies:
@@ -319,9 +338,14 @@ ja:
         delete: 削除
         seeded_warning: "このモデルはサイト上で事前設定されているため、編集できません。"
         quotas:
+          title: "使用量制限"
+          add_title: "新しい制限の作成"
           group: "グループ"
+          max_tokens: "トークン上限"
           max_usages: "最大使用回数"
           duration: "期間"
+          confirm_delete: "この制限を削除してもよろしいですか？"
+          add: "制限を追加"
           durations:
             hour: "１時間"
             six_hours: "6 時間"
@@ -329,6 +353,8 @@ ja:
             week: "7 日間"
             custom: "カスタム..."
           hours: "時間"
+          max_tokens_help: "このグループの各ユーザーが指定された期間内に使用できるトークン（単語と文字）の最大数。トークンは、AI モデルがテキストを処理するときに使用する単位です。およそ 1 トークン = 4 文字または 1 単語の 3/4 です。"
+          max_usages_help: "このグループの各ユーザーが指定された期間内に AI モデルを使用できる最大回数。この使用量制限はグループ全体で共有されるのではなく、ユーザーごとに追跡されます。"
         usage:
           ai_bot: "AI ボット"
           ai_helper: "ヘルパー"
@@ -354,6 +380,7 @@ ja:
           samba_nova-Meta-Llama-3-1-70B-Instruct": "強力な多目的モデル"
           mistral-mistral-large-latest: "Mistral の最も強力なモデル"
           mistral-pixtral-large-latest: "Mistral の最も強力なビジョン対応モデル"
+        preseeded_model_description: "%{model} を利用する事前構成済みのオープンソースモデル"
         configured:
           title: "構成済みの LLM"
         preconfigured_llms: "LLM を選択してください"
@@ -388,6 +415,7 @@ ja:
           CDCK: "CDCK"
           samba_nova: "SambaNova"
           mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "カスタム"
         provider_fields:
           access_key_id: "AWS Bedrock アクセスキー ID"
@@ -396,6 +424,9 @@ ja:
           disable_system_prompt: "プロンプトでシステムメッセージを無効にする"
           enable_native_tool: "ネイティブツールのサポートを有効にする"
           disable_native_tools: "ネイティブツールのサポートを無効にする (XML ベースのツールを使用する)"
+          provider_order: "プロバイダーの順序 (カンマ区切りリスト)"
+          provider_quantizations: "プロバイダーの量子化の順序 (カンマ区切りリスト 例: fp16,fp8)"
+          disable_streaming: "ストリーミングの完了を無効にする (ストリーミングを非ストリーミングリクエストに変換する)"
       related_topics:
         title: "関連トピック"
         pill: "関連"
@@ -431,6 +462,7 @@ ja:
           copied: "コピーしました！"
           cancel: "キャンセル"
           insert_footnote: "脚注を追加"
+          footnote_disabled: "自動挿入が無効です。コピーボタンをクリックして手動で編集してください"
           footnote_credits: "AI による説明"
         fast_edit:
           suggest_button: "編集を提案"
@@ -446,6 +478,7 @@ ja:
           automatic_caption_setting: "自動キャプションを有効にする"
           automatic_caption_loading: "画像のキャプションを作成中..."
           automatic_caption_dialog:
+            prompt: "この投稿にはキャプションのない画像が含まれています。画像アップロード時に、自動キャプションを有効にしますか？(これは後で設定で変更できます)"
             confirm: "有効化"
             cancel: "今後表示しない"
         no_content_error: "先に AI アクションを実行するコンテンツを追加してください"
@@ -453,6 +486,54 @@ ja:
         model_used: "使用モデル:"
         accuracy: "精度:"
       embeddings:
+        short_title: "埋め込み"
+        description: "埋め込みは、関連トピックやセマンティック検索などの機能を有効にする、Discourse AI プラグインの重要なコンポーネントです。"
+        new: "新しい埋め込み"
+        back: "戻る"
+        save: "保存"
+        saved: "埋め込み構成が保存されました"
+        delete: "削除"
+        confirm_delete: この埋め込み構成を削除してもよろしいですか？
+        empty: "埋め込みはまだ構成されていません"
+        presets: "プリセットを選択..."
+        configure_manually: "手動で構成"
+        edit: "編集"
+        seeded_warning: "これはサイト上で事前設定されているため、編集できません。"
+        tests:
+          title: "テストを実行"
+          running: "テストを実行中…"
+          success: "成功！"
+          failure: "埋め込みを生成しようとした際にエラーが発生しました: %{error}"
+        hints:
+          dimensions_warning: "この値は一度保存すると変更できません。"
+          matryoshka_dimensions: "入れ子式の人形が相互に収まるのと同じように、データの階層または多層表示に使用されるネストされた埋め込みのサイズを定義します。"
+          embed_prompt: "LLM に、テキストをどのように処理して、分析または比較を行うための数値の要約（埋め込み）を作成するかを指示します。"
+          search_prompt: "LLM に、検索クエリと既存の埋め込みをどのように比較して、最適な一致を見つけるかを指示します。"
+          sequence_length: "埋め込みの作成やクエリの処理時に一度に処理できるとオークンの最大数。"
+          distance_function: "コサイン距離（ベクトル間の角度を測定）または負の内積（ベクトル値の重なりを測定）のいずれかを使用して、埋め込み間の類似性をどのように計算するかを決定します。"
+        display_name: "名前"
+        provider: "プロバイダー"
+        url: "埋め込みサービス URL"
+        api_key: "埋め込みサービス API キー"
+        tokenizer: "トークナイザ―"
+        dimensions: "埋め込みの次元"
+        max_sequence_length: "シーケンスの長さ"
+        embed_prompt: "埋め込みプロンプト"
+        search_prompt: "検索プロンプト"
+        matryoshka_dimensions: "マトリョーシカの次元"
+        distance_function: "距離関数"
+        distance_functions:
+          "<#>": "負の内積"
+          <=>: "コサイン距離"
+        providers:
+          hugging_face: "Hugging Face"
+          open_ai: "OpenAI"
+          google: "Google"
+          cloudflare: "Cloudflare"
+          CDCK: "CDCK"
+          fake: "カスタム"
+        provider_fields:
+          model_name: "モデル名"
         semantic_search: "トピック (セマンティック)"
         semantic_search_loading: "AI を使ってさらに多くの結果を検索中"
         semantic_search_results:
@@ -460,11 +541,17 @@ ja:
           toggle_hidden: "AI で見つかった %{count} 件の結果を非表示"
           none: "AI 検索ではどのトピックも一致しませんでした"
           new: "「検索」を押すと、AI が新しい結果を検索し始めます"
+          unavailable: "AI の結果は利用できません"
+        semantic_search_tooltips:
+          results_explanation: "有効にすると、追加の AI 検索結果が下に追加されます。"
+          invalid_sort: "AI 結果を表示するには、検索結果を関連性で並べ替える必要があります"
+        semantic_search_unavailable_tooltip: "AI 結果を表示するには、検索結果を関連性で並べ替える必要があります"
         ai_generated_result: "AI で見つかった検索結果"
         quick_search:
           suffix: "AI によるすべてのトピックと投稿"
       ai_artifact:
         expand_view_label: "表示を拡大"
+        collapse_view_label: "全画面表示を終了 (ESC または「戻る」ボタン)"
         click_to_run_label: "アーティファクトを実行"
       ai_bot:
         pm_warning: "AI チャットボットのメッセージは、モデレーターによって定期的に監視されます。"

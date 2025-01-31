@@ -52,10 +52,7 @@ de:
     ai_nsfw_flag_threshold_porn: "Schwellenwert, ab dem ein Bild, das als Porno eingestuft wird, als NSFW gilt."
     ai_nsfw_flag_threshold_sexy: "Schwellenwert, ab dem ein Bild, das als sexy eingestuft wird, als NSFW gilt."
     ai_nsfw_models: "Modelle, die für NSFW-Inferenz verwendet werden."
-    ai_openai_embeddings_url: "Benutzerdefinierte URL, die für die OpenAI-Embeddings-API verwendet wird (im Falle von Azure gegebenenfalls: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)."
-    ai_openai_api_key: "API-Schlüssel für OpenAI-API. Wird NUR für Einbettungen und Dall-E verwendet. Für GPT verwende die Registerkarte für die LLM-Konfiguration"
-    ai_hugging_face_tei_endpoint: URL, auf der die API für die Inferenz der Texteinbettungen von Hugging Face ausgeführt wird
-    ai_hugging_face_tei_api_key: API-Schlüssel für die Inferenz von Texteinbettungen von Hugging Face
+    ai_openai_api_key: "API-Schlüssel für OpenAI-API. Wird NUR für Dall-E verwendet. Für GPT verwende die Registerkarte LLM-Konfiguration"
     ai_helper_enabled: "Aktiviere den KI-Helfer."
     composer_ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
     ai_helper_allowed_in_pm: "Aktiviere den Composer-KI-Helfer in PN."
@@ -68,15 +65,11 @@ de:
     post_ai_helper_allowed_groups: "Nutzergruppen, die auf KI-Helfer-Funktionen in Beiträgen zugreifen dürfen"
     ai_helper_image_caption_model: "Wähle das Modell aus, das für die Erstellung von Bildbeschriftungen verwendet werden soll"
     ai_auto_image_caption_allowed_groups: "Benutzer dieser Gruppen können die automatische Bildbeschriftung ein- und ausschalten."
-    ai_embeddings_enabled: "Aktiviere das Einbettungsmodul."
-    ai_embeddings_discourse_service_api_endpoint: "URL, unter der die API für das Einbettungsmodul läuft"
-    ai_embeddings_discourse_service_api_key: "API-Schlüssel für die Einbettungs-API"
-    ai_embeddings_model: "Benutze all-mpnet-base-v2 für lokale und schnelle Inferenz in Englisch, text-embedding-ada-002, um die OpenAI-API zu verwenden (benötigt API-Schlüssel) und multilingual-e5-large für lokale mehrsprachige Einbettungen"
+    ai_embeddings_selected_model: "Verwende das ausgewählte Modell für die Erzeugung von Einbettungen."
     ai_embeddings_generate_for_pms: "Erstelle Einbettungen für persönliche Nachrichten."
     ai_embeddings_semantic_related_topics_enabled: "Verwende die semantische Suche für verwandte Themen."
     ai_embeddings_semantic_related_topics: "Maximale Anzahl der Themen, die im Abschnitt für verwandte Themen angezeigt werden sollen."
     ai_embeddings_backfill_batch_size: "Anzahl der Einbettungen, die alle 15 Minuten aufgefüllt werden."
-    ai_embeddings_pg_connection_string: "PostgreSQL-Verbindungsstring für das Einbettungsmodul. Die pgvector-Erweiterung muss aktiviert sein und eine Reihe von Tabellen erstellt werden. Siehe Dokumentation für weitere Informationen."
     ai_embeddings_semantic_search_enabled: "Aktiviere die semantische Ganzseitensuche."
     ai_embeddings_semantic_quick_search_enabled: "Aktiviere die semantische Suchoption im Such-Menü-Pop-up."
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"
@@ -422,13 +415,12 @@ de:
         other: "Wir konnten dieses Modell nicht löschen, weil %{settings} es verwenden. Aktualisiere die Einstellungen und versuche es erneut."
       cannot_edit_builtin: "Du kannst ein integriertes Modell nicht bearbeiten."
     embeddings:
+      delete_failed: "Dieses Modell wird derzeit verwendet. Aktualisiere zuerst `ai embeddings selected model`."
+      cannot_edit_builtin: "Du kannst ein integriertes Modell nicht bearbeiten."
       configuration:
         disable_embeddings: "Du musst zuerst „KI-Einbettungen aktiviert“ deaktivieren."
-        choose_model: "Lege zuerst „KI-Einbettungsmodell“ fest."
-        model_unreachable: "Es ist uns nicht gelungen, eine Testeinbettung mit diesem Modell zu erstellen. Prüfe, ob deine Einstellungen korrekt sind."
-        hint:
-          one: "Vergewissere dich, dass die Einstellung `%{settings}` konfiguriert wurde."
-          other: "Vergewissere dich, dass die Einstellungen des gewünschten Anbieters konfiguriert wurden. Die Optionen sind: %{settings}"
+        invalid_config: "Du hast eine ungültige Option ausgewählt."
+        choose_model: "Lege zuerst „ausgewähltes KI-Einbettungsmodell“ fest."
     llm_models:
       missing_provider_param: "%{param} darf nicht leer sein"
       bedrock_invalid_url: "Bitte fülle alle Felder aus, um dieses Modell zu verwenden."

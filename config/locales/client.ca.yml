@@ -99,6 +99,17 @@ ca:
           save_caption: "Desa"
           automatic_caption_dialog:
             confirm: "Activa"
+      embeddings:
+        back: "Enrere"
+        save: "Desa"
+        delete: "Suprimeix"
+        edit: "Edita"
+        tests:
+          success: "Èxit!"
+        display_name: "Nom"
+        providers:
+          google: "Google"
+          fake: "Personalitzat"
       ai_bot:
         debug_ai_modal:
           request: "Sol·licita"

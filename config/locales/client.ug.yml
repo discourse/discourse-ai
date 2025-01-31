@@ -113,6 +113,18 @@ ug:
           save_caption: "ساقلا"
           automatic_caption_dialog:
             confirm: "قوزغات"
+      embeddings:
+        back: "كەينى"
+        save: "ساقلا"
+        delete: "ئۆچۈر"
+        edit: "تەھرىر"
+        tests:
+          title: "سىناقنى ئىجرا قىل"
+          success: "مۇۋەپپەقىيەتلىك!"
+        display_name: "ئىسمى"
+        providers:
+          google: "Google"
+          fake: "ئىختىيارى"
       ai_bot:
         debug_ai_modal:
           request: "ئىلتىماس"

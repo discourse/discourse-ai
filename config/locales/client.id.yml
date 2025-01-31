@@ -187,6 +187,16 @@ id:
         model_used: "Model yang digunakan:"
         accuracy: "Akurasi:"
       embeddings:
+        back: "Kembali"
+        save: "Simpan"
+        delete: "Hapus"
+        edit: "Ubah"
+        tests:
+          running: "Tes berlangsung..."
+          success: "Sukses!"
+        display_name: "Nama"
+        providers:
+          google: "Google"
         semantic_search: "Topik (Semantik)"
         semantic_search_loading: "Mencari hasil lebih banyak menggunakan AI"
         semantic_search_results:

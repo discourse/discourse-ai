@@ -52,10 +52,7 @@ es:
     ai_nsfw_flag_threshold_porn: "Umbral para que una imagen clasificada como porno sea considerada NSFW."
     ai_nsfw_flag_threshold_sexy: "Umbral para que una imagen clasificada como sexy se considere NSFW."
     ai_nsfw_models: "Modelos que se utilizarán para la inferencia NSFW."
-    ai_openai_embeddings_url: "URL personalizada utilizada para la API de incrustaciones de OpenAI. (en el caso de Azure puede ser: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "Clave API para la API de OpenAI. Solo se utiliza para incrustaciones y Dall-E. Para GPT utiliza la pestaña de configuración de LLM"
-    ai_hugging_face_tei_endpoint: URL donde se ejecuta la API para la inferencia de incrustaciones de texto de Hugging Face
-    ai_hugging_face_tei_api_key: Clave API para la inferencia de incrustaciones de texto de Hugging Face
+    ai_openai_api_key: "Clave API para la API de OpenAI. SOLO se utiliza para Dall-E. Para GPT utiliza la pestaña de configuración de LLM"
     ai_helper_enabled: "Activar el ayudante de IA."
     composer_ai_helper_allowed_groups: "Los usuarios de estos grupos verán el botón del asistente de IA en el compositor."
     ai_helper_allowed_in_pm: "Activar el asistente de IA del compositor en los MP."
@@ -68,15 +65,11 @@ es:
     post_ai_helper_allowed_groups: "Grupos de usuarios autorizados a acceder a las funciones del ayudante de IA en las publicaciones"
     ai_helper_image_caption_model: "Selecciona el modelo que se utilizará para generar pies de foto"
     ai_auto_image_caption_allowed_groups: "Los usuarios de estos grupos pueden activar el subtitulado automático de imágenes."
-    ai_embeddings_enabled: "Activar el módulo de incrustaciones."
-    ai_embeddings_discourse_service_api_endpoint: "URL donde se ejecuta la API para el módulo de incrustaciones"
-    ai_embeddings_discourse_service_api_key: "Clave API para la API de incrustaciones"
-    ai_embeddings_model: "Utiliza all-mpnet-base-v2 para la inferencia local y rápida en inglés, text-embedding-ada-002 para utilizar la API de OpenAI (necesitas la clave API) y multilingual-e5-large para las incrustaciones multilingües locales."
+    ai_embeddings_selected_model: "Utiliza el modelo seleccionado para generar incrustaciones."
     ai_embeddings_generate_for_pms: "Generar incrustaciones para mensajes personales."
     ai_embeddings_semantic_related_topics_enabled: "Utilizar la Búsqueda semántica para temas relacionados."
     ai_embeddings_semantic_related_topics: "Número máximo de temas que se mostrarán en la sección de temas relacionados."
     ai_embeddings_backfill_batch_size: "Número de incrustaciones a rellenar cada 15 minutos."
-    ai_embeddings_pg_connection_string: "Cadena de conexión PostgreSQL para el módulo de incrustaciones. Necesita qye la extensión pgvector esté habilitada y crear una serie de tablas. Consulta la documentación para más información."
     ai_embeddings_semantic_search_enabled: "Activar la búsqueda semántica a página completa."
     ai_embeddings_semantic_quick_search_enabled: "Activa la opción de búsqueda semántica en el menú emergente de búsqueda."
     ai_embeddings_semantic_related_include_closed_topics: "Incluir temas cerrados en los resultados de la búsqueda semántica"
@@ -422,13 +415,11 @@ es:
         other: "No hemos podido eliminar este modelo porque %{settings} lo está usando. Actualiza los ajustes e inténtalo de nuevo."
       cannot_edit_builtin: "No puedes editar un modelo integrado."
     embeddings:
+      delete_failed: "Este modelo está actualmente en uso. Actualiza primero el «modelo seleccionado de incrustaciones de IA»."
+      cannot_edit_builtin: "No puedes editar un modelo integrado."
       configuration:
         disable_embeddings: "Tienes que desactivar primero «incrustaciones de ia activadas»."
-        choose_model: "Establece primero «modelo de incrustaciones de ia»."
-        model_unreachable: "No hemos podido generar una prueba de incrustación con este modelo. Comprueba que el ajuste es correcto."
-        hint:
-          one: "Asegúrate de que se ha configurado el ajuste «%{settings}»."
-          other: "Asegúrate de que se han configurado los ajustes del proveedor que deseas. Las opciones son: %{settings}"
+        choose_model: "Establece primero «modelo seleccionado de incrustaciones de ia»."
     llm_models:
       missing_provider_param: "%{param} no puede estar en blanco"
       bedrock_invalid_url: "Rellena todos los campos para utilizar este modelo."

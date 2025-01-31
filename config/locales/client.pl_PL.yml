@@ -207,6 +207,16 @@ pl_PL:
         model_used: "Zastosowany model:"
         accuracy: "Dokładność:"
       embeddings:
+        back: "Poprzednia"
+        save: "Zapisz"
+        delete: "Usuń"
+        edit: "Edytuj"
+        tests:
+          success: "Sukces!"
+        display_name: "Nazwa"
+        providers:
+          google: "Google"
+          fake: "Niestandardowe"
         semantic_search: "Tematy (semantyczne)"
         semantic_search_loading: "Wyszukiwanie większej liczby wyników przy użyciu AI"
         semantic_search_results:

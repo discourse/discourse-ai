@@ -94,6 +94,17 @@ bs_BA:
           save_caption: "Save"
           automatic_caption_dialog:
             confirm: "Omogući"
+      embeddings:
+        back: "Prethodno"
+        save: "Save"
+        delete: "Delete"
+        edit: "Edit"
+        tests:
+          success: "Uspjeh!"
+        display_name: "Ime"
+        providers:
+          google: "Google"
+          fake: "Custom"
       ai_bot:
         debug_ai_modal:
           request: "Zatraži"

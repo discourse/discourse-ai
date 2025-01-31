@@ -97,6 +97,15 @@ sq:
           save_caption: "Ruaj"
           automatic_caption_dialog:
             confirm: "Aktivizo"
+      embeddings:
+        back: "Kthehu mbrapa"
+        save: "Ruani"
+        delete: "Fshij"
+        edit: "Redaktoni"
+        display_name: "Emri"
+        providers:
+          google: "Google"
+          fake: "Grupet e krijuara"
       ai_bot:
         debug_ai_modal:
           next_log: "Vazhdo përpara"

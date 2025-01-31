@@ -52,10 +52,7 @@ fi:
     ai_nsfw_flag_threshold_porn: "Raja, jolloin pornoksi luokiteltua kuvaa pidetään NSFW:nä."
     ai_nsfw_flag_threshold_sexy: "Raja, jolloin seksikkääksi luokiteltua kuvaa pidetään NSFW:nä."
     ai_nsfw_models: "NSFW-päätelmiin käytettävät mallit."
-    ai_openai_embeddings_url: "Mukautettu URL, jota käytetään OpenAI:n upotus-APIssa. (Azuren tapauksessa se voi olla: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "OpenAI APIn API-avain. Käytetään VAIN upotuksiin ja Dall-E:hen. Käytä LLM-määritysvälilehteä GPT:lle."
-    ai_hugging_face_tei_endpoint: URL-osoite, jossa API toimii Hugging Facen tekstiupotuskäyttöliittymää varten
-    ai_hugging_face_tei_api_key: Hugging Facen tekstiupotuskäyttöliittymän API-avain
+    ai_openai_api_key: "OpenAI APIn API-avain. Käytetään VAIN Dall-E:hen. Käytä LLM-määritysvälilehteä GPT:lle."
     ai_helper_enabled: "Ota tekoälyapuri käyttöön."
     composer_ai_helper_allowed_groups: "Näiden ryhmien käyttäjät näkevät tekoälyavustajan painikkeen kirjoitustoiminnossa."
     ai_helper_allowed_in_pm: "Ota kirjoitustoiminnon tekoälyavustaja käyttöön yksityisviesteissä."
@@ -68,15 +65,11 @@ fi:
     post_ai_helper_allowed_groups: "Käyttäjäryhmät, joilla on oikeus käyttää tekoälyavustajan ominaisuuksia viesteissä"
     ai_helper_image_caption_model: "Valitse malli, jota käytetään kuvien kuvatekstien luomiseen"
     ai_auto_image_caption_allowed_groups: "Näiden ryhmien käyttäjät voivat ottaa automaattisen kuvatekstityksen käyttöön tai poistaa sen käytöstä."
-    ai_embeddings_enabled: "Ota upotusmoduuli käyttöön."
-    ai_embeddings_discourse_service_api_endpoint: "URL-osoite, jossa upotusmoduulin API on käynnissä"
-    ai_embeddings_discourse_service_api_key: "Upotus-APIn API-avain"
-    ai_embeddings_model: "Käytä all-mpnet-base-v2:ta paikalliseen ja nopeaan päättelyyn englanniksi, text-embedding-ada-002:ta OpenAI APIn käyttämiseen (API-avain vaaditaan) ja multilingual-e5-largea paikallisiin monikielisiin upotuksiin"
+    ai_embeddings_selected_model: "Käytä valittua mallia upotusten luomiseen."
     ai_embeddings_generate_for_pms: "Luo upotuksia yksityisviesteille."
     ai_embeddings_semantic_related_topics_enabled: "Käytä semanttista hakua aiheeseen liittyviä ketjuja varten."
     ai_embeddings_semantic_related_topics: "Aiheeseen liittyvien ketjujen osiossa näytettävien ketjujen enimmäismäärä."
     ai_embeddings_backfill_batch_size: "15 minuutin välein täydennettävien upotusten määrä."
-    ai_embeddings_pg_connection_string: "PostgreSQL-yhteysmerkkijono upotusmoduulille. Edellyttää, että pgvector-laajennus on käytössä ja taulukoiden sarja on luotu. Katso lisätietoja ohjeista."
     ai_embeddings_semantic_search_enabled: "Ota koko sivun semanttinen haku käyttöön."
     ai_embeddings_semantic_quick_search_enabled: "Ota semanttinen haku käyttöön hakuvalikon ponnahdusikkunassa."
     ai_embeddings_semantic_related_include_closed_topics: "Sisällytä suljetut ketjut semanttisiin hakutuloksiin"
@@ -422,13 +415,11 @@ fi:
         other: "Tätä mallia ei voitu poistaa, koska %{settings} käyttävät sitä. Päivitä asetus ja yritä uudelleen."
       cannot_edit_builtin: "Et voi muokata sisäänrakennettua mallia."
     embeddings:
+      delete_failed: "Tämä malli on tällä hetkellä käytössä. Päivitä \"ai embeddings selected model\" ensin."
+      cannot_edit_builtin: "Et voi muokata sisäänrakennettua mallia."
       configuration:
         disable_embeddings: "Sinun täytyy ensin poistaa \"ai embeddings enabled\" käytöstä."
-        choose_model: "Aseta \"ai embeddings model\" ensin."
-        model_unreachable: "Testiupotusta tällä mallilla ei voitu luoda. Tarkista, että asetuksesi ovat oikein."
-        hint:
-          one: "Varmista, että asetus \"%{settings}\" on määritetty."
-          other: "Varmista, että haluamasi palveluntarjoajan asetukset on määritetty. Vaihtoehdot ovat: %{settings}"
+        choose_model: "Aseta \"ai embeddings selected model\" ensin."
     llm_models:
       missing_provider_param: "%{param} ei voi olla tyhjä"
       bedrock_invalid_url: "Täytä kaikki kentät, jotta voit käyttää tätä mallia."

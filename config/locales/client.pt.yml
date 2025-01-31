@@ -108,6 +108,15 @@ pt:
           save_caption: "Guardar"
           automatic_caption_dialog:
             confirm: "Ativar"
+      embeddings:
+        back: "Retroceder"
+        save: "Guardar"
+        delete: "Eliminar"
+        edit: "Editar"
+        display_name: "Nome"
+        providers:
+          google: "Google"
+          fake: "Personalizar"
       ai_bot:
         debug_ai_modal:
           request: "Pedido"

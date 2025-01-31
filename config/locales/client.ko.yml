@@ -112,6 +112,17 @@ ko:
           save_caption: "저장"
           automatic_caption_dialog:
             confirm: "활성화"
+      embeddings:
+        back: "뒤로"
+        save: "저장"
+        delete: "삭제하기"
+        edit: "편집"
+        tests:
+          success: "성공!"
+        display_name: "그룹명"
+        providers:
+          google: "구글"
+          fake: "사용자 정의"
       ai_bot:
         debug_ai_modal:
           request: "요청"

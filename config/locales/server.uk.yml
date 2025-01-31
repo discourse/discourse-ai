@@ -46,10 +46,6 @@ uk:
     ai_nsfw_flag_threshold_porn: "Поріг для зображення, яке класифікується як порно, щоб вважатися NSFW."
     ai_nsfw_flag_threshold_sexy: "Поріг для зображення, класифікованого як сексуальне, щоб вважатися NSFW."
     ai_nsfw_models: "Моделі для використання NSFW умов."
-    ai_openai_embeddings_url: "Власна URL-адреса, що використовується для API вбудовування OpenAI. (у випадку Azure це може бути: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "Ключ API для OpenAI API. Використовується ЛИШЕ для вбудовування та Dall-E. Для GPT використовуйте вкладку конфігурації LLM"
-    ai_hugging_face_tei_endpoint: URL-адреса, на якій запущено API для висновку про вставлення тексту Hugging Face
-    ai_hugging_face_tei_api_key: Ключ API для виведення вбудовування тексту Hugging Face
     ai_helper_enabled: "Увімкнути помічника ШІ."
     composer_ai_helper_allowed_groups: "Користувачі цих груп бачитимуть кнопку помічника ШІ в композиторі."
     ai_helper_allowed_in_pm: "Увімкнути Помічник ШІ в особистих повідомленнях."
@@ -62,15 +58,10 @@ uk:
     post_ai_helper_allowed_groups: "Групи користувачів, яким дозволено доступ до функцій ШІ-помічника в публікаціях"
     ai_helper_image_caption_model: "Виберіть модель для генерації підписів до зображень"
     ai_auto_image_caption_allowed_groups: "Користувачі в цих групах можуть вмикати автоматичне додавання підписів до зображень."
-    ai_embeddings_enabled: "Увімкнути модуль вкладення."
-    ai_embeddings_discourse_service_api_endpoint: "Посилання, на якому працює API для модуля вкладень"
-    ai_embeddings_discourse_service_api_key: "Ключ API для API вбудовувань"
-    ai_embeddings_model: "Використовуйте all-mpnet-base-v2 для локального та швидкого висновку англійською мовою, text-embedding-ada-002 для використання OpenAI API (потрібен ключ API) та багатомовний-e5-large для локальних багатомовних вбудовувань"
     ai_embeddings_generate_for_pms: "Створюйте вбудовування для особистих повідомлень."
     ai_embeddings_semantic_related_topics_enabled: "Використовуйте семантичний пошук для пов’язаних тем."
     ai_embeddings_semantic_related_topics: "Максимальна кількість тем для показу в розділі пов’язаних тем."
     ai_embeddings_backfill_batch_size: "Кількість закладок для заповнення кожні 15 хвилин."
-    ai_embeddings_pg_connection_string: "Рядок підключення PostgreSQL для модуля вбудовування. Потрібно увімкнути розширення pgvector і створити ряд таблиць. Для отримання додаткової інформації див. Документи."
     ai_embeddings_semantic_search_enabled: "Увімкнути повносторінковий семантичний пошук."
     ai_embeddings_semantic_quick_search_enabled: "Увімкнути опцію семантичного пошуку у спливаючому меню пошуку."
     ai_embeddings_semantic_related_include_closed_topics: "Включити закриті теми в результати семантичного пошуку"
@@ -338,15 +329,9 @@ uk:
         other: "Ми не змогли видалити цю модель, оскільки її використовують %{settings} . Оновіть налаштування та повторіть спробу."
       cannot_edit_builtin: "Ви не можете редагувати вбудовану модель."
     embeddings:
+      cannot_edit_builtin: "Ви не можете редагувати вбудовану модель."
       configuration:
         disable_embeddings: "Спершу потрібно вимкнути функцію «AI embeddings enabled»."
-        choose_model: "Спочатку встановіть 'ai embeddings model'."
-        model_unreachable: "Нам не вдалося згенерувати тестове вбудовування з цією моделлю. Перевірте правильність ваших налаштувань."
-        hint:
-          one: "Переконайтеся, що параметр `%{settings}` налаштовано."
-          few: "Переконайтеся, що налаштовано параметри `%{settings}`."
-          many: "Переконайтеся, що налаштовано параметри `%{settings}`."
-          other: "Переконайтеся, що налаштовано параметри `%{settings}`."
     llm_models:
       missing_provider_param: "%{param} не може бути пустим"
     errors:

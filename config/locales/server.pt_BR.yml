@@ -52,10 +52,7 @@ pt_BR:
     ai_nsfw_flag_threshold_porn: "Limite para uma imagem classificada como pornográfica ser considerada NSFW."
     ai_nsfw_flag_threshold_sexy: "Limite para uma imagem classificada como sensual ser considerada NSFW."
     ai_nsfw_models: "Modelos usados para inferência de NSFW."
-    ai_openai_embeddings_url: "URL personalizada usada para incorporações da API da OpenAI. (No caso do Azure, pode ser: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "Chave de API para API da OpenAI. Usado APENAS para incorporações e Dall-E. Para o GPT, use a aba de configurações de LLM"
-    ai_hugging_face_tei_endpoint: URL em que a API está em execução para as inferências das incorporações de texto do Hugging Face
-    ai_hugging_face_tei_api_key: Chave de API para inferência de incorporações de texto do Hugging Face
+    ai_openai_api_key: "Chave de API para API da OpenAI. Usado APENAS para Dall-E. Para o GPT, use a aba de configurações de LLM"
     ai_helper_enabled: "Habilite o assistente de IA."
     composer_ai_helper_allowed_groups: "Os usuários desses grupos visualizarão o botão de assistência por IA no compositor."
     ai_helper_allowed_in_pm: "Ative o ajudante de IA do compositor em MPs."
@@ -68,15 +65,11 @@ pt_BR:
     post_ai_helper_allowed_groups: "Grupos de usuários(as) com permissão para acessar recursos do ajudante de IA nas postagens"
     ai_helper_image_caption_model: "Selecione o modelo a ser usado para gerar legendas em imagens"
     ai_auto_image_caption_allowed_groups: "Usuários(as) nestes grupos podem alternar legendas automáticas em imagens."
-    ai_embeddings_enabled: "Ative o módulo de incorporações."
-    ai_embeddings_discourse_service_api_endpoint: "URL em que a API está em execução para o módulo de incorporações"
-    ai_embeddings_discourse_service_api_key: "Chave de API para a API de incorporações"
-    ai_embeddings_model: "Use o all-mpnet-base-v2 para inferência local e veloz em inglês, text-embedding-ada-002 usada na API da OpenAI (precisa de chave da API) e multilingual-e5-large para incorporações multi-idiomas locais"
+    ai_embeddings_selected_model: "Use o modelo selecionado para gerar incorporações"
     ai_embeddings_generate_for_pms: "Gere incorporações para mensagens pessoais."
     ai_embeddings_semantic_related_topics_enabled: "Use Pesquisa semântica para tópicos relacionados."
     ai_embeddings_semantic_related_topics: "Número máximo de tópicos na seção do tópico relacionado."
     ai_embeddings_backfill_batch_size: "O número de incorporações para provisionamento a cada 15 minutos."
-    ai_embeddings_pg_connection_string: "String de conexão do PostgreSQL para o módulo de incorporações. É preciso ativar a extensão pgvector e uma série de tabelas criadas. Consulte a documentação para obter mais informações."
     ai_embeddings_semantic_search_enabled: "Ative pesquisa semântica em toda a página."
     ai_embeddings_semantic_quick_search_enabled: "Ative opção de busca semântica no pop-up no menu de busca."
     ai_embeddings_semantic_related_include_closed_topics: "Incluir tópicos fechados em resultados de pesquisa semântica"
@@ -422,13 +415,11 @@ pt_BR:
         other: "Não foi possível excluir este modelo, pois está sendo usado por %{settings}. Atualize a configuração e tente novamente."
       cannot_edit_builtin: "Não é possível eidtar um modelo integrado."
     embeddings:
+      delete_failed: "Este modelo está em uso no momento. Atualize o modelo selecionado de incorporações de IA primeiro."
+      cannot_edit_builtin: "Não é possível editar um modelo integrado."
       configuration:
         disable_embeddings: "Você precisa desativar \"incorporações com IA ativadas\" primeiro."
-        choose_model: "Define \"modelo de incorporações com IA\" primeiro."
-        model_unreachable: "Não foi possível gerar uma incorporação de teste com este modelo. Verifique se as configurações estão corretas."
-        hint:
-          one: "Verifique se a configuração \"%{settings}\" foi definida."
-          other: "Verifique se as configurações do provedor que você queria foram definidas. Confira as opções: %{settings}"
+        choose_model: "Defina o \"modelo selecionado de incorporações com IA\" primeiro."
     llm_models:
       missing_provider_param: "%{param} Não pode ficar em branco"
       bedrock_invalid_url: "Preencha todos os campos para usar este modelo."

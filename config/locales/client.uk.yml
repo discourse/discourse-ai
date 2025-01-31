@@ -329,6 +329,24 @@ uk:
         model_used: "Використана модель:"
         accuracy: "Точність:"
       embeddings:
+        back: "Назад"
+        save: "Зберегти"
+        delete: "Видалити"
+        presets: "Виберіть попереднє налаштування..."
+        edit: "Редагувати"
+        tests:
+          title: "Запустити тест"
+          running: "Виконується тест..."
+          success: "Успіх!"
+        display_name: "Імʼя"
+        provider: "Провайдер"
+        tokenizer: "Токенізатор"
+        providers:
+          hugging_face: "Hugging Face"
+          open_ai: "OpenAI"
+          google: "Google"
+          CDCK: "CDCK"
+          fake: "Користувацька"
         semantic_search: "Теми (семантикв)"
         semantic_search_loading: "Пошук більшої кількості результатів за допомогою ШІ"
         semantic_search_results:

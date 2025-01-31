@@ -106,6 +106,17 @@ zh_TW:
           save_caption: "保存"
           automatic_caption_dialog:
             confirm: "啟用"
+      embeddings:
+        back: "上一步"
+        save: "保存"
+        delete: "刪除"
+        edit: "編輯"
+        tests:
+          success: "成功!"
+        display_name: "名字"
+        providers:
+          google: "Google"
+          fake: "客製"
       ai_bot:
         debug_ai_modal:
           request: "請求"

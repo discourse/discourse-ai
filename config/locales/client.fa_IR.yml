@@ -143,6 +143,19 @@ fa_IR:
         model_used: "مدل مورد استفاده:"
         accuracy: "دقت:"
       embeddings:
+        back: "بازگشت"
+        save: "ذخیره"
+        delete: "حذف"
+        edit: "ویرایش"
+        tests:
+          running: "در حال اجرای آزمایش..."
+          success: "موفقیت!"
+        display_name: "نام"
+        providers:
+          google: "گوگل"
+          fake: "سفارشی"
+        provider_fields:
+          model_name: "نام مدل"
         semantic_search: "موضوعات (معنایی)"
       ai_bot:
         cancel_streaming: "توقف پاسخ"

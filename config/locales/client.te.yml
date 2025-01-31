@@ -101,6 +101,15 @@ te:
           save_caption: "భద్రపరుచు"
           automatic_caption_dialog:
             confirm: "ప్రారంభించండి"
+      embeddings:
+        back: "వెనుకకు"
+        save: "సేవ్ చేయండి"
+        delete: "తొలగించండి"
+        edit: "సవరించండి"
+        display_name: "పేరు"
+        providers:
+          google: "గూగుల్"
+          fake: "అనుకూల"
       ai_bot:
         debug_ai_modal:
           request: "అభ్యర్థన"

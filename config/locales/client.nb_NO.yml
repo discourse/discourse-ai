@@ -105,6 +105,17 @@ nb_NO:
           save_caption: "Lagre"
           automatic_caption_dialog:
             confirm: "Aktiver"
+      embeddings:
+        back: "Forrige"
+        save: "Lagre"
+        delete: "Slett"
+        edit: "Endre"
+        tests:
+          success: "Suksess!"
+        display_name: "Navn"
+        providers:
+          google: "Google"
+          fake: "Egendefinert"
       ai_bot:
         debug_ai_modal:
           request: "Forespørsel"

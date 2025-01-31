@@ -111,6 +111,17 @@ da:
           save_caption: "Gem"
           automatic_caption_dialog:
             confirm: "Aktiver"
+      embeddings:
+        back: "Tilbage"
+        save: "Gem"
+        delete: "Slet"
+        edit: "Rediger"
+        tests:
+          success: "Succes!"
+        display_name: "Navn"
+        providers:
+          google: "Google"
+          fake: "Tilpasset"
       ai_bot:
         debug_ai_modal:
           request: "Anmod om medlemskab"
