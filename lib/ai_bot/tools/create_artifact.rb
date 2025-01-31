@@ -42,6 +42,7 @@ module DiscourseAi
             - List any specific libraries or frameworks to use/avoid
             - Describe error states and edge cases
             - Include accessibility requirements
+            - Include code snippets to help ground the specification
           DESC
         end
 
@@ -66,54 +67,56 @@ module DiscourseAi
           }
         end
 
-        def self.inject_prompt(prompt:, context:, persona:)
-          return if persona.options["echo_artifact"] != "true"
-          # we inject the current artifact content into the last user message
-          if topic_id = context[:topic_id]
-            posts = Post.where(topic_id: topic_id)
-            artifact = AiArtifact.order("id desc").where(post: posts).first
-            if artifact
-              latest_version = artifact.versions.order(version_number: :desc).first
-              current = latest_version || artifact
+        def self.accepted_options
+          [option(:creator_llm, type: :llm)]
+        end
 
-              artifact_source = <<~MSG
-                Current Artifact:
+        def self.allow_partial_tool_calls?
+          true
+        end
 
-                ### HTML
-                ```html
-                #{current.html}
-                ```
-
-                ### CSS
-                ```css
-                #{current.css}
-                ```
-
-                ### JavaScript
-                ```javascript
-                #{current.js}
-                ```
-
-              MSG
-
-              last_message = prompt.messages.last
-              last_message[:content] = "#{artifact_source}\n\n#{last_message[:content]}"
-            end
+        def partial_invoke
+          if parameters[:specification].present?
+            in_progress(specification: parameters[:specification])
           end
         end
 
-        def self.accepted_options
-          [option(:creator_llm, type: :llm), option(:echo_artifact, type: :boolean)]
+        def in_progress(specification:, source: nil)
+          source = (<<~HTML) if source.present?
+            ### Source
+
+            ````
+            #{source}
+            ````
+          HTML
+
+          self.custom_raw = <<~HTML
+            <details>
+              <summary>Thinking...</summary>
+
+
+            ### Specification
+            ````
+            #{specification}
+            ````
+
+            #{source}
+
+            </details>
+          HTML
         end
 
         def invoke
-          name = parameters[:name] || "New Artifact"
-          yield "#{name}\n\n" + parameters[:specification].to_s
-
           post = Post.find_by(id: context[:post_id])
           return error_response("No post context found") unless post
 
-          artifact_code = generate_artifact_code(post: post, user: post.user)
+          partial_response = +""
+          artifact_code =
+            generate_artifact_code(post: post, user: post.user) do |partial|
+              partial_response << partial
+              in_progress(specification: parameters[:specification], source: partial_response)
+              yield nil, true
+            end
           return error_response(artifact_code[:error]) if artifact_code[:error]
 
           artifact = create_artifact(post, artifact_code)
@@ -122,6 +125,7 @@ module DiscourseAi
             update_custom_html(artifact)
             success_response(artifact)
           else
+            self.custom_raw = self.custom_raw + "\n\n###Error creating artifact..."
             error_response(artifact.errors.full_messages.join(", "))
           end
         end
@@ -148,6 +152,7 @@ module DiscourseAi
 
           llm.generate(prompt, user: user, feature_name: "create_artifact") do |partial_response|
             response << partial_response
+            yield partial_response
           end
 
           sections = parse_sections(response)

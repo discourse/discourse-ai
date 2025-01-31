@@ -16,17 +16,20 @@ module DiscourseAi
           @instructions = instructions
         end
 
-        def apply
-          changes = generate_changes
+        def apply(&progress)
+          changes = generate_changes(&progress)
           parsed_changes = parse_changes(changes)
           apply_changes(parsed_changes)
         end
 
         private
 
-        def generate_changes
+        def generate_changes(&progress)
           response = +""
-          llm.generate(build_prompt, user: user) { |partial| response << partial }
+          llm.generate(build_prompt, user: user) do |partial|
+            progress.call(partial) if progress
+            response << partial
+          end
           response
         end
 

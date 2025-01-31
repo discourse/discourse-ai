@@ -37,16 +37,83 @@ module DiscourseAi
           }
         end
 
+        def self.inject_prompt(prompt:, context:, persona:)
+          return if persona.options["echo_artifact"].to_s == "false"
+          # we inject the current artifact content into the last user message
+          if topic_id = context[:topic_id]
+            posts = Post.where(topic_id: topic_id)
+            artifact = AiArtifact.order("id desc").where(post: posts).first
+            if artifact
+              latest_version = artifact.versions.order(version_number: :desc).first
+              current = latest_version || artifact
+
+              artifact_source = <<~MSG
+                Current Artifact:
+
+                ### HTML
+                ```html
+                #{current.html}
+                ```
+
+                ### CSS
+                ```css
+                #{current.css}
+                ```
+
+                ### JavaScript
+                ```javascript
+                #{current.js}
+                ```
+
+              MSG
+
+              last_message = prompt.messages.last
+              last_message[:content] = "#{artifact_source}\n\n#{last_message[:content]}"
+            end
+          end
+        end
+
         def self.accepted_options
           [
             option(:editor_llm, type: :llm),
             option(:update_algorithm, type: :enum, values: %w[full diff], default: "full"),
+            option(:echo_artifact, type: :boolean, default: true),
           ]
         end
 
-        def invoke
-          yield "Updating Artifact\n#{parameters[:instructions]}\n\n"
+        def self.allow_partial_tool_calls?
+          true
+        end
 
+        def partial_invoke
+          in_progress(instructions: parameters[:instructions]) if parameters[:instructions].present?
+        end
+
+        def in_progress(instructions:, source: nil)
+          source = (<<~HTML) if source.present?
+            ### Source
+
+            ````
+            #{source}
+            ````
+          HTML
+
+          self.custom_raw = <<~HTML
+            <details>
+              <summary>Thinking...</summary>
+
+              ### Instructions
+              ````
+              #{instructions}
+              ````
+
+              #{source}
+
+            </details>
+          HTML
+        end
+
+        def invoke
           post = Post.find_by(id: context[:post_id])
           return error_response("No post context found") unless post
 
@@ -81,15 +148,23 @@ module DiscourseAi
             )
 
           begin
+            partial_response = +""
             new_version =
-              strategy.new(
-                llm: llm,
-                post: post,
-                user: post.user,
-                artifact: artifact,
-                artifact_version: artifact_version,
-                instructions: parameters[:instructions],
-              ).apply
+              strategy
+                .new(
+                  llm: llm,
+                  post: post,
+                  user: post.user,
+                  artifact: artifact,
+                  artifact_version: artifact_version,
+                  instructions: parameters[:instructions],
+                )
+                .apply do |progress|
+                  partial_response << progress
+                  in_progress(instructions: parameters[:instructions], source: partial_response)
+                  # force in progress to render
+                  yield nil, true
+                end
 
             update_custom_html(
               artifact: artifact,
