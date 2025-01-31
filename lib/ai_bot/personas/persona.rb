@@ -102,6 +102,7 @@ module DiscourseAi
             if SiteSetting.ai_artifact_security.in?(%w[lax strict])
               tools << Tools::CreateArtifact
               tools << Tools::UpdateArtifact
+              tools << Tools::ReadArtifact
             end
 
             tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?

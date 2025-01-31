@@ -70,6 +70,10 @@ class AiArtifact < ActiveRecord::Base
 
     version
   end
+
+  def public?
+    !!metadata&.dig("public")
+  end
 end
 
 # == Schema Information
