@@ -50,12 +50,19 @@ module DiscourseAi
 
             content = source.public_send(section == :javascript ? :js : section)
             blocks.each do |block|
-              content =
-                DiscourseAi::Utils::DiffUtils::SimpleDiff.apply(
-                  content,
-                  block[:search],
-                  block[:replace],
-                )
+              begin
+                content =
+                  DiscourseAi::Utils::DiffUtils::SimpleDiff.apply(
+                    content,
+                    block[:search],
+                    block[:replace],
+                  )
+              rescue StandardError => e
+                File.write("/tmp/x/content", content)
+                File.write("/tmp/x/search", block[:search])
+                File.write("/tmp/x/replace", block[:replace])
+                raise e
+              end
             end
             updated_content[section == :javascript ? :js : section] = content
           end
