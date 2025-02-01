@@ -49,6 +49,7 @@ module DiscourseAi
             next unless blocks
 
             content = source.public_send(section == :javascript ? :js : section)
+            original_content = content.dup
             blocks.each do |block|
               begin
                 content =
@@ -58,6 +59,8 @@ module DiscourseAi
                     block[:replace],
                   )
               rescue StandardError => e
+                File.write("/tmp/x/original", original_content)
+                File.write("/tmp/x/blocks", blocks.inspect)
                 File.write("/tmp/x/content", content)
                 File.write("/tmp/x/search", block[:search])
                 File.write("/tmp/x/replace", block[:replace])

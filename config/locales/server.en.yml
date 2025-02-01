@@ -298,9 +298,6 @@ en:
           creator_llm:
             name: "LLM"
             description: "Language model to use for artifact creation"
-          echo_artifact:
-            name: "Echo Artifact"
-            description: "Include full artifact source in subsequent replies"
         update_artifact:
           editor_llm:
             name: "LLM"
@@ -308,6 +305,9 @@ en:
           update_algorithm:
             name: "Update Algorithm"
             description: "Ask LLM to fully replace, or use diff to update"
+          echo_artifact:
+            name: "Echo Artifact"
+            description: "Include full artifact source in subsequent replies"
         google:
           base_query:
             name: "Base Search Query"

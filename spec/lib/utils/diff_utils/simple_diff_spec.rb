@@ -10,23 +10,39 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       expect { subject.apply("content", "search", nil) }.to raise_error(ArgumentError)
     end
 
+    it "prioritizes exact matches over all fuzzy matches" do
+      content = <<~TEXT
+        line 1
+          line 1
+        lin 1
+      TEXT
+
+      search = "  line 1"
+      replace = "  new_line"
+      expected = <<~TEXT
+        line 1
+          new_line
+        lin 1
+      TEXT
+
+      expect(subject.apply(content, search, replace)).to eq(expected.strip)
+    end
+
     it "raises error when no match is found" do
       content = "line1\ncompletely_different\nline3"
       search = "nothing_like_this"
       replace = "new_line"
-
       expect { subject.apply(content, search, replace) }.to raise_error(
         DiscourseAi::Utils::DiffUtils::SimpleDiff::NoMatchError,
       )
     end
 
-    it "raises error for ambiguous matches" do
+    it "replaces all matching occurrences" do
       content = "line1\nline2\nmiddle\nline2\nend"
       search = "line2"
       replace = "new_line2"
-
-      expect { subject.apply(content, search, replace) }.to raise_error(
-        DiscourseAi::Utils::DiffUtils::SimpleDiff::AmbiguousMatchError,
+      expect(subject.apply(content, search, replace)).to eq(
+        "line1\nnew_line2\nmiddle\nnew_line2\nend",
       )
     end
 
@@ -34,7 +50,6 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       content = "line1\nline2\nline3"
       search = "line2"
       replace = "new_line2"
-
       expect(subject.apply(content, search, replace)).to eq("line1\nnew_line2\nline3")
     end
 
@@ -42,7 +57,6 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       content = "start\nline1\nline2\nend"
       search = "line1\nline2"
       replace = "new_line"
-
       expect(subject.apply(content, search, replace)).to eq("start\nnew_line\nend")
     end
 
@@ -50,7 +64,6 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       content = "line1\n  line2\nline3"
       search = "line2"
       replace = "new_line2"
-
       expect(subject.apply(content, search, replace)).to eq("line1\nnew_line2\nline3")
     end
 
@@ -58,7 +71,6 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       content = "line one one one\nlin2\nline three three" # Notice 'lin2' instead of 'line2'
       search = "line2"
       replace = "new_line2"
-
       expect(subject.apply(content, search, replace)).to eq(
         "line one one one\nnew_line2\nline three three",
       )
@@ -68,7 +80,6 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       content = "def method\n    line1\n  line2\nend"
       search = "line1\nline2"
       replace = "new_content"
-
       expect(subject.apply(content, search, replace)).to eq("def method\nnew_content\nend")
     end
   end
