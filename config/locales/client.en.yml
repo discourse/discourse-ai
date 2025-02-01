@@ -382,7 +382,9 @@ en:
           open_ai-gpt-4o: "High intelligence model for complex, multi-step tasks"
           open_ai-gpt-4o-mini: "Affordable and fast small model for lightweight tasks"
           open_ai-o1-mini: "Cost-efficient reasoning model"
-          open_ai-o1-preview: "Open AI's most capabale reasoning model"
+          open_ai-o1-preview: "Open AI's most capabale reasoning model (preview)"
+          open_ai-o1: "Open AI's most capable reasoning model"
+          open_ai-o3-mini: "Advanced Cost-efficient reasoning model"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficient lightweight multilingual model"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Powerful multipurpose model"
           mistral-mistral-large-latest: "Mistral's most powerful model"
@@ -439,6 +441,7 @@ en:
           provider_order: "Provider order (comma delimited list)"
           provider_quantizations: "Order of provider quantizations (comma delimited list eg: fp16,fp8)"
           disable_streaming: "Disable streaming completions (convert streaming to non streaming requests)"
+          reasoning_effort: "Reasoning effort (only applicable to reasoning models)"
 
       related_topics:
         title: "Related topics"

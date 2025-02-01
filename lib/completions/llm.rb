@@ -62,8 +62,10 @@ module DiscourseAi
                 {
                   id: "open_ai",
                   models: [
-                    { name: "o1-preview", tokens: 131_072, display_name: "o1" },
-                    { name: "o1-mini", tokens: 131_072, display_name: "o1 mini" },
+                    { name: "o3-mini", tokens: 200_000, display_name: "o3 Mini" },
+                    { name: "o1", tokens: 200_000, display_name: "o1" },
+                    { name: "o1-preview", tokens: 131_072, display_name: "o1 preview" },
+                    { name: "o1-mini", tokens: 131_072, display_name: "o1 Mini" },
                     { name: "gpt-4o", tokens: 131_072, display_name: "GPT-4 Omni" },
                     { name: "gpt-4o-mini", tokens: 131_072, display_name: "GPT-4 Omni Mini" },
                     { name: "gpt-4-turbo", tokens: 131_072, display_name: "GPT-4 Turbo" },

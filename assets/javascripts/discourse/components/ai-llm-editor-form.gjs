@@ -114,10 +114,26 @@ export default class AiLlmEditorForm extends Component {
 
   @computed("args.model.provider")
   get metaProviderParams() {
-    return (
+    const params =
       this.args.llms.resultSetMeta.provider_params[this.args.model.provider] ||
-      {}
-    );
+      {};
+
+    return Object.entries(params).map(([field, value]) => {
+      if (typeof value === "string") {
+        return { field, type: value };
+      } else if (typeof value === "object") {
+        if (value.values) {
+          value = { ...value };
+          value.values = value.values.map((v) => {
+            return { id: v, name: v };
+          });
+        }
+        this.args.model.provider_params[field] =
+          this.args.model.provider_params[field] || value.default;
+        return { field, ...value };
+      }
+      return { field, type: "text" }; // fallback
+    });
   }
 
   @action
@@ -275,24 +291,31 @@ export default class AiLlmEditorForm extends Component {
             />
           </div>
         </div>
-        {{#each-in this.metaProviderParams as |field type|}}
-          <div class="control-group ai-llm-editor-provider-param__{{type}}">
+        {{#each this.metaProviderParams as |param|}}
+          <div
+            class="control-group ai-llm-editor-provider-param__{{param.type}}"
+          >
             <label>{{i18n
-                (concat "discourse_ai.llms.provider_fields." field)
+                (concat "discourse_ai.llms.provider_fields." param.field)
               }}</label>
-            {{#if (eq type "checkbox")}}
+            {{#if (eq param.type "enum")}}
+              <ComboBox
+                @value={{mut (get @model.provider_params param.field)}}
+                @content={{param.values}}
+              />
+            {{else if (eq param.type "checkbox")}}
               <Input
-                @type={{type}}
-                @checked={{mut (get @model.provider_params field)}}
+                @type={{param.type}}
+                @checked={{mut (get @model.provider_params param.field)}}
               />
             {{else}}
               <Input
-                @type={{type}}
-                @value={{mut (get @model.provider_params field)}}
+                @type={{param.type}}
+                @value={{mut (get @model.provider_params param.field)}}
               />
             {{/if}}
           </div>
-        {{/each-in}}
+        {{/each}}
         <div class="control-group">
           <label>{{i18n "discourse_ai.llms.tokenizer"}}</label>
           <ComboBox

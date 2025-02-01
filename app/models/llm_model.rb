@@ -34,6 +34,11 @@ class LlmModel < ActiveRecord::Base
         organization: :text,
         disable_native_tools: :checkbox,
         disable_streaming: :checkbox,
+        reasoning_effort: {
+          type: :enum,
+          values: %w[default low medium high],
+          default: "default",
+        },
       },
       mistral: {
         disable_native_tools: :checkbox,
