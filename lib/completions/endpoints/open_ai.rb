@@ -43,7 +43,14 @@ module DiscourseAi
         private
 
         def disable_streaming?
-          @disable_streaming = llm_model.lookup_custom_param("disable_streaming")
+          @disable_streaming ||= llm_model.lookup_custom_param("disable_streaming")
+        end
+
+        def reasoning_effort
+          return @reasoning_effort if defined?(@reasoning_effort)
+          @reasoning_effort = llm_model.lookup_custom_param("reasoning_effort")
+          @reasoning_effort = nil if !%w[low medium high].include?(@reasoning_effort)
+          @reasoning_effort
         end
 
         def model_uri
@@ -59,6 +66,8 @@ module DiscourseAi
 
         def prepare_payload(prompt, model_params, dialect)
           payload = default_options.merge(model_params).merge(messages: prompt)
+
+          payload[:reasoning_effort] = reasoning_effort if reasoning_effort
 
           if @streaming_mode
             payload[:stream] = true
