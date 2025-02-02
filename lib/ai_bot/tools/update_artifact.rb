@@ -123,10 +123,11 @@ module DiscourseAi
           artifact_version = nil
           if version = parameters[:version]
             artifact_version = artifact.versions.find_by(version_number: version)
-            return error_response("Version not found") unless version
-          else
-            artifact_version = artifact.versions.order(version_number: :desc).first
+            # we could tell llm it is confused here if artifact version is not there
+            # but let's just fix it transparently which saves an llm call
           end
+
+          artifact_version ||= artifact.versions.order(version_number: :desc).first
 
           if artifact.post.topic.id != post.topic.id
             return error_response("Attempting to update an artifact you are not allowed to")

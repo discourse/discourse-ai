@@ -58,13 +58,13 @@ module DiscourseAi
                     block[:search],
                     block[:replace],
                   )
-              rescue StandardError => e
+              rescue DiscourseAi::Utils::DiffUtils::SimpleDiff::NoMatchError
                 File.write("/tmp/x/original", original_content)
                 File.write("/tmp/x/blocks", blocks.inspect)
                 File.write("/tmp/x/content", content)
                 File.write("/tmp/x/search", block[:search])
                 File.write("/tmp/x/replace", block[:replace])
-                raise e
+                # TODO, do we want to inform caller
               end
             end
             updated_content[section == :javascript ? :js : section] = content
