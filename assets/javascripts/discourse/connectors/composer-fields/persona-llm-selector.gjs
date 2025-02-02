@@ -152,7 +152,7 @@ export default class BotSelector extends Component {
   resetTargetRecipients() {
     if (this.allowLLMSelector) {
       const botUsername = this.currentUser.ai_enabled_chat_bots.find(
-        (bot) => bot.model_name === this.llm
+        (bot) => bot.id === this.llm
       ).username;
       this.composer.set("targetRecipients", botUsername);
     } else {
@@ -170,7 +170,7 @@ export default class BotSelector extends Component {
 
     return availableBots.map((bot) => {
       return {
-        id: bot.model_name,
+        id: bot.id,
         name: bot.display_name,
       };
     });

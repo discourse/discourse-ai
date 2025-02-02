@@ -7,7 +7,11 @@ module DiscourseAi
         attr_reader :partial_tool_calls
 
         CompletionFailed = Class.new(StandardError)
-        TIMEOUT = 60
+        # 6 minutes
+        # Reasoning LLMs can take a very long time to respond, generally it will be under 5 minutes
+        # The alternative is to have per LLM timeouts but that would make it extra confusing for people
+        # configuring. Let's try this simple solution first.
+        TIMEOUT = 360
 
         class << self
           def endpoint_for(provider_name)
