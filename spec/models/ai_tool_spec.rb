@@ -12,7 +12,7 @@ RSpec.describe AiTool do
   )
     AiTool.create!(
       name: "test",
-      tool_name: "test",
+      tool_name: "test_#{SecureRandom.uuid}",
       description: "test",
       parameters: parameters || [{ name: "query", type: "string", desciption: "perform a search" }],
       script: script || "function invoke(params) { return params; }",
