@@ -11,8 +11,7 @@ module DiscourseAi
         def self.signature
           {
             name: "update_artifact",
-            description:
-              "Updates an existing web artifact using search/replace operations. Supports multiple changes per section.",
+            description: "Updates an existing web artifact",
             parameters: [
               {
                 name: "artifact_id",
@@ -22,7 +21,7 @@ module DiscourseAi
               },
               {
                 name: "instructions",
-                description: "Clear instructions on what changes need to be made to the artifact",
+                description: "Clear instructions on what changes need to be made to the artifact.",
                 type: "string",
                 required: true,
               },

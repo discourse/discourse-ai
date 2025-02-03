@@ -8,6 +8,15 @@ class AiArtifact < ActiveRecord::Base
   validates :css, length: { maximum: 65_535 }
   validates :js, length: { maximum: 65_535 }
 
+  ALLOWED_CDN_SOURCES = %w[
+    https://cdn.jsdelivr.net
+    https://cdnjs.cloudflare.com
+    https://unpkg.com
+    https://ajax.googleapis.com
+    https://d3js.org
+    https://code.jquery.com
+  ]
+
   def self.iframe_for(id, version = nil)
     <<~HTML
       <div class='ai-artifact'>

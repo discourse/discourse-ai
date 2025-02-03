@@ -114,11 +114,8 @@ module DiscourseAi
             6. Keep changes minimal and focused
             7. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
 
-            External libraries allowed only from:
-            - unpkg.com
-            - cdnjs.com
-            - jsdelivr.net
-            - ajax.googleapis.com
+            JavaScript libraries must be sourced from the following CDNs, otherwise CSP will reject it:
+            #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}
 
             Reply Format:
             [HTML]

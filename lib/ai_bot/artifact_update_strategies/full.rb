@@ -73,11 +73,8 @@ module DiscourseAi
             7. Sections must start and end with exact tags: [HTML] [/HTML], [CSS] [/CSS], [JavaScript] [/JavaScript]
             8. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
 
-            External libraries allowed only from:
-            - unpkg.com
-            - cdnjs.com
-            - jsdelivr.net
-            - ajax.googleapis.com
+            JavaScript libraries must be sourced from the following CDNs, otherwise CSP will reject it:
+            #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}
 
             Always adhere to the format when replying:
 

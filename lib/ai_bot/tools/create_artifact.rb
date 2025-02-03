@@ -17,6 +17,7 @@ module DiscourseAi
             3. Interactive elements and behavior
             4. Data handling (if applicable)
             5. Specific requirements or constraints
+            6. DO NOT include full source code of the artifact, just very clear requirements
 
             Good specification examples:
 
@@ -233,12 +234,10 @@ module DiscourseAi
                - CSS: Valid CSS rules
                - JavaScript: Clean, working code
             4. NEVER USE SHORTCUTS - generate complete code for each section. No placeholders.
+            5. If you need to source ANY 3rd party libraries, use the following CDNs:
+            #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}
 
-            External libraries allowed only from:
-            - unpkg.com
-            - cdnjs.com
-            - jsdelivr.net
-            - ajax.googleapis.com
+            6. When sourcing libraries, include them in the [HTML] section, for example: <script src="https://cdn.jsdelivr.net/...."></script>
 
             Required response format:
 

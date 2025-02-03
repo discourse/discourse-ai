@@ -81,7 +81,7 @@ module DiscourseAi
         response.headers.delete("X-Frame-Options")
         response.headers[
           "Content-Security-Policy"
-        ] = "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://unpkg.com https://cdnjs.cloudflare.com https://ajax.googleapis.com https://cdn.jsdelivr.net;"
+        ] = "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' #{AiArtifact::ALLOWED_CDN_SOURCES.join(" ")};"
         response.headers["X-Robots-Tag"] = "noindex"
 
         # Render the content
