@@ -305,9 +305,9 @@ en:
           update_algorithm:
             name: "Update Algorithm"
             description: "Ask LLM to fully replace, or use diff to update"
-          echo_artifact:
-            name: "Echo Artifact"
-            description: "Include full artifact source in subsequent replies"
+          do_not_echo_artifact:
+            name: "Do Not Echo Artifact"
+            description: "Will limit costs however effectiveness of Artifact updates will be reduced"
         google:
           base_query:
             name: "Base Search Query"

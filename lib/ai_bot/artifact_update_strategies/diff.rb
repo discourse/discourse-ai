@@ -49,7 +49,6 @@ module DiscourseAi
             next unless blocks
 
             content = source.public_send(section == :javascript ? :js : section)
-            original_content = content.dup
             blocks.each do |block|
               begin
                 content =
@@ -59,12 +58,8 @@ module DiscourseAi
                     block[:replace],
                   )
               rescue DiscourseAi::Utils::DiffUtils::SimpleDiff::NoMatchError
-                File.write("/tmp/x/original", original_content)
-                File.write("/tmp/x/blocks", blocks.inspect)
-                File.write("/tmp/x/content", content)
-                File.write("/tmp/x/search", block[:search])
-                File.write("/tmp/x/replace", block[:replace])
-                # TODO, do we want to inform caller
+                # TODO, we may need to inform caller here, LLM made a mistake which it
+                # should correct
               end
             end
             updated_content[section == :javascript ? :js : section] = content

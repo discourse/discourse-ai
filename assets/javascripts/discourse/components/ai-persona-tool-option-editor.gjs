@@ -57,11 +57,8 @@ export default class AiPersonaToolOptionEditor extends Component {
       <div class="">
         {{#if this.isEnum}}
           <select name="input" {{on "change" this.onSelectOption}}>
-            {{#each this.args.option.values as |value|}}
-              <option
-                value={{value}}
-                selected={{eq value this.args.option.value.value}}
-              >
+            {{#each @option.values as |value|}}
+              <option value={{value}} selected={{eq value @option.value.value}}>
                 {{value}}
               </option>
             {{/each}}

@@ -37,7 +37,7 @@ module DiscourseAi
         end
 
         def self.inject_prompt(prompt:, context:, persona:)
-          return if persona.options["echo_artifact"].to_s == "false"
+          return if persona.options["do_not_echo_artifact"].to_s == "true"
           # we inject the current artifact content into the last user message
           if topic_id = context[:topic_id]
             posts = Post.where(topic_id: topic_id)
@@ -75,8 +75,8 @@ module DiscourseAi
         def self.accepted_options
           [
             option(:editor_llm, type: :llm),
-            option(:update_algorithm, type: :enum, values: %w[full diff], default: "full"),
-            option(:echo_artifact, type: :boolean, default: true),
+            option(:update_algorithm, type: :enum, values: %w[diff full], default: "diff"),
+            option(:do_not_echo_artifact, type: :boolean, default: true),
           ]
         end
 
