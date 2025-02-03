@@ -11,7 +11,7 @@ RSpec.describe AiTool do
     rag_chunk_overlap_tokens: nil
   )
     AiTool.create!(
-      name: "test",
+      name: "test #{SecureRandom.uuid}",
       tool_name: "test_#{SecureRandom.uuid.underscore}",
       description: "test",
       parameters: parameters || [{ name: "query", type: "string", desciption: "perform a search" }],
@@ -28,7 +28,7 @@ RSpec.describe AiTool do
 
     expect(tool.signature).to eq(
       {
-        name: "test",
+        name: tool.tool_name,
         description: "test",
         parameters: [{ name: "query", type: "string", desciption: "perform a search" }],
       },
