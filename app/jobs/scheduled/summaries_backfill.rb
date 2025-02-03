@@ -57,7 +57,7 @@ module ::Jobs
                           ais.target_type = 'Topic' AND
                           ais.summary_type = '#{summary_type}'
         SQL
-        .where("topics.created_at > current_timestamp - INTERVAL '#{max_age_days.to_i} DAY'")
+        .where("topics.last_posted_at > current_timestamp - INTERVAL '#{max_age_days.to_i} DAY'")
         .where(
           <<~SQL, # (1..1) gets stored ad (1..2).
           ais.id IS NULL OR (

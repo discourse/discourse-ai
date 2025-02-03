@@ -23,8 +23,8 @@ module DiscourseAi
             .where("chat_messages.created_at > ?", since.hours.ago)
             .includes(:user)
             .order(created_at: :asc)
-            .pluck(:id, :username_lower, :message)
-            .map { { id: _1, poster: _2, text: _3 } }
+            .pluck(:id, :username_lower, :message, :updated_at)
+            .map { { id: _1, poster: _2, text: _3, last_version_at: _4 } }
         end
 
         def summary_extension_prompt(summary, contents)

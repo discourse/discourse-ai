@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Jobs::SummariesBackfill do
-  fab!(:topic) { Fabricate(:topic, word_count: 200, highest_post_number: 2) }
+  fab!(:topic) do
+    Fabricate(:topic, word_count: 200, highest_post_number: 2, last_posted_at: 2.hours.ago)
+  end
   let(:limit) { 24 } # guarantee two summaries per batch
   let(:intervals) { 12 } # budget is split into intervals. Job runs every five minutes.
 
@@ -73,7 +75,7 @@ RSpec.describe Jobs::SummariesBackfill do
 
     it "respects max age setting" do
       SiteSetting.ai_summary_backfill_topic_max_age_days = 1
-      topic.update!(created_at: 2.days.ago)
+      topic.update!(last_posted_at: 2.days.ago)
 
       expect(subject.backfill_candidates(type)).to be_empty
     end
@@ -112,14 +114,14 @@ RSpec.describe Jobs::SummariesBackfill do
     end
 
     it "updates the highest_target_number if the summary turned to be up to date" do
+      og_highest_post_number = topic.highest_post_number
       existing_summary =
         Fabricate(
           :ai_summary,
           target: topic,
           updated_at: 3.hours.ago,
-          highest_target_number: topic.highest_post_number,
+          highest_target_number: og_highest_post_number,
         )
-      og_highest_post_number = topic.highest_post_number
       topic.update!(highest_post_number: og_highest_post_number + 1)
 
       # No prepared responses here. We don't perform a completion call.
