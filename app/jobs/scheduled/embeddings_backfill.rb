@@ -20,10 +20,9 @@ module Jobs
 
       rebaked = 0
 
-      strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-      vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-      table_name = vector_rep.topic_table_name
+      vector = DiscourseAi::Embeddings::Vector.instance
+      vector_def = vector.vdef
+      table_name = DiscourseAi::Embeddings::Schema::TOPICS_TABLE
 
       topics =
         Topic
@@ -31,21 +30,20 @@ module Jobs
           .where(archetype: Archetype.default)
           .where(deleted_at: nil)
           .order("topics.bumped_at DESC")
-          .limit(limit - rebaked)
 
-      rebaked += populate_topic_embeddings(vector_rep, topics)
+      rebaked += populate_topic_embeddings(vector, topics.limit(limit - rebaked))
 
       return if rebaked >= limit
 
       # Then, we'll try to backfill embeddings for topics that have outdated
       # embeddings, be it model or strategy version
-      relation = topics.where(<<~SQL)
-          #{table_name}.model_version < #{vector_rep.version}
+      relation = topics.where(<<~SQL).limit(limit - rebaked)
+          #{table_name}.model_version < #{vector_def.version}
           OR
-          #{table_name}.strategy_version < #{strategy.version}
+          #{table_name}.strategy_version < #{vector_def.strategy_version}
         SQL
 
-      rebaked += populate_topic_embeddings(vector_rep, relation)
+      rebaked += populate_topic_embeddings(vector, relation)
 
       return if rebaked >= limit
 
@@ -57,27 +55,30 @@ module Jobs
           .where("#{table_name}.updated_at < topics.updated_at")
           .limit((limit - rebaked) / 10)
 
-      populate_topic_embeddings(vector_rep, relation, force: true)
+      populate_topic_embeddings(vector, relation, force: true)
 
       return if rebaked >= limit
 
       return unless SiteSetting.ai_embeddings_per_post_enabled
 
       # Now for posts
-      table_name = vector_rep.post_table_name
+      table_name = DiscourseAi::Embeddings::Schema::POSTS_TABLE
+      posts_batch_size = 1000
 
       posts =
         Post
           .joins("LEFT JOIN #{table_name} ON #{table_name}.post_id = posts.id")
           .where(deleted_at: nil)
-          .limit(limit - rebaked)
+          .where(post_type: Post.types[:regular])
 
       # First, we'll try to backfill embeddings for posts that have none
       posts
         .where("#{table_name}.post_id IS NULL")
-        .find_each do |t|
-          vector_rep.generate_representation_from(t)
-          rebaked += 1
+        .limit(limit - rebaked)
+        .pluck(:id)
+        .each_slice(posts_batch_size) do |batch|
+          vector.gen_bulk_reprensentations(Post.where(id: batch))
+          rebaked += batch.length
         end
 
       return if rebaked >= limit
@@ -86,13 +87,15 @@ module Jobs
       # embeddings, be it model or strategy version
       posts
         .where(<<~SQL)
-          #{table_name}.model_version < #{vector_rep.version}
+          #{table_name}.model_version < #{vector_def.version}
           OR
-          #{table_name}.strategy_version < #{strategy.version}
+          #{table_name}.strategy_version < #{vector_def.strategy_version}
         SQL
-        .find_each do |t|
-          vector_rep.generate_representation_from(t)
-          rebaked += 1
+        .limit(limit - rebaked)
+        .pluck(:id)
+        .each_slice(posts_batch_size) do |batch|
+          vector.gen_bulk_reprensentations(Post.where(id: batch))
+          rebaked += batch.length
         end
 
       return if rebaked >= limit
@@ -104,9 +107,9 @@ module Jobs
         .order("random()")
         .limit((limit - rebaked) / 10)
         .pluck(:id)
-        .each do |id|
-          vector_rep.generate_representation_from(Post.find_by(id: id))
-          rebaked += 1
+        .each_slice(posts_batch_size) do |batch|
+          vector.gen_bulk_reprensentations(Post.where(id: batch))
+          rebaked += batch.length
         end
 
       rebaked
@@ -114,20 +117,20 @@ module Jobs
 
     private
 
-    def populate_topic_embeddings(vector_rep, topics, force: false)
+    def populate_topic_embeddings(vector, topics, force: false)
       done = 0
 
-      topics = topics.where("#{vector_rep.topic_table_name}.topic_id IS NULL") if !force
+      topics =
+        topics.where("#{DiscourseAi::Embeddings::Schema::TOPICS_TABLE}.topic_id IS NULL") if !force
 
       ids = topics.pluck("topics.id")
+      batch_size = 1000
 
-      ids.each do |id|
-        topic = Topic.find_by(id: id)
-        if topic
-          vector_rep.generate_representation_from(topic)
-          done += 1
-        end
+      ids.each_slice(batch_size) do |batch|
+        vector.gen_bulk_reprensentations(Topic.where(id: batch).order("topics.bumped_at DESC"))
+        done += batch.length
       end
+
       done
     end
   end

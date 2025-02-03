@@ -101,6 +101,20 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         end
       end
 
+      it "prevents double render when mode is ILLUSTRATE_POST" do
+        DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
+          expect {
+            post "/discourse-ai/ai-helper/suggest",
+                 params: {
+                   mode: CompletionPrompt::ILLUSTRATE_POST,
+                   text: text_to_proofread,
+                   force_default_locale: true,
+                 }
+          }.not_to raise_error
+          expect(response.status).to eq(200)
+        end
+      end
+
       context "when performing numerous requests" do
         it "rate limits" do
           RateLimiter.enable
@@ -160,6 +174,13 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         request_caption({ image_url: image_url, image_url_type: "long_url" }, bad_caption) do |r|
           expect(r.status).to eq(200)
           expect(r.parsed_body["caption"]).to eq(caption_with_attrs)
+        end
+      end
+
+      it "truncates the caption from the LLM" do
+        request_caption({ image_url: image_url, image_url_type: "long_url" }, caption * 10) do |r|
+          expect(r.status).to eq(200)
+          expect(r.parsed_body["caption"].size).to be < caption.size * 10
         end
       end
 
@@ -246,6 +267,9 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         after { SiteSetting.provider = @original_provider }
 
         it "returns a 403 error if the user cannot access the secure upload" do
+          # hosted-site plugin edge case, it enables embeddings
+          SiteSetting.ai_embeddings_enabled = false
+
           create_post(
             title: "Secure upload post",
             raw: "This is a new post <img src=\"#{upload.url}\" />",

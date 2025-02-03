@@ -17,7 +17,7 @@ module DiscourseAi
           model_params
         end
 
-        attr_reader :responses, :completions, :dialect
+        attr_reader :responses, :completions, :dialect, :model_params
 
         def prompt_messages
           dialect.prompt.messages
@@ -26,11 +26,13 @@ module DiscourseAi
         def perform_completion!(
           dialect,
           _user,
-          _model_params,
+          model_params,
           feature_name: nil,
-          feature_context: nil
+          feature_context: nil,
+          partial_tool_calls: false
         )
           @dialect = dialect
+          @model_params = model_params
           response = responses[completions]
           if response.nil?
             raise CANNED_RESPONSE_ERROR,
@@ -45,17 +47,21 @@ module DiscourseAi
             cancel_fn = lambda { cancelled = true }
 
             # We buffer and return tool invocations in one go.
-            if is_tool?(response)
-              yield(response, cancel_fn)
-            else
-              response.each_char do |char|
-                break if cancelled
-                yield(char, cancel_fn)
+            as_array = response.is_a?(Array) ? response : [response]
+            as_array.each do |response|
+              if is_tool?(response)
+                yield(response, cancel_fn)
+              else
+                response.each_char do |char|
+                  break if cancelled
+                  yield(char, cancel_fn)
+                end
               end
             end
-          else
-            response
           end
+
+          response = response.first if response.is_a?(Array) && response.length == 1
+          response
         end
 
         def tokenizer
@@ -65,7 +71,7 @@ module DiscourseAi
         private
 
         def is_tool?(response)
-          Nokogiri::HTML5.fragment(response).at("function_calls").present?
+          response.is_a?(DiscourseAi::Completions::ToolCall)
         end
       end
     end

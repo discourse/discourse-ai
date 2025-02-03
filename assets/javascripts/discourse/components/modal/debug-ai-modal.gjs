@@ -7,10 +7,10 @@ import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { clipboardCopy, escapeExpression } from "discourse/lib/utilities";
-import i18n from "discourse-common/helpers/i18n";
 import discourseLater from "discourse-common/lib/later";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import { jsonToHtml } from "../../lib/utilities";
 
 export default class DebugAiModal extends Component {
@@ -38,7 +38,7 @@ export default class DebugAiModal extends Component {
       } else {
         return this.formattedResponse(this.info.raw_response_payload);
       }
-    } catch (e) {
+    } catch {
       return this.info.raw_request_payload;
     }
 
@@ -63,9 +63,31 @@ export default class DebugAiModal extends Component {
     this.copy(this.info.raw_response_payload);
   }
 
+  async loadLog(logId) {
+    try {
+      await ajax(`/discourse-ai/ai-bot/show-debug-info/${logId}.json`).then(
+        (result) => {
+          this.info = result;
+        }
+      );
+    } catch (e) {
+      popupAjaxError(e);
+    }
+  }
+
+  @action
+  prevLog() {
+    this.loadLog(this.info.prev_log_id);
+  }
+
+  @action
+  nextLog() {
+    this.loadLog(this.info.next_log_id);
+  }
+
   copy(text) {
     clipboardCopy(text);
-    this.justCopiedText = I18n.t("discourse_ai.ai_bot.conversation_shared");
+    this.justCopiedText = i18n("discourse_ai.ai_bot.conversation_shared");
 
     discourseLater(() => {
       this.justCopiedText = "";
@@ -73,11 +95,13 @@ export default class DebugAiModal extends Component {
   }
 
   loadApiRequestInfo() {
-    ajax(
-      `/discourse-ai/ai-bot/post/${this.args.model.id}/show-debug-info.json`
-    ).then((result) => {
-      this.info = result;
-    });
+    ajax(`/discourse-ai/ai-bot/post/${this.args.model.id}/show-debug-info.json`)
+      .then((result) => {
+        this.info = result;
+      })
+      .catch((e) => {
+        popupAjaxError(e);
+      });
   }
 
   get requestActive() {
@@ -147,6 +171,22 @@ export default class DebugAiModal extends Component {
           @action={{this.copyResponse}}
           @label="discourse_ai.ai_bot.debug_ai_modal.copy_response"
         />
+        {{#if this.info.prev_log_id}}
+          <DButton
+            class="btn"
+            @icon="angles-left"
+            @action={{this.prevLog}}
+            @label="discourse_ai.ai_bot.debug_ai_modal.previous_log"
+          />
+        {{/if}}
+        {{#if this.info.next_log_id}}
+          <DButton
+            class="btn"
+            @icon="angles-right"
+            @action={{this.nextLog}}
+            @label="discourse_ai.ai_bot.debug_ai_modal.next_log"
+          />
+        {{/if}}
         <span class="ai-debut-modal__just-copied">{{this.justCopiedText}}</span>
       </:footer>
     </DModal>

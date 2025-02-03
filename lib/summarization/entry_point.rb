@@ -17,13 +17,13 @@ module DiscourseAi
           scope.can_see_summary?(object.topic)
         end
 
+        # Don't add gists to the following topic lists.
+        gist_skipped_lists = %i[suggested semantic_related]
+
         plugin.register_modifier(:topic_query_create_list_topics) do |topics, options|
-          if options[:filter] == :hot && SiteSetting.ai_summarization_enabled &&
-               SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0
-            topics.includes(:ai_summaries).where(
-              "ai_summaries.id IS NULL OR ai_summaries.summary_type = ?",
-              AiSummary.summary_types[:gist],
-            )
+          if SiteSetting.ai_summarization_enabled && SiteSetting.ai_summary_gists_enabled &&
+               !gist_skipped_lists.include?(options[:filter])
+            topics.includes(:ai_gist_summary)
           else
             topics
           end
@@ -34,30 +34,16 @@ module DiscourseAi
           :ai_topic_gist,
           include_condition: -> { scope.can_see_gists? },
         ) do
-          # Options is defined at the instance level so we cannot run this check inside "include_condition".
-          return if options[:filter] != :hot
-
-          summaries = object.ai_summaries.to_a
-
-          # Summaries should always have one or zero elements here.
-          # This is an extra safeguard to avoid including regular summaries.
-          summaries.find { |s| s.summary_type == "gist" }&.summarized_text
+          return if gist_skipped_lists.include?(options[:filter])
+          object.ai_gist_summary&.summarized_text
         end
-
-        # To make sure hot topic gists are inmediately up to date, we rely on this event
-        # instead of using a scheduled job.
-        plugin.on(:topic_hot_scores_updated) { Jobs.enqueue(:hot_topics_gist_batch) }
 
         # As this event can be triggered quite often, let's be overly cautious enqueueing
         # jobs if the feature is disabled.
         plugin.on(:post_created) do |post|
           if SiteSetting.discourse_ai_enabled && SiteSetting.ai_summarization_enabled &&
-               SiteSetting.ai_summarize_max_hot_topics_gists_per_batch > 0 && post.topic
-            hot_score = TopicHotScore.find_by(topic: post.topic)
-
-            if hot_score.present? && hot_score.updated_at > 1.day.ago
-              Jobs.enqueue(:update_hot_topic_gist, topic_id: post&.topic_id)
-            end
+               SiteSetting.ai_summary_gists_enabled && post.topic
+            Jobs.enqueue(:fast_track_topic_gist, topic_id: post&.topic_id)
           end
         end
       end

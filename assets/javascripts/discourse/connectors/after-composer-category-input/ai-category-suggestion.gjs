@@ -1,6 +1,5 @@
 import Component from "@glimmer/component";
-import { inject as service } from "@ember/service";
-import AISuggestionDropdown from "../../components/ai-suggestion-dropdown";
+import AiCategorySuggester from "../../components/suggestion-menus/ai-category-suggester";
 import { showComposerAiHelper } from "../../lib/show-ai-helper";
 
 export default class AiCategorySuggestion extends Component {
@@ -13,15 +12,7 @@ export default class AiCategorySuggestion extends Component {
     );
   }
 
-  @service siteSettings;
-
   <template>
-    {{#if this.siteSettings.ai_embeddings_enabled}}
-      <AISuggestionDropdown
-        @mode="suggest_category"
-        @composer={{@outletArgs.composer}}
-        class="suggest-category-button"
-      />
-    {{/if}}
+    <AiCategorySuggester @composer={{@outletArgs.composer}} />
   </template>
 }

@@ -6,15 +6,25 @@
 
 zh_CN:
   discourse_automation:
+    ai:
+      flag_types:
+        review: "将帖子添加到审核队列"
+        spam: "标记为垃圾内容并隐藏帖子"
+        spam_silence: "标记为垃圾内容，隐藏帖子并将用户禁言"
     scriptables:
       llm_triage:
         title: 使用 AI 对帖子进行分类
         description: "使用大语言模型对帖子进行分类"
+        flagged_post: |
+          <div>模型的回答：</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>由 <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> 规则触发。</b>
       llm_report:
         title: 使用 AI 的定期报告
         description: "基于大语言模型的定期报告"
   site_settings:
     discourse_ai_enabled: "启用 Discourse AI 插件。"
+    ai_artifact_security: "AI 工件系统会生成带有可运行代码的 IFRAME。严格模式会禁用分享并强制执行额外的点击操作以运行代码。宽松模式允许分享工件并直接运行代码。禁用模式会禁用工件系统。"
     ai_toxicity_enabled: "启用毒性模块。"
     ai_toxicity_inference_service_api_endpoint: "为毒性模块运行 API 的 URL"
     ai_toxicity_inference_service_api_key: "毒性 API 的 API 密钥"
@@ -42,11 +52,8 @@ zh_CN:
     ai_nsfw_flag_threshold_porn: "分类为色情作品的图片被视为 NSFW 的阈值。"
     ai_nsfw_flag_threshold_sexy: "分类为性感的图片被视为 NSFW 的阈值。"
     ai_nsfw_models: "用于 NSFW 推断的模型。"
-    ai_openai_embeddings_url: "用于 OpenAI 嵌入向量 API 的自定义 URL。（对于 Azure，可以是：https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15）"
-    ai_openai_api_key: "OpenAI API 的 API 密钥。仅用于嵌入向量和 Dall-E。对于 GPT，请使用 LLM 配置标签页"
-    ai_anthropic_native_tool_call_models: "将使用原生工具调用的模型与使用传统的基于 XML 工具的模型对照列表。"
-    ai_hugging_face_tei_endpoint: 运行 Hugging Face 文本嵌入向量推断 API 的 URL
-    ai_hugging_face_tei_api_key: Hugging Face 文本嵌入向量推断的 API 密钥
+    ai_openai_api_key: "OpenAI API 的 API 密钥。仅用于 Dall-E。对于 GPT，请使用 LLM 配置标签页"
+    ai_helper_enabled: "启用 AI 助手。"
     composer_ai_helper_allowed_groups: "这些群组中的用户将在编辑器中看到 AI 助手按钮。"
     ai_helper_allowed_in_pm: "在私信中启用编辑器的 AI 助手。"
     ai_helper_model: "用于 AI 助手的模型。"
@@ -58,15 +65,11 @@ zh_CN:
     post_ai_helper_allowed_groups: "能够在帖子中访问 AI 助手功能的用户群组"
     ai_helper_image_caption_model: "选择用于生成图片标题的模型"
     ai_auto_image_caption_allowed_groups: "这些群组中的用户可以切换自动生成图片标题。"
-    ai_embeddings_enabled: "启用嵌入向量模块。"
-    ai_embeddings_discourse_service_api_endpoint: "为嵌入向量模块运行 API 的 URL"
-    ai_embeddings_discourse_service_api_key: "嵌入向量 API 的 API 密钥"
-    ai_embeddings_model: "将 all-mpnet-base-v2 用于本地快速英语推断，将 text-embedding-ada-002 用于 OpenAI API（需要 API 密钥），将 multilingual-e5-large 用于本地多语言嵌入向量"
+    ai_embeddings_selected_model: "使用所选模型生成嵌入向量。"
     ai_embeddings_generate_for_pms: "为个人消息生成嵌入向量。"
     ai_embeddings_semantic_related_topics_enabled: "将语义搜索用于相关话题。"
     ai_embeddings_semantic_related_topics: "相关话题部分中显示的最大话题数。"
     ai_embeddings_backfill_batch_size: "每 15 分钟回填的嵌入向量数。"
-    ai_embeddings_pg_connection_string: "嵌入向量模块的 PostgreSQL 连接字符串。需要启用 pgvector 扩展并创建一系列表。请参阅文档来获取更多信息。"
     ai_embeddings_semantic_search_enabled: "启用全页语义搜索。"
     ai_embeddings_semantic_quick_search_enabled: "在搜索菜单弹出窗口中启用语义搜索选项。"
     ai_embeddings_semantic_related_include_closed_topics: "在语义搜索结果中包含已关闭话题"
@@ -75,10 +78,14 @@ zh_CN:
     ai_summarization_enabled: "启用话题总结模块。"
     ai_summarization_model: "用于总结的模型。"
     ai_custom_summarization_allowed_groups: "能够创建新总结的群组。"
+    ai_pm_summarization_allowed_groups: "可以创建摘要并在私信中查看的群组。"
+    ai_summary_gists_enabled: "自动生成话题中最新回复的简要摘要。"
+    ai_summary_gists_allowed_groups: "可以查看热门话题列表中的要点的群组。"
+    ai_summary_backfill_maximum_topics_per_hour: "每小时回填的话题摘要数。"
     ai_bot_enabled: "启用 AI 机器人模块。"
     ai_bot_enable_chat_warning: "启动私信聊天时显示警告。可以通过编辑翻译字符串进行覆盖：discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "当 GPT 机器人可以访问私信时，它将回复这些群组的成员。"
-    ai_bot_debugging_allowed_groups: "允许这些群组在帖子上看到显示原始 AI 请求和响应的调试按钮"
+    ai_bot_debugging_allowed_groups: "允许这些群组在帖子上看到显示原始 AI 请求和回答的调试按钮"
     ai_bot_public_sharing_allowed_groups: "允许这些群组通过唯一的公开链接与公众分享 AI 个人消息。注意：如果您的网站需要登录，分享时也需要登录。"
     ai_bot_add_to_header: "在标题中显示按钮以使用 AI 机器人启动私信"
     ai_bot_github_access_token: "使用 GitHub AI 工具所需的 GitHub 访问令牌（搜索支持需要）"
@@ -91,27 +98,113 @@ zh_CN:
     reasons:
       flagged_by_toxicity: AI 插件将其分类为有毒后对其进行了举报。
       flagged_by_nsfw: AI 插件在将至少一张附加图片分类为 NSFW 后对其进行了举报。
-  errors:
-    prompt_message_length: 消息 %{idx} 超过 1000 个字符限制。
-    invalid_prompt_role: 消息 %{idx} 的角色无效。
   reports:
     overall_sentiment:
       title: "整体情绪"
-      description: "此图表比较了分类为积极或消极的帖子数。"
+      description: '该图表会比较分类为积极或消极的帖子数。当积极分数或消极分数大于设定的阈值分数时，会计算这些值。这意味着不显示中性的帖子。私信 (PM) 也不包括在内。使用“cardiffnlp/twitter-roberta-base-sentiment-latest”进行分类'
       xaxis: "积极 (%)"
       yaxis: "日期"
-    post_emotion:
-      title: "帖子情绪"
-      description: "按发帖人信任级别分组的具有以下一种情绪的帖子数。"
+    emotion_admiration:
+      title: "\U0001F929 钦佩"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为钦佩情绪的帖子。"
+    emotion_amusement:
+      title: "\U0001F604 愉悦"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为愉悦情绪的帖子。"
+    emotion_anger:
+      title: "\U0001F620 愤怒"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为愤怒情绪的帖子。"
+    emotion_annoyance:
+      title: "\U0001F612 烦恼"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为烦恼情绪的帖子。"
+    emotion_approval:
+      title: "\U0001F44D 赞同"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为赞同情绪的帖子。"
+    emotion_caring:
+      title: "\U0001F917 关怀"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为关怀情绪的帖子。"
+    emotion_confusion:
+      title: "\U0001F615 困惑"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为困惑情绪的帖子。"
+    emotion_curiosity:
+      title: "\U0001F914 好奇"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为好奇情绪的帖子。"
+    emotion_desire:
+      title: "\U0001F60D 渴望"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为渴望情绪的帖子。"
+    emotion_disappointment:
+      title: "\U0001F61E 沮丧"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为沮丧情绪的帖子。"
+    emotion_disapproval:
+      title: "\U0001F44E 不赞同"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为不赞同情绪的帖子。"
+    emotion_disgust:
+      title: "\U0001F922 厌恶"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为厌恶情绪的帖子。"
+    emotion_embarrassment:
+      title: "\U0001F633 尴尬"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为尴尬情绪的帖子。"
+    emotion_excitement:
+      title: "\U0001F92A 兴奋"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为兴奋情绪的帖子。"
+    emotion_fear:
+      title: "\U0001F628 恐惧"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为恐惧情绪的帖子。"
+    emotion_gratitude:
+      title: "\U0001F64F 感谢"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为感谢情绪的帖子。"
+    emotion_grief:
+      title: "\U0001F622 悲伤"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为悲伤情绪的帖子。"
+    emotion_joy:
+      title: "\U0001F60A 开心"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为开心情绪的帖子。"
+    emotion_love:
+      title: '❤️ 爱心'
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为爱心情绪的帖子。"
+    emotion_nervousness:
+      title: "\U0001F630 紧张"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为紧张情绪的帖子。"
+    emotion_neutral:
+      title: "\U0001F610 中性"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为中性情绪的帖子。"
+    emotion_optimism:
+      title: "\U0001F31F 乐观"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为乐观情绪的帖子。"
+    emotion_pride:
+      title: "\U0001F981 骄傲"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为骄傲情绪的帖子。"
+    emotion_realization:
+      title: "\U0001F4A1 领悟"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为领悟情绪的帖子。"
+    emotion_relief:
+      title: "\U0001F60C 缓解"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为缓解情绪的帖子。"
+    emotion_remorse:
+      title: "\U0001F614 懊悔"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为懊悔情绪的帖子。"
+    emotion_sadness:
+      title: "\U0001F62D 悲伤"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为悲伤情绪的帖子。"
+    emotion_surprise:
+      title: "\U0001F632 惊讶"
+      description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为惊讶情绪的帖子。"
   discourse_ai:
+    ai_artifact:
+      link: "在新标签页中显示工件"
+      view_source: "查看来源"
+      view_changes: "查看更改"
     unknown_model: "未知 AI 模型"
     tools:
       custom_name: "%{name}（自定义）"
       presets:
+        browse_web_jina:
+          name: "浏览网页 (jina.ai)"
         exchange_rate:
           name: "汇率"
         stock_quote:
           name: "股票报价 (AlphaVantage)"
+        image_generation:
+          name: "Flux 图片生成器 (Together.ai)"
         empty_tool:
           name: "从空白开始…"
     ai_helper:
@@ -125,6 +218,7 @@ zh_CN:
         custom_prompt: "自定义提示"
         explain: "解释"
         illustrate_post: "为帖子创建插图"
+        replace_dates: "智能日期"
       painter:
         attribution:
           stable_diffusion_xl: "图片由 Stable Diffusion XL 提供"
@@ -142,7 +236,15 @@ zh_CN:
         other_content_in_pm: "不能公开分享包含其他人发表的帖子的个人消息"
         failed_to_share: "无法分享对话"
         conversation_deleted: "对话分享已成功删除"
+    spam_detection:
+      flag_reason: "被 <a href='%{url}'>Discourse AI</a> 标记为垃圾内容"
+      silence_reason: "用户被 <a href='%{url}'>Discourse AI</a> 自动禁言"
+      invalid_error_type: "提供的错误类型无效"
+      unexpected: "发生意外错误"
+      bot_user_update_failed: "无法更新垃圾内容扫描机器人用户"
     ai_bot:
+      reply_error: "抱歉，我们的系统在尝试回复时似乎遇到了意外问题。\n\n[details='Error details']\n%{details}\n[/details]"
+      default_pm_prefix: "[无标题 AI 机器人私信]"
       personas:
         default_llm_required: "启用聊天之前需要默认的 LLM 模型"
         cannot_delete_system_persona: "无法删除系统角色，请改为将其禁用"
@@ -174,10 +276,17 @@ zh_CN:
         discourse_helper:
           name: "Discourse 助手"
           description: "专门帮助处理 Discourse 相关任务的 AI 机器人"
+        web_artifact_creator:
+          name: "Web 工件创建者"
+          description: "专注于创建交互式 Web 工件的 AI 机器人"
       topic_not_found: "总结不可用，找不到话题！"
       summarizing: "正在总结话题"
       searching: "搜索：'%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "基本搜索查询"
+            description: "搜索时使用的基本查询。例如：'site:example.com' 将仅包括 example.com 中的结果，before:2022-01-01 将仅包括 2021 年及之前的结果。此文本会附加到搜索查询的前面。"
         read:
           read_private:
             name: "阅读不公开话题"
@@ -193,6 +302,8 @@ zh_CN:
             name: "基本搜索查询"
             description: "搜索时要使用的基本查询。示例：'#urgent' 会在搜索查询前面加上 '#urgent'，并且仅包含具有紧急类别或标签的话题。"
       tool_summary:
+        update_artifact: "更新 Web 工件"
+        create_artifact: "创建 Web 工件"
         web_browser: "浏览网页"
         github_search_files: "GitHub 搜索文件"
         github_search_code: "GitHub 代码搜索"
@@ -214,6 +325,8 @@ zh_CN:
         search_meta_discourse: "搜索元 Discourse"
         javascript_evaluator: "评估 JavaScript"
       tool_help:
+        update_artifact: "使用 AI 机器人更新 Web 工件"
+        create_artifact: "使用 AI 机器人创建 Web 工件"
         web_browser: "使用 AI 机器人浏览网页"
         github_search_code: "在 GitHub 仓库中搜索代码"
         github_search_files: "在 GitHub 仓库中搜索文件"
@@ -235,6 +348,8 @@ zh_CN:
         search_meta_discourse: "搜索元 Discourse"
         javascript_evaluator: "评估 JavaScript"
       tool_description:
+        update_artifact: "已使用 AI 机器人更新 Web 工件"
+        create_artifact: "已使用 AI 机器人创建 Web 工件"
         web_browser: "正在阅读 <a href='%{url}'>%{url}</a>"
         github_search_files: "已在 %{repo}/%{branch} 中搜索 '%{keywords}'"
         github_search_code: "已在 %{repo} 中搜索 '%{query}'"
@@ -267,9 +382,7 @@ zh_CN:
         no_targets: "在所选时间段内没有消息。"
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "积极"
-          negative: "消极"
+        overall_sentiment: "整体情绪（积极 - 消极）"
         post_emotion:
           sadness: "悲伤 \U0001F622"
           surprise: "惊讶 \U0001F631"
@@ -281,18 +394,38 @@ zh_CN:
     llm:
       configuration:
         disable_module_first: "您必须先禁用“%{setting}”。"
-        set_llm_first: "首先设置“%{setting}”。"
+        set_llm_first: "首先设置%{setting}"
         model_unreachable: "我们无法从此模型获得回应。请先检查您的设置。"
+        invalid_seeded_model: "您无法在此模型中使用此功能"
+        must_select_model: "必须先选择一个 LLM"
       endpoints:
         not_configured: "%{display_name}（未配置）"
         configuration_hint:
           other: "确保配置了以下设置：%{settings}"
       delete_failed:
         other: "由于 %{settings} 正在使用此模型，无法将其删除。请更新设置并重试。"
+      cannot_edit_builtin: "您无法编辑内置模型。"
     embeddings:
+      delete_failed: "此模型目前正在使用中。请先更新 `ai embeddings selected model`。"
+      cannot_edit_builtin: "您无法编辑内置模型。"
       configuration:
         disable_embeddings: "您必须先禁用 'ai embeddings enabled'。"
-        choose_model: "首先设置 'ai embeddings model'。"
-        model_unreachable: "我们无法使用此模型生成测试嵌入向量。请检查设置是否正确。"
-        hint:
-          other: "确保已配置 `%{settings}` 设置。"
+        choose_model: "首先设置 'ai embeddings selected model'。"
+    llm_models:
+      missing_provider_param: "%{param} 不能为空"
+      bedrock_invalid_url: "请填写所有字段以使用此模型。"
+    errors:
+      quota_exceeded: "您已超出此模型的配额。请在 %{relative_time}后再试。"
+      quota_required: "必须为此模型指定最大词元数或使用次数"
+      no_query_specified: 查询参数为必填项，请指定。
+      no_user_for_persona: 指定的角色没有与之关联的用户。
+      persona_not_found: 指定的角色不存在。请检查 persona_name 或 persona_id 参数。
+      no_user_specified: username 或 user_unique_id 参数为必填项，请指定。
+      user_not_found: 指定的用户不存在。请检查 username 参数。
+      persona_disabled: 指定的角色被禁用。请检查 persona_name 或 persona_id 参数。
+      no_default_llm: 角色必须定义一个 default_llm。
+      user_not_allowed: 该用户无法参与该话题。
+      prompt_message_length: 消息 %{idx} 超过 1000 个字符限制。
+  dashboard:
+    problem:
+      ai_llm_status: "LLM 模型：%{model_name} 遇到问题。请检查<a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>模型的配置页面</a>。"

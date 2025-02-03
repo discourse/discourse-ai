@@ -44,6 +44,7 @@ module DiscourseAi
               Personas::DallE3 => -7,
               Personas::DiscourseHelper => -8,
               Personas::GithubHelper => -9,
+              Personas::WebArtifactCreator => -10,
             }
           end
 
@@ -97,6 +98,11 @@ module DiscourseAi
               Tools::WebBrowser,
               Tools::JavascriptEvaluator,
             ]
+
+            if SiteSetting.ai_artifact_security.in?(%w[lax strict])
+              tools << Tools::CreateArtifact
+              tools << Tools::UpdateArtifact
+            end
 
             tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
 
@@ -171,6 +177,11 @@ module DiscourseAi
               DiscourseAi::Completions::Llm.proxy(self.class.question_consolidator_llm)
           end
 
+          if context[:custom_instructions].present?
+            prompt_insts << "\n"
+            prompt_insts << context[:custom_instructions]
+          end
+
           fragments_guidance =
             rag_fragments_prompt(
               context[:conversation_context].to_a,
@@ -194,23 +205,26 @@ module DiscourseAi
           prompt
         end
 
-        def find_tools(partial, bot_user:, llm:, context:)
-          return [] if !partial.include?("</invoke>")
+        def find_tool(partial, bot_user:, llm:, context:, existing_tools: [])
+          return nil if !partial.is_a?(DiscourseAi::Completions::ToolCall)
+          tool_instance(
+            partial,
+            bot_user: bot_user,
+            llm: llm,
+            context: context,
+            existing_tools: existing_tools,
+          )
+        end
 
-          parsed_function = Nokogiri::HTML5.fragment(partial)
-          parsed_function
-            .css("invoke")
-            .map do |fragment|
-              tool_instance(fragment, bot_user: bot_user, llm: llm, context: context)
-            end
-            .compact
+        def allow_partial_tool_calls?
+          available_tools.any? { |tool| tool.allow_partial_tool_calls? }
         end
 
         protected
 
-        def tool_instance(parsed_function, bot_user:, llm:, context:)
-          function_id = parsed_function.at("tool_id")&.text
-          function_name = parsed_function.at("tool_name")&.text
+        def tool_instance(tool_call, bot_user:, llm:, context:, existing_tools:)
+          function_id = tool_call.id
+          function_name = tool_call.name
           return nil if function_name.nil?
 
           tool_klass = available_tools.find { |c| c.signature.dig(:name) == function_name }
@@ -219,7 +233,7 @@ module DiscourseAi
           arguments = {}
           tool_klass.signature[:parameters].to_a.each do |param|
             name = param[:name]
-            value = parsed_function.at(name)&.text
+            value = tool_call.parameters[name.to_sym]
 
             if param[:type] == "array" && value
               value =
@@ -242,14 +256,22 @@ module DiscourseAi
             arguments[name.to_sym] = value if value
           end
 
-          tool_klass.new(
-            arguments,
-            tool_call_id: function_id || function_name,
-            persona_options: options[tool_klass].to_h,
-            bot_user: bot_user,
-            llm: llm,
-            context: context,
-          )
+          tool_instance =
+            existing_tools.find { |t| t.name == function_name && t.tool_call_id == function_id }
+
+          if tool_instance
+            tool_instance.parameters = arguments
+            tool_instance
+          else
+            tool_klass.new(
+              arguments,
+              tool_call_id: function_id || function_name,
+              persona_options: options[tool_klass].to_h,
+              bot_user: bot_user,
+              llm: llm,
+              context: context,
+            )
+          end
         end
 
         def strip_quotes(value)
@@ -292,30 +314,34 @@ module DiscourseAi
 
           return nil if !consolidated_question
 
-          strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-          vector_rep =
-            DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+          vector = DiscourseAi::Embeddings::Vector.instance
           reranker = DiscourseAi::Inference::HuggingFaceTextEmbeddings
 
-          interactions_vector = vector_rep.vector_from(consolidated_question)
+          interactions_vector = vector.vector_from(consolidated_question)
 
           rag_conversation_chunks = self.class.rag_conversation_chunks
+          search_limit =
+            if reranker.reranker_configured?
+              rag_conversation_chunks * 5
+            else
+              rag_conversation_chunks
+            end
+
+          schema = DiscourseAi::Embeddings::Schema.for(RagDocumentFragment)
 
           candidate_fragment_ids =
-            vector_rep.asymmetric_rag_fragment_similarity_search(
-              interactions_vector,
-              target_type: "AiPersona",
-              target_id: id,
-              limit:
-                (
-                  if reranker.reranker_configured?
-                    rag_conversation_chunks * 5
-                  else
-                    rag_conversation_chunks
-                  end
-                ),
-              offset: 0,
-            )
+            schema
+              .asymmetric_similarity_search(
+                interactions_vector,
+                limit: search_limit,
+                offset: 0,
+              ) { |builder| builder.join(<<~SQL, target_id: id, target_type: "AiPersona") }
+                  rag_document_fragments ON
+                  rag_document_fragments.id = rag_document_fragment_id AND
+                  rag_document_fragments.target_id = :target_id AND
+                  rag_document_fragments.target_type = :target_type
+                SQL
+              .map(&:rag_document_fragment_id)
 
           fragments =
             RagDocumentFragment.where(upload_id: upload_refs, id: candidate_fragment_ids).pluck(

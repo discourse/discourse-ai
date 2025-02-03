@@ -7,8 +7,7 @@ import DModal from "discourse/components/d-modal";
 import DModalCancel from "discourse/components/d-modal-cancel";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import i18n from "discourse-common/helpers/i18n";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
 
 export default class ChatModalChannelSummary extends Component {
@@ -22,7 +21,7 @@ export default class ChatModalChannelSummary extends Component {
 
   sinceOptions = [1, 3, 6, 12, 24, 72, 168].map((hours) => {
     return {
-      name: I18n.t("discourse_ai.summarization.chat.since", { count: hours }),
+      name: i18n("discourse_ai.summarization.chat.since", { count: hours }),
       value: hours,
     };
   });

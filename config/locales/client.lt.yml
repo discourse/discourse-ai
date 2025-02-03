@@ -23,7 +23,6 @@ lt:
               description: "Vartotojai, kurie gaus ataskaitą (el. laiškai bus siunčiami tiesioginiais el. laiškais, naudotojų vardai bus išsiųsti PM)"
             topic_id:
               label: "Temos ID"
-              description: "Temos ID, kuriuo norite paskelbti ataskaitą"
             title:
               label: "Antraštė"
               description: "Pranešimo pavadinimas"
@@ -45,7 +44,6 @@ lt:
               description: "Pranešimas, kuris bus naudojamas nustatant, įsitikinkite, kad jis turi atsakyti vienu žodžiu, kurį galite naudoti veiksmui suaktyvinti"
             search_for_text:
               label: "Ieškokite teksto"
-              description: "Jei llm atsakyme rodomas šis tekstas, atlikite šiuos veiksmus"
             category:
               label: "Kategorija"
               description: "Kategorija, kuriai taikoma tema"
@@ -65,17 +63,29 @@ lt:
       title: "AI"
       modals:
         select_option: "Pasirink nustatymą..."
+      spam:
+        short_title: "Šlamštas"
+        last_seven_days: "Paskutinės 7 dienos"
+        enable: "Įgalinti"
+        test_modal:
+          spam: "Šlamštas"
+      usage:
+        summary: "Santrauka"
+        model: "Modelis"
+        username: "Vartotojo vardas"
+        total_requests: "Visos užklausos"
+        periods:
+          last_day: "Paskutinės 24 valandos"
+          custom: "Pasirinktinis..."
       ai_persona:
-        back: Atgal
-        name: Vardas
-        edit: Redaguoti
-        description: Aprašymas
+        back: "Atgal"
+        name: "Vardas"
+        edit: "Redaguoti"
+        description: "Aprašymas"
         user: Narys
-        system_prompt: Sistemos pranešimas
-        save: Išsaugoti
+        save: "Išsaugoti"
         enabled: "Galimas?"
-        allowed_groups: Leidžiamos grupės
-        delete: Pašalinti
+        delete: "Pašalinti"
       rag:
         uploads:
           title: "Įkėlimai"
@@ -88,22 +98,31 @@ lt:
         save: "Išsaugoti"
         parameter_required: "Privalomi"
         edit: "Redaguoti"
-        test: "Vykdyti testą"
         delete: "Pašalinti"
         next:
           title: "Kitas"
-        test_modal:
-          run: "Vykdyti testą"
       llms:
         display_name: "Vardas"
         save: "Išsaugoti"
         edit: "Redaguoti"
         back: "Atgal"
         delete: Pašalinti
+        quotas:
+          group: "Grupė"
+          max_usages: "Maksimaliai naudoja"
+          duration: "Trukmė"
+          durations:
+            hour: "1 valanda"
+            six_hours: "6 valandos"
+            day: "24 valandos"
+            custom: "Pasirinktinis..."
+          hours: "valandos"
+        usage:
+          ai_summarization: "Apibendrinti"
+          ai_spam: "Šlamštas"
         next:
           title: "Kitas"
         tests:
-          title: "Vykdyti testą"
           success: "Sėkmingai!"
         providers:
           google: "Google"
@@ -129,10 +148,23 @@ lt:
           save_caption: "Išsaugoti"
           automatic_caption_dialog:
             confirm: "Įgalinti"
+      embeddings:
+        back: "Atgal"
+        save: "Išsaugoti"
+        delete: "Pašalinti"
+        edit: "Redaguoti"
+        tests:
+          success: "Sėkmingai!"
+        display_name: "Vardas"
+        providers:
+          google: "Google"
+          fake: "Išskirtinės"
       ai_bot:
         debug_ai_modal:
           request: "Užklausa"
           response: "Atsakymas"
+          next_log: "Kitas"
+          previous_log: "Buvęs"
         ai_label: "AI"
         share_modal:
           copy: "Kopijuoti"

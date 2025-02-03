@@ -29,15 +29,24 @@ et:
     discourse_ai:
       modals:
         select_option: "Vali võimalus..."
+      spam:
+        short_title: "Spämm"
+        enable: "Lülita sisse"
+        test_modal:
+          spam: "Spämm"
+      usage:
+        summary: "Kokkuvõte"
+        username: "Kasutajanimi"
+        total_requests: "Kokku päringuid"
       ai_persona:
-        back: Tagasi
-        name: Nimi
-        edit: Muuda
-        description: Kirjeldus
+        back: "Tagasi"
+        name: "Nimi"
+        edit: "Muuda"
+        description: "Kirjeldus"
         user: Kasutaja
-        save: Salvesta
+        save: "Salvesta"
         enabled: "Sisse lülitatud?"
-        delete: Kustuta
+        delete: "Kustuta"
       rag:
         uploads:
           title: "Üleslaadimised"
@@ -59,6 +68,16 @@ et:
         edit: "Muuda"
         back: "Tagasi"
         delete: Kustuta
+        quotas:
+          group: "Grupp"
+          durations:
+            hour: "1 tund"
+            six_hours: "6 tundi"
+            day: "24 tundi"
+            week: "7 päeva"
+          hours: "tundi"
+        usage:
+          ai_spam: "Spämm"
         next:
           title: "Järgmine"
         tests:
@@ -79,9 +98,22 @@ et:
           save_caption: "Salvesta"
           automatic_caption_dialog:
             confirm: "Lülita sisse"
+      embeddings:
+        back: "Tagasi"
+        save: "Salvesta"
+        delete: "Kustuta"
+        edit: "Muuda"
+        tests:
+          success: "Korras!"
+        display_name: "Nimi"
+        providers:
+          google: "Google"
+          fake: "Individuaalne"
       ai_bot:
         debug_ai_modal:
           request: "Päring"
           response: "Vastus"
+          next_log: "Järgmine"
+          previous_log: "Eelmine"
         share_modal:
           copy: "Kopeeri"

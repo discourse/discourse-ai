@@ -33,3 +33,7 @@ Licensed under MIT License
 ## Meta-Llama-3-70B-Instruct
 
 Licensed under META LLAMA 3 COMMUNITY LICENSE
+
+## Gemma 2
+
+Licensed under the [Gemma Terms of Use](https://ai.google.dev/gemma/terms)

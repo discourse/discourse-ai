@@ -5,8 +5,9 @@ module DiscourseAi
     module Dialects
       class ChatGpt < Dialect
         class << self
-          def can_translate?(model_provider)
-            model_provider == "open_ai" || model_provider == "azure"
+          def can_translate?(llm_model)
+            llm_model.provider == "open_router" || llm_model.provider == "open_ai" ||
+              llm_model.provider == "azure"
           end
         end
 
@@ -39,22 +40,37 @@ module DiscourseAi
           llm_model.max_prompt_tokens - buffer
         end
 
-        # no support for streaming or tools or system messages
-        def is_gpt_o?
-          llm_model.provider == "open_ai" && llm_model.name.include?("o1-")
+        def disable_native_tools?
+          return @disable_native_tools if defined?(@disable_native_tools)
+          !!@disable_native_tools = llm_model.lookup_custom_param("disable_native_tools")
         end
 
         private
 
         def tools_dialect
-          @tools_dialect ||= DiscourseAi::Completions::Dialects::OpenAiTools.new(prompt.tools)
+          if disable_native_tools?
+            super
+          else
+            @tools_dialect ||= DiscourseAi::Completions::Dialects::OpenAiTools.new(prompt.tools)
+          end
+        end
+
+        # developer messages are preferred on reasoning models
+        def supports_developer_messages?
+          llm_model.provider == "open_ai" &&
+            (llm_model.name.start_with?("o1") || llm_model.name.start_with?("o3"))
         end
 
         def system_msg(msg)
-          if is_gpt_o?
-            { role: "user", content: msg[:content] }
+          content = msg[:content]
+          if disable_native_tools? && tools_dialect.instructions.present?
+            content = content + "\n\n" + tools_dialect.instructions
+          end
+
+          if supports_developer_messages?
+            { role: "developer", content: content }
           else
-            { role: "system", content: msg[:content] }
+            { role: "system", content: content }
           end
         end
 
@@ -63,11 +79,19 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          tools_dialect.from_raw_tool_call(msg)
+          if disable_native_tools?
+            super
+          else
+            tools_dialect.from_raw_tool_call(msg)
+          end
         end
 
         def tool_msg(msg)
-          tools_dialect.from_raw_tool(msg)
+          if disable_native_tools?
+            super
+          else
+            tools_dialect.from_raw_tool(msg)
+          end
         end
 
         def user_msg(msg)

@@ -5,7 +5,7 @@ module DiscourseAi
     class AiPersonasController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      before_action :find_ai_persona, only: %i[show update destroy create_user]
+      before_action :find_ai_persona, only: %i[edit update destroy create_user]
 
       def index
         ai_personas =
@@ -32,13 +32,16 @@ module DiscourseAi
             }
           end
         llms =
-          DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
-            { id: hash[:value], name: hash[:name] }
-          end
+          DiscourseAi::Configuration::LlmEnumerator
+            .values(allowed_seeded_llms: SiteSetting.ai_bot_allowed_seeded_models)
+            .map { |hash| { id: hash[:value], name: hash[:name] } }
         render json: { ai_personas: ai_personas, meta: { tools: tools, llms: llms } }
       end
 
-      def show
+      def new
+      end
+
+      def edit
         render json: LocalizedAiPersonaSerializer.new(@ai_persona)
       end
 
@@ -79,7 +82,92 @@ module DiscourseAi
         end
       end
 
+      def stream_reply
+        persona =
+          AiPersona.find_by(name: params[:persona_name]) ||
+            AiPersona.find_by(id: params[:persona_id])
+        return render_json_error(I18n.t("discourse_ai.errors.persona_not_found")) if persona.nil?
+
+        return render_json_error(I18n.t("discourse_ai.errors.persona_disabled")) if !persona.enabled
+
+        if persona.default_llm.blank?
+          return render_json_error(I18n.t("discourse_ai.errors.no_default_llm"))
+        end
+
+        if params[:query].blank?
+          return render_json_error(I18n.t("discourse_ai.errors.no_query_specified"))
+        end
+
+        if !persona.user_id
+          return render_json_error(I18n.t("discourse_ai.errors.no_user_for_persona"))
+        end
+
+        if !params[:username] && !params[:user_unique_id]
+          return render_json_error(I18n.t("discourse_ai.errors.no_user_specified"))
+        end
+
+        user = nil
+
+        if params[:username]
+          user = User.find_by_username(params[:username])
+          return render_json_error(I18n.t("discourse_ai.errors.user_not_found")) if user.nil?
+        elsif params[:user_unique_id]
+          user = stage_user
+        end
+
+        raise Discourse::NotFound if user.nil?
+
+        topic_id = params[:topic_id].to_i
+        topic = nil
+
+        if topic_id > 0
+          topic = Topic.find(topic_id)
+
+          if topic.topic_allowed_users.where(user_id: user.id).empty?
+            return render_json_error(I18n.t("discourse_ai.errors.user_not_allowed"))
+          end
+        end
+
+        hijack = request.env["rack.hijack"]
+        io = hijack.call
+
+        DiscourseAi::AiBot::ResponseHttpStreamer.queue_streamed_reply(
+          io: io,
+          persona: persona,
+          user: user,
+          topic: topic,
+          query: params[:query].to_s,
+          custom_instructions: params[:custom_instructions].to_s,
+          current_user: current_user,
+        )
+      end
+
       private
+
+      AI_STREAM_CONVERSATION_UNIQUE_ID = "ai-stream-conversation-unique-id"
+
+      def stage_user
+        unique_id = params[:user_unique_id].to_s
+        field = UserCustomField.find_by(name: AI_STREAM_CONVERSATION_UNIQUE_ID, value: unique_id)
+
+        if field
+          field.user
+        else
+          preferred_username = params[:preferred_username]
+          username = UserNameSuggester.suggest(preferred_username || unique_id)
+
+          user =
+            User.new(
+              username: username,
+              email: "#{SecureRandom.hex}@invalid.com",
+              staged: true,
+              active: false,
+            )
+          user.custom_fields[AI_STREAM_CONVERSATION_UNIQUE_ID] = unique_id
+          user.save!
+          user
+        end
+      end
 
       def find_ai_persona
         @ai_persona = AiPersona.find(params[:id])

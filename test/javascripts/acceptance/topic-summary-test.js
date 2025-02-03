@@ -1,5 +1,5 @@
 import { click, visit } from "@ember/test-helpers";
-import { skip, test } from "qunit";
+import { test } from "qunit";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import {
   acceptance,
@@ -22,7 +22,12 @@ acceptance("Topic - Summary", function (needs) {
     });
 
     server.get("/discourse-ai/summarization/t/1", () => {
-      return helper.response({});
+      return helper.response({
+        ai_topic_summary: {
+          summarized_text: "This a",
+        },
+        done: false,
+      });
     });
   });
 
@@ -30,7 +35,7 @@ acceptance("Topic - Summary", function (needs) {
     updateCurrentUser({ id: currentUserId });
   });
 
-  skip("displays streamed summary", async function (assert) {
+  test("displays streamed summary", async function (assert) {
     await visit("/t/-/1");
 
     const partialSummary = "This a";
@@ -39,7 +44,7 @@ acceptance("Topic - Summary", function (needs) {
       ai_topic_summary: { summarized_text: partialSummary },
     });
 
-    await click(".ai-topic-summarization");
+    await click(".ai-summarization-button");
 
     assert
       .dom(".ai-summary-box .generated-summary p")
@@ -63,11 +68,11 @@ acceptance("Topic - Summary", function (needs) {
       .hasText(finalSummary, "Updates the summary with a final result");
 
     assert
-      .dom(".ai-summary-box .summarized-on")
+      .dom(".ai-summary-modal .summarized-on")
       .exists("summary metadata exists");
   });
 
-  skip("clicking summary links", async function (assert) {
+  test("clicking summary links", async function (assert) {
     await visit("/t/-/1");
 
     const partialSummary = "In this post,";
@@ -76,7 +81,7 @@ acceptance("Topic - Summary", function (needs) {
       ai_topic_summary: { summarized_text: partialSummary },
     });
 
-    await click(".ai-topic-summarization");
+    await click(".ai-summarization-button");
     const finalSummaryCooked =
       "In this post,  <a href='/t/-/1/1'>bianca</a> said some stuff.";
     const finalSummaryResult = "In this post, bianca said some stuff.";
@@ -128,20 +133,20 @@ acceptance("Topic - Summary - Anon", function (needs) {
   test("displays cached summary immediately", async function (assert) {
     await visit("/t/-/1");
 
-    await click(".ai-topic-summarization");
+    await click(".ai-summarization-button");
 
     assert
       .dom(".ai-summary-box .generated-summary p")
       .hasText(finalSummary, "Updates the summary with the result");
 
     assert
-      .dom(".ai-summary-box .summarized-on")
+      .dom(".ai-summary-modal .summarized-on")
       .exists("summary metadata exists");
   });
 
   test("clicking outside of summary should not close the summary box", async function (assert) {
     await visit("/t/-/1");
-    await click(".ai-topic-summarization");
+    await click(".ai-summarization-button");
     await click("#main-outlet-wrapper");
     assert.dom(".ai-summary-box").exists();
   });

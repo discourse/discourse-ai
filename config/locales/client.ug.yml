@@ -31,15 +31,27 @@ ug:
     discourse_ai:
       modals:
         select_option: "تاللانما تاللىنىدۇ..."
+      spam:
+        short_title: "ئەخلەت خەت"
+        enable: "قوزغات"
+        test_modal:
+          result: "نەتىجە"
+          spam: "ئەخلەت خەت"
+      usage:
+        summary: "خۇلاسە"
+        username: "ئىشلەتكۈچى ئاتى"
+        total_requests: "جەمئىي ئىلتىماس"
+        periods:
+          custom: "ئىختىيارى..."
       ai_persona:
-        back: كەينى
-        name: ئىسمى
-        edit: تەھرىر
-        description: چۈشەندۈرۈش
+        back: "كەينى"
+        name: "ئىسمى"
+        edit: "تەھرىر"
+        description: "چۈشەندۈرۈش"
         user: ئىشلەتكۈچى
-        save: ساقلا
+        save: "ساقلا"
         enabled: "قوزغىتىلدى؟"
-        delete: ئۆچۈر
+        delete: "ئۆچۈر"
       rag:
         uploads:
           title: "يۈكلەنمە"
@@ -53,22 +65,32 @@ ug:
         save: "ساقلا"
         parameter_required: "زۆرۈر"
         edit: "تەھرىر"
-        test: "سىناقنى ئىجرا قىل"
         delete: "ئۆچۈر"
         next:
           title: "كېيىنكى"
-        test_modal:
-          run: "سىناقنى ئىجرا قىل"
       llms:
         display_name: "ئىسمى"
         save: "ساقلا"
         edit: "تەھرىر"
         back: "كەينى"
         delete: ئۆچۈر
+        quotas:
+          group: "گۇرۇپپا"
+          max_usages: "ئەڭ كۆپ ئىشلىتىلىشى"
+          duration: "داۋاملىشىش ۋاقتى"
+          durations:
+            hour: "1 سائەت"
+            six_hours: "6 سائەت"
+            day: "24 سائەت"
+            week: "7 كۈن"
+            custom: "ئىختىيارى..."
+          hours: "سائەت"
+        usage:
+          ai_summarization: "خۇلاسە"
+          ai_spam: "ئەخلەت خەت"
         next:
           title: "كېيىنكى"
         tests:
-          title: "سىناقنى ئىجرا قىل"
           success: "مۇۋەپپەقىيەتلىك!"
         providers:
           google: "Google"
@@ -91,10 +113,24 @@ ug:
           save_caption: "ساقلا"
           automatic_caption_dialog:
             confirm: "قوزغات"
+      embeddings:
+        back: "كەينى"
+        save: "ساقلا"
+        delete: "ئۆچۈر"
+        edit: "تەھرىر"
+        tests:
+          title: "سىناقنى ئىجرا قىل"
+          success: "مۇۋەپپەقىيەتلىك!"
+        display_name: "ئىسمى"
+        providers:
+          google: "Google"
+          fake: "ئىختىيارى"
       ai_bot:
         debug_ai_modal:
           request: "ئىلتىماس"
           response: "ئىنكاس"
+          next_log: "كېيىنكى"
+          previous_log: "ئالدىنقى"
         share_modal:
           copy: "كۆچۈر"
       summarization:

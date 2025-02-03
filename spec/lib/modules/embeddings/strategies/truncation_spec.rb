@@ -3,32 +3,51 @@
 RSpec.describe DiscourseAi::Embeddings::Strategies::Truncation do
   subject(:truncation) { described_class.new }
 
-  describe "#prepare_text_from" do
-    context "when using vector from OpenAI" do
-      before { SiteSetting.max_post_length = 100_000 }
+  fab!(:open_ai_embedding_def)
+  let(:prefix) { "I come first:" }
 
-      fab!(:topic)
-      fab!(:post) do
-        Fabricate(:post, topic: topic, raw: "Baby, bird, bird, bird\nBird is the word\n" * 500)
-      end
-      fab!(:post) do
-        Fabricate(
-          :post,
-          topic: topic,
-          raw: "Don't you know about the bird?\nEverybody knows that the bird is a word\n" * 400,
-        )
-      end
-      fab!(:post) { Fabricate(:post, topic: topic, raw: "Surfin' bird\n" * 800) }
+  describe "#prepare_target_text" do
+    before { SiteSetting.max_post_length = 100_000 }
 
-      let(:model) do
-        DiscourseAi::Embeddings::VectorRepresentations::TextEmbeddingAda002.new(truncation)
-      end
+    fab!(:topic)
+    fab!(:post) do
+      Fabricate(:post, topic: topic, raw: "Baby, bird, bird, bird\nBird is the word\n" * 500)
+    end
+    fab!(:post) do
+      Fabricate(
+        :post,
+        topic: topic,
+        raw: "Don't you know about the bird?\nEverybody knows that the bird is a word\n" * 400,
+      )
+    end
+    fab!(:post) { Fabricate(:post, topic: topic, raw: "Surfin' bird\n" * 800) }
+    fab!(:open_ai_embedding_def)
 
-      it "truncates a topic" do
-        prepared_text =
-          truncation.prepare_text_from(topic, model.tokenizer, model.max_sequence_length)
+    it "truncates a topic" do
+      prepared_text = truncation.prepare_target_text(topic, open_ai_embedding_def)
 
-        expect(model.tokenizer.size(prepared_text)).to be <= model.max_sequence_length
+      expect(open_ai_embedding_def.tokenizer.size(prepared_text)).to be <=
+        open_ai_embedding_def.max_sequence_length
+    end
+
+    it "includes embed prefix" do
+      open_ai_embedding_def.update!(embed_prompt: prefix)
+
+      prepared_text = truncation.prepare_target_text(topic, open_ai_embedding_def)
+
+      expect(prepared_text.starts_with?(prefix)).to eq(true)
+    end
+  end
+
+  describe "#prepare_query_text" do
+    context "when search is asymetric" do
+      it "includes search prefix" do
+        open_ai_embedding_def.update!(search_prompt: prefix)
+
+        prepared_query_text =
+          truncation.prepare_query_text("searching", open_ai_embedding_def, asymetric: true)
+
+        expect(prepared_query_text.starts_with?(prefix)).to eq(true)
       end
     end
   end

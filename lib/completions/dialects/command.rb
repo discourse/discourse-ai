@@ -6,8 +6,8 @@ module DiscourseAi
   module Completions
     module Dialects
       class Command < Dialect
-        def self.can_translate?(model_provider)
-          model_provider == "cohere"
+        def self.can_translate?(llm_model)
+          llm_model.provider == "cohere"
         end
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/

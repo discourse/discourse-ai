@@ -19,29 +19,28 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     topic
   end
 
-  let(:vector_rep) do
-    strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-    DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-  end
+  fab!(:vector_def) { Fabricate(:embedding_definition) }
 
   before do
+    SiteSetting.ai_embeddings_selected_model = vector_def.id
     SiteSetting.ai_embeddings_enabled = true
-    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
     SiteSetting.ai_embeddings_backfill_batch_size = 1
+    SiteSetting.ai_embeddings_per_post_enabled = true
     Jobs.run_immediately!
   end
 
   it "backfills topics based on bumped_at date" do
     embedding = Array.new(1024) { 1 }
 
-    WebMock.stub_request(
-      :post,
-      "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
-    ).to_return(status: 200, body: JSON.dump(embedding))
+    WebMock.stub_request(:post, "https://test.com/embeddings").to_return(
+      status: 200,
+      body: JSON.dump(embedding),
+    )
 
     Jobs::EmbeddingsBackfill.new.execute({})
 
-    topic_ids = DB.query_single("SELECT topic_id from #{vector_rep.topic_table_name}")
+    topic_ids =
+      DB.query_single("SELECT topic_id from #{DiscourseAi::Embeddings::Schema::TOPICS_TABLE}")
 
     expect(topic_ids).to eq([first_topic.id])
 
@@ -49,7 +48,8 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     SiteSetting.ai_embeddings_backfill_batch_size = 100
     Jobs::EmbeddingsBackfill.new.execute({})
 
-    topic_ids = DB.query_single("SELECT topic_id from #{vector_rep.topic_table_name}")
+    topic_ids =
+      DB.query_single("SELECT topic_id from #{DiscourseAi::Embeddings::Schema::TOPICS_TABLE}")
 
     expect(topic_ids).to contain_exactly(first_topic.id, second_topic.id, third_topic.id)
 
@@ -62,7 +62,7 @@ RSpec.describe Jobs::EmbeddingsBackfill do
 
     index_date =
       DB.query_single(
-        "SELECT updated_at from #{vector_rep.topic_table_name} WHERE topic_id = ?",
+        "SELECT updated_at from #{DiscourseAi::Embeddings::Schema::TOPICS_TABLE} WHERE topic_id = ?",
         third_topic.id,
       ).first
 

@@ -1,7 +1,7 @@
 import { AUTO_GROUPS } from "discourse/lib/constants";
 import DiscourseRoute from "discourse/routes/discourse";
 
-export default DiscourseRoute.extend({
+export default class AdminPluginsShowDiscourseAiPersonasNew extends DiscourseRoute {
   async model() {
     const record = this.store.createRecord("ai-persona");
     record.set("allowed_group_ids", [AUTO_GROUPS.trust_level_0.id]);
@@ -13,13 +13,13 @@ export default DiscourseRoute.extend({
     record.set("allow_personal_messages", true);
     record.set("tool_details", false);
     return record;
-  },
+  }
 
   setupController(controller, model) {
-    this._super(controller, model);
+    super.setupController(controller, model);
     controller.set(
       "allPersonas",
       this.modelFor("adminPlugins.show.discourse-ai-personas")
     );
-  },
-});
+  }
+}

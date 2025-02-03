@@ -5,7 +5,7 @@ module DiscourseAi
     module Dialects
       class Dialect
         class << self
-          def can_translate?(model_provider)
+          def can_translate?(llm_model)
             raise NotImplemented
           end
 
@@ -16,11 +16,13 @@ module DiscourseAi
               DiscourseAi::Completions::Dialects::Claude,
               DiscourseAi::Completions::Dialects::Command,
               DiscourseAi::Completions::Dialects::Ollama,
+              DiscourseAi::Completions::Dialects::Mistral,
+              DiscourseAi::Completions::Dialects::Nova,
               DiscourseAi::Completions::Dialects::OpenAiCompatible,
             ]
           end
 
-          def dialect_for(model_provider)
+          def dialect_for(llm_model)
             dialects = []
 
             if Rails.env.test? || Rails.env.development?
@@ -29,7 +31,7 @@ module DiscourseAi
 
             dialects = dialects.concat(all_dialects)
 
-            dialect = dialects.find { |d| d.can_translate?(model_provider) }
+            dialect = dialects.find { |d| d.can_translate?(llm_model) }
             raise DiscourseAi::Completions::Llm::UNKNOWN_MODEL if !dialect
 
             dialect
@@ -168,7 +170,7 @@ module DiscourseAi
           raise NotImplemented
         end
 
-        def assistant_msg(msg)
+        def model_msg(msg)
           raise NotImplemented
         end
 
@@ -177,11 +179,15 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          { role: "assistant", content: tools_dialect.from_raw_tool_call(msg) }
+          new_content = tools_dialect.from_raw_tool_call(msg)
+          msg = msg.merge(content: new_content)
+          model_msg(msg)
         end
 
         def tool_msg(msg)
-          { role: "user", content: tools_dialect.from_raw_tool(msg) }
+          new_content = tools_dialect.from_raw_tool(msg)
+          msg = msg.merge(content: new_content)
+          user_msg(msg)
         end
       end
     end

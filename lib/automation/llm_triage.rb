@@ -16,7 +16,8 @@ module DiscourseAi
         flag_post: nil,
         flag_type: nil,
         automation: nil,
-        max_post_tokens: nil
+        max_post_tokens: nil,
+        stop_sequences: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
              flag_post.blank?
@@ -32,7 +33,7 @@ module DiscourseAi
 
         content = llm.tokenizer.truncate(content, max_post_tokens) if max_post_tokens.present?
 
-        prompt.push(type: :user, content: content)
+        prompt.push(type: :user, content: content, upload_ids: post.upload_ids)
 
         result = nil
 
@@ -42,6 +43,7 @@ module DiscourseAi
             temperature: 0,
             max_tokens: 700, # ~500 words
             user: Discourse.system_user,
+            stop_sequences: stop_sequences,
             feature_name: "llm_triage",
             feature_context: {
               automation_id: automation&.id,
@@ -64,7 +66,9 @@ module DiscourseAi
 
           changes = {}
           changes[:category_id] = category_id if category_id.present?
-          changes[:tags] = tags if SiteSetting.tagging_enabled? && tags.present?
+          if SiteSetting.tagging_enabled? && tags.present?
+            changes[:tags] = post.topic.tags.map(&:name).concat(tags)
+          end
 
           if changes.present?
             first_post = post.topic.posts.where(post_number: 1).first
@@ -83,7 +87,7 @@ module DiscourseAi
                 .sub("%%AUTOMATION_ID%%", automation&.id.to_s)
                 .sub("%%AUTOMATION_NAME%%", automation&.name.to_s)
 
-            if flag_type == :spam
+            if flag_type == :spam || flag_type == :spam_silence
               PostActionCreator.new(
                 Discourse.system_user,
                 post,
@@ -91,6 +95,8 @@ module DiscourseAi
                 message: score_reason,
                 queue_for_review: true,
               ).perform
+
+              SpamRule::AutoSilence.new(post.user, post).silence_user if flag_type == :spam_silence
             else
               reviewable =
                 ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user)

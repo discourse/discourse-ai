@@ -6,7 +6,7 @@ module DiscourseAi
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
       def index
-        llms = LlmModel.all.order(:display_name)
+        llms = LlmModel.all.includes(:llm_quotas).order(:display_name)
 
         render json: {
                  ai_llms:
@@ -30,13 +30,21 @@ module DiscourseAi
                }
       end
 
-      def show
+      def new
+      end
+
+      def edit
         llm_model = LlmModel.find(params[:id])
         render json: LlmModelSerializer.new(llm_model)
       end
 
       def create
         llm_model = LlmModel.new(ai_llm_params)
+
+        # we could do nested attributes but the mechanics are not ideal leading
+        # to lots of complex debugging, this is simpler
+        quota_params.each { |quota| llm_model.llm_quotas.build(quota) } if quota_params
+
         if llm_model.save
           llm_model.toggle_companion_user
           render json: LlmModelSerializer.new(llm_model), status: :created
@@ -47,6 +55,25 @@ module DiscourseAi
 
       def update
         llm_model = LlmModel.find(params[:id])
+
+        if params[:ai_llm].key?(:llm_quotas)
+          if quota_params
+            existing_quota_group_ids = llm_model.llm_quotas.pluck(:group_id)
+            new_quota_group_ids = quota_params.map { |q| q[:group_id] }
+
+            llm_model
+              .llm_quotas
+              .where(group_id: existing_quota_group_ids - new_quota_group_ids)
+              .destroy_all
+
+            quota_params.each do |quota_param|
+              quota = llm_model.llm_quotas.find_or_initialize_by(group_id: quota_param[:group_id])
+              quota.update!(quota_param)
+            end
+          else
+            llm_model.llm_quotas.destroy_all
+          end
+        end
 
         if llm_model.seeded?
           return render_json_error(I18n.t("discourse_ai.llm.cannot_edit_builtin"), status: 403)
@@ -106,6 +133,19 @@ module DiscourseAi
       end
 
       private
+
+      def quota_params
+        if params[:ai_llm][:llm_quotas].present?
+          params[:ai_llm][:llm_quotas].map do |quota|
+            mapped = {}
+            mapped[:group_id] = quota[:group_id].to_i
+            mapped[:max_tokens] = quota[:max_tokens].to_i if quota[:max_tokens].present?
+            mapped[:max_usages] = quota[:max_usages].to_i if quota[:max_usages].present?
+            mapped[:duration_seconds] = quota[:duration_seconds].to_i
+            mapped
+          end
+        end
+      end
 
       def ai_llm_params(updating: nil)
         return {} if params[:ai_llm].blank?

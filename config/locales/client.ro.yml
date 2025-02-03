@@ -29,15 +29,28 @@ ro:
     discourse_ai:
       modals:
         select_option: "Alege o opțiune..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Ultimele 7 zile"
+        enable: "Activează"
+        test_modal:
+          spam: "Spam"
+      usage:
+        summary: "Rezumat"
+        username: "Nume utilizator"
+        total_requests: "Total cereri"
+        periods:
+          last_day: "Ultimele 24 de ore"
+          custom: "Personalizat..."
       ai_persona:
-        back: Înapoi
-        name: Nume
-        edit: Modifică
-        description: Descriere
+        back: "Înapoi"
+        name: "Nume"
+        edit: "Modifică"
+        description: "Descriere"
         user: Utilizatori
-        save: Salvare
+        save: "Salvare"
         enabled: "Activat?"
-        delete: Șterge
+        delete: "Șterge"
       rag:
         uploads:
           title: "Urcări"
@@ -59,6 +72,18 @@ ro:
         edit: "Modifică"
         back: "Înapoi"
         delete: Șterge
+        quotas:
+          group: "Grup"
+          duration: "Durată"
+          durations:
+            hour: "o oră"
+            six_hours: "6 de ore"
+            day: "24 de ore"
+            custom: "Personalizat..."
+          hours: "de ore"
+        usage:
+          ai_summarization: "Rezumat"
+          ai_spam: "Spam"
         next:
           title: "Următorul"
         tests:
@@ -80,10 +105,24 @@ ro:
           save_caption: "Salvare"
           automatic_caption_dialog:
             confirm: "Activează"
+      embeddings:
+        back: "Înapoi"
+        save: "Salvare"
+        delete: "Șterge"
+        edit: "Modifică"
+        tests:
+          title: "Rulează test"
+          success: "Succes!"
+        display_name: "Nume"
+        providers:
+          google: "Google"
+          fake: "Personalizat"
       ai_bot:
         debug_ai_modal:
           request: "Cere"
           response: "Răspuns"
+          next_log: "Următorul"
+          previous_log: "Precedent"
         share_modal:
           copy: "Copiază"
       summarization:

@@ -5,8 +5,8 @@ module DiscourseAi
     module Dialects
       class Ollama < Dialect
         class << self
-          def can_translate?(model_provider)
-            model_provider == "ollama"
+          def can_translate?(llm_model)
+            llm_model.provider == "ollama"
           end
         end
 
@@ -37,11 +37,19 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          tools_dialect.from_raw_tool_call(msg)
+          if enable_native_tool?
+            tools_dialect.from_raw_tool_call(msg)
+          else
+            super
+          end
         end
 
         def tool_msg(msg)
-          tools_dialect.from_raw_tool(msg)
+          if enable_native_tool?
+            tools_dialect.from_raw_tool(msg)
+          else
+            super
+          end
         end
 
         def system_msg(msg)
@@ -63,8 +71,23 @@ module DiscourseAi
         def user_msg(msg)
           user_message = { role: "user", content: msg[:content] }
 
-          # TODO: Add support for user messages with empbeded user ids
-          # TODO: Add support for user messages with attachments
+          encoded_uploads = prompt.encoded_uploads(msg)
+          if encoded_uploads.present?
+            images =
+              encoded_uploads
+                .map do |upload|
+                  if upload[:mime_type].start_with?("image/")
+                    upload[:base64]
+                  else
+                    nil
+                  end
+                end
+                .compact
+
+            user_message[:images] = images if images.present?
+          end
+
+          # TODO: Add support for user messages with embedded user ids
 
           user_message
         end

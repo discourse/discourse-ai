@@ -24,25 +24,9 @@
       }
     }
   }
-
-  .topic-map__additional-contents {
-    .ai-summarization-button {
-      padding-block: 0.5em;
-      display: flex;
-      gap: 0.5em;
-
-      button span {
-        white-space: nowrap;
-      }
-    }
-  }
 }
 
-.topic-map__ai-summary-content {
-  .ai-summary-container {
-    width: 100vw;
-  }
-
+.ai-summary-modal {
   .ai-summary {
     &__list {
       list-style: none;
@@ -174,14 +158,6 @@
     margin: 0;
   }
 
-  .summarized-on p {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.25em;
-    margin-bottom: 0;
-  }
-
   .outdated-summary {
     display: flex;
     flex-direction: column;
@@ -191,6 +167,40 @@
     }
     p {
       color: var(--primary-medium);
+    }
+  }
+
+  .d-modal__footer {
+    display: grid;
+    gap: 0;
+    grid-template-areas: "summarized regenerate" " outdated regenerate";
+    grid-template-columns: 1fr auto;
+    @include breakpoint(mobile-large) {
+      gap: 0.25em 0.5em;
+      grid-template-areas: "summarized summarized" "regenerate outdated";
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .fk-d-tooltip__trigger {
+      vertical-align: text-top;
+    }
+
+    .summary-outdated {
+      color: var(--primary-high);
+      font-size: var(--font-down-1);
+      line-height: var(--line-height-medium);
+    }
+
+    .summarized-on {
+      grid-area: summarized;
+    }
+
+    button {
+      grid-area: regenerate;
+      justify-self: start;
     }
   }
 }
@@ -213,47 +223,5 @@
   }
   100% {
     opacity: 1;
-  }
-}
-
-.ai-topic-gist {
-  width: 100%;
-  .mobile-view & {
-    position: relative;
-    top: -0.33em;
-    line-height: 1.4;
-    width: 90%;
-  }
-  .desktop-view & {
-    margin-top: 0.15em;
-    margin-bottom: -0.15em;
-  }
-  &__text {
-    color: var(--primary-high);
-    text-wrap: pretty;
-    word-wrap: break-word;
-    font-size: var(--font-down-1);
-    max-width: 70ch;
-    .visited & {
-      color: var(--primary-medium);
-    }
-  }
-
-  &__disclosure {
-    font-size: var(--font-down-1);
-    color: var(--primary-600);
-    .desktop-view & {
-      margin-left: 0.5em;
-    }
-    .mobile-view & {
-      display: block;
-      margin-top: -0.5em;
-      margin-bottom: 0.5em;
-    }
-    .d-icon {
-      font-size: var(--font-down-1);
-      position: relative;
-      top: -0.05em; // improve vertical alignment
-    }
   }
 }

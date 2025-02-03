@@ -2,6 +2,9 @@
 
 module DiscourseAi
   module Configuration
+    class InvalidSeededModelError < StandardError
+    end
+
     class LlmValidator
       def initialize(opts = {})
         @opts = opts
@@ -18,10 +21,13 @@ module DiscourseAi
         allowed_seeded_model?(val)
 
         run_test(val).tap { |result| @unreachable = result }
+      rescue DiscourseAi::Configuration::InvalidSeededModelError => e
+        @unreachable = true
+        false
       rescue StandardError => e
         raise e if Rails.env.test?
         @unreachable = true
-        false
+        true
       end
 
       def run_test(val)
@@ -77,7 +83,7 @@ module DiscourseAi
 
         if allowed_list.split("|").exclude?(id)
           @invalid_seeded_model = true
-          raise Discourse::InvalidParameters.new
+          raise DiscourseAi::Configuration::InvalidSeededModelError.new
         end
       end
     end

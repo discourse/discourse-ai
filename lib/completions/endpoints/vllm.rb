@@ -42,7 +42,10 @@ module DiscourseAi
 
         def prepare_payload(prompt, model_params, dialect)
           payload = default_options.merge(model_params).merge(messages: prompt)
-          payload[:stream] = true if @streaming_mode
+          if @streaming_mode
+            payload[:stream] = true if @streaming_mode
+            payload[:stream_options] = { include_usage: true }
+          end
 
           payload
         end
@@ -56,24 +59,42 @@ module DiscourseAi
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
-        def partials_from(decoded_chunk)
-          decoded_chunk
-            .split("\n")
-            .map do |line|
-              data = line.split("data: ", 2)[1]
-              data == "[DONE]" ? nil : data
-            end
-            .compact
+        def xml_tools_enabled?
+          true
         end
 
-        def extract_completion_from(response_raw)
-          parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
-          # half a line sent here
-          return if !parsed
+        def final_log_update(log)
+          log.request_tokens = @prompt_tokens if @prompt_tokens
+          log.response_tokens = @completion_tokens if @completion_tokens
+        end
 
-          response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
+        def decode(response_raw)
+          json = JSON.parse(response_raw, symbolize_names: true)
+          @prompt_tokens = json.dig(:usage, :prompt_tokens)
+          @completion_tokens = json.dig(:usage, :completion_tokens)
+          [json.dig(:choices, 0, :message, :content)]
+        end
 
-          response_h.dig(:content)
+        def decode_chunk(chunk)
+          @json_decoder ||= JsonStreamDecoder.new
+          (@json_decoder << chunk)
+            .map do |parsed|
+              # vLLM keeps sending usage over and over again
+              prompt_tokens = parsed.dig(:usage, :prompt_tokens)
+              completion_tokens = parsed.dig(:usage, :completion_tokens)
+
+              @prompt_tokens = prompt_tokens if prompt_tokens
+
+              @completion_tokens = completion_tokens if completion_tokens
+
+              text = parsed.dig(:choices, 0, :delta, :content)
+              if text.to_s.empty?
+                nil
+              else
+                text
+              end
+            end
+            .compact
         end
       end
     end

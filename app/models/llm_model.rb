@@ -4,6 +4,7 @@ class LlmModel < ActiveRecord::Base
   FIRST_BOT_USER_ID = -1200
   BEDROCK_PROVIDER_NAME = "aws_bedrock"
 
+  has_many :llm_quotas, dependent: :destroy
   belongs_to :user
 
   validates :display_name, presence: true, length: { maximum: 100 }
@@ -13,6 +14,11 @@ class LlmModel < ActiveRecord::Base
   validates_presence_of :name, :api_key
   validates :max_prompt_tokens, numericality: { greater_than: 0 }
   validate :required_provider_params
+  scope :in_use,
+        -> do
+          model_ids = DiscourseAi::Configuration::LlmEnumerator.global_usage.keys
+          where(id: model_ids)
+        end
 
   def self.provider_params
     {
@@ -26,6 +32,22 @@ class LlmModel < ActiveRecord::Base
       },
       open_ai: {
         organization: :text,
+        disable_native_tools: :checkbox,
+        disable_streaming: :checkbox,
+        reasoning_effort: {
+          type: :enum,
+          values: %w[default low medium high],
+          default: "default",
+        },
+      },
+      mistral: {
+        disable_native_tools: :checkbox,
+      },
+      google: {
+        disable_native_tools: :checkbox,
+      },
+      azure: {
+        disable_native_tools: :checkbox,
       },
       hugging_face: {
         disable_system_prompt: :checkbox,
@@ -36,12 +58,23 @@ class LlmModel < ActiveRecord::Base
       ollama: {
         disable_system_prompt: :checkbox,
         enable_native_tool: :checkbox,
+        disable_streaming: :checkbox,
+      },
+      open_router: {
+        disable_native_tools: :checkbox,
+        provider_order: :text,
+        provider_quantizations: :text,
+        disable_streaming: :checkbox,
       },
     }
   end
 
   def to_llm
-    DiscourseAi::Completions::Llm.proxy("custom:#{id}")
+    DiscourseAi::Completions::Llm.proxy(identifier)
+  end
+
+  def identifier
+    "custom:#{id}"
   end
 
   def toggle_companion_user
@@ -95,7 +128,16 @@ class LlmModel < ActiveRecord::Base
   end
 
   def seeded?
-    id < 0
+    id.present? && id < 0
+  end
+
+  def api_key
+    if seeded?
+      env_key = "DISCOURSE_AI_SEEDED_LLM_API_KEY_#{id.abs}"
+      ENV[env_key] || self[:api_key]
+    else
+      self[:api_key]
+    end
   end
 
   private

@@ -28,6 +28,15 @@ Fabricator(:hf_model, from: :llm_model) do
   provider "hugging_face"
 end
 
+Fabricator(:open_router_model, from: :llm_model) do
+  display_name "OpenRouter"
+  name "openrouter-1.0"
+  provider "open_router"
+  tokenizer "DiscourseAi::Tokenizer::OpenAiTokenizer"
+  max_prompt_tokens 64_000
+  url "https://openrouter.ai/api/v1/chat/completions"
+end
+
 Fabricator(:vllm_model, from: :llm_model) do
   display_name "Llama 3.1 vLLM"
   name "meta-llama/Meta-Llama-3.1-70B-Instruct"
@@ -64,6 +73,17 @@ Fabricator(:bedrock_model, from: :anthropic_model) do
   provider_params { { region: "us-east-1", access_key_id: "123456" } }
 end
 
+Fabricator(:nova_model, from: :llm_model) do
+  display_name "Amazon Nova pro"
+  name "amazon.nova-pro-v1:0"
+  provider "aws_bedrock"
+  tokenizer "DiscourseAi::Tokenizer::OpenAiTokenizer"
+  max_prompt_tokens 300_000
+  api_key "fake"
+  url ""
+  provider_params { { region: "us-east-1", access_key_id: "123456" } }
+end
+
 Fabricator(:cohere_model, from: :llm_model) do
   display_name "Cohere Command R+"
   name "command-r-plus"
@@ -88,6 +108,16 @@ Fabricator(:ollama_model, from: :llm_model) do
   tokenizer "DiscourseAi::Tokenizer::Llama3Tokenizer"
   url "http://api.ollama.ai/api/chat"
   provider_params { { enable_native_tool: true } }
+end
+
+Fabricator(:mistral_model, from: :llm_model) do
+  display_name "Mistral Large"
+  name "mistral-large-latest"
+  provider "mistral"
+  api_key "ABC"
+  tokenizer "DiscourseAi::Tokenizer::MixtralTokenizer"
+  url "https://api.mistral.ai/v1/chat/completions"
+  provider_params { { disable_native_tools: false } }
 end
 
 Fabricator(:seeded_model, from: :llm_model) do

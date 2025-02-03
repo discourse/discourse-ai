@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import loadingSpinner from "discourse/helpers/loading-spinner";
 
 export default class AiQuickSearchLoader extends Component {

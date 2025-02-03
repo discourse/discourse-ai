@@ -29,15 +29,28 @@ vi:
     discourse_ai:
       modals:
         select_option: "Chọn một tùy Chọn..."
+      spam:
+        short_title: "Rác"
+        last_seven_days: "7 ngày qua"
+        enable: "Bật"
+        test_modal:
+          spam: "Rác"
+      usage:
+        summary: "Tóm tắt"
+        username: "Tên tài khoản"
+        total_requests: "Tổng số yêu cầu"
+        periods:
+          last_day: "24 giờ qua"
+          custom: "Tùy chỉnh..."
       ai_persona:
-        back: Quay lại
-        name: Tên
-        edit: Sửa
-        description: Mô tả
+        back: "Quay lại"
+        name: "Tên"
+        edit: "Sửa"
+        description: "Mô tả"
         user: Người dùng
-        save: Lưu lại
+        save: "Lưu lại"
         enabled: "Kích hoạt"
-        delete: Xóa
+        delete: "Xóa"
       rag:
         uploads:
           title: "Tải lên"
@@ -50,22 +63,32 @@ vi:
         save: "Lưu lại"
         parameter_required: "Bắt buộc"
         edit: "Sửa"
-        test: "Chạy thử nghiệm"
         delete: "Xóa"
         next:
           title: "Kế tiếp"
-        test_modal:
-          run: "Chạy thử nghiệm"
       llms:
         display_name: "Tên"
         save: "Lưu lại"
         edit: "Sửa"
         back: "Quay lại"
         delete: Xóa
+        quotas:
+          group: "Nhóm"
+          max_usages: "Sử dụng tối đa"
+          duration: "Thời lượng"
+          durations:
+            hour: "1 tiếng"
+            six_hours: "6 tiếng"
+            day: "24 tiếng"
+            week: "7 ngày"
+            custom: "Tùy chỉnh..."
+          hours: "tiếng"
+        usage:
+          ai_summarization: "Tóm tắt"
+          ai_spam: "Rác"
         next:
           title: "Kế tiếp"
         tests:
-          title: "Chạy thử nghiệm"
           success: "Thành công!"
         providers:
           google: "G"
@@ -87,10 +110,23 @@ vi:
           save_caption: "Lưu lại"
           automatic_caption_dialog:
             confirm: "Bật"
+      embeddings:
+        back: "Quay lại"
+        save: "Lưu lại"
+        delete: "Xóa"
+        edit: "Sửa"
+        tests:
+          success: "Thành công!"
+        display_name: "Tên"
+        providers:
+          google: "G"
+          fake: "Tùy biến"
       ai_bot:
         debug_ai_modal:
           request: "Yêu cầu"
           response: "Đáp ứng"
+          next_log: "Kế tiếp"
+          previous_log: "Trước"
         share_modal:
           copy: "Sao chép"
       summarization:

@@ -39,35 +39,37 @@ RSpec.describe AiTool do
     expect(runner.invoke).to eq("query" => "test")
   end
 
-  it "can perform POST HTTP requests" do
-    script = <<~JS
-    function invoke(params) {
-      result = http.post("https://example.com/api",
-        {
-          headers: { TestHeader: "TestValue" },
-          body: JSON.stringify({ data: params.data })
-        }
-      );
+  it "can perform HTTP requests with various verbs" do
+    %i[post put delete patch].each do |verb|
+      script = <<~JS
+      function invoke(params) {
+        result = http.#{verb}("https://example.com/api",
+          {
+            headers: { TestHeader: "TestValue" },
+            body: JSON.stringify({ data: params.data })
+          }
+        );
 
-      return result.body;
-    }
-  JS
+        return result.body;
+      }
+    JS
 
-    tool = create_tool(script: script)
-    runner = tool.runner({ "data" => "test data" }, llm: nil, bot_user: nil, context: {})
+      tool = create_tool(script: script)
+      runner = tool.runner({ "data" => "test data" }, llm: nil, bot_user: nil, context: {})
 
-    stub_request(:post, "https://example.com/api").with(
-      body: "{\"data\":\"test data\"}",
-      headers: {
-        "Accept" => "*/*",
-        "Testheader" => "TestValue",
-        "User-Agent" => "Discourse AI Bot 1.0 (https://www.discourse.org)",
-      },
-    ).to_return(status: 200, body: "Success", headers: {})
+      stub_request(verb, "https://example.com/api").with(
+        body: "{\"data\":\"test data\"}",
+        headers: {
+          "Accept" => "*/*",
+          "Testheader" => "TestValue",
+          "User-Agent" => "Discourse AI Bot 1.0 (https://www.discourse.org)",
+        },
+      ).to_return(status: 200, body: "Success", headers: {})
 
-    result = runner.invoke
+      result = runner.invoke
 
-    expect(result).to eq("Success")
+      expect(result).to eq("Success")
+    end
   end
 
   it "can perform GET HTTP requests, with 1 param" do
@@ -203,12 +205,12 @@ RSpec.describe AiTool do
   end
 
   context "when defining RAG fragments" do
+    fab!(:cloudflare_embedding_def)
+
     before do
       SiteSetting.authorized_extensions = "txt"
+      SiteSetting.ai_embeddings_selected_model = cloudflare_embedding_def.id
       SiteSetting.ai_embeddings_enabled = true
-      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-      SiteSetting.ai_embeddings_model = "bge-large-en"
-
       Jobs.run_immediately!
     end
 
@@ -227,9 +229,9 @@ RSpec.describe AiTool do
       # this is a trick, we get ever increasing embeddings, this gives us in turn
       # 100% consistent search results
       @counter = 0
-      stub_request(:post, "http://test.com/api/v1/classify").to_return(
+      stub_request(:post, cloudflare_embedding_def.url).to_return(
         status: 200,
-        body: lambda { |req| ([@counter += 1] * 1024).to_json },
+        body: lambda { |req| { result: { data: [([@counter += 1] * 1024)] } }.to_json },
         headers: {
         },
       )

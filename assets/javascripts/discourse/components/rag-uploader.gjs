@@ -5,13 +5,13 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { getOwner } from "@ember/owner";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { ajax } from "discourse/lib/ajax";
 import UppyUpload from "discourse/lib/uppy/uppy-upload";
 import icon from "discourse-common/helpers/d-icon";
 import discourseDebounce from "discourse-common/lib/debounce";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import RagUploadProgress from "./rag-upload-progress";
 
 export default class RagUploader extends Component {
@@ -24,17 +24,27 @@ export default class RagUploader extends Component {
   uppyUpload = new UppyUpload(getOwner(this), {
     id: "discourse-ai-rag-uploader",
     maxFiles: 20,
+    type: "discourse_ai_rag_upload",
     uploadUrl:
       "/admin/plugins/discourse-ai/rag-document-fragments/files/upload",
     preventDirectS3Uploads: true,
     uploadDone: (uploadedFile) => {
       const newUpload = uploadedFile.upload;
       newUpload.status = "uploaded";
-      newUpload.statusText = I18n.t("discourse_ai.rag.uploads.uploaded");
+      newUpload.statusText = i18n("discourse_ai.rag.uploads.uploaded");
       this.ragUploads.pushObject(newUpload);
       this.debouncedSearch();
     },
   });
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.appEvents.off(
+      `upload-mixin:${this.uppyUpload.config}:all-uploads-complete`,
+      this,
+      "_updateTargetWithUploads"
+    );
+  }
 
   didReceiveAttrs() {
     super.didReceiveAttrs(...arguments);
@@ -58,15 +68,6 @@ export default class RagUploader extends Component {
 
     this.appEvents.on(
       `upload-mixin:${this.uppyUpload.config.id}:all-uploads-complete`,
-      this,
-      "_updateTargetWithUploads"
-    );
-  }
-
-  willDestroy() {
-    super.willDestroy(...arguments);
-    this.appEvents.off(
-      `upload-mixin:${this.uppyUpload.config}:all-uploads-complete`,
       this,
       "_updateTargetWithUploads"
     );
@@ -117,8 +118,8 @@ export default class RagUploader extends Component {
 
   <template>
     <div class="rag-uploader">
-      <h3>{{I18n.t "discourse_ai.rag.uploads.title"}}</h3>
-      <p>{{I18n.t "discourse_ai.rag.uploads.description"}}</p>
+      <h3>{{i18n "discourse_ai.rag.uploads.title"}}</h3>
+      <p>{{i18n "discourse_ai.rag.uploads.description"}}</p>
 
       {{#if this.ragUploads}}
         <div class="rag-uploader__search-input-container">
@@ -126,7 +127,7 @@ export default class RagUploader extends Component {
             {{icon "search" class="rag-uploader__search-input__search-icon"}}
             <Input
               class="rag-uploader__search-input__input"
-              placeholder={{I18n.t "discourse_ai.rag.uploads.filter"}}
+              placeholder={{i18n "discourse_ai.rag.uploads.filter"}}
               @value={{this.term}}
               {{on "keyup" this.debouncedSearch}}
             />
@@ -148,10 +149,10 @@ export default class RagUploader extends Component {
               />
               <td class="rag-uploader__remove-file">
                 <DButton
-                  @icon="times"
+                  @icon="xmark"
                   @title="discourse_ai.rag.uploads.remove"
                   @action={{fn this.removeUpload upload}}
-                  @class="btn-flat"
+                  class="btn-flat"
                 />
               </td>
             </tr>
@@ -164,15 +165,15 @@ export default class RagUploader extends Component {
                 {{upload.original_filename}}</td>
               <td class="rag-uploader__upload-status">
                 <div class="spinner small"></div>
-                <span>{{I18n.t "discourse_ai.rag.uploads.uploading"}}
+                <span>{{i18n "discourse_ai.rag.uploads.uploading"}}
                   {{upload.uploadProgress}}%</span>
               </td>
               <td class="rag-uploader__remove-file">
                 <DButton
-                  @icon="times"
+                  @icon="xmark"
                   @title="discourse_ai.rag.uploads.remove"
                   @action={{fn this.cancelUploading upload}}
-                  @class="btn-flat"
+                  class="btn-flat"
                 />
               </td>
             </tr>

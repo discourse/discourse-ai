@@ -18,11 +18,12 @@ register_asset "stylesheets/common/streaming.scss"
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 register_asset "stylesheets/modules/ai-helper/desktop/ai-helper-fk-modals.scss", :desktop
-register_asset "stylesheets/modules/ai-helper/mobile/ai-helper-fk-modals.scss", :mobile
+register_asset "stylesheets/modules/ai-helper/mobile/ai-helper.scss", :mobile
 
-register_asset "stylesheets/modules/summarization/mobile/ai-summary.scss", :mobile
 register_asset "stylesheets/modules/summarization/common/ai-summary.scss"
 register_asset "stylesheets/modules/summarization/desktop/ai-summary.scss", :desktop
+
+register_asset "stylesheets/modules/summarization/common/ai-gists.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
@@ -32,15 +33,24 @@ register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.sc
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
 
 register_asset "stylesheets/modules/sentiment/common/dashboard.scss"
-register_asset "stylesheets/modules/sentiment/desktop/dashboard.scss", :desktop
-register_asset "stylesheets/modules/sentiment/mobile/dashboard.scss", :mobile
 
 register_asset "stylesheets/modules/llms/common/ai-llms-editor.scss"
+register_asset "stylesheets/modules/embeddings/common/ai-embedding-editor.scss"
+
+register_asset "stylesheets/modules/llms/common/usage.scss"
+register_asset "stylesheets/modules/llms/common/spam.scss"
+register_asset "stylesheets/modules/llms/common/ai-llm-quotas.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/ai-tools.scss"
 
+register_asset "stylesheets/modules/ai-bot/common/ai-artifact.scss"
+
 module ::DiscourseAi
   PLUGIN_NAME = "discourse-ai"
+
+  def self.public_asset_path(name)
+    File.expand_path(File.join(__dir__, "public", name))
+  end
 end
 
 Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::DiscourseAi)
@@ -48,6 +58,10 @@ Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::Discours
 require_relative "lib/engine"
 
 after_initialize do
+  if defined?(Rack::MiniProfiler)
+    Rack::MiniProfiler.config.skip_paths << "/discourse-ai/ai-bot/artifacts"
+  end
+
   # do not autoload this cause we may have no namespace
   require_relative "discourse_automation/llm_triage"
   require_relative "discourse_automation/llm_report"
@@ -56,19 +70,23 @@ after_initialize do
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,
-    DiscourseAi::Nsfw::EntryPoint.new,
-    DiscourseAi::Toxicity::EntryPoint.new,
     DiscourseAi::Sentiment::EntryPoint.new,
     DiscourseAi::AiHelper::EntryPoint.new,
     DiscourseAi::Summarization::EntryPoint.new,
     DiscourseAi::AiBot::EntryPoint.new,
+    DiscourseAi::AiModeration::EntryPoint.new,
   ].each { |a_module| a_module.inject_into(self) }
+
+  register_problem_check ProblemCheck::AiLlmStatus
 
   register_reviewable_type ReviewableAiChatMessage
   register_reviewable_type ReviewableAiPost
 
   on(:reviewable_transitioned_to) do |new_status, reviewable|
     ModelAccuracy.adjust_model_accuracy(new_status, reviewable)
+    if DiscourseAi::AiModeration::SpamScanner.enabled?
+      DiscourseAi::AiModeration::SpamMetric.update(new_status, reviewable)
+    end
   end
 
   if Rails.env.test?
@@ -79,6 +97,7 @@ after_initialize do
   reloadable_patch do |plugin|
     Guardian.prepend DiscourseAi::GuardianExtensions
     Topic.prepend DiscourseAi::TopicExtensions
+    Post.prepend DiscourseAi::PostExtensions
   end
 
   register_modifier(:post_should_secure_uploads?) do |_, _, topic|

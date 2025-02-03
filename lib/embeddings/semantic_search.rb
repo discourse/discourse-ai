@@ -10,8 +10,8 @@ module DiscourseAi
           "semantic-search-#{digest}-#{SiteSetting.ai_embeddings_semantic_search_hyde_model}"
 
         Discourse.cache.delete(hyde_key)
-        Discourse.cache.delete("#{hyde_key}-#{SiteSetting.ai_embeddings_model}")
-        Discourse.cache.delete("-#{SiteSetting.ai_embeddings_model}")
+        Discourse.cache.delete("#{hyde_key}-#{SiteSetting.ai_embeddings_selected_model}")
+        Discourse.cache.delete("-#{SiteSetting.ai_embeddings_selected_model}")
       end
 
       def initialize(guardian)
@@ -24,17 +24,14 @@ module DiscourseAi
           build_embedding_key(
             digest,
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
-            SiteSetting.ai_embeddings_model,
+            SiteSetting.ai_embeddings_selected_model,
           )
 
         Discourse.cache.read(embedding_key).present?
       end
 
-      def vector_rep
-        @vector_rep ||=
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(
-            DiscourseAi::Embeddings::Strategies::Truncation.new,
-          )
+      def vector
+        @vector ||= DiscourseAi::Embeddings::Vector.instance
       end
 
       def hyde_embedding(search_term)
@@ -45,7 +42,7 @@ module DiscourseAi
           build_embedding_key(
             digest,
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
-            SiteSetting.ai_embeddings_model,
+            SiteSetting.ai_embeddings_selected_model,
           )
 
         hypothetical_post =
@@ -55,16 +52,14 @@ module DiscourseAi
 
         Discourse
           .cache
-          .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(hypothetical_post) }
+          .fetch(embedding_key, expires_in: 1.week) { vector.vector_from(hypothetical_post) }
       end
 
       def embedding(search_term)
         digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
-        embedding_key = build_embedding_key(digest, "", SiteSetting.ai_embeddings_model)
+        embedding_key = build_embedding_key(digest, "", SiteSetting.ai_embeddings_selected_model)
 
-        Discourse
-          .cache
-          .fetch(embedding_key, expires_in: 1.week) { vector_rep.vector_from(search_term) }
+        Discourse.cache.fetch(embedding_key, expires_in: 1.week) { vector.vector_from(search_term) }
       end
 
       # this ensures the candidate topics are over selected
@@ -87,12 +82,14 @@ module DiscourseAi
 
         over_selection_limit = limit * OVER_SELECTION_FACTOR
 
+        schema = DiscourseAi::Embeddings::Schema.for(Topic)
+
         candidate_topic_ids =
-          vector_rep.asymmetric_topics_similarity_search(
+          schema.asymmetric_similarity_search(
             search_embedding,
             limit: over_selection_limit,
             offset: offset,
-          )
+          ).map(&:topic_id)
 
         semantic_results =
           ::Post
@@ -115,9 +112,7 @@ module DiscourseAi
 
         return [] if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector = DiscourseAi::Embeddings::Vector.instance
 
         digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
 
@@ -125,22 +120,25 @@ module DiscourseAi
           build_embedding_key(
             digest,
             SiteSetting.ai_embeddings_semantic_search_hyde_model,
-            SiteSetting.ai_embeddings_model,
+            SiteSetting.ai_embeddings_selected_model,
           )
 
         search_term_embedding =
           Discourse
             .cache
             .fetch(embedding_key, expires_in: 1.week) do
-              vector_rep.vector_from(search_term, asymetric: true)
+              vector.vector_from(search_term, asymetric: true)
             end
 
         candidate_post_ids =
-          vector_rep.asymmetric_posts_similarity_search(
-            search_term_embedding,
-            limit: max_semantic_results_per_page,
-            offset: 0,
-          )
+          DiscourseAi::Embeddings::Schema
+            .for(Post)
+            .asymmetric_similarity_search(
+              search_term_embedding,
+              limit: max_semantic_results_per_page,
+              offset: 0,
+            )
+            .map(&:post_id)
 
         semantic_results =
           ::Post

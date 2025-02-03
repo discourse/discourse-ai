@@ -4,6 +4,7 @@ require "rails_helper"
 
 describe "AI Tool Management", type: :system do
   fab!(:admin)
+  let(:page_header) { PageObjects::Components::DPageHeader.new }
 
   before do
     SiteSetting.ai_embeddings_enabled = true
@@ -36,9 +37,11 @@ describe "AI Tool Management", type: :system do
   it "allows admin to create a new AI tool from preset" do
     visit "/admin/plugins/discourse-ai/ai-tools"
 
+    expect(page_header).to be_visible
     expect(page).to have_content("Tools")
 
     find(".ai-tool-list-editor__new-button").click
+    expect(page_header).to be_hidden
 
     select_kit = PageObjects::Components::SelectKit.new(".ai-tool-editor__presets")
     select_kit.expand
@@ -58,7 +61,7 @@ describe "AI Tool Management", type: :system do
     expect(page).to have_content("Tool saved")
 
     last_tool = AiTool.order("id desc").limit(1).first
-    visit "/admin/plugins/discourse-ai/ai-tools/#{last_tool.id}"
+    visit "/admin/plugins/discourse-ai/ai-tools/#{last_tool.id}/edit"
 
     ensure_can_run_test
 

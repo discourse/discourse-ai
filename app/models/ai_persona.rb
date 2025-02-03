@@ -12,6 +12,7 @@ class AiPersona < ActiveRecord::Base
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
   validate :chat_preconditions
+  validate :allowed_seeded_model, if: :default_llm
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
   # leaves some room for growth but sets a maximum to avoid memory issues
   # we may want to revisit this in the future
@@ -319,6 +320,18 @@ class AiPersona < ActiveRecord::Base
       throw :abort
     end
   end
+
+  def allowed_seeded_model
+    return if default_llm.blank?
+
+    llm = LlmModel.find_by(id: default_llm.split(":").last.to_i)
+    return if llm.nil?
+    return if !llm.seeded?
+
+    return if SiteSetting.ai_bot_allowed_seeded_models.include?(llm.id.to_s)
+
+    errors.add(:default_llm, I18n.t("discourse_ai.llm.configuration.invalid_seeded_model"))
+  end
 end
 
 # == Schema Information
@@ -341,8 +354,6 @@ end
 #  user_id                     :integer
 #  default_llm                 :text
 #  max_context_posts           :integer
-#  max_post_context_tokens     :integer
-#  max_context_tokens          :integer
 #  vision_enabled              :boolean          default(FALSE), not null
 #  vision_max_pixels           :integer          default(1048576), not null
 #  rag_chunk_tokens            :integer          default(374), not null
@@ -355,7 +366,7 @@ end
 #  allow_chat_channel_mentions :boolean          default(FALSE), not null
 #  allow_chat_direct_messages  :boolean          default(FALSE), not null
 #  allow_topic_mentions        :boolean          default(FALSE), not null
-#  allow_personal_message      :boolean          default(TRUE), not null
+#  allow_personal_messages     :boolean          default(TRUE), not null
 #  force_default_llm           :boolean          default(FALSE), not null
 #
 # Indexes

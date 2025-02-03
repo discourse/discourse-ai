@@ -23,7 +23,6 @@ id:
               description: "Pengguna yang akan menerima laporan (email akan dikirim email langsung, nama pengguna akan dikirim PM)"
             topic_id:
               label: "ID Topik"
-              description: "Id topik tujuan pengiriman laporan"
             title:
               label: "Judul"
               description: "Judul laporan"
@@ -41,7 +40,6 @@ id:
               description: "Jumlah posting yang akan dijadikan sampel laporan"
             tokens_per_post:
               label: "Token per posting"
-              description: "Jumlah token llm yang akan digunakan per posting"
             model:
               label: "Model"
               description: "LLM yang akan digunakan untuk pembuatan laporan"
@@ -71,7 +69,6 @@ id:
               description: "Prioritaskan konten dari grup ini dalam laporan"
             temperature:
               label: "Temperatur"
-              description: "Temperatur yang akan digunakan untuk LLM, naikkan untuk meningkatkan keacakan (0 untuk menggunakan default model)"
             top_p:
               label: "Top P"
               description: "Top P yang akan digunakan untuk LLM, tingkatkan untuk meningkatkan keacakan (0 untuk menggunakan model default)"
@@ -82,7 +79,6 @@ id:
               description: "Perintah yang akan digunakan untuk melakukan triase, pastikan untuk membalas dengan satu kata yang dapat Anda gunakan untuk memicu tindakan"
             search_for_text:
               label: "Cari teks"
-              description: "Jika teks berikut muncul di balasan llm, terapkan tindakan ini"
             category:
               label: "Kategori"
               description: "Kategori untuk diterapkan pada topik"
@@ -96,26 +92,34 @@ id:
       title: "AI"
       modals:
         select_option: "Memilih sebuah pilihan..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "7 hari terakhir"
+        enable: "Aktifkan"
+        test_modal:
+          spam: "Spam"
+      usage:
+        summary: "Ringkasan"
+        model: "Model"
+        username: "Nama Pengguna"
+        periods:
+          last_day: "24 jam terakhir"
       ai_persona:
-        back: Kembali
-        name: Nama
-        edit: Ubah
-        description: Deskripsi
-        mentionable: Izinkan Penyebutan
+        back: "Kembali"
+        name: "Nama"
+        edit: "Ubah"
+        description: "Deskripsi"
         mentionable_help: Jika diaktifkan, pengguna di grup yang diizinkan dapat menyebut pengguna ini di posting, AI akan merespons sebagai persona ini.
         user: Pengguna
         question_consolidator_llm: Model Bahasa untuk Konsolidator Pertanyaan
         question_consolidator_llm_help: Model bahasa yang digunakan untuk konsolidator pertanyaan, Anda dapat memilih model yang kurang kuat untuk menghemat biaya.
-        system_prompt: Perintah Sistem
-        save: Simpan
+        save: "Simpan"
         enabled: "Diaktifkan?"
-        delete: Hapus
-        temperature: Temperatur
-        top_p: Top P
+        allowed_groups: "Grup yang diizinkan"
+        delete: "Hapus"
+        temperature: "Temperatur"
+        top_p: "Top P"
       rag:
-        options:
-          show_indexing_options: "Tampilkan Opsi Unggah"
-          hide_indexing_options: "Sembunyikan Opsi Unggah"
         uploads:
           uploading: "Mengunggah..."
       tools:
@@ -125,18 +129,24 @@ id:
         summary: "Ringkasan"
         save: "Simpan"
         edit: "Ubah"
-        test: "Operasikan Tes"
         delete: "Hapus"
-        test_modal:
-          run: "Operasikan Tes"
       llms:
         display_name: "Nama"
         save: "Simpan"
         edit: "Ubah"
         back: "Kembali"
         delete: Hapus
+        quotas:
+          duration: "Durasi"
+          durations:
+            six_hours: "6 jam"
+            day: "24 jam"
+            week: "7 hari"
+          hours: "jam"
+        usage:
+          ai_summarization: "Meringkas"
+          ai_spam: "Spam"
         tests:
-          title: "Operasikan Tes"
           running: "Tes berlangsung..."
           success: "Sukses!"
           failure: "Mencoba menghubungi model menghasilkan kesalahan ini: %{error}"
@@ -152,9 +162,7 @@ id:
           confirm: "Konfirmasi"
           discard: "Batalkan"
           custom_prompt:
-            title: "Perintah Khusus"
             placeholder: "Masukkan perintah khusus..."
-            submit: "Kirim Perintah"
         post_options_menu:
           trigger: "Tanya AI"
           title: "Tanya AI"
@@ -165,10 +173,7 @@ id:
           cancel: "Batal"
           insert_footnote: "Tambahkan catatan kaki"
           footnote_credits: "Penjelasan oleh AI"
-        fast_edit:
-          suggest_button: "Sarankan Edit"
         thumbnail_suggestions:
-          title: "Gambar Kecil yang Disarankan"
           select: "Pilih"
           selected: "Dipilih"
         image_caption:
@@ -182,13 +187,22 @@ id:
         model_used: "Model yang digunakan:"
         accuracy: "Akurasi:"
       embeddings:
+        back: "Kembali"
+        save: "Simpan"
+        delete: "Hapus"
+        edit: "Ubah"
+        tests:
+          running: "Tes berlangsung..."
+          success: "Sukses!"
+        display_name: "Nama"
+        providers:
+          google: "Google"
         semantic_search: "Topik (Semantik)"
         semantic_search_loading: "Mencari hasil lebih banyak menggunakan AI"
         semantic_search_results:
           toggle: "Menampilkan %{count} hasil yang ditemukan menggunakan AI"
           toggle_hidden: "Menyembunyikan %{count} hasil yang ditemukan menggunakan AI"
-          none: "Maaf, pencarian AI kami tidak menemukan topik yang cocok."
-          new: "Tekan 'Cari' untuk mulai mencari hasil baru dengan AI"
+          none: "Maaf, pencarian AI kami tidak menemukan topik yang cocok"
         ai_generated_result: "Hasil pencarian ditemukan menggunakan AI"
         quick_search:
           suffix: "di semua topik dan posting dengan AI"
@@ -201,13 +215,8 @@ id:
         conversation_shared: "Percakapan disalin"
         debug_ai_modal:
           request: "Pinta"
-        share_full_topic_modal:
-          title: "Bagikan Percakapan Secara Publik"
-          share: "Bagikan dan Salin Tautan"
-          update: "Perbarui dan Salin Tautan"
-          delete: "Hapus Pembagian"
         share_ai_conversation:
-          name: "Bagikan Percakapan AI"
+          name: "Bagikan percakapan AI"
           title: "Bagikan percakapan AI ini secara publik"
         ai_label: "AI"
         ai_title: "Percakapan dengan AI"
@@ -215,7 +224,7 @@ id:
           title: "Salin percakapan AI"
           copy: "Salin"
           context: "Interaksi untuk dibagikan:"
-          share_tip: Alternatifnya, Anda dapat membagikan seluruh percakapan.
+          share_tip: "Alternatifnya, Anda dapat membagikan seluruh percakapan"
         bot_names:
           fake: "Bot Tes Palsu"
           claude-3-opus: "Claude 3 Opus"

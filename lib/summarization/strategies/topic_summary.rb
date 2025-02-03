@@ -8,6 +8,10 @@ module DiscourseAi
           AiSummary.summary_types[:complete]
         end
 
+        def highest_target_number
+          target.highest_post_number
+        end
+
         def targets_data
           posts_data =
             (target.has_summary? ? best_replies : pick_selection).pluck(
@@ -33,7 +37,7 @@ module DiscourseAi
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]})" }.join
 
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT)
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT, topic_id: target.id)
             You are an advanced summarization bot tasked with enhancing an existing summary by incorporating additional posts.
 
             ### Guidelines:
@@ -42,10 +46,10 @@ module DiscourseAi
             - Maintain the original language of the text being summarized.
             - Aim for summaries to be 400 words or less.
             - Each new post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
-            - Cite specific noteworthy posts using the format [NAME](#{resource_path}/POST_NUMBER)
-              - Example: link to the 3rd post by sam: [sam](#{resource_path}/3)
+            - Cite specific noteworthy posts using the format [DESCRIPTION](#{resource_path}/POST_NUMBER)
+              - Example: links to the 3rd and 6th posts by sam: sam ([#3](#{resource_path}/3), [#6](#{resource_path}/6))
               - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
-              - Example: link to the 13th post by joe: [#13](#{resource_path}/13)
+              - Example: link to the 13th post by joe: [joe](#{resource_path}/13)
             - When formatting usernames either use @USERNAME or [USERNAME](#{resource_path}/POST_NUMBER)
           TEXT
 
@@ -53,11 +57,11 @@ module DiscourseAi
             ### Context:
 
             #{content_title.present? ? "The discussion title is: " + content_title + ".\n" : ""}
-              
+
             Here is the existing summary:
-              
+
             #{summary}
-          
+
             Here are the new posts, inside <input></input> XML tags:
 
             <input>
@@ -76,7 +80,7 @@ module DiscourseAi
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }.join
 
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
+          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip, topic_id: target.id)
             You are an advanced summarization bot that generates concise, coherent summaries of provided text.
 
             - Only include the summary, without any additional commentary.
@@ -84,10 +88,10 @@ module DiscourseAi
             - Maintain the original language of the text being summarized.
             - Aim for summaries to be 400 words or less.
             - Each post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
-            - Cite specific noteworthy posts using the format [NAME](#{resource_path}/POST_NUMBER)
-              - Example: link to the 3rd post by sam: [sam](#{resource_path}/3)
+            - Cite specific noteworthy posts using the format [DESCRIPTION](#{resource_path}/POST_NUMBER)
+              - Example: links to the 3rd and 6th posts by sam: sam ([#3](#{resource_path}/3), [#6](#{resource_path}/6))
               - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
-              - Example: link to the 13th post by joe: [#13](#{resource_path}/13)
+              - Example: link to the 13th post by joe: [joe](#{resource_path}/13)
             - When formatting usernames either use @USERNMAE OR [USERNAME](#{resource_path}/POST_NUMBER)
           TEXT
 

@@ -29,15 +29,30 @@ el:
     discourse_ai:
       modals:
         select_option: "Διαλέξτε μία επιλογή..."
+      spam:
+        short_title: "Ανεπιθύμητα"
+        last_seven_days: "Τελευταίες 7 ημέρες"
+        enable: "Ενεργοποίηση"
+        test_modal:
+          result: "Αποτέλεσμα"
+          spam: "Ανεπιθύμητα"
+      usage:
+        summary: "Περίληψη"
+        username: "Όνομα Χρήστη"
+        total_requests: "Σύνολο αιτήσεων"
+        periods:
+          last_day: "Τελευταίες 24 ώρες"
+          custom: "Προσαρμοσμένο..."
       ai_persona:
-        back: Πίσω
-        name: Όνομα
-        edit: Επεξεργασία
-        description: Περιγραφή
+        back: "Πίσω"
+        name: "Όνομα"
+        edit: "Επεξεργασία"
+        description: "Περιγραφή"
         user: Χρήστης
-        save: Αποθήκευση
+        save: "Αποθήκευση"
         enabled: "Ενεργοποιημένο;"
-        delete: Σβήσιμο
+        allowed_groups: "Επιτρεπόμενες ομάδες"
+        delete: "Σβήσιμο"
       rag:
         uploads:
           title: "Μεταφορτώσεις"
@@ -50,22 +65,31 @@ el:
         save: "Αποθήκευση"
         parameter_required: "Απαιτείται"
         edit: "Επεξεργασία"
-        test: "Εκτέλεση δοκιμής"
         delete: "Σβήσιμο"
         next:
           title: "Επόμενο"
-        test_modal:
-          run: "Εκτέλεση δοκιμής"
       llms:
         display_name: "Όνομα"
         save: "Αποθήκευση"
         edit: "Επεξεργασία"
         back: "Πίσω"
         delete: Σβήσιμο
+        quotas:
+          group: "Ομάδα"
+          max_usages: "Μέγιστες χρήσεις"
+          duration: "Διάρκεια"
+          durations:
+            hour: "1 ώρα"
+            six_hours: "6 ώρες"
+            day: "24 ώρες"
+            week: "7 ημέρες"
+            custom: "Προσαρμοσμένο..."
+          hours: "ώρες"
+        usage:
+          ai_spam: "Ανεπιθύμητα"
         next:
           title: "Επόμενο"
         tests:
-          title: "Εκτέλεση δοκιμής"
           success: "Επιτυχία!"
         providers:
           google: "Google"
@@ -84,9 +108,22 @@ el:
           save_caption: "Αποθήκευση"
           automatic_caption_dialog:
             confirm: "Ενεργοποίηση"
+      embeddings:
+        back: "Πίσω"
+        save: "Αποθήκευση"
+        delete: "Σβήσιμο"
+        edit: "Επεξεργασία"
+        tests:
+          success: "Επιτυχία!"
+        display_name: "Όνομα"
+        providers:
+          google: "Google"
+          fake: "Προσαρμοσμένο"
       ai_bot:
         debug_ai_modal:
           request: "Αίτημα"
           response: "Απάντηση"
+          next_log: "Επόμενο"
+          previous_log: "Προηγούμενο"
         share_modal:
           copy: "Αντιγραφή"

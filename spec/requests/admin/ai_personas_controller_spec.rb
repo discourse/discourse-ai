@@ -8,7 +8,6 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     sign_in(admin)
 
     SiteSetting.ai_embeddings_enabled = true
-    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
   end
 
   describe "GET #index" do
@@ -141,9 +140,9 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
   end
 
-  describe "GET #show" do
+  describe "GET #edit" do
     it "returns a success response" do
-      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
+      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}/edit.json"
       expect(response).to be_successful
       expect(response.parsed_body["ai_persona"]["name"]).to eq(ai_persona.name)
     end
@@ -152,7 +151,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       upload = Fabricate(:upload)
       RagDocumentFragment.link_target_and_uploads(ai_persona, [upload.id])
 
-      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
+      get "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}/edit.json"
       expect(response).to be_successful
 
       serialized_persona = response.parsed_body["ai_persona"]
@@ -405,6 +404,196 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         # let's make sure this is translated
         expect(response.parsed_body["errors"].join).not_to include("en.discourse")
       }.not_to change(AiPersona, :count)
+    end
+  end
+
+  describe "#stream_reply" do
+    fab!(:llm) { Fabricate(:llm_model, name: "fake_llm", provider: "fake") }
+    let(:fake_endpoint) { DiscourseAi::Completions::Endpoints::Fake }
+
+    before { fake_endpoint.delays = [] }
+
+    after { fake_endpoint.reset! }
+
+    it "ensures persona exists" do
+      post "/admin/plugins/discourse-ai/ai-personas/stream-reply.json"
+      expect(response).to have_http_status(:unprocessable_entity)
+      # this ensures localization key is actually in the yaml
+      expect(response.body).to include("persona_name")
+    end
+
+    it "ensures question exists" do
+      ai_persona.update!(default_llm: "custom:#{llm.id}")
+
+      post "/admin/plugins/discourse-ai/ai-personas/stream-reply.json",
+           params: {
+             persona_id: ai_persona.id,
+             user_unique_id: "site:test.com:user_id:1",
+           }
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("query")
+    end
+
+    it "ensure persona has a user specified" do
+      ai_persona.update!(default_llm: "custom:#{llm.id}")
+
+      post "/admin/plugins/discourse-ai/ai-personas/stream-reply.json",
+           params: {
+             persona_id: ai_persona.id,
+             query: "how are you today?",
+             user_unique_id: "site:test.com:user_id:1",
+           }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("associated")
+    end
+
+    def validate_streamed_response(raw_http, expected)
+      lines = raw_http.split("\r\n")
+
+      header_lines, _, payload_lines = lines.chunk { |l| l == "" }.map(&:last)
+
+      preamble = (<<~PREAMBLE).strip
+        HTTP/1.1 200 OK
+        Content-Type: text/plain; charset=utf-8
+        Transfer-Encoding: chunked
+        Cache-Control: no-cache, no-store, must-revalidate
+        Connection: close
+        X-Accel-Buffering: no
+        X-Content-Type-Options: nosniff
+      PREAMBLE
+
+      expect(header_lines.join("\n")).to eq(preamble)
+
+      parsed = +""
+
+      context_info = nil
+
+      payload_lines.each_slice(2) do |size, data|
+        size = size.to_i(16)
+        data = data.to_s
+        expect(data.bytesize).to eq(size)
+
+        if size > 0
+          json = JSON.parse(data)
+          parsed << json["partial"].to_s
+
+          context_info = json if json["topic_id"]
+        end
+      end
+
+      expect(parsed).to eq(expected)
+
+      context_info
+    end
+
+    it "is able to create a new conversation" do
+      Jobs.run_immediately!
+      # trust level 0
+      SiteSetting.ai_bot_allowed_groups = "10"
+
+      fake_endpoint.fake_content = ["This is a test! Testing!", "An amazing title"]
+
+      ai_persona.create_user!
+      ai_persona.update!(
+        allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+        default_llm: "custom:#{llm.id}",
+        allow_personal_messages: true,
+        system_prompt: "you are a helpful bot",
+      )
+
+      io_out, io_in = IO.pipe
+
+      post "/admin/plugins/discourse-ai/ai-personas/stream-reply.json",
+           params: {
+             persona_name: ai_persona.name,
+             query: "how are you today?",
+             user_unique_id: "site:test.com:user_id:1",
+             preferred_username: "test_user",
+             custom_instructions: "To be appended to system prompt",
+           },
+           env: {
+             "rack.hijack" => lambda { io_in },
+           }
+
+      # this is a fake response but it catches errors
+      expect(response).to have_http_status(:no_content)
+
+      raw = io_out.read
+      context_info = validate_streamed_response(raw, "This is a test! Testing!")
+
+      system_prompt = fake_endpoint.previous_calls[-2][:dialect].prompt.messages.first[:content]
+
+      expect(system_prompt).to eq("you are a helpful bot\nTo be appended to system prompt")
+
+      expect(context_info["topic_id"]).to be_present
+      topic = Topic.find(context_info["topic_id"])
+      last_post = topic.posts.order(:created_at).last
+      expect(last_post.raw).to eq("This is a test! Testing!")
+
+      user_post = topic.posts.find_by(post_number: 1)
+      expect(user_post.raw).to eq("how are you today?")
+
+      # need ai persona and user
+      expect(topic.topic_allowed_users.count).to eq(2)
+      expect(topic.archetype).to eq(Archetype.private_message)
+      expect(topic.title).to eq("An amazing title")
+      expect(topic.posts.count).to eq(2)
+
+      tool_call =
+        DiscourseAi::Completions::ToolCall.new(name: "categories", parameters: {}, id: "tool_1")
+
+      fake_endpoint.fake_content = [tool_call, "this is the response after the tool"]
+      # this simplifies function calls
+      fake_endpoint.chunk_count = 1
+
+      ai_persona.update!(tools: ["Categories"])
+
+      # lets also unstage the user and add the user to tl0
+      # this will ensure there are no feedback loops
+      new_user = user_post.user
+      new_user.update!(staged: false)
+      Group.user_trust_level_change!(new_user.id, new_user.trust_level)
+
+      # double check this happened and user is in group
+      personas = AiPersona.allowed_modalities(user: new_user.reload, allow_personal_messages: true)
+      expect(personas.count).to eq(1)
+
+      io_out, io_in = IO.pipe
+
+      post "/admin/plugins/discourse-ai/ai-personas/stream-reply.json",
+           params: {
+             persona_id: ai_persona.id,
+             query: "how are you now?",
+             user_unique_id: "site:test.com:user_id:1",
+             preferred_username: "test_user",
+             topic_id: context_info["topic_id"],
+           },
+           env: {
+             "rack.hijack" => lambda { io_in },
+           }
+
+      # this is a fake response but it catches errors
+      expect(response).to have_http_status(:no_content)
+
+      raw = io_out.read
+      context_info = validate_streamed_response(raw, "this is the response after the tool")
+
+      topic = topic.reload
+      last_post = topic.posts.order(:created_at).last
+
+      expect(last_post.raw).to end_with("this is the response after the tool")
+      # function call is visible in the post
+      expect(last_post.raw[0..8]).to eq("<details>")
+
+      user_post = topic.posts.find_by(post_number: 3)
+      expect(user_post.raw).to eq("how are you now?")
+      expect(user_post.user.username).to eq("test_user")
+      expect(user_post.user.custom_fields).to eq(
+        { "ai-stream-conversation-unique-id" => "site:test.com:user_id:1" },
+      )
+
+      expect(topic.posts.count).to eq(4)
     end
   end
 end

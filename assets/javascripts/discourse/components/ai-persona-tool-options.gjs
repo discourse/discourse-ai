@@ -1,5 +1,5 @@
 import Component from "@glimmer/component";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import AiPersonaToolOptionEditor from "./ai-persona-tool-option-editor";
 
 export default class AiPersonaToolOptions extends Component {
@@ -58,7 +58,7 @@ export default class AiPersonaToolOptions extends Component {
   <template>
     {{#if this.showToolOptions}}
       <div class="control-group">
-        <label>{{I18n.t "discourse_ai.ai_persona.tool_options"}}</label>
+        <label>{{i18n "discourse_ai.ai_persona.tool_options"}}</label>
         <div>
           {{#each this.toolOptions as |toolOption|}}
             <div class="ai-persona-editor__tool-options">

@@ -8,6 +8,8 @@ sv:
   reports:
     overall_sentiment:
       yaxis: "Datum"
+    emotion_neutral:
+      title: "\U0001F610 Neutralt"
   discourse_ai:
     ai_bot:
       tool_summary:

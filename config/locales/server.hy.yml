@@ -8,6 +8,8 @@ hy:
   reports:
     overall_sentiment:
       yaxis: "Ամսաթիվ"
+    emotion_neutral:
+      title: "\U0001F610 Նեյտրալ"
   discourse_ai:
     ai_bot:
       tool_summary:

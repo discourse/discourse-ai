@@ -29,15 +29,24 @@ sq:
     discourse_ai:
       modals:
         select_option: "Zgjidhni një opsion..."
+      spam:
+        short_title: "Spam"
+        enable: "Aktivizo"
+        test_modal:
+          spam: "Spam"
+      usage:
+        summary: "Përmbledhja"
+        username: "Emri i përdoruesit"
+        total_requests: "Total requests"
       ai_persona:
-        back: Kthehu mbrapa
-        name: Emri
-        edit: Redakto
-        description: Përshkrimi
+        back: "Kthehu mbrapa"
+        name: "Emri"
+        edit: "Redakto"
+        description: "Përshkrimi"
         user: User
-        save: Ruaj
+        save: "Ruaj"
         enabled: "Aktivizuar?"
-        delete: Fshij
+        delete: "Fshij"
       rag:
         uploads:
           uploading: "Duke ngarkuar..."
@@ -58,6 +67,19 @@ sq:
         edit: "Redakto"
         back: "Kthehu mbrapa"
         delete: Fshij
+        quotas:
+          group: "Grupi"
+          max_usages: "Përdorimet maksimale"
+          duration: "Kohëzgjatja"
+          durations:
+            hour: "1 orë"
+            six_hours: "6 orë"
+            day: "24 orë"
+            week: "7 ditë"
+            custom: "Me porosi..."
+          hours: "orë"
+        usage:
+          ai_spam: "Spam"
         next:
           title: "Vazhdo përpara"
         providers:
@@ -75,6 +97,18 @@ sq:
           save_caption: "Ruaj"
           automatic_caption_dialog:
             confirm: "Aktivizo"
+      embeddings:
+        back: "Kthehu mbrapa"
+        save: "Ruani"
+        delete: "Fshij"
+        edit: "Redaktoni"
+        display_name: "Emri"
+        providers:
+          google: "Google"
+          fake: "Grupet e krijuara"
       ai_bot:
+        debug_ai_modal:
+          next_log: "Vazhdo përpara"
+          previous_log: "I kaluar"
         share_modal:
           copy: "Kopjo"

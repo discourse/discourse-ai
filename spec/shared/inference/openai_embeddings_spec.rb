@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Inference::OpenAiEmbeddings do
+  let(:api_key) { "123456" }
+  let(:dimensions) { 1000 }
+  let(:model) { "text-embedding-ada-002" }
+
   it "supports azure embeddings" do
-    SiteSetting.ai_openai_embeddings_url =
+    azure_url =
       "https://my-company.openai.azure.com/openai/deployments/embeddings-deployment/embeddings?api-version=2023-05-15"
-    SiteSetting.ai_openai_api_key = "123456"
 
     body_json = {
       usage: {
@@ -14,27 +17,22 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
       data: [{ object: "embedding", embedding: [0.0, 0.1] }],
     }.to_json
 
-    stub_request(
-      :post,
-      "https://my-company.openai.azure.com/openai/deployments/embeddings-deployment/embeddings?api-version=2023-05-15",
-    ).with(
+    stub_request(:post, azure_url).with(
       body: "{\"model\":\"text-embedding-ada-002\",\"input\":\"hello\"}",
       headers: {
-        "Api-Key" => "123456",
+        "Api-Key" => api_key,
         "Content-Type" => "application/json",
       },
     ).to_return(status: 200, body: body_json, headers: {})
 
     result =
-      DiscourseAi::Inference::OpenAiEmbeddings.perform!("hello", model: "text-embedding-ada-002")
+      DiscourseAi::Inference::OpenAiEmbeddings.new(azure_url, api_key, model, nil).perform!("hello")
 
-    expect(result[:usage]).to eq({ prompt_tokens: 1, total_tokens: 1 })
-    expect(result[:data].first).to eq({ object: "embedding", embedding: [0.0, 0.1] })
+    expect(result).to eq([0.0, 0.1])
   end
 
   it "supports openai embeddings" do
-    SiteSetting.ai_openai_api_key = "123456"
-
+    url = "https://api.openai.com/v1/embeddings"
     body_json = {
       usage: {
         prompt_tokens: 1,
@@ -43,24 +41,21 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
       data: [{ object: "embedding", embedding: [0.0, 0.1] }],
     }.to_json
 
-    body = { model: "text-embedding-ada-002", input: "hello", dimensions: 1000 }.to_json
+    body = { model: model, input: "hello", dimensions: dimensions }.to_json
 
-    stub_request(:post, "https://api.openai.com/v1/embeddings").with(
+    stub_request(:post, url).with(
       body: body,
       headers: {
-        "Authorization" => "Bearer 123456",
+        "Authorization" => "Bearer #{api_key}",
         "Content-Type" => "application/json",
       },
     ).to_return(status: 200, body: body_json, headers: {})
 
     result =
-      DiscourseAi::Inference::OpenAiEmbeddings.perform!(
+      DiscourseAi::Inference::OpenAiEmbeddings.new(url, api_key, model, dimensions).perform!(
         "hello",
-        model: "text-embedding-ada-002",
-        dimensions: 1000,
       )
 
-    expect(result[:usage]).to eq({ prompt_tokens: 1, total_tokens: 1 })
-    expect(result[:data].first).to eq({ object: "embedding", embedding: [0.0, 0.1] })
+    expect(result).to eq([0.0, 0.1])
   end
 end

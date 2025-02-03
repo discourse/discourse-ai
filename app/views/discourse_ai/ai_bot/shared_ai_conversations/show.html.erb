@@ -10,7 +10,7 @@
     <meta name="twitter:title" content="<%= I18n.t("discourse_ai.share_ai.title", title: @shared_conversation.title, site_name: SiteSetting.title) %>">
     <meta name="twitter:description" content="<%= @shared_conversation.formatted_excerpt %>">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="<%= ::UrlHelper.absolute("/plugins/discourse-ai/ai-share/share.css") %>">
+    <link rel="stylesheet" href="<%= share_asset_url("share.css")  %>">
   </head>
   <body>
     <header class="site-header">
@@ -54,7 +54,7 @@
         </article>
       <% end %>
     </section>
-    <script src="<%= share_asset_url("highlight.min.js") %>" nonce="<%= csp_nonce_placeholder %>" ></script>
+    <script src="<%= share_asset_url("highlight.js") %>" nonce="<%= csp_nonce_placeholder %>" ></script>
     <script nonce="<%= csp_nonce_placeholder %>">
       document.querySelectorAll('pre code').forEach((el) => {
         hljs.highlightElement(el);

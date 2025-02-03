@@ -29,15 +29,28 @@ ur:
     discourse_ai:
       modals:
         select_option: "ایک آپشن منتخب کریں..."
+      spam:
+        short_title: "سپَیم"
+        last_seven_days: "پچھلے 7 دن"
+        enable: "فعال کریں"
+        test_modal:
+          spam: "سپَیم"
+      usage:
+        summary: "Summary"
+        username: "صارف نام"
+        total_requests: "کُل درخواستیں"
+        periods:
+          last_day: "پچھلے 24 گھنٹے"
+          custom: "ترمیم..."
       ai_persona:
-        back: واپس
-        name: نام
-        edit: ترمیم کریں
-        description: تفصیل
+        back: "واپس"
+        name: "نام"
+        edit: "ترمیم کریں"
+        description: "تفصیل"
         user: صارف
-        save: محفوظ کریں
+        save: "محفوظ کریں"
         enabled: "فعال؟"
-        delete: مٹائیں
+        delete: "مٹائیں"
       rag:
         uploads:
           title: "اَپ لوڈز"
@@ -50,22 +63,31 @@ ur:
         save: "محفوظ کریں"
         parameter_required: "درکار"
         edit: "ترمیم کریں"
-        test: "ٹیسٹ چلائیں"
         delete: "مٹائیں"
         next:
           title: "اگلا"
-        test_modal:
-          run: "ٹیسٹ چلائیں"
       llms:
         display_name: "نام"
         save: "محفوظ کریں"
         edit: "ترمیم کریں"
         back: "واپس"
         delete: مٹائیں
+        quotas:
+          group: "گروپ"
+          max_usages: "زیادہ سے زیادہ استعمال"
+          duration: "دورانیہ"
+          durations:
+            hour: "1 گھنٹہ"
+            six_hours: "6 گھنٹے"
+            day: "24 گھنٹے"
+            custom: "ترمیم..."
+          hours: "گھنٹے"
+        usage:
+          ai_summarization: "خلاصہ"
+          ai_spam: "سپَیم"
         next:
           title: "اگلا"
         tests:
-          title: "ٹیسٹ چلائیں"
           success: "کامیابی!"
         providers:
           google: "گُوگَل"
@@ -85,10 +107,23 @@ ur:
           save_caption: "محفوظ کریں"
           automatic_caption_dialog:
             confirm: "فعال کریں"
+      embeddings:
+        back: "واپس"
+        save: "محفوظ کریں"
+        delete: "مٹائیں"
+        edit: "ترمیم کریں"
+        tests:
+          success: "کامیابی!"
+        display_name: "نام"
+        providers:
+          google: "گُوگَل"
+          fake: "اپنی مرضی کا"
       ai_bot:
         debug_ai_modal:
           request: "ریکویسٹ"
           response: "جواب"
+          next_log: "اگلا"
+          previous_log: "پچھلی"
         share_modal:
           copy: "کاپی"
       summarization:

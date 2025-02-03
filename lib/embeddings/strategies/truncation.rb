@@ -12,17 +12,31 @@ module DiscourseAi
           1
         end
 
-        def prepare_text_from(target, tokenizer, max_length)
-          case target
-          when Topic
-            topic_truncation(target, tokenizer, max_length)
-          when Post
-            post_truncation(target, tokenizer, max_length)
-          when RagDocumentFragment
-            tokenizer.truncate(target.fragment, max_length)
-          else
-            raise ArgumentError, "Invalid target type"
-          end
+        def prepare_target_text(target, vdef)
+          max_length = vdef.max_sequence_length - 2
+
+          prepared_text =
+            case target
+            when Topic
+              topic_truncation(target, vdef.tokenizer, max_length)
+            when Post
+              post_truncation(target, vdef.tokenizer, max_length)
+            when RagDocumentFragment
+              vdef.tokenizer.truncate(target.fragment, max_length)
+            else
+              raise ArgumentError, "Invalid target type"
+            end
+
+          return prepared_text if vdef.embed_prompt.blank?
+
+          [vdef.embed_prompt, prepared_text].join(" ")
+        end
+
+        def prepare_query_text(text, vdef, asymetric: false)
+          qtext = asymetric ? "#{vdef.search_prompt} #{text}" : text
+          max_length = vdef.max_sequence_length - 2
+
+          vdef.tokenizer.truncate(qtext, max_length)
         end
 
         private

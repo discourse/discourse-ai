@@ -3,6 +3,7 @@
 class AiApiAuditLog < ActiveRecord::Base
   belongs_to :post
   belongs_to :topic
+  belongs_to :user
 
   module Provider
     OpenAI = 1
@@ -13,6 +14,16 @@ class AiApiAuditLog < ActiveRecord::Base
     Cohere = 6
     Ollama = 7
     SambaNova = 8
+    Mistral = 9
+    OpenRouter = 10
+  end
+
+  def next_log_id
+    self.class.where("id > ?", id).where(topic_id: topic_id).order(id: :asc).pluck(:id).first
+  end
+
+  def prev_log_id
+    self.class.where("id < ?", id).where(topic_id: topic_id).order(id: :desc).pluck(:id).first
   end
 end
 
@@ -34,3 +45,11 @@ end
 #  feature_name         :string(255)
 #  language_model       :string(255)
 #  feature_context      :jsonb
+#  cached_tokens        :integer
+#  duration_msecs       :integer
+#
+# Indexes
+#
+#  index_ai_api_audit_logs_on_created_at_and_feature_name    (created_at,feature_name)
+#  index_ai_api_audit_logs_on_created_at_and_language_model  (created_at,language_model)
+#

@@ -7,29 +7,23 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   let(:query) { "test_query" }
   let(:subject) { described_class.new(Guardian.new(user)) }
 
-  before { assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model) }
+  fab!(:vector_def) { Fabricate(:embedding_definition) }
+
+  before do
+    SiteSetting.ai_embeddings_selected_model = vector_def.id
+    assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model)
+  end
 
   describe "#search_for_topics" do
     let(:hypothetical_post) { "This is an hypothetical post generated from the keyword test_query" }
+    let(:hyde_embedding) { [0.049382] * vector_def.dimensions }
 
-    before do
-      SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-
-      hyde_embedding = [0.049382, 0.9999]
-      EmbeddingsGenerationStubs.discourse_service(
-        SiteSetting.ai_embeddings_model,
-        hypothetical_post,
-        hyde_embedding,
-      )
-    end
+    before { EmbeddingsGenerationStubs.hugging_face_service(hypothetical_post, hyde_embedding) }
 
     after { described_class.clear_cache_for(query) }
 
-    def stub_candidate_ids(candidate_ids)
-      DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
-        .any_instance
-        .expects(:asymmetric_topics_similarity_search)
-        .returns(candidate_ids)
+    def insert_candidate(candidate)
+      DiscourseAi::Embeddings::Schema.for(Topic).store(candidate, hyde_embedding, "digest")
     end
 
     def trigger_search(query)
@@ -39,7 +33,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
     end
 
     it "returns the first post of a topic included in the asymmetric search results" do
-      stub_candidate_ids([post.topic_id])
+      insert_candidate(post.topic)
 
       posts = trigger_search(query)
 
@@ -50,7 +44,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
       context "when the topic is not visible" do
         it "returns an empty list" do
           post.topic.update!(visible: false)
-          stub_candidate_ids([post.topic_id])
+          insert_candidate(post.topic)
 
           posts = trigger_search(query)
 
@@ -61,7 +55,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
       context "when the post is not public" do
         it "returns an empty list" do
           pm_post = Fabricate(:private_message_post)
-          stub_candidate_ids([pm_post.topic_id])
+          insert_candidate(pm_post.topic)
 
           posts = trigger_search(query)
 
@@ -72,7 +66,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
       context "when the post type is not visible" do
         it "returns an empty list" do
           post.update!(post_type: Post.types[:whisper])
-          stub_candidate_ids([post.topic_id])
+          insert_candidate(post.topic)
 
           posts = trigger_search(query)
 
@@ -84,7 +78,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
         it "returns an empty list" do
           reply = Fabricate(:reply)
           reply.topic.first_post.trash!
-          stub_candidate_ids([reply.topic_id])
+          insert_candidate(reply.topic)
 
           posts = trigger_search(query)
 
@@ -95,7 +89,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
       context "when the post is not a candidate" do
         it "doesn't include it in the results" do
           post_2 = Fabricate(:post)
-          stub_candidate_ids([post.topic_id])
+          insert_candidate(post.topic)
 
           posts = trigger_search(query)
 
@@ -109,7 +103,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
 
         before do
           post.topic.update!(category: private_category)
-          stub_candidate_ids([post.topic_id])
+          insert_candidate(post.topic)
         end
 
         it "returns an empty list" do

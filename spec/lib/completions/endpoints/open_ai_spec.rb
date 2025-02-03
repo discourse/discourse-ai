@@ -17,8 +17,8 @@ class OpenAiMock < EndpointMock
       created: 1_678_464_820,
       model: "gpt-3.5-turbo-0301",
       usage: {
-        prompt_tokens: 337,
-        completion_tokens: 162,
+        prompt_tokens: 8,
+        completion_tokens: 13,
         total_tokens: 499,
       },
       choices: [
@@ -53,11 +53,10 @@ class OpenAiMock < EndpointMock
     }.to_json
   end
 
-  def stub_raw(chunks)
-    WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
-      status: 200,
-      body: chunks,
-    )
+  def stub_raw(chunks, body_blk: nil)
+    stub = WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions")
+    stub.with(body: body_blk) if body_blk
+    stub.to_return(status: 200, body: chunks)
   end
 
   def stub_streamed_response(prompt, deltas, tool_call: false)
@@ -231,19 +230,16 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
       result = llm.generate(prompt, user: user)
 
-      expected = (<<~TXT).strip
-        <function_calls>
-        <invoke>
-        <tool_name>echo</tool_name>
-        <parameters>
-        <text>hello</text>
-        </parameters>
-        <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
-        </invoke>
-        </function_calls>
-      TXT
+      tool_call =
+        DiscourseAi::Completions::ToolCall.new(
+          id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+          name: "echo",
+          parameters: {
+            text: "hello",
+          },
+        )
 
-      expect(result.strip).to eq(expected)
+      expect(result).to eq(tool_call)
 
       stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
         body: { choices: [message: { content: "OK" }] }.to_json,
@@ -294,7 +290,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
                   type: "function",
                   function: {
                     name: "echo",
-                    arguments: "{\"text\":\"hello\"}",
+                    arguments: "{\"text\":\"h<e>llo\"}",
                   },
                 },
               ],
@@ -320,19 +316,21 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
       expect(body_json[:tool_choice]).to eq({ type: "function", function: { name: "echo" } })
 
-      expected = (<<~TXT).strip
-        <function_calls>
-        <invoke>
-        <tool_name>echo</tool_name>
-        <parameters>
-        <text>hello</text>
-        </parameters>
-        <tool_id>call_I8LKnoijVuhKOM85nnEQgWwd</tool_id>
-        </invoke>
-        </function_calls>
-      TXT
+      log = AiApiAuditLog.order(:id).last
+      expect(log.request_tokens).to eq(55)
+      expect(log.response_tokens).to eq(13)
+      expect(log.duration_msecs).not_to be_nil
 
-      expect(result.strip).to eq(expected)
+      expected =
+        DiscourseAi::Completions::ToolCall.new(
+          id: "call_I8LKnoijVuhKOM85nnEQgWwd",
+          name: "echo",
+          parameters: {
+            text: "h<e>llo",
+          },
+        )
+
+      expect(result).to eq(expected)
 
       stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
         body: { choices: [message: { content: "OK" }] }.to_json,
@@ -393,6 +391,59 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   end
 
   describe "#perform_completion!" do
+    context "when using XML tool calls format" do
+      let(:xml_tool_call_response) { <<~XML }
+        <function_calls>
+        <invoke>
+        <tool_name>get_weather</tool_name>
+        <parameters>
+        <location>Sydney</location>
+        <unit>c</unit>
+        </parameters>
+        </invoke>
+        </function_calls>
+      XML
+
+      it "parses XML tool calls" do
+        response = {
+          id: "chatcmpl-6sZfAb30Rnv9Q7ufzFwvQsMpjZh8S",
+          object: "chat.completion",
+          created: 1_678_464_820,
+          model: "gpt-3.5-turbo-0301",
+          usage: {
+            prompt_tokens: 8,
+            completion_tokens: 13,
+            total_tokens: 499,
+          },
+          choices: [
+            {
+              message: {
+                role: "assistant",
+                content: xml_tool_call_response,
+              },
+              finish_reason: "stop",
+              index: 0,
+            },
+          ],
+        }.to_json
+
+        endpoint.llm_model.update!(provider_params: { disable_native_tools: true })
+        body = nil
+        open_ai_mock.stub_raw(response, body_blk: proc { |inner_body| body = inner_body })
+
+        dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+        tool_call = endpoint.perform_completion!(dialect, user)
+
+        body_parsed = JSON.parse(body, symbolize_names: true)
+        expect(body_parsed[:tools]).to eq(nil)
+
+        expect(body_parsed[:messages][0][:content]).to include("<function_calls>")
+
+        expect(tool_call.name).to eq("get_weather")
+        expect(tool_call.parameters).to eq({ location: "Sydney", unit: "c" })
+      end
+    end
+
     context "when using regular mode" do
       context "with simple prompts" do
         it "completes a trivial prompt and logs the response" do
@@ -405,6 +456,43 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
           compliance.regular_mode_tools(open_ai_mock)
         end
       end
+    end
+
+    it "falls back to non-streaming mode when streaming is disabled" do
+      model.update!(provider_params: { disable_streaming: true })
+
+      response = {
+        id: "chatcmpl-123",
+        object: "chat.completion",
+        created: 1_677_652_288,
+        choices: [
+          {
+            message: {
+              role: "assistant",
+              content: "Hello there",
+            },
+            index: 0,
+            finish_reason: "stop",
+          },
+        ],
+      }
+
+      parsed_body = nil
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+      ).to_return(status: 200, body: response.to_json)
+
+      chunks = []
+      dialect = compliance.dialect(prompt: compliance.generic_prompt)
+      endpoint.perform_completion!(dialect, user) { |chunk| chunks << chunk }
+
+      expect(parsed_body).not_to have_key(:stream)
+
+      expect(chunks).to eq(["Hello there"])
     end
 
     describe "when using streaming mode" do
@@ -487,7 +575,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"e AI "}}]},"logprobs":null,"finish_reason":null}]}
 
-  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"bot\\"}"}}]},"logprobs":null,"finish_reason":null}]}
+  data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{"tool_calls":[{"index":1,"function":{"arguments":"bot2\\"}"}}]},"logprobs":null,"finish_reason":null}]}
 
   data: {"id":"chatcmpl-8xjcr5ZOGZ9v8BDYCx0iwe57lJAGk","object":"chat.completion.chunk","created":1709247429,"model":"gpt-4-0125-preview","system_fingerprint":"fp_91aa3742b1","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"tool_calls"}]}
 
@@ -495,32 +583,52 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 TEXT
 
           open_ai_mock.stub_raw(raw_data)
-          content = +""
+          response = []
 
           dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
 
-          endpoint.perform_completion!(dialect, user) { |partial| content << partial }
+          endpoint.perform_completion!(dialect, user) { |partial| response << partial }
 
-          expected = <<~TEXT
-            <function_calls>
-            <invoke>
-            <tool_name>search</tool_name>
-            <parameters>
-            <search_query>Discourse AI bot</search_query>
-            </parameters>
-            <tool_id>call_3Gyr3HylFJwfrtKrL6NaIit1</tool_id>
-            </invoke>
-            <invoke>
-            <tool_name>search</tool_name>
-            <parameters>
-            <query>Discourse AI bot</query>
-            </parameters>
-            <tool_id>call_H7YkbgYurHpyJqzwUN4bghwN</tool_id>
-            </invoke>
-            </function_calls>
-          TEXT
+          tool_calls = [
+            DiscourseAi::Completions::ToolCall.new(
+              name: "search",
+              id: "call_3Gyr3HylFJwfrtKrL6NaIit1",
+              parameters: {
+                search_query: "Discourse AI bot",
+              },
+            ),
+            DiscourseAi::Completions::ToolCall.new(
+              name: "search",
+              id: "call_H7YkbgYurHpyJqzwUN4bghwN",
+              parameters: {
+                query: "Discourse AI bot2",
+              },
+            ),
+          ]
 
-          expect(content).to eq(expected)
+          expect(response).to eq(tool_calls)
+        end
+
+        it "properly handles newlines" do
+          response = <<~TEXT.strip
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":":\\n\\n"},"logprobs":null,"finish_reason":null}],"usage":null}
+
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":"```"},"logprobs":null,"finish_reason":null}],"usage":null}
+
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":"ruby"},"logprobs":null,"finish_reason":null}],"usage":null}
+
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":"\\n"},"logprobs":null,"finish_reason":null}],"usage":null}
+
+            data: {"id":"chatcmpl-ASngi346UA9k006bF6GBRV66tEJfQ","object":"chat.completion.chunk","created":1731427548,"model":"gpt-4o-2024-08-06","system_fingerprint":"fp_159d8341cc","choices":[{"index":0,"delta":{"content":"def"},"logprobs":null,"finish_reason":null}],"usage":null}
+         TEXT
+
+          open_ai_mock.stub_raw(response)
+          partials = []
+
+          dialect = compliance.dialect(prompt: compliance.generic_prompt)
+          endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
+
+          expect(partials).to eq([":\n\n", "```", "ruby", "\n", "def"])
         end
 
         it "uses proper token accounting" do
@@ -553,7 +661,46 @@ TEXT
           end
         end
 
-        it "properly handles spaces in tools payload" do
+        it "properly handles multiple params in partial tool calls" do
+          # this is not working and it is driving me nuts so I will use a sledghammer
+          # text = plugin_file_from_fixtures("openai_artifact_call.txt", "bot")
+
+          path = File.join(__dir__, "../../../fixtures/bot", "openai_artifact_call.txt")
+          text = File.read(path)
+
+          partials = []
+          open_ai_mock.with_chunk_array_support do
+            open_ai_mock.stub_raw(text.scan(/.*\n/))
+
+            dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+            endpoint.perform_completion!(dialect, user, partial_tool_calls: true) do |partial|
+              partials << partial.dup
+            end
+          end
+
+          expect(partials.compact.length).to eq(128)
+
+          params =
+            partials
+              .map { |p| p.parameters if p.is_a?(DiscourseAi::Completions::ToolCall) && p.partial? }
+              .compact
+
+          lengths = {}
+          params.each do |p|
+            p.each do |k, v|
+              if lengths[k] && lengths[k] > v.length
+                expect(lengths[k]).to be > v.length
+              else
+                lengths[k] = v.length
+              end
+            end
+          end
+
+          audit_log = AiApiAuditLog.order("id desc").first
+          expect(audit_log.cached_tokens).to eq(33)
+        end
+
+        it "properly handles spaces in tools payload and partial tool calls" do
           raw_data = <<~TEXT.strip
             data: {"choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"index":0,"id":"func_id","type":"function","function":{"name":"go|ogle","arg|uments":""}}]}}]}
 
@@ -591,23 +738,23 @@ TEXT
             partials = []
 
             dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
-            endpoint.perform_completion!(dialect, user) { |partial| partials << partial }
+            endpoint.perform_completion!(dialect, user, partial_tool_calls: true) do |partial|
+              partials << partial.dup
+            end
 
-            expect(partials.length).to eq(1)
+            tool_call =
+              DiscourseAi::Completions::ToolCall.new(
+                id: "func_id",
+                name: "google",
+                parameters: {
+                  query: "Adabas 9.1",
+                },
+              )
 
-            function_call = (<<~TXT).strip
-            <function_calls>
-            <invoke>
-            <tool_name>google</tool_name>
-            <parameters>
-            <query>Adabas 9.1</query>
-            </parameters>
-            <tool_id>func_id</tool_id>
-            </invoke>
-            </function_calls>
-            TXT
+            expect(partials.last).to eq(tool_call)
 
-            expect(partials[0].strip).to eq(function_call)
+            progress = partials.map { |p| p.parameters[:query] }
+            expect(progress).to eq(["Ad", "Adabas", "Adabas 9.", "Adabas 9.1"])
           end
         end
       end

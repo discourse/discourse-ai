@@ -91,6 +91,8 @@ class AiTool < ActiveRecord::Base
       *    Returns:
       *      { status: number, body: string }
       *
+      *    (also available: http.put, http.patch, http.delete)
+      *
       *    Note: Max 20 HTTP requests per execution.
       *
       * 2. llm

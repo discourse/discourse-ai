@@ -42,22 +42,16 @@ pl_PL:
     ai_nsfw_flag_threshold_porn: "Próg uznania obrazu zaklasyfikowanego jako pornograficzny, aby został uznany za NSFW."
     ai_nsfw_flag_threshold_sexy: "Próg uznania obrazu zaklasyfikowanego jako seksowny, aby został uznany za NSFW."
     ai_nsfw_models: "Modele używane do wnioskowania NSFW."
-    ai_openai_embeddings_url: "Niestandardowy adres URL używany w interfejsie API osadzania OpenAI. (w przypadku Azure może to być: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
     composer_ai_helper_allowed_groups: "Użytkownicy w tych grupach zobaczą przycisk pomocy AI w kompozytorze."
     ai_helper_allowed_in_pm: "Włącz asystenta AI kompozytora w PW."
     ai_helper_model: "Model do użycia dla pomocnika AI."
     ai_helper_custom_prompts_allowed_groups: "Użytkownicy w tych grupach zobaczą opcję niestandardowego monitu w pomocniku AI."
     ai_helper_automatic_chat_thread_title_delay: "Opóźnienie w minutach, zanim pomocnik AI automatycznie ustawi tytuł wątku czatu."
     ai_helper_automatic_chat_thread_title: "Automatycznie ustawiaj tytuły wątków czatu na podstawie zawartości wątku."
-    ai_embeddings_enabled: "Włącz moduł osadzania."
-    ai_embeddings_discourse_service_api_endpoint: "Adres URL, pod którym działa interfejs API dla modułu osadzania"
-    ai_embeddings_discourse_service_api_key: "Klucz dla interfejsu API osadzania"
-    ai_embeddings_model: "Użyj all-mpnet-base-v2 do lokalnego i szybkiego wnioskowania w języku angielskim, text-embedding-ada-002 do korzystania z OpenAI API (potrzebny klucz API) i multilingual-e5-large do lokalnego osadzania wielojęzycznych treści"
     ai_embeddings_generate_for_pms: "Generuj osadzenia dla wiadomości osobistych."
     ai_embeddings_semantic_related_topics_enabled: "Użyj wyszukiwania semantycznego dla powiązanych tematów."
     ai_embeddings_semantic_related_topics: "Maksymalna liczba tematów do wyświetlenia w sekcji powiązanych tematów."
     ai_embeddings_backfill_batch_size: "Liczba osadzań do uzupełnienia co 15 minut."
-    ai_embeddings_pg_connection_string: "Parametry połączenia PostgreSQL dla modułu osadzania. Wymaga włączenia rozszerzenia pgvector i utworzenia serii tabel. Zobacz dokumentacje, aby uzyskać więcej informacji."
     ai_embeddings_semantic_search_enabled: "Włącz wyszukiwanie semantyczne na całej stronie."
     ai_embeddings_semantic_related_include_closed_topics: "Uwzględnij zamknięte tematy w semantycznych wynikach wyszukiwania"
     ai_embeddings_semantic_search_hyde_model: "Model używany do rozwijania słów kluczowych w celu uzyskania lepszych wyników podczas wyszukiwania semantycznego"
@@ -74,19 +68,26 @@ pl_PL:
     reasons:
       flagged_by_toxicity: Wtyczka AI oznaczyła to po sklasyfikowaniu jako toksyczne.
       flagged_by_nsfw: Wtyczka AI oznaczyła to po sklasyfikowaniu co najmniej jednego z załączonych obrazów jako NSFW.
-  errors:
-    prompt_message_length: Wiadomość %{idx} przekracza limit 1000 znaków.
-    invalid_prompt_role: Wiadomość %{idx} ma nieprawidłową rolę.
   reports:
     overall_sentiment:
       title: "Ogólny sentyment"
-      description: "Ten wykres porównuje liczbę postów sklasyfikowanych jako pozytywne lub negatywne."
       xaxis: "Pozytywny(%)"
       yaxis: "Data"
-    post_emotion:
-      title: "Emocje postu"
-      description: "Liczba postów sklasyfikowanych z jedną z poniższych emocji, pogrupowanych według poziomu zaufania autora posta."
+    emotion_anger:
+      title: "\U0001F620 Gniew"
+    emotion_disgust:
+      title: "\U0001F922 Niesmak"
+    emotion_fear:
+      title: "\U0001F628 Strach"
+    emotion_neutral:
+      title: "\U0001F610 Neutralne"
+    emotion_sadness:
+      title: "\U0001F62D Smutek"
+    emotion_surprise:
+      title: "\U0001F632 Niespodzianka"
   discourse_ai:
+    ai_artifact:
+      view_changes: "Zobacz zmiany"
     unknown_model: "Nieznany model AI"
     ai_helper:
       errors:
@@ -101,6 +102,7 @@ pl_PL:
     share_ai:
       read_more: "Przeczytaj pełną transkrypcję"
     ai_bot:
+      default_pm_prefix: "[PW bota AI bez tytułu]"
       personas:
         cannot_delete_system_persona: "Person systemowych nie można usunąć, zamiast tego wyłącz je."
         general:
@@ -128,6 +130,9 @@ pl_PL:
       summarizing: "Podsumowanie tematu"
       searching: "Wyszukiwanie: '%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "Podstawowe zapytanie wyszukiwania"
         search:
           max_results:
             name: "Maksymalna liczba wyników"
@@ -212,9 +217,6 @@ pl_PL:
         no_targets: "W wybranym okresie nie było żadnych wiadomości."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Pozytywne"
-          negative: "Negatywne"
         post_emotion:
           sadness: "Smutek \U0001F622"
           surprise: "Niespodzianka \U0001F631"
@@ -225,5 +227,7 @@ pl_PL:
     llm:
       configuration:
         disable_module_first: "Najpierw musisz wyłączyć %{setting}."
-        set_llm_first: "Najpierw ustaw %{setting}."
+        set_llm_first: "Najpierw ustaw %{setting}"
         model_unreachable: "Nie mogliśmy uzyskać odpowiedzi od tego modelu. Sprawdź najpierw swoje ustawienia."
+    errors:
+      prompt_message_length: Wiadomość %{idx} przekracza limit 1000 znaków.

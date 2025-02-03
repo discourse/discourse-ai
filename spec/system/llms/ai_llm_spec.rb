@@ -2,6 +2,7 @@
 
 RSpec.describe "Managing LLM configurations", type: :system, js: true do
   fab!(:admin)
+  let(:page_header) { PageObjects::Components::DPageHeader.new }
 
   before do
     SiteSetting.ai_bot_enabled = true
@@ -11,7 +12,7 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
   it "correctly sets defaults" do
     visit "/admin/plugins/discourse-ai/ai-llms"
 
-    find("[data-llm-id='anthropic-claude-3-haiku'] button").click()
+    find("[data-llm-id='anthropic-claude-3-5-haiku'] button").click()
     find("input.ai-llm-editor__api-key").fill_in(with: "abcd")
     find(".ai-llm-editor__enabled-chat-bot input").click
     find(".ai-llm-editor__save").click()
@@ -23,9 +24,9 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
 
     preset = DiscourseAi::Completions::Llm.presets.find { |p| p[:id] == "anthropic" }
 
-    model_preset = preset[:models].find { |m| m[:name] == "claude-3-haiku" }
+    model_preset = preset[:models].find { |m| m[:name] == "claude-3-5-haiku" }
 
-    expect(llm.name).to eq("claude-3-haiku")
+    expect(llm.name).to eq("claude-3-5-haiku")
     expect(llm.url).to eq(preset[:endpoint])
     expect(llm.tokenizer).to eq(preset[:tokenizer].to_s)
     expect(llm.max_prompt_tokens.to_i).to eq(model_preset[:tokens])
@@ -36,8 +37,10 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
 
   it "manually configures an LLM" do
     visit "/admin/plugins/discourse-ai/ai-llms"
+    expect(page_header).to be_visible
 
     find("[data-llm-id='none'] button").click()
+    expect(page_header).to be_hidden
 
     find("input.ai-llm-editor__display-name").fill_in(with: "Self-hosted LLM")
     find("input.ai-llm-editor__name").fill_in(with: "llava-hf/llava-v1.6-mistral-7b-hf")
@@ -76,26 +79,25 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     it "shows the provider as CDCK in the UI" do
       visit "/admin/plugins/discourse-ai/ai-llms"
       expect(page).to have_css(
-        "[data-llm-id='cdck-hosted'] .column-provider",
+        "[data-llm-id='cdck-hosted']",
         text: I18n.t("js.discourse_ai.llms.providers.CDCK"),
       )
     end
 
-    it "shows an info alert to the user about the seeded LLM" do
+    it "seeded LLM has a description" do
       visit "/admin/plugins/discourse-ai/ai-llms"
-      find("[data-llm-id='#{llm_model.name}'] .column-edit .btn").click()
+
+      desc = I18n.t("js.discourse_ai.llms.preseeded_model_description", model: llm_model.name)
+
       expect(page).to have_css(
-        ".alert.alert-info",
-        text: I18n.t("js.discourse_ai.llms.seeded_warning"),
+        "[data-llm-id='#{llm_model.name}'] .ai-llm-list__description",
+        text: desc,
       )
     end
 
-    it "limits and shows disabled inputs for the seeded LLM" do
+    it "seeded LLM has a disabled edit button" do
       visit "/admin/plugins/discourse-ai/ai-llms"
-      find("[data-llm-id='cdck-hosted'] .column-edit .btn").click()
-      expect(page).to have_css(".ai-llm-editor__display-name[disabled]")
-      expect(page).to have_css(".ai-llm-editor__name[disabled]")
-      expect(page).to have_css(".ai-llm-editor__provider.is-disabled")
+      expect(page).to have_css("[data-llm-id='cdck-hosted'] .ai-llm-list__edit-disabled-tooltip")
     end
   end
 end

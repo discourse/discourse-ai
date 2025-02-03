@@ -29,15 +29,26 @@ lv:
     discourse_ai:
       modals:
         select_option: "Izvēlieties opciju..."
+      spam:
+        short_title: "Spams"
+        last_seven_days: "Pēdējās 7 dienas"
+        enable: "Ieslēgt"
+        test_modal:
+          spam: "Spams"
+      usage:
+        summary: "Kopsavilkums"
+        username: "Lietotājvārds"
+        periods:
+          last_day: "Pēdējās 24 stundas"
       ai_persona:
-        back: Atpakaļ
-        name: Vārds
-        edit: Rediģēt
-        description: Apraksts
+        back: "Atpakaļ"
+        name: "Vārds"
+        edit: "Rediģēt"
+        description: "Apraksts"
         user: Lietotājs
-        save: Saglabāt
+        save: "Saglabāt"
         enabled: "Ieslēgts?"
-        delete: Dzēst
+        delete: "Dzēst"
       rag:
         uploads:
           title: "Augšupielādes"
@@ -59,6 +70,13 @@ lv:
         edit: "Rediģēt"
         back: "Atpakaļ"
         delete: Dzēst
+        quotas:
+          group: "Grupa"
+          max_usages: "Maksimāli izmantojams"
+          duration: "Ilgums"
+          hours: "stunda"
+        usage:
+          ai_spam: "Spams"
         next:
           title: "Nākamais"
         tests:
@@ -79,9 +97,21 @@ lv:
           save_caption: "Saglabāt"
           automatic_caption_dialog:
             confirm: "Ieslēgt"
+      embeddings:
+        back: "Atpakaļ"
+        save: "Saglabāt"
+        delete: "Dzēst"
+        edit: "Rediģēt"
+        tests:
+          success: "Veiksmīgi!"
+        display_name: "Vārds"
+        providers:
+          google: "Google"
       ai_bot:
         debug_ai_modal:
           request: "Pieprasījums"
           response: "Atbilde"
+          next_log: "Nākamais"
+          previous_log: "Iepriekšējais"
         share_modal:
           copy: "Kopēt"

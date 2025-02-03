@@ -29,15 +29,29 @@ pt:
     discourse_ai:
       modals:
         select_option: "Selecione uma opção..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Últimos 7 Dias"
+        enable: "Ativar"
+        test_modal:
+          spam: "Spam"
+      usage:
+        summary: "Resumo"
+        username: "Nome de Utilizador"
+        total_requests: "Total de pedidos"
+        periods:
+          last_day: "Últimas 24 horas"
+          custom: "Personalizar..."
       ai_persona:
-        back: Retroceder
-        name: Nome
-        edit: Editar
-        description: Descrição
+        back: "Retroceder"
+        name: "Nome"
+        edit: "Editar"
+        description: "Descrição"
         user: Utilizador
-        save: Guardar
+        save: "Guardar"
         enabled: "Ativado?"
-        delete: Eliminar
+        allowed_groups: "Grupos permitidos"
+        delete: "Eliminar"
       rag:
         uploads:
           title: "Uploads"
@@ -59,6 +73,20 @@ pt:
         edit: "Editar"
         back: "Retroceder"
         delete: Eliminar
+        quotas:
+          group: "Grupo"
+          max_usages: "Máximo de utilizações"
+          duration: "Duração"
+          durations:
+            hour: "1 hora"
+            six_hours: "6 horas"
+            day: "24 horas"
+            week: "7 dias"
+            custom: "Personalizar..."
+          hours: "horas"
+        usage:
+          ai_summarization: "Resumir"
+          ai_spam: "Spam"
         next:
           title: "Próximo"
         providers:
@@ -80,10 +108,21 @@ pt:
           save_caption: "Guardar"
           automatic_caption_dialog:
             confirm: "Ativar"
+      embeddings:
+        back: "Retroceder"
+        save: "Guardar"
+        delete: "Eliminar"
+        edit: "Editar"
+        display_name: "Nome"
+        providers:
+          google: "Google"
+          fake: "Personalizar"
       ai_bot:
         debug_ai_modal:
           request: "Pedido"
           response: "Resposta"
+          next_log: "Próximo"
+          previous_log: "Anterior"
         share_modal:
           copy: "Copiar"
       summarization:

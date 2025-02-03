@@ -22,6 +22,7 @@ DiscourseAi::Engine.routes.draw do
   scope module: :ai_bot, path: "/ai-bot", defaults: { format: :json } do
     get "bot-username" => "bot#show_bot_username"
     get "post/:post_id/show-debug-info" => "bot#show_debug_info"
+    get "show-debug-info/:id" => "bot#show_debug_info_by_id"
     post "post/:post_id/stop-streaming" => "bot#stop_streaming_response"
   end
 
@@ -29,7 +30,13 @@ DiscourseAi::Engine.routes.draw do
     post "/" => "shared_ai_conversations#create"
     delete "/:share_key" => "shared_ai_conversations#destroy"
     get "/:share_key" => "shared_ai_conversations#show"
+    get "/asset/:version/:name" => "shared_ai_conversations#asset"
     get "/preview/:topic_id" => "shared_ai_conversations#preview"
+  end
+
+  scope module: :ai_bot, path: "/ai-bot/artifacts" do
+    get "/:id" => "artifacts#show"
+    get "/:id/:version" => "artifacts#show"
   end
 
   scope module: :summarization, path: "/summarization", defaults: { format: :json } do
@@ -46,13 +53,15 @@ Discourse::Application.routes.draw do
 
   scope "/admin/plugins/discourse-ai", constraints: AdminConstraint.new do
     resources :ai_personas,
-              only: %i[index create show update destroy],
+              only: %i[index new create edit update destroy],
               path: "ai-personas",
               controller: "discourse_ai/admin/ai_personas"
 
+    post "/ai-personas/stream-reply" => "discourse_ai/admin/ai_personas#stream_reply"
+
     resources(
       :ai_tools,
-      only: %i[index create show update destroy],
+      only: %i[index new create edit update destroy],
       path: "ai-tools",
       controller: "discourse_ai/admin/ai_tools",
     )
@@ -69,10 +78,29 @@ Discourse::Application.routes.draw do
     get "/rag-document-fragments/files/status",
         to: "discourse_ai/admin/rag_document_fragments#indexing_status_check"
 
+    get "/ai-usage", to: "discourse_ai/admin/ai_usage#show"
+    get "/ai-usage-report", to: "discourse_ai/admin/ai_usage#report"
+    get "/ai-spam", to: "discourse_ai/admin/ai_spam#show"
+    put "/ai-spam", to: "discourse_ai/admin/ai_spam#update"
+    post "/ai-spam/test", to: "discourse_ai/admin/ai_spam#test"
+    post "/ai-spam/fix-errors", to: "discourse_ai/admin/ai_spam#fix_errors"
+
     resources :ai_llms,
-              only: %i[index create show update destroy],
+              only: %i[index new create edit update destroy],
               path: "ai-llms",
               controller: "discourse_ai/admin/ai_llms" do
+      collection { get :test }
+    end
+
+    resources :ai_llm_quotas,
+              controller: "discourse_ai/admin/ai_llm_quotas",
+              path: "quotas",
+              only: %i[index create update destroy]
+
+    resources :ai_embeddings,
+              only: %i[index new create edit update destroy],
+              path: "ai-embeddings",
+              controller: "discourse_ai/admin/ai_embeddings" do
       collection { get :test }
     end
   end

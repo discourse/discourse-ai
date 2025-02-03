@@ -39,11 +39,7 @@ class RagDocumentFragment < ActiveRecord::Base
     end
 
     def indexing_status(persona, uploads)
-      truncation = DiscourseAi::Embeddings::Strategies::Truncation.new
-      vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
-
-      embeddings_table = vector_rep.rag_fragments_table_name
+      embeddings_table = DiscourseAi::Embeddings::Schema.for(self).table
 
       results =
         DB.query(
@@ -84,13 +80,12 @@ end
 #  id              :bigint           not null, primary key
 #  fragment        :text             not null
 #  upload_id       :integer          not null
-#  ai_persona_id   :integer          not null
 #  fragment_number :integer          not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  metadata        :text
-#  target_id       :integer
-#  target_type     :string(800)
+#  target_id       :bigint           not null
+#  target_type     :string(800)      not null
 #
 # Indexes
 #

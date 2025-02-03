@@ -6,12 +6,8 @@ RSpec.describe Jobs::DigestRagUpload do
 
   let(:document_file) { StringIO.new("some text" * 200) }
 
-  let(:truncation) { DiscourseAi::Embeddings::Strategies::Truncation.new }
-  let(:vector_rep) do
-    DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(truncation)
-  end
-
-  let(:expected_embedding) { [0.0038493] * vector_rep.dimensions }
+  fab!(:cloudflare_embedding_def)
+  let(:expected_embedding) { [0.0038493] * cloudflare_embedding_def.dimensions }
 
   let(:document_with_metadata) { plugin_file_from_fixtures("doc_with_metadata.txt", "rag") }
 
@@ -24,15 +20,14 @@ RSpec.describe Jobs::DigestRagUpload do
   end
 
   before do
+    SiteSetting.ai_embeddings_selected_model = cloudflare_embedding_def.id
     SiteSetting.ai_embeddings_enabled = true
-    SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
-    SiteSetting.ai_embeddings_model = "bge-large-en"
     SiteSetting.authorized_extensions = "txt"
 
-    WebMock.stub_request(
-      :post,
-      "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
-    ).to_return(status: 200, body: JSON.dump(expected_embedding))
+    WebMock.stub_request(:post, cloudflare_embedding_def.url).to_return(
+      status: 200,
+      body: JSON.dump(expected_embedding),
+    )
   end
 
   describe "#execute" do

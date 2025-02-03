@@ -13,17 +13,20 @@ RSpec.describe SharedAiConversation, type: :model do
 
   fab!(:user)
 
+  let(:bad_user_input) { <<~HTML }
+    Just trying something `<marquee style="font-size: 200px; color: red;" scrollamount=20>h4cked</marquee>`
+  HTML
   let(:raw_with_details) { <<~HTML }
     <details>
     <summary>GitHub pull request diff</summary>
     <p><a href="https://github.com/discourse/discourse-ai/pull/521">discourse/discourse-ai 521</a></p>
     </details>
     <p>This is some other text</p>
-    HTML
+  HTML
 
   let(:bot_user) { claude_2.reload.user }
   let!(:topic) { Fabricate(:private_message_topic, recipient: bot_user) }
-  let!(:post1) { Fabricate(:post, topic: topic, post_number: 1) }
+  let!(:post1) { Fabricate(:post, topic: topic, post_number: 1, raw: bad_user_input) }
   let!(:post2) { Fabricate(:post, topic: topic, post_number: 2, raw: raw_with_details) }
 
   describe ".share_conversation" do
@@ -69,6 +72,13 @@ RSpec.describe SharedAiConversation, type: :model do
       expect(populated_context[0].user.id).to eq(post1.user.id)
       expect(populated_context[1].id).to eq(post2.id)
       expect(populated_context[1].user.id).to eq(post2.user.id)
+    end
+
+    it "escapes HTML" do
+      conversation = described_class.share_conversation(user, topic)
+      onebox = conversation.onebox
+      expect(onebox).not_to include("</marquee>")
+      expect(onebox).to include("AI Conversation with Claude-2")
     end
   end
 end

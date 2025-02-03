@@ -53,7 +53,10 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
   end
 
   describe "custom reports" do
-    before { SiteSetting.ai_sentiment_inference_service_api_endpoint = "http://test.com" }
+    before do
+      SiteSetting.ai_sentiment_model_configs =
+        "[{\"model_name\":\"SamLowe/roberta-base-go_emotions\",\"endpoint\":\"http://samlowe-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"j-hartmann/emotion-english-distilroberta-base\",\"endpoint\":\"http://jhartmann-emotion.com\",\"api_key\":\"123\"},{\"model_name\":\"cardiffnlp/twitter-roberta-base-sentiment-latest\",\"endpoint\":\"http://cardiffnlp-sentiment.com\",\"api_key\":\"123\"}]"
+    end
 
     fab!(:pm) { Fabricate(:private_message_post) }
 
@@ -61,8 +64,8 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
     fab!(:post_2) { Fabricate(:post) }
 
     describe "overall_sentiment report" do
-      let(:positive_classification) { { negative: 2, neutral: 30, positive: 70 } }
-      let(:negative_classification) { { negative: 65, neutral: 2, positive: 10 } }
+      let(:positive_classification) { { negative: 0.2, neutral: 0.3, positive: 0.7 } }
+      let(:negative_classification) { { negative: 0.65, neutral: 0.2, positive: 0.1 } }
 
       def sentiment_classification(post, classification)
         Fabricate(:sentiment_classification, target: post, classification: classification)
@@ -74,22 +77,77 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
         sentiment_classification(pm, positive_classification)
 
         report = Report.find("overall_sentiment")
-        positive_data_point = report.data[0][:data].first[:y].to_i
-        negative_data_point = report.data[1][:data].first[:y].to_i
-
-        expect(positive_data_point).to eq(1)
-        expect(negative_data_point).to eq(-1)
+        overall_sentiment = report.data[:data][0][:y].to_i
+        expect(overall_sentiment).to eq(0)
       end
     end
 
     describe "post_emotion report" do
       let(:emotion_1) do
-        { sadness: 49, surprise: 23, neutral: 6, fear: 34, anger: 87, joy: 22, disgust: 70 }
+        {
+          love: 0.9444406,
+          admiration: 0.013724019,
+          surprise: 0.010188869,
+          excitement: 0.007888741,
+          curiosity: 0.006301749,
+          joy: 0.004060776,
+          confusion: 0.0028238264,
+          approval: 0.0018160914,
+          realization: 0.001174849,
+          neutral: 0.0008561869,
+          amusement: 0.00075853954,
+          disapproval: 0.0006987994,
+          disappointment: 0.0006166883,
+          anger: 0.0006000542,
+          annoyance: 0.0005615011,
+          desire: 0.00046368592,
+          fear: 0.00045117878,
+          sadness: 0.00041727215,
+          gratitude: 0.00041727215,
+          optimism: 0.00037112957,
+          disgust: 0.00035552034,
+          nervousness: 0.00022954118,
+          embarrassment: 0.0002049572,
+          caring: 0.00017737568,
+          remorse: 0.00011407586,
+          grief: 0.0001006716,
+          pride: 0.00009681493,
+          relief: 0.00008919009,
+        }
       end
       let(:emotion_2) do
-        { sadness: 19, surprise: 63, neutral: 45, fear: 44, anger: 27, joy: 62, disgust: 30 }
+        {
+          love: 0.8444406,
+          admiration: 0.113724019,
+          surprise: 0.010188869,
+          excitement: 0.007888741,
+          curiosity: 0.006301749,
+          joy: 0.004060776,
+          confusion: 0.0028238264,
+          approval: 0.0018160914,
+          realization: 0.001174849,
+          neutral: 0.0008561869,
+          amusement: 0.00075853954,
+          disapproval: 0.0006987994,
+          disappointment: 0.0006166883,
+          anger: 0.0006000542,
+          annoyance: 0.0005615011,
+          desire: 0.00046368592,
+          fear: 0.00045117878,
+          sadness: 0.00041727215,
+          gratitude: 0.00041727215,
+          optimism: 0.00037112957,
+          disgust: 0.00035552034,
+          nervousness: 0.00022954118,
+          embarrassment: 0.0002049572,
+          caring: 0.00017737568,
+          remorse: 0.00011407586,
+          grief: 0.0001006716,
+          pride: 0.00009681493,
+          relief: 0.00008919009,
+        }
       end
-      let(:model_used) { "emotion" }
+      let(:model_used) { "SamLowe/roberta-base-go_emotions" }
 
       def emotion_classification(post, classification)
         Fabricate(
@@ -106,22 +164,19 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
       end
 
       it "calculate averages using only public posts" do
-        threshold = 30
+        threshold = 0.10
 
         emotion_classification(post_1, emotion_1)
         emotion_classification(post_2, emotion_2)
         emotion_classification(pm, emotion_2)
 
-        report = Report.find("post_emotion")
+        report = Report.find("emotion_love")
 
         data_point = report.data
 
         data_point.each do |point|
-          emotion = strip_emoji_and_downcase(point[:label])
-          expected =
-            (emotion_1[emotion.to_sym] > threshold ? 1 : 0) +
-              (emotion_2[emotion.to_sym] > threshold ? 1 : 0)
-          expect(point[:data][0][:y]).to eq(expected)
+          expected = (emotion_1[:love] > threshold ? 1 : 0) + (emotion_2[:love] > threshold ? 1 : 0)
+          expect(point[:y]).to eq(expected)
         end
       end
     end

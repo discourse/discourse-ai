@@ -1,16 +1,21 @@
 import Component from "@glimmer/component";
 import { concat, fn } from "@ember/helper";
 import { action } from "@ember/object";
-import { LinkTo } from "@ember/routing";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
-import icon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
-import I18n from "discourse-i18n";
-import AdminPageSubheader from "admin/components/admin-page-subheader";
+import DButton from "discourse/components/d-button";
+import DPageSubheader from "discourse/components/d-page-subheader";
+import I18n, { i18n } from "discourse-i18n";
 import AdminSectionLandingItem from "admin/components/admin-section-landing-item";
 import AdminSectionLandingWrapper from "admin/components/admin-section-landing-wrapper";
+import DTooltip from "float-kit/components/d-tooltip";
 import AiLlmEditor from "./ai-llm-editor";
+
+function isPreseeded(llm) {
+  if (llm.id < 0) {
+    return true;
+  }
+}
 
 export default class AiLlmsListEditor extends Component {
   @service adminPluginNavManager;
@@ -32,9 +37,18 @@ export default class AiLlmsListEditor extends Component {
 
     key = `discourse_ai.llms.model_description.${key}`;
     if (I18n.lookup(key, { ignoreMissing: true })) {
-      return I18n.t(key);
+      return i18n(key);
     }
     return "";
+  }
+
+  @action
+  preseededDescription(llm) {
+    if (isPreseeded(llm)) {
+      return i18n("discourse_ai.llms.preseeded_model_description", {
+        model: llm.name,
+      });
+    }
   }
 
   sanitizedTranslationKey(id) {
@@ -57,7 +71,7 @@ export default class AiLlmsListEditor extends Component {
     const options = [
       {
         id: "none",
-        name: I18n.t("discourse_ai.llms.preconfigured.fake"),
+        name: i18n("discourse_ai.llms.preconfigured.fake"),
         provider: "fake",
       },
     ];
@@ -99,11 +113,11 @@ export default class AiLlmsListEditor extends Component {
 
   localizeUsage(usage) {
     if (usage.type === "ai_persona") {
-      return I18n.t("discourse_ai.llms.usage.ai_persona", {
+      return i18n("discourse_ai.llms.usage.ai_persona", {
         persona: usage.name,
       });
     } else {
-      return I18n.t("discourse_ai.llms.usage." + usage.type);
+      return i18n("discourse_ai.llms.usage." + usage.type);
     }
   }
 
@@ -120,12 +134,19 @@ export default class AiLlmsListEditor extends Component {
           @llmTemplate={{@llmTemplate}}
         />
       {{else}}
+        <DPageSubheader
+          @titleLabel={{i18n "discourse_ai.llms.short_title"}}
+          @descriptionLabel={{i18n
+            "discourse_ai.llms.preconfigured.description"
+          }}
+          @learnMoreUrl="https://meta.discourse.org/t/discourse-ai-large-language-model-llm-settings-page/319903"
+        />
         {{#if this.hasLlmElements}}
           <section class="ai-llms-list-editor__configured">
-            <AdminPageSubheader
-              @titleLabel="discourse_ai.llms.configured.title"
+            <DPageSubheader
+              @titleLabel={{i18n "discourse_ai.llms.configured.title"}}
             />
-            <table>
+            <table class="d-admin-table">
               <thead>
                 <tr>
                   <th>{{i18n "discourse_ai.llms.display_name"}}</th>
@@ -135,12 +156,21 @@ export default class AiLlmsListEditor extends Component {
               </thead>
               <tbody>
                 {{#each @llms as |llm|}}
-                  <tr data-llm-id={{llm.name}} class="ai-llm-list__row">
-                    <td class="column-name">
-                      <h3>{{llm.display_name}}</h3>
-                      <p>
+                  <tr
+                    data-llm-id={{llm.name}}
+                    class="ai-llm-list__row d-admin-row__content"
+                  >
+                    <td class="d-admin-row__overview">
+
+                      <div class="ai-llm-list__name">
+                        <strong>
+                          {{llm.display_name}}
+                        </strong>
+                      </div>
+                      <div class="ai-llm-list__description">
                         {{this.modelDescription llm}}
-                      </p>
+                        {{this.preseededDescription llm}}
+                      </div>
                       {{#if llm.used_by}}
                         <ul class="ai-llm-list-editor__usages">
                           {{#each llm.used_by as |usage|}}
@@ -149,22 +179,35 @@ export default class AiLlmsListEditor extends Component {
                         </ul>
                       {{/if}}
                     </td>
-                    <td class="column-provider">
+                    <td class="d-admin-row__detail">
+                      <div class="d-admin-row__mobile-label">
+                        {{i18n "discourse_ai.llms.provider"}}
+                      </div>
                       {{i18n
                         (concat "discourse_ai.llms.providers." llm.provider)
                       }}
                     </td>
-                    <td class="column-edit">
-                      <LinkTo
-                        @route="adminPlugins.show.discourse-ai-llms.show"
-                        class="btn btn-default"
-                        @model={{llm.id}}
-                      >
-                        {{icon "wrench"}}
-                        <div class="d-button-label">
-                          {{i18n "discourse_ai.llms.edit"}}
-                        </div>
-                      </LinkTo>
+                    <td class="d-admin-row__controls">
+                      {{#if (isPreseeded llm)}}
+                        <DTooltip class="ai-llm-list__edit-disabled-tooltip">
+                          <:trigger>
+                            <DButton
+                              class="btn btn-default btn-small disabled"
+                              @label="discourse_ai.llms.edit"
+                            />
+                          </:trigger>
+                          <:content>
+                            {{i18n "discourse_ai.llms.seeded_warning"}}
+                          </:content>
+                        </DTooltip>
+                      {{else}}
+                        <DButton
+                          class="btn btn-default btn-small ai-llm-list__delete-button"
+                          @label="discourse_ai.llms.edit"
+                          @route="adminPlugins.show.discourse-ai-llms.edit"
+                          @routeModels={{llm.id}}
+                        />
+                      {{/if}}
                     </td>
                   </tr>
                 {{/each}}
@@ -173,8 +216,7 @@ export default class AiLlmsListEditor extends Component {
           </section>
         {{/if}}
         <section class="ai-llms-list-editor__templates">
-          <AdminPageSubheader @titleLabel={{this.preconfiguredTitle}} />
-
+          <DPageSubheader @titleLabel={{i18n this.preconfiguredTitle}} />
           <AdminSectionLandingWrapper
             class="ai-llms-list-editor__templates-list"
           >

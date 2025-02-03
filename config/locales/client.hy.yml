@@ -29,15 +29,24 @@ hy:
     discourse_ai:
       modals:
         select_option: "Ընտրել..."
+      spam:
+        short_title: "Սպամ"
+        enable: "Միացնել"
+        test_modal:
+          spam: "Սպամ"
+      usage:
+        summary: "Ամփոփումը"
+        username: "Օգտանուն"
+        total_requests: "Ընդհանուր հարցումներ"
       ai_persona:
-        back: Ետ
-        name: Անուն
-        edit: Խմբագրել
-        description: Նկարագրությունը
+        back: "Ետ"
+        name: "Անուն"
+        edit: "Խմբագրել"
+        description: "Նկարագրությունը"
         user: Օգտատեր
-        save: Պահպանել
+        save: "Պահպանել"
         enabled: "Միացվա՞ծ է:"
-        delete: Ջնջել
+        delete: "Ջնջել"
       rag:
         uploads:
           title: "Վերբեռնումներ"
@@ -50,22 +59,29 @@ hy:
         save: "Պահպանել"
         parameter_required: "Պարտադիր"
         edit: "Խմբագրել"
-        test: "Մեկնարկել Փորձարկումը"
         delete: "Ջնջել"
         next:
           title: "Հաջորդը"
-        test_modal:
-          run: "Մեկնարկել Փորձարկումը"
       llms:
         display_name: "Անուն"
         save: "Պահպանել"
         edit: "Խմբագրել"
         back: "Ետ"
         delete: Ջնջել
+        quotas:
+          group: "Խմբավորել"
+          max_usages: "Առավելագույն օգտագործման քանակը"
+          durations:
+            hour: "1 ժամով"
+            six_hours: "6 ժամով"
+            day: "Վերջին 24 ժամվա"
+            week: "Վերջին 7 օրվա"
+          hours: "ժամ"
+        usage:
+          ai_spam: "Սպամ"
         next:
           title: "Հաջորդը"
         tests:
-          title: "Մեկնարկել Փորձարկումը"
           success: "Հաջողություն!"
         providers:
           google: "Google"
@@ -83,9 +99,22 @@ hy:
           save_caption: "Պահպանել"
           automatic_caption_dialog:
             confirm: "Միացնել"
+      embeddings:
+        back: "Ետ"
+        save: "Պահպանել"
+        delete: "Ջնջել"
+        edit: "Խմբագրել"
+        tests:
+          success: "Հաջողություն!"
+        display_name: "Անուն"
+        providers:
+          google: "Google"
+          fake: "Մասնավոր"
       ai_bot:
         debug_ai_modal:
           request: "Հարցում"
           response: "Արձագանք"
+          next_log: "Հաջորդը"
+          previous_log: "Նախորդը"
         share_modal:
           copy: "Կրկնօրինակել"

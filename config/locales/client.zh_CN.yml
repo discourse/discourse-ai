@@ -7,9 +7,19 @@
 zh_CN:
   admin_js:
     admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "允许 AI 搜索"
+              stream_completion: "允许流式 AI 角色补全"
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
+      dashboard:
+        emotion:
+          title: "情绪"
+          description: "该表列出了按确定的情绪分类的帖子数量。使用“SamLowe/roberta-base-go_emotions”模型进行分类。"
   js:
     discourse_automation:
       scriptables:
@@ -40,8 +50,8 @@ zh_CN:
               label: "样本大小"
               description: "要为报告抽样的帖子数"
             tokens_per_post:
-              label: "每个帖子的词例数"
-              description: "每个帖子要使用的 LLM 词例数"
+              label: "每个帖子的词元数"
+              description: "每个帖子要使用的 LLM 词元数"
             model:
               label: "模型"
               description: "用于生成报告的 LLM"
@@ -71,7 +81,7 @@ zh_CN:
               description: "在报告中优先考虑来自此群组的内容"
             temperature:
               label: "温度"
-              description: "用于 LLM 的温度，增大可以提升随机性（0 表示使用模型默认值）"
+              description: "用于 LLM 的温度。增大该值可以提升随机性（0 表示使用模型默认值）"
             top_p:
               label: "Top P"
               description: "用于 LLM 的 Top P，增大可以提升随机性（0 表示使用模型默认值）"
@@ -80,9 +90,15 @@ zh_CN:
             system_prompt:
               label: "系统提示"
               description: "将用于分类的提示，请确保它回复一个您可用于触发操作的字词"
+            max_post_tokens:
+              label: "帖子最大词元数"
+              description: "使用 LLM 分类扫描的最大词元数"
+            stop_sequences:
+              label: "停止序列"
+              description: "指示模型在达到其中一个值时停止生成词元"
             search_for_text:
               label: "搜索文本"
-              description: "如果 LLM 回复中出现以下文本，则应用此操作"
+              description: "如果 LLM 回复中出现以下文本，则应用这些操作"
             category:
               label: "类别"
               description: "应用于话题的类别"
@@ -97,7 +113,16 @@ zh_CN:
               description: "发布预设回复的用户的用户名"
             hide_topic:
               label: "隐藏话题"
-              description: "如果触发，使话题对公众不可见"
+              description: "如果触发，则将话题设为对公众不可见"
+            flag_type:
+              label: "举报类型"
+              description: "对帖子应用的举报类型（垃圾内容或只是提出审核请求）"
+            flag_post:
+              label: "举报帖子"
+              description: "举报帖子（垃圾内容或请求审核）"
+            include_personal_messages:
+              label: "包括私信"
+              description: "同时扫描私信并对其进行分类"
             model:
               label: "模型"
               description: "用于分类的语言模型"
@@ -105,11 +130,86 @@ zh_CN:
       title: "AI"
       modals:
         select_option: "选择一个选项…"
+      spam:
+        short_title: "垃圾内容"
+        title: "配置垃圾内容处理"
+        select_llm: "选择 LLM"
+        custom_instructions: "自定义指令"
+        custom_instructions_help: "特定于您的网站的自定义指令，帮助指导 AI 识别垃圾内容，例如“更积极地扫描非英语帖子”。"
+        last_seven_days: "过去 7 天"
+        scanned_count: "已扫描的帖子"
+        false_positives: "错误举报"
+        false_negatives: "错过的垃圾内容"
+        spam_detected: "检测到垃圾内容"
+        custom_instructions_placeholder: "针对特定网站的指令，帮助 AI 更准确地识别垃圾内容"
+        enable: "启用"
+        spam_tip: "AI 垃圾内容检测功能会扫描所有新用户在公开话题中发布的前 3 个帖子。如果这些帖子可能是垃圾内容，它会标记这些帖子以供审核并屏蔽这些用户。"
+        settings_saved: "设置已保存"
+        spam_description: "使用所选 LLM 识别潜在垃圾内容，并进行标记，使其进入审核队列，以便网站版主可以进行检查"
+        no_llms: "无可用 LLM"
+        test_button: "测试…"
+        save_button: "保存更改"
+        test_modal:
+          title: "测试垃圾内容检测"
+          post_url_label: "帖子 URL 或 ID"
+          post_url_placeholder: "https://your-forum.com/t/topic/123/4 或帖子 ID"
+          result: "结果"
+          scan_log: "扫描日志"
+          run: "运行测试"
+          spam: "垃圾内容"
+          not_spam: "非垃圾内容"
+        stat_tooltips:
+          incorrectly_flagged: "AI 机器人标记为垃圾内容但版主不同意的条目"
+          missed_spam: "被社区标记为垃圾内容但未被 AI 机器人检测到且版主认为是垃圾内容的条目"
+        errors:
+          scan_not_admin:
+            message: "警告：垃圾内容扫描无法正常工作，因为垃圾内容扫描帐户不是管理员帐户"
+            action: "修复"
+          resolved: "错误已解决！"
+      usage:
+        short_title: "使用量"
+        summary: "摘要"
+        total_tokens: "词元总数"
+        tokens_over_time: "一段时间内的词元数"
+        features_breakdown: "按功能的使用量"
+        feature: "功能"
+        usage_count: "使用次数"
+        model: "模型"
+        models_breakdown: "按模型的使用量"
+        users_breakdown: "按用户的使用量"
+        all_features: "所有功能"
+        all_models: "所有模型"
+        username: "用户名"
+        total_requests: "请求总数"
+        request_tokens: "请求词元"
+        response_tokens: "回答词元"
+        net_request_tokens: "网络请求词元"
+        cached_tokens: "缓存的词元"
+        cached_request_tokens: "缓存的请求词元"
+        no_users: "找不到用户使用数据"
+        no_models: "找不到模型使用数据"
+        no_features: "找不到功能使用数据"
+        subheader_description: "词元是 LLM 用来理解和生成文本的基本单位，使用数据可能会影响成本。"
+        stat_tooltips:
+          total_requests: "通过 Discourse 向 LLM 提出的所有请求"
+          total_tokens: "提示 LLM 时使用的所有词元"
+          request_tokens: "LLM 试图理解您所说的话时使用的词元"
+          response_tokens: "LLM 回答您的提示时使用的词元"
+          cached_tokens: "先前处理过的请求词元，LLM 会重复使用这些词元优化性能和成本"
+        periods:
+          last_day: "过去 24 小时"
+          last_week: "上周"
+          last_month: "上个月"
+          custom: "自定义…"
       ai_persona:
-        back: 返回
-        name: 名称
-        edit: 编辑
-        description: 描述
+        tool_strategies:
+          all: "应用于所有回复"
+          replies:
+            other: "应用于前 %{count} 条回复"
+        back: "返回"
+        name: "名称"
+        edit: "编辑"
+        description: "描述"
         no_llm_selected: "未选择语言模型"
         max_context_posts: "最大上下文帖子数"
         max_context_posts_help: "AI 在回复用户时用作上下文的最大帖子数。（默认为空）"
@@ -117,8 +217,8 @@ zh_CN:
         vision_enabled_help: 如果启用，AI 将尝试理解用户在话题中发布的图片，这取决于使用的模型是否支持视觉。Anthropic、Google 和 OpenAI 的最新模型支持该功能。
         vision_max_pixels: 支持的图片大小
         vision_max_pixel_sizes:
-          low: 低质量 - 最便宜 (256x256)
-          medium: 中等质量 (512x512)
+          low: 低品质 - 最便宜 (256x256)
+          medium: 中等品质 (512x512)
           high: 高品质 - 最慢 (1024x1024)
         tool_details: 显示工具详细信息
         tool_details_help: 将向最终用户显示语言模型触发了哪些工具的详细信息。
@@ -132,36 +232,38 @@ zh_CN:
         question_consolidator_llm: 问题整合器的语言模型
         question_consolidator_llm_help: 用于问题整合器的语言模型，您可以选择功能较弱的模型来节省成本。
         system_prompt: 系统提示
-        save: 保存
-        saved: AI 角色已保存
+        forced_tool_strategy: 强制工具策略
+        allow_chat_direct_messages: "允许聊天直接消息"
+        allow_chat_direct_messages_help: "如果启用，允许的群组中的用户可以向此角色发送直接消息。"
+        allow_chat_channel_mentions: "允许聊天频道提及"
+        allow_chat_channel_mentions_help: "如果启用，允许的群组中的用户可以在聊天频道中提及此角色。"
+        allow_personal_messages: "允许私信"
+        allow_personal_messages_help: "如果启用，允许的群组中的用户可以向此角色发送私信。"
+        allow_topic_mentions: "允许话题提及"
+        allow_topic_mentions_help: "如果启用，允许的群组中的用户可以在话题中提及此角色。"
+        force_default_llm: "始终使用默认语言模型"
+        save: "保存"
+        saved: "角色已保存"
         enabled: "已启用？"
-        tools: 启用的工具
-        allowed_groups: 允许的群组
-        confirm_delete: 确定要删除此角色吗？
+        tools: "启用的工具"
+        forced_tools: "强制工具"
+        allowed_groups: "允许的群组"
+        confirm_delete: "确定要删除此角色吗？"
         new: "新角色"
-        title: "AI 角色"
+        no_personas: "您还没有创建任何角色"
+        title: "角色"
         short_title: "角色"
-        delete: 删除
-        temperature: 温度
-        temperature_help: 用于 LLM 的温度，增大可以提升创造力（留空将使用模型默认值，通常为 0.0 到 2.0 之间的值）
-        top_p: Top P
-        top_p_help: 用于 LLM 的 Top P，增大可以提升随机性（留空将使用模型默认值，通常为 0.0 到 1.0 之间的值）
-        priority: 优先
-        priority_help: 优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。
+        delete: "删除"
+        temperature: "温度"
+        temperature_help: "用于 LLM 的温度。增大该值可以提升创造力（留空将使用模型默认值，通常为 0.0 到 2.0 之间的值）"
+        top_p: "Top P"
+        top_p_help: "用于 LLM 的 Top P，增大可以提升随机性（留空将使用模型默认值，通常为 0.0 到 1.0 之间的值）"
+        priority: "优先"
+        priority_help: "优先角色会在角色列表的顶部向用户显示。如果多个角色都具有优先级，将按字母顺序排序。"
         tool_options: "工具选项"
         rag_conversation_chunks: "搜索对话分块"
         rag_conversation_chunks_help: "为 RAG 模型搜索使用的分块数。增加分块数会增加 AI 可以使用的上下文数量。"
-        what_are_personas: "什么是 AI 角色？"
-        no_persona_selected: |
-          AI 角色是一项强大的功能，让您可以在 Discourse 论坛中自定义 AI 引擎的行为。这些角色作为“系统消息”，指导 AI 的响应和交互，帮助打造更加个性化和引人入胜的用户体验。
-
-          #### 为何使用 AI 角色？
-
-          借助 AI 角色，您可以定制 AI 的行为，以更好地适应论坛的环境和基调。无论您是希望 AI 在专业环境中显得更正式，还是在社区论坛中显得更随意，甚至是在角色扮演游戏中体现特定角色，您都可以灵活地通过 AI 角色来实现。
-
-          #### 对 AI 角色的群组特定的访问
-
-          此外，您还可以对其进行设置，以便某些用户群组可以访问特定角色。这意味着您可以为论坛的不同版块设置不同的 AI 行为，从而进一步增强社区互动的多元化和丰富性。
+        persona_description: "角色是一种强大的功能，可以让您自定义 Discourse 论坛中 AI 引擎的行为。它们充当“系统消息”，指导 AI 的回答和互动，帮助创造更加个性化、引人入胜的用户体验。"
       rag:
         options:
           rag_chunk_tokens: "上传分块词元"
@@ -172,6 +274,7 @@ zh_CN:
           hide_indexing_options: "隐藏上传选项"
         uploads:
           title: "上传"
+          description: "上传的文件应格式化为纯文本 (.txt) 或 Markdown (.md)。"
           button: "添加文件"
           filter: "筛选上传"
           indexed: "已编制索引"
@@ -182,8 +285,10 @@ zh_CN:
       tools:
         back: "返回"
         short_title: "工具"
-        new: "新建工具"
+        no_tools: "您还没有创建任何工具"
         name: "名称"
+        subheader_description: "工具可以通过用户定义的 JavaScript 函数扩展 AI 机器人的功能。"
+        new: "新工具"
         name_help: "由语言模型使用的工具的唯一名称"
         description: "描述"
         description_help: "向语言模型介绍工具用途的清晰描述"
@@ -204,7 +309,7 @@ zh_CN:
         delete: "删除"
         saved: "工具已保存"
         presets: "选择一个预设…"
-        confirm_delete: 确定要删除此工具吗？
+        confirm_delete: "确定要删除此工具吗？"
         next:
           title: "下一步"
         test_modal:
@@ -214,12 +319,15 @@ zh_CN:
       llms:
         short_title: "LLM"
         no_llms: "没有 LLM"
-        new: "新建模型"
+        new: "新模型"
         display_name: "名称"
+        name: "模型 ID"
+        provider: "提供程序"
         tokenizer: "词元生成器"
         max_prompt_tokens: "提示的词元数"
         url: "托管模型的服务的 URL"
         api_key: "托管模型的服务的 API 密钥"
+        enabled_chat_bot: "允许 AI 机器人选择器"
         vision_enabled: "启用视觉"
         ai_bot_user: "AI 机器人用户"
         save: "保存"
@@ -228,18 +336,72 @@ zh_CN:
         back: "返回"
         confirm_delete: 确定要删除此模型吗？
         delete: 删除
+        seeded_warning: "此模型已在您的网站上预先配置，无法编辑。"
+        quotas:
+          title: "使用配额"
+          add_title: "创建新配额"
+          group: "群组"
+          max_tokens: "最大词元数"
+          max_usages: "最大使用次数"
+          duration: "持续时间"
+          confirm_delete: "确定要删除此配额吗？"
+          add: "添加配额"
+          durations:
+            hour: "1 小时"
+            six_hours: "6 小时"
+            day: "24 小时"
+            week: "7 天"
+            custom: "自定义…"
+          hours: "小时"
+          max_tokens_help: "此群组中每个用户在指定时长内可以使用的最大词元（单词和字符）数。词元是 AI 模型处理文本时使用的单位，1 个词元约等于 4 个字符或 3/4 个单词。"
+          max_usages_help: "此群组中每个用户在指定时长内可以使用 AI 模型的最大次数。此配额按个别用户进行跟踪，不在整个群组中共享。"
+        usage:
+          ai_bot: "AI 机器人"
+          ai_helper: "助手"
+          ai_persona: "角色 (%{persona})"
+          ai_summarization: "总结"
+          ai_embeddings_semantic_search: "AI 搜索"
+          ai_spam: "垃圾内容"
+        in_use_warning:
+          other: "此模型目前的使用者为 %{settings}。如果配置错误，功能将无法按预期运行。"
+        model_description:
+          none: "适用于大多数语言模型的常规设置"
+          anthropic-claude-3-5-sonnet: "Anthropic 最聪明的模型"
+          anthropic-claude-3-5-haiku: "快速、经济实惠"
+          anthropic-claude-3-opus: "擅长写作和复杂任务"
+          google-gemini-1-5-pro: "能够执行多种任务的中型多模态模型"
+          google-gemini-1-5-flash: "轻量、快速、经济高效，具有多模态推理能力"
+          open_ai-gpt-4-turbo: "上一代高智能模型"
+          open_ai-gpt-4o: "适用于复杂、多步骤任务的高智能模型"
+          open_ai-gpt-4o-mini: "经济、快速的小型模型，适用于轻量级任务"
+          open_ai-o1-mini: "经济高效的推理模型"
+          open_ai-o1-preview: "Open AI 最强大的推理模型"
+          samba_nova-Meta-Llama-3-1-8B-Instruct: "高效的轻量级多语言模型"
+          samba_nova-Meta-Llama-3-1-70B-Instruct": "强大的多用途模型"
+          mistral-mistral-large-latest: "Mistral 最强大的模型"
+          mistral-pixtral-large-latest: "Mistral 最强大的视觉能力模型"
+        preseeded_model_description: "利用 %{model} 的预配置开源模型"
+        configured:
+          title: "配置的 LLM"
         preconfigured_llms: "选择您的 LLM"
+        preconfigured:
+          title_no_llms: "选择一个模板以开始"
+          title: "未配置的 LLM 模板"
+          description: "LLM（大语言模型）是经过优化的 AI 工具，可用于执行总结内容、生成报告、自动执行客户互动以及促进论坛审核和见解等任务。"
+          fake: "手动配置"
+          button: "设置"
         next:
           title: "下一步"
         tests:
           title: "运行测试"
-          running: "正在运行测试..."
+          running: "正在运行测试…"
           success: "成功！"
           failure: "尝试联系模型时返回此错误：%{error}"
         hints:
           max_prompt_tokens: "提示的最大词元数。根据经验，此值应为模型上下文窗口的 50%。"
-          name: "我们将其包含在 API 调用中以指定我们将使用哪个模型。"
+          name: "我们将其包含在 API 调用中以指定我们将使用哪个模型"
           vision_enabled: "如果启用，AI 将尝试理解图片，这取决于使用的模型是否支持视觉。Anthropic、Google 和 OpenAI 的最新模型支持该功能。"
+          enabled_chat_bot: "如果启用，用户可以在使用 AI 机器人创建私信时选择此模型"
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
@@ -250,11 +412,21 @@ zh_CN:
           google: "Google"
           azure: "Azure"
           ollama: "Ollama"
+          CDCK: "CDCK"
+          samba_nova: "SambaNova"
+          mistral: "Mistral"
+          open_router: "OpenRouter"
           fake: "自定义"
         provider_fields:
           access_key_id: "AWS Bedrock 访问密钥 ID"
           region: "AWS Bedrock 区域"
           organization: "可选 OpenAI 组织 ID"
+          disable_system_prompt: "在提示中禁用系统消息"
+          enable_native_tool: "启用原生工具支持"
+          disable_native_tools: "禁用原生工具支持（使用基于 XML 的工具）"
+          provider_order: "提供程序顺序（逗号分隔列表）"
+          provider_quantizations: "提供程序量化顺序（逗号分隔列表，例如：fp16,fp8）"
+          disable_streaming: "禁用流式补全（将流式请求转换为非流式请求）"
       related_topics:
         title: "相关话题"
         pill: "相关"
@@ -263,6 +435,10 @@ zh_CN:
         description: "选择以下选项之一，AI 将向您推荐新版本文本。"
         selection_hint: "提示：您也可以在打开助手之前选择文本的一部分来仅重写该文本。"
         suggest: "通过 AI 提出建议"
+        suggest_errors:
+          too_many_tags:
+            other: "您最多只能有 %{count} 个标签"
+          no_suggestions: "没有建议"
         missing_content: "请输入一些内容以生成建议。"
         context_menu:
           trigger: "询问 AI"
@@ -271,6 +447,7 @@ zh_CN:
           regen: "重试"
           confirm: "确认"
           discard: "舍弃"
+          changes: "建议的编辑"
           custom_prompt:
             title: "自定义提示"
             placeholder: "输入自定义提示…"
@@ -285,11 +462,12 @@ zh_CN:
           copied: "已复制！"
           cancel: "取消"
           insert_footnote: "添加脚注"
+          footnote_disabled: "自动插入功能已禁用，请点击“复制”按钮并手动编辑"
           footnote_credits: "AI 的解释"
         fast_edit:
           suggest_button: "建议编辑"
         thumbnail_suggestions:
-          title: "建议缩略图"
+          title: "建议的缩略图"
           select: "选择"
           selected: "已选择"
         image_caption:
@@ -297,26 +475,84 @@ zh_CN:
           generating: "正在生成标题…"
           credits: "由 AI 生成标题"
           save_caption: "保存"
-          automatic_caption_setting: "启用自动 AI 图片标题"
+          automatic_caption_setting: "启用自动标题"
           automatic_caption_loading: "正在为图片生成标题…"
           automatic_caption_dialog:
-            prompt: "此帖子包含无标题的图片。要在图片上传时启用自动 AI 标题吗？（稍后可以在您的偏好设置中更改）"
+            prompt: "此帖子包含无标题图片。要在上传图片时启用自动生成标题功能吗？（稍后可以在偏好设置中进行更改）"
             confirm: "启用"
             cancel: "不再询问"
+        no_content_error: "先添加内容，然后对其执行 AI 操作"
       reviewables:
         model_used: "使用的模型："
         accuracy: "准确性："
       embeddings:
+        short_title: "嵌入向量"
+        description: "嵌入向量是 Discourse AI 插件的重要组件，可以实现相关话题和语义搜索等功能。"
+        new: "新建嵌入向量"
+        back: "返回"
+        save: "保存"
+        saved: "嵌入向量配置已保存"
+        delete: "删除"
+        confirm_delete: 确定要移除此嵌入向量配置吗？
+        empty: "您尚未设置嵌入向量"
+        presets: "选择一个预设…"
+        configure_manually: "手动配置"
+        edit: "编辑"
+        seeded_warning: "此内容在您的网站上预先配置，无法编辑。"
+        tests:
+          title: "运行测试"
+          running: "正在运行测试…"
+          success: "成功！"
+          failure: "尝试生成嵌入向量导致以下错误：%{error}"
+        hints:
+          dimensions_warning: "保存后，此值将无法更改。"
+          matryoshka_dimensions: "定义用于分层或多层数据表示的嵌套嵌入向量的大小，类似于套娃相互契合的方式。"
+          embed_prompt: "告诉 LLM 如何处理文本，以创建其数字摘要（嵌入向量）用于分析或比较。"
+          search_prompt: "告诉 LLM 如何将搜索查询与现有嵌入向量进行比较并找到最佳匹配项。"
+          sequence_length: "创建嵌入向量或处理查询时一次可以处理的最大词元数。"
+          distance_function: "确定如何计算嵌入向量之间的相似度，可以使用余弦距离（测量向量的夹角）或负内积（测量向量值的重叠）。"
+        display_name: "名称"
+        provider: "提供程序"
+        url: "嵌入向量服务 URL"
+        api_key: "嵌入向量服务 API 密钥"
+        tokenizer: "分词器"
+        dimensions: "嵌入向量尺寸"
+        max_sequence_length: "序列长度"
+        embed_prompt: "嵌入提示"
+        search_prompt: "搜索提示"
+        matryoshka_dimensions: "套娃尺寸"
+        distance_function: "距离函数"
+        distance_functions:
+          "<#>": "负内积"
+          <=>: "余弦距离"
+        providers:
+          hugging_face: "Hugging Face"
+          open_ai: "OpenAI"
+          google: "Google"
+          cloudflare: "Cloudflare"
+          CDCK: "CDCK"
+          fake: "自定义"
+        provider_fields:
+          model_name: "模型名称"
         semantic_search: "话题（语义）"
         semantic_search_loading: "正在使用 AI 搜索更多结果"
         semantic_search_results:
           toggle: "显示使用 AI 找到的 %{count} 个结果"
           toggle_hidden: "隐藏使用 AI 找到的 %{count} 个结果"
-          none: "抱歉，我们的 AI 搜索没有找到匹配的话题。"
+          none: "抱歉，我们的 AI 搜索没有找到匹配的话题"
           new: "按“搜索”开始使用 AI 查找新结果"
+          unavailable: "AI 结果不可用"
+        semantic_search_tooltips:
+          results_explanation: "启用后，将在下方添加更多 AI 搜索结果。"
+          invalid_sort: "搜索结果必须按相关性排序才能显示 AI 结果"
+        semantic_search_unavailable_tooltip: "搜索结果必须按相关性排序才能显示 AI 结果"
         ai_generated_result: "使用 AI 找到的搜索结果"
         quick_search:
           suffix: "在所有话题和帖子中使用 AI 搜索"
+      ai_artifact:
+        expand_view_label: "扩展视图"
+        collapse_view_label: "退出全屏（按 ESC 或“返回”按钮）"
+        click_to_run_label: "运行工件"
       ai_bot:
         pm_warning: "版主会定期监控 AI 聊天机器人消息。"
         cancel_streaming: "停止回复"
@@ -324,15 +560,17 @@ zh_CN:
         shortcut_title: "使用 AI 机器人启动私信"
         share: "复制 AI 对话"
         conversation_shared: "对话已复制"
-        debug_ai: "查看原始 AI 请求和响应"
+        debug_ai: "查看原始 AI 请求和回答"
         debug_ai_modal:
           title: "查看 AI 交互"
           copy_request: "复制请求"
-          copy_response: "复制响应"
+          copy_response: "复制回答"
           request_tokens: "请求令牌："
-          response_tokens: "响应令牌："
+          response_tokens: "回答令牌："
           request: "请求"
-          response: "响应"
+          response: "回答"
+          next_log: "下一步"
+          previous_log: "上一步"
         share_full_topic_modal:
           title: "公开分享对话"
           share: "分享并复制链接"
@@ -347,7 +585,7 @@ zh_CN:
           title: "复制 AI 对话"
           copy: "复制"
           context: "要分享的互动："
-          share_tip: 或者，您可以分享整个对话。
+          share_tip: "或者，您可以分享整个对话"
         bot_names:
           fake: "假测试机器人"
           claude-3-opus: "Claude 3 Opus"
@@ -374,6 +612,14 @@ zh_CN:
           summarize: "总结"
           since:
             other: "过去 %{count} 小时"
+        topic:
+          title: "话题摘要"
+          close: "关闭摘要面板"
+        topic_list_layout:
+          button:
+            compact: "紧凑"
+            expanded: "展开"
+            expanded_description: "带 AI 摘要"
     review:
       types:
         reviewable_ai_post:

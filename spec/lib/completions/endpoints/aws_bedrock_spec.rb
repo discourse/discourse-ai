@@ -26,6 +26,22 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     Aws::EventStream::Encoder.new.encode(aws_message)
   end
 
+  it "should provide accurate max token count" do
+    prompt = DiscourseAi::Completions::Prompt.new("hello")
+    dialect = DiscourseAi::Completions::Dialects::Claude.new(prompt, model)
+    endpoint = DiscourseAi::Completions::Endpoints::AwsBedrock.new(model)
+
+    model.name = "claude-2"
+    expect(endpoint.default_options(dialect)[:max_tokens]).to eq(4096)
+
+    model.name = "claude-3-5-sonnet"
+    expect(endpoint.default_options(dialect)[:max_tokens]).to eq(8192)
+
+    model.name = "claude-3-5-haiku"
+    options = endpoint.default_options(dialect)
+    expect(options[:max_tokens]).to eq(8192)
+  end
+
   describe "function calling" do
     it "supports old school xml function calls" do
       model.provider_params["disable_native_tools"] = true
@@ -79,7 +95,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         }
 
         prompt.tools = [tool]
-        response = +""
+        response = []
         proxy.generate(prompt, user: user) { |partial| response << partial }
 
         expect(request.headers["Authorization"]).to be_present
@@ -90,21 +106,18 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         expect(parsed_body["tools"]).to eq(nil)
         expect(parsed_body["stop_sequences"]).to eq(["</function_calls>"])
 
-        # note we now have a tool_id cause we were normalized
-        function_call = <<~XML.strip
-          hello
+        expected = [
+          "hello\n",
+          DiscourseAi::Completions::ToolCall.new(
+            id: "tool_0",
+            name: "google",
+            parameters: {
+              query: "sydney weather today",
+            },
+          ),
+        ]
 
-
-          <function_calls>
-          <invoke>
-          <tool_name>google</tool_name>
-          <parameters><query>sydney weather today</query></parameters>
-          <tool_id>tool_0</tool_id>
-          </invoke>
-          </function_calls>
-        XML
-
-        expect(response.strip).to eq(function_call)
+        expect(response).to eq(expected)
       end
     end
 
@@ -230,26 +243,26 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         }
 
         prompt.tools = [tool]
-        response = +""
+        response = []
         proxy.generate(prompt, user: user) { |partial| response << partial }
 
         expect(request.headers["Authorization"]).to be_present
         expect(request.headers["X-Amz-Content-Sha256"]).to be_present
 
-        expected_response = (<<~RESPONSE).strip
-        <function_calls>
-        <invoke>
-        <tool_name>google</tool_name>
-        <parameters><query>sydney weather today</query></parameters>
-        <tool_id>toolu_bdrk_014CMjxtGmKUtGoEFPgc7PF7</tool_id>
-        </invoke>
-        </function_calls>
-        RESPONSE
+        expected_response = [
+          DiscourseAi::Completions::ToolCall.new(
+            id: "toolu_bdrk_014CMjxtGmKUtGoEFPgc7PF7",
+            name: "google",
+            parameters: {
+              query: "sydney weather today",
+            },
+          ),
+        ]
 
-        expect(response.strip).to eq(expected_response)
+        expect(response).to eq(expected_response)
 
         expected = {
-          "max_tokens" => 3000,
+          "max_tokens" => 4096,
           "anthropic_version" => "bedrock-2023-05-31",
           "messages" => [{ "role" => "user", "content" => "what is the weather in sydney" }],
           "tools" => [
@@ -308,7 +321,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       expect(request.headers["X-Amz-Content-Sha256"]).to be_present
 
       expected = {
-        "max_tokens" => 3000,
+        "max_tokens" => 4096,
         "anthropic_version" => "bedrock-2023-05-31",
         "messages" => [{ "role" => "user", "content" => "hello world" }],
         "system" => "You are a helpful bot",
@@ -357,7 +370,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         expect(request.headers["X-Amz-Content-Sha256"]).to be_present
 
         expected = {
-          "max_tokens" => 3000,
+          "max_tokens" => 4096,
           "anthropic_version" => "bedrock-2023-05-31",
           "messages" => [{ "role" => "user", "content" => "hello world" }],
           "system" => "You are a helpful bot",

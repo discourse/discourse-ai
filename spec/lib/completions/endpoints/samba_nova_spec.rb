@@ -22,10 +22,15 @@ data: [DONE]
       },
     ).to_return(status: 200, body: body, headers: {})
 
-    response = +""
+    response = []
     llm.generate("who are you?", user: Discourse.system_user) { |partial| response << partial }
 
-    expect(response).to eq("I am a bot")
+    expect(response).to eq(["I am a bot"])
+
+    log = AiApiAuditLog.order(:id).last
+
+    expect(log.request_tokens).to eq(21)
+    expect(log.response_tokens).to eq(41)
   end
 
   it "can perform regular completions" do

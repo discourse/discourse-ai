@@ -3,7 +3,14 @@
 RSpec.describe DiscourseAi::AiBot::Playground do
   subject(:playground) { described_class.new(bot) }
 
-  fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
+  fab!(:claude_2) do
+    Fabricate(
+      :llm_model,
+      provider: "anthropic",
+      url: "https://api.anthropic.com/v1/messages",
+      name: "claude-2",
+    )
+  end
   fab!(:opus_model) { Fabricate(:anthropic_model) }
 
   fab!(:bot_user) do
@@ -55,6 +62,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     )
   end
 
+  before { SiteSetting.ai_embeddings_enabled = false }
+
   after do
     # we must reset cache on persona cause data can be rolled back
     AiPersona.persona_cache.flush!
@@ -84,17 +93,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
-    let(:function_call) { (<<~XML).strip }
-        <function_calls>
-          <invoke>
-            <tool_name>search</tool_name>
-            <tool_id>666</tool_id>
-            <parameters>
-              <query>Can you use the custom tool</query>
-            </parameters>
-          </invoke>
-        </function_calls>",
-      XML
+    let(:tool_call) do
+      DiscourseAi::Completions::ToolCall.new(
+        name: "search",
+        id: "666",
+        parameters: {
+          query: "Can you use the custom tool",
+        },
+      )
+    end
 
     let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
 
@@ -116,7 +123,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       reply_post = nil
       prompts = nil
 
-      responses = [function_call]
+      responses = [tool_call]
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
         new_post = Fabricate(:post, raw: "Can you use the custom tool?")
         reply_post = playground.reply_to(new_post)
@@ -134,7 +141,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     it "can force usage of a tool" do
       tool_name = "custom-#{custom_tool.id}"
       ai_persona.update!(tools: [[tool_name, nil, true]], forced_tool_count: 1)
-      responses = [function_call, "custom tool did stuff (maybe)"]
+      responses = [tool_call, "custom tool did stuff (maybe)"]
 
       prompts = nil
       reply_post = nil
@@ -167,7 +174,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
       playground = DiscourseAi::AiBot::Playground.new(bot)
 
-      responses = [function_call, "custom tool did stuff (maybe)"]
+      responses = [tool_call, "custom tool did stuff (maybe)"]
 
       reply_post = nil
 
@@ -207,13 +214,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
       playground = DiscourseAi::AiBot::Playground.new(bot)
 
+      responses = ["custom tool did stuff (maybe)", tool_call]
+
       # lets ensure tool does not run...
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompt|
         new_post = Fabricate(:post, raw: "Can you use the custom tool?")
         reply_post = playground.reply_to(new_post)
       end
 
-      expect(reply_post.raw.strip).to eq(function_call)
+      expect(reply_post.raw.strip).to eq("custom tool did stuff (maybe)")
     end
   end
 
@@ -453,10 +462,25 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       it "can run tools" do
         persona.update!(tools: ["Time"])
 
-        responses = [
-          "<function_calls><invoke><tool_name>time</tool_name><tool_id>time</tool_id><parameters><timezone>Buenos Aires</timezone></parameters></invoke></function_calls>",
-          "The time is 2023-12-14 17:24:00 -0300",
-        ]
+        tool_call1 =
+          DiscourseAi::Completions::ToolCall.new(
+            name: "time",
+            id: "time",
+            parameters: {
+              timezone: "Buenos Aires",
+            },
+          )
+
+        tool_call2 =
+          DiscourseAi::Completions::ToolCall.new(
+            name: "time",
+            id: "time",
+            parameters: {
+              timezone: "Sydney",
+            },
+          )
+
+        responses = [[tool_call1, tool_call2], "The time is 2023-12-14 17:24:00 -0300"]
 
         message =
           DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
@@ -471,7 +495,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         # it also needs to have tool details now set on message
         prompt = ChatMessageCustomPrompt.find_by(message_id: reply.id)
-        expect(prompt.custom_prompt.length).to eq(3)
+
+        expect(prompt.custom_prompt.length).to eq(5)
 
         # TODO in chat I am mixed on including this in the context, but I guess maybe?
         # thinking about this
@@ -596,6 +621,65 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         )
 
       expect(post.topic.posts.last.post_number).to eq(1)
+    end
+
+    it "allows swapping a llm mid conversation using a mention" do
+      SiteSetting.ai_bot_enabled = true
+
+      post = nil
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Yes I can", "Magic Title"],
+        llm: "custom:#{claude_2.id}",
+      ) do
+        post =
+          create_post(
+            title: "I just made a PM",
+            raw: "Hey there #{persona.user.username}, can you help me?",
+            target_usernames: "#{user.username},#{persona.user.username}",
+            archetype: Archetype.private_message,
+            user: admin,
+          )
+      end
+
+      post.topic.custom_fields["ai_persona_id"] = persona.id
+      post.topic.save_custom_fields
+
+      llm2 = Fabricate(:llm_model, enabled_chat_bot: true)
+
+      llm2.toggle_companion_user
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Hi from bot two"],
+        llm: "custom:#{llm2.id}",
+      ) do
+        create_post(
+          user: admin,
+          raw: "hi @#{llm2.user.username.capitalize} how are you",
+          topic_id: post.topic_id,
+        )
+      end
+
+      last_post = post.topic.reload.posts.order("id desc").first
+      expect(last_post.raw).to eq("Hi from bot two")
+      expect(last_post.user_id).to eq(persona.user_id)
+
+      # tether llm, so it can no longer be switched
+      persona.update!(force_default_llm: true, default_llm: "custom:#{claude_2.id}")
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        ["Hi from bot one"],
+        llm: "custom:#{claude_2.id}",
+      ) do
+        create_post(
+          user: admin,
+          raw: "hi @#{llm2.user.username.capitalize} how are you",
+          topic_id: post.topic_id,
+        )
+      end
+
+      last_post = post.topic.reload.posts.order("id desc").first
+      expect(last_post.raw).to eq("Hi from bot one")
+      expect(last_post.user_id).to eq(persona.user_id)
     end
 
     it "allows PMing a persona even when no particular bots are enabled" do
@@ -746,8 +830,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "updates the title using bot suggestions" do
       DiscourseAi::Completions::Llm.with_prepared_responses([expected_response]) do
-        playground.title_playground(third_post)
-
+        playground.title_playground(third_post, user)
         expect(pm.reload.title).to eq(expected_response)
       end
     end
@@ -774,39 +857,39 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         expect(done_signal.data[:cooked]).to eq(reply.cooked)
 
         expect(messages.first.data[:raw]).to eq("")
-        messages[1..-1].each_with_index do |m, idx|
-          expect(m.data[:raw]).to eq(expected_bot_response[0..idx])
-        end
 
         expect(reply.cooked).to eq(PrettyText.cook(expected_bot_response))
+
+        messages[1..-1].each do |m|
+          expect(expected_bot_response.start_with?(m.data[:raw])).to eq(true)
+        end
       end
     end
 
     it "supports multiple function calls" do
-      response1 = (<<~TXT).strip
-          <function_calls>
-          <invoke>
-          <tool_name>search</tool_name>
-          <tool_id>search</tool_id>
-          <parameters>
-          <search_query>testing various things</search_query>
-          </parameters>
-          </invoke>
-          <invoke>
-          <tool_name>search</tool_name>
-          <tool_id>search</tool_id>
-          <parameters>
-          <search_query>another search</search_query>
-          </parameters>
-          </invoke>
-          </function_calls>
-       TXT
+      tool_call1 =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "search",
+          id: "search",
+          parameters: {
+            search_query: "testing various things",
+          },
+        )
+
+      tool_call2 =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "search",
+          id: "search",
+          parameters: {
+            search_query: "another search",
+          },
+        )
 
       response2 = "I found stuff"
 
-      DiscourseAi::Completions::Llm.with_prepared_responses([response1, response2]) do
-        playground.reply_to(third_post)
-      end
+      DiscourseAi::Completions::Llm.with_prepared_responses(
+        [[tool_call1, tool_call2], response2],
+      ) { playground.reply_to(third_post) }
 
       last_post = third_post.topic.reload.posts.order(:post_number).last
 
@@ -820,17 +903,14 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new)
       playground = described_class.new(bot)
 
-      response1 = (<<~TXT).strip
-          <function_calls>
-          <invoke>
-          <tool_name>search</tool_name>
-          <tool_id>search</tool_id>
-          <parameters>
-          <search_query>testing various things</search_query>
-          </parameters>
-          </invoke>
-          </function_calls>
-       TXT
+      response1 =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "search",
+          id: "search",
+          parameters: {
+            search_query: "testing various things",
+          },
+        )
 
       response2 = "I found stuff"
 
@@ -844,17 +924,14 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     it "does not include placeholders in conversation context but includes all completions" do
-      response1 = (<<~TXT).strip
-          <function_calls>
-          <invoke>
-          <tool_name>search</tool_name>
-          <tool_id>search</tool_id>
-          <parameters>
-          <search_query>testing various things</search_query>
-          </parameters>
-          </invoke>
-          </function_calls>
-       TXT
+      response1 =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "search",
+          id: "search",
+          parameters: {
+            search_query: "testing various things",
+          },
+        )
 
       response2 = "I found some really amazing stuff!"
 
@@ -890,17 +967,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         [{ b64_json: image, revised_prompt: "a pink cow 1" }]
       end
 
-      let(:response) { (<<~TXT).strip }
-          <function_calls>
-          <invoke>
-          <tool_name>dall_e</tool_name>
-          <tool_id>dall_e</tool_id>
-          <parameters>
-          <prompts>["a pink cow"]</prompts>
-          </parameters>
-          </invoke>
-          </function_calls>
-       TXT
+      let(:response) do
+        DiscourseAi::Completions::ToolCall.new(
+          name: "dall_e",
+          id: "dall_e",
+          parameters: {
+            prompts: ["a pink cow"],
+          },
+        )
+      end
 
       it "properly returns an image when skipping tool details" do
         persona.update!(tool_details: false)
@@ -936,6 +1011,73 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         expect(custom_prompt.length).to eq(2)
         expect(custom_prompt.to_s).not_to include("<details>")
       end
+    end
+  end
+
+  describe "#canceling a completions" do
+    after { DiscourseAi::AiBot::PostStreamer.on_callback = nil }
+
+    it "should be able to cancel a completion halfway through" do
+      body = (<<~STRING).strip
+      event: message_start
+      data: {"type": "message_start", "message": {"id": "msg_1nZdL29xx5MUA1yADyHTEsnR8uuvGzszyY", "type": "message", "role": "assistant", "content": [], "model": "claude-3-opus-20240229", "stop_reason": null, "stop_sequence": null, "usage": {"input_tokens": 25, "output_tokens": 1}}}
+
+      event: content_block_start
+      data: {"type": "content_block_start", "index":0, "content_block": {"type": "text", "text": ""}}
+
+      event: ping
+      data: {"type": "ping"}
+
+      |event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "Hello"}}
+
+      |event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "1"}}
+
+      |event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "2"}}
+
+      |event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "3"}}
+
+      event: content_block_stop
+      data: {"type": "content_block_stop", "index": 0}
+
+      event: message_delta
+      data: {"type": "message_delta", "delta": {"stop_reason": "end_turn", "stop_sequence":null, "usage":{"output_tokens": 15}}}
+
+      event: message_stop
+      data: {"type": "message_stop"}
+    STRING
+
+      split = body.split("|")
+
+      count = 0
+      DiscourseAi::AiBot::PostStreamer.on_callback =
+        proc do |callback|
+          count += 1
+          if count == 2
+            last_post = third_post.topic.posts.order(:id).last
+            Discourse.redis.del("gpt_cancel:#{last_post.id}")
+          end
+          raise "this should not happen" if count > 2
+        end
+
+      require_relative("../../completions/endpoints/endpoint_compliance")
+      EndpointMock.with_chunk_array_support do
+        stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(
+          status: 200,
+          body: split,
+        )
+        # we are going to need to use real data here cause we want to trigger the
+        # base endpoint to cancel part way through
+        playground.reply_to(third_post)
+      end
+
+      last_post = third_post.topic.posts.order(:id).last
+
+      # not Hello123, we cancelled at 1 which means we may get 2 and then be done
+      expect(last_post.raw).to eq("Hello12")
     end
   end
 

@@ -12,5 +12,7 @@ class AiApiAuditLogSerializer < ApplicationSerializer
              :post_id,
              :feature_name,
              :language_model,
-             :created_at
+             :created_at,
+             :prev_log_id,
+             :next_log_id
 end

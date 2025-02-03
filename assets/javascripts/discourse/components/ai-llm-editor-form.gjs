@@ -6,17 +6,18 @@ import { on } from "@ember/modifier";
 import { action, computed } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
 import ComboBox from "select-kit/components/combo-box";
 import DTooltip from "float-kit/components/d-tooltip";
+import AiLlmQuotaEditor from "./ai-llm-quota-editor";
+import AiLlmQuotaModal from "./modal/ai-llm-quota-modal";
 
 export default class AiLlmEditorForm extends Component {
   @service toasts;
@@ -29,10 +30,18 @@ export default class AiLlmEditorForm extends Component {
   @tracked testResult = null;
   @tracked testError = null;
   @tracked apiKeySecret = true;
+  @tracked quotaCount = 0;
+
+  @tracked modalIsVisible = false;
+
+  constructor() {
+    super(...arguments);
+    this.updateQuotaCount();
+  }
 
   get selectedProviders() {
     const t = (provName) => {
-      return I18n.t(`discourse_ai.llms.providers.${provName}`);
+      return i18n(`discourse_ai.llms.providers.${provName}`);
     };
 
     return this.args.llms.resultSetMeta.providers.map((prov) => {
@@ -45,7 +54,7 @@ export default class AiLlmEditorForm extends Component {
   }
 
   get testErrorMessage() {
-    return I18n.t("discourse_ai.llms.tests.failure", { error: this.testError });
+    return i18n("discourse_ai.llms.tests.failure", { error: this.testError });
   }
 
   get displayTestResult() {
@@ -65,7 +74,7 @@ export default class AiLlmEditorForm extends Component {
     }
 
     const localized = usedBy.map((m) => {
-      return I18n.t(`discourse_ai.llms.usage.${m.type}`, {
+      return i18n(`discourse_ai.llms.usage.${m.type}`, {
         persona: m.name,
       });
     });
@@ -79,18 +88,52 @@ export default class AiLlmEditorForm extends Component {
   }
 
   get inUseWarning() {
-    return I18n.t("discourse_ai.llms.in_use_warning", {
+    return i18n("discourse_ai.llms.in_use_warning", {
       settings: this.modulesUsingModel,
       count: this.args.model.used_by.length,
     });
   }
 
+  get showQuotas() {
+    return this.quotaCount > 0;
+  }
+
+  get showAddQuotaButton() {
+    return !this.showQuotas && !this.args.model.isNew;
+  }
+
+  @action
+  updateQuotaCount() {
+    this.quotaCount = this.args.model?.llm_quotas?.length || 0;
+  }
+
+  @action
+  openAddQuotaModal() {
+    this.modalIsVisible = true;
+  }
+
   @computed("args.model.provider")
   get metaProviderParams() {
-    return (
+    const params =
       this.args.llms.resultSetMeta.provider_params[this.args.model.provider] ||
-      {}
-    );
+      {};
+
+    return Object.entries(params).map(([field, value]) => {
+      if (typeof value === "string") {
+        return { field, type: value };
+      } else if (typeof value === "object") {
+        if (value.values) {
+          value = { ...value };
+          value.values = value.values.map((v) => {
+            return { id: v, name: v };
+          });
+        }
+        this.args.model.provider_params[field] =
+          this.args.model.provider_params[field] || value.default;
+        return { field, ...value };
+      }
+      return { field, type: "text" }; // fallback
+    });
   }
 
   @action
@@ -106,7 +149,7 @@ export default class AiLlmEditorForm extends Component {
         this.router.transitionTo("adminPlugins.show.discourse-ai-llms.index");
       } else {
         this.toasts.success({
-          data: { message: I18n.t("discourse_ai.llms.saved") },
+          data: { message: i18n("discourse_ai.llms.saved") },
           duration: 2000,
         });
       }
@@ -154,7 +197,7 @@ export default class AiLlmEditorForm extends Component {
   @action
   delete() {
     return this.dialog.confirm({
-      message: I18n.t("discourse_ai.llms.confirm_delete"),
+      message: i18n("discourse_ai.llms.confirm_delete"),
       didConfirm: () => {
         return this.args.model
           .destroyRecord()
@@ -169,16 +212,22 @@ export default class AiLlmEditorForm extends Component {
     });
   }
 
+  @action
+  closeAddQuotaModal() {
+    this.modalIsVisible = false;
+    this.updateQuotaCount();
+  }
+
   <template>
     {{#if this.seeded}}
       <div class="alert alert-info">
-        {{icon "exclamation-circle"}}
+        {{icon "circle-exclamation"}}
         {{i18n "discourse_ai.llms.seeded_warning"}}
       </div>
     {{/if}}
     {{#if this.modulesUsingModel}}
       <div class="alert alert-info">
-        {{icon "exclamation-circle"}}
+        {{icon "circle-exclamation"}}
         {{this.inUseWarning}}
       </div>
     {{/if}}
@@ -201,7 +250,7 @@ export default class AiLlmEditorForm extends Component {
           disabled={{this.seeded}}
         />
         <DTooltip
-          @icon="question-circle"
+          @icon="circle-question"
           @content={{i18n "discourse_ai.llms.hints.name"}}
         />
       </div>
@@ -242,24 +291,31 @@ export default class AiLlmEditorForm extends Component {
             />
           </div>
         </div>
-        {{#each-in this.metaProviderParams as |field type|}}
-          <div class="control-group ai-llm-editor-provider-param__{{type}}">
+        {{#each this.metaProviderParams as |param|}}
+          <div
+            class="control-group ai-llm-editor-provider-param__{{param.type}}"
+          >
             <label>{{i18n
-                (concat "discourse_ai.llms.provider_fields." field)
+                (concat "discourse_ai.llms.provider_fields." param.field)
               }}</label>
-            {{#if (eq type "checkbox")}}
+            {{#if (eq param.type "enum")}}
+              <ComboBox
+                @value={{mut (get @model.provider_params param.field)}}
+                @content={{param.values}}
+              />
+            {{else if (eq param.type "checkbox")}}
               <Input
-                @type={{type}}
-                @checked={{mut (get @model.provider_params field)}}
+                @type={{param.type}}
+                @checked={{mut (get @model.provider_params param.field)}}
               />
             {{else}}
               <Input
-                @type={{type}}
-                @value={{mut (get @model.provider_params field)}}
+                @type={{param.type}}
+                @value={{mut (get @model.provider_params param.field)}}
               />
             {{/if}}
           </div>
-        {{/each-in}}
+        {{/each}}
         <div class="control-group">
           <label>{{i18n "discourse_ai.llms.tokenizer"}}</label>
           <ComboBox
@@ -280,7 +336,7 @@ export default class AiLlmEditorForm extends Component {
             required="true"
           />
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
           />
         </div>
@@ -288,7 +344,7 @@ export default class AiLlmEditorForm extends Component {
           <Input @type="checkbox" @checked={{@model.vision_enabled}} />
           <label>{{i18n "discourse_ai.llms.vision_enabled"}}</label>
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{i18n "discourse_ai.llms.hints.vision_enabled"}}
           />
         </div>
@@ -296,7 +352,7 @@ export default class AiLlmEditorForm extends Component {
           <Input @type="checkbox" @checked={{@model.enabled_chat_bot}} />
           <label>{{i18n "discourse_ai.llms.enabled_chat_bot"}}</label>
           <DTooltip
-            @icon="question-circle"
+            @icon="circle-question"
             @content={{i18n "discourse_ai.llms.hints.enabled_chat_bot"}}
           />
         </div>
@@ -317,6 +373,17 @@ export default class AiLlmEditorForm extends Component {
           </div>
         {{/if}}
 
+        {{#if this.showQuotas}}
+          <div class="control-group">
+            <label>{{i18n "discourse_ai.llms.quotas.title"}}</label>
+            <AiLlmQuotaEditor
+              @model={{@model}}
+              @groups={{@groups}}
+              @didUpdate={{this.updateQuotaCount}}
+            />
+          </div>
+        {{/if}}
+
         <div class="control-group ai-llm-editor__action_panel">
           <DButton
             class="ai-llm-editor__test"
@@ -324,7 +391,19 @@ export default class AiLlmEditorForm extends Component {
             @disabled={{this.testRunning}}
             @label="discourse_ai.llms.tests.title"
           />
-
+          {{#if this.showAddQuotaButton}}
+            <DButton
+              @action={{this.openAddQuotaModal}}
+              @label="discourse_ai.llms.quotas.add"
+              class="btn"
+            />
+            {{#if this.modalIsVisible}}
+              <AiLlmQuotaModal
+                @model={{hash llm=@model}}
+                @closeModal={{this.closeAddQuotaModal}}
+              />
+            {{/if}}
+          {{/if}}
           <DButton
             class="btn-primary ai-llm-editor__save"
             @action={{this.save}}
@@ -354,7 +433,7 @@ export default class AiLlmEditorForm extends Component {
               </div>
             {{else}}
               <div class="ai-llm-editor-tests__failure">
-                {{icon "times"}}
+                {{icon "xmark"}}
                 {{this.testErrorMessage}}
               </div>
             {{/if}}

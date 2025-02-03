@@ -21,23 +21,27 @@ module DiscourseAi
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       # Note: The block is only called with results of the final summary, not intermediate summaries.
       #
+      # This method doesn't care if we already have an up to date summary. It always regenerate.
+      #
       # @returns { AiSummary } - Resulting summary.
       def summarize(user, &on_partial_blk)
         base_summary = ""
         initial_pos = 0
-        folded_summary =
-          fold(content_to_summarize, base_summary, initial_pos, user, &on_partial_blk)
+
+        truncated_content = content_to_summarize.map { |cts| truncate(cts) }
+
+        folded_summary = fold(truncated_content, base_summary, initial_pos, user, &on_partial_blk)
 
         clean_summary =
           Nokogiri::HTML5.fragment(folded_summary).css("ai")&.first&.text || folded_summary
 
         if persist_summaries
           AiSummary.store!(
-            strategy.target,
-            strategy.type,
-            llm_model.name,
+            strategy,
+            llm_model,
             clean_summary,
-            content_to_summarize.map { |c| c[:id] },
+            truncated_content,
+            human: user&.human?,
           )
         else
           AiSummary.new(summarized_text: clean_summary)
@@ -46,7 +50,7 @@ module DiscourseAi
 
       # @returns { AiSummary } - Resulting summary.
       #
-      # Finds a summary matching the target and strategy. Marks it as outdates if the strategy found newer content
+      # Finds a summary matching the target and strategy. Marks it as outdated if the strategy found newer content
       def existing_summary
         if !defined?(@existing_summary)
           summary = AiSummary.find_by(target: strategy.target, summary_type: strategy.type)
@@ -64,11 +68,6 @@ module DiscourseAi
 
       def delete_cached_summaries!
         AiSummary.where(target: strategy.target, summary_type: strategy.type).destroy_all
-      end
-
-      def force_summarize(user, &on_partial_blk)
-        delete_cached_summaries!
-        summarize(user, &on_partial_blk)
       end
 
       private
@@ -128,10 +127,10 @@ module DiscourseAi
           )
 
         if cursor == items.length
-          llm.generate(prompt, user: user, feature_name: "summarize", &on_partial_blk)
+          llm.generate(prompt, user: user, feature_name: strategy.feature, &on_partial_blk)
         else
           latest_summary =
-            llm.generate(prompt, user: user, max_tokens: 600, feature_name: "summarize")
+            llm.generate(prompt, user: user, max_tokens: 600, feature_name: strategy.feature)
           fold(items, latest_summary, cursor, user, &on_partial_blk)
         end
       end
@@ -142,6 +141,22 @@ module DiscourseAi
         reserved_tokens = 700
 
         llm_model.max_prompt_tokens - reserved_tokens
+      end
+
+      def truncate(item)
+        item_content = item[:text].to_s
+        split_1, split_2 =
+          [item_content[0, item_content.size / 2], item_content[(item_content.size / 2)..-1]]
+
+        truncation_length = 500
+        tokenizer = llm_model.tokenizer_class
+
+        item[:text] = [
+          tokenizer.truncate(split_1, truncation_length),
+          tokenizer.truncate(split_2.reverse, truncation_length).reverse,
+        ].join(" ")
+
+        item
       end
     end
   end

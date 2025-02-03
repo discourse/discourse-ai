@@ -1,22 +1,25 @@
-import { computed, observer } from "@ember/object";
-import I18n from "discourse-i18n";
+import { computed } from "@ember/object";
+import { observes } from "@ember-decorators/object";
+import { i18n } from "discourse-i18n";
 import ComboBox from "select-kit/components/combo-box";
+import { selectKitOptions } from "select-kit/components/select-kit";
 
-export default ComboBox.extend({
-  _modelDisabledChanged: observer("attrs.disabled", function () {
+@selectKitOptions({
+  filterable: true,
+})
+export default class AiLlmSelector extends ComboBox {
+  @observes("attrs.disabled")
+  _modelDisabledChanged() {
     this.selectKit.options.set("disabled", this.get("attrs.disabled.value"));
-  }),
+  }
 
-  content: computed(function () {
+  @computed
+  get content() {
     return [
       {
         id: "blank",
-        name: I18n.t("discourse_ai.ai_persona.no_llm_selected"),
+        name: i18n("discourse_ai.ai_persona.no_llm_selected"),
       },
     ].concat(this.llms);
-  }),
-
-  selectKitOptions: {
-    filterable: true,
-  },
-});
+  }
+}

@@ -34,6 +34,12 @@ class SharedAiConversation < ActiveRecord::Base
 
   def self.destroy_conversation(conversation)
     conversation.destroy
+
+    maybe_topic = conversation.target
+    if maybe_topic.is_a?(Topic)
+      AiArtifact.where(post: maybe_topic.posts).update_all(metadata: { public: false })
+    end
+
     ::Jobs.enqueue(
       :shared_conversation_adjust_upload_security,
       target_id: conversation.target_id,
@@ -82,14 +88,7 @@ class SharedAiConversation < ActiveRecord::Base
   def html_excerpt
     html = +""
     populated_context.each do |post|
-      text =
-        PrettyText.excerpt(
-          post.cooked,
-          400,
-          text_entities: true,
-          strip_links: true,
-          strip_details: true,
-        )
+      text = PrettyText.excerpt(post.cooked, 400, strip_links: true, strip_details: true)
 
       html << "<p><b>#{post.user.username}</b>: #{text}</p>"
       if html.length > 1000
@@ -97,7 +96,7 @@ class SharedAiConversation < ActiveRecord::Base
         break
       end
     end
-    html << "<a href='#{url}'>#{I18n.t("discourse_ai.share_ai.read_more")}<a>"
+    html << "<a href='#{url}'>#{I18n.t("discourse_ai.share_ai.read_more")}</a>"
     html
   end
 
@@ -165,7 +164,7 @@ class SharedAiConversation < ActiveRecord::Base
             id: post.id,
             user_id: post.user_id,
             created_at: post.created_at,
-            cooked: post.cooked,
+            cooked: cook_artifacts(post),
           }
 
           mapped[:persona] = persona if ai_bot_participant&.id == post.user_id
@@ -173,6 +172,26 @@ class SharedAiConversation < ActiveRecord::Base
           mapped
         end,
     }
+  end
+
+  def self.cook_artifacts(post)
+    html = post.cooked
+    return html if !%w[lax strict].include?(SiteSetting.ai_artifact_security)
+
+    doc = Nokogiri::HTML5.fragment(html)
+    doc
+      .css("div.ai-artifact")
+      .each do |node|
+        id = node["data-ai-artifact-id"].to_i
+        version = node["data-ai-artifact-version"]
+        version_number = version.to_i if version
+        if id > 0
+          AiArtifact.share_publicly(id: id, post: post)
+          node.replace(AiArtifact.iframe_for(id, version_number))
+        end
+      end
+
+    doc.to_s
   end
 
   private

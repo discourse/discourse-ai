@@ -29,15 +29,24 @@ sw:
     discourse_ai:
       modals:
         select_option: "Chagua chaguo moja..."
+      spam:
+        short_title: "Barua Taka"
+        enable: "Wezesha"
+        test_modal:
+          spam: "Barua Taka"
+      usage:
+        summary: "Muhtasari"
+        username: "Jina la mtumiaji"
+        total_requests: "Jumla ya Maombi"
       ai_persona:
-        back: Iliyopita
-        name: Jina
-        edit: Hariri
-        description: Elezo
+        back: "Iliyopita"
+        name: "Jina"
+        edit: "Hariri"
+        description: "Elezo"
         user: Mtumiaji
-        save: Hifadhi
+        save: "Hifadhi"
         enabled: "Imeruhusiwa?"
-        delete: Futa
+        delete: "Futa"
       rag:
         uploads:
           title: "Upakiaji"
@@ -59,6 +68,10 @@ sw:
         edit: "Hariri"
         back: "Iliyopita"
         delete: Futa
+        quotas:
+          group: "Kikundi"
+        usage:
+          ai_spam: "Barua Taka"
         next:
           title: "Ijayo"
         tests:
@@ -78,9 +91,22 @@ sw:
           save_caption: "Hifadhi"
           automatic_caption_dialog:
             confirm: "Wezesha"
+      embeddings:
+        back: "Iliyopita"
+        save: "Hifadhi"
+        delete: "Futa"
+        edit: "Hariri"
+        tests:
+          success: "Mafanikio!"
+        display_name: "Jina"
+        providers:
+          google: "Google"
+          fake: "Binafsi"
       ai_bot:
         debug_ai_modal:
           request: "Ombi"
           response: "Mwitikio"
+          next_log: "Ijayo"
+          previous_log: "Uliopita"
         share_modal:
           copy: "Nakili"

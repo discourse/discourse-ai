@@ -147,9 +147,7 @@ class MoveEmbeddingsToSingleTablePerType < ActiveRecord::Migration[7.0]
     SQL
 
     begin
-      strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-      vector_rep =
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+      vector_rep = DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation
     rescue StandardError => e
       Rails.logger.error("Failed to index embeddings: #{e}")
     end

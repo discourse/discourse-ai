@@ -1,16 +1,15 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
-import i18n from "discourse-common/helpers/i18n";
 import { getAbsoluteURL } from "discourse-common/lib/get-url";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 
 export default class ShareModal extends Component {
   @service toasts;
@@ -83,7 +82,7 @@ export default class ShareModal extends Component {
     this.toasts.success({
       duration: 3000,
       data: {
-        message: I18n.t("discourse_ai.ai_bot.conversation_shared"),
+        message: i18n("discourse_ai.ai_bot.conversation_shared"),
       },
     });
   }
@@ -110,7 +109,7 @@ export default class ShareModal extends Component {
         {{#if this.shareKey}}
           <DButton
             class="btn-danger"
-            @icon="far-trash-alt"
+            @icon="far-trash-can"
             @action={{this.deleteLink}}
             @label="discourse_ai.ai_bot.share_full_topic_modal.delete"
           />

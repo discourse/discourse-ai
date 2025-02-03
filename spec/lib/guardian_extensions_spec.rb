@@ -9,7 +9,7 @@ describe DiscourseAi::GuardianExtensions do
     group.add(user)
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true
-    SiteSetting.ai_summarize_max_hot_topics_gists_per_batch = 1
+    SiteSetting.ai_summary_gists_enabled = true
   end
 
   let(:anon_guardian) { Guardian.new }
@@ -26,13 +26,7 @@ describe DiscourseAi::GuardianExtensions do
       end
 
       it "returns true if there is a cached summary" do
-        AiSummary.create!(
-          target: topic,
-          summarized_text: "test",
-          original_content_sha: "123",
-          algorithm: "test",
-          summary_type: AiSummary.summary_types[:complete],
-        )
+        Fabricate(:ai_summary, target: topic)
 
         expect(guardian.can_see_summary?(topic)).to eq(true)
       end
@@ -66,13 +60,7 @@ describe DiscourseAi::GuardianExtensions do
       end
 
       it "returns true for anons when there is a cached summary" do
-        AiSummary.create!(
-          target: topic,
-          summarized_text: "test",
-          original_content_sha: "123",
-          algorithm: "test",
-          summary_type: AiSummary.summary_types[:complete],
-        )
+        Fabricate(:ai_summary, target: topic)
 
         expect(guardian.can_see_summary?(topic)).to eq(true)
       end
@@ -80,7 +68,7 @@ describe DiscourseAi::GuardianExtensions do
   end
 
   describe "#can_see_gists?" do
-    before { SiteSetting.ai_hot_topic_gists_allowed_groups = group.id }
+    before { SiteSetting.ai_summary_gists_allowed_groups = group.id }
     let(:guardian) { Guardian.new(user) }
 
     context "when there is no user" do
@@ -89,8 +77,16 @@ describe DiscourseAi::GuardianExtensions do
       end
     end
 
+    context "when setting is set to everyone" do
+      before { SiteSetting.ai_summary_gists_allowed_groups = Group::AUTO_GROUPS[:everyone] }
+
+      it "returns true" do
+        expect(guardian.can_see_gists?).to eq(true)
+      end
+    end
+
     context "when there is a user but it's not a member of the allowed groups" do
-      before { SiteSetting.ai_hot_topic_gists_allowed_groups = "" }
+      before { SiteSetting.ai_summary_gists_allowed_groups = "" }
 
       it "returns false" do
         expect(guardian.can_see_gists?).to eq(false)

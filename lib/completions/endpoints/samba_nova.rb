@@ -55,27 +55,31 @@ module DiscourseAi
           log.response_tokens = @completion_tokens if @completion_tokens
         end
 
-        def extract_completion_from(response_raw)
-          json = JSON.parse(response_raw, symbolize_names: true)
-
-          if @streaming_mode
-            @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
-            @completion_tokens ||= json.dig(:usage, :completion_tokens)
-          end
-
-          parsed = json.dig(:choices, 0)
-          return if !parsed
-
-          @streaming_mode ? parsed.dig(:delta, :content) : parsed.dig(:message, :content)
+        def xml_tools_enabled?
+          true
         end
 
-        def partials_from(decoded_chunk)
-          decoded_chunk
-            .split("\n")
-            .map do |line|
-              data = line.split("data: ", 2)[1]
-              data == "[DONE]" ? nil : data
+        def decode(response_raw)
+          json = JSON.parse(response_raw, symbolize_names: true)
+          [json.dig(:choices, 0, :message, :content)]
+        end
+
+        def decode_chunk(chunk)
+          @json_decoder ||= JsonStreamDecoder.new
+          (@json_decoder << chunk)
+            .map do |json|
+              text = json.dig(:choices, 0, :delta, :content)
+
+              @prompt_tokens ||= json.dig(:usage, :prompt_tokens)
+              @completion_tokens ||= json.dig(:usage, :completion_tokens)
+
+              if !text.to_s.empty?
+                text
+              else
+                nil
+              end
             end
+            .flatten
             .compact
         end
       end

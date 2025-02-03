@@ -3,8 +3,6 @@
 module DiscourseAi
   module Embeddings
     class SemanticRelated
-      MissingEmbeddingError = Class.new(StandardError)
-
       def self.clear_cache_for(topic)
         Discourse.cache.delete("semantic-suggested-topic-#{topic.id}")
         Discourse.redis.del("build-semantic-suggested-topic-#{topic.id}")
@@ -12,26 +10,27 @@ module DiscourseAi
 
       def related_topic_ids_for(topic)
         return [] if SiteSetting.ai_embeddings_semantic_related_topics < 1
+        return [] if SiteSetting.ai_embeddings_selected_model.blank? # fail-safe in case something end up in a broken state.
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
         cache_for = results_ttl(topic)
 
         Discourse
           .cache
           .fetch(semantic_suggested_key(topic.id), expires_in: cache_for) do
-            vector_rep
-              .symmetric_topics_similarity_search(topic)
+            DiscourseAi::Embeddings::Schema
+              .for(Topic)
+              .symmetric_similarity_search(topic)
+              .map(&:topic_id)
               .tap do |candidate_ids|
                 # Happens when the topic doesn't have any embeddings
                 # I'd rather not use Exceptions to control the flow, so this should be refactored soon
                 if candidate_ids.empty? || !candidate_ids.include?(topic.id)
-                  raise MissingEmbeddingError, "No embeddings found for topic #{topic.id}"
+                  raise ::DiscourseAi::Embeddings::Schema::MissingEmbeddingError,
+                        "No embeddings found for topic #{topic.id}"
                 end
               end
           end
-      rescue MissingEmbeddingError
+      rescue ::DiscourseAi::Embeddings::Schema::MissingEmbeddingError
         # avoid a flood of jobs when visiting topic
         if Discourse.redis.set(
              build_semantic_suggested_key(topic.id),

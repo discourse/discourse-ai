@@ -44,10 +44,14 @@ module DiscourseAi
       end
 
       def framework_script
+        http_methods = %i[get post put patch delete].map { |method| <<~JS }.join("\n")
+          #{method}: function(url, options) {
+            return _http_#{method}(url, options);
+          },
+          JS
         <<~JS
         const http = {
-          get: function(url, options) { return _http_get(url, options) },
-          post: function(url, options) { return _http_post(url, options) },
+          #{http_methods}
         };
 
         const llm = {
@@ -137,18 +141,19 @@ module DiscourseAi
 
         return [] if upload_refs.empty?
 
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-        query_vector = vector_rep.vector_from(query)
+        query_vector = DiscourseAi::Embeddings::Vector.instance.vector_from(query)
         fragment_ids =
-          vector_rep.asymmetric_rag_fragment_similarity_search(
-            query_vector,
-            target_type: "AiTool",
-            target_id: tool.id,
-            limit: limit,
-            offset: 0,
-          )
+          DiscourseAi::Embeddings::Schema
+            .for(RagDocumentFragment)
+            .asymmetric_similarity_search(query_vector, limit: limit, offset: 0) do |builder|
+              builder.join(<<~SQL, target_id: tool.id, target_type: "AiTool")
+                rag_document_fragments ON
+                  rag_document_fragments.id = rag_document_fragment_id AND
+                  rag_document_fragments.target_id = :target_id AND
+                  rag_document_fragments.target_type = :target_type
+              SQL
+            end
+            .map(&:rag_document_fragment_id)
 
         fragments =
           RagDocumentFragment.where(id: fragment_ids, upload_id: upload_refs).pluck(
@@ -214,7 +219,7 @@ module DiscourseAi
                     for_private_message: @context[:private_message],
                   ).create_for(@bot_user.id)
 
-                { id: upload.id, short_url: upload.short_url }
+                { id: upload.id, short_url: upload.short_url, url: upload.url }
               end
             ensure
               self.running_attached_function = false
@@ -249,36 +254,44 @@ module DiscourseAi
           end,
         )
 
-        mini_racer_context.attach(
-          "_http_post",
-          ->(url, options) do
-            begin
-              @http_requests_made += 1
-              if @http_requests_made > MAX_HTTP_REQUESTS
-                raise TooManyRequestsError.new("Tool made too many HTTP requests")
+        %i[post put patch delete].each do |method|
+          mini_racer_context.attach(
+            "_http_#{method}",
+            ->(url, options) do
+              begin
+                @http_requests_made += 1
+                if @http_requests_made > MAX_HTTP_REQUESTS
+                  raise TooManyRequestsError.new("Tool made too many HTTP requests")
+                end
+
+                self.running_attached_function = true
+                headers = (options && options["headers"]) || {}
+                body = options && options["body"]
+
+                result = {}
+                DiscourseAi::AiBot::Tools::Tool.send_http_request(
+                  url,
+                  method: method,
+                  headers: headers,
+                  body: body,
+                ) do |response|
+                  result[:body] = response.body
+                  result[:status] = response.code.to_i
+                end
+
+                result
+              rescue => e
+                p url
+                p options
+                p e
+                puts e.backtrace
+                raise e
+              ensure
+                self.running_attached_function = false
               end
-
-              self.running_attached_function = true
-              headers = (options && options["headers"]) || {}
-              body = options && options["body"]
-
-              result = {}
-              DiscourseAi::AiBot::Tools::Tool.send_http_request(
-                url,
-                method: :post,
-                headers: headers,
-                body: body,
-              ) do |response|
-                result[:body] = response.body
-                result[:status] = response.code.to_i
-              end
-
-              result
-            ensure
-              self.running_attached_function = false
-            end
-          end,
-        )
+            end,
+          )
+        end
       end
     end
   end

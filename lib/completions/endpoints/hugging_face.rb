@@ -59,22 +59,30 @@ module DiscourseAi
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
-        def extract_completion_from(response_raw)
-          parsed = JSON.parse(response_raw, symbolize_names: true).dig(:choices, 0)
-          # half a line sent here
-          return if !parsed
-
-          response_h = @streaming_mode ? parsed.dig(:delta) : parsed.dig(:message)
-
-          response_h.dig(:content)
+        def xml_tools_enabled?
+          true
         end
 
-        def partials_from(decoded_chunk)
-          decoded_chunk
-            .split("\n")
-            .map do |line|
-              data = line.split("data:", 2)[1]
-              data&.squish == "[DONE]" ? nil : data
+        def decode(response_raw)
+          parsed = JSON.parse(response_raw, symbolize_names: true)
+          text = parsed.dig(:choices, 0, :message, :content)
+          if text.to_s.empty?
+            [""]
+          else
+            [text]
+          end
+        end
+
+        def decode_chunk(chunk)
+          @json_decoder ||= JsonStreamDecoder.new
+          (@json_decoder << chunk)
+            .map do |parsed|
+              text = parsed.dig(:choices, 0, :delta, :content)
+              if text.to_s.empty?
+                nil
+              else
+                text
+              end
             end
             .compact
         end

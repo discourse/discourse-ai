@@ -29,15 +29,24 @@ bs_BA:
     discourse_ai:
       modals:
         select_option: "Odaberi opciju..."
+      spam:
+        short_title: "Spam"
+        enable: "Omogući"
+        test_modal:
+          spam: "Spam"
+      usage:
+        summary: "Sažetak"
+        username: "Nadimak"
       ai_persona:
-        back: Prethodno
-        name: Ime
-        edit: Edit
-        description: Opis
+        back: "Prethodno"
+        name: "Ime"
+        edit: "Edit"
+        description: "Opis"
         user: User
-        save: Save
+        save: "Save"
         enabled: "Omogućen?"
-        delete: Delete
+        allowed_groups: "Dozvoljene grupe"
+        delete: "Delete"
       rag:
         uploads:
           title: "Uploads"
@@ -50,22 +59,23 @@ bs_BA:
         save: "Save"
         parameter_required: "Required"
         edit: "Edit"
-        test: "Pokreni test"
         delete: "Delete"
         next:
           title: "Iduće"
-        test_modal:
-          run: "Pokreni test"
       llms:
         display_name: "Ime"
         save: "Save"
         edit: "Edit"
         back: "Prethodno"
         delete: Delete
+        quotas:
+          group: "Grupa"
+          duration: "Trajanje"
+        usage:
+          ai_spam: "Spam"
         next:
           title: "Iduće"
         tests:
-          title: "Pokreni test"
           success: "Uspjeh!"
         providers:
           google: "Google"
@@ -84,9 +94,22 @@ bs_BA:
           save_caption: "Save"
           automatic_caption_dialog:
             confirm: "Omogući"
+      embeddings:
+        back: "Prethodno"
+        save: "Save"
+        delete: "Delete"
+        edit: "Edit"
+        tests:
+          success: "Uspjeh!"
+        display_name: "Ime"
+        providers:
+          google: "Google"
+          fake: "Custom"
       ai_bot:
         debug_ai_modal:
           request: "Zatraži"
           response: "Odgovor"
+          next_log: "Iduće"
+          previous_log: "Previous"
         share_modal:
           copy: "Copy"

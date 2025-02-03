@@ -13,7 +13,13 @@ describe DiscourseAi::Embeddings::SemanticRelated do
   fab!(:secured_category_topic) { Fabricate(:topic, category: secured_category) }
   fab!(:closed_topic) { Fabricate(:topic, closed: true) }
 
-  before { SiteSetting.ai_embeddings_semantic_related_topics_enabled = true }
+  fab!(:vector_def) { Fabricate(:embedding_definition) }
+
+  before do
+    SiteSetting.ai_embeddings_semantic_related_topics_enabled = true
+    SiteSetting.ai_embeddings_selected_model = vector_def.id
+    SiteSetting.ai_embeddings_enabled = true
+  end
 
   describe "#related_topic_ids_for" do
     context "when embeddings do not exist" do
@@ -24,23 +30,15 @@ describe DiscourseAi::Embeddings::SemanticRelated do
         topic
       end
 
-      let(:vector_rep) do
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-
-        DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
-      end
-
       it "properly generates embeddings if missing" do
-        SiteSetting.ai_embeddings_enabled = true
-        SiteSetting.ai_embeddings_discourse_service_api_endpoint = "http://test.com"
         Jobs.run_immediately!
 
         embedding = Array.new(1024) { 1 }
 
-        WebMock.stub_request(
-          :post,
-          "#{SiteSetting.ai_embeddings_discourse_service_api_endpoint}/api/v1/classify",
-        ).to_return(status: 200, body: JSON.dump(embedding))
+        WebMock.stub_request(:post, vector_def.url).to_return(
+          status: 200,
+          body: JSON.dump([embedding]),
+        )
 
         # miss first
         ids = semantic_related.related_topic_ids_for(topic)

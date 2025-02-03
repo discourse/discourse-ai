@@ -3,7 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
-import { inject as service } from "@ember/service";
+import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import categoryBadge from "discourse/helpers/category-badge";
 import { ajax } from "discourse/lib/ajax";
@@ -54,8 +54,13 @@ export default class AiSplitTopicSuggester extends Component {
             suggestions.includes(item.name.toLowerCase())
           );
           this.suggestions = suggestedCategories;
-        } else {
-          this.suggestions = result.assistant.map((s) => s.name);
+        } else if (this.args.mode === this.SUGGESTION_TYPES.tag) {
+          this.suggestions = result.assistant.map((s) => {
+            return {
+              name: s.name,
+              count: s.count,
+            };
+          });
         }
       })
       .catch(popupAjaxError)
@@ -132,6 +137,17 @@ export default class AiSplitTopicSuggester extends Component {
                 {{on "click" (fn this.applySuggestion suggestion menu)}}
               >
                 {{categoryBadge suggestion}}
+                <span class="topic-count">x
+                  {{suggestion.totalTopicCount}}</span>
+              </li>
+            {{else if (eq @mode "suggest_tags")}}
+              <li data-name={{suggestion.name}} data-value={{index}}>
+                <DButton
+                  @translatedLabel={{suggestion.name}}
+                  @action={{fn this.applySuggestion suggestion.name menu}}
+                >
+                  <span class="topic-count">x{{suggestion.count}}</span>
+                </DButton>
               </li>
             {{else}}
               <li data-name={{suggestion}} data-value={{index}}>

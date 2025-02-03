@@ -1,8 +1,19 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Composer from "discourse/models/composer";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 import ShareFullTopicModal from "../components/modal/share-full-topic-modal";
+
+const MAX_PERSONA_USER_ID = -1200;
+
+export function isPostFromAiBot(post, currentUser) {
+  return (
+    post.user_id <= MAX_PERSONA_USER_ID ||
+    !!currentUser?.ai_enabled_chat_bots?.any(
+      (bot) => post.username === bot.username
+    )
+  );
+}
 
 export function showShareConversationModal(modal, topicId) {
   ajax(`/discourse-ai/ai-bot/shared-ai-conversations/preview/${topicId}.json`)
@@ -24,7 +35,7 @@ export function composeAiBotMessage(targetBot, composer) {
     openOpts: {
       action: Composer.PRIVATE_MESSAGE,
       recipients: botUsername,
-      topicTitle: I18n.t("discourse_ai.ai_bot.default_pm_prefix"),
+      topicTitle: i18n("discourse_ai.ai_bot.default_pm_prefix"),
       archetypeId: "private_message",
       draftKey: "private_message_ai",
       hasGroups: false,

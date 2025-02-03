@@ -110,6 +110,24 @@ describe DiscourseAi::Automation::LlmTriage do
     expect(post.topic.reload.visible).to eq(false)
   end
 
+  it "can handle spam+silence flags" do
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        flag_type: :spam_silence,
+        automation: nil,
+      )
+    end
+
+    expect(post.reload).to be_hidden
+    expect(post.topic.reload.visible).to eq(false)
+    expect(post.user.silenced?).to eq(true)
+  end
+
   it "can handle garbled output from LLM" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["Bad.\n\nYo"]) do
       triage(
@@ -142,5 +160,62 @@ describe DiscourseAi::Automation::LlmTriage do
     reviewable = ReviewablePost.last
 
     expect(reviewable.target).to eq(post)
+  end
+
+  it "includes post uploads when triaging" do
+    post_upload = Fabricate(:image_upload, posts: [post])
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        automation: nil,
+      )
+
+      triage_prompt = DiscourseAi::Completions::Llm.prompts.last
+
+      expect(triage_prompt.messages.last[:upload_ids]).to contain_exactly(post_upload.id)
+    end
+  end
+
+  it "includes stop_sequences in the completion call" do
+    sequences = %w[GOOD BAD]
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do |spy|
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        automation: nil,
+        stop_sequences: sequences,
+      )
+
+      expect(spy.model_params[:stop_sequences]).to contain_exactly(*sequences)
+    end
+  end
+
+  it "append rule tags instead of replacing them" do
+    tag_1 = Fabricate(:tag)
+    tag_2 = Fabricate(:tag)
+    post.topic.update!(tags: [tag_1])
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        tags: [tag_2.name],
+        automation: nil,
+      )
+    end
+
+    expect(post.topic.reload.tags).to contain_exactly(tag_1, tag_2)
   end
 end

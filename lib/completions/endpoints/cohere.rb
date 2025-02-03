@@ -49,6 +49,47 @@ module DiscourseAi
           Net::HTTP::Post.new(model_uri, headers).tap { |r| r.body = payload }
         end
 
+        def decode(response_raw)
+          rval = []
+
+          parsed = JSON.parse(response_raw, symbolize_names: true)
+
+          text = parsed[:text]
+          rval << parsed[:text] if !text.to_s.empty? # also allow " "
+
+          # TODO tool calls
+
+          update_usage(parsed)
+
+          rval
+        end
+
+        def decode_chunk(chunk)
+          @tool_idx ||= -1
+          @json_decoder ||= JsonStreamDecoder.new(line_regex: /^\s*({.*})$/)
+          (@json_decoder << chunk)
+            .map do |parsed|
+              update_usage(parsed)
+              rval = []
+
+              rval << parsed[:text] if !parsed[:text].to_s.empty?
+
+              if tool_calls = parsed[:tool_calls]
+                tool_calls&.each do |tool_call|
+                  @tool_idx += 1
+                  tool_name = tool_call[:name]
+                  tool_params = tool_call[:parameters]
+                  tool_id = "tool_#{@tool_idx}"
+                  rval << ToolCall.new(id: tool_id, name: tool_name, parameters: tool_params)
+                end
+              end
+
+              rval
+            end
+            .flatten
+            .compact
+        end
+
         def extract_completion_from(response_raw)
           parsed = JSON.parse(response_raw, symbolize_names: true)
 
@@ -77,45 +118,13 @@ module DiscourseAi
           end
         end
 
-        def has_tool?(_ignored)
-          @has_tool
-        end
-
-        def native_tool_support?
-          true
-        end
-
-        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          if partial
-            tools = JSON.parse(partial)
-            tools.each do |tool|
-              name = tool["name"]
-              parameters = tool["parameters"]
-              xml_params = parameters.map { |k, v| "<#{k}>#{v}</#{k}>\n" }.join
-
-              current_function = function_buffer.at("invoke")
-              if current_function.nil? || current_function.at("tool_name").content.present?
-                current_function =
-                  function_buffer.at("function_calls").add_child(
-                    Nokogiri::HTML5::DocumentFragment.parse(noop_function_call_text + "\n"),
-                  )
-              end
-
-              current_function.at("tool_name").content = name == "search_local" ? "search" : name
-              current_function.at("parameters").children =
-                Nokogiri::HTML5::DocumentFragment.parse(xml_params)
-            end
-          end
-          function_buffer
+        def xml_tools_enabled?
+          false
         end
 
         def final_log_update(log)
           log.request_tokens = @input_tokens if @input_tokens
           log.response_tokens = @output_tokens if @output_tokens
-        end
-
-        def partials_from(decoded_chunk)
-          decoded_chunk.split("\n").compact
         end
 
         def extract_prompt_for_tokenizer(prompt)
@@ -130,6 +139,18 @@ module DiscourseAi
           text << prompt[:preamble] if prompt[:preamble]
 
           text
+        end
+
+        private
+
+        def update_usage(parsed)
+          input_tokens = parsed.dig(:meta, :billed_units, :input_tokens)
+          input_tokens ||= parsed.dig(:response, :meta, :billed_units, :input_tokens)
+          @input_tokens = input_tokens if input_tokens.present?
+
+          output_tokens = parsed.dig(:meta, :billed_units, :output_tokens)
+          output_tokens ||= parsed.dig(:response, :meta, :billed_units, :output_tokens)
+          @output_tokens = output_tokens if output_tokens.present?
         end
       end
     end

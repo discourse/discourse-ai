@@ -5,8 +5,8 @@ module DiscourseAi
     module Dialects
       class Fake < Dialect
         class << self
-          def can_translate?(model_name)
-            model_name == "fake"
+          def can_translate?(llm_model)
+            llm_model.provider == "fake"
           end
         end
 

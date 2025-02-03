@@ -6,15 +6,25 @@
 
 it:
   discourse_automation:
+    ai:
+      flag_types:
+        review: "Aggiungi il messaggio alla coda di revisione"
+        spam: "Segnala come spam e nascondi il post"
+        spam_silence: "Segnala come spam, nascondi il post e silenzia l'utente"
     scriptables:
       llm_triage:
         title: Triage dei messaggi con IA
         description: "Triage dei messaggi con LLM"
+        flagged_post: |
+          <div>Risposta dal modello:</div>
+          <p>%%LLM_RESPONSE%%</p>
+          <b>Innescato dalla regola <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a>.</b>
       llm_report:
         title: Report periodico con IA
         description: "Report periodico basato su LLM"
   site_settings:
     discourse_ai_enabled: "Abilita il plugin Discourse AI."
+    ai_artifact_security: "Il sistema di artefatti IA genera IFRAME con codice eseguibile. La modalità Strict disabilita la condivisione e impone un clic extra per eseguire il codice. La modalità Lax consente la condivisione di artefatti ed esegue il codice direttamente. La modalità Disabled disabilita il sistema di artefatti."
     ai_toxicity_enabled: "Abilita il modulo tossicità."
     ai_toxicity_inference_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo tossicità"
     ai_toxicity_inference_service_api_key: "Chiave API per l'API di tossicità"
@@ -42,11 +52,8 @@ it:
     ai_nsfw_flag_threshold_porn: "Soglia per un'immagine classificata come pornografica per essere considerata NSFW."
     ai_nsfw_flag_threshold_sexy: "Soglia per un'immagine classificata come sexy per essere considerata NSFW."
     ai_nsfw_models: "Modelli da utilizzare per l'inferenza NSFW."
-    ai_openai_embeddings_url: "URL personalizzato utilizzato per l'API di integrazione OpenAI. (nel caso di Azure può essere: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "Chiave API per l'API OpenAI. Utilizzato SOLO per integrazioni e Dall-E. Per GPT utilizzare la scheda di configurazione LLM"
-    ai_anthropic_native_tool_call_models: "Elenco di modelli che utilizzeranno chiamate di strumenti nativi rispetto a strumenti legacy basati su XML."
-    ai_hugging_face_tei_endpoint: URL in cui è in esecuzione l'API per l'inferenza delle integrazioni testuali di Hugging Face
-    ai_hugging_face_tei_api_key: Chiave API per l'inferenza delle integrazioni testuali di Hugging Face
+    ai_openai_api_key: "Chiave API per l'API OpenAI. Utilizzata SOLO per Dall-E. Per GPT utilizzare la scheda di configurazione LLM"
+    ai_helper_enabled: "Abilita l'assistente IA."
     composer_ai_helper_allowed_groups: "Gli utenti di questi gruppi vedranno il pulsante dell'assistente IA nella sezione di scrittura."
     ai_helper_allowed_in_pm: "Abilita l'assistente IA nei MP."
     ai_helper_model: "Modello da utilizzare per l'assistente IA."
@@ -58,15 +65,11 @@ it:
     post_ai_helper_allowed_groups: "Gruppi di utenti autorizzati ad accedere alle funzionalità dell'assistente IA nei post"
     ai_helper_image_caption_model: "Seleziona il modello da utilizzare per generare le didascalie delle immagini"
     ai_auto_image_caption_allowed_groups: "Gli utenti di questi gruppi possono attivare/disattivare i sottotitoli automatici delle immagini."
-    ai_embeddings_enabled: "Abilita il modulo di integrazioni."
-    ai_embeddings_discourse_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo di integrazioni"
-    ai_embeddings_discourse_service_api_key: "Chiave API per l'API di integrazioni"
-    ai_embeddings_model: "Usa all-mpnet-base-v2 per l'inferenza locale e veloce in inglese, text-embedding-ada-002 per usare l'API OpenAI (richiede la chiave API) e multilingue-e5-large per le integrazioni multilingue locali"
+    ai_embeddings_selected_model: "Usa il modello selezionato per generare le integrazioni."
     ai_embeddings_generate_for_pms: "Genera integrazioni per messaggi personali."
     ai_embeddings_semantic_related_topics_enabled: "Usa la ricerca semantica per argomenti correlati."
     ai_embeddings_semantic_related_topics: "Numero massimo di argomenti da mostrare nella sezione degli argomenti correlati."
     ai_embeddings_backfill_batch_size: "Numero di incorporamenti da riempire ogni 15 minuti."
-    ai_embeddings_pg_connection_string: "Stringa di connessione PostgreSQL per il modulo di integrazioni. Richiede l'estensione pgvector abilitata e la creazione di una serie di tabelle. Consulta i documenti per maggiori informazioni."
     ai_embeddings_semantic_search_enabled: "Abilita la ricerca semantica a pagina intera."
     ai_embeddings_semantic_quick_search_enabled: "Abilita l'opzione di ricerca semantica nel popup del menu di ricerca."
     ai_embeddings_semantic_related_include_closed_topics: "Includi argomenti chiusi nei risultati della ricerca semantica"
@@ -75,6 +78,10 @@ it:
     ai_summarization_enabled: "Abilita il modulo di riepilogo degli argomenti."
     ai_summarization_model: "Modello da utilizzare per il riepilogo."
     ai_custom_summarization_allowed_groups: "I gruppi autorizzati a utilizzare la creazione di nuovi riepiloghi."
+    ai_pm_summarization_allowed_groups: "Gruppi autorizzati a creare e visualizzare riepiloghi nei messaggi privati."
+    ai_summary_gists_enabled: "Genera automaticamente brevi riepiloghi delle ultime risposte negli argomenti."
+    ai_summary_gists_allowed_groups: "Gruppi autorizzati a visualizzare i concetti chiave nell'elenco degli argomenti più popolari."
+    ai_summary_backfill_maximum_topics_per_hour: "Numero di riepiloghi degli argomenti da riempire all'ora."
     ai_bot_enabled: "Abilita il modulo Bot IA."
     ai_bot_enable_chat_warning: "Visualizza un avviso quando viene avviata la chat MP. Può essere sovrascritto modificando la stringa di traduzione: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Quando il bot GPT ha accesso a un MP, risponderà ai membri di questi gruppi."
@@ -91,27 +98,113 @@ it:
     reasons:
       flagged_by_toxicity: Il plugin IA lo ha segnalato dopo averlo classificato come tossico.
       flagged_by_nsfw: Il plugin IA lo ha segnalato dopo aver classificato almeno una delle immagini allegate come NSFW.
-  errors:
-    prompt_message_length: Il messaggio %{idx} supera il limite di 1000 caratteri.
-    invalid_prompt_role: Il messaggio %{idx} ha un ruolo non valido.
   reports:
     overall_sentiment:
       title: "Sentimento generale"
-      description: "Questo grafico confronta il numero di messaggi classificati positivi o negativi."
+      description: 'Il grafico confronta il numero di messaggi classificati come positivi o negativi. Questi vengono calcolati quando i punteggi positivi o negativi > il punteggio soglia impostato. Ciò significa che i messaggi neutri non vengono mostrati. Sono esclusi anche i messaggi personali (MP). Classificazione effettuata con "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Positiva(%)"
       yaxis: "Data"
-    post_emotion:
-      title: "Emozione del messaggio"
-      description: "Numero di messaggi classificati con una delle seguenti emozioni, raggruppati in base al livello di attendibilità dell'utente che ha pubblicato."
+    emotion_admiration:
+      title: "\U0001F929 Ammirazione"
+      description: "Messaggi classificati con l'emozione ammirazione tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_amusement:
+      title: "\U0001F604 Divertimento"
+      description: "Messaggi classificati con l'emozione divertimento tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_anger:
+      title: "\U0001F620 Rabbia"
+      description: "Messaggi classificati con l'emozione rabbia tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_annoyance:
+      title: "\U0001F612 Fastidio"
+      description: "Messaggi classificati con l'emozione fastidio tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_approval:
+      title: "\U0001F44D Approvazione"
+      description: "Messaggi classificati con l'emozione approvazione tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_caring:
+      title: "\U0001F917 Premuroso"
+      description: "Messaggi classificati con l'emozione premuroso tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_confusion:
+      title: "\U0001F615 Confusione"
+      description: "Messaggi classificati con l'emozione confusione tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_curiosity:
+      title: "\U0001F914 Curiosità"
+      description: "Messaggi classificati con l'emozione curiosità tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_desire:
+      title: "\U0001F60D Desiderio"
+      description: "Messaggi classificati con l'emozione desiderio tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_disappointment:
+      title: "\U0001F61E Delusione"
+      description: "Messaggi classificati con l'emozione delusione tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_disapproval:
+      title: "\U0001F44E Disapprovazione"
+      description: "Messaggi classificati con l'emozione disapprovazione tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_disgust:
+      title: "\U0001F922 Disgusto"
+      description: "Messaggi classificati con l'emozione disgusto tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_embarrassment:
+      title: "\U0001F633 Imbarazzo"
+      description: "Messaggi classificati con l'emozione imbarazzo tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_excitement:
+      title: "\U0001F92A Eccitazione"
+      description: "Messaggi classificati con l'emozione eccitazione tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_fear:
+      title: "\U0001F628 Paura"
+      description: "Messaggi classificati con l'emozione paura tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_gratitude:
+      title: "\U0001F64F Gratitudine"
+      description: "Messaggi classificati con l'emozione gratitudine tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_grief:
+      title: "\U0001F622 Dolore"
+      description: "Messaggi classificati con l'emozione dolore tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_joy:
+      title: "\U0001F60A Gioia"
+      description: "Messaggi classificati con l'emozione gioia tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_love:
+      title: '❤️ Amore'
+      description: "Messaggi classificati con l'emozione amore tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_nervousness:
+      title: "\U0001F630 Nervosismo"
+      description: "Messaggi classificati con l'emozione nervosismo tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_neutral:
+      title: "\U0001F610 Neutrale"
+      description: "Messaggi classificati con l'emozione neutrale tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_optimism:
+      title: "\U0001F31F Ottimismo"
+      description: "Messaggi classificati con l'emozione ottimismo tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_pride:
+      title: "\U0001F981 Orgoglio"
+      description: "Messaggi classificati con l'emozione orgoglio tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_realization:
+      title: "\U0001F4A1 Realizzazione"
+      description: "Messaggi classificati con l'emozione realizzazione tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_relief:
+      title: "\U0001F60C Sollievo"
+      description: "Messaggi classificati con l'emozione sollievo tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_remorse:
+      title: "\U0001F614 Rimorso"
+      description: "Messaggi classificati con l'emozione rimorso tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_sadness:
+      title: "\U0001F62D Tristezza"
+      description: "Messaggi classificati con l'emozione tristezza tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
+    emotion_surprise:
+      title: "\U0001F632 Sorpresa"
+      description: "Messaggi classificati con l'emozione sorpresa tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
   discourse_ai:
+    ai_artifact:
+      link: "Mostra artefatto in una nuova scheda"
+      view_source: "Visualizza origine"
+      view_changes: "Visualizza modifiche"
     unknown_model: "Modello IA sconosciuto"
     tools:
       custom_name: "%{name} (personalizzato)"
       presets:
+        browse_web_jina:
+          name: "Naviga sul web (jina.ai)"
         exchange_rate:
           name: "Tasso di cambio"
         stock_quote:
           name: "Quotazione azionaria (AlphaVantage)"
+        image_generation:
+          name: "Generatore di immagini di flusso (Together.ai)"
         empty_tool:
           name: "Inizia da zero..."
     ai_helper:
@@ -125,6 +218,7 @@ it:
         custom_prompt: "Comando personalizzato"
         explain: "Spiega"
         illustrate_post: "Illustra messaggio"
+        replace_dates: "Date smart"
       painter:
         attribution:
           stable_diffusion_xl: "Immagine di Stable Diffusion XL"
@@ -142,7 +236,15 @@ it:
         other_content_in_pm: "I messaggi personali contenenti post di altre persone non possono essere condivisi pubblicamente"
         failed_to_share: "Condivisione della conversazione non riuscita"
         conversation_deleted: "Condivisione di conversazione eliminata correttamente"
+    spam_detection:
+      flag_reason: "Segnalato come spam da <a href='%{url}'>Discourse AI</a>"
+      silence_reason: "Utente silenziato automaticamente da <a href='%{url}'>Discourse AI</a>"
+      invalid_error_type: "Tipo di errore non valido fornito"
+      unexpected: "Si è verificato un errore imprevisto"
+      bot_user_update_failed: "Impossibile aggiornare l'utente del bot di scansione antispam"
     ai_bot:
+      reply_error: "Spiacenti, il nostro sistema ha riscontrato un problema imprevisto durante il tentativo di risposta.\n\n[details='Dettagli errore']\n%{details}\n[/details]"
+      default_pm_prefix: "[Bot IA senza titolo MP]"
       personas:
         default_llm_required: "Il modello LLM predefinito è obbligatorio prima di abilitare la chat"
         cannot_delete_system_persona: "I personaggi di sistema non possono essere eliminati, vanno invece disattivati"
@@ -174,10 +276,17 @@ it:
         discourse_helper:
           name: "Assistente di Discourse"
           description: "Bot IA specializzato nell'aiutare con attività relative a Discourse"
+        web_artifact_creator:
+          name: "Creatore di artefatti web"
+          description: "Bot IA specializzato nella creazione di artefatti web interattivi"
       topic_not_found: "Riepilogo non disponibile, argomento non trovato!"
       summarizing: "Riepilogo argomento"
       searching: "Ricerca di: '%{query}'"
       tool_options:
+        google:
+          base_query:
+            name: "Query di ricerca di base"
+            description: "Query di base da usare durante la ricerca. Esempi: 'site:example.com' includerà solo i risultati di example.com, before:2022-01-01 includerà solo i risultati del 2021 e precedenti. Questo testo è anteposto alla query di ricerca."
         read:
           read_private:
             name: "Leggi privato"
@@ -193,6 +302,8 @@ it:
             name: "Query di ricerca di base"
             description: "Query di base da utilizzare durante la ricerca. Esempio: \"#urgente\" anteporrà \"#urgente\" alla query di ricerca e includerà solo gli argomenti con la categoria o l'etichetta urgente."
       tool_summary:
+        update_artifact: "Aggiorna un artefatto web"
+        create_artifact: "Crea artefatto web"
         web_browser: "Naviga sul web"
         github_search_files: "File di ricerca GitHub"
         github_search_code: "Ricerca codice GitHub"
@@ -214,6 +325,8 @@ it:
         search_meta_discourse: "Cerca Meta Discourse"
         javascript_evaluator: "Valuta JavaScript"
       tool_help:
+        update_artifact: "Aggiorna un artefatto web utilizzando il bot IA"
+        create_artifact: "Crea un artefatto web utilizzando il bot IA"
         web_browser: "Sfoglia la pagina web utilizzando il Bot IA"
         github_search_code: "Cerca il codice in un repository GitHub"
         github_search_files: "Cerca file in un repository GitHub"
@@ -235,6 +348,8 @@ it:
         search_meta_discourse: "Cerca Meta Discourse"
         javascript_evaluator: "Valuta JavaScript"
       tool_description:
+        update_artifact: "Aggiornato un artefatto web utilizzando il bot IA"
+        create_artifact: "Creato un artefatto web utilizzando il bot IA"
         web_browser: "Lettura <a href='%{url}'>%{url}</a>"
         github_search_files: "Hai cercato \"%{keywords}\" in %{repo}/%{branch}"
         github_search_code: "Hai cercato \"%{query}\" in %{repo}"
@@ -274,9 +389,7 @@ it:
         no_targets: "Non ci sono stati messaggi durante il periodo selezionato."
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Positiva"
-          negative: "Negativa"
+        overall_sentiment: "Sentimento generale (positivo - negativo)"
         post_emotion:
           sadness: "Tristezza \U0001F622"
           surprise: "Sorpresa \U0001F631"
@@ -288,8 +401,10 @@ it:
     llm:
       configuration:
         disable_module_first: "Devi prima disabilitare %{setting}."
-        set_llm_first: "Imposta prima %{setting}."
+        set_llm_first: "Imposta prima %{setting}"
         model_unreachable: "Non è stato possibile ottenere una risposta da questo modello. Controlla prima le tue impostazioni."
+        invalid_seeded_model: "Non è possibile utilizzare questo modello con questa funzionalità"
+        must_select_model: "Devi prima selezionare un LLM"
       endpoints:
         not_configured: "%{display_name} (non configurato)"
         configuration_hint:
@@ -298,11 +413,28 @@ it:
       delete_failed:
         one: "Non è stato possibile eliminare questo modello perché è utilizzato da %{settings}. Aggiorna l'impostazione e riprova."
         other: "Non è stato possibile eliminare questo modello perché lo stanno utilizzando %{settings}. Aggiorna le impostazioni e riprova."
+      cannot_edit_builtin: "Non è possibile modificare un modello incorporato."
     embeddings:
+      delete_failed: "Questo modello è attualmente in uso. Aggiorna prima `ai embeddings selected model`."
+      cannot_edit_builtin: "Non è possibile modificare un modello incorporato."
       configuration:
         disable_embeddings: "Devi prima disabilitare \"integrazioni ia abilitate\"."
-        choose_model: "Imposta prima il \"modello integrazioni ia\"."
-        model_unreachable: "Non siamo riusciti a generare un test di integrazione con questo modello. Controlla che le tue impostazioni siano corrette."
-        hint:
-          one: "Assicurati che l'impostazione `%{settings}` sia stata configurata."
-          other: "Assicurati che le impostazioni del fornitore che desideri siano state configurate. Le opzioni sono: %{settings}"
+        choose_model: "Imposta prima \"ai embeddings selected model\"."
+    llm_models:
+      missing_provider_param: "%{param} non può essere vuoto"
+      bedrock_invalid_url: "Compila tutti i campi per utilizzare questo modello."
+    errors:
+      quota_exceeded: "Hai superato la quota per questo modello. Riprova tra %{relative_time}."
+      quota_required: "È necessario specificare il numero massimo di token o utilizzi per questo modello"
+      no_query_specified: Il parametro di query è obbligatorio, specificalo.
+      no_user_for_persona: Il personaggio specificato non ha alcun utente associato.
+      persona_not_found: Il personaggio specificato non esiste. Controlla i parametri persona_name o persona_id.
+      no_user_specified: Il parametro username o user_unique_id è obbligatorio, specificalo.
+      user_not_found: L'utente specificato non esiste. Controlla il parametro username.
+      persona_disabled: Il personaggio specificato è disattivato. Controlla i parametri persona_name o persona_id.
+      no_default_llm: Il personaggio deve avere un default_llm definito.
+      user_not_allowed: All'utente non è consentito partecipare all'argomento.
+      prompt_message_length: Il messaggio %{idx} supera il limite di 1000 caratteri.
+  dashboard:
+    problem:
+      ai_llm_status: "Il modello LLM %{model_name} sta riscontrando problemi. Controlla la pagina di configurazione del modello <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'></a>."

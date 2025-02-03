@@ -26,7 +26,7 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
     let(:single_summary) { "single" }
     let(:concatenated_summary) { "this is a concatenated summary" }
 
-    let(:user) { User.new }
+    fab!(:user)
 
     context "when the content to summarize fits in a single call" do
       it "does one call to summarize content" do

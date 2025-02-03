@@ -25,15 +25,27 @@ sr:
     discourse_ai:
       modals:
         select_option: "Izaberi jednu od opcija..."
+      spam:
+        short_title: "Nepoželjno"
+        last_seven_days: "Последњих 7 дана"
+        enable: "Omogući"
+        test_modal:
+          spam: "Nepoželjno"
+      usage:
+        summary: "Rezime"
+        username: "Korisničko Ime"
+        periods:
+          last_day: "Последња 24 сата"
       ai_persona:
-        back: Nazad
-        name: Ime foruma
-        edit: Izmeni
-        description: Opis
+        back: "Nazad"
+        name: "Ime foruma"
+        edit: "Izmeni"
+        description: "Opis"
         user: Korisnik
-        save: Sačuvaj
+        save: "Sačuvaj"
         enabled: "Omgućeno"
-        delete: Obriši
+        allowed_groups: "Dozvoljene grupe"
+        delete: "Obriši"
       rag:
         uploads:
           uploading: "Uploading..."
@@ -54,6 +66,10 @@ sr:
         edit: "Izmeni"
         back: "Nazad"
         delete: Obriši
+        quotas:
+          group: "Grupa"
+        usage:
+          ai_spam: "Nepoželjno"
         next:
           title: "Dalje"
         providers:
@@ -73,6 +89,18 @@ sr:
           save_caption: "Sačuvaj"
           automatic_caption_dialog:
             confirm: "Omogući"
+      embeddings:
+        back: "Nazad"
+        save: "Sačuvaj"
+        delete: "Obriši"
+        edit: "Izmeni"
+        display_name: "Ime foruma"
+        providers:
+          google: "Google"
+          fake: "Posebna"
       ai_bot:
+        debug_ai_modal:
+          next_log: "Dalje"
+          previous_log: "Prethodno"
         share_modal:
           copy: "Kopija"

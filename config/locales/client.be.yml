@@ -27,14 +27,23 @@ be:
             canned_reply:
               label: "Адказаць"
     discourse_ai:
+      spam:
+        short_title: "Спам"
+        enable: "Уключыць"
+        test_modal:
+          spam: "Спам"
+      usage:
+        summary: "вынік"
+        username: "Імя карыстальніка"
+        total_requests: "Усяго запытаў"
       ai_persona:
-        back: Назад
-        name: імя
-        edit: рэдагаваць
-        description: Апісанне
+        back: "Назад"
+        name: "імя"
+        edit: "рэдагаваць"
+        description: "Апісанне"
         user: карыстальнік
-        save: Захаваць
-        delete: выдаляць
+        save: "Захаваць"
+        delete: "выдаляць"
       rag:
         uploads:
           title: "Загрузкі"
@@ -56,6 +65,10 @@ be:
         edit: "рэдагаваць"
         back: "Назад"
         delete: выдаляць
+        quotas:
+          group: "група"
+        usage:
+          ai_spam: "Спам"
         next:
           title: "Далей"
         tests:
@@ -74,8 +87,19 @@ be:
           save_caption: "захаваць"
           automatic_caption_dialog:
             confirm: "Уключыць"
+      embeddings:
+        back: "Назад"
+        save: "захаваць"
+        delete: "Выдаліць"
+        edit: "Рэдагаваць"
+        tests:
+          success: "поспех!"
+        display_name: "Імя"
+        providers:
+          google: "Google"
       ai_bot:
         debug_ai_modal:
           request: "запыт"
+          next_log: "Далей"
         share_modal:
           copy: "капіяваць"

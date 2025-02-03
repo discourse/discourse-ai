@@ -35,7 +35,7 @@ class ReviewableAiChatMessage < Reviewable
   def build_actions(actions, guardian, args)
     return unless pending?
 
-    return build_action(actions, :ignore, icon: "external-link-alt") if chat_message.blank?
+    return build_action(actions, :ignore, icon: "up-right-from-square") if chat_message.blank?
 
     agree =
       actions.add_bundle("#{id}-agree", icon: "thumbs-up", label: "reviewables.actions.agree.title")
@@ -67,9 +67,9 @@ class ReviewableAiChatMessage < Reviewable
       )
     end
 
-    build_action(actions, :ignore, icon: "external-link-alt")
+    build_action(actions, :ignore, icon: "up-right-from-square")
 
-    build_action(actions, :delete_and_agree, icon: "far-trash-alt") unless chat_message.deleted_at?
+    build_action(actions, :delete_and_agree, icon: "far-trash-can") unless chat_message.deleted_at?
   end
 
   def perform_agree_and_keep_message(performed_by, args)
@@ -158,7 +158,6 @@ end
 #  status                  :integer          default("pending"), not null
 #  created_by_id           :integer          not null
 #  reviewable_by_moderator :boolean          default(FALSE), not null
-#  reviewable_by_group_id  :integer
 #  category_id             :integer
 #  topic_id                :integer
 #  score                   :float            default(0.0), not null
@@ -173,6 +172,7 @@ end
 #  updated_at              :datetime         not null
 #  force_review            :boolean          default(FALSE), not null
 #  reject_reason           :text
+#  potentially_illegal     :boolean          default(FALSE)
 #
 # Indexes
 #

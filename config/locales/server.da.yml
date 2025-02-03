@@ -8,6 +8,8 @@ da:
   reports:
     overall_sentiment:
       yaxis: "Dato"
+    emotion_neutral:
+      title: "\U0001F610 Neutral"
   discourse_ai:
     ai_bot:
       tool_summary:

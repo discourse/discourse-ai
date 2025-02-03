@@ -4,6 +4,7 @@ en:
       flag_types:
         review: "Add post to review queue"
         spam: "Flag as spam and hide post"
+        spam_silence: "Flag as spam, hide post and silence user"
     scriptables:
       llm_triage:
         title: Triage posts using AI
@@ -11,12 +12,13 @@ en:
         flagged_post: |
           <div>Response from the model:</div>
           <p>%%LLM_RESPONSE%%</p>
-          <b>Triggered by the <a href="/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> rule.</b>
+          <b>Triggered by the <a href="%{base_path}/admin/plugins/discourse-automation/%%AUTOMATION_ID%%">%%AUTOMATION_NAME%%</a> rule.</b>
       llm_report:
         title: Periodic report using AI
         description: "Periodic report based on a large language model"
   site_settings:
     discourse_ai_enabled: "Enable the discourse AI plugin."
+    ai_artifact_security: "The AI artifact system generates IFRAMEs with runnable code. Strict mode disables sharing and forces an extra click to run code. Lax mode allows sharing of artifacts and runs code directly. Disabled mode disables the artifact system."
     ai_toxicity_enabled: "Enable the toxicity module."
     ai_toxicity_inference_service_api_endpoint: "URL where the API is running for the toxicity module"
     ai_toxicity_inference_service_api_key: "API key for the toxicity API"
@@ -47,10 +49,7 @@ en:
     ai_nsfw_flag_threshold_sexy: "Threshold for an image classified as sexy to be considered NSFW."
     ai_nsfw_models: "Models to use for NSFW inference."
 
-    ai_openai_embeddings_url: "Custom URL used for the OpenAI embeddings API. (in the case of Azure it can be: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_openai_api_key: "API key for OpenAI API. ONLY used for embeddings and Dall-E. For GPT use the LLM config tab"
-    ai_hugging_face_tei_endpoint: URL where the API is running for the Hugging Face text embeddings inference
-    ai_hugging_face_tei_api_key: API key for Hugging Face text embeddings inference
+    ai_openai_api_key: "API key for OpenAI API. ONLY used for Dall-E. For GPT use the LLM config tab"
 
     ai_helper_enabled: "Enable the AI helper."
     composer_ai_helper_allowed_groups: "Users on these groups will see the AI helper button in the composer."
@@ -65,26 +64,24 @@ en:
     ai_helper_image_caption_model: "Select the model to use for generating image captions"
     ai_auto_image_caption_allowed_groups: "Users on these groups can toggle automatic image captioning."
 
-    ai_embeddings_enabled: "Enable the embeddings module."
-    ai_embeddings_discourse_service_api_endpoint: "URL where the API is running for the embeddings module"
-    ai_embeddings_discourse_service_api_key: "API key for the embeddings API"
-    ai_embeddings_model: "Use all-mpnet-base-v2 for local and fast inference in english, text-embedding-ada-002 to use OpenAI API (need API key) and multilingual-e5-large for local multilingual embeddings"
+    ai_embeddings_selected_model: "Use the selected model for generating embeddings."
     ai_embeddings_generate_for_pms: "Generate embeddings for personal messages."
     ai_embeddings_semantic_related_topics_enabled: "Use Semantic Search for related topics."
     ai_embeddings_semantic_related_topics: "Maximum number of topics to show in related topic section."
     ai_embeddings_backfill_batch_size: "Number of embeddings to backfill every 15 minutes."
-    ai_embeddings_pg_connection_string: "PostgreSQL connection string for the embeddings module. Needs pgvector extension enabled and a series of tables created. See docs for more info."
     ai_embeddings_semantic_search_enabled: "Enable full-page semantic search."
     ai_embeddings_semantic_quick_search_enabled: "Enable semantic search option in search menu popup."
     ai_embeddings_semantic_related_include_closed_topics: "Include closed topics in semantic search results"
     ai_embeddings_semantic_search_hyde_model: "Model used to expand keywords to get better results during a semantic search"
     ai_embeddings_per_post_enabled: Generate embeddings for each post
+
     ai_summarization_enabled: "Enable the topic summarization module."
     ai_summarization_model: "Model to use for summarization."
     ai_custom_summarization_allowed_groups: "Groups allowed to use create new summaries."
     ai_pm_summarization_allowed_groups: "Groups allowed to create and view summaries in PMs."
-    ai_summarize_max_hot_topics_gists_per_batch: "After updating topics in the hot list, we'll generate brief summaries of the first N ones. (Disabled when 0)"
-    ai_hot_topic_gists_allowed_groups:  "Groups allowed to see gists in the hot topics list."
+    ai_summary_gists_enabled: "Generate brief summaries of latest replies in topics automatically."
+    ai_summary_gists_allowed_groups: "Groups allowed to see gists in the hot topics list."
+    ai_summary_backfill_maximum_topics_per_hour: "Number of topic summaries to backfill per hour."
 
     ai_bot_enabled: "Enable the AI Bot module."
     ai_bot_enable_chat_warning: "Display a warning when PM chat is initiated. Can be overriden by editing the translation string: discourse_ai.ai_bot.pm_warning"
@@ -106,23 +103,102 @@ en:
       flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.
       flagged_by_nsfw: The AI plugin flagged this after classifying at least one of the attached images as NSFW.
 
-  errors:
-    prompt_message_length: The message %{idx} is over the 1000 character limit.
-    invalid_prompt_role: The message %{idx} has an invalid role.
-
   reports:
     overall_sentiment:
       title: "Overall sentiment"
-      description: "This chart compares the number of posts classified either positive or negative."
+      description: 'The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Personal messages (PMs) are also excluded. Classified with "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Positive(%)"
       yaxis: "Date"
-    post_emotion:
-      title: "Post emotion"
-      description: "Number of posts classified with one of the following emotions, grouped by poster's trust level."
-      xaxis:
-      yaxis:
+    emotion_admiration:
+      title: 🤩 Admiration
+      description: "Posts classified with the emotion admiration via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_amusement:
+      title: 😄 Amusement
+      description: "Posts classified with the emotion amusement via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_anger:
+      title: 😠 Anger
+      description: "Posts classified with the emotion anger via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_annoyance:
+      title: 😒 Annoyance
+      description: "Posts classified with the emotion annoyance via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_approval:
+      title: 👍 Approval
+      description: "Posts classified with the emotion approval via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_caring:
+      title: 🤗 Caring
+      description: "Posts classified with the emotion caring via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_confusion:
+      title: 😕 Confusion
+      description: "Posts classified with the emotion confusion via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_curiosity:
+      title: 🤔 Curiosity
+      description: "Posts classified with the emotion curiosity via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_desire:
+      title: 😍 Desire
+      description: "Posts classified with the emotion desire via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_disappointment:
+      title: 😞 Disappointment
+      description: "Posts classified with the emotion disappointment via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_disapproval:
+      title: 👎 Disapproval
+      description: "Posts classified with the emotion disapproval via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_disgust:
+      title: 🤢 Disgust
+      description: "Posts classified with the emotion disgust via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_embarrassment:
+      title: 😳 Embarrassment
+      description: "Posts classified with the emotion embarrassment via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_excitement:
+      title: 🤪 Excitement
+      description: "Posts classified with the emotion excitement via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_fear:
+      title: 😨 Fear
+      description: "Posts classified with the emotion fear via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_gratitude:
+      title: 🙏 Gratitude
+      description: "Posts classified with the emotion gratitude via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_grief:
+      title: 😢 Grief
+      description: "Posts classified with the emotion grief via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_joy:
+      title: 😊 Joy
+      description: "Posts classified with the emotion joy via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_love:
+      title: ❤️ Love
+      description: "Posts classified with the emotion love via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_nervousness:
+      title: 😰 Nervousness
+      description: "Posts classified with the emotion nervousness via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_neutral:
+      title: 😐 Neutral
+      description: "Posts classified with the emotion neutral via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_optimism:
+      title: 🌟 Optimism
+      description: "Posts classified with the emotion optimism via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_pride:
+      title: 🦁 Pride
+      description: "Posts classified with the emotion pride via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_realization:
+      title: 💡 Realization
+      description: "Posts classified with the emotion realization via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_relief:
+      title: 😌 Relief
+      description: "Posts classified with the emotion relief via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_remorse:
+      title: 😔 Remorse
+      description: "Posts classified with the emotion remorse via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_sadness:
+      title: 😭 Sadness
+      description: "Posts classified with the emotion sadness via AI, using the model 'SamLowe/roberta-base-go_emotions'."
+    emotion_surprise:
+      title: 😲 Surprise
+      description: "Posts classified with the emotion surprise via AI, using the model 'SamLowe/roberta-base-go_emotions'."
 
   discourse_ai:
+    ai_artifact:
+      link: "Show Artifact in new tab"
+      view_source: "View Source"
+      view_changes: "View Changes"
     unknown_model: "Unknown AI model"
 
     tools:
@@ -152,6 +228,7 @@ en:
         custom_prompt: "Custom Prompt"
         explain: "Explain"
         illustrate_post: "Illustrate Post"
+        replace_dates: "Smart dates"
       painter:
         attribution:
           stable_diffusion_xl: "Image by Stable Diffusion XL"
@@ -170,7 +247,16 @@ en:
         other_content_in_pm: "Personal messages containing posts from other people cannot be shared publicly"
         failed_to_share: "Failed to share the conversation"
         conversation_deleted: "Conversation share deleted successfully"
+    spam_detection:
+      flag_reason: "Flagged as spam by <a href='%{url}'>Discourse AI</a>"
+      silence_reason: "User silenced automatically by <a href='%{url}'>Discourse AI</a>"
+      invalid_error_type: "Invalid error type provided"
+      unexpected: "An unexpected error occured"
+      bot_user_update_failed: "Failed to update the spam scanning bot user"
+
     ai_bot:
+      reply_error: "Sorry, it looks like our system encountered an unexpected issue while trying to reply.\n\n[details='Error details']\n%{details}\n[/details]"
+      default_pm_prefix: "[Untitled AI bot PM]"
       personas:
         default_llm_required: "Default LLM model is required prior to enabling Chat"
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
@@ -203,6 +289,9 @@ en:
         discourse_helper:
           name: "Discourse Helper"
           description: "AI Bot specialized in helping with Discourse related tasks"
+        web_artifact_creator:
+          name: "Web Artifact Creator"
+          description: "AI Bot specialized in creating interactive web artifacts"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
@@ -226,6 +315,8 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       tool_summary:
+        update_artifact: "Update a web artifact"
+        create_artifact: "Create web artifact"
         web_browser: "Browse Web"
         github_search_files: "GitHub search files"
         github_search_code: "GitHub code search"
@@ -247,6 +338,8 @@ en:
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
       tool_help:
+        update_artifact: "Update a web artifact using the AI Bot"
+        create_artifact: "Create a web artifact using the AI Bot"
         web_browser: "Browse web page using the AI Bot"
         github_search_code: "Search for code in a GitHub repository"
         github_search_files: "Search for files in a GitHub repository"
@@ -268,6 +361,8 @@ en:
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
       tool_description:
+        update_artifact: "Updated a web artifact using the AI Bot"
+        create_artifact: "Created a web artifact using the AI Bot"
         web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_files: "Searched for '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Searched for '%{query}' in %{repo}"
@@ -309,9 +404,7 @@ en:
 
     sentiment:
       reports:
-        overall_sentiment:
-          positive: "Positive"
-          negative: "Negative"
+        overall_sentiment: "Overall sentiment (Positive - Negative)"
         post_emotion:
           sadness: "Sadness 😢"
           surprise: "Surprise 😱"
@@ -324,9 +417,10 @@ en:
     llm:
       configuration:
         disable_module_first: "You have to disable %{setting} first."
-        set_llm_first: "Set %{setting} first."
+        set_llm_first: "Set %{setting} first"
         model_unreachable: "We couldn't get a response from this model. Check your settings first."
-        invalid_seeded_model: "You can't use this model with this feature."
+        invalid_seeded_model: "You can't use this model with this feature"
+        must_select_model: "You must select a LLM first"
       endpoints:
         not_configured: "%{display_name} (not configured)"
         configuration_hint:
@@ -339,14 +433,29 @@ en:
       cannot_edit_builtin: "You can't edit a built-in model."
 
     embeddings:
+      delete_failed: "This model is currently in use. Update the `ai embeddings selected model` first."
+      cannot_edit_builtin: "You can't edit a built-in model."
       configuration:
         disable_embeddings: "You have to disable 'ai embeddings enabled' first."
-        choose_model: "Set 'ai embeddings model' first."
-        model_unreachable: "We failed to generate a test embedding with this model. Check your settings are correct."
-        hint:
-          one: "Make sure the `%{settings}` setting was configured."
-          other: "Make sure the settings of the provider you want were configured. Options are: %{settings}"
+        invalid_config: "You selected a invalid option."
+        choose_model: "Set 'ai embeddings selected model' first."
 
     llm_models:
       missing_provider_param: "%{param} can't be blank"
-      bedrock_invalid_url: "Please complete all the fields to contact this model."
+      bedrock_invalid_url: "Please complete all the fields to use this model."
+
+    errors:
+      quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."
+      quota_required: "You must specify maximum tokens or usages for this model"
+      no_query_specified: The query parameter is required, please specify it.
+      no_user_for_persona: The persona specified does not have a user associated with it.
+      persona_not_found: The persona specified does not exist. Check the persona_name or persona_id params.
+      no_user_specified: The username or the user_unique_id parameter is required, please specify it.
+      user_not_found: The user specified does not exist. Check the username param.
+      persona_disabled: The persona specified is disabled. Check the persona_name or persona_id params.
+      no_default_llm: The persona must have a default_llm defined.
+      user_not_allowed: The user is not allowed to participate in the topic.
+      prompt_message_length: The message %{idx} is over the 1000 character limit.
+  dashboard:
+    problem:
+      ai_llm_status: "The LLM model: %{model_name} is encountering issues. Please check the <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>model's configuration page</a>."

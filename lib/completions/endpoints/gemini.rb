@@ -58,7 +58,9 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
-          tools = dialect.tools
+          @native_tool_support = dialect.native_tool_support?
+
+          tools = dialect.tools if @native_tool_support
 
           payload = default_options.merge(contents: prompt[:messages])
           payload[:systemInstruction] = {
@@ -103,15 +105,7 @@ module DiscourseAi
           end
         end
 
-        def partials_from(decoded_chunk)
-          decoded_chunk
-        end
-
-        def chunk_to_string(chunk)
-          chunk.to_s
-        end
-
-        class Decoder
+        class GeminiStreamingDecoder
           def initialize
             @buffer = +""
           end
@@ -151,43 +145,86 @@ module DiscourseAi
         end
 
         def decode(chunk)
-          @decoder ||= Decoder.new
-          @decoder.decode(chunk)
+          json = JSON.parse(chunk, symbolize_names: true)
+
+          idx = -1
+          json
+            .dig(:candidates, 0, :content, :parts)
+            .map do |part|
+              if part[:functionCall]
+                idx += 1
+                ToolCall.new(
+                  id: "tool_#{idx}",
+                  name: part[:functionCall][:name],
+                  parameters: part[:functionCall][:args],
+                )
+              else
+                part = part[:text]
+                if part != ""
+                  part
+                else
+                  nil
+                end
+              end
+            end
+        end
+
+        def decode_chunk(chunk)
+          @tool_index ||= -1
+          streaming_decoder
+            .decode(chunk)
+            .map do |parsed|
+              update_usage(parsed)
+              parts = parsed.dig(:candidates, 0, :content, :parts)
+              parts&.map do |part|
+                if part[:text]
+                  part = part[:text]
+                  if part != ""
+                    part
+                  else
+                    nil
+                  end
+                elsif part[:functionCall]
+                  @tool_index += 1
+                  ToolCall.new(
+                    id: "tool_#{@tool_index}",
+                    name: part[:functionCall][:name],
+                    parameters: part[:functionCall][:args],
+                  )
+                end
+              end
+            end
+            .flatten
+            .compact
+        end
+
+        def update_usage(parsed)
+          usage = parsed.dig(:usageMetadata)
+          if usage
+            if prompt_token_count = usage[:promptTokenCount]
+              @prompt_token_count = prompt_token_count
+            end
+            if candidate_token_count = usage[:candidatesTokenCount]
+              @candidate_token_count = candidate_token_count
+            end
+          end
+        end
+
+        def final_log_update(log)
+          log.request_tokens = @prompt_token_count if @prompt_token_count
+          log.response_tokens = @candidate_token_count if @candidate_token_count
+        end
+
+        def streaming_decoder
+          @decoder ||= GeminiStreamingDecoder.new
         end
 
         def extract_prompt_for_tokenizer(prompt)
           prompt.to_s
         end
 
-        def has_tool?(_response_data)
-          @has_function_call
-        end
-
-        def native_tool_support?
-          true
-        end
-
-        def add_to_function_buffer(function_buffer, payload: nil, partial: nil)
-          if @streaming_mode
-            return function_buffer if !partial
-          else
-            partial = payload
-          end
-
-          function_buffer.at("tool_name").content = partial[:name] if partial[:name].present?
-
-          if partial[:args]
-            argument_fragments =
-              partial[:args].reduce(+"") do |memo, (arg_name, value)|
-                memo << "\n<#{arg_name}>#{value}</#{arg_name}>"
-              end
-            argument_fragments << "\n"
-
-            function_buffer.at("parameters").children =
-              Nokogiri::HTML5::DocumentFragment.parse(argument_fragments)
-          end
-
-          function_buffer
+        def xml_tools_enabled?
+          !@native_tool_support
         end
       end
     end

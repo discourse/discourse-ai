@@ -9,11 +9,21 @@ describe DiscourseAi::Embeddings::EntryPoint do
 
       fab!(:target) { Fabricate(:topic) }
 
-      def stub_semantic_search_with(results)
-        DiscourseAi::Embeddings::VectorRepresentations::BgeLargeEn
-          .any_instance
-          .expects(:symmetric_topics_similarity_search)
-          .returns(results.concat([target.id]))
+      fab!(:vector_def) { Fabricate(:cloudflare_embedding_def) }
+
+      before { SiteSetting.ai_embeddings_selected_model = vector_def.id }
+
+      # The Distance gap to target increases for each element of topics.
+      def seed_embeddings(topics)
+        schema = DiscourseAi::Embeddings::Schema.for(Topic)
+        base_value = 1
+
+        schema.store(target, [base_value] * 1024, "disgest")
+
+        topics.each do |t|
+          base_value -= 0.01
+          schema.store(t, [base_value] * 1024, "digest")
+        end
       end
 
       after { DiscourseAi::Embeddings::SemanticRelated.clear_cache_for(target) }
@@ -21,7 +31,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
       context "when the semantic search returns an unlisted topic" do
         fab!(:unlisted_topic) { Fabricate(:topic, visible: false) }
 
-        before { stub_semantic_search_with([unlisted_topic.id]) }
+        before { seed_embeddings([unlisted_topic]) }
 
         it "filters it out" do
           expect(topic_query.list_semantic_related_topics(target).topics).to be_empty
@@ -31,7 +41,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
       context "when the semantic search returns a private topic" do
         fab!(:private_topic) { Fabricate(:private_message_topic) }
 
-        before { stub_semantic_search_with([private_topic.id]) }
+        before { seed_embeddings([private_topic]) }
 
         it "filters it out" do
           expect(topic_query.list_semantic_related_topics(target).topics).to be_empty
@@ -43,7 +53,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
         fab!(:category) { Fabricate(:private_category, group: group) }
         fab!(:secured_category_topic) { Fabricate(:topic, category: category) }
 
-        before { stub_semantic_search_with([secured_category_topic.id]) }
+        before { seed_embeddings([secured_category_topic]) }
 
         it "filters it out" do
           expect(topic_query.list_semantic_related_topics(target).topics).to be_empty
@@ -63,7 +73,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
 
         before do
           SiteSetting.ai_embeddings_semantic_related_include_closed_topics = false
-          stub_semantic_search_with([closed_topic.id])
+          seed_embeddings([closed_topic])
         end
 
         it "filters it out" do
@@ -80,7 +90,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
             category_id: category.id,
             notification_level: CategoryUser.notification_levels[:muted],
           )
-          stub_semantic_search_with([topic.id])
+          seed_embeddings([topic])
           expect(topic_query.list_semantic_related_topics(target).topics).not_to include(topic)
         end
       end
@@ -91,11 +101,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
         fab!(:normal_topic_3) { Fabricate(:topic) }
         fab!(:closed_topic) { Fabricate(:topic, closed: true) }
 
-        before do
-          stub_semantic_search_with(
-            [closed_topic.id, normal_topic_1.id, normal_topic_2.id, normal_topic_3.id],
-          )
-        end
+        before { seed_embeddings([closed_topic, normal_topic_1, normal_topic_2, normal_topic_3]) }
 
         it "filters it out" do
           expect(topic_query.list_semantic_related_topics(target).topics).to eq(
@@ -117,7 +123,7 @@ describe DiscourseAi::Embeddings::EntryPoint do
         fab!(:included_topic) { Fabricate(:topic) }
         fab!(:excluded_topic) { Fabricate(:topic) }
 
-        before { stub_semantic_search_with([included_topic.id, excluded_topic.id]) }
+        before { seed_embeddings([included_topic, excluded_topic]) }
 
         let(:modifier_block) { Proc.new { |query| query.where.not(id: excluded_topic.id) } }
 

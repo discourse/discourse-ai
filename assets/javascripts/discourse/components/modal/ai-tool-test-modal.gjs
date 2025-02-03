@@ -7,7 +7,7 @@ import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import I18n from "discourse-i18n";
+import { i18n } from "discourse-i18n";
 import { jsonToHtml } from "../../lib/utilities";
 
 export default class AiToolTestModal extends Component {
@@ -45,7 +45,7 @@ export default class AiToolTestModal extends Component {
 
   <template>
     <DModal
-      @title={{I18n.t "discourse_ai.tools.test_modal.title"}}
+      @title={{i18n "discourse_ai.tools.test_modal.title"}}
       @closeModal={{@closeModal}}
       @bodyClass="ai-tool-test-modal__body"
       class="ai-tool-test-modal"
@@ -64,7 +64,7 @@ export default class AiToolTestModal extends Component {
 
         {{#if this.testResult}}
           <div class="ai-tool-test-modal__test-result">
-            <h3>{{I18n.t "discourse_ai.tools.test_modal.result"}}</h3>
+            <h3>{{i18n "discourse_ai.tools.test_modal.result"}}</h3>
             <div>{{this.testResult}}</div>
           </div>
         {{/if}}

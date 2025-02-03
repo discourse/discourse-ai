@@ -5,13 +5,13 @@ module DiscourseAi
     module Dialects
       class Gemini < Dialect
         class << self
-          def can_translate?(model_provider)
-            model_provider == "google"
+          def can_translate?(llm_model)
+            llm_model.provider == "google"
           end
         end
 
         def native_tool_support?
-          true
+          !llm_model.lookup_custom_param("disable_native_tools")
         end
 
         def translate
@@ -80,14 +80,20 @@ module DiscourseAi
         end
 
         def beta_api?
-          @beta_api ||= llm_model.name.start_with?("gemini-1.5")
+          @beta_api ||= !llm_model.name.start_with?("gemini-1.0")
         end
 
         def system_msg(msg)
+          content = msg[:content]
+
+          if !native_tool_support? && tools_dialect.instructions.present?
+            content = content.to_s + "\n\n#{tools_dialect.instructions}"
+          end
+
           if beta_api?
-            { role: "system", content: msg[:content] }
+            { role: "system", content: content }
           else
-            { role: "user", parts: { text: msg[:content] } }
+            { role: "user", parts: { text: content } }
           end
         end
 
@@ -125,35 +131,43 @@ module DiscourseAi
         end
 
         def tool_call_msg(msg)
-          call_details = JSON.parse(msg[:content], symbolize_names: true)
-          part = {
-            functionCall: {
-              name: msg[:name] || call_details[:name],
-              args: call_details[:arguments],
-            },
-          }
+          if native_tool_support?
+            call_details = JSON.parse(msg[:content], symbolize_names: true)
+            part = {
+              functionCall: {
+                name: msg[:name] || call_details[:name],
+                args: call_details[:arguments],
+              },
+            }
 
-          if beta_api?
-            { role: "model", parts: [part] }
+            if beta_api?
+              { role: "model", parts: [part] }
+            else
+              { role: "model", parts: part }
+            end
           else
-            { role: "model", parts: part }
+            super
           end
         end
 
         def tool_msg(msg)
-          part = {
-            functionResponse: {
-              name: msg[:name] || msg[:id],
-              response: {
-                content: msg[:content],
+          if native_tool_support?
+            part = {
+              functionResponse: {
+                name: msg[:name] || msg[:id],
+                response: {
+                  content: msg[:content],
+                },
               },
-            },
-          }
+            }
 
-          if beta_api?
-            { role: "function", parts: [part] }
+            if beta_api?
+              { role: "function", parts: [part] }
+            else
+              { role: "function", parts: part }
+            end
           else
-            { role: "function", parts: part }
+            super
           end
         end
       end

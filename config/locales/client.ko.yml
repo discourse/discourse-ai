@@ -31,15 +31,29 @@ ko:
     discourse_ai:
       modals:
         select_option: "옵션 선택..."
+      spam:
+        short_title: "스팸"
+        last_seven_days: "지난 7일"
+        enable: "활성화"
+        test_modal:
+          spam: "스팸"
+      usage:
+        summary: "요약"
+        username: "아이디"
+        total_requests: "총 요청횟수"
+        periods:
+          last_day: "지난 24시간"
+          custom: "사용자 지정..."
       ai_persona:
-        back: 뒤로
-        name: 그룹명
-        edit: 편집
-        description: 내용
+        back: "뒤로"
+        name: "그룹명"
+        edit: "편집"
+        description: "내용"
         user: 사용자
-        save: 저장
+        save: "저장"
         enabled: "활성화?"
-        delete: 삭제하기
+        allowed_groups: "허용 된 그룹"
+        delete: "삭제하기"
       rag:
         uploads:
           title: "업로드된 파일"
@@ -52,22 +66,31 @@ ko:
         save: "저장"
         parameter_required: "필수"
         edit: "편집"
-        test: "테스트 실행"
         delete: "삭제하기"
         next:
           title: "다음"
-        test_modal:
-          run: "테스트 실행"
       llms:
         display_name: "그룹명"
         save: "저장"
         edit: "편집"
         back: "뒤로"
         delete: 삭제하기
+        quotas:
+          group: "그룹"
+          max_usages: "최대 사용"
+          duration: "기간"
+          durations:
+            hour: "1시간"
+            six_hours: "6시간"
+            day: "24시간"
+            custom: "사용자 지정..."
+          hours: "시간"
+        usage:
+          ai_summarization: "요약하기"
+          ai_spam: "스팸"
         next:
           title: "다음"
         tests:
-          title: "테스트 실행"
           success: "성공!"
         providers:
           google: "구글"
@@ -89,10 +112,23 @@ ko:
           save_caption: "저장"
           automatic_caption_dialog:
             confirm: "활성화"
+      embeddings:
+        back: "뒤로"
+        save: "저장"
+        delete: "삭제하기"
+        edit: "편집"
+        tests:
+          success: "성공!"
+        display_name: "그룹명"
+        providers:
+          google: "구글"
+          fake: "사용자 정의"
       ai_bot:
         debug_ai_modal:
           request: "요청"
           response: "응답"
+          next_log: "다음"
+          previous_log: "이전값"
         share_modal:
           copy: "복사"
       summarization:

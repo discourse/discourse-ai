@@ -8,6 +8,7 @@ class CompletionPrompt < ActiveRecord::Base
   CUSTOM_PROMPT = -305
   EXPLAIN = -306
   ILLUSTRATE_POST = -308
+  DETECT_TEXT_LOCALE = -309
 
   enum :prompt_type, { text: 0, list: 1, diff: 2 }
 
@@ -36,7 +37,7 @@ class CompletionPrompt < ActiveRecord::Base
 
     prompt = DiscourseAi::Completions::Prompt.new(instructions)
 
-    messages_hash[:examples].to_a do |example_pair|
+    messages_hash[:examples].to_a.each do |example_pair|
       prompt.push(type: :user, content: example_pair.first)
       prompt.push(type: :model, content: example_pair.second)
     end
@@ -56,7 +57,7 @@ class CompletionPrompt < ActiveRecord::Base
     messages.each_with_index do |msg, idx|
       next if msg["content"].length <= 1000
 
-      errors.add(:messages, I18n.t("errors.prompt_message_length", idx: idx + 1))
+      errors.add(:messages, I18n.t("discourse_ai.errors.prompt_message_length", idx: idx + 1))
     end
   end
 end

@@ -74,7 +74,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"y\\": \\"s"}      }
 
     event: content_block_delta
-    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"am"}          }
+    data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"<a>m"}          }
 
     event: content_block_delta
     data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":" "}          }
@@ -104,28 +104,35 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     data: {"type":"message_stop"}
     STRING
 
-    result = +""
+    result = []
     body = body.scan(/.*\n/)
     EndpointMock.with_chunk_array_support do
       stub_request(:post, url).to_return(status: 200, body: body)
 
-      llm.generate(prompt_with_google_tool, user: Discourse.system_user) do |partial|
-        result << partial
-      end
+      llm.generate(
+        prompt_with_google_tool,
+        user: Discourse.system_user,
+        partial_tool_calls: true,
+      ) { |partial| result << partial.dup }
     end
 
-    expected = (<<~TEXT).strip
-      <function_calls>
-      <invoke>
-      <tool_name>search</tool_name>
-      <parameters><search_query>sam sam</search_query>
-      <category>general</category></parameters>
-      <tool_id>toolu_01DjrShFRRHp9SnHYRFRc53F</tool_id>
-      </invoke>
-      </function_calls>
-    TEXT
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "search",
+        id: "toolu_01DjrShFRRHp9SnHYRFRc53F",
+        parameters: {
+          search_query: "s<a>m sam",
+          category: "general",
+        },
+      )
 
-    expect(result.strip).to eq(expected)
+    expect(result.last).to eq(tool_call)
+
+    search_queries = result.filter(&:partial).map { |r| r.parameters[:search_query] }
+    categories = result.filter(&:partial).map { |r| r.parameters[:category] }
+
+    expect(categories).to eq([nil, nil, nil, nil, "gene", "general"])
+    expect(search_queries).to eq(["s", "s<a>m", "s<a>m ", "s<a>m sam", "s<a>m sam", "s<a>m sam"])
   end
 
   it "can stream a response" do
@@ -179,7 +186,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     expected_body = {
       model: "claude-3-opus-20240229",
-      max_tokens: 3000,
+      max_tokens: 4096,
       messages: [{ role: "user", content: "user1: hello" }],
       system: "You are hello bot",
       stream: true,
@@ -191,6 +198,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expect(log.feature_name).to eq("testing")
     expect(log.response_tokens).to eq(15)
     expect(log.request_tokens).to eq(25)
+    expect(log.raw_request_payload).to eq(expected_body.to_json)
+    expect(log.raw_response_payload.strip).to eq(body.strip)
   end
 
   it "supports non streaming tool calls" do
@@ -242,17 +251,20 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     result = llm.generate(prompt, user: Discourse.system_user)
 
-    expected = <<~TEXT.strip
-      <function_calls>
-      <invoke>
-      <tool_name>calculate</tool_name>
-      <parameters><expression>2758975 + 21.11</expression></parameters>
-      <tool_id>toolu_012kBdhG4eHaV68W56p4N94h</tool_id>
-      </invoke>
-      </function_calls>
-    TEXT
+    tool_call =
+      DiscourseAi::Completions::ToolCall.new(
+        name: "calculate",
+        id: "toolu_012kBdhG4eHaV68W56p4N94h",
+        parameters: {
+          expression: "2758975 + 21.11",
+        },
+      )
 
-    expect(result.strip).to eq(expected)
+    expect(result).to eq(["Here is the calculation:", tool_call])
+
+    log = AiApiAuditLog.order(:id).last
+    expect(log.request_tokens).to eq(345)
+    expect(log.response_tokens).to eq(65)
   end
 
   it "can send images via a completion prompt" do
@@ -266,7 +278,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     request_body = {
       model: "claude-3-opus-20240229",
-      max_tokens: 3000,
+      max_tokens: 4096,
       messages: [
         {
           role: "user",
@@ -364,7 +376,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
 
     expected_body = {
       model: "claude-3-opus-20240229",
-      max_tokens: 3000,
+      max_tokens: 4096,
       messages: [{ role: "user", content: "user1: hello" }],
       system: "You are hello bot",
     }

@@ -20,7 +20,7 @@ describe DiscourseAi::TopicSummarization do
       cached_summary =
         AiSummary.find_by(target: topic, summary_type: AiSummary.summary_types[:complete])
 
-      expect(cached_summary.content_range).to cover(*topic.posts.map(&:post_number))
+      expect(cached_summary.highest_target_number).to eq(topic.highest_post_number)
       expect(cached_summary.summarized_text).to eq(summary)
       expect(cached_summary.original_content_sha).to be_present
       expect(cached_summary.algorithm).to eq("fake")

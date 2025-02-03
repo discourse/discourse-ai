@@ -5,7 +5,8 @@ module DiscourseAi
     module Dialects
       class OpenAiCompatible < Dialect
         class << self
-          def can_translate?(_model_name)
+          def can_translate?(_llm_model)
+            # fallback dialect
             true
           end
         end

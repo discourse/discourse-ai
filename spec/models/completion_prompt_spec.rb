@@ -22,6 +22,30 @@ RSpec.describe CompletionPrompt do
   describe "messages_with_input" do
     let(:user_input) { "A user wrote this." }
 
+    context "when mapping to a prompt" do
+      it "correctly maps everything to the prompt" do
+        cp =
+          CompletionPrompt.new(
+            messages: {
+              insts: "Instructions",
+              post_insts: "Post Instructions",
+              examples: [["Request 1", "Response 1"]],
+            },
+          )
+
+        prompt = cp.messages_with_input("hello")
+
+        expected = [
+          { type: :system, content: "Instructions\nPost Instructions" },
+          { type: :user, content: "Request 1" },
+          { type: :model, content: "Response 1" },
+          { type: :user, content: "<input>hello</input>" },
+        ]
+
+        expect(prompt.messages).to eq(expected)
+      end
+    end
+
     context "when the record has the custom_prompt type" do
       let(:custom_prompt) { described_class.find(described_class::CUSTOM_PROMPT) }
 

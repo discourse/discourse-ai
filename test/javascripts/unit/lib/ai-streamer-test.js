@@ -16,6 +16,7 @@ class FakeStreamUpdater {
   get streaming() {
     return this._streaming;
   }
+
   set streaming(value) {
     this._streaming = value;
   }

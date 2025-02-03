@@ -38,21 +38,20 @@ id:
     ai_nsfw_flag_automatically: "Secara otomatis menandai postingan NSFW yang berada di atas ambang batas yang dikonfigurasi."
     ai_nsfw_flag_threshold_general: "Ambang Batas Umum agar suatu gambar dianggap NSFW."
     ai_nsfw_models: "Model yang digunakan untuk inferensi NSFW."
-    ai_openai_embeddings_url: "URL khusus yang digunakan untuk OpenAI embeddings API. (dalam kasus Azure bisa jadi: https://COMPANY.openai.azure.com/openai/deployments/DEPLOYMENT/embeddings?api-version=2023-05-15)"
-    ai_embeddings_enabled: "Aktifkan modul embeddings."
-    ai_embeddings_discourse_service_api_key: "Kunci API untuk API embeddings"
-    ai_embeddings_pg_connection_string: "String koneksi PostgreSQL untuk modul embeddings. Perlu mengaktifkan ekstensi pgvector dan dibuat serangkaian tabel. Lihat dokumen untuk info lebih lanjut."
     ai_bot_public_sharing_allowed_groups: "Izinkan grup-grup ini untuk membagikan pesan pribadi AI kepada publik melalui tautan unik yang tersedia untuk umum. Catatan: jika situs Anda memerlukan login, berbagi juga akan memerlukan login."
   reports:
     overall_sentiment:
       yaxis: "Tanggal"
   discourse_ai:
+    ai_artifact:
+      view_changes: "Lihat Perubahan"
     ai_helper:
       prompts:
         custom_prompt: "Perintah Khusus"
       image_caption:
         attribution: "Keterangan oleh AI"
     ai_bot:
+      default_pm_prefix: "[PM bot AI tanpa judul]"
       personas:
         default_llm_required: "Model LLM default diperlukan sebelum mengaktifkan Obrolan"
       tool_options:

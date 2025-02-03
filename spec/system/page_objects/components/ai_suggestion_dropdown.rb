@@ -2,7 +2,7 @@
 
 module PageObjects
   module Components
-    class AISuggestionDropdown < PageObjects::Components::Base
+    class AiSuggestionDropdown < PageObjects::Components::Base
       SUGGESTION_BUTTON_SELECTOR = ".suggestion-button"
       TITLE_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}.suggest-titles-button"
       CATEGORY_BUTTON_SELECTOR = "#{SUGGESTION_BUTTON_SELECTOR}.suggest-category-button"
@@ -22,15 +22,15 @@ module PageObjects
       end
 
       def select_suggestion_by_value(index)
-        find("#{MENU_SELECTOR} li[data-value=\"#{index}\"]").click
+        find("#{MENU_SELECTOR} button[data-value=\"#{index}\"]").click
       end
 
       def select_suggestion_by_name(name)
-        find("#{MENU_SELECTOR} li[data-name=\"#{name}\"]").click
+        find("#{MENU_SELECTOR} button[data-name=\"#{name}\"]").click
       end
 
       def suggestion_name(index)
-        suggestion = find("#{MENU_SELECTOR} li[data-value=\"#{index}\"]")
+        suggestion = find("#{MENU_SELECTOR} button[data-value=\"#{index}\"]")
         suggestion["data-name"]
       end
 

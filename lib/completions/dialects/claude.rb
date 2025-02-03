@@ -5,8 +5,10 @@ module DiscourseAi
     module Dialects
       class Claude < Dialect
         class << self
-          def can_translate?(provider_name)
-            provider_name == "anthropic" || provider_name == "aws_bedrock"
+          def can_translate?(llm_model)
+            llm_model.provider == "anthropic" ||
+              (llm_model.provider == "aws_bedrock") &&
+                (llm_model.name.include?("anthropic") || llm_model.name.include?("claude"))
           end
         end
 

@@ -1,18 +1,18 @@
-import { computed, observer } from "@ember/object";
+import { readOnly } from "@ember/object/computed";
+import { observes } from "@ember-decorators/object";
 import MultiSelectComponent from "select-kit/components/multi-select";
+import { selectKitOptions } from "select-kit/components/select-kit";
 
-export default MultiSelectComponent.extend({
-  _modelDisabledChanged: observer("attrs.disabled", function () {
+@selectKitOptions({
+  filterable: true,
+})
+export default class AiToolSelector extends MultiSelectComponent {
+  @readOnly("tools") content;
+
+  value = "";
+
+  @observes("attrs.disabled")
+  _modelDisabledChanged() {
     this.selectKit.options.set("disabled", this.get("attrs.disabled.value"));
-  }),
-
-  content: computed("tools", function () {
-    return this.tools;
-  }),
-
-  value: "",
-
-  selectKitOptions: {
-    filterable: true,
-  },
-});
+  }
+}

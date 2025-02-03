@@ -6,6 +6,8 @@ module DiscourseAi
   module Completions
     module Endpoints
       class AwsBedrock < Base
+        attr_reader :dialect
+
         def self.can_contact?(model_provider)
           model_provider == "aws_bedrock"
         end
@@ -19,7 +21,15 @@ module DiscourseAi
         end
 
         def default_options(dialect)
-          options = { max_tokens: 3_000, anthropic_version: "bedrock-2023-05-31" }
+          options =
+            if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
+              max_tokens = 4096
+              max_tokens = 8192 if bedrock_model_id.match?(/3.5/)
+
+              { max_tokens: max_tokens, anthropic_version: "bedrock-2023-05-31" }
+            else
+              {}
+            end
 
           options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
             dialect.prompt.has_tools?
@@ -40,6 +50,27 @@ module DiscourseAi
 
         private
 
+        def bedrock_model_id
+          case llm_model.name
+          when "claude-2"
+            "anthropic.claude-v2:1"
+          when "claude-3-haiku"
+            "anthropic.claude-3-haiku-20240307-v1:0"
+          when "claude-3-sonnet"
+            "anthropic.claude-3-sonnet-20240229-v1:0"
+          when "claude-instant-1"
+            "anthropic.claude-instant-v1"
+          when "claude-3-opus"
+            "anthropic.claude-3-opus-20240229-v1:0"
+          when "claude-3-5-sonnet"
+            "anthropic.claude-3-5-sonnet-20241022-v2:0"
+          when "claude-3-5-haiku"
+            "anthropic.claude-3-5-haiku-20241022-v1:0"
+          else
+            llm_model.name
+          end
+        end
+
         def prompt_size(prompt)
           # approximation
           tokenizer.size(prompt.system_prompt.to_s + " " + prompt.messages.to_s)
@@ -47,24 +78,6 @@ module DiscourseAi
 
         def model_uri
           region = llm_model.lookup_custom_param("region")
-
-          bedrock_model_id =
-            case llm_model.name
-            when "claude-2"
-              "anthropic.claude-v2:1"
-            when "claude-3-haiku"
-              "anthropic.claude-3-haiku-20240307-v1:0"
-            when "claude-3-sonnet"
-              "anthropic.claude-3-sonnet-20240229-v1:0"
-            when "claude-instant-1"
-              "anthropic.claude-instant-v1"
-            when "claude-3-opus"
-              "anthropic.claude-3-opus-20240229-v1:0"
-            when "claude-3-5-sonnet"
-              "anthropic.claude-3-5-sonnet-20241022-v2:0"
-            else
-              llm_model.name
-            end
 
           if region.blank? || bedrock_model_id.blank?
             raise CompletionFailed.new(I18n.t("discourse_ai.llm_models.bedrock_invalid_url"))
@@ -80,17 +93,25 @@ module DiscourseAi
 
         def prepare_payload(prompt, model_params, dialect)
           @native_tool_support = dialect.native_tool_support?
+          @dialect = dialect
 
-          payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
-          payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
+          payload = nil
 
-          if prompt.has_tools?
-            payload[:tools] = prompt.tools
-            if dialect.tool_choice.present?
-              payload[:tool_choice] = { type: "tool", name: dialect.tool_choice }
+          if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
+            payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
+            payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
+
+            if prompt.has_tools?
+              payload[:tools] = prompt.tools
+              if dialect.tool_choice.present?
+                payload[:tool_choice] = { type: "tool", name: dialect.tool_choice }
+              end
             end
+          elsif dialect.is_a?(DiscourseAi::Completions::Dialects::Nova)
+            payload = prompt.to_payload(default_options(dialect).merge(model_params))
+          else
+            raise "Unsupported dialect"
           end
-
           payload
         end
 
@@ -117,7 +138,24 @@ module DiscourseAi
             end
         end
 
-        def decode(chunk)
+        def decode_chunk(partial_data)
+          bedrock_decode(partial_data)
+            .map do |decoded_partial_data|
+              @raw_response ||= +""
+              @raw_response << decoded_partial_data
+              @raw_response << "\n"
+
+              parsed_json = JSON.parse(decoded_partial_data, symbolize_names: true)
+              processor.process_streamed_message(parsed_json)
+            end
+            .compact
+        end
+
+        def decode(response_data)
+          processor.process_message(response_data)
+        end
+
+        def bedrock_decode(chunk)
           @decoder ||= Aws::EventStream::Decoder.new
 
           decoded, _done = @decoder.decode_chunk(chunk)
@@ -128,6 +166,11 @@ module DiscourseAi
           i = 0
           while decoded
             parsed = JSON.parse(decoded.payload.string)
+            if exception = decoded.headers[":exception-type"]
+              Rails.logger.error("#{self.class.name}: #{exception}: #{parsed}")
+              # TODO based on how often this happens, we may want to raise so we
+              # can retry, this may catch rate limits for example
+            end
             # perhaps some control message we can just ignore
             messages << Base64.decode64(parsed["bytes"]) if parsed && parsed["bytes"]
 
@@ -147,43 +190,29 @@ module DiscourseAi
                Aws::EventStream::Errors::MessageChecksumError,
                Aws::EventStream::Errors::PreludeChecksumError => e
           Rails.logger.error("#{self.class.name}: #{e.message}")
-          nil
+          []
         end
 
         def final_log_update(log)
           log.request_tokens = processor.input_tokens if processor.input_tokens
           log.response_tokens = processor.output_tokens if processor.output_tokens
+          log.raw_response_payload = @raw_response if @raw_response
         end
 
         def processor
-          @processor ||=
-            DiscourseAi::Completions::AnthropicMessageProcessor.new(streaming_mode: @streaming_mode)
+          if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
+            @processor ||=
+              DiscourseAi::Completions::AnthropicMessageProcessor.new(
+                streaming_mode: @streaming_mode,
+              )
+          else
+            @processor ||=
+              DiscourseAi::Completions::NovaMessageProcessor.new(streaming_mode: @streaming_mode)
+          end
         end
 
-        def add_to_function_buffer(function_buffer, partial: nil, payload: nil)
-          processor.to_xml_tool_calls(function_buffer) if !partial
-        end
-
-        def extract_completion_from(response_raw)
-          processor.process_message(response_raw)
-        end
-
-        def has_tool?(_response_data)
-          processor.tool_calls.present?
-        end
-
-        def partials_from(decoded_chunks)
-          decoded_chunks
-        end
-
-        def native_tool_support?
-          @native_tool_support
-        end
-
-        def chunk_to_string(chunk)
-          joined = +chunk.join("\n")
-          joined << "\n" if joined.length > 0
-          joined
+        def xml_tools_enabled?
+          !@native_tool_support
         end
       end
     end

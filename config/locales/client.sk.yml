@@ -31,15 +31,29 @@ sk:
     discourse_ai:
       modals:
         select_option: "Vyberte možnosť..."
+      spam:
+        short_title: "Spam"
+        last_seven_days: "Posledných 7 dní"
+        enable: "Povoliť"
+        test_modal:
+          result: "Výsledok"
+          spam: "Spam"
+      usage:
+        summary: "Zhrnutie"
+        username: "Používateľské meno"
+        total_requests: "celkový počet žiadostí"
+        periods:
+          last_day: "Posledných 24 hodín"
+          custom: "Vlastné..."
       ai_persona:
-        back: Späť
-        name: Meno
-        edit: Upraviť
-        description: Popis
+        back: "Späť"
+        name: "Meno"
+        edit: "Upraviť"
+        description: "Popis"
         user: Používateľ
-        save: Uložiť
+        save: "Uložiť"
         enabled: "Povolené?"
-        delete: Odstrániť
+        delete: "Odstrániť"
       rag:
         uploads:
           title: "Nahrávanie"
@@ -53,22 +67,32 @@ sk:
         save: "Uložiť"
         parameter_required: "Povinné"
         edit: "Upraviť"
-        test: "Spustiť test"
         delete: "Odstrániť"
         next:
           title: "Ďalej"
-        test_modal:
-          run: "Spustiť test"
       llms:
         display_name: "Meno"
         save: "Uložiť"
         edit: "Upraviť"
         back: "Späť"
         delete: Odstrániť
+        quotas:
+          group: "Skupina"
+          max_usages: "Maximálne využitie"
+          duration: "Trvanie"
+          durations:
+            hour: "1 hodina"
+            six_hours: "6 hodiny"
+            day: "24 hodín"
+            week: "7 dní"
+            custom: "Vlastné..."
+          hours: "hodiny"
+        usage:
+          ai_summarization: "Zhrnúť"
+          ai_spam: "Spam"
         next:
           title: "Ďalej"
         tests:
-          title: "Spustiť test"
           success: "Úspech!"
         providers:
           google: "Google"
@@ -91,10 +115,24 @@ sk:
           save_caption: "Uložiť"
           automatic_caption_dialog:
             confirm: "Povoliť"
+      embeddings:
+        back: "Späť"
+        save: "Uložiť"
+        delete: "Odstrániť"
+        edit: "Upraviť"
+        tests:
+          title: "Spustiť test"
+          success: "Úspech!"
+        display_name: "Meno"
+        providers:
+          google: "Google"
+          fake: "Vlastné"
       ai_bot:
         debug_ai_modal:
           request: "Požiadavka"
           response: "Odpoveď"
+          next_log: "Ďalej"
+          previous_log: "Predchádzajúci"
         share_modal:
           copy: "Kopírovať"
       summarization:

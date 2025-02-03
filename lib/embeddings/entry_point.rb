@@ -4,6 +4,9 @@ module DiscourseAi
   module Embeddings
     class EntryPoint
       def inject_into(plugin)
+        # far-circle-question used by semantic search unavailable tooltip
+        plugin.register_svg_icon "far-circle-question" if plugin.respond_to?(:register_svg_icon)
+
         # Include random topics in the suggested list *only* if there are no related topics.
         plugin.register_modifier(
           :topic_view_suggested_topics_options,

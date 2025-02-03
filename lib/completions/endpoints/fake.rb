@@ -72,6 +72,10 @@ module DiscourseAi
           @fake_content = nil
         end
 
+        def self.fake_content=(content)
+          @fake_content = content
+        end
+
         def self.fake_content
           @fake_content || STOCK_CONTENT
         end
@@ -100,43 +104,65 @@ module DiscourseAi
           @last_call = params
         end
 
+        def self.previous_calls
+          @previous_calls ||= []
+        end
+
+        def self.reset!
+          @last_call = nil
+          @fake_content = nil
+          @delays = nil
+          @chunk_count = nil
+        end
+
         def perform_completion!(
           dialect,
           user,
           model_params = {},
           feature_name: nil,
-          feature_context: nil
+          feature_context: nil,
+          partial_tool_calls: false
         )
-          self.class.last_call = { dialect: dialect, user: user, model_params: model_params }
+          last_call = { dialect: dialect, user: user, model_params: model_params }
+          self.class.last_call = last_call
+          self.class.previous_calls << last_call
+          # guard memory in test
+          self.class.previous_calls.shift if self.class.previous_calls.length > 10
 
           content = self.class.fake_content
 
+          content = content.shift if content.is_a?(Array)
+
           if block_given?
-            split_indices = (1...content.length).to_a.sample(self.class.chunk_count - 1).sort
-            indexes = [0, *split_indices, content.length]
+            if content.is_a?(DiscourseAi::Completions::ToolCall)
+              yield(content, -> {})
+            else
+              split_indices = (1...content.length).to_a.sample(self.class.chunk_count - 1).sort
+              indexes = [0, *split_indices, content.length]
 
-            original_content = content
-            content = +""
+              original_content = content
+              content = +""
 
-            cancel = false
-            cancel_proc = -> { cancel = true }
+              cancel = false
+              cancel_proc = -> { cancel = true }
 
-            i = 0
-            indexes
-              .each_cons(2)
-              .map { |start, finish| original_content[start...finish] }
-              .each do |chunk|
-                break if cancel
-                if self.class.delays.present? &&
-                     (delay = self.class.delays[i % self.class.delays.length])
-                  sleep(delay)
-                  i += 1
+              i = 0
+              indexes
+                .each_cons(2)
+                .map { |start, finish| original_content[start...finish] }
+                .each do |chunk|
+                  break if cancel
+                  if self.class.delays.present? &&
+                       (delay = self.class.delays[i % self.class.delays.length])
+                    sleep(delay)
+                    i += 1
+                  end
+                  break if cancel
+
+                  content << chunk
+                  yield(chunk, cancel_proc)
                 end
-                break if cancel
-
-                content << chunk
-                yield(chunk, cancel_proc)
-              end
+            end
           end
 
           content

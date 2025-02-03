@@ -29,15 +29,26 @@ th:
     discourse_ai:
       modals:
         select_option: "เลือกตัวเลือก..."
+      spam:
+        short_title: "ขยะ"
+        last_seven_days: "7 วันที่ผ่านมา"
+        enable: "เปิดใช้งาน"
+        test_modal:
+          spam: "ขยะ"
+      usage:
+        summary: "สรุป"
+        username: "ชื่อผู้ใช้"
+        periods:
+          last_day: "24 ชั่วโมงที่ผ่านมา"
       ai_persona:
-        back: กลับ
-        name: ชื่อ
-        edit: แก้ไข
-        description: รายละเอียด
+        back: "กลับ"
+        name: "ชื่อ"
+        edit: "แก้ไข"
+        description: "รายละเอียด"
         user: ผู้ใช้
-        save: บันทึก
+        save: "บันทึก"
         enabled: "เปิดใช้"
-        delete: ลบ
+        delete: "ลบ"
       rag:
         uploads:
           title: "อัปโหลด"
@@ -59,6 +70,11 @@ th:
         edit: "แก้ไข"
         back: "กลับ"
         delete: ลบ
+        quotas:
+          group: "กลุ่ม"
+          duration: "ช่วงเวลา"
+        usage:
+          ai_spam: "ขยะ"
         next:
           title: "ต่อไป"
         tests:
@@ -78,8 +94,20 @@ th:
           save_caption: "บันทึก"
           automatic_caption_dialog:
             confirm: "เปิดใช้งาน"
+      embeddings:
+        back: "กลับ"
+        save: "บันทึก"
+        delete: "ลบ"
+        edit: "แก้ไข"
+        tests:
+          success: "สำเร็จ!"
+        display_name: "ชื่อ"
+        providers:
+          google: "กูเกิล"
       ai_bot:
         debug_ai_modal:
           request: "ร้องขอ"
+          next_log: "ต่อไป"
+          previous_log: "ก่อนหน้า"
         share_modal:
           copy: "คัดลอก"

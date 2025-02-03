@@ -12,6 +12,8 @@ module DiscourseAi
         return [] unless SiteSetting.ai_embeddings_enabled
 
         candidates = nearest_neighbors(limit: 100)
+        return [] if candidates.empty?
+
         candidate_ids = candidates.map(&:first)
 
         ::Topic
@@ -19,15 +21,30 @@ module DiscourseAi
           .where(id: candidate_ids)
           .where("categories.id IN (?)", Category.topic_create_allowed(@user.guardian).pluck(:id))
           .order("array_position(ARRAY#{candidate_ids}, topics.id)")
-          .pluck("categories.slug")
+          .pluck(
+            "categories.id",
+            "categories.name",
+            "categories.slug",
+            "categories.color",
+            "categories.topic_count",
+          )
           .map
-          .with_index { |category, index| { name: category, score: candidates[index].last } }
+          .with_index do |(id, name, slug, color, topic_count), index|
+            {
+              id: id,
+              name: name,
+              slug: slug,
+              color: color,
+              topicCount: topic_count,
+              score: candidates[index].last,
+            }
+          end
           .map do |c|
             c[:score] = 1 / (c[:score] + 1) # inverse of the distance
             c
           end
           .group_by { |c| c[:name] }
-          .map { |name, scores| { name: name, score: scores.sum { |s| s[:score] } } }
+          .map { |name, scores| scores.first.merge(score: scores.sum { |s| s[:score] }) }
           .sort_by { |c| -c[:score] }
           .take(5)
       end
@@ -37,7 +54,11 @@ module DiscourseAi
         return [] unless SiteSetting.ai_embeddings_enabled
 
         candidates = nearest_neighbors(limit: 100)
+        return [] if candidates.empty?
+
         candidate_ids = candidates.map(&:first)
+
+        count_column = Tag.topic_count_column(@user.guardian) # Determine the count column
 
         ::Topic
           .joins(:topic_tags, :tags)
@@ -57,24 +78,45 @@ module DiscourseAi
           .group_by { |c| c[:name] }
           .map { |name, scores| { name: name, score: scores.sum { |s| s[:score] } } }
           .sort_by { |c| -c[:score] }
-          .take(5)
+          .take(7)
+          .then do |tags|
+            models = Tag.where(name: tags.map { _1[:name] }).index_by(&:name)
+            tags.map do |tag|
+              tag[:id] = models.dig(tag[:name])&.id
+              tag[:count] = models.dig(tag[:name])&.public_send(count_column) || 0
+              tag
+            end
+          end
       end
 
       private
 
       def nearest_neighbors(limit: 100)
-        strategy = DiscourseAi::Embeddings::Strategies::Truncation.new
-        vector_rep =
-          DiscourseAi::Embeddings::VectorRepresentations::Base.current_representation(strategy)
+        vector = DiscourseAi::Embeddings::Vector.instance
+        schema = DiscourseAi::Embeddings::Schema.for(Topic)
 
-        raw_vector = vector_rep.vector_from(@text)
+        raw_vector = vector.vector_from(@text)
 
-        vector_rep.asymmetric_topics_similarity_search(
-          raw_vector,
-          limit: limit,
-          offset: 0,
-          return_distance: true,
-        )
+        muted_category_ids = nil
+        if @user.present?
+          muted_category_ids =
+            CategoryUser.where(
+              user: @user,
+              notification_level: CategoryUser.notification_levels[:muted],
+            ).pluck(:category_id)
+        end
+
+        schema
+          .asymmetric_similarity_search(raw_vector, limit: limit, offset: 0) do |builder|
+            builder.join("topics t on t.id = topic_id")
+            unless muted_category_ids.empty?
+              builder.where(<<~SQL, exclude_category_ids: muted_category_ids.map(&:to_i))
+                t.category_id NOT IN (:exclude_category_ids) AND
+                t.category_id NOT IN (SELECT categories.id FROM categories WHERE categories.parent_category_id IN (:exclude_category_ids))
+              SQL
+            end
+          end
+          .map { |r| [r.topic_id, r.distance] }
       end
     end
   end

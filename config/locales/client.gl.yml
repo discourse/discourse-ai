@@ -29,15 +29,27 @@ gl:
     discourse_ai:
       modals:
         select_option: "Seleccione unha opción..."
+      spam:
+        short_title: "Lixo"
+        enable: "Activar"
+        test_modal:
+          spam: "Lixo"
+      usage:
+        summary: "Resumo"
+        username: "Nome de usuario"
+        total_requests: "Solicitudes totais"
+        periods:
+          custom: "Personalizar..."
       ai_persona:
-        back: Volver
-        name: Nome
-        edit: Editar
-        description: Descrición
+        back: "Volver"
+        name: "Nome"
+        edit: "Editar"
+        description: "Descrición"
         user: Usuario
-        save: Gardar
+        save: "Gardar"
         enabled: "Activado?"
-        delete: Eliminar
+        allowed_groups: "Grupos permitidos"
+        delete: "Eliminar"
       rag:
         uploads:
           title: "Cargas"
@@ -50,22 +62,29 @@ gl:
         save: "Gardar"
         parameter_required: "Obrigatorio"
         edit: "Editar"
-        test: "Executar proba"
         delete: "Eliminar"
         next:
           title: "Seguinte"
-        test_modal:
-          run: "Executar proba"
       llms:
         display_name: "Nome"
         save: "Gardar"
         edit: "Editar"
         back: "Volver"
         delete: Eliminar
+        quotas:
+          group: "Grupo"
+          duration: "Duración"
+          durations:
+            hour: "1 hora"
+            six_hours: "6 horas"
+            day: "24 horas"
+            custom: "Personalizar..."
+          hours: "horas"
+        usage:
+          ai_spam: "Lixo"
         next:
           title: "Seguinte"
         tests:
-          title: "Executar proba"
           success: "Feito!"
         providers:
           google: "Google"
@@ -85,9 +104,22 @@ gl:
           save_caption: "Gardar"
           automatic_caption_dialog:
             confirm: "Activar"
+      embeddings:
+        back: "Volver"
+        save: "Gardar"
+        delete: "Eliminar"
+        edit: "Editar"
+        tests:
+          success: "Feito!"
+        display_name: "Nome"
+        providers:
+          google: "Google"
+          fake: "Personalizado"
       ai_bot:
         debug_ai_modal:
           request: "Petición"
           response: "Resposta"
+          next_log: "Seguinte"
+          previous_log: "Anterior"
         share_modal:
           copy: "Copiar"
