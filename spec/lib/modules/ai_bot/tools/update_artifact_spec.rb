@@ -44,6 +44,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             },
             bot_user: bot_user,
             llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
             context: {
               post_id: post.id,
             },
@@ -87,6 +90,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             { artifact_id: artifact.id, instructions: "Update only JavaScript" },
             bot_user: bot_user,
             llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
             context: {
               post_id: post.id,
             },
@@ -154,6 +160,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             { artifact_id: artifact.id, instructions: "Just update the HTML" },
             bot_user: bot_user,
             llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
             context: {
               post_id: post.id,
             },
@@ -184,6 +193,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             { artifact_id: artifact.id, instructions: "Update to version 1" },
             bot_user: bot_user,
             llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
             context: {
               post_id: post.id,
             },
@@ -209,6 +221,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             },
             bot_user: bot_user,
             llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
             context: {
               post_id: post.id,
             },
