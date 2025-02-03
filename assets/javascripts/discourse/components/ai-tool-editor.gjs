@@ -192,7 +192,7 @@ export default class AiToolEditor extends Component {
           />
           <DTooltip
             @icon="question-circle"
-            @content={{I18n.t "discourse_ai.tools.tool_name_help"}}
+            @content={{i18n "discourse_ai.tools.tool_name_help"}}
           />
         </div>
 
