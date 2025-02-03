@@ -4,6 +4,7 @@ module DiscourseAi
   module AiModeration
     class SpamMetric
       def self.update(new_status, reviewable)
+        return if !defined?(::DiscoursePrometheus)
         ai_spam_log = AiSpamLog.find_by(reviewable:)
         return if ai_spam_log.nil?
 
