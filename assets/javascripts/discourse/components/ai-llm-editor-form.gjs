@@ -48,7 +48,10 @@ export default class AiLlmEditorForm extends Component {
         name: modelInfo.name,
         provider: info.provider,
         provider_params: Object.fromEntries(
-          Object.keys(params).map((key) => [key, null])
+          Object.entries(params).map(([k, v]) => [
+            k,
+            v?.type === "enum" ? v.default : null,
+          ])
         ),
       };
     }
@@ -156,12 +159,11 @@ export default class AiLlmEditorForm extends Component {
           value = { ...value };
           value.values = value.values.map((v) => ({ id: v, name: v }));
         }
-        this.args.model.provider_params[field] =
-          this.args.model.provider_params[field] || value.default;
+
         acc[field] = {
           type: value.type || "text",
-          values: value.values || undefined,
-          default: value.default || undefined,
+          values: value.values || [],
+          default: value.default ?? undefined,
         };
       } else {
         acc[field] = { type: "text" }; // fallback
@@ -320,7 +322,6 @@ export default class AiLlmEditorForm extends Component {
         </form.Field>
 
         <form.Object @name="provider_params" as |object name|>
-          {{log (this.metaProviderParams data.provider)}}
           {{#let
             (get (this.metaProviderParams data.provider) name)
             as |params|
@@ -333,8 +334,10 @@ export default class AiLlmEditorForm extends Component {
             >
               {{#if (eq params.type "enum")}}
                 <field.Select as |select|>
-                  {{#each params.values as |value|}}
-                    <select.Option @value={{value}}>{{value}}</select.Option>
+                  {{#each params.values as |option|}}
+                    <select.Option
+                      @value={{option.id}}
+                    >{{option.name}}</select.Option>
                   {{/each}}
                 </field.Select>
               {{else if (eq params.type "checkbox")}}
