@@ -25,9 +25,9 @@ export default class AiLlm extends RestModel {
     return attrs;
   }
 
-  async testConfig() {
-    return await ajax(`/admin/plugins/discourse-ai/ai-llms/test.json`, {
-      data: { ai_llm: this.createProperties() },
+  async testConfig(llmConfig) {
+    return await ajax("/admin/plugins/discourse-ai/ai-llms/test.json", {
+      data: { ai_llm: llmConfig ?? this.createProperties() },
     });
   }
 }

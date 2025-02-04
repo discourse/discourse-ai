@@ -1,66 +1,26 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
-import { hash } from "@ember/helper";
-import { on } from "@ember/modifier";
+import { cached } from "@glimmer/tracking";
+import { fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { not } from "truth-helpers";
-import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
+import Form from "discourse/components/form";
 import { i18n } from "discourse-i18n";
 import GroupChooser from "select-kit/components/group-chooser";
-import DTooltip from "float-kit/components/d-tooltip";
 import DurationSelector from "../ai-quota-duration-selector";
 
 export default class AiLlmQuotaModal extends Component {
   @service site;
 
-  @tracked groupIds = null;
-  @tracked maxTokens = null;
-  @tracked maxUsages = null;
-  @tracked duration = 86400; // Default 1 day
-
-  get canSave() {
-    return (
-      this.groupIds?.length > 0 &&
-      (this.maxTokens || this.maxUsages) &&
-      this.duration
-    );
-  }
-
   @action
-  updateGroups(groups) {
-    this.groupIds = groups;
-  }
+  save(data) {
+    const quota = { ...data };
+    quota.group_name = this.site.groups.findBy("id", data.group_id).name;
+    quota.llm_model_id = this.args.model.id;
 
-  @action
-  updateDuration(value) {
-    this.duration = value;
-  }
-
-  @action
-  updateMaxTokens(event) {
-    this.maxTokens = event.target.value;
-  }
-
-  @action
-  updateMaxUsages(event) {
-    this.maxUsages = event.target.value;
-  }
-
-  @action
-  save() {
-    const quota = {
-      group_id: this.groupIds[0],
-      group_name: this.site.groups.findBy("id", this.groupIds[0]).name,
-      llm_model_id: this.args.model.id,
-      max_tokens: this.maxTokens,
-      max_usages: this.maxUsages,
-      duration_seconds: this.duration,
-    };
-
-    this.args.model.llm.llm_quotas.pushObject(quota);
+    this.args.model.addItemToCollection(quota);
     this.args.closeModal();
+
     if (this.args.model.onSave) {
       this.args.model.onSave();
     }
@@ -75,6 +35,39 @@ export default class AiLlmQuotaModal extends Component {
     );
   }
 
+  @cached
+  get quota() {
+    return {
+      group_id: null,
+      llm_model_id: null,
+      max_tokens: null,
+      max_usages: null,
+      duration_seconds: moment.duration(1, "day").asSeconds(),
+    };
+  }
+
+  @action
+  setGroupId(field, groups) {
+    field.set(groups[0]);
+  }
+
+  @action
+  validateForm(data, { addError, removeError }) {
+    if (!data.max_tokens && !data.max_usages) {
+      addError("max_tokens", {
+        title: i18n("discourse_ai.llms.quotas.max_tokens"),
+        message: i18n("discourse_ai.llms.quotas.max_tokens_required"),
+      });
+      addError("max_usages", {
+        title: i18n("discourse_ai.llms.quotas.max_usages"),
+        message: i18n("discourse_ai.llms.quotas.max_usages_required"),
+      });
+    } else {
+      removeError("max_tokens");
+      removeError("max_usages");
+    }
+  }
+
   <template>
     <DModal
       @title={{i18n "discourse_ai.llms.quotas.add_title"}}
@@ -82,63 +75,70 @@ export default class AiLlmQuotaModal extends Component {
       class="ai-llm-quota-modal"
     >
       <:body>
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.llms.quotas.group"}}</label>
-          <GroupChooser
-            @value={{this.groupIds}}
-            @content={{this.availableGroups}}
-            @onChange={{this.updateGroups}}
-            @options={{hash maximum=1}}
-          />
-        </div>
+        <Form
+          @validate={{this.validateForm}}
+          @onSubmit={{this.save}}
+          @data={{this.quota}}
+          as |form data|
+        >
+          <form.Field
+            @name="group_id"
+            @title={{i18n "discourse_ai.llms.quotas.group"}}
+            @validation="required"
+            @format="large"
+            as |field|
+          >
+            <field.Custom>
+              <GroupChooser
+                @value={{data.group_id}}
+                @content={{this.availableGroups}}
+                @onChange={{fn this.setGroupId field}}
+                @options={{hash maximum=1}}
+              />
+            </field.Custom>
+          </form.Field>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.llms.quotas.max_tokens"}}</label>
-          <input
-            type="number"
-            value={{this.maxTokens}}
-            class="input-large"
-            min="1"
-            {{on "input" this.updateMaxTokens}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.llms.quotas.max_tokens_help"}}
-          />
-        </div>
+          <form.Field
+            @name="max_tokens"
+            @title={{i18n "discourse_ai.llms.quotas.max_tokens"}}
+            @tooltip={{i18n "discourse_ai.llms.quotas.max_tokens_help"}}
+            @format="large"
+            as |field|
+          >
+            <field.Input @type="number" min="1" />
+          </form.Field>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.llms.quotas.max_usages"}}</label>
-          <input
-            type="number"
-            value={{this.maxUsages}}
-            class="input-large"
-            min="1"
-            {{on "input" this.updateMaxUsages}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.llms.quotas.max_usages_help"}}
-          />
-        </div>
+          <form.Field
+            @name="max_usages"
+            @title={{i18n "discourse_ai.llms.quotas.max_usages"}}
+            @tooltip={{i18n "discourse_ai.llms.quotas.max_usages_help"}}
+            @format="large"
+            as |field|
+          >
+            <field.Input @type="number" min="1" />
+          </form.Field>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.llms.quotas.duration"}}</label>
-          <DurationSelector
-            @value={{this.duration}}
-            @onChange={{this.updateDuration}}
+          <form.Field
+            @name="duration_seconds"
+            @title={{i18n "discourse_ai.llms.quotas.duration"}}
+            @validation="required"
+            @format="large"
+            as |field|
+          >
+            <field.Custom>
+              <DurationSelector
+                @value={{data.duration_seconds}}
+                @onChange={{field.set}}
+              />
+            </field.Custom>
+          </form.Field>
+
+          <form.Submit
+            @label="discourse_ai.llms.quotas.add"
+            class="btn-primary"
           />
-        </div>
+        </Form>
       </:body>
-
-      <:footer>
-        <DButton
-          @action={{this.save}}
-          @label="discourse_ai.llms.quotas.add"
-          @disabled={{not this.canSave}}
-          class="btn-primary"
-        />
-      </:footer>
     </DModal>
   </template>
 }

@@ -1,42 +1,76 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
-import { Input } from "@ember/component";
-import { concat, get, hash } from "@ember/helper";
-import { on } from "@ember/modifier";
+import { cached, tracked } from "@glimmer/tracking";
+import { concat, fn, get } from "@ember/helper";
 import { action, computed } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { service } from "@ember/service";
-import { eq } from "truth-helpers";
-import DButton from "discourse/components/d-button";
+import { eq, gt } from "truth-helpers";
+import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
+import Form from "discourse/components/form";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
-import ComboBox from "select-kit/components/combo-box";
-import DTooltip from "float-kit/components/d-tooltip";
-import AiLlmQuotaEditor from "./ai-llm-quota-editor";
+import DurationSelector from "./ai-quota-duration-selector";
 import AiLlmQuotaModal from "./modal/ai-llm-quota-modal";
 
 export default class AiLlmEditorForm extends Component {
   @service toasts;
   @service router;
   @service dialog;
+  @service modal;
 
   @tracked isSaving = false;
-
   @tracked testRunning = false;
   @tracked testResult = null;
   @tracked testError = null;
-  @tracked apiKeySecret = true;
-  @tracked quotaCount = 0;
 
-  @tracked modalIsVisible = false;
+  @cached
+  get formData() {
+    if (this.args.llmTemplate) {
+      let [id, modelName] = this.args.llmTemplate.split(/-(.*)/);
+      if (id === "none") {
+        return { provider_params: {} };
+      }
 
-  constructor() {
-    super(...arguments);
-    this.updateQuotaCount();
+      const info = this.args.llms.resultSetMeta.presets.findBy("id", id);
+      const modelInfo = info.models.findBy("name", modelName);
+      const params =
+        this.args.llms.resultSetMeta.provider_params[info.provider] ?? {};
+
+      return {
+        max_prompt_tokens: modelInfo.tokens,
+        tokenizer: info.tokenizer,
+        url: modelInfo.endpoint || info.endpoint,
+        display_name: modelInfo.display_name,
+        name: modelInfo.name,
+        provider: info.provider,
+        provider_params: Object.fromEntries(
+          Object.entries(params).map(([k, v]) => [
+            k,
+            v?.type === "enum" ? v.default : null,
+          ])
+        ),
+      };
+    }
+
+    const { model } = this.args;
+
+    return {
+      max_prompt_tokens: model.max_prompt_tokens,
+      api_key: model.api_key,
+      tokenizer: model.tokenizer,
+      url: model.url,
+      display_name: model.display_name,
+      name: model.name,
+      provider: model.provider,
+      enabled_chat_bot: model.enabled_chat_bot,
+      vision_enabled: model.vision_enabled,
+      provider_params: model.provider_params,
+      llm_quotas: model.llm_quotas,
+    };
   }
 
   get selectedProviders() {
@@ -44,9 +78,17 @@ export default class AiLlmEditorForm extends Component {
       return i18n(`discourse_ai.llms.providers.${provName}`);
     };
 
-    return this.args.llms.resultSetMeta.providers.map((prov) => {
-      return { id: prov, name: t(prov) };
-    });
+    return this.args.llms.resultSetMeta.providers
+      .map((prov) => {
+        return { id: prov, name: t(prov) };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  get tokenizers() {
+    return this.args.llms.resultSetMeta.tokenizers.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
   }
 
   get adminUser() {
@@ -94,55 +136,49 @@ export default class AiLlmEditorForm extends Component {
     });
   }
 
-  get showQuotas() {
-    return this.quotaCount > 0;
-  }
-
   get showAddQuotaButton() {
-    return !this.showQuotas && !this.args.model.isNew;
+    return !this.args.model.isNew;
   }
 
   @action
-  updateQuotaCount() {
-    this.quotaCount = this.args.model?.llm_quotas?.length || 0;
-  }
-
-  @action
-  openAddQuotaModal() {
-    this.modalIsVisible = true;
-  }
-
-  @computed("args.model.provider")
-  get metaProviderParams() {
-    const params =
-      this.args.llms.resultSetMeta.provider_params[this.args.model.provider] ||
-      {};
-
-    return Object.entries(params).map(([field, value]) => {
-      if (typeof value === "string") {
-        return { field, type: value };
-      } else if (typeof value === "object") {
-        if (value.values) {
-          value = { ...value };
-          value.values = value.values.map((v) => {
-            return { id: v, name: v };
-          });
-        }
-        this.args.model.provider_params[field] =
-          this.args.model.provider_params[field] || value.default;
-        return { field, ...value };
-      }
-      return { field, type: "text" }; // fallback
+  openAddQuotaModal(addItemToCollection) {
+    this.modal.show(AiLlmQuotaModal, {
+      model: { llm: this.args.model, addItemToCollection },
     });
   }
 
   @action
-  async save() {
+  metaProviderParams(provider) {
+    const params = this.args.llms.resultSetMeta.provider_params[provider] || {};
+
+    return Object.entries(params).reduce((acc, [field, value]) => {
+      if (typeof value === "string") {
+        acc[field] = { type: value };
+      } else if (typeof value === "object") {
+        if (value.values) {
+          value = { ...value };
+          value.values = value.values.map((v) => ({ id: v, name: v }));
+        }
+
+        acc[field] = {
+          type: value.type || "text",
+          values: value.values || [],
+          default: value.default ?? undefined,
+        };
+      } else {
+        acc[field] = { type: "text" }; // fallback
+      }
+      return acc;
+    }, {});
+  }
+
+  @action
+  async save(data) {
     this.isSaving = true;
     const isNew = this.args.model.isNew;
 
     try {
-      await this.args.model.save();
+      await this.args.model.save(data);
 
       if (isNew) {
         this.args.llms.addObject(this.args.model);
@@ -163,11 +199,11 @@ export default class AiLlmEditorForm extends Component {
   }
 
   @action
-  async test() {
+  async test(data) {
     this.testRunning = true;
 
     try {
-      const configTestResult = await this.args.model.testConfig();
+      const configTestResult = await this.args.model.testConfig(data);
       this.testResult = configTestResult.success;
 
       if (this.testResult) {
@@ -182,16 +218,6 @@ export default class AiLlmEditorForm extends Component {
         this.testRunning = false;
       }, 1000);
     }
-  }
-
-  @action
-  makeApiKeySecret() {
-    this.apiKeySecret = true;
-  }
-
-  @action
-  toggleApiKeySecret() {
-    this.apiKeySecret = !this.apiKeySecret;
   }
 
   @action
@@ -212,154 +238,167 @@ export default class AiLlmEditorForm extends Component {
     });
   }
 
-  @action
-  closeAddQuotaModal() {
-    this.modalIsVisible = false;
-    this.updateQuotaCount();
-  }
-
   <template>
-    {{#if this.seeded}}
-      <div class="alert alert-info">
-        {{icon "circle-exclamation"}}
-        {{i18n "discourse_ai.llms.seeded_warning"}}
-      </div>
-    {{/if}}
-    {{#if this.modulesUsingModel}}
-      <div class="alert alert-info">
-        {{icon "circle-exclamation"}}
-        {{this.inUseWarning}}
-      </div>
-    {{/if}}
-    <form class="form-horizontal ai-llm-editor {{if this.seeded 'seeded'}}">
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.llms.display_name"}}</label>
-        <Input
-          class="ai-llm-editor-input ai-llm-editor__display-name"
-          @type="text"
-          @value={{@model.display_name}}
-          disabled={{this.seeded}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.llms.name"}}</label>
-        <Input
-          class="ai-llm-editor-input ai-llm-editor__name"
-          @type="text"
-          @value={{@model.name}}
-          disabled={{this.seeded}}
-        />
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.llms.hints.name"}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.llms.provider"}}</label>
-        <ComboBox
-          @value={{@model.provider}}
-          @content={{this.selectedProviders}}
-          @class="ai-llm-editor__provider"
-          @options={{hash disabled=this.seeded}}
-        />
-      </div>
+    <Form
+      @onSubmit={{this.save}}
+      @data={{this.formData}}
+      class="ai-llm-editor {{if this.seeded 'seeded'}}"
+      as |form data|
+    >
+      {{#if this.seeded}}
+        <form.Alert @icon="circle-info">
+          {{i18n "discourse_ai.llms.seeded_warning"}}
+        </form.Alert>
+      {{/if}}
+
+      {{#if this.modulesUsingModel}}
+        <form.Alert @icon="circle-info">
+          {{this.inUseWarning}}
+        </form.Alert>
+      {{/if}}
+
+      <form.Field
+        @name="display_name"
+        @title={{i18n "discourse_ai.llms.display_name"}}
+        @validation="required|length:1,100"
+        @disabled={{this.seeded}}
+        @format="large"
+        @tooltip={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
+        as |field|
+      >
+        <field.Input />
+      </form.Field>
+
+      <form.Field
+        @name="name"
+        @title={{i18n "discourse_ai.llms.name"}}
+        @tooltip={{i18n "discourse_ai.llms.hints.name"}}
+        @validation="required"
+        @disabled={{this.seeded}}
+        @format="large"
+        as |field|
+      >
+        <field.Input />
+      </form.Field>
+
+      <form.Field
+        @name="provider"
+        @title={{i18n "discourse_ai.llms.provider"}}
+        @disabled={{this.seeded}}
+        @format="large"
+        @validation="required"
+        as |field|
+      >
+        <field.Select as |select|>
+          {{#each this.selectedProviders as |provider|}}
+            <select.Option
+              @value={{provider.id}}
+            >{{provider.name}}</select.Option>
+          {{/each}}
+        </field.Select>
+      </form.Field>
+
       {{#unless this.seeded}}
         {{#if this.canEditURL}}
-          <div class="control-group">
-            <label>{{i18n "discourse_ai.llms.url"}}</label>
-            <Input
-              class="ai-llm-editor-input ai-llm-editor__url"
-              @type="text"
-              @value={{@model.url}}
-              required="true"
-            />
-          </div>
-        {{/if}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.llms.api_key"}}</label>
-          <div class="ai-llm-editor__secret-api-key-group">
-            <Input
-              @value={{@model.api_key}}
-              class="ai-llm-editor-input ai-llm-editor__api-key"
-              @type={{if this.apiKeySecret "password" "text"}}
-              required="true"
-              {{on "focusout" this.makeApiKeySecret}}
-            />
-            <DButton
-              @action={{this.toggleApiKeySecret}}
-              @icon="far-eye-slash"
-            />
-          </div>
-        </div>
-        {{#each this.metaProviderParams as |param|}}
-          <div
-            class="control-group ai-llm-editor-provider-param__{{param.type}}"
+          <form.Field
+            @name="url"
+            @title={{i18n "discourse_ai.llms.url"}}
+            @validation="required"
+            @format="large"
+            as |field|
           >
-            <label>{{i18n
-                (concat "discourse_ai.llms.provider_fields." param.field)
-              }}</label>
-            {{#if (eq param.type "enum")}}
-              <ComboBox
-                @value={{mut (get @model.provider_params param.field)}}
-                @content={{param.values}}
-              />
-            {{else if (eq param.type "checkbox")}}
-              <Input
-                @type={{param.type}}
-                @checked={{mut (get @model.provider_params param.field)}}
-              />
-            {{else}}
-              <Input
-                @type={{param.type}}
-                @value={{mut (get @model.provider_params param.field)}}
-              />
-            {{/if}}
-          </div>
-        {{/each}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.llms.tokenizer"}}</label>
-          <ComboBox
-            @value={{@model.tokenizer}}
-            @content={{@llms.resultSetMeta.tokenizers}}
-            @class="ai-llm-editor__tokenizer"
-          />
-        </div>
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.llms.max_prompt_tokens"}}</label>
-          <Input
-            @type="number"
-            class="ai-llm-editor-input ai-llm-editor__max-prompt-tokens"
-            step="any"
-            min="0"
-            lang="en"
-            @value={{@model.max_prompt_tokens}}
-            required="true"
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
-          />
-        </div>
-        <div class="control-group ai-llm-editor__vision-enabled">
-          <Input @type="checkbox" @checked={{@model.vision_enabled}} />
-          <label>{{i18n "discourse_ai.llms.vision_enabled"}}</label>
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.llms.hints.vision_enabled"}}
-          />
-        </div>
-        <div class="control-group ai-llm-editor__enabled-chat-bot">
-          <Input @type="checkbox" @checked={{@model.enabled_chat_bot}} />
-          <label>{{i18n "discourse_ai.llms.enabled_chat_bot"}}</label>
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.llms.hints.enabled_chat_bot"}}
-          />
-        </div>
+            <field.Input />
+          </form.Field>
+        {{/if}}
+
+        <form.Field
+          @name="api_key"
+          @title={{i18n "discourse_ai.llms.api_key"}}
+          @validation="required"
+          @format="large"
+          as |field|
+        >
+          <field.Password />
+        </form.Field>
+
+        <form.Object @name="provider_params" as |object name|>
+          {{#let
+            (get (this.metaProviderParams data.provider) name)
+            as |params|
+          }}
+            <object.Field
+              @name={{name}}
+              @title={{i18n (concat "discourse_ai.llms.provider_fields." name)}}
+              @format="large"
+              as |field|
+            >
+              {{#if (eq params.type "enum")}}
+                <field.Select as |select|>
+                  {{#each params.values as |option|}}
+                    <select.Option
+                      @value={{option.id}}
+                    >{{option.name}}</select.Option>
+                  {{/each}}
+                </field.Select>
+              {{else if (eq params.type "checkbox")}}
+                <field.Checkbox />
+              {{else}}
+                <field.Input @type={{params.type}} />
+              {{/if}}
+            </object.Field>
+          {{/let}}
+        </form.Object>
+
+        <form.Field
+          @name="tokenizer"
+          @title={{i18n "discourse_ai.llms.tokenizer"}}
+          @disabled={{this.seeded}}
+          @format="large"
+          @validation="required"
+          as |field|
+        >
+          <field.Select as |select|>
+            {{#each this.tokenizers as |tokenizer|}}
+              <select.Option
+                @value={{tokenizer.id}}
+              >{{tokenizer.name}}</select.Option>
+            {{/each}}
+          </field.Select>
+        </form.Field>
+
+        <form.Field
+          @name="max_prompt_tokens"
+          @title={{i18n "discourse_ai.llms.max_prompt_tokens"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
+          @validation="required"
+          @format="large"
+          as |field|
+        >
+          <field.Input @type="number" step="any" min="0" lang="en" />
+        </form.Field>
+
+        <form.Field
+          @name="vision_enabled"
+          @title={{i18n "discourse_ai.llms.vision_enabled"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.vision_enabled"}}
+          @format="large"
+          as |field|
+        >
+          <field.Checkbox />
+        </form.Field>
+
+        <form.Field
+          @name="enabled_chat_bot"
+          @title={{i18n "discourse_ai.llms.enabled_chat_bot"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.enabled_chat_bot"}}
+          @format="large"
+          as |field|
+        >
+          <field.Checkbox />
+        </form.Field>
 
         {{#if @model.user}}
-          <div class="control-group">
-            <label>{{i18n "discourse_ai.llms.ai_bot_user"}}</label>
+          <form.Container @title={{i18n "discourse_ai.llms.ai_bot_user"}}>
             <a
               class="avatar"
               href={{@model.user.path}}
@@ -370,76 +409,166 @@ export default class AiLlmEditorForm extends Component {
             <LinkTo @route="adminUser" @model={{this.adminUser}}>
               {{@model.user.username}}
             </LinkTo>
-          </div>
+          </form.Container>
         {{/if}}
 
-        {{#if this.showQuotas}}
-          <div class="control-group">
-            <label>{{i18n "discourse_ai.llms.quotas.title"}}</label>
-            <AiLlmQuotaEditor
-              @model={{@model}}
-              @groups={{@groups}}
-              @didUpdate={{this.updateQuotaCount}}
-            />
-          </div>
+        {{#if (gt data.llm_quotas.length 0)}}
+          <form.Container @title={{i18n "discourse_ai.llms.quotas.title"}}>
+            <table class="ai-llm-quotas__table">
+              <thead class="ai-llm-quotas__table-head">
+                <tr class="ai-llm-quotas__header-row">
+                  <th class="ai-llm-quotas__header">{{i18n
+                      "discourse_ai.llms.quotas.group"
+                    }}</th>
+                  <th class="ai-llm-quotas__header">{{i18n
+                      "discourse_ai.llms.quotas.max_tokens"
+                    }}</th>
+                  <th class="ai-llm-quotas__header">{{i18n
+                      "discourse_ai.llms.quotas.max_usages"
+                    }}</th>
+                  <th class="ai-llm-quotas__header">{{i18n
+                      "discourse_ai.llms.quotas.duration"
+                    }}</th>
+                  <th
+                    class="ai-llm-quotas__header ai-llm-quotas__header--actions"
+                  ></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody class="ai-llm-quotas__table-body">
+                <form.Collection
+                  @name="llm_quotas"
+                  @tagName="tr"
+                  class="ai-llm-quotas__row"
+                  as |collection index collectionData|
+                >
+                  <td
+                    class="ai-llm-quotas__cell"
+                  >{{collectionData.group_name}}</td>
+                  <td class="ai-llm-quotas__cell">
+                    <collection.Field
+                      @name="max_tokens"
+                      @title="max_tokens"
+                      @showTitle={{false}}
+                      as |field|
+                    >
+                      <field.Input
+                        @type="number"
+                        class="ai-llm-quotas__input"
+                        min="1"
+                      />
+                    </collection.Field>
+                  </td>
+                  <td class="ai-llm-quotas__cell">
+                    <collection.Field
+                      @name="max_usages"
+                      @title="max_usages"
+                      @showTitle={{false}}
+                      as |field|
+                    >
+                      <field.Input
+                        @type="number"
+                        class="ai-llm-quotas__input"
+                        min="1"
+                      />
+                    </collection.Field>
+                  </td>
+                  <td class="ai-llm-quotas__cell">
+                    <collection.Field
+                      @name="duration_seconds"
+                      @title="duration_seconds"
+                      @showTitle={{false}}
+                      as |field|
+                    >
+                      <field.Custom>
+                        <DurationSelector
+                          @value={{collectionData.duration_seconds}}
+                          @onChange={{field.set}}
+                        />
+                      </field.Custom>
+                    </collection.Field>
+                  </td>
+                  <td>
+                    <form.Button
+                      @icon="trash-can"
+                      @action={{fn collection.remove index}}
+                      class="btn-danger ai-llm-quotas__delete-btn"
+                    />
+                  </td>
+                </form.Collection>
+              </tbody>
+            </table>
+          </form.Container>
+
+          <form.Button
+            @action={{fn
+              this.openAddQuotaModal
+              (fn form.addItemToCollection "llm_quotas")
+            }}
+            @icon="plus"
+            @label="discourse_ai.llms.quotas.add"
+            class="ai-llm-editor__add-quota-btn"
+          />
         {{/if}}
 
-        <div class="control-group ai-llm-editor__action_panel">
-          <DButton
-            class="ai-llm-editor__test"
-            @action={{this.test}}
+        <form.Actions>
+          <form.Button
+            @action={{fn this.test data}}
             @disabled={{this.testRunning}}
             @label="discourse_ai.llms.tests.title"
           />
-          {{#if this.showAddQuotaButton}}
-            <DButton
-              @action={{this.openAddQuotaModal}}
+
+          <form.Submit />
+
+          {{#if (eq data.llm_quotas.length 0)}}
+            <form.Button
+              @action={{fn
+                this.openAddQuotaModal
+                (fn form.addItemToCollection "llm_quotas")
+              }}
               @label="discourse_ai.llms.quotas.add"
-              class="btn"
+              class="ai-llm-editor__add-quota-btn"
             />
-            {{#if this.modalIsVisible}}
-              <AiLlmQuotaModal
-                @model={{hash llm=@model}}
-                @closeModal={{this.closeAddQuotaModal}}
-              />
-            {{/if}}
           {{/if}}
-          <DButton
-            class="btn-primary ai-llm-editor__save"
-            @action={{this.save}}
-            @disabled={{this.isSaving}}
-            @label="discourse_ai.llms.save"
-          />
+
           {{#unless @model.isNew}}
-            <DButton
+            <form.Button
               @action={{this.delete}}
-              class="btn-danger ai-llm-editor__delete"
               @label="discourse_ai.llms.delete"
+              class="btn-danger"
             />
           {{/unless}}
-        </div>
+        </form.Actions>
       {{/unless}}
 
-      <div class="control-group ai-llm-editor-tests">
-        {{#if this.displayTestResult}}
-          {{#if this.testRunning}}
-            <div class="spinner small"></div>
-            {{i18n "discourse_ai.llms.tests.running"}}
-          {{else}}
-            {{#if this.testResult}}
-              <div class="ai-llm-editor-tests__success">
-                {{icon "check"}}
-                {{i18n "discourse_ai.llms.tests.success"}}
-              </div>
-            {{else}}
-              <div class="ai-llm-editor-tests__failure">
-                {{icon "xmark"}}
-                {{this.testErrorMessage}}
-              </div>
-            {{/if}}
-          {{/if}}
-        {{/if}}
-      </div>
-    </form>
+      {{#if this.displayTestResult}}
+        <form.Field
+          @showTitle={{false}}
+          @name="test_results"
+          @title="test_results"
+          @format="full"
+          as |field|
+        >
+          <field.Custom>
+            <ConditionalLoadingSpinner
+              @size="small"
+              @condition={{this.testRunning}}
+            >
+              {{#if this.testResult}}
+                <div class="ai-llm-editor-tests__success">
+                  {{icon "check"}}
+                  {{i18n "discourse_ai.llms.tests.success"}}
+                </div>
+              {{else}}
+                <div class="ai-llm-editor-tests__failure">
+                  {{icon "xmark"}}
+                  {{this.testErrorMessage}}
+                </div>
+              {{/if}}
+            </ConditionalLoadingSpinner>
+          </field.Custom>
+        </form.Field>
+      {{/if}}
+    </Form>
   </template>
 }

@@ -360,7 +360,9 @@ en:
             custom: "Custom..."
           hours: "hours"
           max_tokens_help: "Maximum number of tokens (words and characters) that each user in this group can use within the specified duration. Tokens are the units used by AI models to process text - roughly 1 token = 4 characters or 3/4 of a word."
+          max_tokens_required: "Must be set if max usages is not set"
           max_usages_help: "Maximum number of times each user in this group can use the AI model within the specified duration. This quota is tracked per individual user, not shared across the group."
+          max_usages_required: "Must be set if max tokens is not set"
         usage:
           ai_bot: "AI bot"
           ai_helper: "Helper"
