@@ -101,7 +101,7 @@ export default class AiLlmQuotaModal extends Component {
           <form.Field
             @name="max_tokens"
             @title={{i18n "discourse_ai.llms.quotas.max_tokens"}}
-            @description={{i18n "discourse_ai.llms.quotas.max_tokens_help"}}
+            @tooltip={{i18n "discourse_ai.llms.quotas.max_tokens_help"}}
             @format="large"
             as |field|
           >
@@ -111,7 +111,7 @@ export default class AiLlmQuotaModal extends Component {
           <form.Field
             @name="max_usages"
             @title={{i18n "discourse_ai.llms.quotas.max_usages"}}
-            @description={{i18n "discourse_ai.llms.quotas.max_usages_help"}}
+            @tooltip={{i18n "discourse_ai.llms.quotas.max_usages_help"}}
             @format="large"
             as |field|
           >

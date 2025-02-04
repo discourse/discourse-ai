@@ -13,6 +13,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
+import DTooltip from "float-kit/components/d-tooltip";
 import DurationSelector from "./ai-quota-duration-selector";
 import AiLlmQuotaModal from "./modal/ai-llm-quota-modal";
 
@@ -258,6 +259,7 @@ export default class AiLlmEditorForm extends Component {
         @validation="required|length:1,100"
         @disabled={{this.seeded}}
         @format="large"
+        @tooltip={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
         as |field|
       >
         <field.Input />
@@ -266,7 +268,7 @@ export default class AiLlmEditorForm extends Component {
       <form.Field
         @name="name"
         @title={{i18n "discourse_ai.llms.name"}}
-        @description={{i18n "discourse_ai.llms.hints.name"}}
+        @tooltip={{i18n "discourse_ai.llms.hints.name"}}
         @validation="required"
         @disabled={{this.seeded}}
         @format="large"
@@ -324,6 +326,7 @@ export default class AiLlmEditorForm extends Component {
               @name={{name}}
               @title={{i18n (concat "discourse_ai.llms.provider_fields." name)}}
               @format="large"
+              @showTitle={{false}}
               as |field|
             >
               {{#if (eq type "checkbox")}}
@@ -355,7 +358,7 @@ export default class AiLlmEditorForm extends Component {
         <form.Field
           @name="max_prompt_tokens"
           @title={{i18n "discourse_ai.llms.max_prompt_tokens"}}
-          @description={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
           @validation="required"
           @format="large"
           as |field|
@@ -366,7 +369,8 @@ export default class AiLlmEditorForm extends Component {
         <form.Field
           @name="vision_enabled"
           @title={{i18n "discourse_ai.llms.vision_enabled"}}
-          @description={{i18n "discourse_ai.llms.hints.vision_enabled"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.vision_enabled"}}
+          @format="large"
           as |field|
         >
           <field.Checkbox />
@@ -375,7 +379,8 @@ export default class AiLlmEditorForm extends Component {
         <form.Field
           @name="enabled_chat_bot"
           @title={{i18n "discourse_ai.llms.enabled_chat_bot"}}
-          @description={{i18n "discourse_ai.llms.hints.enabled_chat_bot"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.enabled_chat_bot"}}
+          @format="large"
           as |field|
         >
           <field.Checkbox />
