@@ -509,7 +509,7 @@ en:
 
       embeddings:
         short_title: "Embeddings"
-        description: "Embeddings are a crucial component of the Discourse AI plugin, enabling features like related topics and semantic search."
+        description: "Embeddings are numerical representations of data that capture meaning and relationships, enabling Discourse AI features like Related Topics and AI Search to understand and connect content."
         new: "New embedding"
         back: "Back"
         save: "Save"
