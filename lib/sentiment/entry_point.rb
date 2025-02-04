@@ -17,6 +17,7 @@ module DiscourseAi
         EmotionFilterOrder.register!(plugin)
         EmotionDashboardReport.register!(plugin)
         SentimentDashboardReport.register!(plugin)
+        SentimentAnalysisReport.register!(plugin)
       end
     end
   end
