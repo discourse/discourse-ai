@@ -13,7 +13,6 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import icon from "discourse-common/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
-import DTooltip from "float-kit/components/d-tooltip";
 import DurationSelector from "./ai-quota-duration-selector";
 import AiLlmQuotaModal from "./modal/ai-llm-quota-modal";
 
@@ -145,27 +144,30 @@ export default class AiLlmEditorForm extends Component {
     });
   }
 
-  get metaProviderParams() {
-    const params =
-      this.args.llms.resultSetMeta.provider_params[this.args.model.provider] ||
-      {};
+  @action
+  metaProviderParams(provider) {
+    const params = this.args.llms.resultSetMeta.provider_params[provider] || {};
 
-    return Object.entries(params).map(([field, value]) => {
+    return Object.entries(params).reduce((acc, [field, value]) => {
       if (typeof value === "string") {
-        return { field, type: value };
+        acc[field] = { type: value };
       } else if (typeof value === "object") {
         if (value.values) {
           value = { ...value };
-          value.values = value.values.map((v) => {
-            return { id: v, name: v };
-          });
+          value.values = value.values.map((v) => ({ id: v, name: v }));
         }
         this.args.model.provider_params[field] =
           this.args.model.provider_params[field] || value.default;
-        return { field, ...value };
+        acc[field] = {
+          type: value.type || "text",
+          values: value.values || undefined,
+          default: value.default || undefined,
+        };
+      } else {
+        acc[field] = { type: "text" }; // fallback
       }
-      return { field, type: "text" }; // fallback
-    });
+      return acc;
+    }, {});
   }
 
   @action
@@ -318,21 +320,27 @@ export default class AiLlmEditorForm extends Component {
         </form.Field>
 
         <form.Object @name="provider_params" as |object name|>
+          {{log (this.metaProviderParams data.provider)}}
           {{#let
-            (get (get @llms.resultSetMeta.provider_params data.provider) name)
-            as |type|
+            (get (this.metaProviderParams data.provider) name)
+            as |params|
           }}
             <object.Field
               @name={{name}}
               @title={{i18n (concat "discourse_ai.llms.provider_fields." name)}}
               @format="large"
-              @showTitle={{false}}
               as |field|
             >
-              {{#if (eq type "checkbox")}}
+              {{#if (eq params.type "enum")}}
+                <field.Select as |select|>
+                  {{#each params.values as |value|}}
+                    <select.Option @value={{value}}>{{value}}</select.Option>
+                  {{/each}}
+                </field.Select>
+              {{else if (eq params.type "checkbox")}}
                 <field.Checkbox />
               {{else}}
-                <field.Input @type={{type}} />
+                <field.Input @type={{params.type}} />
               {{/if}}
             </object.Field>
           {{/let}}
