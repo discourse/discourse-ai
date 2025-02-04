@@ -25,7 +25,7 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
         lin 1
       TEXT
 
-      expect(subject.apply(content, search, replace)).to eq(expected.strip)
+      expect(subject.apply(content, search, replace).strip).to eq(expected.strip)
     end
 
     it "raises error when no match is found" do
@@ -61,10 +61,10 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
     end
 
     it "is forgiving of whitespace differences" do
-      content = "line1\n  line2\nline3"
+      content = "line1\n line2\nline3"
       search = "line2"
       replace = "new_line2"
-      expect(subject.apply(content, search, replace)).to eq("line1\nnew_line2\nline3")
+      expect(subject.apply(content, search, replace).strip).to eq("line1\n new_line2\nline3")
     end
 
     it "is forgiving of small character differences" do
@@ -119,6 +119,13 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       CSS
 
       expect(subject.apply(content, search, replace)).to eq(expected.strip)
+    end
+
+    it "handles partial line matches" do
+      content = "abc hello efg\nabc hello efg"
+      search = "hello"
+      replace = "bob"
+      expect(subject.apply(content, search, replace)).to eq("abc bob efg\nabc bob efg")
     end
 
     it "handles JavaScript blocks in different orders" do

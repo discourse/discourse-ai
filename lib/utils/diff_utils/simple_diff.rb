@@ -19,6 +19,9 @@ module DiscourseAi
           raise ArgumentError, "content cannot be nil" if content.nil?
           raise ArgumentError, "search cannot be nil" if search.nil?
           raise ArgumentError, "replace cannot be nil" if replace.nil?
+          raise ArgumentError, "search cannot be empty" if search.empty?
+
+          return content.gsub(search, replace) if content.include?(search)
 
           lines = content.split("\n")
           search_lines = search.split("\n")
