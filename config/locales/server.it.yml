@@ -349,7 +349,6 @@ it:
         javascript_evaluator: "Valuta JavaScript"
       tool_description:
         update_artifact: "Aggiornato un artefatto web utilizzando il bot IA"
-        create_artifact: "Creato un artefatto web utilizzando il bot IA"
         web_browser: "Lettura <a href='%{url}'>%{url}</a>"
         github_search_files: "Hai cercato \"%{keywords}\" in %{repo}/%{branch}"
         github_search_code: "Hai cercato \"%{query}\" in %{repo}"

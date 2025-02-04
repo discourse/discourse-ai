@@ -377,7 +377,6 @@ nl:
           open_ai-gpt-4o: "Hoogintelligent model voor complexe taken met meerdere stappen"
           open_ai-gpt-4o-mini: "Betaalbaar, snel en klein model voor lichte taken"
           open_ai-o1-mini: "Kostenefficiënt redeneringsmodel"
-          open_ai-o1-preview: "Het meest capabele redeneringsmodel van Open AI"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficiënt lichtgewicht meertalig model"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Krachtig multifunctioneel model"
           mistral-mistral-large-latest: "Het krachtigste model van Mistral"

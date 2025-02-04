@@ -375,7 +375,6 @@ zh_CN:
           open_ai-gpt-4o: "适用于复杂、多步骤任务的高智能模型"
           open_ai-gpt-4o-mini: "经济、快速的小型模型，适用于轻量级任务"
           open_ai-o1-mini: "经济高效的推理模型"
-          open_ai-o1-preview: "Open AI 最强大的推理模型"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "高效的轻量级多语言模型"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "强大的多用途模型"
           mistral-mistral-large-latest: "Mistral 最强大的模型"

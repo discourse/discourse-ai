@@ -349,7 +349,6 @@ nl:
         javascript_evaluator: "JavaScript evalueren"
       tool_description:
         update_artifact: "Webartefact bijgewerkt met behulp van de AI-bot"
-        create_artifact: "Webartefact gemaakt met behulp van de AI-bot"
         web_browser: "Lezen: <a href='%{url}'>%{url}</a>"
         github_search_files: "Gezocht naar '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Gezocht naar '%{query}' in %{repo}"

@@ -385,7 +385,6 @@ ar:
           open_ai-gpt-4o: "نموذج عالي الذكاء للمهام المعقدة والمتعددة الخطوات"
           open_ai-gpt-4o-mini: "نموذج صغير سريع وبأسعارٍ معقولة للمهام الخفيفة"
           open_ai-o1-mini: "نموذج استدلال فعَّال من حيث التكلفة"
-          open_ai-o1-preview: "نموذج الاستدلال الأكثر كفاءة لدى OpenAI"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "نموذج متعدد اللغات خفيف وفعَّال"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "نموذج قوي متعدد الأغراض"
           mistral-mistral-large-latest: "النموذج الأقوى لدى Mistral"

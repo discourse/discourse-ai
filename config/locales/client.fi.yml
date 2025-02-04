@@ -377,7 +377,6 @@ fi:
           open_ai-gpt-4o: "Älykäs malli monimutkaisiin, monivaiheisiin tehtäviin"
           open_ai-gpt-4o-mini: "Edullinen ja nopea pieni malli kevyisiin tehtäviin"
           open_ai-o1-mini: "Kustannustehokas päättelymalli"
-          open_ai-o1-preview: "Open AI:n kyvykkäin päättelymalli"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Tehokas kevyt monikielinen malli"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Tehokas monikäyttöinen malli"
           mistral-mistral-large-latest: "Mistralin tehokkain malli"

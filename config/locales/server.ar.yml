@@ -349,7 +349,6 @@ ar:
         javascript_evaluator: "تقييم JavaScript"
       tool_description:
         update_artifact: "تم تحديث ملف ثانوي على الويب باستخدام روبوت الذكاء الاصطناعي"
-        create_artifact: "تم إنشاء ملف ثانوي على الويب باستخدام روبوت الذكاء الاصطناعي"
         web_browser: "قراءة <a href='%{url}'>%{url}</a>"
         github_search_files: "تم البحث عن '%{keywords}' في %{repo}/%{branch}"
         github_search_code: "تم البحث عن '%{query}' في %{repo}"

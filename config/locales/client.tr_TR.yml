@@ -377,7 +377,6 @@ tr_TR:
           open_ai-gpt-4o: "Karmaşık, çok adımlı görevler için yüksek zekâ modeli"
           open_ai-gpt-4o-mini: "Hafif görevler için uygun fiyatlı ve hızlı küçük model"
           open_ai-o1-mini: "Uygun maliyetli muhakeme modeli"
-          open_ai-o1-preview: "Açık YZ'nin en yetenekli muhakeme modeli"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Verimli hafif çok dilli model"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Güçlü çok amaçlı model"
           mistral-mistral-large-latest: "Mistral'in en güçlü modeli"
@@ -429,6 +428,7 @@ tr_TR:
           provider_order: "Sağlayıcı sırası (virgülle ayrılmış liste)"
           provider_quantizations: "Sağlayıcı nicelleştirmelerinin sırası (virgülle ayrılmış liste, ör.: fp16,fp8)"
           disable_streaming: "Akış tamamlamalarını devre dışı bırak (akışı akış dışı taleplere dönüştür)"
+          reasoning_effort: "Muhakeme eforu (yalnızca muhakeme modelleri için)"
       related_topics:
         title: "İlgili konular"
         pill: "İlgili"

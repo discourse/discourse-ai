@@ -377,7 +377,6 @@ it:
           open_ai-gpt-4o: "Modello ad alta intelligenza per attività complesse e multi-passaggio"
           open_ai-gpt-4o-mini: "Modello piccolo, economico e veloce per lavori leggeri"
           open_ai-o1-mini: "Modello di ragionamento economicamente efficiente"
-          open_ai-o1-preview: "Il modello di ragionamento più capace di Open AI"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Modello multilingue leggero ed efficiente"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Potente modello multifunzionale"
           mistral-mistral-large-latest: "Il modello più potente di Mistral"
