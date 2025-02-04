@@ -333,7 +333,7 @@ export default class AiLlmEditorForm extends Component {
               as |field|
             >
               {{#if (eq params.type "enum")}}
-                <field.Select as |select|>
+                <field.Select @includeNone={{false}} as |select|>
                   {{#each params.values as |option|}}
                     <select.Option
                       @value={{option.id}}
