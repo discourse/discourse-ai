@@ -82,5 +82,87 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       replace = "new_content"
       expect(subject.apply(content, search, replace)).to eq("def method\nnew_content\nend")
     end
+
+    it "handles CSS blocks in different orders" do
+      content = <<~CSS
+        .first {
+          color: red;
+          padding: 10px;
+        }
+        .second {
+          color: blue;
+          margin: 20px;
+        }
+      CSS
+
+      search = <<~CSS
+        .second {
+          color: blue;
+          margin: 20px;
+        }
+        .first {
+          color: red;
+          padding: 10px;
+        }
+      CSS
+
+      replace = <<~CSS
+        .new-block {
+          color: green;
+        }
+      CSS
+
+      expected = <<~CSS
+        .new-block {
+          color: green;
+        }
+      CSS
+
+      expect(subject.apply(content, search, replace)).to eq(expected.strip)
+    end
+
+    it "handles JavaScript blocks in different orders" do
+      content = <<~JS
+        function first() {
+          const x = 1;
+          return x + 2;
+        }
+
+        function second() {
+          if (true) {
+            return 42;
+          }
+          return 0;
+        }
+      JS
+
+      search = <<~JS
+        function second() {
+          if (true) {
+            return 42;
+          }
+          return 0;
+        }
+
+        function first() {
+          const x = 1;
+          return x + 2;
+        }
+      JS
+
+      replace = <<~JS
+        function replacement() {
+          return 'new';
+        }
+      JS
+
+      expected = <<~JS
+        function replacement() {
+          return 'new';
+        }
+      JS
+
+      expect(subject.apply(content, search, replace).strip).to eq(expected.strip)
+    end
   end
 end
