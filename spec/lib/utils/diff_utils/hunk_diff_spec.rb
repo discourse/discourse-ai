@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe DiscourseAi::Utils::DiffUtils do
+RSpec.describe DiscourseAi::Utils::DiffUtils::HunkDiff do
   describe ".apply_hunk" do
-    subject(:apply_hunk) { described_class.apply_hunk(original_text, diff) }
+    subject(:apply_hunk) { described_class.apply(original_text, diff) }
 
     context "with HTML content" do
       let(:original_text) { <<~HTML }
@@ -140,7 +140,7 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
 
         it "raises an AmbiguousMatchError" do
           expect { apply_hunk }.to raise_error(
-            DiscourseAi::Utils::DiffUtils::AmbiguousMatchError,
+            DiscourseAi::Utils::DiffUtils::HunkDiff::AmbiguousMatchError,
           ) do |error|
             expect(error.to_llm_message).to include("Found multiple possible locations")
           end
@@ -156,7 +156,7 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
 
         it "raises a NoMatchingContextError" do
           expect { apply_hunk }.to raise_error(
-            DiscourseAi::Utils::DiffUtils::NoMatchingContextError,
+            DiscourseAi::Utils::DiffUtils::HunkDiff::NoMatchingContextError,
           ) do |error|
             expect(error.to_llm_message).to include("Could not find the context lines")
           end
@@ -169,7 +169,7 @@ RSpec.describe DiscourseAi::Utils::DiffUtils do
 
           it "raises a MalformedDiffError" do
             expect { apply_hunk }.to raise_error(
-              DiscourseAi::Utils::DiffUtils::MalformedDiffError,
+              DiscourseAi::Utils::DiffUtils::HunkDiff::MalformedDiffError,
             ) do |error|
               expect(error.context["Issue"]).to eq("Diff is empty")
             end

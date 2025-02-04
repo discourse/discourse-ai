@@ -4,12 +4,14 @@ module DiscourseAi
   module AiBot
     module Tools
       class Option
-        attr_reader :tool, :name, :type
+        attr_reader :tool, :name, :type, :values, :default
 
-        def initialize(tool:, name:, type:)
+        def initialize(tool:, name:, type:, values: nil, default: nil)
           @tool = tool
           @name = name.to_s
           @type = type
+          @values = values
+          @default = default
         end
 
         def localized_name

@@ -41,6 +41,7 @@ const SYSTEM_ATTRIBUTES = [
   "enabled",
   "system",
   "priority",
+  "tools",
   "user_id",
   "default_llm",
   "force_default_llm",

@@ -102,6 +102,7 @@ module DiscourseAi
             if SiteSetting.ai_artifact_security.in?(%w[lax strict])
               tools << Tools::CreateArtifact
               tools << Tools::UpdateArtifact
+              tools << Tools::ReadArtifact
             end
 
             tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
@@ -201,7 +202,9 @@ module DiscourseAi
 
           prompt.max_pixels = self.class.vision_max_pixels if self.class.vision_enabled
           prompt.tools = available_tools.map(&:signature) if available_tools
-
+          available_tools.each do |tool|
+            tool.inject_prompt(prompt: prompt, context: context, persona: self)
+          end
           prompt
         end
 

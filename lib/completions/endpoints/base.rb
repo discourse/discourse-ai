@@ -87,10 +87,11 @@ module DiscourseAi
                 partial_tool_calls: partial_tool_calls,
               )
 
-            result = [result] if !result.is_a?(Array)
+            wrapped = result
+            wrapped = [result] if !result.is_a?(Array)
             cancelled_by_caller = false
             cancel_proc = -> { cancelled_by_caller = true }
-            result.each do |partial|
+            wrapped.each do |partial|
               blk.call(partial, cancel_proc)
               break if cancelled_by_caller
             end

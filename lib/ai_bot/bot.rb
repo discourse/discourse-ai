@@ -220,8 +220,11 @@ module DiscourseAi
         update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
 
         result =
-          tool.invoke do |progress|
-            if show_placeholder
+          tool.invoke do |progress, render_raw|
+            if render_raw
+              update_blk.call("", cancel, tool.custom_raw, :partial_invoke)
+              show_placeholder = false
+            elsif show_placeholder
               placeholder = build_placeholder(tool.summary, progress)
               update_blk.call("", cancel, placeholder)
             end

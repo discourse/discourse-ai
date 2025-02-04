@@ -130,8 +130,6 @@ class AiPersona < ActiveRecord::Base
       tool_details
     ]
 
-    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
-
     instance_attributes = {}
     attributes.each do |attr|
       value = self.read_attribute(attr)
@@ -139,14 +137,6 @@ class AiPersona < ActiveRecord::Base
     end
 
     instance_attributes[:username] = user&.username_lower
-
-    if persona_class
-      instance_attributes.each do |key, value|
-        # description/name are localized
-        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
-      end
-      return persona_class
-    end
 
     options = {}
     force_tool_use = []
@@ -179,6 +169,16 @@ class AiPersona < ActiveRecord::Base
         force_tool_use << klass if should_force_tool_use
         klass
       end
+
+    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
+    if persona_class
+      instance_attributes.each do |key, value|
+        # description/name are localized
+        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
+      end
+      persona_class.define_method(:options) { options }
+      return persona_class
+    end
 
     ai_persona_id = self.id
 
@@ -264,9 +264,19 @@ class AiPersona < ActiveRecord::Base
   end
 
   def system_persona_unchangeable
-    if top_p_changed? || temperature_changed? || system_prompt_changed? || tools_changed? ||
-         name_changed? || description_changed?
+    if top_p_changed? || temperature_changed? || system_prompt_changed? || name_changed? ||
+         description_changed?
       errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
+    elsif tools_changed?
+      old_tools = tools_change[0]
+      new_tools = tools_change[1]
+
+      old_tool_names = old_tools.map { |t| t.is_a?(Array) ? t[0] : t }.to_set
+      new_tool_names = new_tools.map { |t| t.is_a?(Array) ? t[0] : t }.to_set
+
+      if old_tool_names != new_tool_names
+        errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
+      end
     end
   end
 
