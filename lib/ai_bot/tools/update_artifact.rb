@@ -148,6 +148,7 @@ module DiscourseAi
             )
 
           begin
+            instructions = parameters[:instructions]
             partial_response = +""
             new_version =
               strategy
@@ -157,11 +158,11 @@ module DiscourseAi
                   user: post.user,
                   artifact: artifact,
                   artifact_version: artifact_version,
-                  instructions: parameters[:instructions],
+                  instructions: instructions,
                 )
                 .apply do |progress|
                   partial_response << progress
-                  in_progress(instructions: parameters[:instructions], source: partial_response)
+                  in_progress(instructions: instructions, source: partial_response)
                   # force in progress to render
                   yield nil, true
                 end

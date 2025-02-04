@@ -40,12 +40,13 @@ module DiscourseAi
         end
 
         def chain_next_response?
-          false
+          @chain_next_response
         end
 
         private
 
         def error_response(message)
+          @chain_next_response = true
           { status: "error", error: message }
         end
 
@@ -105,17 +106,19 @@ module DiscourseAi
 
         def extract_discourse_artifact(html)
           doc = Nokogiri.HTML(html)
-          iframe = doc.at_css(".ai-artifact iframe")
+          iframe = doc.at_css("body > iframe")
           return nil unless iframe
 
-          response = fetch_page(URI.parse(iframe["src"]))
-          return nil unless response
+          # parse srcdoc attribute of iframe
+          iframe_doc = Nokogiri.HTML(iframe["srcdoc"])
+          return nil unless iframe_doc
 
-          iframe_doc = Nokogiri.HTML(response.body)
-
-          content = iframe_doc.at_css("#content")&.inner_html.to_s[0...MAX_HTML_SIZE]
+          body = iframe_doc.at_css("body")
+          last_script_tag = body&.at_css("script:last-of-type")
+          script = last_script_tag&.content.to_s[0...MAX_HTML_SIZE]
+          last_script_tag.remove if last_script_tag
+          content = body&.inner_html.to_s[0...MAX_HTML_SIZE]
           style = iframe_doc.at_css("style")&.content.to_s[0...MAX_HTML_SIZE]
-          script = iframe_doc.at_css("script:not([src])")&.content.to_s[0...MAX_HTML_SIZE]
 
           [content, style, script]
         end
