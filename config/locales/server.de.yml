@@ -193,6 +193,7 @@ de:
       link: "Artefakt in neuem Tab anzeigen"
       view_source: "Quelle anzeigen"
       view_changes: "Änderungen anzeigen"
+      change_description: "Beschreibung ändern"
     unknown_model: "Unbekanntes KI-Modell"
     tools:
       custom_name: "%{name} (benutzerdefiniert)"
@@ -283,6 +284,20 @@ de:
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
       tool_options:
+        create_artifact:
+          creator_llm:
+            name: "LLM"
+            description: "Sprachmodell, das für die Erstellung von Artefakten verwendet werden soll"
+        update_artifact:
+          editor_llm:
+            name: "LLM"
+            description: "Sprachmodell, das für Artefaktbearbeitungen verwendet werden soll"
+          update_algorithm:
+            name: "Algorithmus aktualisieren"
+            description: "Bitten LLM, den gesamten Austausch vorzunehmen, oder verwenden diff zum Aktualisieren"
+          do_not_echo_artifact:
+            name: "Kein Echo Artefakt"
+            description: "Begrenzt die Kosten, reduziert aber die Effektivität von Artefakt-Updates"
         google:
           base_query:
             name: "Basissuchanfrage"
@@ -302,6 +317,7 @@ de:
             name: "Basissuchanfrage"
             description: "Basisanfrage, die bei der Suche verwendet wird. Beispiel: Bei „#dringend“ wird der Suchanfrage „#dringend“ vorangestellt und es werden nur Themen mit der Kategorie oder dem Schlagwort „dringend“ angezeigt."
       tool_summary:
+        read_artifact: "Ein Web-Artefakt lesen"
         update_artifact: "Aktualisieren eines Web-Artefakts"
         create_artifact: "Web-Artefakt erstellen"
         web_browser: "Web durchsuchen"
@@ -325,6 +341,7 @@ de:
         search_meta_discourse: "Meta-Discourse durchsuchen"
         javascript_evaluator: "JavaScript auswerten"
       tool_help:
+        read_artifact: "Lesen eines Webartefakts mit dem KI-Bot"
         update_artifact: "Aktualisiere ein Web-Artefakt mit dem KI-Bot"
         create_artifact: "Erstelle ein Web-Artefakt mit dem KI-Bot"
         web_browser: "Webseite mit dem KI-Bot durchsuchen"
@@ -348,8 +365,9 @@ de:
         search_meta_discourse: "Meta-Discourse durchsuchen"
         javascript_evaluator: "JavaScript auswerten"
       tool_description:
+        read_artifact: "Lesen eines Webartefakts mit dem KI-Bot"
         update_artifact: "Ein Web-Artefakt wurde mit dem KI-Bot aktualisiert"
-        create_artifact: "Ein Web-Artefakt wurde mit dem KI-Bot erstellt"
+        create_artifact: "Erstellt ein Web-Artefakt: %{name} - %{specification}"
         web_browser: "<a href='%{url}'>%{url}</a> wird gelesen"
         github_search_files: "Gesucht wurde nach „%{keywords}“ in %{repo}/%{branch}"
         github_search_code: "Gesucht wurde nach „%{query}“ in %{repo}"

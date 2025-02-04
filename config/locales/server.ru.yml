@@ -349,7 +349,6 @@ ru:
         javascript_evaluator: "Оценить JavaScript"
       tool_description:
         update_artifact: "Обновлен веб-артефакт с помощью AI-бота"
-        create_artifact: "Создан веб-артефакт с использованием AI-бота"
         web_browser: "Чтение: <a href='%{url}'>%{url}</a>"
         github_search_files: "Выполнен поиск «%{keywords}» в %{repo}/%{branch}"
         github_search_code: "Выполнен поиск «%{query}» в %{repo}"

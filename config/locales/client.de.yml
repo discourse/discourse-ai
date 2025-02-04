@@ -212,6 +212,7 @@ de:
         edit: "Bearbeiten"
         description: "Beschreibung"
         no_llm_selected: "Kein Sprachmodell ausgewählt"
+        use_parent_llm: "Verwende das Personas Sprachmodell"
         max_context_posts: "Max. Kontext-Beiträge"
         max_context_posts_help: "Die maximale Anzahl von Beiträgen, die die KI als Kontext für die Antwort auf einen Nutzer verwenden soll (leer für Standardwert)."
         vision_enabled: Sehen aktiviert
@@ -377,7 +378,9 @@ de:
           open_ai-gpt-4o: "Hochintelligentes Modell für komplexe, mehrstufige Aufgaben"
           open_ai-gpt-4o-mini: "Erschwingliches und schnelles kleines Modell für leichte Aufgaben"
           open_ai-o1-mini: "Kosteneffizientes Argumentationsmodell"
-          open_ai-o1-preview: "Das leistungsfähigste Argumentationsmodell von Open AI"
+          open_ai-o1-preview: "Open AI's fähigstes Argumentationsmodell (Vorschau)"
+          open_ai-o1: "Das leistungsfähigste Argumentationsmodell von Open AI"
+          open_ai-o3-mini: "Erweitertes kosteneffizientes Argumentationsmodell"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Effizientes leichtgewichtiges mehrsprachiges Modell"
           samba_nova-Meta-Llama-3-1-70B-Instruct": "Leistungsstarkes Mehrzweckmodell"
           mistral-mistral-large-latest: "Das leistungsstärkste Modell von Mistral"
@@ -429,6 +432,7 @@ de:
           provider_order: "Anbieterreihenfolge (kommagetrennte Liste)"
           provider_quantizations: "Reihenfolge der Provider-Quantisierungen (kommagetrennte Liste, z. B.: fp16,fp8)"
           disable_streaming: "Streaming-Vervollständigung deaktivieren (Streaming-Anfragen in Nicht-Streaming-Anfragen umwandeln)"
+          reasoning_effort: "Argumentationsaufwand (gilt nur für Argumentationsmodelle)"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"

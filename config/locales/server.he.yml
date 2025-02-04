@@ -191,6 +191,7 @@ he:
       link: "הצגת תוצר בלשונית חדשה"
       view_source: "הצגת המקור"
       view_changes: "הצגת שינויים"
+      change_description: "עריכת התיאור"
     unknown_model: "דגם בינה מלאכותית לא ידוע"
     tools:
       custom_name: "%{name} (מותאם אישית)"
@@ -278,6 +279,17 @@ he:
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
       tool_options:
+        create_artifact:
+          creator_llm:
+            name: "LLM"
+            description: "מודל שפה לשימוש ליצירת תוצרים"
+        update_artifact:
+          editor_llm:
+            name: "LLM"
+            description: "מודל שפה לשימוש לעריכת תוצרים"
+          update_algorithm:
+            name: "עדכון אלגוריתם"
+            description: "לבקש מ־LLM להחליף לחלוטין או להשתמש ב־diff (הבדלים) כדי לעדכן"
         google:
           base_query:
             name: "שאילתת חיפוש בסיסית"
@@ -297,6 +309,7 @@ he:
             name: "שאילתת חיפוש בסיסית"
             description: "שאילתת בסיס לשימוש בעת חיפוש. למשל: ‚‎#urgent’ יוסיף את ‚‎#urgent’ לשאילתת החיפוש ויכלול רק נושאים עם הקטגוריה או התגית urgent (דחוף)."
       tool_summary:
+        read_artifact: "קריאת תוצר דפדפני"
         update_artifact: "עדכון תוצר דפדפני"
         create_artifact: "יצירת תוצר דפדפני"
         web_browser: "גלישה באינטרנט"
@@ -320,6 +333,7 @@ he:
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
       tool_help:
+        read_artifact: "לקרוא תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         update_artifact: "עדכון תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         create_artifact: "יצירת תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         web_browser: "גלישה באינטרנט באמצעות בוט בינה מלאכותית"
@@ -343,8 +357,9 @@ he:
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
       tool_description:
+        read_artifact: "לקרוא תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         update_artifact: "עודכן תוצר דפדפני באמצעות בוט הבינה המלאכותית"
-        create_artifact: "נוצר תוצר דפדפני באמצעות בוט הבינה המלאכותית"
+        create_artifact: "נוצר תוצר דפדפני: %{name} - %{specification}"
         web_browser: "קורא את <a href='%{url}'>%{url}</a>"
         github_search_files: "בוצע חיפוש אחר ‚%{keywords}’ בתוך %{repo}/%{branch}"
         github_search_code: "בוצע חיפוש אחר ‚%{query}’ בתוך %{repo}"
@@ -431,6 +446,7 @@ he:
       cannot_edit_builtin: "אי אפשר לערוך מודל מובנה."
       configuration:
         disable_embeddings: "יש להשבית קודם את ‚הטמעת בינה מלאכותית פעילה’."
+        invalid_config: "בחרת אפשרות שגויה."
     llm_models:
       missing_provider_param: "%{param} לא יכול להישאר ריק"
       bedrock_invalid_url: "נא למלא את כל השדות די להשתמש במודל הזה."
