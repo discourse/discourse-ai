@@ -121,6 +121,13 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
       expect(subject.apply(content, search, replace)).to eq(expected.strip)
     end
 
+    it "handles partial line matches" do
+      content = "abc hello efg\nabc hello efg"
+      search = "hello"
+      replace = "bob"
+      expect(subject.apply(content, search, replace)).to eq("abc bob efg\nabc bob efg")
+    end
+
     it "handles JavaScript blocks in different orders" do
       content = <<~JS
         function first() {
