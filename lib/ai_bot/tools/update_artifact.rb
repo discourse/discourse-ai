@@ -167,7 +167,6 @@ module DiscourseAi
                   yield nil, true
                 end
 
-            puts "updating artifact"
             update_custom_html(
               artifact: artifact,
               artifact_version: artifact_version,
