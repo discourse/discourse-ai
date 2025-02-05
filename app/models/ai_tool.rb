@@ -370,5 +370,5 @@ end
 #  updated_at               :datetime         not null
 #  rag_chunk_tokens         :integer          default(374), not null
 #  rag_chunk_overlap_tokens :integer          default(10), not null
-#  tool_name                :string           default(""), not null
+#  tool_name                :string(100)      default(""), not null
 #

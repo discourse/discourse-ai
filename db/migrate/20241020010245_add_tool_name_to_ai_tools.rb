@@ -2,7 +2,13 @@
 
 class AddToolNameToAiTools < ActiveRecord::Migration[7.1]
   def up
-    add_column :ai_tools, :tool_name, :string, null: false, limit: 100, default: "", if_not_exists: true
+    add_column :ai_tools,
+      :tool_name,
+      :string,
+      null: false,
+      limit: 100,
+      default: "",
+      if_not_exists: true
 
     # Migrate existing name to tool_name
     execute <<~SQL
