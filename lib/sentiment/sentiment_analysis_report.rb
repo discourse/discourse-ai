@@ -6,8 +6,8 @@ module DiscourseAi
       def self.register!(plugin)
         plugin.add_report("sentiment_analysis") do |report|
           # TODO: Implement the report
-          # report.modes = []
-          # reprot.data = {}
+          report.modes = [:sentiment_analysis]
+          report.data = [300, 50, 100]
         end
       end
     end

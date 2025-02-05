@@ -14,7 +14,7 @@ export default {
     withPluginApi("2.0.1", (api) => {
       api.registerReportModeComponent("emotion", AdminReportEmotion);
       api.registerReportModeComponent(
-        "sentiment-analysis",
+        "sentiment_analysis",
         AdminReportSentimentAnalysis
       );
     });
