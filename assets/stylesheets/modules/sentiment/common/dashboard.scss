@@ -9,3 +9,27 @@
     }
   }
 }
+
+.admin-report.sentiment-analyis {
+  .filters {
+    order: 1;
+    width: 100%;
+  }
+
+  .main {
+    order: 2;
+  }
+}
+
+.admin-report-sentiment-analysis {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2.5rem;
+  justify-items: center;
+
+  .admin-report-doughnut {
+    max-width: 300px; /* Adjust size */
+    max-height: 300px;
+  }
+}
