@@ -3,11 +3,11 @@ import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action, get } from "@ember/object";
+import PostList from "discourse/components/post-list";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import dIcon from "discourse-common/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 import DoughnutChart from "./doughnut-chart";
-import PostList from "discourse/components/post-list";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @tracked selectedChart = null;
@@ -29,7 +29,6 @@ export default class AdminReportSentimentAnalysis extends Component {
           data.overall_scores.neutral,
           data.overall_scores.negative,
         ],
-        // TODO slicing 3 posts for now
         posts: data.posts,
       };
     });

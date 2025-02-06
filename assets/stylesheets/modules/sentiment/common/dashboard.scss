@@ -31,10 +31,11 @@
 
   .main {
     flex: 100%;
-
     display: flex;
     order: 2;
     gap: 1rem;
+    align-items: flex-start;
+    max-height: 100vh;
   }
 }
 
@@ -74,6 +75,8 @@
   flex: 1;
   display: flex;
   flex-flow: column nowrap;
+  overflow-y: auto;
+  height: 100%;
 
   &__title {
     font-size: var(--font-up-2);
