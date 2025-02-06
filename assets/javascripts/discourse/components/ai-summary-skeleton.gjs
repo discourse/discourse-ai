@@ -7,8 +7,8 @@ import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { cancel } from "@ember/runloop";
 import concatClass from "discourse/helpers/concat-class";
-import i18n from "discourse-common/helpers/i18n";
-import discourseLater from "discourse-common/lib/later";
+import discourseLater from "discourse/lib/later";
+import { i18n } from "discourse-i18n";
 import AiIndicatorWave from "./ai-indicator-wave";
 
 class Block {

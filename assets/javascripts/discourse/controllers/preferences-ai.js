@@ -3,7 +3,7 @@ import Controller from "@ember/controller";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { isTesting } from "discourse-common/config/environment";
+import { isTesting } from "discourse/lib/environment";
 
 const AI_ATTRS = ["auto_image_caption"];
 

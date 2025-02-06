@@ -1,5 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import i18n from "discourse-common/helpers/i18n";
+import { i18n } from "discourse-i18n";
 import AiComposerHelperMenu from "../discourse/components/ai-composer-helper-menu";
 import ModalDiffModal from "../discourse/components/modal/diff-modal";
 import { showComposerAiHelper } from "../discourse/lib/show-ai-helper";

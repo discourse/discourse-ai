@@ -7,8 +7,8 @@ import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { getAbsoluteURL } from "discourse/lib/get-url";
 import { clipboardCopyAsync } from "discourse/lib/utilities";
-import { getAbsoluteURL } from "discourse-common/lib/get-url";
 import { i18n } from "discourse-i18n";
 
 export default class ShareModal extends Component {

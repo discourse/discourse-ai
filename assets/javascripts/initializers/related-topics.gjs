@@ -1,8 +1,8 @@
 import { cached, tracked } from "@glimmer/tracking";
 import BasicTopicList from "discourse/components/basic-topic-list";
+import icon from "discourse/helpers/d-icon";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import icon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
+import { i18n } from "discourse-i18n";
 
 const RelatedTopics = <template>
   <div
