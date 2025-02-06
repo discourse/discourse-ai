@@ -12,11 +12,6 @@ module ::DiscourseAi
       attr_reader :endpoint, :key, :referer
 
       class << self
-        def configured?
-          SiteSetting.ai_hugging_face_tei_endpoint.present? ||
-            SiteSetting.ai_hugging_face_tei_endpoint_srv.present?
-        end
-
         def reranker_configured?
           SiteSetting.ai_hugging_face_tei_reranker_endpoint.present? ||
             SiteSetting.ai_hugging_face_tei_reranker_endpoint_srv.present?
@@ -50,32 +45,23 @@ module ::DiscourseAi
 
           JSON.parse(response.body, symbolize_names: true)
         end
+      end
 
-        def classify(content, model_config, base_url = Discourse.base_url)
-          headers = { "Referer" => base_url, "Content-Type" => "application/json" }
-          headers["X-API-KEY"] = model_config.api_key
-          headers["Authorization"] = "Bearer #{model_config.api_key}"
+      def classify_by_sentiment!(content)
+        response = do_request!(content)
 
-          body = { inputs: content, truncate: true }.to_json
-
-          api_endpoint = model_config.endpoint
-          if api_endpoint.present? && api_endpoint.start_with?("srv://")
-            service = DiscourseAi::Utils::DnsSrv.lookup(api_endpoint.delete_prefix("srv://"))
-            api_endpoint = "https://#{service.target}:#{service.port}"
-          end
-
-          conn = Faraday.new { |f| f.adapter FinalDestination::FaradayAdapter }
-          response = conn.post(api_endpoint, body, headers)
-
-          if response.status != 200
-            raise Net::HTTPBadResponse.new("Status: #{response.status}\n\n#{response.body}")
-          end
-
-          JSON.parse(response.body, symbolize_names: true)
-        end
+        JSON.parse(response.body, symbolize_names: true)
       end
 
       def perform!(content)
+        response = do_request!(content)
+
+        JSON.parse(response.body, symbolize_names: true).first
+      end
+
+      private
+
+      def do_request!(content)
         headers = { "Referer" => referer, "Content-Type" => "application/json" }
         body = { inputs: content, truncate: true }.to_json
 
@@ -89,7 +75,7 @@ module ::DiscourseAi
 
         raise Net::HTTPBadResponse.new(response.body.to_s) if ![200].include?(response.status)
 
-        JSON.parse(response.body, symbolize_names: true).first
+        response
       end
     end
   end
