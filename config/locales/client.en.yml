@@ -15,6 +15,11 @@ en:
         emotion:
           title: "Emotion"
           description: "The table lists a count of posts classified with a determined emotion. Classified with the model 'SamLowe/roberta-base-go_emotions'."
+        reports:
+          filters:
+            filter_by:
+              label: "Filter by"
+
   js:
     discourse_automation:
       scriptables:

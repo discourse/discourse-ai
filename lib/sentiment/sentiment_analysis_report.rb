@@ -46,6 +46,23 @@ module DiscourseAi
                   end,
               }
             end
+
+          # TODO: connect filter to make the report data change.
+          filter_type = report.filters.dig(:filter_type) || "Category"
+          report.add_filter(
+            "filter_by",
+            type: "list",
+            default: filter_type,
+            choices: [{ id: "category", name: "Category" }, { id: "tag", name: "Tag" }],
+            allow_any: false,
+            auto_insert_none_item: false,
+          )
+
+          report.labels = [
+            I18n.t("discourse_ai.sentiment.reports.sentiment_analysis.positive"),
+            I18n.t("discourse_ai.sentiment.reports.sentiment_analysis.neutral"),
+            I18n.t("discourse_ai.sentiment.reports.sentiment_analysis.negative"),
+          ]
         end
       end
 

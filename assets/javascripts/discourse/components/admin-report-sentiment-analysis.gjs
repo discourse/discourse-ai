@@ -12,10 +12,6 @@ import DoughnutChart from "./doughnut-chart";
 export default class AdminReportSentimentAnalysis extends Component {
   @tracked selectedChart = null;
 
-  get labels() {
-    return ["Positive", "Neutral", "Negative"];
-  }
-
   get colors() {
     return ["#2ecc71", "#95a5a6", "#e74c3c"];
   }
@@ -71,6 +67,14 @@ export default class AdminReportSentimentAnalysis extends Component {
     }
   }
 
+  doughnutTitle(data) {
+    if (data.posts?.length > 0) {
+      return `${data.category_name} (${data.posts.length})`;
+    } else {
+      return data.category_name;
+    }
+  }
+
   <template>
     {{! TODO add more details about posts on click + tag data }}
     <div class="admin-report-sentiment-analysis">
@@ -87,10 +91,10 @@ export default class AdminReportSentimentAnalysis extends Component {
           }}
         >
           <DoughnutChart
-            @labels={{this.labels}}
+            @labels={{@model.labels}}
             @colors={{this.colors}}
             @data={{data.scores}}
-            @doughnutTitle={{data.category_name}}
+            @doughnutTitle={{this.doughnutTitle data}}
           />
         </div>
       {{/each}}

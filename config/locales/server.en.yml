@@ -413,6 +413,10 @@ en:
           anger: "Anger 😡"
           joy: "Joy 😀"
           disgust: "Disgust 🤢"
+        sentiment_analysis:
+          positive: "Positive"
+          negative: "Negative"
+          neutral: "Neutral"
 
     llm:
       configuration:
