@@ -3,10 +3,11 @@
 RSpec.describe DiscourseAi::Admin::AiPersonasController do
   fab!(:admin)
   fab!(:ai_persona)
+  fab!(:embedding_definition)
 
   before do
     sign_in(admin)
-
+    SiteSetting.ai_embeddings_selected_model = embedding_definition.id
     SiteSetting.ai_embeddings_enabled = true
   end
 

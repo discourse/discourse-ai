@@ -9,7 +9,7 @@ module DiscourseAi
 
       def categories
         return [] if @text.blank?
-        return [] unless SiteSetting.ai_embeddings_enabled
+        return [] if !DiscourseAi::Embeddings.enabled?
 
         candidates = nearest_neighbors(limit: 100)
         return [] if candidates.empty?
@@ -51,7 +51,7 @@ module DiscourseAi
 
       def tags
         return [] if @text.blank?
-        return [] unless SiteSetting.ai_embeddings_enabled
+        return [] if !DiscourseAi::Embeddings.enabled?
 
         candidates = nearest_neighbors(limit: 100)
         return [] if candidates.empty?

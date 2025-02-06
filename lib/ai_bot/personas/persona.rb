@@ -295,7 +295,7 @@ module DiscourseAi
           upload_refs =
             UploadReference.where(target_id: id, target_type: "AiPersona").pluck(:upload_id)
 
-          return nil if !SiteSetting.ai_embeddings_enabled?
+          return nil if !DiscourseAi::Embeddings.enabled?
           return nil if conversation_context.blank? || upload_refs.blank?
 
           latest_interactions =
