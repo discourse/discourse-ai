@@ -7,7 +7,7 @@ module Jobs
     cluster_concurrency 1
 
     def execute(args)
-      return unless SiteSetting.ai_embeddings_enabled
+      return unless DiscourseAi::Embeddings.enabled?
 
       limit = SiteSetting.ai_embeddings_backfill_batch_size
 

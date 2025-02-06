@@ -11,7 +11,7 @@ class RagDocumentFragment < ActiveRecord::Base
     def link_target_and_uploads(target, upload_ids)
       return if target.blank?
       return if upload_ids.blank?
-      return if !SiteSetting.ai_embeddings_enabled?
+      return if !DiscourseAi::Embeddings.enabled?
 
       UploadReference.ensure_exist!(upload_ids: upload_ids, target: target)
 
@@ -27,7 +27,7 @@ class RagDocumentFragment < ActiveRecord::Base
 
     def update_target_uploads(target, upload_ids)
       return if target.blank?
-      return if !SiteSetting.ai_embeddings_enabled?
+      return if !DiscourseAi::Embeddings.enabled?
 
       if upload_ids.blank?
         RagDocumentFragment.where(target: target).destroy_all

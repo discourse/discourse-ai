@@ -20,7 +20,7 @@ module DiscourseAi
       def upload_file
         file = params[:file] || params[:files].first
 
-        if !SiteSetting.ai_embeddings_enabled?
+        if !DiscourseAi::Embeddings.enabled?
           raise Discourse::InvalidAccess.new("Embeddings not enabled")
         end
 
