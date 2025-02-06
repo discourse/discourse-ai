@@ -4,7 +4,7 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import DButton from "discourse/components/d-button";
 import withEventValue from "discourse/helpers/with-event-value";
-import i18n from "discourse-common/helpers/i18n";
+import { i18n } from "discourse-i18n";
 import not from "truth-helpers/helpers/not";
 
 export default class AiHelperCustomPrompt extends Component {

@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { LinkTo } from "@ember/routing";
-import i18n from "discourse-common/helpers/i18n";
+import { i18n } from "discourse-i18n";
 
 export default class AISentimentDashboard extends Component {
   static shouldRender(_outletArgs, helper) {
