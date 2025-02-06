@@ -633,6 +633,11 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+        sentiment_analysis:
+          score_types:
+            positive: "Positive"
+            neutral: "Neutral"
+            negative: "Negative"
 
       summarization:
         chat:
