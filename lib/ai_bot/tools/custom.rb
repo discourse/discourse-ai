@@ -26,8 +26,11 @@ module DiscourseAi
           AiTool.find(tool_id).signature
         end
 
+        # Backwards compatibility: if tool_name is not set (existing custom tools), use name
         def self.name
-          AiTool.where(id: tool_id).pluck(:name).first
+          name, tool_name = AiTool.where(id: tool_id).pluck(:name, :tool_name).first
+
+          tool_name.presence || name
         end
 
         def initialize(*args, **kwargs)
