@@ -187,7 +187,7 @@ export default class RagUploader extends Component {
         disabled={{this.uploading}}
         type="file"
         multiple="multiple"
-        accept=".txt,.md"
+        accept=".txt,.md,.pdf"
       />
       <DButton
         @label="discourse_ai.rag.uploads.button"

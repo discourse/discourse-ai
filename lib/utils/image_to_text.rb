@@ -1,9 +1,53 @@
 # frozen_string_literal: true
 
-class DiscourseAi::Utils::PdfToText
-  MAX_PDF_SIZE = 100.megabytes
-  MAX_CONVERT_SECONDS = 30
+class DiscourseAi::Utils::ImageToText
   BACKOFF_SECONDS = [5, 30, 60]
+
+  class Reader
+    def initialize(uploads:, llm_model:, user:)
+      @uploads = uploads
+      @llm_model = llm_model
+      @user = user
+      @buffer = +""
+
+      @to_process = uploads.dup
+    end
+
+    # return nil if no more data
+    def read(length)
+      # for implementation simplicity we will process one image at a time
+      if !@buffer.empty?
+        part = @buffer.slice!(0, length)
+        return part
+      end
+
+      return nil if @to_process.empty?
+
+      upload = @to_process.shift
+      extractor =
+        DiscourseAi::Utils::ImageToText.new(upload: upload, llm_model: @llm_model, user: @user)
+      extractor.extract_text do |chunk, error|
+        if error
+          Discourse.warn_exception(
+            error,
+            message: "Discourse AI: Failed to extract text from image",
+          )
+        else
+          # this introduces chunk markers so discourse rag ingestion requires no overlaps
+          @buffer << "\n[[metadata ]]\n"
+          @buffer << chunk
+        end
+      end
+
+      read(length)
+    end
+  end
+
+  def self.as_fake_file(uploads:, llm_model:, user:)
+    # given our implementation for extracting text expect a file, return a simple object that can simulate read(size)
+    # and stream content
+    Reader.new(uploads: uploads, llm_model: llm_model, user: user)
+  end
 
   attr_reader :upload, :llm_model, :user
 
@@ -11,100 +55,34 @@ class DiscourseAi::Utils::PdfToText
     @upload = upload
     @llm_model = llm_model
     @user = user
-    @uploaded_pages = UploadReference.where(target: upload).map(&:upload)
   end
 
-  def extract_pages
-    temp_dir = File.join(Dir.tmpdir, "discourse-pdf-#{SecureRandom.hex(8)}")
-    FileUtils.mkdir_p(temp_dir)
-
-    begin
-      pdf_path =
-        if upload.local?
-          Discourse.store.path_for(upload)
-        else
-          Discourse.store.download_safe(upload, max_file_size_kb: MAX_PDF_SIZE)&.path
-        end
-
-      raise Discourse::InvalidParameters.new("Failed to download PDF") if pdf_path.nil?
-
-      temp_pdf = File.join(temp_dir, "source.pdf")
-      FileUtils.cp(pdf_path, temp_pdf)
-
-      # Convert PDF to individual page images
-      output_pattern = File.join(temp_dir, "page-%04d.png")
-
-      command = [
-        "magick",
-        "-density",
-        "300",
-        temp_pdf,
-        "-background",
-        "white",
-        "-auto-orient",
-        "-quality",
-        "85",
-        output_pattern,
-      ]
-
-      Discourse::Utils.execute_command(
-        *command,
-        failure_message: "Failed to convert PDF to images",
-        timeout: MAX_CONVERT_SECONDS,
-      )
-
-      uploads = []
-      Dir
-        .glob(File.join(temp_dir, "page-*.png"))
-        .sort
-        .each do |page_path|
-          upload =
-            UploadCreator.new(File.open(page_path), "page-#{File.basename(page_path)}").create_for(
-              @user.id,
-            )
-
-          uploads << upload
-        end
-
-      # Create upload references
-      UploadReference.ensure_exist!(upload_ids: uploads.map(&:id), target: @upload)
-
-      @uploaded_pages = uploads
-    ensure
-      FileUtils.rm_rf(temp_dir) if Dir.exist?(temp_dir)
-    end
-  end
-
-  def extract_text(uploads: nil, retries: 3)
+  def extract_text(retries: 3)
     uploads ||= @uploaded_pages
 
     raise "must specify a block" if !block_given?
-    uploads
-      .map do |upload|
-        extracted = nil
-        error = nil
+    extracted = nil
+    error = nil
 
-        backoff = BACKOFF_SECONDS.dup
+    backoff = BACKOFF_SECONDS.dup
 
-        retries.times do
-          seconds = nil
-          begin
-            extracted = extract_text_from_page(upload)
-            break
-          rescue => e
-            error = e
-            seconds = backoff.shift || seconds
-            sleep(seconds)
-          end
-        end
-        if extracted
-          extracted.each { |chunk| yield(chunk, upload) }
-        else
-          yield(nil, upload, error)
-        end
-        extracted || []
+    retries.times do
+      seconds = nil
+      begin
+        extracted = extract_text_from_page(upload)
+        break
+      rescue => e
+        error = e
+        seconds = backoff.shift || seconds
+        sleep(seconds)
       end
-      .flatten
+    end
+    if extracted
+      extracted.each { |chunk| yield(chunk) }
+    else
+      yield(nil, error)
+    end
+    extracted || []
   end
 
   private

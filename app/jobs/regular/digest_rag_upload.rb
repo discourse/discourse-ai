@@ -164,6 +164,32 @@ module ::Jobs
     end
 
     def get_uploaded_file(upload)
+      if upload.extension == "pdf"
+        pages =
+          DiscourseAi::Utils::PdfToImages.new(
+            upload: upload,
+            user: Discourse.system_user,
+          ).uploaded_pages
+
+        return(
+          DiscourseAi::Utils::ImageToText.as_fake_file(
+            uploads: pages,
+            llm_model: LlmModel.find_by(display_name: "GPT-4o"),
+            user: Discourse.system_user,
+          )
+        )
+      end
+
+      if %w[png jpg jpeg].include?(upload.extension)
+        return(
+          DiscourseAi::Utils::ImageToText.as_fake_file(
+            uploads: [upload],
+            llm_model: LlmModel.find_by(display_name: "GPT-4o"),
+            user: Discourse.system_user,
+          )
+        )
+      end
+
       store = Discourse.store
       @file ||=
         if store.external?
