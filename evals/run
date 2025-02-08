@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+discourse_path = File.expand_path(File.join(File.dirname(__FILE__), "../../.."))
+# rubocop:disable Discourse/NoChdir
+Dir.chdir(discourse_path)
+# rubocop:enable Discourse/NoChdir
+
+require "/home/sam/Source/discourse/config/environment"
+require_relative "lib/llm"
+
+# Set up command line argument parsing
+require "optparse"
+ENV["DISCOURSE_AI_NO_DEBUG"] = "1"
+
+options = { eval_name: nil, model: nil, output_dir: File.join(discourse_path, "tmp", "evals") }
+
+OptionParser
+  .new do |opts|
+    opts.banner = "Usage: evals/run [options]"
+
+    opts.on("-e", "--eval NAME", "Name of the evaluation to run") do |eval_name|
+      options[:eval_name] = eval_name
+    end
+
+    opts.on("-m", "--model NAME", "Model to evaluate") { |model| options[:model] = model }
+
+    opts.on("-o", "--output-dir DIR", "Directory for evaluation results") do |dir|
+      options[:output_dir] = dir
+    end
+  end
+  .parse!
+
+# Ensure output directory exists
+FileUtils.mkdir_p(options[:output_dir])
+
+# Load and run the specified evaluation
+if options[:eval_name].nil?
+  puts "Error: Must specify an evaluation name with -e or --eval"
+  exit 1
+end
+
+cases_path = File.join(__dir__, "cases")
+
+cases = Dir.glob(File.join(cases_path, "*/*.yml")).map { |f| [File.basename(f, ".yml"), f] }.to_h
+
+if !cases.keys.include?(options[:eval_name])
+  puts "Error: Unknown evaluation '#{options[:eval_name]}'"
+  exit 1
+end
+
+llms = DiscourseAi::Evals::Llm.choose(options[:model])
+
+if llms.empty?
+  puts "Error: Unknown model '#{options[:model]}'"
+  exit 1
+end
+
+eval_info = YAML.load_file(cases[options[:eval_name]]).symbolize_keys
+
+puts "Running evaluation '#{options[:eval_name]}'"
+
+llms.each do |llm|
+  eval =
+    llm.eval(
+      type: eval_info[:type],
+      args: eval_info[:args].symbolize_keys,
+      expected_output: eval_info[:expected_output],
+    )
+
+  print "#{llm.name}: "
+  if eval[:result] == :fail
+    puts "Error: #{eval.inspect}"
+  elsif eval[:result] == :pass
+    puts "Passed 🟢"
+  else
+    STDERR.puts "Error: Unknown result #{eval.inspect}"
+  end
+end

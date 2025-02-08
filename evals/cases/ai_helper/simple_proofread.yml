@@ -1,0 +1,9 @@
+id: simple_proofread
+name: Simple Proofread
+description: A simple proofread evaluation
+type: helper
+args:
+  name: proofread
+  input: "Haw are you doing todayy?"
+expected_output: "How are you doing today?"
+
