@@ -24,10 +24,6 @@ OptionParser
     end
 
     opts.on("-m", "--model NAME", "Model to evaluate") { |model| options[:model] = model }
-
-    opts.on("-o", "--output-dir DIR", "Directory for evaluation results") do |dir|
-      options[:output_dir] = dir
-    end
   end
   .parse!
 
@@ -60,7 +56,19 @@ eval_info = YAML.load_file(cases[options[:eval_name]]).symbolize_keys
 
 puts "Running evaluation '#{options[:eval_name]}'"
 
+log_filename = "#{options[:eval_name]}-#{Time.now.strftime("%Y%m%d-%H%M%S")}.log"
+logs_dir = File.join(__dir__, "log")
+FileUtils.mkdir_p(logs_dir) # Create directory if it doesn't exist
+log_file = File.join(logs_dir, log_filename)
+
+logger = Logger.new(File.open(log_file, "a"))
+
+logger.info("Starting evaluation '#{options[:eval_name]}'")
+
+Thread.current[:llm_audit_log] = logger
+
 llms.each do |llm|
+  logger.info("Evaluating with LLM: #{llm.name}")
   eval =
     llm.eval(
       type: eval_info[:type],
@@ -73,9 +81,15 @@ llms.each do |llm|
     puts "Failed 🔴"
     puts "---- Expected ----\n#{eval[:expected_output]}"
     puts "---- Actual ----\n#{eval[:actual_output]}"
+    logger.error("Evaluation failed with LLM: #{llm.name}")
   elsif eval[:result] == :pass
     puts "Passed 🟢"
+    logger.info("Evaluation passed with LLM: #{llm.name}")
   else
     STDERR.puts "Error: Unknown result #{eval.inspect}"
+    logger.error("Unknown result: #{eval.inspect}")
   end
 end
+
+puts
+puts "Log file: #{log_file}"

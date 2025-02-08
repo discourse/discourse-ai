@@ -156,7 +156,7 @@ module DiscourseAi
                 )
 
               if !@streaming_mode
-                return(
+                response_data =
                   non_streaming_response(
                     response: response,
                     xml_tool_processor: xml_tool_processor,
@@ -164,7 +164,7 @@ module DiscourseAi
                     partials_raw: partials_raw,
                     response_raw: response_raw,
                   )
-                )
+                return response_data
               end
 
               begin
@@ -214,6 +214,16 @@ module DiscourseAi
               decode_chunk_finish.each { |partial| blk.call(partial, cancel) }
               return response_data
             ensure
+              if log && (logger = Thread.current[:llm_audit_log])
+                call_data = <<~LOG
+                  #{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}
+                  request:
+                  #{format_possible_json_payload(log.raw_request_payload)}
+                  response:
+                  #{response_data}
+                LOG
+                logger.info(call_data)
+              end
               if log
                 log.raw_response_payload = response_raw
                 final_log_update(log)
@@ -297,6 +307,14 @@ module DiscourseAi
         end
 
         private
+
+        def format_possible_json_payload(payload)
+          begin
+            JSON.pretty_generate(JSON.parse(payload))
+          rescue JSON::ParserError
+            payload
+          end
+        end
 
         def start_log(
           provider_id:,

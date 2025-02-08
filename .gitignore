@@ -2,3 +2,4 @@ node_modules
 /gems
 /auto_generated
 .env
+evals/log/*
