@@ -70,7 +70,9 @@ llms.each do |llm|
 
   print "#{llm.name}: "
   if eval[:result] == :fail
-    puts "Error: #{eval.inspect}"
+    puts "Failed 🔴"
+    puts "---- Expected ----\n#{eval[:expected_output]}"
+    puts "---- Actual ----\n#{eval[:actual_output]}"
   elsif eval[:result] == :pass
     puts "Passed 🟢"
   else
