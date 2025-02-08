@@ -74,6 +74,7 @@ llms.each do |llm|
       type: eval_info[:type],
       args: eval_info[:args].symbolize_keys,
       expected_output: eval_info[:expected_output],
+      expected_output_regex: eval_info[:expected_output_regex],
     )
 
   print "#{llm.name}: "

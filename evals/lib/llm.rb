@@ -59,7 +59,17 @@ class DiscourseAi::Evals::Llm
 
   def self.choose(config_name)
     if CONFIGS[config_name].nil?
-      CONFIGS.keys.map { |config_name| new(config_name) }
+      CONFIGS
+        .keys
+        .map do |config_name|
+          begin
+            new(config_name)
+          rescue => e
+            puts "Error initializing #{config_name}: #{e}"
+            nil
+          end
+        end
+        .compact
     elsif !CONFIGS.include?(config_name)
       raise "Invalid llm"
     else
@@ -82,17 +92,28 @@ class DiscourseAi::Evals::Llm
     @llm = DiscourseAi::Completions::Llm.proxy(@llm_model)
   end
 
-  def eval(type:, args:, expected_output: nil)
+  def eval(type:, args:, expected_output: nil, expected_output_regex: nil)
     result =
       case type
       when "helper"
         helper(**args)
       end
 
-    if expected_output && result == expected_output
-      { result: :pass }
+    if expected_output
+      if result == expected_output
+        { result: :pass }
+      else
+        { result: :fail, expected_output: expected_output, actual_output: result }
+      end
+    elsif expected_output_regex
+      expected_output_regex = Regexp.new(expected_output_regex)
+      if result.match?(expected_output_regex)
+        { result: :pass }
+      else
+        { result: :fail, expected_output: expected_output_regex, actual_output: result }
+      end
     else
-      { result: :fail, expected_output: expected_output, actual_output: result }
+      { result: :unknown, actual_output: result }
     end
   end
 
