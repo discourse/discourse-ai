@@ -55,6 +55,16 @@ class DiscourseAi::Evals::Llm
       max_prompt_tokens: 1_000_000,
       vision_enabled: true,
     },
+    "gemini-2.0-pro-exp" => {
+      display_name: "Gemini 2.0 pro",
+      name: "gemini-2-0-pro-exp",
+      tokenizer: "DiscourseAi::Tokenizer::GeminiTokenizer",
+      api_key_env: "GEMINI_API_KEY",
+      provider: "google",
+      url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-pro-exp",
+      max_prompt_tokens: 1_000_000,
+      vision_enabled: true,
+    },
   }
 
   def self.choose(config_name)
@@ -97,6 +107,8 @@ class DiscourseAi::Evals::Llm
       case type
       when "helper"
         helper(**args)
+      when "pdf_to_text"
+        pdf_to_text(**args)
       end
 
     if expected_output
@@ -121,7 +133,37 @@ class DiscourseAi::Evals::Llm
     @llm_model.display_name
   end
 
+  def vision?
+    @llm_model.vision_enabled
+  end
+
   private
+
+  def pdf_to_text(path:)
+    upload =
+      UploadCreator.new(File.open(path), File.basename(path)).create_for(Discourse.system_user.id)
+
+    uploads =
+      DiscourseAi::Utils::PdfToImages.new(
+        upload: upload,
+        user: Discourse.system_user,
+      ).uploaded_pages
+
+    text = +""
+    uploads.each do |page_upload|
+      DiscourseAi::Utils::ImageToText
+        .new(upload: page_upload, llm_model: @llm_model, user: Discourse.system_user)
+        .extract_text do |chunk, error|
+          text << chunk if chunk
+          text << "\n\n" if chunk
+        end
+      upload.destroy
+    end
+
+    text
+  ensure
+    upload.destroy if upload
+  end
 
   def helper(input:, name:)
     completion_prompt = CompletionPrompt.find_by(name: name)

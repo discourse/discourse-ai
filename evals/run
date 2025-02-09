@@ -1,6 +1,30 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# got to ensure evals are here
+# rubocop:disable Discourse/Plugins/NamespaceConstants
+EVAL_PATH = File.join(__dir__, "cases")
+# rubocop:enable Discourse/Plugins/NamespaceConstants
+#
+if !Dir.exist?(EVAL_PATH)
+  puts "Evals are missing, cloning from discourse/discourse-ai-evals"
+
+  success =
+    system("git clone git@github.com:discourse/discourse-ai-evals.git '#{EVAL_PATH}' 2>/dev/null")
+
+  # Fall back to HTTPS if SSH fails
+  if !success
+    puts "SSH clone failed, falling back to HTTPS..."
+    success = system("git clone https://github.com/discourse/discourse-ai-evals.git '#{EVAL_PATH}'")
+  end
+
+  if success
+    puts "Successfully cloned evals repository"
+  else
+    abort "Failed to clone evals repository"
+  end
+end
+
 discourse_path = File.expand_path(File.join(File.dirname(__FILE__), "../../.."))
 # rubocop:disable Discourse/NoChdir
 Dir.chdir(discourse_path)
@@ -27,10 +51,8 @@ OptionParser
   end
   .parse!
 
-# Ensure output directory exists
 FileUtils.mkdir_p(options[:output_dir])
 
-# Load and run the specified evaluation
 if options[:eval_name].nil?
   puts "Error: Must specify an evaluation name with -e or --eval"
   exit 1
@@ -54,11 +76,21 @@ end
 
 eval_info = YAML.load_file(cases[options[:eval_name]]).symbolize_keys
 
+# correct relative paths in args
+begin
+  eval_info[:args]&.each do |k, v|
+    if k.to_sym == :path
+      root = File.dirname(cases[options[:eval_name]])
+      eval_info[:args][k] = File.join(root, v)
+    end
+  end
+end
+
 puts "Running evaluation '#{options[:eval_name]}'"
 
 log_filename = "#{options[:eval_name]}-#{Time.now.strftime("%Y%m%d-%H%M%S")}.log"
 logs_dir = File.join(__dir__, "log")
-FileUtils.mkdir_p(logs_dir) # Create directory if it doesn't exist
+FileUtils.mkdir_p(logs_dir)
 log_file = File.join(logs_dir, log_filename)
 
 logger = Logger.new(File.open(log_file, "a"))
@@ -68,6 +100,11 @@ logger.info("Starting evaluation '#{options[:eval_name]}'")
 Thread.current[:llm_audit_log] = logger
 
 llms.each do |llm|
+  if eval_info[:vision] && !llm.vision?
+    logger.info("Skipping LLM: #{llm.name} as it does not support vision")
+    next
+  end
+
   logger.info("Evaluating with LLM: #{llm.name}")
   eval =
     llm.eval(
