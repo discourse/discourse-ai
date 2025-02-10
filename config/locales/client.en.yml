@@ -17,8 +17,10 @@ en:
           description: "The table lists a count of posts classified with a determined emotion. Classified with the model 'SamLowe/roberta-base-go_emotions'."
         reports:
           filters:
-            filter_by:
-              label: "Filter by"
+            group_by:
+              label: "Group by"
+            sort_by:
+              label: "Sort by"
 
   js:
     discourse_automation:

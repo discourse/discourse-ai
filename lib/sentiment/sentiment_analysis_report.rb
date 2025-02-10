@@ -8,14 +8,21 @@ module DiscourseAi
       def self.register!(plugin)
         plugin.add_report("sentiment_analysis") do |report|
           report.modes = [:sentiment_analysis]
-          category_filter = report.filters.dig(:filter_by)
+          category_filter = report.filters.dig(:group_by) || :category
           report.add_filter(
-            "filter_by",
+            "group_by",
             type: "list",
             default: category_filter,
             choices: [{ id: "category", name: "Category" }, { id: "tag", name: "Tag" }],
             allow_any: false,
             auto_insert_none_item: false,
+          )
+
+          report.add_filter(
+            "sort_by",
+            type: "list",
+            default: "size",
+            choices: [{ id: "size", name: "Size" }, { id: "name", name: "Name" }],
           )
 
           sentiment_data = DiscourseAi::Sentiment::SentimentAnalysisReport.fetch_data(report)
@@ -33,7 +40,7 @@ module DiscourseAi
       end
 
       def self.fetch_data(report)
-        grouping = report.filters.dig(:filter_by).to_sym
+        grouping = report.filters.dig(:group_by).to_sym
         threshold = 0.6
 
         sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
