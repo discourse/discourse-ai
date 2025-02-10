@@ -371,4 +371,4 @@ end
 #  rag_chunk_tokens         :integer          default(374), not null
 #  rag_chunk_overlap_tokens :integer          default(10), not null
 #  tool_name                :string(100)      default(""), not null
-#
+#  rag_llm_model_id         :bigint

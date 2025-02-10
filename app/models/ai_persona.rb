@@ -378,6 +378,7 @@ end
 #  allow_topic_mentions        :boolean          default(FALSE), not null
 #  allow_personal_messages     :boolean          default(TRUE), not null
 #  force_default_llm           :boolean          default(FALSE), not null
+#  rag_llm_model_id            :bigint
 #
 # Indexes
 #
