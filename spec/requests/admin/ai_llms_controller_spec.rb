@@ -16,7 +16,7 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         :ai_persona,
         name: "Cool persona",
         force_default_llm: true,
-        default_llm: "custom:#{llm_model2.id}",
+        default_llm_id: llm_model2.id,
       )
     end
 

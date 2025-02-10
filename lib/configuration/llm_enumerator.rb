@@ -16,11 +16,8 @@ module DiscourseAi
 
           AiPersona
             .where("force_default_llm = ?", true)
-            .pluck(:default_llm, :name, :id)
-            .each do |llm_name, name, id|
-              llm_id = llm_name.split(":").last.to_i
-              rval[llm_id] << { type: :ai_persona, name: name, id: id }
-            end
+            .pluck(:default_llm_id, :name, :id)
+            .each { |llm_id, name, id| rval[llm_id] << { type: :ai_persona, name: name, id: id } }
         end
 
         if SiteSetting.ai_helper_enabled
