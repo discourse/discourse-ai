@@ -274,6 +274,8 @@ en:
           rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
           rag_chunk_overlap_tokens: "Upload chunk overlap tokens"
           rag_chunk_overlap_tokens_help: "The number of tokens to overlap between chunks in the RAG model. (changing will re-index all uploads)"
+          rag_llm_model: "Indexing Language Model"
+          rag_llm_model_help: "The language model used for OCR during indexing of PDFs and images."
           show_indexing_options: "Show upload options"
           hide_indexing_options: "Hide upload options"
         uploads:

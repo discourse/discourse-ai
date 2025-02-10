@@ -4,6 +4,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   fab!(:admin)
   fab!(:ai_persona)
   fab!(:embedding_definition)
+  fab!(:llm_model)
 
   before do
     sign_in(admin)
@@ -44,7 +45,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           allow_personal_messages: true,
           allow_chat_channel_mentions: true,
           allow_chat_direct_messages: true,
-          default_llm: "anthropic:claude-2",
+          default_llm_id: llm_model.id,
           forced_tool_count: 2,
         )
       persona2.create_user!
@@ -178,7 +179,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           allow_personal_messages: true,
           allow_chat_channel_mentions: true,
           allow_chat_direct_messages: true,
-          default_llm: "anthropic:claude-2",
+          default_llm_id: llm_model.id,
           forced_tool_count: 2,
         }
       end

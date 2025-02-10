@@ -598,7 +598,10 @@ export default class PersonaEditor extends Component {
             @onRemove={{this.removeUpload}}
           />
         </div>
-        <RagOptions @model={{this.editingModel}}>
+        <RagOptions
+          @model={{this.editingModel}}
+          @llms={{@personas.resultSetMeta.llms}}
+        >
           <div class="control-group">
             <label>{{i18n
                 "discourse_ai.ai_persona.rag_conversation_chunks"

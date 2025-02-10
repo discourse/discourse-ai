@@ -32,9 +32,12 @@ module DiscourseAi
             }
           end
         llms =
-          DiscourseAi::Configuration::LlmEnumerator
-            .values(allowed_seeded_llms: SiteSetting.ai_bot_allowed_seeded_models)
-            .map { |hash| { id: hash[:value], name: hash[:name] } }
+          LlmModel
+            .pluck(:display_name, :id, :vision_enabled)
+            .map do |name, id, vision|
+              next if id < 0 && SiteSetting.ai_bot_allowed_seeded_models_map.exclude?(id.to_s)
+              { id: id, name: name, vision: vision }
+            end
         render json: { ai_personas: ai_personas, meta: { tools: tools, llms: llms } }
       end
 

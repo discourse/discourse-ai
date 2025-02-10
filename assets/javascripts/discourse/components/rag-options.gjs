@@ -5,6 +5,7 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import DTooltip from "discourse/components/d-tooltip";
 import { i18n } from "discourse-i18n";
+import AiLlmSelector from "./ai-llm-selector";
 
 export default class RagOptions extends Component {
   @tracked showIndexingOptions = false;
@@ -20,6 +21,10 @@ export default class RagOptions extends Component {
     return this.showIndexingOptions
       ? i18n("discourse_ai.rag.options.hide_indexing_options")
       : i18n("discourse_ai.rag.options.show_indexing_options");
+  }
+
+  get visionLlms() {
+    return this.args.llms.filter((llm) => llm.vision);
   }
 
   <template>
@@ -62,6 +67,18 @@ export default class RagOptions extends Component {
           @content={{i18n
             "discourse_ai.rag.options.rag_chunk_overlap_tokens_help"
           }}
+        />
+      </div>
+      <div class="control-group">
+        <label>{{i18n "discourse_ai.rag.options.rag_llm_model"}}</label>
+        <AiLlmSelector
+          class="ai-persona-editor__llms"
+          @value={{this.visionLlmId}}
+          @llms={{this.visionLlms}}
+        />
+        <DTooltip
+          @icon="circle-question"
+          @content={{i18n "discourse_ai.rag.options.rag_llm_model_help"}}
         />
       </div>
       {{yield}}
