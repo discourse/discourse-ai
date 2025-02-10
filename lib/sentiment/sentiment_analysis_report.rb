@@ -8,20 +8,21 @@ module DiscourseAi
       def self.register!(plugin)
         plugin.add_report("sentiment_analysis") do |report|
           report.modes = [:sentiment_analysis]
+          category_filter = report.filters.dig(:filter_by)
+          report.add_filter(
+            "filter_by",
+            type: "list",
+            default: category_filter,
+            choices: [{ id: "category", name: "Category" }, { id: "tag", name: "Tag" }],
+            allow_any: false,
+            auto_insert_none_item: false,
+          )
+
           sentiment_data = DiscourseAi::Sentiment::SentimentAnalysisReport.fetch_data(report)
 
           report.data = sentiment_data
 
           # TODO: connect filter to make the report data change.
-          filter_type = report.filters.dig(:filter_type) || "Category"
-          report.add_filter(
-            "filter_by",
-            type: "list",
-            default: filter_type,
-            choices: [{ id: "category", name: "Category" }, { id: "tag", name: "Tag" }],
-            allow_any: false,
-            auto_insert_none_item: false,
-          )
 
           report.labels = [
             I18n.t("discourse_ai.sentiment.reports.sentiment_analysis.positive"),
@@ -95,6 +96,8 @@ module DiscourseAi
             report_end: report.end_date,
             threshold: threshold,
           )
+
+        grouped_sentiments
       end
     end
   end

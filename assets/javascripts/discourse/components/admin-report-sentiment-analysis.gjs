@@ -16,14 +16,20 @@ export default class AdminReportSentimentAnalysis extends Component {
     return ["#2ecc71", "#95a5a6", "#e74c3c"];
   }
 
+  calculateNeutralScore(data) {
+    return data.total_count - (data.positive_count + data.negative_count);
+  }
+
   get transformedData() {
+    console.log(this.args.model);
     return this.args.model.data.map((data) => {
+      console.log("called", data);
       return {
-        category_name: data.category_name,
+        title: data.category_name || data.tag_name,
         scores: [
-          data.overall_scores.positive,
-          data.overall_scores.neutral,
-          data.overall_scores.negative,
+          data.positive_count,
+          this.calculateNeutralScore(data),
+          data.negative_count,
         ],
         posts: data.posts,
       };
@@ -32,7 +38,6 @@ export default class AdminReportSentimentAnalysis extends Component {
 
   @action
   showDetails(data) {
-    console.log(data);
     this.selectedChart = data;
   }
 
@@ -69,9 +74,9 @@ export default class AdminReportSentimentAnalysis extends Component {
 
   doughnutTitle(data) {
     if (data.posts?.length > 0) {
-      return `${data.category_name} (${data.posts.length})`;
+      return `${data.title} (${data.posts.length})`;
     } else {
-      return data.category_name;
+      return data.title;
     }
   }
 
@@ -103,7 +108,7 @@ export default class AdminReportSentimentAnalysis extends Component {
     {{#if this.selectedChart}}
       <div class="admin-report-sentiment-analysis-details">
         <h3 class="admin-report-sentiment-analysis-details__title">
-          {{this.selectedChart.category_name}}
+          {{this.selectedChart.title}}
         </h3>
 
         <ul class="admin-report-sentiment-analysis-details__scores">
