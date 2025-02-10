@@ -394,22 +394,27 @@ module DiscourseAi
             queue_for_review: true,
           ).perform
 
-        log.update!(reviewable: result.reviewable)
+        # Currently in core re-flagging something that is already flagged as spam
+        # is not supported, long term we may want to support this but in the meantime
+        # we should not be silencing/hiding if the PostActionCreator fails.
+        if result.success?
+          log.update!(reviewable: result.reviewable)
 
-        reason = I18n.t("discourse_ai.spam_detection.silence_reason", url: url)
-        silencer =
-          UserSilencer.new(
-            post.user,
-            flagging_user,
-            message: :too_many_spam_flags,
-            post_id: post.id,
-            reason: reason,
-            keep_posts: true,
-          )
-        silencer.silence
+          reason = I18n.t("discourse_ai.spam_detection.silence_reason", url: url)
+          silencer =
+            UserSilencer.new(
+              post.user,
+              flagging_user,
+              message: :too_many_spam_flags,
+              post_id: post.id,
+              reason: reason,
+              keep_posts: true,
+            )
+          silencer.silence
 
-        # silencer will not hide tl1 posts, so we do this here
-        hide_post(post)
+          # silencer will not hide tl1 posts, so we do this here
+          hide_post(post)
+        end
       end
 
       def self.hide_post(post)
