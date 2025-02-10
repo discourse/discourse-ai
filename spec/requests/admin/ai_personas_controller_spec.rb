@@ -28,9 +28,13 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(response).to be_successful
 
       expect(response.parsed_body["meta"]["llms"]).to eq(
-        DiscourseAi::Configuration::LlmEnumerator.values.map do |hash|
-          { "id" => hash[:value], "name" => hash[:name] }
-        end,
+        [
+          {
+            id: llm_model.id,
+            name: llm_model.display_name,
+            vision: llm_model.vision_enabled,
+          }.stringify_keys,
+        ],
       )
     end
 
@@ -46,6 +50,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           allow_chat_channel_mentions: true,
           allow_chat_direct_messages: true,
           default_llm_id: llm_model.id,
+          question_consolidator_llm_id: llm_model.id,
           forced_tool_count: 2,
         )
       persona2.create_user!
@@ -61,7 +66,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(serializer_persona2["allow_chat_channel_mentions"]).to eq(true)
       expect(serializer_persona2["allow_chat_direct_messages"]).to eq(true)
 
-      expect(serializer_persona2["default_llm"]).to eq("anthropic:claude-2")
+      expect(serializer_persona2["default_llm_id"]).to eq(llm_model.id)
+      expect(serializer_persona2["question_consolidator_llm_id"]).to eq(llm_model.id)
       expect(serializer_persona2["user_id"]).to eq(persona2.user_id)
       expect(serializer_persona2["user"]["id"]).to eq(persona2.user_id)
       expect(serializer_persona2["forced_tool_count"]).to eq(2)
@@ -180,6 +186,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           allow_chat_channel_mentions: true,
           allow_chat_direct_messages: true,
           default_llm_id: llm_model.id,
+          question_consolidator_llm_id: llm_model.id,
           forced_tool_count: 2,
         }
       end
@@ -191,18 +198,20 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
                headers: {
                  "CONTENT_TYPE" => "application/json",
                }
+
           expect(response).to be_successful
           persona_json = response.parsed_body["ai_persona"]
 
           expect(persona_json["name"]).to eq("superbot")
           expect(persona_json["top_p"]).to eq(0.1)
           expect(persona_json["temperature"]).to eq(0.5)
-          expect(persona_json["default_llm"]).to eq("anthropic:claude-2")
+          expect(persona_json["default_llm_id"]).to eq(llm_model.id)
           expect(persona_json["forced_tool_count"]).to eq(2)
           expect(persona_json["allow_topic_mentions"]).to eq(true)
           expect(persona_json["allow_personal_messages"]).to eq(true)
           expect(persona_json["allow_chat_channel_mentions"]).to eq(true)
           expect(persona_json["allow_chat_direct_messages"]).to eq(true)
+          expect(persona_json["question_consolidator_llm_id"]).to eq(llm_model.id)
 
           persona = AiPersona.find(persona_json["id"])
 
@@ -425,7 +434,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
 
     it "ensures question exists" do
-      ai_persona.update!(default_llm: "custom:#{llm.id}")
+      ai_persona.update!(default_llm_id: llm.id)
 
       post "/admin/plugins/discourse-ai/ai-personas/stream-reply.json",
            params: {
@@ -437,7 +446,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
 
     it "ensure persona has a user specified" do
-      ai_persona.update!(default_llm: "custom:#{llm.id}")
+      ai_persona.update!(default_llm_id: llm.id)
 
       post "/admin/plugins/discourse-ai/ai-personas/stream-reply.json",
            params: {
@@ -499,7 +508,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       ai_persona.create_user!
       ai_persona.update!(
         allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
-        default_llm: "custom:#{llm.id}",
+        default_llm_id: llm.id,
         allow_personal_messages: true,
         system_prompt: "you are a helpful bot",
       )
