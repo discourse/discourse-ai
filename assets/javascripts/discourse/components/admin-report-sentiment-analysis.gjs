@@ -21,9 +21,7 @@ export default class AdminReportSentimentAnalysis extends Component {
   }
 
   get transformedData() {
-    console.log(this.args.model);
     return this.args.model.data.map((data) => {
-      console.log("called", data);
       return {
         title: data.category_name || data.tag_name,
         scores: [
@@ -32,6 +30,7 @@ export default class AdminReportSentimentAnalysis extends Component {
           data.negative_count,
         ],
         posts: data.posts,
+        total_score: data.total_count,
       };
     });
   }
@@ -73,19 +72,19 @@ export default class AdminReportSentimentAnalysis extends Component {
   }
 
   doughnutTitle(data) {
-    if (data.posts?.length > 0) {
-      return `${data.title} (${data.posts.length})`;
+    if (data?.total_score) {
+      return `${data.title} (${data.total_score})`;
     } else {
       return data.title;
     }
   }
 
   <template>
-    {{! TODO add more details about posts on click + tag data }}
     <div class="admin-report-sentiment-analysis">
       {{#each this.transformedData as |data|}}
         <div
           class="admin-report-sentiment-analysis__chart-wrapper"
+          role="button"
           {{on "click" (fn this.showDetails data)}}
           {{closeOnClickOutside
             (fn (mut this.selectedChart) null)

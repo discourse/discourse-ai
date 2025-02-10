@@ -17,12 +17,14 @@ module DiscourseAi
             allow_any: false,
             auto_insert_none_item: false,
           )
-
+          size_filter = report.filters.dig(:sort_by) || :size
           report.add_filter(
             "sort_by",
             type: "list",
-            default: "size",
-            choices: [{ id: "size", name: "Size" }, { id: "name", name: "Name" }],
+            default: size_filter,
+            choices: [{ id: "size", name: "Size" }, { id: "alphabetical", name: "Alphabetical" }],
+            allow_any: false,
+            auto_insert_none_item: false,
           )
 
           sentiment_data = DiscourseAi::Sentiment::SentimentAnalysisReport.fetch_data(report)
@@ -41,6 +43,7 @@ module DiscourseAi
 
       def self.fetch_data(report)
         grouping = report.filters.dig(:group_by).to_sym
+        sorting = report.filters.dig(:sort_by).to_sym
         threshold = 0.6
 
         sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
@@ -78,6 +81,16 @@ module DiscourseAi
             raise Discourse::InvalidParameters
           end
 
+        order_by_clause =
+          case sorting
+          when :size
+            "ORDER BY total_count DESC"
+          when :alphabetical
+            "ORDER BY 1 ASC"
+          else
+            raise Discourse::InvalidParameters
+          end
+
         grouped_sentiments =
           DB.query(
             <<~SQL,
@@ -97,7 +110,7 @@ module DiscourseAi
                 cr.model_used = 'cardiffnlp/twitter-roberta-base-sentiment-latest' AND
                 (p.created_at > :report_start AND p.created_at < :report_end)
               GROUP BY 1
-              ORDER BY 1 ASC
+              #{order_by_clause}
             SQL
             report_start: report.start_date,
             report_end: report.end_date,
