@@ -2,7 +2,8 @@
 
 class DiscourseAi::Utils::PdfToImages
   MAX_PDF_SIZE = 100.megabytes
-  MAX_CONVERT_SECONDS = 30
+  # this is long, mutool can be faster than magick, 10 minutes will be enough for quite large pdfs
+  MAX_CONVERT_SECONDS = 600
   BACKOFF_SECONDS = [5, 30, 60]
 
   attr_reader :upload, :user
