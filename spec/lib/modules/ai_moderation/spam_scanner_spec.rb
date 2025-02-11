@@ -214,7 +214,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
     before { Jobs.run_immediately! }
 
-    it "Can correctly run tests" do
+    it "can correctly run tests" do
       prompts = nil
       result =
         DiscourseAi::Completions::Llm.with_prepared_responses(
@@ -240,7 +240,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       expect(result[:is_spam]).to eq(false)
     end
 
-    it "Correctly handles spam scanning" do
+    it "correctly handles spam scanning" do
       expect(described_class.flagging_user.id).not_to eq(Discourse.system_user.id)
 
       # flag post for scanning
@@ -287,6 +287,30 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       expect(post.reload.hidden?).to eq(false)
       expect(post.topic.reload.visible).to eq(true)
       expect(post.user.reload.silenced?).to eq(false)
+    end
+
+    it "does not silence the user or hide the post when a flag cannot be created" do
+      post = post_with_uploaded_image
+      Fabricate(
+        :post_action,
+        post: post,
+        user: described_class.flagging_user,
+        post_action_type_id: PostActionType.types[:spam],
+      )
+
+      described_class.new_post(post)
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do |_, _, _prompts|
+        # force a rebake so we actually scan
+        post.rebake!
+      end
+
+      log = AiSpamLog.find_by(post: post)
+
+      expect(log.reviewable).to be_nil
+      expect(log.error).to match(/unable to flag post as spam/)
+      expect(post.user.reload).not_to be_silenced
+      expect(post.topic.reload).to be_visible
     end
   end
 

@@ -88,15 +88,24 @@ module DiscourseAi
                 .sub("%%AUTOMATION_NAME%%", automation&.name.to_s)
 
             if flag_type == :spam || flag_type == :spam_silence
-              PostActionCreator.new(
-                Discourse.system_user,
-                post,
-                PostActionType.types[:spam],
-                message: score_reason,
-                queue_for_review: true,
-              ).perform
+              result =
+                PostActionCreator.new(
+                  Discourse.system_user,
+                  post,
+                  PostActionType.types[:spam],
+                  message: score_reason,
+                  queue_for_review: true,
+                ).perform
 
-              SpamRule::AutoSilence.new(post.user, post).silence_user if flag_type == :spam_silence
+              if flag_type == :spam_silence
+                if result.success?
+                  SpamRule::AutoSilence.new(post.user, post).silence_user
+                else
+                  Rails.logger.warn(
+                    "llm_triage: unable to flag post as spam, post action failed for #{post.id} with error: '#{result.errors.full_messages.join(",").truncate(3000)}'",
+                  )
+                end
+              end
             else
               reviewable =
                 ReviewablePost.needs_review!(target: post, created_by: Discourse.system_user)
