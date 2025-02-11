@@ -531,8 +531,8 @@ en:
         hints:
           dimensions_warning: "Once saved, this value can't be changed."
           matryoshka_dimensions: "Defines the size of nested embeddings used for hierarchical or multi-layered representation of data, similar to how nested dolls fit within each other."
-          embed_prompt: "Tells the LLM how to process text to create its numerical summary (embedding) for analysis or comparison."
-          search_prompt: "Tells the LLM how to compare a search query with existing embeddings and find the best matches."
+          embed_prompt: "Task instruction prefix when generating embeddings of forum content. ONLY for embeddings models that require prefixes, like nomic-embed or stella. Not needed for most models."
+          search_prompt: "Task instruction prefix when generating embeddings of search queries. ONLY for embeddings models that require prefixes, like nomic-embed or stella. Not needed for most models."
           sequence_length: "The maximum number of tokens that can be processed at once when creating embeddings or handling a query."
           distance_function: "Determines how similarity between embeddings is calculated, using either cosine distance (measuring the angle between vectors) or negative inner product (measuring overlap of vector values)."
         display_name: "Name"
