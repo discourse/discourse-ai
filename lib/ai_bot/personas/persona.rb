@@ -17,7 +17,7 @@ module DiscourseAi
             1_048_576
           end
 
-          def question_consolidator_llm
+          def question_consolidator_llm_id
             nil
           end
 
