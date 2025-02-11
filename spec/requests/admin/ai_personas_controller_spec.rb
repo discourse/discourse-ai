@@ -268,6 +268,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
               rag_chunk_tokens: "102",
               rag_chunk_overlap_tokens: "12",
               rag_conversation_chunks: "13",
+              rag_llm_model_id: llm_model.id,
+              question_consolidator_llm_id: llm_model.id,
             },
           }
 
@@ -277,6 +279,8 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(persona.rag_chunk_tokens).to eq(102)
       expect(persona.rag_chunk_overlap_tokens).to eq(12)
       expect(persona.rag_conversation_chunks).to eq(13)
+      expect(persona.rag_llm_model_id).to eq(llm_model.id)
+      expect(persona.question_consolidator_llm_id).to eq(llm_model.id)
     end
 
     it "supports updating vision params" do

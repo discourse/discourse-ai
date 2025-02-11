@@ -90,7 +90,8 @@ export default class AiToolEditor extends Component {
         "summary",
         "rag_uploads",
         "rag_chunk_tokens",
-        "rag_chunk_overlap_tokens"
+        "rag_chunk_overlap_tokens",
+        "rag_llm_model_id"
       );
 
       await this.args.model.save(data);
@@ -246,7 +247,7 @@ export default class AiToolEditor extends Component {
               @onRemove={{this.removeUpload}}
             />
           </div>
-          <RagOptions @model={{this.editingModel}} />
+          <RagOptions @model={{this.editingModel}} @llms={{this.args.llms}} />
         {{/if}}
 
         <div class="control-group ai-tool-editor__action_panel">

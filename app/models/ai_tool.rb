@@ -8,6 +8,7 @@ class AiTool < ActiveRecord::Base
   validates :script, presence: true, length: { maximum: 100_000 }
   validates :created_by_id, presence: true
   belongs_to :created_by, class_name: "User"
+  belongs_to :rag_llm_model, class_name: "LlmModel"
   has_many :rag_document_fragments, dependent: :destroy, as: :target
   has_many :upload_references, as: :target, dependent: :destroy
   has_many :uploads, through: :upload_references

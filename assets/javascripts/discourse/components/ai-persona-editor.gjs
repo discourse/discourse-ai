@@ -167,27 +167,27 @@ export default class PersonaEditor extends Component {
   }
 
   get mappedQuestionConsolidatorLlm() {
-    return this.editingModel?.question_consolidator_llm || "blank";
+    return this.editingModel?.question_consolidator_llm_id || "blank";
   }
 
   set mappedQuestionConsolidatorLlm(value) {
     if (value === "blank") {
-      this.editingModel.question_consolidator_llm = null;
+      this.editingModel.question_consolidator_llm_id = null;
     } else {
-      this.editingModel.question_consolidator_llm = value;
+      this.editingModel.question_consolidator_llm_id = value;
     }
   }
 
   get mappedDefaultLlm() {
-    return this.editingModel?.default_llm || "blank";
+    return this.editingModel?.default_llm_id || "blank";
   }
 
   set mappedDefaultLlm(value) {
     if (value === "blank") {
-      this.editingModel.default_llm = null;
+      this.editingModel.default_llm_id = null;
       this.hasDefaultLlm = false;
     } else {
-      this.editingModel.default_llm = value;
+      this.editingModel.default_llm_id = value;
       this.hasDefaultLlm = true;
     }
   }

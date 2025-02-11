@@ -28,7 +28,7 @@ module ::Jobs
 
       # Check if this is the first time we process this upload.
       if fragment_ids.empty?
-        document = get_uploaded_file(upload)
+        document = get_uploaded_file(upload: upload, target: target)
         return if document.nil?
 
         RagDocumentFragment.publish_status(upload, { total: 0, indexed: 0, left: 0 })
@@ -163,7 +163,7 @@ module ::Jobs
       [buffer, split_char]
     end
 
-    def get_uploaded_file(upload)
+    def get_uploaded_file(upload:, target:)
       if upload.extension == "pdf"
         pages =
           DiscourseAi::Utils::PdfToImages.new(
@@ -174,7 +174,7 @@ module ::Jobs
         return(
           DiscourseAi::Utils::ImageToText.as_fake_file(
             uploads: pages,
-            llm_model: LlmModel.find_by(display_name: "GPT-4o"),
+            llm_model: target.rag_llm_model,
             user: Discourse.system_user,
           )
         )
@@ -184,7 +184,7 @@ module ::Jobs
         return(
           DiscourseAi::Utils::ImageToText.as_fake_file(
             uploads: [upload],
-            llm_model: LlmModel.find_by(display_name: "GPT-4o"),
+            llm_model: target.rag_llm_model,
             user: Discourse.system_user,
           )
         )

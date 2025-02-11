@@ -32,6 +32,7 @@ class AiPersona < ActiveRecord::Base
 
   belongs_to :default_llm, class_name: "LlmModel"
   belongs_to :question_consolidator_llm, class_name: "LlmModel"
+  belongs_to :rag_llm_model, class_name: "LlmModel"
 
   has_many :upload_references, as: :target, dependent: :destroy
   has_many :uploads, through: :upload_references

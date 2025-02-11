@@ -22,6 +22,7 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :rag_chunk_tokens,
              :rag_chunk_overlap_tokens,
              :rag_conversation_chunks,
+             :rag_llm_model_id,
              :question_consolidator_llm_id,
              :tool_details,
              :forced_tool_count,

@@ -6,7 +6,10 @@ class AiCustomToolListSerializer < ApplicationSerializer
   has_many :ai_tools, serializer: AiCustomToolSerializer, embed: :objects
 
   def meta
-    { presets: AiTool.presets }
+    {
+      presets: AiTool.presets,
+      llms: DiscourseAi::Configuration::LlmEnumerator.values_for_serialization,
+    }
   end
 
   def ai_tools

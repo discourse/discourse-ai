@@ -24,7 +24,19 @@ export default class RagOptions extends Component {
   }
 
   get visionLlms() {
-    return this.args.llms.filter((llm) => llm.vision);
+    return this.args.llms.filter((llm) => llm.vision_enabled);
+  }
+
+  get visionLlmId() {
+    return this.args.model.rag_llm_model_id || "blank";
+  }
+
+  set visionLlmId(value) {
+    if (value === "blank") {
+      this.args.model.rag_llm_model_id = null;
+    } else {
+      this.args.model.rag_llm_model_id = value;
+    }
   }
 
   <template>

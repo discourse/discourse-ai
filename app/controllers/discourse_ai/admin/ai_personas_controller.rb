@@ -32,12 +32,9 @@ module DiscourseAi
             }
           end
         llms =
-          LlmModel
-            .pluck(:display_name, :id, :vision_enabled)
-            .map do |name, id, vision|
-              next if id < 0 && SiteSetting.ai_bot_allowed_seeded_models_map.exclude?(id.to_s)
-              { id: id, name: name, vision: vision }
-            end
+          DiscourseAi::Configuration::LlmEnumerator.values_for_serialization(
+            allowed_seeded_llm_ids: SiteSetting.ai_bot_allowed_seeded_models_map,
+          )
         render json: { ai_personas: ai_personas, meta: { tools: tools, llms: llms } }
       end
 
@@ -198,6 +195,7 @@ module DiscourseAi
             :rag_chunk_tokens,
             :rag_chunk_overlap_tokens,
             :rag_conversation_chunks,
+            :rag_llm_model_id,
             :question_consolidator_llm_id,
             :allow_chat_channel_mentions,
             :allow_chat_direct_messages,

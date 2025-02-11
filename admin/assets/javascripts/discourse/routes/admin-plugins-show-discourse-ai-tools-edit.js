@@ -14,5 +14,6 @@ export default class DiscourseAiToolsEditRoute extends DiscourseRoute {
 
     controller.set("allTools", toolsModel);
     controller.set("presets", toolsModel.resultSetMeta.presets);
+    controller.set("llms", toolsModel.resultSetMeta.llms);
   }
 }
