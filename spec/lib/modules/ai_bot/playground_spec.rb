@@ -661,7 +661,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(last_post.user_id).to eq(persona.user_id)
 
       # tether llm, so it can no longer be switched
-      persona.update!(force_default_llm: true, default_llm: "custom:#{claude_2.id}")
+      persona.update!(force_default_llm: true, default_llm_id: claude_2.id)
 
       DiscourseAi::Completions::Llm.with_prepared_responses(["Hi from bot one"], llm: claude_2) do
         create_post(
@@ -762,7 +762,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
         ["Yes I can", "Magic Title"],
-        llm: "custom:#{gpt_35_turbo.id}",
+        llm: gpt_35_turbo,
       ) do
         messages =
           MessageBus.track_publish do
@@ -799,10 +799,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       )
 
       # replies as correct persona if replying direct to persona
-      DiscourseAi::Completions::Llm.with_prepared_responses(
-        ["Another reply"],
-        llm: "custom:#{gpt_35_turbo.id}",
-      ) do
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Another reply"], llm: gpt_35_turbo) do
         create_post(
           raw: "Please ignore this bot, I am replying to a user",
           topic: post.topic,

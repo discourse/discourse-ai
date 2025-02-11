@@ -173,9 +173,11 @@ module DiscourseAi
           TEXT
 
           question_consolidator_llm = llm
-          if self.class.question_consolidator_llm.present?
-            question_consolidator_llm =
-              DiscourseAi::Completions::Llm.proxy(self.class.question_consolidator_llm)
+          if self.class.question_consolidator_llm_id.present?
+            question_consolidator_llm ||=
+              DiscourseAi::Completions::Llm.proxy(
+                LlmModel.find_by(id: self.class.question_consolidator_llm_id),
+              )
           end
 
           if context[:custom_instructions].present?

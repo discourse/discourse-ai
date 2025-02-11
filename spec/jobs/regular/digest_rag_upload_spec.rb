@@ -2,8 +2,7 @@
 
 RSpec.describe Jobs::DigestRagUpload do
   fab!(:persona) { Fabricate(:ai_persona) }
-  fab!(:upload)
-
+  fab!(:upload) { Fabricate(:upload, extension: "txt") }
   let(:document_file) { StringIO.new("some text" * 200) }
 
   fab!(:cloudflare_embedding_def)

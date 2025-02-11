@@ -165,7 +165,7 @@ class AiPersona < ActiveRecord::Base
       vision_enabled
       vision_max_pixels
       rag_conversation_chunks
-      question_consolidator_llm
+      question_consolidator_llm_id
       allow_chat_channel_mentions
       allow_chat_direct_messages
       allow_topic_mentions

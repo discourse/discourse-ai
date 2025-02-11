@@ -246,7 +246,7 @@ module DiscourseAi
 
         return if associated_llm.nil? # Might be a persona user. Handled by constructor.
 
-        "custom:#{associated_llm.id}"
+        associated_llm
       end
 
       def build_placeholder(summary, details, custom_raw: nil)
