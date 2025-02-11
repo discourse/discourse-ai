@@ -208,6 +208,8 @@ de:
           name: "Flux-Bildgenerator (Together.ai)"
         empty_tool:
           name: "Von vorne beginnen …"
+      name:
+        characters: "darf nur Zahlen, Buchstaben und Unterstriche enthalten"
     ai_helper:
       errors:
         completion_request_failed: "Beim Versuch, Vorschläge zu machen, ist etwas schiefgelaufen. Bitte versuche es noch einmal."
@@ -250,6 +252,7 @@ de:
         default_llm_required: "Standard-LLM-Modell ist erforderlich, bevor der Chat aktiviert werden kann"
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
         cannot_edit_system_persona: "System-Personas können nur umbenannt werden. Du darfst keine Tools oder die System-Eingabeaufforderung bearbeiten, sondern musst sie deaktivieren und eine Kopie erstellen"
+        cannot_have_duplicate_tools: "Es kann keine doppelten Werkzeuge geben"
         github_helper:
           name: "GitHub-Helfer"
           description: "KI-Bot, der auf die Unterstützung bei GitHub-bezogenen Aufgaben und Fragen spezialisiert ist"

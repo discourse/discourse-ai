@@ -28,21 +28,21 @@ hu:
               label: "Válasz"
     discourse_ai:
       modals:
-        select_option: "Válasszon egy lehetőséget..."
+        select_option: "Válasszon egy lehetőséget…"
       spam:
-        short_title: "Szemét"
+        short_title: "Kéretlen tartalom"
         last_seven_days: "Elmúlt 7 nap"
-        enable: "Engedélyez"
+        enable: "Engedélyezés"
         test_modal:
           result: "Eredmény"
-          spam: "Szemét"
+          spam: "Kéretlen tartalom"
       usage:
         summary: "Összefoglaló"
         username: "Felhasználónév"
         total_requests: "Összes kérés"
         periods:
           last_day: "Elmúlt 24 óra"
-          custom: "Egyéb..."
+          custom: "Egyéni…"
       ai_persona:
         back: "Vissza"
         name: "Név"
@@ -50,7 +50,7 @@ hu:
         description: "Leírás"
         user: Felhasználó
         save: "Mentés"
-        enabled: "Engedélyezed?"
+        enabled: "Engedélyezve?"
         delete: "Törlés"
       rag:
         uploads:
@@ -74,23 +74,23 @@ hu:
         back: "Vissza"
         delete: Törlés
         quotas:
-          group: "Csoport:"
+          group: "Csoport"
           max_usages: "Maximális használat"
           duration: "Időtartam"
           durations:
-            hour: "1 óráig"
-            six_hours: "6 óráig"
-            day: "24 óráig"
+            hour: "1 óra"
+            six_hours: "6 óra"
+            day: "24 óra"
             week: "7 nap"
-            custom: "Egyéb..."
+            custom: "Egyéni…"
           hours: "óra"
         usage:
           ai_summarization: "Összefoglalás"
-          ai_spam: "Szemét"
+          ai_spam: "Kéretlen tartalom"
         next:
           title: "Tovább"
         tests:
-          success: "Siker!"
+          success: "Sikeres!"
         providers:
           google: "Google"
           fake: "Egyéni"
@@ -100,10 +100,10 @@ hu:
         context_menu:
           cancel: "Mégse"
           regen: "Újrapróbálkozás"
-          confirm: "Megerősít"
+          confirm: "Megerősítés"
           discard: "Elvetés"
         post_options_menu:
-          close: "Lezárás"
+          close: "Bezárás"
           copy: "Másolás"
           copied: "Másolva!"
           cancel: "Mégse"
@@ -112,7 +112,7 @@ hu:
         image_caption:
           save_caption: "Mentés"
           automatic_caption_dialog:
-            confirm: "Engedélyez"
+            confirm: "Engedélyezés"
       embeddings:
         back: "Vissza"
         save: "Mentés"
@@ -120,7 +120,7 @@ hu:
         edit: "Szerkesztés"
         tests:
           title: "Teszt futtatása"
-          success: "Siker!"
+          success: "Sikeres!"
         display_name: "Név"
         providers:
           google: "Google"
@@ -130,7 +130,7 @@ hu:
           request: "Kérés"
           response: "Válasz"
           next_log: "Tovább"
-          previous_log: "Előző"
+          previous_log: "Vissza"
         share_modal:
           copy: "Másolás"
       summarization:

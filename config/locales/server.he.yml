@@ -206,6 +206,8 @@ he:
           name: "מחולל תמונות Flux‏ (Together.ai)"
         empty_tool:
           name: "התחלה מאפס…"
+      name:
+        characters: "חייב לכלול מספרים, אותיות וקווים תחתיים בלבד"
     ai_helper:
       errors:
         completion_request_failed: "משהו השתבש במהלך הניסיון לספק הצעות. נא לנסות שוב."
@@ -238,6 +240,7 @@ he:
     spam_detection:
       flag_reason: "סומן כספאם ע״י <a href='%{url}'>בינה מלאכותית של Discourse</a>"
       silence_reason: "המשתמש הושתק אוטומטית על ידי <a href='%{url}'>בינה מלאכותית של Discourse</a>"
+      unexpected: "אירעה שגיאה בלתי צפויה"
     ai_bot:
       reply_error: "נראה שהמערכת שלך נתקלה בקשיים לא צפויים בעת הניסיון להשיב, עמך הסליחה.\n\n[details='פרטי השגיאה']\n%{details}\n[/details]"
       default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
@@ -245,6 +248,7 @@ he:
         default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
         cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
         cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך כלים או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
+        cannot_have_duplicate_tools: "לא יכולים להיות כלים כפולים"
         github_helper:
           name: "מסייע GitHub"
           description: "בוט בינה מלאכותית שמסייע במשימות ובשאלות שקשורות ב־GitHub"
