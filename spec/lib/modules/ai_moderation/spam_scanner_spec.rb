@@ -300,11 +300,9 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
       described_class.new_post(post)
 
-      prompt = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do |_, _, _prompts|
         # force a rebake so we actually scan
         post.rebake!
-        prompt = _prompts.first
       end
 
       log = AiSpamLog.find_by(post: post)
