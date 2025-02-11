@@ -310,8 +310,8 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       log = AiSpamLog.find_by(post: post)
 
       expect(log.reviewable).to be_nil
-      expect(post.user.reload.silenced_till).to be_nil
-      expect(post.topic.reload.visible).to eq(true)
+      expect(post.user.reload).not_to be_silenced
+      expect(post.topic.reload).to be_visible
     end
   end
 
