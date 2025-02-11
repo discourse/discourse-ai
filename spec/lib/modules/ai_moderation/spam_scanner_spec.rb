@@ -308,6 +308,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       log = AiSpamLog.find_by(post: post)
 
       expect(log.reviewable).to be_nil
+      expect(log.error).to match(/unable to flag post as spam/)
       expect(post.user.reload).not_to be_silenced
       expect(post.topic.reload).to be_visible
     end

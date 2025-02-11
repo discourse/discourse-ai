@@ -414,6 +414,11 @@ module DiscourseAi
 
           # silencer will not hide tl1 posts, so we do this here
           hide_post(post)
+        else
+          log.update!(
+            error:
+              "unable to flag post as spam, post action failed for post #{post.id} with error: '#{result.errors.full_messages.join(", ").truncate(3000)}'",
+          )
         end
       end
 

@@ -147,7 +147,7 @@ describe DiscourseAi::Automation::LlmTriage do
       )
     end
 
-    expect(post.user).not_to be_silenced
+    expect(post.user.reload).not_to be_silenced
   end
 
   it "can handle garbled output from LLM" do
