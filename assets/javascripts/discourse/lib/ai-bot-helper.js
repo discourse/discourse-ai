@@ -38,7 +38,7 @@ export function composeAiBotMessage(targetBot, composer) {
       recipients: botUsername,
       topicTitle: i18n("discourse_ai.ai_bot.default_pm_prefix"),
       archetypeId: "private_message",
-      draftKey: draftKey,
+      draftKey,
       hasGroups: false,
       warningsDisabled: true,
     },
