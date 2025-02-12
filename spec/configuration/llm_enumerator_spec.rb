@@ -3,7 +3,7 @@
 RSpec.describe DiscourseAi::Configuration::LlmEnumerator do
   fab!(:fake_model)
   fab!(:llm_model)
-  fab!(:seeded_llm_model) { Fabricate(:llm_model, id: -10) }
+  fab!(:seeded_model)
 
   describe "#values_for_serialization" do
     it "returns an array for that can be used for serialization" do
@@ -20,14 +20,12 @@ RSpec.describe DiscourseAi::Configuration::LlmEnumerator do
       )
 
       expect(
-        described_class.values_for_serialization(
-          allowed_seeded_llm_ids: [seeded_llm_model.id.to_s],
-        ),
+        described_class.values_for_serialization(allowed_seeded_llm_ids: [seeded_model.id.to_s]),
       ).to contain_exactly(
         {
-          id: seeded_llm_model.id,
-          name: seeded_llm_model.display_name,
-          vision_enabled: seeded_llm_model.vision_enabled,
+          id: seeded_model.id,
+          name: seeded_model.display_name,
+          vision_enabled: seeded_model.vision_enabled,
         },
         {
           id: llm_model.id,

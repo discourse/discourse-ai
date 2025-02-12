@@ -49,8 +49,6 @@ module DiscourseAi
 
       # returns an array of hashes (id: , name:, vision_enabled:)
       def self.values_for_serialization(allowed_seeded_llm_ids: nil)
-        #if allowed_seeded_llms.is_a?(Array) && !allowed_seeded_llms.empty?
-
         builder = DB.build(<<~SQL)
           SELECT id, display_name AS name, vision_enabled
           FROM llm_models
