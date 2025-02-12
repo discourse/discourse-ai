@@ -250,7 +250,7 @@ export default class AiToolEditor extends Component {
           </div>
           <RagOptions
             @model={{this.editingModel}}
-            @llms={{this.args.llms}}
+            @llms={{@llms}}
             @allowPdfsAndImages={{@settings.rag_pdf_images_enabled}}
           />
         {{/if}}

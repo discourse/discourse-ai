@@ -32,7 +32,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           {
             id: llm_model.id,
             name: llm_model.display_name,
-            vision: llm_model.vision_enabled,
+            vision_enabled: llm_model.vision_enabled,
           }.stringify_keys,
         ],
       )
