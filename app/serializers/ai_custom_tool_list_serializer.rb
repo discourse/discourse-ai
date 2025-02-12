@@ -9,6 +9,9 @@ class AiCustomToolListSerializer < ApplicationSerializer
     {
       presets: AiTool.presets,
       llms: DiscourseAi::Configuration::LlmEnumerator.values_for_serialization,
+      settings: {
+        rag_pdf_images_enabled: SiteSetting.ai_rag_pdf_images_enabled,
+      },
     }
   end
 

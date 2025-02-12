@@ -77,6 +77,14 @@ export default class RagUploader extends Component {
     this.updateUploads(this.ragUploads);
   }
 
+  get acceptedFileTypes() {
+    if (this.args?.allowPdfsAndImages) {
+      return ".txt,.md,.pdf,.png,.jpg,.jpeg";
+    } else {
+      return ".txt,.md";
+    }
+  }
+
   @action
   submitFiles() {
     this.uppyUpload.openPicker();
@@ -119,7 +127,11 @@ export default class RagUploader extends Component {
   <template>
     <div class="rag-uploader">
       <h3>{{i18n "discourse_ai.rag.uploads.title"}}</h3>
-      <p>{{i18n "discourse_ai.rag.uploads.description"}}</p>
+      {{#if @allowPdfsAndImages}}
+        <p>{{i18n "discourse_ai.rag.uploads.description_with_pdfs"}}</p>
+      {{else}}
+        <p>{{i18n "discourse_ai.rag.uploads.description"}}</p>
+      {{/if}}
 
       {{#if this.ragUploads}}
         <div class="rag-uploader__search-input-container">
@@ -187,7 +199,7 @@ export default class RagUploader extends Component {
         disabled={{this.uploading}}
         type="file"
         multiple="multiple"
-        accept=".txt,.md,.pdf,.png,.jpg,.jpeg"
+        accept={{this.acceptedFileTypes}}
       />
       <DButton
         @label="discourse_ai.rag.uploads.button"

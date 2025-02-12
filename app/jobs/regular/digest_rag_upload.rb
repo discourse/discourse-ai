@@ -164,6 +164,11 @@ module ::Jobs
     end
 
     def get_uploaded_file(upload:, target:)
+      if %w[pdf png jpg jpeg].include?(upload.extension) && !SiteSetting.ai_rag_pdf_images_enabled
+        raise Discourse::InvalidAccess.new(
+                "The setting ai_rag_pdf_images_enabled is false, can not index images and pdfs.",
+              )
+      end
       if upload.extension == "pdf"
         pages =
           DiscourseAi::Utils::PdfToImages.new(

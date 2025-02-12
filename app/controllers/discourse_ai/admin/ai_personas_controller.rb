@@ -35,7 +35,16 @@ module DiscourseAi
           DiscourseAi::Configuration::LlmEnumerator.values_for_serialization(
             allowed_seeded_llm_ids: SiteSetting.ai_bot_allowed_seeded_models_map,
           )
-        render json: { ai_personas: ai_personas, meta: { tools: tools, llms: llms } }
+        render json: {
+                 ai_personas: ai_personas,
+                 meta: {
+                   tools: tools,
+                   llms: llms,
+                   settings: {
+                     rag_pdf_images_enabled: SiteSetting.ai_rag_pdf_images_enabled,
+                   },
+                 },
+               }
       end
 
       def new

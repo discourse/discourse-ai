@@ -245,9 +245,14 @@ export default class AiToolEditor extends Component {
               @target={{this.editingModel}}
               @updateUploads={{this.updateUploads}}
               @onRemove={{this.removeUpload}}
+              @allowPdfsAndImages={{@settings.rag_pdf_images_enabled}}
             />
           </div>
-          <RagOptions @model={{this.editingModel}} @llms={{this.args.llms}} />
+          <RagOptions
+            @model={{this.editingModel}}
+            @llms={{this.args.llms}}
+            @allowPdfsAndImages={{@settings.rag_pdf_images_enabled}}
+          />
         {{/if}}
 
         <div class="control-group ai-tool-editor__action_panel">

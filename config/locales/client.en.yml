@@ -280,7 +280,8 @@ en:
           hide_indexing_options: "Hide upload options"
         uploads:
           title: "Uploads"
-          description: "Plaintext (.txt), markdown (.md), PDF (.pdf) or image (.png, .jpeg)."
+          description: "Plaintext (.txt) or markdown (.md)."
+          description_with_pdfs: "Plaintext (.txt), markdown (.md), PDF (.pdf) or image (.png, .jpeg)."
           button: "Add files"
           filter: "Filter uploads"
           indexed: "Indexed"

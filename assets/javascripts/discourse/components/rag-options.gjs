@@ -81,18 +81,20 @@ export default class RagOptions extends Component {
           }}
         />
       </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.rag.options.rag_llm_model"}}</label>
-        <AiLlmSelector
-          class="ai-persona-editor__llms"
-          @value={{this.visionLlmId}}
-          @llms={{this.visionLlms}}
-        />
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.rag.options.rag_llm_model_help"}}
-        />
-      </div>
+      {{#if @allowPdfsAndImages}}
+        <div class="control-group">
+          <label>{{i18n "discourse_ai.rag.options.rag_llm_model"}}</label>
+          <AiLlmSelector
+            class="ai-persona-editor__llms"
+            @value={{this.visionLlmId}}
+            @llms={{this.visionLlms}}
+          />
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n "discourse_ai.rag.options.rag_llm_model_help"}}
+          />
+        </div>
+      {{/if}}
       {{yield}}
     {{/if}}
   </template>

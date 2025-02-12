@@ -3,6 +3,7 @@
 RSpec.describe Jobs::DigestRagUpload do
   fab!(:persona) { Fabricate(:ai_persona) }
   fab!(:upload) { Fabricate(:upload, extension: "txt") }
+  fab!(:pdf_upload) { Fabricate(:upload, extension: "pdf") }
   let(:document_file) { StringIO.new("some text" * 200) }
 
   fab!(:cloudflare_embedding_def)
@@ -30,6 +31,19 @@ RSpec.describe Jobs::DigestRagUpload do
   end
 
   describe "#execute" do
+    context "when processing a PDF upload" do
+      it "will reject the indexing if the site setting is not enabled" do
+        SiteSetting.ai_rag_pdf_images_enabled = false
+
+        expect {
+          described_class.new.execute(
+            upload_id: pdf_upload.id,
+            target_id: persona.id,
+            target_type: persona.class.to_s,
+          )
+        }.to raise_error(Discourse::InvalidAccess)
+      end
+    end
     context "when processing an upload containing metadata" do
       it "correctly splits on metadata boundary" do
         # be explicit here about chunking strategy
