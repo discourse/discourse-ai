@@ -91,7 +91,7 @@ class DiscourseAi::Utils::ImageToText
   def system_message
     <<~MSG
       OCR the following page into Markdown. Tables should be formatted as Github flavored markdown.
-      Do not sorround your output with triple backticks.
+      Do not surround your output with triple backticks.
 
       Chunk the document into sections of roughly 250 - 1000 words. Our goal is to identify parts of the page with same semantic theme. These chunks will be embedded and used in a RAG pipeline.
 

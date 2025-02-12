@@ -75,7 +75,7 @@ class DiscourseAi::Utils::PdfToImages
 
       @uploaded_pages = uploads
     ensure
-      FileUtils.rm_rf(temp_dir) if Dir.exist?(temp_dir)
+      FileUtils.rm_rf(temp_dir)
     end
   end
 end

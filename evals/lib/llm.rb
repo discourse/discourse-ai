@@ -106,6 +106,4 @@ class DiscourseAi::Evals::Llm
   def vision?
     @llm_model.vision_enabled
   end
-
-  private
 end
