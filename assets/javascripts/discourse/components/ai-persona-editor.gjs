@@ -167,7 +167,7 @@ export default class PersonaEditor extends Component {
   }
 
   get mappedQuestionConsolidatorLlm() {
-    return this.editingModel?.question_consolidator_llm_id || "blank";
+    return this.editingModel?.question_consolidator_llm_id ?? "blank";
   }
 
   set mappedQuestionConsolidatorLlm(value) {
