@@ -179,7 +179,7 @@ export default class PersonaEditor extends Component {
   }
 
   get mappedDefaultLlm() {
-    return this.editingModel?.default_llm_id || "blank";
+    return this.editingModel?.default_llm_id ?? "blank";
   }
 
   set mappedDefaultLlm(value) {
