@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-module DiscourseAi::Evals
-end
-
 class DiscourseAi::Evals::Llm
   CONFIGS = {
     "gpt-4o" => {
@@ -88,7 +85,7 @@ class DiscourseAi::Evals::Llm
   end
 
   attr_reader :llm_model
-  attr_reader :llm
+  attr_reader :llm_proxy
 
   def initialize(config_name)
     config = CONFIGS[config_name].dup
@@ -99,34 +96,7 @@ class DiscourseAi::Evals::Llm
 
     config[:api_key] = ENV[api_key_env]
     @llm_model = LlmModel.new(config)
-    @llm = DiscourseAi::Completions::Llm.proxy(@llm_model)
-  end
-
-  def eval(type:, args:, expected_output: nil, expected_output_regex: nil)
-    result =
-      case type
-      when "helper"
-        helper(**args)
-      when "pdf_to_text"
-        pdf_to_text(**args)
-      end
-
-    if expected_output
-      if result == expected_output
-        { result: :pass }
-      else
-        { result: :fail, expected_output: expected_output, actual_output: result }
-      end
-    elsif expected_output_regex
-      expected_output_regex = Regexp.new(expected_output_regex)
-      if result.match?(expected_output_regex)
-        { result: :pass }
-      else
-        { result: :fail, expected_output: expected_output_regex, actual_output: result }
-      end
-    else
-      { result: :unknown, actual_output: result }
-    end
+    @llm_proxy = DiscourseAi::Completions::Llm.proxy(@llm_model)
   end
 
   def name
@@ -138,44 +108,4 @@ class DiscourseAi::Evals::Llm
   end
 
   private
-
-  def pdf_to_text(path:)
-    upload =
-      UploadCreator.new(File.open(path), File.basename(path)).create_for(Discourse.system_user.id)
-
-    uploads =
-      DiscourseAi::Utils::PdfToImages.new(
-        upload: upload,
-        user: Discourse.system_user,
-      ).uploaded_pages
-
-    text = +""
-    uploads.each do |page_upload|
-      DiscourseAi::Utils::ImageToText
-        .new(upload: page_upload, llm_model: @llm_model, user: Discourse.system_user)
-        .extract_text do |chunk, error|
-          text << chunk if chunk
-          text << "\n\n" if chunk
-        end
-      upload.destroy
-    end
-
-    text
-  ensure
-    upload.destroy if upload
-  end
-
-  def helper(input:, name:)
-    completion_prompt = CompletionPrompt.find_by(name: name)
-    helper = DiscourseAi::AiHelper::Assistant.new(helper_llm: @llm)
-    result =
-      helper.generate_and_send_prompt(
-        completion_prompt,
-        input,
-        current_user = Discourse.system_user,
-        _force_default_locale = false,
-      )
-
-    result[:suggestions].first
-  end
 end
