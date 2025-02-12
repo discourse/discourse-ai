@@ -37,10 +37,9 @@ export function composeAiBotMessage(targetBot, composer) {
       recipients: botUsername,
       topicTitle: i18n("discourse_ai.ai_bot.default_pm_prefix"),
       archetypeId: "private_message",
-      draftKey: "private_message_ai",
+      draftKey: "new_private_message_ai",
       hasGroups: false,
       warningsDisabled: true,
-      skipDraftCheck: true,
     },
   });
 }
