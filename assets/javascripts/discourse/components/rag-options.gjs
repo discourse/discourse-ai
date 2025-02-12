@@ -28,7 +28,7 @@ export default class RagOptions extends Component {
   }
 
   get visionLlmId() {
-    return this.args.model.rag_llm_model_id || "blank";
+    return this.args.model.rag_llm_model_id ?? "blank";
   }
 
   set visionLlmId(value) {
