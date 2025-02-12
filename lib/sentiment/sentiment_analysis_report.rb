@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# TODO: Currently returns all posts, need to add pagination?
-
 module DiscourseAi
   module Sentiment
     class SentimentAnalysisReport
@@ -44,7 +42,7 @@ module DiscourseAi
       def self.fetch_data(report)
         grouping = report.filters.dig(:group_by).to_sym
         sorting = report.filters.dig(:sort_by).to_sym
-        threshold = 0.6
+        threshold = DiscourseAi::Sentiment::SentimentController::SENTIMENT_THRESHOLD
 
         sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
           COUNT(

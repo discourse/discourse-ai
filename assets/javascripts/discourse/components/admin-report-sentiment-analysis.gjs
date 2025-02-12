@@ -4,6 +4,9 @@ import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action, get } from "@ember/object";
 import PostList from "discourse/components/post-list";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
+import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import dIcon from "discourse-common/helpers/d-icon";
 import { i18n } from "discourse-i18n";
@@ -11,6 +14,7 @@ import DoughnutChart from "./doughnut-chart";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @tracked selectedChart = null;
+  @tracked posts = null;
 
   get colors() {
     return ["#2ecc71", "#95a5a6", "#e74c3c"];
@@ -18,6 +22,18 @@ export default class AdminReportSentimentAnalysis extends Component {
 
   calculateNeutralScore(data) {
     return data.total_count - (data.positive_count + data.negative_count);
+  }
+
+  get currentGroupFilter() {
+    return this.args.model.available_filters.find(
+      (filter) => filter.id === "group_by"
+    ).default;
+  }
+
+  get currentSortFilter() {
+    return this.args.model.available_filters.find(
+      (filter) => filter.id === "sort_by"
+    ).default;
   }
 
   get transformedData() {
@@ -29,45 +45,56 @@ export default class AdminReportSentimentAnalysis extends Component {
           this.calculateNeutralScore(data),
           data.negative_count,
         ],
-        posts: data.posts,
         total_score: data.total_count,
       };
     });
   }
 
   @action
-  showDetails(data) {
+  async showDetails(data) {
     this.selectedChart = data;
+    try {
+      const posts = await ajax(`/discourse-ai/sentiment/posts`, {
+        data: {
+          group_by: this.currentGroupFilter,
+          group_value: data.title,
+          start_date: this.args.model.start_date,
+          end_date: this.args.model.end_date,
+        },
+      });
+
+      this.posts = posts.map((post) => Post.create(post));
+    } catch (e) {
+      popupAjaxError(e);
+    }
   }
 
-  sentimentTopScore(post) {
-    const { positive_score, neutral_score, negative_score } = post;
-    const maxScore = Math.max(positive_score, neutral_score, negative_score);
-
-    if (maxScore === positive_score) {
-      return {
-        id: "positive",
-        text: i18n(
-          "discourse_ai.sentiments.sentiment_analysis.score_types.positive"
-        ),
-        icon: "face-smile",
-      };
-    } else if (maxScore === neutral_score) {
-      return {
-        id: "neutral",
-        text: i18n(
-          "discourse_ai.sentiments.sentiment_analysis.score_types.neutral"
-        ),
-        icon: "face-meh",
-      };
-    } else {
-      return {
-        id: "negative",
-        text: i18n(
-          "discourse_ai.sentiments.sentiment_analysis.score_types.negative"
-        ),
-        icon: "face-angry",
-      };
+  sentimentMapping(sentiment) {
+    switch (sentiment) {
+      case "positive":
+        return {
+          id: "positive",
+          text: i18n(
+            "discourse_ai.sentiments.sentiment_analysis.score_types.positive"
+          ),
+          icon: "face-smile",
+        };
+      case "neutral":
+        return {
+          id: "neutral",
+          text: i18n(
+            "discourse_ai.sentiments.sentiment_analysis.score_types.neutral"
+          ),
+          icon: "face-meh",
+        };
+      case "negative":
+        return {
+          id: "negative",
+          text: i18n(
+            "discourse_ai.sentiments.sentiment_analysis.score_types.negative"
+          ),
+          icon: "face-angry",
+        };
     }
   }
 
@@ -131,15 +158,22 @@ export default class AdminReportSentimentAnalysis extends Component {
             {{get this.selectedChart.scores 2}}</li>
         </ul>
 
-        <PostList @posts={{this.selectedChart.posts}} @urlPath="postUrl">
+        <PostList
+          @posts={{this.posts}}
+          @urlPath="url"
+          @idPath="post_id"
+          @titlePath="topic_title"
+          @usernamePath="username"
+          class="admin-report-sentiment-analysis-details__post-list"
+        >
           <:abovePostItemExcerpt as |post|>
-            {{#let (this.sentimentTopScore post) as |score|}}
+            {{#let (this.sentimentMapping post.sentiment) as |sentiment|}}
               <span
                 class="admin-report-sentiment-analysis-details__post-score"
-                data-sentiment-score={{score.id}}
+                data-sentiment-score={{sentiment.id}}
               >
-                {{dIcon score.icon}}
-                {{score.text}}
+                {{dIcon sentiment.icon}}
+                {{sentiment.text}}
               </span>
             {{/let}}
           </:abovePostItemExcerpt>
