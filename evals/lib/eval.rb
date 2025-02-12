@@ -22,9 +22,12 @@ class DiscourseAi::Evals::Eval
     @type = @yaml[:type]
     @expected_output = @yaml[:expected_output]
     @expected_output_regex = @yaml[:expected_output_regex]
-    @expected_output_regex = Regexp.new(@expected_output_regex) if @expected_output_regex
+    @expected_output_regex =
+      Regexp.new(@expected_output_regex, Regexp::MULTILINE) if @expected_output_regex
 
-    @args[:path] = File.join(File.dirname(path), @args[:path]) if @args&.key?(:path)
+    @args[:path] = File.expand_path(File.join(File.dirname(path), @args[:path])) if @args&.key?(
+      :path,
+    )
   end
 
   def run(llm:)
@@ -34,6 +37,8 @@ class DiscourseAi::Evals::Eval
         helper(llm, **args)
       when "pdf_to_text"
         pdf_to_text(llm, **args)
+      when "image_to_text"
+        image_to_text(llm, **args)
       end
 
     if expected_output
@@ -71,6 +76,22 @@ class DiscourseAi::Evals::Eval
       )
 
     result[:suggestions].first
+  end
+
+  def image_to_text(llm, path:)
+    upload =
+      UploadCreator.new(File.open(path), File.basename(path)).create_for(Discourse.system_user.id)
+
+    text = +""
+    DiscourseAi::Utils::ImageToText
+      .new(upload: upload, llm_model: llm.llm_model, user: Discourse.system_user)
+      .extract_text do |chunk, error|
+        text << chunk if chunk
+        text << "\n\n" if chunk
+      end
+    text
+  ensure
+    upload.destroy if upload
   end
 
   def pdf_to_text(llm, path:)

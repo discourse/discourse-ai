@@ -2,6 +2,7 @@
 
 class DiscourseAi::Utils::ImageToText
   BACKOFF_SECONDS = [5, 30, 60]
+  MAX_IMAGE_SIZE = 10.megabytes
 
   class Reader
     def initialize(uploads:, llm_model:, user:)
@@ -103,11 +104,70 @@ class DiscourseAi::Utils::ImageToText
   end
 
   def extract_text_from_page(page)
+    raw_text = extract_text_with_tesseract(page)
+
     llm = llm_model.to_llm
-    messages = [{ type: :user, content: "process the following page", upload_ids: [page.id] }]
+    if raw_text.present?
+      messages = [
+        {
+          type: :user,
+          content:
+            "The following text was extracted from an image using OCR. Please enhance, correct, and structure this content while maintaining the original meaning:\n\n#{raw_text}",
+          upload_ids: [page.id],
+        },
+      ]
+    else
+      messages = [
+        { type: :user, content: "Please OCR the content in the image.", upload_ids: [page.id] },
+      ]
+    end
     prompt = DiscourseAi::Completions::Prompt.new(system_message, messages: messages)
     result = llm.generate(prompt, user: Discourse.system_user)
     extract_chunks(result)
+  end
+
+  def extract_text_with_tesseract(page)
+    upload_path =
+      if page.local?
+        Discourse.store.path_for(page)
+      else
+        Discourse.store.download_safe(page, max_file_size_kb: MAX_IMAGE_SIZE)&.path
+      end
+
+    return "" if !upload_path || !File.exist?(upload_path)
+
+    tmp_output_file = Tempfile.new(%w[tesseract_output .txt])
+    tmp_output = tmp_output_file.path
+    tmp_output_file.unlink
+
+    command = [
+      "tesseract",
+      upload_path,
+      tmp_output.sub(/\.txt$/, ""), # Tesseract adds .txt automatically
+    ]
+
+    success =
+      Discourse::Utils.execute_command(
+        *command,
+        timeout: 20.seconds,
+        failure_message: "Failed to OCR image with Tesseract",
+      )
+
+    if success && File.exist?("#{tmp_output}")
+      text = File.read("#{tmp_output}")
+      begin
+        File.delete("#{tmp_output}")
+      rescue StandardError
+        nil
+      end
+      text.strip
+    else
+      Rails.logger.error("Tesseract OCR failed for #{upload_path}")
+      ""
+    end
+  rescue => e
+    Rails.logger.error("Error during OCR processing: #{e.message}")
+    ""
   end
 
   def extract_chunks(text)
