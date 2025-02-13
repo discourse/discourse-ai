@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { cached, tracked } from "@glimmer/tracking";
 import { concat, fn, get } from "@ember/helper";
-import { action, computed } from "@ember/object";
+import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { service } from "@ember/service";
@@ -37,8 +37,6 @@ export default class AiLlmEditorForm extends Component {
 
       const info = this.args.llms.resultSetMeta.presets.findBy("id", id);
       const modelInfo = info.models.findBy("name", modelName);
-      const params =
-        this.args.llms.resultSetMeta.provider_params[info.provider] ?? {};
 
       return {
         max_prompt_tokens: modelInfo.tokens,
@@ -47,12 +45,7 @@ export default class AiLlmEditorForm extends Component {
         display_name: modelInfo.display_name,
         name: modelInfo.name,
         provider: info.provider,
-        provider_params: Object.fromEntries(
-          Object.entries(params).map(([k, v]) => [
-            k,
-            v?.type === "enum" ? v.default : null,
-          ])
-        ),
+        provider_params: this.computeProviderParams(info.provider),
       };
     }
 
@@ -103,11 +96,6 @@ export default class AiLlmEditorForm extends Component {
     return this.testRunning || this.testResult !== null;
   }
 
-  @computed("args.model.provider")
-  get canEditURL() {
-    return this.args.model.provider !== "aws_bedrock";
-  }
-
   get modulesUsingModel() {
     const usedBy = this.args.model.used_by?.filter((m) => m.type !== "ai_bot");
 
@@ -138,6 +126,21 @@ export default class AiLlmEditorForm extends Component {
 
   get showAddQuotaButton() {
     return !this.args.model.isNew;
+  }
+
+  computeProviderParams(provider) {
+    const params = this.args.llms.resultSetMeta.provider_params[provider] ?? {};
+    return Object.fromEntries(
+      Object.entries(params).map(([k, v]) => [
+        k,
+        v?.type === "enum" ? v.default : null,
+      ])
+    );
+  }
+
+  @action
+  canEditURL(provider) {
+    return provider !== "aws_bedrock";
   }
 
   @action
@@ -221,6 +224,12 @@ export default class AiLlmEditorForm extends Component {
   }
 
   @action
+  setProvider(provider, { set }) {
+    set("provider_params", this.computeProviderParams(provider));
+    set("provider", provider);
+  }
+
+  @action
   delete() {
     return this.dialog.confirm({
       message: i18n("discourse_ai.llms.confirm_delete"),
@@ -287,6 +296,7 @@ export default class AiLlmEditorForm extends Component {
         @disabled={{this.seeded}}
         @format="large"
         @validation="required"
+        @onSet={{this.setProvider}}
         as |field|
       >
         <field.Select as |select|>
@@ -299,7 +309,7 @@ export default class AiLlmEditorForm extends Component {
       </form.Field>
 
       {{#unless this.seeded}}
-        {{#if this.canEditURL}}
+        {{#if (this.canEditURL data.provider)}}
           <form.Field
             @name="url"
             @title={{i18n "discourse_ai.llms.url"}}

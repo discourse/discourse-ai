@@ -71,6 +71,34 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     expect(llm.user_id).not_to be_nil
   end
 
+  context "changing the provider" do
+    it "correctly changes the provider params" do
+      visit "/admin/plugins/discourse-ai/ai-llms"
+      find("[data-llm-id='none'] button").click()
+      form.field("provider").select("vllm")
+
+      expect(form).to have_field_with_name("provider_params.disable_system_prompt")
+      expect(form).to have_no_field_with_name("provider_params.disable_native_tools")
+
+      form.field("provider").select("open_router")
+
+      expect(form).to have_field_with_name("provider_params.disable_streaming")
+      expect(form).to have_field_with_name("provider_params.disable_native_tools")
+    end
+
+    it "updates if the url can be edited" do
+      visit "/admin/plugins/discourse-ai/ai-llms"
+      find("[data-llm-id='none'] button").click()
+      form.field("provider").select("vllm")
+
+      expect(form).to have_field_with_name("url")
+
+      form.field("provider").select("aws_bedrock")
+
+      expect(form).to have_no_field_with_name("url")
+    end
+  end
+
   context "with quotas" do
     fab!(:llm_model_1) { Fabricate(:llm_model, name: "claude-2") }
     fab!(:group_1) { Fabricate(:group) }
