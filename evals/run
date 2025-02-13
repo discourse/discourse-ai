@@ -10,7 +10,12 @@ require_relative "lib/eval"
 options = DiscourseAi::Evals::Cli.parse_options!
 
 if options.list
-  DiscourseAi::Evals::Runner.list
+  DiscourseAi::Evals::Runner.print
+  exit 0
+end
+
+if options.list_models
+  DiscourseAi::Evals::Llm.print
   exit 0
 end
 

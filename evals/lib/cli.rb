@@ -3,11 +3,12 @@ require "optparse"
 
 class DiscourseAi::Evals::Cli
   class Options
-    attr_accessor :eval_name, :model, :list
-    def initialize(eval_name: nil, model: nil, list: false)
+    attr_accessor :eval_name, :model, :list, :list_models
+    def initialize(eval_name: nil, model: nil, list: false, list_models: false)
       @eval_name = eval_name
       @model = model
       @list = list
+      @list_models = list_models
     end
   end
 
@@ -21,6 +22,8 @@ class DiscourseAi::Evals::Cli
         opts.on("-e", "--eval NAME", "Name of the evaluation to run") do |eval_name|
           options.eval_name = eval_name
         end
+
+        opts.on("--list-models", "List models") { |model| options.list_models = true }
 
         opts.on(
           "-m",

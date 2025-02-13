@@ -214,16 +214,6 @@ module DiscourseAi
               decode_chunk_finish.each { |partial| blk.call(partial, cancel) }
               return response_data
             ensure
-              if log && (logger = Thread.current[:llm_audit_log])
-                call_data = <<~LOG
-                  #{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}
-                  request:
-                  #{format_possible_json_payload(log.raw_request_payload)}
-                  response:
-                  #{response_data}
-                LOG
-                logger.info(call_data)
-              end
               if log
                 log.raw_response_payload = response_raw
                 final_log_update(log)
@@ -236,6 +226,42 @@ module DiscourseAi
                 if Rails.env.development? && !ENV["DISCOURSE_AI_NO_DEBUG"]
                   puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
                 end
+              end
+              if log && (logger = Thread.current[:llm_audit_log])
+                call_data = <<~LOG
+                  #{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}
+                  request:
+                  #{format_possible_json_payload(log.raw_request_payload)}
+                  response:
+                  #{response_data}
+                LOG
+                logger.info(call_data)
+              end
+              if log && (structured_logger = Thread.current[:llm_audit_structured_log])
+                llm_request =
+                  begin
+                    JSON.parse(log.raw_request_payload)
+                  rescue StandardError
+                    log.raw_request_payload
+                  end
+
+                # gemini puts passwords in query params
+                # we don't want to log that
+                structured_logger.log(
+                  "llm_call",
+                  args: {
+                    class: self.class.name,
+                    completion_url: request.uri.to_s.split("?")[0],
+                    request: llm_request,
+                    result: response_data,
+                    request_tokens: log.request_tokens,
+                    response_tokens: log.response_tokens,
+                    duration: log.duration_msecs,
+                    stream: @streaming_mode,
+                  },
+                  start_time: start_time.utc,
+                  end_time: Time.now.utc,
+                )
               end
             end
           end

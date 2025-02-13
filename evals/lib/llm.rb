@@ -64,6 +64,20 @@ class DiscourseAi::Evals::Llm
     },
   }
 
+  def self.print
+    CONFIGS
+      .keys
+      .map do |config_name|
+        begin
+          new(config_name)
+        rescue StandardError
+          nil
+        end
+      end
+      .compact
+      .each { |llm| puts "#{llm.config_name}: #{llm.name} (#{llm.provider})" }
+  end
+
   def self.choose(config_name)
     if CONFIGS[config_name].nil?
       CONFIGS
@@ -86,6 +100,7 @@ class DiscourseAi::Evals::Llm
 
   attr_reader :llm_model
   attr_reader :llm_proxy
+  attr_reader :config_name
 
   def initialize(config_name)
     config = CONFIGS[config_name].dup
@@ -97,6 +112,11 @@ class DiscourseAi::Evals::Llm
     config[:api_key] = ENV[api_key_env]
     @llm_model = LlmModel.new(config)
     @llm_proxy = DiscourseAi::Completions::Llm.proxy(@llm_model)
+    @config_name = config_name
+  end
+
+  def provider
+    @llm_model.provider
   end
 
   def name

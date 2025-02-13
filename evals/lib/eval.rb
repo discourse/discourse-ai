@@ -62,6 +62,20 @@ class DiscourseAi::Evals::Eval
     puts "#{id}: #{description}"
   end
 
+  def to_json
+    {
+      type: @type,
+      path: @path,
+      name: @name,
+      description: @description,
+      id: @id,
+      args: @args,
+      vision: @vision,
+      expected_output: @expected_output,
+      expected_output_regex: @expected_output_regex,
+    }.compact
+  end
+
   private
 
   def helper(llm, input:, name:)
