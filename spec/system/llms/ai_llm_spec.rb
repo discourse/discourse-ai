@@ -71,7 +71,7 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     expect(llm.user_id).not_to be_nil
   end
 
-  context "changing the provider" do
+  context "when changing the provider" do
     it "correctly changes the provider params" do
       visit "/admin/plugins/discourse-ai/ai-llms"
       find("[data-llm-id='none'] button").click()
