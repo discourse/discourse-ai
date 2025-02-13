@@ -3,10 +3,14 @@
 module DiscourseAi
   module Sentiment
     class SentimentAnalysisReport
+      GROUP_BY_FILTER_DEFAULT = :category
+      SORT_BY_FILTER_DEFAULT = :size
+
       def self.register!(plugin)
         plugin.add_report("sentiment_analysis") do |report|
           report.modes = [:sentiment_analysis]
-          category_filter = report.filters.dig(:group_by) || :category
+
+          category_filter = report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT
           report.add_filter(
             "group_by",
             type: "list",
@@ -15,7 +19,8 @@ module DiscourseAi
             allow_any: false,
             auto_insert_none_item: false,
           )
-          size_filter = report.filters.dig(:sort_by) || :size
+
+          size_filter = report.filters.dig(:sort_by) || SORT_BY_FILTER_DEFAULT
           report.add_filter(
             "sort_by",
             type: "list",
@@ -40,8 +45,8 @@ module DiscourseAi
       end
 
       def self.fetch_data(report)
-        grouping = report.filters.dig(:group_by).to_sym
-        sorting = report.filters.dig(:sort_by).to_sym
+        grouping = (report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT).to_sym
+        sorting = (report.filters.dig(:sort_by) || SORT_BY_FILTER_DEFAULT).to_sym
         threshold = DiscourseAi::Sentiment::SentimentController::SENTIMENT_THRESHOLD
 
         sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
