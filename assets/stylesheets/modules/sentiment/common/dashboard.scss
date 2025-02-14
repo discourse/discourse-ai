@@ -35,34 +35,18 @@
       min-width: 200px;
     }
 
-    .control:first-child {
+    .control:nth-of-type(-n + 4) {
       flex: 1;
     }
 
-    .control:nth-child(2) {
-      flex: 1;
-    }
-
-    .control:nth-child(3) {
-      flex: 1;
-    }
-
-    .control:nth-child(4) {
-      flex: 1;
-    }
-
-    .control:nth-child(5) {
-      flex: 1;
-    }
-
-    .control:nth-child(6) {
+    .control:nth-of-type(n + 6) {
       flex-basis: 49%;
       align-self: flex-end;
     }
 
-    .control:last-child {
-      flex-basis: 49%;
-      align-self: flex-end;
+    // Hides tag selector when showing subcategories selector
+    .control:nth-of-type(6):nth-last-of-type(3) {
+      display: none;
     }
   }
 

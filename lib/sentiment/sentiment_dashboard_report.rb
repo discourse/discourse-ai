@@ -3,10 +3,12 @@
 module DiscourseAi
   module Sentiment
     class SentimentDashboardReport
+      include Constants
+
       def self.register!(plugin)
         plugin.add_report("overall_sentiment") do |report|
           report.modes = [:stacked_chart]
-          threshold = DiscourseAi::Sentiment::SentimentController::SENTIMENT_THRESHOLD
+          threshold = SENTIMENT_THRESHOLD
 
           sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
             COUNT(

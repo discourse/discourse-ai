@@ -3,6 +3,7 @@
 module DiscourseAi
   module Sentiment
     class SentimentAnalysisReport
+      include Constants
       GROUP_BY_FILTER_DEFAULT = :category
       SORT_BY_FILTER_DEFAULT = :size
 
@@ -60,7 +61,7 @@ module DiscourseAi
       end
 
       def self.fetch_data(report)
-        threshold = DiscourseAi::Sentiment::SentimentController::SENTIMENT_THRESHOLD
+        threshold = SENTIMENT_THRESHOLD
 
         grouping = (report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT).to_sym
         sorting = (report.filters.dig(:sort_by) || SORT_BY_FILTER_DEFAULT).to_sym

@@ -2,8 +2,8 @@
 
 module DiscourseAi
   module Sentiment
-    class SentimentController < ::ApplicationController
-      SENTIMENT_THRESHOLD = 0.6
+    class SentimentController < ::Admin::StaffController
+      include Constants
       requires_plugin ::DiscourseAi::PLUGIN_NAME
       requires_login
 
