@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class AiPersona < ActiveRecord::Base
-  # TODO remove this line 01-1-2025
-  self.ignored_columns = %i[commands allow_chat mentionable]
+  # TODO remove this line 01-10-2025
+  self.ignored_columns = %i[default_llm question_consolidator_llm]
 
   # places a hard limit, so per site we cache a maximum of 500 classes
   MAX_PERSONAS_PER_SITE = 500
@@ -12,7 +12,7 @@ class AiPersona < ActiveRecord::Base
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
   validate :chat_preconditions
-  validate :allowed_seeded_model, if: :default_llm
+  validate :allowed_seeded_model, if: :default_llm_id
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
   # leaves some room for growth but sets a maximum to avoid memory issues
   # we may want to revisit this in the future
@@ -29,6 +29,10 @@ class AiPersona < ActiveRecord::Base
 
   belongs_to :created_by, class_name: "User"
   belongs_to :user
+
+  belongs_to :default_llm, class_name: "LlmModel"
+  belongs_to :question_consolidator_llm, class_name: "LlmModel"
+  belongs_to :rag_llm_model, class_name: "LlmModel"
 
   has_many :upload_references, as: :target, dependent: :destroy
   has_many :uploads, through: :upload_references
@@ -62,7 +66,7 @@ class AiPersona < ActiveRecord::Base
             user_id: persona.user_id,
             username: persona.user.username_lower,
             allowed_group_ids: persona.allowed_group_ids,
-            default_llm: persona.default_llm,
+            default_llm_id: persona.default_llm_id,
             force_default_llm: persona.force_default_llm,
             allow_chat_channel_mentions: persona.allow_chat_channel_mentions,
             allow_chat_direct_messages: persona.allow_chat_direct_messages,
@@ -157,12 +161,12 @@ class AiPersona < ActiveRecord::Base
       user_id
       system
       mentionable
-      default_llm
+      default_llm_id
       max_context_posts
       vision_enabled
       vision_max_pixels
       rag_conversation_chunks
-      question_consolidator_llm
+      question_consolidator_llm_id
       allow_chat_channel_mentions
       allow_chat_direct_messages
       allow_topic_mentions
@@ -302,7 +306,7 @@ class AiPersona < ActiveRecord::Base
     if (
          allow_chat_channel_mentions || allow_chat_direct_messages || allow_topic_mentions ||
            force_default_llm
-       ) && !default_llm
+       ) && !default_llm_id
       errors.add(:default_llm, I18n.t("discourse_ai.ai_bot.personas.default_llm_required"))
     end
   end
@@ -332,13 +336,12 @@ class AiPersona < ActiveRecord::Base
   end
 
   def allowed_seeded_model
-    return if default_llm.blank?
+    return if default_llm_id.blank?
 
-    llm = LlmModel.find_by(id: default_llm.split(":").last.to_i)
-    return if llm.nil?
-    return if !llm.seeded?
+    return if default_llm.nil?
+    return if !default_llm.seeded?
 
-    return if SiteSetting.ai_bot_allowed_seeded_models.include?(llm.id.to_s)
+    return if SiteSetting.ai_bot_allowed_seeded_models_map.include?(default_llm.id.to_s)
 
     errors.add(:default_llm, I18n.t("discourse_ai.llm.configuration.invalid_seeded_model"))
   end
@@ -348,36 +351,37 @@ end
 #
 # Table name: ai_personas
 #
-#  id                          :bigint           not null, primary key
-#  name                        :string(100)      not null
-#  description                 :string(2000)     not null
-#  system_prompt               :string(10000000) not null
-#  allowed_group_ids           :integer          default([]), not null, is an Array
-#  created_by_id               :integer
-#  enabled                     :boolean          default(TRUE), not null
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
-#  system                      :boolean          default(FALSE), not null
-#  priority                    :boolean          default(FALSE), not null
-#  temperature                 :float
-#  top_p                       :float
-#  user_id                     :integer
-#  default_llm                 :text
-#  max_context_posts           :integer
-#  vision_enabled              :boolean          default(FALSE), not null
-#  vision_max_pixels           :integer          default(1048576), not null
-#  rag_chunk_tokens            :integer          default(374), not null
-#  rag_chunk_overlap_tokens    :integer          default(10), not null
-#  rag_conversation_chunks     :integer          default(10), not null
-#  question_consolidator_llm   :text
-#  tool_details                :boolean          default(TRUE), not null
-#  tools                       :json             not null
-#  forced_tool_count           :integer          default(-1), not null
-#  allow_chat_channel_mentions :boolean          default(FALSE), not null
-#  allow_chat_direct_messages  :boolean          default(FALSE), not null
-#  allow_topic_mentions        :boolean          default(FALSE), not null
-#  allow_personal_messages     :boolean          default(TRUE), not null
-#  force_default_llm           :boolean          default(FALSE), not null
+#  id                           :bigint           not null, primary key
+#  name                         :string(100)      not null
+#  description                  :string(2000)     not null
+#  system_prompt                :string(10000000) not null
+#  allowed_group_ids            :integer          default([]), not null, is an Array
+#  created_by_id                :integer
+#  enabled                      :boolean          default(TRUE), not null
+#  created_at                   :datetime         not null
+#  updated_at                   :datetime         not null
+#  system                       :boolean          default(FALSE), not null
+#  priority                     :boolean          default(FALSE), not null
+#  temperature                  :float
+#  top_p                        :float
+#  user_id                      :integer
+#  max_context_posts            :integer
+#  vision_enabled               :boolean          default(FALSE), not null
+#  vision_max_pixels            :integer          default(1048576), not null
+#  rag_chunk_tokens             :integer          default(374), not null
+#  rag_chunk_overlap_tokens     :integer          default(10), not null
+#  rag_conversation_chunks      :integer          default(10), not null
+#  tool_details                 :boolean          default(TRUE), not null
+#  tools                        :json             not null
+#  forced_tool_count            :integer          default(-1), not null
+#  allow_chat_channel_mentions  :boolean          default(FALSE), not null
+#  allow_chat_direct_messages   :boolean          default(FALSE), not null
+#  allow_topic_mentions         :boolean          default(FALSE), not null
+#  allow_personal_messages      :boolean          default(TRUE), not null
+#  force_default_llm            :boolean          default(FALSE), not null
+#  rag_llm_model_id             :bigint
+#  default_llm_id               :bigint
+#  question_consolidator_llm_id :bigint
 #
 # Indexes
 #

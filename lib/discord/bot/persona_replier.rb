@@ -13,7 +13,7 @@ module DiscourseAi
           DiscourseAi::AiBot::Bot.as(
             Discourse.system_user,
             persona: @persona,
-            model: @persona.class.default_llm,
+            model: LlmModel.find(@persona.class.default_llm_id),
           )
         super(body)
       end

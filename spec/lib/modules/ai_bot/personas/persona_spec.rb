@@ -8,7 +8,6 @@ class TestPersona < DiscourseAi::AiBot::Personas::Persona
       DiscourseAi::AiBot::Tools::Image,
     ]
   end
-
   def system_prompt
     <<~PROMPT
       {site_url}
@@ -337,7 +336,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
             name: "custom",
             rag_conversation_chunks: 3,
             allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
-            question_consolidator_llm: "custom:#{llm_model.id}",
+            question_consolidator_llm_id: llm_model.id,
           )
 
         UploadReference.ensure_exist!(target: custom_ai_persona, upload_ids: [upload.id])

@@ -8,8 +8,11 @@ RSpec.describe DiscourseAi::Discord::Bot::PersonaReplier do
   end
   let(:persona_replier) { described_class.new(interaction_body) }
 
+  fab!(:llm_model)
+  fab!(:persona) { Fabricate(:ai_persona, default_llm_id: llm_model.id) }
+
   before do
-    SiteSetting.ai_discord_search_persona = "-1"
+    SiteSetting.ai_discord_search_persona = persona.id.to_s
     allow_any_instance_of(DiscourseAi::AiBot::Bot).to receive(:reply).and_return(
       "This is a reply from bot!",
     )

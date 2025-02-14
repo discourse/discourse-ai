@@ -90,6 +90,7 @@ module DiscourseAi
             :summary,
             :rag_chunk_tokens,
             :rag_chunk_overlap_tokens,
+            :rag_llm_model_id,
             rag_uploads: [:id],
             parameters: [:name, :type, :description, :required, enum: []],
           )

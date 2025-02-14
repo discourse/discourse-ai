@@ -13,9 +13,12 @@ RSpec.describe Jobs::StreamDiscordReply, type: :job do
     }.to_json.to_s
   end
 
+  fab!(:llm_model)
+  fab!(:persona) { Fabricate(:ai_persona, default_llm_id: llm_model.id) }
+
   before do
     SiteSetting.ai_discord_search_mode = "persona"
-    SiteSetting.ai_discord_search_persona = -1
+    SiteSetting.ai_discord_search_persona = persona.id
   end
 
   it "calls PersonaReplier when search mode is persona" do

@@ -347,12 +347,14 @@ discourse_ai:
   ai_spam_detection_enabled:
     default: false
     hidden: true
-
   ai_spam_detection_user_id:
     default: ""
     hidden: true
-
   ai_spam_detection_model_allowed_seeded_models:
     default: ""
     hidden: true
     type: list
+
+  ai_rag_pdf_images_enabled:
+    default: false
+    hidden: true

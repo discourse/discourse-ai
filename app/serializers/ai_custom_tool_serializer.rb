@@ -10,6 +10,7 @@ class AiCustomToolSerializer < ApplicationSerializer
              :script,
              :rag_chunk_tokens,
              :rag_chunk_overlap_tokens,
+             :rag_llm_model_id,
              :created_by_id,
              :created_at,
              :updated_at

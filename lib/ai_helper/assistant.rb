@@ -13,6 +13,20 @@ module DiscourseAi
         prompt_cache.flush!
       end
 
+      def initialize(helper_llm: nil, image_caption_llm: nil)
+        @helper_llm = helper_llm
+        @image_caption_llm = image_caption_llm
+      end
+
+      def helper_llm
+        @helper_llm || DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
+      end
+
+      def image_caption_llm
+        @image_caption_llm ||
+          DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model)
+      end
+
       def available_prompts(user)
         key = "prompt_cache_#{I18n.locale}"
         self
@@ -115,7 +129,7 @@ module DiscourseAi
       end
 
       def generate_prompt(completion_prompt, input, user, force_default_locale = false, &block)
-        llm = DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model)
+        llm = helper_llm
         prompt = completion_prompt.messages_with_input(input)
         localize_prompt!(prompt, user, force_default_locale)
 
@@ -182,7 +196,7 @@ module DiscourseAi
           )
 
         raw_caption =
-          DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_image_caption_model).generate(
+          image_caption_llm.generate(
             prompt,
             user: user,
             max_tokens: 1024,

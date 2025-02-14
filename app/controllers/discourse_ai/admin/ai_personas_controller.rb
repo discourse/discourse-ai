@@ -32,10 +32,19 @@ module DiscourseAi
             }
           end
         llms =
-          DiscourseAi::Configuration::LlmEnumerator
-            .values(allowed_seeded_llms: SiteSetting.ai_bot_allowed_seeded_models)
-            .map { |hash| { id: hash[:value], name: hash[:name] } }
-        render json: { ai_personas: ai_personas, meta: { tools: tools, llms: llms } }
+          DiscourseAi::Configuration::LlmEnumerator.values_for_serialization(
+            allowed_seeded_llm_ids: SiteSetting.ai_bot_allowed_seeded_models_map,
+          )
+        render json: {
+                 ai_personas: ai_personas,
+                 meta: {
+                   tools: tools,
+                   llms: llms,
+                   settings: {
+                     rag_pdf_images_enabled: SiteSetting.ai_rag_pdf_images_enabled,
+                   },
+                 },
+               }
       end
 
       def new
@@ -187,7 +196,7 @@ module DiscourseAi
             :priority,
             :top_p,
             :temperature,
-            :default_llm,
+            :default_llm_id,
             :user_id,
             :max_context_posts,
             :vision_enabled,
@@ -195,7 +204,8 @@ module DiscourseAi
             :rag_chunk_tokens,
             :rag_chunk_overlap_tokens,
             :rag_conversation_chunks,
-            :question_consolidator_llm,
+            :rag_llm_model_id,
+            :question_consolidator_llm_id,
             :allow_chat_channel_mentions,
             :allow_chat_direct_messages,
             :allow_topic_mentions,

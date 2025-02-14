@@ -12,6 +12,7 @@ const CREATE_ATTRIBUTES = [
   "rag_uploads",
   "rag_chunk_tokens",
   "rag_chunk_overlap_tokens",
+  "rag_llm_model_id",
   "enabled",
 ];
 

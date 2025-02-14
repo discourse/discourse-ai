@@ -156,7 +156,7 @@ module DiscourseAi
                 )
 
               if !@streaming_mode
-                return(
+                response_data =
                   non_streaming_response(
                     response: response,
                     xml_tool_processor: xml_tool_processor,
@@ -164,7 +164,7 @@ module DiscourseAi
                     partials_raw: partials_raw,
                     response_raw: response_raw,
                   )
-                )
+                return response_data
               end
 
               begin
@@ -223,9 +223,45 @@ module DiscourseAi
                 log.duration_msecs = (Time.now - start_time) * 1000
                 log.save!
                 LlmQuota.log_usage(@llm_model, user, log.request_tokens, log.response_tokens)
-                if Rails.env.development?
+                if Rails.env.development? && !ENV["DISCOURSE_AI_NO_DEBUG"]
                   puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
                 end
+              end
+              if log && (logger = Thread.current[:llm_audit_log])
+                call_data = <<~LOG
+                  #{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}
+                  request:
+                  #{format_possible_json_payload(log.raw_request_payload)}
+                  response:
+                  #{response_data}
+                LOG
+                logger.info(call_data)
+              end
+              if log && (structured_logger = Thread.current[:llm_audit_structured_log])
+                llm_request =
+                  begin
+                    JSON.parse(log.raw_request_payload)
+                  rescue StandardError
+                    log.raw_request_payload
+                  end
+
+                # gemini puts passwords in query params
+                # we don't want to log that
+                structured_logger.log(
+                  "llm_call",
+                  args: {
+                    class: self.class.name,
+                    completion_url: request.uri.to_s.split("?")[0],
+                    request: llm_request,
+                    result: response_data,
+                    request_tokens: log.request_tokens,
+                    response_tokens: log.response_tokens,
+                    duration: log.duration_msecs,
+                    stream: @streaming_mode,
+                  },
+                  start_time: start_time.utc,
+                  end_time: Time.now.utc,
+                )
               end
             end
           end
@@ -297,6 +333,14 @@ module DiscourseAi
         end
 
         private
+
+        def format_possible_json_payload(payload)
+          begin
+            JSON.pretty_generate(JSON.parse(payload))
+          rescue JSON::ParserError
+            payload
+          end
+        end
 
         def start_log(
           provider_id:,

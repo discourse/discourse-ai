@@ -28,7 +28,7 @@ module ::Jobs
 
       # Check if this is the first time we process this upload.
       if fragment_ids.empty?
-        document = get_uploaded_file(upload)
+        document = get_uploaded_file(upload: upload, target: target)
         return if document.nil?
 
         RagDocumentFragment.publish_status(upload, { total: 0, indexed: 0, left: 0 })
@@ -163,7 +163,38 @@ module ::Jobs
       [buffer, split_char]
     end
 
-    def get_uploaded_file(upload)
+    def get_uploaded_file(upload:, target:)
+      if %w[pdf png jpg jpeg].include?(upload.extension) && !SiteSetting.ai_rag_pdf_images_enabled
+        raise Discourse::InvalidAccess.new(
+                "The setting ai_rag_pdf_images_enabled is false, can not index images and pdfs.",
+              )
+      end
+      if upload.extension == "pdf"
+        pages =
+          DiscourseAi::Utils::PdfToImages.new(
+            upload: upload,
+            user: Discourse.system_user,
+          ).uploaded_pages
+
+        return(
+          DiscourseAi::Utils::ImageToText.as_fake_file(
+            uploads: pages,
+            llm_model: target.rag_llm_model,
+            user: Discourse.system_user,
+          )
+        )
+      end
+
+      if %w[png jpg jpeg].include?(upload.extension)
+        return(
+          DiscourseAi::Utils::ImageToText.as_fake_file(
+            uploads: [upload],
+            llm_model: target.rag_llm_model,
+            user: Discourse.system_user,
+          )
+        )
+      end
+
       store = Discourse.store
       @file ||=
         if store.external?

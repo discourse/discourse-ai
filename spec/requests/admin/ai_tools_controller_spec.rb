@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Admin::AiToolsController do
+  fab!(:llm_model)
   fab!(:admin)
   fab!(:ai_tool) do
     AiTool.create!(
@@ -33,6 +34,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       expect(response).to be_successful
       expect(response.parsed_body["ai_tools"].length).to eq(AiTool.count)
       expect(response.parsed_body["meta"]["presets"].length).to be > 0
+      expect(response.parsed_body["meta"]["llms"].length).to be > 0
     end
   end
 

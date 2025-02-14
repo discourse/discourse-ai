@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe AiPersona do
+  fab!(:llm_model)
+  fab!(:seeded_llm_model) { Fabricate(:llm_model, id: -1) }
+
   it "validates context settings" do
     persona =
       AiPersona.new(
@@ -118,7 +121,7 @@ RSpec.describe AiPersona do
     forum_helper = AiPersona.find_by(name: "Forum Helper")
     forum_helper.update!(
       user_id: 1,
-      default_llm: "anthropic:claude-2",
+      default_llm_id: llm_model.id,
       max_context_posts: 3,
       allow_topic_mentions: true,
       allow_personal_messages: true,
@@ -133,7 +136,7 @@ RSpec.describe AiPersona do
     # tl 0 by default
     expect(klass.allowed_group_ids).to eq([10])
     expect(klass.user_id).to eq(1)
-    expect(klass.default_llm).to eq("anthropic:claude-2")
+    expect(klass.default_llm_id).to eq(llm_model.id)
     expect(klass.max_context_posts).to eq(3)
     expect(klass.allow_topic_mentions).to eq(true)
     expect(klass.allow_personal_messages).to eq(true)
@@ -149,7 +152,7 @@ RSpec.describe AiPersona do
         system_prompt: "test",
         tools: [],
         allowed_group_ids: [],
-        default_llm: "anthropic:claude-2",
+        default_llm_id: llm_model.id,
         max_context_posts: 3,
         allow_topic_mentions: true,
         allow_personal_messages: true,
@@ -164,7 +167,7 @@ RSpec.describe AiPersona do
     expect(klass.system).to eq(false)
     expect(klass.allowed_group_ids).to eq([])
     expect(klass.user_id).to eq(1)
-    expect(klass.default_llm).to eq("anthropic:claude-2")
+    expect(klass.default_llm_id).to eq(llm_model.id)
     expect(klass.max_context_posts).to eq(3)
     expect(klass.allow_topic_mentions).to eq(true)
     expect(klass.allow_personal_messages).to eq(true)
@@ -227,10 +230,9 @@ RSpec.describe AiPersona do
         system_prompt: "test",
         tools: [],
         allowed_group_ids: [],
-        default_llm: "seeded_model:-1",
+        default_llm_id: seeded_llm_model.id,
       )
 
-    llm_model = Fabricate(:llm_model, id: -1)
     SiteSetting.ai_bot_allowed_seeded_models = ""
 
     expect(persona.valid?).to eq(false)
