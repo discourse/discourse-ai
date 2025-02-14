@@ -90,6 +90,15 @@ en:
               label: "Top P"
               description: "Top P to use for the LLM, increase to increase randomness (leave empty to use model default)"
 
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Model"
+              description: "The default language model used for triage"
+            tool:
+              label: "Tool"
+              description: "Tool to use for triage (tool must have no parameters defined)"
+
         llm_triage:
           fields:
             system_prompt:

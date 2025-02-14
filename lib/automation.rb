@@ -12,6 +12,15 @@ module DiscourseAi
         },
       ]
     end
+
+    def self.available_custom_tools
+      AiTool
+        .where(enabled: true)
+        .where("parameters = '[]'::jsonb")
+        .pluck(:id, :name, :description)
+        .map { |id, name, description| { id: id, translated_name: name, description: description } }
+    end
+
     def self.available_models
       values = DB.query_hash(<<~SQL)
         SELECT display_name AS translated_name, id AS id
