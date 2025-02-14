@@ -22,10 +22,48 @@
   gap: 1rem;
 
   .filters {
-    order: 1;
-    width: 300px;
     @include report-container-box();
+    order: 1;
+    width: 100%;
     margin-left: 0;
+    flex-flow: row wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.5rem;
+
+    .control {
+      min-width: 200px;
+    }
+
+    .control:first-child {
+      flex: 1;
+    }
+
+    .control:nth-child(2) {
+      flex: 1;
+    }
+
+    .control:nth-child(3) {
+      flex: 1;
+    }
+
+    .control:nth-child(4) {
+      flex: 1;
+    }
+
+    .control:nth-child(5) {
+      flex: 1;
+    }
+
+    .control:nth-child(6) {
+      flex-basis: 49%;
+      align-self: flex-end;
+    }
+
+    .control:last-child {
+      flex-basis: 49%;
+      align-self: flex-end;
+    }
   }
 
   .main {

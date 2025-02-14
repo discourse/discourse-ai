@@ -10,11 +10,11 @@ module DiscourseAi
         plugin.add_report("sentiment_analysis") do |report|
           report.modes = [:sentiment_analysis]
 
-          category_filter = report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT
+          group_by_filter = report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT
           report.add_filter(
             "group_by",
             type: "list",
-            default: category_filter,
+            default: group_by_filter,
             choices: [{ id: "category", name: "Category" }, { id: "tag", name: "Tag" }],
             allow_any: false,
             auto_insert_none_item: false,
@@ -30,12 +30,27 @@ module DiscourseAi
             auto_insert_none_item: false,
           )
 
+          report.add_category_filter(disabled: group_by_filter.to_sym == :tag)
+
+          tag_filter = report.filters.dig(:tag) || "any"
+          tag_choices =
+            Tag
+              .all
+              .map { |tag| { id: tag.name, name: tag.name } }
+              .unshift({ id: "any", name: "Any" })
+          report.add_filter(
+            "tag",
+            type: "list",
+            default: tag_filter,
+            choices: tag_choices,
+            allow_any: false,
+            auto_insert_none_item: false,
+            disabled: group_by_filter.to_sym == :category,
+          )
+
           sentiment_data = DiscourseAi::Sentiment::SentimentAnalysisReport.fetch_data(report)
 
           report.data = sentiment_data
-
-          # TODO: connect filter to make the report data change.
-
           report.labels = [
             I18n.t("discourse_ai.sentiment.reports.sentiment_analysis.positive"),
             I18n.t("discourse_ai.sentiment.reports.sentiment_analysis.neutral"),
@@ -45,9 +60,12 @@ module DiscourseAi
       end
 
       def self.fetch_data(report)
+        threshold = DiscourseAi::Sentiment::SentimentController::SENTIMENT_THRESHOLD
+
         grouping = (report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT).to_sym
         sorting = (report.filters.dig(:sort_by) || SORT_BY_FILTER_DEFAULT).to_sym
-        threshold = DiscourseAi::Sentiment::SentimentController::SENTIMENT_THRESHOLD
+        category_filter = report.filters.dig(:category)
+        tag_filter = report.filters.dig(:tag)
 
         sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
           COUNT(
@@ -94,6 +112,22 @@ module DiscourseAi
             raise Discourse::InvalidParameters
           end
 
+        where_clause =
+          case grouping
+          when :category
+            if category_filter.nil?
+              ""
+            else
+              "AND c.id = :category_filter"
+            end
+          when :tag
+            if tag_filter.nil? || tag_filter == "any"
+              ""
+            else
+              "AND tags.name = :tag_filter"
+            end
+          end
+
         grouped_sentiments =
           DB.query(
             <<~SQL,
@@ -112,12 +146,15 @@ module DiscourseAi
                 p.user_id > 0 AND
                 cr.model_used = 'cardiffnlp/twitter-roberta-base-sentiment-latest' AND
                 (p.created_at > :report_start AND p.created_at < :report_end)
+                #{where_clause}
               GROUP BY 1
               #{order_by_clause}
             SQL
             report_start: report.start_date,
             report_end: report.end_date,
             threshold: threshold,
+            category_filter: category_filter,
+            tag_filter: tag_filter,
           )
 
         grouped_sentiments

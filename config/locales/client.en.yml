@@ -21,6 +21,8 @@ en:
               label: "Group by"
             sort_by:
               label: "Sort by"
+            tag:
+              label: "Tag"
 
   js:
     discourse_automation:
