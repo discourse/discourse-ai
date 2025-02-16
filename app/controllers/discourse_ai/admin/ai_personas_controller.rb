@@ -41,7 +41,7 @@ module DiscourseAi
                    tools: tools,
                    llms: llms,
                    settings: {
-                     rag_pdf_images_enabled: SiteSetting.ai_rag_pdf_images_enabled,
+                     rag_images_enabled: SiteSetting.ai_rag_images_enabled,
                    },
                  },
                }

@@ -81,7 +81,7 @@ export default class RagOptions extends Component {
           }}
         />
       </div>
-      {{#if @allowPdfsAndImages}}
+      {{#if @allowImages}}
         <div class="control-group">
           <label>{{i18n "discourse_ai.rag.options.rag_llm_model"}}</label>
           <AiLlmSelector

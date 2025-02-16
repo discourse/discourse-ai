@@ -596,13 +596,13 @@ export default class PersonaEditor extends Component {
             @target={{this.editingModel}}
             @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}
-            @allowPdfsAndImages={{@personas.resultSetMeta.settings.rag_pdf_images_enabled}}
+            @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
           />
         </div>
         <RagOptions
           @model={{this.editingModel}}
           @llms={{@personas.resultSetMeta.llms}}
-          @allowPdfsAndImages={{@personas.resultSetMeta.settings.rag_pdf_images_enabled}}
+          @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
         >
           <div class="control-group">
             <label>{{i18n

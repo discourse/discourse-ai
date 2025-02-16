@@ -3,7 +3,7 @@
 RSpec.describe Jobs::DigestRagUpload do
   fab!(:persona) { Fabricate(:ai_persona) }
   fab!(:upload) { Fabricate(:upload, extension: "txt") }
-  fab!(:pdf_upload) { Fabricate(:upload, extension: "pdf") }
+  fab!(:image_upload) { Fabricate(:upload, extension: "png") }
   let(:document_file) { StringIO.new("some text" * 200) }
 
   fab!(:cloudflare_embedding_def)
@@ -31,13 +31,13 @@ RSpec.describe Jobs::DigestRagUpload do
   end
 
   describe "#execute" do
-    context "when processing a PDF upload" do
+    context "when processing an image upload" do
       it "will reject the indexing if the site setting is not enabled" do
-        SiteSetting.ai_rag_pdf_images_enabled = false
+        SiteSetting.ai_rag_images_enabled = false
 
         expect {
           described_class.new.execute(
-            upload_id: pdf_upload.id,
+            upload_id: image_upload.id,
             target_id: persona.id,
             target_type: persona.class.to_s,
           )

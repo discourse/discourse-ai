@@ -355,6 +355,6 @@ discourse_ai:
     hidden: true
     type: list
 
-  ai_rag_pdf_images_enabled:
+  ai_rag_images_enabled:
     default: false
     hidden: true

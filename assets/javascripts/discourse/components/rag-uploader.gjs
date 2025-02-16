@@ -78,10 +78,10 @@ export default class RagUploader extends Component {
   }
 
   get acceptedFileTypes() {
-    if (this.args?.allowPdfsAndImages) {
-      return ".txt,.md,.pdf,.png,.jpg,.jpeg";
+    if (this.args?.allowImages) {
+      return ".txt,.md,.png,.jpg,.jpeg";
     } else {
-      return ".txt,.md";
+      return ".txt,.md,.pdf";
     }
   }
 
@@ -127,8 +127,8 @@ export default class RagUploader extends Component {
   <template>
     <div class="rag-uploader">
       <h3>{{i18n "discourse_ai.rag.uploads.title"}}</h3>
-      {{#if @allowPdfsAndImages}}
-        <p>{{i18n "discourse_ai.rag.uploads.description_with_pdfs"}}</p>
+      {{#if @allowImages}}
+        <p>{{i18n "discourse_ai.rag.uploads.description_with_images"}}</p>
       {{else}}
         <p>{{i18n "discourse_ai.rag.uploads.description"}}</p>
       {{/if}}
