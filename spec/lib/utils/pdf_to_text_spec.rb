@@ -19,6 +19,9 @@ RSpec.describe DiscourseAi::Utils::PdfToText do
 
   context "when improving PDF extraction with LLM" do
     it "works as expected" do
+      if ENV["CI"]
+        skip "This test requires imagemagick is installed with ghostscript support - which is not available in CI"
+      end
       pdf_to_text = described_class.new(upload: upload, user: user, llm_model: llm_model)
       pages = []
 
