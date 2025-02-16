@@ -24,7 +24,7 @@ RSpec.describe DiscourseAi::Admin::RagDocumentFragmentsController do
   end
 
   describe "POST #upload_file" do
-    let :fake_pdf do
+    let :fake_image do
       @cleanup_files ||= []
       tempfile = Tempfile.new(%w[test .png])
       tempfile.write("fake image")
@@ -56,8 +56,8 @@ RSpec.describe DiscourseAi::Admin::RagDocumentFragmentsController do
       expect(response.status).to eq(400)
     end
 
-    it "allows PDF files if site setting is enabled" do
-      SiteSetting.ai_rag_pdf_images_enabled = true
+    it "allows image files if site setting is enabled" do
+      SiteSetting.ai_rag_images_enabled = true
 
       post "/admin/plugins/discourse-ai/rag-document-fragments/files/upload.json",
            params: {
