@@ -18,6 +18,28 @@ RSpec.describe DiscourseAi::Utils::PdfToText do
   end
 
   context "when improving PDF extraction with LLM" do
+    it "can properly simulate a file" do
+      if ENV["CI"]
+        skip "This test requires imagemagick is installed with ghostscript support - which is not available in CI"
+      end
+
+      responses = [
+        "<chunk>Page 1: LLM chunk 1</chunk><chunk>Page 1: LLM chunk 2</chunk>",
+        "<chunk>Page 2: LLM chunk 3</chunk>",
+      ]
+
+      pages = []
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
+        file = described_class.as_fake_file(upload: upload, user: user, llm_model: llm_model)
+
+        while content = file.read(100_000)
+          pages << content
+        end
+      end
+
+      expect(pages).to eq(["Page 1: LLM chunk 1", "Page 1: LLM chunk 2", "Page 2: LLM chunk 3"])
+    end
+
     it "works as expected" do
       if ENV["CI"]
         skip "This test requires imagemagick is installed with ghostscript support - which is not available in CI"

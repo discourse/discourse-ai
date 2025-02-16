@@ -3,7 +3,8 @@
 class DiscourseAi::Utils::PdfToText
   class Reader
     def initialize(upload:, user: nil, llm_model: nil)
-      @extractor = self.new(upload: upload, user: user, llm_model: llm_model)
+      @extractor =
+        DiscourseAi::Utils::PdfToText.new(upload: upload, user: user, llm_model: llm_model)
       @enumerator = create_enumerator
       @buffer = +""
     end
@@ -12,9 +13,9 @@ class DiscourseAi::Utils::PdfToText
       return @buffer.slice!(0, length) if !@buffer.empty?
 
       begin
-        buffer << @enumerator.next
+        @buffer << @enumerator.next
       rescue StopIteration
-        nil
+        return nil
       end
 
       @buffer.slice!(0, length)
