@@ -98,16 +98,18 @@ module DiscourseAi
 
             1. Use EXACTLY this format for changes:
                <<<<<<< SEARCH
-               (exact code to find)
+               (first line of code to replace)
+               (other lines of code to avoid ambiguity)
+               (last line of code to replace)
                =======
                (replacement code)
                >>>>>>> REPLACE
             2. DO NOT modify the markers or add spaces around them
             3. DO NOT add explanations or comments within sections
             4. ONLY include [HTML], [CSS], and [JavaScript] sections if they have changes
-            5. Ensure search text matches EXACTLY - partial matches will fail
-            6. Keep changes minimal and focused
-            7. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
+            5. Keep changes minimal and focused
+            6. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
+            7. When specifying a SEARCH block, ALWAYS keep it 8 lines or less, you will be interrupted and a retry will be required if you exceed this limit
 
             JavaScript libraries must be sourced from the following CDNs, otherwise CSP will reject it:
             #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}

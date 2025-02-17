@@ -171,5 +171,31 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
 
       expect(subject.apply(content, search, replace).strip).to eq(expected.strip)
     end
+
+    it "handles missing lines in search" do
+      original = <<~TEXT
+        line1
+         line2
+        line3
+        line4
+        line5
+        line1
+        line2
+      TEXT
+
+      search = <<~TEXT
+        line1
+         line3
+        line1
+      TEXT
+
+      replace = ""
+
+      expected = <<~TEXT
+        line2
+      TEXT
+
+      expect(subject.apply(original, search, replace).strip).to eq(expected.strip)
+    end
   end
 end
