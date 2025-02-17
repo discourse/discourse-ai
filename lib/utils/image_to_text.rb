@@ -50,12 +50,27 @@ class DiscourseAi::Utils::ImageToText
     Reader.new(uploads: uploads, llm_model: llm_model, user: user)
   end
 
+  def self.tesseract_installed?
+    if defined?(@tesseract_installed)
+      @tesseract_installed
+    else
+      @tesseract_installed =
+        begin
+          Discourse::Utils.execute_command("which", "tesseract")
+          true
+        rescue Discourse::Utils::CommandError
+          false
+        end
+    end
+  end
+
   attr_reader :upload, :llm_model, :user
 
-  def initialize(upload:, llm_model:, user:)
+  def initialize(upload:, llm_model:, user:, guidance_text: nil)
     @upload = upload
     @llm_model = llm_model
     @user = user
+    @guidance_text = guidance_text
   end
 
   def extract_text(retries: 3)
@@ -104,7 +119,8 @@ class DiscourseAi::Utils::ImageToText
   end
 
   def extract_text_from_page(page)
-    raw_text = extract_text_with_tesseract(page)
+    raw_text = @guidance_text
+    raw_text ||= extract_text_with_tesseract(page) if self.class.tesseract_installed?
 
     llm = llm_model.to_llm
     if raw_text.present?
@@ -112,7 +128,7 @@ class DiscourseAi::Utils::ImageToText
         {
           type: :user,
           content:
-            "The following text was extracted from an image using OCR. Please enhance, correct, and structure this content while maintaining the original meaning:\n\n#{raw_text}",
+            "The following text was extracted from an image using OCR. Please enhance, correct, and structure this content while maintaining the original text:\n\n#{raw_text}",
           upload_ids: [page.id],
         },
       ]
@@ -127,6 +143,8 @@ class DiscourseAi::Utils::ImageToText
   end
 
   def extract_text_with_tesseract(page)
+    # return nil if we can not find tessaract binary
+    return nil if !self.class.tesseract_installed?
     upload_path =
       if page.local?
         Discourse.store.path_for(page)

@@ -19,8 +19,6 @@ class DiscourseAi::Utils::PdfToImages
   end
 
   def extract_pages
-    Dir.mktmpdir("discourse-pdf-#{SecureRandom.hex(8)}")
-
     begin
       pdf_path =
         if upload.local?
@@ -31,6 +29,7 @@ class DiscourseAi::Utils::PdfToImages
 
       raise Discourse::InvalidParameters.new("Failed to download PDF") if pdf_path.nil?
 
+      temp_dir = Dir.mktmpdir("discourse-pdf-#{SecureRandom.hex(8)}")
       temp_pdf = File.join(temp_dir, "source.pdf")
       FileUtils.cp(pdf_path, temp_pdf)
 
@@ -74,7 +73,7 @@ class DiscourseAi::Utils::PdfToImages
 
       @uploaded_pages = uploads
     ensure
-      FileUtils.rm_rf(temp_dir)
+      FileUtils.rm_rf(temp_dir) if temp_dir
     end
   end
 end

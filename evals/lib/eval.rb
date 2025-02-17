@@ -130,22 +130,13 @@ class DiscourseAi::Evals::Eval
     upload =
       UploadCreator.new(File.open(path), File.basename(path)).create_for(Discourse.system_user.id)
 
-    uploads =
-      DiscourseAi::Utils::PdfToImages.new(
-        upload: upload,
-        user: Discourse.system_user,
-      ).uploaded_pages
-
     text = +""
-    uploads.each do |page_upload|
-      DiscourseAi::Utils::ImageToText
-        .new(upload: page_upload, llm_model: llm.llm_model, user: Discourse.system_user)
-        .extract_text do |chunk, error|
-          text << chunk if chunk
-          text << "\n\n" if chunk
-        end
-      upload.destroy
-    end
+    DiscourseAi::Utils::PdfToText
+      .new(upload: upload, user: Discourse.system_user, llm_model: llm.llm_model)
+      .extract_text do |chunk|
+        text << chunk if chunk
+        text << "\n\n" if chunk
+      end
 
     text
   ensure

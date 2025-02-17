@@ -164,22 +164,16 @@ module ::Jobs
     end
 
     def get_uploaded_file(upload:, target:)
-      if %w[pdf png jpg jpeg].include?(upload.extension) && !SiteSetting.ai_rag_pdf_images_enabled
+      if %w[png jpg jpeg].include?(upload.extension) && !SiteSetting.ai_rag_images_enabled
         raise Discourse::InvalidAccess.new(
-                "The setting ai_rag_pdf_images_enabled is false, can not index images and pdfs.",
+                "The setting ai_rag_images_enabled is false, can not index images",
               )
       end
       if upload.extension == "pdf"
-        pages =
-          DiscourseAi::Utils::PdfToImages.new(
-            upload: upload,
-            user: Discourse.system_user,
-          ).uploaded_pages
-
         return(
-          DiscourseAi::Utils::ImageToText.as_fake_file(
-            uploads: pages,
-            llm_model: target.rag_llm_model,
+          DiscourseAi::Utils::PdfToText.as_fake_file(
+            upload: upload,
+            llm_model: SiteSetting.ai_rag_images_enabled ? target.rag_llm_model : nil,
             user: Discourse.system_user,
           )
         )

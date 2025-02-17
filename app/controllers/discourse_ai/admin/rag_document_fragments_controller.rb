@@ -48,8 +48,8 @@ module DiscourseAi
 
       def validate_extension!(filename)
         extension = File.extname(filename)[1..-1] || ""
-        authorized_extensions = %w[txt md]
-        authorized_extensions.concat(%w[pdf png jpg jpeg]) if SiteSetting.ai_rag_pdf_images_enabled
+        authorized_extensions = %w[txt md pdf]
+        authorized_extensions.concat(%w[png jpg jpeg]) if SiteSetting.ai_rag_images_enabled
         if !authorized_extensions.include?(extension)
           raise Discourse::InvalidParameters.new(
                   I18n.t(

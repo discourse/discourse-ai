@@ -24,10 +24,10 @@ RSpec.describe DiscourseAi::Admin::RagDocumentFragmentsController do
   end
 
   describe "POST #upload_file" do
-    let :fake_pdf do
+    let :fake_image do
       @cleanup_files ||= []
-      tempfile = Tempfile.new(%w[test .pdf])
-      tempfile.write("fake pdf")
+      tempfile = Tempfile.new(%w[test .png])
+      tempfile.write("fake image")
       tempfile.rewind
       @cleanup_files << tempfile
       tempfile
@@ -46,26 +46,26 @@ RSpec.describe DiscourseAi::Admin::RagDocumentFragmentsController do
     end
 
     it "rejects PDF files if site setting is not enabled" do
-      SiteSetting.ai_rag_pdf_images_enabled = false
+      SiteSetting.ai_rag_images_enabled = false
 
       post "/admin/plugins/discourse-ai/rag-document-fragments/files/upload.json",
            params: {
-             file: Rack::Test::UploadedFile.new(fake_pdf),
+             file: Rack::Test::UploadedFile.new(fake_image),
            }
 
       expect(response.status).to eq(400)
     end
 
-    it "allows PDF files if site setting is enabled" do
-      SiteSetting.ai_rag_pdf_images_enabled = true
+    it "allows image files if site setting is enabled" do
+      SiteSetting.ai_rag_images_enabled = true
 
       post "/admin/plugins/discourse-ai/rag-document-fragments/files/upload.json",
            params: {
-             file: Rack::Test::UploadedFile.new(fake_pdf),
+             file: Rack::Test::UploadedFile.new(fake_image),
            }
 
       upload = Upload.last
-      expect(upload.original_filename).to end_with(".pdf")
+      expect(upload.original_filename).to end_with(".png")
     end
   end
 end
