@@ -144,7 +144,7 @@ class DiscourseAi::Utils::ImageToText
 
   def extract_text_with_tesseract(page)
     # return nil if we can not find tessaract binary
-    return nil if !Discourse::Utils.which("tesseract")
+    return nil if !self.class.tesseract_installed?
     upload_path =
       if page.local?
         Discourse.store.path_for(page)
