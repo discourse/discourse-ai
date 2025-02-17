@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DiscourseAi::Utils::PdfToText
+  MAX_PDF_SIZE = 100.megabytes
+
   class Reader
     def initialize(upload:, user: nil, llm_model: nil)
       @extractor =
