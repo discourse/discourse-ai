@@ -2,29 +2,36 @@
 
 RSpec.describe DiscourseAi::Sentiment::SentimentController do
   describe "#posts" do
-    fab!(:user)
+    fab!(:admin)
     fab!(:category)
-    fab!(:post) { Fabricate(:post, user: user) }
-    fab!(:embedding_definition)
+    fab!(:topic) { Fabricate(:topic, category: category) }
+    fab!(:post) { Fabricate(:post, user: admin, topic: topic) }
+    fab!(:post_2) { Fabricate(:post, user: admin, topic: topic) }
+    fab!(:classification_result) { Fabricate(:classification_result, target: post) }
 
-    # before do
-    # SiteSetting.ai_embeddings_enabled = false
-    # SiteSetting.ai_embeddings_selected_model = ""
-    # sign_in(user)
-    # end
+    before do
+      SiteSetting.ai_sentiment_enabled = true
+      sign_in(admin)
+    end
 
     it "returns a posts based on params" do
-      get "/discourse-ai/sentiment/posts.json",
+      post.reload
+      classification_result.reload
+
+      get "/discourse-ai/sentiment/posts",
           params: {
             group_by: "category",
             group_value: category.name,
-            start_date: 1.month.ago.to_s,
-            end_date: 0.days.ago.to_s,
-            threshold: 0.6,
+            threshold: 0.0,
           }
 
-      pp response.inspect
       expect(response).to be_successful
+
+      posts = JSON.parse(response.body)
+      posts.each do |post|
+        expect(post).to have_key("sentiment")
+        expect(post["sentiment"]).to match(/positive|negative|neutral/)
+      end
     end
   end
 end

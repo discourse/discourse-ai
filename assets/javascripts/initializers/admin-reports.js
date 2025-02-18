@@ -11,7 +11,7 @@ export default {
     }
 
     // We need to import dynamically with CommonJS require because
-    // using ESM import would cause the component to be imported globally
+    // using ESM import in an initializer would cause the component to be imported globally
     // and cause errors for non-admin users since the component is only available to admins
     const AdminReportSentimentAnalysis =
       require("discourse/plugins/discourse-ai/discourse/components/admin-report-sentiment-analysis").default;

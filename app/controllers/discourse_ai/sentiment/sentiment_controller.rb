@@ -9,8 +9,8 @@ module DiscourseAi
 
       def posts
         group_by = params[:group_by]&.to_sym
-        group_value = params[:group_value]
-        start_date = params[:start_date]
+        group_value = params[:group_value].presence
+        start_date = params[:start_date].presence
         end_date = params[:end_date]
         threshold = SENTIMENT_THRESHOLD
 
@@ -58,7 +58,7 @@ module DiscourseAi
             t.archetype = 'regular' AND
             p.user_id > 0 AND
             cr.model_used = 'cardiffnlp/twitter-roberta-base-sentiment-latest' AND
-            (p.created_at > :start_date AND p.created_at < :end_date)
+            ((:start_date IS NULL OR p.created_at > :start_date) AND (:end_date IS NULL OR p.created_at < :end_date))
           ORDER BY p.created_at DESC
         SQL
             group_value: group_value,
