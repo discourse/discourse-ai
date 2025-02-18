@@ -86,7 +86,10 @@ module DiscourseAi
           search_index = 0
 
           lines.each_with_index do |line, idx|
-            search_index += 1 if search_lines[search_index].strip == "..."
+            if search_lines[search_index].strip == "..."
+              search_index += 1
+              break if search_lines[search_index].nil?
+            end
             if line.strip == search_lines[search_index].strip
               first_idx ||= idx
               last_idx = idx

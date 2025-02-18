@@ -12,6 +12,15 @@ class DiscourseAi::Evals::Eval
               :expected_output_regex,
               :expected_tool_call
 
+  class EvalError < StandardError
+    attr_reader :context
+
+    def initialize(message, context)
+      super(message)
+      @context = context
+    end
+  end
+
   def initialize(path:)
     @yaml = YAML.load_file(path).symbolize_keys
     @path = path
@@ -78,6 +87,8 @@ class DiscourseAi::Evals::Eval
     else
       { result: :unknown, actual_output: result }
     end
+  rescue EvalError
+    { result: :fail }
   end
 
   def print
@@ -190,14 +201,22 @@ class DiscourseAi::Evals::Eval
       )
 
     post = Post.new(topic_id: 1, id: 1)
-    DiscourseAi::AiBot::ArtifactUpdateStrategies::Diff.new(
-      llm: llm.llm_model.to_llm,
-      post: post,
-      user: Discourse.system_user,
-      artifact: artifact,
-      artifact_version: nil,
-      instructions: instructions,
-    ).apply
+    diff =
+      DiscourseAi::AiBot::ArtifactUpdateStrategies::Diff.new(
+        llm: llm.llm_model.to_llm,
+        post: post,
+        user: Discourse.system_user,
+        artifact: artifact,
+        artifact_version: nil,
+        instructions: instructions,
+      )
+    diff.apply
+
+    if diff.failed_searches.present?
+      puts "Eval Errors encountered"
+      p diff.failed_searches
+      raise EvalError.new("Failed to apply all changes", diff.failed_searches)
+    end
 
     version = artifact.versions.last
     output = { css: version.css, js: version.js, html: version.html }
