@@ -476,4 +476,4 @@ en:
       prompt_message_length: The message %{idx} is over the 1000 character limit.
   dashboard:
     problem:
-      ai_llm_status: "The LLM model: %{model_name} is encountering issues. Please check the <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>model's configuration page</a>."
+      ai_llm_status: "The LLM model: %{model_name} is encountering issues. Please check the <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}/edit'>model's configuration page</a>."
