@@ -169,9 +169,16 @@ module DiscourseAi
 
         yield(builder) if block_given?
 
+        if table == RAG_DOCS_TABLE
+          # A too low limit exacerbates the the recall loss of binary quantization
+          candidates_limit = [limit * 2, 100].max
+        else
+          candidates_limit = limit * 2
+        end
+
         builder.query(
           query_embedding: embedding,
-          candidates_limit: limit * 2,
+          candidates_limit: candidates_limit,
           limit: limit,
           offset: offset,
         )
@@ -262,12 +269,14 @@ module DiscourseAi
       private
 
       def hnsw_search_workaround(limit)
-        return "", "" if limit > DEFAULT_HNSW_EF_SEARCH
-        return "SET LOCAL hnsw.ef_search = #{limit * 2};", "" if Rails.env.test?
+        threshold = limit * 2
+
+        return "", "" if threshold < DEFAULT_HNSW_EF_SEARCH
+        return "SET LOCAL hnsw.ef_search = #{threshold};", "" if Rails.env.test?
 
         before_query = <<~SQL
           BEGIN;
-          SET LOCAL hnsw.ef_search = #{limit * 2};
+          SET LOCAL hnsw.ef_search = #{threshold};
         SQL
         after_query = <<~SQL
           COMMIT;
