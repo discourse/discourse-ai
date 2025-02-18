@@ -78,7 +78,7 @@
     border-radius: var(--d-border-radius);
 
     &:hover {
-      @include transform(translateY(-1rem));
+      transform: translateY(-1rem);
       box-shadow: var(--shadow-card);
       cursor: pointer;
     }
