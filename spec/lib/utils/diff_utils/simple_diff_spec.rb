@@ -185,7 +185,9 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
 
       search = <<~TEXT
         line1
+        ...
          line3
+        ...
         line1
       TEXT
 

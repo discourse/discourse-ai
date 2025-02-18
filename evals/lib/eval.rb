@@ -28,9 +28,11 @@ class DiscourseAi::Evals::Eval
     @expected_tool_call = @yaml[:expected_tool_call]
     @expected_tool_call.symbolize_keys! if @expected_tool_call
 
-    @args[:path] = File.expand_path(File.join(File.dirname(path), @args[:path])) if @args&.key?(
-      :path,
-    )
+    @args.each do |key, value|
+      if (key.to_s.include?("_path") || key.to_s == "path") && value.is_a?(String)
+        @args[key] = File.expand_path(File.join(File.dirname(path), value))
+      end
+    end
   end
 
   def run(llm:)
@@ -44,6 +46,8 @@ class DiscourseAi::Evals::Eval
         image_to_text(llm, **args)
       when "prompt"
         prompt_call(llm, **args)
+      when "edit_artifact"
+        edit_artifact(llm, **args)
       end
 
     if expected_output
@@ -53,7 +57,7 @@ class DiscourseAi::Evals::Eval
         { result: :fail, expected_output: expected_output, actual_output: result }
       end
     elsif expected_output_regex
-      if result.match?(expected_output_regex)
+      if result.to_s.match?(expected_output_regex)
         { result: :pass }
       else
         { result: :fail, expected_output: expected_output_regex, actual_output: result }
@@ -168,5 +172,37 @@ class DiscourseAi::Evals::Eval
       result = llm.llm_model.to_llm.generate(prompt, user: Discourse.system_user)
     end
     result
+  end
+
+  def edit_artifact(llm, css_path:, js_path:, html_path:, instructions_path:)
+    css = File.read(css_path)
+    js = File.read(js_path)
+    html = File.read(html_path)
+    instructions = File.read(instructions_path)
+    artifact =
+      AiArtifact.create!(
+        css: css,
+        js: js,
+        html: html,
+        user_id: Discourse.system_user.id,
+        post_id: 1,
+        name: "eval artifact",
+      )
+
+    post = Post.new(topic_id: 1, id: 1)
+    DiscourseAi::AiBot::ArtifactUpdateStrategies::Diff.new(
+      llm: llm.llm_model.to_llm,
+      post: post,
+      user: Discourse.system_user,
+      artifact: artifact,
+      artifact_version: nil,
+      instructions: instructions,
+    ).apply
+
+    version = artifact.versions.last
+    output = { css: version.css, js: version.js, html: version.html }
+
+    artifact.destroy
+    output
   end
 end

@@ -110,6 +110,8 @@ module DiscourseAi
             5. Keep changes minimal and focused
             6. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
             7. When specifying a SEARCH block, ALWAYS keep it 8 lines or less, you will be interrupted and a retry will be required if you exceed this limit
+            8. NEVER EVER ask followup questions, ALL changes must be performed in a single response, you are consumed via an API, there is no opportunity for humans in the loop
+            9. When performing a non-contiguous search, ALWAYS use ... to denote the skipped lines
 
             JavaScript libraries must be sourced from the following CDNs, otherwise CSP will reject it:
             #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}
@@ -154,6 +156,36 @@ module DiscourseAi
             .text { font-size: 16px; }
             >>>>>>> REPLACE
             [/CSS]
+
+            Example - Non contiguous search in CSS (replace all CSS with new CSS)
+
+            Original CSS:
+            [CSS]
+            body {
+              color: red;
+            }
+            .button {
+              color: blue;
+            }
+            .alert {
+              background-color: green;
+            }
+            [/CSS]
+
+            [CSS]
+            <<<<<<< SEARCH
+            body {
+            ...
+              background-color: green;
+            }
+            =======
+            body {
+              color: red;
+            }
+            >>>>>>> REPLACE
+
+            This will replace the entire CSS block with the new CSS block, given that the search block is non-contiguous and unambiguous.
+
           PROMPT
         end
 
