@@ -171,7 +171,7 @@ module DiscourseAi
 
         builder.query(
           query_embedding: embedding,
-          candidates_limit: candidates_limit,
+          candidates_limit: limit * 2,
           limit: limit,
           offset: offset,
         )
