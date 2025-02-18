@@ -7,7 +7,7 @@ module Jobs
     cluster_concurrency 1
 
     def execute(args)
-      return unless SiteSetting.ai_embeddings_enabled
+      return unless DiscourseAi::Embeddings.enabled?
 
       limit = SiteSetting.ai_embeddings_backfill_batch_size
 
@@ -26,7 +26,9 @@ module Jobs
 
       topics =
         Topic
-          .joins("LEFT JOIN #{table_name} ON #{table_name}.topic_id = topics.id")
+          .joins(
+            "LEFT JOIN #{table_name} ON #{table_name}.topic_id = topics.id AND #{table_name}.model_id = #{vector_def.id}",
+          )
           .where(archetype: Archetype.default)
           .where(deleted_at: nil)
           .order("topics.bumped_at DESC")
@@ -43,7 +45,7 @@ module Jobs
           #{table_name}.strategy_version < #{vector_def.strategy_version}
         SQL
 
-      rebaked += populate_topic_embeddings(vector, relation)
+      rebaked += populate_topic_embeddings(vector, relation, force: true)
 
       return if rebaked >= limit
 
@@ -67,7 +69,9 @@ module Jobs
 
       posts =
         Post
-          .joins("LEFT JOIN #{table_name} ON #{table_name}.post_id = posts.id")
+          .joins(
+            "LEFT JOIN #{table_name} ON #{table_name}.post_id = posts.id AND #{table_name}.model_id = #{vector_def.id}",
+          )
           .where(deleted_at: nil)
           .where(post_type: Post.types[:regular])
 

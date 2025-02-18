@@ -10,7 +10,6 @@ module DiscourseAi
             Tools::Google,
             Tools::Image,
             Tools::Read,
-            Tools::Image,
             Tools::ListCategories,
             Tools::ListTags,
           ]

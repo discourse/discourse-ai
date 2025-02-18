@@ -39,7 +39,7 @@ RSpec.describe "AI chat channel summarization", type: :system, js: true do
 
     # lets disable bots but still allow 1 persona
     allowed_persona.create_user!
-    allowed_persona.update!(default_llm: "custom:#{gpt_4.id}")
+    allowed_persona.update!(default_llm_id: gpt_4.id)
 
     gpt_4.update!(enabled_chat_bot: false)
     gpt_3_5_turbo.update!(enabled_chat_bot: false)

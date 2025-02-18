@@ -4,6 +4,7 @@ import RestModel from "discourse/models/rest";
 const CREATE_ATTRIBUTES = [
   "id",
   "name",
+  "tool_name",
   "description",
   "parameters",
   "script",
@@ -11,6 +12,7 @@ const CREATE_ATTRIBUTES = [
   "rag_uploads",
   "rag_chunk_tokens",
   "rag_chunk_overlap_tokens",
+  "rag_llm_model_id",
   "enabled",
 ];
 

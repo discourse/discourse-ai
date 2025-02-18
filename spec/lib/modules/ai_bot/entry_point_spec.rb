@@ -43,7 +43,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
             :ai_persona,
             enabled: true,
             allowed_group_ids: [bot_allowed_group.id],
-            default_llm: "claude-2",
+            default_llm_id: claude_2.id,
             force_default_llm: true,
           )
         persona.create_user!

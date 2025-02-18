@@ -349,7 +349,6 @@ fi:
         javascript_evaluator: "Arvioi JavaScript"
       tool_description:
         update_artifact: "Verkkoartefakti päivitettiin tekoälybotilla"
-        create_artifact: "Luotu verkkoartefakti tekoälybotilla"
         web_browser: "Luetaan: <a href='%{url}'>%{url}</a>"
         github_search_files: "Haettiin avainsanoilla \"%{keywords}\" tietovarastosta %{repo}/%{branch}"
         github_search_code: "Haettiin ehdolla \"%{query}\" tietovarastosta %{repo}"

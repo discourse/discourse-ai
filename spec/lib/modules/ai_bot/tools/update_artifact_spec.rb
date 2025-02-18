@@ -1,108 +1,140 @@
-# spec/lib/modules/ai_bot/tools/update_artifact_spec.rb
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
   fab!(:llm_model)
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   fab!(:post)
   fab!(:artifact) do
     AiArtifact.create!(
       user: Fabricate(:user),
       post: post,
       name: "Test Artifact",
-      html: "<div>\nOriginal\n</div>",
-      css: "div {\n color: blue; \n}",
-      js: "console.log('hello');",
+      html: "<div>Original</div>",
+      css: ".test { color: blue; }",
+      js: "console.log('original');\nconsole.log('world');\nconsole.log('hello');",
     )
   end
 
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#process" do
-    let(:html) { <<~DIFF }
-         <div>
-           Updated
-         </div>
-      DIFF
-
-    let(:css) { <<~DIFF }
-         div {
-          color: red;
-         }
-      DIFF
-
-    let(:js) { <<~DIFF }
+    it "correctly updates artifact using section markers" do
+      responses = [<<~TXT.strip]
+        [HTML]
+        <div>Updated</div>
+        [/HTML]
+        [CSS]
+        .test { color: red; }
+        [/CSS]
+        [JavaScript]
+        console.log('updated');
         console.log('world');
-      DIFF
+        console.log('updated2');
+        [/JavaScript]
+      TXT
 
-    it "updates artifact content when supplied" do
-      tool =
-        described_class.new(
-          {
-            artifact_id: artifact.id,
-            html: html,
-            css: css,
-            js: js,
-            change_description: "Updated colors and text",
-          },
-          bot_user: bot_user,
-          llm: llm,
-          context: {
-            post_id: post.id,
-          },
-        )
+      tool = nil
 
-      result = tool.invoke {}
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        tool =
+          described_class.new(
+            {
+              artifact_id: artifact.id,
+              instructions: "Change the text to Updated and color to red",
+            },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
+            context: {
+              post_id: post.id,
+            },
+          )
 
-      expect(result[:status]).to eq("success")
-      expect(result[:version]).to eq(1)
+        result = tool.invoke {}
+        expect(result[:status]).to eq("success")
+      end
 
-      version = artifact.versions.find_by(version_number: 1)
-      expect(version.html).to include("Updated")
-      expect(version.css).to include("color: red")
-      expect(version.js).to include("'world'")
-      expect(artifact.versions.count).to eq(1)
-      expect(version.change_description).to eq("Updated colors and text")
+      version = artifact.versions.order(:version_number).last
+      expect(version.html).to eq("<div>Updated</div>")
+      expect(version.css).to eq(".test { color: red; }")
+      expect(version.js).to eq(<<~JS.strip)
+        console.log('updated');
+        console.log('world');
+        console.log('updated2');
+      JS
 
-      # updating again should update the correct version
-      tool.parameters = {
-        artifact_id: artifact.id,
-        html: nil,
-        css: nil,
-        js: "updated",
-        change_description: "Updated colors and text again",
-      }
-
-      result = tool.invoke {}
-
-      version = artifact.versions.find_by(version_number: 2)
-
-      expect(result[:status]).to eq("success")
-      expect(result[:version]).to eq(2)
-
-      expect(version.html).to include("Updated")
-      expect(version.css).to include("color: red")
-      expect(version.js).to include("updated")
+      expect(tool.custom_raw).to include("Change Description")
+      expect(tool.custom_raw).to include("[details='View Changes']")
+      expect(tool.custom_raw).to include("### HTML Changes")
+      expect(tool.custom_raw).to include("### CSS Changes")
+      expect(tool.custom_raw).to include("### JS Changes")
+      expect(tool.custom_raw).to include("<div class=\"ai-artifact\"")
     end
 
-    it "handles partial updates correctly" do
-      tool = described_class.new({}, bot_user: bot_user, llm: llm)
+    it "handles partial updates with only some sections" do
+      responses = [<<~TXT.strip]
+        [JavaScript]
+        console.log('updated');
+        console.log('world');
+        console.log('hello');
+        [/JavaScript]
+      TXT
 
-      tool.parameters = { artifact_id: artifact.id, html: html, change_description: "Changed HTML" }
-      tool.partial_invoke
+      tool = nil
 
-      expect(tool.custom_raw).to include("### HTML Changes")
-      expect(tool.custom_raw).to include("### Change Description")
-      expect(tool.custom_raw).not_to include("### CSS Changes")
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        tool =
+          described_class.new(
+            { artifact_id: artifact.id, instructions: "Update only JavaScript" },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
+            context: {
+              post_id: post.id,
+            },
+          )
+
+        result = tool.invoke {}
+        expect(result[:status]).to eq("success")
+      end
+
+      version = artifact.versions.order(:version_number).last
+      expect(version.html).to eq("<div>Original</div>")
+      expect(version.css).to eq(".test { color: blue; }")
+      expect(version.js).to eq(
+        "console.log('updated');\nconsole.log('world');\nconsole.log('hello');",
+      )
+    end
+
+    it "handles invalid section format" do
+      responses = ["Invalid format without proper section markers"]
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        tool =
+          described_class.new(
+            { artifact_id: artifact.id, instructions: "Invalid update" },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            context: {
+              post_id: post.id,
+            },
+          )
+
+        result = tool.invoke {}
+        expect(result[:status]).to eq("success") # The strategy will just keep original content
+      end
     end
 
     it "handles invalid artifact ID" do
       tool =
         described_class.new(
-          { artifact_id: -1, html: html, change_description: "Test change" },
+          { artifact_id: -1, instructions: "Update something" },
           bot_user: bot_user,
-          llm: llm,
+          llm: llm_model.to_llm,
           context: {
             post_id: post.id,
           },
@@ -113,36 +145,233 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
       expect(result[:error]).to eq("Artifact not found")
     end
 
-    it "requires at least one change" do
+    it "preserves unchanged sections in the diff output" do
+      responses = [<<~TXT.strip]
+        [HTML]
+        <div>Updated</div>
+        [/HTML]
+      TXT
+
+      tool = nil
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        tool =
+          described_class.new(
+            { artifact_id: artifact.id, instructions: "Just update the HTML" },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
+            context: {
+              post_id: post.id,
+            },
+          )
+
+        tool.invoke {}
+      end
+
+      version = artifact.versions.order(:version_number).last
+      expect(version.css).to eq(artifact.css)
+      expect(version.js).to eq(artifact.js)
+      expect(tool.custom_raw).to include("### HTML Changes")
+      expect(tool.custom_raw).not_to include("### CSS Changes")
+      expect(tool.custom_raw).not_to include("### JavaScript Changes")
+    end
+
+    it "handles updates to specific versions" do
+      # Create first version
+      responses = [<<~TXT.strip]
+        [HTML]
+        <div>Version 1</div>
+        [/HTML]
+      TXT
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        described_class
+          .new(
+            { artifact_id: artifact.id, instructions: "Update to version 1" },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
+            context: {
+              post_id: post.id,
+            },
+          )
+          .invoke {}
+      end
+
+      first_version = artifact.versions.order(:version_number).last
+
+      responses = [<<~TXT.strip]
+        [HTML]
+        <div>Updated from version 1</div>
+        [/HTML]
+      TXT
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        tool =
+          described_class.new(
+            {
+              artifact_id: artifact.id,
+              version: first_version.version_number,
+              instructions: "Update from version 1",
+            },
+            bot_user: bot_user,
+            llm: llm_model.to_llm,
+            persona_options: {
+              "update_algorithm" => "full",
+            },
+            context: {
+              post_id: post.id,
+            },
+          )
+
+        result = tool.invoke {}
+        expect(result[:status]).to eq("success")
+      end
+
+      latest_version = artifact.versions.order(:version_number).last
+      expect(latest_version.html).to eq("<div>Updated from version 1</div>")
+    end
+  end
+
+  it "correctly updates artifact using diff strategy (partial diff)" do
+    responses = [<<~TXT.strip]
+
+    [HTML]
+    nonsense
+    <<<<<<< SEARCH
+    <div>Original</div>
+    =======
+    <div>Updated</div>
+    >>>>>>> REPLACE
+    garbage llm injects
+    [/HTML]
+
+    [CSS]
+    garbage llm injects
+    <<<<<<< SEARCH
+    .test { color: blue; }
+    =======
+    .test { color: red; }
+    >>>>>>> REPLACE
+    nonsense
+    [/CSS]
+
+    [JavaScript]
+    nothing to do
+    [/JavaScript]
+
+    LLMs like to say nonsense that we can ignore here as well
+  TXT
+
+    tool = nil
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
       tool =
         described_class.new(
-          { artifact_id: artifact.id, change_description: "No changes" },
+          { artifact_id: artifact.id, instructions: "Change the text to Updated and color to red" },
           bot_user: bot_user,
-          llm: llm,
+          llm: llm_model.to_llm,
           context: {
             post_id: post.id,
+          },
+          persona_options: {
+            "update_algorithm" => "diff",
           },
         )
 
       result = tool.invoke {}
       expect(result[:status]).to eq("success")
-      expect(artifact.versions.count).to eq(1)
     end
 
-    it "correctly renders changes in message" do
+    version = artifact.versions.order(:version_number).last
+    expect(version.html).to eq("<div>Updated</div>")
+    expect(version.css).to eq(".test { color: red; }")
+    expect(version.js).to eq(<<~JS.strip)
+    console.log('original');
+    console.log('world');
+    console.log('hello');
+  JS
+
+    expect(tool.custom_raw).to include("Change Description")
+    expect(tool.custom_raw).to include("[details='View Changes']")
+    expect(tool.custom_raw).to include("### HTML Changes")
+    expect(tool.custom_raw).to include("### CSS Changes")
+    expect(tool.custom_raw).to include("<div class=\"ai-artifact\"")
+  end
+
+  it "correctly updates artifact using diff strategy" do
+    responses = [<<~TXT.strip]
+
+    [HTML]
+    <<<<<<< SEARCH
+    <div>Original</div>
+    =======
+    <div>Updated</div>
+    >>>>>>> REPLACE
+    [/HTML]
+
+    [CSS]
+    <<<<<<< SEARCH
+    .test { color: blue; }
+    =======
+    .test { color: red; }
+    >>>>>>> REPLACE
+    [/CSS]
+
+    [JavaScript]
+    <<<<<<< SEARCH
+    console.log('original');
+    console.log('world');
+    console.log('hello');
+    =======
+    console.log('updated');
+    console.log('world');
+    console.log('updated sam');
+    >>>>>>> REPLACE
+    [/JavaScript]
+
+    LLMs like to say nonsense that we can ignore here
+  TXT
+
+    tool = nil
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
       tool =
         described_class.new(
-          { artifact_id: artifact.id, html: html, change_description: "Updated content" },
+          { artifact_id: artifact.id, instructions: "Change the text to Updated and color to red" },
           bot_user: bot_user,
-          llm: llm,
+          llm: llm_model.to_llm,
           context: {
             post_id: post.id,
           },
+          persona_options: {
+            "update_algorithm" => "diff",
+          },
         )
 
-      tool.invoke {}
-
-      expect(tool.custom_raw.strip).to include(html.strip)
+      result = tool.invoke {}
+      expect(result[:status]).to eq("success")
     end
+
+    version = artifact.versions.order(:version_number).last
+    expect(version.html).to eq("<div>Updated</div>")
+    expect(version.css).to eq(".test { color: red; }")
+    expect(version.js).to eq(<<~JS.strip)
+    console.log('updated');
+    console.log('world');
+    console.log('updated sam');
+  JS
+
+    expect(tool.custom_raw).to include("Change Description")
+    expect(tool.custom_raw).to include("[details='View Changes']")
+    expect(tool.custom_raw).to include("### HTML Changes")
+    expect(tool.custom_raw).to include("### CSS Changes")
+    expect(tool.custom_raw).to include("### JS Changes")
+    expect(tool.custom_raw).to include("<div class=\"ai-artifact\"")
   end
 end

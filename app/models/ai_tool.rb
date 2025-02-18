@@ -1,19 +1,38 @@
 # frozen_string_literal: true
 
 class AiTool < ActiveRecord::Base
-  validates :name, presence: true, length: { maximum: 100 }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: true
+  validates :tool_name, presence: true, length: { maximum: 100 }
   validates :description, presence: true, length: { maximum: 1000 }
   validates :summary, presence: true, length: { maximum: 255 }
   validates :script, presence: true, length: { maximum: 100_000 }
   validates :created_by_id, presence: true
   belongs_to :created_by, class_name: "User"
+  belongs_to :rag_llm_model, class_name: "LlmModel"
   has_many :rag_document_fragments, dependent: :destroy, as: :target
   has_many :upload_references, as: :target, dependent: :destroy
   has_many :uploads, through: :upload_references
   before_update :regenerate_rag_fragments
 
+  ALPHANUMERIC_PATTERN = /\A[a-zA-Z0-9_]+\z/
+
+  validates :tool_name,
+            format: {
+              with: ALPHANUMERIC_PATTERN,
+              message: I18n.t("discourse_ai.tools.name.characters"),
+            }
+
   def signature
-    { name: name, description: description, parameters: parameters.map(&:symbolize_keys) }
+    {
+      name: function_call_name,
+      description: description,
+      parameters: parameters.map(&:symbolize_keys),
+    }
+  end
+
+  # Backwards compatibility: if tool_name is not set (existing custom tools), use name
+  def function_call_name
+    tool_name.presence || name
   end
 
   def runner(parameters, llm:, bot_user:, context: {})
@@ -127,7 +146,8 @@ class AiTool < ActiveRecord::Base
     [
       {
         preset_id: "browse_web_jina",
-        name: "browse_web",
+        name: "Browse Web",
+        tool_name: "browse_web",
         description: "Browse the web as a markdown document",
         parameters: [
           { name: "url", type: "string", required: true, description: "The URL to browse" },
@@ -148,7 +168,8 @@ class AiTool < ActiveRecord::Base
       },
       {
         preset_id: "exchange_rate",
-        name: "exchange_rate",
+        name: "Exchange Rate",
+        tool_name: "exchange_rate",
         description: "Get current exchange rates for various currencies",
         parameters: [
           {
@@ -204,7 +225,8 @@ class AiTool < ActiveRecord::Base
       },
       {
         preset_id: "stock_quote",
-        name: "stock_quote",
+        name: "Stock Quote (AlphaVantage)",
+        tool_name: "stock_quote",
         description: "Get real-time stock quote information using AlphaVantage API",
         parameters: [
           {
@@ -253,7 +275,8 @@ class AiTool < ActiveRecord::Base
       },
       {
         preset_id: "image_generation",
-        name: "image_generation",
+        name: "Image Generation (Flux)",
+        tool_name: "image_generation",
         description:
           "Generate images using the FLUX model from Black Forest Labs using together.ai",
         parameters: [
@@ -348,4 +371,5 @@ end
 #  updated_at               :datetime         not null
 #  rag_chunk_tokens         :integer          default(374), not null
 #  rag_chunk_overlap_tokens :integer          default(10), not null
-#
+#  tool_name                :string(100)      default(""), not null
+#  rag_llm_model_id         :bigint

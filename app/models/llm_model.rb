@@ -70,7 +70,7 @@ class LlmModel < ActiveRecord::Base
   end
 
   def to_llm
-    DiscourseAi::Completions::Llm.proxy(identifier)
+    DiscourseAi::Completions::Llm.proxy(self)
   end
 
   def identifier

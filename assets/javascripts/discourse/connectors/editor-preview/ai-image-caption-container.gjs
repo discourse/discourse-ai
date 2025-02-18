@@ -8,9 +8,9 @@ import { service } from "@ember/service";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
 import DTextarea from "discourse/components/d-textarea";
+import icon from "discourse/helpers/d-icon";
 import autoFocus from "discourse/modifiers/auto-focus";
-import icon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
+import { i18n } from "discourse-i18n";
 
 export default class AiImageCaptionContainer extends Component {
   @service imageCaptionPopup;

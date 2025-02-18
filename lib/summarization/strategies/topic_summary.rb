@@ -18,16 +18,17 @@ module DiscourseAi
               :post_number,
               :raw,
               :username,
+              :last_version_at,
             )
 
-          posts_data.reduce([]) do |memo, (pn, raw, username)|
+          posts_data.reduce([]) do |memo, (pn, raw, username, last_version_at)|
             raw_text = raw
 
             if pn == 1 && target.topic_embed&.embed_content_cache.present?
               raw_text = target.topic_embed&.embed_content_cache
             end
 
-            memo << { poster: username, id: pn, text: raw_text }
+            memo << { poster: username, id: pn, text: raw_text, last_version_at: last_version_at }
           end
         end
 

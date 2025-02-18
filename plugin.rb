@@ -12,6 +12,16 @@ gem "tokenizers", "0.4.4"
 gem "tiktoken_ruby", "0.0.9"
 gem "ed25519", "1.2.4" #TODO remove this as existing ssl gem should handle this
 
+# we probably want to move all dependencies directly in to the Discourse Gemfile, this
+# will give us a strong guarantee that the dependencies are compatible and keep getting upgraded
+gem "Ascii85", "2.0.1", require: false
+gem "ruby-rc4", "0.1.5", require: false
+gem "hashery", "2.1.2", require: false
+gem "ttfunk", "1.8.0", require: false
+gem "afm", "0.2.2", require: false
+# all above are required by pdf-reader
+gem "pdf-reader", "2.14.1", require: false
+
 enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/common/streaming.scss"

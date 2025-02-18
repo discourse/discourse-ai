@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Admin::AiToolsController do
+  fab!(:llm_model)
   fab!(:admin)
   fab!(:ai_tool) do
     AiTool.create!(
       name: "Test Tool",
+      tool_name: "test_tool",
       description: "A test tool",
       script: "function invoke(params) { return params; }",
       parameters: [
@@ -32,6 +34,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       expect(response).to be_successful
       expect(response.parsed_body["ai_tools"].length).to eq(AiTool.count)
       expect(response.parsed_body["meta"]["presets"].length).to be > 0
+      expect(response.parsed_body["meta"]["llms"].length).to be > 0
     end
   end
 
@@ -46,7 +49,8 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
   describe "POST #create" do
     let(:valid_attributes) do
       {
-        name: "Test Tool",
+        name: "Test Tool 1",
+        tool_name: "test_tool_1",
         description: "A test tool",
         parameters: [{ name: "query", type: "string", description: "perform a search" }],
         script: "function invoke(params) { return params; }",
@@ -64,7 +68,8 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       }.to change(AiTool, :count).by(1)
 
       expect(response).to have_http_status(:created)
-      expect(response.parsed_body["ai_tool"]["name"]).to eq("Test Tool")
+      expect(response.parsed_body["ai_tool"]["name"]).to eq("Test Tool 1")
+      expect(response.parsed_body["ai_tool"]["tool_name"]).to eq("test_tool_1")
     end
 
     context "when the parameter is a enum" do

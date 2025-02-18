@@ -16,7 +16,8 @@ module DiscourseAi
       def initialize(bot_user, persona, model = nil)
         @bot_user = bot_user
         @persona = persona
-        @model = model || self.class.guess_model(bot_user) || @persona.class.default_llm
+        @model =
+          model || self.class.guess_model(bot_user) || LlmModel.find(@persona.class.default_llm_id)
       end
 
       attr_reader :bot_user
@@ -220,8 +221,11 @@ module DiscourseAi
         update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
 
         result =
-          tool.invoke do |progress|
-            if show_placeholder
+          tool.invoke do |progress, render_raw|
+            if render_raw
+              update_blk.call("", cancel, tool.custom_raw, :partial_invoke)
+              show_placeholder = false
+            elsif show_placeholder
               placeholder = build_placeholder(tool.summary, progress)
               update_blk.call("", cancel, placeholder)
             end
@@ -242,7 +246,7 @@ module DiscourseAi
 
         return if associated_llm.nil? # Might be a persona user. Handled by constructor.
 
-        "custom:#{associated_llm.id}"
+        associated_llm
       end
 
       def build_placeholder(summary, details, custom_raw: nil)

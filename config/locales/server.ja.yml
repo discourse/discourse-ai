@@ -349,7 +349,6 @@ ja:
         javascript_evaluator: "JavaScript を評価"
       tool_description:
         update_artifact: "AI ボットを使ってウェブアーティファクトを更新しました"
-        create_artifact: "AI ボットを使用してウェブアーティファクトを作成しました"
         web_browser: "読み取り中: <a href='%{url}'>%{url}</a>"
         github_search_files: "%{repo}/%{branch} で「%{keywords}」を検索しました"
         github_search_code: "%{repo} で「%{query}」を検索しました"

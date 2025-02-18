@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { service } from "@ember/service";
 import { isValidSearchTerm } from "discourse/lib/search";
-import i18n from "discourse-common/helpers/i18n";
+import { i18n } from "discourse-i18n";
 
 export default class AiQuickSearchInfo extends Component {
   @service search;

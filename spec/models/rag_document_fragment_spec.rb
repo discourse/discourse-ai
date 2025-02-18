@@ -6,7 +6,10 @@ RSpec.describe RagDocumentFragment do
   fab!(:upload_2) { Fabricate(:upload) }
   fab!(:vector_def) { Fabricate(:embedding_definition) }
 
-  before { SiteSetting.ai_embeddings_enabled = true }
+  before do
+    SiteSetting.ai_embeddings_selected_model = vector_def.id
+    SiteSetting.ai_embeddings_enabled = true
+  end
 
   describe ".link_uploads_and_persona" do
     it "does nothing if there is no persona" do

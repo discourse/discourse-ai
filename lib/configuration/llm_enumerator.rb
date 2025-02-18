@@ -16,11 +16,8 @@ module DiscourseAi
 
           AiPersona
             .where("force_default_llm = ?", true)
-            .pluck(:default_llm, :name, :id)
-            .each do |llm_name, name, id|
-              llm_id = llm_name.split(":").last.to_i
-              rval[llm_id] << { type: :ai_persona, name: name, id: id }
-            end
+            .pluck(:default_llm_id, :name, :id)
+            .each { |llm_id, name, id| rval[llm_id] << { type: :ai_persona, name: name, id: id } }
         end
 
         if SiteSetting.ai_helper_enabled
@@ -48,6 +45,26 @@ module DiscourseAi
 
       def self.valid_value?(val)
         true
+      end
+
+      # returns an array of hashes (id: , name:, vision_enabled:)
+      def self.values_for_serialization(allowed_seeded_llm_ids: nil)
+        builder = DB.build(<<~SQL)
+          SELECT id, display_name AS name, vision_enabled
+          FROM llm_models
+          /*where*/
+        SQL
+
+        if allowed_seeded_llm_ids.is_a?(Array) && !allowed_seeded_llm_ids.empty?
+          builder.where(
+            "id > 0 OR id IN (:allowed_seeded_llm_ids)",
+            allowed_seeded_llm_ids: allowed_seeded_llm_ids,
+          )
+        else
+          builder.where("id > 0")
+        end
+
+        builder.query_hash.map(&:symbolize_keys)
       end
 
       def self.values(allowed_seeded_llms: nil)

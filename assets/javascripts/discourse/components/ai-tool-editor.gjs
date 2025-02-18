@@ -83,13 +83,15 @@ export default class AiToolEditor extends Component {
     try {
       const data = this.editingModel.getProperties(
         "name",
+        "tool_name",
         "description",
         "parameters",
         "script",
         "summary",
         "rag_uploads",
         "rag_chunk_tokens",
-        "rag_chunk_overlap_tokens"
+        "rag_chunk_overlap_tokens",
+        "rag_llm_model_id"
       );
 
       await this.args.model.save(data);
@@ -179,6 +181,23 @@ export default class AiToolEditor extends Component {
         </div>
 
         <div class="control-group">
+          <label>{{i18n "discourse_ai.tools.tool_name"}}</label>
+          <input
+            {{on
+              "input"
+              (withEventValue (fn (mut this.editingModel.tool_name)))
+            }}
+            value={{this.editingModel.tool_name}}
+            type="text"
+            class="ai-tool-editor__tool_name"
+          />
+          <DTooltip
+            @icon="circle-question"
+            @content={{i18n "discourse_ai.tools.tool_name_help"}}
+          />
+        </div>
+
+        <div class="control-group">
           <label>{{i18n "discourse_ai.tools.description"}}</label>
           <textarea
             {{on
@@ -226,9 +245,14 @@ export default class AiToolEditor extends Component {
               @target={{this.editingModel}}
               @updateUploads={{this.updateUploads}}
               @onRemove={{this.removeUpload}}
+              @allowImages={{@settings.rag_images_enabled}}
             />
           </div>
-          <RagOptions @model={{this.editingModel}} />
+          <RagOptions
+            @model={{this.editingModel}}
+            @llms={{@llms}}
+            @allowImages={{@settings.rag_images_enabled}}
+          />
         {{/if}}
 
         <div class="control-group ai-tool-editor__action_panel">

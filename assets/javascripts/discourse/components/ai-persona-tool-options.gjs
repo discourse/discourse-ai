@@ -67,7 +67,10 @@ export default class AiPersonaToolOptions extends Component {
               </div>
               <div class="ai-persona-editor__tool-option-options">
                 {{#each toolOption.options as |option|}}
-                  <AiPersonaToolOptionEditor @option={{option}} />
+                  <AiPersonaToolOptionEditor
+                    @option={{option}}
+                    @llms={{@llms}}
+                  />
                 {{/each}}
               </div>
             </div>

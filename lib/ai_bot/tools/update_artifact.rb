@@ -8,50 +8,10 @@ module DiscourseAi
           "update_artifact"
         end
 
-        # this is not working that well, we support it, but I am leaving it dormant for now
-        def self.unified_diff_tip
-          <<~TIP
-            When updating and artifact in diff mode unified diffs can be applied:
-
-            If editing:
-
-            <div>
-              <p>Some text</p>
-            </div>
-
-            You can provide a diff like:
-
-            <div>
-            - <p>Some text</p>
-            + <p>Some new text</p>
-            </div>
-
-            This will result in:
-
-            <div>
-              <p>Some new text</p>
-            </div>
-
-            If you need to supply multiple hunks for a diff use a @@ separator, for example:
-
-            @@ -1,3 +1,3 @@
-            - <p>Some text</p>
-            + <p>Some new text</p>
-            @@ -5,3 +5,3 @@
-            - </div>
-            + <p>more text</p>
-            </div>
-
-            If you supply text without @@ seperators or + and - prefixes, the entire text will be appended to the artifact section.
-
-          TIP
-        end
-
         def self.signature
           {
             name: "update_artifact",
-            description:
-              "Updates an existing web artifact with new HTML, CSS, or JavaScript content. Note either html, css, or js MUST be provided. You may provide all three if desired.",
+            description: "Updates an existing web artifact",
             parameters: [
               {
                 name: "artifact_id",
@@ -59,137 +19,240 @@ module DiscourseAi
                 type: "integer",
                 required: true,
               },
-              { name: "html", description: "new HTML content for the artifact", type: "string" },
-              { name: "css", description: "new CSS content for the artifact", type: "string" },
               {
-                name: "js",
-                description: "new JavaScript content for the artifact",
+                name: "instructions",
+                description: "Clear instructions on what changes need to be made to the artifact.",
                 type: "string",
+                required: true,
               },
               {
-                name: "change_description",
+                name: "version",
                 description:
-                  "A brief description of the changes being made. Note: This only documents the change - you must provide the actual content in html/css/js parameters to make changes.",
-                type: "string",
+                  "The version number of the artifact to update, if not supplied latest version will be updated",
+                type: "integer",
+                required: false,
               },
             ],
           }
+        end
+
+        def self.inject_prompt(prompt:, context:, persona:)
+          return if persona.options["do_not_echo_artifact"].to_s == "true"
+          # we inject the current artifact content into the last user message
+          if topic_id = context[:topic_id]
+            posts = Post.where(topic_id: topic_id)
+            artifact = AiArtifact.order("id desc").where(post: posts).first
+            if artifact
+              latest_version = artifact.versions.order(version_number: :desc).first
+              current = latest_version || artifact
+
+              artifact_source = <<~MSG
+                Current Artifact:
+
+                ### HTML
+                ```html
+                #{current.html}
+                ```
+
+                ### CSS
+                ```css
+                #{current.css}
+                ```
+
+                ### JavaScript
+                ```javascript
+                #{current.js}
+                ```
+
+              MSG
+
+              last_message = prompt.messages.last
+              last_message[:content] = "#{artifact_source}\n\n#{last_message[:content]}"
+            end
+          end
+        end
+
+        def self.accepted_options
+          [
+            option(:editor_llm, type: :llm),
+            option(:update_algorithm, type: :enum, values: %w[diff full], default: "diff"),
+            option(:do_not_echo_artifact, type: :boolean, default: true),
+          ]
         end
 
         def self.allow_partial_tool_calls?
           true
         end
 
-        def chain_next_response?
-          @chain_next_response
+        def partial_invoke
+          in_progress(instructions: parameters[:instructions]) if parameters[:instructions].present?
         end
 
-        def partial_invoke
-          @selected_tab = :html
-          if @prev_parameters
-            @selected_tab = parameters.keys.find { |k| @prev_parameters[k] != parameters[k] }
-          end
-          update_custom_html
-          @prev_parameters = parameters.dup
+        def in_progress(instructions:, source: nil)
+          source = (<<~HTML) if source.present?
+            ### Source
+
+            ````
+            #{source}
+            ````
+          HTML
+
+          self.custom_raw = <<~HTML
+            <details>
+              <summary>Thinking...</summary>
+
+              ### Instructions
+              ````
+              #{instructions}
+              ````
+
+              #{source}
+
+            </details>
+          HTML
         end
 
         def invoke
-          yield "Updating Artifact"
-
           post = Post.find_by(id: context[:post_id])
           return error_response("No post context found") unless post
 
           artifact = AiArtifact.find_by(id: parameters[:artifact_id])
           return error_response("Artifact not found") unless artifact
 
+          artifact_version = nil
+          if version = parameters[:version]
+            artifact_version = artifact.versions.find_by(version_number: version)
+            # we could tell llm it is confused here if artifact version is not there
+            # but let's just fix it transparently which saves an llm call
+          end
+
+          artifact_version ||= artifact.versions.order(version_number: :desc).first
+
           if artifact.post.topic.id != post.topic.id
             return error_response("Attempting to update an artifact you are not allowed to")
           end
 
-          last_version = artifact.versions.order(version_number: :desc).first
+          llm =
+            (
+              options[:editor_llm].present? &&
+                LlmModel.find_by(id: options[:editor_llm].to_i)&.to_llm
+            ) || self.llm
+
+          strategy =
+            (
+              if options[:update_algorithm] == "diff"
+                ArtifactUpdateStrategies::Diff
+              else
+                ArtifactUpdateStrategies::Full
+              end
+            )
 
           begin
-            version =
-              artifact.create_new_version(
-                html: parameters[:html] || last_version&.html || artifact.html,
-                css: parameters[:css] || last_version&.css || artifact.css,
-                js: parameters[:js] || last_version&.js || artifact.js,
-                change_description: parameters[:change_description].to_s,
-              )
+            instructions = parameters[:instructions]
+            partial_response = +""
+            new_version =
+              strategy
+                .new(
+                  llm: llm,
+                  post: post,
+                  user: post.user,
+                  artifact: artifact,
+                  artifact_version: artifact_version,
+                  instructions: instructions,
+                )
+                .apply do |progress|
+                  partial_response << progress
+                  in_progress(instructions: instructions, source: partial_response)
+                  # force in progress to render
+                  yield nil, true
+                end
 
-            update_custom_html(artifact, version)
-            success_response(artifact, version)
-          rescue DiscourseAi::Utils::DiffUtils::DiffError => e
-            error_response(e.to_llm_message)
-          rescue => e
+            update_custom_html(
+              artifact: artifact,
+              artifact_version: artifact_version,
+              new_version: new_version,
+            )
+            success_response(artifact, new_version)
+          rescue StandardError => e
             error_response(e.message)
           end
         end
 
+        def chain_next_response?
+          false
+        end
+
         private
 
-        def update_custom_html(artifact = nil, version = nil)
+        def line_based_markdown_diff(before, after)
+          # Split into lines
+          before_lines = before.split("\n")
+          after_lines = after.split("\n")
+
+          # Use ONPDiff for line-level comparison
+          diff = ONPDiff.new(before_lines, after_lines).diff
+
+          # Build markdown output
+          result = ["```diff"]
+
+          diff.each do |line, status|
+            case status
+            when :common
+              result << " #{line}"
+            when :delete
+              result << "-#{line}"
+            when :add
+              result << "+#{line}"
+            end
+          end
+
+          result << "```"
+          result.join("\n")
+        end
+
+        def update_custom_html(artifact:, artifact_version:, new_version:)
           content = []
 
-          if parameters[:html].present?
-            content << [:html, "### HTML Changes\n\n```html\n#{parameters[:html]}\n```"]
-          end
-
-          if parameters[:css].present?
-            content << [:css, "### CSS Changes\n\n```css\n#{parameters[:css]}\n```"]
-          end
-
-          if parameters[:js].present?
-            content << [:js, "### JavaScript Changes\n\n```javascript\n#{parameters[:js]}\n```"]
-          end
-
-          if parameters[:change_description].present?
-            content.unshift(
-              [:description, "### Change Description\n\n#{parameters[:change_description]}"],
-            )
-          end
-
-          content.sort_by! { |c| c[0] === @selected_tab ? 1 : 0 } if !artifact
-
-          if artifact
-            content.unshift([nil, "[details='#{I18n.t("discourse_ai.ai_artifact.view_changes")}']"])
-            content << [nil, "[/details]"]
+          if new_version.change_description.present?
             content << [
-              :preview,
-              "### Preview\n\n<div class=\"ai-artifact\" data-ai-artifact-version=\"#{version.version_number}\" data-ai-artifact-id=\"#{artifact.id}\"></div>",
+              :description,
+              "[details='#{I18n.t("discourse_ai.ai_artifact.change_description")}']\n\n````\n#{new_version.change_description}\n````\n\n[/details]",
             ]
           end
+          content << [nil, "[details='#{I18n.t("discourse_ai.ai_artifact.view_changes")}']"]
 
-          content.unshift("\n\n")
+          %w[html css js].each do |type|
+            source = artifact_version || artifact
+            old_content = source.public_send(type)
+            new_content = new_version.public_send(type)
+
+            if old_content != new_content
+              diff = line_based_markdown_diff(old_content, new_content)
+              content << [nil, "### #{type.upcase} Changes\n#{diff}"]
+            end
+          end
+
+          content << [nil, "[/details]"]
+          content << [
+            :preview,
+            "### Preview\n\n<div class=\"ai-artifact\" data-ai-artifact-version=\"#{new_version.version_number}\" data-ai-artifact-id=\"#{artifact.id}\"></div>",
+          ]
 
           self.custom_raw = content.map { |c| c[1] }.join("\n\n")
         end
 
         def success_response(artifact, version)
-          @chain_next_response = false
-
-          hash = {
+          {
             status: "success",
             artifact_id: artifact.id,
             version: version.version_number,
             message: "Artifact updated successfully and rendered to user.",
           }
-
-          hash
         end
 
         def error_response(message)
-          @chain_next_response = true
           self.custom_raw = ""
-
           { status: "error", error: message }
-        end
-
-        def help
-          "Updates an existing web artifact with changes to its HTML, CSS, or JavaScript content. " \
-            "Requires the artifact ID and at least one change diff. " \
-            "Changes are applied using unified diff format. " \
-            "A description of the changes is required for version history."
         end
       end
     end

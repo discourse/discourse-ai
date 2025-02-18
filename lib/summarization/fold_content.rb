@@ -58,8 +58,9 @@ module DiscourseAi
           if summary
             @existing_summary = summary
 
-            if existing_summary.original_content_sha != latest_sha
-              @existing_summary.mark_as_outdated
+            if summary.original_content_sha != latest_sha ||
+                 content_to_summarize.any? { |cts| cts[:last_version_at] > summary.updated_at }
+              summary.mark_as_outdated
             end
           end
         end

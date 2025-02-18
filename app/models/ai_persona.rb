@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class AiPersona < ActiveRecord::Base
-  # TODO remove this line 01-1-2025
-  self.ignored_columns = %i[commands allow_chat mentionable]
+  # TODO remove this line 01-10-2025
+  self.ignored_columns = %i[default_llm question_consolidator_llm]
 
   # places a hard limit, so per site we cache a maximum of 500 classes
   MAX_PERSONAS_PER_SITE = 500
@@ -12,7 +12,7 @@ class AiPersona < ActiveRecord::Base
   validates :system_prompt, presence: true, length: { maximum: 10_000_000 }
   validate :system_persona_unchangeable, on: :update, if: :system
   validate :chat_preconditions
-  validate :allowed_seeded_model, if: :default_llm
+  validate :allowed_seeded_model, if: :default_llm_id
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
   # leaves some room for growth but sets a maximum to avoid memory issues
   # we may want to revisit this in the future
@@ -22,10 +22,17 @@ class AiPersona < ActiveRecord::Base
   validates :rag_chunk_overlap_tokens, numericality: { greater_than: -1, maximum: 200 }
   validates :rag_conversation_chunks, numericality: { greater_than: 0, maximum: 1000 }
   validates :forced_tool_count, numericality: { greater_than: -2, maximum: 100_000 }
+
+  validate :tools_can_not_be_duplicated
+
   has_many :rag_document_fragments, dependent: :destroy, as: :target
 
   belongs_to :created_by, class_name: "User"
   belongs_to :user
+
+  belongs_to :default_llm, class_name: "LlmModel"
+  belongs_to :question_consolidator_llm, class_name: "LlmModel"
+  belongs_to :rag_llm_model, class_name: "LlmModel"
 
   has_many :upload_references, as: :target, dependent: :destroy
   has_many :uploads, through: :upload_references
@@ -59,7 +66,7 @@ class AiPersona < ActiveRecord::Base
             user_id: persona.user_id,
             username: persona.user.username_lower,
             allowed_group_ids: persona.allowed_group_ids,
-            default_llm: persona.default_llm,
+            default_llm_id: persona.default_llm_id,
             force_default_llm: persona.force_default_llm,
             allow_chat_channel_mentions: persona.allow_chat_channel_mentions,
             allow_chat_direct_messages: persona.allow_chat_direct_messages,
@@ -107,18 +114,59 @@ class AiPersona < ActiveRecord::Base
     self.class.persona_cache.flush!
   end
 
+  def tools_can_not_be_duplicated
+    return unless tools.is_a?(Array)
+
+    seen_tools = Set.new
+
+    custom_tool_ids = Set.new
+    builtin_tool_names = Set.new
+
+    tools.each do |tool|
+      inner_name, _, _ = tool.is_a?(Array) ? tool : [tool, nil]
+
+      if inner_name.start_with?("custom-")
+        custom_tool_ids.add(inner_name.split("-", 2).last.to_i)
+      else
+        builtin_tool_names.add(inner_name.downcase)
+      end
+
+      if seen_tools.include?(inner_name)
+        errors.add(:tools, I18n.t("discourse_ai.ai_bot.personas.cannot_have_duplicate_tools"))
+        break
+      else
+        seen_tools.add(inner_name)
+      end
+    end
+
+    return if errors.any?
+
+    # Checking if there are any duplicate tool_names between custom and builtin tools
+    if builtin_tool_names.present? && custom_tool_ids.present?
+      AiTool
+        .where(id: custom_tool_ids)
+        .pluck(:tool_name)
+        .each do |tool_name|
+          if builtin_tool_names.include?(tool_name.downcase)
+            errors.add(:tools, I18n.t("discourse_ai.ai_bot.personas.cannot_have_duplicate_tools"))
+            break
+          end
+        end
+    end
+  end
+
   def class_instance
     attributes = %i[
       id
       user_id
       system
       mentionable
-      default_llm
+      default_llm_id
       max_context_posts
       vision_enabled
       vision_max_pixels
       rag_conversation_chunks
-      question_consolidator_llm
+      question_consolidator_llm_id
       allow_chat_channel_mentions
       allow_chat_direct_messages
       allow_topic_mentions
@@ -130,8 +178,6 @@ class AiPersona < ActiveRecord::Base
       tool_details
     ]
 
-    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
-
     instance_attributes = {}
     attributes.each do |attr|
       value = self.read_attribute(attr)
@@ -139,14 +185,6 @@ class AiPersona < ActiveRecord::Base
     end
 
     instance_attributes[:username] = user&.username_lower
-
-    if persona_class
-      instance_attributes.each do |key, value|
-        # description/name are localized
-        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
-      end
-      return persona_class
-    end
 
     options = {}
     force_tool_use = []
@@ -179,6 +217,16 @@ class AiPersona < ActiveRecord::Base
         force_tool_use << klass if should_force_tool_use
         klass
       end
+
+    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
+    if persona_class
+      instance_attributes.each do |key, value|
+        # description/name are localized
+        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
+      end
+      persona_class.define_method(:options) { options }
+      return persona_class
+    end
 
     ai_persona_id = self.id
 
@@ -258,15 +306,25 @@ class AiPersona < ActiveRecord::Base
     if (
          allow_chat_channel_mentions || allow_chat_direct_messages || allow_topic_mentions ||
            force_default_llm
-       ) && !default_llm
+       ) && !default_llm_id
       errors.add(:default_llm, I18n.t("discourse_ai.ai_bot.personas.default_llm_required"))
     end
   end
 
   def system_persona_unchangeable
-    if top_p_changed? || temperature_changed? || system_prompt_changed? || tools_changed? ||
-         name_changed? || description_changed?
+    if top_p_changed? || temperature_changed? || system_prompt_changed? || name_changed? ||
+         description_changed?
       errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
+    elsif tools_changed?
+      old_tools = tools_change[0]
+      new_tools = tools_change[1]
+
+      old_tool_names = old_tools.map { |t| t.is_a?(Array) ? t[0] : t }.to_set
+      new_tool_names = new_tools.map { |t| t.is_a?(Array) ? t[0] : t }.to_set
+
+      if old_tool_names != new_tool_names
+        errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
+      end
     end
   end
 
@@ -278,13 +336,12 @@ class AiPersona < ActiveRecord::Base
   end
 
   def allowed_seeded_model
-    return if default_llm.blank?
+    return if default_llm_id.blank?
 
-    llm = LlmModel.find_by(id: default_llm.split(":").last.to_i)
-    return if llm.nil?
-    return if !llm.seeded?
+    return if default_llm.nil?
+    return if !default_llm.seeded?
 
-    return if SiteSetting.ai_bot_allowed_seeded_models.include?(llm.id.to_s)
+    return if SiteSetting.ai_bot_allowed_seeded_models_map.include?(default_llm.id.to_s)
 
     errors.add(:default_llm, I18n.t("discourse_ai.llm.configuration.invalid_seeded_model"))
   end
@@ -294,36 +351,37 @@ end
 #
 # Table name: ai_personas
 #
-#  id                          :bigint           not null, primary key
-#  name                        :string(100)      not null
-#  description                 :string(2000)     not null
-#  system_prompt               :string(10000000) not null
-#  allowed_group_ids           :integer          default([]), not null, is an Array
-#  created_by_id               :integer
-#  enabled                     :boolean          default(TRUE), not null
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
-#  system                      :boolean          default(FALSE), not null
-#  priority                    :boolean          default(FALSE), not null
-#  temperature                 :float
-#  top_p                       :float
-#  user_id                     :integer
-#  default_llm                 :text
-#  max_context_posts           :integer
-#  vision_enabled              :boolean          default(FALSE), not null
-#  vision_max_pixels           :integer          default(1048576), not null
-#  rag_chunk_tokens            :integer          default(374), not null
-#  rag_chunk_overlap_tokens    :integer          default(10), not null
-#  rag_conversation_chunks     :integer          default(10), not null
-#  question_consolidator_llm   :text
-#  tool_details                :boolean          default(TRUE), not null
-#  tools                       :json             not null
-#  forced_tool_count           :integer          default(-1), not null
-#  allow_chat_channel_mentions :boolean          default(FALSE), not null
-#  allow_chat_direct_messages  :boolean          default(FALSE), not null
-#  allow_topic_mentions        :boolean          default(FALSE), not null
-#  allow_personal_messages     :boolean          default(TRUE), not null
-#  force_default_llm           :boolean          default(FALSE), not null
+#  id                           :bigint           not null, primary key
+#  name                         :string(100)      not null
+#  description                  :string(2000)     not null
+#  system_prompt                :string(10000000) not null
+#  allowed_group_ids            :integer          default([]), not null, is an Array
+#  created_by_id                :integer
+#  enabled                      :boolean          default(TRUE), not null
+#  created_at                   :datetime         not null
+#  updated_at                   :datetime         not null
+#  system                       :boolean          default(FALSE), not null
+#  priority                     :boolean          default(FALSE), not null
+#  temperature                  :float
+#  top_p                        :float
+#  user_id                      :integer
+#  max_context_posts            :integer
+#  vision_enabled               :boolean          default(FALSE), not null
+#  vision_max_pixels            :integer          default(1048576), not null
+#  rag_chunk_tokens             :integer          default(374), not null
+#  rag_chunk_overlap_tokens     :integer          default(10), not null
+#  rag_conversation_chunks      :integer          default(10), not null
+#  tool_details                 :boolean          default(TRUE), not null
+#  tools                        :json             not null
+#  forced_tool_count            :integer          default(-1), not null
+#  allow_chat_channel_mentions  :boolean          default(FALSE), not null
+#  allow_chat_direct_messages   :boolean          default(FALSE), not null
+#  allow_topic_mentions         :boolean          default(FALSE), not null
+#  allow_personal_messages      :boolean          default(TRUE), not null
+#  force_default_llm            :boolean          default(FALSE), not null
+#  rag_llm_model_id             :bigint
+#  default_llm_id               :bigint
+#  question_consolidator_llm_id :bigint
 #
 # Indexes
 #

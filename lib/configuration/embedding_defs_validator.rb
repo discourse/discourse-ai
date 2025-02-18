@@ -8,20 +8,11 @@ module DiscourseAi
       end
 
       def valid_value?(val)
-        if val.blank?
-          @module_enabled = SiteSetting.ai_embeddings_enabled
-
-          !@module_enabled
-        else
-          EmbeddingDefinition.exists?(id: val).tap { |def_exists| @invalid_option = !def_exists }
-        end
+        val.present? || !SiteSetting.ai_embeddings_enabled
       end
 
       def error_message
-        return I18n.t("discourse_ai.embeddings.configuration.disable_embeddings") if @module_enabled
-        return I18n.t("discourse_ai.embeddings.configuration.invalid_config") if @invalid_option
-
-        ""
+        I18n.t("discourse_ai.embeddings.configuration.disable_embeddings")
       end
     end
   end

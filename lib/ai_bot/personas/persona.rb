@@ -17,7 +17,7 @@ module DiscourseAi
             1_048_576
           end
 
-          def question_consolidator_llm
+          def question_consolidator_llm_id
             nil
           end
 
@@ -102,6 +102,7 @@ module DiscourseAi
             if SiteSetting.ai_artifact_security.in?(%w[lax strict])
               tools << Tools::CreateArtifact
               tools << Tools::UpdateArtifact
+              tools << Tools::ReadArtifact
             end
 
             tools << Tools::GithubSearchCode if SiteSetting.ai_bot_github_access_token.present?
@@ -172,9 +173,11 @@ module DiscourseAi
           TEXT
 
           question_consolidator_llm = llm
-          if self.class.question_consolidator_llm.present?
-            question_consolidator_llm =
-              DiscourseAi::Completions::Llm.proxy(self.class.question_consolidator_llm)
+          if self.class.question_consolidator_llm_id.present?
+            question_consolidator_llm ||=
+              DiscourseAi::Completions::Llm.proxy(
+                LlmModel.find_by(id: self.class.question_consolidator_llm_id),
+              )
           end
 
           if context[:custom_instructions].present?
@@ -201,7 +204,9 @@ module DiscourseAi
 
           prompt.max_pixels = self.class.vision_max_pixels if self.class.vision_enabled
           prompt.tools = available_tools.map(&:signature) if available_tools
-
+          available_tools.each do |tool|
+            tool.inject_prompt(prompt: prompt, context: context, persona: self)
+          end
           prompt
         end
 
@@ -292,7 +297,7 @@ module DiscourseAi
           upload_refs =
             UploadReference.where(target_id: id, target_type: "AiPersona").pluck(:upload_id)
 
-          return nil if !SiteSetting.ai_embeddings_enabled?
+          return nil if !DiscourseAi::Embeddings.enabled?
           return nil if conversation_context.blank? || upload_refs.blank?
 
           latest_interactions =

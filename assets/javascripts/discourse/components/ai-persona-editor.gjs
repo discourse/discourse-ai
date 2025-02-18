@@ -167,27 +167,27 @@ export default class PersonaEditor extends Component {
   }
 
   get mappedQuestionConsolidatorLlm() {
-    return this.editingModel?.question_consolidator_llm || "blank";
+    return this.editingModel?.question_consolidator_llm_id ?? "blank";
   }
 
   set mappedQuestionConsolidatorLlm(value) {
     if (value === "blank") {
-      this.editingModel.question_consolidator_llm = null;
+      this.editingModel.question_consolidator_llm_id = null;
     } else {
-      this.editingModel.question_consolidator_llm = value;
+      this.editingModel.question_consolidator_llm_id = value;
     }
   }
 
   get mappedDefaultLlm() {
-    return this.editingModel?.default_llm || "blank";
+    return this.editingModel?.default_llm_id ?? "blank";
   }
 
   set mappedDefaultLlm(value) {
     if (value === "blank") {
-      this.editingModel.default_llm = null;
+      this.editingModel.default_llm_id = null;
       this.hasDefaultLlm = false;
     } else {
-      this.editingModel.default_llm = value;
+      this.editingModel.default_llm_id = value;
       this.hasDefaultLlm = true;
     }
   }
@@ -420,13 +420,12 @@ export default class PersonaEditor extends Component {
           </div>
         {{/if}}
       {{/if}}
-      {{#unless this.editingModel.system}}
-        <AiPersonaToolOptions
-          @persona={{this.editingModel}}
-          @tools={{this.selectedToolNames}}
-          @allTools={{@personas.resultSetMeta.tools}}
-        />
-      {{/unless}}
+      <AiPersonaToolOptions
+        @persona={{this.editingModel}}
+        @tools={{this.selectedToolNames}}
+        @llms={{@personas.resultSetMeta.llms}}
+        @allTools={{@personas.resultSetMeta.tools}}
+      />
       <div class="control-group">
         <label>{{i18n "discourse_ai.ai_persona.allowed_groups"}}</label>
         <GroupChooser
@@ -597,9 +596,14 @@ export default class PersonaEditor extends Component {
             @target={{this.editingModel}}
             @updateUploads={{this.updateUploads}}
             @onRemove={{this.removeUpload}}
+            @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
           />
         </div>
-        <RagOptions @model={{this.editingModel}}>
+        <RagOptions
+          @model={{this.editingModel}}
+          @llms={{@personas.resultSetMeta.llms}}
+          @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
+        >
           <div class="control-group">
             <label>{{i18n
                 "discourse_ai.ai_persona.rag_conversation_chunks"

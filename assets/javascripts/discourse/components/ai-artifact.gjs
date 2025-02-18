@@ -4,7 +4,7 @@ import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import htmlClass from "discourse/helpers/html-class";
-import getURL from "discourse-common/lib/get-url";
+import getURL from "discourse/lib/get-url";
 
 // note the panel for artifact full screen can not be at position 0,0
 // otherwise this hack will not activate.

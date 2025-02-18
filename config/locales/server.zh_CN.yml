@@ -349,7 +349,6 @@ zh_CN:
         javascript_evaluator: "评估 JavaScript"
       tool_description:
         update_artifact: "已使用 AI 机器人更新 Web 工件"
-        create_artifact: "已使用 AI 机器人创建 Web 工件"
         web_browser: "正在阅读 <a href='%{url}'>%{url}</a>"
         github_search_files: "已在 %{repo}/%{branch} 中搜索 '%{keywords}'"
         github_search_code: "已在 %{repo} 中搜索 '%{query}'"

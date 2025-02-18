@@ -22,11 +22,14 @@ class AiToolSerializer < ApplicationSerializer
   def options
     options = {}
     object.accepted_options.each do |option|
-      options[option.name] = {
+      processed_option = {
         name: option.localized_name,
         description: option.localized_description,
         type: option.type,
       }
+      processed_option[:values] = option.values if option.values.present?
+      processed_option[:default] = option.default if option.default.present?
+      options[option.name] = processed_option
     end
     options
   end

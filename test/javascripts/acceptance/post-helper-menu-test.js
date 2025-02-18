@@ -1,6 +1,7 @@
 import { click, settled, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import { AUTO_GROUPS } from "discourse/lib/constants";
+import { cloneJSON } from "discourse/lib/object";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import {
   acceptance,
@@ -8,7 +9,6 @@ import {
   query,
   selectText,
 } from "discourse/tests/helpers/qunit-helpers";
-import { cloneJSON } from "discourse-common/lib/object";
 import aiHelperPrompts from "../fixtures/ai-helper-prompts";
 
 acceptance("AI Helper - Post Helper Menu", function (needs) {

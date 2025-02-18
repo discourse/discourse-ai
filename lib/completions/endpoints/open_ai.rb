@@ -132,7 +132,7 @@ module DiscourseAi
         end
 
         def decode_chunk_finish
-          @processor.finish
+          processor.finish
         end
 
         def xml_tools_enabled?

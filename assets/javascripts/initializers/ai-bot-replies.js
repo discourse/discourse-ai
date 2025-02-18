@@ -1,7 +1,7 @@
 import { hbs } from "ember-cli-htmlbars";
+import { withSilencedDeprecations } from "discourse/lib/deprecated";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
-import { withSilencedDeprecations } from "discourse-common/lib/deprecated";
 import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
 import AiCancelStreamingButton from "../discourse/components/post-menu/ai-cancel-streaming-button";
 import AiDebugButton from "../discourse/components/post-menu/ai-debug-button";

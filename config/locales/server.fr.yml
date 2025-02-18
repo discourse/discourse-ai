@@ -349,7 +349,6 @@ fr:
         javascript_evaluator: "Évaluer JavaScript"
       tool_description:
         update_artifact: "Mise à jour d'un artefact Web à l'aide du robot IA"
-        create_artifact: "Création d'un artefact Web à l'aide du robot IA"
         web_browser: "Lecture : <a href='%{url}'>%{url}</a>"
         github_search_files: "Recherche de « %{keywords} » dans %{repo}/%{branch}"
         github_search_code: "Recherche de « %{query} » dans %{repo}"

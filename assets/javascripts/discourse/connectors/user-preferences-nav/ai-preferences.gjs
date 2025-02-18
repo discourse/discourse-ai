@@ -1,7 +1,7 @@
 import Component from "@glimmer/component";
 import { LinkTo } from "@ember/routing";
-import dIcon from "discourse-common/helpers/d-icon";
-import i18n from "discourse-common/helpers/i18n";
+import dIcon from "discourse/helpers/d-icon";
+import { i18n } from "discourse-i18n";
 
 function showAiPreferences(user, settings) {
   // Since we only have one AI related user setting we don't show

@@ -128,6 +128,28 @@ describe DiscourseAi::Automation::LlmTriage do
     expect(post.user.silenced?).to eq(true)
   end
 
+  it "does not silence the user if the flag fails" do
+    Fabricate(
+      :post_action,
+      post: post,
+      user: Discourse.system_user,
+      post_action_type_id: PostActionType.types[:spam],
+    )
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        flag_type: :spam_silence,
+        automation: nil,
+      )
+    end
+
+    expect(post.user.reload).not_to be_silenced
+  end
+
   it "can handle garbled output from LLM" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["Bad.\n\nYo"]) do
       triage(

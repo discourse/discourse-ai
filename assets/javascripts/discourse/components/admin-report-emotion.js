@@ -1,6 +1,6 @@
 import Component from "@ember/component";
 import { attributeBindings, classNames } from "@ember-decorators/component";
-import getURL from "discourse-common/lib/get-url";
+import getURL from "discourse/lib/get-url";
 
 @classNames("admin-report-counters")
 @attributeBindings("model.description:title")

@@ -202,6 +202,7 @@ en:
       link: "Show Artifact in new tab"
       view_source: "View Source"
       view_changes: "View Changes"
+      change_description: "Change Description"
     unknown_model: "Unknown AI model"
 
     tools:
@@ -217,6 +218,8 @@ en:
           name: "Flux image generator (Together.ai)"
         empty_tool:
           name: "Start from blank..."
+      name:
+        characters: "must only include numbers, letters, and underscores"
 
     ai_helper:
       errors:
@@ -262,6 +265,7 @@ en:
         default_llm_required: "Default LLM model is required prior to enabling Chat"
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
         cannot_edit_system_persona: "System personas can only be renamed, you may not edit tools or system prompt, instead disable and make a copy"
+        cannot_have_duplicate_tools: "Can not have duplicate tools"
         github_helper:
           name: "GitHub Helper"
           description: "AI Bot specialized in assisting with GitHub-related tasks and questions"
@@ -296,6 +300,20 @@ en:
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
       tool_options:
+        create_artifact:
+          creator_llm:
+            name: "LLM"
+            description: "Language model to use for artifact creation"
+        update_artifact:
+          editor_llm:
+            name: "LLM"
+            description: "Language model to use for artifact edits"
+          update_algorithm:
+            name: "Update Algorithm"
+            description: "Ask LLM to fully replace, or use diff to update"
+          do_not_echo_artifact:
+            name: "Do Not Echo Artifact"
+            description: "Will limit costs however effectiveness of Artifact updates will be reduced"
         google:
           base_query:
             name: "Base Search Query"
@@ -315,6 +333,7 @@ en:
             name: "Base Search Query"
             description: "Base query to use when searching. Example: '#urgent' will prepend '#urgent' to the search query and only include topics with the urgent category or tag."
       tool_summary:
+        read_artifact: "Read a web artifact"
         update_artifact: "Update a web artifact"
         create_artifact: "Create web artifact"
         web_browser: "Browse Web"
@@ -338,6 +357,7 @@ en:
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
       tool_help:
+        read_artifact: "Read a web artifact using the AI Bot"
         update_artifact: "Update a web artifact using the AI Bot"
         create_artifact: "Create a web artifact using the AI Bot"
         web_browser: "Browse web page using the AI Bot"
@@ -361,8 +381,9 @@ en:
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
       tool_description:
+        read_artifact: "Read a web artifact using the AI Bot"
         update_artifact: "Updated a web artifact using the AI Bot"
-        create_artifact: "Created a web artifact using the AI Bot"
+        create_artifact: "Created a web artifact: %{name} - %{specification}"
         web_browser: "Reading <a href='%{url}'>%{url}</a>"
         github_search_files: "Searched for '%{keywords}' in %{repo}/%{branch}"
         github_search_code: "Searched for '%{query}' in %{repo}"

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe AiPersona do
+  fab!(:llm_model)
+  fab!(:seeded_llm_model) { Fabricate(:llm_model, id: -1) }
+
   it "validates context settings" do
     persona =
       AiPersona.new(
@@ -22,6 +25,53 @@ RSpec.describe AiPersona do
 
     persona.max_context_posts = nil
     expect(persona.valid?).to eq(true)
+  end
+
+  it "validates tools" do
+    persona =
+      AiPersona.new(
+        name: "test",
+        description: "test",
+        system_prompt: "test",
+        tools: [],
+        allowed_group_ids: [],
+      )
+
+    Fabricate(:ai_tool, id: 1)
+    Fabricate(:ai_tool, id: 2, name: "Archie search", tool_name: "search")
+
+    expect(persona.valid?).to eq(true)
+
+    persona.tools = %w[search image_generation]
+    expect(persona.valid?).to eq(true)
+
+    persona.tools = %w[search image_generation search]
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
+
+    persona.tools = [["custom-1", { test: "test" }, false], ["custom-2", { test: "test" }, false]]
+    expect(persona.valid?).to eq(true)
+    expect(persona.errors[:tools]).to eq([])
+
+    persona.tools = [["custom-1", { test: "test" }, false], ["custom-1", { test: "test" }, false]]
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
+
+    persona.tools = [
+      ["custom-1", { test: "test" }, false],
+      ["custom-2", { test: "test" }, false],
+      "image_generation",
+    ]
+    expect(persona.valid?).to eq(true)
+    expect(persona.errors[:tools]).to eq([])
+
+    persona.tools = [
+      ["custom-1", { test: "test" }, false],
+      ["custom-2", { test: "test" }, false],
+      "Search",
+    ]
+    expect(persona.valid?).to eq(false)
+    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
   end
 
   it "allows creation of user" do
@@ -71,7 +121,7 @@ RSpec.describe AiPersona do
     forum_helper = AiPersona.find_by(name: "Forum Helper")
     forum_helper.update!(
       user_id: 1,
-      default_llm: "anthropic:claude-2",
+      default_llm_id: llm_model.id,
       max_context_posts: 3,
       allow_topic_mentions: true,
       allow_personal_messages: true,
@@ -86,7 +136,7 @@ RSpec.describe AiPersona do
     # tl 0 by default
     expect(klass.allowed_group_ids).to eq([10])
     expect(klass.user_id).to eq(1)
-    expect(klass.default_llm).to eq("anthropic:claude-2")
+    expect(klass.default_llm_id).to eq(llm_model.id)
     expect(klass.max_context_posts).to eq(3)
     expect(klass.allow_topic_mentions).to eq(true)
     expect(klass.allow_personal_messages).to eq(true)
@@ -102,7 +152,7 @@ RSpec.describe AiPersona do
         system_prompt: "test",
         tools: [],
         allowed_group_ids: [],
-        default_llm: "anthropic:claude-2",
+        default_llm_id: llm_model.id,
         max_context_posts: 3,
         allow_topic_mentions: true,
         allow_personal_messages: true,
@@ -117,7 +167,7 @@ RSpec.describe AiPersona do
     expect(klass.system).to eq(false)
     expect(klass.allowed_group_ids).to eq([])
     expect(klass.user_id).to eq(1)
-    expect(klass.default_llm).to eq("anthropic:claude-2")
+    expect(klass.default_llm_id).to eq(llm_model.id)
     expect(klass.max_context_posts).to eq(3)
     expect(klass.allow_topic_mentions).to eq(true)
     expect(klass.allow_personal_messages).to eq(true)
@@ -180,10 +230,9 @@ RSpec.describe AiPersona do
         system_prompt: "test",
         tools: [],
         allowed_group_ids: [],
-        default_llm: "seeded_model:-1",
+        default_llm_id: seeded_llm_model.id,
       )
 
-    llm_model = Fabricate(:llm_model, id: -1)
     SiteSetting.ai_bot_allowed_seeded_models = ""
 
     expect(persona.valid?).to eq(false)
@@ -209,5 +258,33 @@ RSpec.describe AiPersona do
     expect(AiPersona.persona_cache[:value].length).to be > (0)
     RailsMultisite::ConnectionManagement.stubs(:current_db) { "abc" }
     expect(AiPersona.persona_cache[:value]).to eq(nil)
+  end
+
+  describe "system persona validations" do
+    let(:system_persona) do
+      AiPersona.create!(
+        name: "system_persona",
+        description: "system persona",
+        system_prompt: "system persona",
+        tools: %w[Search Time],
+        system: true,
+      )
+    end
+
+    context "when modifying a system persona" do
+      it "allows changing tool options without allowing tool additions/removals" do
+        tools = [["Search", { "base_query" => "abc" }], ["Time"]]
+        system_persona.update!(tools: tools)
+
+        system_persona.reload
+        expect(system_persona.tools).to eq(tools)
+
+        invalid_tools = ["Time"]
+        system_persona.update(tools: invalid_tools)
+        expect(system_persona.errors[:base]).to include(
+          I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"),
+        )
+      end
+    end
   end
 end

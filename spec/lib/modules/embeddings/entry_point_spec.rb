@@ -3,6 +3,10 @@
 describe DiscourseAi::Embeddings::EntryPoint do
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
 
+  fab!(:embedding_definition)
+
+  before { SiteSetting.ai_embeddings_selected_model = embedding_definition.id }
+
   describe "registering event callbacks" do
     context "when creating a topic" do
       let(:creator) do

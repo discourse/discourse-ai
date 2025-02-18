@@ -56,7 +56,7 @@ module DiscourseAi
         # embeddings generation.
         callback =
           Proc.new do |target|
-            if SiteSetting.ai_embeddings_enabled &&
+            if DiscourseAi::Embeddings.enabled? &&
                  (target.is_a?(Topic) || SiteSetting.ai_embeddings_per_post_enabled)
               Jobs.enqueue(
                 :generate_embeddings,
