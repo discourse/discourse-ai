@@ -134,9 +134,9 @@ module DiscourseAi
       end
 
       def asymmetric_similarity_search(embedding, limit:, offset:)
-        before_query, after_query = hnsw_search_workaround(limit)
+        before_query = hnsw_search_workaround(limit)
+
         builder = DB.build(<<~SQL)
-          #{before_query}
           WITH candidates AS (
             SELECT
               #{target_column},
@@ -158,7 +158,6 @@ module DiscourseAi
             embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
           LIMIT :limit
           OFFSET :offset;
-          #{after_query}
         SQL
 
         builder.where(
@@ -176,12 +175,15 @@ module DiscourseAi
           candidates_limit = limit * 2
         end
 
-        builder.query(
-          query_embedding: embedding,
-          candidates_limit: candidates_limit,
-          limit: limit,
-          offset: offset,
-        )
+        ActiveRecord::Base.transaction do
+          DB.exec(before_query) unless before_query.blank?
+          builder.query(
+            query_embedding: embedding,
+            candidates_limit: candidates_limit,
+            limit: limit,
+            offset: offset,
+          )
+        end
       rescue PG::Error => e
         Rails.logger.error("Error #{e} querying embeddings for model #{vector_def.display_name}")
         raise MissingEmbeddingError
@@ -189,9 +191,9 @@ module DiscourseAi
 
       def symmetric_similarity_search(record)
         limit = 200
-        before_query, after_query = hnsw_search_workaround(limit)
+        before_query = hnsw_search_workaround(limit)
+
         builder = DB.build(<<~SQL)
-          #{before_query}
           WITH le_target AS (
             SELECT
               embeddings
@@ -229,14 +231,16 @@ module DiscourseAi
               LIMIT 1
             )
           LIMIT #{limit / 2};
-          #{after_query}
         SQL
 
         builder.where("model_id = :vid AND strategy_id = :vsid")
 
         yield(builder) if block_given?
 
-        builder.query(vid: vector_def.id, vsid: vector_def.strategy_id, target_id: record.id)
+        ActiveRecord::Base.transaction do
+          DB.exec(before_query) unless before_query.blank?
+          builder.query(vid: vector_def.id, vsid: vector_def.strategy_id, target_id: record.id)
+        end
       rescue PG::Error => e
         Rails.logger.error("Error #{e} querying embeddings for model #{vector_def.display_name}")
         raise MissingEmbeddingError
@@ -271,17 +275,8 @@ module DiscourseAi
       def hnsw_search_workaround(limit)
         threshold = limit * 2
 
-        return "", "" if threshold < DEFAULT_HNSW_EF_SEARCH
-        return "SET LOCAL hnsw.ef_search = #{threshold};", "" if Rails.env.test?
-
-        before_query = <<~SQL
-          BEGIN;
-          SET LOCAL hnsw.ef_search = #{threshold};
-        SQL
-        after_query = <<~SQL
-          COMMIT;
-        SQL
-        [before_query, after_query]
+        return "" if threshold < DEFAULT_HNSW_EF_SEARCH
+        "SET LOCAL hnsw.ef_search = #{threshold};"
       end
 
       delegate :dimensions, :pg_function, to: :vector_def
