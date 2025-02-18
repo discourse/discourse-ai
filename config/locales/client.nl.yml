@@ -275,7 +275,6 @@ nl:
           hide_indexing_options: "Uploadopties verbergen"
         uploads:
           title: "Uploads"
-          description: "Geüploade bestanden moeten platte tekst (.txt) of markdown (.md) als indeling hebben."
           button: "Bestanden toevoegen"
           filter: "Uploads filteren"
           indexed: "Geïndexeerd"
@@ -507,8 +506,6 @@ nl:
         hints:
           dimensions_warning: "Eenmaal opgeslagen kan deze waarde niet meer worden gewijzigd."
           matryoshka_dimensions: "Bepaalt de grootte van geneste insluitingen die worden gebruikt voor hiërarchische of meerlaagse weergave van gegevens, vergelijkbaar met hoe geneste poppetjes in elkaar passen."
-          embed_prompt: "Vertelt de LLM hoe de tekst moet worden verwerkt om een numerieke samenvatting (insluiting) te maken voor analyse of vergelijking."
-          search_prompt: "Vertelt de LLM hoe deze een zoekopdracht moet vergelijken met bestaande insluitingen en de beste overeenkomsten moet vinden."
           sequence_length: "Het maximale aantal tokens dat in één keer kan worden verwerkt bij het maken van insluitingen of het verwerken van een query."
           distance_function: "Bepaalt hoe de mate van overeenkomst tussen insluitingen wordt berekend, met behulp van cosinusafstand (meting van de hoek tussen vectoren) of negatief binnenproduct (meting van de overlap van vectorwaarden)."
         display_name: "Naam"

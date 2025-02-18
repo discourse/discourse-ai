@@ -275,7 +275,6 @@ es:
           hide_indexing_options: "Ocultar opciones de carga"
         uploads:
           title: "Cargas"
-          description: "Los archivos cargados deben tener formato de texto simple (.txt) o Markdown (.md)."
           button: "Añadir archivos"
           filter: "Filtrar cargas"
           indexed: "Indexado"
@@ -507,8 +506,6 @@ es:
         hints:
           dimensions_warning: "Una vez guardado, este valor no se puede cambiar."
           matryoshka_dimensions: "Define el tamaño de las incrustaciones anidadas utilizadas para la representación jerárquica o en varias capas de los datos, de forma similar a como encajan los muñecos anidados unos dentro de otros."
-          embed_prompt: "Indica al LLM cómo procesar el texto para crear su resumen numérico (incrustación) para su análisis o comparación."
-          search_prompt: "Indica al LLM cómo comparar una consulta de búsqueda con las incrustaciones existentes y encontrar las mejores coincidencias."
           sequence_length: "El número máximo de tokens que se pueden procesar a la vez al crear incrustaciones o gestionar una consulta."
           distance_function: "Determina cómo se calcula la similitud entre las incrustaciones, utilizando la distancia del coseno (que mide el ángulo entre los vectores) o el producto interior negativo (que mide el solapamiento de los valores de los vectores)."
         display_name: "Nombre"

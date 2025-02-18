@@ -274,7 +274,6 @@ zh_CN:
           hide_indexing_options: "隐藏上传选项"
         uploads:
           title: "上传"
-          description: "上传的文件应格式化为纯文本 (.txt) 或 Markdown (.md)。"
           button: "添加文件"
           filter: "筛选上传"
           indexed: "已编制索引"
@@ -504,8 +503,6 @@ zh_CN:
         hints:
           dimensions_warning: "保存后，此值将无法更改。"
           matryoshka_dimensions: "定义用于分层或多层数据表示的嵌套嵌入向量的大小，类似于套娃相互契合的方式。"
-          embed_prompt: "告诉 LLM 如何处理文本，以创建其数字摘要（嵌入向量）用于分析或比较。"
-          search_prompt: "告诉 LLM 如何将搜索查询与现有嵌入向量进行比较并找到最佳匹配项。"
           sequence_length: "创建嵌入向量或处理查询时一次可以处理的最大词元数。"
           distance_function: "确定如何计算嵌入向量之间的相似度，可以使用余弦距离（测量向量的夹角）或负内积（测量向量值的重叠）。"
         display_name: "名称"

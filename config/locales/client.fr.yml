@@ -275,7 +275,6 @@ fr:
           hide_indexing_options: "Masquer les options de téléversement"
         uploads:
           title: "Fichiers envoyés"
-          description: "Les fichiers téléversés doivent être formatés en texte brut (.txt) ou en Markdown (.md)."
           button: "Ajouter des fichiers"
           filter: "Filtrer les téléversements"
           indexed: "Indexé"
@@ -507,8 +506,6 @@ fr:
         hints:
           dimensions_warning: "Une fois enregistrée, cette valeur ne peut plus être modifiée."
           matryoshka_dimensions: "Définit la taille des intégrations imbriquées utilisées pour la représentation hiérarchique ou multicouche des données, de la même manière que les poupées imbriquées s'emboîtent les unes dans les autres."
-          embed_prompt: "Indique au LLM comment traiter le texte pour créer son résumé numérique (intégration) à des fins d'analyse ou de comparaison."
-          search_prompt: "Indique au LLM comment comparer une requête de recherche avec des intégrations existantes et trouver les meilleures correspondances."
           sequence_length: "Le nombre maximal de jetons pouvant être traités simultanément lors de la création d'intégrations ou du traitement d'une requête."
           distance_function: "Détermine comment la similarité entre les intégrations est calculée, en utilisant soit la distance cosinus (mesure de l'angle entre les vecteurs) soit un produit interne négatif (mesure du chevauchement des valeurs vectorielles)."
         display_name: "Nom"

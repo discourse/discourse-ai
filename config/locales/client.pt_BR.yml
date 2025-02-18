@@ -275,7 +275,6 @@ pt_BR:
           hide_indexing_options: "Ocultar opções de envio"
         uploads:
           title: "Envios"
-          description: "Os arquivos enviados devem estar no formato plaintext (.txt) ou markdown (.md)."
           button: "Adicionar arquivos"
           filter: "Filtrar envios"
           indexed: "Indexado(a)"
@@ -507,8 +506,6 @@ pt_BR:
         hints:
           dimensions_warning: "Ao ser salvo, este valor não poderá ser alterado."
           matryoshka_dimensions: "Define o tamanho das incorporações aninhadas usadas para representação de dados de forma hierárquica ou multicamada, parecido com o aninhamento de bonecas umas nas outras."
-          embed_prompt: "Diz ao LLM como processar texto para criar um resumo numérico (incorporação) para fins de análise e comparação."
-          search_prompt: "Diz ao LLM como comparar uma consulta de pesquisa com incorporações existentes para encontrar as melhores correspondências."
           sequence_length: "A quantidade máxima de tokens que podem ser processados de uma vez ao criar incorporações ou manipular uma consulta."
           distance_function: "Determina como a semelhança entre incorporações é calculada, usando distância do cosseno (medida do ângulo entre vetores) ou o produto interno negativo (medida da sobreposição de valores de vetores)"
         display_name: "Nome"

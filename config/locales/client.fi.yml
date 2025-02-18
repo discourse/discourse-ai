@@ -275,7 +275,6 @@ fi:
           hide_indexing_options: "Piilota latausasetukset"
         uploads:
           title: "Lataukset"
-          description: "Ladatut tiedostot tulisi muotoilla pelkäksi tekstiksi (.txt) tai markdown-tiedostoksi (.md)."
           button: "Lisää tiedostoja"
           filter: "Suodata latauksia"
           indexed: "Indeksoitu"
@@ -507,8 +506,6 @@ fi:
         hints:
           dimensions_warning: "Tallentamisen jälkeen tätä arvoa ei voi enää muuttaa."
           matryoshka_dimensions: "Määrittää sellaisten sisäkkäisten upotusten koon, joita käytetään tietojen hierarkkiseen tai monikerroksiseen esittämiseen samalla tavalla kuin maatuskanuket sopivat toisiinsa."
-          embed_prompt: "Kertoo suurelle kielimallille, kuinka tekstiä käsitellään sen numeerisen yhteenvedon (upotus) luomiseksi analyysia tai vertailua varten."
-          search_prompt: "Kertoo suurelle kielimallille, kuinka hakukyselyä verrataan olemassa oleviin upotuksiin ja löydetään parhaat osumat."
           sequence_length: "Enimmäismäärä saneita, joka voidaan käsitellä kerralla luotaessa upotuksia tai käsiteltäessä kyselyä."
           distance_function: "Määrittää, kuinka upotusten välinen samankaltaisuus lasketaan, käyttämällä joko kosinietäisyyttä (mittaamalla vektorien välisen kulman) tai negatiivista sisätuloa (mittaamalla vektorin arvojen päällekkäisyyttä)."
         display_name: "Nimi"
