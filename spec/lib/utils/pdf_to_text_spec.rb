@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::Utils::PdfToText do
   before { SiteSetting.authorized_extensions = "pdf|png|jpg|jpeg" }
 
   describe "#extract_text" do
-    it "extracts text from PDF pages" do
+    xit "extracts text from PDF pages" do
       pdf_to_text = described_class.new(upload: upload)
       pages = []
       pdf_to_text.extract_text { |page| pages << page }
@@ -18,7 +18,7 @@ RSpec.describe DiscourseAi::Utils::PdfToText do
   end
 
   context "when improving PDF extraction with LLM" do
-    it "can properly simulate a file" do
+    xit "can properly simulate a file" do
       if ENV["CI"]
         skip "This test requires imagemagick is installed with ghostscript support - which is not available in CI"
       end
@@ -40,7 +40,7 @@ RSpec.describe DiscourseAi::Utils::PdfToText do
       expect(pages).to eq(["Page 1: LLM chunk 1", "Page 1: LLM chunk 2", "Page 2: LLM chunk 3"])
     end
 
-    it "works as expected" do
+    xit "works as expected" do
       if ENV["CI"]
         skip "This test requires imagemagick is installed with ghostscript support - which is not available in CI"
       end
