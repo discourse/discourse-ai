@@ -275,7 +275,6 @@ it:
           hide_indexing_options: "Nascondi opzioni di caricamento"
         uploads:
           title: "Caricamenti"
-          description: "I file caricati devono essere formattati come testo normale (.txt) o markdown (.md)."
           button: "Aggiungi file"
           filter: "Filtro caricamenti"
           indexed: "Indicizzato"
@@ -507,8 +506,6 @@ it:
         hints:
           dimensions_warning: "Una volta salvato, questo valore non può essere modificato."
           matryoshka_dimensions: "Definisce la dimensione delle integrazioni nidificate utilizzate per la rappresentazione gerarchica o multistrato dei dati, in modo simile a come le matrioske si inseriscono l'una nell'altra."
-          embed_prompt: "Indica all'LLM come elaborare il testo per creare il suo riepilogo numerico (integrazione) a scopo di analisi o confronto."
-          search_prompt: "Indica all'LLM come confrontare una query di ricerca con le integrazioni esistenti e trovare le corrispondenze migliori."
           sequence_length: "Numero massimo di token che possono essere elaborati contemporaneamente durante la creazione di integrazioni o la gestione di una query."
           distance_function: "Determina come viene calcolata la similarità tra integrazioni, utilizzando la distanza del coseno (misurando l'angolo tra i vettori) o il prodotto interno negativo (misurando la sovrapposizione dei valori dei vettori)."
         display_name: "Nome"

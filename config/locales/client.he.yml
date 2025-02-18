@@ -271,7 +271,7 @@ he:
           hide_indexing_options: "הסתרת אפשרויות העלאה"
         uploads:
           title: "העלאות"
-          description: "קבצים שמועלים צריכים להיות בתסדיר טקסט פשוט (‎.txt) או Markdown‏ (‎.md)"
+          description_with_images: "טקסט פשוט (‎.txt), markdown‏ (‎.md), PDF‏ (‎.pdf) או תמונה (‎.png,‏ ‎.jpeg)"
           button: "הוספת קבצים"
           filter: "סינון העלאות"
           indexed: "סודר במפתח"
