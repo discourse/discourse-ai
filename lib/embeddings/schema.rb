@@ -263,6 +263,8 @@ module DiscourseAi
 
       def hnsw_search_workaround(limit)
         return "", "" if limit > DEFAULT_HNSW_EF_SEARCH
+        return "SET LOCAL hnsw.ef_search = #{limit * 2};", "" if Rails.env.test?
+
         before_query = <<~SQL
           BEGIN;
           SET LOCAL hnsw.ef_search = #{limit * 2};
