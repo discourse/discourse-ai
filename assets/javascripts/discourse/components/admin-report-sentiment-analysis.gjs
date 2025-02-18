@@ -10,7 +10,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
-import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughtnut-chart";
+import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @tracked selectedChart = null;
