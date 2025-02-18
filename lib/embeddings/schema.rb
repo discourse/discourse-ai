@@ -15,6 +15,8 @@ module DiscourseAi
       EMBEDDING_TARGETS = %w[topics posts document_fragments]
       EMBEDDING_TABLES = [TOPICS_TABLE, POSTS_TABLE, RAG_DOCS_TABLE]
 
+      DEFAULT_HNSW_EF_SEARCH = 40
+
       MissingEmbeddingError = Class.new(StandardError)
 
       class << self
@@ -132,7 +134,9 @@ module DiscourseAi
       end
 
       def asymmetric_similarity_search(embedding, limit:, offset:)
+        before_query, after_query = hnsw_search_workaround(limit)
         builder = DB.build(<<~SQL)
+          #{before_query}
           WITH candidates AS (
             SELECT
               #{target_column},
@@ -153,7 +157,8 @@ module DiscourseAi
           ORDER BY
             embeddings::halfvec(#{dimensions}) #{pg_function} '[:query_embedding]'::halfvec(#{dimensions})
           LIMIT :limit
-          OFFSET :offset
+          OFFSET :offset;
+          #{after_query}
         SQL
 
         builder.where(
@@ -163,13 +168,6 @@ module DiscourseAi
         )
 
         yield(builder) if block_given?
-
-        if table == RAG_DOCS_TABLE
-          # A too low limit exacerbates the the recall loss of binary quantization
-          candidates_limit = [limit * 2, 100].max
-        else
-          candidates_limit = limit * 2
-        end
 
         builder.query(
           query_embedding: embedding,
@@ -183,7 +181,10 @@ module DiscourseAi
       end
 
       def symmetric_similarity_search(record)
+        limit = 200
+        before_query, after_query = hnsw_search_workaround(limit)
         builder = DB.build(<<~SQL)
+          #{before_query}
           WITH le_target AS (
             SELECT
               embeddings
@@ -210,7 +211,7 @@ module DiscourseAi
                   le_target
                 LIMIT 1
               )
-            LIMIT 200
+            LIMIT #{limit}
           ) AS widenet
           ORDER BY
             embeddings::halfvec(#{dimensions}) #{pg_function} (
@@ -220,7 +221,8 @@ module DiscourseAi
                 le_target
               LIMIT 1
             )
-          LIMIT 100;
+          LIMIT #{limit / 2};
+          #{after_query}
         SQL
 
         builder.where("model_id = :vid AND strategy_id = :vsid")
@@ -258,6 +260,18 @@ module DiscourseAi
       end
 
       private
+
+      def hnsw_search_workaround(limit)
+        return "", "" if limit > DEFAULT_HNSW_EF_SEARCH
+        before_query = <<~SQL
+          BEGIN;
+          SET LOCAL hnsw.ef_search = #{limit * 2};
+        SQL
+        after_query = <<~SQL
+          COMMIT;
+        SQL
+        [before_query, after_query]
+      end
 
       delegate :dimensions, :pg_function, to: :vector_def
     end

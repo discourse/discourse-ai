@@ -5,13 +5,15 @@ module DiscourseAi
       def initialize(input, user)
         @user = user
         @text = input[:text]
+        @vector = DiscourseAi::Embeddings::Vector.instance
+        @schema = DiscourseAi::Embeddings::Schema.for(Topic)
       end
 
       def categories
         return [] if @text.blank?
         return [] if !DiscourseAi::Embeddings.enabled?
 
-        candidates = nearest_neighbors(limit: 100)
+        candidates = nearest_neighbors
         return [] if candidates.empty?
 
         candidate_ids = candidates.map(&:first)
@@ -40,6 +42,9 @@ module DiscourseAi
             }
           end
           .map do |c|
+            # Note: <#> returns the negative inner product since Postgres only supports ASC order index scans on operators
+            c[:score] = (c[:score] + 1).abs if @vector.vdef.pg_function = "<#>"
+
             c[:score] = 1 / (c[:score] + 1) # inverse of the distance
             c
           end
@@ -72,6 +77,9 @@ module DiscourseAi
           .with_index { |tag_list, index| { tags: tag_list, score: candidates[index].last } }
           .flat_map { |c| c[:tags].map { |t| { name: t, score: c[:score] } } }
           .map do |c|
+            # Note: <#> returns the negative inner product since Postgres only supports ASC order index scans on operators
+            c[:score] = (c[:score] + 1).abs if @vector.vdef.pg_function = "<#>"
+
             c[:score] = 1 / (c[:score] + 1) # inverse of the distance
             c
           end
@@ -91,11 +99,8 @@ module DiscourseAi
 
       private
 
-      def nearest_neighbors(limit: 100)
-        vector = DiscourseAi::Embeddings::Vector.instance
-        schema = DiscourseAi::Embeddings::Schema.for(Topic)
-
-        raw_vector = vector.vector_from(@text)
+      def nearest_neighbors(limit: 50)
+        raw_vector = @vector.vector_from(@text)
 
         muted_category_ids = nil
         if @user.present?
@@ -106,7 +111,7 @@ module DiscourseAi
             ).pluck(:category_id)
         end
 
-        schema
+        @schema
           .asymmetric_similarity_search(raw_vector, limit: limit, offset: 0) do |builder|
             builder.join("topics t on t.id = topic_id")
             unless muted_category_ids.empty?
