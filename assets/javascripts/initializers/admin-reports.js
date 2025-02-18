@@ -1,6 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import AdminReportEmotion from "discourse/plugins/discourse-ai/discourse/components/admin-report-emotion";
-import AdminReportSentimentAnalysis from "../discourse/components/admin-report-sentiment-analysis";
 
 export default {
   name: "discourse-ai-admin-reports",
@@ -11,7 +10,13 @@ export default {
       return;
     }
 
-    withPluginApi("2.0.1", (api) => {
+    // We need to import dynamically with CommonJS require because
+    // using ESM import would cause the component to be imported globally
+    // and cause errors for non-admin users since the component is only available to admins
+    const AdminReportSentimentAnalysis =
+      require("discourse/plugins/discourse-ai/discourse/components/admin-report-sentiment-analysis").default;
+
+    withPluginApi((api) => {
       api.registerReportModeComponent("emotion", AdminReportEmotion);
       api.registerReportModeComponent(
         "sentiment_analysis",
