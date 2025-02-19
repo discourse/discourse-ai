@@ -4,6 +4,19 @@ class AiArtifactVersion < ActiveRecord::Base
   validates :html, length: { maximum: 65_535 }
   validates :css, length: { maximum: 65_535 }
   validates :js, length: { maximum: 65_535 }
+
+  # used when generating test cases
+  def write_to(path)
+    css_path = "#{path}/main.css"
+    html_path = "#{path}/main.html"
+    js_path = "#{path}/main.js"
+    instructions_path = "#{path}/instructions.txt"
+
+    File.write(css_path, css)
+    File.write(html_path, html)
+    File.write(js_path, js)
+    File.write(instructions_path, change_description)
+  end
 end
 
 # == Schema Information

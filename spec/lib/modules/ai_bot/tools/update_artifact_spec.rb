@@ -262,7 +262,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
     [/CSS]
 
     [JavaScript]
-    nothing to do
+    no changes
     [/JavaScript]
 
     LLMs like to say nonsense that we can ignore here as well

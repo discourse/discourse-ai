@@ -26,6 +26,8 @@ module DiscourseAi
           lines = content.split("\n")
           search_lines = search.split("\n")
 
+          ### TODO implement me
+
           # 1. Try exact matching
           match_positions =
             find_matches(lines, search_lines) { |line, search_line| line == search_line }
@@ -38,7 +40,17 @@ module DiscourseAi
               end
           end
 
-          # 3. Try fuzzy matching
+          # 3. Try non-contiguous line based stripped matching
+          if match_positions.empty?
+            if range = non_contiguous_match_range(lines, search_lines)
+              first_match, last_match = range
+              lines.slice!(first_match, last_match - first_match + 1)
+              lines.insert(first_match, *replace.split("\n"))
+              return lines.join("\n")
+            end
+          end
+
+          # 4. Try fuzzy matching
           if match_positions.empty?
             match_positions =
               find_matches(lines, search_lines) do |line, search_line|
@@ -46,7 +58,7 @@ module DiscourseAi
               end
           end
 
-          # 4. Try block matching as last resort
+          # 5. Try block matching as last resort
           if match_positions.empty?
             if block_matches = find_block_matches(content, search)
               return replace_blocks(content, block_matches, replace)
@@ -67,6 +79,27 @@ module DiscourseAi
         end
 
         private
+
+        def non_contiguous_match_range(lines, search_lines)
+          first_idx = nil
+          last_idx = nil
+          search_index = 0
+
+          lines.each_with_index do |line, idx|
+            if search_lines[search_index].strip == "..."
+              search_index += 1
+              break if search_lines[search_index].nil?
+            end
+            if line.strip == search_lines[search_index].strip
+              first_idx ||= idx
+              last_idx = idx
+              search_index += 1
+              return first_idx, last_idx if search_index == search_lines.length
+            end
+          end
+
+          nil
+        end
 
         def find_matches(lines, search_lines)
           matches = []

@@ -3,7 +3,14 @@ module DiscourseAi
   module AiBot
     module ArtifactUpdateStrategies
       class Diff < Base
+        attr_reader :failed_searches
+
         private
+
+        def initialize(**kwargs)
+          super
+          @failed_searches = []
+        end
 
         def build_prompt
           DiscourseAi::Completions::Prompt.new(
@@ -51,15 +58,21 @@ module DiscourseAi
             content = source.public_send(section == :javascript ? :js : section)
             blocks.each do |block|
               begin
-                content =
-                  DiscourseAi::Utils::DiffUtils::SimpleDiff.apply(
-                    content,
-                    block[:search],
-                    block[:replace],
-                  )
+                if !block[:search]
+                  content = block[:replace]
+                else
+                  content =
+                    DiscourseAi::Utils::DiffUtils::SimpleDiff.apply(
+                      content,
+                      block[:search],
+                      block[:replace],
+                    )
+                end
               rescue DiscourseAi::Utils::DiffUtils::SimpleDiff::NoMatchError
+                @failed_searches << { section: section, search: block[:search] }
                 # TODO, we may need to inform caller here, LLM made a mistake which it
                 # should correct
+                puts "Failed to find search: #{block[:search]}"
               end
             end
             updated_content[section == :javascript ? :js : section] = content
@@ -76,7 +89,8 @@ module DiscourseAi
         private
 
         def extract_search_replace_blocks(content)
-          return nil if content.blank?
+          return nil if content.blank? || content.to_s.strip.downcase.match?(/^\(?no changes?\)?$/m)
+          return [{ replace: content }] if !content.match?(/<<+\s*SEARCH/)
 
           blocks = []
           remaining = content
@@ -98,29 +112,35 @@ module DiscourseAi
 
             1. Use EXACTLY this format for changes:
                <<<<<<< SEARCH
-               (exact code to find)
+               (first line of code to replace)
+               (other lines of code to avoid ambiguity)
+               (last line of code to replace)
                =======
                (replacement code)
                >>>>>>> REPLACE
             2. DO NOT modify the markers or add spaces around them
             3. DO NOT add explanations or comments within sections
             4. ONLY include [HTML], [CSS], and [JavaScript] sections if they have changes
-            5. Ensure search text matches EXACTLY - partial matches will fail
-            6. Keep changes minimal and focused
-            7. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
+            5. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
+            6. When specifying a SEARCH block, ALWAYS keep it 8 lines or less, you will be interrupted and a retry will be required if you exceed this limit
+            7. NEVER EVER ask followup questions, ALL changes must be performed in a single response, you are consumed via an API, there is no opportunity for humans in the loop
+            8. When performing a non-contiguous search, ALWAYS use ... to denote the skipped lines
+            9. Be mindful that ... non-contiguous search is not greedy, the following line will only match the first occurrence of the search block
+            10. Never mix a full section replacement with a search/replace block in the same section
+            11. ALWAYS skip sections you to not want to change, do not include them in the response
 
             JavaScript libraries must be sourced from the following CDNs, otherwise CSP will reject it:
             #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}
 
             Reply Format:
             [HTML]
-            (changes or empty if no changes)
+            (changes or empty if no changes or entire HTML)
             [/HTML]
             [CSS]
-            (changes or empty if no changes)
+            (changes or empty if no changes or entire CSS)
             [/CSS]
             [JavaScript]
-            (changes or empty if no changes)
+            (changes or empty if no changes or entire JavaScript)
             [/JavaScript]
 
             Example - Multiple changes in one file:
@@ -152,6 +172,68 @@ module DiscourseAi
             .text { font-size: 16px; }
             >>>>>>> REPLACE
             [/CSS]
+
+            Example - Non contiguous search in CSS (replace most CSS with new CSS)
+
+            Original CSS:
+
+            [CSS]
+            body {
+              color: red;
+            }
+            .button {
+              color: blue;
+            }
+            .alert {
+              background-color: green;
+            }
+            .alert2 {
+              background-color: green;
+            }
+            [/CSS]
+
+            [CSS]
+            <<<<<<< SEARCH
+            body {
+            ...
+              background-color: green;
+            }
+            =======
+            body {
+              color: red;
+            }
+            >>>>>>> REPLACE
+
+            RESULT:
+
+            [CSS]
+            body {
+              color: red;
+            }
+            .alert2 {
+              background-color: green;
+            }
+            [/CSS]
+
+            Example - full HTML replacement:
+
+            [HTML]
+            <div>something old</div>
+            <div>another somethin old</div>
+            [/HTML]
+
+            output:
+
+            [HTML]
+            <div>something new</div>
+            [/HTML]
+
+            result:
+            [HTML]
+            <div>something new</div>
+            [/HTML]
+
+
           PROMPT
         end
 

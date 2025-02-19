@@ -155,9 +155,18 @@ class DiscourseAi::Evals::Runner
 
           if result[:result] == :fail
             puts "Failed 🔴"
-            puts "---- Expected ----\n#{result[:expected_output]}"
-            puts "---- Actual ----\n#{result[:actual_output]}"
+            puts "Error: #{result[:message]}" if result[:message]
+            # this is deliberate, it creates a lot of noise, but sometimes for debugging it's useful
+            #puts "Context: #{result[:context].to_s[0..2000]}" if result[:context]
+            if result[:expected_output] && result[:actual_output]
+              puts "---- Expected ----\n#{result[:expected_output]}"
+              puts "---- Actual ----\n#{result[:actual_output]}"
+            end
             logger.error("Evaluation failed with LLM: #{llm.name}")
+            logger.error("Error: #{result[:message]}") if result[:message]
+            logger.error("Expected: #{result[:expected_output]}") if result[:expected_output]
+            logger.error("Actual: #{result[:actual_output]}") if result[:actual_output]
+            logger.error("Context: #{result[:context]}") if result[:context]
           elsif result[:result] == :pass
             puts "Passed 🟢"
             logger.info("Evaluation passed with LLM: #{llm.name}")
