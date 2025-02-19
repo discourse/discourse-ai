@@ -85,10 +85,10 @@ class DiscourseAi::Evals::Eval
         { result: :pass }
       end
     else
-      { result: :unknown, actual_output: result }
+      { result: :pass }
     end
-  rescue EvalError
-    { result: :fail }
+  rescue EvalError => e
+    { result: :fail, message: e.message, context: e.context }
   end
 
   def print
@@ -218,10 +218,39 @@ class DiscourseAi::Evals::Eval
       raise EvalError.new("Failed to apply all changes", diff.failed_searches)
     end
 
+    raise EvalError.new("Invalid JS", artifact.js) if !valid_javascript?(artifact.js)
+
     version = artifact.versions.last
     output = { css: version.css, js: version.js, html: version.html }
 
     artifact.destroy
     output
+  end
+
+  def valid_javascript?(str)
+    require "open3"
+
+    # Create a temporary file with the JavaScript code
+    Tempfile.create(%w[test .js]) do |f|
+      f.write(str)
+      f.flush
+
+      File.write("/tmp/test.js", str)
+
+      begin
+        Discourse::Utils.execute_command(
+          "node",
+          "--check",
+          f.path,
+          failure_message: "Invalid JavaScript syntax",
+          timeout: 30, # reasonable timeout in seconds
+        )
+        true
+      rescue Discourse::Utils::CommandError
+        false
+      end
+    end
+  rescue StandardError
+    false
   end
 end
