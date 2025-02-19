@@ -29,7 +29,7 @@ discourse_path = File.expand_path(File.join(__dir__, "../../../.."))
 Dir.chdir(discourse_path)
 # rubocop:enable Discourse/NoChdir
 
-require "/home/sam/Source/discourse/config/environment"
+require File.expand_path("../../../../discourse/config/environment", __dir__)
 
 ENV["DISCOURSE_AI_NO_DEBUG"] = "1"
 module DiscourseAi::Evals
