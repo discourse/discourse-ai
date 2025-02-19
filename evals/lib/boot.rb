@@ -24,12 +24,12 @@ if !Dir.exist?(EVAL_PATH)
   end
 end
 
-discourse_path = File.expand_path(File.join(__dir__, "../../../.."))
+discourse_path = ENV["DISCOURSE_PATH"] || File.expand_path(File.join(__dir__, "../../../.."))
 # rubocop:disable Discourse/NoChdir
 Dir.chdir(discourse_path)
 # rubocop:enable Discourse/NoChdir
 
-require "/home/sam/Source/discourse/config/environment"
+require "#{discourse_path}/config/environment"
 
 ENV["DISCOURSE_AI_NO_DEBUG"] = "1"
 module DiscourseAi::Evals
