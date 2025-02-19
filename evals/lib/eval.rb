@@ -218,9 +218,9 @@ class DiscourseAi::Evals::Eval
       raise EvalError.new("Failed to apply all changes", diff.failed_searches)
     end
 
-    raise EvalError.new("Invalid JS", artifact.js) if !valid_javascript?(artifact.js)
-
     version = artifact.versions.last
+    raise EvalError.new("Invalid JS", version.js) if !valid_javascript?(version.js)
+
     output = { css: version.css, js: version.js, html: version.html }
 
     artifact.destroy
