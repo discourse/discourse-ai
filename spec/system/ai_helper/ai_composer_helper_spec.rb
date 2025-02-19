@@ -3,6 +3,7 @@
 RSpec.describe "AI Composer helper", type: :system, js: true do
   fab!(:user) { Fabricate(:admin, refresh_auto_groups: true) }
   fab!(:non_member_group) { Fabricate(:group) }
+  fab!(:embedding_definition)
 
   before do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
@@ -243,7 +244,10 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when suggesting the category with AI category suggester" do
-    before { SiteSetting.ai_embeddings_enabled = true }
+    before do
+      SiteSetting.ai_embeddings_selected_model = embedding_definition.id
+      SiteSetting.ai_embeddings_enabled = true
+    end
 
     it "updates the category with the suggested category" do
       response =
@@ -274,7 +278,10 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when suggesting the tags with AI tag suggester" do
-    before { SiteSetting.ai_embeddings_enabled = true }
+    before do
+      SiteSetting.ai_embeddings_selected_model = embedding_definition.id
+      SiteSetting.ai_embeddings_enabled = true
+    end
 
     it "updates the tag with the suggested tag" do
       response =
