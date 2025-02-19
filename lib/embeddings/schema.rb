@@ -176,7 +176,7 @@ module DiscourseAi
         end
 
         ActiveRecord::Base.transaction do
-          DB.exec(before_query) unless before_query.blank?
+          DB.exec(before_query) if before_query.present?
           builder.query(
             query_embedding: embedding,
             candidates_limit: candidates_limit,
@@ -238,7 +238,7 @@ module DiscourseAi
         yield(builder) if block_given?
 
         ActiveRecord::Base.transaction do
-          DB.exec(before_query) unless before_query.blank?
+          DB.exec(before_query) if before_query.present?
           builder.query(vid: vector_def.id, vsid: vector_def.strategy_id, target_id: record.id)
         end
       rescue PG::Error => e
