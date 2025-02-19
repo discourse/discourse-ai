@@ -317,13 +317,13 @@ class DiscourseAi::Evals::Eval
 
   def summarization(llm, input:)
     topic =
-      Topic.create!(
+      Topic.new(
         category: Category.last,
         title: "Eval topic for topic summarization",
         id: -99,
         user_id: Discourse.system_user.id,
       )
-    post = Post.create!(topic: topic, id: -99, user_id: Discourse.system_user.id, raw: input)
+    Post.new(topic: topic, id: -99, user_id: Discourse.system_user.id, raw: input)
 
     strategy =
       DiscourseAi::Summarization::FoldContent.new(
@@ -332,11 +332,6 @@ class DiscourseAi::Evals::Eval
       )
 
     summary = DiscourseAi::TopicSummarization.new(strategy, Discourse.system_user).summarize
-    summarized_text = summary.summarized_text
-
-    topic.destroy
-    post.destroy
-
-    summarized_text
+    summary.summarized_text
   end
 end
