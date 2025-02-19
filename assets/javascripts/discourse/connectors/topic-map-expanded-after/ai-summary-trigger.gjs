@@ -19,12 +19,14 @@ export default class AiSummaryTrigger extends Component {
 
   <template>
     {{#if @outletArgs.topic.summarizable}}
-      <DButton
-        @label="summary.buttons.generate"
-        @icon="discourse-sparkles"
-        @action={{this.openAiSummaryModal}}
-        class="btn-default ai-summarization-button"
-      />
+      <section class="topic-map__additional-contents toggle-summary">
+        <DButton
+          @label="summary.buttons.generate"
+          @icon="discourse-sparkles"
+          @action={{this.openAiSummaryModal}}
+          class="btn-default ai-summarization-button"
+        />
+      </section>
     {{/if}}
   </template>
 }
