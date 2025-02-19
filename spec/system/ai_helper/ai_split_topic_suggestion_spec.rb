@@ -35,6 +35,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
   fab!(:cloud) { Fabricate(:tag) }
   fab!(:feedback) { Fabricate(:tag) }
   fab!(:review) { Fabricate(:tag) }
+  fab!(:embedding_definition)
 
   before do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
