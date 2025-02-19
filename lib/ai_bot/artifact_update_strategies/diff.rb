@@ -58,12 +58,16 @@ module DiscourseAi
             content = source.public_send(section == :javascript ? :js : section)
             blocks.each do |block|
               begin
-                content =
-                  DiscourseAi::Utils::DiffUtils::SimpleDiff.apply(
-                    content,
-                    block[:search],
-                    block[:replace],
-                  )
+                if !block[:search]
+                  content = block[:replace]
+                else
+                  content =
+                    DiscourseAi::Utils::DiffUtils::SimpleDiff.apply(
+                      content,
+                      block[:search],
+                      block[:replace],
+                    )
+                end
               rescue DiscourseAi::Utils::DiffUtils::SimpleDiff::NoMatchError
                 @failed_searches << { section: section, search: block[:search] }
                 # TODO, we may need to inform caller here, LLM made a mistake which it
@@ -85,7 +89,8 @@ module DiscourseAi
         private
 
         def extract_search_replace_blocks(content)
-          return nil if content.blank?
+          return nil if content.blank? || content.to_s.strip.downcase.match?(/^\(?no changes?\)?$/m)
+          return [{ replace: content }] if !content.match?(/<<+\s*SEARCH/)
 
           blocks = []
           remaining = content
@@ -116,25 +121,26 @@ module DiscourseAi
             2. DO NOT modify the markers or add spaces around them
             3. DO NOT add explanations or comments within sections
             4. ONLY include [HTML], [CSS], and [JavaScript] sections if they have changes
-            5. Keep changes minimal and focused
-            6. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
-            7. When specifying a SEARCH block, ALWAYS keep it 8 lines or less, you will be interrupted and a retry will be required if you exceed this limit
-            8. NEVER EVER ask followup questions, ALL changes must be performed in a single response, you are consumed via an API, there is no opportunity for humans in the loop
-            9. When performing a non-contiguous search, ALWAYS use ... to denote the skipped lines
-            10. Be mindful that ... non-contiguous search is not greedy, the following line will only match the first occurrence of the search block
+            5. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
+            6. When specifying a SEARCH block, ALWAYS keep it 8 lines or less, you will be interrupted and a retry will be required if you exceed this limit
+            7. NEVER EVER ask followup questions, ALL changes must be performed in a single response, you are consumed via an API, there is no opportunity for humans in the loop
+            8. When performing a non-contiguous search, ALWAYS use ... to denote the skipped lines
+            9. Be mindful that ... non-contiguous search is not greedy, the following line will only match the first occurrence of the search block
+            10. Never mix a full section replacement with a search/replace block in the same section
+            11. ALWAYS skip sections you to not want to change, do not include them in the response
 
             JavaScript libraries must be sourced from the following CDNs, otherwise CSP will reject it:
             #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}
 
             Reply Format:
             [HTML]
-            (changes or empty if no changes)
+            (changes or empty if no changes or entire HTML)
             [/HTML]
             [CSS]
-            (changes or empty if no changes)
+            (changes or empty if no changes or entire CSS)
             [/CSS]
             [JavaScript]
-            (changes or empty if no changes)
+            (changes or empty if no changes or entire JavaScript)
             [/JavaScript]
 
             Example - Multiple changes in one file:
@@ -208,6 +214,25 @@ module DiscourseAi
               background-color: green;
             }
             [/CSS]
+
+            Example - full HTML replacement:
+
+            [HTML]
+            <div>something old</div>
+            <div>another somethin old</div>
+            [/HTML]
+
+            output:
+
+            [HTML]
+            <div>something new</div>
+            [/HTML]
+
+            result:
+            [HTML]
+            <div>something new</div>
+            [/HTML]
+
 
           PROMPT
         end
