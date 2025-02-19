@@ -8,6 +8,17 @@ module DiscourseAi
           %w[open_router].include?(model_provider)
         end
 
+        def normalize_model_params(model_params)
+          model_params = model_params.dup
+
+          # max_tokens, temperature are already supported
+          if model_params[:stop_sequences]
+            model_params[:stop] = model_params.delete(:stop_sequences)
+          end
+
+          model_params
+        end
+
         def prepare_request(payload)
           headers = { "Content-Type" => "application/json" }
           api_key = llm_model.api_key
