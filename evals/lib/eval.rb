@@ -331,13 +331,7 @@ class DiscourseAi::Evals::Eval
         DiscourseAi::Summarization::Strategies::TopicSummary.new(topic),
       )
 
-    result = []
-
-    summary =
-      DiscourseAi::TopicSummarization
-        .new(strategy, Discourse.system_user)
-        .summarize { |partial| result << partial }
-
+    summary = DiscourseAi::TopicSummarization.new(strategy, Discourse.system_user).summarize
     summarized_text = summary.summarized_text
 
     topic.destroy
