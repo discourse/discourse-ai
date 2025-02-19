@@ -156,6 +156,8 @@ class DiscourseAi::Evals::Runner
           if result[:result] == :fail
             puts "Failed 🔴"
             puts "Error: #{result[:message]}" if result[:message]
+            # this is deliberate, it creates a lot of noise, but sometimes for debugging it's useful
+            #puts "Context: #{result[:context].to_s[0..2000]}" if result[:context]
             if result[:expected_output] && result[:actual_output]
               puts "---- Expected ----\n#{result[:expected_output]}"
               puts "---- Actual ----\n#{result[:actual_output]}"

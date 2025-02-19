@@ -10,7 +10,8 @@ class DiscourseAi::Evals::Eval
               :vision,
               :expected_output,
               :expected_output_regex,
-              :expected_tool_call
+              :expected_tool_call,
+              :judge
 
   class EvalError < StandardError
     attr_reader :context
@@ -36,6 +37,8 @@ class DiscourseAi::Evals::Eval
       Regexp.new(@expected_output_regex, Regexp::MULTILINE) if @expected_output_regex
     @expected_tool_call = @yaml[:expected_tool_call]
     @expected_tool_call.symbolize_keys! if @expected_tool_call
+    @judge = @yaml[:judge]
+    @judge.symbolize_keys! if @judge
 
     @args.each do |key, value|
       if (key.to_s.include?("_path") || key.to_s == "path") && value.is_a?(String)
@@ -84,6 +87,8 @@ class DiscourseAi::Evals::Eval
       else
         { result: :pass }
       end
+    elsif judge
+      judge_result(result)
     else
       { result: :pass }
     end
@@ -111,14 +116,68 @@ class DiscourseAi::Evals::Eval
 
   private
 
-  def helper(llm, input:, name:)
+  def judge_result(result)
+    prompt = judge[:prompt].dup
+    prompt.sub!("{{output}}", result)
+    prompt.sub!("{{input}}", args[:input])
+
+    prompt += <<~SUFFIX
+
+      Reply with a rating from 1 to 10, where 10 is perfect and 1 is terrible.
+
+      example output:
+
+      [RATING]10[/RATING] perfect output
+
+      example output:
+
+      [RATING]5[/RATING]
+
+      the following failed to preserve... etc...
+    SUFFIX
+
+    judge_llm = DiscourseAi::Evals::Llm.choose(judge[:llm]).first
+
+    DiscourseAi::Completions::Prompt.new(
+      "You are an expert judge tasked at testing LLM outputs.",
+      messages: [{ type: :user, content: prompt }],
+    )
+
+    result = judge_llm.llm_model.to_llm.generate(prompt, user: Discourse.system_user)
+
+    if rating = result.match(%r{\[RATING\](\d+)\[/RATING\]})
+      rating = rating[1].to_i
+    end
+
+    if rating.to_i >= judge[:pass_rating]
+      { result: :pass }
+    else
+      {
+        result: :fail,
+        message: "LLM Rating below threshold, it was #{rating}, expecting #{judge[:pass_rating]}",
+        context: result,
+      }
+    end
+  end
+
+  def helper(llm, input:, name:, locale: nil)
     completion_prompt = CompletionPrompt.find_by(name: name)
     helper = DiscourseAi::AiHelper::Assistant.new(helper_llm: llm.llm_proxy)
+    user = Discourse.system_user
+    if locale
+      user = User.new
+      class << user
+        attr_accessor :effective_locale
+      end
+
+      user.effective_locale = locale
+      user.admin = true
+    end
     result =
       helper.generate_and_send_prompt(
         completion_prompt,
         input,
-        current_user = Discourse.system_user,
+        current_user = user,
         _force_default_locale = false,
       )
 
