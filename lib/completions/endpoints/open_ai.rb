@@ -11,7 +11,11 @@ module DiscourseAi
         def normalize_model_params(model_params)
           model_params = model_params.dup
 
-          # max_tokens, temperature are already supported
+          # max_tokens is deprecated and is not functional on reasoning models
+          max_tokens = model_params.delete(:max_tokens)
+          model_params[:max_completion_tokens] = max_tokens if max_tokens
+
+          # temperature is already supported
           if model_params[:stop_sequences]
             model_params[:stop] = model_params.delete(:stop_sequences)
           end

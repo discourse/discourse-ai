@@ -171,6 +171,40 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
   end
 
+  describe "max tokens for reasoning models" do
+    it "uses max_completion_tokens for reasoning models" do
+      model.update!(name: "o3-mini")
+      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [type: :user, content: "hello"],
+        )
+
+      response_text = <<~RESPONSE
+        data: {"id":"chatcmpl-B2VwlY6KzSDtHvg8pN1VAfRhhLFgn","object":"chat.completion.chunk","created":1739939159,"model":"o3-mini-2025-01-31","service_tier":"default","system_fingerprint":"fp_ef58bd3122","choices":[{"index":0,"delta":{"role":"assistant","content":"","refusal":null},"finish_reason":null}],"usage":null}
+
+        data: {"id":"chatcmpl-B2VwlY6KzSDtHvg8pN1VAfRhhLFgn","object":"chat.completion.chunk","created":1739939159,"model":"o3-mini-2025-01-31","service_tier":"default","system_fingerprint":"fp_ef58bd3122","choices":[{"index":0,"delta":{"content":"hello"},"finish_reason":null}],"usage":null}
+
+        data: {"id":"chatcmpl-B2VwlY6KzSDtHvg8pN1VAfRhhLFgn","object":"chat.completion.chunk","created":1739939159,"model":"o3-mini-2025-01-31","service_tier":"default","system_fingerprint":"fp_ef58bd3122","choices":[{"index":0,"delta":{},"finish_reason":"stop"}],"usage":null}
+
+        data: {"id":"chatcmpl-B2VwlY6KzSDtHvg8pN1VAfRhhLFgn","object":"chat.completion.chunk","created":1739939159,"model":"o3-mini-2025-01-31","service_tier":"default","system_fingerprint":"fp_ef58bd3122","choices":[],"usage":{"prompt_tokens":22,"completion_tokens":203,"total_tokens":225,"prompt_tokens_details":{"cached_tokens":0,"audio_tokens":0},"completion_tokens_details":{"reasoning_tokens":192,"audio_tokens":0,"accepted_prediction_tokens":0,"rejected_prediction_tokens":0}}}
+
+        data: [DONE]
+      RESPONSE
+
+      body_parsed = nil
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
+        body: ->(body) { body_parsed = JSON.parse(body) },
+      ).to_return(body: response_text)
+      result = +""
+      llm.generate(prompt, user: user, max_tokens: 1000) { |chunk| result << chunk }
+
+      expect(result).to eq("hello")
+      expect(body_parsed["max_completion_tokens"]).to eq(1000)
+    end
+  end
+
   describe "repeat calls" do
     it "can properly reset context" do
       llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
