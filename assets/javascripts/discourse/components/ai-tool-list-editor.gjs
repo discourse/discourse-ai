@@ -2,9 +2,12 @@ import Component from "@glimmer/component";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
+import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
+import DropdownMenu from "discourse/components/dropdown-menu";
 import { i18n } from "discourse-i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
+import DMenu from "float-kit/components/d-menu";
 
 export default class AiToolListEditor extends Component {
   @service adminPluginNavManager;
@@ -20,13 +23,26 @@ export default class AiToolListEditor extends Component {
         @learnMoreUrl="https://meta.discourse.org/t/ai-bot-custom-tools/314103"
         @descriptionLabel={{i18n "discourse_ai.tools.subheader_description"}}
       >
-        <:actions as |actions|>
-          <actions.Primary
-            @label="discourse_ai.tools.new"
-            @route="adminPlugins.show.discourse-ai-tools.new"
+        <:actions>
+          <DMenu
+            @triggerClass="btn-primary btn-small"
+            @label={{i18n "discourse_ai.tools.new"}}
             @icon="plus"
-            class="ai-tool-list-editor__new-button"
-          />
+          >
+            <:content>
+              {{! TODO add action to dropdown button that prefills editor }}
+              <DropdownMenu as |dropdown|>
+                {{#each @tools.resultSetMeta.presets as |preset|}}
+                  <dropdown.item>
+                    <DButton
+                      @translatedLabel={{preset.preset_name}}
+                      class="btn-transparent"
+                    />
+                  </dropdown.item>
+                {{/each}}
+              </DropdownMenu>
+            </:content>
+          </DMenu>
         </:actions>
       </DPageSubheader>
 
