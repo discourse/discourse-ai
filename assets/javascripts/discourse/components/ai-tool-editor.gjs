@@ -13,7 +13,6 @@ import DTooltip from "discourse/components/d-tooltip";
 import withEventValue from "discourse/helpers/with-event-value";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
-import ComboBox from "select-kit/components/combo-box";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
 import RagOptions from "./rag-options";
@@ -33,34 +32,26 @@ export default class AiToolEditor extends Component {
   @tracked isSaving = false;
   @tracked editingModel = null;
   @tracked showDelete = false;
-  @tracked selectedPreset = null;
 
-  get presets() {
-    return this.args.presets.map((preset) => {
-      return {
-        name: preset.preset_name,
-        id: preset.preset_id,
-      };
-    });
-  }
+  get selectedPreset() {
+    if (!this.args.selectedPreset) {
+      return null;
+    }
 
-  get showPresets() {
-    return !this.selectedPreset && this.args.model.isNew;
+    return this.args.presets.findBy("preset_id", this.args.selectedPreset);
   }
 
   @action
   updateModel() {
-    this.editingModel = this.args.model.workingCopy();
-    this.showDelete = !this.args.model.isNew;
-  }
-
-  @action
-  configurePreset() {
-    this.selectedPreset = this.args.presets.findBy("preset_id", this.presetId);
-    this.editingModel = this.store
-      .createRecord("ai-tool", this.selectedPreset)
-      .workingCopy();
-    this.showDelete = false;
+    if (this.args.model.isNew) {
+      this.editingModel = this.store
+        .createRecord("ai-tool", this.selectedPreset)
+        .workingCopy();
+      this.showDelete = false;
+    } else {
+      this.editingModel = this.args.model.workingCopy();
+      this.showDelete = !this.args.model.isNew;
+    }
   }
 
   @action
@@ -148,138 +139,116 @@ export default class AiToolEditor extends Component {
       {{didUpdate this.updateModel @model.id}}
       class="form-horizontal ai-tool-editor"
     >
-      {{#if this.showPresets}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.tools.presets"}}</label>
-          <ComboBox
-            @value={{this.presetId}}
-            @content={{this.presets}}
-            class="ai-tool-editor__presets"
-          />
-        </div>
+      <div class="control-group">
+        <label>{{i18n "discourse_ai.tools.name"}}</label>
+        <input
+          {{on "input" (withEventValue (fn (mut this.editingModel.name)))}}
+          value={{this.editingModel.name}}
+          type="text"
+          class="ai-tool-editor__name"
+        />
+        <DTooltip
+          @icon="circle-question"
+          @content={{i18n "discourse_ai.tools.name_help"}}
+        />
+      </div>
 
-        <div class="control-group ai-llm-editor__action_panel">
-          <DButton
-            @action={{this.configurePreset}}
-            @label="discourse_ai.tools.next.title"
-            class="ai-tool-editor__next"
-          />
-        </div>
-      {{else}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.tools.name"}}</label>
-          <input
-            {{on "input" (withEventValue (fn (mut this.editingModel.name)))}}
-            value={{this.editingModel.name}}
-            type="text"
-            class="ai-tool-editor__name"
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.tools.name_help"}}
-          />
-        </div>
+      <div class="control-group">
+        <label>{{i18n "discourse_ai.tools.tool_name"}}</label>
+        <input
+          {{on "input" (withEventValue (fn (mut this.editingModel.tool_name)))}}
+          value={{this.editingModel.tool_name}}
+          type="text"
+          class="ai-tool-editor__tool_name"
+        />
+        <DTooltip
+          @icon="circle-question"
+          @content={{i18n "discourse_ai.tools.tool_name_help"}}
+        />
+      </div>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.tools.tool_name"}}</label>
-          <input
-            {{on
-              "input"
-              (withEventValue (fn (mut this.editingModel.tool_name)))
-            }}
-            value={{this.editingModel.tool_name}}
-            type="text"
-            class="ai-tool-editor__tool_name"
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.tools.tool_name_help"}}
-          />
-        </div>
+      <div class="control-group">
+        <label>{{i18n "discourse_ai.tools.description"}}</label>
+        <textarea
+          {{on
+            "input"
+            (withEventValue (fn (mut this.editingModel.description)))
+          }}
+          placeholder={{i18n "discourse_ai.tools.description_help"}}
+          class="ai-tool-editor__description input-xxlarge"
+        >{{this.editingModel.description}}</textarea>
+      </div>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.tools.description"}}</label>
-          <textarea
-            {{on
-              "input"
-              (withEventValue (fn (mut this.editingModel.description)))
-            }}
-            placeholder={{i18n "discourse_ai.tools.description_help"}}
-            class="ai-tool-editor__description input-xxlarge"
-          >{{this.editingModel.description}}</textarea>
-        </div>
+      <div class="control-group">
+        <label>{{i18n "discourse_ai.tools.summary"}}</label>
+        <input
+          {{on "input" (withEventValue (fn (mut this.editingModel.summary)))}}
+          value={{this.editingModel.summary}}
+          type="text"
+          class="ai-tool-editor__summary input-xxlarge"
+        />
+        <DTooltip
+          @icon="circle-question"
+          @content={{i18n "discourse_ai.tools.summary_help"}}
+        />
+      </div>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.tools.summary"}}</label>
-          <input
-            {{on "input" (withEventValue (fn (mut this.editingModel.summary)))}}
-            value={{this.editingModel.summary}}
-            type="text"
-            class="ai-tool-editor__summary input-xxlarge"
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.tools.summary_help"}}
-          />
-        </div>
+      <div class="control-group">
+        <label>{{i18n "discourse_ai.tools.parameters"}}</label>
+        <AiToolParameterEditor @parameters={{this.editingModel.parameters}} />
+      </div>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.tools.parameters"}}</label>
-          <AiToolParameterEditor @parameters={{this.editingModel.parameters}} />
-        </div>
+      <div class="control-group">
+        <label>{{i18n "discourse_ai.tools.script"}}</label>
+        <AceEditor
+          @content={{this.editingModel.script}}
+          @onChange={{fn (mut this.editingModel.script)}}
+          @mode={{ACE_EDITOR_MODE}}
+          @theme={{ACE_EDITOR_THEME}}
+          @editorId="ai-tool-script-editor"
+        />
+      </div>
 
+      {{#if this.siteSettings.ai_embeddings_enabled}}
         <div class="control-group">
-          <label>{{i18n "discourse_ai.tools.script"}}</label>
-          <AceEditor
-            @content={{this.editingModel.script}}
-            @onChange={{fn (mut this.editingModel.script)}}
-            @mode={{ACE_EDITOR_MODE}}
-            @theme={{ACE_EDITOR_THEME}}
-            @editorId="ai-tool-script-editor"
-          />
-        </div>
-
-        {{#if this.siteSettings.ai_embeddings_enabled}}
-          <div class="control-group">
-            <RagUploader
-              @target={{this.editingModel}}
-              @updateUploads={{this.updateUploads}}
-              @onRemove={{this.removeUpload}}
-              @allowImages={{@settings.rag_images_enabled}}
-            />
-          </div>
-          <RagOptions
-            @model={{this.editingModel}}
-            @llms={{@llms}}
+          <RagUploader
+            @target={{this.editingModel}}
+            @updateUploads={{this.updateUploads}}
+            @onRemove={{this.removeUpload}}
             @allowImages={{@settings.rag_images_enabled}}
           />
-        {{/if}}
-
-        <div class="control-group ai-tool-editor__action_panel">
-          {{#unless @model.isNew}}
-            <DButton
-              @action={{this.openTestModal}}
-              @label="discourse_ai.tools.test"
-              class="ai-tool-editor__test-button"
-            />
-          {{/unless}}
-
-          <DButton
-            @action={{this.save}}
-            @label="discourse_ai.tools.save"
-            @disabled={{this.isSaving}}
-            class="btn-primary ai-tool-editor__save"
-          />
-
-          {{#if this.showDelete}}
-            <DButton
-              @action={{this.delete}}
-              @label="discourse_ai.tools.delete"
-              class="btn-danger ai-tool-editor__delete"
-            />
-          {{/if}}
         </div>
+        <RagOptions
+          @model={{this.editingModel}}
+          @llms={{@llms}}
+          @allowImages={{@settings.rag_images_enabled}}
+        />
       {{/if}}
+
+      <div class="control-group ai-tool-editor__action_panel">
+        {{#unless @model.isNew}}
+          <DButton
+            @action={{this.openTestModal}}
+            @label="discourse_ai.tools.test"
+            class="ai-tool-editor__test-button"
+          />
+        {{/unless}}
+
+        <DButton
+          @action={{this.save}}
+          @label="discourse_ai.tools.save"
+          @disabled={{this.isSaving}}
+          class="btn-primary ai-tool-editor__save"
+        />
+
+        {{#if this.showDelete}}
+          <DButton
+            @action={{this.delete}}
+            @label="discourse_ai.tools.delete"
+            class="btn-danger ai-tool-editor__delete"
+          />
+        {{/if}}
+      </div>
     </form>
   </template>
 }

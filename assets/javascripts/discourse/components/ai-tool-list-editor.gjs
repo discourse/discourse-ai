@@ -1,6 +1,9 @@
 import Component from "@glimmer/component";
+import { array, fn } from "@ember/helper";
+import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
+import { eq } from "truth-helpers";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
@@ -11,6 +14,23 @@ import DMenu from "float-kit/components/d-menu";
 
 export default class AiToolListEditor extends Component {
   @service adminPluginNavManager;
+  @service router;
+
+  get lastIndexOfPresets() {
+    return this.args.tools.resultSetMeta.presets.length - 1;
+  }
+
+  @action
+  routeToNewTool(preset) {
+    return this.router.transitionTo(
+      "adminPlugins.show.discourse-ai-tools.new",
+      {
+        queryParams: {
+          presetId: preset.preset_id,
+        },
+      }
+    );
+  }
 
   <template>
     <DBreadcrumbsItem
@@ -28,19 +48,25 @@ export default class AiToolListEditor extends Component {
             @triggerClass="btn-primary btn-small"
             @label={{i18n "discourse_ai.tools.new"}}
             @icon="plus"
+            @placement="bottom-end"
           >
             <:content>
-              {{! TODO add action to dropdown button that prefills editor }}
               <DropdownMenu as |dropdown|>
-                {{#each @tools.resultSetMeta.presets as |preset|}}
+                {{#each @tools.resultSetMeta.presets as |preset index|}}
+                  {{#if (eq index this.lastIndexOfPresets)}}
+                    <dropdown.divider />
+                  {{/if}}
+
                   <dropdown.item>
                     <DButton
                       @translatedLabel={{preset.preset_name}}
+                      @action={{fn this.routeToNewTool preset}}
                       class="btn-transparent"
                     />
                   </dropdown.item>
                 {{/each}}
               </DropdownMenu>
+
             </:content>
           </DMenu>
         </:actions>
