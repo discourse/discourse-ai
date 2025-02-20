@@ -60,6 +60,8 @@ class DiscourseAi::Evals::Eval
         prompt_call(llm, **args)
       when "edit_artifact"
         edit_artifact(llm, **args)
+      when "summarization"
+        summarization(llm, **args)
       end
 
     if expected_output
@@ -311,5 +313,25 @@ class DiscourseAi::Evals::Eval
     end
   rescue StandardError
     false
+  end
+
+  def summarization(llm, input:)
+    topic =
+      Topic.new(
+        category: Category.last,
+        title: "Eval topic for topic summarization",
+        id: -99,
+        user_id: Discourse.system_user.id,
+      )
+    Post.new(topic: topic, id: -99, user_id: Discourse.system_user.id, raw: input)
+
+    strategy =
+      DiscourseAi::Summarization::FoldContent.new(
+        llm.llm_proxy,
+        DiscourseAi::Summarization::Strategies::TopicSummary.new(topic),
+      )
+
+    summary = DiscourseAi::TopicSummarization.new(strategy, Discourse.system_user).summarize
+    summary.summarized_text
   end
 end
