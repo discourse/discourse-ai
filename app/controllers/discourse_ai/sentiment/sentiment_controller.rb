@@ -5,18 +5,15 @@ module DiscourseAi
     class SentimentController < ::Admin::StaffController
       include Constants
       requires_plugin ::DiscourseAi::PLUGIN_NAME
-      requires_login
 
       def posts
-        group_by = params[:group_by]&.to_sym
-        group_value = params[:group_value].presence
+        group_by = params.required(:group_by)&.to_sym
+        group_value = params.required(:group_value).presence
         start_date = params[:start_date].presence
         end_date = params[:end_date]
         threshold = SENTIMENT_THRESHOLD
 
-        if %i[category tag].exclude?(group_by) || group_value.blank?
-          raise Discourse::InvalidParameters
-        end
+        raise Discourse::InvalidParameters if %i[category tag].exclude?(group_by)
 
         case group_by
         when :category
@@ -26,8 +23,6 @@ module DiscourseAi
           grouping_clause = "tags.name"
           grouping_join =
             "INNER JOIN topic_tags tt ON tt.topic_id = p.topic_id INNER JOIN tags ON tags.id = tt.tag_id"
-        else
-          raise Discourse::InvalidParameters
         end
 
         posts =
@@ -59,6 +54,7 @@ module DiscourseAi
             p.user_id > 0 AND
             cr.model_used = 'cardiffnlp/twitter-roberta-base-sentiment-latest' AND
             ((:start_date IS NULL OR p.created_at > :start_date) AND (:end_date IS NULL OR p.created_at < :end_date))
+            AND p.deleted_at IS NULL
           ORDER BY p.created_at DESC
         SQL
             group_value: group_value,
