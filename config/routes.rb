@@ -24,6 +24,8 @@ DiscourseAi::Engine.routes.draw do
     get "post/:post_id/show-debug-info" => "bot#show_debug_info"
     get "show-debug-info/:id" => "bot#show_debug_info_by_id"
     post "post/:post_id/stop-streaming" => "bot#stop_streaming_response"
+
+    get "discover" => "bot#discover"
   end
 
   scope module: :ai_bot, path: "/ai-bot/shared-ai-conversations" do

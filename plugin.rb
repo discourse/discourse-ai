@@ -25,6 +25,7 @@ gem "pdf-reader", "2.14.1", require: false
 enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/common/streaming.scss"
+register_asset "stylesheets/common/ai-blinking-animation.scss"
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 register_asset "stylesheets/modules/ai-helper/desktop/ai-helper-fk-modals.scss", :desktop
@@ -37,6 +38,7 @@ register_asset "stylesheets/modules/summarization/common/ai-gists.scss"
 
 register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
+register_asset "stylesheets/modules/ai-bot/common/ai-discobot-discoveries.scss"
 register_asset "stylesheets/modules/ai-bot/mobile/ai-persona.scss", :mobile
 
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
@@ -119,4 +121,16 @@ after_initialize do
       nil
     end
   end
+
+  plugin_icons = %w[
+    spell-check
+    language
+    images
+    far-copy
+    robot
+    info
+    bars-staggered
+    far-circle-question
+  ]
+  plugin_icons.each { |icon| register_svg_icon(icon) }
 end

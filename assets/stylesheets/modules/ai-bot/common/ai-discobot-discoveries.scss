@@ -1,0 +1,33 @@
+.ai-search-discoveries {
+  &__regular-results-title {
+    margin-bottom: 0;
+  }
+
+  &__completion {
+    margin: 1em 0;
+  }
+
+  &__discovery-preview {
+    @include ellipsis;
+    max-height: 300px;
+  }
+
+  &__discoveries-title,
+  &__regular-results-title {
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid var(--primary-low);
+  }
+
+  &__toggle {
+    padding-left: 0;
+    margin-bottom: 0.5em;
+  }
+}
+
+.ai-discobot-discoveries {
+  padding: 0.5em;
+}
+
+.full-page-discoveries {
+  padding: 1em 10%;
+}
