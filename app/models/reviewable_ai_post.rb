@@ -230,6 +230,7 @@ end
 #  force_review            :boolean          default(FALSE), not null
 #  reject_reason           :text
 #  potentially_illegal     :boolean          default(FALSE)
+#  type_source             :string           default("unknown"), not null
 #
 # Indexes
 #
