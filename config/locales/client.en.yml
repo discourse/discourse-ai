@@ -680,8 +680,8 @@ en:
         collapse: "Collapse"
         timed_out: "Discobot couldn't find any discoveries. Something went wrong."
         tooltip:
-          title: "AI powered search"
-          body: "Natural language search powered by %{model}"
+          header: "AI powered search"
+          content: "Natural language search powered by %{model}"
     review:
       types:
         reviewable_ai_post:

@@ -18,9 +18,25 @@
     border-bottom: 1px solid var(--primary-low);
   }
 
+  &__discoveries-title {
+    display: flex;
+    justify-content: space-between;
+  }
+
   &__toggle {
     padding-left: 0;
     margin-bottom: 0.5em;
+  }
+}
+
+.ai-search-discoveries-tooltip {
+  &__header {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+  }
+
+  .fk-d-tooltip__trigger {
+    vertical-align: middle;
   }
 }
 
