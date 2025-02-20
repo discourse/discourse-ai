@@ -104,6 +104,9 @@ en:
       flagged_by_nsfw: The AI plugin flagged this after classifying at least one of the attached images as NSFW.
 
   reports:
+    sentiment_analysis:
+      title: "Sentiment analysis"
+      description: "This report provides sentiment analysis for posts, grouped by category, with positive, negative, and neutral scores for each post and category."
     overall_sentiment:
       title: "Overall sentiment"
       description: 'The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Personal messages (PMs) are also excluded. Classified with "cardiffnlp/twitter-roberta-base-sentiment-latest"'
@@ -431,6 +434,10 @@ en:
           anger: "Anger 😡"
           joy: "Joy 😀"
           disgust: "Disgust 🤢"
+        sentiment_analysis:
+          positive: "Positive"
+          negative: "Negative"
+          neutral: "Neutral"
 
     llm:
       configuration:

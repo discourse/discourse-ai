@@ -15,6 +15,15 @@ en:
         emotion:
           title: "Emotion"
           description: "The table lists a count of posts classified with a determined emotion. Classified with the model 'SamLowe/roberta-base-go_emotions'."
+        reports:
+          filters:
+            group_by:
+              label: "Group by"
+            sort_by:
+              label: "Sort by"
+            tag:
+              label: "Tag"
+
   js:
     discourse_automation:
       scriptables:
@@ -641,6 +650,11 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+        sentiment_analysis:
+          score_types:
+            positive: "Positive"
+            neutral: "Neutral"
+            negative: "Negative"
 
       summarization:
         chat:
