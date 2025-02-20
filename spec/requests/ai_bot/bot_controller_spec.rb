@@ -122,4 +122,50 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       expect(response.parsed_body["bot_username"]).to eq(expected_username)
     end
   end
+
+  describe "#discover" do
+    before { SiteSetting.ai_bot_enabled = true }
+
+    fab!(:group)
+    fab!(:ai_persona) { Fabricate(:ai_persona, allowed_group_ids: [group.id], default_llm_id: 1) }
+
+    context "when no persona is selected" do
+      it "returns a 403" do
+        get "/discourse-ai/ai-bot/discover", params: { query: "What is Discourse?" }
+
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context "when the user doesn't have access to the persona" do
+      before { SiteSetting.ai_bot_discover_persona = ai_persona.id }
+
+      it "returns a 403" do
+        get "/discourse-ai/ai-bot/discover", params: { query: "What is Discourse?" }
+
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context "when the user is allowed to use discover" do
+      before do
+        SiteSetting.ai_bot_discover_persona = ai_persona.id
+        group.add(user)
+      end
+
+      it "returns a 200 and queues a job to reply" do
+        expect {
+          get "/discourse-ai/ai-bot/discover", params: { query: "What is Discourse?" }
+        }.to change(Jobs::StreamDiscoverReply.jobs, :size).by(1)
+
+        expect(response.status).to eq(200)
+      end
+
+      it "retues a 400 if the query is missing" do
+        get "/discourse-ai/ai-bot/discover"
+
+        expect(response.status).to eq(400)
+      end
+    end
+  end
 end

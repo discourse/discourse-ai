@@ -311,6 +311,12 @@ discourse_ai:
     hidden: true
     type: list
     list_type: compact
+  ai_bot_discover_persona:
+    default: ""
+    type: enum
+    hidden: true
+    client: true
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
   ai_automation_max_triage_per_minute:
     default: 60
     hidden: true

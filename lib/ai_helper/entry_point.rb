@@ -7,9 +7,6 @@ module DiscourseAi
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_helper"),
         )
 
-        additional_icons = %w[spell-check language images far-copy]
-        additional_icons.each { |icon| plugin.register_svg_icon(icon) }
-
         plugin.add_to_serializer(:current_user, :can_use_assistant) do
           scope.user.in_any_groups?(SiteSetting.composer_ai_helper_allowed_groups_map)
         end

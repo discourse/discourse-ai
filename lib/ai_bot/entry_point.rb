@@ -166,8 +166,19 @@ module DiscourseAi
           scope.user.in_any_groups?(SiteSetting.ai_bot_public_sharing_allowed_groups_map)
         end
 
-        plugin.register_svg_icon("robot")
-        plugin.register_svg_icon("info")
+        plugin.add_to_serializer(
+          :current_user,
+          :can_use_ai_bot_discover_persona,
+          include_condition: -> do
+            SiteSetting.ai_bot_enabled && scope.authenticated? &&
+              SiteSetting.ai_bot_discover_persona.present?
+          end,
+        ) do
+          persona_allowed_groups =
+            AiPersona.find_by(id: SiteSetting.ai_bot_discover_persona)&.allowed_group_ids.to_a
+
+          scope.user.in_any_groups?(persona_allowed_groups)
+        end
 
         plugin.add_to_serializer(
           :topic_view,

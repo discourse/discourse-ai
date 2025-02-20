@@ -658,6 +658,16 @@ en:
             compact: "Compact"
             expanded: "Expanded"
             expanded_description: "with AI summaries"
+
+      discobot_discoveries:
+        main_title: "Discobot discoveries"
+        regular_results: "Topics"
+        tell_me_more: "Tell me more..."
+        collapse: "Collapse"
+        timed_out: "Discobot couldn't find any discoveries. Something went wrong."
+        tooltip:
+          title: "AI powered search"
+          body: "Natural language search powered by %{model}"
     review:
       types:
         reviewable_ai_post:
