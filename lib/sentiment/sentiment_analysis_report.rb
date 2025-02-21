@@ -31,7 +31,8 @@ module DiscourseAi
             auto_insert_none_item: false,
           )
 
-          report.add_category_filter(disabled: group_by_filter.to_sym == :tag)
+          category_id, include_subcategories =
+            report.add_category_filter(disabled: group_by_filter.to_sym == :tag)
 
           tag_filter = report.filters.dig(:tag) || "any"
           tag_choices =
@@ -49,7 +50,8 @@ module DiscourseAi
             disabled: group_by_filter.to_sym == :category,
           )
 
-          sentiment_data = DiscourseAi::Sentiment::SentimentAnalysisReport.fetch_data(report)
+          opts = { category_id: category_id, include_subcategories: include_subcategories }
+          sentiment_data = DiscourseAi::Sentiment::SentimentAnalysisReport.fetch_data(report, opts)
 
           report.data = sentiment_data
           report.labels = [
@@ -60,12 +62,13 @@ module DiscourseAi
         end
       end
 
-      def self.fetch_data(report)
+      def self.fetch_data(report, opts)
         threshold = SENTIMENT_THRESHOLD
 
         grouping = (report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT).to_sym
         sorting = (report.filters.dig(:sort_by) || SORT_BY_FILTER_DEFAULT).to_sym
         category_filter = report.filters.dig(:category)
+        pp "========================== category_filter ===================================== #{category_filter} include subcategories?: #{opts[:include_subcategories]}"
         tag_filter = report.filters.dig(:tag)
 
         sentiment_count_sql = Proc.new { |sentiment| <<~SQL }
@@ -118,6 +121,10 @@ module DiscourseAi
           when :category
             if category_filter.nil?
               ""
+            elsif opts[:include_subcategories]
+              <<~SQL
+                AND (c.id = :category_filter OR c.parent_category_id = :category_filter)
+              SQL
             else
               "AND c.id = :category_filter"
             end
