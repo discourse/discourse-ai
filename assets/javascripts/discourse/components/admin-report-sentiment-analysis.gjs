@@ -3,6 +3,8 @@ import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action, get } from "@ember/object";
+import { and } from "truth-helpers";
+import DButton from "discourse/components/d-button";
 import PostList from "discourse/components/post-list";
 import dIcon from "discourse/helpers/d-icon";
 import { ajax } from "discourse/lib/ajax";
@@ -11,12 +13,14 @@ import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
+import HorizontalOverflowNav from "discourse/components/horizontal-overflow-nav";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @tracked selectedChart = null;
   @tracked posts = null;
   @tracked hasMorePosts = false;
   @tracked nextOffset = 0;
+  @tracked showingSelectedChart = false;
 
   get colors() {
     return ["#2ecc71", "#95a5a6", "#e74c3c"];
@@ -66,11 +70,17 @@ export default class AdminReportSentimentAnalysis extends Component {
 
   @action
   async showDetails(data) {
+    if (this.selectedChart === data) {
+      console.log("already selected bro!");
+      // Don't do anything if the same chart is clicked again
+      return;
+    }
+
     this.selectedChart = data;
+    this.showingSelectedChart = true;
 
     try {
       const response = await this.postRequest();
-
       this.posts = response.posts.map((post) => Post.create(post));
       this.hasMorePosts = response.has_more;
       this.nextOffset = response.next_offset;
@@ -102,7 +112,7 @@ export default class AdminReportSentimentAnalysis extends Component {
         return {
           id: "positive",
           text: i18n(
-            "discourse_ai.sentiments.sentiment_analysis.score_types.positive"
+            "discourse_ai.sentiments.sentiment_analysis.filter_types.positive"
           ),
           icon: "face-smile",
         };
@@ -110,7 +120,7 @@ export default class AdminReportSentimentAnalysis extends Component {
         return {
           id: "neutral",
           text: i18n(
-            "discourse_ai.sentiments.sentiment_analysis.score_types.neutral"
+            "discourse_ai.sentiments.sentiment_analysis.filter_types.neutral"
           ),
           icon: "face-meh",
         };
@@ -118,7 +128,7 @@ export default class AdminReportSentimentAnalysis extends Component {
         return {
           id: "negative",
           text: i18n(
-            "discourse_ai.sentiments.sentiment_analysis.score_types.negative"
+            "discourse_ai.sentiments.sentiment_analysis.filter_types.negative"
           ),
           icon: "face-angry",
         };
@@ -126,64 +136,120 @@ export default class AdminReportSentimentAnalysis extends Component {
   }
 
   doughnutTitle(data) {
-    if (data?.total_score) {
-      return `${data.title} (${data.total_score})`;
-    } else {
-      return data.title;
+    const MAX_TITLE_LENGTH = 18;
+    const title = data?.title || "";
+    const score = data?.total_score ? ` (${data.total_score})` : "";
+
+    if (title.length + score.length > MAX_TITLE_LENGTH) {
+      return (
+        title.substring(0, MAX_TITLE_LENGTH - score.length) + "..." + score
+      );
     }
+
+    return title + score;
+  }
+
+  @action
+  backToAllCharts() {
+    this.showingSelectedChart = false;
+    this.selectedChart = null;
+  }
+
+  get postFilters() {
+    return [
+      {
+        id: "all",
+        text: `${i18n(
+          "discourse_ai.sentiments.sentiment_analysis.filter_types.all"
+        )} (${this.selectedChart.total_score})`,
+        icon: "bars-staggered",
+        active: true,
+      },
+      {
+        id: "positive",
+        text: `${i18n(
+          "discourse_ai.sentiments.sentiment_analysis.filter_types.positive"
+        )} (${this.selectedChart.scores[0]})`,
+        icon: "face-smile",
+        active: false,
+      },
+      {
+        id: "neutral",
+        text: `${i18n(
+          "discourse_ai.sentiments.sentiment_analysis.filter_types.neutral"
+        )} (${this.selectedChart.scores[1]})`,
+        icon: "face-meh",
+        active: false,
+      },
+      {
+        id: "negative",
+        text: `${i18n(
+          "discourse_ai.sentiments.sentiment_analysis.filter_types.negative"
+        )} (${this.selectedChart.scores[2]})`,
+        icon: "face-angry",
+        active: false,
+      },
+    ];
   }
 
   <template>
-    <div class="admin-report-sentiment-analysis">
-      {{#each this.transformedData as |data|}}
-        <div
-          class="admin-report-sentiment-analysis__chart-wrapper"
-          role="button"
-          {{on "click" (fn this.showDetails data)}}
-          {{closeOnClickOutside
-            (fn (mut this.selectedChart) null)
-            (hash
-              targetSelector=".admin-report-sentiment-analysis-details"
-              secondaryTargetSelector=".admin-report-sentiment-analysis"
-            )
-          }}
-        >
-          <DoughnutChart
-            @labels={{@model.labels}}
-            @colors={{this.colors}}
-            @data={{data.scores}}
-            @doughnutTitle={{this.doughnutTitle data}}
-          />
-        </div>
-      {{/each}}
-    </div>
+    {{#unless this.showingSelectedChart}}
+      <div class="admin-report-sentiment-analysis">
+        {{#each this.transformedData as |data|}}
+          <div
+            class="admin-report-sentiment-analysis__chart-wrapper"
+            role="button"
+            {{on "click" (fn this.showDetails data)}}
+            {{closeOnClickOutside
+              (fn (mut this.selectedChart) null)
+              (hash
+                targetSelector=".admin-report-sentiment-analysis-details"
+                secondaryTargetSelector=".admin-report-sentiment-analysis"
+              )
+            }}
+          >
+            <DoughnutChart
+              @labels={{@model.labels}}
+              @colors={{this.colors}}
+              @data={{data.scores}}
+              @doughnutTitle={{this.doughnutTitle data}}
+            />
+          </div>
+        {{/each}}
+      </div>
+    {{/unless}}
 
-    {{#if this.selectedChart}}
-      <div class="admin-report-sentiment-analysis-details">
+    {{#if (and this.selectedChart this.showingSelectedChart)}}
+      <div class="admin-report-sentiment-analysis__selected-chart">
+        <DButton
+          @label="back_button"
+          @icon="chevron-left"
+          class="btn-flat"
+          @action={{this.backToAllCharts}}
+        />
         <h3 class="admin-report-sentiment-analysis-details__title">
           {{this.selectedChart.title}}
         </h3>
 
-        <ul class="admin-report-sentiment-analysis-details__scores">
-          <li>
-            {{dIcon "face-smile"}}
-            {{i18n
-              "discourse_ai.sentiments.sentiment_analysis.score_types.positive"
-            }}:
-            {{get this.selectedChart.scores 0}}</li>
-          <li>
-            {{dIcon "face-meh"}}
-            {{i18n
-              "discourse_ai.sentiments.sentiment_analysis.score_types.neutral"
-            }}:
-            {{get this.selectedChart.scores 1}}</li>
-          <li>
-            {{dIcon "face-angry"}}
-            {{i18n
-              "discourse_ai.sentiments.sentiment_analysis.score_types.negative"
-            }}:
-            {{get this.selectedChart.scores 2}}</li>
-        </ul>
+        <DoughnutChart
+          @labels={{@model.labels}}
+          @colors={{this.colors}}
+          @data={{this.selectedChart.scores}}
+          @doughnutTitle={{this.doughnutTitle this.selectedChart}}
+        />
+      </div>
+      <div class="admin-report-sentiment-analysis-details">
+        <HorizontalOverflowNav>
+          {{#each this.postFilters as |filter|}}
+            <li>
+              <DButton
+                @icon={{filter.icon}}
+                @translatedLabel={{filter.text}}
+                class="btn-flat {{if filter.active 'active'}}"
+              />
+            </li>
+          {{/each}}
+        </HorizontalOverflowNav>
 
         <PostList
           @posts={{this.posts}}

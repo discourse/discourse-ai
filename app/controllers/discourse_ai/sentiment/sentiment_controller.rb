@@ -6,10 +6,8 @@ module DiscourseAi
       include Constants
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      # DEFAULT_POSTS_LIMIT = 50
-      # MAX_POSTS_LIMIT = 100
-      DEFAULT_POSTS_LIMIT = 3
-      MAX_POSTS_LIMIT = 3
+      DEFAULT_POSTS_LIMIT = 50
+      MAX_POSTS_LIMIT = 100
 
       def posts
         group_by = params.required(:group_by)&.to_sym

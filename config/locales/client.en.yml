@@ -651,7 +651,8 @@ en:
         dashboard:
           title: "Sentiment"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "All"
             positive: "Positive"
             neutral: "Neutral"
             negative: "Negative"
