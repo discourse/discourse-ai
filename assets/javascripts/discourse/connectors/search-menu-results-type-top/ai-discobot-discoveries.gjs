@@ -20,7 +20,7 @@ export default class AiDiscobotDiscoveries extends Component {
     <div class="ai-discobot-discoveries">
       <h3 class="ai-search-discoveries__discoveries-title">
         <span>
-          {{icon "robot"}}
+          {{icon "ai-bot"}}
           {{i18n "discourse_ai.discobot_discoveries.main_title"}}
         </span>
 

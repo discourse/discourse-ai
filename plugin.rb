@@ -131,6 +131,10 @@ after_initialize do
     info
     bars-staggered
     far-circle-question
+    face-smile
+    face-meh
+    face-angry
+    ai-bot
   ]
   plugin_icons.each { |icon| register_svg_icon(icon) }
 end

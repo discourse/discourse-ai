@@ -14,9 +14,6 @@ module DiscourseAi
         plugin.on(:post_created, &sentiment_analysis_cb)
         plugin.on(:post_edited, &sentiment_analysis_cb)
 
-        additional_icons = %w[face-smile face-meh face-angry]
-        additional_icons.each { |icon| plugin.register_svg_icon(icon) }
-
         EmotionFilterOrder.register!(plugin)
         EmotionDashboardReport.register!(plugin)
         SentimentDashboardReport.register!(plugin)
