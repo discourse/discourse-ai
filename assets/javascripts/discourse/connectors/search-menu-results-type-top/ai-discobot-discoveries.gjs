@@ -10,7 +10,7 @@ export default class AiDiscobotDiscoveries extends Component {
     return (
       args.resultType.type === "topic" &&
       siteSettings.ai_bot_discover_persona &&
-      currentUser.can_use_ai_bot_discover_persona
+      currentUser?.can_use_ai_bot_discover_persona
     );
   }
 
