@@ -25,7 +25,7 @@ export default class AiFullPageDiscobotDiscoveries extends Component {
         class="ai-search-discoveries__discoveries-title full-page-discoveries"
       >
         <span>
-          {{icon "robot"}}
+          {{icon "ai-bot"}}
           {{i18n "discourse_ai.discobot_discoveries.main_title"}}
         </span>
 
