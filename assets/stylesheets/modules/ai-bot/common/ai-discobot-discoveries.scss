@@ -4,18 +4,34 @@
   }
 
   &__completion {
-    margin: 1em 0;
+    margin: 0;
   }
 
   &__discovery-preview {
-    @include ellipsis;
-    max-height: 300px;
+    height: 3.5em; // roughly the loading skeleton height
+    overflow: hidden;
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      display: block;
+      background: linear-gradient(rgba(255, 255, 255, 0), var(--secondary));
+      height: 50%;
+      width: 100%;
+      bottom: 0;
+    }
   }
 
   &__discoveries-title,
   &__regular-results-title {
     padding-bottom: 0.5em;
     border-bottom: 1px solid var(--primary-low);
+    font-size: var(--font-0);
+
+    .d-icon {
+      color: var(--primary-high);
+    }
   }
 
   &__discoveries-title {
@@ -26,6 +42,10 @@
   &__toggle {
     padding-left: 0;
     margin-bottom: 0.5em;
+  }
+
+  .cooked p:first-child {
+    margin-top: 0;
   }
 }
 
@@ -38,6 +58,10 @@
   .fk-d-tooltip__trigger {
     vertical-align: middle;
   }
+
+  .d-icon {
+    color: var(--primary-medium);
+  }
 }
 
 .ai-discobot-discoveries {
@@ -46,4 +70,10 @@
 
 .full-page-discoveries {
   padding: 1em 10%;
+}
+
+.d-icon-discobot {
+  // appears a little undersized next to other icons
+  height: 1.15em;
+  width: 1.15em;
 }
