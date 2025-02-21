@@ -68,7 +68,6 @@ module DiscourseAi
         grouping = (report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT).to_sym
         sorting = (report.filters.dig(:sort_by) || SORT_BY_FILTER_DEFAULT).to_sym
         category_filter = report.filters.dig(:category)
-        pp "========================== category_filter ===================================== #{category_filter} include subcategories?: #{opts[:include_subcategories]}"
         tag_filter = report.filters.dig(:tag)
 
         sentiment_count_sql = Proc.new { |sentiment| <<~SQL }

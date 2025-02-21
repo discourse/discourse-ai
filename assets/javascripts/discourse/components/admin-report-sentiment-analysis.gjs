@@ -15,6 +15,8 @@ import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/d
 export default class AdminReportSentimentAnalysis extends Component {
   @tracked selectedChart = null;
   @tracked posts = null;
+  @tracked hasMorePosts = false;
+  @tracked nextOffset = 0;
 
   get colors() {
     return ["#2ecc71", "#95a5a6", "#e74c3c"];
@@ -50,20 +52,45 @@ export default class AdminReportSentimentAnalysis extends Component {
     });
   }
 
+  async postRequest() {
+    return await ajax("/discourse-ai/sentiment/posts", {
+      data: {
+        group_by: this.currentGroupFilter,
+        group_value: this.selectedChart?.title,
+        start_date: this.args.model.start_date,
+        end_date: this.args.model.end_date,
+        offset: this.nextOffset,
+      },
+    });
+  }
+
   @action
   async showDetails(data) {
     this.selectedChart = data;
-    try {
-      const posts = await ajax(`/discourse-ai/sentiment/posts`, {
-        data: {
-          group_by: this.currentGroupFilter,
-          group_value: data.title,
-          start_date: this.args.model.start_date,
-          end_date: this.args.model.end_date,
-        },
-      });
 
-      this.posts = posts.map((post) => Post.create(post));
+    try {
+      const response = await this.postRequest();
+
+      this.posts = response.posts.map((post) => Post.create(post));
+      this.hasMorePosts = response.has_more;
+      this.nextOffset = response.next_offset;
+    } catch (e) {
+      popupAjaxError(e);
+    }
+  }
+
+  @action
+  async fetchMorePosts() {
+    if (!this.hasMorePosts || this.selectedChart === null) {
+      return [];
+    }
+
+    try {
+      const response = await this.postRequest();
+
+      this.hasMorePosts = response.has_more;
+      this.nextOffset = response.next_offset;
+      return response.posts.map((post) => Post.create(post));
     } catch (e) {
       popupAjaxError(e);
     }
@@ -139,7 +166,7 @@ export default class AdminReportSentimentAnalysis extends Component {
 
         <ul class="admin-report-sentiment-analysis-details__scores">
           <li>
-            {{dIcon "face-smile" style="color: #2ecc71"}}
+            {{dIcon "face-smile"}}
             {{i18n
               "discourse_ai.sentiments.sentiment_analysis.score_types.positive"
             }}:
@@ -164,6 +191,7 @@ export default class AdminReportSentimentAnalysis extends Component {
           @idPath="post_id"
           @titlePath="topic_title"
           @usernamePath="username"
+          @fetchMorePosts={{this.fetchMorePosts}}
           class="admin-report-sentiment-analysis-details__post-list"
         >
           <:abovePostItemExcerpt as |post|>

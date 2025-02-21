@@ -6,6 +6,11 @@ module DiscourseAi
       include Constants
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
+      # DEFAULT_POSTS_LIMIT = 50
+      # MAX_POSTS_LIMIT = 100
+      DEFAULT_POSTS_LIMIT = 3
+      MAX_POSTS_LIMIT = 3
+
       def posts
         group_by = params.required(:group_by)&.to_sym
         group_value = params.required(:group_value).presence
@@ -14,6 +19,9 @@ module DiscourseAi
         threshold = SENTIMENT_THRESHOLD
 
         raise Discourse::InvalidParameters if %i[category tag].exclude?(group_by)
+
+        limit = fetch_limit_from_params(default: DEFAULT_POSTS_LIMIT, max: MAX_POSTS_LIMIT)
+        offset = params[:offset].to_i || 0
 
         case group_by
         when :category
@@ -56,22 +64,31 @@ module DiscourseAi
             ((:start_date IS NULL OR p.created_at > :start_date) AND (:end_date IS NULL OR p.created_at < :end_date))
             AND p.deleted_at IS NULL
           ORDER BY p.created_at DESC
+          LIMIT :limit OFFSET :offset
         SQL
             group_value: group_value,
             start_date: start_date,
             end_date: end_date,
             threshold: threshold,
+            limit: limit + 1,
+            offset: offset,
           )
 
+        has_more = posts.length > limit
+        posts.pop if has_more
+
         render_json_dump(
-          serialize_data(
-            posts,
-            AiSentimentPostSerializer,
-            scope: guardian,
-            add_raw: true,
-            add_excerpt: true,
-            add_title: true,
-          ),
+          posts:
+            serialize_data(
+              posts,
+              AiSentimentPostSerializer,
+              scope: guardian,
+              add_raw: true,
+              add_excerpt: true,
+              add_title: true,
+            ),
+          has_more: has_more,
+          next_offset: has_more ? offset + limit : nil,
         )
       end
     end
