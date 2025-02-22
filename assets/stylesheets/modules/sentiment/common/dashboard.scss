@@ -105,7 +105,7 @@
   overflow-y: auto;
   height: 100%;
 
-  .horizontal-overflow-nav {
+  &__filters {
     border-bottom: 1px solid var(--primary-low);
     margin-bottom: 1rem;
   }

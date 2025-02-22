@@ -2,9 +2,11 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
-import { action, get } from "@ember/object";
+import { action } from "@ember/object";
+import { modifier } from "ember-modifier";
 import { and } from "truth-helpers";
 import DButton from "discourse/components/d-button";
+import HorizontalOverflowNav from "discourse/components/horizontal-overflow-nav";
 import PostList from "discourse/components/post-list";
 import dIcon from "discourse/helpers/d-icon";
 import { ajax } from "discourse/lib/ajax";
@@ -13,7 +15,6 @@ import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
-import HorizontalOverflowNav from "discourse/components/horizontal-overflow-nav";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @tracked selectedChart = null;
@@ -21,6 +22,21 @@ export default class AdminReportSentimentAnalysis extends Component {
   @tracked hasMorePosts = false;
   @tracked nextOffset = 0;
   @tracked showingSelectedChart = false;
+  @tracked activeFilter = "all";
+
+  setActiveFilter = modifier((element) => {
+    this.clearActiveFilters(element);
+    element
+      .querySelector(`li[data-filter-type="${this.activeFilter}"] button`)
+      .classList.add("active");
+  });
+
+  clearActiveFilters(element) {
+    const filterButtons = element.querySelectorAll("li button");
+    for (let button of filterButtons) {
+      button.classList.remove("active");
+    }
+  }
 
   get colors() {
     return ["#2ecc71", "#95a5a6", "#e74c3c"];
@@ -56,6 +72,20 @@ export default class AdminReportSentimentAnalysis extends Component {
     });
   }
 
+  get filteredPosts() {
+    if (!this.posts || !this.posts.length) {
+      return [];
+    }
+
+    return this.posts.filter((post) => {
+      if (this.activeFilter === "all") {
+        return true;
+      }
+
+      return post.sentiment === this.activeFilter;
+    });
+  }
+
   async postRequest() {
     return await ajax("/discourse-ai/sentiment/posts", {
       data: {
@@ -71,7 +101,6 @@ export default class AdminReportSentimentAnalysis extends Component {
   @action
   async showDetails(data) {
     if (this.selectedChart === data) {
-      console.log("already selected bro!");
       // Don't do anything if the same chart is clicked again
       return;
     }
@@ -163,7 +192,9 @@ export default class AdminReportSentimentAnalysis extends Component {
           "discourse_ai.sentiments.sentiment_analysis.filter_types.all"
         )} (${this.selectedChart.total_score})`,
         icon: "bars-staggered",
-        active: true,
+        action: () => {
+          this.activeFilter = "all";
+        },
       },
       {
         id: "positive",
@@ -171,7 +202,9 @@ export default class AdminReportSentimentAnalysis extends Component {
           "discourse_ai.sentiments.sentiment_analysis.filter_types.positive"
         )} (${this.selectedChart.scores[0]})`,
         icon: "face-smile",
-        active: false,
+        action: () => {
+          this.activeFilter = "positive";
+        },
       },
       {
         id: "neutral",
@@ -179,7 +212,9 @@ export default class AdminReportSentimentAnalysis extends Component {
           "discourse_ai.sentiments.sentiment_analysis.filter_types.neutral"
         )} (${this.selectedChart.scores[1]})`,
         icon: "face-meh",
-        active: false,
+        action: () => {
+          this.activeFilter = "neutral";
+        },
       },
       {
         id: "negative",
@@ -187,7 +222,9 @@ export default class AdminReportSentimentAnalysis extends Component {
           "discourse_ai.sentiments.sentiment_analysis.filter_types.negative"
         )} (${this.selectedChart.scores[2]})`,
         icon: "face-angry",
-        active: false,
+        action: () => {
+          this.activeFilter = "negative";
+        },
       },
     ];
   }
@@ -239,20 +276,24 @@ export default class AdminReportSentimentAnalysis extends Component {
         />
       </div>
       <div class="admin-report-sentiment-analysis-details">
-        <HorizontalOverflowNav>
+        <HorizontalOverflowNav
+          {{this.setActiveFilter}}
+          class="admin-report-sentiment-analysis-details__filters"
+        >
           {{#each this.postFilters as |filter|}}
-            <li>
+            <li data-filter-type={{filter.id}}>
               <DButton
                 @icon={{filter.icon}}
                 @translatedLabel={{filter.text}}
-                class="btn-flat {{if filter.active 'active'}}"
+                @action={{filter.action}}
+                class="btn-transparent"
               />
             </li>
           {{/each}}
         </HorizontalOverflowNav>
 
         <PostList
-          @posts={{this.posts}}
+          @posts={{this.filteredPosts}}
           @urlPath="url"
           @idPath="post_id"
           @titlePath="topic_title"
