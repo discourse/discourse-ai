@@ -182,6 +182,7 @@ export default class AdminReportSentimentAnalysis extends Component {
   backToAllCharts() {
     this.showingSelectedChart = false;
     this.selectedChart = null;
+    this.activeFilter = "all";
   }
 
   get postFilters() {
