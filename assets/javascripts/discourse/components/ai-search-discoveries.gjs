@@ -182,7 +182,7 @@ export default class AiSearchDiscoveries extends Component {
               <CookText @rawText={{this.discobotDiscoveries.discovery}} />
             </div>
           {{else}}
-            <div class="ai-search-discoveries___discovery-preview cooked">
+            <div class="ai-search-discoveries__discovery-preview cooked">
               <CookText
                 @rawText={{this.discobotDiscoveries.discoveryPreview}}
               />
