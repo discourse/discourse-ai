@@ -24,7 +24,7 @@ module DiscourseAi
         case group_by
         when :category
           grouping_clause = "c.name"
-          grouping_join = "INNER JOIN categories c ON c.id = t.category_id"
+          grouping_join = "" # categories already joined
         when :tag
           grouping_clause = "tags.name"
           grouping_join =
@@ -44,6 +44,11 @@ module DiscourseAi
             u.username,
             u.name,
             u.uploaded_avatar_id,
+            c.id AS category_id,
+            c.name AS category_name,
+            c.color AS category_color,
+            c.slug AS category_slug,
+            c.description AS category_description,
             (CASE 
               WHEN (cr.classification::jsonb->'positive')::float > :threshold THEN 'positive'
               WHEN (cr.classification::jsonb->'negative')::float > :threshold THEN 'negative'
@@ -53,6 +58,7 @@ module DiscourseAi
           INNER JOIN topics t ON t.id = p.topic_id
           INNER JOIN classification_results cr ON cr.target_id = p.id AND cr.target_type = 'Post'
           LEFT JOIN users u ON u.id = p.user_id
+          LEFT JOIN categories c ON c.id = t.category_id
           #{grouping_join}
           WHERE
             #{grouping_clause} = :group_value AND

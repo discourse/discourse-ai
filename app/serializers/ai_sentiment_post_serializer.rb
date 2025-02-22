@@ -10,7 +10,8 @@ class AiSentimentPostSerializer < ApplicationSerializer
              :avatar_template,
              :excerpt,
              :sentiment,
-             :truncated
+             :truncated,
+             :category
 
   def avatar_template
     User.avatar_template(object.username, object.uploaded_avatar_id)
@@ -22,5 +23,15 @@ class AiSentimentPostSerializer < ApplicationSerializer
 
   def truncated
     true
+  end
+
+  def category
+    {
+      id: object.category_id,
+      name: object.category_name,
+      color: object.category_color,
+      slug: object.category_slug,
+      description: object.category_description,
+    }
   end
 end

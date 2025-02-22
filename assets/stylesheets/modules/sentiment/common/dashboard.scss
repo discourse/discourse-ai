@@ -53,6 +53,7 @@
   .main {
     flex: 100%;
     display: flex;
+    flex-flow: row wrap;
     order: 2;
     gap: 1rem;
     align-items: flex-start;
@@ -99,7 +100,9 @@
 
 .admin-report-sentiment-analysis-details {
   @include report-container-box();
-  flex: 1;
+  flex: 1 1 300px;
+  min-width: 300px;
+
   display: flex;
   flex-flow: column nowrap;
   overflow-y: auto;
@@ -108,6 +111,12 @@
   &__filters {
     border-bottom: 1px solid var(--primary-low);
     margin-bottom: 1rem;
+
+    @include breakpoint("mobile-extra-large") {
+      .d-button-label {
+        display: none;
+      }
+    }
   }
 
   &__title {
@@ -170,6 +179,7 @@
   }
 
   &__post-list {
+    margin-top: 1rem;
     .avatar-wrapper,
     .avatar-link {
       width: calc(48px * 0.75);
