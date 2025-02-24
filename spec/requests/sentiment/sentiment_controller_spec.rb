@@ -27,7 +27,8 @@ RSpec.describe DiscourseAi::Sentiment::SentimentController do
 
       expect(response).to be_successful
 
-      posts = JSON.parse(response.body)
+      post_response = JSON.parse(response.body)
+      posts = post_response["posts"]
       posts.each do |post|
         expect(post).to have_key("sentiment")
         expect(post["sentiment"]).to match(/positive|negative|neutral/)
