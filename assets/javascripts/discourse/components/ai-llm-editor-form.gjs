@@ -61,7 +61,7 @@ export default class AiLlmEditorForm extends Component {
       provider: model.provider,
       enabled_chat_bot: model.enabled_chat_bot,
       vision_enabled: model.vision_enabled,
-      provider_params: model.provider_params,
+      provider_params: this.computeProviderParams(model.provider),
       llm_quotas: model.llm_quotas,
     };
   }
