@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 sr:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Sortiraj po"
   js:
     discourse_automation:
       scriptables:
@@ -104,3 +111,6 @@ sr:
           previous_log: "Prethodno"
         share_modal:
           copy: "Kopija"
+      discobot_discoveries:
+        regular_results: "Teme"
+        collapse: "Spusti"

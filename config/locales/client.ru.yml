@@ -20,6 +20,12 @@ ru:
         emotion:
           title: "Эмоция"
           description: "В таблице указано количество публикаций, классифицированных по определенной эмоции. Классификация выполнена с помощью модели 'SamLowe/roberta-base-go_emotions'."
+        reports:
+          filters:
+            sort_by:
+              label: "Сортировка"
+            tag:
+              label: "Теги"
   js:
     discourse_automation:
       scriptables:
@@ -608,6 +614,11 @@ ru:
       sentiments:
         dashboard:
           title: "Настроение"
+        sentiment_analysis:
+          score_types:
+            positive: "Позитивное"
+            neutral: "Нейтральность"
+            negative: "Негативное"
       summarization:
         chat:
           title: "Делать сводку сообщений"
@@ -626,6 +637,9 @@ ru:
             compact: "Компактный"
             expanded: "Расширенный"
             expanded_description: "со сводками от AI"
+      discobot_discoveries:
+        regular_results: "Новые темы"
+        collapse: "Свернуть"
     review:
       types:
         reviewable_ai_post:

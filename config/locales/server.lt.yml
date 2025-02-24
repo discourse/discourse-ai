@@ -25,3 +25,5 @@ lt:
       reports:
         post_emotion:
           neutral: "Neutrali \U0001F610"
+        sentiment_analysis:
+          neutral: "Neutrali"

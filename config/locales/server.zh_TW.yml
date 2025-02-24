@@ -20,3 +20,5 @@ zh_TW:
       reports:
         post_emotion:
           neutral: "中性 \U0001F610"
+        sentiment_analysis:
+          neutral: "中性"

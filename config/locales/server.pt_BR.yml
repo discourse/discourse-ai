@@ -397,6 +397,10 @@ pt_BR:
           anger: "Raiva \U0001F621"
           joy: "Alegria \U0001F600"
           disgust: "Repulsa \U0001F922"
+        sentiment_analysis:
+          positive: "Positivo"
+          negative: "Negativo"
+          neutral: "Neutro"
     llm:
       configuration:
         disable_module_first: "Você precisa desativar %{setting} primeiro."
@@ -434,6 +438,3 @@ pt_BR:
       no_default_llm: A persona deve ter default_llm definida.
       user_not_allowed: O(a) usuário(a) não tem permissão para participar do tópico.
       prompt_message_length: A mensagem %{idx} excede o limite de 1000 caracteres.
-  dashboard:
-    problem:
-      ai_llm_status: "O modelo de LLM %{model_name} está com problemas. Confira a <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>página de configuração do modelo</a>."

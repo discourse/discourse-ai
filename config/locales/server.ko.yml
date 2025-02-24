@@ -20,3 +20,5 @@ ko:
       reports:
         post_emotion:
           neutral: "중립국 \U0001F610"
+        sentiment_analysis:
+          neutral: "중립국"

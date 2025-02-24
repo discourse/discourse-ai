@@ -24,3 +24,5 @@ ug:
       reports:
         post_emotion:
           neutral: "بىتەرەپ \U0001F610"
+        sentiment_analysis:
+          neutral: "بىتەرەپ"

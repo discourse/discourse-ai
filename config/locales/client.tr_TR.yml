@@ -20,6 +20,12 @@ tr_TR:
         emotion:
           title: "Duygu"
           description: "Tablo, belirli bir duyguyla sınıflandırılan gönderilerin sayısını listeler. \"SamLowe/roberta-base-go_emotions\" modeliyle sınıflandırılmıştır."
+        reports:
+          filters:
+            sort_by:
+              label: "Sıralama ölçütü"
+            tag:
+              label: "Etiket"
   js:
     discourse_automation:
       scriptables:
@@ -603,6 +609,11 @@ tr_TR:
       sentiments:
         dashboard:
           title: "Duyarlılık"
+        sentiment_analysis:
+          score_types:
+            positive: "Pozitif"
+            neutral: "Nötr"
+            negative: "Negatif"
       summarization:
         chat:
           title: "Mesajları özetle"
@@ -619,6 +630,9 @@ tr_TR:
             compact: "Kompakt"
             expanded: "Genişletilmiş"
             expanded_description: "YZ özetleriyle"
+      discobot_discoveries:
+        regular_results: "Konular"
+        collapse: "Daralt"
     review:
       types:
         reviewable_ai_post:

@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 sv:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Sortera efter"
+            tag:
+              label: "Tagg"
   js:
     discourse_automation:
       scriptables:
@@ -131,6 +140,10 @@ sv:
           previous_log: "Föregående"
         share_modal:
           copy: "Kopiera"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Neutralt"
       summarization:
         chat:
           title: "Sammanfatta meddelanden"
@@ -141,3 +154,6 @@ sv:
             other: "Senaste %{count} timmarna"
         topic:
           title: "Sammanfattning av ämne"
+      discobot_discoveries:
+        regular_results: "Ämnen"
+        collapse: "Förminska"

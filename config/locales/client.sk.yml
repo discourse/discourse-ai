@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 sk:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Zoradiť podľa"
+            tag:
+              label: "Značka"
   js:
     discourse_automation:
       scriptables:
@@ -135,6 +144,10 @@ sk:
           previous_log: "Predchádzajúci"
         share_modal:
           copy: "Kopírovať"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Neutrálna"
       summarization:
         chat:
           title: "Zhrnutie správ"
@@ -145,3 +158,6 @@ sk:
             few: "Posledných %{count} hodín"
             many: "Posledných %{count} hodín"
             other: "Posledných %{count} hodín"
+      discobot_discoveries:
+        regular_results: "Témy"
+        collapse: "Zbaliť"

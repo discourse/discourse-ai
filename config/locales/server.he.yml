@@ -426,6 +426,10 @@ he:
           anger: "כעס \U0001F621"
           joy: "הנאה \U0001F600"
           disgust: "גועל \U0001F922"
+        sentiment_analysis:
+          positive: "חיובי"
+          negative: "שלילי"
+          neutral: "נייטרלי"
     llm:
       configuration:
         disable_module_first: "קודם צריך להשבית את %{setting}."
@@ -464,6 +468,3 @@ he:
       no_default_llm: לדמות חייב להיות מוגדר default_llm (מודל ברירת מחדל).
       user_not_allowed: המשתמש לא מורשה להשתתף בנושא.
       prompt_message_length: ההודעה %{idx} חורגת ממגבלת 1000 התווים.
-  dashboard:
-    problem:
-      ai_llm_status: "מודל ה־LLM:‏ %{model_name} חווה קשיים. נא לבקר ב<a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>עמוד ההגדרות של המודל</a>."

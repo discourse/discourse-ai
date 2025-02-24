@@ -10,6 +10,13 @@ fa_IR:
       site_settings:
         categories:
           discourse_ai: "هوش مصنوعی دیسکورس"
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "مرتب سازی بر اساس"
+            tag:
+              label: "برچسب"
   js:
     discourse_automation:
       scriptables:
@@ -176,3 +183,6 @@ fa_IR:
       summarization:
         chat:
           summarize: "خلاصه کنید"
+      discobot_discoveries:
+        regular_results: "موضوعات"
+        collapse: "جمع کردن"

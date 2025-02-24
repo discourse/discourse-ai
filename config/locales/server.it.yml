@@ -397,6 +397,10 @@ it:
           anger: "Rabbia \U0001F621"
           joy: "Gioia \U0001F600"
           disgust: "Disgusto \U0001F922"
+        sentiment_analysis:
+          positive: "Positiva"
+          negative: "Negativa"
+          neutral: "Neutro"
     llm:
       configuration:
         disable_module_first: "Devi prima disabilitare %{setting}."
@@ -434,6 +438,3 @@ it:
       no_default_llm: Il personaggio deve avere un default_llm definito.
       user_not_allowed: All'utente non è consentito partecipare all'argomento.
       prompt_message_length: Il messaggio %{idx} supera il limite di 1000 caratteri.
-  dashboard:
-    problem:
-      ai_llm_status: "Il modello LLM %{model_name} sta riscontrando problemi. Controlla la pagina di configurazione del modello <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'></a>."

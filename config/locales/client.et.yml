@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 et:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Järjesta"
   js:
     discourse_automation:
       scriptables:
@@ -117,3 +124,10 @@ et:
           previous_log: "Eelmine"
         share_modal:
           copy: "Kopeeri"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Neutraalne"
+      discobot_discoveries:
+        regular_results: "Teemasid"
+        collapse: "Ahenda"

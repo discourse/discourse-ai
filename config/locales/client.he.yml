@@ -20,6 +20,12 @@ he:
         emotion:
           title: "רגש"
           description: "הטבלה מפרטת את כמות הפוסטים שסווגו עם רגש שנקבע. הסיווג נעשה בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
+        reports:
+          filters:
+            sort_by:
+              label: "מיון על פי"
+            tag:
+              label: "תגית"
   js:
     discourse_automation:
       scriptables:
@@ -271,6 +277,7 @@ he:
           hide_indexing_options: "הסתרת אפשרויות העלאה"
         uploads:
           title: "העלאות"
+          description: "PDF‏ (‎*.pdf), טקסט פשוט (‎.txt) או markdown‏ (‎.md)"
           description_with_images: "טקסט פשוט (‎.txt), markdown‏ (‎.md), PDF‏ (‎.pdf) או תמונה (‎.png,‏ ‎.jpeg)"
           button: "הוספת קבצים"
           filter: "סינון העלאות"
@@ -597,6 +604,11 @@ he:
       sentiments:
         dashboard:
           title: "רגש"
+        sentiment_analysis:
+          score_types:
+            positive: "חיובי"
+            neutral: "נייטרלי"
+            negative: "שלילי"
       summarization:
         chat:
           title: "סיכום הודעות"
@@ -615,6 +627,9 @@ he:
             compact: "מצומצם"
             expanded: "מורחב"
             expanded_description: "עם סיכוי בינה מלאכותית"
+      discobot_discoveries:
+        regular_results: "נושאים"
+        collapse: "צמצום"
     review:
       types:
         reviewable_ai_post:

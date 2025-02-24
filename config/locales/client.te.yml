@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 te:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "క్రమబద్ధీకరించండి"
+            tag:
+              label: "ట్యాగ్"
   js:
     discourse_automation:
       scriptables:
@@ -118,3 +127,10 @@ te:
           previous_log: "గత"
         share_modal:
           copy: "నకలు"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "తటస్థ"
+      discobot_discoveries:
+        regular_results: "విషయాలు"
+        collapse: "కుదించండి"

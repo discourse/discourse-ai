@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 ur:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "ترتیب بہ"
+            tag:
+              label: "ٹیگ"
   js:
     discourse_automation:
       scriptables:
@@ -126,6 +135,13 @@ ur:
           previous_log: "پچھلی"
         share_modal:
           copy: "کاپی"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "نیوٹرل"
       summarization:
         chat:
           summarize: "خلاصہ"
+      discobot_discoveries:
+        regular_results: "ٹاپک"
+        collapse: "بند کریں"

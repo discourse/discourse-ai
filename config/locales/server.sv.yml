@@ -23,3 +23,5 @@ sv:
       reports:
         post_emotion:
           neutral: "Neutralt \U0001F610"
+        sentiment_analysis:
+          neutral: "Neutralt"

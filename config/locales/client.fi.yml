@@ -20,6 +20,12 @@ fi:
         emotion:
           title: "Tunne"
           description: "Taulukossa luetellaan määritetyllä tunteella luokiteltujen viestien lukumäärä. Luokiteltu mallilla \"SamLowe/roberta-base-go_emotions\"."
+        reports:
+          filters:
+            sort_by:
+              label: "Järjestä"
+            tag:
+              label: "Tunniste"
   js:
     discourse_automation:
       scriptables:
@@ -602,6 +608,11 @@ fi:
       sentiments:
         dashboard:
           title: "Tunne"
+        sentiment_analysis:
+          score_types:
+            positive: "Positiivinen"
+            neutral: "Neutraali"
+            negative: "Negatiivinen"
       summarization:
         chat:
           title: "Tee yhteenveto viesteistä"
@@ -618,6 +629,9 @@ fi:
             compact: "Kompakti"
             expanded: "Laajennettu"
             expanded_description: "tekoäly-yhteenvedoilla"
+      discobot_discoveries:
+        regular_results: "Aiheet"
+        collapse: "Kutista"
     review:
       types:
         reviewable_ai_post:

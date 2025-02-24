@@ -411,6 +411,10 @@ ru:
           anger: "Гнев \U0001F621"
           joy: "Радость \U0001F600"
           disgust: "Отвращение \U0001F922"
+        sentiment_analysis:
+          positive: "Позитивное"
+          negative: "Негативное"
+          neutral: "Нейтральность"
     llm:
       configuration:
         disable_module_first: "Сначала вам нужно отключить %{setting}."
@@ -452,6 +456,3 @@ ru:
       no_default_llm: У персоны должен быть определен параметр default_llm.
       user_not_allowed: Пользователю не разрешено участвовать в теме.
       prompt_message_length: Сообщение %{idx} превышает ограничение в 1000 символов.
-  dashboard:
-    problem:
-      ai_llm_status: "У модели LLM (%{model_name}) возникли проблемы. Проверьте <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>страницу настройки модели</a>."

@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 lv:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Kārtot pēc"
   js:
     discourse_automation:
       scriptables:
@@ -115,3 +122,6 @@ lv:
           previous_log: "Iepriekšējais"
         share_modal:
           copy: "Kopēt"
+      discobot_discoveries:
+        regular_results: "Tēmas"
+        collapse: "Sakļaut"

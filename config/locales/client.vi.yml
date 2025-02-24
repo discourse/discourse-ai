@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 vi:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Sắp xếp theo"
   js:
     discourse_automation:
       scriptables:
@@ -132,3 +139,6 @@ vi:
       summarization:
         chat:
           summarize: "Tóm tắt"
+      discobot_discoveries:
+        regular_results: "Các chủ đề"
+        collapse: "Thu gọn"

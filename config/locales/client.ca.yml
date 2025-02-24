@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 ca:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Ordena per"
   js:
     discourse_automation:
       scriptables:
@@ -118,3 +125,10 @@ ca:
           previous_log: "Previ"
         share_modal:
           copy: "Còpia"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Neutre"
+      discobot_discoveries:
+        regular_results: "Temes"
+        collapse: "Redueix"

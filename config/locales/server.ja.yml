@@ -390,6 +390,10 @@ ja:
           anger: "怒り \U0001F621"
           joy: "喜び \U0001F600"
           disgust: "嫌悪 \U0001F922"
+        sentiment_analysis:
+          positive: "ポジティブ"
+          negative: "ネガティブ"
+          neutral: "ニュートラル"
     llm:
       configuration:
         disable_module_first: "まず %{setting} を無効にする必要があります"
@@ -425,6 +429,3 @@ ja:
       no_default_llm: ペルソナには default_llm が定義されている必要があります。
       user_not_allowed: ユーザーはトピックに参加できません。
       prompt_message_length: メッセージ %{idx} は 1000 文字の上限を超えています。
-  dashboard:
-    problem:
-      ai_llm_status: "LLM モデル: %{model_name} に問題が発生しています。<a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>モデルの構成ページ</a>を確認してください。"

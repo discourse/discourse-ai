@@ -20,6 +20,12 @@ nl:
         emotion:
           title: "Emotie"
           description: "De tabel bevat een telling van berichten die zijn geclassificeerd met een bepaalde emotie. Geclassificeerd met het model 'SamLowe/roberta-base-go_emotions'."
+        reports:
+          filters:
+            sort_by:
+              label: "Sorteren op"
+            tag:
+              label: "Taggen"
   js:
     discourse_automation:
       scriptables:
@@ -602,6 +608,11 @@ nl:
       sentiments:
         dashboard:
           title: "Sentiment"
+        sentiment_analysis:
+          score_types:
+            positive: "Positief"
+            neutral: "Neutraal"
+            negative: "Negatief"
       summarization:
         chat:
           title: "Berichten samenvatten"
@@ -618,6 +629,9 @@ nl:
             compact: "Compact"
             expanded: "Uitgebreid"
             expanded_description: "met AI-samenvattingen"
+      discobot_discoveries:
+        regular_results: "Topics"
+        collapse: "Samenvouwen"
     review:
       types:
         reviewable_ai_post:

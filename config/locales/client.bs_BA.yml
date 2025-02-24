@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 bs_BA:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Sortiraj po"
   js:
     discourse_automation:
       scriptables:
@@ -113,3 +120,6 @@ bs_BA:
           previous_log: "Previous"
         share_modal:
           copy: "Copy"
+      discobot_discoveries:
+        regular_results: "Topics"
+        collapse: "Spusti"

@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 da:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Sorter efter"
+            tag:
+              label: "Mærke"
   js:
     discourse_automation:
       scriptables:
@@ -130,3 +139,10 @@ da:
           previous_log: "Forrige"
         share_modal:
           copy: "Kopier"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Neutral"
+      discobot_discoveries:
+        regular_results: "Emner"
+        collapse: "Fold sammen"

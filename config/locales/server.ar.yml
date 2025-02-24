@@ -425,6 +425,10 @@ ar:
           anger: "الغضب \U0001F621"
           joy: "المرح \U0001F600"
           disgust: "الاشمئزاز \U0001F922"
+        sentiment_analysis:
+          positive: "إيجابية"
+          negative: "سلبية"
+          neutral: "محايدة"
     llm:
       configuration:
         disable_module_first: "يجب عليك إيقاف %{setting} أولًا."
@@ -470,6 +474,3 @@ ar:
       no_default_llm: يجب أن يكون للشخصية معلمة default_llm محدَّدة.
       user_not_allowed: غير مسموح للمستخدم بالمشاركة في الموضوع.
       prompt_message_length: تتجاوز الرسالة الحد الأقصى لعدد الحروف، والبالغ 1000 حرف، بمقدار %{idx}.
-  dashboard:
-    problem:
-      ai_llm_status: "نموذج اللغة الكبير: %{model_name} يواجه مشكلات. يُرجى التحقق من <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>صفحة تكوين النموذج</a>."

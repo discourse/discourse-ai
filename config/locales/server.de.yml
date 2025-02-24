@@ -99,6 +99,9 @@ de:
       flagged_by_toxicity: Das KI-Plug-in meldete dies nach der Klassifizierung als toxisch.
       flagged_by_nsfw: Das KI-Plug-in meldete dies nach der Klassifizierung von mindestens einem der angehängten Bilder als NSFW.
   reports:
+    sentiment_analysis:
+      title: "Stimmungsanalyse"
+      description: "Dieser Bericht enthält eine Stimmungsanalyse für Beiträge, gruppiert nach Kategorie, mit positiven, negativen und neutralen Bewertungen für jeden Beitrag und jede Kategorie."
     overall_sentiment:
       title: "Allgemeine Stimmung"
       description: 'Das Diagramm vergleicht die Anzahl der Beiträge, die entweder als positiv oder negativ eingestuft werden. Sie werden berechnet, wenn die positive oder negative Bewertung über dem festgelegten Schwellenwert liegt. Das bedeutet, dass neutrale Beiträge nicht angezeigt werden. Persönliche Nachrichten (PN) sind ebenfalls ausgeschlossen. Klassifiziert mit „cardiffnlp/twitter-roberta-base-sentiment-latest“'
@@ -419,6 +422,10 @@ de:
           anger: "Wut \U0001F621"
           joy: "Freude \U0001F600"
           disgust: "Ekel \U0001F922"
+        sentiment_analysis:
+          positive: "Positiv"
+          negative: "Negativ"
+          neutral: "Neutral"
     llm:
       configuration:
         disable_module_first: "Du musst zuerst %{setting} deaktivieren."
@@ -459,4 +466,4 @@ de:
       prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.
   dashboard:
     problem:
-      ai_llm_status: "Beim LLM-Modell %{model_name} treten Probleme auf. Bitte überprüfe die <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>Konfigurationsseite des Modells</a>."
+      ai_llm_status: "Bei dem LLM-Modell: %{model_name} treten Probleme auf. Bitte überprüfe <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}/edit'>die Konfigurationsseite des Modells</a>."
