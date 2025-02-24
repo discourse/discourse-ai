@@ -23,7 +23,7 @@ class AiSentimentPostSerializer < ApplicationSerializer
   end
 
   def truncated
-    true
+    object.post_cooked.length > SiteSetting.post_excerpt_maxlength
   end
 
   def category
