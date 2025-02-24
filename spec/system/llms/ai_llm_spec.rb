@@ -72,6 +72,15 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
   end
 
   context "when changing the provider" do
+    it "has the correct provider params when visiting the edit page" do
+      llm = Fabricate(:llm_model, provider: "open_ai", provider_params: {})
+      visit "/admin/plugins/discourse-ai/ai-llms/#{llm.id}/edit"
+
+      expect(form).to have_field_with_name("provider_params.organization")
+      expect(form).to have_field_with_name("provider_params.disable_native_tools")
+      expect(form).to have_field_with_name("provider_params.disable_streaming")
+      expect(form).to have_field_with_name("provider_params.reasoning_effort")
+    end
     it "correctly changes the provider params" do
       visit "/admin/plugins/discourse-ai/ai-llms"
       find("[data-llm-id='none'] button").click()

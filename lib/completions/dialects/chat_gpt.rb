@@ -55,10 +55,15 @@ module DiscourseAi
           end
         end
 
-        # developer messages are preferred on reasoning models
+        # developer messages are preferred on recent reasoning models
         def supports_developer_messages?
-          llm_model.provider == "open_ai" &&
+          !legacy_reasoning_model? && llm_model.provider == "open_ai" &&
             (llm_model.name.start_with?("o1") || llm_model.name.start_with?("o3"))
+        end
+
+        def legacy_reasoning_model?
+          llm_model.provider == "open_ai" &&
+            (llm_model.name.start_with?("o1-preview") || llm_model.name.start_with?("o1-mini"))
         end
 
         def system_msg(msg)
@@ -69,6 +74,8 @@ module DiscourseAi
 
           if supports_developer_messages?
             { role: "developer", content: content }
+          elsif legacy_reasoning_model?
+            { role: "user", content: content }
           else
             { role: "system", content: content }
           end
