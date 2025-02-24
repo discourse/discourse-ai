@@ -250,7 +250,8 @@ export default class AdminReportSentimentAnalysis extends Component {
               @labels={{@model.labels}}
               @colors={{this.colors}}
               @data={{data.scores}}
-              @doughnutTitle={{this.doughnutTitle data}}
+              @totalScore={{data.total_score}}
+              @doughnutTitle={{data.title}}
             />
           </div>
         {{/each}}
@@ -265,15 +266,13 @@ export default class AdminReportSentimentAnalysis extends Component {
           class="btn-flat"
           @action={{this.backToAllCharts}}
         />
-        <h3 class="admin-report-sentiment-analysis-details__title">
-          {{this.selectedChart.title}}
-        </h3>
 
         <DoughnutChart
           @labels={{@model.labels}}
           @colors={{this.colors}}
           @data={{this.selectedChart.scores}}
-          @doughnutTitle={{this.doughnutTitle this.selectedChart}}
+          @totalScore={{this.selectedChart.total_score}}
+          @doughnutTitle={{this.selectedChart.title}}
         />
       </div>
       <div class="admin-report-sentiment-analysis-details">

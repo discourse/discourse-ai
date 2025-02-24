@@ -75,6 +75,14 @@
   }
 
   &__chart-wrapper {
+    width: auto;
+    .doughnut-chart-title {
+      @include ellipsis;
+      margin: 0 auto;
+      text-align: center;
+      margin-bottom: 1rem;
+      max-width: 300px;
+    }
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     border-radius: var(--d-border-radius);
 
@@ -89,6 +97,17 @@
     border: 1px solid var(--primary-low);
     border-radius: var(--d-border-radius);
     padding: 1rem;
+
+    .doughnut-chart-title {
+      font-size: var(--font-up-2);
+      margin: 0 auto;
+      text-align: center;
+      margin-bottom: 1rem;
+      margin-top: 0.3rem;
+      padding-top: 2rem;
+      padding-bottom: 1rem;
+      border-top: 1px solid var(--primary-low);
+    }
   }
 }
 
@@ -117,17 +136,6 @@
         display: none;
       }
     }
-  }
-
-  &__title {
-    font-size: var(--font-up-2);
-    margin: 0 auto;
-    text-align: center;
-    margin-bottom: 1rem;
-    margin-top: 0.3rem;
-    padding-top: 2rem;
-    padding-bottom: 1rem;
-    border-top: 1px solid var(--primary-low);
   }
 
   &__scores {
