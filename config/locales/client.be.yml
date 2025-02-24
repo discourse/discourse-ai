@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 be:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "сартаваць па"
   js:
     discourse_automation:
       scriptables:
@@ -103,3 +110,9 @@ be:
           next_log: "Далей"
         share_modal:
           copy: "капіяваць"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "нейтральны"
+      discobot_discoveries:
+        regular_results: "тэмы"

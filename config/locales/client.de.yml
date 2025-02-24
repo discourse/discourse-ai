@@ -20,6 +20,14 @@ de:
         emotion:
           title: "Emotion"
           description: "Die Tabelle listet die Anzahl der Beiträge auf, die mit einer bestimmten Emotion klassifiziert wurden. Klassifiziert mit dem Modell „SamLowe/roberta-base-go_emotions“."
+        reports:
+          filters:
+            group_by:
+              label: "Gruppieren nach"
+            sort_by:
+              label: "Sortieren nach"
+            tag:
+              label: "Schlagwort"
   js:
     discourse_automation:
       scriptables:
@@ -619,6 +627,11 @@ de:
       sentiments:
         dashboard:
           title: "Stimmung"
+        sentiment_analysis:
+          score_types:
+            positive: "Positiv"
+            neutral: "Neutral"
+            negative: "Negativ"
       summarization:
         chat:
           title: "Nachrichten zusammenfassen"
@@ -635,6 +648,15 @@ de:
             compact: "Kompakt"
             expanded: "Erweitert"
             expanded_description: "mit KI-Zusammenfassungen"
+      discobot_discoveries:
+        main_title: "Discobot Entdeckungen"
+        regular_results: "Themen"
+        tell_me_more: "Erzähl mir mehr..."
+        collapse: "Zuklappen"
+        timed_out: "Discobot konnte keine Entdeckungen finden. Irgendetwas ist schief gelaufen."
+        tooltip:
+          header: "KI-gestützte Suche"
+          content: "Natürliche Sprachsuche unterstützt von %{model}"
     review:
       types:
         reviewable_ai_post:

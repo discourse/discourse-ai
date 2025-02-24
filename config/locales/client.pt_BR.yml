@@ -20,6 +20,12 @@ pt_BR:
         emotion:
           title: "Gesto"
           description: "Esta tabela exibe uma contagem de postagens classificadas com um determinado gesto, com o modelo \"SamLowe/roberta-base-go_emotions\""
+        reports:
+          filters:
+            sort_by:
+              label: "Ordenar por"
+            tag:
+              label: "Etiqueta"
   js:
     discourse_automation:
       scriptables:
@@ -602,6 +608,11 @@ pt_BR:
       sentiments:
         dashboard:
           title: "Sentimento"
+        sentiment_analysis:
+          score_types:
+            positive: "Positivo"
+            neutral: "Neutro"
+            negative: "Negativo"
       summarization:
         chat:
           title: "Resumir mensagens"
@@ -618,6 +629,9 @@ pt_BR:
             compact: "Compactar"
             expanded: "Expandido(a)"
             expanded_description: "com resumos de IA"
+      discobot_discoveries:
+        regular_results: "Tópicos"
+        collapse: "Recolher"
     review:
       types:
         reviewable_ai_post:

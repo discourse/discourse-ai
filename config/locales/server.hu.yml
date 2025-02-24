@@ -21,3 +21,5 @@ hu:
       reports:
         post_emotion:
           neutral: "Semleges \U0001F610"
+        sentiment_analysis:
+          neutral: "Semleges"

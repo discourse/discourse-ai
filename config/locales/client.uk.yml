@@ -10,6 +10,13 @@ uk:
       site_settings:
         categories:
           discourse_ai: "Дискурс ШІ"
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Сортувати за"
+            tag:
+              label: "Теґ"
   js:
     discourse_automation:
       scriptables:
@@ -400,6 +407,11 @@ uk:
       sentiments:
         dashboard:
           title: "Почуття"
+        sentiment_analysis:
+          score_types:
+            positive: "Позитивний"
+            neutral: "Нейтральна"
+            negative: "Негативний"
       summarization:
         chat:
           title: "Підсумкове повідомлення"
@@ -413,6 +425,9 @@ uk:
         topic:
           title: "Підсумок теми"
           close: "Закрити панель підсумків"
+      discobot_discoveries:
+        regular_results: "Теми"
+        collapse: "Згорнути"
     review:
       types:
         reviewable_ai_post:

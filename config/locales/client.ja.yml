@@ -20,6 +20,12 @@ ja:
         emotion:
           title: "感情"
           description: "表には、特定の感情で分類された投稿のかっずがリストされます。'SamLowe/roberta-base-go_emotions' モデルで分類されます。"
+        reports:
+          filters:
+            sort_by:
+              label: "並べ替え"
+            tag:
+              label: "タグ"
   js:
     discourse_automation:
       scriptables:
@@ -599,6 +605,11 @@ ja:
       sentiments:
         dashboard:
           title: "センチメント"
+        sentiment_analysis:
+          score_types:
+            positive: "ポジティブ"
+            neutral: "ニュートラル"
+            negative: "ネガティブ"
       summarization:
         chat:
           title: "メッセージを要約する"
@@ -614,6 +625,9 @@ ja:
             compact: "コンパクト"
             expanded: "展開"
             expanded_description: "AI 要約を使用"
+      discobot_discoveries:
+        regular_results: "トピック"
+        collapse: "折りたたむ"
     review:
       types:
         reviewable_ai_post:

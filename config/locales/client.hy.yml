@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 hy:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Դասավորել ըստ"
   js:
     discourse_automation:
       scriptables:
@@ -118,3 +125,10 @@ hy:
           previous_log: "Նախորդը"
         share_modal:
           copy: "Կրկնօրինակել"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Նեյտրալ"
+      discobot_discoveries:
+        regular_results: "Թեմաներ"
+        collapse: "Կրճատել"

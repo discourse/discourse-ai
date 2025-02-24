@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 ro:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Sortează după"
+            tag:
+              label: "Etichetă"
   js:
     discourse_automation:
       scriptables:
@@ -130,3 +139,6 @@ ro:
           title: "Rezumați mesajele"
           description: "Selectați o opțiune de mai jos pentru a rezuma conversația trimisă în intervalul de timp dorit."
           summarize: "Rezumat"
+      discobot_discoveries:
+        regular_results: "Discuții"
+        collapse: "Colaps"

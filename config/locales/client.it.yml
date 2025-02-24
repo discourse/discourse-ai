@@ -20,6 +20,12 @@ it:
         emotion:
           title: "Emozione"
           description: "La tabella elenca un conteggio di messaggi classificati con un'emozione determinata. Classificati con il modello 'SamLowe/roberta-base-go_emotions'."
+        reports:
+          filters:
+            sort_by:
+              label: "Ordina per"
+            tag:
+              label: "Etichetta"
   js:
     discourse_automation:
       scriptables:
@@ -602,6 +608,11 @@ it:
       sentiments:
         dashboard:
           title: "Sentimento"
+        sentiment_analysis:
+          score_types:
+            positive: "Positiva"
+            neutral: "Neutro"
+            negative: "Negativa"
       summarization:
         chat:
           title: "Riassumi i messaggi"
@@ -618,6 +629,9 @@ it:
             compact: "Compatto"
             expanded: "Espanso"
             expanded_description: "con riepiloghi IA"
+      discobot_discoveries:
+        regular_results: "Argomenti"
+        collapse: "Comprimi"
     review:
       types:
         reviewable_ai_post:

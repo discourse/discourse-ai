@@ -397,6 +397,10 @@ tr_TR:
           anger: "Öfke \U0001F621"
           joy: "Neşe \U0001F600"
           disgust: "İğrenme \U0001F922"
+        sentiment_analysis:
+          positive: "Pozitif"
+          negative: "Negatif"
+          neutral: "Nötr"
     llm:
       configuration:
         disable_module_first: "Önce %{setting} devre dışı bırakılmalı."
@@ -435,6 +439,3 @@ tr_TR:
       no_default_llm: Kişiliğin tanımlanmış bir default_llm'si olmalıdır.
       user_not_allowed: Kullanıcının konuya katılmasına izin verilmiyor.
       prompt_message_length: '%{idx} mesajı 1000 karakter limitinin üzerinde.'
-  dashboard:
-    problem:
-      ai_llm_status: "LLM modeli: %{model_name} sorunlarla karşılaşıyor. Lütfen <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>modelin yapılandırma sayfasını</a> kontrol edin."

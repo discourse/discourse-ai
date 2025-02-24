@@ -19,3 +19,5 @@ te:
       reports:
         post_emotion:
           neutral: "తటస్థ \U0001F610"
+        sentiment_analysis:
+          neutral: "తటస్థ"

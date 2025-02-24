@@ -16,3 +16,5 @@ be:
       reports:
         post_emotion:
           neutral: "нейтральны \U0001F610"
+        sentiment_analysis:
+          neutral: "нейтральны"

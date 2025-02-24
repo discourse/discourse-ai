@@ -310,6 +310,10 @@ uk:
           anger: "Гнів \U0001F621"
           joy: "Радість \U0001F600"
           disgust: "Огида \U0001F922"
+        sentiment_analysis:
+          positive: "Позитивний"
+          negative: "Негативний"
+          neutral: "Нейтральна"
     llm:
       configuration:
         disable_module_first: "Спочатку потрібно вимкнути %{setting} ."

@@ -397,6 +397,10 @@ fi:
           anger: "Viha \U0001F621"
           joy: "Ilo \U0001F600"
           disgust: "Inho \U0001F922"
+        sentiment_analysis:
+          positive: "Positiivinen"
+          negative: "Negatiivinen"
+          neutral: "Neutraali"
     llm:
       configuration:
         disable_module_first: "Sinun täytyy ensin poistaa %{setting} käytöstä."
@@ -434,6 +438,3 @@ fi:
       no_default_llm: Persoonalla täytyy olla default_llm määritelty.
       user_not_allowed: Käyttäjä ei saa osallistua ketjuun.
       prompt_message_length: Viesti %{idx} ylittää 1 000 merkin rajan.
-  dashboard:
-    problem:
-      ai_llm_status: "Suuressa kielimallissa %{model_name} on ongelmia. Tarkista <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>mallin määrityssivu</a>."

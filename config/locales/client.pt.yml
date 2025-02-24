@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 pt:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Ordenar por"
   js:
     discourse_automation:
       scriptables:
@@ -128,3 +135,6 @@ pt:
       summarization:
         chat:
           summarize: "Resumir"
+      discobot_discoveries:
+        regular_results: "Tópicos"
+        collapse: "Colapsar"

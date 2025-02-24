@@ -20,6 +20,12 @@ ar:
         emotion:
           title: "العاطفة"
           description: "يسرد الجدول عدد المنشورات المصنَّفة بعاطفة محدَّدة. مصنَّفة باستخدام النموذج 'SamLowe/roberta-base-go_emotions'."
+        reports:
+          filters:
+            sort_by:
+              label: "الترتيب حسب"
+            tag:
+              label: "الوسم"
   js:
     discourse_automation:
       scriptables:
@@ -614,6 +620,11 @@ ar:
       sentiments:
         dashboard:
           title: "المشاعر"
+        sentiment_analysis:
+          score_types:
+            positive: "إيجابية"
+            neutral: "محايدة"
+            negative: "سلبية"
       summarization:
         chat:
           title: "تلخيص الرسائل"
@@ -634,6 +645,9 @@ ar:
             compact: "مضغوط"
             expanded: "موسَّع"
             expanded_description: "مع ملخصات الذكاء الاصطناعي"
+      discobot_discoveries:
+        regular_results: "الموضوعات"
+        collapse: "طي"
     review:
       types:
         reviewable_ai_post:

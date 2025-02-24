@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 sq:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Rendit sipas"
   js:
     discourse_automation:
       scriptables:
@@ -112,3 +119,6 @@ sq:
           previous_log: "I kaluar"
         share_modal:
           copy: "Kopjo"
+      discobot_discoveries:
+        regular_results: "Topics"
+        collapse: "Zvogëloni"

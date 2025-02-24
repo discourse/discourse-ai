@@ -10,6 +10,13 @@ pl_PL:
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Sortuj po"
+            tag:
+              label: "Tag"
   js:
     discourse_automation:
       scriptables:
@@ -254,6 +261,11 @@ pl_PL:
       sentiments:
         dashboard:
           title: "Sentiment"
+        sentiment_analysis:
+          score_types:
+            positive: "Pozytywne"
+            neutral: "Neutralne"
+            negative: "Negatywne"
       summarization:
         chat:
           title: "Podsumuj wiadomości"
@@ -266,6 +278,9 @@ pl_PL:
             other: "Ostatnie %{count} godzin"
         topic:
           title: "Podsumowanie tematu"
+      discobot_discoveries:
+        regular_results: "Tematy"
+        collapse: "Zwiń"
     review:
       types:
         reviewable_ai_post:

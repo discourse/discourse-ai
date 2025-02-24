@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 cs:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Řadit podle"
+            tag:
+              label: "Štítek"
   js:
     discourse_automation:
       scriptables:
@@ -230,3 +239,6 @@ cs:
             compact: "Kompaktní"
             expanded: "Rozšířený"
             expanded_description: "se souhrny AI"
+      discobot_discoveries:
+        regular_results: "Témata"
+        collapse: "Sbalit"

@@ -20,3 +20,5 @@ ur:
       reports:
         post_emotion:
           neutral: "نیوٹرل \U0001F610"
+        sentiment_analysis:
+          neutral: "نیوٹرل"

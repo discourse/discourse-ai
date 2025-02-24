@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 ko:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "정렬 기준"
+            tag:
+              label: "태그"
   js:
     discourse_automation:
       scriptables:
@@ -131,6 +140,10 @@ ko:
           previous_log: "이전값"
         share_modal:
           copy: "복사"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "중립국"
       summarization:
         chat:
           title: "메시지 요약"
@@ -138,3 +151,6 @@ ko:
           summarize: "요약하기"
           since:
             other: "약 %{count}시간"
+      discobot_discoveries:
+        regular_results: "글"
+        collapse: "축소"

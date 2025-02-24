@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 sw:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Panga kwa"
   js:
     discourse_automation:
       scriptables:
@@ -110,3 +117,6 @@ sw:
           previous_log: "Uliopita"
         share_modal:
           copy: "Nakili"
+      discobot_discoveries:
+        regular_results: "Mada"
+        collapse: "Kunja"

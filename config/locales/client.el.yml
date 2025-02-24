@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 el:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Ταξινόμηση κατά"
   js:
     discourse_automation:
       scriptables:
@@ -127,3 +134,6 @@ el:
           previous_log: "Προηγούμενο"
         share_modal:
           copy: "Αντιγραφή"
+      discobot_discoveries:
+        regular_results: "Θέματα"
+        collapse: "Σύμπτυξη"

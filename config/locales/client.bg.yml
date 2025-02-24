@@ -5,6 +5,13 @@
 # https://translate.discourse.org/
 
 bg:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Сортирай по"
   js:
     discourse_automation:
       scriptables:
@@ -122,3 +129,6 @@ bg:
       summarization:
         chat:
           summarize: "Обобщаване"
+      discobot_discoveries:
+        regular_results: "Теми"
+        collapse: "Намали"

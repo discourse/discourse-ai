@@ -10,6 +10,13 @@ lt:
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Rūšiuoti pagal"
+            tag:
+              label: "Žymėti"
   js:
     discourse_automation:
       scriptables:
@@ -170,6 +177,13 @@ lt:
           copy: "Kopijuoti"
         bot_names:
           claude-2: "Claude 2"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Neutrali"
       summarization:
         chat:
           summarize: "Apibendrinti"
+      discobot_discoveries:
+        regular_results: "Temos"
+        collapse: "Suskleisti"

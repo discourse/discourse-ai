@@ -20,6 +20,12 @@ fr:
         emotion:
           title: "Émotion"
           description: "Le tableau répertorie le nombre de publications classées selon une émotion déterminée. Cette classification est réalisée avec le modèle « Samlowe/Roberta-Base-Go_Emotions »."
+        reports:
+          filters:
+            sort_by:
+              label: "Trier par"
+            tag:
+              label: "Étiqueter"
   js:
     discourse_automation:
       scriptables:
@@ -602,6 +608,11 @@ fr:
       sentiments:
         dashboard:
           title: "Sentiment"
+        sentiment_analysis:
+          score_types:
+            positive: "Positif"
+            neutral: "Neutre"
+            negative: "Négatif"
       summarization:
         chat:
           title: "Résumer les messages"
@@ -618,6 +629,9 @@ fr:
             compact: "Compact"
             expanded: "Étendu"
             expanded_description: "avec des résumés d'IA"
+      discobot_discoveries:
+        regular_results: "Sujets"
+        collapse: "Réduire"
     review:
       types:
         reviewable_ai_post:

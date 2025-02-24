@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 gl:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Ordenar por"
+            tag:
+              label: "Etiqueta"
   js:
     discourse_automation:
       scriptables:
@@ -123,3 +132,10 @@ gl:
           previous_log: "Anterior"
         share_modal:
           copy: "Copiar"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Neutro"
+      discobot_discoveries:
+        regular_results: "Temas"
+        collapse: "Pregar"

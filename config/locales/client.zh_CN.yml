@@ -20,6 +20,12 @@ zh_CN:
         emotion:
           title: "情绪"
           description: "该表列出了按确定的情绪分类的帖子数量。使用“SamLowe/roberta-base-go_emotions”模型进行分类。"
+        reports:
+          filters:
+            sort_by:
+              label: "排序依据"
+            tag:
+              label: "标签"
   js:
     discourse_automation:
       scriptables:
@@ -599,6 +605,11 @@ zh_CN:
       sentiments:
         dashboard:
           title: "情绪"
+        sentiment_analysis:
+          score_types:
+            positive: "积极"
+            neutral: "中性"
+            negative: "消极"
       summarization:
         chat:
           title: "总结消息"
@@ -614,6 +625,9 @@ zh_CN:
             compact: "紧凑"
             expanded: "展开"
             expanded_description: "带 AI 摘要"
+      discobot_discoveries:
+        regular_results: "话题"
+        collapse: "收起"
     review:
       types:
         reviewable_ai_post:

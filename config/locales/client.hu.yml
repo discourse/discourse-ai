@@ -5,6 +5,15 @@
 # https://translate.discourse.org/
 
 hu:
+  admin_js:
+    admin:
+      dashboard:
+        reports:
+          filters:
+            sort_by:
+              label: "Rendezés"
+            tag:
+              label: "Címke"
   js:
     discourse_automation:
       scriptables:
@@ -133,6 +142,13 @@ hu:
           previous_log: "Vissza"
         share_modal:
           copy: "Másolás"
+      sentiments:
+        sentiment_analysis:
+          score_types:
+            neutral: "Semleges"
       summarization:
         chat:
           summarize: "Összefoglalás"
+      discobot_discoveries:
+        regular_results: "Témák"
+        collapse: "Összecsukás"

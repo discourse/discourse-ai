@@ -240,3 +240,6 @@ id:
             other: "%{count} jam terakhir"
         topic:
           title: "Ringkasan topik"
+      discobot_discoveries:
+        regular_results: "Topik"
+        collapse: "Persempit"

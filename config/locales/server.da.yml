@@ -19,3 +19,5 @@ da:
       reports:
         post_emotion:
           neutral: "Neutral \U0001F610"
+        sentiment_analysis:
+          neutral: "Neutral"

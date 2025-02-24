@@ -397,6 +397,10 @@ nl:
           anger: "Boosheid \U0001F621"
           joy: "Vreugde \U0001F600"
           disgust: "Afschuw \U0001F922"
+        sentiment_analysis:
+          positive: "Positief"
+          negative: "Negatief"
+          neutral: "Neutraal"
     llm:
       configuration:
         disable_module_first: "Je moet eerst %{setting} uitschakelen."
@@ -434,6 +438,3 @@ nl:
       no_default_llm: Er moet een default_llm zijn gedefinieerd voor de persona.
       user_not_allowed: De gebruiker mag niet deelnemen aan het topic.
       prompt_message_length: Het bericht %{idx} is langer dan de limiet van 1000 tekens.
-  dashboard:
-    problem:
-      ai_llm_status: "Het LLM-model %{model_name} ondervindt problemen. Controleer de <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>configuratiepagina van het model</a>."

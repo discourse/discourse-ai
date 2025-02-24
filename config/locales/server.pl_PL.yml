@@ -224,6 +224,10 @@ pl_PL:
           fear: "Strach \U0001F628"
           anger: "Gniew \U0001F621"
           disgust: "Niesmak \U0001F922"
+        sentiment_analysis:
+          positive: "Pozytywne"
+          negative: "Negatywne"
+          neutral: "Neutralne"
     llm:
       configuration:
         disable_module_first: "Najpierw musisz wyłączyć %{setting}."

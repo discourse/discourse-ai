@@ -390,6 +390,10 @@ zh_CN:
           anger: "愤怒 \U0001F621"
           joy: "开心\U0001F600"
           disgust: "厌恶 \U0001F922"
+        sentiment_analysis:
+          positive: "积极"
+          negative: "消极"
+          neutral: "中性"
     llm:
       configuration:
         disable_module_first: "您必须先禁用“%{setting}”。"
@@ -425,6 +429,3 @@ zh_CN:
       no_default_llm: 角色必须定义一个 default_llm。
       user_not_allowed: 该用户无法参与该话题。
       prompt_message_length: 消息 %{idx} 超过 1000 个字符限制。
-  dashboard:
-    problem:
-      ai_llm_status: "LLM 模型：%{model_name} 遇到问题。请检查<a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}'>模型的配置页面</a>。"
