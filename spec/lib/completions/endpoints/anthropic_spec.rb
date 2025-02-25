@@ -334,6 +334,68 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expect(requested_body).to eq(request_body)
   end
 
+  it "can support reasoning" do
+    body = <<~STRING
+      {
+        "content": [
+          {
+            "text": "Hello!",
+            "type": "text"
+          }
+        ],
+        "id": "msg_013Zva2CMHLNnXjNJJKqJ2EF",
+        "model": "claude-3-opus-20240229",
+        "role": "assistant",
+        "stop_reason": "end_turn",
+        "stop_sequence": null,
+        "type": "message",
+        "usage": {
+          "input_tokens": 10,
+          "output_tokens": 25
+        }
+      }
+    STRING
+
+    parsed_body = nil
+    stub_request(:post, url).with(
+      body:
+        proc do |req_body|
+          parsed_body = JSON.parse(req_body, symbolize_names: true)
+          true
+        end,
+      headers: {
+        "Content-Type" => "application/json",
+        "X-Api-Key" => "123",
+        "Anthropic-Version" => "2023-06-01",
+      },
+    ).to_return(status: 200, body: body)
+
+    model.provider_params["enable_reasoning"] = true
+    model.provider_params["reasoning_tokens"] = 10_000
+    model.save!
+
+    proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    result = proxy.generate(prompt, user: Discourse.system_user)
+    expect(result).to eq("Hello!")
+
+    expected_body = {
+      model: "claude-3-opus-20240229",
+      max_tokens: 40_000,
+      thinking: {
+        type: "enabled",
+        budget_tokens: 10_000,
+      },
+      messages: [{ role: "user", content: "user1: hello" }],
+      system: "You are hello bot",
+    }
+    expect(parsed_body).to eq(expected_body)
+
+    log = AiApiAuditLog.order(:id).last
+    expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
+    expect(log.request_tokens).to eq(10)
+    expect(log.response_tokens).to eq(25)
+  end
+
   it "can operate in regular mode" do
     body = <<~STRING
       {

@@ -285,6 +285,23 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     end
   end
 
+  describe "max tokens remapping" do
+    it "remaps max_tokens to max_completion_tokens for reasoning models" do
+      model.update!(name: "o3-mini")
+      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+
+      body_parsed = nil
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
+        body: ->(body) { body_parsed = JSON.parse(body) },
+      ).to_return(status: 200, body: { choices: [{ message: { content: "hello" } }] }.to_json)
+
+      llm.generate("test", user: user, max_tokens: 1000)
+
+      expect(body_parsed["max_completion_tokens"]).to eq(1000)
+      expect(body_parsed["max_tokens"]).to be_nil
+    end
+  end
+
   describe "forced tool use" do
     it "can properly force tool use" do
       llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
@@ -346,9 +363,11 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
         body: proc { |body| body_json = JSON.parse(body, symbolize_names: true) },
       ).to_return(body: response)
 
-      result = llm.generate(prompt, user: user)
+      result = llm.generate(prompt, user: user, max_tokens: 1000)
 
       expect(body_json[:tool_choice]).to eq({ type: "function", function: { name: "echo" } })
+      # we expect this not to be remapped on older non reasoning models
+      expect(body_json[:max_tokens]).to eq(1000)
 
       log = AiApiAuditLog.order(:id).last
       expect(log.request_tokens).to eq(55)

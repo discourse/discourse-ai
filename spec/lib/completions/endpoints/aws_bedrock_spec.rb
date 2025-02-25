@@ -335,6 +335,57 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       expect(log.response_tokens).to eq(20)
     end
 
+    it "supports thinking" do
+      model.provider_params["enable_reasoning"] = true
+      model.provider_params["reasoning_tokens"] = 10_000
+      model.save!
+
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+
+      request = nil
+
+      content = {
+        content: [text: "hello sam"],
+        usage: {
+          input_tokens: 10,
+          output_tokens: 20,
+        },
+      }.to_json
+
+      stub_request(
+        :post,
+        "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke",
+      )
+        .with do |inner_request|
+          request = inner_request
+          true
+        end
+        .to_return(status: 200, body: content)
+
+      response = proxy.generate("hello world", user: user)
+
+      expect(request.headers["Authorization"]).to be_present
+      expect(request.headers["X-Amz-Content-Sha256"]).to be_present
+
+      expected = {
+        "max_tokens" => 40_000,
+        "thinking" => {
+          "type" => "enabled",
+          "budget_tokens" => 10_000,
+        },
+        "anthropic_version" => "bedrock-2023-05-31",
+        "messages" => [{ "role" => "user", "content" => "hello world" }],
+        "system" => "You are a helpful bot",
+      }
+      expect(JSON.parse(request.body)).to eq(expected)
+
+      expect(response).to eq("hello sam")
+
+      log = AiApiAuditLog.order(:id).last
+      expect(log.request_tokens).to eq(10)
+      expect(log.response_tokens).to eq(20)
+    end
+
     it "supports claude 3 streaming" do
       proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
 
