@@ -370,7 +370,7 @@ zh_CN:
           other: "此模型目前的使用者为 %{settings}。如果配置错误，功能将无法按预期运行。"
         model_description:
           none: "适用于大多数语言模型的常规设置"
-          anthropic-claude-3-5-sonnet: "Anthropic 最聪明的模型"
+          anthropic-claude-3-7-sonnet: "Anthropic 最聪明的模型"
           anthropic-claude-3-5-haiku: "快速、经济实惠"
           anthropic-claude-3-opus: "擅长写作和复杂任务"
           google-gemini-1-5-pro: "能够执行多种任务的中型多模态模型"
@@ -606,7 +606,8 @@ zh_CN:
         dashboard:
           title: "情绪"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "所有"
             positive: "积极"
             neutral: "中性"
             negative: "消极"

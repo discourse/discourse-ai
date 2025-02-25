@@ -142,7 +142,8 @@ ko:
           copy: "복사"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "전체"
             neutral: "중립국"
       summarization:
         chat:

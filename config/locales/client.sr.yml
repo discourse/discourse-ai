@@ -111,6 +111,10 @@ sr:
           previous_log: "Prethodno"
         share_modal:
           copy: "Kopija"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "sve"
       discobot_discoveries:
         regular_results: "Teme"
         collapse: "Spusti"

@@ -127,7 +127,8 @@ ca:
           copy: "Còpia"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Tot"
             neutral: "Neutre"
       discobot_discoveries:
         regular_results: "Temes"

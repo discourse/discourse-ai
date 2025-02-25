@@ -370,7 +370,7 @@ ja:
           other: "このモデルは現在次によって使用されています: %{settings}。誤って構成されると、機能は期待どおりに動作しなくなります。"
         model_description:
           none: "ほとんどの言語モデルで機能する一般的な設定"
-          anthropic-claude-3-5-sonnet: "Anthropic の最もインテリジェントなモデル"
+          anthropic-claude-3-7-sonnet: "Anthropic の最もインテリジェントなモデル"
           anthropic-claude-3-5-haiku: "高速でコスト効率に優れています"
           anthropic-claude-3-opus: "作文と複雑なタスクに優れています"
           google-gemini-1-5-pro: "広範なタスクに対応できる中規模のマルチモーダルモデル"
@@ -606,7 +606,8 @@ ja:
         dashboard:
           title: "センチメント"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "すべて"
             positive: "ポジティブ"
             neutral: "ニュートラル"
             negative: "ネガティブ"

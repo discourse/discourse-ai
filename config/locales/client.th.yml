@@ -118,6 +118,10 @@ th:
           previous_log: "ก่อนหน้า"
         share_modal:
           copy: "คัดลอก"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "ทั้งหมด"
       discobot_discoveries:
         regular_results: "หัวข้อ"
         collapse: "ย่อ"

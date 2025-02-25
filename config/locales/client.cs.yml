@@ -221,6 +221,9 @@ cs:
       sentiments:
         dashboard:
           title: "Sentiment"
+        sentiment_analysis:
+          filter_types:
+            all: "Vše"
       summarization:
         chat:
           title: "Shrnout zprávy"

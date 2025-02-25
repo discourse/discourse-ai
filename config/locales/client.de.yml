@@ -384,7 +384,7 @@ de:
           other: "Dieses Modell wird derzeit verwendet von: %{settings}. Wenn es falsch konfiguriert ist, werden die Funktionen nicht wie erwartet funktionieren. "
         model_description:
           none: "Allgemeine Einstellungen, die für die meisten Sprachmodelle funktionieren"
-          anthropic-claude-3-5-sonnet: "Das intelligenteste Modell von Anthropic"
+          anthropic-claude-3-7-sonnet: "Das intelligenteste Modell von Anthropic"
           anthropic-claude-3-5-haiku: "Schnell und kosteneffizient"
           anthropic-claude-3-opus: "Hervorragend im Schreiben und bei komplexen Aufgaben"
           google-gemini-1-5-pro: "Multimodales Modell mittlerer Größe, das eine Vielzahl von Aufgaben bewältigen kann"
@@ -448,6 +448,8 @@ de:
           provider_quantizations: "Reihenfolge der Provider-Quantisierungen (kommagetrennte Liste, z. B.: fp16,fp8)"
           disable_streaming: "Streaming-Vervollständigung deaktivieren (Streaming-Anfragen in Nicht-Streaming-Anfragen umwandeln)"
           reasoning_effort: "Argumentationsaufwand (gilt nur für Argumentationsmodelle)"
+          enable_reasoning: "Argumentation aktivieren (gilt nur für Sonnet 3.7)"
+          reasoning_tokens: "Anzahl der für die Argumentation verwendeten Token"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -628,7 +630,8 @@ de:
         dashboard:
           title: "Stimmung"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Gesamt"
             positive: "Positiv"
             neutral: "Neutral"
             negative: "Negativ"

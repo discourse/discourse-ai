@@ -112,7 +112,8 @@ be:
           copy: "капіяваць"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Усё"
             neutral: "нейтральны"
       discobot_discoveries:
         regular_results: "тэмы"

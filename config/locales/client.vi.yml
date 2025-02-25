@@ -136,6 +136,10 @@ vi:
           previous_log: "Trước"
         share_modal:
           copy: "Sao chép"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "All"
       summarization:
         chat:
           summarize: "Tóm tắt"

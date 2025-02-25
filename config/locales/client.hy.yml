@@ -127,7 +127,8 @@ hy:
           copy: "Կրկնօրինակել"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Բոլորը"
             neutral: "Նեյտրալ"
       discobot_discoveries:
         regular_results: "Թեմաներ"

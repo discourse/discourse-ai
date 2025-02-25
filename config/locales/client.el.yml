@@ -134,6 +134,10 @@ el:
           previous_log: "Προηγούμενο"
         share_modal:
           copy: "Αντιγραφή"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Όλα"
       discobot_discoveries:
         regular_results: "Θέματα"
         collapse: "Σύμπτυξη"

@@ -131,6 +131,10 @@ nb_NO:
           previous_log: "Forrige"
         share_modal:
           copy: "Kopier"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Alle"
       discobot_discoveries:
         regular_results: "Emner"
         collapse: "Fold sammen"

@@ -126,7 +126,8 @@ et:
           copy: "Kopeeri"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Kõik"
             neutral: "Neutraalne"
       discobot_discoveries:
         regular_results: "Teemasid"

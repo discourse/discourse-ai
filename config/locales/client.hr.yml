@@ -139,6 +139,10 @@ hr:
           previous_log: "Predhodno"
         share_modal:
           copy: "Kopija"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Sve"
       summarization:
         chat:
           title: "Sažmi poruke"

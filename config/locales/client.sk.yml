@@ -146,7 +146,8 @@ sk:
           copy: "Kopírovať"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Všetky"
             neutral: "Neutrálna"
       summarization:
         chat:

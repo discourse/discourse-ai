@@ -132,6 +132,10 @@ pt:
           previous_log: "Anterior"
         share_modal:
           copy: "Copiar"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Tudo"
       summarization:
         chat:
           summarize: "Resumir"

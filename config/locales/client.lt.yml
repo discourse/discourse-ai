@@ -179,7 +179,8 @@ lt:
           claude-2: "Claude 2"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Visos"
             neutral: "Neutrali"
       summarization:
         chat:

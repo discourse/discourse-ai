@@ -119,6 +119,10 @@ sq:
           previous_log: "I kaluar"
         share_modal:
           copy: "Kopjo"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Të Gjithë"
       discobot_discoveries:
         regular_results: "Topics"
         collapse: "Zvogëloni"

@@ -134,7 +134,8 @@ gl:
           copy: "Copiar"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Todas"
             neutral: "Neutro"
       discobot_discoveries:
         regular_results: "Temas"

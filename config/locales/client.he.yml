@@ -373,7 +373,7 @@ he:
           other: "המודל הזה משמש את: %{settings}. אם ההגדרות שגויות היכולת לא תעבודנה כמצופה."
         model_description:
           none: "הגדרות כלליות שעובדות עבור רוב המודלים של השפות"
-          anthropic-claude-3-5-sonnet: "המודל החכם ביותר של Anthropic"
+          anthropic-claude-3-7-sonnet: "המודל החכם ביותר של Anthropic"
           anthropic-claude-3-5-haiku: "מהיר וחסכוני"
           anthropic-claude-3-opus: "מצטיין בכתיבה ובמשימות מורכבות"
           google-gemini-1-5-pro: "מודל בינוני רב־נדבכים שבנוי למגוון רחב של משימות"
@@ -605,7 +605,8 @@ he:
         dashboard:
           title: "רגש"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "הכול"
             positive: "חיובי"
             neutral: "נייטרלי"
             negative: "שלילי"
