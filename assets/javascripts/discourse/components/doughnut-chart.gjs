@@ -3,7 +3,7 @@ import Chart from "admin/components/chart";
 
 export default class DoughnutChart extends Component {
   get config() {
-    const doughnutTitle = this.args.doughnutTitle || "";
+    const totalScore = this.args.totalScore || "";
 
     return {
       type: "doughnut",
@@ -30,11 +30,11 @@ export default class DoughnutChart extends Component {
           afterDraw: function (chart) {
             const cssVarColor =
               getComputedStyle(document.documentElement).getPropertyValue(
-                "--primary"
+                "--primary-high"
               ) || "#000";
             const cssFontSize =
               getComputedStyle(document.documentElement).getPropertyValue(
-                "--font-down-2"
+                "--font-up-4"
               ) || "1.3em";
             const cssFontFamily =
               getComputedStyle(document.documentElement).getPropertyValue(
@@ -49,9 +49,9 @@ export default class DoughnutChart extends Component {
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillStyle = cssVarColor.trim();
-            ctx.font = `${cssFontSize.trim()} ${cssFontFamily.trim()}`;
+            ctx.font = `bold ${cssFontSize.trim()} ${cssFontFamily.trim()}`;
 
-            ctx.fillText(doughnutTitle, centerX, centerY);
+            ctx.fillText(totalScore, centerX, centerY);
             ctx.save();
           },
         },
@@ -61,6 +61,7 @@ export default class DoughnutChart extends Component {
 
   <template>
     {{#if this.config}}
+      <h3 class="doughnut-chart-title">{{@doughnutTitle}}</h3>
       <Chart @chartConfig={{this.config}} class="admin-report-doughnut" />
     {{/if}}
   </template>

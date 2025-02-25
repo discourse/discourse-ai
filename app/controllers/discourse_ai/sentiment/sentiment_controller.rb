@@ -41,6 +41,7 @@ module DiscourseAi
             p.cooked as post_cooked,
             p.user_id,
             p.post_number,
+            p.created_at AS created_at,
             u.username,
             u.name,
             u.uploaded_avatar_id,

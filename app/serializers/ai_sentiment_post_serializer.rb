@@ -11,7 +11,8 @@ class AiSentimentPostSerializer < ApplicationSerializer
              :excerpt,
              :sentiment,
              :truncated,
-             :category
+             :category,
+             :created_at
 
   def avatar_template
     User.avatar_template(object.username, object.uploaded_avatar_id)
@@ -22,7 +23,7 @@ class AiSentimentPostSerializer < ApplicationSerializer
   end
 
   def truncated
-    true
+    object.post_cooked.length > SiteSetting.post_excerpt_maxlength
   end
 
   def category
