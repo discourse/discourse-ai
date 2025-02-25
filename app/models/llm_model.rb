@@ -26,9 +26,13 @@ class LlmModel < ActiveRecord::Base
         access_key_id: :text,
         region: :text,
         disable_native_tools: :checkbox,
+        enable_reasoning: :checkbox,
+        reasoning_tokens: :number,
       },
       anthropic: {
         disable_native_tools: :checkbox,
+        enable_reasoning: :checkbox,
+        reasoning_tokens: :number,
       },
       open_ai: {
         organization: :text,

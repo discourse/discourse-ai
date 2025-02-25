@@ -61,7 +61,10 @@ export default class AiLlmEditorForm extends Component {
       provider: model.provider,
       enabled_chat_bot: model.enabled_chat_bot,
       vision_enabled: model.vision_enabled,
-      provider_params: this.computeProviderParams(model.provider),
+      provider_params: this.computeProviderParams(
+        model.provider,
+        model.provider_params
+      ),
       llm_quotas: model.llm_quotas,
     };
   }
@@ -128,12 +131,12 @@ export default class AiLlmEditorForm extends Component {
     return !this.args.model.isNew;
   }
 
-  computeProviderParams(provider) {
+  computeProviderParams(provider, currentParams = {}) {
     const params = this.args.llms.resultSetMeta.provider_params[provider] ?? {};
     return Object.fromEntries(
       Object.entries(params).map(([k, v]) => [
         k,
-        v?.type === "enum" ? v.default : null,
+        currentParams[k] ?? (v?.type === "enum" ? v.default : null),
       ])
     );
   }

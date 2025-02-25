@@ -27,9 +27,9 @@ module DiscourseAi
                   id: "anthropic",
                   models: [
                     {
-                      name: "claude-3-5-sonnet",
+                      name: "claude-3-7-sonnet",
                       tokens: 200_000,
-                      display_name: "Claude 3.5 Sonnet",
+                      display_name: "Claude 3.7 Sonnet",
                     },
                     { name: "claude-3-5-haiku", tokens: 200_000, display_name: "Claude 3.5 Haiku" },
                     { name: "claude-3-opus", tokens: 200_000, display_name: "Claude 3 Opus" },

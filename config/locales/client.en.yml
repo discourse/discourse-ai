@@ -390,7 +390,7 @@ en:
 
         model_description:
           none: "General settings that work for most language models"
-          anthropic-claude-3-5-sonnet: "Anthropic's most intelligent model"
+          anthropic-claude-3-7-sonnet: "Anthropic's most intelligent model"
           anthropic-claude-3-5-haiku: "Fast and cost-effective"
           anthropic-claude-3-opus: "Excels at writing and complex tasks"
           google-gemini-1-5-pro: "Mid-sized multimodal model capable of a wide range of tasks"
@@ -459,6 +459,8 @@ en:
           provider_quantizations: "Order of provider quantizations (comma delimited list eg: fp16,fp8)"
           disable_streaming: "Disable streaming completions (convert streaming to non streaming requests)"
           reasoning_effort: "Reasoning effort (only applicable to reasoning models)"
+          enable_reasoning: "Enable reasoning (only applicable to Sonnet 3.7)"
+          reasoning_tokens: "Number of tokens used for reasoning"
 
       related_topics:
         title: "Related topics"

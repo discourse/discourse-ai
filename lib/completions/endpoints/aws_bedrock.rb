@@ -26,7 +26,22 @@ module DiscourseAi
               max_tokens = 4096
               max_tokens = 8192 if bedrock_model_id.match?(/3.5/)
 
-              { max_tokens: max_tokens, anthropic_version: "bedrock-2023-05-31" }
+              result = { anthropic_version: "bedrock-2023-05-31" }
+              if llm_model.lookup_custom_param("enable_reasoning")
+                reasoning_tokens = llm_model.lookup_custom_param("reasoning_tokens").to_i
+                if reasoning_tokens < 100
+                  reasoning_tokens = 100
+                elsif reasoning_tokens > 65_536
+                  reasoning_tokens = 65_536
+                end
+
+                # this allows for ample tokens beyond reasoning
+                max_tokens = reasoning_tokens + 30_000
+                result[:thinking] = { type: "enabled", budget_tokens: reasoning_tokens }
+              end
+              result[:max_tokens] = max_tokens
+
+              result
             else
               {}
             end
@@ -66,6 +81,8 @@ module DiscourseAi
             "anthropic.claude-3-5-sonnet-20241022-v2:0"
           when "claude-3-5-haiku"
             "anthropic.claude-3-5-haiku-20241022-v1:0"
+          when "claude-3-7-sonnet"
+            "anthropic.claude-3-7-sonnet-20250219-v1:0"
           else
             llm_model.name
           end

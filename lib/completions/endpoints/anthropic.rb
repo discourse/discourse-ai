@@ -38,6 +38,19 @@ module DiscourseAi
 
           options = { model: mapped_model, max_tokens: max_tokens }
 
+          if llm_model.lookup_custom_param("enable_reasoning")
+            reasoning_tokens = llm_model.lookup_custom_param("reasoning_tokens").to_i
+            if reasoning_tokens < 100
+              reasoning_tokens = 100
+            elsif reasoning_tokens > 65_536
+              reasoning_tokens = 65_536
+            end
+
+            # this allows for lots of tokens beyond reasoning
+            options[:max_tokens] = reasoning_tokens + 30_000
+            options[:thinking] = { type: "enabled", budget_tokens: reasoning_tokens }
+          end
+
           options[:stop_sequences] = ["</function_calls>"] if !dialect.native_tool_support? &&
             dialect.prompt.has_tools?
 
